@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+    background: #f7f7f8;
+    color: #1a1a1a;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 슬라이더 스타일 (STEP 6 경력) */
+  input[type="range"].career-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #ececec;
+    border-radius: 3px;
+    outline: none;
+  }
+  input[type="range"].career-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: #5f0080;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(95, 0, 128, 0.3);
+    transition: transform 0.1s;
+  }
+  input[type="range"].career-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+  input[type="range"].career-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: #5f0080;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(95, 0, 128, 0.3);
+  }
+}
+
+@layer components {
+  /* 입력 필드 공통 */
+  .text-input {
+    @apply w-full h-[52px] px-4 border border-[#e5e5e5] rounded-lg bg-white text-[15px] text-[#1a1a1a] outline-none transition-all;
+  }
+  .text-input::placeholder {
+    @apply text-[#9a9a9a];
+  }
+  .text-input:focus {
+    @apply border-primary;
+    box-shadow: 0 0 0 3px rgba(95, 0, 128, 0.12);
+  }
+
+  /* 메인 풀 너비 버튼 */
+  .btn-primary-full {
+    @apply w-full h-14 rounded-lg text-base font-semibold transition-all flex items-center justify-center;
+    background: #ececec;
+    color: #9a9a9a;
+    cursor: not-allowed;
+  }
+  .btn-primary-full.active {
+    background: #5f0080;
+    color: white;
+    cursor: pointer;
+  }
+  .btn-primary-full.active:hover {
+    background: #4a0066;
+  }
+  .btn-primary-full.active:active {
+    transform: scale(0.99);
+  }
+
+  /* 체크박스 비주얼 */
+  .checkbox-visual {
+    @apply flex-shrink-0 w-[22px] h-[22px] border-[1.5px] border-[#d4d4d4] rounded-md bg-white relative transition-all;
+  }
+  .checkbox-visual::after {
+    content: "";
+    @apply absolute top-1 left-2 w-[5px] h-[10px] opacity-0;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  input[type="checkbox"]:checked + .checkbox-visual {
+    @apply bg-primary border-primary;
+  }
+  input[type="checkbox"]:checked + .checkbox-visual::after {
+    @apply opacity-100;
+  }
+}
