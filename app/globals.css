@@ -1560,3 +1560,133 @@ input[type="range"].career-slider::-moz-range-thumb {
 .profile-skill-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .profile-skill-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--color-primary-soft); border-radius: 100px; font-size: 13px; font-weight: 500; color: var(--color-primary); }
 .profile-skill-chip button { background: transparent; border: none; color: var(--color-primary); cursor: pointer; font-size: 14px; padding: 0; display: flex; align-items: center; }
+
+/* ===========================================
+   알림 설정 모달
+   =========================================== */
+.noti-modal { max-width: 440px; }
+.noti-group { margin-bottom: 28px; }
+.noti-group-title { font-size: 14px; font-weight: 700; color: var(--color-text); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--color-border); }
+.noti-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--color-border); }
+.noti-item:last-child { border-bottom: none; }
+.noti-item-text { flex: 1; }
+.noti-item-text strong { display: block; font-size: 14px; font-weight: 600; color: var(--color-text); margin-bottom: 3px; }
+.noti-item-text span { font-size: 12px; color: var(--color-text-sub); line-height: 1.5; }
+.noti-toggle { width: 48px; height: 28px; border-radius: 14px; background: #ddd; border: none; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+.noti-toggle.on { background: var(--color-primary); }
+.noti-toggle-thumb { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+.noti-toggle.on .noti-toggle-thumb { transform: translateX(20px); }
+
+/* ===========================================
+   관심 브랜드 모달
+   =========================================== */
+.brand-modal { max-width: 500px; max-height: 85vh; }
+.brand-search-box { display: flex; align-items: center; gap: 10px; border: 1px solid var(--color-border); border-radius: 8px; padding: 0 14px; margin-bottom: 16px; }
+.brand-search-icon { color: var(--color-text-mute); flex-shrink: 0; }
+.brand-search-input { flex: 1; height: 44px; border: none; outline: none; font-size: 14px; font-family: inherit; background: transparent; }
+.brand-search-input::placeholder { color: var(--color-text-mute); }
+.brand-selected-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.brand-selected-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--color-primary); color: white; font-size: 12px; font-weight: 500; padding: 5px 10px; border-radius: 100px; }
+.brand-selected-tag button { background: transparent; border: none; color: white; cursor: pointer; display: flex; padding: 0; }
+.brand-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+.brand-card { background: white; border: 1.5px solid var(--color-border); border-radius: 10px; padding: 16px 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; cursor: pointer; transition: all 0.15s; text-align: left; font-family: inherit; }
+.brand-card:hover { border-color: var(--color-primary-light); }
+.brand-card.active { border-color: var(--color-primary); background: var(--color-primary-pale); }
+.brand-logo { font-size: 10px; font-weight: 800; color: var(--color-text-mute); letter-spacing: 0.5px; margin-bottom: 4px; }
+.brand-category { font-size: 11px; color: var(--color-text-mute); }
+.brand-name { font-size: 14px; font-weight: 700; color: var(--color-text); }
+.brand-empty { text-align: center; padding: 32px; color: var(--color-text-mute); font-size: 14px; }
+
+/* ===========================================
+   이력서 에디터 페이지
+   =========================================== */
+.resume-page { min-height: 100vh; background: var(--color-bg-soft); }
+.resume-header { background: white; border-bottom: 1px solid var(--color-border); padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 50; }
+.resume-back-btn { display: flex; align-items: center; gap: 4px; background: transparent; border: none; cursor: pointer; font-size: 14px; color: var(--color-text-sub); transition: color 0.15s; font-family: inherit; }
+.resume-back-btn:hover { color: var(--color-primary); }
+.resume-header-title { font-size: 16px; font-weight: 700; color: var(--color-text); flex: 1; text-align: center; }
+.resume-header-actions { display: flex; align-items: center; gap: 8px; }
+.resume-action-btn { display: flex; align-items: center; gap: 4px; background: white; border: 1px solid var(--color-border); border-radius: 8px; padding: 8px 14px; font-size: 13px; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.resume-action-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.resume-save-btn { background: var(--color-text); color: white; border: none; border-radius: 8px; padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; font-family: inherit; }
+.resume-save-btn:hover { background: #000; }
+
+.resume-layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 64px); }
+
+.resume-sidebar { background: white; border-right: 1px solid var(--color-border); padding: 24px 16px; }
+.resume-sidebar-title { font-size: 12px; font-weight: 700; color: var(--color-text-mute); letter-spacing: 0.5px; margin-bottom: 8px; padding: 0 8px; }
+.resume-sidebar-item { width: 100%; background: transparent; border: none; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: var(--color-text-sub); cursor: pointer; text-align: left; transition: all 0.15s; font-family: inherit; margin-bottom: 2px; }
+.resume-sidebar-item:hover { background: var(--color-bg-soft); color: var(--color-text); }
+.resume-sidebar-item.active { background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600; }
+
+.resume-editor { padding: 32px; max-width: 800px; }
+
+.resume-section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+.resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.resume-section-title { font-size: 17px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; }
+.resume-section-head .resume-section-title { margin-bottom: 0; }
+.resume-add-btn { display: flex; align-items: center; gap: 4px; background: transparent; border: none; color: var(--color-primary); font-size: 13px; font-weight: 500; cursor: pointer; padding: 6px 10px; border-radius: 6px; transition: background 0.15s; font-family: inherit; }
+.resume-add-btn:hover { background: var(--color-primary-soft); }
+
+.resume-basic-info { margin-bottom: 20px; }
+.resume-name-block { margin-bottom: 16px; }
+.resume-name { font-size: 24px; font-weight: 800; color: var(--color-text); letter-spacing: -0.5px; margin-bottom: 4px; }
+.resume-job-line { font-size: 14px; color: var(--color-text-sub); margin-bottom: 4px; }
+.resume-contact { font-size: 13px; color: var(--color-text-mute); }
+
+.resume-field-label { display: block; font-size: 13px; font-weight: 600; color: var(--color-text); margin-bottom: 6px; margin-top: 12px; }
+.resume-required { color: var(--color-text-mute); font-weight: 400; }
+.resume-input { width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; color: var(--color-text); outline: none; transition: border-color 0.15s; font-family: inherit; }
+.resume-input:focus { border-color: var(--color-primary); }
+.resume-textarea { width: 100%; min-height: 100px; padding: 12px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; color: var(--color-text); outline: none; resize: vertical; transition: border-color 0.15s; font-family: inherit; line-height: 1.6; margin-bottom: 4px; }
+.resume-textarea:focus { border-color: var(--color-primary); }
+.resume-textarea::placeholder { color: var(--color-text-mute); }
+
+.resume-tag-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.resume-tag-label { font-size: 13px; color: var(--color-text-mute); }
+.resume-tag-add { background: transparent; border: 1px dashed var(--color-border); border-radius: 100px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-mute); transition: all 0.15s; }
+.resume-tag-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+.resume-empty-notice { background: #fff3f3; color: #d4537e; font-size: 13px; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; }
+.resume-empty-section { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+.resume-empty-btn { display: flex; align-items: center; gap: 6px; background: white; border: 1px solid var(--color-border); border-radius: 8px; padding: 10px 16px; font-size: 14px; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.resume-empty-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.resume-empty-btn-outline { background: transparent; }
+.resume-empty-or { font-size: 12px; color: var(--color-text-mute); }
+
+.resume-career-item, .resume-edu-item, .resume-exp-item, .resume-lang-item, .resume-link-item { padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+.resume-career-item:last-child, .resume-edu-item:last-child, .resume-exp-item:last-child, .resume-lang-item:last-child, .resume-link-item:last-child { border-bottom: none; }
+.resume-career-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 15px; font-weight: 700; }
+.resume-career-period { font-size: 12px; color: var(--color-text-mute); font-weight: 400; }
+.resume-career-dept { font-size: 13px; color: var(--color-text-sub); }
+.resume-edu-item strong, .resume-lang-item strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.resume-edu-info, .resume-lang-level { font-size: 13px; color: var(--color-text-sub); display: block; }
+.resume-edu-period { font-size: 12px; color: var(--color-text-mute); }
+.resume-exp-category { font-size: 11px; font-weight: 700; color: var(--color-primary); display: block; margin-bottom: 3px; }
+.resume-exp-desc { font-size: 13px; color: var(--color-text-sub); margin-top: 4px; }
+.resume-link-category { font-size: 12px; color: var(--color-text-mute); display: block; margin-bottom: 2px; }
+.resume-link-url { font-size: 13px; color: var(--color-primary); text-decoration: none; }
+.resume-link-url:hover { text-decoration: underline; }
+
+.resume-skill-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.resume-skill-chip { background: var(--color-primary-soft); color: var(--color-primary); font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 100px; }
+
+.resume-bottom-save { padding: 24px 0; }
+.resume-save-btn-full { width: 100%; height: 52px; background: var(--color-text); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.15s; font-family: inherit; }
+.resume-save-btn-full:hover { background: #000; }
+
+@media (max-width: 768px) {
+  .resume-layout { grid-template-columns: 1fr; }
+  .resume-sidebar { display: none; }
+  .resume-editor { padding: 16px; }
+  .resume-header { padding: 0 16px; }
+  .resume-action-btn span { display: none; }
+}
+
+/* 배너 위치 수정 */
+.profile-agent-banner {
+  max-width: 600px !important;
+  margin: 12px auto 0 !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
