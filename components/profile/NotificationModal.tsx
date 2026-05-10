@@ -17,7 +17,7 @@ interface ToggleItem {
 
 const NOTIFICATION_GROUPS = [
   {
-    group: "코공고 소식받기",
+    group: "뷰티앤잡 소식받기",
     items: [
       { id: "newsletter", title: "Dbd 뉴스레터 구독", desc: "데일리뷰티드롭의 아티클을 손쉽게 받아보세요.", defaultOn: false },
       { id: "agent", title: "뷰티앤잡 에이전트 제안받기", desc: "프로필을 채우면 더 많은 커리어 제안을 받아요.", defaultOn: false },
