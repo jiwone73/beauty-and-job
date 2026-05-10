@@ -65,7 +65,7 @@ function Header() {
         </Link>
 
         <nav className="gnb">
-          <Link href="#">채용공고</Link>
+          <Link href="/jobs">채용공고</Link>
           <Link href="#">브랜드</Link>
           <Link href="#">이력서</Link>
           <Link href="#" className="gnb-with-tag">
@@ -685,53 +685,72 @@ function SectionGlobal() {
    ============================================ */
 function Footer() {
   return (
-    <footer className="footer">
-      <div className="container">
-        <div className="footer-top">
-          <div className="footer-brand">
-            <Image
-              src="/images/logo.png"
-              alt="뷰티앤잡"
-              width={120}
-              height={32}
-              className="footer-logo"
-            />
-            <p className="footer-tagline">뷰티 산업 종사자를 위한 단 하나의 커리어 플랫폼</p>
-            <div className="footer-social">
-              <button aria-label="Instagram">📷</button>
-              <button aria-label="YouTube">📺</button>
-              <button aria-label="LinkedIn">💼</button>
-            </div>
-          </div>
-
-          <div className="footer-links">
-            <div className="footer-col">
-              <h4>서비스</h4>
-              <Link href="#">채용공고</Link>
-              <Link href="#">브랜드</Link>
-              <Link href="#">이력서</Link>
-              <Link href="#">인사이트</Link>
-            </div>
-            <div className="footer-col">
-              <h4>회사</h4>
-              <Link href="#">회사 소개</Link>
-              <Link href="#">채용</Link>
-              <Link href="#">제휴 문의</Link>
-              <Link href="#">광고 문의</Link>
-            </div>
-            <div className="footer-col">
-              <h4>고객지원</h4>
-              <Link href="#">고객센터</Link>
-              <Link href="#">자주 묻는 질문</Link>
-              <Link href="#">이용약관</Link>
-              <Link href="#">개인정보처리방침</Link>
-            </div>
+    <footer className="footer-new">
+      {/* 상단: 로고 + 회사/고객지원 + CTA */}
+      <div className="footer-new-top">
+        <div className="footer-new-brand">
+          <Image
+            src="/images/logo.png"
+            alt="뷰티앤잡"
+            width={120}
+            height={32}
+            className="footer-new-logo"
+          />
+          <p className="footer-new-tagline">뷰티 산업 종사자를 위한 단 하나의 커리어 플랫폼</p>
+          <div className="footer-new-social">
+            <button aria-label="Instagram">📷</button>
+            <button aria-label="YouTube">📺</button>
+            <button aria-label="LinkedIn">💼</button>
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <p>© 2025 Beauty&Job. All rights reserved.</p>
-          <p>대표: 홍길동 · 사업자등록번호: 123-45-67890 · 서울특별시 강남구 테헤란로 123</p>
+        <div className="footer-new-links">
+          <div className="footer-new-col">
+            <h4>회사</h4>
+            <Link href="#">회사 소개</Link>
+            <Link href="#">채용</Link>
+            <Link href="#">제휴 문의</Link>
+            <Link href="#">광고 문의</Link>
+          </div>
+          <div className="footer-new-col">
+            <h4>고객지원</h4>
+            <Link href="#">고객센터</Link>
+            <Link href="#">자주 묻는 질문</Link>
+            <Link href="#">이용약관</Link>
+            <Link href="#">개인정보처리방침</Link>
+          </div>
+        </div>
+
+        <div className="footer-new-cta">
+          <p className="footer-new-cta-text">우리 회사도 채용하고 싶다면?</p>
+          <Link href="#" className="footer-new-cta-btn">기업회원 바로가기</Link>
+        </div>
+      </div>
+
+      {/* 구분선 */}
+      <div className="footer-new-divider" />
+
+      {/* 하단: 회사 정보 */}
+      <div className="footer-new-bottom">
+        <div className="footer-new-company-row">
+          <span className="footer-new-company-name">(주)뷰티앤잡</span>
+          <span className="footer-new-dot">·</span>
+          <button className="footer-new-info-link">기업 도입 문의</button>
+          <button className="footer-new-info-link">기타 문의</button>
+        </div>
+        <div className="footer-new-details">
+          <span>주소 :</span>
+          <span>사업자등록번호 :</span>
+          <span>통신판매업신고번호 :</span>
+          <span>유료직업소개사업 등록번호 :</span>
+          <span>직업정보제공사업 신고번호 :</span>
+        </div>
+        <div className="footer-new-copy">
+          <span>© 2025 Beauty&Job. All rights reserved.</span>
+          <div className="footer-new-policies">
+            <button className="footer-new-info-link">이용약관</button>
+            <button className="footer-new-info-link">개인정보 처리방침</button>
+          </div>
         </div>
       </div>
     </footer>
