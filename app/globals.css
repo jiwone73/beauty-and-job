@@ -3229,3 +3229,269 @@ input[type="range"].career-slider::-moz-range-thumb {
 .rp-link:hover {
   text-decoration: underline;
 }
+
+/* ============================================
+   로그인 페이지
+   ============================================ */
+.login-page {
+  min-height: 100vh;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+.login-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+.login-logo { display: flex; align-items: center; }
+
+.login-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+.login-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  padding: 40px 40px 36px;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* 뒤로가기 */
+.login-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: #888;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  transition: color 0.15s;
+}
+.login-back:hover { color: #1a1a1a; }
+
+.login-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+}
+.login-sub {
+  font-size: 14px;
+  color: #888;
+  margin: 0 0 32px;
+}
+
+/* 로그인 방법 */
+.login-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 카카오 버튼 */
+.login-kakao-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 54px;
+  background: #FEE500;
+  color: #3A1D1D;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.login-kakao-btn:hover {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+}
+.login-kakao-btn:active { transform: translateY(0); }
+
+/* 구분선 */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ccc;
+  font-size: 13px;
+  margin: 2px 0;
+}
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #f0f0f0;
+}
+
+/* 휴대폰 버튼 */
+.login-phone-btn {
+  width: 100%;
+  height: 52px;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.login-phone-btn:hover {
+  border-color: #5f0080;
+  background: #fdf5ff;
+}
+
+/* 회원가입 안내 */
+.login-signup-hint {
+  text-align: center;
+  font-size: 13px;
+  color: #999;
+  margin: 4px 0 0;
+}
+.login-signup-link {
+  color: #5f0080;
+  font-weight: 600;
+  text-decoration: none;
+}
+.login-signup-link:hover { text-decoration: underline; }
+
+/* 카카오 알림 안내 박스 */
+.login-kakao-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fffde7;
+  border: 1px solid #FEE500;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 4px;
+}
+.login-kakao-notice-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+.login-kakao-notice p {
+  font-size: 13px;
+  color: #5a4a00;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 폼 */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.login-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+.login-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  font-size: 16px;
+  color: #1a1a1a;
+  background: #fafafa;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.login-input:focus {
+  border-color: #5f0080;
+  background: #fff;
+}
+.login-input.error { border-color: #e53e3e; }
+.login-input-code {
+  letter-spacing: 0.3em;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+}
+.login-error {
+  font-size: 13px;
+  color: #e53e3e;
+  margin: 0;
+}
+.login-phone-display {
+  font-size: 14px;
+  color: #555;
+  margin: 0 0 4px;
+}
+.login-phone-display strong { color: #1a1a1a; }
+
+.login-submit-btn {
+  width: 100%;
+  height: 52px;
+  margin-top: 8px;
+  background: #5f0080;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.login-submit-btn:hover:not(:disabled) { background: #4a0066; }
+.login-submit-btn:disabled {
+  background: #d4b8e0;
+  cursor: not-allowed;
+}
+
+.login-resend-btn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #888;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: underline;
+  padding: 4px 0;
+}
+.login-resend-btn:hover { color: #5f0080; }
+
+.login-notice {
+  font-size: 12px;
+  color: #aaa;
+  text-align: center;
+  margin: 4px 0 0;
+}
+
+/* 모바일 */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 32px 24px 28px;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    min-height: 100vh;
+  }
+  .login-main {
+    padding: 0;
+    align-items: flex-start;
+  }
+}
