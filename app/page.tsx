@@ -716,14 +716,14 @@ function Footer() {
           <div className="footer-new-col">
             <h4>회사</h4>
             <Link href="#">회사 소개</Link>
-            <Link href="#">채용</Link>
+            <Link href="/company">채용</Link>
             <Link href="#">제휴 문의</Link>
             <Link href="#">광고 문의</Link>
           </div>
           <div className="footer-new-col">
             <h4>고객지원</h4>
             <Link href="#">고객센터</Link>
-            <Link href="#">자주 묻는 질문</Link>
+            <Link href="/company#faq">자주 묻는 질문</Link>
             <Link href="#">이용약관</Link>
             <Link href="#">개인정보처리방침</Link>
           </div>
