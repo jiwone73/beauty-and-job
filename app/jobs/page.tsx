@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
@@ -28,15 +29,23 @@ const CATEGORIES = ["스킨케어", "색조", "헤어", "바디", "향수", "건
 
 export default function JobsPage() {
   const { job, careers: signupCareers } = useSignupStore() as any;
-  const [selectedJob, setSelectedJob] = useState("직군 전체");
-  const [selectedCareer, setSelectedCareer] = useState("경력 전체");
+  const searchParams = useSearchParams();
+
+  const initJob = searchParams.get("job") || "직군 전체";
+  const initCareer = searchParams.get("career") || "경력 전체";
+  const initRegion = searchParams.get("region") || "";
+  const initBrand = searchParams.get("brand") || "";
+  const initSearch = searchParams.get("q") || "";
+
+  const [selectedJob, setSelectedJob] = useState(initJob);
+  const [selectedCareer, setSelectedCareer] = useState(initCareer);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sort, setSort] = useState<"latest" | "popular">("latest");
   const [showSearch, setShowSearch] = useState(false);
   const [showJobDrop, setShowJobDrop] = useState(false);
   const [showCareerDrop, setShowCareerDrop] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initSearch);
   const [bookmarks, setBookmarks] = useState<number[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -50,9 +59,11 @@ export default function JobsPage() {
 
   const filteredJobs = JOBS.filter((j) => {
     const matchJob = selectedJob === "직군 전체" || j.jobType.includes(selectedJob);
+    const matchCareer = selectedCareer === "경력 전체" || j.career.includes(selectedCareer.replace("년", "").replace("신입", "신입"));
     const matchCategory = !selectedCategory || j.tags.includes(selectedCategory);
     const matchSearch = !searchQuery || j.title.includes(searchQuery) || j.brand.includes(searchQuery);
-    return matchJob && matchCategory && matchSearch;
+    const matchBrand = !initBrand || j.brand.includes(initBrand);
+    return matchJob && matchCareer && matchCategory && matchSearch && matchBrand;
   });
 
   return (
