@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -27,7 +27,7 @@ const JOB_TYPES = ["마케팅", "상품기획·개발", "영업", "디자인", "
 const CAREER_OPTIONS = ["신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상", "경력 무관"];
 const CATEGORIES = ["스킨케어", "색조", "헤어", "바디", "향수", "건기식", "디바이스", "맨즈케어", "네일", "뷰티툴", "OEM", "ODM", "플랫폼", "유통사", "MCN"];
 
-export default function JobsPage() {
+function JobsPageInner() {
   const { job, careers: signupCareers } = useSignupStore() as any;
   const searchParams = useSearchParams();
 
@@ -266,5 +266,13 @@ export default function JobsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function JobsPage() {
+  return (
+    <Suspense fallback={<div style={{padding:"80px",textAlign:"center"}}>로딩 중...</div>}>
+      <JobsPageInner />
+    </Suspense>
   );
 }
