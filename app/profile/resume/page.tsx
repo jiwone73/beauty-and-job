@@ -88,7 +88,11 @@ export default function ResumePage() {
             <button
               key={sec.id}
               className={`resume-sidebar-item ${activeSection === sec.id ? "active" : ""}`}
-              onClick={() => setActiveSection(sec.id)}
+              onClick={() => {
+                setActiveSection(sec.id);
+                const el = document.getElementById(`section-${sec.id}`);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
             >
               {sec.label}
             </button>
@@ -98,7 +102,7 @@ export default function ResumePage() {
         {/* 오른쪽: 편집 영역 */}
         <main className="resume-editor">
           {/* 기본 정보 */}
-          <section className="resume-section">
+          <section id="section-basic" className="resume-section">
             <h2 className="resume-section-title">기본 정보</h2>
             <div className="resume-basic-info">
               <div className="resume-name-block">
@@ -129,7 +133,7 @@ export default function ResumePage() {
           </section>
 
           {/* 소개 & 핵심역량 */}
-          <section className="resume-section">
+          <section id="section-intro" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">소개 & 핵심역량</h2>
             </div>
@@ -159,7 +163,7 @@ export default function ResumePage() {
           </section>
 
           {/* 경력 */}
-          <section className="resume-section">
+          <section id="section-career" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">경력</h2>
               <button className="resume-add-btn" onClick={() => router.push("/profile")}>
@@ -190,7 +194,7 @@ export default function ResumePage() {
           </section>
 
           {/* 학력 */}
-          <section className="resume-section">
+          <section id="section-education" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">학력</h2>
               <button className="resume-add-btn" onClick={() => router.push("/profile")}>
@@ -215,7 +219,7 @@ export default function ResumePage() {
           </section>
 
           {/* 관련 경험 */}
-          <section className="resume-section">
+          <section id="section-experience" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">관련 경험 및 기타</h2>
               <button className="resume-add-btn" onClick={() => router.push("/profile")}>
@@ -239,7 +243,7 @@ export default function ResumePage() {
           </section>
 
           {/* 스킬 */}
-          <section className="resume-section">
+          <section id="section-skill" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">스킬</h2>
               <button className="resume-add-btn" onClick={() => router.push("/profile")}>
@@ -260,7 +264,7 @@ export default function ResumePage() {
           </section>
 
           {/* 어학 */}
-          <section className="resume-section">
+          <section id="section-language" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">어학</h2>
               <button className="resume-add-btn" onClick={() => router.push("/profile")}>
@@ -284,7 +288,7 @@ export default function ResumePage() {
           </section>
 
           {/* 링크 */}
-          <section className="resume-section">
+          <section id="section-link" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">링크</h2>
               <button className="resume-add-btn" onClick={() => router.push("/profile")}>
