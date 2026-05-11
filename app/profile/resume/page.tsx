@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import { ChevronLeft, Download, Eye, Plus, X } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -36,23 +38,38 @@ export default function ResumePage() {
 
   return (
     <div className="resume-page">
-      {/* 상단 헤더 */}
+      {/* 상단 헤더 - GNB 포함 */}
       <header className="resume-header">
-        <button className="resume-back-btn" onClick={() => router.push("/profile")}>
-          <ChevronLeft size={20} />
-          <span>프로필로 돌아가기</span>
-        </button>
-        <h1 className="resume-header-title">이력서 편집</h1>
-        <div className="resume-header-actions">
-          <button className="resume-action-btn" onClick={() => alert("미리보기 기능은 다음 업데이트에서 구현됩니다.")}>
-            <Eye size={16} /><span>미리보기</span>
-          </button>
-          <button className="resume-action-btn" onClick={() => alert("다운로드 기능은 다음 업데이트에서 구현됩니다.")}>
-            <Download size={16} /><span>다운로드</span>
-          </button>
-          <button className="resume-save-btn" onClick={handleSave}>저장</button>
+        <div className="resume-header-inner">
+          <Link href="/" className="resume-logo">
+            <Image src="/images/logo.png" alt="뷰티앤잡" width={110} height={28} priority />
+          </Link>
+          <nav className="resume-gnb">
+            <Link href="/jobs" className="resume-gnb-item">채용공고</Link>
+            <Link href="/brands" className="resume-gnb-item">브랜드</Link>
+            <Link href="/salary" className="resume-gnb-item">연봉어택</Link>
+            <Link href="/insights" className="resume-gnb-item">인사이트</Link>
+          </nav>
+          <div className="resume-header-actions">
+            <button className="resume-back-btn" onClick={() => router.push("/profile")}>
+              <ChevronLeft size={16} />
+              <span>프로필</span>
+            </button>
+            <button className="resume-action-btn" onClick={() => alert("미리보기 기능은 다음 업데이트에서 구현됩니다.")}>
+              <Eye size={16} /><span>미리보기</span>
+            </button>
+            <button className="resume-action-btn" onClick={() => alert("다운로드 기능은 다음 업데이트에서 구현됩니다.")}>
+              <Download size={16} /><span>다운로드</span>
+            </button>
+            <button className="resume-save-btn" onClick={handleSave}>저장</button>
+          </div>
         </div>
       </header>
+
+      {/* 서브 타이틀 바 */}
+      <div className="resume-subheader">
+        <h1 className="resume-subheader-title">이력서 편집</h1>
+      </div>
 
       <div className="resume-layout">
         {/* 왼쪽: 섹션 목록 */}

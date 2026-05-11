@@ -2905,3 +2905,138 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-gnb-item { font-size: 14px; font-weight: 500; color: #555; padding: 6px 10px; border-radius: 6px; text-decoration: none; transition: color 0.15s; white-space: nowrap; }
 .resume-gnb-item:hover { color: var(--color-primary); }
 @media (max-width: 768px) { .resume-gnb { display: none; } }
+
+/* ============================================
+   이력서 편집 페이지 - GNB 헤더
+   ============================================ */
+.resume-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+.resume-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  gap: 32px;
+}
+.resume-logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.resume-gnb {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex: 1;
+}
+.resume-gnb-item {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-decoration: none;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+.resume-gnb-item:hover {
+  color: #5f0080;
+}
+.resume-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.resume-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  background: transparent;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.resume-back-btn:hover {
+  background: #f9f9f9;
+  color: #1a1a1a;
+}
+.resume-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a1a;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.resume-action-btn:hover {
+  background: #f9f9f9;
+  border-color: #d4d4d4;
+}
+.resume-save-btn {
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: #5f0080;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.resume-save-btn:hover {
+  background: #4a0066;
+}
+
+/* 서브 헤더 */
+.resume-subheader {
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+.resume-subheader-title {
+  max-width: 1400px;
+  margin: 0 auto;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .resume-header-inner {
+    padding: 0 16px;
+    gap: 16px;
+    height: 56px;
+  }
+  .resume-gnb {
+    display: none;
+  }
+  .resume-back-btn span,
+  .resume-action-btn span {
+    display: none;
+  }
+  .resume-back-btn,
+  .resume-action-btn {
+    padding: 8px;
+  }
+}
