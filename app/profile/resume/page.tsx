@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -22,12 +22,14 @@ export default function ResumePage() {
   const [introLocal, setIntroLocal] = useState(intro);
   const [coreLocal, setCoreLocal] = useState(coreCompetencies);
   const [emailLocal, setEmailLocal] = useState(email);
+  const [showPreview, setShowPreview] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const jobDisplay = job === "직접입력" ? jobCustom : job || "직군 미설정";
   const birthDisplay = birth
     ? `${birth.slice(0, 4)}년 (${gender === "남성" ? "남" : "여"})`
     : "";
-  const careerDisplay = `${CAREER_LABELS[careerYears] || ""}${isLeader ? " · 팀리더 경험" : ""}`;
 
   const handleSave = () => {
     setIntro(introLocal);
@@ -36,9 +38,163 @@ export default function ResumePage() {
     alert("저장되었습니다.");
   };
 
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const jsPDF = (await import("jspdf")).default;
+
+      setShowPreview(true);
+      await new Promise((r) => setTimeout(r, 600));
+
+      if (!previewRef.current) return;
+      const canvas = await html2canvas(previewRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let heightLeft = pdfHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const fileName = name ? `${name}_이력서.pdf` : "이력서.pdf";
+      pdf.save(fileName);
+      setShowPreview(false);
+    } catch (e) {
+      alert("다운로드 중 오류가 발생했습니다. 다시 시도해주세요.");
+      setShowPreview(false);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  // 미리보기 & PDF 공용 컨텐츠
+  const ResumeContent = () => (
+    <div ref={previewRef} className="rp-wrap">
+      <div className="rp-header">
+        <h1 className="rp-name">{name || "이름"}</h1>
+        <p className="rp-meta">
+          {birthDisplay}{birthDisplay && jobDisplay ? " · " : ""}{jobDisplay}
+        </p>
+        <p className="rp-contact">
+          {phone || ""}{phone && (emailLocal || email) ? " · " : ""}{emailLocal || email || ""}
+        </p>
+      </div>
+
+      {introLocal && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">소개</h2>
+          <p className="rp-text">{introLocal}</p>
+        </div>
+      )}
+
+      {coreLocal && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">핵심 역량</h2>
+          <p className="rp-text" style={{ whiteSpace: "pre-line" }}>{coreLocal}</p>
+        </div>
+      )}
+
+      {careers.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">경력</h2>
+          {careers.map((c) => (
+            <div key={c.id} className="rp-item">
+              <div className="rp-item-head">
+                <strong>{c.company}</strong>
+                <span className="rp-period">{c.startDate} – {c.endDate}</span>
+              </div>
+              {c.department && <p className="rp-item-sub">{c.department} · {c.position}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {educations.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">학력</h2>
+          {educations.map((edu) => (
+            <div key={edu.id} className="rp-item">
+              <div className="rp-item-head">
+                <strong>{edu.school}</strong>
+                <span className="rp-period">{edu.startDate} – {edu.endDate}</span>
+              </div>
+              <p className="rp-item-sub">{edu.major} · {edu.status}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {experiences.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">관련 경험</h2>
+          {experiences.map((exp) => (
+            <div key={exp.id} className="rp-item">
+              <div className="rp-item-head">
+                <strong>{exp.title}</strong>
+                <span className="rp-badge">{exp.category}</span>
+              </div>
+              {exp.description && <p className="rp-text">{exp.description}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {skills.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">스킬</h2>
+          <div className="rp-chips">
+            {skills.map((sk) => <span key={sk} className="rp-chip">{sk}</span>)}
+          </div>
+        </div>
+      )}
+
+      {languages.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">어학</h2>
+          {languages.map((lang) => (
+            <div key={lang.id} className="rp-item">
+              <div className="rp-item-head">
+                <strong>{lang.language}</strong>
+                <span className="rp-item-sub">{lang.level}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {links.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">링크</h2>
+          {links.map((link) => (
+            <div key={link.id} className="rp-item">
+              <span className="rp-badge">{link.category}</span>
+              <a href={link.url} className="rp-link">{link.url}</a>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="resume-page">
-      {/* 상단 헤더 - GNB 포함 */}
+      {/* 상단 헤더 */}
       <header className="resume-header">
         <div className="resume-header-inner">
           <Link href="/" className="resume-logo">
@@ -55,24 +211,27 @@ export default function ResumePage() {
               <ChevronLeft size={16} />
               <span>프로필</span>
             </button>
-            <button className="resume-action-btn" onClick={() => alert("미리보기 기능은 다음 업데이트에서 구현됩니다.")}>
+            <button className="resume-action-btn" onClick={() => setShowPreview(true)}>
               <Eye size={16} /><span>미리보기</span>
             </button>
-            <button className="resume-action-btn" onClick={() => alert("다운로드 기능은 다음 업데이트에서 구현됩니다.")}>
-              <Download size={16} /><span>다운로드</span>
+            <button
+              className="resume-action-btn"
+              onClick={handleDownload}
+              disabled={isDownloading}
+            >
+              <Download size={16} />
+              <span>{isDownloading ? "저장 중..." : "다운로드"}</span>
             </button>
             <button className="resume-save-btn" onClick={handleSave}>저장</button>
           </div>
         </div>
       </header>
 
-      {/* 서브 타이틀 바 */}
       <div className="resume-subheader">
         <h1 className="resume-subheader-title">이력서 편집</h1>
       </div>
 
       <div className="resume-layout">
-        {/* 왼쪽: 섹션 목록 */}
         <aside className="resume-sidebar">
           <p className="resume-sidebar-title">섹션 구성</p>
           {[
@@ -99,9 +258,7 @@ export default function ResumePage() {
           ))}
         </aside>
 
-        {/* 오른쪽: 편집 영역 */}
         <main className="resume-editor">
-          {/* 기본 정보 */}
           <section id="section-basic" className="resume-section">
             <h2 className="resume-section-title">기본 정보</h2>
             <div className="resume-basic-info">
@@ -120,8 +277,6 @@ export default function ResumePage() {
                 />
               </div>
             </div>
-
-            {/* 담당 카테고리 + 국가 태그 */}
             <div className="resume-tag-row">
               <span className="resume-tag-label">담당 카테고리</span>
               <button className="resume-tag-add"><Plus size={14} /></button>
@@ -132,7 +287,6 @@ export default function ResumePage() {
             </div>
           </section>
 
-          {/* 소개 & 핵심역량 */}
           <section id="section-intro" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">소개 & 핵심역량</h2>
@@ -142,7 +296,6 @@ export default function ResumePage() {
                 ⓘ 소개와 핵심역량을 입력해 주세요.
               </div>
             )}
-
             <label className="resume-field-label">소개 <span className="resume-required">* (0/300자)</span></label>
             <textarea
               className="resume-textarea"
@@ -151,7 +304,6 @@ export default function ResumePage() {
               value={introLocal}
               onChange={(e) => setIntroLocal(e.target.value)}
             />
-
             <label className="resume-field-label">핵심 역량 <span className="resume-required">* (0/300자)</span></label>
             <textarea
               className="resume-textarea"
@@ -162,7 +314,6 @@ export default function ResumePage() {
             />
           </section>
 
-          {/* 경력 */}
           <section id="section-career" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">경력</h2>
@@ -193,7 +344,6 @@ export default function ResumePage() {
             )}
           </section>
 
-          {/* 학력 */}
           <section id="section-education" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">학력</h2>
@@ -218,7 +368,6 @@ export default function ResumePage() {
             )}
           </section>
 
-          {/* 관련 경험 */}
           <section id="section-experience" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">관련 경험 및 기타</h2>
@@ -226,23 +375,23 @@ export default function ResumePage() {
                 <Plus size={14} /> 추가
               </button>
             </div>
-            {experiences.map((exp) => (
-              <div key={exp.id} className="resume-exp-item">
-                <span className="resume-exp-category">{exp.category}</span>
-                <strong>{exp.title}</strong>
-                {exp.description && <p className="resume-exp-desc">{exp.description}</p>}
-              </div>
-            ))}
-            {experiences.length === 0 && (
+            {experiences.length === 0 ? (
               <div className="resume-empty-section">
                 <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
                   <Plus size={16} /> 관련 경험 추가
                 </button>
               </div>
+            ) : (
+              experiences.map((exp) => (
+                <div key={exp.id} className="resume-exp-item">
+                  <span className="resume-exp-category">{exp.category}</span>
+                  <strong>{exp.title}</strong>
+                  {exp.description && <p className="resume-exp-desc">{exp.description}</p>}
+                </div>
+              ))
             )}
           </section>
 
-          {/* 스킬 */}
           <section id="section-skill" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">스킬</h2>
@@ -263,7 +412,6 @@ export default function ResumePage() {
             )}
           </section>
 
-          {/* 어학 */}
           <section id="section-language" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">어학</h2>
@@ -287,7 +435,6 @@ export default function ResumePage() {
             )}
           </section>
 
-          {/* 링크 */}
           <section id="section-link" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">링크</h2>
@@ -311,12 +458,38 @@ export default function ResumePage() {
             )}
           </section>
 
-          {/* 저장 버튼 */}
           <div className="resume-bottom-save">
             <button className="resume-save-btn-full" onClick={handleSave}>저장하기</button>
           </div>
         </main>
       </div>
+
+      {/* ===== 미리보기 모달 ===== */}
+      {showPreview && (
+        <div className="rp-modal-overlay" onClick={() => setShowPreview(false)}>
+          <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="rp-modal-header">
+              <h2 className="rp-modal-title">이력서 미리보기</h2>
+              <div className="rp-modal-actions">
+                <button
+                  className="resume-action-btn"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                >
+                  <Download size={16} />
+                  <span>{isDownloading ? "저장 중..." : "PDF 다운로드"}</span>
+                </button>
+                <button className="rp-modal-close" onClick={() => setShowPreview(false)}>
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            <div className="rp-modal-body">
+              <ResumeContent />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

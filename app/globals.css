@@ -3040,3 +3040,192 @@ input[type="range"].career-slider::-moz-range-thumb {
     padding: 8px;
   }
 }
+
+/* ============================================
+   이력서 미리보기 모달
+   ============================================ */
+.rp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  overflow-y: auto;
+}
+.rp-modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 760px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.rp-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  border-radius: 12px 12px 0 0;
+  z-index: 1;
+}
+.rp-modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.rp-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rp-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #f5f5f5;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #666;
+  transition: background 0.15s;
+}
+.rp-modal-close:hover {
+  background: #ebebeb;
+  color: #1a1a1a;
+}
+.rp-modal-body {
+  padding: 32px 40px;
+  overflow-y: auto;
+}
+
+/* ============================================
+   이력서 미리보기 컨텐츠 (모달 + PDF 공용)
+   ============================================ */
+.rp-wrap {
+  background: #fff;
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+/* 상단 프로필 */
+.rp-header {
+  padding-bottom: 24px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid #5f0080;
+}
+.rp-name {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 6px;
+}
+.rp-meta {
+  font-size: 14px;
+  color: #555;
+  margin: 0 0 4px;
+}
+.rp-contact {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}
+
+/* 섹션 공통 */
+.rp-section {
+  padding: 20px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.rp-section:last-child {
+  border-bottom: none;
+}
+.rp-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5f0080;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 12px;
+}
+
+/* 텍스트 */
+.rp-text {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+  line-height: 1.75;
+}
+
+/* 아이템 */
+.rp-item {
+  margin-bottom: 12px;
+}
+.rp-item:last-child {
+  margin-bottom: 0;
+}
+.rp-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.rp-item-head strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.rp-period {
+  font-size: 13px;
+  color: #888;
+  white-space: nowrap;
+}
+.rp-item-sub {
+  font-size: 13px;
+  color: #666;
+  margin: 2px 0 0;
+}
+
+/* 배지 */
+.rp-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5f0080;
+  background: #f5eaff;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+/* 스킬 칩 */
+.rp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rp-chip {
+  padding: 4px 12px;
+  font-size: 13px;
+  color: #333;
+  background: #f5f5f5;
+  border-radius: 20px;
+}
+
+/* 링크 */
+.rp-link {
+  font-size: 13px;
+  color: #5f0080;
+  text-decoration: none;
+  word-break: break-all;
+}
+.rp-link:hover {
+  text-decoration: underline;
+}
