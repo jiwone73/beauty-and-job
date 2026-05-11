@@ -1,4 +1,5 @@
 "use client";
+import { INSIGHTS } from "./data";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -6,7 +7,7 @@ import Image from "next/image";
 import { Search, Clock, ChevronRight } from "lucide-react";
 
 /* ===== 더미 데이터 ===== */
-export const INSIGHTS = [
+const INSIGHTS = [
   {
     id: 1,
     category: "트렌드",
