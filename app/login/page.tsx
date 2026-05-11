@@ -6,12 +6,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useSignupStore } from "@/lib/store/signupStore";
 
 type Step = "method" | "phone" | "verify";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuthStore();
+  const { name: savedName, phone: savedPhone } = useSignupStore();
   const [step, setStep] = useState<Step>("method");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
@@ -46,7 +48,9 @@ export default function LoginPage() {
     setVerifying(false);
 
     if (code === "123456") {
-      login({ userPhone: rawPhone });
+      // 저장된 회원 정보와 전화번호 매칭
+      const matchedName = savedPhone.replace(/-/g, "") === rawPhone ? savedName : "";
+      login({ userName: matchedName, userPhone: rawPhone });
       router.push("/");
     } else {
       setError("인증번호가 올바르지 않습니다. (테스트: 123456)");
