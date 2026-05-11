@@ -14,36 +14,21 @@ import {
   Sparkles,
   Globe,
   GraduationCap,
+  Mail,
+  CheckCircle,
 } from "lucide-react";
 
 export default function HomePage() {
   return (
     <main className="main-page">
-      {/* ===== 헤더 ===== */}
       <Header />
-
-      {/* ===== 히어로 ===== */}
       <Hero />
-
-      {/* ===== 뷰티앤잡 Pick ===== */}
       <SectionPick />
-
-      {/* ===== 뷰티 업계 인사이트 ===== */}
       <SectionInsights />
-
-      {/* ===== 뉴스레터 ===== */}
       <SectionNewsletter />
-
-      {/* ===== 고급경력직 채용관 ===== */}
       <SectionPremium />
-
-      {/* ===== 뷰티 인턴 채용관 ===== */}
       <SectionIntern />
-
-      {/* ===== 글로벌 뷰티 커리어 채용관 ===== */}
       <SectionGlobal />
-
-      {/* ===== 푸터 ===== */}
       <Footer />
     </main>
   );
@@ -57,15 +42,8 @@ function Header() {
     <header className="header">
       <div className="header-inner">
         <Link href="/" className="logo">
-          <Image
-            src="/images/logo.png"
-            alt="뷰티앤잡"
-            width={140}
-            height={40}
-            priority
-          />
+          <Image src="/images/logo.png" alt="뷰티앤잡" width={140} height={40} priority />
         </Link>
-
         <nav className="gnb">
           <Link href="/jobs">채용공고</Link>
           <Link href="/brands">브랜드</Link>
@@ -79,7 +57,6 @@ function Header() {
             <span className="tag tag-new">NEW</span>
           </Link>
         </nav>
-
         <div className="header-right">
           <button className="icon-btn" aria-label="검색">
             <Search size={20} />
@@ -94,21 +71,40 @@ function Header() {
 /* ============================================
    히어로 섹션
    ============================================ */
+const JOB_OPTIONS = ["마케팅", "MD·상품기획", "BM·브랜드", "영업", "디자인", "R&D", "CS", "경영지원"];
+const CAREER_OPTIONS = ["신입", "1~3년", "3~5년", "5~7년", "7~10년", "10년 이상"];
+const REGION_OPTIONS = ["서울", "경기", "인천", "부산", "대구", "광주", "대전", "해외"];
+const BRAND_OPTIONS = ["올리브영", "아모레퍼시픽", "LG생활건강", "이니스프리", "샤넬코리아", "에스티로더"];
+
 function Hero() {
   const router = useRouter();
   const [job, setJob] = useState("");
   const [career, setCareer] = useState("");
+  const [region, setRegion] = useState("");
+  const [brand, setBrand] = useState("");
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  const toggleDropdown = (name: string) => {
+    setOpenDropdown(openDropdown === name ? null : name);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     if (job) params.set("job", job);
     if (career) params.set("career", career);
+    if (region) params.set("region", region);
+    if (brand) params.set("brand", brand);
     router.push(`/jobs${params.toString() ? "?" + params.toString() : ""}`);
+    setOpenDropdown(null);
+  };
+
+  const handleHashtag = (tag: string) => {
+    router.push(`/jobs?job=${encodeURIComponent(tag)}`);
   };
 
   return (
-    <section className="hero">
+    <section className="hero" onClick={() => setOpenDropdown(null)}>
       <div className="hero-inner">
         <div className="hero-text">
           <h1 className="hero-title">
@@ -121,23 +117,95 @@ function Hero() {
             <br />한 번에
           </p>
 
-          <form className="search-box" onSubmit={handleSearch}>
-            <div className="search-select">
-              <span>직무 선택</span>
-              <i className="caret" />
+          <form className="search-box" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
+            {/* 직무 선택 */}
+            <div className="search-select-wrap">
+              <button
+                type="button"
+                className={`search-select ${openDropdown === "job" ? "active" : ""}`}
+                onClick={() => toggleDropdown("job")}
+              >
+                <span>{job || "직무 선택"}</span>
+                <i className="caret" />
+              </button>
+              {openDropdown === "job" && (
+                <div className="search-dropdown">
+                  {JOB_OPTIONS.map((o) => (
+                    <button key={o} type="button" className={`search-dropdown-item ${job === o ? "selected" : ""}`}
+                      onClick={() => { setJob(o); setOpenDropdown(null); }}>
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="search-select">
-              <span>경력 선택</span>
-              <i className="caret" />
+
+            {/* 경력 선택 */}
+            <div className="search-select-wrap">
+              <button
+                type="button"
+                className={`search-select ${openDropdown === "career" ? "active" : ""}`}
+                onClick={() => toggleDropdown("career")}
+              >
+                <span>{career || "경력 선택"}</span>
+                <i className="caret" />
+              </button>
+              {openDropdown === "career" && (
+                <div className="search-dropdown">
+                  {CAREER_OPTIONS.map((o) => (
+                    <button key={o} type="button" className={`search-dropdown-item ${career === o ? "selected" : ""}`}
+                      onClick={() => { setCareer(o); setOpenDropdown(null); }}>
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="search-select">
-              <span>지역 선택</span>
-              <i className="caret" />
+
+            {/* 지역 선택 */}
+            <div className="search-select-wrap">
+              <button
+                type="button"
+                className={`search-select ${openDropdown === "region" ? "active" : ""}`}
+                onClick={() => toggleDropdown("region")}
+              >
+                <span>{region || "지역 선택"}</span>
+                <i className="caret" />
+              </button>
+              {openDropdown === "region" && (
+                <div className="search-dropdown">
+                  {REGION_OPTIONS.map((o) => (
+                    <button key={o} type="button" className={`search-dropdown-item ${region === o ? "selected" : ""}`}
+                      onClick={() => { setRegion(o); setOpenDropdown(null); }}>
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="search-select">
-              <span>브랜드 선택</span>
-              <i className="caret" />
+
+            {/* 브랜드 선택 */}
+            <div className="search-select-wrap">
+              <button
+                type="button"
+                className={`search-select ${openDropdown === "brand" ? "active" : ""}`}
+                onClick={() => toggleDropdown("brand")}
+              >
+                <span>{brand || "브랜드 선택"}</span>
+                <i className="caret" />
+              </button>
+              {openDropdown === "brand" && (
+                <div className="search-dropdown">
+                  {BRAND_OPTIONS.map((o) => (
+                    <button key={o} type="button" className={`search-dropdown-item ${brand === o ? "selected" : ""}`}
+                      onClick={() => { setBrand(o); setOpenDropdown(null); }}>
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+
             <button type="submit" className="search-btn">
               <Search size={16} />
               검색하기
@@ -145,17 +213,14 @@ function Hero() {
           </form>
 
           <div className="hashtags">
-            {["마케팅", "MD·상품기획", "BM·브랜드", "영업", "신입채용"].map(
-              (tag) => (
-                <button key={tag} className="hashtag">
-                  # {tag}
-                </button>
-              )
-            )}
+            {["마케팅", "MD·상품기획", "BM·브랜드", "영업", "신입채용"].map((tag) => (
+              <button key={tag} className="hashtag" type="button" onClick={() => handleHashtag(tag)}>
+                # {tag}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* 히어로 비주얼 - SVG 일러스트 */}
         <div className="hero-visual" aria-hidden="true">
           <HeroVisual />
         </div>
@@ -198,14 +263,10 @@ function HeroVisual() {
           <stop offset="100%" stopColor="#f5e8f8" />
         </radialGradient>
       </defs>
-
-      {/* 배경 원형 장식 */}
       <circle cx="300" cy="240" r="200" fill="#f3e8f7" opacity="0.5" />
       <circle cx="120" cy="100" r="40" fill="#e8c8ee" opacity="0.6" />
       <circle cx="500" cy="380" r="50" fill="#d8a8e8" opacity="0.5" />
       <circle cx="480" cy="80" r="25" fill="#c89cd6" opacity="0.6" />
-
-      {/* 향수병 (중앙) */}
       <g>
         <rect x="240" y="200" width="120" height="180" rx="12" fill="url(#perfumeBody)" />
         <rect x="240" y="200" width="60" height="180" rx="12" fill="url(#perfumeHighlight)" />
@@ -213,33 +274,22 @@ function HeroVisual() {
         <rect x="285" y="160" width="30" height="25" rx="2" fill="#5f0080" />
         <circle cx="370" cy="195" r="18" fill="#fff" opacity="0.8" />
         <circle cx="370" cy="195" r="12" fill="#c89cd6" />
-        {/* 라벨 */}
         <rect x="260" y="270" width="80" height="40" rx="4" fill="#fff" opacity="0.9" />
-        <text x="300" y="287" textAnchor="middle" fill="#5f0080" fontSize="10" fontWeight="700" fontFamily="Pretendard">
-          BEAUTY
-        </text>
-        <text x="300" y="302" textAnchor="middle" fill="#9a6cb0" fontSize="8" fontFamily="Pretendard">
-          &amp; JOB
-        </text>
+        <text x="300" y="287" textAnchor="middle" fill="#5f0080" fontSize="10" fontWeight="700" fontFamily="Pretendard">BEAUTY</text>
+        <text x="300" y="302" textAnchor="middle" fill="#9a6cb0" fontSize="8" fontFamily="Pretendard">&amp; JOB</text>
       </g>
-
-      {/* 립스틱 (왼쪽) */}
       <g transform="translate(80, 240) rotate(-15)">
         <rect x="0" y="0" width="40" height="120" rx="6" fill="url(#lipstickCase)" />
         <rect x="0" y="0" width="20" height="120" rx="6" fill="url(#perfumeHighlight)" />
         <rect x="8" y="-40" width="24" height="45" rx="3" fill="url(#lipstickColor)" />
         <ellipse cx="20" cy="-38" rx="12" ry="6" fill="#7a1a9a" />
       </g>
-
-      {/* 화장품 용기 (오른쪽) */}
       <g transform="translate(420, 280)">
         <ellipse cx="50" cy="80" rx="55" ry="15" fill="#9a6cb0" opacity="0.3" />
         <rect x="0" y="20" width="100" height="65" rx="8" fill="url(#potBody)" />
         <ellipse cx="50" cy="20" rx="50" ry="10" fill="#d8a8e8" />
         <ellipse cx="50" cy="20" rx="42" ry="7" fill="url(#cream)" />
       </g>
-
-      {/* 마스카라 (하단 왼쪽) */}
       <g transform="translate(140, 360)">
         <rect x="0" y="0" width="30" height="80" rx="4" fill="#5f0080" />
         <rect x="0" y="0" width="15" height="80" rx="4" fill="url(#perfumeHighlight)" />
@@ -247,66 +297,27 @@ function HeroVisual() {
         <line x1="15" y1="-30" x2="15" y2="-50" stroke="#3a004f" strokeWidth="2" />
         <ellipse cx="15" cy="-50" rx="4" ry="8" fill="#3a004f" />
       </g>
-
-      {/* 작은 별 장식 */}
       <g fill="#c89cd6" opacity="0.7">
         <path d="M 100 200 L 105 215 L 120 220 L 105 225 L 100 240 L 95 225 L 80 220 L 95 215 Z" />
       </g>
       <g fill="#e8c8ee" opacity="0.8">
         <path d="M 480 200 L 483 209 L 492 212 L 483 215 L 480 224 L 477 215 L 468 212 L 477 209 Z" />
       </g>
-      <g fill="#d8a8e8" opacity="0.7">
-        <circle cx="200" cy="430" r="4" />
-        <circle cx="220" cy="440" r="3" />
-        <circle cx="240" cy="425" r="5" />
-      </g>
     </svg>
   );
 }
 
 /* ============================================
-   섹션 1: 뷰티앤잡 Pick (채용공고 카드)
+   섹션 1: 뷰티앤잡 Pick
    ============================================ */
-function SectionPick() {
-  const jobs = [
-    {
-      brand: "올리브영",
-      tag: "경력 3~5년",
-      tagType: "primary",
-      title: "올리브영 MD - 색조 카테고리 매니저",
-      location: "서울 중구",
-      type: "정규직",
-      deadline: "D-7",
-    },
-    {
-      brand: "아모레퍼시픽",
-      tag: "신입/경력",
-      tagType: "soft",
-      title: "헤라 브랜드 마케팅 매니저",
-      location: "서울 용산구",
-      type: "정규직",
-      deadline: "D-12",
-    },
-    {
-      brand: "LG생활건강",
-      tag: "경력 5년+",
-      tagType: "primary",
-      title: "더후 글로벌 영업 PM",
-      location: "서울 종로구",
-      type: "정규직",
-      deadline: "D-3",
-    },
-    {
-      brand: "닥터지",
-      tag: "경력 2~4년",
-      tagType: "soft",
-      title: "퍼포먼스 마케터 (그로스)",
-      location: "서울 강남구",
-      type: "정규직",
-      deadline: "D-15",
-    },
-  ];
+const PICK_JOBS = [
+  { id: 1, brand: "올리브영", tag: "경력 3~5년", tagType: "primary", title: "올리브영 MD - 색조 카테고리 매니저", location: "서울 중구", type: "정규직", deadline: "D-7" },
+  { id: 2, brand: "아모레퍼시픽", tag: "신입/경력", tagType: "soft", title: "헤라 브랜드 마케팅 매니저", location: "서울 용산구", type: "정규직", deadline: "D-12" },
+  { id: 3, brand: "LG생활건강", tag: "경력 5년+", tagType: "primary", title: "더후 글로벌 영업 PM", location: "서울 종로구", type: "정규직", deadline: "D-3" },
+  { id: 4, brand: "닥터지", tag: "경력 2~4년", tagType: "soft", title: "퍼포먼스 마케터 (그로스)", location: "서울 강남구", type: "정규직", deadline: "D-15" },
+];
 
+function SectionPick() {
   return (
     <section className="section">
       <div className="container">
@@ -318,14 +329,11 @@ function SectionPick() {
             </h2>
             <p className="section-sub">에디터가 엄선한 이번 주의 추천 채용공고</p>
           </div>
-          <Link href="/jobs" className="see-all">
-            전체보기 →
-          </Link>
+          <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
-
         <div className="card-grid card-grid-4">
-          {jobs.map((job, i) => (
-            <JobCard key={i} {...job} />
+          {PICK_JOBS.map((job) => (
+            <JobCard key={job.id} {...job} />
           ))}
         </div>
       </div>
@@ -333,37 +341,20 @@ function SectionPick() {
   );
 }
 
-function JobCard({
-  brand,
-  tag,
-  tagType,
-  title,
-  location,
-  type,
-  deadline,
-}: {
-  brand: string;
-  tag: string;
-  tagType: string;
-  title: string;
-  location: string;
-  type: string;
-  deadline: string;
+function JobCard({ id, brand, tag, tagType, title, location, type, deadline }: {
+  id: number; brand: string; tag: string; tagType: string;
+  title: string; location: string; type: string; deadline: string;
 }) {
+  const router = useRouter();
   const [bookmarked, setBookmarked] = useState(false);
 
   return (
-    <div className="job-card">
+    <div className="job-card" onClick={() => router.push(`/jobs/${id}`)} style={{ cursor: "pointer" }}>
       <div className="card-header">
         <span className="card-brand">{brand}</span>
-        <button
-          className={`bookmark ${bookmarked ? "active" : ""}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setBookmarked(!bookmarked);
-          }}
-          aria-label="북마크"
-        >
+        <button className={`bookmark ${bookmarked ? "active" : ""}`}
+          onClick={(e) => { e.stopPropagation(); setBookmarked(!bookmarked); }}
+          aria-label="북마크">
           <Bookmark size={18} fill={bookmarked ? "currentColor" : "none"} />
         </button>
       </div>
@@ -380,29 +371,17 @@ function JobCard({
 }
 
 /* ============================================
-   섹션 2: 뷰티 업계 인사이트
+   섹션 2: 뷰티 업계 인사이트 (4장)
    ============================================ */
+const INSIGHTS_DATA = [
+  { id: 1, category: "트렌드", title: "2025 뷰티 산업, 무엇이 달라지나?", desc: "K-뷰티의 글로벌 확장과 클린뷰티 트렌드가 만드는 새로운 기회", date: "2025.01.15", emoji: "✨" },
+  { id: 2, category: "커리어", title: "뷰티 MD가 되기 위한 5가지 필수 역량", desc: "현직 MD가 알려주는 진짜 실전 노하우와 커리어 패스 가이드", date: "2025.01.12", emoji: "💼" },
+  { id: 3, category: "연봉정보", title: "뷰티 업계 직무별 연봉 리포트 2025", desc: "마케팅, MD, 디자인 등 주요 직무 연봉 데이터 전격 공개", date: "2025.01.10", emoji: "📊" },
+  { id: 4, category: "인터뷰", title: "아모레퍼시픽 10년차 마케터가 말하는 뷰티 커리어", desc: "현직자가 직접 전하는 뷰티 업계 취업 & 이직 현실 이야기", date: "2025.01.08", emoji: "🎤" },
+];
+
 function SectionInsights() {
-  const insights = [
-    {
-      category: "트렌드",
-      title: "2025 뷰티 산업, 무엇이 달라지나?",
-      desc: "K-뷰티의 글로벌 확장과 클린뷰티 트렌드가 만드는 새로운 기회",
-      date: "2025.01.15",
-    },
-    {
-      category: "커리어",
-      title: "뷰티 MD가 되기 위한 5가지 필수 역량",
-      desc: "현직 MD가 알려주는 진짜 실전 노하우",
-      date: "2025.01.12",
-    },
-    {
-      category: "연봉정보",
-      title: "뷰티 업계 직무별 연봉 리포트 2025",
-      desc: "마케팅, MD, 디자인 등 주요 직무 연봉 데이터 공개",
-      date: "2025.01.10",
-    },
-  ];
+  const router = useRouter();
 
   return (
     <section className="section">
@@ -412,20 +391,15 @@ function SectionInsights() {
             <h2 className="section-title">뷰티 업계 인사이트</h2>
             <p className="section-sub">최신 트렌드와 커리어 정보를 한 눈에</p>
           </div>
-          <Link href="/jobs" className="see-all">
-            전체보기 →
-          </Link>
+          <Link href="/insights" className="see-all">전체보기 →</Link>
         </div>
-
-        <div className="card-grid card-grid-3">
-          {insights.map((item, i) => (
-            <article key={i} className="insight-card">
+        <div className="card-grid card-grid-4">
+          {INSIGHTS_DATA.map((item) => (
+            <article key={item.id} className="insight-card"
+              onClick={() => router.push(`/insights/${item.id}`)}
+              style={{ cursor: "pointer" }}>
               <div className="insight-image">
-                <div className="insight-image-placeholder">
-                  {i === 0 && "✨"}
-                  {i === 1 && "💼"}
-                  {i === 2 && "📊"}
-                </div>
+                <div className="insight-image-placeholder">{item.emoji}</div>
               </div>
               <span className="insight-category">{item.category}</span>
               <h3 className="insight-title">{item.title}</h3>
@@ -444,34 +418,58 @@ function SectionInsights() {
    ============================================ */
 function SectionNewsletter() {
   const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    alert(`${email}\n뉴스레터 구독이 신청되었습니다.`);
-    setEmail("");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) { setError("이메일 주소를 입력해주세요."); return; }
+    if (!emailRegex.test(email)) { setError("올바른 이메일 형식을 입력해주세요."); return; }
+    setError("");
+    setSubmitted(true);
   };
 
   return (
     <section className="section">
       <div className="container">
         <div className="newsletter-box">
-          <div className="newsletter-text">
-            <h2 className="newsletter-title">뷰티앤잡 뉴스레터 구독하기</h2>
-            <p className="newsletter-sub">
-              매주 화요일, 엄선된 뷰티 채용 소식과 업계 인사이트를 메일함에서 만나보세요
-            </p>
-          </div>
-          <form className="newsletter-form" onSubmit={handleSubmit}>
-            <input
-              type="email"
-              placeholder="이메일 주소를 입력해주세요"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <button type="submit">구독하기</button>
-          </form>
+          {submitted ? (
+            <div className="newsletter-success">
+              <CheckCircle size={40} className="newsletter-success-icon" />
+              <h3 className="newsletter-success-title">구독 신청이 완료되었습니다! 🎉</h3>
+              <p className="newsletter-success-desc">
+                <strong>{email}</strong>으로 매주 화요일 뷰티 업계 소식을 보내드릴게요.<br />
+                스팸 폴더도 한 번 확인해주세요.
+              </p>
+              <button className="newsletter-reset-btn" onClick={() => { setSubmitted(false); setEmail(""); }}>
+                다른 이메일로 구독하기
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="newsletter-text">
+                <Mail size={28} className="newsletter-icon" />
+                <h2 className="newsletter-title">뷰티앤잡 뉴스레터 구독하기</h2>
+                <p className="newsletter-sub">
+                  매주 화요일, 엄선된 뷰티 채용 소식과 업계 인사이트를 메일함에서 만나보세요
+                </p>
+              </div>
+              <form className="newsletter-form" onSubmit={handleSubmit}>
+                <div className="newsletter-input-wrap">
+                  <input
+                    type="email"
+                    placeholder="이메일 주소를 입력해주세요"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                    className={error ? "error" : ""}
+                  />
+                  {error && <p className="newsletter-error">{error}</p>}
+                </div>
+                <button type="submit">구독하기</button>
+              </form>
+            </>
+          )}
         </div>
       </div>
     </section>
@@ -479,38 +477,20 @@ function SectionNewsletter() {
 }
 
 /* ============================================
-   섹션 4: 고급경력직 채용관
+   섹션 4: 고급경력직 채용관 (밝은 배경)
    ============================================ */
+const PREMIUM_JOBS = [
+  { id: 1, brand: "샤넬코리아", title: "Brand Director, Fragrance", meta: "10년+ · 임원급", salary: "협의" },
+  { id: 2, brand: "에스티로더", title: "Marketing Senior Manager", meta: "8년+ · 시니어", salary: "1억 2천+" },
+  { id: 3, brand: "닥터자르트", title: "Global Brand Lead", meta: "10년+ · 디렉터", salary: "1억 5천+" },
+  { id: 4, brand: "VT코스메틱스", title: "Head of Marketing", meta: "10년+ · 임원급", salary: "협의" },
+];
+
 function SectionPremium() {
-  const items = [
-    {
-      brand: "샤넬코리아",
-      title: "Brand Director, Fragrance",
-      meta: "10년+ · 임원급",
-      salary: "협의",
-    },
-    {
-      brand: "에스티로더",
-      title: "Marketing Senior Manager",
-      meta: "8년+ · 시니어",
-      salary: "1억 2천+",
-    },
-    {
-      brand: "닥터자르트",
-      title: "Global Brand Lead",
-      meta: "10년+ · 디렉터",
-      salary: "1억 5천+",
-    },
-    {
-      brand: "VT코스메틱스",
-      title: "Head of Marketing",
-      meta: "10년+ · 임원급",
-      salary: "협의",
-    },
-  ];
+  const router = useRouter();
 
   return (
-    <section className="section">
+    <section className="section section-premium-bg">
       <div className="container">
         <div className="section-head">
           <div>
@@ -520,19 +500,13 @@ function SectionPremium() {
             </h2>
             <p className="section-sub">경력 10년 이상의 시니어를 위한 프리미엄 포지션</p>
           </div>
-          <div className="nav-arrows">
-            <button className="nav-arrow" aria-label="이전">
-              <ChevronLeft size={18} />
-            </button>
-            <button className="nav-arrow" aria-label="다음">
-              <ChevronRight size={18} />
-            </button>
-          </div>
+          <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
-
         <div className="card-grid card-grid-4">
-          {items.map((item, i) => (
-            <div key={i} className="premium-card">
+          {PREMIUM_JOBS.map((item) => (
+            <div key={item.id} className="premium-card"
+              onClick={() => router.push(`/jobs/${item.id}`)}
+              style={{ cursor: "pointer" }}>
               <span className="premium-badge">PREMIUM</span>
               <div className="premium-brand">{item.brand}</div>
               <h3 className="premium-title">{item.title}</h3>
@@ -552,33 +526,15 @@ function SectionPremium() {
 /* ============================================
    섹션 5: 뷰티 인턴 채용관
    ============================================ */
+const INTERN_JOBS = [
+  { id: 5, brand: "이니스프리", type: "체험형 인턴", title: "마케팅 인턴 (3개월)", location: "서울" },
+  { id: 6, brand: "토니모리", type: "정규직 전환형", title: "MD 어시스턴트 인턴", location: "경기 안양" },
+  { id: 7, brand: "에이블씨엔씨", type: "체험형 인턴", title: "디자인팀 인턴", location: "서울 강남" },
+  { id: 8, brand: "코스맥스", type: "정규직 전환형", title: "R&D 인턴", location: "경기 화성" },
+];
+
 function SectionIntern() {
-  const items = [
-    {
-      brand: "이니스프리",
-      type: "체험형 인턴",
-      title: "마케팅 인턴 (3개월)",
-      location: "서울",
-    },
-    {
-      brand: "토니모리",
-      type: "정규직 전환형",
-      title: "MD 어시스턴트 인턴",
-      location: "경기 안양",
-    },
-    {
-      brand: "에이블씨엔씨",
-      type: "체험형 인턴",
-      title: "디자인팀 인턴",
-      location: "서울 강남",
-    },
-    {
-      brand: "코스맥스",
-      type: "정규직 전환형",
-      title: "R&D 인턴",
-      location: "경기 화성",
-    },
-  ];
+  const router = useRouter();
 
   return (
     <section className="section">
@@ -591,18 +547,15 @@ function SectionIntern() {
             </h2>
             <p className="section-sub">뷰티 커리어의 첫 걸음을 응원합니다</p>
           </div>
-          <Link href="/jobs" className="see-all">
-            전체보기 →
-          </Link>
+          <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
-
         <div className="card-grid card-grid-4">
-          {items.map((item, i) => (
-            <div key={i} className="intern-card">
+          {INTERN_JOBS.map((item, i) => (
+            <div key={item.id} className="intern-card"
+              onClick={() => router.push(`/jobs/${item.id}`)}
+              style={{ cursor: "pointer" }}>
               <div className="intern-brand">{item.brand}</div>
-              <span className={`intern-type intern-type-${i % 2 === 0 ? "exp" : "regular"}`}>
-                {item.type}
-              </span>
+              <span className={`intern-type intern-type-${i % 2 === 0 ? "exp" : "regular"}`}>{item.type}</span>
               <h3 className="intern-title">{item.title}</h3>
               <div className="intern-location">📍 {item.location}</div>
             </div>
@@ -616,37 +569,15 @@ function SectionIntern() {
 /* ============================================
    섹션 6: 글로벌 뷰티 커리어 채용관
    ============================================ */
+const GLOBAL_JOBS = [
+  { id: 9, flag: "🇫🇷", country: "France", brand: "L'Oréal Paris", title: "Global Marketing Manager", city: "Paris" },
+  { id: 10, flag: "🇺🇸", country: "USA", brand: "Estée Lauder", title: "Brand Strategist", city: "New York" },
+  { id: 11, flag: "🇯🇵", country: "Japan", brand: "SK-II", title: "Regional Marketing Lead", city: "Tokyo" },
+  { id: 12, flag: "🇸🇬", country: "Singapore", brand: "Shiseido APAC", title: "Digital Marketing Manager", city: "Singapore" },
+];
+
 function SectionGlobal() {
-  const items = [
-    {
-      flag: "🇫🇷",
-      country: "France",
-      brand: "L'Oréal Paris",
-      title: "Global Marketing Manager",
-      city: "Paris",
-    },
-    {
-      flag: "🇺🇸",
-      country: "USA",
-      brand: "Estée Lauder",
-      title: "Brand Strategist",
-      city: "New York",
-    },
-    {
-      flag: "🇯🇵",
-      country: "Japan",
-      brand: "SK-II",
-      title: "Regional Marketing Lead",
-      city: "Tokyo",
-    },
-    {
-      flag: "🇸🇬",
-      country: "Singapore",
-      brand: "Shiseido APAC",
-      title: "Digital Marketing Manager",
-      city: "Singapore",
-    },
-  ];
+  const router = useRouter();
 
   return (
     <section className="section section-last">
@@ -659,14 +590,13 @@ function SectionGlobal() {
             </h2>
             <p className="section-sub">전 세계 뷰티 브랜드에서 당신을 기다립니다</p>
           </div>
-          <Link href="/jobs" className="see-all">
-            전체보기 →
-          </Link>
+          <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
-
         <div className="card-grid card-grid-4">
-          {items.map((item, i) => (
-            <div key={i} className="global-card">
+          {GLOBAL_JOBS.map((item) => (
+            <div key={item.id} className="global-card"
+              onClick={() => router.push(`/jobs/${item.id}`)}
+              style={{ cursor: "pointer" }}>
               <div className="global-flag">{item.flag}</div>
               <div className="global-country">{item.country}</div>
               <div className="global-brand">{item.brand}</div>
@@ -686,57 +616,44 @@ function SectionGlobal() {
 function Footer() {
   return (
     <footer className="footer-new">
-      {/* 상단: 로고 + 회사/고객지원 + CTA */}
       <div className="footer-new-top">
+        {/* 로고 + 태그라인만 */}
         <div className="footer-new-brand">
-          <Image
-            src="/images/logo.png"
-            alt="뷰티앤잡"
-            width={120}
-            height={32}
-            className="footer-new-logo"
-          />
+          <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} className="footer-new-logo" />
           <p className="footer-new-tagline">뷰티 산업 종사자를 위한 단 하나의 커리어 플랫폼</p>
-          <div className="footer-new-social">
-            <button aria-label="Instagram">📷</button>
-            <button aria-label="YouTube">📺</button>
-            <button aria-label="LinkedIn">💼</button>
-          </div>
         </div>
 
+        {/* 링크 컬럼 */}
         <div className="footer-new-links">
           <div className="footer-new-col">
             <h4>회사</h4>
-            <Link href="#">회사 소개</Link>
-            <Link href="/company">채용</Link>
-            <Link href="#">제휴 문의</Link>
-            <Link href="#">광고 문의</Link>
+            <Link href="/about">회사 소개</Link>
+            <Link href="/about/recruit">채용</Link>
+            <Link href="/about/partnership">제휴 문의</Link>
+            <Link href="/about/advertise">광고 문의</Link>
+            <Link href="/about/contact">기타 문의</Link>
           </div>
           <div className="footer-new-col">
             <h4>고객지원</h4>
-            <Link href="#">고객센터</Link>
-            <Link href="/company#faq">자주 묻는 질문</Link>
-            <Link href="#">이용약관</Link>
-            <Link href="#">개인정보처리방침</Link>
+            <Link href="/support">고객센터</Link>
+            <Link href="/support/faq">자주 묻는 질문</Link>
+            <Link href="/support/terms">이용약관</Link>
+            <Link href="/support/privacy">개인정보처리방침</Link>
           </div>
         </div>
 
+        {/* 기업회원 CTA */}
         <div className="footer-new-cta">
           <p className="footer-new-cta-text">우리 회사도 채용하고 싶다면?</p>
-          <Link href="#" className="footer-new-cta-btn">기업회원 바로가기</Link>
+          <Link href="/company" className="footer-new-cta-btn">기업회원 바로가기</Link>
         </div>
       </div>
 
-      {/* 구분선 */}
       <div className="footer-new-divider" />
 
-      {/* 하단: 회사 정보 */}
       <div className="footer-new-bottom">
         <div className="footer-new-company-row">
           <span className="footer-new-company-name">(주)뷰티앤잡</span>
-          <span className="footer-new-dot">·</span>
-          <button className="footer-new-info-link">기업 도입 문의</button>
-          <button className="footer-new-info-link">기타 문의</button>
         </div>
         <div className="footer-new-details">
           <span>주소 :</span>
@@ -746,10 +663,10 @@ function Footer() {
           <span>직업정보제공사업 신고번호 :</span>
         </div>
         <div className="footer-new-copy">
-          <span>© 2025 Beauty&Job. All rights reserved.</span>
+          <span>© 2025 Beauty&amp;Job. All rights reserved.</span>
           <div className="footer-new-policies">
-            <button className="footer-new-info-link">이용약관</button>
-            <button className="footer-new-info-link">개인정보 처리방침</button>
+            <Link href="/support/terms" className="footer-new-info-link">이용약관</Link>
+            <Link href="/support/privacy" className="footer-new-info-link">개인정보 처리방침</Link>
           </div>
         </div>
       </div>
@@ -758,7 +675,7 @@ function Footer() {
 }
 
 /* ============================================
-   GNB 인증 버튼 (로그인 상태 반영)
+   GNB 인증 버튼
    ============================================ */
 function AuthButtons() {
   const router = useRouter();
@@ -775,28 +692,19 @@ function AuthButtons() {
             </span>
             <span className="auth-username">{userName || "내 계정"}</span>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M3 5l4 4 4-4" stroke="#666" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M3 5l4 4 4-4" stroke="#666" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </button>
           {open && (
             <div className="auth-dropdown">
-              <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>
-                내 프로필
-              </button>
-              <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/resume"); }}>
-                이력서
-              </button>
+              <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>내 프로필</button>
+              <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/resume"); }}>이력서</button>
               <div className="auth-dropdown-divider" />
-              <button className="auth-dropdown-item auth-logout" onClick={() => { logout(); setOpen(false); }}>
-                로그아웃
-              </button>
+              <button className="auth-dropdown-item auth-logout" onClick={() => { logout(); setOpen(false); }}>로그아웃</button>
             </div>
           )}
         </div>
-        <Link href="/company" className="btn btn-dark">
-          <Building2 size={16} />
-          기업 서비스
-        </Link>
+        <Link href="/company" className="btn btn-dark"><Building2 size={16} />기업 서비스</Link>
       </>
     );
   }
@@ -805,10 +713,7 @@ function AuthButtons() {
     <>
       <Link href="/login" className="btn btn-text">로그인</Link>
       <Link href="/signup" className="btn btn-primary">회원가입</Link>
-      <Link href="/company" className="btn btn-dark">
-        <Building2 size={16} />
-        기업 서비스
-      </Link>
+      <Link href="/company" className="btn btn-dark"><Building2 size={16} />기업 서비스</Link>
     </>
   );
 }
