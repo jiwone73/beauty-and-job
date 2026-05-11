@@ -3,16 +3,21 @@
 import { useRouter } from "next/navigation";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useProfileStore } from "@/lib/store/profileStore";
 import { CAREER_LABELS } from "@/lib/constants";
 import { Check } from "lucide-react";
 
 export default function Step10Done() {
   const router = useRouter();
+
   const {
     name, phone, job, jobCustom, careerYears, isLeader,
-    categories, categoryCustom, countries, countryCustom, reset,
+    categories, categoryCustom, countries, countryCustom,
+    reset,
   } = useSignupStore();
+
   const { login } = useAuthStore();
+  const { setMainJob, setEmail } = useProfileStore();
 
   const jobDisplay = job === "직접입력" ? jobCustom : job;
   const allCategories = [...categories.filter((c) => c !== "직접입력"), ...categoryCustom];
@@ -25,14 +30,25 @@ export default function Step10Done() {
     { label: "담당 국가", value: allCountries.join(", ") },
   ];
 
-  const handleGoProfile = () => {
+  /** 공통: signupStore → profileStore 이관 + authStore 로그인 처리 */
+  const handleComplete = () => {
+    // 1. profileStore에 직군/직무 이관
+    setMainJob(jobDisplay || "", allCategories.join(", "));
+
+    // 2. authStore에 로그인 상태 저장
     login({ userName: name, userPhone: phone });
+
+    // 3. signupStore 초기화 (가입 데이터 정리)
+    reset();
+  };
+
+  const handleGoProfile = () => {
+    handleComplete();
     router.push("/profile");
   };
 
   const handleGoMain = () => {
-    login({ userName: name, userPhone: phone });
-    reset();
+    handleComplete();
     router.push("/");
   };
 
@@ -42,6 +58,7 @@ export default function Step10Done() {
         <div className="absolute -inset-2 border-2 border-primary-soft rounded-full opacity-50" />
         <Check size={32} className="text-primary relative z-10" strokeWidth={2.5} />
       </div>
+
       <h2 className="text-2xl font-bold text-[#1a1a1a] tracking-tight mb-3">
         환영합니다, <span className="text-primary">{name || "회원"}</span>님!
       </h2>
@@ -49,6 +66,7 @@ export default function Step10Done() {
         뷰티앤잡 가입이 완료되었습니다<br />
         입력하신 정보로 맞춤 채용공고를 추천해드릴게요
       </p>
+
       <div className="bg-[#f7f7f8] rounded-lg p-4 mb-7 text-left">
         {summary.map((row, idx) => (
           <div
@@ -64,6 +82,7 @@ export default function Step10Done() {
           </div>
         ))}
       </div>
+
       <button type="button" onClick={handleGoProfile} className="btn-primary-full active">
         내 프로필 보러가기
       </button>
