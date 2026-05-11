@@ -2898,3 +2898,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   .salary-hero-title { font-size: 26px; }
   .salary-table th, .salary-table td { padding: 10px 12px; }
 }
+
+/* 이력서 에디터 GNB */
+.resume-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+.resume-gnb { display: flex; gap: 4px; flex: 1; margin: 0 16px; }
+.resume-gnb-item { font-size: 14px; font-weight: 500; color: #555; padding: 6px 10px; border-radius: 6px; text-decoration: none; transition: color 0.15s; white-space: nowrap; }
+.resume-gnb-item:hover { color: var(--color-primary); }
+@media (max-width: 768px) { .resume-gnb { display: none; } }
