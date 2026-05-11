@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Search,
   Building2,
@@ -66,13 +67,13 @@ function Header() {
 
         <nav className="gnb">
           <Link href="/jobs">채용공고</Link>
-          <Link href="#">브랜드</Link>
-          <Link href="#">이력서</Link>
-          <Link href="#" className="gnb-with-tag">
+          <Link href="/brands">브랜드</Link>
+          <Link href="/profile/resume">이력서</Link>
+          <Link href="/salary" className="gnb-with-tag">
             연봉·이직 제안
             <span className="tag tag-gray">경력직</span>
           </Link>
-          <Link href="#" className="gnb-with-tag">
+          <Link href="/insights" className="gnb-with-tag">
             인사이트
             <span className="tag tag-new">NEW</span>
           </Link>
@@ -88,7 +89,7 @@ function Header() {
           <Link href="/signup" className="btn btn-primary">
             회원가입
           </Link>
-          <Link href="#" className="btn btn-dark">
+          <Link href="/company" className="btn btn-dark">
             <Building2 size={16} />
             기업 서비스
           </Link>
@@ -102,9 +103,16 @@ function Header() {
    히어로 섹션
    ============================================ */
 function Hero() {
+  const router = useRouter();
+  const [job, setJob] = useState("");
+  const [career, setCareer] = useState("");
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("검색 기능은 준비 중입니다.");
+    const params = new URLSearchParams();
+    if (job) params.set("job", job);
+    if (career) params.set("career", career);
+    router.push(`/jobs${params.toString() ? "?" + params.toString() : ""}`);
   };
 
   return (
@@ -318,7 +326,7 @@ function SectionPick() {
             </h2>
             <p className="section-sub">에디터가 엄선한 이번 주의 추천 채용공고</p>
           </div>
-          <Link href="#" className="see-all">
+          <Link href="/jobs" className="see-all">
             전체보기 →
           </Link>
         </div>
@@ -412,7 +420,7 @@ function SectionInsights() {
             <h2 className="section-title">뷰티 업계 인사이트</h2>
             <p className="section-sub">최신 트렌드와 커리어 정보를 한 눈에</p>
           </div>
-          <Link href="#" className="see-all">
+          <Link href="/jobs" className="see-all">
             전체보기 →
           </Link>
         </div>
@@ -591,7 +599,7 @@ function SectionIntern() {
             </h2>
             <p className="section-sub">뷰티 커리어의 첫 걸음을 응원합니다</p>
           </div>
-          <Link href="#" className="see-all">
+          <Link href="/jobs" className="see-all">
             전체보기 →
           </Link>
         </div>
@@ -659,7 +667,7 @@ function SectionGlobal() {
             </h2>
             <p className="section-sub">전 세계 뷰티 브랜드에서 당신을 기다립니다</p>
           </div>
-          <Link href="#" className="see-all">
+          <Link href="/jobs" className="see-all">
             전체보기 →
           </Link>
         </div>
