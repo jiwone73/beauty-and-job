@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useAuthStore } from "@/lib/store/authStore";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -83,16 +84,7 @@ function Header() {
           <button className="icon-btn" aria-label="검색">
             <Search size={20} />
           </button>
-          <Link href="/signup" className="btn btn-text">
-            로그인
-          </Link>
-          <Link href="/signup" className="btn btn-primary">
-            회원가입
-          </Link>
-          <Link href="/company" className="btn btn-dark">
-            <Building2 size={16} />
-            기업 서비스
-          </Link>
+          <AuthButtons />
         </div>
       </div>
     </header>
@@ -762,5 +754,61 @@ function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+/* ============================================
+   GNB 인증 버튼 (로그인 상태 반영)
+   ============================================ */
+function AuthButtons() {
+  const router = useRouter();
+  const { isLoggedIn, userName, logout } = useAuthStore();
+  const [open, setOpen] = useState(false);
+
+  if (isLoggedIn) {
+    return (
+      <>
+        <div className="auth-user-wrap">
+          <button className="auth-user-btn" onClick={() => setOpen(!open)}>
+            <span className="auth-avatar">
+              {userName ? userName.slice(0, 1).toUpperCase() : "U"}
+            </span>
+            <span className="auth-username">{userName || "내 계정"}</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M3 5l4 4 4-4" stroke="#666" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </button>
+          {open && (
+            <div className="auth-dropdown">
+              <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>
+                내 프로필
+              </button>
+              <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/resume"); }}>
+                이력서
+              </button>
+              <div className="auth-dropdown-divider" />
+              <button className="auth-dropdown-item auth-logout" onClick={() => { logout(); setOpen(false); }}>
+                로그아웃
+              </button>
+            </div>
+          )}
+        </div>
+        <Link href="/company" className="btn btn-dark">
+          <Building2 size={16} />
+          기업 서비스
+        </Link>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Link href="/login" className="btn btn-text">로그인</Link>
+      <Link href="/signup" className="btn btn-primary">회원가입</Link>
+      <Link href="/company" className="btn btn-dark">
+        <Building2 size={16} />
+        기업 서비스
+      </Link>
+    </>
   );
 }

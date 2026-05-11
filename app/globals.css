@@ -3495,3 +3495,75 @@ input[type="range"].career-slider::-moz-range-thumb {
     align-items: flex-start;
   }
 }
+
+/* ============================================
+   GNB 로그인 상태 버튼
+   ============================================ */
+.auth-user-wrap {
+  position: relative;
+}
+.auth-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.auth-user-btn:hover { background: #ebebeb; }
+.auth-avatar {
+  width: 26px;
+  height: 26px;
+  background: #5f0080;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.auth-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  min-width: 140px;
+  z-index: 200;
+  overflow: hidden;
+}
+.auth-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.auth-dropdown-item:hover { background: #f9f9f9; }
+.auth-dropdown-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 2px 0;
+}
+.auth-logout { color: #e53e3e !important; }
+.auth-logout:hover { background: #fff5f5 !important; }
