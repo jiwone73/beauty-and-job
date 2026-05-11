@@ -210,6 +210,8 @@
 }
 
 .search-btn {
+  min-width: 110px;
+  white-space: nowrap;
   height: 44px;
   padding: 0 22px;
   background: var(--color-primary);
