@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, Clock, Share2, Bookmark } from "lucide-react";
 import { useState } from "react";
-import { INSIGHTS } from "../page";
+import { INSIGHTS } from "../data";
 
 /* ===== 더미 본문 데이터 ===== */
 const CONTENTS: Record<string, string> = {
