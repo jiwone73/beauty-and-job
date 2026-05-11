@@ -39,11 +39,15 @@ function JobsPageInner() {
 
   const [selectedJob, setSelectedJob] = useState(initJob);
   const [selectedCareer, setSelectedCareer] = useState(initCareer);
+  const [selectedRegion, setSelectedRegion] = useState(initRegion);
+  const [selectedBrand, setSelectedBrand] = useState(initBrand);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sort, setSort] = useState<"latest" | "popular">("latest");
   const [showSearch, setShowSearch] = useState(false);
   const [showJobDrop, setShowJobDrop] = useState(false);
   const [showCareerDrop, setShowCareerDrop] = useState(false);
+  const [showRegionDrop, setShowRegionDrop] = useState(false);
+  const [showBrandDrop, setShowBrandDrop] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
   const [searchQuery, setSearchQuery] = useState(initSearch);
   const [bookmarks, setBookmarks] = useState<number[]>([]);
@@ -62,8 +66,9 @@ function JobsPageInner() {
     const matchCareer = selectedCareer === "경력 전체" || j.career.includes(selectedCareer.replace("년", "").replace("신입", "신입"));
     const matchCategory = !selectedCategory || j.tags.includes(selectedCategory);
     const matchSearch = !searchQuery || j.title.includes(searchQuery) || j.brand.includes(searchQuery);
-    const matchBrand = !initBrand || j.brand.includes(initBrand);
-    return matchJob && matchCareer && matchCategory && matchSearch && matchBrand;
+    const matchRegion = !selectedRegion || j.region.includes(selectedRegion);
+    const matchBrand = !selectedBrand || j.brand.includes(selectedBrand);
+    return matchJob && matchCareer && matchCategory && matchSearch && matchRegion && matchBrand;
   });
 
   return (
