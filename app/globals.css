@@ -5202,3 +5202,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-size: 14px;
   color: #aaa;
 }
+
+/* 관리자 차트 그리드 */
+.admin-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}

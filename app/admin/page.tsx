@@ -2,8 +2,11 @@
 
 import AdminLayout from "@/components/admin/AdminLayout";
 import Link from "next/link";
-import { Users, Briefcase, CheckCircle, Clock, TrendingUp, TrendingDown } from "lucide-react";
-import { Eye, Trash2 } from "lucide-react";
+import { Users, Briefcase, CheckCircle, Clock, TrendingUp, TrendingDown, Eye, Trash2 } from "lucide-react";
+import {
+  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, Tooltip, ResponsiveContainer, Legend
+} from "recharts";
 
 const STATS = [
   { label: "오늘 신규 가입", value: "24", unit: "명", trend: 12, icon: Users, color: "#5f0080" },
@@ -11,6 +14,37 @@ const STATS = [
   { label: "오늘 지원수", value: "87", unit: "건", trend: -3, icon: CheckCircle, color: "#10b981" },
   { label: "승인 대기 공고", value: "8", unit: "건", trend: 0, icon: Clock, color: "#f59e0b" },
 ];
+
+const SIGNUP_DATA = [
+  { day: "1/14", 가입자: 18 },
+  { day: "1/15", 가입자: 25 },
+  { day: "1/16", 가입자: 22 },
+  { day: "1/17", 가입자: 31 },
+  { day: "1/18", 가입자: 28 },
+  { day: "1/19", 가입자: 19 },
+  { day: "1/20", 가입자: 24 },
+];
+
+const APPLY_DATA = [
+  { day: "1/14", 지원수: 65 },
+  { day: "1/15", 지원수: 78 },
+  { day: "1/16", 지원수: 91 },
+  { day: "1/17", 지원수: 82 },
+  { day: "1/18", 지원수: 95 },
+  { day: "1/19", 지원수: 71 },
+  { day: "1/20", 지원수: 87 },
+];
+
+const JOB_DIST = [
+  { name: "마케팅", value: 38 },
+  { name: "MD", value: 22 },
+  { name: "영업", value: 15 },
+  { name: "디자인", value: 10 },
+  { name: "연구개발", value: 8 },
+  { name: "기타", value: 7 },
+];
+
+const PIE_COLORS = ["#5f0080", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 const RECENT_JOBS = [
   { id: 1, company: "올리브영", title: "디지털 마케팅 매니저", date: "2025.01.20", status: "승인대기" },
@@ -30,6 +64,7 @@ const RECENT_MEMBERS = [
 export default function AdminDashboard() {
   return (
     <AdminLayout activeMenu="dashboard">
+      {/* 통계 카드 */}
       <div className="admin-stat-grid">
         {STATS.map((stat) => (
           <div key={stat.label} className="admin-stat-card">
@@ -50,6 +85,83 @@ export default function AdminDashboard() {
         ))}
       </div>
 
+      {/* 차트 영역 */}
+      <div className="admin-chart-grid">
+        {/* 일별 가입자 */}
+        <div className="admin-card">
+          <div className="admin-card-head">
+            <h2 className="admin-card-title">일별 신규 가입자 (최근 7일)</h2>
+          </div>
+          <div style={{ padding: "16px 8px" }}>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={SIGNUP_DATA}>
+                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="가입자"
+                  stroke="#5f0080"
+                  strokeWidth={2.5}
+                  dot={{ fill: "#5f0080", r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 일별 지원수 */}
+        <div className="admin-card">
+          <div className="admin-card-head">
+            <h2 className="admin-card-title">일별 지원수 (최근 7일)</h2>
+          </div>
+          <div style={{ padding: "16px 8px" }}>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={APPLY_DATA}>
+                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Bar dataKey="지원수" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 직군별 공고 분포 */}
+        <div className="admin-card">
+          <div className="admin-card-head">
+            <h2 className="admin-card-title">직군별 채용공고 분포</h2>
+          </div>
+          <div style={{ padding: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={JOB_DIST}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={85}
+                  dataKey="value"
+                  paddingAngle={3}
+                >
+                  {JOB_DIST.map((_, index) => (
+                    <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => [`${value}건`, ""]} />
+                <Legend
+                  iconType="circle"
+                  iconSize={8}
+                  formatter={(value) => <span style={{ fontSize: 12 }}>{value}</span>}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* 테이블 영역 */}
       <div className="admin-dashboard-grid">
         <div className="admin-card">
           <div className="admin-card-head">
