@@ -13,17 +13,12 @@ const RESUMES = [
   { id: 6, name: "한소희", gender: "여", age: 30, photo: null, job: "SCM", career: "경력 6년", location: "경기 화성시", email: "sohee@email.com", phone: "010-6789-0123", date: "2025.01.15", updated: "2025.01.14", complete: true, public: true, title: "뷰티 SCM 물류 전문가", skills: ["SCM", "물류관리"], status: "정상" },
 ];
 
-const STATS = [
-  { label: "전체 이력서", value: "1,284" },
-  { label: "오늘 등록", value: "20" },
-  { label: "오늘 수정", value: "43" },
-  { label: "완성", value: "987" },
-  { label: "미완성", value: "297" },
-  { label: "공개", value: "856" },
-  { label: "비공개", value: "428" },
-  { label: "남성", value: "312" },
-  { label: "여성", value: "972" },
-];
+const STATS = {
+  total: { value: "1,284", todayNew: "+20", todayUpdate: "+43" },
+  complete: { complete: "987", incomplete: "297" },
+  public: { public: "856", private: "428" },
+  gender: { male: "312", female: "972" },
+};
 
 type Resume = typeof RESUMES[0];
 
@@ -46,13 +41,70 @@ export default function AdminResumesPage() {
       <ResumeTabs />
 
       {/* 통계 */}
-      <div className="admin-resume-stats">
-        {STATS.map((s) => (
-          <div key={s.label} className="admin-resume-stat">
-            <span className="admin-resume-stat-label">{s.label}</span>
-            <span className="admin-resume-stat-value">{s.value}</span>
+      <div className="admin-resume-stat-grid">
+        {/* 전체 */}
+        <div className="admin-resume-stat-card main">
+          <div className="admin-rsc-label">전체 이력서</div>
+          <div className="admin-rsc-value">{STATS.total.value}<span className="admin-mini-unit">건</span></div>
+          <div className="admin-rsc-subs">
+            <span className="admin-rsc-sub green">오늘 등록 {STATS.total.todayNew}</span>
+            <span className="admin-rsc-sub blue">오늘 수정 {STATS.total.todayUpdate}</span>
           </div>
-        ))}
+        </div>
+        {/* 완성여부 */}
+        <div className="admin-resume-stat-card">
+          <div className="admin-rsc-label">완성여부</div>
+          <div className="admin-rsc-split">
+            <div className="admin-rsc-split-item">
+              <span className="admin-rsc-split-label">완성</span>
+              <span className="admin-rsc-split-value green">{STATS.complete.complete}</span>
+            </div>
+            <div className="admin-rsc-divider" />
+            <div className="admin-rsc-split-item">
+              <span className="admin-rsc-split-label">미완성</span>
+              <span className="admin-rsc-split-value orange">{STATS.complete.incomplete}</span>
+            </div>
+          </div>
+          <div className="admin-rsc-bar">
+            <div className="admin-rsc-bar-fill green" style={{width: `${Math.round(987/1284*100)}%`}} />
+          </div>
+        </div>
+        {/* 공개여부 */}
+        <div className="admin-resume-stat-card">
+          <div className="admin-rsc-label">공개여부</div>
+          <div className="admin-rsc-split">
+            <div className="admin-rsc-split-item">
+              <span className="admin-rsc-split-label">공개</span>
+              <span className="admin-rsc-split-value blue">{STATS.public.public}</span>
+            </div>
+            <div className="admin-rsc-divider" />
+            <div className="admin-rsc-split-item">
+              <span className="admin-rsc-split-label">비공개</span>
+              <span className="admin-rsc-split-value gray">{STATS.public.private}</span>
+            </div>
+          </div>
+          <div className="admin-rsc-bar">
+            <div className="admin-rsc-bar-fill blue" style={{width: `${Math.round(856/1284*100)}%`}} />
+          </div>
+        </div>
+        {/* 성별 */}
+        <div className="admin-resume-stat-card">
+          <div className="admin-rsc-label">성별</div>
+          <div className="admin-rsc-split">
+            <div className="admin-rsc-split-item">
+              <span className="admin-rsc-split-label">여성</span>
+              <span className="admin-rsc-split-value purple">{STATS.gender.female}</span>
+            </div>
+            <div className="admin-rsc-divider" />
+            <div className="admin-rsc-split-item">
+              <span className="admin-rsc-split-label">남성</span>
+              <span className="admin-rsc-split-value gray">{STATS.gender.male}</span>
+            </div>
+          </div>
+          <div className="admin-rsc-bar">
+            <div className="admin-rsc-bar-fill purple" style={{width: `${Math.round(972/1284*100)}%`}} />
+          </div>
+        </div>
       </div>
 
       {/* 툴바 */}
