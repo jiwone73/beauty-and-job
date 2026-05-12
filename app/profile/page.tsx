@@ -8,6 +8,7 @@ import {
   Settings, ChevronRight, Plus, CheckCircle2, X, Award, Briefcase,
 } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
+import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { CAREER_LABELS } from "@/lib/constants";
 import CareerVerifyModal from "@/components/profile/CareerVerifyModal";
@@ -36,7 +37,7 @@ export default function ProfilePage() {
     removeEducation, removeSkill, removeLanguage, removeLink, removeExperience,
   } = useProfileStore();
 
-  const [activeTab, setActiveTab] = useState<"profile" | "resume">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "resume" | "applied" | "bookmarks" | "brands">("profile");
   const [bannerClosed, setBannerClosed] = useState(false);
   const [openModal, setOpenModal] = useState<ModalType>(null);
   const [showJobModal, setShowJobModal] = useState(false);
@@ -125,11 +126,20 @@ export default function ProfilePage() {
       <div className="profile-tabs">
         <button className={`profile-tab ${activeTab === "profile" ? "active" : ""}`} onClick={() => setActiveTab("profile")}>프로필</button>
         <button className={`profile-tab ${activeTab === "resume" ? "active" : ""}`} onClick={() => setActiveTab("resume")}>이력서</button>
+        <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>지원현황</button>
+        <button className={`profile-tab ${activeTab === "bookmarks" ? "active" : ""}`} onClick={() => setActiveTab("bookmarks")}>관심공고</button>
+        <button className={`profile-tab ${activeTab === "brands" ? "active" : ""}`} onClick={() => setActiveTab("brands")}>관심브랜드</button>
       </div>
 
       {/* 탭 콘텐츠 */}
       <div className="profile-content">
-        {activeTab === "profile" ? (
+        {activeTab === "applied" ? (
+          <AppliedTab />
+        ) : activeTab === "bookmarks" ? (
+          <BookmarksTab />
+        ) : activeTab === "brands" ? (
+          <BrandsTab />
+        ) : activeTab === "profile" ? (
           <>
             {/* 프로모 */}
             <div className="profile-promo">
@@ -351,5 +361,135 @@ function InfoRow({ label, value, isEmpty, isLast, onClick }: {
       <span className={`profile-info-value ${isEmpty ? "is-empty" : ""}`}>{value}</span>
       <ChevronRight size={16} className="profile-info-chevron" />
     </button>
+  );
+}
+
+/* ============================================
+   지원현황 탭
+   ============================================ */
+function AppliedTab() {
+  const APPLIED_JOBS = [
+    { id: 1, brand: "올리브영", title: "올리브영 MD - 색조 카테고리 매니저", date: "2025.01.15", status: "서류검토중" },
+    { id: 2, brand: "아모레퍼시픽", title: "헤라 브랜드 마케팅 매니저", date: "2025.01.10", status: "합격" },
+    { id: 3, brand: "LG생활건강", title: "더후 글로벌 영업 PM", date: "2025.01.05", status: "불합격" },
+  ];
+
+  const statusStyle: Record<string, string> = {
+    "서류검토중": "applied-status-review",
+    "합격": "applied-status-pass",
+    "불합격": "applied-status-fail",
+    "면접예정": "applied-status-interview",
+  };
+
+  if (APPLIED_JOBS.length === 0) {
+    return (
+      <div className="profile-empty-tab">
+        <div className="profile-empty-icon">📋</div>
+        <p>아직 지원한 공고가 없어요</p>
+        <a href="/jobs" className="profile-empty-btn">채용공고 보러가기</a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="profile-tab-content">
+      <div className="applied-list">
+        {APPLIED_JOBS.map((job) => (
+          <div key={job.id} className="applied-item">
+            <div className="applied-item-left">
+              <span className="applied-brand">{job.brand}</span>
+              <h3 className="applied-title">{job.title}</h3>
+              <span className="applied-date">지원일 {job.date}</span>
+            </div>
+            <span className={`applied-status ${statusStyle[job.status] || ""}`}>
+              {job.status}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================
+   관심공고 탭
+   ============================================ */
+function BookmarksTab() {
+  const { bookmarks } = useBookmarkStore();
+
+  const ALL_JOBS = [
+    { id: 1, brand: "올리브영", title: "올리브영 MD - 색조 카테고리 매니저", location: "서울 중구", deadline: "D-7" },
+    { id: 2, brand: "아모레퍼시픽", title: "헤라 브랜드 마케팅 매니저", location: "서울 용산구", deadline: "D-12" },
+    { id: 3, brand: "LG생활건강", title: "더후 글로벌 영업 PM", location: "서울 종로구", deadline: "D-3" },
+    { id: 4, brand: "닥터지", title: "퍼포먼스 마케터 (그로스)", location: "서울 강남구", deadline: "D-15" },
+  ];
+
+  const bookmarkedJobs = ALL_JOBS.filter((j) => bookmarks.includes(j.id));
+
+  if (bookmarkedJobs.length === 0) {
+    return (
+      <div className="profile-empty-tab">
+        <div className="profile-empty-icon">🔖</div>
+        <p>저장한 공고가 없어요<br />관심있는 공고를 북마크해보세요</p>
+        <a href="/jobs" className="profile-empty-btn">채용공고 보러가기</a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="profile-tab-content">
+      <div className="bookmark-list">
+        {bookmarkedJobs.map((job) => (
+          <a key={job.id} href={`/jobs/${job.id}`} className="bookmark-item">
+            <div className="bookmark-item-left">
+              <span className="bookmark-brand">{job.brand}</span>
+              <h3 className="bookmark-title">{job.title}</h3>
+              <span className="bookmark-location">📍 {job.location}</span>
+            </div>
+            <span className="bookmark-deadline">{job.deadline}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================
+   관심브랜드 탭
+   ============================================ */
+function BrandsTab() {
+  const BRANDS = [
+    { id: 1, name: "올리브영", category: "헬스앤뷰티", jobs: 12 },
+    { id: 2, name: "아모레퍼시픽", category: "뷰티 대기업", jobs: 8 },
+    { id: 3, name: "LG생활건강", category: "뷰티 대기업", jobs: 5 },
+  ];
+
+  if (BRANDS.length === 0) {
+    return (
+      <div className="profile-empty-tab">
+        <div className="profile-empty-icon">🏢</div>
+        <p>관심 브랜드가 없어요<br />브랜드를 팔로우하면 새 공고를 알려드려요</p>
+        <a href="/brands" className="profile-empty-btn">브랜드 둘러보기</a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="profile-tab-content">
+      <div className="brand-follow-list">
+        {BRANDS.map((brand) => (
+          <a key={brand.id} href={`/brands`} className="brand-follow-item">
+            <div className="brand-follow-logo">
+              {brand.name.slice(0, 2)}
+            </div>
+            <div className="brand-follow-info">
+              <strong>{brand.name}</strong>
+              <span>{brand.category}</span>
+            </div>
+            <span className="brand-follow-jobs">채용 {brand.jobs}건</span>
+          </a>
+        ))}
+      </div>
+    </div>
   );
 }
