@@ -73,17 +73,23 @@ export default function AdminMembersPage() {
             <input className="admin-search-input" placeholder="이름, 이메일, 연락처 검색"
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
           </div>
-          <div className="admin-filter-tabs">
-            {["전체", "개인", "기업"].map((t) => (
-              <button key={t} className={`admin-filter-tab ${typeFilter === t ? "active" : ""}`}
-                onClick={() => { setTypeFilter(t); setPage(1); }}>{t}</button>
-            ))}
+          <div className="admin-filter-group">
+            <span className="admin-filter-label">회원유형</span>
+            <div className="admin-filter-tabs">
+              {["전체", "개인", "기업"].map((t) => (
+                <button key={t} className={`admin-filter-tab ${typeFilter === t ? "active" : ""}`}
+                  onClick={() => { setTypeFilter(t); setPage(1); }}>{t}</button>
+              ))}
+            </div>
           </div>
-          <div className="admin-filter-tabs">
-            {["전체", "정상", "휴면", "탈퇴"].map((s) => (
-              <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
-                onClick={() => { setStatusFilter(s); setPage(1); }}>{s}</button>
-            ))}
+          <div className="admin-filter-group">
+            <span className="admin-filter-label">계정상태</span>
+            <div className="admin-filter-tabs">
+              {["전체", "정상", "휴면", "탈퇴"].map((s) => (
+                <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
+                  onClick={() => { setStatusFilter(s); setPage(1); }}>{s}</button>
+              ))}
+            </div>
           </div>
         </div>
         <button className="admin-secondary-btn">

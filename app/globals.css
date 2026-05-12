@@ -5328,3 +5328,25 @@ input[type="range"].career-slider::-moz-range-thumb {
   transition: background 0.15s;
 }
 .admin-danger-btn:hover { background: #dc2626; }
+
+/* 관리자 필터 그룹 */
+.admin-toolbar-left {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+}
+.admin-toolbar-left > .admin-search-wrap {
+  width: 100%;
+}
+.admin-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  white-space: nowrap;
+  min-width: 52px;
+}
