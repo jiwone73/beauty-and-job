@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AdminLayout } from "../../page";
+import AdminLayout from "@/components/admin/AdminLayout";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 

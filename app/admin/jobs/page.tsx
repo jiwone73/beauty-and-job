@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AdminLayout } from "../page";
+import AdminLayout from "@/components/admin/AdminLayout";
 import { Plus, Search, Eye, Edit, Trash2, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 

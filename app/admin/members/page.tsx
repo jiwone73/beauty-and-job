@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { AdminLayout } from "../page";
+import AdminLayout from "@/components/admin/AdminLayout";
 import { Search, Eye, Trash2 } from "lucide-react";
 
 const MEMBERS = [

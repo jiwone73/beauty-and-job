@@ -25,7 +25,7 @@ const NAV_ITEMS = [
 /* ============================================
    레이아웃 컴포넌트
    ============================================ */
-export function AdminLayout({ children, activeMenu }: { children: React.ReactNode; activeMenu: string }) {
+
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
