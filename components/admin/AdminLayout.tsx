@@ -27,11 +27,8 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
       <aside className={`admin-sidebar ${sidebarOpen ? "open" : "closed"}`}>
         <div className="admin-sidebar-logo">
           <Link href="/admin" className="admin-logo-link">
-            {sidebarOpen ? (
-              <Image src="/images/logo.png" alt="뷰티앤잡" width={100} height={26} style={{filter:"brightness(0) invert(1)"}} />
-            ) : (
-              <span className="admin-logo-icon">B</span>
-            )}
+            <span className="admin-logo-icon">B</span>
+            {sidebarOpen && <span className="admin-logo-text">뷰티앤잡</span>}
           </Link>
           <button className="admin-sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
