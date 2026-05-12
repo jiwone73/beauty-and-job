@@ -20,7 +20,6 @@ import Step10Done from "@/components/signup/Step10Done";
 export default function SignupPage() {
   const router = useRouter();
   const { currentStep, setStep, prevStep, nextStep } = useSignupStore();
-  const router = useRouter();
 
   useEffect(() => {
     console.log(
