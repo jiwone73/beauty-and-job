@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { id: "members", label: "회원관리", icon: Users, href: "/admin/members" },
   { id: "insights", label: "인사이트", icon: BookOpen, href: "/admin/insights" },
   { id: "brands", label: "브랜드", icon: Building2, href: "/admin/brands" },
+  { id: "resumes", label: "인재정보", icon: Users, href: "/admin/resumes" },
   { id: "stats", label: "통계", icon: BarChart2, href: "/admin/stats" },
 ];
 

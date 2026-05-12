@@ -5425,3 +5425,94 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-color: #f0f0f0;
   border-bottom-color: #fff;
 }
+
+/* ============================================
+   관리자 이력서 관리
+   ============================================ */
+.admin-resume-stats {
+  display: flex;
+  gap: 0;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.admin-resume-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  border-right: 1px solid #f0f0f0;
+  gap: 6px;
+}
+.admin-resume-stat:last-child { border-right: none; }
+.admin-resume-stat-label { font-size: 11px; color: #888; text-align: center; }
+.admin-resume-stat-value { font-size: 20px; font-weight: 800; color: #1a1a1a; }
+
+/* 이력서 테이블 */
+.admin-resume-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 100px;
+}
+.admin-resume-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f5eaff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #5f0080;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.admin-resume-photo img { width: 100%; height: 100%; object-fit: cover; }
+.admin-resume-photo.large {
+  width: 56px;
+  height: 56px;
+  font-size: 22px;
+}
+.admin-resume-member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.admin-resume-member-info strong { font-size: 14px; color: #1a1a1a; }
+.admin-resume-member-info span { font-size: 11px; color: #aaa; }
+.admin-resume-info { display: flex; flex-direction: column; gap: 4px; max-width: 280px; }
+.admin-resume-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-resume-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.admin-resume-tag {
+  padding: 2px 6px;
+  background: #f5eaff;
+  color: #5f0080;
+  font-size: 11px;
+  border-radius: 4px;
+}
+.admin-resume-job { font-size: 11px; color: #888; }
+.admin-resume-modal-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #f9f5ff;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.admin-resume-modal-profile h3 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+.admin-resume-modal-profile p { font-size: 13px; color: #666; margin: 0; }
+
+/* 관리자 사이드바 인재정보 메뉴 */
