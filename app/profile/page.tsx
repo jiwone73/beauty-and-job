@@ -39,6 +39,8 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"profile" | "resume">("profile");
   const [bannerClosed, setBannerClosed] = useState(false);
   const [openModal, setOpenModal] = useState<ModalType>(null);
+  const [showJobModal, setShowJobModal] = useState(false);
+  const [selectedJobTemp, setSelectedJobTemp] = useState("");
 
   const jobDisplay = job === "직접입력" ? jobCustom : job || "직군 미설정";
   const allCategories = [...categories.filter((c) => c !== "직접입력"), ...categoryCustom];
