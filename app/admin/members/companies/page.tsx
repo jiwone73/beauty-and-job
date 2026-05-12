@@ -53,6 +53,8 @@ export default function AdminCompaniesPage() {
       <div className="admin-subtabs">
         <a href="/admin/members" className="admin-subtab">개인회원</a>
         <a href="/admin/members/companies" className="admin-subtab active">기업회원</a>
+        <a href="/admin/members/companies/blocked" className="admin-subtab">열람제한기업</a>
+        <a href="/admin/members/companies/favorites" className="admin-subtab">관심기업</a>
       </div>
       <div className="admin-mini-stats">
         {Object.entries(counts).map(([label, count]) => (
