@@ -21,6 +21,7 @@ export default function AdminMembersPage() {
   const [typeFilter, setTypeFilter] = useState("전체");
   const [statusFilter, setStatusFilter] = useState("전체");
   const [joinFilter, setJoinFilter] = useState("전체");
+  const [joinFilter, setJoinFilter] = useState("전체");
   const [members, setMembers] = useState(MEMBERS);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [page, setPage] = useState(1);
