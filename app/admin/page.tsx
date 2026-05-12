@@ -1,102 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import AdminLayout from "@/components/admin/AdminLayout";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {
-  LayoutDashboard, Users, Briefcase, BookOpen, Building2,
-  BarChart2, LogOut, Bell, ChevronRight, TrendingUp,
-  TrendingDown, CheckCircle, Clock, XCircle, Plus,
-  Search, Filter, Eye, Edit, Trash2, Menu, X
-} from "lucide-react";
+import { Users, Briefcase, CheckCircle, Clock, TrendingUp, TrendingDown } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 
-/* ============================================
-   사이드바 메뉴 구조
-   ============================================ */
-const NAV_ITEMS = [
-  { id: "dashboard", label: "대시보드", icon: LayoutDashboard, href: "/admin" },
-  { id: "jobs", label: "채용공고", icon: Briefcase, href: "/admin/jobs" },
-  { id: "members", label: "회원관리", icon: Users, href: "/admin/members" },
-  { id: "insights", label: "인사이트", icon: BookOpen, href: "/admin/insights" },
-  { id: "brands", label: "브랜드", icon: Building2, href: "/admin/brands" },
-  { id: "stats", label: "통계", icon: BarChart2, href: "/admin/stats" },
-];
-
-/* ============================================
-   레이아웃 컴포넌트
-   ============================================ */
-
-  const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  return (
-    <div className="admin-layout">
-      {/* 사이드바 */}
-      <aside className={`admin-sidebar ${sidebarOpen ? "open" : "closed"}`}>
-        <div className="admin-sidebar-logo">
-          <Link href="/admin" className="admin-logo-link">
-            <span className="admin-logo-icon">B</span>
-            {sidebarOpen && <span className="admin-logo-text">뷰티앤잡 Admin</span>}
-          </Link>
-          <button className="admin-sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
-        </div>
-
-        <nav className="admin-nav">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href}
-              className={`admin-nav-item ${activeMenu === item.id ? "active" : ""}`}
-            >
-              <item.icon size={20} />
-              {sidebarOpen && <span>{item.label}</span>}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="admin-sidebar-bottom">
-          <button className="admin-nav-item" onClick={() => router.push("/")}>
-            <LogOut size={20} />
-            {sidebarOpen && <span>사이트로 이동</span>}
-          </button>
-        </div>
-      </aside>
-
-      {/* 메인 영역 */}
-      <div className="admin-main">
-        {/* 상단 헤더 */}
-        <header className="admin-header">
-          <div className="admin-header-left">
-            <h1 className="admin-page-title">
-              {NAV_ITEMS.find(n => n.id === activeMenu)?.label || "관리자"}
-            </h1>
-          </div>
-          <div className="admin-header-right">
-            <button className="admin-header-btn">
-              <Bell size={18} />
-              <span className="admin-notif-dot" />
-            </button>
-            <div className="admin-profile">
-              <div className="admin-avatar">A</div>
-              <span className="admin-name">관리자</span>
-            </div>
-          </div>
-        </header>
-
-        {/* 콘텐츠 */}
-        <main className="admin-content">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
-}
-
-/* ============================================
-   대시보드 페이지
-   ============================================ */
 const STATS = [
   { label: "오늘 신규 가입", value: "24", unit: "명", trend: 12, icon: Users, color: "#5f0080" },
   { label: "진행중 채용공고", value: "142", unit: "건", trend: 5, icon: Briefcase, color: "#0ea5e9" },
@@ -122,7 +30,6 @@ const RECENT_MEMBERS = [
 export default function AdminDashboard() {
   return (
     <AdminLayout activeMenu="dashboard">
-      {/* 통계 카드 */}
       <div className="admin-stat-grid">
         {STATS.map((stat) => (
           <div key={stat.label} className="admin-stat-card">
@@ -144,7 +51,6 @@ export default function AdminDashboard() {
       </div>
 
       <div className="admin-dashboard-grid">
-        {/* 최근 채용공고 */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">최근 채용공고</h2>
@@ -152,13 +58,7 @@ export default function AdminDashboard() {
           </div>
           <table className="admin-table">
             <thead>
-              <tr>
-                <th>기업</th>
-                <th>공고명</th>
-                <th>등록일</th>
-                <th>상태</th>
-                <th>관리</th>
-              </tr>
+              <tr><th>기업</th><th>공고명</th><th>등록일</th><th>상태</th><th>관리</th></tr>
             </thead>
             <tbody>
               {RECENT_JOBS.map((job) => (
@@ -170,15 +70,10 @@ export default function AdminDashboard() {
                     <span className={`admin-badge admin-badge-${
                       job.status === "승인완료" ? "success" :
                       job.status === "승인대기" ? "warning" : "danger"
-                    }`}>
-                      {job.status}
-                    </span>
+                    }`}>{job.status}</span>
                   </td>
                   <td>
                     <div className="admin-actions">
-                      {job.status === "승인대기" && (
-                        <button className="admin-action-btn approve">승인</button>
-                      )}
                       <button className="admin-action-icon"><Eye size={15} /></button>
                       <button className="admin-action-icon danger"><Trash2 size={15} /></button>
                     </div>
@@ -189,7 +84,6 @@ export default function AdminDashboard() {
           </table>
         </div>
 
-        {/* 최근 가입 회원 */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">최근 가입 회원</h2>
@@ -197,12 +91,7 @@ export default function AdminDashboard() {
           </div>
           <table className="admin-table">
             <thead>
-              <tr>
-                <th>이름</th>
-                <th>유형</th>
-                <th>이메일</th>
-                <th>가입일</th>
-              </tr>
+              <tr><th>이름</th><th>유형</th><th>이메일</th><th>가입일</th></tr>
             </thead>
             <tbody>
               {RECENT_MEMBERS.map((m) => (
