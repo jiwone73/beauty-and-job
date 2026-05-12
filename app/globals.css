@@ -4273,3 +4273,47 @@ input[type="range"].career-slider::-moz-range-thumb {
   transition: background 0.15s;
 }
 .job-select-confirm:hover { background: #4a0066; }
+
+/* ============================================
+   모바일 카드 가로 스크롤
+   ============================================ */
+@media (max-width: 768px) {
+  /* 카드 그리드 → 가로 스크롤로 변경 */
+  .card-grid-4,
+  .card-grid-3 {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    gap: 12px !important;
+    padding-bottom: 12px !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    /* 스크롤바 숨기기 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .card-grid-4::-webkit-scrollbar,
+  .card-grid-3::-webkit-scrollbar { display: none; }
+
+  /* 카드 고정 너비 - 1.3개 보이게 */
+  .card-grid-4 > *,
+  .card-grid-3 > * {
+    min-width: 75vw !important;
+    max-width: 75vw !important;
+    scroll-snap-align: start;
+    flex-shrink: 0 !important;
+  }
+
+  /* 인사이트 카드도 동일 */
+  .insight-card {
+    min-width: 75vw !important;
+    max-width: 75vw !important;
+  }
+
+  /* 모바일 GNB 이름 표시 */
+  .auth-username {
+    display: inline !important;
+    max-width: 60px;
+    font-size: 13px;
+  }
+}
