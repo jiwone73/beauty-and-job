@@ -5654,3 +5654,99 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .admin-sort-drop-item:hover { background: #f9f5ff; }
 .admin-sort-drop-item.active { color: #5f0080; font-weight: 700; background: #f5eaff; }
+
+/* ============================================
+   이력서 통계 카드
+   ============================================ */
+.admin-resume-stat-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 14px;
+}
+.admin-resume-stat-card {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.admin-resume-stat-card.main {
+  background: linear-gradient(135deg, #f9f5ff 0%, #fff 100%);
+  border-color: #e8d5f5;
+}
+.admin-rsc-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.admin-rsc-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1;
+}
+.admin-rsc-subs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.admin-rsc-sub {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+.admin-rsc-sub.green { background: #d1fae5; color: #065f46; }
+.admin-rsc-sub.blue { background: #dbeafe; color: #1e40af; }
+
+/* 분할 통계 */
+.admin-rsc-split {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+}
+.admin-rsc-split-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.admin-rsc-divider {
+  width: 1px;
+  height: 36px;
+  background: #f0f0f0;
+  margin: 0 8px;
+}
+.admin-rsc-split-label { font-size: 11px; color: #aaa; }
+.admin-rsc-split-value {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+.admin-rsc-split-value.green { color: #10b981; }
+.admin-rsc-split-value.orange { color: #f59e0b; }
+.admin-rsc-split-value.blue { color: #0ea5e9; }
+.admin-rsc-split-value.purple { color: #5f0080; }
+.admin-rsc-split-value.gray { color: #94a3b8; }
+
+/* 비율 바 */
+.admin-rsc-bar {
+  height: 4px;
+  background: #f0f0f0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.admin-rsc-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.admin-rsc-bar-fill.green { background: #10b981; }
+.admin-rsc-bar-fill.blue { background: #0ea5e9; }
+.admin-rsc-bar-fill.purple { background: #5f0080; }

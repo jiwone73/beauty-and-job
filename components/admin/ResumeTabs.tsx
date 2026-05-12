@@ -12,13 +12,20 @@ export default function ResumeTabs() {
   ];
 
   return (
-    <div className="admin-tab-row1">
-      {sub.map((tab) => (
-        <a key={tab.href} href={tab.href}
-          className={`admin-tab1 ${pathname === tab.href ? "active" : ""}`}>
-          {tab.label}
-        </a>
-      ))}
+    <div className="admin-member-tabs">
+      {/* 1단 */}
+      <div className="admin-tab-row1">
+        <a href="/admin/resumes" className="admin-tab1 active">인재정보</a>
+      </div>
+      {/* 2단 */}
+      <div className="admin-tab-row2">
+        {sub.map((tab) => (
+          <a key={tab.href} href={tab.href}
+            className={`admin-tab2 ${pathname === tab.href ? "active" : ""}`}>
+            {tab.label}
+          </a>
+        ))}
+      </div>
     </div>
   );
 }
