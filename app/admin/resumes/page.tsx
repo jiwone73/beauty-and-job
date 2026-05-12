@@ -2,7 +2,7 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumeTabs from "@/components/admin/ResumeTabs";
-import { Search, FileText, Trash2, Download, CheckSquare } from "lucide-react";
+import { Search, Download, FileText } from "lucide-react";
 
 const RESUMES = [
   { id: 1, name: "김지수", gender: "여", age: 28, photo: null, job: "마케팅", career: "경력 3년", location: "서울 강남구", address: "서울 강남구", email: "jisoo@email.com", phone: "010-1234-5678", date: "2025.01.20", updated: "2025.01.20", lastLogin: "2025.01.20", complete: true, public: true, title: "뷰티 브랜드 마케터 김지수입니다", skills: ["SNS마케팅", "콘텐츠기획"], salary: "4,000만원", education: "대학교(4년제) 졸업", status: "정상" },
@@ -214,7 +214,6 @@ export default function AdminResumesPage() {
                 <th>연봉</th>
                 <th>학력</th>
                 <th>연락처</th>
-                <th>관리</th>
               </tr>
             </thead>
           <tbody>
@@ -261,9 +260,9 @@ export default function AdminResumesPage() {
                     </div>
                   </div>
                 </td>
-                <td>
+                <td style={{cursor:"pointer"}} onClick={() => setSelected(r)}>
                   <div className="admin-resume-info">
-                    <p className="admin-resume-title">{r.title}</p>
+                    <p className="admin-resume-title" style={{color:"#5f0080"}}>{r.title}</p>
                     <div className="admin-resume-tags">
                       {r.skills.map((sk) => (
                         <span key={sk} className="admin-resume-tag">{sk}</span>
@@ -290,18 +289,7 @@ export default function AdminResumesPage() {
                   <div>{r.email}</div>
                   <div>{r.phone}</div>
                 </td>
-                <td>
-                  <div className="admin-actions">
-                    <button className="admin-action-icon" title="이력서 보기"
-                      onClick={() => setSelected(r)}>
-                      <FileText size={15} />
-                    </button>
-                    <button className="admin-action-icon danger" title="삭제"
-                      onClick={() => { if(confirm("삭제하시겠습니까?")) setResumes(resumes.filter(x => x.id !== r.id)); }}>
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </td>
+
               </tr>
             ))}
           </tbody>
