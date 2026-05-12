@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
+import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 
 /* ===== 더미 데이터 ===== */
 const JOBS = [

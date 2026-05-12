@@ -3961,3 +3961,315 @@ input[type="range"].career-slider::-moz-range-thumb {
   .support-cards { grid-template-columns: 1fr; }
   .info-hero-title { font-size: 24px; }
 }
+
+/* ===========================================
+   모바일 반응형 보강 (전체 페이지)
+   =========================================== */
+
+/* ── 공통 ── */
+@media (max-width: 768px) {
+  .container { padding: 0 16px; }
+  .section { padding: 40px 0; }
+  .section-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .section-title { font-size: 20px; }
+
+  /* 헤더 */
+  .header-inner { padding: 0 16px; }
+  .header-right .btn-primary { display: none; }
+  .auth-username { display: none; }
+
+  /* 히어로 */
+  .hero { padding: 40px 0 32px; }
+  .hero-title { font-size: 32px; }
+  .search-box { grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; }
+  .search-select { min-width: unset; font-size: 13px; padding: 0 10px; height: 42px; }
+  .search-btn { grid-column: 1 / -1; height: 42px; }
+  .hashtags { gap: 6px; flex-wrap: wrap; }
+  .hashtag { font-size: 12px; padding: 6px 12px; }
+
+  /* 카드 */
+  .card-grid-4 { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .card-grid-3 { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .job-card { padding: 16px; }
+  .insight-card { padding: 0; }
+
+  /* 뉴스레터 */
+  .newsletter-box { padding: 28px 20px; gap: 20px; }
+  .newsletter-title { font-size: 18px; }
+  .newsletter-form { flex-direction: column; }
+  .newsletter-form button { width: 100%; }
+
+  /* 푸터 */
+  .footer-new-top { grid-template-columns: 1fr; gap: 32px; padding: 32px 16px; }
+  .footer-new-links { grid-template-columns: repeat(2, 1fr); }
+  .footer-new-cta { text-align: left; }
+  .footer-new-bottom { padding: 20px 16px; }
+  .footer-new-details { flex-direction: column; gap: 4px; font-size: 11px; }
+
+  /* 채용공고 */
+  .jobs-header-inner { padding: 0 16px; }
+  .jobs-gnb { display: none; }
+  .jobs-container { padding: 0 16px; }
+  .jobs-filter-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .jobs-filter-left { flex-wrap: wrap; gap: 8px; }
+  .jobs-filter-right { width: 100%; justify-content: space-between; }
+  .jobs-card-grid { grid-template-columns: 1fr; }
+
+  /* 채용공고 상세 */
+  .job-detail-layout { grid-template-columns: 1fr; }
+  .job-detail-sidebar { display: none; }
+  .job-detail-apply-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 12px 16px;
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+    z-index: 100;
+  }
+
+  /* 이력서 */
+  .resume-header-inner { padding: 0 12px; gap: 8px; }
+  .resume-gnb { display: none; }
+  .resume-layout { grid-template-columns: 1fr; }
+  .resume-sidebar { display: none; }
+  .resume-editor { padding: 16px; }
+  .resume-action-btn span { display: none; }
+
+  /* 프로필 */
+  .profile-header-inner { padding: 0 16px; }
+  .profile-card { padding: 20px 16px; }
+  .profile-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* 브랜드 */
+  .brands-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  /* 인사이트 */
+  .insights-grid { grid-template-columns: 1fr; }
+  .insight-detail-layout { grid-template-columns: 1fr; }
+  .insight-detail-sidebar { display: none; }
+
+  /* 연봉어택 */
+  .salary-grid { grid-template-columns: 1fr; }
+  .salary-filter { flex-wrap: wrap; gap: 8px; }
+
+  /* 로그인/회원가입 */
+  .login-card { border-radius: 0; border: none; box-shadow: none; min-height: 100vh; padding: 32px 20px; }
+  .login-main { padding: 0; align-items: flex-start; }
+
+  /* 회사/고객지원 */
+  .info-values { grid-template-columns: repeat(2, 1fr); }
+  .support-cards { grid-template-columns: 1fr; }
+  .info-nav { justify-content: flex-start; overflow-x: auto; }
+  .contact-form { padding: 20px 16px; }
+
+  /* 기업 서비스 */
+  .company-hero { padding: 60px 16px 40px; }
+  .company-hero-title { font-size: 28px; }
+  .company-grid { grid-template-columns: 1fr; }
+  .company-pricing-grid { grid-template-columns: 1fr; }
+
+  /* 드롭다운 */
+  .auth-dropdown { right: 0; min-width: 160px; }
+  .search-dropdown { min-width: 120px; }
+
+  /* 모달 */
+  .rp-modal { border-radius: 0; min-height: 100vh; }
+  .rp-modal-overlay { padding: 0; }
+  .rp-modal-body { padding: 20px; }
+}
+
+@media (max-width: 480px) {
+  /* 카드 1열 */
+  .card-grid-4, .card-grid-3 { grid-template-columns: 1fr; }
+  .brands-grid { grid-template-columns: 1fr; }
+  .info-values { grid-template-columns: 1fr; }
+
+  /* 히어로 검색 */
+  .search-box { grid-template-columns: 1fr; }
+  .search-select { width: 100%; }
+
+  /* 섹션 타이틀 */
+  .section-title { font-size: 18px; }
+  .hero-title { font-size: 28px; }
+
+  /* 푸터 */
+  .footer-new-links { grid-template-columns: 1fr; gap: 24px; }
+  .footer-new-copy { flex-direction: column; gap: 8px; align-items: flex-start; }
+
+  /* 프리미엄 카드 */
+  .premium-card { padding: 16px; }
+  .global-card, .intern-card { padding: 16px; }
+}
+
+/* ===========================================
+   2순위: 북마크 UI 개선 (저장 표시)
+   =========================================== */
+.bookmark.active { color: var(--color-primary); }
+.bookmark-toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 999;
+  animation: toastIn 0.2s ease, toastOut 0.2s ease 1.5s forwards;
+  white-space: nowrap;
+}
+@keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* ===========================================
+   3순위: 지원하기 모달
+   =========================================== */
+.apply-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.apply-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.apply-modal-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 6px;
+}
+.apply-modal-sub {
+  font-size: 14px;
+  color: #888;
+  margin: 0 0 24px;
+}
+.apply-modal-info {
+  background: #f9f5ff;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+.apply-modal-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 4px 0;
+  color: #555;
+}
+.apply-modal-info-row strong { color: #1a1a1a; }
+.apply-modal-btns {
+  display: flex;
+  gap: 10px;
+}
+.apply-modal-cancel {
+  flex: 1;
+  height: 48px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+}
+.apply-modal-submit {
+  flex: 2;
+  height: 48px;
+  background: #5f0080;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.apply-modal-submit:hover { background: #4a0066; }
+.apply-modal-done {
+  text-align: center;
+  padding: 16px 0;
+}
+.apply-modal-done-icon { font-size: 48px; margin-bottom: 12px; }
+.apply-modal-done h3 { font-size: 20px; font-weight: 800; margin: 0 0 8px; }
+.apply-modal-done p { font-size: 14px; color: #666; line-height: 1.7; margin: 0 0 20px; }
+
+/* ===========================================
+   4순위: 대표 직무 선택 모달
+   =========================================== */
+.job-select-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+@media (min-width: 640px) {
+  .job-select-modal-overlay { align-items: center; }
+}
+.job-select-modal {
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 28px 24px 40px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+@media (min-width: 640px) {
+  .job-select-modal { border-radius: 16px; }
+}
+.job-select-modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 20px;
+}
+.job-select-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.job-select-item {
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  background: #f5f5f5;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.job-select-item:hover { border-color: #5f0080; color: #5f0080; }
+.job-select-item.selected { background: #f5eaff; border-color: #5f0080; color: #5f0080; font-weight: 700; }
+.job-select-confirm {
+  width: 100%;
+  height: 50px;
+  background: #5f0080;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.job-select-confirm:hover { background: #4a0066; }

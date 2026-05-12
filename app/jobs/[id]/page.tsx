@@ -136,6 +136,9 @@ export default function JobDetailPage() {
 
   const [bookmarked, setBookmarked] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
+  const [applyDone, setApplyDone] = useState(false);
+  const { isLoggedIn, userName } = useAuthStore();
+  const { toggle: toggleBookmark, isBookmarked } = useBookmarkStore();
 
   return (
     <div className="job-detail-page">

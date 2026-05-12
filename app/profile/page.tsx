@@ -189,7 +189,7 @@ export default function ProfilePage() {
                     <span className="profile-career-checkbox-text">회사에서 팀을 이끈 경험이 있어요.</span>
                   </label>
                 </div>
-                <button className="profile-career-row profile-career-clickable" onClick={() => alert("대표 직무 선택은 다음 업데이트에서 구현됩니다.")}>
+                <button className="profile-career-row profile-career-clickable" onClick={() => { setSelectedJobTemp(jobDisplay || ""); setShowJobModal(true); }}>
                   <span className="profile-career-label">대표 직무</span>
                   <span className="profile-career-value-row">
                     <span className="profile-career-value">{jobDisplay}</span>
