@@ -32,9 +32,10 @@ export default function AdminResumesPage() {
   const [showSortDrop, setShowSortDrop] = useState(false);
 
   const SORT_OPTIONS = [
-    { value: "date", label: "등록일" },
-    { value: "updated", label: "수정일" },
     { value: "lastLogin", label: "방문일" },
+    { value: "updated", label: "수정일" },
+    { value: "date", label: "등록일" },
+    { value: "date", label: "가입일" },
   ];
 
   const sorted = [...resumes].sort((a, b) => {
@@ -160,12 +161,17 @@ export default function AdminResumesPage() {
               <th>
                 <div className="admin-sort-wrap">
                   <button className="admin-sort-btn" onClick={() => setShowSortDrop(!showSortDrop)}>
-                    {SORT_OPTIONS.find(o => o.value === sortBy)?.label} ▾
+                    수정일 ▾
                   </button>
                   {showSortDrop && (
                     <div className="admin-sort-drop">
-                      {SORT_OPTIONS.map((o) => (
-                        <button key={o.value}
+                      {[
+                        { value: "lastLogin", label: "방문일" },
+                        { value: "updated", label: "수정일" },
+                        { value: "date", label: "등록일" },
+                        { value: "date", label: "가입일" },
+                      ].map((o) => (
+                        <button key={o.label}
                           className={`admin-sort-drop-item ${sortBy === o.value ? "active" : ""}`}
                           onClick={() => { setSortBy(o.value); setShowSortDrop(false); }}>
                           {o.label}
@@ -189,7 +195,24 @@ export default function AdminResumesPage() {
             {filtered.map((r) => (
               <tr key={r.id}>
                 <td className="admin-td-date">
-                  {sortBy === "updated" ? r.updated : r.date}
+                  <div className="admin-date-cell">
+                    <div className="admin-date-row">
+                      <span className="admin-date-label">방문</span>
+                      <span className="admin-date-val">{r.lastLogin}</span>
+                    </div>
+                    <div className="admin-date-row">
+                      <span className="admin-date-label">수정</span>
+                      <span className="admin-date-val">{r.updated}</span>
+                    </div>
+                    <div className="admin-date-row">
+                      <span className="admin-date-label">등록</span>
+                      <span className="admin-date-val">{r.date}</span>
+                    </div>
+                    <div className="admin-date-row">
+                      <span className="admin-date-label">가입</span>
+                      <span className="admin-date-val">{r.date}</span>
+                    </div>
+                  </div>
                 </td>
                 <td>
                   <div className="admin-resume-member">

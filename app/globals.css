@@ -5750,3 +5750,27 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-rsc-bar-fill.green { background: #10b981; }
 .admin-rsc-bar-fill.blue { background: #0ea5e9; }
 .admin-rsc-bar-fill.purple { background: #5f0080; }
+
+/* 날짜 멀티 표시 */
+.admin-date-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 120px;
+}
+.admin-date-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.admin-date-label {
+  width: 24px;
+  color: #aaa;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.admin-date-val { color: #555; }
+/* 정렬 기준 강조 */
+.admin-date-row.active .admin-date-label { color: #5f0080; }
+.admin-date-row.active .admin-date-val { color: #1a1a1a; font-weight: 600; }
