@@ -175,41 +175,48 @@ export default function AdminResumesPage() {
       <div className="admin-card">
         <div className="admin-table-meta">총 <strong>{filtered.length}</strong>건</div>
         <table className="admin-table">
-          <thead>
-            <tr>
-              <th>
-                <div className="admin-sort-wrap">
-                  <button className="admin-sort-btn" onClick={() => setShowSortDrop(!showSortDrop)}>
-                    {sortLabel} ▾
-                  </button>
-                  {showSortDrop && (
-                    <div className="admin-sort-drop">
-                      {[
-                        { value: "lastLogin", label: "방문일" },
-                        { value: "updated", label: "수정일" },
-                        { value: "date", label: "등록일" },
-                        { value: "date", label: "가입일" },
-                      ].map((o) => (
-                        <button key={o.label}
-                          className={`admin-sort-drop-item ${sortBy === o.value ? "active" : ""}`}
-                          onClick={() => { setSortBy(o.value); setSortLabel(o.label); setShowSortDrop(false); }}>
-                          {o.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </th>
-              <th>이름</th>
-              <th>이력서 정보</th>
-              <th>경력</th>
-              <th>희망지역</th>
-              <th>완성</th>
-              <th>공개</th>
-              <th>연락처</th>
-              <th>관리</th>
-            </tr>
-          </thead>
+            <thead>
+              <tr>
+                <th style={{width:"36px"}}>
+                  <input type="checkbox"
+                    checked={checked.length === filtered.length && filtered.length > 0}
+                    onChange={toggleAll} />
+                </th>
+                <th>
+                  <div className="admin-sort-wrap">
+                    <button className="admin-sort-btn" onClick={() => setShowSortDrop(!showSortDrop)}>
+                      {sortLabel} ▾
+                    </button>
+                    {showSortDrop && (
+                      <div className="admin-sort-drop">
+                        {[
+                          { value: "lastLogin", label: "방문일" },
+                          { value: "updated", label: "수정일" },
+                          { value: "date", label: "등록일" },
+                          { value: "date", label: "가입일" },
+                        ].map((o) => (
+                          <button key={o.label}
+                            className={`admin-sort-drop-item ${sortBy === o.value ? "active" : ""}`}
+                            onClick={() => { setSortBy(o.value); setSortLabel(o.label); setShowSortDrop(false); }}>
+                            {o.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </th>
+                <th>이름</th>
+                <th>이력서 정보</th>
+                <th>경력</th>
+                <th>희망지역</th>
+                <th>완성</th>
+                <th>공개</th>
+                <th>연봉</th>
+                <th>학력</th>
+                <th>연락처</th>
+                <th>관리</th>
+              </tr>
+            </thead>
           <tbody>
             {filtered.map((r) => (
               <tr key={r.id} style={{background: checked.includes(r.id) ? "#faf5ff" : ""}}>
