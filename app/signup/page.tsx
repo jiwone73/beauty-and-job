@@ -20,6 +20,7 @@ import Step10Done from "@/components/signup/Step10Done";
 export default function SignupPage() {
   const router = useRouter();
   const { currentStep, setStep, prevStep, nextStep } = useSignupStore();
+  const router = useRouter();
 
   useEffect(() => {
     console.log(
@@ -35,7 +36,7 @@ export default function SignupPage() {
       <div className="min-h-screen flex items-center justify-center p-5">
         <Step1Select
           onSelectPhone={() => setStep(2)}
-          onSelectKakao={() => alert("카카오 로그인을 진행합니다 (실제 연동 시 SDK 호출)")}
+          onSelectKakao={() => router.push("/login")}
         />
       </div>
     );
