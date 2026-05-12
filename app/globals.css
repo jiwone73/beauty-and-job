@@ -4318,3 +4318,85 @@ input[type="range"].career-slider::-moz-range-thumb {
     white-space: nowrap;
   }
 }
+
+/* ============================================
+   모바일 푸터 정리
+   ============================================ */
+@media (max-width: 768px) {
+  .footer-new-top {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 28px 16px;
+  }
+  .footer-new-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .footer-new-tagline {
+    font-size: 12px;
+    color: #888;
+  }
+  .footer-new-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .footer-new-col h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0 0 10px;
+  }
+  .footer-new-col a {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+    text-decoration: none;
+  }
+  .footer-new-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #f9f5ff;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .footer-new-cta-text {
+    font-size: 13px;
+    color: #444;
+    margin: 0;
+  }
+  .footer-new-cta-btn {
+    font-size: 13px;
+    padding: 8px 16px;
+    white-space: nowrap;
+  }
+  .footer-new-divider { margin: 0 16px; }
+  .footer-new-bottom { padding: 16px; }
+  .footer-new-company-row {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  .footer-new-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 12px;
+  }
+  .footer-new-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 11px;
+    color: #aaa;
+  }
+  .footer-new-policies {
+    display: flex;
+    gap: 12px;
+  }
+}
