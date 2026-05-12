@@ -67,7 +67,7 @@ export default function AdminMembersPage() {
         {Object.entries(counts).map(([label, count]) => (
           <div key={label} className="admin-mini-stat">
             <span className="admin-mini-stat-label">{label}</span>
-            <span className="admin-mini-stat-value">{count.toLocaleString()}명</span>
+            <span className="admin-mini-stat-value">{count.toLocaleString()}<span className="admin-mini-unit">명</span></span>
           </div>
         ))}
       </div>

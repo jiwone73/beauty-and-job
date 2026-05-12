@@ -58,7 +58,7 @@ export default function AdminCompaniesPage() {
         {Object.entries(counts).map(([label, count]) => (
           <div key={label} className="admin-mini-stat">
             <span className="admin-mini-stat-label">{label}</span>
-            <span className="admin-mini-stat-value">{count}개사</span>
+            <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">개사</span></span>
           </div>
         ))}
       </div>

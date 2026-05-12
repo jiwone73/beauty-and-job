@@ -5230,6 +5230,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .admin-mini-stat-label { font-size: 12px; color: #888; }
 .admin-mini-stat-value { font-size: 20px; font-weight: 800; color: #1a1a1a; }
+.admin-mini-stat-value .admin-mini-unit { font-size: 13px; font-weight: 400; color: #888; margin-left: 2px; }
 
 .admin-table-meta {
   padding: 12px 16px;
