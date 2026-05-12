@@ -5612,3 +5612,45 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-rsc-bar-fill.green { background: #10b981; }
 .admin-rsc-bar-fill.blue { background: #0ea5e9; }
 .admin-rsc-bar-fill.purple { background: #5f0080; }
+
+/* 테이블 소팅 드롭다운 */
+.admin-sort-wrap { position: relative; }
+.admin-sort-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5f0080;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background 0.12s;
+}
+.admin-sort-btn:hover { background: #f5eaff; }
+.admin-sort-drop {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  min-width: 110px;
+  z-index: 100;
+  overflow: hidden;
+}
+.admin-sort-drop-item {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #444;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.admin-sort-drop-item:hover { background: #f9f5ff; }
+.admin-sort-drop-item.active { color: #5f0080; font-weight: 700; background: #f5eaff; }

@@ -28,8 +28,22 @@ export default function AdminResumesPage() {
   const [publicFilter, setPublicFilter] = useState("전체");
   const [resumes, setResumes] = useState(RESUMES);
   const [selected, setSelected] = useState<Resume | null>(null);
+  const [sortBy, setSortBy] = useState("date");
+  const [showSortDrop, setShowSortDrop] = useState(false);
 
-  const filtered = resumes.filter((r) => {
+  const SORT_OPTIONS = [
+    { value: "date", label: "등록일" },
+    { value: "updated", label: "수정일" },
+    { value: "lastLogin", label: "방문일" },
+  ];
+
+  const sorted = [...resumes].sort((a, b) => {
+    const aVal = sortBy === "updated" ? a.updated : a.date;
+    const bVal = sortBy === "updated" ? b.updated : b.date;
+    return bVal.localeCompare(aVal);
+  });
+
+  const filtered = sorted.filter((r) => {
     const matchSearch = !search || r.name.includes(search) || r.title.includes(search) || r.job.includes(search);
     const matchComplete = completeFilter === "전체" || (completeFilter === "완성" ? r.complete : !r.complete);
     const matchPublic = publicFilter === "전체" || (publicFilter === "공개" ? r.public : !r.public);
@@ -143,7 +157,24 @@ export default function AdminResumesPage() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>등록일</th>
+              <th>
+                <div className="admin-sort-wrap">
+                  <button className="admin-sort-btn" onClick={() => setShowSortDrop(!showSortDrop)}>
+                    {SORT_OPTIONS.find(o => o.value === sortBy)?.label} ▾
+                  </button>
+                  {showSortDrop && (
+                    <div className="admin-sort-drop">
+                      {SORT_OPTIONS.map((o) => (
+                        <button key={o.value}
+                          className={`admin-sort-drop-item ${sortBy === o.value ? "active" : ""}`}
+                          onClick={() => { setSortBy(o.value); setShowSortDrop(false); }}>
+                          {o.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </th>
               <th>이름</th>
               <th>이력서 정보</th>
               <th>경력</th>
@@ -157,7 +188,9 @@ export default function AdminResumesPage() {
           <tbody>
             {filtered.map((r) => (
               <tr key={r.id}>
-                <td className="admin-td-date">{r.date}</td>
+                <td className="admin-td-date">
+                  {sortBy === "updated" ? r.updated : r.date}
+                </td>
                 <td>
                   <div className="admin-resume-member">
                     <div className="admin-resume-photo">
