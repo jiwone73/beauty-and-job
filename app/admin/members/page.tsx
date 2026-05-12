@@ -20,6 +20,7 @@ export default function AdminMembersPage() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("전체");
   const [statusFilter, setStatusFilter] = useState("전체");
+  const [joinFilter, setJoinFilter] = useState("전체");
   const [members, setMembers] = useState(MEMBERS);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [page, setPage] = useState(1);
@@ -27,9 +28,10 @@ export default function AdminMembersPage() {
 
   const filtered = members.filter((m) => {
     const matchSearch = !search || m.name.includes(search) || m.email.includes(search) || m.phone.includes(search);
-    const matchType = typeFilter === "전체" || m.type === typeFilter;
+    const matchType = true; // 탭으로 구분
+    const matchJoin = joinFilter === "전체" || m.joinType === joinFilter;
     const matchStatus = statusFilter === "전체" || m.status === statusFilter;
-    return matchSearch && matchType && matchStatus;
+    return matchSearch && matchType && matchStatus && matchJoin;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -79,11 +81,11 @@ export default function AdminMembersPage() {
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
           </div>
           <div className="admin-filter-group">
-            <span className="admin-filter-label">회원유형</span>
+            <span className="admin-filter-label">가입방법</span>
             <div className="admin-filter-tabs">
-              {["전체", "개인", "기업"].map((t) => (
-                <button key={t} className={`admin-filter-tab ${typeFilter === t ? "active" : ""}`}
-                  onClick={() => { setTypeFilter(t); setPage(1); }}>{t}</button>
+              {["전체", "카카오", "일반"].map((j) => (
+                <button key={j} className={`admin-filter-tab ${joinFilter === j ? "active" : ""}`}
+                  onClick={() => { setJoinFilter(j); setPage(1); }}>{j}</button>
               ))}
             </div>
           </div>
