@@ -5372,3 +5372,56 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .admin-subtab:hover { color: #5f0080; }
 .admin-subtab.active { color: #5f0080; border-bottom-color: #5f0080; }
+
+/* ============================================
+   관리자 회원관리 2단 탭
+   ============================================ */
+.admin-member-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.admin-tab-row1 {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid #f0f0f0;
+}
+.admin-tab1 {
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #888;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.15s;
+}
+.admin-tab1:hover { color: #5f0080; }
+.admin-tab1.active { color: #5f0080; border-bottom-color: #5f0080; }
+
+.admin-tab-row2 {
+  display: flex;
+  gap: 4px;
+  padding: 8px 0 0 8px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+.admin-tab2 {
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #888;
+  text-decoration: none;
+  border-radius: 6px 6px 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  transition: all 0.15s;
+}
+.admin-tab2:hover { color: #5f0080; background: #fff; }
+.admin-tab2.active {
+  color: #5f0080;
+  font-weight: 700;
+  background: #fff;
+  border-color: #f0f0f0;
+  border-bottom-color: #fff;
+}

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import MemberTabs from "@/components/admin/MemberTabs";
 import { Search, Eye, Trash2, Download, X } from "lucide-react";
 
 const MEMBERS = [
@@ -58,10 +59,7 @@ export default function AdminMembersPage() {
   return (
     <AdminLayout activeMenu="members">
       {/* 탭 */}
-      <div className="admin-subtabs">
-        <a href="/admin/members" className="admin-subtab active">개인회원</a>
-        <a href="/admin/members/companies" className="admin-subtab">기업회원</a>
-      </div>
+      <MemberTabs />
       {/* 요약 카드 */}
       <div className="admin-mini-stats">
         {Object.entries(counts).map(([label, count]) => (

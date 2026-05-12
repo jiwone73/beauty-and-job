@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import MemberTabs from "@/components/admin/MemberTabs";
 import { Search, Trash2 } from "lucide-react";
 
 const BLOCKED = [
@@ -24,12 +25,7 @@ export default function AdminBlockedCompaniesPage() {
 
   return (
     <AdminLayout activeMenu="members">
-      <div className="admin-subtabs">
-        <a href="/admin/members" className="admin-subtab">개인회원</a>
-        <a href="/admin/members/companies" className="admin-subtab">기업회원</a>
-        <a href="/admin/members/companies/blocked" className="admin-subtab active">열람제한기업</a>
-        <a href="/admin/members/companies/favorites" className="admin-subtab">관심기업</a>
-      </div>
+      <MemberTabs />
 
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
