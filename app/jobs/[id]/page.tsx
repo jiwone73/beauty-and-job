@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store/authStore";
+import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import Link from "next/link";
 import Image from "next/image";
 import {
