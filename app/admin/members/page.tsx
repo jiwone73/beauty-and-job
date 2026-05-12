@@ -138,7 +138,7 @@ export default function AdminMembersPage() {
                   {m.joinType === "카카오" ? (
                     <span className="admin-badge" style={{ background: "#FEE500", color: "#3A1D1D" }}>카카오</span>
                   ) : (
-                    <span className="admin-badge admin-badge-neutral">일반</span>
+                    <span className="admin-badge admin-badge-neutral">SMS</span>
                   )}
                 </td>
                 <td className="admin-td-date">{m.email}</td>
