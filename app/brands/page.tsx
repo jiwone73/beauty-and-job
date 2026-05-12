@@ -20,6 +20,14 @@ const BRANDS = [
   { id: 10, name: "리브네일", category: "네일", desc: "전국 네일 아트 프랜차이즈. 체계적인 교육 시스템.", location: "서울 종로구", size: "10~50명", jobs: 5, color: "#f8bbd0", emoji: "💅", tags: ["네일", "프랜차이즈", "교육"] },
   { id: 11, name: "스파1899", category: "스파", desc: "전통 한방을 현대적으로 재해석한 프리미엄 스파.", location: "서울 용산구", size: "50~100명", jobs: 4, color: "#e0f2f1", emoji: "♨️", tags: ["스파", "웰니스", "한방"] },
   { id: 12, name: "코스맥스", category: "제조·유통", desc: "글로벌 화장품 ODM 1위 기업.", location: "서울 중구", size: "1000명 이상", jobs: 15, color: "#e8eaf6", emoji: "🏭", tags: ["ODM", "제조", "글로벌"] },
+  { id: 13, name: "이니스프리", category: "화장품 브랜드", desc: "제주 자연을 담은 그린뷰티 브랜드.", location: "서울 중구", size: "300명 이상", jobs: 7, color: "#e8f5e9", emoji: "🍃", tags: ["스킨케어", "그린뷰티", "글로벌"] },
+  { id: 14, name: "토니모리", category: "화장품 브랜드", desc: "귀엽고 톡톡 튀는 K-뷰티 브랜드.", location: "서울 강남구", size: "100~300명", jobs: 4, color: "#fff3e0", emoji: "🐰", tags: ["색조", "스킨케어", "캐릭터"] },
+  { id: 15, name: "조선미녀", category: "화장품 브랜드", desc: "전통 한방 성분을 현대적으로 재해석한 글로벌 K-뷰티.", location: "서울 강남구", size: "50~100명", jobs: 5, color: "#f3e8f7", emoji: "🏮", tags: ["스킨케어", "글로벌", "한방"] },
+  { id: 16, name: "마녀공장", category: "화장품 브랜드", desc: "성분 중심의 비건 스킨케어 브랜드.", location: "서울 마포구", size: "50~100명", jobs: 3, color: "#e0f2f1", emoji: "🧪", tags: ["비건", "클린뷰티", "스킨케어"] },
+  { id: 17, name: "VT코스메틱스", category: "화장품 브랜드", desc: "시카 성분 기반의 더마 스킨케어 브랜드.", location: "서울 강남구", size: "100~300명", jobs: 6, color: "#e8eaf6", emoji: "🦌", tags: ["더마", "시카", "글로벌"] },
+  { id: 18, name: "클리오", category: "화장품 브랜드", desc: "트렌디한 색조 메이크업 전문 브랜드.", location: "서울 강남구", size: "100~300명", jobs: 8, color: "#fce4ec", emoji: "💄", tags: ["색조", "메이크업", "글로벌"] },
+  { id: 19, name: "에뛰드", category: "화장품 브랜드", desc: "아모레퍼시픽 계열의 영 타겟 색조 브랜드.", location: "서울 용산구", size: "100~300명", jobs: 4, color: "#f8bbd0", emoji: "🎀", tags: ["색조", "영타겟", "스킨케어"] },
+  { id: 20, name: "넘버즈인", category: "화장품 브랜드", desc: "비건 인증 클린뷰티 스킨케어 브랜드.", location: "서울 성동구", size: "10~50명", jobs: 2, color: "#fff8e1", emoji: "🌱", tags: ["비건", "클린뷰티", "스킨케어"] },
 ];
 
 export default function BrandsPage() {
