@@ -5,13 +5,13 @@ import { Search, Eye, Trash2, Download, X } from "lucide-react";
 
 const MEMBERS = [
   { id: 1, name: "김지수", type: "개인", joinType: "카카오", email: "jisoo@email.com", phone: "010-1234-5678", job: "마케팅", date: "2025.01.20", status: "정상", lastLogin: "2025.01.20" },
-  { id: 2, name: "(주)올리브영", type: "기업", joinType: "휴대폰", email: "hr@oliveyoung.com", phone: "02-1234-5678", job: "-", date: "2025.01.20", status: "정상", lastLogin: "2025.01.19" },
+  { id: 2, name: "(주)올리브영", type: "기업", joinType: "SMS", email: "hr@oliveyoung.com", phone: "02-1234-5678", job: "-", date: "2025.01.20", status: "정상", lastLogin: "2025.01.19" },
   { id: 3, name: "박민준", type: "개인", joinType: "카카오", email: "minjun@email.com", phone: "010-2345-6789", job: "MD", date: "2025.01.19", status: "정상", lastLogin: "2025.01.18" },
-  { id: 4, name: "이수진", type: "개인", joinType: "휴대폰", email: "sujin@email.com", phone: "010-3456-7890", job: "영업", date: "2025.01.19", status: "휴면", lastLogin: "2024.10.01" },
-  { id: 5, name: "(주)아모레퍼시픽", type: "기업", joinType: "휴대폰", email: "recruit@amorepacific.com", phone: "02-2345-6789", job: "-", date: "2025.01.18", status: "정상", lastLogin: "2025.01.17" },
+  { id: 4, name: "이수진", type: "개인", joinType: "SMS", email: "sujin@email.com", phone: "010-3456-7890", job: "영업", date: "2025.01.19", status: "휴면", lastLogin: "2024.10.01" },
+  { id: 5, name: "(주)아모레퍼시픽", type: "기업", joinType: "SMS", email: "recruit@amorepacific.com", phone: "02-2345-6789", job: "-", date: "2025.01.18", status: "정상", lastLogin: "2025.01.17" },
   { id: 6, name: "최유나", type: "개인", joinType: "카카오", email: "yuna@email.com", phone: "010-4567-8901", job: "디자인", date: "2025.01.17", status: "정상", lastLogin: "2025.01.17" },
-  { id: 7, name: "정다은", type: "개인", joinType: "휴대폰", email: "daeun@email.com", phone: "010-5678-9012", job: "마케팅", date: "2025.01.16", status: "탈퇴", lastLogin: "2025.01.10" },
-  { id: 8, name: "(주)LG생활건강", type: "기업", joinType: "휴대폰", email: "hr@lgcare.com", phone: "02-3456-7890", job: "-", date: "2025.01.15", status: "정상", lastLogin: "2025.01.14" },
+  { id: 7, name: "정다은", type: "개인", joinType: "SMS", email: "daeun@email.com", phone: "010-5678-9012", job: "마케팅", date: "2025.01.16", status: "탈퇴", lastLogin: "2025.01.10" },
+  { id: 8, name: "(주)LG생활건강", type: "기업", joinType: "SMS", email: "hr@lgcare.com", phone: "02-3456-7890", job: "-", date: "2025.01.15", status: "정상", lastLogin: "2025.01.14" },
 ];
 
 type Member = typeof MEMBERS[0];
@@ -83,7 +83,7 @@ export default function AdminMembersPage() {
           <div className="admin-filter-group">
             <span className="admin-filter-label">가입방법</span>
             <div className="admin-filter-tabs">
-              {["전체", "카카오", "휴대폰"].map((j) => (
+              {["전체", "카카오", "SMS"].map((j) => (
                 <button key={j} className={`admin-filter-tab ${joinFilter === j ? "active" : ""}`}
                   onClick={() => { setJoinFilter(j); setPage(1); }}>{j}</button>
               ))}
