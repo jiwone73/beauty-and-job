@@ -4721,7 +4721,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-sidebar {
   width: 220px;
   min-height: 100vh;
-  background: #1a1a2e;
+  background: #fff;
+  border-right: 1px solid #f0f0f0;
   display: flex;
   flex-direction: column;
   transition: width 0.2s;
@@ -4737,7 +4738,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   align-items: center;
   justify-content: space-between;
   padding: 20px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid #f0f0f0;
 }
 .admin-logo-link {
   display: flex;
@@ -4789,7 +4790,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   gap: 10px;
   padding: 10px 12px;
   border-radius: 8px;
-  color: rgba(255,255,255,0.6);
+  color: #666;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -4800,12 +4801,12 @@ input[type="range"].career-slider::-moz-range-thumb {
   width: 100%;
   white-space: nowrap;
 }
-.admin-nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
-.admin-nav-item.active { background: #5f0080; color: #fff; }
+.admin-nav-item:hover { background: #f5f0ff; color: #5f0080; }
+.admin-nav-item.active { background: #f5eaff; color: #5f0080; font-weight: 700; }
 
 .admin-sidebar-bottom {
   padding: 12px 8px;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid #f0f0f0;
 }
 
 /* 메인 */
