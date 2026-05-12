@@ -2,7 +2,7 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumeTabs from "@/components/admin/ResumeTabs";
-import { Search, Download, FileText } from "lucide-react";
+import { Search, Download, FileText, Trash2 } from "lucide-react";
 
 const RESUMES = [
   { id: 1, name: "김지수", gender: "여", age: 28, photo: null, job: "마케팅", career: "경력 3년", location: "서울 강남구", address: "서울 강남구", email: "jisoo@email.com", phone: "010-1234-5678", date: "2025.01.20", updated: "2025.01.20", lastLogin: "2025.01.20", complete: true, public: true, title: "뷰티 브랜드 마케터 김지수입니다", skills: ["SNS마케팅", "콘텐츠기획"], salary: "4,000만원", education: "대학교(4년제) 졸업", status: "정상" },
