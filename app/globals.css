@@ -3976,7 +3976,6 @@ input[type="range"].career-slider::-moz-range-thumb {
   /* 헤더 */
   .header-inner { padding: 0 16px; }
   .header-right .btn-primary { display: none; }
-  .auth-username { display: none; }
 
   /* 히어로 */
   .hero { padding: 40px 0 32px; }
@@ -4312,8 +4311,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 
   /* 모바일 GNB 이름 표시 */
   .auth-username {
-    display: inline !important;
-    max-width: 60px;
-    font-size: 13px;
+    display: inline-flex !important;
+    max-width: 55px;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
