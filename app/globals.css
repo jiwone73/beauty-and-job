@@ -955,7 +955,6 @@ input[type="range"].career-slider::-moz-range-thumb {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .header-right .btn-text { display: none; }
 }
 
 /* ===========================================
@@ -3975,12 +3974,12 @@ input[type="range"].career-slider::-moz-range-thumb {
 
   /* 헤더 */
   .header-inner { padding: 0 16px; }
-  .header-right .btn-primary { display: none; }
 
   /* 히어로 */
   .hero { padding: 40px 0 32px; }
   .hero-title { font-size: 32px; }
   .search-box { grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; }
+  .search-select-wrap { width: 100%; }
   .search-select { min-width: unset; font-size: 13px; padding: 0 10px; height: 42px; }
   .search-btn { grid-column: 1 / -1; height: 42px; }
   .hashtags { gap: 6px; flex-wrap: wrap; }
