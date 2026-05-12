@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import BottomTabBar from "@/components/BottomTabBar";
 
 export const metadata: Metadata = {
   title: "뷰티앤잡 | 뷰티 커리어의 시작과 성장",
@@ -23,7 +24,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        {children}
+        <BottomTabBar />
+      </body>
     </html>
   );
 }

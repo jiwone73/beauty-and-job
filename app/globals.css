@@ -4513,3 +4513,49 @@ input[type="range"].career-slider::-moz-range-thumb {
     color: #888 !important;
   }
 }
+
+/* ============================================
+   하단 탭 바
+   ============================================ */
+.bottom-tab-bar {
+  display: none; /* PC에서는 숨김 */
+}
+@media (max-width: 768px) {
+  .bottom-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+    z-index: 500;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .bottom-tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-decoration: none;
+    color: #aaa;
+    font-size: 10px;
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+  .bottom-tab-item.active {
+    color: #5f0080;
+  }
+  .bottom-tab-item span {
+    font-size: 10px;
+    line-height: 1;
+  }
+  /* 탭바 높이만큼 하단 여백 */
+  body {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom));
+  }
+}
