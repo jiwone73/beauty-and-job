@@ -4400,3 +4400,116 @@ input[type="range"].career-slider::-moz-range-thumb {
     gap: 12px;
   }
 }
+
+/* ============================================
+   모바일 푸터 - 정돈된 스타일 (재정의)
+   ============================================ */
+@media (max-width: 768px) {
+  .footer-new {
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+  }
+  .footer-new-top {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 로고 + 태그라인 */
+  .footer-new-brand {
+    padding: 24px 16px 20px;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .footer-new-logo { margin-bottom: 6px; }
+  .footer-new-tagline {
+    font-size: 12px;
+    color: #999;
+    margin: 0;
+  }
+
+  /* 링크 2열 그리드 */
+  .footer-new-links {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0 !important;
+    padding: 20px 16px;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .footer-new-col h4 {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 10px;
+  }
+  .footer-new-col a {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    text-decoration: none;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .footer-new-col a:hover { color: #5f0080; }
+
+  /* 기업회원 CTA */
+  .footer-new-cta {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 14px 16px !important;
+    border-bottom: 1px solid #f5f5f5;
+    background: #faf5ff;
+    text-align: left !important;
+  }
+  .footer-new-cta-text {
+    font-size: 13px !important;
+    color: #444;
+    margin: 0 !important;
+    font-weight: 500;
+  }
+  .footer-new-cta-btn {
+    font-size: 13px !important;
+    padding: 8px 14px !important;
+    white-space: nowrap;
+    border-radius: 8px !important;
+  }
+
+  /* 하단 회사 정보 */
+  .footer-new-divider { display: none; }
+  .footer-new-bottom {
+    padding: 16px !important;
+    background: #fafafa;
+  }
+  .footer-new-company-row {
+    font-size: 12px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 8px;
+  }
+  .footer-new-details {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    font-size: 11px !important;
+    color: #aaa !important;
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .footer-new-copy {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    font-size: 11px;
+    color: #bbb;
+  }
+  .footer-new-policies {
+    display: flex;
+    gap: 16px;
+  }
+  .footer-new-info-link {
+    font-size: 11px !important;
+    color: #888 !important;
+  }
+}
