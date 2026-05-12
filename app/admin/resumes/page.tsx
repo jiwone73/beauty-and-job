@@ -2,15 +2,15 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumeTabs from "@/components/admin/ResumeTabs";
-import { Search, Eye, Trash2, Download } from "lucide-react";
+import { Search, FileText, Trash2, Download, CheckSquare } from "lucide-react";
 
 const RESUMES = [
-  { id: 1, name: "김지수", gender: "여", age: 28, photo: null, job: "마케팅", career: "경력 3년", location: "서울 강남구", email: "jisoo@email.com", phone: "010-1234-5678", date: "2025.01.20", updated: "2025.01.20", lastLogin: "2025.01.20", complete: true, public: true, title: "뷰티 브랜드 마케터 김지수입니다", skills: ["SNS마케팅", "콘텐츠기획"], status: "정상" },
-  { id: 2, name: "박민준", gender: "남", age: 31, photo: null, job: "MD", career: "경력 5년", location: "서울 종로구", email: "minjun@email.com", phone: "010-2345-6789", date: "2025.01.19", updated: "2025.01.19", lastLogin: "2025.01.19", complete: true, public: true, title: "글로벌 뷰티 MD 전문가", skills: ["상품기획", "바잉"], status: "정상" },
-  { id: 3, name: "이수진", gender: "여", age: 26, photo: null, job: "영업", career: "신입", location: "경기 성남시", email: "sujin@email.com", phone: "010-3456-7890", date: "2025.01.19", updated: "2025.01.18", lastLogin: "2025.01.17", complete: false, public: false, title: "뷰티 영업 신입 지원자", skills: ["영업관리"], status: "정상" },
-  { id: 4, name: "최유나", gender: "여", age: 29, photo: null, job: "디자인", career: "경력 4년", location: "서울 마포구", email: "yuna@email.com", phone: "010-4567-8901", date: "2025.01.17", updated: "2025.01.17", lastLogin: "2025.01.16", complete: true, public: true, title: "뷰티 패키지 디자이너", skills: ["패키지디자인", "브랜딩"], status: "정상" },
-  { id: 5, name: "정다은", gender: "여", age: 27, photo: null, job: "마케팅", career: "경력 2년", location: "서울 성동구", email: "daeun@email.com", phone: "010-5678-9012", date: "2025.01.16", updated: "2025.01.15", lastLogin: "2025.01.14", complete: true, public: false, title: "디지털 마케터 정다은", skills: ["퍼포먼스마케팅", "메타광고"], status: "정상" },
-  { id: 6, name: "한소희", gender: "여", age: 30, photo: null, job: "SCM", career: "경력 6년", location: "경기 화성시", email: "sohee@email.com", phone: "010-6789-0123", date: "2025.01.15", updated: "2025.01.14", lastLogin: "2025.01.13", complete: true, public: true, title: "뷰티 SCM 물류 전문가", skills: ["SCM", "물류관리"], status: "정상" },
+  { id: 1, name: "김지수", gender: "여", age: 28, photo: null, job: "마케팅", career: "경력 3년", location: "서울 강남구", address: "서울 강남구", email: "jisoo@email.com", phone: "010-1234-5678", date: "2025.01.20", updated: "2025.01.20", lastLogin: "2025.01.20", complete: true, public: true, title: "뷰티 브랜드 마케터 김지수입니다", skills: ["SNS마케팅", "콘텐츠기획"], salary: "4,000만원", education: "대학교(4년제) 졸업", status: "정상" },
+  { id: 2, name: "박민준", gender: "남", age: 31, photo: null, job: "MD", career: "경력 5년", location: "서울 종로구", address: "서울 종로구", email: "minjun@email.com", phone: "010-2345-6789", date: "2025.01.19", updated: "2025.01.19", lastLogin: "2025.01.19", complete: true, public: true, title: "글로벌 뷰티 MD 전문가", skills: ["상품기획", "바잉"], salary: "5,500만원", education: "대학교(4년제) 졸업", status: "정상" },
+  { id: 3, name: "이수진", gender: "여", age: 26, photo: null, job: "영업", career: "신입", location: "경기 성남시", address: "경기 성남시", email: "sujin@email.com", phone: "010-3456-7890", date: "2025.01.19", updated: "2025.01.18", lastLogin: "2025.01.17", complete: false, public: false, title: "뷰티 영업 신입 지원자", skills: ["영업관리"], salary: "회사내규", education: "대학교(4년제) 재학", status: "정상" },
+  { id: 4, name: "최유나", gender: "여", age: 29, photo: null, job: "디자인", career: "경력 4년", location: "서울 마포구", address: "서울 마포구", email: "yuna@email.com", phone: "010-4567-8901", date: "2025.01.17", updated: "2025.01.17", lastLogin: "2025.01.16", complete: true, public: true, title: "뷰티 패키지 디자이너", skills: ["패키지디자인", "브랜딩"], salary: "4,500만원", education: "대학원 졸업", status: "정상" },
+  { id: 5, name: "정다은", gender: "여", age: 27, photo: null, job: "마케팅", career: "경력 2년", location: "서울 성동구", address: "서울 성동구", email: "daeun@email.com", phone: "010-5678-9012", date: "2025.01.16", updated: "2025.01.15", lastLogin: "2025.01.14", complete: true, public: false, title: "디지털 마케터 정다은", skills: ["퍼포먼스마케팅", "메타광고"], salary: "3,800만원", education: "대학교(4년제) 졸업", status: "정상" },
+  { id: 6, name: "한소희", gender: "여", age: 30, photo: null, job: "SCM", career: "경력 6년", location: "경기 화성시", address: "경기 화성시", email: "sohee@email.com", phone: "010-6789-0123", date: "2025.01.15", updated: "2025.01.14", lastLogin: "2025.01.13", complete: true, public: true, title: "뷰티 SCM 물류 전문가", skills: ["SCM", "물류관리"], salary: "6,000만원", education: "대학교(4년제) 졸업", status: "정상" },
 ];
 
 const STATS = {
@@ -30,6 +30,18 @@ export default function AdminResumesPage() {
   const [selected, setSelected] = useState<Resume | null>(null);
   const [sortBy, setSortBy] = useState("date");
   const [showSortDrop, setShowSortDrop] = useState(false);
+  const [checked, setChecked] = useState<number[]>([]);
+  const [sortLabel, setSortLabel] = useState("수정일");
+
+  const toggleCheck = (id: number) => setChecked(c => c.includes(id) ? c.filter(x => x !== id) : [...c, id]);
+  const toggleAll = () => setChecked(checked.length === filtered.length ? [] : filtered.map(r => r.id));
+  const handleBulkDelete = () => {
+    if (checked.length === 0) return;
+    if (confirm(`선택한 ${checked.length}건을 삭제하시겠습니까?`)) {
+      setResumes(resumes.filter(r => !checked.includes(r.id)));
+      setChecked([]);
+    }
+  };
 
   const SORT_OPTIONS = [
     { value: "lastLogin", label: "방문일" },
@@ -39,8 +51,8 @@ export default function AdminResumesPage() {
   ];
 
   const sorted = [...resumes].sort((a, b) => {
-    const aVal = sortBy === "updated" ? a.updated : a.date;
-    const bVal = sortBy === "updated" ? b.updated : b.date;
+    const aVal = sortBy === "lastLogin" ? a.lastLogin : sortBy === "updated" ? a.updated : a.date;
+    const bVal = sortBy === "lastLogin" ? b.lastLogin : sortBy === "updated" ? b.updated : b.date;
     return bVal.localeCompare(aVal);
   });
 
@@ -149,7 +161,14 @@ export default function AdminResumesPage() {
             </div>
           </div>
         </div>
-        <button className="admin-secondary-btn"><Download size={16} /> 엑셀 다운로드</button>
+        <div style={{display:"flex", gap:"8px"}}>
+          {checked.length > 0 && (
+            <button className="admin-danger-btn" onClick={handleBulkDelete}>
+              <Trash2 size={15} /> 선택삭제 ({checked.length})
+            </button>
+          )}
+          <button className="admin-secondary-btn"><Download size={16} /> 엑셀 다운로드</button>
+        </div>
       </div>
 
       {/* 테이블 */}
@@ -161,7 +180,7 @@ export default function AdminResumesPage() {
               <th>
                 <div className="admin-sort-wrap">
                   <button className="admin-sort-btn" onClick={() => setShowSortDrop(!showSortDrop)}>
-                    수정일 ▾
+                    {sortLabel} ▾
                   </button>
                   {showSortDrop && (
                     <div className="admin-sort-drop">
@@ -173,7 +192,7 @@ export default function AdminResumesPage() {
                       ].map((o) => (
                         <button key={o.label}
                           className={`admin-sort-drop-item ${sortBy === o.value ? "active" : ""}`}
-                          onClick={() => { setSortBy(o.value); setShowSortDrop(false); }}>
+                          onClick={() => { setSortBy(o.value); setSortLabel(o.label); setShowSortDrop(false); }}>
                           {o.label}
                         </button>
                       ))}
@@ -193,7 +212,12 @@ export default function AdminResumesPage() {
           </thead>
           <tbody>
             {filtered.map((r) => (
-              <tr key={r.id}>
+              <tr key={r.id} style={{background: checked.includes(r.id) ? "#faf5ff" : ""}}>
+                <td>
+                  <input type="checkbox"
+                    checked={checked.includes(r.id)}
+                    onChange={() => toggleCheck(r.id)} />
+                </td>
                 <td className="admin-td-date">
                   <div className="admin-date-cell">
                     <div className="admin-date-row">
@@ -226,6 +250,7 @@ export default function AdminResumesPage() {
                     <div className="admin-resume-member-info">
                       <strong>{r.name}</strong>
                       <span>{r.gender} · {r.age}세</span>
+                      <span style={{fontSize:"10px",color:"#bbb"}}>{r.address}</span>
                     </div>
                   </div>
                 </td>
@@ -252,14 +277,19 @@ export default function AdminResumesPage() {
                     {r.public ? "공개" : "비공개"}
                   </span>
                 </td>
+                <td className="admin-td-date">{r.salary}</td>
+                <td className="admin-td-date" style={{fontSize:"11px"}}>{r.education}</td>
                 <td className="admin-td-date">
                   <div>{r.email}</div>
                   <div>{r.phone}</div>
                 </td>
                 <td>
                   <div className="admin-actions">
-                    <button className="admin-action-icon" onClick={() => setSelected(r)}><Eye size={15} /></button>
-                    <button className="admin-action-icon danger"
+                    <button className="admin-action-icon" title="이력서 보기"
+                      onClick={() => setSelected(r)}>
+                      <FileText size={15} />
+                    </button>
+                    <button className="admin-action-icon danger" title="삭제"
                       onClick={() => { if(confirm("삭제하시겠습니까?")) setResumes(resumes.filter(x => x.id !== r.id)); }}>
                       <Trash2 size={15} />
                     </button>
