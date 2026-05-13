@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Search, Plus, Edit, Trash2 } from "lucide-react";
+import { Search, Plus, Edit, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const INSIGHTS_DATA = [
@@ -15,6 +15,18 @@ const INSIGHTS_DATA = [
 export default function AdminInsightsPage() {
   const router = useRouter();
   const [insights, setInsights] = useState(INSIGHTS_DATA);
+  const [selected, setSelected] = useState<typeof INSIGHTS_DATA[0] | null>(null);
+  const [checked, setChecked] = useState<number[]>([]);
+
+  const toggleCheck = (id: number) => setChecked(c => c.includes(id) ? c.filter(x => x !== id) : [...c, id]);
+  const toggleAll = () => setChecked(checked.length === filtered.length ? [] : filtered.map(i => i.id));
+  const handleBulkDelete = () => {
+    if (!checked.length) return;
+    if (confirm(`선택한 ${checked.length}건을 삭제하시겠습니까?`)) {
+      setInsights(insights.filter(i => !checked.includes(i.id)));
+      setChecked([]);
+    }
+  };
   const [search, setSearch] = useState("");
 
   const filtered = insights.filter(i => !search || i.title.includes(search));
@@ -29,34 +41,92 @@ export default function AdminInsightsPage() {
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
         </div>
-        <button className="admin-primary-btn" onClick={() => router.push("/admin/insights/new")}>
-          <Plus size={16} /> 글 작성
-        </button>
+        <div style={{display:"flex", gap:"8px"}}>
+          {checked.length > 0 && (
+            <button className="admin-danger-btn" onClick={handleBulkDelete}>
+              <Trash2 size={15} /> 선택삭제 ({checked.length})
+            </button>
+          )}
+          <button className="admin-primary-btn" onClick={() => router.push("/admin/insights/new")}>
+            <Plus size={16} /> 글 작성
+          </button>
+        </div>
       </div>
       <div className="admin-card">
         <table className="admin-table">
           <thead>
-            <tr><th>제목</th><th>카테고리</th><th>작성일</th><th>조회수</th><th>상태</th><th>관리</th></tr>
+            <tr>
+              <th style={{width:"36px"}}>
+                <input type="checkbox"
+                  checked={checked.length === filtered.length && filtered.length > 0}
+                  onChange={toggleAll} />
+              </th>
+              <th>제목</th><th>카테고리</th><th>작성일</th><th>조회수</th><th>상태</th>
+            </tr>
           </thead>
           <tbody>
             {filtered.map((item) => (
-              <tr key={item.id}>
-                <td className="admin-td-title">{item.title}</td>
+              <tr key={item.id} style={{background: checked.includes(item.id) ? "#faf5ff" : ""}}>
+                <td>
+                  <input type="checkbox"
+                    checked={checked.includes(item.id)}
+                    onChange={() => toggleCheck(item.id)} />
+                </td>
+                <td>
+                  <span className="admin-td-title"
+                    style={{color:"#5f0080", cursor:"pointer", fontWeight:600}}
+                    onClick={() => setSelected(item)}>
+                    {item.title}
+                  </span>
+                </td>
                 <td><span className="admin-badge admin-badge-neutral">{item.category}</span></td>
                 <td className="admin-td-date">{item.date}</td>
                 <td className="admin-td-date">{item.views.toLocaleString()}</td>
                 <td><span className={`admin-badge ${item.status === "게시중" ? "admin-badge-success" : "admin-badge-warning"}`}>{item.status}</span></td>
-                <td>
-                  <div className="admin-actions">
-                    <button className="admin-action-icon"><Edit size={15} /></button>
-                    <button className="admin-action-icon danger" onClick={() => setInsights(insights.filter(i => i.id !== item.id))}><Trash2 size={15} /></button>
-                  </div>
-                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {selected && (
+        <div className="admin-modal-overlay" onClick={() => setSelected(null)}>
+          <div className="admin-modal" style={{maxWidth:"600px"}} onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <div>
+                <span className="admin-badge admin-badge-neutral" style={{marginBottom:"6px", display:"inline-block"}}>{selected.category}</span>
+                <h2 className="admin-modal-title">{selected.title}</h2>
+              </div>
+              <button className="admin-modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
+            </div>
+            <div className="admin-modal-body">
+              <div className="admin-detail-grid">
+                {[
+                  ["카테고리", selected.category],
+                  ["작성일", selected.date],
+                  ["조회수", selected.views.toLocaleString() + "회"],
+                  ["상태", selected.status],
+                ].map(([label, value]) => (
+                  <div key={label} className="admin-detail-row">
+                    <span className="admin-detail-label">{label}</span>
+                    <span className="admin-detail-value">{value}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="admin-modal-actions">
+                <button className="admin-primary-btn" onClick={() => { router.push("/admin/insights/new"); setSelected(null); }}>
+                  <Edit size={15} /> 수정하기
+                </button>
+                <button className="admin-danger-btn" onClick={() => {
+                  if (confirm("삭제하시겠습니까?")) {
+                    setInsights(insights.filter(i => i.id !== selected.id));
+                    setSelected(null);
+                  }
+                }}><Trash2 size={15} /> 삭제</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }
