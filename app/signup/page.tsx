@@ -19,7 +19,7 @@ import Step10Done from "@/components/signup/Step10Done";
 
 export default function SignupPage() {
   const router = useRouter();
-  const { currentStep, setStep, prevStep, nextStep } = useSignupStore();
+  const { currentStep, setStep, prevStep, nextStep, job, jobType } = useSignupStore();
 
   useEffect(() => {
     console.log(
@@ -42,10 +42,27 @@ export default function SignupPage() {
   }
 
   // STEP 2~10은 진행 화면 (헤더 + 진행바 + 본문)
+  // HR/경영지원/CS는 카테고리 스킵
+  const SKIP_CATEGORY_JOBS = ["HR", "경영지원", "CS·CX"];
+  const shouldSkipCategory = jobType === "기업·사무직" && SKIP_CATEGORY_JOBS.includes(job);
+
+  const handleNext = () => {
+    if (currentStep === 7 && shouldSkipCategory) {
+      setStep(9); // Step8 스킵
+      return;
+    }
+    nextStep();
+  };
+
   const handleBack = () => {
     if (currentStep === 10) return;
     if (currentStep === 2) {
       setStep(1);
+      return;
+    }
+    // Step9에서 뒤로 갈 때 스킵했으면 Step7로
+    if (currentStep === 9 && shouldSkipCategory) {
+      setStep(7);
       return;
     }
     prevStep();
@@ -90,7 +107,7 @@ export default function SignupPage() {
         {currentStep === 4 && <Step4Terms onNext={nextStep} />}
         {currentStep === 5 && <Step5Basic onNext={nextStep} />}
         {currentStep === 6 && <Step6Career onNext={nextStep} />}
-        {currentStep === 7 && <Step7Job onNext={nextStep} />}
+        {currentStep === 7 && <Step7Job onNext={handleNext} />}
         {currentStep === 8 && <Step8Category onNext={nextStep} />}
         {currentStep === 9 && <Step9Country onNext={nextStep} />}
         {currentStep === 10 && <Step10Done />}
