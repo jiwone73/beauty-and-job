@@ -164,14 +164,19 @@ export default function AdminMembersPage() {
                   {m.status === "탈퇴" ? (
                     <span className="admin-badge admin-badge-danger">탈퇴</span>
                   ) : (
-                    <button
-                      className={`admin-badge admin-badge-${m.status === "정상" ? "success" : "warning"}`}
-                      style={{border:"none", cursor:"pointer"}}
-                      title={m.status === "정상" ? "클릭하면 휴면 처리" : "클릭하면 정상 복구"}
-                      onClick={() => toggleStatus(m.id)}
-                    >
-                      {m.status} ⇄
-                    </button>
+                    <div className="admin-toggle-wrap">
+                      <label className="admin-toggle">
+                        <input
+                          type="checkbox"
+                          checked={m.status === "정상"}
+                          onChange={() => toggleStatus(m.id)}
+                        />
+                        <span className="admin-toggle-slider" />
+                      </label>
+                      <span className={`admin-toggle-label ${m.status === "정상" ? "on" : "off"}`}>
+                        {m.status}
+                      </span>
+                    </div>
                   )}
                 </td>
               </tr>
