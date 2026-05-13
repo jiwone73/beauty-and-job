@@ -6133,3 +6133,242 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #aaa;
   margin-top: 2px;
 }
+
+/* ============================================
+   기업 대시보드 레이아웃
+   ============================================ */
+.company-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f6fa;
+  font-family: 'Pretendard', sans-serif;
+}
+.company-sidebar {
+  width: 220px;
+  min-height: 100vh;
+  background: #fff;
+  border-right: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.company-sidebar-logo {
+  padding: 20px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.company-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.company-logo-avatar {
+  width: 36px;
+  height: 36px;
+  background: #5f0080;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.company-logo-info { display: flex; flex-direction: column; gap: 2px; }
+.company-logo-name { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+.company-logo-category { font-size: 11px; color: #aaa; }
+.company-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; }
+.company-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #666;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.15s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+.company-nav-item:hover { background: #f5f0ff; color: #5f0080; }
+.company-nav-item.active { background: #f5eaff; color: #5f0080; font-weight: 700; }
+.company-sidebar-bottom { padding: 12px 8px; border-top: 1px solid #f0f0f0; }
+.company-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.company-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 28px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.company-page-title { font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 0; }
+.company-header-right { display: flex; align-items: center; gap: 12px; }
+.company-header-btn {
+  position: relative;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+.company-header-btn:hover { background: #f5f5f5; }
+.company-notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 8px; height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+.company-profile { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.company-avatar {
+  width: 32px; height: 32px;
+  background: #5f0080; color: #fff;
+  font-size: 14px; font-weight: 700;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.company-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+.company-content { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+
+/* 통계 카드 */
+.company-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.company-stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.company-stat-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.company-stat-value { font-size: 28px; font-weight: 800; color: #1a1a1a; line-height: 1; }
+.company-stat-unit { font-size: 16px; font-weight: 500; margin-left: 2px; }
+.company-stat-label { font-size: 13px; color: #888; }
+
+/* 대시보드 그리드 */
+.company-dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* 카드 */
+.company-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  overflow: hidden;
+}
+.company-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f5f5f5;
+}
+.company-card-title { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 0; }
+.company-card-more { font-size: 13px; color: #5f0080; text-decoration: none; font-weight: 500; }
+
+/* 테이블 */
+.company-table { width: 100%; border-collapse: collapse; }
+.company-table th {
+  padding: 12px 16px;
+  font-size: 12px; font-weight: 600; color: #888;
+  text-align: left;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+}
+.company-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid #f9f9f9;
+  font-size: 13px; color: #333;
+  vertical-align: middle;
+}
+.company-table tr:last-child td { border-bottom: none; }
+.company-table tr:hover td { background: #fafafa; }
+.company-td-name { font-weight: 600; color: #1a1a1a !important; }
+.company-td-sub { color: #888 !important; white-space: nowrap; }
+
+/* 배지 */
+.company-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.company-badge.active { background: #d1fae5; color: #065f46; }
+.company-badge.closed { background: #f3f4f6; color: #374151; }
+.company-badge.new { background: #fee2e2; color: #991b1b; }
+.company-badge.viewed { background: #f3f4f6; color: #374151; }
+.company-badge-warning { background: #fef3c7; color: #92400e; }
+.company-badge-info { background: #dbeafe; color: #1e40af; }
+.company-badge-success { background: #d1fae5; color: #065f46; }
+.company-badge-danger { background: #fee2e2; color: #991b1b; }
+
+/* 버튼 */
+.company-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px; font-weight: 600;
+  color: #fff;
+  background: #5f0080;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.company-primary-btn:hover { background: #4a0066; }
+.company-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  font-size: 12px; font-weight: 500;
+  color: #5f0080;
+  background: #f5eaff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.company-action-btn:hover { background: #ead5ff; }
+.company-action-btn.secondary { color: #666; background: #f5f5f5; }
+.company-action-btn.secondary:hover { background: #e5e5e5; }
+.company-action-btn.scrapped { color: #f59e0b; background: #fef3c7; }
+
+/* 툴바 */
+.company-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.company-toolbar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
