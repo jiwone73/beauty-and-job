@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import MemberTabs from "@/components/admin/MemberTabs";
 import { Search, Download, Trash2 } from "lucide-react";
@@ -17,6 +18,8 @@ const INIT_MEMBERS = [
 
 export default function AdminMembersPage() {
   const [members, setMembers] = useState(INIT_MEMBERS);
+  const pathname = usePathname();
+  const isCompanyTab = pathname.includes("companies");
   const [search, setSearch] = useState("");
   const [joinFilter, setJoinFilter] = useState("전체");
   const [statusFilter, setStatusFilter] = useState("전체");
@@ -28,7 +31,8 @@ export default function AdminMembersPage() {
     const matchSearch = !search || m.name.includes(search) || m.email.includes(search) || m.phone.includes(search);
     const matchJoin = joinFilter === "전체" || m.joinType === joinFilter;
     const matchStatus = statusFilter === "전체" || m.status === statusFilter;
-    return matchSearch && matchJoin && matchStatus;
+    const matchType = isCompanyTab ? m.type === "기업" : m.type === "개인";
+    return matchSearch && matchJoin && matchStatus && matchType;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -54,11 +58,12 @@ export default function AdminMembersPage() {
     }));
   };
 
+  const tabMembers = members.filter(m => isCompanyTab ? m.type === "기업" : m.type === "개인");
   const counts = {
-    전체: members.length,
-    정상: members.filter(m => m.status === "정상").length,
-    휴면: members.filter(m => m.status === "휴면").length,
-    탈퇴: members.filter(m => m.status === "탈퇴").length,
+    전체: tabMembers.length,
+    정상: tabMembers.filter(m => m.status === "정상").length,
+    휴면: tabMembers.filter(m => m.status === "휴면").length,
+    탈퇴: tabMembers.filter(m => m.status === "탈퇴").length,
   };
 
   return (
