@@ -12,8 +12,8 @@ interface Props {
 type JobType = "기업·사무직" | "매장·기술직";
 
 export default function Step7Job({ onNext }: Props) {
-  const { job, jobCustom, setJob, setJobType } = useSignupStore();
-  const [jobType, setJobType] = useState<JobType | null>(null);
+  const { job, jobCustom, setJob, setJobType: saveJobType } = useSignupStore();
+  const [jobType, setLocalJobType] = useState<JobType | null>(null);
   const [customInput, setCustomInput] = useState(jobCustom);
   const [step, setStep] = useState<"type" | "job">("type");
 
@@ -21,9 +21,10 @@ export default function Step7Job({ onNext }: Props) {
   const valid = job !== "" && (!isCustomMode || customInput.trim() !== "");
 
   const handleTypeSelect = (type: JobType) => {
-    setJobType(type);
+    setLocalJobType(type);
+    saveJobType(type);
     setStep("job");
-    setJob(""); // 직군 초기화
+    setJob("");
   };
 
   const handleJobSelect = (value: string) => {
@@ -41,7 +42,7 @@ export default function Step7Job({ onNext }: Props) {
     if (isCustomMode) setJob("직접입력", v);
   };
 
-  const jobOptions = jobType ? JOB_TYPE_OPTIONS[jobType] : [];
+  const jobOptions = jobType ? (JOB_TYPE_OPTIONS as any)[jobType] : [];
 
   return (
     <div className="p-7 px-7">
@@ -97,7 +98,7 @@ export default function Step7Job({ onNext }: Props) {
           <div className="flex items-center gap-2 mb-6">
             <button
               type="button"
-              onClick={() => { setStep("type"); setJob(""); }}
+              onClick={() => { setLocalJobType(null); saveJobType(""); setStep("type"); setJob(""); }}
               className="p-1.5 rounded-lg hover:bg-[#f5f5f5] transition-all"
             >
               <ArrowLeft size={20} className="text-[#666]" />
