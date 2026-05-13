@@ -157,18 +157,22 @@ export default function AdminJobsPage() {
                 <td className="admin-td-date">{job.date}</td>
                 <td className="admin-td-date">{job.views.toLocaleString()}</td>
                 <td>
-                  <div style={{display:"flex", alignItems:"center", gap:"6px"}}>
-                    <span className={`admin-badge admin-badge-${
+                  <select
+                    className={`admin-status-select admin-status-${
                       job.status === "승인완료" ? "success" :
                       job.status === "승인대기" ? "warning" : "danger"
-                    }`}>{job.status}</span>
-                    {job.status === "승인대기" && (
-                      <div style={{display:"flex", gap:"4px"}}>
-                        <button className="admin-action-btn approve" onClick={() => handleApprove(job.id)}>승인</button>
-                        <button className="admin-action-btn reject" onClick={() => handleReject(job.id)}>반려</button>
-                      </div>
-                    )}
-                  </div>
+                    }`}
+                    value={job.status}
+                    onChange={(e) => {
+                      const newStatus = e.target.value;
+                      setJobs(jobs.map(j => j.id === job.id ? { ...j, status: newStatus } : j));
+                      if (selected?.id === job.id) setSelected(prev => prev ? { ...prev, status: newStatus } : null);
+                    }}
+                  >
+                    <option value="승인대기">승인대기</option>
+                    <option value="승인완료">승인완료</option>
+                    <option value="반려">반려</option>
+                  </select>
                 </td>
               </tr>
             ))}
@@ -206,22 +210,25 @@ export default function AdminJobsPage() {
                 ))}
                 <div className="admin-detail-row">
                   <span className="admin-detail-label">상태</span>
-                  <span className={`admin-badge admin-badge-${
-                    selected.status === "승인완료" ? "success" :
-                    selected.status === "승인대기" ? "warning" : "danger"
-                  }`}>{selected.status}</span>
+                  <select
+                    className={`admin-status-select admin-status-${
+                      selected.status === "승인완료" ? "success" :
+                      selected.status === "승인대기" ? "warning" : "danger"
+                    }`}
+                    value={selected.status}
+                    onChange={(e) => {
+                      const newStatus = e.target.value;
+                      setJobs(jobs.map(j => j.id === selected.id ? { ...j, status: newStatus } : j));
+                      setSelected(prev => prev ? { ...prev, status: newStatus } : null);
+                    }}
+                  >
+                    <option value="승인대기">승인대기</option>
+                    <option value="승인완료">승인완료</option>
+                    <option value="반려">반려</option>
+                  </select>
                 </div>
               </div>
               <div className="admin-modal-actions">
-                {selected.status === "승인대기" && (
-                  <>
-                    <button className="admin-primary-btn" onClick={() => handleApprove(selected.id)}>승인</button>
-                    <button className="admin-secondary-btn" onClick={() => handleReject(selected.id)}>반려</button>
-                  </>
-                )}
-                {selected.status === "반려" && (
-                  <button className="admin-primary-btn" onClick={() => handleApprove(selected.id)}>승인으로 변경</button>
-                )}
                 <button className="admin-danger-btn" onClick={() => handleDelete(selected.id)}>
                   <Trash2 size={15} /> 삭제
                 </button>
