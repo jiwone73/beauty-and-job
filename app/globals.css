@@ -5972,3 +5972,24 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #991b1b;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23991b1b'/%3E%3C/svg%3E");
 }
+
+/* 채용공고 등록 - 유형 탭 */
+.admin-job-type-tabs {
+  display: flex;
+  gap: 8px;
+}
+.admin-job-type-tab {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  background: #f5f5f5;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.admin-job-type-tab:hover { border-color: #5f0080; color: #5f0080; background: #f5eaff; }
+.admin-job-type-tab.active { background: #f5eaff; border-color: #5f0080; color: #5f0080; }
