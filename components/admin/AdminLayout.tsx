@@ -14,7 +14,6 @@ const NAV_ITEMS = [
     id: "jobs", label: "채용공고", icon: Briefcase, href: "/admin/jobs",
     children: [
       { id: "jobs", label: "채용공고 목록", href: "/admin/jobs" },
-      { id: "jobs-scrapped", label: "스크랩 채용공고", href: "/admin/jobs/scrapped" },
       { id: "jobs-upload", label: "채용공고 업로드", href: "/admin/jobs/upload" },
     ]
   },
