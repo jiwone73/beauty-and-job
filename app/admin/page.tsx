@@ -9,10 +9,10 @@ import {
 } from "recharts";
 
 const STATS = [
-  { label: "오늘 신규 가입", value: "24", unit: "명", trend: 12, icon: Users, color: "#5f0080" },
-  { label: "진행중 채용공고", value: "142", unit: "건", trend: 5, icon: Briefcase, color: "#0ea5e9" },
-  { label: "오늘 지원수", value: "87", unit: "건", trend: -3, icon: CheckCircle, color: "#10b981" },
-  { label: "승인 대기 공고", value: "8", unit: "건", trend: 0, icon: Clock, color: "#f59e0b" },
+  { label: "오늘 신규 가입", value: "24", unit: "명", trend: 12, icon: Users, color: "#5f0080", sub: { individual: 21, company: 3 } },
+  { label: "진행중 채용공고", value: "142", unit: "건", trend: 5, icon: Briefcase, color: "#0ea5e9", sub: null },
+  { label: "오늘 지원수", value: "87", unit: "건", trend: -3, icon: CheckCircle, color: "#10b981", sub: null },
+  { label: "승인 대기 공고", value: "8", unit: "건", trend: 0, icon: Clock, color: "#f59e0b", sub: null },
 ];
 
 const SIGNUP_DATA = [
@@ -81,6 +81,19 @@ export default function AdminDashboard() {
               {stat.value}<span className="admin-stat-unit">{stat.unit}</span>
             </div>
             <div className="admin-stat-label">{stat.label}</div>
+            {stat.sub && (
+              <div className="admin-stat-sub">
+                <span className="admin-stat-sub-item">
+                  <span className="admin-stat-sub-icon">👤</span>
+                  개인 {stat.sub.individual}
+                </span>
+                <span className="admin-stat-sub-divider">·</span>
+                <span className="admin-stat-sub-item">
+                  <span className="admin-stat-sub-icon">🏢</span>
+                  기업 {stat.sub.company}
+                </span>
+              </div>
+            )}
           </div>
         ))}
       </div>

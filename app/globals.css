@@ -6061,3 +6061,23 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .admin-upload-done-title { font-size: 15px; font-weight: 700; color: #065f46; margin: 0 0 4px; }
 .admin-upload-done-file { font-size: 13px; color: #888; margin: 0; }
+
+/* 대시보드 가입자 서브 통계 */
+.admin-stat-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+.admin-stat-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #888;
+  font-weight: 500;
+}
+.admin-stat-sub-icon { font-size: 13px; }
+.admin-stat-sub-divider { color: #ddd; font-size: 12px; }
