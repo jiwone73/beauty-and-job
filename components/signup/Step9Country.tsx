@@ -19,11 +19,8 @@ export default function Step9Country({ onNext }: Props) {
 
   const isSalon = jobType === "매장·기술직";
 
-  // 매장·기술직용 state
   const [workTypes, setWorkTypes] = useState<string[]>([]);
   const [workRegions, setWorkRegions] = useState<string[]>([]);
-
-  // 기업·사무직용 state
   const [showCustom, setShowCustom] = useState(false);
   const [customInput, setCustomInput] = useState("");
 
@@ -59,7 +56,6 @@ export default function Step9Country({ onNext }: Props) {
             원하는 근무 형태와 지역을 선택해 주세요
           </p>
 
-          {/* 근무 형태 */}
           <div className="mb-6">
             <p className="text-[14px] font-bold text-[#1a1a1a] mb-3">근무 형태</p>
             <div className="flex flex-wrap gap-2">
@@ -70,14 +66,11 @@ export default function Step9Country({ onNext }: Props) {
                     workTypes.includes(opt)
                       ? "bg-primary border-primary text-white"
                       : "bg-white border-[#e5e5e5] text-[#6b6b6b] hover:border-primary-light hover:text-primary"
-                  )}>
-                  {opt}
-                </button>
+                  )}>{opt}</button>
               ))}
             </div>
           </div>
 
-          {/* 희망 지역 */}
           <div className="mb-6">
             <p className="text-[14px] font-bold text-[#1a1a1a] mb-3">희망 근무 지역</p>
             <div className="flex flex-wrap gap-2">
@@ -88,9 +81,7 @@ export default function Step9Country({ onNext }: Props) {
                     workRegions.includes(opt)
                       ? "bg-primary border-primary text-white"
                       : "bg-white border-[#e5e5e5] text-[#6b6b6b] hover:border-primary-light hover:text-primary"
-                  )}>
-                  {opt}
-                </button>
+                  )}>{opt}</button>
               ))}
             </div>
           </div>

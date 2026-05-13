@@ -64,7 +64,7 @@ export const COUNTRY_OPTIONS = [
   "인도",
   "유럽",
   "중동",
-  "제한 없음",
+  "국가 구분 없음",
   "직접입력",
 ] as const;
 
