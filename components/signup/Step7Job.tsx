@@ -12,7 +12,7 @@ interface Props {
 type JobType = "기업·사무직" | "매장·기술직";
 
 export default function Step7Job({ onNext }: Props) {
-  const { job, jobCustom, setJob } = useSignupStore();
+  const { job, jobCustom, setJob, setJobType } = useSignupStore();
   const [jobType, setJobType] = useState<JobType | null>(null);
   const [customInput, setCustomInput] = useState(jobCustom);
   const [step, setStep] = useState<"type" | "job">("type");

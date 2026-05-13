@@ -30,6 +30,7 @@ export interface SignupState {
 
   // STEP 7: 직군
   job: string;
+  jobType: string;
   jobCustom: string;
 
   // STEP 8: 카테고리
@@ -50,6 +51,7 @@ export interface SignupState {
   setBasic: (data: { name?: string; birth?: string; gender?: Gender }) => void;
   setCareer: (data: { careerYears?: number; isLeader?: boolean }) => void;
   setJob: (job: string, custom?: string) => void;
+  setJobType: (jobType: string) => void;
   toggleCategory: (category: string) => void;
   addCategoryCustom: (category: string) => void;
   removeCategoryCustom: (category: string) => void;
@@ -75,6 +77,7 @@ const initialState = {
   careerYears: 1,
   isLeader: false,
   job: "",
+  jobType: "",
   jobCustom: "",
   categories: [],
   categoryCustom: [],
@@ -104,6 +107,7 @@ export const useSignupStore = create<SignupState>()(
       setCareer: (data) => set((state) => ({ ...state, ...data })),
 
       setJob: (job, custom = "") => set({ job, jobCustom: custom }),
+      setJobType: (jobType) => set({ jobType }),
 
       toggleCategory: (category) =>
         set((state) => {
@@ -181,6 +185,7 @@ export const useSignupStore = create<SignupState>()(
         careerYears: state.careerYears,
         isLeader: state.isLeader,
         job: state.job,
+        jobType: state.jobType,
         jobCustom: state.jobCustom,
         categories: state.categories,
         categoryCustom: state.categoryCustom,
