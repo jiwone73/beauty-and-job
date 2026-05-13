@@ -6081,3 +6081,55 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .admin-stat-sub-icon { font-size: 13px; }
 .admin-stat-sub-divider { color: #ddd; font-size: 12px; }
+
+/* ============================================
+   대시보드 섹션 헤더
+   ============================================ */
+.admin-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0 4px;
+  border-bottom: 2px solid #f0f0f0;
+  margin-top: 8px;
+}
+.admin-section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-section-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+.admin-section-icon { flex-shrink: 0; }
+.admin-section-icon.individual { color: #5f0080; }
+.admin-section-icon.company { color: #0ea5e9; }
+.admin-section-icon.jobs { color: #10b981; }
+
+/* 미니 통계 행 */
+.admin-mini-stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.admin-mini-stat-card {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.admin-mini-stat-label { font-size: 12px; color: #888; }
+.admin-mini-stat-value { font-size: 22px; font-weight: 800; color: #1a1a1a; }
+
+/* 전체 요약 카드 서브텍스트 */
+.admin-stat-sub-text {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 2px;
+}
