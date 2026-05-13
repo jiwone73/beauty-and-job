@@ -1,5 +1,16 @@
 "use client";
 import { useState } from "react";
+
+// 날짜 표시 함수 (24시간 이내 → N분/시간 전, 이후 → 날짜)
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr.replace(/\./g, "-"));
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const hours = diff / (1000 * 60 * 60);
+  if (hours < 1) return `${Math.floor(diff / (1000 * 60))}분 전`;
+  if (hours < 24) return `${Math.floor(hours)}시간 전`;
+  return dateStr;
+}
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumeTabs from "@/components/admin/ResumeTabs";
 import { Search, Download, FileText, Trash2 } from "lucide-react";
@@ -225,22 +236,17 @@ export default function AdminResumesPage() {
                     onChange={() => toggleCheck(r.id)} />
                 </td>
                 <td className="admin-td-date">
-                  <div className="admin-date-cell">
-                    <div className="admin-date-row">
-                      <span className="admin-date-label">방문</span>
-                      <span className="admin-date-val">{r.lastLogin}</span>
-                    </div>
-                    <div className="admin-date-row">
-                      <span className="admin-date-label">수정</span>
-                      <span className="admin-date-val">{r.updated}</span>
-                    </div>
-                    <div className="admin-date-row">
-                      <span className="admin-date-label">등록</span>
-                      <span className="admin-date-val">{r.date}</span>
-                    </div>
-                    <div className="admin-date-row">
-                      <span className="admin-date-label">가입</span>
-                      <span className="admin-date-val">{r.date}</span>
+                  <div className="admin-date-hover-wrap">
+                    <span className="admin-date-main">
+                      {sortBy === "lastLogin" ? formatDate(r.lastLogin) :
+                       sortBy === "updated" ? formatDate(r.updated) :
+                       formatDate(r.date)}
+                    </span>
+                    <div className="admin-date-tooltip">
+                      <div className="admin-date-row"><span className="admin-date-label">방문</span><span className="admin-date-val">{formatDate(r.lastLogin)}</span></div>
+                      <div className="admin-date-row"><span className="admin-date-label">수정</span><span className="admin-date-val">{formatDate(r.updated)}</span></div>
+                      <div className="admin-date-row"><span className="admin-date-label">등록</span><span className="admin-date-val">{formatDate(r.date)}</span></div>
+                      <div className="admin-date-row"><span className="admin-date-label">가입</span><span className="admin-date-val">{formatDate(r.date)}</span></div>
                     </div>
                   </div>
                 </td>

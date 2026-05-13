@@ -5774,3 +5774,47 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 정렬 기준 강조 */
 .admin-date-row.active .admin-date-label { color: #5f0080; }
 .admin-date-row.active .admin-date-val { color: #1a1a1a; font-weight: 600; }
+
+/* ============================================
+   날짜 호버 툴팁
+   ============================================ */
+.admin-date-hover-wrap {
+  position: relative;
+  display: inline-block;
+}
+.admin-date-main {
+  font-size: 13px;
+  color: #555;
+  cursor: default;
+  border-bottom: 1px dashed #ccc;
+}
+.admin-date-tooltip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  z-index: 200;
+  min-width: 160px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  flex-direction: column;
+  gap: 6px;
+}
+.admin-date-hover-wrap:hover .admin-date-tooltip {
+  display: flex;
+}
+.admin-date-tooltip .admin-date-row {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+}
+.admin-date-tooltip .admin-date-label {
+  color: #aaa;
+  width: 28px;
+  flex-shrink: 0;
+}
+.admin-date-tooltip .admin-date-val {
+  color: #fff;
+}
