@@ -2,9 +2,9 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import MemberTabs from "@/components/admin/MemberTabs";
-import { Search, Eye, Trash2, Download, X } from "lucide-react";
+import { Search, Download, Trash2 } from "lucide-react";
 
-const MEMBERS = [
+const INIT_MEMBERS = [
   { id: 1, name: "김지수", type: "개인", joinType: "카카오", email: "jisoo@email.com", phone: "010-1234-5678", job: "마케팅", date: "2025.01.20", status: "정상", lastLogin: "2025.01.20" },
   { id: 2, name: "(주)올리브영", type: "기업", joinType: "SMS", email: "hr@oliveyoung.com", phone: "02-1234-5678", job: "-", date: "2025.01.20", status: "정상", lastLogin: "2025.01.19" },
   { id: 3, name: "박민준", type: "개인", joinType: "카카오", email: "minjun@email.com", phone: "010-2345-6789", job: "MD", date: "2025.01.19", status: "정상", lastLogin: "2025.01.18" },
@@ -15,38 +15,43 @@ const MEMBERS = [
   { id: 8, name: "(주)LG생활건강", type: "기업", joinType: "SMS", email: "hr@lgcare.com", phone: "02-3456-7890", job: "-", date: "2025.01.15", status: "정상", lastLogin: "2025.01.14" },
 ];
 
-type Member = typeof MEMBERS[0];
-
 export default function AdminMembersPage() {
+  const [members, setMembers] = useState(INIT_MEMBERS);
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState("전체");
-  const [statusFilter, setStatusFilter] = useState("전체");
   const [joinFilter, setJoinFilter] = useState("전체");
-  const [members, setMembers] = useState(MEMBERS);
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [statusFilter, setStatusFilter] = useState("전체");
+  const [checked, setChecked] = useState<number[]>([]);
   const [page, setPage] = useState(1);
   const PER_PAGE = 10;
 
   const filtered = members.filter((m) => {
     const matchSearch = !search || m.name.includes(search) || m.email.includes(search) || m.phone.includes(search);
-    const matchType = true; // 탭으로 구분
     const matchJoin = joinFilter === "전체" || m.joinType === joinFilter;
     const matchStatus = statusFilter === "전체" || m.status === statusFilter;
-    return matchSearch && matchType && matchStatus && matchJoin;
+    return matchSearch && matchJoin && matchStatus;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
 
-  const handleStatusChange = (id: number, newStatus: string) => {
-    setMembers(members.map(m => m.id === id ? { ...m, status: newStatus } : m));
+  const toggleCheck = (id: number) => setChecked(c => c.includes(id) ? c.filter(x => x !== id) : [...c, id]);
+  const toggleAll = () => setChecked(checked.length === filtered.length ? [] : filtered.map(m => m.id));
+
+  const handleBulkDelete = () => {
+    if (checked.length === 0) return;
+    if (confirm(`선택한 ${checked.length}명을 삭제하시겠습니까?`)) {
+      setMembers(members.filter(m => !checked.includes(m.id)));
+      setChecked([]);
+    }
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm("정말 삭제하시겠습니까?")) {
-      setMembers(members.filter(m => m.id !== id));
-      setSelectedMember(null);
-    }
+  const toggleStatus = (id: number) => {
+    setMembers(members.map(m => {
+      if (m.id !== id) return m;
+      if (m.status === "정상") return { ...m, status: "휴면" };
+      if (m.status === "휴면") return { ...m, status: "정상" };
+      return m;
+    }));
   };
 
   const counts = {
@@ -58,14 +63,14 @@ export default function AdminMembersPage() {
 
   return (
     <AdminLayout activeMenu="members">
-      {/* 탭 */}
       <MemberTabs />
+
       {/* 요약 카드 */}
       <div className="admin-mini-stats">
         {Object.entries(counts).map(([label, count]) => (
           <div key={label} className="admin-mini-stat">
             <span className="admin-mini-stat-label">{label}</span>
-            <span className="admin-mini-stat-value">{count.toLocaleString()}<span className="admin-mini-unit">명</span></span>
+            <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">명</span></span>
           </div>
         ))}
       </div>
@@ -97,19 +102,27 @@ export default function AdminMembersPage() {
             </div>
           </div>
         </div>
-        <button className="admin-secondary-btn">
-          <Download size={16} /> 엑셀 다운로드
-        </button>
+        <div style={{display:"flex", gap:"8px"}}>
+          {checked.length > 0 && (
+            <button className="admin-danger-btn" onClick={handleBulkDelete}>
+              <Trash2 size={15} /> 선택삭제 ({checked.length})
+            </button>
+          )}
+          <button className="admin-secondary-btn"><Download size={16} /> 엑셀 다운로드</button>
+        </div>
       </div>
 
       {/* 테이블 */}
       <div className="admin-card">
-        <div className="admin-table-meta">
-          총 <strong>{filtered.length.toLocaleString()}</strong>명
-        </div>
+        <div className="admin-table-meta">총 <strong>{filtered.length.toLocaleString()}</strong>명</div>
         <table className="admin-table">
           <thead>
             <tr>
+              <th style={{width:"36px"}}>
+                <input type="checkbox"
+                  checked={checked.length === filtered.length && filtered.length > 0}
+                  onChange={toggleAll} />
+              </th>
               <th>가입일</th>
               <th>이름</th>
               <th>유형</th>
@@ -119,12 +132,16 @@ export default function AdminMembersPage() {
               <th>직군</th>
               <th>최근 로그인</th>
               <th>상태</th>
-              <th>관리</th>
             </tr>
           </thead>
           <tbody>
             {paginated.map((m) => (
-              <tr key={m.id}>
+              <tr key={m.id} style={{background: checked.includes(m.id) ? "#faf5ff" : ""}}>
+                <td>
+                  <input type="checkbox"
+                    checked={checked.includes(m.id)}
+                    onChange={() => toggleCheck(m.id)} />
+                </td>
                 <td className="admin-td-date">{m.date}</td>
                 <td className="admin-td-brand">{m.name}</td>
                 <td>
@@ -134,7 +151,7 @@ export default function AdminMembersPage() {
                 </td>
                 <td>
                   {m.joinType === "카카오" ? (
-                    <span className="admin-badge" style={{ background: "#FEE500", color: "#3A1D1D" }}>카카오</span>
+                    <span className="admin-badge" style={{background:"#FEE500", color:"#3A1D1D"}}>카카오</span>
                   ) : (
                     <span className="admin-badge admin-badge-neutral">SMS</span>
                   )}
@@ -144,35 +161,24 @@ export default function AdminMembersPage() {
                 <td className="admin-td-date">{m.job}</td>
                 <td className="admin-td-date">{m.lastLogin}</td>
                 <td>
-                  <span className={`admin-badge admin-badge-${
-                    m.status === "정상" ? "success" :
-                    m.status === "휴면" ? "warning" : "danger"
-                  }`}>{m.status}</span>
-                </td>
-                <td>
-                  <div className="admin-actions">
-                    <button className="admin-action-icon" onClick={() => setSelectedMember(m)}>
-                      <Eye size={15} />
+                  {m.status === "탈퇴" ? (
+                    <span className="admin-badge admin-badge-danger">탈퇴</span>
+                  ) : (
+                    <button
+                      className={`admin-badge admin-badge-${m.status === "정상" ? "success" : "warning"}`}
+                      style={{border:"none", cursor:"pointer"}}
+                      title={m.status === "정상" ? "클릭하면 휴면 처리" : "클릭하면 정상 복구"}
+                      onClick={() => toggleStatus(m.id)}
+                    >
+                      {m.status} ⇄
                     </button>
-                    {m.status === "정상" && (
-                      <button className="admin-action-btn" style={{ background: "#fef3c7", color: "#92400e" }}
-                        onClick={() => handleStatusChange(m.id, "휴면")}>휴면</button>
-                    )}
-                    {m.status === "휴면" && (
-                      <button className="admin-action-btn approve"
-                        onClick={() => handleStatusChange(m.id, "정상")}>복구</button>
-                    )}
-                    <button className="admin-action-icon danger" onClick={() => handleDelete(m.id)}>
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        {/* 페이지네이션 */}
         {totalPages > 1 && (
           <div className="admin-pagination">
             <button className="admin-page-btn" disabled={page === 1} onClick={() => setPage(page - 1)}>이전</button>
@@ -183,55 +189,6 @@ export default function AdminMembersPage() {
           </div>
         )}
       </div>
-
-      {/* 회원 상세 모달 */}
-      {selectedMember && (
-        <div className="admin-modal-overlay" onClick={() => setSelectedMember(null)}>
-          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h2 className="admin-modal-title">회원 상세 정보</h2>
-              <button className="admin-modal-close" onClick={() => setSelectedMember(null)}><X size={20} /></button>
-            </div>
-            <div className="admin-modal-body">
-              <div className="admin-detail-grid">
-                {[
-                  ["이름", selectedMember.name],
-                  ["유형", selectedMember.type],
-                  ["가입방법", selectedMember.joinType],
-                  ["이메일", selectedMember.email],
-                  ["연락처", selectedMember.phone],
-                  ["직군", selectedMember.job],
-                  ["가입일", selectedMember.date],
-                  ["최근 로그인", selectedMember.lastLogin],
-                  ["상태", selectedMember.status],
-                ].map(([label, value]) => (
-                  <div key={label} className="admin-detail-row">
-                    <span className="admin-detail-label">{label}</span>
-                    <span className="admin-detail-value">{value}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="admin-modal-actions">
-                {selectedMember.status === "정상" && (
-                  <button className="admin-secondary-btn" onClick={() => {
-                    handleStatusChange(selectedMember.id, "휴면");
-                    setSelectedMember({ ...selectedMember, status: "휴면" });
-                  }}>휴면 처리</button>
-                )}
-                {selectedMember.status === "휴면" && (
-                  <button className="admin-primary-btn" onClick={() => {
-                    handleStatusChange(selectedMember.id, "정상");
-                    setSelectedMember({ ...selectedMember, status: "정상" });
-                  }}>계정 복구</button>
-                )}
-                <button className="admin-danger-btn" onClick={() => handleDelete(selectedMember.id)}>
-                  <Trash2 size={15} /> 삭제
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </AdminLayout>
   );
 }
