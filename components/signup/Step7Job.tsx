@@ -112,7 +112,7 @@ export default function Step7Job({ onNext }: Props) {
           </div>
 
           <div className="grid grid-cols-2 gap-2 mb-4">
-            {jobOptions.map((opt) => (
+            {jobOptions.map((opt: string) => (
               <button
                 key={opt}
                 type="button"
