@@ -234,6 +234,11 @@ export default function CompanySettingsPage() {
                     onChange={(e) => setAccountForm({...accountForm, [key]: e.target.value})} />
                 </div>
               ))}
+              <div className="admin-modal-actions" style={{justifyContent:"flex-end"}}>
+                <button className="company-primary-btn" onClick={handleSave}>
+                  <Save size={15} /> {saved ? "✅ 저장됨" : "저장하기"}
+                </button>
+              </div>
             </div>
           </div>
 
