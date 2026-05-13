@@ -19,6 +19,7 @@ export default function ResumePage() {
   } = useProfileStore();
 
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [resumeType, setResumeType] = useState<"office" | "salon">("office");
   const [introLocal, setIntroLocal] = useState(intro);
   const [coreLocal, setCoreLocal] = useState(coreCompetencies);
   const [emailLocal, setEmailLocal] = useState(email);
@@ -229,12 +230,24 @@ export default function ResumePage() {
 
       <div className="resume-subheader">
         <h1 className="resume-subheader-title">이력서 편집</h1>
+        <div className="resume-type-tabs">
+          <button
+            className={`resume-type-tab ${resumeType === "office" ? "active" : ""}`}
+            onClick={() => setResumeType("office")}>
+            🏢 기업·사무직
+          </button>
+          <button
+            className={`resume-type-tab ${resumeType === "salon" ? "active" : ""}`}
+            onClick={() => setResumeType("salon")}>
+            💄 매장·기술직
+          </button>
+        </div>
       </div>
 
       <div className="resume-layout">
         <aside className="resume-sidebar">
           <p className="resume-sidebar-title">섹션 구성</p>
-          {[
+          {(resumeType === "office" ? [
             { id: "basic", label: "기본 정보" },
             { id: "intro", label: "소개 · 핵심역량" },
             { id: "career", label: "경력" },
@@ -243,7 +256,16 @@ export default function ResumePage() {
             { id: "skill", label: "스킬" },
             { id: "language", label: "어학" },
             { id: "link", label: "링크" },
-          ].map((sec) => (
+          ] : [
+            { id: "basic", label: "기본 정보" },
+            { id: "intro", label: "소개" },
+            { id: "career", label: "경력 (근무 매장)" },
+            { id: "education", label: "학력" },
+            { id: "license", label: "자격증" },
+            { id: "skill", label: "전문 기술" },
+            { id: "workCondition", label: "희망 근무 조건" },
+            { id: "link", label: "링크·포트폴리오" },
+          ]).map((sec) => (
             <button
               key={sec.id}
               className={`resume-sidebar-item ${activeSection === sec.id ? "active" : ""}`}
@@ -277,14 +299,33 @@ export default function ResumePage() {
                 />
               </div>
             </div>
-            <div className="resume-tag-row">
-              <span className="resume-tag-label">담당 카테고리</span>
-              <button className="resume-tag-add"><Plus size={14} /></button>
-            </div>
-            <div className="resume-tag-row">
-              <span className="resume-tag-label">담당 국가</span>
-              <button className="resume-tag-add"><Plus size={14} /></button>
-            </div>
+            {resumeType === "office" ? (
+              <>
+                <div className="resume-tag-row">
+                  <span className="resume-tag-label">담당 카테고리</span>
+                  <button className="resume-tag-add"><Plus size={14} /></button>
+                </div>
+                <div className="resume-tag-row">
+                  <span className="resume-tag-label">담당 국가</span>
+                  <button className="resume-tag-add"><Plus size={14} /></button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="resume-tag-row">
+                  <span className="resume-tag-label">전문 분야</span>
+                  <button className="resume-tag-add"><Plus size={14} /></button>
+                </div>
+                <div className="resume-tag-row">
+                  <span className="resume-tag-label">희망 급여</span>
+                  <button className="resume-tag-add"><Plus size={14} /></button>
+                </div>
+                <div className="resume-tag-row">
+                  <span className="resume-tag-label">근무 형태</span>
+                  <button className="resume-tag-add"><Plus size={14} /></button>
+                </div>
+              </>
+            )}
           </section>
 
           <section id="section-intro" className="resume-section">
@@ -299,24 +340,35 @@ export default function ResumePage() {
             <label className="resume-field-label">소개 <span className="resume-required">* (0/300자)</span></label>
             <textarea
               className="resume-textarea"
-              placeholder={`채용 담당자가 가장 먼저 읽게되는 글이에요. 경력을 기반으로한 300자 이하의 소개를 작성해 보세요.\n예시) 소비자 관점과 브랜드 관점을 모두 이해하는 3년차 뷰티 마케터입니다.`}
+              placeholder={resumeType === "office"
+                ? `채용 담당자가 가장 먼저 읽게되는 글이에요. 경력을 기반으로한 300자 이하의 소개를 작성해 보세요.
+예시) 소비자 관점과 브랜드 관점을 모두 이해하는 3년차 뷰티 마케터입니다.`
+                : `나를 표현하는 한 줄 소개를 작성해보세요.
+예시) 섬세한 손기술과 트렌드 감각을 갖춘 5년 경력 네일 아티스트입니다.`}
               maxLength={300}
               value={introLocal}
               onChange={(e) => setIntroLocal(e.target.value)}
             />
-            <label className="resume-field-label">핵심 역량 <span className="resume-required">* (0/300자)</span></label>
-            <textarea
-              className="resume-textarea"
-              placeholder={`핵심역량 3~5가지를 정리해보세요\n1. 일본 이커머스 플랫폼 운영 경험 (Qoo10, 라쿠텐, 아마존JP 등)\n2. 뷰티 브랜드 인하우스 마케팅 및 시딩 캠페인 기획\n3. 메타 광고 운영 및 인플루언서 협업 캠페인 실무 역량`}
-              maxLength={300}
-              value={coreLocal}
-              onChange={(e) => setCoreLocal(e.target.value)}
-            />
+            {resumeType === "office" && (
+              <>
+                <label className="resume-field-label">핵심 역량 <span className="resume-required">* (0/300자)</span></label>
+                <textarea
+                  className="resume-textarea"
+                  placeholder={`핵심역량 3~5가지를 정리해보세요
+1. 일본 이커머스 플랫폼 운영 경험 (Qoo10, 라쿠텐, 아마존JP 등)
+2. 뷰티 브랜드 인하우스 마케팅 및 시딩 캠페인 기획
+3. 메타 광고 운영 및 인플루언서 협업 캠페인 실무 역량`}
+                  maxLength={300}
+                  value={coreLocal}
+                  onChange={(e) => setCoreLocal(e.target.value)}
+                />
+              </>
+            )}
           </section>
 
           <section id="section-career" className="resume-section">
             <div className="resume-section-head">
-              <h2 className="resume-section-title">경력</h2>
+              <h2 className="resume-section-title">{resumeType === "office" ? "경력" : "경력 (근무 매장)"}</h2>
               <button className="resume-add-btn" onClick={() => router.push("/profile")}>
                 <Plus size={14} /> 경력 추가
               </button>
@@ -434,6 +486,49 @@ export default function ResumePage() {
               </div>
             )}
           </section>
+
+          {resumeType === "salon" && (
+            <>
+              <section id="section-license" className="resume-section">
+                <div className="resume-section-head">
+                  <h2 className="resume-section-title">자격증</h2>
+                  <button className="resume-add-btn" onClick={() => router.push("/profile")}>
+                    <Plus size={14} /> 추가
+                  </button>
+                </div>
+                <div className="resume-empty-section">
+                  <p style={{fontSize:"13px", color:"#aaa", marginBottom:"8px"}}>
+                    네일, 미용사, 피부관리사 등 보유 자격증을 추가해보세요
+                  </p>
+                  <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
+                    <Plus size={16} /> 자격증 추가
+                  </button>
+                </div>
+              </section>
+
+              <section id="section-workCondition" className="resume-section">
+                <div className="resume-section-head">
+                  <h2 className="resume-section-title">희망 근무 조건</h2>
+                </div>
+                <div className="resume-field-group" style={{display:"flex", flexDirection:"column", gap:"12px"}}>
+                  {[
+                    { label: "근무 형태", options: ["풀타임", "파트타임", "주말only", "무관"] },
+                    { label: "희망 급여", options: ["월급", "시급", "협의"] },
+                    { label: "근무 지역", options: ["서울", "경기", "인천", "기타"] },
+                  ].map(({ label, options }) => (
+                    <div key={label}>
+                      <label className="resume-field-label">{label}</label>
+                      <div style={{display:"flex", gap:"8px", flexWrap:"wrap", marginTop:"6px"}}>
+                        {options.map(o => (
+                          <button key={o} className="resume-tag-chip">{o}</button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
 
           <section id="section-link" className="resume-section">
             <div className="resume-section-head">
