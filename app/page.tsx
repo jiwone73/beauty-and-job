@@ -16,7 +16,7 @@ import {
   GraduationCap,
   Mail,
   CheckCircle,
-} from "lucide-react";
+, MapPin} from "lucide-react";
 
 export default function HomePage() {
   return (
