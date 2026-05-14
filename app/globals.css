@@ -6893,58 +6893,63 @@ input[type="range"].career-slider::-moz-range-thumb {
    ============================================ */
 .hero-banner-top {
   background: linear-gradient(135deg, #5f0080 0%, #9b59b6 100%);
-  padding: 16px 24px;
+  padding: 0;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  height: 80px;
+  display: flex;
+  align-items: center;
+}
+.hero-banner-top::before {
+  content: "";
+  position: absolute;
+  top: -20px; right: 10%;
+  width: 120px; height: 120px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+.hero-banner-top::after {
+  content: "";
+  position: absolute;
+  bottom: -30px; right: 25%;
+  width: 90px; height: 90px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%;
 }
 .hero-banner-top-inner {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 0 40px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.hero-banner-top-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.hero-banner-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-  margin: 0;
-}
-.hero-banner-sub {
-  font-size: 13px;
-  color: rgba(255,255,255,0.8);
-  margin: 0;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
 }
 .hero-banner-badge {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 3px 8px;
   background: rgba(255,255,255,0.2);
   color: rgba(255,255,255,0.9);
   font-size: 11px;
   font-weight: 600;
   border-radius: 20px;
   white-space: nowrap;
-}
-.hero-banner-btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 10px 20px;
-  background: #fff;
-  color: #5f0080;
-  font-size: 13px;
-  font-weight: 700;
-  border-radius: 50px;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.15s;
   flex-shrink: 0;
 }
-.hero-banner-btn:hover { background: #f5eaff; }
+.hero-banner-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+}
+.hero-banner-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  margin: 0;
+}
+.hero-banner-btn { display: none; }
 
 /* ============================================
    히어로 AI 추천 카드
@@ -7047,18 +7052,6 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 /* 배너 top 수정 */
-.hero-banner-top {
-  background: linear-gradient(135deg, #5f0080 0%, #9b59b6 100%);
-  padding: 12px 32px;
-}
-.hero-banner-top-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
 .hero-banner-link {
   color: rgba(255,255,255,0.9);
   font-size: 13px;
@@ -7068,6 +7061,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   white-space: nowrap;
   border-bottom: 1px solid rgba(255,255,255,0.4);
   padding-bottom: 1px;
+  flex-shrink: 0;
 }
 .hero-banner-link:hover { color: #fff; }
 
@@ -7088,3 +7082,47 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-radius: 10px;
 }
 .hero-ai-guest-copy strong { color: #5f0080; }
+
+/* AI 카드 비주얼 */
+.hero-ai-visual-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f5eaff 0%, #ede0f5 100%);
+  border-radius: 14px;
+  text-decoration: none;
+  margin-bottom: 12px;
+  border: 1px solid #e8d5f5;
+  transition: all 0.15s;
+}
+.hero-ai-visual-card:hover { background: linear-gradient(135deg, #ede0f5 0%, #e0ccf0 100%); }
+.hero-ai-visual-icons { display: flex; gap: 8px; font-size: 24px; }
+.hero-ai-visual-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+.hero-ai-visual-sub {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+.hero-ai-guest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #444;
+  padding: 11px 14px;
+  background: #faf5ff;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+}
+.hero-ai-guest-item:hover { background: #f0e5ff; border-color: #e0ccf0; color: #5f0080; }
+.hero-ai-guest-arrow { margin-left: auto; color: #ccc; font-size: 14px; }
+.hero-ai-guest-item:hover .hero-ai-guest-arrow { color: #5f0080; }

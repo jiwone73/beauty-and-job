@@ -157,14 +157,7 @@ function Hero() {
         <div className="hero-ai-card">
           <div className="hero-ai-header">
             <span className="hero-ai-icon">✨</span>
-            <div>
-              <span className="hero-ai-title">AI 맞춤 추천</span>
-              <p className="hero-ai-desc">
-                {isLoggedIn
-                  ? "내 이력서 기반으로 딱 맞는 공고를 찾았어요"
-                  : "이력서 하나로 내게 맞는 공고·연봉·브랜드를 한번에"}
-              </p>
-            </div>
+            <span className="hero-ai-title">맞춤형 취업 전략</span>
           </div>
 
           {isLoggedIn ? (
@@ -199,24 +192,31 @@ function Hero() {
             </div>
           ) : (
             <div className="hero-ai-guest">
-              <p className="hero-ai-guest-copy">
-                지금 이력서를 등록하면<br />
-                <strong>뷰티 업계 맞춤 공고 · 연봉 · 브랜드</strong>를<br />
-                AI가 자동으로 추천해드려요
-              </p>
+              <Link href="/signup" className="hero-ai-visual-card">
+                <div className="hero-ai-visual-icons">
+                  <span>📄</span><span>🎯</span><span>💰</span>
+                </div>
+                <div>
+                  <p className="hero-ai-visual-title">취업 준비, 여기서 다 끝낼 수 있어요</p>
+                  <p className="hero-ai-visual-sub">이력서 등록 한 번으로 맞춤 공고·연봉·브랜드 추천까지</p>
+                </div>
+              </Link>
               <div className="hero-ai-guest-items">
-                <div className="hero-ai-guest-item">
+                <Link href="/jobs" className="hero-ai-guest-item">
                   <span>🎯</span>
                   <span>직군·경력 맞춤 공고 추천</span>
-                </div>
-                <div className="hero-ai-guest-item">
+                  <span className="hero-ai-guest-arrow">→</span>
+                </Link>
+                <Link href="/salary" className="hero-ai-guest-item">
                   <span>📊</span>
                   <span>내 경력 기반 연봉 분석</span>
-                </div>
-                <div className="hero-ai-guest-item">
+                  <span className="hero-ai-guest-arrow">→</span>
+                </Link>
+                <Link href="/profile" className="hero-ai-guest-item">
                   <span>🏢</span>
                   <span>관심 브랜드 채용 알림</span>
-                </div>
+                  <span className="hero-ai-guest-arrow">→</span>
+                </Link>
               </div>
               <Link href="/signup" className="hero-ai-cta">
                 무료로 이력서 등록하기 →
