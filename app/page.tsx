@@ -47,15 +47,13 @@ function Header() {
         </Link>
         <nav className="gnb">
           <Link href="/jobs">채용공고</Link>
-          <Link href="/brands">브랜드</Link>
-          <Link href="/profile/resume">이력서</Link>
           <Link href="/salary" className="gnb-with-tag">
-            연봉·이직 제안
+            연봉어택
             <span className="tag tag-gray">경력직</span>
           </Link>
           <Link href="/insights" className="gnb-with-tag">
             인사이트
-            <span className="tag tag-new">NEW</span>
+            <span className="tag tag-new">NEWS</span>
           </Link>
         </nav>
         <div className="header-right">
@@ -77,6 +75,7 @@ const REGION_OPTIONS = ["지역 전체", "서울", "경기", "인천", "부산",
 
 function Hero() {
   const router = useRouter();
+  const { isLoggedIn } = useAuthStore();
   const [region, setRegion] = useState("지역 전체");
   const [searchQuery, setSearchQuery] = useState("");
   const [showRegionDrop, setShowRegionDrop] = useState(false);
@@ -95,7 +94,21 @@ function Hero() {
 
   return (
     <section className="hero" onClick={() => setShowRegionDrop(false)}>
+
+      {/* 배너 광고 - 맨 위 */}
+      <div className="hero-banner-top">
+        <div className="hero-banner-top-inner">
+          <div className="hero-banner-top-left">
+            <span className="hero-banner-badge">광고</span>
+            <p className="hero-banner-title">뷰티앤잡과 함께 성장하세요</p>
+            <p className="hero-banner-sub">뷰티 업계 1등 채용 플랫폼, 지금 바로 시작하세요</p>
+          </div>
+          <Link href="/company" className="hero-banner-btn">기업 서비스 보기 →</Link>
+        </div>
+      </div>
+
       <div className="hero-inner">
+        {/* 왼쪽: 텍스트 + 검색 */}
         <div className="hero-text">
           <h1 className="hero-title">
             뷰티 커리어의 시작,
@@ -107,9 +120,7 @@ function Hero() {
             <br />한 번에
           </p>
 
-          {/* 심플 검색창 */}
           <form className="hero-search-bar" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
-            {/* 지역 드롭다운 */}
             <div className="hero-region-wrap">
               <button type="button" className="hero-region-btn"
                 onClick={() => setShowRegionDrop(!showRegionDrop)}>
@@ -130,19 +141,15 @@ function Hero() {
               )}
             </div>
             <div className="hero-search-divider" />
-            <input
-              className="hero-search-input"
-              type="text"
+            <input className="hero-search-input" type="text"
               placeholder="직무, 회사, 키워드로 검색"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+              onChange={(e) => setSearchQuery(e.target.value)} />
             <button type="submit" className="hero-search-btn">
               <Search size={20} />
             </button>
           </form>
 
-          {/* 해시태그 */}
           <div className="hashtags">
             {["마케팅", "MD", "영업", "신입채용", "글로벌"].map((tag) => (
               <button key={tag} className="hashtag" type="button" onClick={() => handleHashtag(tag)}>
@@ -152,22 +159,64 @@ function Hero() {
           </div>
         </div>
 
-        <div className="hero-visual" aria-hidden="true">
-          <HeroVisual />
-        </div>
-      </div>
-
-      {/* 배너 광고 영역 */}
-      <div className="hero-banner-wrap">
-        <div className="hero-banner">
-          <div className="hero-banner-content">
-            <div className="hero-banner-text">
-              <span className="hero-banner-badge">광고</span>
-              <p className="hero-banner-title">뷰티앤잡과 함께 성장하세요</p>
-              <p className="hero-banner-sub">뷰티 업계 1등 채용 플랫폼, 지금 바로 시작하세요</p>
-            </div>
-            <Link href="/company" className="hero-banner-btn">기업 서비스 보기 →</Link>
+        {/* 오른쪽: AI 맞춤 추천 카드 */}
+        <div className="hero-ai-card">
+          <div className="hero-ai-header">
+            <span className="hero-ai-icon">✨</span>
+            <span className="hero-ai-title">AI 맞춤 추천</span>
           </div>
+
+          {isLoggedIn ? (
+            <div className="hero-ai-items">
+              <Link href="/jobs" className="hero-ai-item">
+                <div className="hero-ai-item-icon">🎯</div>
+                <div className="hero-ai-item-text">
+                  <p className="hero-ai-item-title">맞춤 채용공고</p>
+                  <p className="hero-ai-item-sub">내 직군·경력에 딱 맞는 공고</p>
+                </div>
+                <span className="hero-ai-item-badge">3건</span>
+              </Link>
+              <Link href="/salary" className="hero-ai-item">
+                <div className="hero-ai-item-icon">📊</div>
+                <div className="hero-ai-item-text">
+                  <p className="hero-ai-item-title">연봉 분석</p>
+                  <p className="hero-ai-item-sub">내 경력 기반 시장 연봉</p>
+                </div>
+                <span className="hero-ai-arrow">→</span>
+              </Link>
+              <Link href="/profile" className="hero-ai-item">
+                <div className="hero-ai-item-icon">🏢</div>
+                <div className="hero-ai-item-text">
+                  <p className="hero-ai-item-title">관심 브랜드 채용</p>
+                  <p className="hero-ai-item-sub">팔로우한 브랜드 새 공고</p>
+                </div>
+                <span className="hero-ai-item-badge new">NEW</span>
+              </Link>
+              <Link href="/profile/resume" className="hero-ai-cta">
+                이력서 업데이트하기 →
+              </Link>
+            </div>
+          ) : (
+            <div className="hero-ai-guest">
+              <div className="hero-ai-guest-items">
+                <div className="hero-ai-guest-item">
+                  <span>🎯</span>
+                  <span>직군·경력 맞춤 공고 추천</span>
+                </div>
+                <div className="hero-ai-guest-item">
+                  <span>📊</span>
+                  <span>내 경력 기반 연봉 분석</span>
+                </div>
+                <div className="hero-ai-guest-item">
+                  <span>🏢</span>
+                  <span>관심 브랜드 채용 알림</span>
+                </div>
+              </div>
+              <Link href="/signup" className="hero-ai-cta">
+                이력서 등록하고 추천받기 →
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </section>

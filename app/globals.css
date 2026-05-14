@@ -6972,3 +6972,161 @@ input[type="range"].career-slider::-moz-range-thumb {
   .hero-banner { padding: 20px; }
   .hero-banner-title { font-size: 16px; }
 }
+
+/* ============================================
+   히어로 배너 (맨 위)
+   ============================================ */
+.hero-banner-top {
+  background: linear-gradient(135deg, #5f0080 0%, #9b59b6 100%);
+  padding: 16px 24px;
+}
+.hero-banner-top-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.hero-banner-top-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hero-banner-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+.hero-banner-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  margin: 0;
+}
+.hero-banner-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.hero-banner-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: #fff;
+  color: #5f0080;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 50px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.hero-banner-btn:hover { background: #f5eaff; }
+
+/* ============================================
+   히어로 AI 추천 카드
+   ============================================ */
+.hero-ai-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(95,0,128,0.1);
+  border: 1px solid #f0e0f8;
+  min-width: 300px;
+  max-width: 340px;
+  flex-shrink: 0;
+}
+.hero-ai-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f5eaff;
+}
+.hero-ai-icon { font-size: 20px; }
+.hero-ai-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+.hero-ai-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hero-ai-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.hero-ai-item:hover { background: #faf5ff; }
+.hero-ai-item-icon { font-size: 20px; flex-shrink: 0; }
+.hero-ai-item-text { flex: 1; }
+.hero-ai-item-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 2px;
+}
+.hero-ai-item-sub {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+.hero-ai-item-badge {
+  padding: 3px 8px;
+  background: #f5eaff;
+  color: #5f0080;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.hero-ai-item-badge.new { background: #fee2e2; color: #991b1b; }
+.hero-ai-arrow { font-size: 16px; color: #ccc; }
+
+/* 비로그인 */
+.hero-ai-guest { display: flex; flex-direction: column; gap: 12px; }
+.hero-ai-guest-items { display: flex; flex-direction: column; gap: 10px; }
+.hero-ai-guest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #555;
+  padding: 10px 12px;
+  background: #faf5ff;
+  border-radius: 10px;
+}
+.hero-ai-cta {
+  display: block;
+  text-align: center;
+  padding: 13px;
+  background: #5f0080;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 12px;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: background 0.15s;
+}
+.hero-ai-cta:hover { background: #4a0066; }
+
+@media (max-width: 768px) {
+  .hero-ai-card { min-width: unset; max-width: 100%; }
+  .hero-banner-top-inner { flex-direction: column; align-items: flex-start; }
+}
