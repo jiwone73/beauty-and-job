@@ -103,7 +103,7 @@ function Hero() {
             <p className="hero-banner-title">뷰티앤잡과 함께 성장하세요</p>
             <p className="hero-banner-sub">뷰티 업계 1등 채용 플랫폼, 지금 바로 시작하세요</p>
           </div>
-          <Link href="/company" className="hero-banner-btn">기업 서비스 보기 →</Link>
+
         </div>
       </div>
 
@@ -150,20 +150,21 @@ function Hero() {
             </button>
           </form>
 
-          <div className="hashtags">
-            {["마케팅", "MD", "영업", "신입채용", "글로벌"].map((tag) => (
-              <button key={tag} className="hashtag" type="button" onClick={() => handleHashtag(tag)}>
-                # {tag}
-              </button>
-            ))}
-          </div>
+
         </div>
 
         {/* 오른쪽: AI 맞춤 추천 카드 */}
         <div className="hero-ai-card">
           <div className="hero-ai-header">
             <span className="hero-ai-icon">✨</span>
-            <span className="hero-ai-title">AI 맞춤 추천</span>
+            <div>
+              <span className="hero-ai-title">AI 맞춤 추천</span>
+              <p className="hero-ai-desc">
+                {isLoggedIn
+                  ? "내 이력서 기반으로 딱 맞는 공고를 찾았어요"
+                  : "이력서 하나로 내게 맞는 공고·연봉·브랜드를 한번에"}
+              </p>
+            </div>
           </div>
 
           {isLoggedIn ? (
@@ -198,6 +199,11 @@ function Hero() {
             </div>
           ) : (
             <div className="hero-ai-guest">
+              <p className="hero-ai-guest-copy">
+                지금 이력서를 등록하면<br />
+                <strong>뷰티 업계 맞춤 공고 · 연봉 · 브랜드</strong>를<br />
+                AI가 자동으로 추천해드려요
+              </p>
               <div className="hero-ai-guest-items">
                 <div className="hero-ai-guest-item">
                   <span>🎯</span>
@@ -213,7 +219,7 @@ function Hero() {
                 </div>
               </div>
               <Link href="/signup" className="hero-ai-cta">
-                이력서 등록하고 추천받기 →
+                무료로 이력서 등록하기 →
               </Link>
             </div>
           )}
