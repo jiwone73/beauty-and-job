@@ -2,12 +2,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import CompanyLayout from "@/components/company/CompanyLayout";
 import {
   Briefcase, Users, FileText, Settings,
   Bell, LogOut, Plus, Search, Eye, Edit, X, Trash2
 } from "lucide-react";
-
-const COMPANY = { name: "(주)올리브영", category: "리테일" };
 
 function CompanyLayout({ children, activePage }: { children: React.ReactNode; activePage: string }) {
   const router = useRouter();

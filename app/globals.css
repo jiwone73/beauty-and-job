@@ -6458,3 +6458,25 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .resume-tag-chip:hover { border-color: #5f0080; color: #5f0080; background: #f5eaff; }
 .resume-tag-chip.active { background: #5f0080; border-color: #5f0080; color: #fff; }
+
+/* 기업 사이드바 토글 */
+.company-sidebar-closed {
+  width: 64px !important;
+}
+.company-sidebar-closed .company-logo-info,
+.company-sidebar-closed .company-nav-item span,
+.company-sidebar-closed .company-sidebar-bottom span {
+  display: none;
+}
+.company-sidebar-toggle {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+.company-sidebar-toggle:hover { color: #5f0080; }

@@ -7,8 +7,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-const COMPANY = { name: "(주)올리브영", category: "리테일" };
-
 function CompanyLayout({ children, activePage }: { children: React.ReactNode; activePage: string }) {
   const router = useRouter();
   const NAV = [

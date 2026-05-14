@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import CompanyLayout from "@/components/company/CompanyLayout";
 import {
   Briefcase, Users, Eye, BookmarkCheck,
   TrendingUp, Plus, Bell, LogOut, ChevronRight,
@@ -15,12 +16,6 @@ import {
 /* ============================================
    더미 데이터
    ============================================ */
-const COMPANY = {
-  name: "(주)올리브영",
-  category: "리테일",
-  logo: null,
-};
-
 const STATS = [
   { label: "진행중 공고", value: "5", unit: "건", icon: Briefcase, color: "#5f0080" },
   { label: "총 지원자", value: "128", unit: "명", icon: Users, color: "#0ea5e9" },
