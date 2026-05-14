@@ -6480,3 +6480,93 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin-left: auto;
 }
 .company-sidebar-toggle:hover { color: #5f0080; }
+
+/* ============================================
+   인재 검색 카드
+   ============================================ */
+.talent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+.talent-card {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow 0.15s;
+}
+.talent-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.talent-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.talent-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f5eaff;
+  color: #5f0080;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.talent-info { flex: 1; }
+.talent-name { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 0 0 2px; }
+.talent-meta { font-size: 12px; color: #888; margin: 0 0 2px; }
+.talent-location { font-size: 12px; color: #aaa; margin: 0; }
+.talent-scrap-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.talent-scrap-btn:hover { color: #5f0080; background: #f5eaff; }
+.talent-scrap-btn.scrapped { color: #5f0080; }
+.talent-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5f0080;
+  cursor: pointer;
+  margin: 0;
+  line-height: 1.4;
+}
+.talent-title:hover { text-decoration: underline; }
+.talent-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.talent-tag {
+  padding: 3px 8px;
+  background: #f5eaff;
+  color: #5f0080;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px;
+}
+.talent-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid #f5f5f5;
+}
+.talent-detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #888;
+  flex-wrap: wrap;
+}
+.talent-scrap-date { color: #aaa; }
