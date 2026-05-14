@@ -8,6 +8,7 @@ import {
   Settings, ChevronRight, Plus, CheckCircle2, X, Award, Briefcase,
 } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
+import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -29,9 +30,11 @@ type ModalType =
 export default function ProfilePage() {
   const router = useRouter();
   const {
-    name, birth, gender, job, jobCustom, careerYears, isLeader,
+    name: signupName, birth, gender, job, jobCustom, careerYears, isLeader,
     categories, categoryCustom, countries, countryCustom, phone,
   } = useSignupStore();
+  const { userName } = useAuthStore();
+  const name = userName || signupName || "";
   const {
     isCareerVerified, verifiedDate, careers, educations, experiences,
     skills, languages, links, setCareerVerified,
