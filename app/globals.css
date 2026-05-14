@@ -6570,3 +6570,69 @@ input[type="range"].career-slider::-moz-range-thumb {
   flex-wrap: wrap;
 }
 .talent-scrap-date { color: #aaa; }
+
+/* ============================================
+   로그인 페이지 개선
+   ============================================ */
+.login-type-tabs {
+  display: flex;
+  gap: 0;
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+.login-type-tab {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.login-type-tab.active {
+  background: #fff;
+  color: #5f0080;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* 테스트 계정 안내 */
+.login-test-accounts {
+  margin-top: 16px;
+  padding: 14px;
+  background: #fafafa;
+  border: 1px dashed #e5e5e5;
+  border-radius: 10px;
+}
+.login-test-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #666;
+  margin: 0 0 10px;
+}
+.login-test-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.login-test-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+}
+.login-test-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.login-test-badge.individual { background: #f5eaff; color: #5f0080; }
+.login-test-badge.company { background: #dbeafe; color: #1e40af; }
+.login-test-badge.admin { background: #fee2e2; color: #991b1b; }

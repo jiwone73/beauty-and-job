@@ -9,11 +9,21 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 
 type Step = "method" | "phone" | "verify";
+type UserType = "individual" | "company" | "admin";
+
+// 테스트용 계정
+const TEST_ACCOUNTS: Record<string, { name: string; type: UserType; redirect: string }> = {
+  "010-1234-5678": { name: "김지수", type: "individual", redirect: "/profile" },
+  "010-9999-0000": { name: "올리브영 HR", type: "company", redirect: "/company/dashboard" },
+  "010-0000-0001": { name: "관리자", type: "admin", redirect: "/admin" },
+};
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuthStore();
   const { name: savedName, phone: savedPhone } = useSignupStore();
+
+  const [userType, setUserType] = useState<"individual" | "company">("individual");
   const [step, setStep] = useState<Step>("method");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
@@ -29,6 +39,7 @@ export default function LoginPage() {
   };
 
   const rawPhone = phone.replace(/-/g, "");
+  const formattedForLookup = `${rawPhone.slice(0,3)}-${rawPhone.slice(3,7)}-${rawPhone.slice(7)}`;
   const isValidPhone = rawPhone.length === 11 && rawPhone.startsWith("01");
 
   const handleSendCode = async () => {
@@ -48,17 +59,33 @@ export default function LoginPage() {
     setVerifying(false);
 
     if (code === "123456") {
-      // 저장된 회원 정보와 전화번호 매칭
+      // 테스트 계정 매칭
+      const testAccount = TEST_ACCOUNTS[formattedForLookup];
+      if (testAccount) {
+        login({ userName: testAccount.name, userPhone: rawPhone });
+        router.push(testAccount.redirect);
+        return;
+      }
+
+      // 일반 회원가입 유저 매칭
       const matchedName = savedPhone.replace(/-/g, "") === rawPhone ? savedName : "";
-      login({ userName: matchedName, userPhone: rawPhone });
-      router.push("/");
+
+      if (userType === "company") {
+        login({ userName: matchedName || "기업담당자", userPhone: rawPhone });
+        router.push("/company/dashboard");
+      } else {
+        login({ userName: matchedName, userPhone: rawPhone });
+        router.push("/profile");
+      }
     } else {
       setError("인증번호가 올바르지 않습니다. (테스트: 123456)");
     }
   };
 
   const handleKakaoLogin = () => {
-    alert("카카오 로그인은 카카오 개발자 콘솔 연동 후 사용 가능합니다.");
+    // 카카오 로그인은 개인회원만
+    login({ userName: "카카오유저", userPhone: "" });
+    router.push("/profile");
   };
 
   return (
@@ -72,41 +99,86 @@ export default function LoginPage() {
       <main className="login-main">
         <div className="login-card">
           {step !== "method" && (
-            <button
-              className="login-back"
-              onClick={() => { setStep(step === "verify" ? "phone" : "method"); setError(""); setCode(""); }}
-            >
+            <button className="login-back"
+              onClick={() => { setStep(step === "verify" ? "phone" : "method"); setError(""); setCode(""); }}>
               <ChevronLeft size={18} /> 이전
             </button>
           )}
 
-          <h1 className="login-title">로그인</h1>
-          <p className="login-sub">뷰티앤잡에 오신 것을 환영해요</p>
+          {/* 개인/기업 탭 */}
+          {step === "method" && (
+            <div className="login-type-tabs">
+              <button
+                className={`login-type-tab ${userType === "individual" ? "active" : ""}`}
+                onClick={() => setUserType("individual")}>
+                개인회원
+              </button>
+              <button
+                className={`login-type-tab ${userType === "company" ? "active" : ""}`}
+                onClick={() => setUserType("company")}>
+                기업회원
+              </button>
+            </div>
+          )}
+
+          <h1 className="login-title">
+            {userType === "company" ? "기업 로그인" : "로그인"}
+          </h1>
+          <p className="login-sub">
+            {userType === "company"
+              ? "기업 담당자 계정으로 로그인해주세요"
+              : "뷰티앤잡에 오신 것을 환영해요"}
+          </p>
 
           {/* STEP 1: 방법 선택 */}
           {step === "method" && (
             <div className="login-methods">
-              <button className="login-kakao-btn" onClick={handleKakaoLogin}>
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                  <path d="M11 2C6.029 2 2 5.36 2 9.5c0 2.618 1.664 4.916 4.187 6.258L5.2 19.3c-.09.31.225.56.503.39l4.46-2.94A10.6 10.6 0 0011 17c4.971 0 9-3.36 9-7.5S15.971 2 11 2z" fill="#3A1D1D" />
-                </svg>
-                카카오로 로그인
-              </button>
-
-              <div className="login-divider"><span>또는</span></div>
+              {userType === "individual" && (
+                <>
+                  <button className="login-kakao-btn" onClick={handleKakaoLogin}>
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                      <path d="M11 2C6.029 2 2 5.36 2 9.5c0 2.618 1.664 4.916 4.187 6.258L5.2 19.3c-.09.31.225.56.503.39l4.46-2.94A10.6 10.6 0 0011 17c4.971 0 9-3.36 9-7.5S15.971 2 11 2z" fill="#3A1D1D" />
+                    </svg>
+                    카카오로 로그인
+                  </button>
+                  <div className="login-divider"><span>또는</span></div>
+                </>
+              )}
 
               <button className="login-phone-btn" onClick={() => setStep("phone")}>
-                휴대폰 번호로 로그인
+                {userType === "company" ? "📧 담당자 번호로 로그인" : "휴대폰 번호로 로그인"}
               </button>
 
               <p className="login-signup-hint">
-                아직 계정이 없으신가요?{" "}
-                <Link href="/signup" className="login-signup-link">회원가입</Link>
+                {userType === "company" ? (
+                  <>기업 계정이 없으신가요?{" "}
+                    <Link href="/company/signup" className="login-signup-link">기업 회원가입</Link>
+                  </>
+                ) : (
+                  <>아직 계정이 없으신가요?{" "}
+                    <Link href="/signup" className="login-signup-link">회원가입</Link>
+                  </>
+                )}
               </p>
 
-              <div className="login-kakao-notice">
-                <span className="login-kakao-notice-icon">💬</span>
-                <p>카카오 계정으로 가입하면 채용 알림을<br />카카오톡으로 바로 받을 수 있어요</p>
+              {/* 테스트 계정 안내 */}
+              <div className="login-test-accounts">
+                <p className="login-test-title">🧪 테스트 계정</p>
+                <div className="login-test-list">
+                  <div className="login-test-item">
+                    <span className="login-test-badge individual">개인</span>
+                    <span>010-1234-5678 → /profile</span>
+                  </div>
+                  <div className="login-test-item">
+                    <span className="login-test-badge company">기업</span>
+                    <span>010-9999-0000 → /company/dashboard</span>
+                  </div>
+                  <div className="login-test-item">
+                    <span className="login-test-badge admin">관리자</span>
+                    <span>010-0000-0001 → /admin</span>
+                  </div>
+                </div>
+                <p style={{fontSize:"11px", color:"#aaa", marginTop:"8px"}}>인증번호: 123456</p>
               </div>
             </div>
           )}
@@ -115,17 +187,15 @@ export default function LoginPage() {
           {step === "phone" && (
             <div className="login-form">
               <label className="login-label">휴대폰 번호</label>
-              <input
-                className={`login-input ${error ? "error" : ""}`}
-                type="tel"
-                placeholder="010-0000-0000"
+              <input className={`login-input ${error ? "error" : ""}`}
+                type="tel" placeholder="010-0000-0000"
                 value={phone}
                 onChange={(e) => { setPhone(formatPhone(e.target.value)); setError(""); }}
                 onKeyDown={(e) => e.key === "Enter" && handleSendCode()}
-                autoFocus
-              />
+                autoFocus />
               {error && <p className="login-error">{error}</p>}
-              <button className="login-submit-btn" onClick={handleSendCode} disabled={!isValidPhone || sending}>
+              <button className="login-submit-btn" onClick={handleSendCode}
+                disabled={!isValidPhone || sending}>
                 {sending ? "전송 중..." : "인증번호 받기"}
               </button>
               <p className="login-notice">가입된 계정의 휴대폰 번호를 입력해주세요.</p>
@@ -137,20 +207,19 @@ export default function LoginPage() {
             <div className="login-form">
               <p className="login-phone-display"><strong>{phone}</strong>으로 인증번호를 보냈어요</p>
               <label className="login-label">인증번호 6자리</label>
-              <input
-                className={`login-input login-input-code ${error ? "error" : ""}`}
-                type="number"
-                placeholder="123456"
+              <input className={`login-input login-input-code ${error ? "error" : ""}`}
+                type="number" placeholder="123456"
                 value={code}
                 onChange={(e) => { setCode(e.target.value.slice(0, 6)); setError(""); }}
                 onKeyDown={(e) => e.key === "Enter" && handleVerify()}
-                autoFocus
-              />
+                autoFocus />
               {error && <p className="login-error">{error}</p>}
-              <button className="login-submit-btn" onClick={handleVerify} disabled={code.length !== 6 || verifying}>
+              <button className="login-submit-btn" onClick={handleVerify}
+                disabled={code.length !== 6 || verifying}>
                 {verifying ? "확인 중..." : "로그인"}
               </button>
-              <button className="login-resend-btn" onClick={() => { setCode(""); setError(""); handleSendCode(); }}>
+              <button className="login-resend-btn"
+                onClick={() => { setCode(""); setError(""); handleSendCode(); }}>
                 인증번호 재전송
               </button>
             </div>
