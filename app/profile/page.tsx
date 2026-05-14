@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
+import { useApplicationStore } from "@/lib/store/applicationStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { CAREER_LABELS } from "@/lib/constants";
 import CareerVerifyModal from "@/components/profile/CareerVerifyModal";

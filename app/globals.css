@@ -6776,3 +6776,15 @@ input[type="range"].career-slider::-moz-range-thumb {
   transition: color 0.15s;
 }
 .admin-login-back-link:hover { color: #5f0080; }
+
+/* 지원완료 버튼 */
+.job-detail-apply-btn.applied {
+  background: #e5e5e5 !important;
+  color: #888 !important;
+  cursor: default !important;
+}
+.job-detail-mobile-apply.applied {
+  background: #e5e5e5 !important;
+  color: #888 !important;
+  cursor: default !important;
+}

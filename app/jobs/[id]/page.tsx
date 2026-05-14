@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useApplicationStore } from "@/lib/store/applicationStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import Link from "next/link";
 import Image from "next/image";
@@ -142,6 +143,8 @@ export default function JobDetailPage() {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
   const { isLoggedIn, userName } = useAuthStore();
+  const { apply, isApplied } = useApplicationStore();
+  const alreadyApplied = job ? isApplied(String(job.id)) : false;
   const { toggle: toggleBookmark, isBookmarked } = useBookmarkStore();
 
   return (
@@ -348,8 +351,10 @@ export default function JobDetailPage() {
               마감일: <strong>{job.deadline}</strong>
             </div>
             <button
-              className="job-detail-apply-btn"
+              className={`job-detail-apply-btn ${alreadyApplied ? "applied" : ""}`}
+              disabled={alreadyApplied}
               onClick={() => {
+                if (alreadyApplied) return;
                 if (!isLoggedIn) {
                   setShowLoginPrompt(true);
                 } else {
@@ -357,7 +362,7 @@ export default function JobDetailPage() {
                 }
               }}
             >
-              지원하기
+              {alreadyApplied ? "✓ 지원완료" : "지원하기"}
             </button>
             <button
               className={`job-detail-aside-bookmark ${bookmarked ? "active" : ""}`}
@@ -379,8 +384,10 @@ export default function JobDetailPage() {
           <Bookmark size={20} fill={bookmarked ? "currentColor" : "none"} />
         </button>
         <button
-          className="job-detail-mobile-apply"
+          className={`job-detail-mobile-apply ${alreadyApplied ? "applied" : ""}`}
+          disabled={alreadyApplied}
           onClick={() => {
+            if (alreadyApplied) return;
             if (!isLoggedIn) {
               setShowLoginPrompt(true);
             } else {
@@ -388,7 +395,7 @@ export default function JobDetailPage() {
             }
           }}
         >
-          지원하기
+          {alreadyApplied ? "✓ 지원완료" : "지원하기"}
         </button>
       </div>
 
