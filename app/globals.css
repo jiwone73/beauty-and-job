@@ -7184,11 +7184,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 /* hero-inner grid 수정 */
-.hero-inner {
-  grid-template-columns: 1fr 360px !important;
-}
 
-@media (max-width: 900px) {
+
+@media (max-width: 1024px) {
+  .hero-inner { grid-template-columns: 1fr 280px !important; }
+  .hero-visual { display: none; }
+}
+@media (max-width: 768px) {
   .hero-inner { grid-template-columns: 1fr !important; }
   .hero-cards-wrap { flex-direction: row; }
   .hero-ai-card, .hero-strategy-card { flex: 1; }

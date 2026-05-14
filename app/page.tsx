@@ -153,6 +153,11 @@ function Hero() {
 
         </div>
 
+        {/* 가운데: 비주얼 */}
+        <div className="hero-visual" aria-hidden="true">
+          <HeroVisual />
+        </div>
+
         {/* 오른쪽: 카드 2개 */}
         <div className="hero-cards-wrap">
           {/* 카드1: AI 맞춤 추천 */}
