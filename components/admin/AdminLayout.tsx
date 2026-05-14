@@ -139,9 +139,9 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
         </nav>
 
         <div className="admin-sidebar-bottom">
-          <button className="admin-nav-item" onClick={() => router.push("/")}>
+          <button className="admin-nav-item" onClick={() => router.push("/admin/login")}>
             <LogOut size={20} />
-            {sidebarOpen && <span>사이트로 이동</span>}
+            {sidebarOpen && <span>로그아웃</span>}
           </button>
         </div>
       </aside>

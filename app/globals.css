@@ -6636,3 +6636,143 @@ input[type="range"].career-slider::-moz-range-thumb {
 .login-test-badge.individual { background: #f5eaff; color: #5f0080; }
 .login-test-badge.company { background: #dbeafe; color: #1e40af; }
 .login-test-badge.admin { background: #fee2e2; color: #991b1b; }
+
+/* ============================================
+   관리자 로그인 페이지
+   ============================================ */
+.admin-login-page {
+  min-height: 100vh;
+  background: #f5f6fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.admin-login-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.admin-login-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.admin-login-badge {
+  padding: 3px 10px;
+  background: #5f0080;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 20px;
+}
+.admin-login-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 6px;
+}
+.admin-login-sub {
+  font-size: 14px;
+  color: #888;
+  margin: 0 0 28px;
+}
+.admin-login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.admin-login-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+.admin-login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.admin-login-input-icon {
+  position: absolute;
+  left: 12px;
+  color: #aaa;
+}
+.admin-login-input {
+  width: 100%;
+  padding: 12px 12px 12px 38px;
+  font-size: 14px;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.admin-login-input:focus { border-color: #5f0080; }
+.admin-login-input.error { border-color: #ef4444; }
+.admin-login-pw-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+.admin-login-pw-toggle:hover { color: #5f0080; }
+.admin-login-error {
+  font-size: 13px;
+  color: #ef4444;
+  margin: 0 0 12px;
+}
+.admin-login-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: #5f0080;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: inherit;
+  margin-bottom: 20px;
+}
+.admin-login-btn:hover { background: #4a0066; }
+.admin-login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.admin-login-test {
+  padding: 14px;
+  background: #fafafa;
+  border: 1px dashed #e5e5e5;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.admin-login-test-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #666;
+  margin: 0 0 8px;
+}
+.admin-login-test-item {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #666;
+}
+.admin-login-test-item strong { color: #5f0080; }
+.admin-login-footer { text-align: center; }
+.admin-login-back-link {
+  font-size: 13px;
+  color: #888;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.admin-login-back-link:hover { color: #5f0080; }
