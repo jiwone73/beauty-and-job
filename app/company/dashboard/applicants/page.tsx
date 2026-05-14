@@ -6,6 +6,7 @@ import {
   Search, FileText, Bell, LogOut, Settings, Plus, X
 } from "lucide-react";
 import Link from "next/link";
+import CompanyLayout from "@/components/company/CompanyLayout";
 
 const APPLICANTS = [
   { id: 1, name: "김지수", age: 28, gender: "여", job: "디지털 마케팅 매니저", career: "경력 3년", location: "서울 강남구", date: "2025.01.20", viewed: false, scrapped: false, status: "검토중" },
