@@ -7126,3 +7126,70 @@ input[type="range"].career-slider::-moz-range-thumb {
 .hero-ai-guest-item:hover { background: #f0e5ff; border-color: #e0ccf0; color: #5f0080; }
 .hero-ai-guest-arrow { margin-left: auto; color: #ccc; font-size: 14px; }
 .hero-ai-guest-item:hover .hero-ai-guest-arrow { color: #5f0080; }
+
+/* 히어로 카드 2개 레이아웃 */
+.hero-cards-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.hero-ai-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(95,0,128,0.08);
+  border: 1px solid #f0e0f8;
+}
+.hero-ai-items { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+
+/* 취업 전략 카드 */
+.hero-strategy-card {
+  background: linear-gradient(135deg, #f5eaff 0%, #e8d5f5 100%);
+  border-radius: 16px;
+  padding: 20px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid #e0ccf0;
+  transition: all 0.15s;
+}
+.hero-strategy-card:hover { background: linear-gradient(135deg, #ede0f5 0%, #ddc8f0 100%); }
+.hero-strategy-visual {
+  display: flex;
+  gap: 6px;
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+.hero-strategy-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.4;
+}
+.hero-strategy-sub {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+.hero-strategy-btn {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5f0080;
+}
+
+/* hero-inner grid 수정 */
+.hero-inner {
+  grid-template-columns: 1fr 360px !important;
+}
+
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr !important; }
+  .hero-cards-wrap { flex-direction: row; }
+  .hero-ai-card, .hero-strategy-card { flex: 1; }
+}
