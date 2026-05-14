@@ -42,7 +42,7 @@ const JOBS = [
   { id: 30, brand: "메디큐브", tags: ["디바이스", "홈케어"], category: null, title: "데이터 분석가 (마케팅)", jobType: "경영·전략", career: "경력 2-4년", region: "국내", thumbnail: null, color: "#fff8e1" },
 ];
 
-const JOB_TYPES = ["마케팅", "상품기획·개발", "영업", "디자인", "MD", "SCM·물류", "경영·전략", "품질관리", "CS·CX", "연구개발(RA)", "미디어"];
+const JOB_TYPES = ["마케팅", "MD", "영업", "디자인", "연구개발(RA)", "SCM·물류", "HR", "경영지원"];
 const CAREER_OPTIONS = ["신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상", "경력 무관"];
 const CATEGORIES = ["스킨케어", "색조", "헤어", "바디", "향수", "건기식", "디바이스", "맨즈케어", "네일", "뷰티툴", "OEM", "ODM", "플랫폼", "유통사", "MCN"];
 
