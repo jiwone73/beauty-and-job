@@ -139,6 +139,8 @@ export default function JobDetailPage() {
   const [bookmarked, setBookmarked] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [applyDone, setApplyDone] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [applySuccess, setApplySuccess] = useState(false);
   const { isLoggedIn, userName } = useAuthStore();
   const { toggle: toggleBookmark, isBookmarked } = useBookmarkStore();
 
@@ -347,7 +349,13 @@ export default function JobDetailPage() {
             </div>
             <button
               className="job-detail-apply-btn"
-              onClick={() => setShowApplyModal(true)}
+              onClick={() => {
+                if (!isLoggedIn) {
+                  setShowLoginPrompt(true);
+                } else {
+                  setShowApplyModal(true);
+                }
+              }}
             >
               지원하기
             </button>
@@ -372,7 +380,13 @@ export default function JobDetailPage() {
         </button>
         <button
           className="job-detail-mobile-apply"
-          onClick={() => setShowApplyModal(true)}
+          onClick={() => {
+            if (!isLoggedIn) {
+              setShowLoginPrompt(true);
+            } else {
+              setShowApplyModal(true);
+            }
+          }}
         >
           지원하기
         </button>
