@@ -72,31 +72,20 @@ function Header() {
    히어로 섹션
    ============================================ */
 const JOB_OPTIONS = ["마케팅", "MD", "영업", "디자인", "연구개발(RA)", "SCM·물류", "HR", "경영지원"];
-const CAREER_OPTIONS = ["신입", "1~3년", "3~5년", "5~7년", "7~10년", "10년 이상"];
-const REGION_OPTIONS = ["서울", "경기", "인천", "부산", "대구", "광주", "대전", "해외"];
-const BRAND_OPTIONS = ["올리브영", "아모레퍼시픽", "LG생활건강", "이니스프리", "샤넬코리아", "에스티로더"];
+const REGION_OPTIONS = ["지역 전체", "서울", "경기", "인천", "부산", "대구", "광주", "대전", "해외"];
 
 function Hero() {
   const router = useRouter();
-  const [job, setJob] = useState("");
-  const [career, setCareer] = useState("");
-  const [region, setRegion] = useState("");
-  const [brand, setBrand] = useState("");
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-
-  const toggleDropdown = (name: string) => {
-    setOpenDropdown(openDropdown === name ? null : name);
-  };
+  const [region, setRegion] = useState("지역 전체");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showRegionDrop, setShowRegionDrop] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (job) params.set("job", job);
-    if (career) params.set("career", career);
-    if (region) params.set("region", region);
-    if (brand) params.set("brand", brand);
+    if (region !== "지역 전체") params.set("region", region);
+    if (searchQuery.trim()) params.set("q", searchQuery.trim());
     router.push(`/jobs${params.toString() ? "?" + params.toString() : ""}`);
-    setOpenDropdown(null);
   };
 
   const handleHashtag = (tag: string) => {
@@ -104,7 +93,7 @@ function Hero() {
   };
 
   return (
-    <section className="hero" onClick={() => setOpenDropdown(null)}>
+    <section className="hero" onClick={() => setShowRegionDrop(false)}>
       <div className="hero-inner">
         <div className="hero-text">
           <h1 className="hero-title">
@@ -117,103 +106,44 @@ function Hero() {
             <br />한 번에
           </p>
 
-          <form className="search-box" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
-            {/* 직무 선택 */}
-            <div className="search-select-wrap">
-              <button
-                type="button"
-                className={`search-select ${openDropdown === "job" ? "active" : ""}`}
-                onClick={() => toggleDropdown("job")}
-              >
-                <span>{job || "직무 선택"}</span>
+          {/* 심플 검색창 */}
+          <form className="hero-search-bar" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
+            {/* 지역 드롭다운 */}
+            <div className="hero-region-wrap">
+              <button type="button" className="hero-region-btn"
+                onClick={() => setShowRegionDrop(!showRegionDrop)}>
+                <MapPin size={14} />
+                <span>{region}</span>
                 <i className="caret" />
               </button>
-              {openDropdown === "job" && (
-                <div className="search-dropdown">
-                  {JOB_OPTIONS.map((o) => (
-                    <button key={o} type="button" className={`search-dropdown-item ${job === o ? "selected" : ""}`}
-                      onClick={() => { setJob(o); setOpenDropdown(null); }}>
-                      {o}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 경력 선택 */}
-            <div className="search-select-wrap">
-              <button
-                type="button"
-                className={`search-select ${openDropdown === "career" ? "active" : ""}`}
-                onClick={() => toggleDropdown("career")}
-              >
-                <span>{career || "경력 선택"}</span>
-                <i className="caret" />
-              </button>
-              {openDropdown === "career" && (
-                <div className="search-dropdown">
-                  {CAREER_OPTIONS.map((o) => (
-                    <button key={o} type="button" className={`search-dropdown-item ${career === o ? "selected" : ""}`}
-                      onClick={() => { setCareer(o); setOpenDropdown(null); }}>
-                      {o}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 지역 선택 */}
-            <div className="search-select-wrap">
-              <button
-                type="button"
-                className={`search-select ${openDropdown === "region" ? "active" : ""}`}
-                onClick={() => toggleDropdown("region")}
-              >
-                <span>{region || "지역 선택"}</span>
-                <i className="caret" />
-              </button>
-              {openDropdown === "region" && (
-                <div className="search-dropdown">
+              {showRegionDrop && (
+                <div className="hero-region-drop">
                   {REGION_OPTIONS.map((o) => (
-                    <button key={o} type="button" className={`search-dropdown-item ${region === o ? "selected" : ""}`}
-                      onClick={() => { setRegion(o); setOpenDropdown(null); }}>
+                    <button key={o} type="button"
+                      className={`hero-region-item ${region === o ? "selected" : ""}`}
+                      onClick={() => { setRegion(o); setShowRegionDrop(false); }}>
                       {o}
                     </button>
                   ))}
                 </div>
               )}
             </div>
-
-            {/* 브랜드 선택 */}
-            <div className="search-select-wrap">
-              <button
-                type="button"
-                className={`search-select ${openDropdown === "brand" ? "active" : ""}`}
-                onClick={() => toggleDropdown("brand")}
-              >
-                <span>{brand || "브랜드 선택"}</span>
-                <i className="caret" />
-              </button>
-              {openDropdown === "brand" && (
-                <div className="search-dropdown">
-                  {BRAND_OPTIONS.map((o) => (
-                    <button key={o} type="button" className={`search-dropdown-item ${brand === o ? "selected" : ""}`}
-                      onClick={() => { setBrand(o); setOpenDropdown(null); }}>
-                      {o}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <button type="submit" className="search-btn">
-              <Search size={16} />
-              검색하기
+            <div className="hero-search-divider" />
+            <input
+              className="hero-search-input"
+              type="text"
+              placeholder="직무, 회사, 키워드로 검색"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="submit" className="hero-search-btn">
+              <Search size={20} />
             </button>
           </form>
 
+          {/* 해시태그 */}
           <div className="hashtags">
-            {["마케팅", "MD·상품기획", "BM·브랜드", "영업", "신입채용"].map((tag) => (
+            {["마케팅", "MD", "영업", "신입채용", "글로벌"].map((tag) => (
               <button key={tag} className="hashtag" type="button" onClick={() => handleHashtag(tag)}>
                 # {tag}
               </button>
@@ -223,6 +153,20 @@ function Hero() {
 
         <div className="hero-visual" aria-hidden="true">
           <HeroVisual />
+        </div>
+      </div>
+
+      {/* 배너 광고 영역 */}
+      <div className="hero-banner-wrap">
+        <div className="hero-banner">
+          <div className="hero-banner-content">
+            <div className="hero-banner-text">
+              <span className="hero-banner-badge">광고</span>
+              <p className="hero-banner-title">뷰티앤잡과 함께 성장하세요</p>
+              <p className="hero-banner-sub">뷰티 업계 1등 채용 플랫폼, 지금 바로 시작하세요</p>
+            </div>
+            <Link href="/company" className="hero-banner-btn">기업 서비스 보기 →</Link>
+          </div>
         </div>
       </div>
     </section>

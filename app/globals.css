@@ -6788,3 +6788,187 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #888 !important;
   cursor: default !important;
 }
+
+/* ============================================
+   히어로 심플 검색바
+   ============================================ */
+.hero-search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  padding: 6px 6px 6px 16px;
+  max-width: 540px;
+  width: 100%;
+  margin-bottom: 20px;
+  position: relative;
+}
+.hero-region-wrap { position: relative; flex-shrink: 0; }
+.hero-region-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5f0080;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.hero-region-btn .caret {
+  border: 4px solid transparent;
+  border-top-color: #5f0080;
+  margin-top: 3px;
+}
+.hero-region-drop {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  min-width: 120px;
+  z-index: 100;
+  overflow: hidden;
+  padding: 4px;
+}
+.hero-region-item {
+  display: block;
+  width: 100%;
+  padding: 9px 14px;
+  font-size: 14px;
+  color: #444;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.12s;
+}
+.hero-region-item:hover { background: #f5eaff; color: #5f0080; }
+.hero-region-item.selected { color: #5f0080; font-weight: 700; background: #f5eaff; }
+.hero-search-divider {
+  width: 1px;
+  height: 20px;
+  background: #e5e5e5;
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+.hero-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: #1a1a1a;
+  background: transparent;
+  font-family: inherit;
+  min-width: 0;
+}
+.hero-search-input::placeholder { color: #aaa; }
+.hero-search-btn {
+  width: 44px;
+  height: 44px;
+  background: #5f0080;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.hero-search-btn:hover { background: #4a0066; }
+
+/* 배너 광고 영역 */
+.hero-banner-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.hero-banner {
+  background: linear-gradient(135deg, #5f0080 0%, #9b59b6 100%);
+  border-radius: 16px;
+  padding: 24px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-banner::before {
+  content: "";
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 160px;
+  height: 160px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.hero-banner::after {
+  content: "";
+  position: absolute;
+  bottom: -40px;
+  right: 100px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+}
+.hero-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+.hero-banner-text { display: flex; flex-direction: column; gap: 4px; }
+.hero-banner-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 20px;
+  width: fit-content;
+  margin-bottom: 4px;
+}
+.hero-banner-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+}
+.hero-banner-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  margin: 0;
+}
+.hero-banner-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  background: #fff;
+  color: #5f0080;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 50px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.hero-banner-btn:hover { background: #f5eaff; }
+
+@media (max-width: 640px) {
+  .hero-search-bar { max-width: 100%; }
+  .hero-banner-content { flex-direction: column; align-items: flex-start; }
+  .hero-banner { padding: 20px; }
+  .hero-banner-title { font-size: 16px; }
+}
