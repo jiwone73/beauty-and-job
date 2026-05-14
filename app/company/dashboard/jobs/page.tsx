@@ -8,61 +8,6 @@ import {
   Bell, LogOut, Plus, Search, Eye, Edit, X, Trash2
 } from "lucide-react";
 
-function CompanyLayout({ children, activePage }: { children: React.ReactNode; activePage: string }) {
-  const router = useRouter();
-  const NAV = [
-    { id: "dashboard", label: "대시보드", icon: Briefcase, href: "/company/dashboard" },
-    { id: "jobs", label: "채용공고 관리", icon: FileText, href: "/company/dashboard/jobs" },
-    { id: "applicants", label: "지원자 관리", icon: Users, href: "/company/dashboard/applicants" },
-    { id: "settings", label: "기업 정보", icon: Settings, href: "/company/dashboard/settings" },
-  ];
-  const PAGE_TITLES: Record<string, string> = {
-    dashboard: "대시보드", jobs: "채용공고 관리",
-    applicants: "지원자 관리", settings: "기업 정보",
-  };
-  return (
-    <div className="company-layout">
-      <aside className="company-sidebar">
-        <div className="company-sidebar-logo">
-          <Link href="/company/dashboard" className="company-logo-link">
-            <div className="company-logo-avatar">{COMPANY.name.slice(0,1)}</div>
-            <div className="company-logo-info">
-              <span className="company-logo-name">{COMPANY.name}</span>
-              <span className="company-logo-category">{COMPANY.category}</span>
-            </div>
-          </Link>
-        </div>
-        <nav className="company-nav">
-          {NAV.map((item) => (
-            <Link key={item.id} href={item.href}
-              className={`company-nav-item ${activePage === item.id ? "active" : ""}`}>
-              <item.icon size={20} /><span>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-        <div className="company-sidebar-bottom">
-          <button className="company-nav-item" onClick={() => router.push("/")}>
-            <LogOut size={20} /><span>사이트로 이동</span>
-          </button>
-        </div>
-      </aside>
-      <div className="company-main">
-        <header className="company-header">
-          <h1 className="company-page-title">{PAGE_TITLES[activePage]}</h1>
-          <div className="company-header-right">
-            <button className="company-header-btn"><Bell size={18} /><span className="company-notif-dot" /></button>
-            <div className="company-profile">
-              <div className="company-avatar">{COMPANY.name.slice(0,1)}</div>
-              <span className="company-name">{COMPANY.name}</span>
-            </div>
-          </div>
-        </header>
-        <main className="company-content">{children}</main>
-      </div>
-    </div>
-  );
-}
-
 const INIT_JOBS = [
   { id: 1, title: "디지털 마케팅 매니저", category: "마케팅", career: "경력 3-5년", region: "서울", type: "정규직", deadline: "2025.02.28", applicants: 34, views: 412, status: "진행중", date: "2025.01.10" },
   { id: 2, title: "MD - 색조 카테고리", category: "MD", career: "경력 2-4년", region: "서울", type: "정규직", deadline: "2025.02.15", applicants: 28, views: 287, status: "진행중", date: "2025.01.08" },
