@@ -7798,3 +7798,17 @@ input[type="range"].career-slider::-moz-range-thumb {
 .mob-menu-badge.gray { background: #f0f0f0; color: #666; }
 .mob-menu-badge.purple { background: #f0e8ff; color: #5f0080; }
 .mob-menu-divider { height: 1px; background: #f0f0f0; margin: 8px 0; }
+
+/* 햄버거 버튼 항상 맨 오른쪽 */
+.mob-hamburger { order: 99; }
+
+@media (max-width: 768px) {
+  /* 회원가입 모바일에서 텍스트만 */
+  .header-right .btn-primary {
+    background: none !important;
+    color: #1a1a1a !important;
+    font-weight: 700;
+    padding: 0 4px !important;
+    box-shadow: none !important;
+  }
+}

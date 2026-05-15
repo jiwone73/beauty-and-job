@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Building2, Menu, X, LogIn } from "lucide-react";
+import { Search, Building2, Menu, X } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -50,12 +50,8 @@ function AuthButtons() {
 
   return (
     <>
-      {/* 비로그인: PC=텍스트, 모바일=LogIn 아이콘 */}
-      <Link href="/login" className="btn btn-text gnb-login-btn">
-        <span className="gnb-pc-only">로그인</span>
-        <span className="gnb-mobile-only"><LogIn size={22} strokeWidth={1.8} /></span>
-      </Link>
-      <Link href="/signup" className="btn btn-primary">회원가입</Link>
+      <Link href="/login" className="btn btn-text">로그인</Link>
+      <Link href="/signup" className="btn btn-text" style={{fontWeight:700, color:"#1a1a1a"}}>회원가입</Link>
       <Link href="/company/login" className="btn btn-dark gnb-biz-btn">
         <Building2 size={16} />기업 서비스
       </Link>
