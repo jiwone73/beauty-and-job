@@ -237,12 +237,12 @@ export default function ResumePage() {
           <button
             className={`resume-type-tab ${resumeType === "office" ? "active" : ""}`}
             onClick={() => setResumeType("office")}>
-            🏢 기업·사무직
+            🏢 기업
           </button>
           <button
             className={`resume-type-tab ${resumeType === "salon" ? "active" : ""}`}
             onClick={() => setResumeType("salon")}>
-            💄 매장·기술직
+            🏪 매장
           </button>
         </div>
       </div>
