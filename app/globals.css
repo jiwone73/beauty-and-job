@@ -6892,19 +6892,9 @@ input[type="range"].career-slider::-moz-range-thumb {
    히어로 배너 (맨 위)
    ============================================ */
 .hero-banner-top {
-  background: linear-gradient(135deg, #5f0080 0%, #9b59b6 100%);
-  padding: 0;
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-  height: 80px;
-  display: flex;
-  align-items: center;
-
   max-width: 1280px;
-  margin: 0 auto;
+  margin: -12px auto 0;
   padding: 0 32px;
-  border-radius: 12px;
 }
 .hero-banner-top::before {
   content: "";
@@ -6923,13 +6913,17 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-radius: 50%;
 }
 .hero-banner-top-inner {
+  background: linear-gradient(135deg, #5f0080 0%, #9b59b6 100%);
   width: 100%;
-  padding: 0 40px;
+  height: 80px;
+  padding: 0 32px;
   display: flex;
   align-items: center;
   gap: 14px;
   position: relative;
   z-index: 1;
+  border-radius: 12px;
+  overflow: hidden;
 }
 .hero-banner-badge {
   display: inline-block;
