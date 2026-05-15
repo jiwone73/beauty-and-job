@@ -33,7 +33,7 @@ function AuthButtons() {
             </div>
           )}
         </div>
-        <Link href="/login?type=company" className="btn btn-dark"><Building2 size={16} />기업 서비스</Link>
+        <Link href="/company/login" className="btn btn-dark"><Building2 size={16} />기업 서비스</Link>
       </>
     );
   }
@@ -42,7 +42,7 @@ function AuthButtons() {
     <>
       <Link href="/login" className="btn btn-text">로그인</Link>
       <Link href="/signup" className="btn btn-primary">회원가입</Link>
-      <Link href="/login?type=company" className="btn btn-dark"><Building2 size={16} />기업 서비스</Link>
+      <Link href="/company/login" className="btn btn-dark"><Building2 size={16} />기업 서비스</Link>
     </>
   );
 }

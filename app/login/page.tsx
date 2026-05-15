@@ -1,14 +1,14 @@
 "use client";
 import { Suspense } from "react";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 
 type Step = "phone" | "verify";
-type UserType = "individual" | "company";
+type UserType = "individual";
 
 const TEST_ACCOUNTS: Record<string, { name: string; type: string; redirect: string }> = {
   "010-1234-5678": { name: "김지수", type: "individual", redirect: "/profile" },
@@ -18,13 +18,9 @@ const TEST_ACCOUNTS: Record<string, { name: string; type: string; redirect: stri
 
 function LoginPageInner() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { login } = useAuthStore();
 
-  const isCompanyOnly = searchParams.get("type") === "company";
-  const [userType, setUserType] = useState<UserType>(
-    isCompanyOnly ? "company" : "individual"
-  );
+  const [userType, setUserType] = useState<UserType>("individual");
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
@@ -70,28 +66,13 @@ function LoginPageInner() {
       </div>
 
       <div className="login-main"><div className="login-card">
-        {!isCompanyOnly && (
-          <div className="login-type-tabs">
-            <button
-              className={`login-type-tab ${userType === "individual" ? "active" : ""}`}
-              onClick={() => setUserType("individual")}>
-              개인회원
-            </button>
-            <button
-              className={`login-type-tab ${userType === "company" ? "active" : ""}`}
-              onClick={() => setUserType("company")}>
-              기업회원
-            </button>
-          </div>
-        )}
+        
 
         <h2 className="login-title">
-          {userType === "company" ? "기업 로그인" : "로그인"}
+          {"로그인"}
         </h2>
         <p className="login-sub">
-          {userType === "company"
-            ? "기업 담당자 계정으로 로그인해주세요"
-            : "뷰티앤잡에 오신 것을 환영해요"}
+          {"뷰티앤잡에 오신 것을 환영해요"}
         </p>
 
         {step === "phone" ? (
@@ -133,7 +114,7 @@ function LoginPageInner() {
           </div>
         )}
 
-        {userType === "individual" && !isCompanyOnly && (
+        {userType === "individual" && (
           <p className="login-signup-link">
             아직 회원이 아니신가요?{" "}
             <Link href="/signup" className="login-signup-anchor">회원가입</Link>
