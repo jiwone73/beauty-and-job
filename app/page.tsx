@@ -79,12 +79,14 @@ function Hero() {
   const [region, setRegion] = useState("지역 전체");
   const [searchQuery, setSearchQuery] = useState("");
   const [showRegionDrop, setShowRegionDrop] = useState(false);
+  const [jobType, setJobType] = useState<"기업" | "매장">("기업");
 
   const REGION_OPTIONS = ["지역 전체", "서울", "경기", "인천", "부산", "대구", "광주", "대전", "해외"];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
+    params.set("type", jobType);
     if (region !== "지역 전체") params.set("region", region);
     if (searchQuery.trim()) params.set("q", searchQuery.trim());
     router.push(`/jobs${params.toString() ? "?" + params.toString() : ""}`);
@@ -116,6 +118,19 @@ function Hero() {
             뷰티 업계 채용, 이직, 커리어까지<br />한 번에
           </p>
           <form className="hero-search-bar" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
+            <div className="hero-type-toggle">
+              <button type="button"
+                className={`hero-type-btn ${jobType === "기업" ? "active" : ""}`}
+                onClick={() => setJobType("기업")}>
+                🏢 기업
+              </button>
+              <button type="button"
+                className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`}
+                onClick={() => setJobType("매장")}>
+                🏪 매장
+              </button>
+            </div>
+            <div className="hero-search-divider" />
             <div className="hero-region-wrap">
               <button type="button" className="hero-region-btn"
                 onClick={() => setShowRegionDrop(!showRegionDrop)}>

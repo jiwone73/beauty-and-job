@@ -7285,3 +7285,63 @@ input[type="range"].career-slider::-moz-range-thumb {
   .hero-right-cards { grid-template-columns: 1fr; }
   .hero-inner { padding: 32px 20px 0; }
 }
+
+/* 메인 검색바 기업/매장 토글 */
+.hero-type-toggle {
+  display: flex;
+  align-items: center;
+  background: #f3eaff;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.hero-type-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #7a4a9a;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.hero-type-btn.active {
+  background: #5f0080;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(95,0,128,0.25);
+}
+
+/* jobs 페이지 기업/매장 탭 */
+.jobs-type-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 20px 32px 0;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.jobs-type-tab {
+  padding: 8px 22px;
+  border-radius: 20px;
+  border: 1.5px solid #e0d0f0;
+  background: #fff;
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.jobs-type-tab.active {
+  background: #5f0080;
+  color: #fff;
+  border-color: #5f0080;
+  box-shadow: 0 2px 8px rgba(95,0,128,0.2);
+}
+.jobs-type-tab:hover:not(.active) {
+  border-color: #9b59b6;
+  color: #5f0080;
+}

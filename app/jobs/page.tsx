@@ -10,37 +10,53 @@ import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 
 /* ===== 더미 데이터 ===== */
 const JOBS = [
-  { id: 1, brand: "로지킴", tags: ["스킨케어", "색조"], category: "OEM", title: "일본, 동남아 해외영업", jobType: "스킨케어 · 색조 · OEM", career: "경력 무관", region: "일본 · 동남아 · 중국", thumbnail: null, color: "#f5e6e8" },
-  { id: 2, brand: "윗유", tags: ["브랜드 무관"], category: null, title: "[글로벌] 틱톡샵 어필리에이트 마케터", jobType: "마케팅", career: "신입 ~ 경력 무관", region: "북미", thumbnail: null, color: "#e8f0fe" },
-  { id: 3, brand: "아누아", tags: ["스킨케어"], category: null, title: "[인턴] [ANUA] 북미 틱톡샵 인플루언서 마케터", jobType: "스킨케어", career: "신입", region: "북미", thumbnail: null, color: "#e8f5e9" },
-  { id: 4, brand: "오가닉서라운딩", tags: ["브랜드 무관"], category: null, title: "채용 담당자", jobType: "HR", career: "경력 무관", region: "국내", thumbnail: null, color: "#fff3e0" },
-  { id: 5, brand: "윗유", tags: ["플랫폼", "MCN"], category: null, title: "[피플앤컬처] 커뮤니티 매니저 (총무)", jobType: "플랫폼 · MCN", career: "경력 2년 이상", region: "국내", thumbnail: null, color: "#f3e5f5" },
-  { id: 6, brand: "하야르", tags: ["리베니프", "신규 브랜드"], extraCount: 2, title: "[인턴] 제품 개발 담당자 (6개월 채용전환형)", jobType: "스킨케어 · 헤어 · 바디", career: "신입", region: "국내 · 북미", thumbnail: null, color: "#e1f5fe" },
-  { id: 7, brand: "하우스 오브 밸런스", tags: ["스킨케어", "바디"], category: null, title: "일본 온라인 MD", jobType: "MD", career: "경력 2-7년", region: "일본", thumbnail: null, color: "#fce4ec" },
-  { id: 8, brand: "하우스 오브 밸런스", tags: ["스킨케어", "바디"], category: null, title: "TikTok Shop 틱톡샵 MD (북미)", jobType: "MD", career: "경력 2-7년", region: "북미", thumbnail: null, color: "#e8eaf6" },
-  { id: 9, brand: "데이지크", tags: ["에프트블로우"], extraCount: 1, title: "구매 담당", jobType: "스킨케어 · 색조 · 향수", career: "경력 3년 이상", region: "국내", thumbnail: null, color: "#f1f8e9" },
-  { id: 10, brand: "파운더즈", tags: ["브랜드 총괄"], category: null, title: "파운더즈 글로벌 Demand & Supply 매니저", jobType: "SCM · 물류", career: "3년 이상", region: "대만 · 러시아", thumbnail: null, color: "#fff8e1" },
-  { id: 11, brand: "쏙쏙컴퍼니", tags: ["브랜드 총괄"], category: null, title: "[헤트라스] 국내 물류 담당자", jobType: "SCM · 물류", career: "경력 3년 이상", region: "국내", thumbnail: null, color: "#e0f2f1" },
-  { id: 12, brand: "하야르", tags: ["리베니프", "신규 브랜드"], extraCount: 2, title: "[아이리스브라이트] 국내 물류 담당자", jobType: "스킨케어 · 헤어 · 바디", career: "경력 2-5년", region: "북미 · 일본 · 동남아", thumbnail: null, color: "#ede7f6" },
-  { id: 13, brand: "올리브영", tags: ["리테일"], category: null, title: "디지털 마케팅 매니저", jobType: "마케팅", career: "경력 3-5년", region: "국내", thumbnail: null, color: "#e8f5e9" },
-  { id: 14, brand: "아모레퍼시픽", tags: ["스킨케어", "색조"], category: null, title: "글로벌 브랜드 마케터 (설화수)", jobType: "마케팅", career: "경력 5년 이상", region: "국내 · 해외", thumbnail: null, color: "#fce4ec" },
-  { id: 15, brand: "LG생활건강", tags: ["스킨케어"], category: null, title: "e커머스 MD (CNP)", jobType: "MD", career: "경력 2-4년", region: "국내", thumbnail: null, color: "#e8eaf6" },
-  { id: 16, brand: "코스맥스", tags: ["OEM", "ODM"], category: null, title: "화장품 연구원 (제형 개발)", jobType: "연구개발(RA)", career: "경력 3년 이상", region: "경기 성남", thumbnail: null, color: "#f3e8f7" },
-  { id: 17, brand: "에이피알", tags: ["멀티브랜드"], category: null, title: "퍼포먼스 마케터 (메디큐브)", jobType: "마케팅", career: "경력 2-5년", region: "국내", thumbnail: null, color: "#fff3e0" },
-  { id: 18, brand: "달바", tags: ["스킨케어", "글로벌"], category: null, title: "유럽 수출 영업 담당자", jobType: "영업", career: "경력 3년 이상", region: "유럽", thumbnail: null, color: "#e0f2f1" },
-  { id: 19, brand: "닥터자르트", tags: ["더마"], category: null, title: "브랜드 콘텐츠 기획자", jobType: "마케팅", career: "경력 2-4년", region: "국내", thumbnail: null, color: "#e8f0fe" },
-  { id: 20, brand: "아누아", tags: ["스킨케어"], category: null, title: "인플루언서 마케팅 매니저", jobType: "마케팅", career: "경력 1-3년", region: "국내", thumbnail: null, color: "#e8f5e9" },
-  { id: 21, brand: "메디큐브", tags: ["디바이스"], category: null, title: "제품 기획 MD (디바이스)", jobType: "MD", career: "경력 3-5년", region: "국내", thumbnail: null, color: "#fff8e1" },
-  { id: 22, brand: "라운드랩", tags: ["스킨케어", "클린뷰티"], category: null, title: "SNS 콘텐츠 마케터", jobType: "마케팅", career: "신입 · 경력 1-2년", region: "국내", thumbnail: null, color: "#e0f7fa" },
-  { id: 23, brand: "코스맥스", tags: ["ODM"], category: null, title: "품질관리 담당자 (QC)", jobType: "품질관리", career: "경력 2-5년", region: "경기 성남", thumbnail: null, color: "#f1f8e9" },
-  { id: 24, brand: "올리브영", tags: ["리테일"], category: null, title: "MD (스킨케어 카테고리)", jobType: "MD", career: "경력 2-4년", region: "국내", thumbnail: null, color: "#e8f5e9" },
-  { id: 25, brand: "에이피알", tags: ["글로벌"], category: null, title: "글로벌 영업 매니저 (북미)", jobType: "영업", career: "경력 3-6년", region: "북미", thumbnail: null, color: "#fff3e0" },
-  { id: 26, brand: "아모레퍼시픽", tags: ["경영"], category: null, title: "경영기획 담당자", jobType: "경영·전략", career: "경력 5년 이상", region: "국내", thumbnail: null, color: "#fce4ec" },
-  { id: 27, brand: "달바", tags: ["스킨케어"], category: null, title: "고객서비스 CS 담당자", jobType: "CS·CX", career: "경력 1-3년", region: "국내", thumbnail: null, color: "#e0f2f1" },
-  { id: 28, brand: "닥터자르트", tags: ["더마", "글로벌"], category: null, title: "글로벌 마케팅 인턴 (6개월)", jobType: "마케팅", career: "신입", region: "국내", thumbnail: null, color: "#e8eaf6" },
-  { id: 29, brand: "라운드랩", tags: ["스킨케어"], category: null, title: "상품 기획 MD (인턴)", jobType: "MD", career: "신입", region: "국내", thumbnail: null, color: "#e0f7fa" },
-  { id: 30, brand: "메디큐브", tags: ["디바이스", "홈케어"], category: null, title: "데이터 분석가 (마케팅)", jobType: "경영·전략", career: "경력 2-4년", region: "국내", thumbnail: null, color: "#fff8e1" },
+  { id: 1, brand: "로지킴", tags: ["스킨케어", "색조"], category: "OEM", title: "일본, 동남아 해외영업", jobType: "스킨케어 · 색조 · OEM", career: "경력 무관", region: "일본 · 동남아 · 중국", type: "기업", thumbnail: null, color: "#f5e6e8" },
+  { id: 2, brand: "윗유", tags: ["브랜드 무관"], category: null, title: "[글로벌] 틱톡샵 어필리에이트 마케터", jobType: "마케팅", career: "신입 ~ 경력 무관", region: "북미", type: "기업", thumbnail: null, color: "#e8f0fe" },
+  { id: 3, brand: "아누아", tags: ["스킨케어"], category: null, title: "[인턴] [ANUA] 북미 틱톡샵 인플루언서 마케터", jobType: "스킨케어", career: "신입", region: "북미", type: "기업", thumbnail: null, color: "#e8f5e9" },
+  { id: 4, brand: "오가닉서라운딩", tags: ["브랜드 무관"], category: null, title: "채용 담당자", jobType: "HR", career: "경력 무관", region: "국내", type: "기업", thumbnail: null, color: "#fff3e0" },
+  { id: 5, brand: "윗유", tags: ["플랫폼", "MCN"], category: null, title: "[피플앤컬처] 커뮤니티 매니저 (총무)", jobType: "플랫폼 · MCN", career: "경력 2년 이상", region: "국내", type: "기업", thumbnail: null, color: "#f3e5f5" },
+  { id: 6, brand: "하야르", tags: ["리베니프", "신규 브랜드"], extraCount: 2, title: "[인턴] 제품 개발 담당자 (6개월 채용전환형)", jobType: "스킨케어 · 헤어 · 바디", career: "신입", region: "국내 · 북미", type: "기업", thumbnail: null, color: "#e1f5fe" },
+  { id: 7, brand: "하우스 오브 밸런스", tags: ["스킨케어", "바디"], category: null, title: "일본 온라인 MD", jobType: "MD", career: "경력 2-7년", region: "일본", type: "기업", thumbnail: null, color: "#fce4ec" },
+  { id: 8, brand: "하우스 오브 밸런스", tags: ["스킨케어", "바디"], category: null, title: "TikTok Shop 틱톡샵 MD (북미)", jobType: "MD", career: "경력 2-7년", region: "북미", type: "기업", thumbnail: null, color: "#e8eaf6" },
+  { id: 9, brand: "데이지크", tags: ["에프트블로우"], extraCount: 1, title: "구매 담당", jobType: "스킨케어 · 색조 · 향수", career: "경력 3년 이상", region: "국내", type: "기업", thumbnail: null, color: "#f1f8e9" },
+  { id: 10, brand: "파운더즈", tags: ["브랜드 총괄"], category: null, title: "파운더즈 글로벌 Demand & Supply 매니저", jobType: "SCM · 물류", career: "3년 이상", region: "대만 · 러시아", type: "기업", thumbnail: null, color: "#fff8e1" },
+  { id: 11, brand: "쏙쏙컴퍼니", tags: ["브랜드 총괄"], category: null, title: "[헤트라스] 국내 물류 담당자", jobType: "SCM · 물류", career: "경력 3년 이상", region: "국내", type: "기업", thumbnail: null, color: "#e0f2f1" },
+  { id: 12, brand: "하야르", tags: ["리베니프", "신규 브랜드"], extraCount: 2, title: "[아이리스브라이트] 국내 물류 담당자", jobType: "스킨케어 · 헤어 · 바디", career: "경력 2-5년", region: "북미 · 일본 · 동남아", type: "기업", thumbnail: null, color: "#ede7f6" },
+  { id: 13, brand: "올리브영", tags: ["리테일"], category: null, title: "디지털 마케팅 매니저", jobType: "마케팅", career: "경력 3-5년", region: "국내", type: "기업", thumbnail: null, color: "#e8f5e9" },
+  { id: 14, brand: "아모레퍼시픽", tags: ["스킨케어", "색조"], category: null, title: "글로벌 브랜드 마케터 (설화수)", jobType: "마케팅", career: "경력 5년 이상", region: "국내 · 해외", type: "기업", thumbnail: null, color: "#fce4ec" },
+  { id: 15, brand: "LG생활건강", tags: ["스킨케어"], category: null, title: "e커머스 MD (CNP)", jobType: "MD", career: "경력 2-4년", region: "국내", type: "기업", thumbnail: null, color: "#e8eaf6" },
+  { id: 16, brand: "코스맥스", tags: ["OEM", "ODM"], category: null, title: "화장품 연구원 (제형 개발)", jobType: "연구개발(RA)", career: "경력 3년 이상", region: "경기 성남", type: "기업", thumbnail: null, color: "#f3e8f7" },
+  { id: 17, brand: "에이피알", tags: ["멀티브랜드"], category: null, title: "퍼포먼스 마케터 (메디큐브)", jobType: "마케팅", career: "경력 2-5년", region: "국내", type: "기업", thumbnail: null, color: "#fff3e0" },
+  { id: 18, brand: "달바", tags: ["스킨케어", "글로벌"], category: null, title: "유럽 수출 영업 담당자", jobType: "영업", career: "경력 3년 이상", region: "유럽", type: "기업", thumbnail: null, color: "#e0f2f1" },
+  { id: 19, brand: "닥터자르트", tags: ["더마"], category: null, title: "브랜드 콘텐츠 기획자", jobType: "마케팅", career: "경력 2-4년", region: "국내", type: "기업", thumbnail: null, color: "#e8f0fe" },
+  { id: 20, brand: "아누아", tags: ["스킨케어"], category: null, title: "인플루언서 마케팅 매니저", jobType: "마케팅", career: "경력 1-3년", region: "국내", type: "기업", thumbnail: null, color: "#e8f5e9" },
+  { id: 21, brand: "메디큐브", tags: ["디바이스"], category: null, title: "제품 기획 MD (디바이스)", jobType: "MD", career: "경력 3-5년", region: "국내", type: "기업", thumbnail: null, color: "#fff8e1" },
+  { id: 22, brand: "라운드랩", tags: ["스킨케어", "클린뷰티"], category: null, title: "SNS 콘텐츠 마케터", jobType: "마케팅", career: "신입 · 경력 1-2년", region: "국내", type: "기업", thumbnail: null, color: "#e0f7fa" },
+  { id: 23, brand: "코스맥스", tags: ["ODM"], category: null, title: "품질관리 담당자 (QC)", jobType: "품질관리", career: "경력 2-5년", region: "경기 성남", type: "기업", thumbnail: null, color: "#f1f8e9" },
+  { id: 24, brand: "올리브영", tags: ["리테일"], category: null, title: "MD (스킨케어 카테고리)", jobType: "MD", career: "경력 2-4년", region: "국내", type: "기업", thumbnail: null, color: "#e8f5e9" },
+  { id: 25, brand: "에이피알", tags: ["글로벌"], category: null, title: "글로벌 영업 매니저 (북미)", jobType: "영업", career: "경력 3-6년", region: "북미", type: "기업", thumbnail: null, color: "#fff3e0" },
+  { id: 26, brand: "아모레퍼시픽", tags: ["경영"], category: null, title: "경영기획 담당자", jobType: "경영·전략", career: "경력 5년 이상", region: "국내", type: "기업", thumbnail: null, color: "#fce4ec" },
+  { id: 27, brand: "달바", tags: ["스킨케어"], category: null, title: "고객서비스 CS 담당자", jobType: "CS·CX", career: "경력 1-3년", region: "국내", type: "기업", thumbnail: null, color: "#e0f2f1" },
+  { id: 28, brand: "닥터자르트", tags: ["더마", "글로벌"], category: null, title: "글로벌 마케팅 인턴 (6개월)", jobType: "마케팅", career: "신입", region: "국내", type: "기업", thumbnail: null, color: "#e8eaf6" },
+  { id: 29, brand: "라운드랩", tags: ["스킨케어"], category: null, title: "상품 기획 MD (인턴)", jobType: "MD", career: "신입", region: "국내", type: "기업", thumbnail: null, color: "#e0f7fa" },
+  { id: 30, brand: "메디큐브", tags: ["디바이스", "홈케어"], category: null, title: "데이터 분석가 (마케팅)", jobType: "경영·전략", career: "경력 2-4년", region: "국내", type: "기업", thumbnail: null, color: "#fff8e1" },
 ];
+
+
+const STORE_JOB_TYPES = ["뷰티어드바이저", "메이크업아티스트", "헤어디자이너", "네일아티스트", "피부관리사", "매장관리자"];
+
+const STORE_JOBS = [
+  { id: 101, brand: "올리브영", tags: ["리테일"], title: "뷰티어드바이저 (강남점)", jobType: "뷰티어드바이저", career: "경력 무관", region: "서울 강남", type: "매장", thumbnail: null, color: "#e8f5e9" },
+  { id: 102, brand: "아리따움", tags: ["스킨케어", "색조"], title: "뷰티 컨설턴트", jobType: "뷰티어드바이저", career: "경력 1년 이상", region: "서울", type: "매장", thumbnail: null, color: "#fce4ec" },
+  { id: 103, brand: "이니스프리", tags: ["스킨케어"], title: "매장 점장 (홍대점)", jobType: "매장관리자", career: "경력 3년 이상", region: "서울 마포", type: "매장", thumbnail: null, color: "#e0f2f1" },
+  { id: 104, brand: "헤라", tags: ["색조"], title: "백화점 메이크업 아티스트", jobType: "메이크업아티스트", career: "경력 2년 이상", region: "서울", type: "매장", thumbnail: null, color: "#f3e5f5" },
+  { id: 105, brand: "맥(MAC)", tags: ["색조"], title: "카운터 뷰티어드바이저", jobType: "뷰티어드바이저", career: "경력 1-3년", region: "서울", type: "매장", thumbnail: null, color: "#e8eaf6" },
+  { id: 106, brand: "에스티로더", tags: ["스킨케어", "색조"], title: "백화점 스킨케어 어드바이저", jobType: "뷰티어드바이저", career: "경력 2년 이상", region: "서울", type: "매장", thumbnail: null, color: "#fff8e1" },
+  { id: 107, brand: "클리오", tags: ["색조"], title: "H&B 매장 스태프", jobType: "뷰티어드바이저", career: "경력 무관", region: "경기", type: "매장", thumbnail: null, color: "#e0f7fa" },
+  { id: 108, brand: "세포라", tags: ["멀티브랜드"], title: "뷰티 어드바이저 (세포라 코리아)", jobType: "뷰티어드바이저", career: "경력 1년 이상", region: "서울", type: "매장", thumbnail: null, color: "#ede7f6" },
+];
+
+const ALL_JOBS = [...JOBS, ...STORE_JOBS];
 
 const JOB_TYPES = ["마케팅", "MD", "영업", "디자인", "연구개발(RA)", "SCM·물류", "HR", "경영지원"];
 const CAREER_OPTIONS = ["신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상", "경력 무관"];
@@ -50,12 +66,14 @@ function JobsPageInner() {
   const { job, careers: signupCareers } = useSignupStore() as any;
   const searchParams = useSearchParams();
 
+  const initType = searchParams.get("type") || "전체";
   const initJob = searchParams.get("job") || "직군 전체";
   const initCareer = searchParams.get("career") || "경력 전체";
   const initRegion = searchParams.get("region") || "";
   const initBrand = searchParams.get("brand") || "";
   const initSearch = searchParams.get("q") || "";
 
+  const [jobTypeFilter, setJobTypeFilter] = useState(initType);
   const [selectedJob, setSelectedJob] = useState(initJob);
   const [selectedCareer, setSelectedCareer] = useState(initCareer);
   const [selectedRegion, setSelectedRegion] = useState(initRegion);
@@ -80,14 +98,16 @@ function JobsPageInner() {
     setBookmarks((prev) => prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]);
   };
 
-  const filteredJobs = JOBS.filter((j) => {
+  const currentJobTypes = jobTypeFilter === "매장" ? STORE_JOB_TYPES : JOB_TYPES;
+  const filteredJobs = ALL_JOBS.filter((j) => {
+    const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter;
     const matchJob = selectedJob === "직군 전체" || j.jobType.includes(selectedJob);
     const matchCareer = selectedCareer === "경력 전체" || j.career.includes(selectedCareer.replace("년", "").replace("신입", "신입"));
     const matchCategory = !selectedCategory || j.tags.includes(selectedCategory);
     const matchSearch = !searchQuery || j.title.includes(searchQuery) || j.brand.includes(searchQuery);
     const matchRegion = !selectedRegion || j.region.includes(selectedRegion);
     const matchBrand = !selectedBrand || j.brand.includes(selectedBrand);
-    return matchJob && matchCareer && matchCategory && matchSearch && matchRegion && matchBrand;
+    return matchType && matchJob && matchCareer && matchCategory && matchSearch && matchRegion && matchBrand;
   });
 
   return (
@@ -181,6 +201,15 @@ function JobsPageInner() {
 
       <div className="jobs-container">
         {/* ===== 필터 바 ===== */}
+        <div className="jobs-type-tabs">
+          {["전체", "기업", "매장"].map((t) => (
+            <button key={t}
+              className={`jobs-type-tab ${jobTypeFilter === t ? "active" : ""}`}
+              onClick={() => { setJobTypeFilter(t); setSelectedJob("직군 전체"); }}>
+              {t === "기업" ? "🏢 기업 공고" : t === "매장" ? "🏪 매장 공고" : "전체"}
+            </button>
+          ))}
+        </div>
         <div className="jobs-filter-bar">
           <div className="jobs-filter-left">
             {/* 직군 드롭다운 */}
@@ -191,7 +220,7 @@ function JobsPageInner() {
               {showJobDrop && (
                 <div className="jobs-dropdown">
                   <button className={`jobs-dropdown-item ${selectedJob === "직군 전체" ? "active" : ""}`} onClick={() => { setSelectedJob("직군 전체"); setShowJobDrop(false); }}>직군 전체</button>
-                  {JOB_TYPES.map((jt) => (
+                  {currentJobTypes.map((jt) => (
                     <button key={jt} className={`jobs-dropdown-item ${selectedJob === jt ? "active" : ""}`} onClick={() => { setSelectedJob(jt); setShowJobDrop(false); }}>{jt}</button>
                   ))}
                 </div>
