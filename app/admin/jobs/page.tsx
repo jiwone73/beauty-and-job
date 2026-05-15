@@ -5,14 +5,14 @@ import { Search, Plus, Download, Trash2, X } from "lucide-react";
 import Link from "next/link";
 
 const INIT_JOBS = [
-  { id: 1, company: "올리브영", title: "디지털 마케팅 매니저", category: "마케팅", career: "경력 3-5년", region: "국내", date: "2025.01.20", views: 0, status: "승인대기" },
-  { id: 2, company: "아모레퍼시픽", title: "글로벌 브랜드 마케터 (설화수)", category: "마케팅", career: "경력 5년+", region: "국내·해외", date: "2025.01.20", views: 234, status: "승인완료" },
-  { id: 3, company: "LG생활건강", title: "e커머스 MD (CNP)", category: "MD", career: "경력 2-4년", region: "국내", date: "2025.01.19", views: 187, status: "승인완료" },
-  { id: 4, company: "코스맥스", title: "화장품 연구원 (제형 개발)", category: "연구개발", career: "경력 3년+", region: "경기", date: "2025.01.19", views: 0, status: "반려" },
-  { id: 5, company: "에이피알", title: "퍼포먼스 마케터 (메디큐브)", category: "마케팅", career: "경력 2-5년", region: "국내", date: "2025.01.18", views: 0, status: "승인대기" },
-  { id: 6, company: "달바", title: "유럽 수출 영업 담당자", category: "영업", career: "경력 3년+", region: "유럽", date: "2025.01.18", views: 156, status: "승인완료" },
-  { id: 7, company: "닥터자르트", title: "브랜드 콘텐츠 기획자", category: "마케팅", career: "경력 2-4년", region: "국내", date: "2025.01.17", views: 98, status: "승인완료" },
-  { id: 8, company: "아누아", title: "인플루언서 마케팅 매니저", category: "마케팅", career: "경력 1-3년", region: "국내", date: "2025.01.17", views: 312, status: "승인완료" },
+  { id: 1, jobGroup: "기업", company: "올리브영", title: "디지털 마케팅 매니저", category: "마케팅", career: "경력 3-5년", region: "국내", date: "2025.01.20", views: 0, status: "승인대기" },
+  { id: 2, jobGroup: "기업", company: "아모레퍼시픽", title: "글로벌 브랜드 마케터 (설화수)", category: "마케팅", career: "경력 5년+", region: "국내·해외", date: "2025.01.20", views: 234, status: "승인완료" },
+  { id: 3, jobGroup: "기업", company: "LG생활건강", title: "e커머스 MD (CNP)", category: "MD", career: "경력 2-4년", region: "국내", date: "2025.01.19", views: 187, status: "승인완료" },
+  { id: 4, jobGroup: "매장", company: "코스맥스", title: "화장품 연구원 (제형 개발)", category: "연구개발", career: "경력 3년+", region: "경기", date: "2025.01.19", views: 0, status: "반려" },
+  { id: 5, jobGroup: "매장", company: "에이피알", title: "퍼포먼스 마케터 (메디큐브)", category: "마케팅", career: "경력 2-5년", region: "국내", date: "2025.01.18", views: 0, status: "승인대기" },
+  { id: 6, jobGroup: "기업", company: "달바", title: "유럽 수출 영업 담당자", category: "영업", career: "경력 3년+", region: "유럽", date: "2025.01.18", views: 156, status: "승인완료" },
+  { id: 7, jobGroup: "기업", company: "닥터자르트", title: "브랜드 콘텐츠 기획자", category: "마케팅", career: "경력 2-4년", region: "국내", date: "2025.01.17", views: 98, status: "승인완료" },
+  { id: 8, jobGroup: "기업", company: "아누아", title: "인플루언서 마케팅 매니저", category: "마케팅", career: "경력 1-3년", region: "국내", date: "2025.01.17", views: 312, status: "승인완료" },
 ];
 
 const STATUS_OPTIONS = ["전체", "승인대기", "승인완료", "반려"];
@@ -23,10 +23,12 @@ export default function AdminJobsPage() {
   const [jobs, setJobs] = useState(INIT_JOBS);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
+  const [jobGroupFilter, setJobGroupFilter] = useState("전체");
   const [checked, setChecked] = useState<number[]>([]);
   const [selected, setSelected] = useState<Job | null>(null);
 
   const filtered = jobs.filter((j) => {
+    const matchGroup = jobGroupFilter === "전체" || j.jobGroup === jobGroupFilter;
     const matchSearch = !search || j.title.includes(search) || j.company.includes(search);
     const matchStatus = statusFilter === "전체" || j.status === statusFilter;
     return matchSearch && matchStatus;
@@ -88,6 +90,15 @@ export default function AdminJobsPage() {
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           <div className="admin-filter-group">
+            <span className="admin-filter-label">유형</span>
+            <div className="admin-filter-tabs">
+              {["전체", "기업", "매장"].map(g => (
+                <button key={g} className={`admin-filter-tab ${jobGroupFilter === g ? "active" : ""}`}
+                  onClick={() => setJobGroupFilter(g)}>{g}</button>
+              ))}
+            </div>
+          </div>
+          <div className="admin-filter-group">
             <span className="admin-filter-label">승인상태</span>
             <div className="admin-filter-tabs">
               {STATUS_OPTIONS.map((s) => (
@@ -125,6 +136,7 @@ export default function AdminJobsPage() {
                   checked={checked.length === filtered.length && filtered.length > 0}
                   onChange={toggleAll} />
               </th>
+              <th>유형</th>
               <th>기업</th>
               <th>공고명</th>
               <th>직군</th>
@@ -142,6 +154,11 @@ export default function AdminJobsPage() {
                   <input type="checkbox"
                     checked={checked.includes(job.id)}
                     onChange={() => toggleCheck(job.id)} />
+                </td>
+                <td>
+                  <span className={`jobs-type-badge ${job.jobGroup === "매장" ? "store" : "corp"}`}>
+                    {job.jobGroup === "매장" ? "🏪 매장" : "🏢 기업"}
+                  </span>
                 </td>
                 <td className="admin-td-brand">{job.company}</td>
                 <td>
