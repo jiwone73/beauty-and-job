@@ -120,10 +120,6 @@ function JobsPageInner() {
           </Link>
           <nav className="jobs-gnb">
             <Link href="/jobs" className="jobs-gnb-item active">채용공고</Link>
-            <Link href="/brands" className="jobs-gnb-item">회사 둘러보기</Link>
-            <Link href="/profile/resume" className="jobs-gnb-item">
-              이력서 <span className="jobs-gnb-badge green">합격률 UP</span>
-            </Link>
             <Link href="#" className="jobs-gnb-item">
               연봉어택 <span className="jobs-gnb-badge purple">경력직</span>
             </Link>
@@ -135,7 +131,7 @@ function JobsPageInner() {
             <button className="jobs-search-icon" onClick={() => { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 100); }}>
               <Search size={22} />
             </button>
-            <Link href="/signup" className="jobs-start-btn">시작하기</Link>
+            <Link href="/signup" className="btn btn-primary">회원가입</Link>
             <Link href="/company" className="jobs-biz-btn">기업 서비스</Link>
           </div>
         </div>
