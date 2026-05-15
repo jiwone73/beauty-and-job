@@ -63,7 +63,16 @@ interface HeaderProps {
 
 export default function Header({ onSearchClick }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleSearch = () => {
+    if (onSearchClick) {
+      onSearchClick();
+    } else {
+      router.push("/jobs");
+    }
+  };
 
   return (
     <>
@@ -82,7 +91,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
             </Link>
           </nav>
           <div className="header-right">
-            <button className="icon-btn" aria-label="검색" onClick={onSearchClick}>
+            <button className="icon-btn" aria-label="검색" onClick={handleSearch}>
               <Search size={20} />
             </button>
             <AuthButtons />
