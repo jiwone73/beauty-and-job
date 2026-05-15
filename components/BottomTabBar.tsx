@@ -31,6 +31,7 @@ export default function BottomTabBar() {
           key={href}
           href={href}
           className={`bottom-tab-item ${isActive(href) ? "active" : ""}`}
+          onClick={(e) => handleTabClick(e, href)}
         >
           <Icon size={22} strokeWidth={isActive(href) ? 2.5 : 1.8} />
           <span>{label}</span>
