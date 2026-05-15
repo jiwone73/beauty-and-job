@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Building2 } from "lucide-react";
+import { Search, Building2, Menu, X } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -60,6 +60,7 @@ interface HeaderProps {
 
 export default function Header({ onSearchClick }: HeaderProps) {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="header">
@@ -77,6 +78,9 @@ export default function Header({ onSearchClick }: HeaderProps) {
           </Link>
         </nav>
         <div className="header-right">
+          <button className="icon-btn mob-hamburger" aria-label="메뉴" onClick={() => setMenuOpen(true)}>
+            <Menu size={22} />
+          </button>
           <button className="icon-btn" aria-label="검색" onClick={onSearchClick}>
             <Search size={20} />
           </button>
@@ -84,5 +88,36 @@ export default function Header({ onSearchClick }: HeaderProps) {
         </div>
       </div>
     </header>
+
+    {/* 모바일 햄버거 메뉴 드로어 */}
+    {menuOpen && (
+      <div className="mob-menu-overlay" onClick={() => setMenuOpen(false)}>
+        <div className="mob-menu-drawer" onClick={(e) => e.stopPropagation()}>
+          <div className="mob-menu-head">
+            <span className="mob-menu-title">메뉴</span>
+            <button className="mob-menu-close" onClick={() => setMenuOpen(false)}>
+              <X size={22} />
+            </button>
+          </div>
+          <nav className="mob-menu-nav">
+            <Link href="/salary" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
+              <span className="mob-menu-item-label">연봉어택</span>
+              <span className="mob-menu-badge gray">경력직</span>
+            </Link>
+            <Link href="/brands" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
+              <span className="mob-menu-item-label">회사 탐색</span>
+            </Link>
+            <Link href="/company/login" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
+              <span className="mob-menu-item-label">기업 서비스</span>
+              <span className="mob-menu-badge purple">기업</span>
+            </Link>
+            <div className="mob-menu-divider" />
+            <Link href="/support/faq" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
+              <span className="mob-menu-item-label">고객지원</span>
+            </Link>
+          </nav>
+        </div>
+      </div>
+    )}
   );
 }

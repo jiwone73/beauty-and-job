@@ -7738,3 +7738,63 @@ input[type="range"].career-slider::-moz-range-thumb {
   .gnb-login-icon { display: none; }
   .gnb-login-text { display: inline; }
 }
+
+/* ── 모바일 햄버거 메뉴 ── */
+.mob-hamburger { display: none; }
+
+@media (max-width: 768px) {
+  .mob-hamburger { display: flex; }
+}
+
+.mob-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+}
+.mob-menu-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 75%;
+  max-width: 300px;
+  height: 100%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+}
+.mob-menu-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.mob-menu-title { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+.mob-menu-close {
+  background: none; border: none; cursor: pointer;
+  color: #666; display: flex; align-items: center;
+}
+.mob-menu-nav { padding: 8px 0; flex: 1; }
+.mob-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  text-decoration: none;
+  color: #1a1a1a;
+  font-size: 15px;
+  transition: background 0.1s;
+}
+.mob-menu-item:hover { background: #faf5ff; }
+.mob-menu-item-label { flex: 1; font-weight: 500; }
+.mob-menu-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.mob-menu-badge.gray { background: #f0f0f0; color: #666; }
+.mob-menu-badge.purple { background: #f0e8ff; color: #5f0080; }
+.mob-menu-divider { height: 1px; background: #f0f0f0; margin: 8px 0; }
