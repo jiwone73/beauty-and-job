@@ -7870,3 +7870,13 @@ input[type="range"].career-slider::-moz-range-thumb {
     white-space: nowrap;
   }
 }
+
+@media (max-width: 400px) {
+  .resume-header { padding: 0 8px !important; gap: 6px !important; }
+  .resume-header-actions { gap: 4px !important; }
+  .resume-header-actions .btn,
+  .resume-header-actions button { 
+    padding: 6px 10px !important; 
+    font-size: 12px !important; 
+  }
+}
