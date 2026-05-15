@@ -6900,6 +6900,11 @@ input[type="range"].career-slider::-moz-range-thumb {
   height: 80px;
   display: flex;
   align-items: center;
+
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  border-radius: 12px;
 }
 .hero-banner-top::before {
   content: "";
