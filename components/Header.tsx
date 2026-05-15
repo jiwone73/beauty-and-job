@@ -16,24 +16,22 @@ function AuthButtons() {
       <>
         <div className="auth-user-wrap">
           <button className="auth-user-btn" onClick={() => setOpen(!open)}>
-            {/* PC: 아바타 + 이름 + 화살표 */}
-            <span className="auth-avatar gnb-pc-only">
+            {/* PC 전용: 아바타 + 이름 + 화살표 */}
+            <span className="auth-avatar auth-pc">
               {userName ? userName.slice(0, 1).toUpperCase() : "U"}
             </span>
-            <span className="auth-username gnb-pc-only">{userName || "내 계정"}</span>
-            <svg className="gnb-pc-only" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <span className="auth-username auth-pc">{userName || "내 계정"}</span>
+            <svg className="auth-pc" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M3 5l4 4 4-4" stroke="#666" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
-            {/* 모바일: 사람 아이콘만 */}
-            <span className="gnb-mobile-only">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                <circle cx="12" cy="8" r="4"/>
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-              </svg>
-            </span>
+            {/* 모바일 전용: 사람 아이콘 */}
+            <svg className="auth-mob" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
           </button>
           {open && (
-            <div className="auth-dropdown">
+            <div className="auth-dropdown auth-dropdown-right">
               <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>내 프로필</button>
               <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/resume"); }}>이력서</button>
               <div className="auth-dropdown-divider" />
