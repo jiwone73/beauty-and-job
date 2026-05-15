@@ -157,6 +157,11 @@ export default function CompanyJobsPage() {
                     onChange={() => toggleCheck(job.id)} />
                 </td>
                 <td>
+                  <span className={`jobs-type-badge ${job.jobGroup === "매장" ? "store" : "corp"}`}>
+                    {job.jobGroup === "매장" ? "🏪 매장" : "🏢 기업"}
+                  </span>
+                </td>
+                <td>
                   <span style={{color:"#5f0080", fontWeight:600, cursor:"pointer"}}
                     onClick={() => setSelected(job)}>
                     {job.title}

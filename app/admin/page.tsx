@@ -288,11 +288,16 @@ export default function AdminDashboard() {
           </div>
           <table className="admin-table">
             <thead>
-              <tr><th>기업</th><th>공고명</th><th>등록일</th><th>상태</th></tr>
+              <tr><th>유형</th><th>기업</th><th>공고명</th><th>등록일</th><th>상태</th></tr>
             </thead>
             <tbody>
               {RECENT_JOBS.map((job) => (
                 <tr key={job.id}>
+                  <td>
+                    <span className={`jobs-type-badge ${job.jobGroup === "매장" ? "store" : "corp"}`}>
+                      {job.jobGroup === "매장" ? "🏪 매장" : "🏢 기업"}
+                    </span>
+                  </td>
                   <td className="admin-td-brand">{job.company}</td>
                   <td className="admin-td-title">{job.title}</td>
                   <td className="admin-td-date">{job.date}</td>
