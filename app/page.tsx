@@ -94,17 +94,17 @@ function Hero() {
     <section className="hero" onClick={() => setShowRegionDrop(false)}>
 
       {/* 배너광고 - 전체 너비 */}
-      <div className="hero-banner-top">
+      <div className="hero-wrap">
+        {/* 배너광고 */}
         <div className="hero-banner-top-inner">
           <span className="hero-banner-badge">AD</span>
           <p className="hero-banner-title">🎀 뷰티앤잡 × 아모레퍼시픽 — 봄 채용 시즌 공개!</p>
           <p className="hero-banner-sub">마케터·MD·연구원 등 50개+ 포지션 지금 확인하세요</p>
           <Link href="/jobs" className="hero-banner-link">공고 보기 →</Link>
         </div>
-      </div>
 
-      {/* 메인 컨텐츠 */}
-      <div className="hero-inner">
+        {/* 메인 컨텐츠 */}
+        <div className="hero-inner">
 
         {/* 왼쪽: 텍스트 + 검색 */}
         <div className="hero-text">
@@ -195,6 +195,7 @@ function Hero() {
 
           </div>
         </div>
+      </div>
       </div>
     </section>
   );

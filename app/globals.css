@@ -147,8 +147,6 @@
 }
 
 .hero-inner {
-  max-width: 1280px;
-  margin: 0 auto;
   padding: 40px 48px;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -158,7 +156,6 @@
   border: 1px solid #f0e8f8;
   border-radius: 24px;
   box-shadow: 0 4px 24px rgba(95,0,128,0.06);
-  position: relative;
 }
 
 .hero-text { max-width: 500px; }
@@ -6896,10 +6893,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* ============================================
    히어로 배너 (맨 위)
    ============================================ */
-.hero-banner-top {
+.hero-wrap {
   max-width: 1280px;
-  margin: 0 auto 16px;
-  padding: 0 32px;
+  margin: 0 auto;
+  padding: 16px 32px 32px;
 }
 .hero-banner-top::before {
   content: "";
