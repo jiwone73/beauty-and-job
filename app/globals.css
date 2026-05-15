@@ -7186,6 +7186,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 /* hero-inner grid 수정 */
+@media (max-width: 1024px) {
 
 
 
@@ -7464,6 +7465,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   background: #fce4f3;
   color: #c2185b;
 }
+@media (max-width: 1024px) {
 
 
 
