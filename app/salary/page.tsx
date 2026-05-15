@@ -1,4 +1,5 @@
 "use client";
+import Header from "@/components/Header";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -54,25 +55,7 @@ export default function SalaryPage() {
 
   return (
     <div className="salary-page">
-      {/* 헤더 */}
-      <header className="jobs-header">
-        <div className="jobs-header-inner">
-          <Link href="/" className="jobs-logo">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={130} height={34} priority />
-          </Link>
-          <nav className="jobs-gnb">
-            <Link href="/jobs" className="jobs-gnb-item">채용공고</Link>
-            <Link href="/brands" className="jobs-gnb-item">회사 둘러보기</Link>
-            <Link href="/profile/resume" className="jobs-gnb-item">이력서 <span className="jobs-gnb-badge green">합격률 UP</span></Link>
-            <Link href="/salary" className="jobs-gnb-item active">연봉어택 <span className="jobs-gnb-badge purple">경력직</span></Link>
-            <Link href="/insights" className="jobs-gnb-item">인사이트 <span className="jobs-gnb-badge dark">NEWS</span></Link>
-          </nav>
-          <div className="jobs-header-right">
-            <Link href="/signup" className="jobs-start-btn">시작하기</Link>
-            <Link href="/company" className="jobs-biz-btn">기업 서비스</Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <div className="salary-container">
         {/* 히어로 */}
