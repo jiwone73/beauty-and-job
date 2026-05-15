@@ -7447,3 +7447,23 @@ input[type="range"].career-slider::-moz-range-thumb {
 .baj-login-links a { font-size: 13px; color: #666; text-decoration: none; }
 .baj-login-links a:hover { color: var(--color-primary); }
 .baj-login-divider { width: 1px; height: 12px; background: #ddd; display: inline-block; }
+
+/* 기업/매장 유형 뱃지 */
+.jobs-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.jobs-type-badge.corp {
+  background: #f0e8ff;
+  color: #5f0080;
+}
+.jobs-type-badge.store {
+  background: #fce4f3;
+  color: #c2185b;
+}

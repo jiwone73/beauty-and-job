@@ -47,11 +47,11 @@ const JOB_DIST = [
 const PIE_COLORS = ["#5f0080", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 const RECENT_JOBS = [
-  { id: 1, company: "올리브영", title: "디지털 마케팅 매니저", date: "2025.01.20", status: "승인대기" },
-  { id: 2, company: "아모레퍼시픽", title: "글로벌 브랜드 마케터", date: "2025.01.20", status: "승인완료" },
-  { id: 3, company: "LG생활건강", title: "e커머스 MD", date: "2025.01.19", status: "승인완료" },
-  { id: 4, company: "코스맥스", title: "화장품 연구원", date: "2025.01.19", status: "반려" },
-  { id: 5, company: "에이피알", title: "퍼포먼스 마케터", date: "2025.01.18", status: "승인대기" },
+  { id: 1, jobGroup: "기업", company: "올리브영", title: "디지털 마케팅 매니저", date: "2025.01.20", status: "승인대기" },
+  { id: 2, jobGroup: "기업", company: "아모레퍼시픽", title: "글로벌 브랜드 마케터", date: "2025.01.20", status: "승인완료" },
+  { id: 3, jobGroup: "기업", company: "LG생활건강", title: "e커머스 MD", date: "2025.01.19", status: "승인완료" },
+  { id: 4, jobGroup: "매장", company: "코스맥스", title: "뷰티어드바이저 (강남점)", date: "2025.01.19", status: "반려" },
+  { id: 5, jobGroup: "매장", company: "에이피알", title: "매장 스태프 (홍대점)", date: "2025.01.18", status: "승인대기" },
 ];
 
 const RECENT_INDIVIDUAL = [
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
       <div className="admin-stat-grid">
         {[
           { label: "총 가입자", value: "1,284", unit: "명", sub: "개인 972 · 기업 312", trend: 12, icon: Users, color: "#5f0080" },
-          { label: "진행중 채용공고", value: "142", unit: "건", sub: "승인대기 8건", trend: 5, icon: Briefcase, color: "#0ea5e9" },
+          { label: "진행중 채용공고", value: "142", unit: "건", sub: "기업 118건 · 매장 24건", trend: 5, icon: Briefcase, color: "#0ea5e9" },
           { label: "오늘 지원수", value: "87", unit: "건", sub: "어제 대비 -3%", trend: -3, icon: CheckCircle, color: "#10b981" },
           { label: "승인 대기 공고", value: "8", unit: "건", sub: "즉시 처리 필요", trend: 0, icon: Clock, color: "#f59e0b" },
         ].map((stat) => (

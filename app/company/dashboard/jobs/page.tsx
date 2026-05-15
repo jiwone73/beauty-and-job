@@ -9,11 +9,11 @@ import {
 } from "lucide-react";
 
 const INIT_JOBS = [
-  { id: 1, title: "디지털 마케팅 매니저", category: "마케팅", career: "경력 3-5년", region: "서울", type: "정규직", deadline: "2025.02.28", applicants: 34, views: 412, status: "진행중", date: "2025.01.10" },
-  { id: 2, title: "MD - 색조 카테고리", category: "MD", career: "경력 2-4년", region: "서울", type: "정규직", deadline: "2025.02.15", applicants: 28, views: 287, status: "진행중", date: "2025.01.08" },
-  { id: 3, title: "SCM 물류 담당자", category: "SCM", career: "경력 3년+", region: "경기", type: "정규직", deadline: "2025.01.31", applicants: 19, views: 198, status: "진행중", date: "2025.01.05" },
-  { id: 4, title: "HR 채용 담당자", category: "HR", career: "경력 2-4년", region: "서울", type: "정규직", deadline: "2025.01.20", applicants: 47, views: 523, status: "마감", date: "2024.12.20" },
-  { id: 5, title: "콘텐츠 마케터 (SNS)", category: "마케팅", career: "경력 1-3년", region: "서울", type: "계약직", deadline: "2024.12.31", applicants: 62, views: 891, status: "마감", date: "2024.12.01" },
+  { id: 1, jobGroup: "기업", title: "디지털 마케팅 매니저", category: "마케팅", career: "경력 3-5년", region: "서울", type: "정규직", deadline: "2025.02.28", applicants: 34, views: 412, status: "진행중", date: "2025.01.10" },
+  { id: 2, jobGroup: "기업", title: "MD - 색조 카테고리", category: "MD", career: "경력 2-4년", region: "서울", type: "정규직", deadline: "2025.02.15", applicants: 28, views: 287, status: "진행중", date: "2025.01.08" },
+  { id: 3, jobGroup: "기업", title: "SCM 물류 담당자", category: "SCM", career: "경력 3년+", region: "경기", type: "정규직", deadline: "2025.01.31", applicants: 19, views: 198, status: "진행중", date: "2025.01.05" },
+  { id: 4, jobGroup: "기업", title: "HR 채용 담당자", category: "HR", career: "경력 2-4년", region: "서울", type: "정규직", deadline: "2025.01.20", applicants: 47, views: 523, status: "마감", date: "2024.12.20" },
+  { id: 5, jobGroup: "기업", title: "콘텐츠 마케터 (SNS)", category: "마케팅", career: "경력 1-3년", region: "서울", type: "계약직", deadline: "2024.12.31", applicants: 62, views: 891, status: "마감", date: "2024.12.01" },
 ];
 
 type Job = typeof INIT_JOBS[0];
@@ -23,10 +23,12 @@ export default function CompanyJobsPage() {
   const [jobs, setJobs] = useState(INIT_JOBS);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
+  const [jobGroupFilter, setJobGroupFilter] = useState("전체");
   const [selected, setSelected] = useState<Job | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
 
   const filtered = jobs.filter(j => {
+    const matchGroup = jobGroupFilter === "전체" || j.jobGroup === jobGroupFilter;
     const matchSearch = !search || j.title.includes(search);
     const matchStatus = statusFilter === "전체" || j.status === statusFilter;
     return matchSearch && matchStatus;
@@ -59,6 +61,8 @@ export default function CompanyJobsPage() {
     전체: jobs.length,
     진행중: jobs.filter(j => j.status === "진행중").length,
     마감: jobs.filter(j => j.status === "마감").length,
+    기업: jobs.filter(j => j.jobGroup === "기업").length,
+    매장: jobs.filter(j => j.jobGroup === "매장").length,
   };
 
   return (
@@ -70,6 +74,8 @@ export default function CompanyJobsPage() {
           { label: "진행중", value: String(counts.진행중), unit: "건", color: "#10b981" },
           { label: "마감", value: String(counts.마감), unit: "건", color: "#888" },
           { label: "총 지원자", value: String(jobs.reduce((s, j) => s + j.applicants, 0)), unit: "명", color: "#0ea5e9" },
+          { label: "기업 공고", value: String(counts.기업), unit: "건", color: "#5f0080" },
+          { label: "매장 공고", value: String(counts.매장), unit: "건", color: "#e91e8c" },
         ].map((s) => (
           <div key={s.label} className="company-stat-card">
             <div className="company-stat-value" style={{color: s.color}}>
@@ -87,6 +93,15 @@ export default function CompanyJobsPage() {
             <Search size={16} className="admin-search-icon" />
             <input className="admin-search-input" placeholder="공고명 검색"
               value={search} onChange={(e) => setSearch(e.target.value)} />
+          </div>
+          <div className="admin-filter-group">
+            <span className="admin-filter-label">유형</span>
+            <div className="admin-filter-tabs">
+              {["전체", "기업", "매장"].map(g => (
+                <button key={g} className={`admin-filter-tab ${jobGroupFilter === g ? "active" : ""}`}
+                  onClick={() => setJobGroupFilter(g)}>{g}</button>
+              ))}
+            </div>
           </div>
           <div className="admin-filter-group">
             <span className="admin-filter-label">상태</span>
@@ -121,7 +136,7 @@ export default function CompanyJobsPage() {
                   checked={checked.length === filtered.length && filtered.length > 0}
                   onChange={toggleAll} />
               </th>
-              <th>공고명</th>
+              <th>유형</th><th>공고명</th>
               <th>직군</th>
               <th>경력</th>
               <th>지역</th>
