@@ -80,6 +80,8 @@ function Hero() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showRegionDrop, setShowRegionDrop] = useState(false);
 
+  const REGION_OPTIONS = ["지역 전체", "서울", "경기", "인천", "부산", "대구", "광주", "대전", "해외"];
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
@@ -88,38 +90,31 @@ function Hero() {
     router.push(`/jobs${params.toString() ? "?" + params.toString() : ""}`);
   };
 
-  const handleHashtag = (tag: string) => {
-    router.push(`/jobs?job=${encodeURIComponent(tag)}`);
-  };
-
   return (
     <section className="hero" onClick={() => setShowRegionDrop(false)}>
 
-      {/* 배너 광고 - 맨 위 */}
+      {/* 배너광고 - 전체 너비 */}
       <div className="hero-banner-top">
         <div className="hero-banner-top-inner">
-          <div className="hero-banner-top-left">
-            <span className="hero-banner-badge">광고</span>
-            <p className="hero-banner-title">뷰티앤잡과 함께 성장하세요</p>
-            <p className="hero-banner-sub">뷰티 업계 1등 채용 플랫폼, 지금 바로 시작하세요</p>
-          </div>
-
+          <span className="hero-banner-badge">AD</span>
+          <p className="hero-banner-title">🎀 뷰티앤잡 × 아모레퍼시픽 — 봄 채용 시즌 공개!</p>
+          <p className="hero-banner-sub">마케터·MD·연구원 등 50개+ 포지션 지금 확인하세요</p>
+          <Link href="/jobs" className="hero-banner-link">공고 보기 →</Link>
         </div>
       </div>
 
+      {/* 메인 컨텐츠 */}
       <div className="hero-inner">
+
         {/* 왼쪽: 텍스트 + 검색 */}
         <div className="hero-text">
           <h1 className="hero-title">
-            뷰티 커리어의 시작,
-            <br />
+            뷰티 커리어의 시작,<br />
             <span className="hero-title-point">뷰티앤잡</span>
           </h1>
           <p className="hero-sub">
-            뷰티 업계 채용, 이직, 커리어까지
-            <br />한 번에
+            뷰티 업계 채용, 이직, 커리어까지<br />한 번에
           </p>
-
           <form className="hero-search-bar" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
             <div className="hero-region-wrap">
               <button type="button" className="hero-region-btn"
@@ -149,72 +144,62 @@ function Hero() {
               <Search size={20} />
             </button>
           </form>
-
-
         </div>
 
-        {/* 가운데: 비주얼 */}
-        <div className="hero-visual" aria-hidden="true">
-          <HeroVisual />
-        </div>
-
-        {/* 오른쪽: 카드 2개 */}
-        <div className="hero-cards-wrap">
-          {/* 카드1: AI 맞춤 추천 */}
-          <div className="hero-ai-card">
-            <div className="hero-ai-header">
-              <span className="hero-ai-icon">✨</span>
-              <span className="hero-ai-title">AI 맞춤 추천</span>
-            </div>
-            {isLoggedIn ? (
-              <div className="hero-ai-items">
-                <Link href="/jobs" className="hero-ai-guest-item">
-                  <span>🎯</span><span>맞춤 채용공고</span>
-                  <span className="hero-ai-item-badge" style={{marginLeft:"auto"}}>3건</span>
-                </Link>
-                <Link href="/salary" className="hero-ai-guest-item">
-                  <span>📊</span><span>연봉 분석</span>
-                  <span className="hero-ai-guest-arrow">→</span>
-                </Link>
-                <Link href="/profile" className="hero-ai-guest-item">
-                  <span>🏢</span><span>관심 브랜드 채용</span>
-                  <span className="hero-ai-guest-arrow">→</span>
-                </Link>
-                <Link href="/profile/resume" className="hero-ai-cta">이력서 업데이트 →</Link>
-              </div>
-            ) : (
-              <div className="hero-ai-items">
-                <Link href="/jobs" className="hero-ai-guest-item">
-                  <span>🎯</span><span>직군·경력 맞춤 공고</span>
-                  <span className="hero-ai-guest-arrow">→</span>
-                </Link>
-                <Link href="/salary" className="hero-ai-guest-item">
-                  <span>📊</span><span>경력 기반 연봉 분석</span>
-                  <span className="hero-ai-guest-arrow">→</span>
-                </Link>
-                <Link href="/profile" className="hero-ai-guest-item">
-                  <span>🏢</span><span>관심 브랜드 채용 알림</span>
-                  <span className="hero-ai-guest-arrow">→</span>
-                </Link>
-                <Link href="/signup" className="hero-ai-cta">무료로 시작하기 →</Link>
-              </div>
-            )}
+        {/* 오른쪽: AI 맞춤 커리어 추천 */}
+        <div className="hero-right">
+          <div className="hero-right-header">
+            <span className="hero-ai-icon">✨</span>
+            <span className="hero-right-title">AI 맞춤 커리어 추천</span>
           </div>
+          <div className="hero-right-cards">
 
-          {/* 카드2: 맞춤형 취업 전략 */}
-          <Link href="/signup" className="hero-strategy-card">
-            <div className="hero-strategy-visual">
-              <span>📄</span><span>🎯</span><span>💰</span>
+            {/* 카드1: 이력서 등록 */}
+            <div className="hero-right-card">
+              <div className="hero-right-card-visual card1">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                  <rect x="15" y="10" width="42" height="52" rx="6" fill="#e8d5f5" />
+                  <rect x="15" y="10" width="42" height="52" rx="6" fill="white" opacity="0.6"/>
+                  <rect x="22" y="22" width="12" height="12" rx="6" fill="#c4a0d8" />
+                  <rect x="22" y="38" width="28" height="3" rx="1.5" fill="#dcc8ec" />
+                  <rect x="22" y="44" width="22" height="3" rx="1.5" fill="#dcc8ec" />
+                  <rect x="22" y="50" width="25" height="3" rx="1.5" fill="#dcc8ec" />
+                  <circle cx="52" cy="52" r="12" fill="#5f0080" />
+                  <path d="M46 52l4 4 8-8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <h3 className="hero-right-card-title">이력서 등록하면</h3>
+              <p className="hero-right-card-desc">내 경력과 관심사에 맞는<br />채용정보를 추천해드려요</p>
+              <Link href="/signup" className="hero-right-card-btn">
+                무료 이력서 등록하기 ›
+              </Link>
             </div>
-            <p className="hero-strategy-title">취업 준비,<br />여기서 다 끝낼 수 있어요</p>
-            <p className="hero-strategy-sub">이력서 등록 한 번으로<br />맞춤 공고·연봉·브랜드 추천까지</p>
-            <span className="hero-strategy-btn">이력서 등록하기 →</span>
-          </Link>
+
+            {/* 카드2: 취업 전략 */}
+            <Link href="/insights" className="hero-right-card card-link">
+              <div className="hero-right-card-visual card2">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                  <rect x="20" y="15" width="35" height="45" rx="5" fill="#fce4f0" />
+                  <rect x="20" y="15" width="35" height="45" rx="5" fill="white" opacity="0.5"/>
+                  <rect x="27" y="32" width="6" height="16" rx="2" fill="#e8a0c0" />
+                  <rect x="36" y="26" width="6" height="22" rx="2" fill="#d060a0" />
+                  <rect x="45" y="22" width="6" height="26" rx="2" fill="#b03080" />
+                  <circle cx="57" cy="52" r="10" fill="#ff80b0" opacity="0.9"/>
+                  <path d="M53 52l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M27 28 L48 18" stroke="#e8a0c0" strokeWidth="1.5" strokeDasharray="2 2"/>
+                </svg>
+              </div>
+              <h3 className="hero-right-card-title accent">취업 전략까지</h3>
+              <p className="hero-right-card-desc">직무별 준비 팁, 지원 우선순위,<br />커리어 방향까지 한눈에 확인하세요</p>
+            </Link>
+
+          </div>
         </div>
       </div>
     </section>
   );
 }
+
 
 /* ============================================
    히어로 SVG 일러스트

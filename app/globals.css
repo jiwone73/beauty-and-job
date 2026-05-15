@@ -7195,3 +7195,92 @@ input[type="range"].career-slider::-moz-range-thumb {
   .hero-cards-wrap { flex-direction: row; }
   .hero-ai-card, .hero-strategy-card { flex: 1; }
 }
+
+/* ============================================
+   히어로 오른쪽 영역
+   ============================================ */
+.hero-right {
+  background: #fff;
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 8px 40px rgba(95,0,128,0.08);
+  border: 1px solid #f0e0f8;
+}
+.hero-right-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.hero-right-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.hero-right-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.hero-right-card {
+  background: #faf5ff;
+  border-radius: 16px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid #ede0f8;
+}
+.hero-right-card.card-link {
+  text-decoration: none;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.hero-right-card.card-link:hover {
+  background: #f0e5ff;
+  border-color: #d4b0f0;
+  transform: translateY(-2px);
+}
+.hero-right-card-visual {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.hero-right-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+}
+.hero-right-card-title.accent { color: #5f0080; }
+.hero-right-card-desc {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+.hero-right-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  background: #5f0080;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: background 0.15s;
+}
+.hero-right-card-btn:hover { background: #4a0066; }
+
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 32px; }
+  .hero-title { font-size: 36px; }
+}
+@media (max-width: 480px) {
+  .hero-right-cards { grid-template-columns: 1fr; }
+  .hero-inner { padding: 32px 20px 0; }
+}
