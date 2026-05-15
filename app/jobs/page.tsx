@@ -46,14 +46,14 @@ const JOBS = [
 const STORE_JOB_TYPES = ["뷰티어드바이저", "메이크업아티스트", "헤어디자이너", "네일아티스트", "피부관리사", "매장관리자"];
 
 const STORE_JOBS = [
-  { id: 101, brand: "올리브영", tags: ["리테일"], title: "뷰티어드바이저 (강남점)", jobType: "뷰티어드바이저", career: "경력 무관", region: "서울 강남", type: "매장", thumbnail: null, color: "#e8f5e9" },
-  { id: 102, brand: "아리따움", tags: ["스킨케어", "색조"], title: "뷰티 컨설턴트", jobType: "뷰티어드바이저", career: "경력 1년 이상", region: "서울", type: "매장", thumbnail: null, color: "#fce4ec" },
-  { id: 103, brand: "이니스프리", tags: ["스킨케어"], title: "매장 점장 (홍대점)", jobType: "매장관리자", career: "경력 3년 이상", region: "서울 마포", type: "매장", thumbnail: null, color: "#e0f2f1" },
-  { id: 104, brand: "헤라", tags: ["색조"], title: "백화점 메이크업 아티스트", jobType: "메이크업아티스트", career: "경력 2년 이상", region: "서울", type: "매장", thumbnail: null, color: "#f3e5f5" },
-  { id: 105, brand: "맥(MAC)", tags: ["색조"], title: "카운터 뷰티어드바이저", jobType: "뷰티어드바이저", career: "경력 1-3년", region: "서울", type: "매장", thumbnail: null, color: "#e8eaf6" },
-  { id: 106, brand: "에스티로더", tags: ["스킨케어", "색조"], title: "백화점 스킨케어 어드바이저", jobType: "뷰티어드바이저", career: "경력 2년 이상", region: "서울", type: "매장", thumbnail: null, color: "#fff8e1" },
-  { id: 107, brand: "클리오", tags: ["색조"], title: "H&B 매장 스태프", jobType: "뷰티어드바이저", career: "경력 무관", region: "경기", type: "매장", thumbnail: null, color: "#e0f7fa" },
-  { id: 108, brand: "세포라", tags: ["멀티브랜드"], title: "뷰티 어드바이저 (세포라 코리아)", jobType: "뷰티어드바이저", career: "경력 1년 이상", region: "서울", type: "매장", thumbnail: null, color: "#ede7f6" },
+  { id: 101, brand: "올리브영", tags: ["리테일"], title: "뷰티어드바이저 (강남점)", jobType: "뷰티어드바이저", career: "경력 무관", region: "서울 강남", extraCount: 0, type: "매장", thumbnail: null, color: "#e8f5e9" },
+  { id: 102, brand: "아리따움", tags: ["스킨케어", "색조"], title: "뷰티 컨설턴트", jobType: "뷰티어드바이저", career: "경력 1년 이상", region: "서울", extraCount: 0, type: "매장", thumbnail: null, color: "#fce4ec" },
+  { id: 103, brand: "이니스프리", tags: ["스킨케어"], title: "매장 점장 (홍대점)", jobType: "매장관리자", career: "경력 3년 이상", region: "서울 마포", extraCount: 0, type: "매장", thumbnail: null, color: "#e0f2f1" },
+  { id: 104, brand: "헤라", tags: ["색조"], title: "백화점 메이크업 아티스트", jobType: "메이크업아티스트", career: "경력 2년 이상", region: "서울", extraCount: 0, type: "매장", thumbnail: null, color: "#f3e5f5" },
+  { id: 105, brand: "맥(MAC)", tags: ["색조"], title: "카운터 뷰티어드바이저", jobType: "뷰티어드바이저", career: "경력 1-3년", region: "서울", extraCount: 0, type: "매장", thumbnail: null, color: "#e8eaf6" },
+  { id: 106, brand: "에스티로더", tags: ["스킨케어", "색조"], title: "백화점 스킨케어 어드바이저", jobType: "뷰티어드바이저", career: "경력 2년 이상", region: "서울", extraCount: 0, type: "매장", thumbnail: null, color: "#fff8e1" },
+  { id: 107, brand: "클리오", tags: ["색조"], title: "H&B 매장 스태프", jobType: "뷰티어드바이저", career: "경력 무관", region: "경기", extraCount: 0, type: "매장", thumbnail: null, color: "#e0f7fa" },
+  { id: 108, brand: "세포라", tags: ["멀티브랜드"], title: "뷰티 어드바이저 (세포라 코리아)", jobType: "뷰티어드바이저", career: "경력 1년 이상", region: "서울", extraCount: 0, type: "매장", thumbnail: null, color: "#ede7f6" },
 ];
 
 const ALL_JOBS = [...JOBS, ...STORE_JOBS];
