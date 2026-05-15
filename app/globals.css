@@ -7348,3 +7348,25 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-color: #9b59b6;
   color: #5f0080;
 }
+
+.baj-login-save {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+  margin-bottom: 16px;
+  user-select: none;
+}
+.baj-login-save input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+.baj-save-info {
+  font-size: 13px;
+  color: #aaa;
+  cursor: help;
+}
