@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import Header from "@/components/Header";
 import HeroMobile from "@/components/HeroMobile";
 import { useEffect, useState, useCallback } from "react";
