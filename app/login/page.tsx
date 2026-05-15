@@ -49,7 +49,7 @@ function LoginPageInner() {
     const formattedPhone = formatPhone(rawPhone);
     const account = TEST_ACCOUNTS[formattedPhone];
     const matchedName = account?.name;
-    const redirect = account?.redirect || (userType === "company" ? "/company/dashboard" : "/profile");
+    const redirect = account?.redirect || "/profile";
     login({ userName: matchedName || "사용자", userPhone: formattedPhone });
     router.push(redirect);
   };
