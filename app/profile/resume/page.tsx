@@ -7,11 +7,14 @@ import Image from "next/image";
 import { ChevronLeft, Download, Eye, Plus, X } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
+import { useAuthStore } from "@/lib/store/authStore";
 import { CAREER_LABELS } from "@/lib/constants";
 
 export default function ResumePage() {
   const router = useRouter();
-  const { name, birth, gender, job, jobCustom, careerYears, isLeader, phone } = useSignupStore();
+  const { name: signupName, birth, gender, job, jobCustom, careerYears, isLeader, phone } = useSignupStore();
+  const { userName } = useAuthStore();
+  const name = signupName || userName || "";
   const {
     intro, coreCompetencies, educations, careers, experiences,
     skills, languages, links, email,
