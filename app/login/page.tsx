@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
@@ -23,7 +23,10 @@ export default function LoginPage() {
   const { login } = useAuthStore();
   const { name: savedName, phone: savedPhone } = useSignupStore();
 
-  const [userType, setUserType] = useState<"individual" | "company">("individual");
+  const searchParams = useSearchParams();
+  const [userType, setUserType] = useState<"individual" | "company">(
+    searchParams.get("type") === "company" ? "company" : "individual"
+  );
   const [step, setStep] = useState<Step>("method");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
