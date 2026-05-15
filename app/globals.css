@@ -2742,6 +2742,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 반응형 */
 
+@media (max-width: 1024px) {
   .company-hero-right { display: none; }
   .company-product-grid { grid-template-columns: repeat(2, 1fr); }
   .company-service-grid { grid-template-columns: repeat(2, 1fr); }
