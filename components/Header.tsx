@@ -63,6 +63,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
+    <>
     <header className="header">
       <div className="header-inner">
         <Link href="/" className="logo">
@@ -119,5 +120,6 @@ export default function Header({ onSearchClick }: HeaderProps) {
         </div>
       </div>
     )}
+    </>
   );
 }
