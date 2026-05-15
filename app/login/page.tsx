@@ -21,8 +21,9 @@ function LoginPageInner() {
   const searchParams = useSearchParams();
   const { login } = useAuthStore();
 
+  const isCompanyOnly = searchParams.get("type") === "company";
   const [userType, setUserType] = useState<UserType>(
-    searchParams.get("type") === "company" ? "company" : "individual"
+    isCompanyOnly ? "company" : "individual"
   );
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState("");
@@ -69,18 +70,20 @@ function LoginPageInner() {
       </div>
 
       <div className="login-main"><div className="login-card">
-        <div className="login-type-tabs">
-          <button
-            className={`login-type-tab ${userType === "individual" ? "active" : ""}`}
-            onClick={() => setUserType("individual")}>
-            개인회원
-          </button>
-          <button
-            className={`login-type-tab ${userType === "company" ? "active" : ""}`}
-            onClick={() => setUserType("company")}>
-            기업회원
-          </button>
-        </div>
+        {!isCompanyOnly && (
+          <div className="login-type-tabs">
+            <button
+              className={`login-type-tab ${userType === "individual" ? "active" : ""}`}
+              onClick={() => setUserType("individual")}>
+              개인회원
+            </button>
+            <button
+              className={`login-type-tab ${userType === "company" ? "active" : ""}`}
+              onClick={() => setUserType("company")}>
+              기업회원
+            </button>
+          </div>
+        )}
 
         <h2 className="login-title">
           {userType === "company" ? "기업 로그인" : "로그인"}
@@ -130,7 +133,7 @@ function LoginPageInner() {
           </div>
         )}
 
-        {userType === "individual" && (
+        {userType === "individual" && !isCompanyOnly && (
           <p className="login-signup-link">
             아직 회원이 아니신가요?{" "}
             <Link href="/signup" className="login-signup-anchor">회원가입</Link>
