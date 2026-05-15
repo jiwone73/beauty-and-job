@@ -68,7 +68,7 @@ function LoginPageInner() {
         </Link>
       </div>
 
-      <div className="login-container">
+      <div className="login-main"><div className="login-card">
         <div className="login-type-tabs">
           <button
             className={`login-type-tab ${userType === "individual" ? "active" : ""}`}
@@ -136,6 +136,7 @@ function LoginPageInner() {
             <Link href="/signup" className="login-signup-anchor">회원가입</Link>
           </p>
         )}
+      </div>
       </div>
     </div>
   );
