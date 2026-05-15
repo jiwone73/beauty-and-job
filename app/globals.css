@@ -90,6 +90,7 @@
   transition: color 0.15s;
 }
 .gnb a:hover { color: var(--color-primary); }
+.gnb-active { color: var(--color-primary) !important; font-weight: 700; border-bottom: 2px solid var(--color-primary); padding-bottom: 2px; }
 .gnb-with-tag { gap: 6px; }
 
 .tag {
@@ -6887,7 +6888,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 .hero-search-btn:hover { background: #4a0066; }
 
 @media (max-width: 640px) {
-  .hero-search-bar { max-width: 100%; }
+  .hero-search-bar { max-width: 100%; flex-wrap: wrap; gap: 8px; }
+  .hero-type-toggle { width: 100%; justify-content: center; }
+  .hero-type-btn { flex: 1; text-align: center; }
 }
 
 /* ============================================
