@@ -33,16 +33,23 @@ function AuthButtons() {
             </div>
           )}
         </div>
-        <Link href="/company/login" className="btn btn-dark"><Building2 size={16} />기업 서비스</Link>
+        <Link href="/company/login" className="btn btn-dark gnb-biz-btn"><Building2 size={16} />기업 서비스</Link>
       </>
     );
   }
 
   return (
     <>
-      <Link href="/login" className="btn btn-text">로그인</Link>
+      <Link href="/login" className="btn btn-text gnb-login-btn">
+          <span className="gnb-login-text">로그인</span>
+          <span className="gnb-login-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+          </span>
+        </Link>
       <Link href="/signup" className="btn btn-primary">회원가입</Link>
-      <Link href="/company/login" className="btn btn-dark"><Building2 size={16} />기업 서비스</Link>
+      <Link href="/company/login" className="btn btn-dark gnb-biz-btn"><Building2 size={16} />기업 서비스</Link>
     </>
   );
 }
