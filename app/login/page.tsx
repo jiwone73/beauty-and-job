@@ -1,5 +1,6 @@
 "use client";
 import { Suspense } from "react";
+import { Suspense } from "react";
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -231,6 +232,14 @@ function LoginPageInner() {
         </div>
       </main>
     </div>
+  );
+}
+
+function LoginPageInner() {
+  return (
+    <Suspense fallback={<div />}>
+      <LoginPageInner />
+    </Suspense>
   );
 }
 
