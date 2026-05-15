@@ -1,4 +1,5 @@
 "use client";
+import Header from "@/components/Header";
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -112,30 +113,7 @@ function JobsPageInner() {
 
   return (
     <div className="jobs-page">
-      {/* ===== 헤더 ===== */}
-      <header className="jobs-header">
-        <div className="jobs-header-inner">
-          <Link href="/" className="jobs-logo">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={130} height={34} priority />
-          </Link>
-          <nav className="jobs-gnb">
-            <Link href="/jobs" className="jobs-gnb-item active">채용공고</Link>
-            <Link href="#" className="jobs-gnb-item">
-              연봉어택 <span className="jobs-gnb-badge purple">경력직</span>
-            </Link>
-            <Link href="#" className="jobs-gnb-item">
-              인사이트 <span className="jobs-gnb-badge dark">NEWS</span>
-            </Link>
-          </nav>
-          <div className="jobs-header-right">
-            <button className="jobs-search-icon" onClick={() => { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 100); }}>
-              <Search size={22} />
-            </button>
-            <Link href="/signup" className="btn btn-primary">회원가입</Link>
-            <Link href="/company" className="jobs-biz-btn">기업 서비스</Link>
-          </div>
-        </div>
-      </header>
+      <Header onSearchClick={() => { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 100); }} />
 
       {/* ===== 검색 모달 ===== */}
       {showSearch && (

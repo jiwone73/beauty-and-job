@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import Header from "@/components/Header";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRouter } from "next/navigation";
 import {
@@ -35,37 +36,6 @@ export default function HomePage() {
   );
 }
 
-/* ============================================
-   헤더
-   ============================================ */
-function Header() {
-  return (
-    <header className="header">
-      <div className="header-inner">
-        <Link href="/" className="logo">
-          <Image src="/images/logo.png" alt="뷰티앤잡" width={140} height={40} priority />
-        </Link>
-        <nav className="gnb">
-          <Link href="/jobs">채용공고</Link>
-          <Link href="/salary" className="gnb-with-tag">
-            연봉어택
-            <span className="tag tag-gray">경력직</span>
-          </Link>
-          <Link href="/insights" className="gnb-with-tag">
-            인사이트
-            <span className="tag tag-new">NEWS</span>
-          </Link>
-        </nav>
-        <div className="header-right">
-          <button className="icon-btn" aria-label="검색">
-            <Search size={20} />
-          </button>
-          <AuthButtons />
-        </div>
-      </div>
-    </header>
-  );
-}
 
 /* ============================================
    히어로 섹션
