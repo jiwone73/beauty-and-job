@@ -7856,3 +7856,17 @@ input[type="range"].career-slider::-moz-range-thumb {
     right: 0 !important;
   }
 }
+
+@media (max-width: 768px) {
+  .jobs-type-tabs {
+    padding: 12px 16px 0;
+    flex-wrap: nowrap;
+  }
+  .jobs-type-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 8px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
