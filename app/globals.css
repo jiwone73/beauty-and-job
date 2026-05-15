@@ -7834,3 +7834,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   /* header-right 간격 축소 */
   .header-right { gap: 4px; }
 }
+
+@media (max-width: 768px) {
+  .header-right { margin-left: auto; }
+}
