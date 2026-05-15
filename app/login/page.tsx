@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -18,7 +19,7 @@ const TEST_ACCOUNTS: Record<string, { name: string; type: UserType; redirect: st
   "010-0000-0001": { name: "관리자", type: "admin", redirect: "/admin" },
 };
 
-export default function LoginPage() {
+function LoginPageInner() {
   const router = useRouter();
   const { login } = useAuthStore();
   const { name: savedName, phone: savedPhone } = useSignupStore();
@@ -230,5 +231,13 @@ export default function LoginPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div />}>
+      <LoginPageInner />
+    </Suspense>
   );
 }
