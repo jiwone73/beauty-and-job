@@ -7591,7 +7591,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 타이틀 */
 .hero-m-title-wrap { padding: 24px 20px 16px; }
 .hero-m-title {
-  font-size: 26px;
+  font-size: 21px;
   font-weight: 800;
   line-height: 1.25;
   color: #1a1a1a;
