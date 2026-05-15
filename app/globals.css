@@ -7540,3 +7540,179 @@ input[type="range"].career-slider::-moz-range-thumb {
   .hero-title { font-size: 26px; }
   .hero-right-card { min-width: 180px; }
 }
+
+/* ════════════════════════════════
+   히어로 모바일 전용 컴포넌트
+   ════════════════════════════════ */
+.hero-m {
+  background: linear-gradient(180deg, #faf5fc 0%, #fff 100%);
+  padding-bottom: 24px;
+}
+
+/* 배너 */
+.hero-m-banner {
+  background: linear-gradient(135deg, #5f0080, #9b59b6);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  overflow: hidden;
+}
+.hero-m-banner-ad {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.hero-m-banner-text {
+  color: #fff;
+  font-size: 12px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hero-m-banner-link {
+  color: rgba(255,255,255,0.85);
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+/* 타이틀 */
+.hero-m-title-wrap { padding: 24px 20px 16px; }
+.hero-m-title {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+.hero-m-title-point { color: #5f0080; }
+
+/* 토글 */
+.hero-m-toggle {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 14px;
+}
+.hero-m-toggle-btn {
+  flex: 1;
+  height: 40px;
+  border-radius: 10px;
+  border: 1.5px solid #e0d0f0;
+  background: #fff;
+  color: #888;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.hero-m-toggle-btn.active {
+  background: #5f0080;
+  color: #fff;
+  border-color: #5f0080;
+}
+
+/* 검색바 */
+.hero-m-search {
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+  background: #fff;
+  border: 1.5px solid #e0d0f0;
+  border-radius: 12px;
+  padding: 0 4px 0 12px;
+  height: 48px;
+  gap: 8px;
+}
+.hero-m-region-wrap { position: relative; flex-shrink: 0; }
+.hero-m-region-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #5f0080;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.hero-m-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: transparent;
+  min-width: 0;
+  font-family: inherit;
+}
+.hero-m-input::placeholder { color: #bbb; }
+.hero-m-search-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #5f0080;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* AI 추천 카드 */
+.hero-m-ai-wrap { padding: 20px 20px 0; }
+.hero-m-ai-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.hero-m-ai-title { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+.hero-m-ai-cards {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 4px;
+}
+.hero-m-ai-cards::-webkit-scrollbar { display: none; }
+.hero-m-ai-card {
+  min-width: 180px;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  background: #fff;
+  border: 1px solid #ede0f8;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+}
+.hero-m-ai-card-icon { font-size: 24px; }
+.hero-m-ai-card strong { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+.hero-m-ai-card p { font-size: 12px; color: #888; line-height: 1.5; }
+.hero-m-ai-card-btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #5f0080;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 8px;
+  text-align: center;
+}

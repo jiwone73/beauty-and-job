@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import Header from "@/components/Header";
+import HeroMobile from "@/components/HeroMobile";
+import { useEffect, useState, useCallback } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRouter } from "next/navigation";
 import {
@@ -24,7 +26,7 @@ export default function HomePage() {
   return (
     <main className="main-page">
       <Header />
-      <Hero />
+      <MobileDetector />
       <SectionPick />
       <SectionInsights />
       <SectionNewsletter />
@@ -42,6 +44,17 @@ export default function HomePage() {
    ============================================ */
 const JOB_OPTIONS = ["마케팅", "MD", "영업", "디자인", "연구개발(RA)", "SCM·물류", "HR", "경영지원"];
 const REGION_OPTIONS = ["지역 전체", "서울", "경기", "인천", "부산", "대구", "광주", "대전", "해외"];
+
+function MobileDetector() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile ? <HeroMobile /> : <Hero />;
+}
 
 function Hero() {
   const router = useRouter();
