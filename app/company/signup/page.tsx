@@ -134,6 +134,9 @@ export default function CompanySignupPage() {
             <p style={{fontSize:"13px",color:"#888",marginTop:"6px",padding:"8px 12px",background:"#f9f5ff",borderRadius:"6px"}}>
               💡 계정은 주로 회사의 영문명을 사용해요 (예: oliveyoung, amorepacific)
             </p>
+            <p style={{fontSize:"12px",color:"#bbb",marginTop:"8px"}}>
+              테스트 계정: oliveyoung / olive1234 · amore / amore1234 · lgbeauty / lg1234
+            </p>
             <label className="cv-field-label cv-required" style={{marginTop:"16px"}}>비밀번호</label>
             <div style={{position:"relative"}}>
               <input className="cv-input" type={showPw ? "text" : "password"} placeholder="8자 이상 영문+숫자 조합" value={accountPw} onChange={(e) => setAccountPw(e.target.value)} />
