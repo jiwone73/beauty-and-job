@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { X } from "lucide-react";
-import { useAuthStore } from "@/lib/store/authStore";
 
 interface Props {
   onClose: () => void;
@@ -11,14 +10,8 @@ interface Props {
 
 export default function LoginModal({ onClose }: Props) {
   const router = useRouter();
-  const { login } = useAuthStore();
 
-  const handleKakao = () => {
-    // 테스트: 카카오 로그인 → 김지수로 로그인
-    login({ userName: "김지수", userPhone: "010-1234-5678" });
-    onClose();
-    router.push("/profile");
-  };
+  // 카카오 OAuth URL (실제 앱키 등록 후 사용)
 
   const handlePhone = () => {
     onClose();
@@ -41,12 +34,12 @@ export default function LoginModal({ onClose }: Props) {
 
         {/* 버튼 */}
         <div className="lm-btns">
-          <button className="lm-kakao-btn" onClick={handleKakao}>
+          <a href="https://kauth.kakao.com/oauth/authorize?client_id=KAKAO_APP_KEY&redirect_uri=https://beauty-and-job.vercel.app&response_type=code" className="lm-kakao-btn">
             <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
               <path d="M10 2C5.58 2 2 4.92 2 8.5c0 2.3 1.52 4.32 3.82 5.48L4.9 17.1c-.08.3.22.54.48.38L9.1 14.9c.3.03.6.05.9.05 4.42 0 8-2.92 8-6.5S14.42 2 10 2z" fill="#3C1E1E"/>
             </svg>
             카카오 계정으로 계속하기
-          </button>
+          </a>
           <button className="lm-phone-btn" onClick={handlePhone}>
             휴대전화 번호로 계속하기
           </button>
