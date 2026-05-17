@@ -48,10 +48,9 @@ function AuthButtons() {
 
   return (
     <>
-      <Link href="/login" className="btn btn-text">로그인</Link>
-      <Link href="/signup" className="btn btn-text" style={{fontWeight:700, color:"#1a1a1a"}}>회원가입</Link>
-      <Link href="/company/login" className="btn btn-dark gnb-biz-btn">
-        <Building2 size={16} />기업 서비스
+      <Link href="/login" className="btn btn-outline-auth">회원가입/로그인</Link>
+      <Link href="/company/login" className="btn btn-outline-biz gnb-biz-btn">
+        기업 서비스 <ChevronDown size={14} />
       </Link>
     </>
   );
