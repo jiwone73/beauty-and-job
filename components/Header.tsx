@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
-import LoginModal from "@/components/LoginModal";
 import Image from "next/image";
 import { Search, Building2, Menu, X, ChevronDown } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
+import LoginModal from "@/components/LoginModal";
 
-function AuthButtons({ onLoginClick }: { onLoginClick?: () => void }) {
+function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const router = useRouter();
   const { isLoggedIn, userName, logout } = useAuthStore();
   const [open, setOpen] = useState(false);
@@ -17,18 +17,13 @@ function AuthButtons({ onLoginClick }: { onLoginClick?: () => void }) {
       <>
         <div className="auth-user-wrap">
           <button className="auth-user-btn" onClick={() => setOpen(!open)}>
-            {/* PC 전용: 아바타 + 이름 + 화살표 */}
-            <span className="auth-avatar auth-pc">
-              {userName ? userName.slice(0, 1).toUpperCase() : "U"}
-            </span>
+            <span className="auth-avatar auth-pc">{userName ? userName.slice(0,1).toUpperCase() : "U"}</span>
             <span className="auth-username auth-pc">{userName || "내 계정"}</span>
             <svg className="auth-pc" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M3 5l4 4 4-4" stroke="#666" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
-            {/* 모바일 전용: 사람 아이콘 */}
             <svg className="auth-mob" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-              <circle cx="12" cy="8" r="4"/>
-              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
             </svg>
           </button>
           {open && (
@@ -40,8 +35,8 @@ function AuthButtons({ onLoginClick }: { onLoginClick?: () => void }) {
             </div>
           )}
         </div>
-        <Link href="/company/login" className="btn btn-dark gnb-biz-btn">
-          <Building2 size={16} />기업 서비스
+        <Link href="/company/login" className="btn btn-outline-biz gnb-biz-btn">
+          기업 서비스 <ChevronDown size={14} />
         </Link>
       </>
     );
@@ -53,7 +48,6 @@ function AuthButtons({ onLoginClick }: { onLoginClick?: () => void }) {
       <Link href="/company/login" className="btn btn-outline-biz gnb-biz-btn">
         기업 서비스 <ChevronDown size={14} />
       </Link>
-      {showModal && <LoginModal onClose={() => setShowModal(false)} />}
     </>
   );
 }
@@ -69,11 +63,8 @@ export default function Header({ onSearchClick }: HeaderProps) {
   const [showModal, setShowModal] = useState(false);
 
   const handleSearch = () => {
-    if (onSearchClick) {
-      onSearchClick();
-    } else {
-      router.push("/jobs");
-    }
+    if (onSearchClick) onSearchClick();
+    else router.push("/jobs");
   };
 
   return (
@@ -97,7 +88,6 @@ export default function Header({ onSearchClick }: HeaderProps) {
               <Search size={20} />
             </button>
             <AuthButtons onLoginClick={() => setShowModal(true)} />
-            {/* 햄버거: 맨 오른쪽, 모바일만 */}
             <button className="icon-btn mob-hamburger" aria-label="메뉴" onClick={() => setMenuOpen(true)}>
               <Menu size={22} />
             </button>
@@ -105,15 +95,16 @@ export default function Header({ onSearchClick }: HeaderProps) {
         </div>
       </header>
 
-      {/* 모바일 햄버거 메뉴 드로어 */}
+      {/* 로그인 모달 */}
+      {showModal && <LoginModal onClose={() => setShowModal(false)} />}
+
+      {/* 햄버거 메뉴 */}
       {menuOpen && (
         <div className="mob-menu-overlay" onClick={() => setMenuOpen(false)}>
           <div className="mob-menu-drawer" onClick={(e) => e.stopPropagation()}>
             <div className="mob-menu-head">
               <span className="mob-menu-title">메뉴</span>
-              <button className="mob-menu-close" onClick={() => setMenuOpen(false)}>
-                <X size={22} />
-              </button>
+              <button className="mob-menu-close" onClick={() => setMenuOpen(false)}><X size={22} /></button>
             </div>
             <nav className="mob-menu-nav">
               <Link href="/salary" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
@@ -135,7 +126,6 @@ export default function Header({ onSearchClick }: HeaderProps) {
           </div>
         </div>
       )}
-      {showModal && <LoginModal onClose={() => setShowModal(false)} />}
     </>
   );
 }
