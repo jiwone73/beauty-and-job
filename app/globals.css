@@ -7923,3 +7923,75 @@ input[type="range"].career-slider::-moz-range-thumb {
     padding: 6px 10px !important;
   }
 }
+
+/* 로그인 - 구분선 */
+.baj-login-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #bbb;
+  font-size: 13px;
+}
+.baj-login-or span {
+  flex: 1;
+  height: 1px;
+  background: #e8e8e8;
+}
+
+/* 간편로그인 버튼 */
+.baj-social-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.baj-kakao-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  background: #FEE500;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3C1E1E;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.baj-kakao-btn:hover { background: #f5da00; }
+
+.baj-phone-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  background: #fff;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+.baj-phone-btn:hover { border-color: #5f0080; color: #5f0080; }
+
+/* 돌아가기 버튼 */
+.baj-back-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+  font-family: inherit;
+}
+.baj-back-btn:hover { color: #333; }
