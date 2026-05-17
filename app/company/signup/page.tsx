@@ -14,11 +14,8 @@ const HIRE_TYPES = [
 ];
 
 const HIRE_METHODS = [
-  { id: "post", icon: "📋", label: "직접 공고를 등록하고 싶어요", desc: "유료/무료 공고 등록" },
-  { id: "matching", icon: "🤝", label: "후보자를 추천받고 싶어요", desc: "성과형 매칭" },
-  { id: "urgent", icon: "⚡", label: "빠르게 채용하고 싶어요", desc: "긴급 채용 패키지" },
-  { id: "senior", icon: "👔", label: "경력직을 찾고 있어요", desc: "전문 매칭 상담" },
-  { id: "consult", icon: "💬", label: "상담 후 결정하고 싶어요", desc: "담당자 상담" },
+  { id: "paid", icon: "📋", label: "유료 공고 등록", desc: "채용공고 직접 등록 · 노출 기간 동안 지원자 모집" },
+  { id: "free", icon: "🤝", label: "무료 등록 · 채용 성사 시 수수료", desc: "공고 무료 등록 · 채용 확정 시에만 수수료 발생" },
 ];
 
 const INDUSTRY_TYPES = [
