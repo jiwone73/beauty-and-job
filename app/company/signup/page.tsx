@@ -9,12 +9,8 @@ import { ChevronLeft, CheckCircle2, ArrowRight } from "lucide-react";
 type WizardStep = 1 | 2 | 3 | 4 | 5 | 6;
 
 const HIRE_TYPES = [
-  { id: "store", icon: "🛍️", label: "매장직 채용", desc: "뷰티 어드바이저, 판매직, 매니저" },
-  { id: "service", icon: "💆", label: "시술직 채용", desc: "피부관리, 헤어, 네일, 스파" },
-  { id: "hq", icon: "🏢", label: "본사직 채용", desc: "마케팅, MD, BM, 영업, 디자인" },
-  { id: "edu", icon: "📚", label: "교육직 채용", desc: "교육강사, 트레이너" },
-  { id: "event", icon: "⚡", label: "단기 / 행사 인력", desc: "팝업, 프로모션, 단기 판매" },
-  { id: "unknown", icon: "💬", label: "아직 정하지 못했어요", desc: "상담 후 추천" },
+  { id: "corp", icon: "🏢", label: "기업 공고", desc: "마케팅, MD, 영업, 디자인, HR 등 본사 사무직" },
+  { id: "store", icon: "🏪", label: "매장 공고", desc: "뷰티어드바이저, 헤어, 네일, 피부관리 등 현장직" },
 ];
 
 const HIRE_METHODS = [
