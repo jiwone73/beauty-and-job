@@ -7995,3 +7995,117 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-family: inherit;
 }
 .baj-back-btn:hover { color: #333; }
+
+/* ── 로그인 모달 ── */
+.lm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.lm-card {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 380px;
+  padding: 40px 32px 28px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.lm-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+.lm-close:hover { color: #333; }
+.lm-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.lm-header img { margin-bottom: 16px; }
+.lm-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+}
+.lm-sub {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}
+.lm-btns {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.lm-kakao-btn {
+  width: 100%;
+  height: 52px;
+  background: #FEE500;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3C1E1E;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.lm-kakao-btn:hover { background: #f5da00; }
+.lm-phone-btn {
+  width: 100%;
+  height: 52px;
+  background: #fff;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+.lm-phone-btn:hover { border-color: #5f0080; color: #5f0080; }
+.lm-biz-link {
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+  margin-bottom: 20px;
+  padding: 8px 0;
+}
+.lm-biz-link:hover { color: #5f0080; }
+.lm-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #bbb;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  width: 100%;
+  justify-content: center;
+}
+.lm-footer a { color: #bbb; text-decoration: none; }
+.lm-footer a:hover { color: #666; }
+.lm-footer span { font-size: 10px; }

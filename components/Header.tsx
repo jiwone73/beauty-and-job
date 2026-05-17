@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import LoginModal from "@/components/LoginModal";
 import Image from "next/image";
 import { Search, Building2, Menu, X, ChevronDown } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
@@ -48,10 +49,11 @@ function AuthButtons() {
 
   return (
     <>
-      <Link href="/login" className="btn btn-outline-auth">회원가입/로그인</Link>
+      <button className="btn btn-outline-auth" onClick={() => setShowModal(true)}>회원가입/로그인</button>
       <Link href="/company/login" className="btn btn-outline-biz gnb-biz-btn">
         기업 서비스 <ChevronDown size={14} />
       </Link>
+      {showModal && <LoginModal onClose={() => setShowModal(false)} />}
     </>
   );
 }
@@ -64,6 +66,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleSearch = () => {
     if (onSearchClick) {
@@ -132,6 +135,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
           </div>
         </div>
       )}
+      {showModal && <LoginModal onClose={() => setShowModal(false)} />}
     </>
   );
 }
