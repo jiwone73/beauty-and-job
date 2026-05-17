@@ -8,6 +8,7 @@ import {
   Settings, ChevronRight, Plus, CheckCircle2, X, Award, Briefcase,
 } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
+import { useApplicationStore } from "@/lib/store/applicationStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
