@@ -111,7 +111,7 @@ export default function LoginModal({ onClose }: Props) {
             휴대전화 번호로 계속하기
           </button>
         </div>
-        <Link href="/company/login" className="lm-biz-link" onClick={onClose}>기업회원 시작하기</Link>
+        <Link href="/company" className="lm-biz-link" onClick={onClose}>기업회원 시작하기</Link>
         <div className="lm-footer">
           <Link href="/support/terms" onClick={onClose}>이용약관</Link>
           <span>|</span>

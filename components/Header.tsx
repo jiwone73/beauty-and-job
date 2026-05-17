@@ -35,7 +35,7 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
             </div>
           )}
         </div>
-        <Link href="/company/login" className="btn btn-outline-biz gnb-biz-btn">
+        <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
           기업 서비스 <ChevronDown size={14} />
         </Link>
       </>
@@ -45,7 +45,7 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   return (
     <>
       <button className="btn btn-outline-auth" onClick={onLoginClick}>회원가입/로그인</button>
-      <Link href="/company/login" className="btn btn-outline-biz gnb-biz-btn">
+      <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
         기업 서비스 <ChevronDown size={14} />
       </Link>
     </>
