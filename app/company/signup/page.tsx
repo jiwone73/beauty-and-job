@@ -131,6 +131,9 @@ export default function CompanySignupPage() {
             <p className="company-wizard-desc">로그인에 사용할 아이디와 비밀번호를 입력해 주세요.</p>
             <label className="cv-field-label cv-required">아이디</label>
             <input className="cv-input" placeholder="영문, 숫자 조합 4~20자" value={accountId} onChange={(e) => setAccountId(e.target.value)} />
+            <p style={{fontSize:"13px",color:"#888",marginTop:"6px",padding:"8px 12px",background:"#f9f5ff",borderRadius:"6px"}}>
+              💡 계정은 주로 회사의 영문명을 사용해요 (예: oliveyoung, amorepacific)
+            </p>
             <label className="cv-field-label cv-required" style={{marginTop:"16px"}}>비밀번호</label>
             <div style={{position:"relative"}}>
               <input className="cv-input" type={showPw ? "text" : "password"} placeholder="8자 이상 영문+숫자 조합" value={accountPw} onChange={(e) => setAccountPw(e.target.value)} />
@@ -151,6 +154,11 @@ export default function CompanySignupPage() {
             >
               다음 →
             </button>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"16px",marginTop:"16px"}}>
+              <a href="/company/login" style={{fontSize:"13px",color:"#888",textDecoration:"none"}}>아이디 찾기</a>
+              <span style={{width:"1px",height:"12px",background:"#ddd",display:"inline-block"}} />
+              <a href="/company/login" style={{fontSize:"13px",color:"#888",textDecoration:"none"}}>비밀번호 찾기</a>
+            </div>
           </div>
         )}
 
