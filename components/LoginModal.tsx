@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { X, ChevronLeft } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useSignupStore } from "@/lib/store/signupStore";
 
 interface Props { onClose: () => void; }
 
