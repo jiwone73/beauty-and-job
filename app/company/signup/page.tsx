@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, CheckCircle2, ArrowRight } from "lucide-react";
 
-type WizardStep = 1 | 2 | 3 | 4 | 5;
+type WizardStep = 1 | 2 | 3 | 4 | 5 | 6;
 
 const HIRE_TYPES = [
   { id: "store", icon: "🛍️", label: "매장직 채용", desc: "뷰티 어드바이저, 판매직, 매니저" },
@@ -51,7 +51,7 @@ export default function CompanySignupPage() {
   const [email, setEmail] = useState("");
   const [agreed, setAgreed] = useState(false);
 
-  const progress = (step / 5) * 100;
+  const progress = (step / 6) * 100;
 
   const getRecommend = () => {
     const key = `${hireType}-${hireMethod}`;
@@ -59,7 +59,7 @@ export default function CompanySignupPage() {
   };
 
   const handleNext = () => {
-    if (step < 5) setStep((prev) => (prev + 1) as WizardStep);
+    if (step < 6) setStep((prev) => (prev + 1) as WizardStep);
   };
   const handleBack = () => {
     if (step > 1) setStep((prev) => (prev - 1) as WizardStep);
@@ -83,7 +83,7 @@ export default function CompanySignupPage() {
             <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} />
           </Link>
           <div className="company-wizard-step-indicator">
-            {step < 5 && <span>{step} / 4</span>}
+            {step < 6 && <span>{step} / 5</span>}
           </div>
         </div>
         {/* 진행 바 */}
@@ -116,6 +116,36 @@ export default function CompanySignupPage() {
             </div>
             <button className={`cv-btn-primary ${hireType ? "" : "disabled"}`} disabled={!hireType} onClick={handleNext}>
               다음 <ArrowRight size={16} style={{ display: "inline", marginLeft: 4 }} />
+            </button>
+          </div>
+        )}
+
+        {/* STEP 1: 계정 설정 */}
+        {step === 1 && (
+          <div className="company-wizard-step">
+            <h2 className="company-wizard-title">계정을 설정해 주세요</h2>
+            <p className="company-wizard-desc">로그인에 사용할 아이디와 비밀번호를 입력해 주세요.</p>
+            <label className="cv-field-label cv-required">아이디</label>
+            <input className="cv-input" placeholder="영문, 숫자 조합 4~20자" value={accountId} onChange={(e) => setAccountId(e.target.value)} />
+            <label className="cv-field-label cv-required" style={{marginTop:"16px"}}>비밀번호</label>
+            <div style={{position:"relative"}}>
+              <input className="cv-input" type={showPw ? "text" : "password"} placeholder="8자 이상 영문+숫자 조합" value={accountPw} onChange={(e) => setAccountPw(e.target.value)} />
+              <button type="button" onClick={() => setShowPw(!showPw)} style={{position:"absolute",right:"12px",top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"#aaa",fontSize:"13px"}}>
+                {showPw ? "숨기기" : "보기"}
+              </button>
+            </div>
+            <label className="cv-field-label cv-required" style={{marginTop:"16px"}}>비밀번호 확인</label>
+            <input className="cv-input" type="password" placeholder="비밀번호를 다시 입력해 주세요" value={accountPwConfirm} onChange={(e) => setAccountPwConfirm(e.target.value)} />
+            {accountPw && accountPwConfirm && accountPw !== accountPwConfirm && (
+              <p style={{color:"#e53935",fontSize:"13px",marginTop:"6px"}}>비밀번호가 일치하지 않습니다.</p>
+            )}
+            <button
+              className={`cv-btn-primary ${(accountId.length >= 4 && accountPw.length >= 8 && accountPw === accountPwConfirm) ? "" : "disabled"}`}
+              disabled={!(accountId.length >= 4 && accountPw.length >= 8 && accountPw === accountPwConfirm)}
+              onClick={handleNext}
+              style={{marginTop:"24px"}}
+            >
+              다음 →
             </button>
           </div>
         )}
@@ -217,8 +247,8 @@ export default function CompanySignupPage() {
           </div>
         )}
 
-        {/* STEP 5: 가입 완료 + 다음 행동 유도 */}
-        {step === 5 && (
+        {/* STEP 6: 가입 완료 + 다음 행동 유도 */}
+        {step === 6 && (
           <div className="company-wizard-step company-wizard-done">
             <div className="company-wizard-done-icon">🎉</div>
             <h2 className="company-wizard-done-title">
