@@ -49,6 +49,10 @@ export default function CompanySignupPage() {
   const [managerName, setManagerName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [accountId, setAccountId] = useState("");
+  const [accountPw, setAccountPw] = useState("");
+  const [accountPwConfirm, setAccountPwConfirm] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [agreed, setAgreed] = useState(false);
 
   const progress = (step / 6) * 100;
