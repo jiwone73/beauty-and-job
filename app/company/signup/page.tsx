@@ -94,7 +94,7 @@ export default function CompanySignupPage() {
 
       <div className="company-wizard-body">
         {/* STEP 1: 채용 유형 선택 */}
-        {step === 1 && (
+        {step === 2 && (
           <div className="company-wizard-step">
             <h2 className="company-wizard-title">어떤 채용을 준비 중이신가요?</h2>
             <p className="company-wizard-desc">선택하신 조건에 맞는 채용 방식을 추천해드립니다.</p>
@@ -121,7 +121,7 @@ export default function CompanySignupPage() {
         )}
 
         {/* STEP 2: 채용 방식 선택 */}
-        {step === 2 && (
+        {step === 3 && (
           <div className="company-wizard-step">
             <h2 className="company-wizard-title">채용 방식은 어떻게 진행하고 싶으신가요?</h2>
             <p className="company-wizard-desc">기업 상황에 맞는 방식을 선택해 주세요.</p>
@@ -148,7 +148,7 @@ export default function CompanySignupPage() {
         )}
 
         {/* STEP 3: 추천 서비스 확인 */}
-        {step === 3 && (
+        {step === 4 && (
           <div className="company-wizard-step">
             <h2 className="company-wizard-title">입력하신 조건에 맞는 서비스를 추천드립니다</h2>
             <div className="company-wizard-recommend">
@@ -177,7 +177,7 @@ export default function CompanySignupPage() {
         )}
 
         {/* STEP 4: 기업 정보 입력 */}
-        {step === 4 && (
+        {step === 5 && (
           <div className="company-wizard-step">
             <h2 className="company-wizard-title">기업 정보를 입력해 주세요</h2>
             <p className="company-wizard-desc">가입 후 바로 채용을 시작할 수 있습니다.</p>
