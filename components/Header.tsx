@@ -7,7 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
 
-function AuthButtons() {
+function AuthButtons({ onLoginClick }: { onLoginClick?: () => void }) {
   const router = useRouter();
   const { isLoggedIn, userName, logout } = useAuthStore();
   const [open, setOpen] = useState(false);
@@ -49,7 +49,7 @@ function AuthButtons() {
 
   return (
     <>
-      <button className="btn btn-outline-auth" onClick={() => setShowModal(true)}>회원가입/로그인</button>
+      <button className="btn btn-outline-auth" onClick={onLoginClick}>회원가입/로그인</button>
       <Link href="/company/login" className="btn btn-outline-biz gnb-biz-btn">
         기업 서비스 <ChevronDown size={14} />
       </Link>
@@ -96,7 +96,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
             <button className="icon-btn" aria-label="검색" onClick={handleSearch}>
               <Search size={20} />
             </button>
-            <AuthButtons />
+            <AuthButtons onLoginClick={() => setShowModal(true)} />
             {/* 햄버거: 맨 오른쪽, 모바일만 */}
             <button className="icon-btn mob-hamburger" aria-label="메뉴" onClick={() => setMenuOpen(true)}>
               <Menu size={22} />
