@@ -11,6 +11,7 @@ interface Props { onClose: () => void; }
 export default function LoginModal({ onClose }: Props) {
   const router = useRouter();
   const { login } = useAuthStore();
+  const { setPhone: setSignupPhone, setBasic } = useSignupStore();
   const [phoneMode, setPhoneMode] = useState(false);
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
