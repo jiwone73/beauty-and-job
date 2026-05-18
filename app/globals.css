@@ -8204,7 +8204,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* ── 섹션 구분선 ── */
 .section-divider {
-  border-top: 1px solid var(--color-border);
+  background: #faf5fc;
 }
 
 /* ── 인사이트 새 카드 ── */
@@ -8243,4 +8243,12 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-size: 11px;
   color: #bbb;
   margin-top: 4px;
+}
+
+/* 섹션 내부 구분선 - 컨텐츠 너비만큼 */
+.section-inner-divider {
+  height: 1px;
+  background: var(--color-border);
+  width: 100%;
+  margin: 0 auto;
 }

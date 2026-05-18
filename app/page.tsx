@@ -356,6 +356,7 @@ function SectionStorePick() {
   return (
     <section className="section section-divider">
       <div className="container">
+        <div className="section-inner-divider" style={{marginBottom:"48px"}} />
         <div className="section-head">
           <div>
             <h2 className="section-title">
@@ -390,6 +391,7 @@ function SectionCorpPick() {
   return (
     <section className="section section-divider">
       <div className="container">
+        <div className="section-inner-divider" style={{marginBottom:"48px"}} />
         <div className="section-head">
           <div>
             <h2 className="section-title">
@@ -423,6 +425,7 @@ function SectionBeautyServices() {
   return (
     <section className="section section-divider">
       <div className="container">
+        <div className="section-inner-divider" style={{marginBottom:"48px"}} />
         <div className="section-head">
           <div>
             <h2 className="section-title">
@@ -463,6 +466,7 @@ function SectionInsights() {
   return (
     <section className="section section-divider">
       <div className="container">
+        <div className="section-inner-divider" style={{marginBottom:"48px"}} />
         <div className="section-head">
           <div>
             <h2 className="section-title">📖 뷰티 인사이트</h2>
