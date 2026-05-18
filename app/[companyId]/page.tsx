@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Building2, Briefcase, Users, Settings, BarChart2, Plus } from "lucide-react";
 
 export default function CompanyHomePage() {
@@ -22,7 +23,9 @@ export default function CompanyHomePage() {
       {/* 헤더 */}
       <div className="cid-header">
         <div className="cid-header-inner">
-          <Link href="/" className="cid-logo">🌸 뷰티앤잡</Link>
+          <Link href="/" className="cid-logo">
+            <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} />
+          </Link>
           <div className="cid-account">
             <span className="cid-account-id">@{companyId}</span>
             <Link href="/company/dashboard/settings" className="cid-account-btn">설정</Link>
