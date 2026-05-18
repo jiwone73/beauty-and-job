@@ -35,6 +35,7 @@
   * { box-sizing: border-box; }
 
   html, body {
+  background: #faf5fc !important;
     height: 100%;
     color: var(--color-text);
     background: var(--color-bg);
