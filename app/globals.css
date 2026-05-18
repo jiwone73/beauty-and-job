@@ -9359,3 +9359,139 @@ input[type="range"].career-slider::-moz-range-thumb {
 .co-cta-title { font-size: clamp(22px, 4vw, 32px); font-weight: 800; color: #fff; margin-bottom: 12px; }
 .co-cta-desc { font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 32px; line-height: 1.7; }
 .co-cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ════════════════════════════════
+   기업 전용 홈 페이지 /{companyId}
+════════════════════════════════ */
+.cid-page { min-height: 100vh; background: #f9fafb; }
+
+.cid-header {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.cid-header-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cid-logo { font-size: 16px; font-weight: 800; color: #7c3aed; text-decoration: none; }
+.cid-account { display: flex; align-items: center; gap: 10px; }
+.cid-account-id { font-size: 13px; color: #888; }
+.cid-account-btn {
+  font-size: 12px;
+  color: #7c3aed;
+  background: #f3e8ff;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cid-body { max-width: 640px; margin: 0 auto; padding: 24px 20px 80px; }
+
+/* 프로필 카드 */
+.cid-profile-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  border: 1px solid #e5e7eb;
+}
+.cid-profile-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background: #f3e8ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7c3aed;
+  flex-shrink: 0;
+}
+.cid-profile-info { flex: 1; }
+.cid-profile-name { font-size: 18px; font-weight: 800; color: #111; }
+.cid-profile-sub  { font-size: 13px; color: #888; margin-top: 2px; }
+.cid-post-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cid-post-btn:hover { background: #6d28d9; }
+
+/* 메뉴 */
+.cid-menu-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #444;
+  margin-bottom: 12px;
+}
+.cid-menu-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.cid-menu-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: #222;
+  transition: border-color 0.15s, background 0.15s;
+}
+.cid-menu-card:hover { border-color: #a78bfa; background: #faf5ff; }
+.cid-menu-icon { color: #7c3aed; flex-shrink: 0; }
+.cid-menu-info { display: flex; flex-direction: column; gap: 2px; }
+.cid-menu-info strong { font-size: 14px; font-weight: 600; }
+.cid-menu-info span   { font-size: 12px; color: #888; }
+
+/* 안내 배너 */
+.cid-banner {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  border-radius: 14px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cid-banner-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.cid-banner-desc  { font-size: 12px; color: rgba(255,255,255,0.75); }
+.cid-banner-btn {
+  background: #fff;
+  color: #7c3aed;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 9px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cid-banner-btn:hover { opacity: 0.9; }

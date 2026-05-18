@@ -226,7 +226,7 @@ function CompanySignupInner() {
               ))}
             </div>
             <button type="button" className="cv-btn-text-add"
-              onClick={() => router.push("/company/dashboard")} style={{ marginTop: 16 }}>
+              onClick={() => router.push(`/${accountId}`)} style={{ marginTop: 16 }}>
               나중에 할게요 →
             </button>
           </div>
