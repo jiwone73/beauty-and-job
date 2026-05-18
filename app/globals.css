@@ -8156,3 +8156,48 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .lm-error { font-size: 12px; color: #e53935; margin: 8px 0 0; }
 .lm-hint { font-size: 12px; color: #bbb; margin: 6px 0 12px; }
+
+/* ── 매장·기업 채용관 섹션 배경 ── */
+.section-store { background: #fff8f2; }
+.section-corp  { background: #f9f0ff; }
+
+/* ── 광고 라벨 ── */
+.ad-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: #e8eaf6;
+  color: #283593;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* ── 추천 뷰티 서비스 카드 ── */
+.service-card {
+  background: #fff;
+  border: 1px solid #f0e8f8;
+  border-radius: 16px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: box-shadow 0.15s;
+  cursor: pointer;
+}
+.service-card:hover { box-shadow: 0 4px 16px rgba(95,0,128,0.08); }
+.service-emoji { font-size: 28px; }
+.service-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #f0e8ff;
+  color: #5f0080;
+  width: fit-content;
+}
+.service-name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+.service-desc { font-size: 12px; color: #666; line-height: 1.5; }
+.service-company { font-size: 11px; color: #aaa; margin-top: 4px; }

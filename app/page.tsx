@@ -27,7 +27,10 @@ export default function HomePage() {
       <Header />
       <MobileDetector />
       <SectionPick />
+      <SectionStorePick />
+      <SectionCorpPick />
       <SectionInsights />
+      <SectionBeautyServices />
       <SectionNewsletter />
       <SectionPremium />
       <SectionIntern />
@@ -337,6 +340,114 @@ function JobCard({ id, brand, tag, tagType, title, location, type, deadline }: {
       </div>
       <div className="card-deadline">{deadline}</div>
     </div>
+  );
+}
+
+
+/* ============================================
+   섹션: 매장·샵 채용관
+   ============================================ */
+const STORE_PICK_JOBS = [
+  { id: 101, brand: "아름다운나라", tag: "경력 2~5년", title: "헤어 디자이너 모집", location: "서울 강남구", type: "정규직", deadline: "D-5" },
+  { id: 102, brand: "미즈헤어", tag: "경력무관", title: "네일 아티스트 채용", location: "서울 홍대", type: "정규직", deadline: "D-10" },
+  { id: 103, brand: "바이올렛드림", tag: "경력 1년+", title: "피부관리사 구인", location: "경기 분당", type: "정규직", deadline: "D-8" },
+  { id: 104, brand: "글로우샵", tag: "신입/경력", title: "뷰티어드바이저 채용", location: "서울 명동", type: "계약직", deadline: "D-14" },
+];
+
+function SectionStorePick() {
+  const router = useRouter();
+  return (
+    <section className="section section-store">
+      <div className="container">
+        <div className="section-head">
+          <div>
+            <h2 className="section-title">
+              🏪 매장·샵 채용관
+            </h2>
+            <p className="section-sub">헤어·네일·피부·메이크업·스파 등 현장직 채용공고를 모아봤어요. 내 기술로 바로 시작할 수 있는 기회를 찾아보세요.</p>
+          </div>
+          <Link href="/jobs?type=매장" className="see-all">전체보기 →</Link>
+        </div>
+        <div className="card-grid card-grid-4">
+          {STORE_PICK_JOBS.map((job) => (
+            <JobCard key={job.id} {...job} tagType="soft" />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================
+   섹션: 기업·브랜드 채용관
+   ============================================ */
+const CORP_PICK_JOBS = [
+  { id: 201, brand: "아모레퍼시픽", tag: "경력 5년+", title: "글로벌 브랜드 마케터", location: "서울 용산구", type: "정규직", deadline: "D-7" },
+  { id: 202, brand: "코스맥스", tag: "경력 3년+", title: "화장품 연구원 (제형)", location: "경기 성남", type: "정규직", deadline: "D-11" },
+  { id: 203, brand: "달바", tag: "경력 3년+", title: "유럽 수출 영업 담당자", location: "서울", type: "정규직", deadline: "D-9" },
+  { id: 204, brand: "에이피알", tag: "경력 2~5년", title: "퍼포먼스 마케터", location: "서울 강남", type: "정규직", deadline: "D-6" },
+];
+
+function SectionCorpPick() {
+  const router = useRouter();
+  return (
+    <section className="section section-corp">
+      <div className="container">
+        <div className="section-head">
+          <div>
+            <h2 className="section-title">
+              🏢 기업·브랜드 채용관
+            </h2>
+            <p className="section-sub">화장품 브랜드·프랜차이즈 본사·병원·클리닉·교육기관의 마케팅·MD·영업·연구개발 등 전문직 채용공고예요.</p>
+          </div>
+          <Link href="/jobs?type=기업" className="see-all">전체보기 →</Link>
+        </div>
+        <div className="card-grid card-grid-4">
+          {CORP_PICK_JOBS.map((job) => (
+            <JobCard key={job.id} {...job} tagType="primary" />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================
+   섹션: 추천 뷰티 서비스
+   ============================================ */
+const BEAUTY_SERVICES = [
+  { id: 1, emoji: "🎓", name: "뷰티 자격증 과정", desc: "헤어·피부·메이크업 국가자격증 취득 과정", company: "뷰티스쿨 A", tag: "교육" },
+  { id: 2, emoji: "🔧", name: "미용 장비 렌탈", desc: "살롱 오픈에 필요한 장비를 합리적으로", company: "장비사 B", tag: "장비" },
+  { id: 3, emoji: "📦", name: "살롱 용품 도매", desc: "시술에 필요한 소모품을 한 곳에서", company: "용품사 C", tag: "용품" },
+  { id: 4, emoji: "💻", name: "예약관리 솔루션", desc: "소규모 샵도 쉽게 쓰는 예약·고객 관리", company: "서비스사 D", tag: "운영" },
+];
+
+function SectionBeautyServices() {
+  return (
+    <section className="section">
+      <div className="container">
+        <div className="section-head">
+          <div>
+            <h2 className="section-title">
+              추천 뷰티 서비스
+              <span className="ad-label">광고</span>
+            </h2>
+            <p className="section-sub">채용공고 외에도 뷰티 사업에 필요한 교육·장비·용품·운영 서비스를 소개해 드려요.</p>
+          </div>
+        </div>
+        <div className="card-grid card-grid-4">
+          {BEAUTY_SERVICES.map((s) => (
+            <div key={s.id} className="service-card">
+              <div className="service-emoji">{s.emoji}</div>
+              <span className="service-tag">{s.tag}</span>
+              <h3 className="service-name">{s.name}</h3>
+              <p className="service-desc">{s.desc}</p>
+              <p className="service-company">{s.company}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
