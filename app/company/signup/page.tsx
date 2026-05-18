@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -43,7 +43,7 @@ const SERVICES_CORP = [
   { id: "headhunting", icon: "🎯", label: "헤드헌팅 매칭", desc: "경력직 · 관리자급 전문 추천", href: "/company/dashboard", primary: false },
 ];
 
-export default function CompanySignupPage() {
+function CompanySignupInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState<WizardStep>(1);
@@ -349,5 +349,13 @@ export default function CompanySignupPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function CompanySignupPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 40, textAlign: "center" }}>로딩 중...</div>}>
+      <CompanySignupInner />
+    </Suspense>
   );
 }
