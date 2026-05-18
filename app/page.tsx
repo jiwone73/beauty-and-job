@@ -32,9 +32,6 @@ export default function HomePage() {
       <SectionInsights />
       <SectionBeautyServices />
       <SectionNewsletter />
-      <SectionPremium />
-      <SectionIntern />
-      <SectionGlobal />
       <Footer />
     </main>
   );
@@ -357,7 +354,7 @@ const STORE_PICK_JOBS = [
 function SectionStorePick() {
   const router = useRouter();
   return (
-    <section className="section section-store">
+    <section className="section section-divider">
       <div className="container">
         <div className="section-head">
           <div>
@@ -391,7 +388,7 @@ const CORP_PICK_JOBS = [
 function SectionCorpPick() {
   const router = useRouter();
   return (
-    <section className="section section-corp">
+    <section className="section section-divider">
       <div className="container">
         <div className="section-head">
           <div>
@@ -424,7 +421,7 @@ const BEAUTY_SERVICES = [
 
 function SectionBeautyServices() {
   return (
-    <section className="section">
+    <section className="section section-divider">
       <div className="container">
         <div className="section-head">
           <div>
@@ -463,29 +460,26 @@ const INSIGHTS_DATA = [
 
 function SectionInsights() {
   const router = useRouter();
-
   return (
-    <section className="section">
+    <section className="section section-divider">
       <div className="container">
         <div className="section-head">
           <div>
-            <h2 className="section-title">뷰티 업계 인사이트</h2>
-            <p className="section-sub">최신 트렌드와 커리어 정보를 한 눈에</p>
+            <h2 className="section-title">📖 뷰티 인사이트</h2>
+            <p className="section-sub">최신 트렌드와 커리어 정보를 한눈에</p>
           </div>
           <Link href="/insights" className="see-all">전체보기 →</Link>
         </div>
         <div className="card-grid card-grid-4">
           {INSIGHTS_DATA.map((item) => (
-            <article key={item.id} className="insight-card"
+            <article key={item.id} className="insight-card-new"
               onClick={() => router.push(`/insights/${item.id}`)}
               style={{ cursor: "pointer" }}>
-              <div className="insight-image">
-                <div className="insight-image-placeholder">{item.emoji}</div>
-              </div>
+              <div className="insight-card-new-img">{item.emoji}</div>
               <span className="insight-category">{item.category}</span>
-              <h3 className="insight-title">{item.title}</h3>
-              <p className="insight-desc">{item.desc}</p>
-              <time className="insight-date">{item.date}</time>
+              <h3 className="insight-card-new-title">{item.title}</h3>
+              <p className="insight-card-new-desc">{item.desc}</p>
+              <time className="insight-card-new-date">{item.date}</time>
             </article>
           ))}
         </div>
@@ -497,7 +491,7 @@ function SectionInsights() {
 /* ============================================
    섹션 3: 뉴스레터
    ============================================ */
-function SectionNewsletter() {
+function SectionNewsletter() { // divider added via CSS
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
