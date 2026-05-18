@@ -1,5 +1,6 @@
 "use client";
 import LoginModal from "@/components/LoginModal";
+import LoginModal from "@/components/LoginModal";
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -141,6 +142,7 @@ export default function JobDetailPage() {
   const [bookmarked, setBookmarked] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [applyDone, setApplyDone] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
   const { isLoggedIn, userName } = useAuthStore();
