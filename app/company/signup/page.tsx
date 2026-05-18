@@ -129,95 +129,57 @@ function CompanySignupInner() {
           </div>
         )}
 
-        {/* STEP 2: 계정 설정 */}
+                {/* STEP 2: 계정 설정 */}
         {step === 2 && (
           <div className="company-wizard-step">
-            <h2 className="company-wizard-title">계정을 만들어 주세요</h2>
-            <p className="company-wizard-desc">카카오 또는 휴대전화로 빠르게 시작하세요.</p>
+            <h2 className="company-wizard-title">계정을 설정해 주세요</h2>
+            <p className="company-wizard-desc">로그인에 사용할 아이디와 비밀번호를 입력해 주세요.</p>
 
-            {/* 카카오 */}
-            <button
-              type="button"
-              className={`company-wizard-kakao-btn ${authMethod === "kakao" ? "active" : ""}`}
-              onClick={() => {
-                setAuthMethod("kakao");
-                setAuthVerified(true);
-                setAuthSent(false);
-              }}
-            >
-              <span style={{ fontSize: 20 }}>💬</span>
-              카카오로 시작하기
-              {authMethod === "kakao" && (
-                <CheckCircle2 size={18} style={{ marginLeft: "auto", color: "#3d1d6e" }} />
-              )}
-            </button>
+            <label className="cv-field-label cv-required">아이디</label>
+            <input
+              className="cv-input"
+              placeholder="영문, 숫자 조합 4~20자"
+              value={accountId}
+              onChange={(e) => setAccountId(e.target.value)}
+            />
+            <p style={{ fontSize: 13, color: "#888", marginTop: 6, padding: "8px 12px", background: "#f9f5ff", borderRadius: 6 }}>
+              💡 회사 또는 매장 영문명을 사용하는 걸 추천해요 (예: oliveyoung, hairshop01)
+            </p>
 
-            <div className="company-wizard-divider"><span>또는</span></div>
-
-            {/* 휴대전화 인증 */}
-            <div className={`company-wizard-phone-box ${authMethod === "phone" ? "active" : ""}`}>
-              <label className="cv-field-label cv-required">휴대전화 번호</label>
-              <div style={{ display: "flex", gap: 8 }}>
-                <input
-                  className="cv-input"
-                  placeholder="010-0000-0000"
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  style={{ flex: 1 }}
-                />
-                <button
-                  type="button"
-                  className="cv-btn-outline"
-                  disabled={phone.length < 10}
-                  style={{ whiteSpace: "nowrap" }}
-                  onClick={() => {
-                    setAuthMethod("phone");
-                    setAuthSent(true);
-                    setAuthVerified(false);
-                    setAuthCode("");
-                  }}
-                >
-                  인증번호 받기
-                </button>
-              </div>
-
-              {authSent && (
-                <>
-                  <label className="cv-field-label" style={{ marginTop: 12 }}>인증번호</label>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <input
-                      className="cv-input"
-                      placeholder="인증번호 6자리"
-                      value={authCode}
-                      onChange={(e) => setAuthCode(e.target.value)}
-                      style={{ flex: 1 }}
-                    />
-                    <button
-                      type="button"
-                      className="cv-btn-outline"
-                      style={{ whiteSpace: "nowrap" }}
-                      onClick={() => {
-                        if (authCode === "123456") {
-                          setAuthVerified(true);
-                        }
-                      }}
-                    >
-                      확인
-                    </button>
-                  </div>
-                  {authVerified && (
-                    <p style={{ color: "#7c3aed", fontSize: 13, marginTop: 6 }}>✅ 인증이 완료되었습니다.</p>
-                  )}
-                  <p style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>테스트 인증번호: 123456</p>
-                </>
-              )}
+            <label className="cv-field-label cv-required" style={{ marginTop: 16 }}>비밀번호</label>
+            <div style={{ position: "relative" }}>
+              <input
+                className="cv-input"
+                type={showPw ? "text" : "password"}
+                placeholder="8자 이상 영문 + 숫자 조합"
+                value={accountPw}
+                onChange={(e) => setAccountPw(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw(!showPw)}
+                style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#aaa", fontSize: 13 }}
+              >
+                {showPw ? "숨기기" : "보기"}
+              </button>
             </div>
 
+            <label className="cv-field-label cv-required" style={{ marginTop: 16 }}>비밀번호 확인</label>
+            <input
+              className="cv-input"
+              type="password"
+              placeholder="비밀번호를 다시 입력해 주세요"
+              value={accountPwConfirm}
+              onChange={(e) => setAccountPwConfirm(e.target.value)}
+            />
+            {accountPw && accountPwConfirm && accountPw !== accountPwConfirm && (
+              <p style={{ color: "#e53935", fontSize: 13, marginTop: 6 }}>비밀번호가 일치하지 않습니다.</p>
+            )}
+
             <button
               type="button"
-              className={`cv-btn-primary ${authVerified ? "" : "disabled"}`}
-              disabled={!authVerified}
+              className={`cv-btn-primary ${(accountId.length >= 4 && accountPw.length >= 8 && accountPw === accountPwConfirm) ? "" : "disabled"}`}
+              disabled={!(accountId.length >= 4 && accountPw.length >= 8 && accountPw === accountPwConfirm)}
               onClick={handleNext}
               style={{ marginTop: 24 }}
             >
