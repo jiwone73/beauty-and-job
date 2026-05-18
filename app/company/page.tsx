@@ -100,12 +100,6 @@ export default function CompanyPage() {
             헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 병원·클리닉, 교육기관까지<br />
             뷰티 분야에 맞는 채용공고와 인재추천 서비스를 제공합니다.
           </p>
-          <div className="co-hero-btns">
-            <Link href="/company/dashboard/jobs" className="co-btn-primary">
-              📋 무료 채용공고 등록하기
-            </Link>
-
-          </div>
         </div>
       </section>
 
