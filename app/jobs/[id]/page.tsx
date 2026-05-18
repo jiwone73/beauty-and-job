@@ -400,38 +400,7 @@ export default function JobDetailPage() {
         </button>
       </div>
 
-      {/* 비로그인 유도 모달 */}
-      {showLoginPrompt && (
-        <div className="cv-overlay" onClick={() => setShowLoginPrompt(false)}>
-          <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="cv-header">
-              <div style={{width:36}} />
-              <h2 className="cv-title">로그인이 필요해요</h2>
-              <button className="cv-close" onClick={() => setShowLoginPrompt(false)}>✕</button>
-            </div>
-            <div className="cv-body">
-              <div style={{textAlign:"center", padding:"8px 0 20px"}}>
-                <div style={{fontSize:"48px", marginBottom:"12px"}}>🔐</div>
-                <p style={{fontSize:"15px", fontWeight:"600", color:"#1a1a1a", marginBottom:"8px"}}>
-                  지원하려면 로그인이 필요해요
-                </p>
-                <p style={{fontSize:"13px", color:"#888"}}>
-                  로그인 후 이력서로 간편하게 지원할 수 있어요
-                </p>
-              </div>
-              <Link href="/login"
-                className="cv-btn-primary"
-                style={{display:"block", textAlign:"center", textDecoration:"none", lineHeight:"52px"}}>
-                로그인하기
-              </Link>
-              <Link href="/signup"
-                style={{display:"block", textAlign:"center", fontSize:"14px", color:"#888", marginTop:"12px", textDecoration:"none"}}>
-                아직 계정이 없으신가요? <span style={{color:"#5f0080", fontWeight:"600"}}>회원가입</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+      {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} />}
 
       {/* 지원하기 모달 */}
       {showApplyModal && (
