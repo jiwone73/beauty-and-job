@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
@@ -7,7 +7,7 @@ import {
   Bell, LogOut, Search, BookmarkCheck, Menu, X
 } from "lucide-react";
 
-const COMPANY_INFO = { name: "(주)올리브영", category: "리테일" };
+
 
 const PAGE_TITLES: Record<string, string> = {
   dashboard: "대시보드",
@@ -24,6 +24,13 @@ export default function CompanyLayout({ children, activePage }: {
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [companyInfo, setCompanyInfo] = useState({ name: "(주)올리브영", category: "리테일" });
+
+  useEffect(() => {
+    const name     = localStorage.getItem("company_name");
+    const category = localStorage.getItem("company_industry");
+    if (name) setCompanyInfo({ name, category: category || "" });
+  }, []);
 
   // /company/dashboard/* 이면 기존 base, 아니면 /{companyId} base
   const segments = pathname.split("/").filter(Boolean);
@@ -46,11 +53,11 @@ export default function CompanyLayout({ children, activePage }: {
       <aside className={`company-sidebar ${sidebarOpen ? "" : "company-sidebar-closed"}`}>
         <div className="company-sidebar-logo">
           <Link href={base} className="company-logo-link">
-            <div className="company-logo-avatar">{COMPANY_INFO.name.slice(0, 1)}</div>
+            <div className="company-logo-avatar">{companyInfo.name.slice(0, 1)}</div>
             {sidebarOpen && (
               <div className="company-logo-info">
-                <span className="company-logo-name">{COMPANY_INFO.name}</span>
-                <span className="company-logo-category">{COMPANY_INFO.category}</span>
+                <span className="company-logo-name">{companyInfo.name}</span>
+                <span className="company-logo-category">{companyInfo.category}</span>
               </div>
             )}
           </Link>
@@ -86,8 +93,8 @@ export default function CompanyLayout({ children, activePage }: {
               <span className="company-notif-dot" />
             </button>
             <div className="company-profile">
-              <div className="company-avatar">{COMPANY_INFO.name.slice(0, 1)}</div>
-              <span className="company-name">{COMPANY_INFO.name}</span>
+              <div className="company-avatar">{companyInfo.name.slice(0, 1)}</div>
+              <span className="company-name">{companyInfo.name}</span>
             </div>
           </div>
         </header>

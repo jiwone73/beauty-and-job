@@ -194,7 +194,12 @@ function CompanySignupInner() {
 
             <button type="button"
               className={`cv-btn-primary ${(companyName && industry && managerName) ? "" : "disabled"}`}
-              disabled={!(companyName && industry && managerName)} onClick={handleNext}>
+              disabled={!(companyName && industry && managerName)} onClick={() => {
+              localStorage.setItem("company_name", companyName);
+              localStorage.setItem("company_industry", industry);
+              localStorage.setItem("company_id", accountId);
+              handleNext();
+            }}>
               가입 완료하기
             </button>
           </div>
