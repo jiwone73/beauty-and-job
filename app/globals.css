@@ -8376,3 +8376,126 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-size: 12px;
   opacity: 0.7;
 }
+
+/* ─────────────────────────────────────────
+   기업회원 가입 위자드 추가 CSS
+───────────────────────────────────────── */
+
+.company-wizard-kakao-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  background: #FEE500;
+  color: #191919;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.company-wizard-kakao-btn:hover { opacity: 0.88; }
+.company-wizard-kakao-btn.active {
+  outline: 2px solid #7c3aed;
+  outline-offset: 2px;
+}
+
+.company-wizard-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #bbb;
+  font-size: 13px;
+}
+.company-wizard-divider::before,
+.company-wizard-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.company-wizard-phone-box {
+  padding: 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.company-wizard-phone-box.active {
+  border-color: #7c3aed;
+  background: #faf5ff;
+}
+
+.company-wizard-card-tag {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  color: #7c3aed;
+  background: #f3e8ff;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.company-wizard-service-list {
+  width: 100%;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.company-wizard-service-list-title {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.company-wizard-service-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #222;
+  background: #fff;
+  transition: border-color 0.15s, background 0.15s;
+}
+.company-wizard-service-item:hover {
+  border-color: #7c3aed;
+  background: #faf5ff;
+}
+.company-wizard-service-item.primary {
+  border-color: #7c3aed;
+  background: #7c3aed;
+  color: #fff;
+}
+.company-wizard-service-item.primary:hover {
+  background: #6d28d9;
+}
+.company-wizard-service-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.company-wizard-service-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.company-wizard-service-info strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.company-wizard-service-info span {
+  font-size: 12px;
+  opacity: 0.7;
+}
