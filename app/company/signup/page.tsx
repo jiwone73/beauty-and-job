@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -44,7 +45,16 @@ const SERVICES_CORP = [
 
 export default function CompanySignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<WizardStep>(1);
+
+  useEffect(() => {
+    const type = searchParams.get("type");
+    if (type === "store" || type === "corp") {
+      setMemberType(type);
+      setStep(2); // Step 1 스킵
+    }
+  }, [searchParams]);
 
   // Step 1
   const [memberType, setMemberType] = useState("");

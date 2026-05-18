@@ -104,9 +104,7 @@ export default function CompanyPage() {
             <Link href="/company/dashboard/jobs" className="co-btn-primary">
               📋 무료 채용공고 등록하기
             </Link>
-            <Link href="/company/signup" className="co-btn-outline-dark">
-              기업회원 가입하기
-            </Link>
+
           </div>
         </div>
       </section>
@@ -149,7 +147,7 @@ export default function CompanyPage() {
                 <li><CheckCircle2 size={14} /> 경력직·관리자급 인재추천</li>
                 <li><CheckCircle2 size={14} /> 광고·노출 상품 이용 가능</li>
               </ul>
-              <Link href="/company/signup" className="co-type-btn primary">
+              <Link href="/company/signup?type=corp" className="co-type-btn primary">
                 기업회원 시작하기 <ArrowRight size={15} />
               </Link>
             </div>
