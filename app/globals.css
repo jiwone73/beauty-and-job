@@ -51,7 +51,7 @@
 /* ===========================================
    메인 페이지 - 헤더
    =========================================== */
-.main-page { background: var(--color-bg); }
+.main-page { background: var(--color-primary-pale); }
 
 .header {
   position: sticky; top: 0; z-index: 100;
