@@ -35,7 +35,7 @@
   * { box-sizing: border-box; }
 
   html, body {
-  background: #faf5fc !important;
+  background: #fdfbff !important;
   color: var(--color-text);
   font-family: var(--font-sans);
 }
