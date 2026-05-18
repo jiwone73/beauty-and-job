@@ -362,7 +362,7 @@ function SectionStorePick() {
             <h2 className="section-title">
               🏪 매장·샵 채용관
             </h2>
-            <p className="section-sub">헤어·네일·피부·메이크업·스파 등 현장직 채용공고를 모아봤어요. 내 기술로 바로 시작할 수 있는 기회를 찾아보세요.</p>
+            <p className="section-sub">우리 동네 샵부터 프랜차이즈 매장까지</p>
           </div>
           <Link href="/jobs?type=매장" className="see-all">전체보기 →</Link>
         </div>
@@ -397,7 +397,7 @@ function SectionCorpPick() {
             <h2 className="section-title">
               🏢 기업·브랜드 채용관
             </h2>
-            <p className="section-sub">화장품 브랜드·프랜차이즈 본사·병원·클리닉·교육기관의 마케팅·MD·영업·연구개발 등 전문직 채용공고예요.</p>
+            <p className="section-sub">마케팅·MD·영업·연구개발 등 커리어를 키울 수 있는 포지션</p>
           </div>
           <Link href="/jobs?type=기업" className="see-all">전체보기 →</Link>
         </div>
