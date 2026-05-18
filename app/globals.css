@@ -36,13 +36,9 @@
 
   html, body {
   background: #faf5fc !important;
-    height: 100%;
-    color: var(--color-text);
-    background: var(--color-bg);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  }
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
 
   a { text-decoration: none; color: inherit; }
 
@@ -52,7 +48,7 @@
 /* ===========================================
    메인 페이지 - 헤더
    =========================================== */
-.main-page { background: var(--color-primary-pale); }
+.main-page { background: transparent; }
 
 .header {
   position: sticky; top: 0; z-index: 100;
@@ -119,7 +115,7 @@
   color: #555;
   transition: background 0.15s;
 }
-.icon-btn:hover { background: var(--color-bg-soft); }
+.icon-btn:hover { background: transparent; }
 
 .btn {
   font-size: 14px;
@@ -144,7 +140,7 @@
    메인 페이지 - 히어로
    =========================================== */
 .hero {
-  background: linear-gradient(180deg, #faf5fc 0%, #ffffff 100%);
+  background: transparent;
   padding: 16px 0 32px;
 }
 
@@ -194,7 +190,7 @@
 .search-select {
   height: 44px;
   border-radius: 8px;
-  background: var(--color-bg-soft);
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -263,7 +259,7 @@
 /* ===========================================
    메인 페이지 - 섹션 공통
    =========================================== */
-.section { padding: 72px 0; background: #faf5fc; }
+.section { padding: 72px 0; background: transparent; }
 .section-last { padding-bottom: 96px; }
 
 .container {
@@ -964,7 +960,7 @@ input[type="range"].career-slider::-moz-range-thumb {
    =========================================== */
 .profile-page {
   min-height: 100vh;
-  background: var(--color-bg-soft);
+  background: transparent;
   padding-bottom: 100px;
 }
 
@@ -994,7 +990,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   cursor: pointer;
   transition: background 0.15s;
 }
-.profile-settings-btn:hover { background: var(--color-bg-soft); }
+.profile-settings-btn:hover { background: transparent; }
 
 .profile-summary {
   max-width: 600px;
@@ -1044,7 +1040,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin-bottom: 18px;
 }
 .profile-tag {
-  background: var(--color-bg-soft);
+  background: transparent;
   color: var(--color-text-sub);
   font-size: 12px;
   font-weight: 500;
@@ -1059,7 +1055,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .profile-stats {
   display: flex;
   align-items: center;
-  background: var(--color-bg-soft);
+  background: transparent;
   border-radius: 12px;
   padding: 16px 8px;
   margin-bottom: 4px;
@@ -1128,7 +1124,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 0 20px;
   display: flex;
   gap: 24px;
-  background: var(--color-bg-soft);
+  background: transparent;
   border-bottom: 1px solid var(--color-border);
 }
 .profile-tab {
@@ -1240,7 +1236,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   transition: background 0.15s;
 }
 .profile-info-row:disabled { cursor: default; }
-.profile-info-row:not(:disabled):hover { background: var(--color-bg-soft); }
+.profile-info-row:not(:disabled):hover { background: transparent; }
 .profile-info-row.is-last { border-bottom: none; }
 .profile-info-label {
   font-size: 13px;
@@ -1460,14 +1456,14 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; background: white; z-index: 10; border-radius: 16px 16px 0 0; }
 .cv-title { font-size: 16px; font-weight: 700; color: var(--color-text); flex: 1; text-align: center; }
 .cv-back, .cv-close { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--color-text-sub); cursor: pointer; border-radius: 8px; transition: background 0.15s; }
-.cv-back:hover, .cv-close:hover { background: var(--color-bg-soft); }
+.cv-back:hover, .cv-close:hover { background: transparent; }
 .cv-body { padding: 24px 20px 32px; }
 .cv-heading { font-size: 20px; font-weight: 700; color: var(--color-text); line-height: 1.4; margin-bottom: 8px; letter-spacing: -0.3px; }
 .cv-desc { font-size: 14px; color: var(--color-text-sub); line-height: 1.6; margin-bottom: 24px; }
 .cv-field-label { display: block; font-size: 14px; font-weight: 600; color: var(--color-text); margin-top: 20px; margin-bottom: 8px; }
 .cv-field-label:first-child { margin-top: 0; }
 .cv-required::after { content: " *"; color: #d4537e; }
-.cv-field-value { background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: 8px; padding: 14px 16px; font-size: 15px; color: var(--color-text); margin-bottom: 4px; }
+.cv-field-value { background: transparent; border: 1px solid var(--color-border); border-radius: 8px; padding: 14px 16px; font-size: 15px; color: var(--color-text); margin-bottom: 4px; }
 .cv-field-hint { font-size: 12px; color: var(--color-text-mute); margin-bottom: 8px; }
 .cv-field-row { display: flex; gap: 8px; align-items: stretch; margin-bottom: 4px; }
 .cv-field-flex { flex: 1; }
@@ -1486,7 +1482,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-dropdown { border: 1px solid var(--color-border); border-radius: 8px; margin-top: 4px; margin-bottom: 12px; overflow: hidden; background: white; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
 .cv-dropdown-item { width: 100%; padding: 14px 16px; border: none; border-bottom: 1px solid var(--color-border); background: white; font-size: 14px; color: var(--color-text); cursor: pointer; text-align: left; transition: background 0.15s; font-family: inherit; display: block; }
 .cv-dropdown-item:last-child { border-bottom: none; }
-.cv-dropdown-item:hover { background: var(--color-bg-soft); }
+.cv-dropdown-item:hover { background: transparent; }
 .cv-dropdown-item.active { color: var(--color-primary); font-weight: 600; }
 .cv-dropdown-level .cv-level-item { display: flex; flex-direction: column; gap: 4px; padding: 16px; }
 .cv-dropdown-level .cv-level-item strong { font-size: 14px; }
@@ -1520,7 +1516,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-noti-text { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--color-text); }
 .cv-noti-text strong { font-weight: 700; }
 .cv-noti-text span { color: var(--color-text-sub); }
-.cv-trouble-box { background: var(--color-bg-soft); border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 13px; color: var(--color-text); }
+.cv-trouble-box { background: transparent; border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 13px; color: var(--color-text); }
 .cv-trouble-box strong { display: block; margin-bottom: 4px; font-weight: 700; }
 .cv-trouble-box p { color: var(--color-text-sub); line-height: 1.5; }
 .cv-done-center { text-align: center; padding-top: 32px; }
@@ -1602,7 +1598,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* ===========================================
    이력서 에디터 페이지
    =========================================== */
-.resume-page { min-height: 100vh; background: var(--color-bg-soft); }
+.resume-page { min-height: 100vh; background: transparent; }
 .resume-header { background: white; border-bottom: 1px solid var(--color-border); padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 50; }
 .resume-back-btn { display: flex; align-items: center; gap: 4px; background: transparent; border: none; cursor: pointer; font-size: 14px; color: var(--color-text-sub); transition: color 0.15s; font-family: inherit; }
 .resume-back-btn:hover { color: var(--color-primary); }
@@ -1618,7 +1614,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-sidebar { background: white; border-right: 1px solid var(--color-border); padding: 24px 16px; }
 .resume-sidebar-title { font-size: 12px; font-weight: 700; color: var(--color-text-mute); letter-spacing: 0.5px; margin-bottom: 8px; padding: 0 8px; }
 .resume-sidebar-item { width: 100%; background: transparent; border: none; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: var(--color-text-sub); cursor: pointer; text-align: left; transition: all 0.15s; font-family: inherit; margin-bottom: 2px; }
-.resume-sidebar-item:hover { background: var(--color-bg-soft); color: var(--color-text); }
+.resume-sidebar-item:hover { background: transparent; color: var(--color-text); }
 .resume-sidebar-item.active { background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600; }
 
 .resume-editor { padding: 32px; max-width: 800px; }
@@ -1705,7 +1701,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobs-gnb-badge.dark { background: #1f2024; color: #c896d8; }
 .jobs-header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .jobs-search-icon { background: transparent; border: none; cursor: pointer; padding: 8px; color: #333; display: flex; align-items: center; border-radius: 8px; transition: background 0.15s; }
-.jobs-search-icon:hover { background: var(--color-bg-soft); }
+.jobs-search-icon:hover { background: transparent; }
 .jobs-start-btn { background: var(--color-primary); color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; transition: background 0.15s; }
 .jobs-start-btn:hover { background: var(--color-primary-hover); }
 .jobs-biz-btn { background: transparent; color: #333; border: 1px solid var(--color-border); border-radius: 8px; padding: 9px 16px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.15s; }
@@ -1723,7 +1719,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobs-search-desc { font-size: 14px; color: var(--color-text-mute); margin-bottom: 20px; }
 .jobs-search-section-title { font-size: 15px; font-weight: 700; color: var(--color-text); margin-bottom: 12px; }
 .jobs-search-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.jobs-search-chip { background: var(--color-bg-soft); border: none; border-radius: 8px; padding: 8px 14px; font-size: 14px; color: var(--color-text); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.jobs-search-chip { background: transparent; border: none; border-radius: 8px; padding: 8px 14px; font-size: 14px; color: var(--color-text); cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .jobs-search-chip:hover { background: var(--color-primary-soft); color: var(--color-primary); }
 
 /* 컨테이너 */
@@ -1738,7 +1734,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobs-filter-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .jobs-dropdown { position: absolute; top: calc(100% + 6px); left: 0; background: white; border: 1px solid var(--color-border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 50; min-width: 180px; max-height: 300px; overflow-y: auto; padding: 6px; }
 .jobs-dropdown-item { display: block; width: 100%; padding: 10px 12px; border: none; background: transparent; font-size: 14px; color: var(--color-text); cursor: pointer; border-radius: 8px; text-align: left; transition: background 0.15s; font-family: inherit; }
-.jobs-dropdown-item:hover { background: var(--color-bg-soft); }
+.jobs-dropdown-item:hover { background: transparent; }
 .jobs-dropdown-item.active { color: var(--color-primary); font-weight: 700; background: var(--color-primary-soft); }
 .jobs-custom-btn { display: flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--color-border); border-radius: 8px; padding: 8px 14px; font-size: 13px; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .jobs-custom-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
@@ -1771,7 +1767,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobs-card-brand-row { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; flex-wrap: wrap; }
 .jobs-card-brand { font-size: 13px; font-weight: 600; color: var(--color-text-sub); }
 .jobs-card-tag { font-size: 12px; color: var(--color-text-mute); }
-.jobs-card-tag-extra { font-size: 11px; color: var(--color-text-mute); background: var(--color-bg-soft); border-radius: 4px; padding: 1px 5px; }
+.jobs-card-tag-extra { font-size: 11px; color: var(--color-text-mute); background: transparent; border-radius: 4px; padding: 1px 5px; }
 .jobs-card-title { font-size: 15px; font-weight: 700; color: var(--color-text); line-height: 1.4; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .jobs-card-meta { font-size: 12px; color: var(--color-text-mute); margin-bottom: 3px; }
 .jobs-card-region { font-size: 12px; color: var(--color-text-mute); }
@@ -1785,7 +1781,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 맞춤 공고 설정 모달 전용 */
 .jobs-custom-hint { font-size: 13px; color: var(--color-text-sub); margin: 16px 0 8px; }
-.jobs-custom-career-btn { background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: 8px; padding: 10px 16px; font-size: 14px; color: var(--color-text); cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.jobs-custom-career-btn { background: transparent; border: 1px solid var(--color-border); border-radius: 8px; padding: 10px 16px; font-size: 14px; color: var(--color-text); cursor: pointer; font-family: inherit; transition: all 0.15s; }
 .jobs-custom-career-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
 /* 반응형 */
@@ -2077,7 +2073,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* ===========================================
    채용공고 상세 페이지
    =========================================== */
-.job-detail-page { min-height: 100vh; background: var(--color-bg-soft); }
+.job-detail-page { min-height: 100vh; background: transparent; }
 
 /* 헤더 */
 .job-detail-header { background: white; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
@@ -2117,7 +2113,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-brand-desc { font-size: 14px; color: var(--color-text-sub); line-height: 1.7; margin-bottom: 16px; }
 
 /* 회사 정보 */
-.job-detail-company-info { background: var(--color-bg-soft); border-radius: 8px; padding: 14px 16px; }
+.job-detail-company-info { background: transparent; border-radius: 8px; padding: 14px 16px; }
 .job-detail-company-row { display: flex; gap: 16px; padding: 6px 0; font-size: 13px; border-bottom: 1px solid var(--color-border); }
 .job-detail-company-row:last-child { border-bottom: none; }
 .job-detail-company-label { color: var(--color-text-mute); width: 60px; flex-shrink: 0; }
@@ -2142,7 +2138,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 관련 공고 */
 .job-detail-related { display: flex; flex-direction: column; gap: 12px; }
 .job-detail-related-card { display: flex; gap: 14px; text-decoration: none; color: inherit; padding: 12px; border-radius: 10px; transition: background 0.15s; }
-.job-detail-related-card:hover { background: var(--color-bg-soft); }
+.job-detail-related-card:hover { background: transparent; }
 .job-detail-related-thumb { width: 64px; height: 64px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .job-detail-related-thumb span { font-size: 24px; font-weight: 900; color: rgba(0,0,0,0.15); }
 .job-detail-related-info { display: flex; flex-direction: column; gap: 3px; }
@@ -2173,7 +2169,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-mobile-apply { flex: 1; height: 48px; background: var(--color-primary); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
 /* 지원 모달 */
-.apply-modal-job { background: var(--color-bg-soft); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+.apply-modal-job { background: transparent; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
 .apply-modal-job strong { display: block; font-size: 13px; color: var(--color-text-sub); margin-bottom: 4px; }
 .apply-modal-job p { font-size: 15px; font-weight: 600; color: var(--color-text); }
 .apply-modal-profile-btn { display: block; text-align: center; background: transparent; border: 1.5px solid var(--color-primary); color: var(--color-primary); border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 8px; transition: all 0.15s; }
@@ -2195,7 +2191,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* ===========================================
    인사이트 페이지
    =========================================== */
-.insights-page { min-height: 100vh; background: var(--color-bg-soft); }
+.insights-page { min-height: 100vh; background: transparent; }
 .insights-container { max-width: 1280px; margin: 0 auto; padding: 0 32px 64px; }
 
 /* 히어로 배너 */
@@ -2374,7 +2370,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* ===========================================
    인사이트 상세 페이지
    =========================================== */
-.insight-detail-page { min-height: 100vh; background: var(--color-bg-soft); }
+.insight-detail-page { min-height: 100vh; background: transparent; }
 .insight-detail-layout {
   max-width: 1280px; margin: 0 auto;
   padding: 32px 32px 64px;
@@ -2560,7 +2556,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 섹션 공통 */
 .company-section { padding: 80px 0; }
-.company-section-gray { background: var(--color-bg-soft); }
+.company-section-gray { background: transparent; }
 .company-section-head { text-align: center; margin-bottom: 48px; }
 .company-section-badge { display: inline-block; background: var(--color-primary-soft); color: var(--color-primary); font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 100px; margin-bottom: 12px; letter-spacing: 0.5px; }
 .company-section-title { font-size: 32px; font-weight: 800; color: var(--color-text); line-height: 1.3; letter-spacing: -0.5px; margin-bottom: 14px; }
@@ -2604,7 +2600,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-strength-icon { width: 52px; height: 52px; background: var(--color-primary-soft); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--color-primary); margin-bottom: 16px; }
 .company-strength-card h3 { font-size: 18px; font-weight: 700; color: var(--color-text); margin-bottom: 10px; }
 .company-strength-card p { font-size: 14px; color: var(--color-text-sub); line-height: 1.7; margin-bottom: 14px; }
-.company-strength-table { background: var(--color-bg-soft); border-radius: 8px; overflow: hidden; }
+.company-strength-table { background: transparent; border-radius: 8px; overflow: hidden; }
 .company-strength-row { display: flex; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--color-border); font-size: 13px; }
 .company-strength-row:last-child { border-bottom: none; }
 .company-strength-role { font-weight: 600; color: var(--color-primary); width: 110px; flex-shrink: 0; }
@@ -2683,7 +2679,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-faq-list { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
 .company-faq-item { background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--color-border); }
 .company-faq-q { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 20px; background: transparent; border: none; cursor: pointer; font-size: 15px; font-weight: 600; color: var(--color-text); text-align: left; font-family: inherit; transition: background 0.15s; }
-.company-faq-q:hover { background: var(--color-bg-soft); }
+.company-faq-q:hover { background: transparent; }
 .company-faq-a { padding: 0 20px 18px; font-size: 14px; color: var(--color-text-sub); line-height: 1.7; border-top: 1px solid var(--color-border); padding-top: 14px; }
 
 /* 최종 CTA */
@@ -2700,7 +2696,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* ===========================================
    기업회원 Wizard 페이지
    =========================================== */
-.company-wizard-page { min-height: 100vh; background: var(--color-bg-soft); }
+.company-wizard-page { min-height: 100vh; background: transparent; }
 .company-wizard-step-indicator { font-size: 13px; font-weight: 600; color: var(--color-text-mute); min-width: 40px; text-align: right; }
 .company-wizard-progress { height: 3px; background: var(--color-border); }
 .company-wizard-progress-bar { height: 100%; background: var(--color-primary); transition: width 0.4s ease; }
@@ -2772,7 +2768,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* ===========================================
    브랜드 페이지
    =========================================== */
-.brands-page { min-height: 100vh; background: var(--color-bg-soft); }
+.brands-page { min-height: 100vh; background: transparent; }
 .brands-container { max-width: 1280px; margin: 0 auto; padding: 0 32px 64px; }
 
 .brands-hero { padding: 40px 0 28px; text-align: center; }
@@ -2807,7 +2803,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .brands-card-meta { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
 .brands-card-meta-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-mute); }
 .brands-card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
-.brands-card-tag { font-size: 11px; color: var(--color-text-mute); background: var(--color-bg-soft); padding: 3px 8px; border-radius: 4px; }
+.brands-card-tag { font-size: 11px; color: var(--color-text-mute); background: transparent; padding: 3px 8px; border-radius: 4px; }
 .brands-card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--color-border); }
 .brands-card-jobs { font-size: 13px; font-weight: 600; color: var(--color-primary); }
 .brands-card-cta { display: flex; align-items: center; gap: 2px; font-size: 13px; font-weight: 600; color: var(--color-text); text-decoration: none; transition: color 0.15s; }
@@ -2819,7 +2815,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* ===========================================
    연봉어택 페이지
    =========================================== */
-.salary-page { min-height: 100vh; background: var(--color-bg-soft); }
+.salary-page { min-height: 100vh; background: transparent; }
 .salary-container { max-width: 1280px; margin: 0 auto; padding: 0 32px 64px; }
 
 .salary-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; padding: 48px 0 36px; }
@@ -2850,7 +2846,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .salary-table-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
 .salary-table-title { font-size: 20px; font-weight: 800; color: var(--color-text); }
 .salary-table-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.salary-search-box { display: flex; align-items: center; gap: 8px; background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: 8px; padding: 0 12px; }
+.salary-search-box { display: flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--color-border); border-radius: 8px; padding: 0 12px; }
 .salary-search-icon { color: var(--color-text-mute); }
 .salary-search-input { height: 36px; border: none; outline: none; font-size: 13px; font-family: inherit; background: transparent; width: 140px; }
 .salary-sort-group { display: flex; border: 1.5px solid var(--color-border); border-radius: 8px; overflow: hidden; }
@@ -2864,11 +2860,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 .salary-table-wrap { overflow-x: auto; }
 .salary-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.salary-table thead tr { background: var(--color-bg-soft); border-bottom: 2px solid var(--color-border); }
+.salary-table thead tr { background: transparent; border-bottom: 2px solid var(--color-border); }
 .salary-table th { padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 700; color: var(--color-text-mute); white-space: nowrap; }
 .salary-table tbody tr { border-bottom: 1px solid var(--color-border); transition: background 0.15s; }
 .salary-table tbody tr:last-child { border-bottom: none; }
-.salary-table tbody tr:hover { background: var(--color-bg-soft); }
+.salary-table tbody tr:hover { background: transparent; }
 .salary-table td { padding: 14px 16px; white-space: nowrap; }
 .salary-job-name { font-weight: 700; color: var(--color-text); }
 .salary-category-badge { background: var(--color-primary-soft); color: var(--color-primary); font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
@@ -8204,9 +8200,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .service-company { font-size: 11px; color: #aaa; margin-top: 4px; }
 
 /* ── 섹션 구분선 ── */
-.section-divider {
-  background: #faf5fc;
-}
+.section-divider { background: transparent; }
 
 /* ── 인사이트 새 카드 ── */
 .insight-card-new {
