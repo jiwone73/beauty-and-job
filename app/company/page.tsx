@@ -122,8 +122,8 @@ export default function CompanyPage() {
                 <li><CheckCircle2 size={14} /> 현장직 지원자 매칭</li>
                 <li><CheckCircle2 size={14} /> 간편 가입 (1분 완료)</li>
               </ul>
-              <Link href="/company/signup" className="co-type-btn">
-                매장회원 시작하기 <ArrowRight size={15} />
+              <Link href="/company/signup?type=store" className="co-type-btn">
+              매장회원 시작하기 <ArrowRight size={15} />
               </Link>
             </div>
 
