@@ -1,4 +1,5 @@
 "use client";
+import LoginModal from "@/components/LoginModal";
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -140,7 +141,7 @@ export default function JobDetailPage() {
   const [bookmarked, setBookmarked] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [applyDone, setApplyDone] = useState(false);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
   const { isLoggedIn, userName } = useAuthStore();
   const { apply, isApplied } = useApplicationStore();
@@ -356,7 +357,7 @@ export default function JobDetailPage() {
               onClick={() => {
                 if (alreadyApplied) return;
                 if (!isLoggedIn) {
-                  setShowLoginPrompt(true);
+                  setShowLoginModal(true);
                 } else {
                   setShowApplyModal(true);
                 }
@@ -389,7 +390,7 @@ export default function JobDetailPage() {
           onClick={() => {
             if (alreadyApplied) return;
             if (!isLoggedIn) {
-              setShowLoginPrompt(true);
+              setShowLoginModal(true);
             } else {
               setShowApplyModal(true);
             }
