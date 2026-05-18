@@ -9,15 +9,6 @@ import {
 
 const COMPANY_INFO = { name: "(주)올리브영", category: "리테일" };
 
-const NAV_ITEMS = [
-  { id: "dashboard", label: "대시보드", icon: Briefcase, href: "/company/dashboard" },
-  { id: "jobs", label: "채용공고 관리", icon: FileText, href: "/company/dashboard/jobs" },
-  { id: "applicants", label: "지원자 관리", icon: Users, href: "/company/dashboard/applicants" },
-  { id: "talent", label: "인재 검색", icon: Search, href: "/company/dashboard/talent" },
-  { id: "scrapped", label: "스크랩 인재", icon: BookmarkCheck, href: "/company/dashboard/talent/scrapped" },
-  { id: "settings", label: "기업 정보", icon: Settings, href: "/company/dashboard/settings" },
-];
-
 const PAGE_TITLES: Record<string, string> = {
   dashboard: "대시보드",
   jobs: "채용공고 관리",
@@ -27,16 +18,34 @@ const PAGE_TITLES: Record<string, string> = {
   settings: "기업 정보",
 };
 
-export default function CompanyLayout({ children, activePage }: { children: React.ReactNode; activePage: string }) {
+export default function CompanyLayout({ children, activePage }: {
+  children: React.ReactNode;
+  activePage: string;
+}) {
   const router = useRouter();
+  const pathname = usePathname();
+
+  // /company/dashboard/* 이면 기존 base, 아니면 /{companyId} base
+  const segments = pathname.split("/").filter(Boolean);
+  const isLegacy = segments[0] === "company";
+  const base = isLegacy ? "/company/dashboard" : `/${segments[0]}`;
+
+  const NAV_ITEMS = [
+    { id: "dashboard", label: "대시보드",      icon: Briefcase,    href: base },
+    { id: "jobs",      label: "채용공고 관리", icon: FileText,     href: `${base}/jobs` },
+    { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants` },
+    { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent` },
+    { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped` },
+    { id: "settings",  label: "기업 정보",     icon: Settings,     href: `${base}/settings` },
+  ];
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
     <div className="company-layout">
-      {/* 사이드바 */}
       <aside className={`company-sidebar ${sidebarOpen ? "" : "company-sidebar-closed"}`}>
         <div className="company-sidebar-logo">
-          <Link href="/company/dashboard" className="company-logo-link">
+          <Link href={base} className="company-logo-link">
             <div className="company-logo-avatar">{COMPANY_INFO.name.slice(0, 1)}</div>
             {sidebarOpen && (
               <div className="company-logo-info">
@@ -68,7 +77,6 @@ export default function CompanyLayout({ children, activePage }: { children: Reac
         </div>
       </aside>
 
-      {/* 메인 */}
       <div className="company-main">
         <header className="company-header">
           <h1 className="company-page-title">{PAGE_TITLES[activePage] || "대시보드"}</h1>
