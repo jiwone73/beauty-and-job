@@ -57,8 +57,8 @@ export default function BrandsPage() {
             <Link href="/jobs" className="jobs-gnb-item">채용공고</Link>
             <Link href="/brands" className="jobs-gnb-item active">회사 둘러보기</Link>
             <Link href="/profile/resume" className="jobs-gnb-item">이력서 <span className="jobs-gnb-badge green">합격률 UP</span></Link>
-            <Link href="/salary" className="jobs-gnb-item">연봉어택 <span className="jobs-gnb-badge purple">경력직</span></Link>
-            <Link href="/insights" className="jobs-gnb-item">인사이트 <span className="jobs-gnb-badge dark">NEWS</span></Link>
+            <Link href="/profile/resume" className="jobs-gnb-item">이력서 등록</Link>
+            <Link href="/insights" className="jobs-gnb-item">뷰티 인사이트 <span className="jobs-gnb-badge dark">NEWS</span></Link>
           </nav>
           <div className="jobs-header-right">
             <Link href="/signup" className="jobs-start-btn">시작하기</Link>

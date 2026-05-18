@@ -77,10 +77,10 @@ export default function Header({ onSearchClick }: HeaderProps) {
           <nav className="gnb">
             <Link href="/jobs" className={pathname === "/jobs" ? "gnb-active" : ""}>채용공고</Link>
             <Link href="/salary" className="gnb-with-tag">
-              연봉어택<span className="tag tag-gray">경력직</span>
+              이력서 등록
             </Link>
             <Link href="/insights" className="gnb-with-tag">
-              인사이트<span className="tag tag-new">NEWS</span>
+              뷰티 인사이트<span className="tag tag-new">NEWS</span>
             </Link>
           </nav>
           <div className="header-right">
@@ -108,7 +108,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
             </div>
             <nav className="mob-menu-nav">
               <Link href="/salary" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
-                <span className="mob-menu-item-label">연봉어택</span>
+                <span className="mob-menu-item-label">이력서 등록</span>
                 <span className="mob-menu-badge gray">경력직</span>
               </Link>
               <Link href="/brands" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
