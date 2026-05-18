@@ -262,7 +262,7 @@
 /* ===========================================
    메인 페이지 - 섹션 공통
    =========================================== */
-.section { padding: 72px 0; }
+.section { padding: 72px 0; background: #faf5fc; }
 .section-last { padding-bottom: 96px; }
 
 .container {
