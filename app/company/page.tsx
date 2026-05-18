@@ -306,22 +306,6 @@ export default function CompanyPage() {
         </div>
       </section>
 
-      {/* ── 10. 하단 CTA ── */}
-      <section className="co-cta">
-        <div className="co-cta-inner">
-          <h2 className="co-cta-title">뷰티 인재 채용이 필요하신가요?</h2>
-          <p className="co-cta-desc">지금 바로 무료로 시작하세요. 가입부터 공고 등록까지 5분이면 충분합니다.</p>
-          <div className="co-cta-btns">
-            <Link href="/company/dashboard/jobs" className="co-btn-primary large">
-              📋 무료 채용공고 등록하기
-            </Link>
-            <Link href="/company/signup" className="co-btn-white large">
-              기업회원 가입하기
-            </Link>
-          </div>
-        </div>
-      </section>
-
     </div>
   );
 }
