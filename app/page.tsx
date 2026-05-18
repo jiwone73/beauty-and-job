@@ -297,7 +297,7 @@ function SectionPick() {
               <Sparkles size={24} className="title-icon" />
               뷰티앤잡 Pick
             </h2>
-            <p className="section-sub">에디터가 엄선한 이번 주의 추천 채용공고</p>
+            <p className="section-sub">뷰티앤잡이 직접 엄선한 이번 주의 추천 채용공고</p>
           </div>
           <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
@@ -429,7 +429,7 @@ function SectionBeautyServices() {
               추천 뷰티 서비스
               <span className="ad-label">광고</span>
             </h2>
-            <p className="section-sub">채용공고 외에도 뷰티 사업에 필요한 교육·장비·용품·운영 서비스를 소개해 드려요.</p>
+            <p className="section-sub">교육·장비·용품·운영 서비스 광고</p>
           </div>
         </div>
         <div className="card-grid card-grid-4">
