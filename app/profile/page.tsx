@@ -160,6 +160,7 @@ export default function ProfilePage() {
               </div>
               <div className="profile-info-card">
                 <InfoRow label="이름" value={name || "정보 없음"} />
+                <InfoRow label="휴대전화" value={phone || "정보 없음"} />
                 <InfoRow label="인적사항" value={birthDisplay} />
                 <InfoRow label="이메일" value="입력하기" isEmpty onClick={() => alert("이메일 입력은 이력서 편집 페이지에서 가능합니다.")} />
                 <InfoRow label="카테고리" value={allCategories.length > 0 ? allCategories.join(", ") : "미설정"} />
