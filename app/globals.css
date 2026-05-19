@@ -9798,8 +9798,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   align-items: start;
 }
 .co-combined-right {
-  padding-left: 24px;
-  border-left: 2px solid #f0f0f0;
+  padding-left: 0;
+  border-left: none;
+  padding-right: 40px;
+  max-width: 320px;
 }
 @media (max-width: 768px) {
   .co-combined-grid { grid-template-columns: 1fr; gap: 32px; }
@@ -9811,7 +9813,12 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-size: 13px; color: #888; margin-bottom: 20px;
 }
 .co-combined-left {}
-.co-combined-right {}
+.co-combined-right {
+  padding-left: 0;
+  border-left: none;
+  padding-right: 40px;
+  max-width: 320px;
+}
 
 /* 회원유형 카드 세로 스택 */
 .co-type-stack { display: flex; flex-direction: column; gap: 12px; }
