@@ -178,15 +178,54 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* 관심 브랜드 */}
-            <section className="profile-section">
-              <div className="profile-section-head">
-                <h2 className="profile-section-title">관심 브랜드</h2>
-              </div>
-              <button className="profile-add-card" onClick={() => setOpenModal("brand")}>
-                <Plus size={18} /><span>추가하기</span>
-              </button>
-            </section>
+            {/* jobType 분기: 기업 → 관심 브랜드 / 매장 → 시술 분야 */}
+            {jobType === "store" ? (
+              <section className="profile-section">
+                <div className="profile-section-head">
+                  <h2 className="profile-section-title">시술 분야 · 전문 영역</h2>
+                </div>
+                <div className="profile-info-card" style={{padding:"16px"}}>
+                  <p style={{fontSize:"13px",color:"#888",marginBottom:"12px"}}>해당하는 시술 분야를 선택해 주세요</p>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"20px"}}>
+                    {["헤어","네일","피부관리","메이크업","속눈썹","왁싱","스파·에스테틱","반영구"].map((area) => (
+                      <button key={area}
+                        onClick={() => setStoreProfile({ skillAreas: skillAreas.includes(area) ? skillAreas.filter(a=>a!==area) : [...skillAreas, area] })}
+                        style={{padding:"6px 14px",borderRadius:"20px",border:`1.5px solid ${skillAreas.includes(area)?"#5f0080":"#e0e0e0"}`,background:skillAreas.includes(area)?"#f3e5f5":"#fff",color:skillAreas.includes(area)?"#5f0080":"#888",fontSize:"13px",fontWeight:skillAreas.includes(area)?600:400,cursor:"pointer"}}>
+                        {area}
+                      </button>
+                    ))}
+                  </div>
+                  <label style={{fontSize:"13px",fontWeight:600,color:"#333",display:"block",marginBottom:"6px"}}>보유 자격증</label>
+                  <input className="cv-input" placeholder="예: 미용사(일반), 피부미용사 (쉼표로 구분)"
+                    defaultValue={certificates.join(", ")}
+                    onBlur={(e) => setStoreProfile({ certificates: e.target.value.split(",").map(s=>s.trim()).filter(Boolean) })}
+                    style={{marginBottom:"16px"}} />
+                  <label style={{fontSize:"13px",fontWeight:600,color:"#333",display:"block",marginBottom:"6px"}}>희망 근무 형태</label>
+                  <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:"16px"}}>
+                    {["풀타임","파트타임","주말근무 가능","시급"].map((w) => (
+                      <button key={w}
+                        onClick={() => setStoreProfile({ workTypePrefer: workTypePrefer === w ? "" : w })}
+                        style={{padding:"6px 14px",borderRadius:"20px",border:`1.5px solid ${workTypePrefer===w?"#5f0080":"#e0e0e0"}`,background:workTypePrefer===w?"#f3e5f5":"#fff",color:workTypePrefer===w?"#5f0080":"#888",fontSize:"13px",fontWeight:workTypePrefer===w?600:400,cursor:"pointer"}}>
+                        {w}
+                      </button>
+                    ))}
+                  </div>
+                  <label style={{fontSize:"13px",fontWeight:600,color:"#333",display:"block",marginBottom:"6px"}}>희망 근무 지역</label>
+                  <input className="cv-input" placeholder="예: 서울 강남, 서울 홍대"
+                    defaultValue={regionPrefer}
+                    onBlur={(e) => setStoreProfile({ regionPrefer: e.target.value })} />
+                </div>
+              </section>
+            ) : (
+              <section className="profile-section">
+                <div className="profile-section-head">
+                  <h2 className="profile-section-title">관심 브랜드</h2>
+                </div>
+                <button className="profile-add-card" onClick={() => setOpenModal("brand")}>
+                  <Plus size={18} /><span>추가하기</span>
+                </button>
+              </section>
+            )}
 
             {/* 경력 */}
             <section className="profile-section">
