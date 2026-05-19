@@ -235,8 +235,8 @@ export default function CompanyPage() {
             ))}
           </div>
           <div style={{textAlign: "center", marginTop: 32}}>
-            <Link href="/company/signup" className="co-btn-outline">
-              📩 광고상품 문의하기
+            <Link href="/company/ads" className="co-btn-outline">
+              📋 광고·노출 상품 보기
             </Link>
           </div>
         </div>
