@@ -9917,7 +9917,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-color: #7c3aed;
 }
 .co-cta-product-btn.green {
-  background: #059669;
-  color: #fff;
-  border-color: #059669;
+  background: transparent;
+  color: #7c3aed;
+  border-color: #7c3aed;
 }
