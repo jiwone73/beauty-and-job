@@ -75,9 +75,8 @@ export default function CompanyPage() {
                 </div>
 
                 {/* 기업회원 */}
-                <div className="co-type-card featured">
-                  <span className="co-type-featured-badge">추천</span>
-                  <div className="co-type-icon"><Building2 size={28} /></div>
+                <div className="co-type-card">
+<div className="co-type-icon"><Building2 size={28} /></div>
                   <div className="co-type-body">
                     <h3 className="co-type-name">기업회원</h3>
                     <p className="co-type-desc">화장품 브랜드·프랜차이즈·병원·클리닉·교육기관·유통사</p>
@@ -86,7 +85,7 @@ export default function CompanyPage() {
                       <li><CheckCircle2 size={13} /> 광고·노출 상품 이용 가능</li>
                     </ul>
                   </div>
-                  <Link href="/company/signup?type=corp" className="co-type-btn primary">
+                  <Link href="/company/signup?type=corp" className="co-type-btn">
                     시작하기 <ArrowRight size={14} />
                   </Link>
                 </div>
