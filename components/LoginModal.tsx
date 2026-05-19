@@ -14,6 +14,7 @@ export default function LoginModal({ onClose }: Props) {
   const { login } = useAuthStore();
   const { setPhone: setSignupPhone, setBasic } = useSignupStore();
   const [phoneMode, setPhoneMode] = useState(false);
+  const [userName, setUserName] = useState("");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [sent, setSent] = useState(false);
@@ -27,16 +28,13 @@ export default function LoginModal({ onClose }: Props) {
   };
 
   const handleSend = () => {
-    if (phone.replace(/\D/g,"").length < 10) { setError("올바른 번호를 입력해주세요."); return; }
+    if (!userName.trim() || phone.replace(/\D/g,"").length < 10) { setError("올바른 번호를 입력해주세요."); return; }
     setError(""); setSent(true);
   };
 
   const handleVerify = () => {
     if (code !== "123456") { setError("인증번호가 올바르지 않습니다. (테스트: 123456)"); return; }
-    const TEST: Record<string, string> = {
-      "010-1234-5678": "김지수", "01012345678": "김지수",
-    };
-    const name = TEST[phone] || TEST[phone.replace(/-/g,"")] || "사용자";
+    const name = userName.trim() || "사용자";
     login({ userName: name, userPhone: phone });
     setSignupPhone(phone);
     setBasic({ name });
@@ -49,13 +47,22 @@ export default function LoginModal({ onClose }: Props) {
       <div className="lm-overlay" onClick={onClose}>
         <div className="lm-card" onClick={(e) => e.stopPropagation()}>
           <div className="lm-phone-top">
-            <button className="lm-back-btn" onClick={() => { setPhoneMode(false); setSent(false); setPhone(""); setCode(""); setError(""); }}>
+            <button className="lm-back-btn" onClick={() => { setPhoneMode(false); setSent(false); setPhone(""); setCode(""); setError(""); setUserName(""); }}>
               <ChevronLeft size={20} />
             </button>
             <span className="lm-phone-top-title">휴대전화 번호로 계속하기</span>
           </div>
 
           <div className="lm-phone-body">
+            <label className="lm-phone-label">이름</label>
+            <input
+              className="lm-phone-input"
+              type="text"
+              placeholder="실명을 입력해 주세요"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              style={{marginBottom:"12px", width:"100%"}}
+            />
             <label className="lm-phone-label">휴대전화 번호</label>
             <div className="lm-phone-row">
               <input
