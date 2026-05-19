@@ -200,7 +200,7 @@ export default function CompanyPage() {
                 <span key={t} className="co-job-tag">{t}</span>
               ))}
             </div>
-            <Link href="/company/signup" className="co-btn-primary" style={{marginTop: "24px", display: "inline-flex"}}>
+            <Link href="/company/signup?type=store" className="co-btn-primary" style={{marginTop: "24px", display: "inline-flex"}}>
               매장 채용공고 등록하기 <ArrowRight size={15} style={{marginLeft: 6}} />
             </Link>
           </div>
@@ -230,7 +230,7 @@ export default function CompanyPage() {
                 <span key={t} className="co-job-tag purple">{t}</span>
               ))}
             </div>
-            <Link href="/company/signup" className="co-btn-primary purple" style={{marginTop: "24px", display: "inline-flex"}}>
+            <Link href="/company/signup?type=corp" className="co-btn-primary purple" style={{marginTop: "24px", display: "inline-flex"}}>
               기업 채용공고 등록하기 <ArrowRight size={15} style={{marginLeft: 6}} />
             </Link>
           </div>
