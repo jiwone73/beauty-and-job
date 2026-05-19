@@ -15,7 +15,6 @@ export default function LoginModal({ onClose }: Props) {
   const { setPhone: setSignupPhone, setBasic } = useSignupStore();
   const [phoneMode, setPhoneMode] = useState(false);
   const [userName, setUserName] = useState("");
-  const [userName, setUserName] = useState("");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [sent, setSent] = useState(false);
