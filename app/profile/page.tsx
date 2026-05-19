@@ -156,12 +156,18 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* 임시: 직군 타입 토글 (테스트용) */}
-            <div style={{margin:"16px 0",padding:"12px 16px",background:"#fff3e0",borderRadius:"8px",display:"flex",alignItems:"center",gap:"12px"}}>
-              <span style={{fontSize:"12px",color:"#e65100",fontWeight:600}}>🧪 테스트:</span>
-              <span style={{fontSize:"13px",color:"#666"}}>직군 타입</span>
-              <button onClick={() => setJobType("corp")} style={{padding:"4px 12px",borderRadius:"6px",border:`1.5px solid ${jobType!=="store"?"#5f0080":"#ddd"}`,background:jobType!=="store"?"#5f0080":"#fff",color:jobType!=="store"?"#fff":"#888",fontSize:"12px",fontWeight:600,cursor:"pointer"}}>🏢 기업</button>
-              <button onClick={() => setJobType("store")} style={{padding:"4px 12px",borderRadius:"6px",border:`1.5px solid ${jobType==="store"?"#5f0080":"#ddd"}`,background:jobType==="store"?"#5f0080":"#fff",color:jobType==="store"?"#fff":"#888",fontSize:"12px",fontWeight:600,cursor:"pointer"}}>🏪 매장</button>
+            {/* 직군 표시 */}
+            <div style={{margin:"16px 0",padding:"14px 16px",background:"#fff",border:"1px solid #f0e8f8",borderRadius:"12px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+                <span style={{fontSize:"20px"}}>{jobType==="store"?"🏪":"🏢"}</span>
+                <div>
+                  <p style={{fontSize:"11px",color:"#888",marginBottom:"2px"}}>지금 찾고 있는 채용</p>
+                  <p style={{fontSize:"14px",fontWeight:600,color:"#1a1a1a"}}>{jobType==="store"?"매장·샵 채용":"기업·브랜드 채용"}</p>
+                </div>
+              </div>
+              <button onClick={() => setEditField("jobType")} style={{padding:"6px 12px",borderRadius:"6px",border:"1px solid #e0e0e0",background:"#fff",color:"#5f0080",fontSize:"12px",fontWeight:600,cursor:"pointer"}}>
+                ✏️ 변경
+              </button>
             </div>
 
             {/* 기본 정보 */}
@@ -394,6 +400,39 @@ export default function ProfilePage() {
       </div>
 
       {/* 모달들 */}
+      {/* 직군 변경 모달 */}
+      {editField === "jobType" && (
+        <div className="cv-overlay" onClick={() => setEditField(null)}>
+          <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="cv-header">
+              <div style={{width:36}} />
+              <h2 className="cv-title">직군 변경</h2>
+              <button className="cv-close" onClick={() => setEditField(null)}>✕</button>
+            </div>
+            <div className="cv-body">
+              <p style={{fontSize:"13px",color:"#888",marginBottom:"16px"}}>찾고 있는 채용 분야를 선택해 주세요</p>
+              <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+                <button onClick={() => { setJobType("corp"); setEditField(null); }}
+                  style={{padding:"16px 20px",borderRadius:"12px",border:`2px solid ${jobType!=="store"?"#5f0080":"#e0e0e0"}`,background:jobType!=="store"?"#f9f5fc":"#fff",textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:"14px"}}>
+                  <span style={{fontSize:"28px"}}>🏢</span>
+                  <div>
+                    <p style={{fontSize:"15px",fontWeight:700,color:"#1a1a1a",marginBottom:"3px"}}>기업·브랜드 채용</p>
+                    <p style={{fontSize:"12px",color:"#888"}}>마케팅·MD·영업·연구개발 등 본사 사무직</p>
+                  </div>
+                </button>
+                <button onClick={() => { setJobType("store"); setEditField(null); }}
+                  style={{padding:"16px 20px",borderRadius:"12px",border:`2px solid ${jobType==="store"?"#5f0080":"#e0e0e0"}`,background:jobType==="store"?"#f9f5fc":"#fff",textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:"14px"}}>
+                  <span style={{fontSize:"28px"}}>🏪</span>
+                  <div>
+                    <p style={{fontSize:"15px",fontWeight:700,color:"#1a1a1a",marginBottom:"3px"}}>매장·샵 채용</p>
+                    <p style={{fontSize:"12px",color:"#888"}}>헤어·네일·피부·메이크업·스파 등 현장직</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* 이메일 편집 */}
       {editField === "email" && (
         <div className="cv-overlay" onClick={() => setEditField(null)}>
