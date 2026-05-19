@@ -12,7 +12,7 @@ interface Props { onClose: () => void; }
 export default function LoginModal({ onClose }: Props) {
   const router = useRouter();
   const { login } = useAuthStore();
-  const { setPhone: setSignupPhone, setBasic } = useSignupStore();
+  const { setPhone: setSignupPhone, setBasic, setStep, setPhoneVerified } = useSignupStore();
   const [phoneMode, setPhoneMode] = useState(false);
   const [userName, setUserName] = useState("");
   const [phone, setPhone] = useState("");
@@ -39,8 +39,10 @@ export default function LoginModal({ onClose }: Props) {
     login({ userName: name, userPhone: phone });
     setSignupPhone(phone);
     setBasic({ name });
+    setPhoneVerified(true);
+    setStep(4); // Step 4 (약관)부터 시작
     onClose();
-    router.push("/profile");
+    router.push("/signup");
   };
 
   if (phoneMode) {
