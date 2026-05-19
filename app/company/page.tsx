@@ -149,6 +149,24 @@ export default function CompanyPage() {
         </div>
       </section>
 
+      {/* ── 7. 이용 절차 ── */}
+      <section className="co-section gray">
+        <div className="co-section-inner">
+          <h2 className="co-section-title">이용 절차</h2>
+          <p className="co-section-sub">4단계로 간단하게 시작할 수 있습니다</p>
+          <div className="co-steps">
+            {STEPS.map((s, i) => (
+              <div key={i} className="co-step-item">
+                <div className="co-step-num">{s.step}</div>
+                <div className="co-step-connector" />
+                <h3 className="co-step-title">{s.title}</h3>
+                <p className="co-step-desc">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── 3. 주요 서비스 4종 ── */}
       <section className="co-section gray">
         <div className="co-section-inner">
@@ -234,49 +252,13 @@ export default function CompanyPage() {
               </div>
             ))}
           </div>
-          <div style={{textAlign: "center", marginTop: 32}}>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 32, flexWrap: "wrap" }}>
             <Link href="/company/ads" className="co-btn-outline">
               📋 광고·노출 상품 보기
             </Link>
-            <Link href="/company/matching" className="co-btn-outline" style={{borderColor:"#10b981", color:"#10b981"}}>
+            <Link href="/company/matching" className="co-btn-outline" style={{ borderColor: "#10b981", color: "#10b981" }}>
               🤝 채용성공형 매칭 알아보기
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 7. 이용 절차 ── */}
-      <section className="co-section gray">
-        <div className="co-section-inner">
-          <h2 className="co-section-title">이용 절차</h2>
-          <p className="co-section-sub">4단계로 간단하게 시작할 수 있습니다</p>
-          <div className="co-steps">
-            {STEPS.map((s, i) => (
-              <div key={i} className="co-step-item">
-                <div className="co-step-num">{s.step}</div>
-                <div className="co-step-connector" />
-                <h3 className="co-step-title">{s.title}</h3>
-                <p className="co-step-desc">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── 8. 요금 안내 ── */}
-      <section className="co-section">
-        <div className="co-section-inner">
-          <h2 className="co-section-title">요금 안내</h2>
-          <p className="co-section-sub">기본 채용공고는 무료, 추가 노출만 선택 결제</p>
-          <div className="co-pricing-grid">
-            {PRICING.map((p, i) => (
-              <div key={i} className={`co-pricing-card ${p.highlight ? "highlight" : ""}`}>
-                <p className="co-pricing-label">{p.label}</p>
-                <p className="co-pricing-price" style={{ color: p.highlight ? "#7c3aed" : "#111" }}>
-                  {p.price}
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
