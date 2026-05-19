@@ -206,7 +206,6 @@ export default function ResumePage() {
           </Link>
           <nav className="resume-gnb">
             <Link href="/jobs" className="resume-gnb-item">채용공고</Link>
-            <Link href="/brands" className="resume-gnb-item">브랜드</Link>
             <Link href="/profile/resume" className="resume-gnb-item">이력서 등록</Link>
             <Link href="/insights" className="resume-gnb-item">뷰티 인사이트</Link>
           </nav>
