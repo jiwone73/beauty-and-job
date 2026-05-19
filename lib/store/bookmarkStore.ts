@@ -5,11 +5,13 @@ interface BookmarkState {
   bookmarks: number[];
   toggle: (id: number) => void;
   isBookmarked: (id: number) => boolean;
+  reset: () => void;
 }
 
 export const useBookmarkStore = create<BookmarkState>()(
   persist(
     (set, get) => ({
+      reset: () => set({ bookmarks: [] }),
       bookmarks: [],
       toggle: (id) =>
         set((s) => ({

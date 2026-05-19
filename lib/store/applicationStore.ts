@@ -13,12 +13,14 @@ interface Application {
 interface ApplicationStore {
   applications: Application[];
   apply: (job: { id: string; brand: string; title: string }) => void;
+  reset: () => void;
   isApplied: (jobId: string) => boolean;
 }
 
 export const useApplicationStore = create<ApplicationStore>()(
   persist(
     (set, get) => ({
+      reset: () => set({ applications: [] }),
       applications: [],
       apply: (job) => {
         const already = get().applications.find(a => a.jobId === job.id);

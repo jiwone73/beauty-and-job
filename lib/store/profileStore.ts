@@ -81,6 +81,7 @@ export interface ProfileState {
   setIntro: (intro: string) => void;
   setCoreCompetencies: (comp: string) => void;
   setEmail: (email: string) => void;
+  reset: () => void;
 }
 
 let counter = 0;
@@ -105,6 +106,21 @@ export const useProfileStore = create<ProfileState>()(
       coreCompetencies: "",
       email: "",
 
+      reset: () => set({
+        isCareerVerified: false,
+        verifiedDate: "",
+        careers: [],
+        mainJobGroup: "",
+        subJob: "",
+        educations: [],
+        experiences: [],
+        skills: [],
+        languages: [],
+        links: [],
+        intro: "",
+        coreCompetencies: "",
+        email: "",
+      }),
       setCareerVerified: (verified, date) =>
         set({ isCareerVerified: verified, verifiedDate: date || "" }),
 

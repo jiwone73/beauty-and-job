@@ -5,6 +5,9 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import HeroMobile from "@/components/HeroMobile";
 import { useEffect, useState, useCallback } from "react";
+import { useBookmarkStore } from "@/lib/store/bookmarkStore";
+import { useApplicationStore } from "@/lib/store/applicationStore";
+import { useProfileStore } from "@/lib/store/profileStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRouter } from "next/navigation";
@@ -780,7 +783,14 @@ function AuthButtons() {
               <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>내 프로필</button>
               <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/resume"); }}>이력서</button>
               <div className="auth-dropdown-divider" />
-              <button className="auth-dropdown-item auth-logout" onClick={() => { useSignupStore.getState().reset(); logout(); setOpen(false); }}>로그아웃</button>
+              <button className="auth-dropdown-item auth-logout" onClick={() => {
+                useSignupStore.getState().reset();
+                useProfileStore.getState().reset();
+                useBookmarkStore.getState().reset();
+                useApplicationStore.getState().reset();
+                logout();
+                setOpen(false);
+              }}>로그아웃</button>
             </div>
           )}
         </div>
