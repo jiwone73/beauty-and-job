@@ -44,12 +44,20 @@ export default function SignupPage() {
   // STEP 2~10은 진행 화면 (헤더 + 진행바 + 본문)
   // HR/경영지원/CS는 카테고리 스킵
   const SKIP_CATEGORY_JOBS = ["HR", "경영지원", "CS·CX"];
-  const shouldSkipCategory = jobType === "기업·사무직" && SKIP_CATEGORY_JOBS.includes(job);
+  const shouldSkipCategory = jobType === "corp" && SKIP_CATEGORY_JOBS.includes(job);
 
   const handleNext = () => {
     if (currentStep === 7 && shouldSkipCategory) {
-      setStep(9); // Step8 스킵
+      setStep(9); // Step8 (카테고리) 스킵
       return;
+    }
+    // 매장(store)은 Step9(국가) 스킵
+    if (currentStep === 8 && jobType === "store") {
+      setStep(10);
+      return;
+    }
+    if (currentStep === 7 && jobType === "store" && shouldSkipCategory === false) {
+      // 매장 + 카테고리 표시 → 8로
     }
     nextStep();
   };
@@ -63,6 +71,11 @@ export default function SignupPage() {
     // Step9에서 뒤로 갈 때 스킵했으면 Step7로
     if (currentStep === 9 && shouldSkipCategory) {
       setStep(7);
+      return;
+    }
+    // 매장은 Step10에서 뒤로 갈 때 Step8로
+    if (currentStep === 10 && jobType === "store") {
+      setStep(8);
       return;
     }
     prevStep();
