@@ -178,10 +178,10 @@ export default function CompanyPage() {
             ))}
           </div>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 32, flexWrap: "wrap" }}>
-            <Link href="/company/ads" className="co-btn-outline">
+            <Link href="/company/ads" className="co-cta-product-btn purple">
               📋 광고·노출 상품 보기
             </Link>
-            <Link href="/company/matching" className="co-btn-outline" style={{ borderColor: "#10b981", color: "#10b981" }}>
+            <Link href="/company/matching" className="co-cta-product-btn green">
               🤝 채용성공형 매칭 알아보기
             </Link>
           </div>
