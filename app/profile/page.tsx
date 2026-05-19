@@ -490,11 +490,14 @@ function InfoRow({ label, value, isEmpty, isLast, onClick }: {
    지원현황 탭
    ============================================ */
 function AppliedTab() {
-  const APPLIED_JOBS = [
-    { id: 1, brand: "올리브영", title: "올리브영 MD - 색조 카테고리 매니저", date: "2025.01.15", status: "서류검토중" },
-    { id: 2, brand: "아모레퍼시픽", title: "헤라 브랜드 마케팅 매니저", date: "2025.01.10", status: "합격" },
-    { id: 3, brand: "LG생활건강", title: "더후 글로벌 영업 PM", date: "2025.01.05", status: "불합격" },
-  ];
+  const { applications } = useApplicationStore();
+  const APPLIED_JOBS = applications.map((a) => ({
+    id: a.jobId,
+    brand: a.brand,
+    title: a.title,
+    date: a.date,
+    status: a.status || "서류검토중",
+  }));
 
   const statusStyle: Record<string, string> = {
     "서류검토중": "applied-status-review",
