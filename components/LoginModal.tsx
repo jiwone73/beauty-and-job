@@ -38,6 +38,8 @@ export default function LoginModal({ onClose }: Props) {
     };
     const name = TEST[phone] || TEST[phone.replace(/-/g,"")] || "사용자";
     login({ userName: name, userPhone: phone });
+    setSignupPhone(phone);
+    setBasic({ name });
     onClose();
     router.push("/profile");
   };
