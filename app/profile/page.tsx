@@ -44,6 +44,8 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"profile" | "resume" | "applied" | "bookmarks" | "brands">("profile");
   const [bannerClosed, setBannerClosed] = useState(false);
   const [openModal, setOpenModal] = useState<ModalType>(null);
+  const [editField, setEditField] = useState<string | null>(null);
+  const [emailInput, setEmailInput] = useState("");
   const [showJobModal, setShowJobModal] = useState(false);
   const [selectedJobTemp, setSelectedJobTemp] = useState("");
 
@@ -161,8 +163,8 @@ export default function ProfilePage() {
               <div className="profile-info-card">
                 <InfoRow label="이름" value={name || "정보 없음"} />
                 <InfoRow label="휴대전화" value={phone || "정보 없음"} />
-                <InfoRow label="생년월일" value={birth ? `${birth.slice(0,4)}.${birth.slice(4,6) || "00"}.${birth.slice(6,8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => setOpenModal("birth")} />
-                <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setOpenModal("gender")} />
+                <InfoRow label="생년월일" value={birth ? `${birth.slice(0,4)}.${birth.slice(4,6) || "00"}.${birth.slice(6,8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => setEditField("birth")} />
+                <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setEditField("gender")} />
                 <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => setEditField("email")} isLast />
               </div>
             </section>
@@ -372,13 +374,13 @@ export default function ProfilePage() {
         </div>
       )}
       {/* 생년월일 편집 */}
-      {openModal === "birth" && (
+      {editField === "birth" && (
         <div className="cv-overlay" onClick={() => setOpenModal(null)}>
           <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
             <div className="cv-header">
               <div style={{width:36}} />
               <h2 className="cv-title">생년월일 입력</h2>
-              <button className="cv-close" onClick={() => setOpenModal(null)}>✕</button>
+              <button className="cv-close" onClick={() => setEditField(null)}>✕</button>
             </div>
             <div className="cv-body">
               <label className="cv-field-label">생년월일 (예: 19900115)</label>
@@ -393,18 +395,18 @@ export default function ProfilePage() {
         </div>
       )}
       {/* 성별 선택 */}
-      {openModal === "gender" && (
+      {editField === "gender" && (
         <div className="cv-overlay" onClick={() => setOpenModal(null)}>
           <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
             <div className="cv-header">
               <div style={{width:36}} />
               <h2 className="cv-title">성별 선택</h2>
-              <button className="cv-close" onClick={() => setOpenModal(null)}>✕</button>
+              <button className="cv-close" onClick={() => setEditField(null)}>✕</button>
             </div>
             <div className="cv-body" style={{display:"flex", gap:"12px"}}>
               {["남성","여성"].map((g) => (
                 <button key={g} className={`company-wizard-card ${gender === g ? "active" : ""}`} style={{flex:1, padding:"20px", fontSize:"16px"}}
-                  onClick={() => { useSignupStore.getState().setBasic({ gender: g as "남성"|"여성" }); setOpenModal(null); }}>
+                  onClick={() => { useSignupStore.getState().setBasic({ gender: g as "남성"|"여성" }); setEditField(null); }}>
                   {g === "남성" ? "👨 남성" : "👩 여성"}
                 </button>
               ))}
