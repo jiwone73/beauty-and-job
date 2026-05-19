@@ -622,11 +622,7 @@ function BookmarksTab() {
    관심브랜드 탭
    ============================================ */
 function BrandsTab() {
-  const BRANDS = [
-    { id: 1, name: "올리브영", category: "헬스앤뷰티", jobs: 12 },
-    { id: 2, name: "아모레퍼시픽", category: "뷰티 대기업", jobs: 8 },
-    { id: 3, name: "LG생활건강", category: "뷰티 대기업", jobs: 5 },
-  ];
+  const BRANDS: { id: number; name: string; category: string; jobs: number }[] = [];
 
   if (BRANDS.length === 0) {
     return (
