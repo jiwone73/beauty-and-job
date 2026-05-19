@@ -32,6 +32,7 @@ export default function ProfilePage() {
   const {
     name: signupName, birth, gender, job, jobCustom, careerYears, isLeader,
     categories, categoryCustom, countries, countryCustom, phone,
+    jobType, skillAreas, certificates, workTypePrefer, regionPrefer, setStoreProfile, setJobType,
   } = useSignupStore();
   const { userName } = useAuthStore();
   const name = userName || signupName || "";
