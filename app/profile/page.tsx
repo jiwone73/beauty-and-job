@@ -155,6 +155,14 @@ export default function ProfilePage() {
               </div>
             </div>
 
+            {/* 임시: 직군 타입 토글 (테스트용) */}
+            <div style={{margin:"16px 0",padding:"12px 16px",background:"#fff3e0",borderRadius:"8px",display:"flex",alignItems:"center",gap:"12px"}}>
+              <span style={{fontSize:"12px",color:"#e65100",fontWeight:600}}>🧪 테스트:</span>
+              <span style={{fontSize:"13px",color:"#666"}}>직군 타입</span>
+              <button onClick={() => setJobType("corp")} style={{padding:"4px 12px",borderRadius:"6px",border:`1.5px solid ${jobType!=="store"?"#5f0080":"#ddd"}`,background:jobType!=="store"?"#5f0080":"#fff",color:jobType!=="store"?"#fff":"#888",fontSize:"12px",fontWeight:600,cursor:"pointer"}}>🏢 기업</button>
+              <button onClick={() => setJobType("store")} style={{padding:"4px 12px",borderRadius:"6px",border:`1.5px solid ${jobType==="store"?"#5f0080":"#ddd"}`,background:jobType==="store"?"#5f0080":"#fff",color:jobType==="store"?"#fff":"#888",fontSize:"12px",fontWeight:600,cursor:"pointer"}}>🏪 매장</button>
+            </div>
+
             {/* 기본 정보 */}
             <section className="profile-section">
               <div className="profile-section-head">
