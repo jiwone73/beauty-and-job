@@ -6,33 +6,27 @@ import Image from "next/image";
 import { ChevronLeft, ChevronDown, ChevronUp, CheckCircle2, XCircle, ArrowRight } from "lucide-react";
 
 const COMPARE = [
-  { label: "공고 노출",     free: "일반",     premium: "상단 고정 ⭐", matching: "일반" },
-  { label: "AI 후보자 추천", free: false,      premium: false,          matching: true  },
-  { label: "담당자 매칭",   free: false,      premium: false,          matching: true  },
-  { label: "면접 연결",     free: false,      premium: false,          matching: true  },
-  { label: "공고 비용",     free: "무료",     premium: "5만원~",       matching: "무료" },
-  { label: "수수료",        free: "없음",     premium: "없음",         matching: "채용 시" },
+  { label: "공고 노출",      free: "일반",  premium: "상단 고정 ⭐", matching: "일반" },
+  { label: "AI 후보자 추천", free: false,   premium: false,          matching: true  },
+  { label: "담당자 매칭",    free: false,   premium: false,          matching: true  },
+  { label: "면접 연결",      free: false,   premium: false,          matching: true  },
+  { label: "공고 비용",      free: "무료",  premium: "5만원~",       matching: "무료" },
+  { label: "수수료",         free: "없음",  premium: "없음",         matching: "채용 시" },
 ];
 
 const PROCESS = [
-  { step: "01", icon: "📋", title: "공고 등록",       desc: "무료로 채용공고를 등록합니다.
-직군·근무조건·급여 등 상세히 작성할수록 매칭 정확도가 높아져요." },
-  { step: "02", icon: "🤖", title: "AI 후보자 매칭",  desc: "뷰티앤잡 AI가 DB에서 조건에 맞는
-후보자를 자동으로 탐색·추천합니다." },
-  { step: "03", icon: "📨", title: "후보자 제안",      desc: "담당자가 후보자 프로필을 기업에 제안합니다.
-검토 후 면접 진행 여부를 결정해 주세요." },
-  { step: "04", icon: "🤝", title: "면접·채용 확정",  desc: "면접 일정을 조율하고
-채용이 확정되면 알려주세요." },
-  { step: "05", icon: "💳", title: "수수료 청구",      desc: "채용 확정 후 수수료가 발생합니다.
-채용이 성사되지 않으면 비용은 없습니다." },
+  { step: "01", icon: "📋", title: "공고 등록",      desc1: "무료로 채용공고를 등록합니다.",           desc2: "직군·근무조건·급여 등 상세히 작성할수록 매칭 정확도가 높아져요." },
+  { step: "02", icon: "🤖", title: "AI 후보자 매칭", desc1: "뷰티앤잡 AI가 DB에서 조건에 맞는",       desc2: "후보자를 자동으로 탐색·추천합니다." },
+  { step: "03", icon: "📨", title: "후보자 제안",     desc1: "담당자가 후보자 프로필을 기업에 제안합니다.", desc2: "검토 후 면접 진행 여부를 결정해 주세요." },
+  { step: "04", icon: "🤝", title: "면접·채용 확정", desc1: "면접 일정을 조율하고",                   desc2: "채용이 확정되면 알려주세요." },
+  { step: "05", icon: "💳", title: "수수료 청구",     desc1: "채용 확정 후 수수료가 발생합니다.",       desc2: "채용이 성사되지 않으면 비용은 없습니다." },
 ];
 
 const FEES = [
   {
     type: "매장직",
     icon: "🏪",
-    desc: "헤어디자이너, 네일아티스트, 피부관리사,
-에스테틱, 왁싱, 속눈썹 등 현장 매장직",
+    desc: "헤어디자이너, 네일아티스트, 피부관리사, 에스테틱, 왁싱, 속눈썹 등 현장 매장직",
     fee: "30만원",
     feeDesc: "채용 확정 1인당 고정",
     tags: ["헤어디자이너", "네일아티스트", "피부관리사", "에스테틱", "속눈썹", "왁싱"],
@@ -40,8 +34,7 @@ const FEES = [
   {
     type: "기업 사무직",
     icon: "🏢",
-    desc: "마케팅, MD, 브랜드, 영업, HR,
-콘텐츠, 병원 코디네이터 등 본사·전문직",
+    desc: "마케팅, MD, 브랜드, 영업, HR, 콘텐츠, 병원 코디네이터 등 본사·전문직",
     fee: "연봉의 8%",
     feeDesc: "채용 확정 시 세전 연봉 기준",
     tags: ["뷰티MD", "브랜드마케터", "영업관리", "교육강사", "콘텐츠마케터", "병원 코디네이터"],
@@ -54,7 +47,7 @@ const FAQS = [
   { q: "일반 무료공고와 동시에 진행할 수 있나요?", a: "네, 가능합니다. 같은 공고로 일반 지원자도 받으면서 동시에 매칭 서비스도 이용할 수 있습니다." },
   { q: "프리미엄 상단공고와 함께 쓸 수 있나요?", a: "물론입니다. 상단 노출로 지원자 유입을 늘리면서 동시에 AI 매칭으로 적합 후보자를 추천받는 방식으로 채용 속도를 높일 수 있습니다." },
   { q: "수수료는 언제 납부하나요?", a: "채용 확정(근로계약서 서명 또는 출근 확정) 후 세금계산서를 발행합니다. 계좌이체로 납부하시면 됩니다." },
-  { q: "채용 후 조기 퇴사 시 수수료는 환불되나요?", a: "입사 후 1개월 이내 퇴사 시 50% 환불, 2주 이내 퇴사 시 전액 환불합니다. 이후 동일 포지션 재매칭은 무료로 진행합니다." },
+  { q: "채용 후 조기 퇴사 시 환불되나요?", a: "입사 후 2주 이내 퇴사 시 전액 환불, 1개월 이내 퇴사 시 50% 환불합니다. 동일 포지션 재매칭은 무료로 진행합니다." },
 ];
 
 export default function MatchingPage() {
@@ -62,7 +55,6 @@ export default function MatchingPage() {
 
   return (
     <div className="mat-page">
-      {/* 헤더 */}
       <header className="ads-header">
         <div className="ads-header-inner">
           <Link href="/company" className="ads-back">
@@ -118,17 +110,17 @@ export default function MatchingPage() {
                     <td className="mat-compare-label">{row.label}</td>
                     <td className="mat-compare-val">
                       {typeof row.free === "boolean"
-                        ? row.free ? <CheckCircle2 size={16} className="mat-icon-yes" /> : <XCircle size={16} className="mat-icon-no" />
+                        ? (row.free ? <CheckCircle2 size={16} className="mat-icon-yes" /> : <XCircle size={16} className="mat-icon-no" />)
                         : row.free}
                     </td>
                     <td className="mat-compare-val">
                       {typeof row.premium === "boolean"
-                        ? row.premium ? <CheckCircle2 size={16} className="mat-icon-yes" /> : <XCircle size={16} className="mat-icon-no" />
+                        ? (row.premium ? <CheckCircle2 size={16} className="mat-icon-yes" /> : <XCircle size={16} className="mat-icon-no" />)
                         : row.premium}
                     </td>
                     <td className="mat-compare-val mat-col-highlight">
                       {typeof row.matching === "boolean"
-                        ? row.matching ? <CheckCircle2 size={16} className="mat-icon-yes" /> : <XCircle size={16} className="mat-icon-no" />
+                        ? (row.matching ? <CheckCircle2 size={16} className="mat-icon-yes" /> : <XCircle size={16} className="mat-icon-no" />)
                         : <strong>{row.matching}</strong>}
                     </td>
                   </tr>
@@ -153,7 +145,7 @@ export default function MatchingPage() {
                   {i < PROCESS.length - 1 && <div className="mat-process-line" />}
                 </div>
                 <h3 className="mat-process-title">{p.title}</h3>
-                <p className="mat-process-desc">{p.desc}</p>
+                <p className="mat-process-desc">{p.desc1}<br />{p.desc2}</p>
               </div>
             ))}
           </div>
@@ -198,7 +190,7 @@ export default function MatchingPage() {
           <div className="ads-faq-list">
             {FAQS.map((faq, i) => (
               <div key={i}
-                className={`ads-faq-item ${openFaq === i ? "open" : ""}`}
+                className={"ads-faq-item" + (openFaq === i ? " open" : "")}
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
               >
                 <div className="ads-faq-q">
