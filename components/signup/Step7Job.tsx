@@ -22,7 +22,7 @@ export default function Step7Job({ onNext }: Props) {
 
   const handleTypeSelect = (type: JobType) => {
     setLocalJobType(type);
-    saveJobType(type);
+    saveJobType(type === "기업·사무직" ? "corp" : "store");
     setStep("job");
     setJob("");
   };
