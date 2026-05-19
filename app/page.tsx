@@ -5,6 +5,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import HeroMobile from "@/components/HeroMobile";
 import { useEffect, useState, useCallback } from "react";
+import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRouter } from "next/navigation";
 import {
@@ -779,7 +780,7 @@ function AuthButtons() {
               <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>내 프로필</button>
               <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/resume"); }}>이력서</button>
               <div className="auth-dropdown-divider" />
-              <button className="auth-dropdown-item auth-logout" onClick={() => { logout(); setOpen(false); }}>로그아웃</button>
+              <button className="auth-dropdown-item auth-logout" onClick={() => { useSignupStore.getState().reset(); logout(); setOpen(false); }}>로그아웃</button>
             </div>
           )}
         </div>

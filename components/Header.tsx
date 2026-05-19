@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Search, Building2, Menu, X, ChevronDown } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
+import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import LoginModal from "@/components/LoginModal";
 
@@ -31,7 +32,7 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
               <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>내 프로필</button>
               <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/resume"); }}>이력서</button>
               <div className="auth-dropdown-divider" />
-              <button className="auth-dropdown-item auth-logout" onClick={() => { logout(); setOpen(false); }}>로그아웃</button>
+              <button className="auth-dropdown-item auth-logout" onClick={() => { useSignupStore.getState().reset(); logout(); setOpen(false); }}>로그아웃</button>
             </div>
           )}
         </div>

@@ -31,6 +31,12 @@ export interface SignupState {
   // STEP 7: 직군
   job: string;
   jobType: string;
+  // 매장직 전용
+  skillAreas: string[];      // 시술 분야 (헤어/네일/피부/메이크업/스파)
+  certificates: string[];    // 보유 자격증
+  workTypePrefer: string;    // 희망 근무 형태 (풀타임/파트타임)
+  regionPrefer: string;      // 희망 근무 지역
+  // 매장직 전용
   jobCustom: string;
 
   // STEP 8: 카테고리
@@ -52,6 +58,7 @@ export interface SignupState {
   setCareer: (data: { careerYears?: number; isLeader?: boolean }) => void;
   setJob: (job: string, custom?: string) => void;
   setJobType: (jobType: string) => void;
+  setStoreProfile: (data: { skillAreas?: string[]; certificates?: string[]; workTypePrefer?: string; regionPrefer?: string }) => void;
   toggleCategory: (category: string) => void;
   addCategoryCustom: (category: string) => void;
   removeCategoryCustom: (category: string) => void;
@@ -78,6 +85,10 @@ const initialState = {
   isLeader: false,
   job: "",
   jobType: "",
+  skillAreas: [],
+  certificates: [],
+  workTypePrefer: "",
+  regionPrefer: "",
   jobCustom: "",
   categories: [],
   categoryCustom: [],
@@ -108,6 +119,7 @@ export const useSignupStore = create<SignupState>()(
 
       setJob: (job, custom = "") => set({ job, jobCustom: custom }),
       setJobType: (jobType) => set({ jobType }),
+      setStoreProfile: (data) => set(data),
 
       toggleCategory: (category) =>
         set((state) => {
@@ -186,6 +198,10 @@ export const useSignupStore = create<SignupState>()(
         isLeader: state.isLeader,
         job: state.job,
         jobType: state.jobType,
+        skillAreas: state.skillAreas,
+        certificates: state.certificates,
+        workTypePrefer: state.workTypePrefer,
+        regionPrefer: state.regionPrefer,
         jobCustom: state.jobCustom,
         categories: state.categories,
         categoryCustom: state.categoryCustom,
