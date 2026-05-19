@@ -161,10 +161,9 @@ export default function ProfilePage() {
               <div className="profile-info-card">
                 <InfoRow label="이름" value={name || "정보 없음"} />
                 <InfoRow label="휴대전화" value={phone || "정보 없음"} />
-                <InfoRow label="인적사항" value={birthDisplay} />
-                <InfoRow label="이메일" value="입력하기" isEmpty onClick={() => alert("이메일 입력은 이력서 편집 페이지에서 가능합니다.")} />
-                <InfoRow label="카테고리" value={allCategories.length > 0 ? allCategories.join(", ") : "미설정"} />
-                <InfoRow label="담당 국가" value={allCountries.length > 0 ? allCountries.join(", ") : "미설정"} isLast />
+                <InfoRow label="생년월일" value={birth ? `${birth.slice(0,4)}.${birth.slice(4,6) || "00"}.${birth.slice(6,8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => setOpenModal("birth")} />
+                <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setOpenModal("gender")} />
+                <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => setEditField("email")} isLast />
               </div>
             </section>
 
@@ -345,6 +344,74 @@ export default function ProfilePage() {
       </div>
 
       {/* 모달들 */}
+      {/* 이메일 편집 */}
+      {editField === "email" && (
+        <div className="cv-overlay" onClick={() => setEditField(null)}>
+          <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="cv-header">
+              <div style={{width:36}} />
+              <h2 className="cv-title">이메일 입력</h2>
+              <button className="cv-close" onClick={() => setEditField(null)}>✕</button>
+            </div>
+            <div className="cv-body">
+              <label className="cv-field-label">이메일 주소</label>
+              <input
+                className="cv-input"
+                type="email"
+                placeholder="example@email.com"
+                defaultValue={emailInput}
+                id="email-input"
+              />
+              <button className="cv-btn-primary" style={{marginTop:"16px"}} onClick={() => {
+                const val = (document.getElementById("email-input") as HTMLInputElement)?.value;
+                if (val) setEmailInput(val);
+                setEditField(null);
+              }}>저장</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* 생년월일 편집 */}
+      {openModal === "birth" && (
+        <div className="cv-overlay" onClick={() => setOpenModal(null)}>
+          <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="cv-header">
+              <div style={{width:36}} />
+              <h2 className="cv-title">생년월일 입력</h2>
+              <button className="cv-close" onClick={() => setOpenModal(null)}>✕</button>
+            </div>
+            <div className="cv-body">
+              <label className="cv-field-label">생년월일 (예: 19900115)</label>
+              <input className="cv-input" type="text" placeholder="YYYYMMDD" id="birth-input" defaultValue={birth} maxLength={8} />
+              <button className="cv-btn-primary" style={{marginTop:"16px"}} onClick={() => {
+                const val = (document.getElementById("birth-input") as HTMLInputElement)?.value;
+                if (val) useSignupStore.getState().setBasic({ birth: val });
+                setOpenModal(null);
+              }}>저장</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* 성별 선택 */}
+      {openModal === "gender" && (
+        <div className="cv-overlay" onClick={() => setOpenModal(null)}>
+          <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="cv-header">
+              <div style={{width:36}} />
+              <h2 className="cv-title">성별 선택</h2>
+              <button className="cv-close" onClick={() => setOpenModal(null)}>✕</button>
+            </div>
+            <div className="cv-body" style={{display:"flex", gap:"12px"}}>
+              {["남성","여성"].map((g) => (
+                <button key={g} className={`company-wizard-card ${gender === g ? "active" : ""}`} style={{flex:1, padding:"20px", fontSize:"16px"}}
+                  onClick={() => { useSignupStore.getState().setBasic({ gender: g as "남성"|"여성" }); setOpenModal(null); }}>
+                  {g === "남성" ? "👨 남성" : "👩 여성"}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
       <CareerVerifyModal isOpen={openModal === "career"} onClose={() => setOpenModal(null)} onComplete={handleCareerComplete} userName={name} userBirth={birth} userGender={gender} userPhone={phone} />
       <EducationModal isOpen={openModal === "education"} onClose={() => setOpenModal(null)} />
       <SkillModal isOpen={openModal === "skill"} onClose={() => setOpenModal(null)} />
