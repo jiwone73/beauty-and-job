@@ -15,6 +15,7 @@ export default function LoginModal({ onClose }: Props) {
   const { setPhone: setSignupPhone, setBasic } = useSignupStore();
   const [phoneMode, setPhoneMode] = useState(false);
   const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState("");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [sent, setSent] = useState(false);
@@ -28,7 +29,7 @@ export default function LoginModal({ onClose }: Props) {
   };
 
   const handleSend = () => {
-    if (!userName.trim() || phone.replace(/\D/g,"").length < 10) { setError("올바른 번호를 입력해주세요."); return; }
+    if (!userName.trim() || !userName.trim() || phone.replace(/\D/g,"").length < 10) { setError("올바른 번호를 입력해주세요."); return; }
     setError(""); setSent(true);
   };
 
@@ -47,7 +48,7 @@ export default function LoginModal({ onClose }: Props) {
       <div className="lm-overlay" onClick={onClose}>
         <div className="lm-card" onClick={(e) => e.stopPropagation()}>
           <div className="lm-phone-top">
-            <button className="lm-back-btn" onClick={() => { setPhoneMode(false); setSent(false); setPhone(""); setCode(""); setError(""); setUserName(""); }}>
+            <button className="lm-back-btn" onClick={() => { setPhoneMode(false); setSent(false); setPhone(""); setCode(""); setError(""); setUserName(""); setUserName(""); }}>
               <ChevronLeft size={20} />
             </button>
             <span className="lm-phone-top-title">휴대전화 번호로 계속하기</span>
