@@ -238,6 +238,9 @@ export default function CompanyPage() {
             <Link href="/company/ads" className="co-btn-outline">
               📋 광고·노출 상품 보기
             </Link>
+            <Link href="/company/matching" className="co-btn-outline" style={{borderColor:"#10b981", color:"#10b981"}}>
+              🤝 채용성공형 매칭 알아보기
+            </Link>
           </div>
         </div>
       </section>
