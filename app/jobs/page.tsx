@@ -293,7 +293,7 @@ function JobsPageInner() {
                 <div className="jobs-card-body">
                   <div className="jobs-card-brand-row">
                     <span className="jobs-card-brand">{job.brand}</span>
-                    {job.tags.slice(0, 2).map((tag) => (
+                    {job.tags.slice(0, 2).map((tag: string) => (
                       <span key={tag} className="jobs-card-tag">· {tag}</span>
                     ))}
                     {job.extraCount && (
