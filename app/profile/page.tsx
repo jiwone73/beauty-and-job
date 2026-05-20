@@ -34,7 +34,7 @@ export default function ProfilePage() {
     categories, categoryCustom, countries, countryCustom, phone,
     jobType, skillAreas, certificates, workTypePrefer, regionPrefer, setStoreProfile, setJobType,
   } = useSignupStore();
-  const { userName } = useAuthStore();
+  const { userName, userPhone } = useAuthStore();
   const name = userName || signupName || "";
   const {
     isCareerVerified, verifiedDate, careers, educations, experiences,
@@ -177,7 +177,7 @@ export default function ProfilePage() {
               </div>
               <div className="profile-info-card">
                 <InfoRow label="이름" value={name || "정보 없음"} />
-                <InfoRow label="휴대전화" value={phone || "정보 없음"} />
+                <InfoRow label="휴대전화" value={userPhone || phone || "정보 없음"} />
                 <InfoRow label="생년월일" value={birth ? `${birth.slice(0,4)}.${birth.slice(4,6) || "00"}.${birth.slice(6,8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => setEditField("birth")} />
                 <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setEditField("gender")} />
                 <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => setEditField("email")} isLast />

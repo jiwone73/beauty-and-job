@@ -19,14 +19,16 @@ import Step10Done from "@/components/signup/Step10Done";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { currentStep, setStep, prevStep, nextStep, job, jobType } = useSignupStore();
-
   useEffect(() => {
-    console.log(
-      "%c BEAUTY&JOB 회원가입 ",
-      "background:#5f0080;color:#fff;font-weight:700;font-size:14px;padding:4px 10px;border-radius:4px;"
-    );
-    console.log("💡 데모 인증번호: 123456");
+    console.log("BEAUTY&JOB 회원가입");
+    console.log("데모 인증번호: 123456");
+    const phoneFromUrl = searchParams.get("phone");
+    if (phoneFromUrl) {
+      useSignupStore.setState({ phone: phoneFromUrl, isPhoneVerified: true });
+      setStep(4);
+    }
   }, []);
 
   // STEP 1은 별도 모달 형태

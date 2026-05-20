@@ -31,25 +31,51 @@ export default function Step10Done() {
   ];
 
   /** 공통: signupStore → profileStore 이관 + authStore 로그인 처리 */
-  const handleComplete = () => {
-    // 1. profileStore에 직군/직무 이관
-    setMainJob(jobDisplay || "", allCategories.join(", "));
+  const handleComplete = async () => {
+    try {
+      const termsRes = await fetch('/api/terms');
+      const termsData = await termsRes.json();
+      const requiredTermIds = termsData.success
+        ? termsData.data.filter((t: any) => t.is_required).map((t: any) => t.id)
+        : [];
 
-    // 2. authStore에 로그인 상태 저장
-    login({ userName: name, userPhone: phone });
+      const { jobType: storeJobType } = useSignupStore.getState();
+      const signupRes = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone,
+          name,
+          job_type: storeJobType === 'store' ? 'STORE' : 'OFFICE',
+          desired_location: allCountries[0] || '',
+          agreed_term_ids: requiredTermIds,
+        }),
+      });
+      const signupData = await signupRes.json();
 
-    // 3. signupStore 초기화 (가입 데이터 정리)
-    reset();
+      if (!signupData.success) {
+        alert(signupData.error?.message || '가입에 실패했습니다.');
+        return false;
+      }
+
+      localStorage.setItem('access_token', signupData.data.access_token);
+      setMainJob(jobDisplay || "", allCategories.join(", "));
+      login({ userName: name, userPhone: phone });
+      reset();
+      return true;
+    } catch (e) {
+      console.error('[signup error]', e);
+      alert('네트워크 오류가 발생했습니다.');
+      return false;
+    }
   };
-
-  const handleGoProfile = () => {
-    handleComplete();
-    router.push("/profile");
+  const handleGoProfile = async () => {
+    const ok = await handleComplete();
+    if (ok) router.push("/profile");
   };
-
-  const handleGoMain = () => {
-    handleComplete();
-    router.push("/");
+  const handleGoMain = async () => {
+    const ok = await handleComplete();
+    if (ok) router.push("/");
   };
 
   return (
