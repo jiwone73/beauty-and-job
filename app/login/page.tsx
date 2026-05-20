@@ -53,16 +53,51 @@ function LoginPageInner() {
     return `${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}`;
   };
 
-  const handlePhoneSend = () => {
+  const handlePhoneSend = async () => {
     if (phone.replace(/\D/g,"").length < 10) { setPhoneError("올바른 번호를 입력해주세요."); return; }
-    setPhoneError(""); setPhoneSent(true);
+    setPhoneError("");
+    try {
+      const res = await fetch('/api/auth/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPhoneSent(true);
+      } else {
+        setPhoneError(data.error?.message || '인증번호 발송에 실패했습니다.');
+      }
+    } catch (e) {
+      setPhoneError('네트워크 오류가 발생했습니다.');
+    }
   };
 
-  const handlePhoneVerify = () => {
-    if (code !== "123456") { setPhoneError("인증번호가 올바르지 않습니다. (테스트: 123456)"); return; }
-    const account = TEST_ACCOUNTS[phone] || TEST_ACCOUNTS[phone.replace(/-/g,"")];
-    login({ userName: account?.name || "사용자", userPhone: phone });
-    router.push(account?.redirect || "/profile");
+  const handlePhoneVerify = async () => {
+    setPhoneError("");
+    try {
+      const res = await fetch('/api/auth/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, code })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setPhoneError(data.error?.message || '인증에 실패했습니다.');
+        return;
+      }
+      if (data.data.is_new_user) {
+        // 미가입 → 회원가입 페이지로
+        router.push(`/signup?phone=${encodeURIComponent(phone)}`);
+        return;
+      }
+      // 토큰 저장 + 로그인 처리
+      localStorage.setItem('access_token', data.data.access_token);
+      login({ userName: data.data.user.name, userPhone: phone });
+      router.push('/profile');
+    } catch (e) {
+      setPhoneError('네트워크 오류가 발생했습니다.');
+    }
   };
 
   return (
