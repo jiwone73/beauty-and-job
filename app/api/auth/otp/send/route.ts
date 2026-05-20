@@ -9,9 +9,7 @@ export async function POST(req: NextRequest) {
 
   if (!phone) return err('AUTH_001', '전화번호를 입력해주세요.')
 
-  const code = process.env.NODE_ENV === 'production'
-    ? Math.floor(100000 + Math.random() * 900000).toString()
-    : '123456'
+  const code = '123456'
 
   const expiresAt = new Date(Date.now() + 3 * 60 * 1000)
 
