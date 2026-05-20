@@ -1,7 +1,7 @@
 "use client";
 import LoginModal from "@/components/LoginModal";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
@@ -136,7 +136,37 @@ export default function JobDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
-  const job = JOBS_DATA[id] || JOBS_DATA["1"];
+  const [job, setJob] = useState<any>(JOBS_DATA[id] || JOBS_DATA["1"]);
+
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/jobs/${id}`)
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && res.data) {
+          const j = res.data;
+          setJob({
+            id: j.id,
+            brand: j.company?.brand_name || j.company?.company_name || '',
+            brandDesc: j.company?.description || '',
+            tags: [],
+            title: j.title,
+            jobType: j.job_type === 'OFFICE' ? '사무직' : '매장직',
+            career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
+            region: j.location || '',
+            employType: j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직',
+            deadline: j.deadline || '상시채용',
+            salary: j.salary_min ? `${(j.salary_min/10000).toLocaleString()}만원 ~` : '협의',
+            color: '#e8f0fe',
+            description: j.description || '',
+            responsibilities: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],
+            qualifications: j.preferred_qualifications ? j.preferred_qualifications.split('\n').filter(Boolean) : [],
+            logo_url: j.company?.logo_url,
+          });
+        }
+      })
+      .catch(e => console.error('[load job]', e));
+  }, [id]);
 
   const [bookmarked, setBookmarked] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
