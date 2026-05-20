@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { TOTAL_STEPS } from "@/lib/constants";
