@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextRequest } from 'next/server'
 import bcrypt from 'bcrypt'
 import pool from '@/lib/db'

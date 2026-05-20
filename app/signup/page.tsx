@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
@@ -17,7 +17,7 @@ import Step8Category from "@/components/signup/Step8Category";
 import Step9Country from "@/components/signup/Step9Country";
 import Step10Done from "@/components/signup/Step10Done";
 
-export default function SignupPage() {
+function SignupPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { currentStep, setStep, prevStep, nextStep, job, jobType } = useSignupStore();
@@ -128,5 +128,14 @@ export default function SignupPage() {
         {currentStep === 10 && <Step10Done />}
       </section>
     </div>
+  );
+}
+
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">로딩중...</div>}>
+      <SignupPageInner />
+    </Suspense>
   );
 }
