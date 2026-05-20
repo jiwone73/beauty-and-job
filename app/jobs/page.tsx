@@ -88,19 +88,44 @@ function JobsPageInner() {
   const [showBrandDrop, setShowBrandDrop] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
   const [searchQuery, setSearchQuery] = useState(initSearch);
-  const [bookmarks, setBookmarks] = useState<number[]>([]);
+  const [bookmarks, setBookmarks] = useState<(string | number)[]>([]);
+  const [apiJobs, setApiJobs] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    fetch('/api/jobs')
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && Array.isArray(res.data)) {
+          const mapped = res.data.map((j: any) => ({
+            id: j.id,
+            brand: j.brand_name || j.company_name,
+            tags: [],
+            category: null,
+            title: j.title,
+            jobType: '',
+            career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
+            region: j.location || '국내',
+            type: j.job_type === 'OFFICE' ? '기업' : '매장',
+            thumbnail: j.logo_url,
+            color: '#e8f0fe',
+          }));
+          setApiJobs(mapped);
+        }
+      })
+      .catch(e => console.error('[load jobs]', e));
+  }, []);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const POPULAR_SEARCHES = ["아누아", "성분에디터", "퓌", "메디힐", "메디큐브", "넘버즈인", "유무", "브이티", "달바", "온그리디언츠", "마녀공장", "이퀄베리", "닥터엘시아"];
 
-  const toggleBookmark = (id: number, e: React.MouseEvent) => {
+  const toggleBookmark = (id: string | number, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setBookmarks((prev) => prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]);
   };
 
   const currentJobTypes = jobTypeFilter === "매장" ? STORE_JOB_TYPES : JOB_TYPES;
-  const filteredJobs = ALL_JOBS.filter((j) => {
+  const filteredJobs = (apiJobs || ALL_JOBS).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter;
     const matchJob = selectedJob === "직군 전체" || j.jobType.includes(selectedJob);
     const matchCareer = selectedCareer === "경력 전체" || j.career.includes(selectedCareer.replace("년", "").replace("신입", "신입"));
