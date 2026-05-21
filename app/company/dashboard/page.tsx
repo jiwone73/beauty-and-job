@@ -1,64 +1,124 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Users, Briefcase, Eye, BookmarkCheck, TrendingUp, Plus } from "lucide-react";
+import { Users, Briefcase, BookmarkCheck, TrendingUp, Plus, Inbox } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-const STATS = [
-  { label: "진행중 공고", value: "5", unit: "건", color: "#5f0080", icon: Briefcase },
-  { label: "총 지원자", value: "128", unit: "명", color: "#0ea5e9", icon: Users },
-  { label: "오늘 지원", value: "12", unit: "명", color: "#10b981", icon: TrendingUp },
-  { label: "스크랩한 인재", value: "24", unit: "명", color: "#f59e0b", icon: BookmarkCheck },
-];
+interface Stats {
+  active_jobs: number;
+  total_applications: number;
+  today_applications: number;
+  scrapped_talents: number;
+  trends: { label: string; value: number }[];
+}
 
-const APPLY_DATA = [
-  { day: "1/14", 지원수: 8 }, { day: "1/15", 지원수: 15 },
-  { day: "1/16", 지원수: 11 }, { day: "1/17", 지원수: 19 },
-  { day: "1/18", 지원수: 14 }, { day: "1/19", 지원수: 9 },
-  { day: "1/20", 지원수: 12 },
-];
+interface JobItem {
+  id: string;
+  title: string;
+  job_type: string;
+  status: string;
+  view_count: number;
+  application_count: number;
+  deadline: string | null;
+  created_at: string;
+}
 
-const MY_JOBS = [
-  { id: 1, title: "디지털 마케팅 매니저", category: "마케팅", deadline: "2025.02.28", applicants: 34, views: 412, status: "진행중" },
-  { id: 2, title: "MD - 색조 카테고리", category: "MD", deadline: "2025.02.15", applicants: 28, views: 287, status: "진행중" },
-  { id: 3, title: "SCM 물류 담당자", category: "SCM", deadline: "2025.01.31", applicants: 19, views: 198, status: "진행중" },
-  { id: 4, title: "HR 채용 담당자", category: "HR", deadline: "2025.01.20", applicants: 47, views: 523, status: "마감" },
-];
+interface ApplicantItem {
+  id: string;
+  user_name: string;
+  job_title: string;
+  experience_level: string | null;
+  applied_at: string;
+  viewed_at: string | null;
+}
 
-const RECENT_APPLICANTS = [
-  { id: 1, name: "김지수", job: "디지털 마케팅 매니저", career: "경력 3년", date: "2025.01.20", viewed: false },
-  { id: 2, name: "박민준", job: "MD - 색조 카테고리", career: "경력 5년", date: "2025.01.20", viewed: true },
-  { id: 3, name: "최유나", job: "디지털 마케팅 매니저", career: "경력 4년", date: "2025.01.19", viewed: false },
-  { id: 4, name: "이수진", job: "SCM 물류 담당자", career: "신입", date: "2025.01.19", viewed: true },
-];
+const STATUS_LABEL: Record<string, string> = {
+  ACTIVE: "진행중",
+  CLOSED: "마감",
+  HIDDEN: "숨김",
+  DRAFT: "임시저장",
+  EXPIRED: "만료",
+};
+
+const EXP_LABEL: Record<string, string> = {
+  NEW: "신입",
+  EXPERIENCED: "경력",
+  ANY: "경력 무관",
+};
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" }).replace(/\. /g, ".").replace(".", ".");
+}
 
 export default function CompanyDashboard() {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [jobs, setJobs] = useState<JobItem[]>([]);
+  const [applicants, setApplicants] = useState<ApplicantItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+    const headers = { Authorization: `Bearer ${token}` };
+
+    Promise.all([
+      fetch("/api/company/dashboard/stats", { headers }).then((r) => r.json()),
+      fetch("/api/company/jobs?limit=10", { headers }).then((r) => r.json()),
+      fetch("/api/company/applications?limit=5", { headers }).then((r) => r.json()),
+    ])
+      .then(([statsRes, jobsRes, applicantsRes]) => {
+        if (statsRes.success) setStats(statsRes.data);
+        if (jobsRes.success) setJobs(jobsRes.data);
+        if (applicantsRes.success) setApplicants(applicantsRes.data);
+      })
+      .catch((e) => console.error("[dashboard load]", e))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // 통계 카드 데이터
+  const statCards = [
+    { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#5f0080", icon: Briefcase },
+    { label: "총 지원자", value: stats?.total_applications ?? 0, unit: "명", color: "#0ea5e9", icon: Users },
+    { label: "오늘 지원", value: stats?.today_applications ?? 0, unit: "명", color: "#10b981", icon: TrendingUp },
+    { label: "스크랩한 인재", value: stats?.scrapped_talents ?? 0, unit: "명", color: "#f59e0b", icon: BookmarkCheck },
+  ];
+
+  const chartData = (stats?.trends ?? []).map((t) => ({ day: t.label, 지원수: t.value }));
+
   return (
     <CompanyLayout activePage="dashboard">
+      {/* 통계 카드 */}
       <div className="company-stat-grid">
-        {STATS.map((stat) => (
+        {statCards.map((stat) => (
           <div key={stat.label} className="company-stat-card">
             <div className="company-stat-icon" style={{ background: stat.color + "18", color: stat.color }}>
               <stat.icon size={22} />
             </div>
-            <div className="company-stat-value">{stat.value}<span className="company-stat-unit">{stat.unit}</span></div>
+            <div className="company-stat-value">
+              {stat.value}<span className="company-stat-unit">{stat.unit}</span>
+            </div>
             <div className="company-stat-label">{stat.label}</div>
           </div>
         ))}
       </div>
 
+      {/* 차트 + 최근 지원자 */}
       <div className="company-dashboard-grid">
         <div className="company-card">
           <div className="company-card-head">
             <h2 className="company-card-title">일별 지원자 추이 (최근 7일)</h2>
           </div>
-          <div style={{padding:"16px 8px"}}>
+          <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={APPLY_DATA}>
-                <XAxis dataKey="day" tick={{fontSize:12}} />
-                <YAxis tick={{fontSize:12}} />
+              <BarChart data={chartData}>
+                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="지원수" fill="#5f0080" radius={[4,4,0,0]} />
+                <Bar dataKey="지원수" fill="#5f0080" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -67,27 +127,42 @@ export default function CompanyDashboard() {
         <div className="company-card">
           <div className="company-card-head">
             <h2 className="company-card-title">최근 지원자</h2>
-            <Link href="/company/dashboard/applicants" className="company-card-more">전체보기 →</Link>
+            {applicants.length > 0 && (
+              <Link href="/company/dashboard/applicants" className="company-card-more">전체보기 →</Link>
+            )}
           </div>
-          <table className="company-table">
-            <thead>
-              <tr><th>이름</th><th>지원공고</th><th>경력</th><th>지원일</th><th>열람</th></tr>
-            </thead>
-            <tbody>
-              {RECENT_APPLICANTS.map((a) => (
-                <tr key={a.id}>
-                  <td className="company-td-name">{a.name}</td>
-                  <td className="company-td-sub">{a.job}</td>
-                  <td className="company-td-sub">{a.career}</td>
-                  <td className="company-td-sub">{a.date}</td>
-                  <td><span className={`company-badge ${a.viewed ? "viewed" : "new"}`}>{a.viewed ? "열람" : "미열람"}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {applicants.length === 0 ? (
+            <EmptyState
+              icon={<Inbox size={32} />}
+              message={loading ? "불러오는 중..." : "아직 지원자가 없습니다"}
+              hint={loading ? "" : "채용공고를 등록하면 지원자가 들어와요"}
+            />
+          ) : (
+            <table className="company-table">
+              <thead>
+                <tr><th>이름</th><th>지원공고</th><th>경력</th><th>지원일</th><th>열람</th></tr>
+              </thead>
+              <tbody>
+                {applicants.map((a) => (
+                  <tr key={a.id}>
+                    <td className="company-td-name">{a.user_name}</td>
+                    <td className="company-td-sub">{a.job_title}</td>
+                    <td className="company-td-sub">{a.experience_level ? EXP_LABEL[a.experience_level] || "-" : "-"}</td>
+                    <td className="company-td-sub">{formatDate(a.applied_at)}</td>
+                    <td>
+                      <span className={`company-badge ${a.viewed_at ? "viewed" : "new"}`}>
+                        {a.viewed_at ? "열람" : "미열람"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
+      {/* 내 채용공고 */}
       <div className="company-card">
         <div className="company-card-head">
           <h2 className="company-card-title">내 채용공고</h2>
@@ -95,24 +170,56 @@ export default function CompanyDashboard() {
             <Plus size={15} /> 공고 등록
           </Link>
         </div>
-        <table className="company-table">
-          <thead>
-            <tr><th>공고명</th><th>직군</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
-          </thead>
-          <tbody>
-            {MY_JOBS.map((job) => (
-              <tr key={job.id}>
-                <td className="company-td-name">{job.title}</td>
-                <td className="company-td-sub">{job.category}</td>
-                <td className="company-td-sub">{job.deadline}</td>
-                <td className="company-td-sub">{job.applicants}명</td>
-                <td className="company-td-sub">{job.views.toLocaleString()}</td>
-                <td><span className={`company-badge ${job.status === "진행중" ? "active" : "closed"}`}>{job.status}</span></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {jobs.length === 0 ? (
+          <EmptyState
+            icon={<Briefcase size={32} />}
+            message={loading ? "불러오는 중..." : "아직 등록된 공고가 없습니다"}
+            hint={loading ? "" : "첫 번째 채용공고를 등록해보세요"}
+            cta={
+              !loading && (
+                <Link href="/company/dashboard/jobs/new" className="company-primary-btn" style={{ marginTop: 16 }}>
+                  <Plus size={15} /> 공고 등록하기
+                </Link>
+              )
+            }
+          />
+        ) : (
+          <table className="company-table">
+            <thead>
+              <tr><th>공고명</th><th>유형</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
+            </thead>
+            <tbody>
+              {jobs.map((job) => (
+                <tr key={job.id}>
+                  <td className="company-td-name">{job.title}</td>
+                  <td className="company-td-sub">{job.job_type === "OFFICE" ? "기업" : "매장"}</td>
+                  <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
+                  <td className="company-td-sub">{job.application_count}명</td>
+                  <td className="company-td-sub">{job.view_count.toLocaleString()}</td>
+                  <td>
+                    <span className={`company-badge ${job.status === "ACTIVE" ? "active" : "closed"}`}>
+                      {STATUS_LABEL[job.status] || job.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </CompanyLayout>
+  );
+}
+
+function EmptyState({ icon, message, hint, cta }: { icon: React.ReactNode; message: string; hint?: string; cta?: React.ReactNode }) {
+  return (
+    <div style={{ padding: "48px 24px", textAlign: "center", color: "#9a9a9a" }}>
+      <div style={{ display: "inline-flex", padding: 14, borderRadius: "50%", background: "#f7f7f8", color: "#bfbfbf", marginBottom: 12 }}>
+        {icon}
+      </div>
+      <p style={{ fontSize: 14, color: "#3a3a3a", fontWeight: 500, margin: 0 }}>{message}</p>
+      {hint && <p style={{ fontSize: 12, marginTop: 6, marginBottom: 0 }}>{hint}</p>}
+      {cta}
+    </div>
   );
 }
