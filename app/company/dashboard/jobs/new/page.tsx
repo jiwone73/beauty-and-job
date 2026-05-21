@@ -44,11 +44,63 @@ export default function CompanyJobNewPage() {
 
   const currentGroups = JOB_GROUPS[jobGroupType];
 
-  const handleSubmit = (status: "draft" | "publish") => {
+  const handleSubmit = async (status: "draft" | "publish") => {
     if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
     if (!form.category) { alert("직군을 선택해주세요."); return; }
-    setSaved(true);
-    setTimeout(() => router.push("/company/dashboard/jobs"), 1000);
+
+    const token = localStorage.getItem("access_token");
+    if (!token) { alert("로그인이 필요합니다."); return; }
+
+    // 경력 매핑: "신입"→NEW, "경력 X년"→EXPERIENCED, 그 외 ANY
+    const expLevel = form.career.includes("신입") ? "NEW"
+      : form.career.match(/\d+년/) ? "EXPERIENCED"
+      : "ANY";
+
+    // 근무형태 매핑: "정규직"→FULL_TIME, "파트타임"→PART_TIME, "계약직"→CONTRACT
+    const workType = form.type === "파트타임" ? "PART_TIME"
+      : form.type === "계약직" ? "CONTRACT"
+      : "FULL_TIME";
+
+    // 연봉 파싱: "3000-5000만원" 형태에서 숫자 추출
+    let salaryMin = null, salaryMax = null;
+    const salaryNums = form.salary.match(/\d+/g);
+    if (salaryNums && salaryNums.length > 0) {
+      salaryMin = parseInt(salaryNums[0]) * 10000;
+      if (salaryNums.length > 1) salaryMax = parseInt(salaryNums[1]) * 10000;
+    }
+
+    try {
+      const res = await fetch("/api/company/jobs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: form.title,
+          job_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
+          description: form.description || null,
+          requirements: form.requirements || null,
+          preferred_qualifications: form.preferred || null,
+          salary_min: salaryMin,
+          salary_max: salaryMax,
+          salary_type: salaryMin ? "ANNUAL" : null,
+          location: form.region || null,
+          work_type: workType,
+          experience_level: expLevel,
+          deadline: form.deadline || null,
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        alert(data.error?.message || "공고 등록에 실패했습니다.");
+        return;
+      }
+      setSaved(true);
+      setTimeout(() => router.push("/company/dashboard/jobs"), 1000);
+    } catch (e) {
+      alert("네트워크 오류가 발생했습니다.");
+    }
   };
 
   return (
