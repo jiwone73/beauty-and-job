@@ -171,7 +171,7 @@ function Hero() {
               </div>
               <h3 className="hero-right-card-title">이력서 등록하면</h3>
               <p className="hero-right-card-desc">내 경력과 관심사에 맞는<br />채용정보를 추천해드려요</p>
-              <Link href="/signup" className="hero-right-card-btn">
+              <Link href="/login" className="hero-right-card-btn">
                 무료 이력서 등록하기 ›
               </Link>
             </div>

@@ -28,6 +28,8 @@ function SignupPageInner() {
     if (phoneFromUrl) {
       useSignupStore.setState({ phone: phoneFromUrl, isPhoneVerified: true });
       setStep(4);
+    } else {
+      router.replace("/login");
     }
   }, []);
 
