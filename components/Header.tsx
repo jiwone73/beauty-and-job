@@ -9,7 +9,6 @@ import { useApplicationStore } from "@/lib/store/applicationStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
-import LoginModal from "@/components/LoginModal";
 
 function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const router = useRouter();
@@ -71,7 +70,6 @@ export default function Header({ onSearchClick }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
 
   const handleSearch = () => {
     if (onSearchClick) onSearchClick();
@@ -98,7 +96,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
             <button className="icon-btn" aria-label="검색" onClick={handleSearch}>
               <Search size={20} />
             </button>
-            <AuthButtons onLoginClick={() => setShowModal(true)} />
+            <AuthButtons onLoginClick={() => router.push("/login")} />
             <button className="icon-btn mob-hamburger" aria-label="메뉴" onClick={() => setMenuOpen(true)}>
               <Menu size={22} />
             </button>
@@ -106,8 +104,6 @@ export default function Header({ onSearchClick }: HeaderProps) {
         </div>
       </header>
 
-      {/* 로그인 모달 */}
-      {showModal && <LoginModal onClose={() => setShowModal(false)} />}
 
       {/* 햄버거 메뉴 */}
       {menuOpen && (
