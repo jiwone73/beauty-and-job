@@ -13,10 +13,8 @@ interface Term {
 }
 
 const COMPANY_TYPES = [
-  { value: "BRAND", label: "브랜드 / 제조사" },
-  { value: "AGENCY", label: "에이전시 / 유통" },
-  { value: "STORE", label: "매장 / 살롱" },
-  { value: "OTHER", label: "기타" },
+  { value: "OFFICE", label: "기업·브랜드" },
+  { value: "STORE", label: "매장·살롱" },
 ];
 
 export default function CompanySignupPage() {
