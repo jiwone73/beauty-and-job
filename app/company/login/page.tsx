@@ -6,11 +6,6 @@ import Link from "next/link";
 import { Eye, EyeOff, Lock, User, Building2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 
-const COMPANY_ACCOUNTS: Record<string, { name: string; password: string }> = {
-  "oliveyoung": { name: "올리브영 HR", password: "olive1234" },
-  "amore":      { name: "아모레퍼시픽 인사팀", password: "amore1234" },
-  "lgbeauty":   { name: "LG생활건강 채용팀", password: "lg1234" },
-};
 
 export default function CompanyLoginPage() {
   const router = useRouter();
@@ -22,18 +17,31 @@ export default function CompanyLoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!id.trim()) { setError("아이디를 입력해주세요."); return; }
+    if (!id.trim()) { setError("이메일을 입력해주세요."); return; }
     if (!password.trim()) { setError("비밀번호를 입력해주세요."); return; }
     setLoading(true);
     setError("");
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    const account = COMPANY_ACCOUNTS[id.toLowerCase()];
-    if (account && account.password === password) {
-      login({ userName: account.name, userPhone: "" });
+    try {
+      const res = await fetch("/api/auth/company/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: id.trim(), password }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error?.message || "로그인에 실패했습니다.");
+        return;
+      }
+      localStorage.setItem("access_token", data.data.access_token);
+      login({
+        userName: data.data.company.company_name,
+        userPhone: data.data.company.phone || "",
+      });
       router.push("/company/dashboard");
-    } else {
-      setError("아이디 또는 비밀번호가 올바르지 않습니다.");
+    } catch (e) {
+      setError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,13 +57,13 @@ export default function CompanyLoginPage() {
         <p className="admin-login-sub">기업 담당자 전용 채용관리 서비스입니다</p>
 
         <div className="admin-login-field">
-          <label className="admin-login-label">아이디</label>
+          <label className="admin-login-label">이메일</label>
           <div className="admin-login-input-wrap">
             <User size={16} className="admin-login-input-icon" />
             <input
               className={`admin-login-input ${error ? "error" : ""}`}
               type="text"
-              placeholder="기업 아이디"
+              placeholder="이메일"
               value={id}
               onChange={(e) => setId(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
@@ -92,7 +100,7 @@ export default function CompanyLoginPage() {
         </button>
 
         <p className="admin-login-hint">
-          테스트: oliveyoung / olive1234
+          이메일과 비밀번호를 입력해주세요
         </p>
 
         <div style={{textAlign:"center", marginTop:"20px", paddingTop:"20px", borderTop:"1px solid #f0f0f0"}}>
