@@ -61,7 +61,7 @@ export default function LoginStartPage() {
         {/* 기업회원 */}
         <div className="mt-8 text-center">
           <Link
-            href="/company/login"
+            href="/company/signup"
             className="text-[14px] text-[#6b6b6b] hover:text-[#5f0080] transition"
           >
             기업회원 시작하기

@@ -1,274 +1,281 @@
 "use client";
-
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, CheckCircle2, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 
-type WizardStep = 1 | 2 | 3 | 4 | 5;
+interface Term {
+  id: string;
+  type: string;
+  title: string;
+  is_required: boolean;
+}
 
-const MEMBER_TYPES = [
-  { id: "store", icon: "🏪", label: "매장회원", desc: "뷰티어드바이저, 헤어, 네일, 피부관리 등 현장 매장 채용", tag: "무료 공고 등록" },
-  { id: "corp",  icon: "🏢", label: "기업회원", desc: "마케팅, MD, HR, 영업, 디자인 등 본사 사무직 채용",    tag: "프리미엄 서비스" },
+const COMPANY_TYPES = [
+  { value: "BRAND", label: "브랜드 / 제조사" },
+  { value: "AGENCY", label: "에이전시 / 유통" },
+  { value: "STORE", label: "매장 / 살롱" },
+  { value: "OTHER", label: "기타" },
 ];
 
-const INDUSTRY_TYPES = [
-  "화장품 브랜드","에스테틱 / 피부관리","헤어샵 / 헤어 브랜드",
-  "네일 / 속눈썹","스파 / 웰니스","뷰티 리테일",
-  "뷰티 교육기관","뷰티 제조 / 유통","병원 / 클리닉","기타",
-];
-
-const SERVICES_STORE = [
-  { id: "free-post", icon: "📋", label: "무료 채용공고 등록", desc: "즉시 등록 · 지원자 모집 시작",   href: "/company/dashboard/jobs", primary: true  },
-  { id: "matching",  icon: "🤝", label: "성과형 인재 매칭",   desc: "채용 성사 시에만 수수료 발생",  href: "/company/dashboard",      primary: false },
-];
-
-const SERVICES_CORP = [
-  { id: "free-post",   icon: "📋", label: "무료 채용공고 등록", desc: "즉시 시작 · 30일 무료 노출",     href: "/company/dashboard/jobs", primary: true  },
-  { id: "premium",     icon: "⭐", label: "프리미엄 공고",      desc: "메인 노출 + SNS 홍보 병행",      href: "/company/dashboard/jobs", primary: false },
-  { id: "headhunting", icon: "🎯", label: "헤드헌팅 매칭",      desc: "경력직 · 관리자급 전문 추천",    href: "/company/dashboard",      primary: false },
-];
-
-function CompanySignupInner() {
+export default function CompanySignupPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const [step,       setStep]       = useState<WizardStep>(1);
-  const [memberType, setMemberType] = useState("");
-
-  // Step 2: 계정 설정
-  const [accountId,        setAccountId]        = useState("");
-  const [accountPw,        setAccountPw]        = useState("");
-  const [accountPwConfirm, setAccountPwConfirm] = useState("");
-  const [showPw,           setShowPw]           = useState(false);
-
-  // Step 3: 기업 정보
-  const [companyName,  setCompanyName]  = useState("");
-  const [industry,     setIndustry]     = useState("");
-  const [managerName,  setManagerName]  = useState("");
-  const [email,        setEmail]        = useState("");
+  const [form, setForm] = useState({
+    company_name: "",
+    brand_name: "",
+    business_number: "",
+    company_type: "",
+    email: "",
+    phone: "",
+    password: "",
+    passwordConfirm: "",
+    address: "",
+    website_url: "",
+  });
+  const [showPw, setShowPw] = useState(false);
+  const [terms, setTerms] = useState<Term[]>([]);
+  const [agreed, setAgreed] = useState<Record<string, boolean>>({});
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const type = searchParams.get("type");
-    if (type === "store" || type === "corp") {
-      setMemberType(type);
-      setStep(2);
+    fetch("/api/terms")
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) setTerms(res.data);
+      });
+  }, []);
+
+  const update = (k: string, v: string) => setForm({ ...form, [k]: v });
+
+  // 사업자번호 형식 (000-00-00000)
+  const formatBizNum = (v: string) => {
+    const d = v.replace(/\D/g, "").slice(0, 10);
+    if (d.length <= 3) return d;
+    if (d.length <= 5) return `${d.slice(0, 3)}-${d.slice(3)}`;
+    return `${d.slice(0, 3)}-${d.slice(3, 5)}-${d.slice(5)}`;
+  };
+
+  // 전화 형식
+  const formatPhone = (v: string) => {
+    const d = v.replace(/\D/g, "").slice(0, 11);
+    if (d.length <= 2) return d;
+    if (d.length <= 6) return `${d.slice(0, 2)}-${d.slice(2)}`;
+    if (d.length <= 10) return `${d.slice(0, 2)}-${d.slice(2, 6)}-${d.slice(6)}`;
+    return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
+  };
+
+  const isPasswordValid = (pw: string) => {
+    if (pw.length < 8 || pw.length > 16) return false;
+    const hasUpper = /[A-Z]/.test(pw);
+    const hasLower = /[a-z]/.test(pw);
+    const hasNumber = /[0-9]/.test(pw);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pw);
+    return [hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length >= 3;
+  };
+
+  const requiredTerms = terms.filter((t) => t.is_required);
+  const allRequiredAgreed = requiredTerms.every((t) => agreed[t.id]);
+  const allAgreed = terms.every((t) => agreed[t.id]);
+
+  const toggleAll = () => {
+    if (allAgreed) {
+      setAgreed({});
+    } else {
+      const a: Record<string, boolean> = {};
+      terms.forEach((t) => (a[t.id] = true));
+      setAgreed(a);
     }
-  }, [searchParams]);
+  };
 
-  const TOTAL = 5;
-  const progress = (step / TOTAL) * 100;
-  const handleNext = () => { if (step < TOTAL) setStep((p) => (p + 1) as WizardStep); };
-  const handleBack = () => { if (step > 1)    setStep((p) => (p - 1) as WizardStep); };
-  const services = memberType === "corp" ? SERVICES_CORP : SERVICES_STORE;
+  const isFormValid =
+    form.company_name &&
+    form.business_number.replace(/\D/g, "").length === 10 &&
+    form.company_type &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
+    form.phone.replace(/\D/g, "").length >= 9 &&
+    isPasswordValid(form.password) &&
+    form.password === form.passwordConfirm &&
+    allRequiredAgreed;
 
-  const pwValid = accountId.length >= 4 && accountPw.length >= 8 && accountPw === accountPwConfirm;
+  const handleSubmit = async () => {
+    if (!isFormValid) return;
+    setError("");
+    setLoading(true);
+    try {
+      const agreedTermIds = Object.entries(agreed).filter(([, v]) => v).map(([k]) => k);
+      const res = await fetch("/api/auth/company/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          agreed_term_ids: agreedTermIds,
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error?.message || "가입에 실패했습니다.");
+        return;
+      }
+      localStorage.setItem("access_token", data.data.access_token);
+      router.push("/company/dashboard");
+    } catch (e) {
+      setError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="company-wizard-page">
-      <header className="job-detail-header">
-        <div className="job-detail-header-inner">
-          <button type="button" className="job-detail-back"
-            onClick={step === 1 ? () => router.push("/company") : handleBack}>
-            <ChevronLeft size={20} />
-            <span>{step === 1 ? "기업서비스" : "이전"}</span>
-          </button>
-          <Link href="/" className="job-detail-logo">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} />
-          </Link>
-          <div className="company-wizard-step-indicator">
-            {step < TOTAL && <span>{step} / {TOTAL - 1}</span>}
-          </div>
-        </div>
-        <div className="company-wizard-progress">
-          <div className="company-wizard-progress-bar" style={{ width: `${progress}%` }} />
-        </div>
+    <div className="min-h-screen flex flex-col bg-white">
+      <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
+        <button onClick={() => router.back()} className="flex items-center gap-1 p-2 text-[14px] text-[#6b6b6b]">
+          <ChevronLeft size={18} />
+          <span>돌아가기</span>
+        </button>
       </header>
 
-      <div className="company-wizard-body">
+      <div className="flex-1 flex justify-center px-5 py-8">
+        <div className="w-full max-w-[480px]">
+          <div className="flex justify-center mb-6">
+            <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} />
+          </div>
 
-        {/* ── STEP 1: 회원 유형 선택 ── */}
-        {step === 1 && (
-          <div className="company-wizard-step">
-            <h2 className="company-wizard-title">어떤 채용을 준비 중이신가요?</h2>
-            <p className="company-wizard-desc">회원 유형을 선택하시면 맞춤 서비스를 안내해드립니다.</p>
-            <div className="company-wizard-cards">
-              {MEMBER_TYPES.map((t) => (
-                <button key={t.id} type="button"
-                  className={`company-wizard-card ${memberType === t.id ? "active" : ""}`}
-                  onClick={() => setMemberType(t.id)}>
-                  <span className="company-wizard-card-icon">{t.icon}</span>
-                  <div className="company-wizard-card-info">
-                    <strong>{t.label}</strong>
-                    <span>{t.desc}</span>
-                    <em className="company-wizard-card-tag">{t.tag}</em>
-                  </div>
-                  {memberType === t.id && <CheckCircle2 size={18} className="company-wizard-check" />}
+          <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-2">
+            기업회원 가입
+          </h1>
+          <p className="text-[13px] text-[#6b6b6b] text-center mb-8">
+            뷰티앤잡에서 우수한 인재를 만나보세요
+          </p>
+
+          {/* 기업 정보 */}
+          <div className="mb-3">
+            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">회사명 *</label>
+            <input type="text" value={form.company_name}
+              onChange={(e) => update("company_name", e.target.value)}
+              placeholder="예) 올리브영"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
+          </div>
+
+          <div className="mb-3">
+            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">브랜드명 (선택)</label>
+            <input type="text" value={form.brand_name}
+              onChange={(e) => update("brand_name", e.target.value)}
+              placeholder="대표 브랜드명"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
+          </div>
+
+          <div className="mb-3">
+            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">사업자등록번호 *</label>
+            <input type="text" value={form.business_number}
+              onChange={(e) => update("business_number", formatBizNum(e.target.value))}
+              placeholder="000-00-00000"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">기업 유형 *</label>
+            <div className="grid grid-cols-2 gap-2">
+              {COMPANY_TYPES.map((t) => (
+                <button
+                  key={t.value}
+                  type="button"
+                  onClick={() => update("company_type", t.value)}
+                  className={`h-[44px] border rounded-lg text-[13px] transition ${
+                    form.company_type === t.value
+                      ? "border-[#5f0080] bg-[#f5ebfa] text-[#5f0080] font-semibold"
+                      : "border-[#e0e0e0] text-[#6b6b6b]"
+                  }`}
+                >
+                  {t.label}
                 </button>
               ))}
             </div>
-            <button type="button"
-              className={`cv-btn-primary ${memberType ? "" : "disabled"}`}
-              disabled={!memberType} onClick={handleNext}>
-              다음 <ArrowRight size={16} style={{ display: "inline", marginLeft: 4 }} />
-            </button>
           </div>
-        )}
 
-        {/* ── STEP 2: 계정 설정 (ID / PW) ── */}
-        {step === 2 && (
-          <div className="company-wizard-step">
-            <h2 className="company-wizard-title">계정을 설정해 주세요</h2>
-            <p className="company-wizard-desc">로그인에 사용할 아이디와 비밀번호를 입력해 주세요.</p>
+          {/* 담당자 정보 */}
+          <div className="mt-6 pt-6 border-t border-[#ececec]">
+            <h2 className="text-[15px] font-semibold mb-3">담당자 정보</h2>
 
-            <label className="cv-field-label cv-required">아이디</label>
-            <input className="cv-input" placeholder="영문, 숫자 조합 4~20자"
-              value={accountId} onChange={(e) => setAccountId(e.target.value)} />
-            <p style={{ fontSize: 13, color: "#888", marginTop: 6, padding: "8px 12px", background: "#f9f5ff", borderRadius: 6 }}>
-              💡 회사 또는 매장 영문명을 추천해요 (예: oliveyoung, hairshop01)
-            </p>
-
-            <label className="cv-field-label cv-required" style={{ marginTop: 16 }}>비밀번호</label>
-            <div style={{ position: "relative" }}>
-              <input className="cv-input"
-                type={showPw ? "text" : "password"}
-                placeholder="8자 이상 영문 + 숫자 조합"
-                value={accountPw} onChange={(e) => setAccountPw(e.target.value)} />
-              <button type="button" onClick={() => setShowPw(!showPw)}
-                style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
-                  background: "none", border: "none", cursor: "pointer", color: "#aaa", fontSize: 13 }}>
-                {showPw ? "숨기기" : "보기"}
-              </button>
+            <div className="mb-3">
+              <label className="block text-[13px] text-[#6b6b6b] mb-1.5">이메일 *</label>
+              <input type="email" value={form.email}
+                onChange={(e) => update("email", e.target.value)}
+                placeholder="hr@company.com"
+                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
             </div>
 
-            <label className="cv-field-label cv-required" style={{ marginTop: 16 }}>비밀번호 확인</label>
-            <input className="cv-input" type="password"
-              placeholder="비밀번호를 다시 입력해 주세요"
-              value={accountPwConfirm} onChange={(e) => setAccountPwConfirm(e.target.value)} />
-            {accountPw && accountPwConfirm && accountPw !== accountPwConfirm && (
-              <p style={{ color: "#e53935", fontSize: 13, marginTop: 6 }}>비밀번호가 일치하지 않습니다.</p>
-            )}
-            {pwValid && (
-              <p style={{ color: "#7c3aed", fontSize: 13, marginTop: 6 }}>✅ 사용 가능한 계정입니다.</p>
-            )}
+            <div className="mb-3">
+              <label className="block text-[13px] text-[#6b6b6b] mb-1.5">대표 연락처 *</label>
+              <input type="tel" value={form.phone}
+                onChange={(e) => update("phone", formatPhone(e.target.value))}
+                placeholder="02-1234-5678"
+                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
+            </div>
 
-            <button type="button"
-              className={`cv-btn-primary ${pwValid ? "" : "disabled"}`}
-              disabled={!pwValid} onClick={handleNext} style={{ marginTop: 24 }}>
-              다음 <ArrowRight size={16} style={{ display: "inline", marginLeft: 4 }} />
-            </button>
+            <div className="mb-2">
+              <label className="block text-[13px] text-[#6b6b6b] mb-1.5">비밀번호 *</label>
+              <div className="relative mb-2">
+                <input type={showPw ? "text" : "password"} value={form.password}
+                  onChange={(e) => update("password", e.target.value)}
+                  placeholder="비밀번호 입력"
+                  className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
+                <button type="button" onClick={() => setShowPw(!showPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a9a9a]">
+                  {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              <input type={showPw ? "text" : "password"} value={form.passwordConfirm}
+                onChange={(e) => update("passwordConfirm", e.target.value)}
+                placeholder="비밀번호 다시 입력"
+                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
+              <p className="text-[12px] text-[#9a9a9a] mt-1.5">
+                영문 대소문자, 숫자, 특수문자를 3가지 이상으로 조합해 8~16자
+              </p>
+              {form.passwordConfirm && form.password !== form.passwordConfirm && (
+                <p className="text-[12px] text-[#e74c3c] mt-1">비밀번호가 일치하지 않습니다.</p>
+              )}
+            </div>
           </div>
-        )}
 
-        {/* ── STEP 3: 기업 / 매장 정보 입력 ── */}
-        {step === 3 && (
-          <div className="company-wizard-step">
-            <h2 className="company-wizard-title">
-              {memberType === "store" ? "매장 정보를 입력해 주세요" : "기업 정보를 입력해 주세요"}
-            </h2>
-            <p className="company-wizard-desc">가입 후 바로 채용을 시작할 수 있습니다.</p>
-
-            <label className="cv-field-label cv-required">{memberType === "store" ? "매장명" : "회사명"}</label>
-            <input className="cv-input"
-              placeholder={memberType === "store" ? "매장명을 입력해 주세요." : "회사명을 입력해 주세요."}
-              value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-
-            <label className="cv-field-label cv-required">업종</label>
-            <div className="company-wizard-industry-grid">
-              {INDUSTRY_TYPES.map((ind) => (
-                <button key={ind} type="button"
-                  className={`company-wizard-industry-btn ${industry === ind ? "active" : ""}`}
-                  onClick={() => setIndustry(ind)}>{ind}</button>
+          {/* 약관 */}
+          <div className="mt-6 pt-6 border-t border-[#ececec]">
+            <label className="flex items-center gap-2 mb-3 cursor-pointer">
+              <input type="checkbox" checked={allAgreed} onChange={toggleAll}
+                className="w-4 h-4 accent-[#5f0080]" />
+              <span className="font-semibold text-[14px]">전체 동의</span>
+            </label>
+            <div className="space-y-2 ml-1">
+              {terms.map((term) => (
+                <label key={term.id} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#3a3a3a]">
+                  <input type="checkbox" checked={!!agreed[term.id]}
+                    onChange={(e) => setAgreed({ ...agreed, [term.id]: e.target.checked })}
+                    className="w-4 h-4 accent-[#5f0080]" />
+                  <span>
+                    <span className={`font-semibold ${term.is_required ? "text-[#5f0080]" : "text-[#9a9a9a]"}`}>
+                      [{term.is_required ? "필수" : "선택"}]
+                    </span>{" "}
+                    {term.title}
+                  </span>
+                </label>
               ))}
             </div>
-
-            <label className="cv-field-label cv-required">담당자명</label>
-            <input className="cv-input" placeholder="담당자명을 입력해 주세요."
-              value={managerName} onChange={(e) => setManagerName(e.target.value)} />
-
-            <label className="cv-field-label">이메일 (선택)</label>
-            <input className="cv-input" placeholder="company@example.com" type="email"
-              value={email} onChange={(e) => setEmail(e.target.value)} />
-
-            <button type="button"
-              className={`cv-btn-primary ${(companyName && industry && managerName) ? "" : "disabled"}`}
-              disabled={!(companyName && industry && managerName)} onClick={() => {
-              localStorage.setItem("company_name", companyName);
-              localStorage.setItem("company_industry", industry);
-              localStorage.setItem("company_id", accountId);
-              handleNext();
-            }}>
-              가입 완료하기
-            </button>
           </div>
-        )}
 
-        {/* ── STEP 4: 가입 완료 + 서비스 선택 ── */}
-        {step === 4 && (
-          <div className="company-wizard-step company-wizard-done">
-            <div className="company-wizard-done-icon">🎉</div>
-            <h2 className="company-wizard-done-title">
-              {memberType === "store" ? "매장회원" : "기업회원"} 가입이 완료되었습니다!
-            </h2>
-            <p className="company-wizard-done-desc">
-              이제 첫 채용을 시작해보세요.<br />
-              담당자가 1 영업일 이내에 연락드립니다.
-            </p>
-            <div className="company-wizard-service-list">
-              <p className="company-wizard-service-list-title">원하시는 서비스를 선택해 주세요</p>
-              {services.map((s) => (
-                <Link key={s.id} href={s.href}
-                  className={`company-wizard-service-item ${s.primary ? "primary" : ""}`}>
-                  <span className="company-wizard-service-icon">{s.icon}</span>
-                  <div className="company-wizard-service-info">
-                    <strong>{s.label}</strong>
-                    <span>{s.desc}</span>
-                  </div>
-                  <ArrowRight size={16} />
-                </Link>
-              ))}
-            </div>
-            <button type="button" className="cv-btn-text-add"
-              onClick={() => router.push(`/${accountId}`)} style={{ marginTop: 16 }}>
-              나중에 할게요 →
-            </button>
+          {error && <p className="text-[13px] text-[#e74c3c] mt-4 text-center">{error}</p>}
+
+          <button onClick={handleSubmit} disabled={!isFormValid || loading}
+            className="w-full h-[52px] mt-6 bg-[#5f0080] text-white rounded-lg font-semibold text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition">
+            {loading ? "가입 중..." : "기업회원 가입"}
+          </button>
+
+          <div className="mt-6 text-center text-[13px] text-[#6b6b6b]">
+            이미 계정이 있으신가요?{" "}
+            <Link href="/company/login" className="text-[#5f0080] font-semibold hover:underline">로그인</Link>
           </div>
-        )}
-
-        {/* ── STEP 5: 공고 등록 유도 ── */}
-        {step === 5 && (
-          <div className="company-wizard-step company-wizard-done">
-            <div className="company-wizard-done-icon">📋</div>
-            <h2 className="company-wizard-done-title">무료 채용공고를 등록해 보세요</h2>
-            <p className="company-wizard-done-desc">
-              지금 바로 무료로 채용공고를 등록하고<br />뷰티 인재를 만나보세요.
-            </p>
-            <div className="company-wizard-done-actions">
-              <Link href="/company/dashboard/jobs" className="company-wizard-done-btn primary">
-                📋 지금 바로 공고 등록하기
-              </Link>
-              <Link href="/company/dashboard" className="company-wizard-done-btn secondary">
-                🏠 대시보드 바로가기
-              </Link>
-            </div>
-          </div>
-        )}
-
+        </div>
       </div>
     </div>
-  );
-}
-
-export default function CompanySignupPage() {
-  return (
-    <Suspense fallback={
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh", color: "#888" }}>
-        로딩 중...
-      </div>
-    }>
-      <CompanySignupInner />
-    </Suspense>
   );
 }
