@@ -24,12 +24,23 @@ export default function CompanyLayout({ children, activePage }: {
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [companyInfo, setCompanyInfo] = useState({ name: "(주)올리브영", category: "리테일" });
-
+  const [companyInfo, setCompanyInfo] = useState({ name: "", category: "" });
   useEffect(() => {
-    const name     = localStorage.getItem("company_name");
-    const category = localStorage.getItem("company_industry");
-    if (name) setCompanyInfo({ name, category: category || "" });
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/company/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setCompanyInfo({
+            name: res.data.company_name || "",
+            category: res.data.company_type === "OFFICE" ? "기업·브랜드" : "매장·살롱",
+          });
+        }
+      })
+      .catch((e) => console.error("[company info]", e));
   }, []);
 
   // /company/dashboard/* 이면 기존 base, 아니면 /{companyId} base
