@@ -453,9 +453,32 @@ export default function JobDetailPage() {
               <Link href="/profile" className="apply-modal-profile-btn">
                 프로필 완성하기 →
               </Link>
-              <button className="cv-btn-primary" onClick={() => {
-                alert("지원이 완료되었습니다!\n(실제 지원 기능은 로그인 후 사용 가능합니다.)");
-                setShowApplyModal(false);
+              <button className="cv-btn-primary" onClick={async () => {
+                const token = localStorage.getItem("access_token");
+                if (!token) {
+                  alert("로그인이 필요합니다.");
+                  return;
+                }
+                try {
+                  const res = await fetch(`/api/jobs/${params.id}/apply`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({}),
+                  });
+                  const data = await res.json();
+                  if (!data.success) {
+                    alert(data.error?.message || "지원에 실패했습니다.");
+                    return;
+                  }
+                  alert("지원이 완료되었습니다!");
+                  setShowApplyModal(false);
+                } catch (e) {
+                  console.error(e);
+                  alert("지원 중 오류가 발생했습니다.");
+                }
               }}>
                 현재 프로필로 지원하기
               </button>
