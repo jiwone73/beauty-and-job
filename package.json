@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@supabase/supabase-js": "^2.106.1",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/pg": "^8.20.0",
     "bcryptjs": "^3.0.3",
