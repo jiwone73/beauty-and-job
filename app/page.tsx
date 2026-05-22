@@ -395,7 +395,39 @@ const STORE_PICK_JOBS = [
 ];
 
 function SectionStorePick() {
-  const router = useRouter();
+  const [jobs, setJobs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/jobs?job_type=STORE&limit=4")
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && Array.isArray(res.data)) setJobs(res.data);
+      })
+      .catch(console.error);
+  }, []);
+
+  const formatDeadline = (deadline: string | null) => {
+    if (!deadline) return "상시";
+    const today = new Date();
+    const dl = new Date(deadline);
+    const dDay = Math.ceil((dl.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (dDay < 0) return "마감";
+    if (dDay === 0) return "오늘 마감";
+    return `D-${dDay}`;
+  };
+
+  const mappedJobs = jobs.length > 0
+    ? jobs.map((j: any) => ({
+        id: j.id,
+        brand: j.brand_name || j.company_name,
+        tag: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
+        title: j.title,
+        location: j.location || "협의",
+        type: j.work_type || "정규직",
+        deadline: formatDeadline(j.deadline),
+      }))
+    : STORE_PICK_JOBS;
+
   return (
     <section className="section section-divider">
       <div className="container">
@@ -410,7 +442,7 @@ function SectionStorePick() {
           <Link href="/jobs?type=매장" className="see-all">전체보기 →</Link>
         </div>
         <div className="card-grid card-grid-4">
-          {STORE_PICK_JOBS.map((job) => (
+          {mappedJobs.map((job: any) => (
             <JobCard key={job.id} {...job} tagType="soft" />
           ))}
         </div>
@@ -430,7 +462,39 @@ const CORP_PICK_JOBS = [
 ];
 
 function SectionCorpPick() {
-  const router = useRouter();
+  const [jobs, setJobs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/jobs?job_type=OFFICE&limit=4")
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && Array.isArray(res.data)) setJobs(res.data);
+      })
+      .catch(console.error);
+  }, []);
+
+  const formatDeadline = (deadline: string | null) => {
+    if (!deadline) return "상시";
+    const today = new Date();
+    const dl = new Date(deadline);
+    const dDay = Math.ceil((dl.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (dDay < 0) return "마감";
+    if (dDay === 0) return "오늘 마감";
+    return `D-${dDay}`;
+  };
+
+  const mappedJobs = jobs.length > 0
+    ? jobs.map((j: any) => ({
+        id: j.id,
+        brand: j.brand_name || j.company_name,
+        tag: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
+        title: j.title,
+        location: j.location || "협의",
+        type: j.work_type || "정규직",
+        deadline: formatDeadline(j.deadline),
+      }))
+    : CORP_PICK_JOBS;
+
   return (
     <section className="section section-divider">
       <div className="container">
@@ -445,7 +509,7 @@ function SectionCorpPick() {
           <Link href="/jobs?type=기업" className="see-all">전체보기 →</Link>
         </div>
         <div className="card-grid card-grid-4">
-          {CORP_PICK_JOBS.map((job) => (
+          {mappedJobs.map((job: any) => (
             <JobCard key={job.id} {...job} tagType="primary" />
           ))}
         </div>
@@ -610,6 +674,34 @@ const PREMIUM_JOBS = [
 
 function SectionPremium() {
   const router = useRouter();
+  const [jobs, setJobs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/jobs?limit=4")
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && Array.isArray(res.data)) setJobs(res.data);
+      })
+      .catch(console.error);
+  }, []);
+
+  const formatSalary = (j: any) => {
+    if (j.salary_min && j.salary_max) {
+      return `${(j.salary_min / 10000).toLocaleString()}만 ~ ${(j.salary_max / 10000).toLocaleString()}만`;
+    }
+    if (j.salary_min) return `${(j.salary_min / 10000).toLocaleString()}만+`;
+    return "협의";
+  };
+
+  const mappedJobs = jobs.length > 0
+    ? jobs.map((j: any) => ({
+        id: j.id,
+        brand: j.brand_name || j.company_name,
+        title: j.title,
+        meta: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
+        salary: formatSalary(j),
+      }))
+    : PREMIUM_JOBS;
 
   return (
     <section className="section section-premium-bg">
@@ -625,7 +717,7 @@ function SectionPremium() {
           <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
         <div className="card-grid card-grid-4">
-          {PREMIUM_JOBS.map((item) => (
+          {mappedJobs.map((item: any) => (
             <div key={item.id} className="premium-card"
               onClick={() => router.push(`/jobs/${item.id}`)}
               style={{ cursor: "pointer" }}>
@@ -644,7 +736,6 @@ function SectionPremium() {
     </section>
   );
 }
-
 /* ============================================
    섹션 5: 뷰티 인턴 채용관
    ============================================ */
