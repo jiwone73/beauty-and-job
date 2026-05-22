@@ -9,6 +9,8 @@ import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
 
+const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
+
 export default function ResumePage() {
   const router = useRouter();
   const { name: signupName, birth, gender, job, jobCustom, phone } = useSignupStore();
@@ -29,10 +31,10 @@ export default function ResumePage() {
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
-  // 포트폴리오 관련
   const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
   const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -66,17 +68,14 @@ export default function ResumePage() {
     alert("저장되었습니다.");
   };
 
-  // 포트폴리오 업로드
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  // 파일 업로드 처리 (input/drag 공용)
+  const processFile = async (file: File) => {
     if (file.type !== "application/pdf") {
       alert("PDF 파일만 업로드 가능합니다.");
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      alert("파일 크기는 10MB 이하여야 합니다.");
+    if (file.size > MAX_PORTFOLIO_SIZE) {
+      alert("파일 크기는 5MB 이하여야 합니다.");
       return;
     }
 
@@ -111,6 +110,26 @@ export default function ResumePage() {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) processFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) processFile(file);
   };
 
   const handleDeletePortfolio = async () => {
@@ -451,16 +470,16 @@ export default function ResumePage() {
             )}
           </section>
 
-          {/* ⭐ 포트폴리오 섹션 (PDF 업로드) */}
+          {/* ⭐ 포트폴리오 섹션 (PDF 업로드 + 드래그앤드롭) */}
           <section id="section-portfolio" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">포트폴리오</h2>
             </div>
             <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
-              PDF 파일을 첨부해 주세요 (최대 10MB).
+              PDF 파일을 첨부해 주세요 (최대 5MB).
               {resumeType === "salon" && " 시술 사진을 모은 PDF를 추천드려요."}
             </p>
-            
+
             {portfolioUrl ? (
               <div style={{
                 display: "flex",
@@ -477,7 +496,6 @@ export default function ResumePage() {
                     {portfolioFilename || "포트폴리오.pdf"}
                   </p>
                   
-                  <a
                     href={portfolioUrl}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -510,24 +528,36 @@ export default function ResumePage() {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
+              <div
+                onClick={() => !isUploading && fileInputRef.current?.click()}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
                 style={{
-                  width: "100%", padding: "32px 16px",
-                  borderRadius: "12px", border: "2px dashed #d0c0e0",
-                  background: "#fafafa", color: "#5f0080",
+                  width: "100%", padding: "40px 16px",
+                  borderRadius: "12px",
+                  border: `2px dashed ${isDragOver ? "#5f0080" : "#d0c0e0"}`,
+                  background: isDragOver ? "#f3e5f5" : "#fafafa",
+                  color: "#5f0080",
                   fontSize: "14px", fontWeight: 600,
                   cursor: isUploading ? "not-allowed" : "pointer",
-                  display: "flex", flexDirection: "column", alignItems: "center", gap: "8px"
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
+                  transition: "all 0.15s ease",
+                  textAlign: "center"
                 }}
               >
-                <Upload size={28} />
-                <span>{isUploading ? "업로드 중..." : "PDF 업로드"}</span>
-                <span style={{ fontSize: "11px", color: "#888", fontWeight: 400 }}>
-                  PDF · 최대 10MB
+                <Upload size={32} />
+                <span>
+                  {isUploading
+                    ? "업로드 중..."
+                    : isDragOver
+                      ? "여기에 놓으세요"
+                      : "PDF를 끌어다 놓거나 클릭하여 업로드"}
                 </span>
-              </button>
+                <span style={{ fontSize: "11px", color: "#888", fontWeight: 400 }}>
+                  PDF · 최대 5MB
+                </span>
+              </div>
             )}
 
             <input

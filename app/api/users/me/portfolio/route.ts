@@ -6,7 +6,7 @@ import { verifyAccessToken } from "@/lib/jwt";
 import { supabaseAdmin } from "@/lib/supabase";
 
 const BUCKET = "portfolios";
-const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 // 포트폴리오 업로드
 export async function POST(req: NextRequest) {
@@ -33,9 +33,8 @@ export async function POST(req: NextRequest) {
 
     if (!file) return err("FILE_001", "파일이 없습니다.");
     if (file.type !== "application/pdf") return err("FILE_002", "PDF 파일만 업로드 가능합니다.");
-    if (file.size > MAX_SIZE) return err("FILE_003", "파일 크기는 10MB 이하여야 합니다.");
+    if (file.size > MAX_SIZE) return err("FILE_003", "파일 크기는 5MB 이하여야 합니다.");
 
-    // 기존 파일 있으면 삭제
     const client = await pool.connect();
     try {
       const existing = await client.query(
@@ -44,14 +43,12 @@ export async function POST(req: NextRequest) {
       );
       const oldUrl = existing.rows[0]?.portfolio_url;
       if (oldUrl) {
-        // URL에서 파일명 추출 후 삭제
         const oldPath = oldUrl.split(`/${BUCKET}/`)[1];
         if (oldPath) {
           await supabaseAdmin.storage.from(BUCKET).remove([oldPath]);
         }
       }
 
-      // 새 파일 업로드
       const fileName = `${userId}/${Date.now()}.pdf`;
       const arrayBuffer = await file.arrayBuffer();
 
@@ -70,7 +67,6 @@ export async function POST(req: NextRequest) {
       const { data: urlData } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(fileName);
       const publicUrl = urlData.publicUrl;
 
-      // DB 업데이트
       await client.query(
         `UPDATE users SET portfolio_url = $1, portfolio_filename = $2, portfolio_uploaded_at = NOW() WHERE id = $3`,
         [publicUrl, file.name, userId]
