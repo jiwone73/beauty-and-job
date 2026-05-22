@@ -21,7 +21,6 @@ import LanguageModal from "@/components/profile/LanguageModal";
 import LinkModal from "@/components/profile/LinkModal";
 import ExperienceModal from "@/components/profile/ExperienceModal";
 import NotificationModal from "@/components/profile/NotificationModal";
-import BrandModal from "@/components/profile/BrandModal";
 import ResumeTab from "@/components/profile/ResumeTab";
 
 type ModalType =
@@ -46,7 +45,7 @@ export default function ProfilePage() {
     removeEducation, removeSkill, removeLanguage, removeLink, removeExperience,
   } = useProfileStore();
 
-  const [activeTab, setActiveTab] = useState<"profile" | "resume" | "applied" | "bookmarks" | "brands">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "resume" | "applied" | "bookmarks">("profile");
   const [bannerClosed, setBannerClosed] = useState(false);
   const [openModal, setOpenModal] = useState<ModalType>(null);
   const [editField, setEditField] = useState<string | null>(null);
@@ -164,11 +163,6 @@ export default function ProfilePage() {
             <div className="profile-stat-value">{bookmarkCount}</div>
             <div className="profile-stat-label">관심 공고</div>
           </div>
-          <div className="profile-stat-divider" />
-          <div className="profile-stat">
-            <div className="profile-stat-value">0</div>
-            <div className="profile-stat-label">관심 브랜드</div>
-          </div>
         </div>
       </div>
 
@@ -189,7 +183,6 @@ export default function ProfilePage() {
         <button className={`profile-tab ${activeTab === "resume" ? "active" : ""}`} onClick={() => setActiveTab("resume")}>이력서</button>
         <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>지원현황</button>
         <button className={`profile-tab ${activeTab === "bookmarks" ? "active" : ""}`} onClick={() => setActiveTab("bookmarks")}>관심공고</button>
-        <button className={`profile-tab ${activeTab === "brands" ? "active" : ""}`} onClick={() => setActiveTab("brands")}>관심브랜드</button>
       </div>
 
       <div className="profile-content">
@@ -197,8 +190,6 @@ export default function ProfilePage() {
           <AppliedTab />
         ) : activeTab === "bookmarks" ? (
           <BookmarksTab />
-        ) : activeTab === "brands" ? (
-          <BrandsTab />
         ) : activeTab === "profile" ? (
           <>
             <div className="profile-promo">
@@ -235,7 +226,7 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {dbJobType === null ? null : dbJobType === "STORE" ? (
+            {dbJobType === "STORE" && (
               <section className="profile-section">
                 <div className="profile-section-head">
                   <h2 className="profile-section-title">시술 분야 · 전문 영역</h2>
@@ -298,15 +289,6 @@ export default function ProfilePage() {
                     defaultValue={regionPrefer}
                     onBlur={(e) => setStoreProfile({ regionPrefer: e.target.value })} />
                 </div>
-              </section>
-            ) : (
-              <section className="profile-section">
-                <div className="profile-section-head">
-                  <h2 className="profile-section-title">관심 브랜드</h2>
-                </div>
-                <button className="profile-add-card" onClick={() => setOpenModal("brand")}>
-                  <Plus size={18} /><span>추가하기</span>
-                </button>
               </section>
             )}
 
@@ -534,7 +516,6 @@ export default function ProfilePage() {
       <LinkModal isOpen={openModal === "link"} onClose={() => setOpenModal(null)} />
       <ExperienceModal isOpen={openModal === "experience"} onClose={() => setOpenModal(null)} />
       <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} />
-      <BrandModal isOpen={openModal === "brand"} onClose={() => setOpenModal(null)} />
     </main>
   );
 }
@@ -696,31 +677,3 @@ function BookmarksTab() {
   );
 }
 
-function BrandsTab() {
-  const BRANDS: { id: number; name: string; category: string; jobs: number }[] = [];
-  if (BRANDS.length === 0) {
-    return (
-      <div className="profile-empty-tab">
-        <div className="profile-empty-icon">🏢</div>
-        <p>관심 브랜드가 없어요<br />브랜드를 팔로우하면 새 공고를 알려드려요</p>
-        <a href="/brands" className="profile-empty-btn">브랜드 둘러보기</a>
-      </div>
-    );
-  }
-  return (
-    <div className="profile-tab-content">
-      <div className="brand-follow-list">
-        {BRANDS.map((brand) => (
-          <a key={brand.id} href="/brands" className="brand-follow-item">
-            <div className="brand-follow-logo">{brand.name.slice(0, 2)}</div>
-            <div className="brand-follow-info">
-              <strong>{brand.name}</strong>
-              <span>{brand.category}</span>
-            </div>
-            <span className="brand-follow-jobs">채용 {brand.jobs}건</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-}
