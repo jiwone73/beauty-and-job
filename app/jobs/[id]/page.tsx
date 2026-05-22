@@ -140,11 +140,15 @@ export default function JobDetailPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/jobs/${id}`)
+    const token = localStorage.getItem("access_token");
+    fetch(`/api/jobs/${id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
       .then(r => r.json())
       .then(res => {
         if (res.success && res.data) {
           const j = res.data;
+          if (j.has_applied) setDbApplied(true);
           setJob({
             id: j.id,
             brand: j.company?.brand_name || j.company?.company_name || '',
@@ -171,6 +175,7 @@ export default function JobDetailPage() {
   const [bookmarked, setBookmarked] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [applyDone, setApplyDone] = useState(false);
+  const [dbApplied, setDbApplied] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
   const { isLoggedIn, userName } = useAuthStore();
