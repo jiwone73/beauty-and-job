@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,11 +8,10 @@ import { ChevronLeft, Download, Eye, Plus, X } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
-import { CAREER_LABELS } from "@/lib/constants";
 
 export default function ResumePage() {
   const router = useRouter();
-  const { name: signupName, birth, gender, job, jobCustom, careerYears, isLeader, phone } = useSignupStore();
+  const { name: signupName, birth, gender, job, jobCustom, phone } = useSignupStore();
   const { userName } = useAuthStore();
   const name = signupName || userName || "";
   const {
@@ -29,6 +28,29 @@ export default function ResumePage() {
   const [showPreview, setShowPreview] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
+
+  // 유저 정보 불러오기 (이메일 + job_type)
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/users/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) {
+          if (res.data.email && !emailLocal) {
+            setEmailLocal(res.data.email);
+          }
+          if (res.data.job_type === "STORE") {
+            setResumeType("salon");
+          } else {
+            setResumeType("office");
+          }
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const jobDisplay = job === "직접입력" ? jobCustom : job || "직군 미설정";
   const birthDisplay = birth
@@ -47,17 +69,14 @@ export default function ResumePage() {
     try {
       const html2canvas = (await import("html2canvas")).default;
       const jsPDF = (await import("jspdf")).default;
-
       setShowPreview(true);
       await new Promise((r) => setTimeout(r, 600));
-
       if (!previewRef.current) return;
       const canvas = await html2canvas(previewRef.current, {
         scale: 2,
         useCORS: true,
         backgroundColor: "#ffffff",
       });
-
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -65,29 +84,25 @@ export default function ResumePage() {
       const pageHeight = pdf.internal.pageSize.getHeight();
       let heightLeft = pdfHeight;
       let position = 0;
-
       pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
       heightLeft -= pageHeight;
-
       while (heightLeft > 0) {
         position = heightLeft - pdfHeight;
         pdf.addPage();
         pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
         heightLeft -= pageHeight;
       }
-
       const fileName = name ? `${name}_이력서.pdf` : "이력서.pdf";
       pdf.save(fileName);
       setShowPreview(false);
     } catch (e) {
-      alert("다운로드 중 오류가 발생했습니다. 다시 시도해주세요.");
+      alert("다운로드 중 오류가 발생했습니다.");
       setShowPreview(false);
     } finally {
       setIsDownloading(false);
     }
   };
 
-  // 미리보기 & PDF 공용 컨텐츠
   const ResumeContent = () => (
     <div ref={previewRef} className="rp-wrap">
       <div className="rp-header">
@@ -99,21 +114,18 @@ export default function ResumePage() {
           {phone || ""}{phone && (emailLocal || email) ? " · " : ""}{emailLocal || email || ""}
         </p>
       </div>
-
       {introLocal && (
         <div className="rp-section">
           <h2 className="rp-section-title">소개</h2>
           <p className="rp-text">{introLocal}</p>
         </div>
       )}
-
       {coreLocal && (
         <div className="rp-section">
           <h2 className="rp-section-title">핵심 역량</h2>
           <p className="rp-text" style={{ whiteSpace: "pre-line" }}>{coreLocal}</p>
         </div>
       )}
-
       {careers.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">경력</h2>
@@ -128,7 +140,6 @@ export default function ResumePage() {
           ))}
         </div>
       )}
-
       {educations.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">학력</h2>
@@ -143,22 +154,6 @@ export default function ResumePage() {
           ))}
         </div>
       )}
-
-      {experiences.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">관련 경험</h2>
-          {experiences.map((exp) => (
-            <div key={exp.id} className="rp-item">
-              <div className="rp-item-head">
-                <strong>{exp.title}</strong>
-                <span className="rp-badge">{exp.category}</span>
-              </div>
-              {exp.description && <p className="rp-text">{exp.description}</p>}
-            </div>
-          ))}
-        </div>
-      )}
-
       {skills.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">스킬</h2>
@@ -167,21 +162,6 @@ export default function ResumePage() {
           </div>
         </div>
       )}
-
-      {languages.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">어학</h2>
-          {languages.map((lang) => (
-            <div key={lang.id} className="rp-item">
-              <div className="rp-item-head">
-                <strong>{lang.language}</strong>
-                <span className="rp-item-sub">{lang.level}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
       {links.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">링크</h2>
@@ -230,20 +210,12 @@ export default function ResumePage() {
         </div>
       </header>
 
+      {/* 탭 없이 타이틀만 */}
       <div className="resume-subheader">
         <h1 className="resume-subheader-title">이력서 편집</h1>
-        <div className="resume-type-tabs">
-          <button
-            className={`resume-type-tab ${resumeType === "office" ? "active" : ""}`}
-            onClick={() => setResumeType("office")}>
-            🏢 기업
-          </button>
-          <button
-            className={`resume-type-tab ${resumeType === "salon" ? "active" : ""}`}
-            onClick={() => setResumeType("salon")}>
-            🏪 매장
-          </button>
-        </div>
+        <span className="text-sm text-gray-500">
+          {resumeType === "office" ? "🏢 기업·브랜드" : "🏪 매장·기술직"}
+        </span>
       </div>
 
       <div className="resume-layout">
@@ -289,7 +261,7 @@ export default function ResumePage() {
               <div className="resume-name-block">
                 <h3 className="resume-name">{name || "이름"}</h3>
                 <p className="resume-job-line">{birthDisplay} {birthDisplay && "·"} {jobDisplay}</p>
-                <p className="resume-contact">{phone || ""} {phone && email ? "·" : ""} {emailLocal}</p>
+                <p className="resume-contact">{phone || ""} {phone && emailLocal ? "·" : ""} {emailLocal}</p>
               </div>
               <div className="resume-field-group">
                 <label className="resume-field-label">이메일</label>
@@ -343,10 +315,8 @@ export default function ResumePage() {
             <textarea
               className="resume-textarea"
               placeholder={resumeType === "office"
-                ? `채용 담당자가 가장 먼저 읽게되는 글이에요. 경력을 기반으로한 300자 이하의 소개를 작성해 보세요.
-예시) 소비자 관점과 브랜드 관점을 모두 이해하는 3년차 뷰티 마케터입니다.`
-                : `나를 표현하는 한 줄 소개를 작성해보세요.
-예시) 섬세한 손기술과 트렌드 감각을 갖춘 5년 경력 네일 아티스트입니다.`}
+                ? `채용 담당자가 가장 먼저 읽게되는 글이에요.\n예시) 소비자 관점과 브랜드 관점을 모두 이해하는 3년차 뷰티 마케터입니다.`
+                : `나를 표현하는 한 줄 소개를 작성해보세요.\n예시) 섬세한 손기술과 트렌드 감각을 갖춘 5년 경력 네일 아티스트입니다.`}
               maxLength={300}
               value={introLocal}
               onChange={(e) => setIntroLocal(e.target.value)}
@@ -356,10 +326,7 @@ export default function ResumePage() {
                 <label className="resume-field-label">핵심 역량 <span className="resume-required">* (0/300자)</span></label>
                 <textarea
                   className="resume-textarea"
-                  placeholder={`핵심역량 3~5가지를 정리해보세요
-1. 일본 이커머스 플랫폼 운영 경험 (Qoo10, 라쿠텐, 아마존JP 등)
-2. 뷰티 브랜드 인하우스 마케팅 및 시딩 캠페인 기획
-3. 메타 광고 운영 및 인플루언서 협업 캠페인 실무 역량`}
+                  placeholder={`핵심역량 3~5가지를 정리해보세요\n1. 일본 이커머스 플랫폼 운영 경험\n2. 뷰티 브랜드 인하우스 마케팅\n3. 메타 광고 운영 및 인플루언서 협업`}
                   maxLength={300}
                   value={coreLocal}
                   onChange={(e) => setCoreLocal(e.target.value)}
@@ -499,7 +466,7 @@ export default function ResumePage() {
                   </button>
                 </div>
                 <div className="resume-empty-section">
-                  <p style={{fontSize:"13px", color:"#aaa", marginBottom:"8px"}}>
+                  <p style={{ fontSize: "13px", color: "#aaa", marginBottom: "8px" }}>
                     네일, 미용사, 피부관리사 등 보유 자격증을 추가해보세요
                   </p>
                   <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
@@ -512,7 +479,7 @@ export default function ResumePage() {
                 <div className="resume-section-head">
                   <h2 className="resume-section-title">희망 근무 조건</h2>
                 </div>
-                <div className="resume-field-group" style={{display:"flex", flexDirection:"column", gap:"12px"}}>
+                <div className="resume-field-group" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {[
                     { label: "근무 형태", options: ["풀타임", "파트타임", "주말only", "무관"] },
                     { label: "희망 급여", options: ["월급", "시급", "협의"] },
@@ -520,8 +487,8 @@ export default function ResumePage() {
                   ].map(({ label, options }) => (
                     <div key={label}>
                       <label className="resume-field-label">{label}</label>
-                      <div style={{display:"flex", gap:"8px", flexWrap:"wrap", marginTop:"6px"}}>
-                        {options.map(o => (
+                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "6px" }}>
+                        {options.map((o) => (
                           <button key={o} className="resume-tag-chip">{o}</button>
                         ))}
                       </div>
@@ -561,7 +528,7 @@ export default function ResumePage() {
         </main>
       </div>
 
-      {/* ===== 미리보기 모달 ===== */}
+      {/* 미리보기 모달 */}
       {showPreview && (
         <div className="rp-modal-overlay" onClick={() => setShowPreview(false)}>
           <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
