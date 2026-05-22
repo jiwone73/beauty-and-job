@@ -529,15 +529,50 @@ function InfoRow({ label, value, isEmpty, isLast, onClick }: {
 }
 
 function AppliedTab() {
-  const { applications } = useApplicationStore();
-  const APPLIED_JOBS = applications.map((a) => ({
-    id: a.jobId, brand: a.brand, title: a.title, date: a.date, status: a.status || "서류검토중",
-  }));
-  const statusStyle: Record<string, string> = {
-    "서류검토중": "applied-status-review", "합격": "applied-status-pass",
-    "불합격": "applied-status-fail", "면접예정": "applied-status-interview",
+  const [apps, setApps] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    fetch("/api/users/me/applications", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) setApps(res.data || []);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const statusLabel: Record<string, string> = {
+    APPLIED: "서류검토중",
+    REVIEWING: "서류검토중",
+    PASSED: "합격",
+    REJECTED: "불합격",
+    INTERVIEW: "면접예정",
   };
-  if (APPLIED_JOBS.length === 0) {
+  const statusStyle: Record<string, string> = {
+    APPLIED: "applied-status-review",
+    REVIEWING: "applied-status-review",
+    PASSED: "applied-status-pass",
+    REJECTED: "applied-status-fail",
+    INTERVIEW: "applied-status-interview",
+  };
+
+  if (loading) {
+    return (
+      <div className="profile-empty-tab">
+        <p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p>
+      </div>
+    );
+  }
+
+  if (apps.length === 0) {
     return (
       <div className="profile-empty-tab">
         <div className="profile-empty-icon">📋</div>
@@ -546,19 +581,26 @@ function AppliedTab() {
       </div>
     );
   }
+
   return (
     <div className="profile-tab-content">
       <div className="applied-list">
-        {APPLIED_JOBS.map((job) => (
-          <div key={job.id} className="applied-item">
-            <div className="applied-item-left">
-              <span className="applied-brand">{job.brand}</span>
-              <h3 className="applied-title">{job.title}</h3>
-              <span className="applied-date">지원일 {job.date}</span>
+        {apps.map((app) => {
+          const date = new Date(app.applied_at);
+          const dateStr = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
+          return (
+            <div key={app.id} className="applied-item">
+              <div className="applied-item-left">
+                <span className="applied-brand">{app.brand_name || app.company_name}</span>
+                <h3 className="applied-title">{app.job_title}</h3>
+                <span className="applied-date">지원일 {dateStr}</span>
+              </div>
+              <span className={`applied-status ${statusStyle[app.status] || "applied-status-review"}`}>
+                {statusLabel[app.status] || app.status}
+              </span>
             </div>
-            <span className={`applied-status ${statusStyle[job.status] || ""}`}>{job.status}</span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
