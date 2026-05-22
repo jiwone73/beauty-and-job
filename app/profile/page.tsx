@@ -27,6 +27,8 @@ type ModalType =
   | "link" | "experience" | "notification" | "brand"
   | null;
 
+const PRESET_SKILL_AREAS = ["헤어","네일","피부관리","메이크업","속눈썹","왁싱","스파·에스테틱","반영구"];
+
 export default function ProfilePage() {
   const router = useRouter();
   const {
@@ -49,9 +51,8 @@ export default function ProfilePage() {
   const [emailInput, setEmailInput] = useState("");
   const [showJobModal, setShowJobModal] = useState(false);
   const [selectedJobTemp, setSelectedJobTemp] = useState("");
-
-  // DB에서 가져온 job_type
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
+  const [customAreaInput, setCustomAreaInput] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -77,6 +78,21 @@ export default function ProfilePage() {
     : "정보 없음";
   const careerDisplay = CAREER_LABELS[careerYears] || "경력 미설정";
 
+  // 시술 분야: 직접입력값 추가
+  const addCustomArea = () => {
+    const v = customAreaInput.trim();
+    if (!v) return;
+    if (skillAreas.includes(v)) {
+      setCustomAreaInput("");
+      return;
+    }
+    setStoreProfile({ skillAreas: [...skillAreas, v] });
+    setCustomAreaInput("");
+  };
+
+  // 사용자가 직접입력한 시술 분야 (프리셋에 없는 것)
+  const customAreas = skillAreas.filter((a) => !PRESET_SKILL_AREAS.includes(a));
+
   const handleCareerComplete = () => {
     const today = new Date();
     const date = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, "0")}.${String(today.getDate()).padStart(2, "0")}`;
@@ -85,7 +101,6 @@ export default function ProfilePage() {
 
   return (
     <main className="profile-page">
-      {/* 헤더 */}
       <header className="profile-header">
         <div className="profile-header-inner">
           <Link href="/" className="profile-logo">
@@ -101,7 +116,6 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      {/* 프로필 요약 */}
       <div className="profile-summary">
         <div className="profile-name-row"><h1 className="profile-name">{name || "회원"}</h1></div>
         <button className="profile-job-row" onClick={() => router.push("/")}>
@@ -135,7 +149,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* 에이전트 배너 */}
       {!bannerClosed && (
         <div className="profile-agent-banner">
           <button className="profile-banner-close" onClick={() => setBannerClosed(true)} aria-label="닫기">
@@ -148,7 +161,6 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* 탭 */}
       <div className="profile-tabs">
         <button className={`profile-tab ${activeTab === "profile" ? "active" : ""}`} onClick={() => setActiveTab("profile")}>프로필</button>
         <button className={`profile-tab ${activeTab === "resume" ? "active" : ""}`} onClick={() => setActiveTab("resume")}>이력서</button>
@@ -157,7 +169,6 @@ export default function ProfilePage() {
         <button className={`profile-tab ${activeTab === "brands" ? "active" : ""}`} onClick={() => setActiveTab("brands")}>관심브랜드</button>
       </div>
 
-      {/* 탭 콘텐츠 */}
       <div className="profile-content">
         {activeTab === "applied" ? (
           <AppliedTab />
@@ -167,7 +178,6 @@ export default function ProfilePage() {
           <BrandsTab />
         ) : activeTab === "profile" ? (
           <>
-            {/* 프로모 */}
             <div className="profile-promo">
               <div className="profile-promo-icon"><Award size={20} /></div>
               <div className="profile-promo-text">
@@ -175,23 +185,20 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* 직군 표시 (DB 기반) */}
-           {/* 직군 표시 (DB 기반) */}
-{dbJobType && (
-  <div style={{margin:"16px 0",padding:"14px 16px",background:"#fff",border:"1px solid #f0e8f8",borderRadius:"12px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-    <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-      <span style={{fontSize:"20px"}}>{dbJobType === "STORE" ? "🏪" : "🏢"}</span>
-      <div>
-        <p style={{fontSize:"11px",color:"#888",marginBottom:"2px"}}>지금 찾고 있는 채용</p>
-        <p style={{fontSize:"14px",fontWeight:600,color:"#1a1a1a"}}>
-          {dbJobType === "STORE" ? "매장·샵 채용" : "기업·브랜드 채용"}
-        </p>
-      </div>
-    </div>
-  </div>
-)}
+            {dbJobType && (
+              <div style={{margin:"16px 0",padding:"14px 16px",background:"#fff",border:"1px solid #f0e8f8",borderRadius:"12px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+                  <span style={{fontSize:"20px"}}>{dbJobType === "STORE" ? "🏪" : "🏢"}</span>
+                  <div>
+                    <p style={{fontSize:"11px",color:"#888",marginBottom:"2px"}}>지금 찾고 있는 채용</p>
+                    <p style={{fontSize:"14px",fontWeight:600,color:"#1a1a1a"}}>
+                      {dbJobType === "STORE" ? "매장·샵 채용" : "기업·브랜드 채용"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
-            {/* 기본 정보 */}
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">기본 정보 <CheckCircle2 size={16} className="profile-check" /></h2>
@@ -205,23 +212,49 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* job_type 분기: 기업 → 관심 브랜드 / 매장 → 시술 분야 */}
             {dbJobType === null ? null : dbJobType === "STORE" ? (
               <section className="profile-section">
                 <div className="profile-section-head">
                   <h2 className="profile-section-title">시술 분야 · 전문 영역</h2>
                 </div>
                 <div className="profile-info-card" style={{padding:"16px"}}>
-                  <p style={{fontSize:"13px",color:"#888",marginBottom:"12px"}}>해당하는 시술 분야를 선택해 주세요</p>
-                  <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"20px"}}>
-                    {["헤어","네일","피부관리","메이크업","속눈썹","왁싱","스파·에스테틱","반영구"].map((area) => (
+                  <p style={{fontSize:"13px",color:"#888",marginBottom:"12px"}}>해당하는 시술 분야를 선택하거나 직접 입력해 주세요</p>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
+                    {PRESET_SKILL_AREAS.map((area) => (
                       <button key={area}
                         onClick={() => setStoreProfile({ skillAreas: skillAreas.includes(area) ? skillAreas.filter(a=>a!==area) : [...skillAreas, area] })}
                         style={{padding:"6px 14px",borderRadius:"20px",border:`1.5px solid ${skillAreas.includes(area)?"#5f0080":"#e0e0e0"}`,background:skillAreas.includes(area)?"#f3e5f5":"#fff",color:skillAreas.includes(area)?"#5f0080":"#888",fontSize:"13px",fontWeight:skillAreas.includes(area)?600:400,cursor:"pointer"}}>
                         {area}
                       </button>
                     ))}
+                    {customAreas.map((area) => (
+                      <button key={area}
+                        onClick={() => setStoreProfile({ skillAreas: skillAreas.filter(a=>a!==area) })}
+                        style={{padding:"6px 14px",borderRadius:"20px",border:"1.5px solid #5f0080",background:"#f3e5f5",color:"#5f0080",fontSize:"13px",fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"4px"}}>
+                        {area}
+                        <span style={{fontSize:"15px",lineHeight:1,marginLeft:"2px"}}>×</span>
+                      </button>
+                    ))}
                   </div>
+
+                  <div style={{display:"flex",gap:"6px",marginBottom:"20px"}}>
+                    <input
+                      className="cv-input"
+                      placeholder="직접 입력 (예: 두피관리, 타투, 브로우 등)"
+                      value={customAreaInput}
+                      onChange={(e) => setCustomAreaInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomArea(); } }}
+                      style={{flex:1,fontSize:"13px"}}
+                    />
+                    <button
+                      onClick={addCustomArea}
+                      disabled={!customAreaInput.trim()}
+                      style={{padding:"0 14px",borderRadius:"8px",border:"none",background: customAreaInput.trim() ? "#5f0080" : "#e0e0e0",color:"#fff",fontSize:"13px",fontWeight:600,cursor: customAreaInput.trim() ? "pointer" : "not-allowed"}}
+                    >
+                      추가
+                    </button>
+                  </div>
+
                   <label style={{fontSize:"13px",fontWeight:600,color:"#333",display:"block",marginBottom:"6px"}}>보유 자격증</label>
                   <input className="cv-input" placeholder="예: 미용사(일반), 피부미용사 (쉼표로 구분)"
                     defaultValue={certificates.join(", ")}
@@ -254,7 +287,6 @@ export default function ProfilePage() {
               </section>
             )}
 
-            {/* 경력 */}
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">
@@ -305,7 +337,6 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* 관련 경험 */}
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">관련 경험 및 기타 <CheckCircle2 size={16} className="profile-check profile-check-soft" /></h2>
@@ -324,7 +355,6 @@ export default function ProfilePage() {
               </button>
             </section>
 
-            {/* 학력 */}
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">학력 <CheckCircle2 size={16} className="profile-check profile-check-soft" /></h2>
@@ -343,7 +373,6 @@ export default function ProfilePage() {
               </button>
             </section>
 
-            {/* 스킬 */}
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">스킬</h2>
@@ -363,7 +392,6 @@ export default function ProfilePage() {
               </button>
             </section>
 
-            {/* 어학 */}
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">어학</h2>
@@ -382,7 +410,6 @@ export default function ProfilePage() {
               </button>
             </section>
 
-            {/* 링크 */}
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">링크</h2>
@@ -413,14 +440,12 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* 하단 CTA */}
       <div className="profile-bottom-cta">
         <button className="profile-resume-btn" onClick={() => router.push("/profile/resume")}>
           현재 프로필로 이력서 만들기
         </button>
       </div>
 
-      {/* 모달들 */}
       {editField === "email" && (
         <div className="cv-overlay" onClick={() => setEditField(null)}>
           <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
@@ -431,13 +456,7 @@ export default function ProfilePage() {
             </div>
             <div className="cv-body">
               <label className="cv-field-label">이메일 주소</label>
-              <input
-                className="cv-input"
-                type="email"
-                placeholder="example@email.com"
-                defaultValue={emailInput}
-                id="email-input"
-              />
+              <input className="cv-input" type="email" placeholder="example@email.com" defaultValue={emailInput} id="email-input" />
               <button className="cv-btn-primary" style={{marginTop:"16px"}} onClick={() => {
                 const val = (document.getElementById("email-input") as HTMLInputElement)?.value;
                 if (val) setEmailInput(val);
