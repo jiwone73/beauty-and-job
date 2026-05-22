@@ -51,7 +51,7 @@ export default function ProfilePage() {
   const [selectedJobTemp, setSelectedJobTemp] = useState("");
 
   // DB에서 가져온 job_type
-  const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE">("OFFICE");
+  const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -176,17 +176,20 @@ export default function ProfilePage() {
             </div>
 
             {/* 직군 표시 (DB 기반) */}
-            <div style={{margin:"16px 0",padding:"14px 16px",background:"#fff",border:"1px solid #f0e8f8",borderRadius:"12px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-                <span style={{fontSize:"20px"}}>{dbJobType === "STORE" ? "🏪" : "🏢"}</span>
-                <div>
-                  <p style={{fontSize:"11px",color:"#888",marginBottom:"2px"}}>지금 찾고 있는 채용</p>
-                  <p style={{fontSize:"14px",fontWeight:600,color:"#1a1a1a"}}>
-                    {dbJobType === "STORE" ? "매장·샵 채용" : "기업·브랜드 채용"}
-                  </p>
-                </div>
-              </div>
-            </div>
+           {/* 직군 표시 (DB 기반) */}
+{dbJobType && (
+  <div style={{margin:"16px 0",padding:"14px 16px",background:"#fff",border:"1px solid #f0e8f8",borderRadius:"12px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+    <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+      <span style={{fontSize:"20px"}}>{dbJobType === "STORE" ? "🏪" : "🏢"}</span>
+      <div>
+        <p style={{fontSize:"11px",color:"#888",marginBottom:"2px"}}>지금 찾고 있는 채용</p>
+        <p style={{fontSize:"14px",fontWeight:600,color:"#1a1a1a"}}>
+          {dbJobType === "STORE" ? "매장·샵 채용" : "기업·브랜드 채용"}
+        </p>
+      </div>
+    </div>
+  </div>
+)}
 
             {/* 기본 정보 */}
             <section className="profile-section">
@@ -203,7 +206,7 @@ export default function ProfilePage() {
             </section>
 
             {/* job_type 분기: 기업 → 관심 브랜드 / 매장 → 시술 분야 */}
-            {dbJobType === "STORE" ? (
+            {dbJobType === null ? null : dbJobType === "STORE" ? (
               <section className="profile-section">
                 <div className="profile-section-head">
                   <h2 className="profile-section-title">시술 분야 · 전문 영역</h2>
