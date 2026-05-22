@@ -22,6 +22,7 @@ import LinkModal from "@/components/profile/LinkModal";
 import ExperienceModal from "@/components/profile/ExperienceModal";
 import NotificationModal from "@/components/profile/NotificationModal";
 import BrandModal from "@/components/profile/BrandModal";
+import ResumeTab from "@/components/profile/ResumeTab";
 
 type ModalType =
   | "career" | "careerEdit" | "education" | "skill" | "language"
@@ -433,14 +434,7 @@ export default function ProfilePage() {
             </section>
           </>
         ) : (
-          <div className="profile-resume-empty">
-            <div className="profile-resume-empty-icon"><Briefcase size={48} /></div>
-            <h3 className="profile-resume-empty-title">아직 작성된 이력서가 없어요</h3>
-            <p className="profile-resume-empty-desc">프로필을 기반으로 이력서를 만들어보세요.<br />뷰티 채용 담당자에게 어필할 수 있어요.</p>
-            <button className="profile-resume-create-btn" onClick={() => router.push("/profile/resume")}>
-              이력서 만들기
-            </button>
-          </div>
+          <ResumeTab />
         )}
       </div>
 
