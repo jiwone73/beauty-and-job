@@ -56,6 +56,7 @@ export default function ProfilePage() {
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
   const [customAreaInput, setCustomAreaInput] = useState("");
   const [appliedCount, setAppliedCount] = useState(0);
+  const [bookmarkCount, setBookmarkCount] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -80,6 +81,18 @@ export default function ProfilePage() {
         if (res.success) setAppliedCount(res.data?.length || 0);
       })
       .catch(console.error);
+
+    fetch("/api/users/me/bookmarks", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) setBookmarkCount(res.data?.length || 0);
+      })
+      .catch(console.error);
+
+    // bookmarkStore도 동기화
+    useBookmarkStore.getState().loadFromServer();
   }, []);
 
   const jobDisplay = job === "직접입력" ? jobCustom : job || "직군 미설정";
@@ -148,7 +161,7 @@ export default function ProfilePage() {
           </div>
           <div className="profile-stat-divider" />
           <div className="profile-stat">
-            <div className="profile-stat-value">0</div>
+            <div className="profile-stat-value">{bookmarkCount}</div>
             <div className="profile-stat-label">관심 공고</div>
           </div>
           <div className="profile-stat-divider" />
@@ -617,14 +630,44 @@ function AppliedTab() {
 }
 
 function BookmarksTab() {
-  const { bookmarks } = useBookmarkStore();
-  const ALL_JOBS = [
-    { id: 1, brand: "올리브영", title: "올리브영 MD - 색조 카테고리 매니저", location: "서울 중구", deadline: "D-7" },
-    { id: 2, brand: "아모레퍼시픽", title: "헤라 브랜드 마케팅 매니저", location: "서울 용산구", deadline: "D-12" },
-    { id: 3, brand: "LG생활건강", title: "더후 글로벌 영업 PM", location: "서울 종로구", deadline: "D-3" },
-    { id: 4, brand: "닥터지", title: "퍼포먼스 마케터 (그로스)", location: "서울 강남구", deadline: "D-15" },
-  ];
-  const bookmarkedJobs = ALL_JOBS.filter((j) => bookmarks.includes(j.id));
+  const [bookmarkedJobs, setBookmarkedJobs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    fetch("/api/users/me/bookmarks", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) setBookmarkedJobs(res.data || []);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const formatDeadline = (deadline: string | null) => {
+    if (!deadline) return "상시";
+    const today = new Date();
+    const dl = new Date(deadline);
+    const dDay = Math.ceil((dl.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (dDay < 0) return "마감";
+    if (dDay === 0) return "오늘 마감";
+    return `D-${dDay}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="profile-empty-tab">
+        <p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p>
+      </div>
+    );
+  }
+
   if (bookmarkedJobs.length === 0) {
     return (
       <div className="profile-empty-tab">
@@ -634,17 +677,18 @@ function BookmarksTab() {
       </div>
     );
   }
+
   return (
     <div className="profile-tab-content">
       <div className="bookmark-list">
         {bookmarkedJobs.map((job) => (
-          <a key={job.id} href={`/jobs/${job.id}`} className="bookmark-item">
+          <a key={job.id} href={`/jobs/${job.job_posting_id}`} className="bookmark-item">
             <div className="bookmark-item-left">
-              <span className="bookmark-brand">{job.brand}</span>
+              <span className="bookmark-brand">{job.brand_name || job.company_name}</span>
               <h3 className="bookmark-title">{job.title}</h3>
-              <span className="bookmark-location">📍 {job.location}</span>
+              <span className="bookmark-location">📍 {job.location || "협의"}</span>
             </div>
-            <span className="bookmark-deadline">{job.deadline}</span>
+            <span className="bookmark-deadline">{formatDeadline(job.deadline)}</span>
           </a>
         ))}
       </div>
