@@ -55,6 +55,7 @@ export default function ProfilePage() {
   const [selectedJobTemp, setSelectedJobTemp] = useState("");
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
   const [customAreaInput, setCustomAreaInput] = useState("");
+  const [appliedCount, setAppliedCount] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -68,6 +69,15 @@ export default function ProfilePage() {
           if (res.data.job_type) setDbJobType(res.data.job_type);
           if (res.data.email) setEmailInput(res.data.email);
         }
+      })
+      .catch(console.error);
+
+    fetch("/api/users/me/applications", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) setAppliedCount(res.data?.length || 0);
       })
       .catch(console.error);
   }, []);
@@ -133,7 +143,7 @@ export default function ProfilePage() {
         </div>
         <div className="profile-stats">
           <div className="profile-stat">
-            <div className="profile-stat-value">0</div>
+            <div className="profile-stat-value">{appliedCount}</div>
             <div className="profile-stat-label">지원 완료</div>
           </div>
           <div className="profile-stat-divider" />
