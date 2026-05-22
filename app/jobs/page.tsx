@@ -88,8 +88,8 @@ function JobsPageInner() {
   const [showBrandDrop, setShowBrandDrop] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
   const [searchQuery, setSearchQuery] = useState(initSearch);
+  const bookmarks = useBookmarkStore((s) => s.bookmarks);
   const toggleBookmarkStore = useBookmarkStore((s) => s.toggle);
-  const isBookmarked = useBookmarkStore((s) => s.isBookmarked);
   const loadBookmarks = useBookmarkStore((s) => s.loadFromServer);
   const [apiJobs, setApiJobs] = useState<any[] | null>(null);
 
@@ -288,11 +288,11 @@ function JobsPageInner() {
                     <span>{job.brand[0]}</span>
                   </div>
                   <button
-                    className={`jobs-card-bookmark ${isBookmarked(job.id) ? "active" : ""}`}
+                    className={`jobs-card-bookmark ${bookmarks.includes(String(job.id)) ? "active" : ""}`}
                     onClick={(e) => toggleBookmark(job.id, e)}
                     aria-label="북마크"
                   >
-                    <Bookmark size={18} fill={isBookmarked(job.id) ? "currentColor" : "none"} />
+                    <Bookmark size={18} fill={bookmarks.includes(String(job.id)) ? "currentColor" : "none"} />
                   </button>
                 </div>
 
