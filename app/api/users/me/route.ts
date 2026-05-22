@@ -23,7 +23,10 @@ export async function GET(req: NextRequest) {
   const client = await pool.connect();
   try {
     const res = await client.query(
-      `SELECT id, email, name, phone, job_type, status, created_at FROM users WHERE id = $1`,
+      `SELECT 
+        id, email, name, phone, job_type, status, created_at,
+        portfolio_url, portfolio_filename, portfolio_uploaded_at
+       FROM users WHERE id = $1`,
       [payload.sub]
     );
     if (res.rowCount === 0) return err("USER_004", "사용자를 찾을 수 없습니다.", 404);
