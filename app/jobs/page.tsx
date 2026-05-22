@@ -88,7 +88,9 @@ function JobsPageInner() {
   const [showBrandDrop, setShowBrandDrop] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
   const [searchQuery, setSearchQuery] = useState(initSearch);
-  const [bookmarks, setBookmarks] = useState<(string | number)[]>([]);
+  const toggleBookmarkStore = useBookmarkStore((s) => s.toggle);
+  const isBookmarked = useBookmarkStore((s) => s.isBookmarked);
+  const loadBookmarks = useBookmarkStore((s) => s.loadFromServer);
   const [apiJobs, setApiJobs] = useState<any[] | null>(null);
 
   useEffect(() => {
@@ -114,6 +116,11 @@ function JobsPageInner() {
       })
       .catch(e => console.error('[load jobs]', e));
   }, []);
+
+  useEffect(() => {
+    loadBookmarks();
+  }, [loadBookmarks]);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const POPULAR_SEARCHES = ["아누아", "성분에디터", "퓌", "메디힐", "메디큐브", "넘버즈인", "유무", "브이티", "달바", "온그리디언츠", "마녀공장", "이퀄베리", "닥터엘시아"];
@@ -121,7 +128,7 @@ function JobsPageInner() {
   const toggleBookmark = (id: string | number, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setBookmarks((prev) => prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]);
+    toggleBookmarkStore(id);
   };
 
   const currentJobTypes = jobTypeFilter === "매장" ? STORE_JOB_TYPES : JOB_TYPES;
@@ -281,11 +288,11 @@ function JobsPageInner() {
                     <span>{job.brand[0]}</span>
                   </div>
                   <button
-                    className={`jobs-card-bookmark ${bookmarks.includes(job.id) ? "active" : ""}`}
+                    className={`jobs-card-bookmark ${isBookmarked(job.id) ? "active" : ""}`}
                     onClick={(e) => toggleBookmark(job.id, e)}
                     aria-label="북마크"
                   >
-                    <Bookmark size={18} fill={bookmarks.includes(job.id) ? "currentColor" : "none"} />
+                    <Bookmark size={18} fill={isBookmarked(job.id) ? "currentColor" : "none"} />
                   </button>
                 </div>
 
