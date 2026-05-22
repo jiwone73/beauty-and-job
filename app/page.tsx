@@ -292,6 +292,45 @@ const PICK_JOBS = [
 ];
 
 function SectionPick() {
+  const [jobs, setJobs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/jobs?limit=4")
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && Array.isArray(res.data)) setJobs(res.data);
+      })
+      .catch(console.error);
+  }, []);
+
+  const formatDeadline = (deadline: string | null) => {
+    if (!deadline) return "상시";
+    const today = new Date();
+    const dl = new Date(deadline);
+    const dDay = Math.ceil((dl.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (dDay < 0) return "마감";
+    if (dDay === 0) return "오늘 마감";
+    return `D-${dDay}`;
+  };
+
+  const mappedJobs = jobs.length > 0
+    ? jobs.map((j: any) => ({
+        id: j.id,
+        brand: j.brand_name || j.company_name,
+        tag:
+          j.experience_level === "NEW"
+            ? "신입"
+            : j.experience_level === "EXPERIENCED"
+            ? "경력"
+            : "경력 무관",
+        tagType: "primary",
+        title: j.title,
+        location: j.location || "협의",
+        type: j.work_type || "정규직",
+        deadline: formatDeadline(j.deadline),
+      }))
+    : PICK_JOBS;
+
   return (
     <section className="section">
       <div className="container">
@@ -306,7 +345,7 @@ function SectionPick() {
           <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
         <div className="card-grid card-grid-4">
-          {PICK_JOBS.map((job) => (
+          {mappedJobs.map((job: any) => (
             <JobCard key={job.id} {...job} />
           ))}
         </div>
@@ -316,7 +355,7 @@ function SectionPick() {
 }
 
 function JobCard({ id, brand, tag, tagType, title, location, type, deadline }: {
-  id: number; brand: string; tag: string; tagType: string;
+  id: number | string; brand: string; tag: string; tagType: string;
   title: string; location: string; type: string; deadline: string;
 }) {
   const router = useRouter();
