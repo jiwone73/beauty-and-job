@@ -8,6 +8,7 @@ import { ChevronLeft, Download, Eye, Plus, X, FileText, Trash2, Upload } from "l
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
+import ResumePreview from "@/components/profile/ResumePreview";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -17,7 +18,7 @@ export default function ResumePage() {
   const { userName } = useAuthStore();
   const name = signupName || userName || "";
   const {
-    intro, coreCompetencies, educations, careers, experiences,
+    intro, coreCompetencies, educations, careers,
     skills, languages, links, email,
     setIntro, setCoreCompetencies, setEmail,
   } = useProfileStore();
@@ -68,7 +69,6 @@ export default function ResumePage() {
     alert("저장되었습니다.");
   };
 
-  // 파일 업로드 처리 (input/drag 공용)
   const processFile = async (file: File) => {
     if (file.type !== "application/pdf") {
       alert("PDF 파일만 업로드 가능합니다.");
@@ -194,85 +194,6 @@ export default function ResumePage() {
     }
   };
 
-  const ResumeContent = () => (
-    <div ref={previewRef} className="rp-wrap">
-      <div className="rp-header">
-        <h1 className="rp-name">{name || "이름"}</h1>
-        <p className="rp-meta">
-          {birthDisplay}{birthDisplay && jobDisplay ? " · " : ""}{jobDisplay}
-        </p>
-        <p className="rp-contact">
-          {phone || ""}{phone && (emailLocal || email) ? " · " : ""}{emailLocal || email || ""}
-        </p>
-      </div>
-      {introLocal && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">소개</h2>
-          <p className="rp-text">{introLocal}</p>
-        </div>
-      )}
-      {coreLocal && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">핵심 역량</h2>
-          <p className="rp-text" style={{ whiteSpace: "pre-line" }}>{coreLocal}</p>
-        </div>
-      )}
-      {careers.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">경력</h2>
-          {careers.map((c) => (
-            <div key={c.id} className="rp-item">
-              <div className="rp-item-head">
-                <strong>{c.company}</strong>
-                <span className="rp-period">{c.startDate} – {c.endDate}</span>
-              </div>
-              {c.department && <p className="rp-item-sub">{c.department} · {c.position}</p>}
-            </div>
-          ))}
-        </div>
-      )}
-      {educations.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">학력</h2>
-          {educations.map((edu) => (
-            <div key={edu.id} className="rp-item">
-              <div className="rp-item-head">
-                <strong>{edu.school}</strong>
-                <span className="rp-period">{edu.startDate} – {edu.endDate}</span>
-              </div>
-              <p className="rp-item-sub">{edu.major} · {edu.status}</p>
-            </div>
-          ))}
-        </div>
-      )}
-      {skills.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">스킬</h2>
-          <div className="rp-chips">
-            {skills.map((sk) => <span key={sk} className="rp-chip">{sk}</span>)}
-          </div>
-        </div>
-      )}
-      {portfolioUrl && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">포트폴리오</h2>
-          <p className="rp-text">📎 {portfolioFilename || "포트폴리오.pdf"}</p>
-        </div>
-      )}
-      {links.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">링크</h2>
-          {links.map((link) => (
-            <div key={link.id} className="rp-item">
-              <span className="rp-badge">{link.category}</span>
-              <a href={link.url} className="rp-link">{link.url}</a>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <div className="resume-page">
       <header className="resume-header">
@@ -321,9 +242,7 @@ export default function ResumePage() {
             { id: "intro", label: "소개 · 핵심역량" },
             { id: "career", label: "경력" },
             { id: "education", label: "학력" },
-            { id: "experience", label: "관련 경험" },
             { id: "skill", label: "스킬" },
-            { id: "language", label: "어학" },
             { id: "portfolio", label: "포트폴리오" },
             { id: "link", label: "링크" },
           ] : [
@@ -331,9 +250,7 @@ export default function ResumePage() {
             { id: "intro", label: "소개" },
             { id: "career", label: "경력 (근무 매장)" },
             { id: "education", label: "학력" },
-            { id: "license", label: "자격증" },
             { id: "skill", label: "전문 기술" },
-            { id: "workCondition", label: "희망 근무 조건" },
             { id: "portfolio", label: "포트폴리오" },
             { id: "link", label: "링크" },
           ]).map((sec) => (
@@ -470,7 +387,6 @@ export default function ResumePage() {
             )}
           </section>
 
-          {/* ⭐ 포트폴리오 섹션 (PDF 업로드 + 드래그앤드롭) */}
           <section id="section-portfolio" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">포트폴리오</h2>
@@ -496,12 +412,13 @@ export default function ResumePage() {
                     {portfolioFilename || "포트폴리오.pdf"}
                   </p>
                   
+                  <a
                     href={portfolioUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ fontSize: "12px", color: "#5f0080", textDecoration: "underline" }}
                   >
-                    파일 열기 ↗
+                    파일 열기
                   </a>
                 </div>
                 <button
@@ -618,7 +535,23 @@ export default function ResumePage() {
               </div>
             </div>
             <div className="rp-modal-body">
-              <ResumeContent />
+              <ResumePreview
+                ref={previewRef}
+                name={name}
+                birthDisplay={birthDisplay}
+                jobDisplay={jobDisplay}
+                phone={phone}
+                email={emailLocal || email}
+                intro={introLocal}
+                coreCompetencies={coreLocal}
+                careers={careers}
+                educations={educations}
+                skills={skills}
+                languages={languages}
+                links={links}
+                portfolioUrl={portfolioUrl}
+                portfolioFilename={portfolioFilename}
+              />
             </div>
           </div>
         </div>
