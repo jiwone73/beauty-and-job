@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -32,7 +32,7 @@ export default function ProfilePage() {
   const {
     name: signupName, birth, gender, job, jobCustom, careerYears, isLeader,
     categories, categoryCustom, countries, countryCustom, phone,
-    jobType, skillAreas, certificates, workTypePrefer, regionPrefer, setStoreProfile, setJobType,
+    skillAreas, certificates, workTypePrefer, regionPrefer, setStoreProfile,
   } = useSignupStore();
   const { userName, userPhone } = useAuthStore();
   const name = userName || signupName || "";
@@ -49,6 +49,25 @@ export default function ProfilePage() {
   const [emailInput, setEmailInput] = useState("");
   const [showJobModal, setShowJobModal] = useState(false);
   const [selectedJobTemp, setSelectedJobTemp] = useState("");
+
+  // DB에서 가져온 job_type
+  const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE">("OFFICE");
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/users/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) {
+          if (res.data.job_type) setDbJobType(res.data.job_type);
+          if (res.data.email) setEmailInput(res.data.email);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const jobDisplay = job === "직접입력" ? jobCustom : job || "직군 미설정";
   const allCategories = [...categories.filter((c) => c !== "직접입력"), ...categoryCustom];
@@ -156,16 +175,17 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* 직군 표시 */}
+            {/* 직군 표시 (DB 기반) */}
             <div style={{margin:"16px 0",padding:"14px 16px",background:"#fff",border:"1px solid #f0e8f8",borderRadius:"12px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
               <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-                <span style={{fontSize:"20px"}}>{jobType==="store"?"🏪":"🏢"}</span>
+                <span style={{fontSize:"20px"}}>{dbJobType === "STORE" ? "🏪" : "🏢"}</span>
                 <div>
                   <p style={{fontSize:"11px",color:"#888",marginBottom:"2px"}}>지금 찾고 있는 채용</p>
-                  <p style={{fontSize:"14px",fontWeight:600,color:"#1a1a1a"}}>{jobType==="store"?"매장·샵 채용":"기업·브랜드 채용"}</p>
+                  <p style={{fontSize:"14px",fontWeight:600,color:"#1a1a1a"}}>
+                    {dbJobType === "STORE" ? "매장·샵 채용" : "기업·브랜드 채용"}
+                  </p>
                 </div>
               </div>
-              
             </div>
 
             {/* 기본 정보 */}
@@ -182,8 +202,8 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* jobType 분기: 기업 → 관심 브랜드 / 매장 → 시술 분야 */}
-            {jobType === "store" ? (
+            {/* job_type 분기: 기업 → 관심 브랜드 / 매장 → 시술 분야 */}
+            {dbJobType === "STORE" ? (
               <section className="profile-section">
                 <div className="profile-section-head">
                   <h2 className="profile-section-title">시술 분야 · 전문 영역</h2>
@@ -398,11 +418,9 @@ export default function ProfilePage() {
       </div>
 
       {/* 모달들 */}
-      {/* 이메일 편집 */}
       {editField === "email" && (
         <div className="cv-overlay" onClick={() => setEditField(null)}>
           <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
-      
             <div className="cv-header">
               <div style={{width:36}} />
               <h2 className="cv-title">이메일 입력</h2>
@@ -426,7 +444,6 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
-      {/* 생년월일 편집 */}
       {editField === "birth" && (
         <div className="cv-overlay" onClick={() => setOpenModal(null)}>
           <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
@@ -447,7 +464,6 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
-      {/* 성별 선택 */}
       {editField === "gender" && (
         <div className="cv-overlay" onClick={() => setOpenModal(null)}>
           <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
@@ -491,26 +507,15 @@ function InfoRow({ label, value, isEmpty, isLast, onClick }: {
   );
 }
 
-/* ============================================
-   지원현황 탭
-   ============================================ */
 function AppliedTab() {
   const { applications } = useApplicationStore();
   const APPLIED_JOBS = applications.map((a) => ({
-    id: a.jobId,
-    brand: a.brand,
-    title: a.title,
-    date: a.date,
-    status: a.status || "서류검토중",
+    id: a.jobId, brand: a.brand, title: a.title, date: a.date, status: a.status || "서류검토중",
   }));
-
   const statusStyle: Record<string, string> = {
-    "서류검토중": "applied-status-review",
-    "합격": "applied-status-pass",
-    "불합격": "applied-status-fail",
-    "면접예정": "applied-status-interview",
+    "서류검토중": "applied-status-review", "합격": "applied-status-pass",
+    "불합격": "applied-status-fail", "면접예정": "applied-status-interview",
   };
-
   if (APPLIED_JOBS.length === 0) {
     return (
       <div className="profile-empty-tab">
@@ -520,7 +525,6 @@ function AppliedTab() {
       </div>
     );
   }
-
   return (
     <div className="profile-tab-content">
       <div className="applied-list">
@@ -531,9 +535,7 @@ function AppliedTab() {
               <h3 className="applied-title">{job.title}</h3>
               <span className="applied-date">지원일 {job.date}</span>
             </div>
-            <span className={`applied-status ${statusStyle[job.status] || ""}`}>
-              {job.status}
-            </span>
+            <span className={`applied-status ${statusStyle[job.status] || ""}`}>{job.status}</span>
           </div>
         ))}
       </div>
@@ -541,21 +543,15 @@ function AppliedTab() {
   );
 }
 
-/* ============================================
-   관심공고 탭
-   ============================================ */
 function BookmarksTab() {
   const { bookmarks } = useBookmarkStore();
-
   const ALL_JOBS = [
     { id: 1, brand: "올리브영", title: "올리브영 MD - 색조 카테고리 매니저", location: "서울 중구", deadline: "D-7" },
     { id: 2, brand: "아모레퍼시픽", title: "헤라 브랜드 마케팅 매니저", location: "서울 용산구", deadline: "D-12" },
     { id: 3, brand: "LG생활건강", title: "더후 글로벌 영업 PM", location: "서울 종로구", deadline: "D-3" },
     { id: 4, brand: "닥터지", title: "퍼포먼스 마케터 (그로스)", location: "서울 강남구", deadline: "D-15" },
   ];
-
   const bookmarkedJobs = ALL_JOBS.filter((j) => bookmarks.includes(j.id));
-
   if (bookmarkedJobs.length === 0) {
     return (
       <div className="profile-empty-tab">
@@ -565,7 +561,6 @@ function BookmarksTab() {
       </div>
     );
   }
-
   return (
     <div className="profile-tab-content">
       <div className="bookmark-list">
@@ -584,12 +579,8 @@ function BookmarksTab() {
   );
 }
 
-/* ============================================
-   관심브랜드 탭
-   ============================================ */
 function BrandsTab() {
   const BRANDS: { id: number; name: string; category: string; jobs: number }[] = [];
-
   if (BRANDS.length === 0) {
     return (
       <div className="profile-empty-tab">
@@ -599,15 +590,12 @@ function BrandsTab() {
       </div>
     );
   }
-
   return (
     <div className="profile-tab-content">
       <div className="brand-follow-list">
         {BRANDS.map((brand) => (
-          <a key={brand.id} href={`/brands`} className="brand-follow-item">
-            <div className="brand-follow-logo">
-              {brand.name.slice(0, 2)}
-            </div>
+          <a key={brand.id} href="/brands" className="brand-follow-item">
+            <div className="brand-follow-logo">{brand.name.slice(0, 2)}</div>
             <div className="brand-follow-info">
               <strong>{brand.name}</strong>
               <span>{brand.category}</span>
