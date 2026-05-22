@@ -165,9 +165,7 @@ export default function ProfilePage() {
                   <p style={{fontSize:"14px",fontWeight:600,color:"#1a1a1a"}}>{jobType==="store"?"매장·샵 채용":"기업·브랜드 채용"}</p>
                 </div>
               </div>
-              <button onClick={() => setEditField("jobType")} style={{padding:"6px 12px",borderRadius:"6px",border:"1px solid #e0e0e0",background:"#fff",color:"#5f0080",fontSize:"12px",fontWeight:600,cursor:"pointer"}}>
-                ✏️ 변경
-              </button>
+              
             </div>
 
             {/* 기본 정보 */}
@@ -400,43 +398,11 @@ export default function ProfilePage() {
       </div>
 
       {/* 모달들 */}
-      {/* 직군 변경 모달 */}
-      {editField === "jobType" && (
-        <div className="cv-overlay" onClick={() => setEditField(null)}>
-          <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="cv-header">
-              <div style={{width:36}} />
-              <h2 className="cv-title">직군 변경</h2>
-              <button className="cv-close" onClick={() => setEditField(null)}>✕</button>
-            </div>
-            <div className="cv-body">
-              <p style={{fontSize:"13px",color:"#888",marginBottom:"16px"}}>찾고 있는 채용 분야를 선택해 주세요</p>
-              <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-                <button onClick={() => { setJobType("corp"); setEditField(null); }}
-                  style={{padding:"16px 20px",borderRadius:"12px",border:`2px solid ${jobType!=="store"?"#5f0080":"#e0e0e0"}`,background:jobType!=="store"?"#f9f5fc":"#fff",textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:"14px"}}>
-                  <span style={{fontSize:"28px"}}>🏢</span>
-                  <div>
-                    <p style={{fontSize:"15px",fontWeight:700,color:"#1a1a1a",marginBottom:"3px"}}>기업·브랜드 채용</p>
-                    <p style={{fontSize:"12px",color:"#888"}}>마케팅·MD·영업·연구개발 등 본사 사무직</p>
-                  </div>
-                </button>
-                <button onClick={() => { setJobType("store"); setEditField(null); }}
-                  style={{padding:"16px 20px",borderRadius:"12px",border:`2px solid ${jobType==="store"?"#5f0080":"#e0e0e0"}`,background:jobType==="store"?"#f9f5fc":"#fff",textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:"14px"}}>
-                  <span style={{fontSize:"28px"}}>🏪</span>
-                  <div>
-                    <p style={{fontSize:"15px",fontWeight:700,color:"#1a1a1a",marginBottom:"3px"}}>매장·샵 채용</p>
-                    <p style={{fontSize:"12px",color:"#888"}}>헤어·네일·피부·메이크업·스파 등 현장직</p>
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       {/* 이메일 편집 */}
       {editField === "email" && (
         <div className="cv-overlay" onClick={() => setEditField(null)}>
           <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
+      
             <div className="cv-header">
               <div style={{width:36}} />
               <h2 className="cv-title">이메일 입력</h2>

@@ -1,4 +1,6 @@
 "use client";
+// 기존 useState들 아래에 추가
+const [jobType, setJobType] = useState<'OFFICE' | 'STORE'>('OFFICE');
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -93,17 +95,17 @@ export default function SignupEmailPage() {
         .filter(([_, v]) => v)
         .map(([k]) => k);
 
-      const res = await fetch("/api/auth/email/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          password,
-          name,
-          phone,
-          agreed_term_ids: agreedTermIds,
-        }),
-      });
+      const res = await fetch('/api/auth/email/signup', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email,
+    name,
+    phone,
+    password,
+    job_type: jobType,  // ← 추가
+  }),
+});
       const data = await res.json();
       if (!data.success) {
         setError(data.error?.message || "가입에 실패했습니다.");
@@ -142,7 +144,59 @@ export default function SignupEmailPage() {
           <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-8">
             회원가입
           </h1>
+{/* 직군 선택 */}
+<div className="mb-6">
+  <label className="block text-sm font-medium text-gray-700 mb-3">
+    어떤 채용을 찾고 계신가요? <span className="text-red-500">*</span>
+  </label>
+  <div className="grid grid-cols-2 gap-3">
+    <button
+      type="button"
+      onClick={() => setJobType('OFFICE')}
+      className={`relative flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+        jobType === 'OFFICE'
+          ? 'border-purple-500 bg-purple-50 text-purple-700'
+          : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
+      }`}
+    >
+      <span className="text-2xl mb-1">🏢</span>
+      <span className="text-sm font-semibold">기업·브랜드</span>
+      <span className="text-xs mt-0.5 text-center leading-tight">
+        사무직 · 마케팅 · MD
+      </span>
+      {jobType === 'OFFICE' && (
+        <span className="absolute top-2 right-2 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
+          <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+          </svg>
+        </span>
+      )}
+    </button>
 
+    <button
+      type="button"
+      onClick={() => setJobType('STORE')}
+      className={`relative flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+        jobType === 'STORE'
+          ? 'border-purple-500 bg-purple-50 text-purple-700'
+          : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
+      }`}
+    >
+      <span className="text-2xl mb-1">💄</span>
+      <span className="text-sm font-semibold">매장·기술직</span>
+      <span className="text-xs mt-0.5 text-center leading-tight">
+        뷰티샵 · 에스테틱 · 네일
+      </span>
+      {jobType === 'STORE' && (
+        <span className="absolute top-2 right-2 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
+          <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+          </svg>
+        </span>
+      )}
+    </button>
+  </div>
+</div>
           {/* 이메일 */}
           <div className="mb-4">
             <label className="block text-[13px] text-[#6b6b6b] mb-1.5">이메일</label>
