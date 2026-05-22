@@ -14,6 +14,7 @@ import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { CAREER_LABELS } from "@/lib/constants";
 import CareerVerifyModal from "@/components/profile/CareerVerifyModal";
+import CareerEditModal from "@/components/profile/CareerEditModal";
 import EducationModal from "@/components/profile/EducationModal";
 import SkillModal from "@/components/profile/SkillModal";
 import LanguageModal from "@/components/profile/LanguageModal";
@@ -23,7 +24,7 @@ import NotificationModal from "@/components/profile/NotificationModal";
 import BrandModal from "@/components/profile/BrandModal";
 
 type ModalType =
-  | "career" | "education" | "skill" | "language"
+  | "career" | "careerEdit" | "education" | "skill" | "language"
   | "link" | "experience" | "notification" | "brand"
   | null;
 
@@ -78,7 +79,6 @@ export default function ProfilePage() {
     : "정보 없음";
   const careerDisplay = CAREER_LABELS[careerYears] || "경력 미설정";
 
-  // 시술 분야: 직접입력값 추가
   const addCustomArea = () => {
     const v = customAreaInput.trim();
     if (!v) return;
@@ -90,7 +90,6 @@ export default function ProfilePage() {
     setCustomAreaInput("");
   };
 
-  // 사용자가 직접입력한 시술 분야 (프리셋에 없는 것)
   const customAreas = skillAreas.filter((a) => !PRESET_SKILL_AREAS.includes(a));
 
   const handleCareerComplete = () => {
@@ -293,7 +292,7 @@ export default function ProfilePage() {
                   경력
                   {isCareerVerified && <CheckCircle2 size={16} className="profile-check" />}
                 </h2>
-                <button className="profile-section-add" onClick={() => setOpenModal("career")}>
+                <button className="profile-section-add" onClick={() => setOpenModal("careerEdit")}>
                   <Plus size={14} /> 추가
                 </button>
               </div>
@@ -329,10 +328,15 @@ export default function ProfilePage() {
                       {c.isVerified && <span className="profile-verified-badge">✓ 인증</span>}
                     </div>
                     <span className="profile-career-entry-period">{c.startDate} - {c.endDate}</span>
+                    {(c.department || c.position) && (
+                      <p style={{fontSize:"12px",color:"#888",marginTop:"2px"}}>
+                        {c.department}{c.department && c.position ? " · " : ""}{c.position}
+                      </p>
+                    )}
                   </div>
                 ))}
                 <button className="profile-career-bring-btn" onClick={() => setOpenModal("career")}>
-                  경력 한번에 불러오기
+                  경력 한번에 불러오기 (간편인증)
                 </button>
               </div>
             </section>
@@ -506,6 +510,7 @@ export default function ProfilePage() {
         </div>
       )}
       <CareerVerifyModal isOpen={openModal === "career"} onClose={() => setOpenModal(null)} onComplete={handleCareerComplete} userName={name} userBirth={birth} userGender={gender} userPhone={phone} />
+      <CareerEditModal isOpen={openModal === "careerEdit"} onClose={() => setOpenModal(null)} />
       <EducationModal isOpen={openModal === "education"} onClose={() => setOpenModal(null)} />
       <SkillModal isOpen={openModal === "skill"} onClose={() => setOpenModal(null)} />
       <LanguageModal isOpen={openModal === "language"} onClose={() => setOpenModal(null)} />
