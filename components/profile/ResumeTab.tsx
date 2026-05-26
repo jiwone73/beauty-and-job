@@ -47,6 +47,7 @@ export default function ResumeTab() {
     { label: "보유 자격증", done: certificates.length > 0, required: false },
     { label: "희망 근무 형태", done: !!workTypePrefer, required: false, extra: workTypePrefer || undefined },
     { label: "희망 근무 지역", done: !!regionPrefer, required: false, extra: regionPrefer || undefined },
+    { label: "어학", done: languages.length > 0, required: false },
     { label: "프로젝트 · 활동", done: experiences.length > 0, required: false },
     { label: "포트폴리오", done: !!portfolioUrl, required: false, extra: portfolioFilename || undefined },
     { label: "링크", done: links.length > 0, required: false },
