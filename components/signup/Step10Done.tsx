@@ -17,7 +17,7 @@ export default function Step10Done() {
   } = useSignupStore();
 
   const { login } = useAuthStore();
-  const { setMainJob, setEmail } = useProfileStore();
+  const { setEmail } = useProfileStore();
 
   const jobDisplay = job === "직접입력" ? jobCustom : job;
   const allCategories = [...categories.filter((c) => c !== "직접입력"), ...categoryCustom];
@@ -59,7 +59,6 @@ export default function Step10Done() {
       }
 
       localStorage.setItem('access_token', signupData.data.access_token);
-      setMainJob(jobDisplay || "", allCategories.join(", "));
       login({ userName: name, userPhone: phone });
       reset();
       return true;

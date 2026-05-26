@@ -42,8 +42,6 @@ export interface ProfileState {
   isCareerVerified: boolean;
   verifiedDate: string;
   careers: CareerEntry[];
-  mainJobGroup: string;
-  subJob: string;
   educations: EducationEntry[];
   experiences: ExperienceEntry[];
   skills: string[];
@@ -58,7 +56,6 @@ export interface ProfileState {
   setCareerVerified: (verified: boolean, date?: string) => void;
   addCareer: (entry: CareerEntry) => void;
   removeCareer: (id: string) => void;
-  setMainJob: (group: string, sub: string) => void;
   addEducation: (entry: EducationEntry) => void;
   removeEducation: (id: string) => void;
   addExperience: (entry: ExperienceEntry) => void;
@@ -96,8 +93,6 @@ export const useProfileStore = create<ProfileState>()(
         isCareerVerified: false,
         verifiedDate: "",
         careers: [],
-        mainJobGroup: "",
-        subJob: "",
         educations: [],
         experiences: [],
         skills: [],
@@ -112,8 +107,6 @@ export const useProfileStore = create<ProfileState>()(
           isCareerVerified: false,
           verifiedDate: "",
           careers: [],
-          mainJobGroup: "",
-          subJob: "",
           educations: [],
           experiences: [],
           skills: [],
@@ -135,10 +128,6 @@ export const useProfileStore = create<ProfileState>()(
         },
         removeCareer: (id) => {
           set((s) => ({ careers: s.careers.filter((c) => c.id !== id) }));
-          autoSync();
-        },
-        setMainJob: (group, sub) => {
-          set({ mainJobGroup: group, subJob: sub });
           autoSync();
         },
         addEducation: (entry) => {
@@ -210,8 +199,6 @@ export const useProfileStore = create<ProfileState>()(
               set({
                 intro: profile?.intro || "",
                 coreCompetencies: profile?.core_competencies || "",
-                mainJobGroup: profile?.main_job_group || "",
-                subJob: profile?.sub_job || "",
                 isCareerVerified: profile?.is_career_verified || false,
                 verifiedDate: profile?.verified_date || "",
                 skills: profile?.skills || [],
@@ -276,8 +263,6 @@ export const useProfileStore = create<ProfileState>()(
                 profile: {
                   intro: s.intro,
                   core_competencies: s.coreCompetencies,
-                  main_job_group: s.mainJobGroup,
-                  sub_job: s.subJob,
                   is_career_verified: s.isCareerVerified,
                   verified_date: s.verifiedDate,
                   skills: s.skills,
