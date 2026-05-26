@@ -132,7 +132,7 @@ function JobsPageInner() {
   };
 
   const currentJobTypes = jobTypeFilter === "매장" ? STORE_JOB_TYPES : JOB_TYPES;
-  const filteredJobs = (apiJobs || ALL_JOBS).filter((j: any) => {
+  const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter;
     const matchJob = selectedJob === "직군 전체" || j.jobType.includes(selectedJob);
     const matchCareer = selectedCareer === "경력 전체" || j.career.includes(selectedCareer.replace("년", "").replace("신입", "신입"));
