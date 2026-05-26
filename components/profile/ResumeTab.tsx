@@ -72,7 +72,7 @@ export default function ResumeTab() {
   const hasAnyContent = completedCount > 0;
 
   // 데이터 로딩 중에는 빈 화면 (flash 방지)
-  if (!loaded || !dbJobType) {
+  if (!loaded) {
     return <div style={{ minHeight: "300px" }} />;
   }
 
