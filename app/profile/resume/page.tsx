@@ -405,9 +405,68 @@ function ResumePageContent() {
                   <Plus size={16} /> 프로필에서 스킬 추가하기
                 </button>
               </div>
+           )}
+          </section>
+          <section id="section-language" className="resume-section">
+            <div className="resume-section-head">
+              <h2 className="resume-section-title">어학</h2>
+              <button className="resume-add-btn" onClick={() => router.push("/profile")}>
+                <Plus size={14} /> 추가
+              </button>
+            </div>
+            {languages.length > 0 ? (
+              <div className="resume-list">
+                {languages.map((lang) => (
+                  <div key={lang.id} className="resume-list-item">
+                    <p style={{ fontWeight: 600, marginBottom: "4px" }}>
+                      {lang.language}
+                      <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
+                    </p>
+                    {lang.test && (
+                      <p style={{ color: "#888", fontSize: "13px" }}>{lang.test}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="resume-empty-section">
+                <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
+                  <Plus size={16} /> 프로필에서 어학 추가하기
+                </button>
+              </div>
             )}
           </section>
-
+          <section id="section-experience" className="resume-section">
+            <div className="resume-section-head">
+              <h2 className="resume-section-title">프로젝트 · 활동</h2>
+              <button className="resume-add-btn" onClick={() => router.push("/profile")}>
+                <Plus size={14} /> 추가
+              </button>
+            </div>
+            {experiences.length > 0 ? (
+              <div className="resume-list">
+                {experiences.map((x) => (
+                  <div key={x.id} className="resume-list-item">
+                    <p style={{ fontWeight: 600, marginBottom: "4px" }}>
+                      {x.category && (
+                        <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>
+                      )}
+                      {x.title}
+                    </p>
+                    {x.description && (
+                      <p style={{ color: "#666", fontSize: "14px" }}>{x.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="resume-empty-section">
+                <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
+                  <Plus size={16} /> 프로필에서 활동 추가하기
+                </button>
+              </div>
+            )}
+          </section>
           <section id="section-portfolio" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">포트폴리오</h2>
