@@ -32,6 +32,7 @@ export interface SignupState {
   jobType: string;
   // 매장직 전용
   skillAreas: string[];      // 시술 분야 (헤어/네일/피부/메이크업/스파)
+  officeJobAreas: string[];  // 기업 직군 영역 (브랜드마케팅/MD/영업/R&D 등)
   certificates: string[];    // 보유 자격증
   workTypePrefer: string;    // 희망 근무 형태 (풀타임/파트타임)
   regionPrefer: string;      // 희망 근무 지역
@@ -57,7 +58,7 @@ export interface SignupState {
   setCareer: (data: { careerYears?: number; isLeader?: boolean }) => void;
   setJob: (job: string, custom?: string) => void;
   setJobType: (jobType: string) => void;
-  setStoreProfile: (data: { skillAreas?: string[]; certificates?: string[]; workTypePrefer?: string; regionPrefer?: string }) => void;
+  setStoreProfile: (data: { skillAreas?: string[]; certificates?: string[]; workTypePrefer?: string; regionPrefer?: string; officeJobAreas?: string[] }) => void;
   toggleCategory: (category: string) => void;
   addCategoryCustom: (category: string) => void;
   removeCategoryCustom: (category: string) => void;
@@ -84,6 +85,7 @@ const initialState = {
   job: "",
   jobType: "",
   skillAreas: [],
+  officeJobAreas: [],
   certificates: [],
   workTypePrefer: "",
   regionPrefer: "",
@@ -196,6 +198,7 @@ export const useSignupStore = create<SignupState>()(
         job: state.job,
         jobType: state.jobType,
         skillAreas: state.skillAreas,
+        officeJobAreas: state.officeJobAreas,
         certificates: state.certificates,
         workTypePrefer: state.workTypePrefer,
         regionPrefer: state.regionPrefer,

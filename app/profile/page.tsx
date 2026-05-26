@@ -29,13 +29,27 @@ type ModalType =
   | null;
 
 const PRESET_SKILL_AREAS = ["헤어","네일","피부관리","메이크업","속눈썹","왁싱","스파·에스테틱","반영구"];
+const PRESET_OFFICE_JOB_AREAS = [
+  "브랜드 마케팅",
+  "디지털·퍼포먼스 마케팅",
+  "콘텐츠·PR·SNS",
+  "MD·상품기획",
+  "영업·채널영업",
+  "글로벌 사업",
+  "R&D·연구개발",
+  "디자인·VMD",
+  "생산·품질",
+  "구매·SCM·물류",
+  "경영지원",
+  "데이터·IT",
+];
 
 export default function ProfilePage() {
   const router = useRouter();
   const {
     name: signupName, birth, gender, job, jobCustom, careerYears,
     categories, categoryCustom, countries, countryCustom, phone,
-    skillAreas, certificates, workTypePrefer, regionPrefer, setStoreProfile,
+    skillAreas, certificates, workTypePrefer, regionPrefer, officeJobAreas, setStoreProfile,
   } = useSignupStore();
   const { userName, userPhone } = useAuthStore();
   const name = userName || signupName || "";
@@ -54,6 +68,7 @@ export default function ProfilePage() {
   const [selectedJobTemp, setSelectedJobTemp] = useState("");
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
   const [customAreaInput, setCustomAreaInput] = useState("");
+  const [customOfficeAreaInput, setCustomOfficeAreaInput] = useState("");
   const [appliedCount, setAppliedCount] = useState(0);
   const [bookmarkCount, setBookmarkCount] = useState(0);
 
@@ -118,6 +133,17 @@ export default function ProfilePage() {
   };
 
   const customAreas = skillAreas.filter((a) => !PRESET_SKILL_AREAS.includes(a));
+  const customOfficeAreas = officeJobAreas.filter((a) => !PRESET_OFFICE_JOB_AREAS.includes(a));
+  const addCustomOfficeArea = () => {
+    const v = customOfficeAreaInput.trim();
+    if (!v) return;
+    if (officeJobAreas.includes(v)) {
+      setCustomOfficeAreaInput("");
+      return;
+    }
+    setStoreProfile({ officeJobAreas: [...officeJobAreas, v] });
+    setCustomOfficeAreaInput("");
+  };
 
   const handleCareerComplete = () => {
     const today = new Date();
@@ -228,7 +254,50 @@ export default function ProfilePage() {
                 <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => setEditField("email")} isLast />
               </div>
             </section>
-
+            {dbJobType === "OFFICE" && (
+              <section className="profile-section">
+                <div className="profile-section-head">
+                  <h2 className="profile-section-title">직군 영역</h2>
+                </div>
+                <div className="profile-info-card" style={{padding:"16px"}}>
+                  <p style={{fontSize:"13px",color:"#888",marginBottom:"12px"}}>해당하는 직군 영역을 선택하거나 직접 입력해 주세요 (1~3개 권장)</p>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
+                    {PRESET_OFFICE_JOB_AREAS.map((area) => (
+                      <button key={area}
+                        onClick={() => setStoreProfile({ officeJobAreas: officeJobAreas.includes(area) ? officeJobAreas.filter(a=>a!==area) : [...officeJobAreas, area] })}
+                        style={{padding:"6px 14px",borderRadius:"20px",border:`1.5px solid ${officeJobAreas.includes(area)?"#5f0080":"#e0e0e0"}`,background:officeJobAreas.includes(area)?"#f3e5f5":"#fff",color:officeJobAreas.includes(area)?"#5f0080":"#888",fontSize:"13px",fontWeight:officeJobAreas.includes(area)?600:400,cursor:"pointer"}}>
+                        {area}
+                      </button>
+                    ))}
+                    {customOfficeAreas.map((area) => (
+                      <button key={area}
+                        onClick={() => setStoreProfile({ officeJobAreas: officeJobAreas.filter(a=>a!==area) })}
+                        style={{padding:"6px 14px",borderRadius:"20px",border:"1.5px solid #5f0080",background:"#f3e5f5",color:"#5f0080",fontSize:"13px",fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"4px"}}>
+                        {area}
+                        <span style={{fontSize:"15px",lineHeight:1,marginLeft:"2px"}}>×</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{display:"flex",gap:"6px"}}>
+                    <input
+                      className="cv-input"
+                      placeholder="직접 입력 (예: 사업개발, 법무, 신사업기획 등)"
+                      value={customOfficeAreaInput}
+                      onChange={(e) => setCustomOfficeAreaInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomOfficeArea(); } }}
+                      style={{flex:1,fontSize:"13px"}}
+                    />
+                    <button
+                      onClick={addCustomOfficeArea}
+                      disabled={!customOfficeAreaInput.trim()}
+                      style={{padding:"0 14px",borderRadius:"8px",border:"none",background: customOfficeAreaInput.trim() ? "#5f0080" : "#e0e0e0",color:"#fff",fontSize:"13px",fontWeight:600,cursor: customOfficeAreaInput.trim() ? "pointer" : "not-allowed"}}
+                    >
+                      추가
+                    </button>
+                  </div>
+                </div>
+              </section>
+            )}
             {dbJobType === "STORE" && (
               <section className="profile-section">
                 <div className="profile-section-head">
