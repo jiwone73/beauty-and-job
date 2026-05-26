@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, Download, Eye, Plus, X, FileText, Trash2, Upload } from "lucide-react";
@@ -193,6 +193,21 @@ export default function ResumePage() {
       setIsDownloading(false);
     }
   };
+
+  // URL ?action=preview 또는 ?action=download 자동 트리거
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action === "preview") {
+      setShowPreview(true);
+    } else if (action === "download") {
+      setTimeout(() => handleDownload(), 500);
+    }
+    if (action) {
+      window.history.replaceState({}, "", "/profile/resume");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="resume-page">
