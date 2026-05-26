@@ -9,7 +9,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 
 export default function ResumeTab() {
   const router = useRouter();
-  const { intro, coreCompetencies, careers, educations, skills, links } = useProfileStore();
+  const { intro, coreCompetencies, careers, educations, skills, languages, experiences, links } = useProfileStore();
   const { name: signupName, phone } = useSignupStore();
   const { userName } = useAuthStore();
   const name = userName || signupName || "";
