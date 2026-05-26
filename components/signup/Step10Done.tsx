@@ -11,7 +11,7 @@ export default function Step10Done() {
   const router = useRouter();
 
   const {
-    name, phone, job, jobCustom, careerYears, isLeader,
+    name, phone, job, jobCustom, careerYears,
     categories, categoryCustom, countries, countryCustom,
     reset,
   } = useSignupStore();
@@ -25,7 +25,7 @@ export default function Step10Done() {
 
   const summary = [
     { label: "직군", value: jobDisplay },
-    { label: "경력", value: `${CAREER_LABELS[careerYears]}${isLeader ? " · 팀리더 경험" : ""}` },
+    { label: "경력", value: CAREER_LABELS[careerYears] },
     { label: "카테고리", value: allCategories.join(", ") },
     { label: "담당 국가", value: allCountries.join(", ") },
   ];

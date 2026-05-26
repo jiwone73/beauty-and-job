@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function Step6Career({ onNext }: Props) {
-  const { name, careerYears, isLeader, setCareer } = useSignupStore();
+  const { name, careerYears, setCareer } = useSignupStore();
   const displayLabel = `경력 ${CAREER_LABELS[careerYears]}`;
   const percent = (careerYears / (CAREER_LABELS.length - 1)) * 100;
 
@@ -41,22 +41,6 @@ export default function Step6Career({ onNext }: Props) {
           <span>신입</span>
           <span>10년 이상</span>
         </div>
-      </div>
-
-      <div className="bg-[#f7f7f8] rounded-lg p-4 mb-4">
-        <label className="flex items-center gap-2.5 p-1 cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only"
-            checked={isLeader}
-            onChange={(e) => setCareer({ isLeader: e.target.checked })}
-          />
-          <span className="checkbox-visual" />
-          <span className="text-sm font-medium text-[#1a1a1a]">팀리더 경험</span>
-        </label>
-        <p className="text-xs text-[#9a9a9a] mt-2 ml-8 leading-relaxed">
-          회사에서 프로젝트 리더로서 팀을 이끈 경험이 있는 경우 선택해 주세요.
-        </p>
       </div>
 
       <button

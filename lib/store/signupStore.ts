@@ -26,7 +26,6 @@ export interface SignupState {
 
   // STEP 6: 경력
   careerYears: number;
-  isLeader: boolean;
 
   // STEP 7: 직군
   job: string;
@@ -82,7 +81,6 @@ const initialState = {
   birth: "",
   gender: "" as Gender,
   careerYears: 1,
-  isLeader: false,
   job: "",
   jobType: "",
   skillAreas: [],
@@ -195,7 +193,6 @@ export const useSignupStore = create<SignupState>()(
         birth: state.birth,
         gender: state.gender,
         careerYears: state.careerYears,
-        isLeader: state.isLeader,
         job: state.job,
         jobType: state.jobType,
         skillAreas: state.skillAreas,

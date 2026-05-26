@@ -33,7 +33,7 @@ const PRESET_SKILL_AREAS = ["헤어","네일","피부관리","메이크업","속
 export default function ProfilePage() {
   const router = useRouter();
   const {
-    name: signupName, birth, gender, job, jobCustom, careerYears, isLeader,
+    name: signupName, birth, gender, job, jobCustom, careerYears,
     categories, categoryCustom, countries, countryCustom, phone,
     skillAreas, certificates, workTypePrefer, regionPrefer, setStoreProfile,
   } = useSignupStore();
@@ -148,7 +148,6 @@ export default function ProfilePage() {
           <span className="profile-job">{jobDisplay}</span>
           <span className="profile-divider">·</span>
           <span className="profile-career">{careerDisplay}</span>
-          {isLeader && <span className="profile-leader-badge">팀리더 경험</span>}
           <ChevronRight size={16} className="profile-chevron" />
         </button>
         <div className="profile-tags">
@@ -311,17 +310,8 @@ export default function ProfilePage() {
                   <span className="profile-career-label">총 경력</span>
                   <span className="profile-career-value">
                     {careerDisplay}
-                    {isLeader && <span className="profile-career-leader-tag">팀리더 경험</span>}
                     {isCareerVerified && <span className="profile-verified-badge">✓ {verifiedDate} 인증</span>}
                   </span>
-                </div>
-                <div className="profile-career-row">
-                  <span className="profile-career-label">리더 경험</span>
-                  <label className="profile-career-checkbox">
-                    <input type="checkbox" checked={isLeader} readOnly />
-                    <span className="checkbox-visual" />
-                    <span className="profile-career-checkbox-text">회사에서 팀을 이끈 경험이 있어요.</span>
-                  </label>
                 </div>
                 <button className="profile-career-row profile-career-clickable" onClick={() => { setSelectedJobTemp(jobDisplay || ""); setShowJobModal(true); }}>
                   <span className="profile-career-label">대표 직무</span>
