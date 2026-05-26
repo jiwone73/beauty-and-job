@@ -81,7 +81,7 @@ const initialState = {
   name: "",
   birth: "",
   gender: "" as Gender,
-  careerYears: 1,
+  careerYears: 0,
   job: "",
   jobType: "",
   skillAreas: [],

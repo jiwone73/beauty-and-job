@@ -381,15 +381,7 @@ export default function ProfilePage() {
                     {careerDisplay}
                     {isCareerVerified && <span className="profile-verified-badge">✓ {verifiedDate} 인증</span>}
                   </span>
-                </div>
-                <button className="profile-career-row profile-career-clickable" onClick={() => { setSelectedJobTemp(jobDisplay || ""); setShowJobModal(true); }}>
-                  <span className="profile-career-label">대표 직무</span>
-                  <span className="profile-career-value-row">
-                    <span className="profile-career-value">{jobDisplay}</span>
-                    <ChevronRight size={16} className="profile-chevron" />
-                  </span>
-                </button>
-                <div className="profile-career-warn">⚠️ 세부 직무를 입력해 주세요.</div>
+                </div>             
                 {careers.map((c) => (
                   <div key={c.id} className="profile-career-entry">
                     <div className="profile-career-entry-head">
