@@ -7691,7 +7691,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .hero-m-ai-cards::-webkit-scrollbar { display: none; }
 .hero-m-ai-card {
-  min-width: 180px;
+  min-width: 75vw;
+  max-width: 75vw;
   flex-shrink: 0;
   scroll-snap-align: start;
   background: #fff;
