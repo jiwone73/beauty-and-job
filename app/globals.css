@@ -4556,6 +4556,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   body {
     padding-bottom: calc(60px + env(safe-area-inset-bottom));
   }
+  /* 입사지원 CTA를 탭바 위로 올림 */
+  .job-detail-mobile-cta {
+    bottom: calc(60px + env(safe-area-inset-bottom));
+  }
 }
 
 /* ============================================
