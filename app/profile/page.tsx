@@ -60,6 +60,10 @@ export default function ProfilePage() {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
+
+    // DB에서 프로필 동기화
+    useProfileStore.getState().loadFromServer();
+
     fetch("/api/users/me", {
       headers: { Authorization: `Bearer ${token}` },
     })

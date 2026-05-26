@@ -2,58 +2,48 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 /* ===== 타입 정의 ===== */
-
 export interface CareerEntry {
   id: string;
   company: string;
   department: string;
   position: string;
-  startDate: string; // YYYY.MM
-  endDate: string;   // YYYY.MM 또는 "재직 중"
+  startDate: string;
+  endDate: string;
   isVerified: boolean;
 }
-
 export interface EducationEntry {
   id: string;
   school: string;
-  status: string;  // 졸업, 재학, 휴학, 중퇴
+  status: string;
   startDate: string;
   endDate: string;
   major: string;
   description: string;
 }
-
 export interface ExperienceEntry {
   id: string;
-  category: string; // 프로젝트, 수상, 자격증 등
+  category: string;
   title: string;
   description: string;
 }
-
 export interface LanguageEntry {
   id: string;
   language: string;
-  level: string; // 글로벌 커뮤니케이션 / 고급 비즈니스 / 비즈니스 / 기본
-  test: string;  // 어학시험명 (선택)
+  level: string;
+  test: string;
 }
-
 export interface LinkEntry {
   id: string;
-  category: string; // 인스타그램, 유튜브, 포트폴리오, 기타
+  category: string;
   url: string;
 }
 
 export interface ProfileState {
-  // 경력 인증
   isCareerVerified: boolean;
   verifiedDate: string;
   careers: CareerEntry[];
-
-  // 대표 직무
   mainJobGroup: string;
   subJob: string;
-
-  // 이력서 섹션 데이터
   educations: EducationEntry[];
   experiences: ExperienceEntry[];
   skills: string[];
@@ -62,6 +52,7 @@ export interface ProfileState {
   intro: string;
   coreCompetencies: string;
   email: string;
+  loaded: boolean;
 
   // 액션
   setCareerVerified: (verified: boolean, date?: string) => void;
@@ -82,31 +73,26 @@ export interface ProfileState {
   setCoreCompetencies: (comp: string) => void;
   setEmail: (email: string) => void;
   reset: () => void;
+
+  // 새 액션: DB 동기화
+  loadFromServer: () => Promise<void>;
+  syncToDb: () => Promise<void>;
 }
 
 let counter = 0;
-export function genId() {
+export function genId(): string {
   return `${Date.now()}-${++counter}`;
 }
 
 export const useProfileStore = create<ProfileState>()(
   persist(
-    (set) => ({
-      isCareerVerified: false,
-      verifiedDate: "",
-      careers: [],
-      mainJobGroup: "",
-      subJob: "",
-      educations: [],
-      experiences: [],
-      skills: [],
-      languages: [],
-      links: [],
-      intro: "",
-      coreCompetencies: "",
-      email: "",
+    (set, get) => {
+      // 헬퍼: 액션 후 자동 DB 동기화
+      const autoSync = () => {
+        setTimeout(() => get().syncToDb(), 100);
+      };
 
-      reset: () => set({
+      return {
         isCareerVerified: false,
         verifiedDate: "",
         careers: [],
@@ -120,49 +106,195 @@ export const useProfileStore = create<ProfileState>()(
         intro: "",
         coreCompetencies: "",
         email: "",
-      }),
-      setCareerVerified: (verified, date) =>
-        set({ isCareerVerified: verified, verifiedDate: date || "" }),
+        loaded: false,
 
-      addCareer: (entry) =>
-        set((s) => ({ careers: [...s.careers, entry] })),
-      removeCareer: (id) =>
-        set((s) => ({ careers: s.careers.filter((c) => c.id !== id) })),
+        reset: () => set({
+          isCareerVerified: false,
+          verifiedDate: "",
+          careers: [],
+          mainJobGroup: "",
+          subJob: "",
+          educations: [],
+          experiences: [],
+          skills: [],
+          languages: [],
+          links: [],
+          intro: "",
+          coreCompetencies: "",
+          email: "",
+          loaded: false,
+        }),
 
-      setMainJob: (group, sub) =>
-        set({ mainJobGroup: group, subJob: sub }),
+        setCareerVerified: (verified, date) => {
+          set({ isCareerVerified: verified, verifiedDate: date || "" });
+          autoSync();
+        },
+        addCareer: (entry) => {
+          set((s) => ({ careers: [...s.careers, entry] }));
+          autoSync();
+        },
+        removeCareer: (id) => {
+          set((s) => ({ careers: s.careers.filter((c) => c.id !== id) }));
+          autoSync();
+        },
+        setMainJob: (group, sub) => {
+          set({ mainJobGroup: group, subJob: sub });
+          autoSync();
+        },
+        addEducation: (entry) => {
+          set((s) => ({ educations: [...s.educations, entry] }));
+          autoSync();
+        },
+        removeEducation: (id) => {
+          set((s) => ({ educations: s.educations.filter((e) => e.id !== id) }));
+          autoSync();
+        },
+        addExperience: (entry) => {
+          set((s) => ({ experiences: [...s.experiences, entry] }));
+          autoSync();
+        },
+        removeExperience: (id) => {
+          set((s) => ({ experiences: s.experiences.filter((e) => e.id !== id) }));
+          autoSync();
+        },
+        addSkill: (skill) => {
+          set((s) => ({
+            skills: s.skills.includes(skill) ? s.skills : [...s.skills, skill],
+          }));
+          autoSync();
+        },
+        removeSkill: (skill) => {
+          set((s) => ({ skills: s.skills.filter((sk) => sk !== skill) }));
+          autoSync();
+        },
+        addLanguage: (entry) => {
+          set((s) => ({ languages: [...s.languages, entry] }));
+          autoSync();
+        },
+        removeLanguage: (id) => {
+          set((s) => ({ languages: s.languages.filter((l) => l.id !== id) }));
+          autoSync();
+        },
+        addLink: (entry) => {
+          set((s) => ({ links: [...s.links, entry] }));
+          autoSync();
+        },
+        removeLink: (id) => {
+          set((s) => ({ links: s.links.filter((l) => l.id !== id) }));
+          autoSync();
+        },
+        setIntro: (intro) => {
+          set({ intro });
+          autoSync();
+        },
+        setCoreCompetencies: (comp) => {
+          set({ coreCompetencies: comp });
+          autoSync();
+        },
+        setEmail: (email) => set({ email }),
 
-      addEducation: (entry) =>
-        set((s) => ({ educations: [...s.educations, entry] })),
-      removeEducation: (id) =>
-        set((s) => ({ educations: s.educations.filter((e) => e.id !== id) })),
+        // === DB 동기화 ===
+        loadFromServer: async () => {
+          const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+          if (!token) {
+            set({ loaded: true });
+            return;
+          }
+          try {
+            const res = await fetch("/api/users/me/profile", {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (data.success && data.data) {
+              const { profile, careers, educations, experiences, languages, links } = data.data;
+              set({
+                intro: profile?.intro || "",
+                coreCompetencies: profile?.core_competencies || "",
+                mainJobGroup: profile?.main_job_group || "",
+                subJob: profile?.sub_job || "",
+                isCareerVerified: profile?.is_career_verified || false,
+                verifiedDate: profile?.verified_date || "",
+                skills: profile?.skills || [],
+                careers: (careers || []).map((c: any) => ({
+                  id: c.id,
+                  company: c.company || "",
+                  department: c.department || "",
+                  position: c.position || "",
+                  startDate: c.start_date || "",
+                  endDate: c.end_date || "",
+                  isVerified: c.is_verified || false,
+                })),
+                educations: (educations || []).map((e: any) => ({
+                  id: e.id,
+                  school: e.school || "",
+                  status: e.status || "",
+                  startDate: e.start_date || "",
+                  endDate: e.end_date || "",
+                  major: e.major || "",
+                  description: e.description || "",
+                })),
+                experiences: (experiences || []).map((x: any) => ({
+                  id: x.id,
+                  category: x.category || "",
+                  title: x.title || "",
+                  description: x.description || "",
+                })),
+                languages: (languages || []).map((l: any) => ({
+                  id: l.id,
+                  language: l.language || "",
+                  level: l.level || "",
+                  test: l.test || "",
+                })),
+                links: (links || []).map((lk: any) => ({
+                  id: lk.id,
+                  category: lk.category || "",
+                  url: lk.url || "",
+                })),
+                loaded: true,
+              });
+            } else {
+              set({ loaded: true });
+            }
+          } catch (e) {
+            console.error("[profile load]", e);
+            set({ loaded: true });
+          }
+        },
 
-      addExperience: (entry) =>
-        set((s) => ({ experiences: [...s.experiences, entry] })),
-      removeExperience: (id) =>
-        set((s) => ({ experiences: s.experiences.filter((e) => e.id !== id) })),
-
-      addSkill: (skill) =>
-        set((s) => ({
-          skills: s.skills.includes(skill) ? s.skills : [...s.skills, skill],
-        })),
-      removeSkill: (skill) =>
-        set((s) => ({ skills: s.skills.filter((sk) => sk !== skill) })),
-
-      addLanguage: (entry) =>
-        set((s) => ({ languages: [...s.languages, entry] })),
-      removeLanguage: (id) =>
-        set((s) => ({ languages: s.languages.filter((l) => l.id !== id) })),
-
-      addLink: (entry) =>
-        set((s) => ({ links: [...s.links, entry] })),
-      removeLink: (id) =>
-        set((s) => ({ links: s.links.filter((l) => l.id !== id) })),
-
-      setIntro: (intro) => set({ intro }),
-      setCoreCompetencies: (comp) => set({ coreCompetencies: comp }),
-      setEmail: (email) => set({ email }),
-    }),
+        syncToDb: async () => {
+          const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+          if (!token) return;
+          const s = get();
+          try {
+            await fetch("/api/users/me/profile", {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                profile: {
+                  intro: s.intro,
+                  core_competencies: s.coreCompetencies,
+                  main_job_group: s.mainJobGroup,
+                  sub_job: s.subJob,
+                  is_career_verified: s.isCareerVerified,
+                  verified_date: s.verifiedDate,
+                  skills: s.skills,
+                },
+                careers: s.careers,
+                educations: s.educations,
+                experiences: s.experiences,
+                languages: s.languages,
+                links: s.links,
+              }),
+            });
+          } catch (e) {
+            console.error("[profile sync]", e);
+          }
+        },
+      };
+    },
     { name: "beautynjob-profile" }
   )
 );
