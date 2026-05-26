@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -7,6 +7,7 @@ import {
   Briefcase, Users, FileText, Settings,
   Bell, LogOut, ChevronLeft
 } from "lucide-react";
+import { companyMeApi } from "@/lib/api/company";
 
 const JOB_GROUPS = {
   "기업": {
@@ -34,6 +35,18 @@ const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트",
 export default function CompanyJobNewPage() {
   const router = useRouter();
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
+  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | null>(null);
+
+  // 회사 타입에 맞게 jobGroupType 자동 설정
+  useEffect(() => {
+    companyMeApi.get()
+      .then(res => {
+        const type = res.data.company_type;
+        setCompanyType(type);
+        setJobGroupType(type === "STORE" ? "매장" : "기업");
+      })
+      .catch(console.error);
+  }, []);
   const [selectedGroup, setSelectedGroup] = useState("");
   const [form, setForm] = useState({
     title: "", category: "", career: "", region: "",
@@ -122,17 +135,24 @@ export default function CompanyJobNewPage() {
         <div className="company-card" style={{overflow:"visible"}}>
           <div className="company-card-head"><h2 className="company-card-title">기본 정보</h2></div>
           <div className="admin-form-body">
-            {/* 채용 유형 */}
+            {/* 채용 유형 (회사 타입에 따라 자동 설정) */}
             <div className="admin-form-row">
-              <label className="admin-form-label">채용 유형 *</label>
-              <div className="admin-job-type-tabs">
-                {(["기업", "매장"] as const).map((t) => (
-                  <button key={t} type="button"
-                    className={`admin-job-type-tab ${jobGroupType === t ? "active" : ""}`}
-                    onClick={() => { setJobGroupType(t); setSelectedGroup(""); setForm({...form, category: ""}); }}>
-                    {t === "기업" ? "🏢 기업" : "🏪 매장"}
-                  </button>
-                ))}
+              <label className="admin-form-label">채용 유형</label>
+              <div style={{
+                padding: "12px 16px",
+                background: "#faf5ff",
+                border: "1px solid #ede0f8",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}>
+                <span style={{ fontSize: "14px", fontWeight: 600, color: "#5f0080" }}>
+                  {jobGroupType === "기업" ? "🏢 기업·브랜드 채용" : "🏪 매장·살롱 채용"}
+                </span>
+                <span style={{ fontSize: "11px", color: "#888" }}>
+                  회사 정보에 따라 자동 설정
+                </span>
               </div>
             </div>
 
