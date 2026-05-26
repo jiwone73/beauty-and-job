@@ -91,6 +91,16 @@ export default function CompanyDashboard() {
 
   return (
     <CompanyLayout activePage="dashboard">
+      {/* 환영 메시지 */}
+      <div style={{ marginBottom: "24px" }}>
+        <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#1a1a1a", marginBottom: "6px" }}>
+          대시보드
+        </h1>
+        <p style={{ fontSize: "14px", color: "#888" }}>
+          오늘도 좋은 인재를 만나보세요 👋
+        </p>
+      </div>
+
       {/* 통계 카드 */}
       <div className="company-stat-grid">
         {statCards.map((stat) => (
