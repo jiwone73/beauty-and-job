@@ -376,7 +376,7 @@ export default function ProfilePage() {
                 <Plus size={18} /><span>추가하기</span>
               </button>
             </section>
-
+             {dbJobType !== "STORE" && (
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">스킬</h2>
@@ -395,7 +395,7 @@ export default function ProfilePage() {
                 <Plus size={18} /><span>추가하기</span>
               </button>
             </section>
-
+            )}
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">어학</h2>

@@ -269,7 +269,6 @@ function ResumePageContent() {
             { id: "intro", label: "소개" },
             { id: "career", label: "경력 (근무 매장)" },
             { id: "education", label: "학력" },
-            { id: "skill", label: "전문 기술" },
             { id: "language", label: "어학" },
             { id: "experience", label: "프로젝트 · 활동" },
             { id: "portfolio", label: "포트폴리오" },
@@ -387,7 +386,7 @@ function ResumePageContent() {
               ))
             )}
           </section>
-
+          {resumeType === "office" && (
           <section id="section-skill" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">스킬</h2>
@@ -407,6 +406,7 @@ function ResumePageContent() {
               </div>
            )}
           </section>
+          )}
           <section id="section-language" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">어학</h2>
