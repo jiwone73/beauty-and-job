@@ -13,7 +13,7 @@ const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
 
 function ResumePageContent() {
   const router = useRouter();
-  const { name: signupName, birth, gender, job, jobCustom, phone } = useSignupStore();
+  const { name: signupName, birth, gender, job, jobCustom, phone, officeJobAreas, skillAreas, certificates, workTypePrefer, regionPrefer } = useSignupStore();
   const { userName } = useAuthStore();
   const name = signupName || userName || "";
   const {
@@ -632,6 +632,12 @@ function ResumePageContent() {
                 links={links}
                 portfolioUrl={portfolioUrl}
                 portfolioFilename={portfolioFilename}
+                resumeType={resumeType}
+                officeJobAreas={officeJobAreas}
+                skillAreas={skillAreas}
+                certificates={certificates}
+                workTypePrefer={workTypePrefer}
+                regionPrefer={regionPrefer}
               />
             </div>
           </div>

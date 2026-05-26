@@ -25,6 +25,12 @@ interface Props {
   links: LinkEntry[];
   portfolioUrl: string | null;
   portfolioFilename: string | null;
+  resumeType: "office" | "salon";
+  officeJobAreas: string[];
+  skillAreas: string[];
+  certificates: string[];
+  workTypePrefer: string;
+  regionPrefer: string;
 }
 
 const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
@@ -44,6 +50,12 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     links,
     portfolioUrl,
     portfolioFilename,
+    resumeType,
+    officeJobAreas,
+    skillAreas,
+    certificates,
+    workTypePrefer,
+    regionPrefer,
   },
   ref
 ) {
@@ -78,7 +90,47 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           </p>
         </div>
       )}
-
+      {resumeType === "office" && officeJobAreas.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">직군 영역</h2>
+          <div className="rp-chips">
+            {officeJobAreas.map((area) => (
+              <span key={area} className="rp-chip">{area}</span>
+            ))}
+          </div>
+        </div>
+      )}
+      {resumeType === "salon" && skillAreas.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">시술 분야 · 전문 영역</h2>
+          <div className="rp-chips">
+            {skillAreas.map((area) => (
+              <span key={area} className="rp-chip">{area}</span>
+            ))}
+          </div>
+        </div>
+      )}
+      {resumeType === "salon" && certificates.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">보유 자격증</h2>
+          <div className="rp-chips">
+            {certificates.map((cert) => (
+              <span key={cert} className="rp-chip">{cert}</span>
+            ))}
+          </div>
+        </div>
+      )}
+      {resumeType === "salon" && (workTypePrefer || regionPrefer) && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">희망 근무 조건</h2>
+          {workTypePrefer && (
+            <p className="rp-text"><strong>근무 형태:</strong> {workTypePrefer}</p>
+          )}
+          {regionPrefer && (
+            <p className="rp-text"><strong>근무 지역:</strong> {regionPrefer}</p>
+          )}
+        </div>
+      )}
       {careers.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">경력</h2>

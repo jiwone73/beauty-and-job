@@ -10,7 +10,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 export default function ResumeTab() {
   const router = useRouter();
   const { intro, coreCompetencies, careers, educations, skills, languages, experiences, links, loaded } = useProfileStore();
-  const { name: signupName, phone, skillAreas, certificates, workTypePrefer, regionPrefer } = useSignupStore();
+  const { name: signupName, phone, skillAreas, certificates, workTypePrefer, regionPrefer, officeJobAreas } = useSignupStore();
   const { userName } = useAuthStore();
   const name = userName || signupName || "";
 
@@ -56,6 +56,7 @@ export default function ResumeTab() {
     { label: "기본 정보", done: !!(name && phone && emailFromDb), required: true },
     { label: "소개", done: !!intro.trim(), required: true },
     { label: "핵심 역량", done: !!coreCompetencies.trim(), required: true },
+    { label: "직군 영역", done: officeJobAreas.length > 0, required: true },
     { label: "경력", done: careers.length > 0, required: true },
     { label: "학력", done: educations.length > 0, required: false },
     { label: "스킬", done: skills.length > 0, required: false },
