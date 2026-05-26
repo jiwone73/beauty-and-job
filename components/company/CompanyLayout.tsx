@@ -58,6 +58,18 @@ export default function CompanyLayout({ children, activePage }: {
   ];
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  if (isMobile) {
+    return <PCOnlyNotice />;
+  }
 
   return (
     <div className="company-layout">
@@ -111,6 +123,78 @@ export default function CompanyLayout({ children, activePage }: {
         </header>
         <main className="company-content">{children}</main>
       </div>
+    </div>
+  );
+}
+function PCOnlyNotice() {
+  return (
+    <div style={{
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "32px 24px",
+      background: "linear-gradient(135deg, #f3e5f5 0%, #fff 100%)",
+    }}>
+      <div style={{ fontSize: "64px", marginBottom: "16px" }}>💻</div>
+      <h1 style={{
+        fontSize: "22px",
+        fontWeight: 700,
+        color: "#1a1a1a",
+        marginBottom: "12px",
+        textAlign: "center",
+      }}>
+        PC에서 이용해주세요
+      </h1>
+      <p style={{
+        fontSize: "14px",
+        color: "#666",
+        textAlign: "center",
+        marginBottom: "32px",
+        lineHeight: 1.7,
+        maxWidth: "320px",
+      }}>
+        기업 대시보드는 더 편한 사용 경험을 위해<br />
+        <strong style={{ color: "#5f0080" }}>PC 환경에 최적화</strong>되어 있어요.<br /><br />
+        PC에서 접속하시면 모든 기능을<br />
+        편리하게 사용하실 수 있습니다.
+      </p>
+      <div style={{
+        padding: "14px 20px",
+        background: "#fff",
+        border: "1px solid #ede0f8",
+        borderRadius: "12px",
+        marginBottom: "24px",
+        maxWidth: "320px",
+        width: "100%",
+      }}>
+        <p style={{ fontSize: "12px", color: "#888", marginBottom: "6px" }}>
+          접속 주소
+        </p>
+        <p style={{
+          fontSize: "13px",
+          color: "#5f0080",
+          fontWeight: 600,
+          wordBreak: "break-all",
+        }}>
+          beauty-and-job.vercel.app
+        </p>
+      </div>
+      <Link href="/" style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        padding: "12px 24px",
+        background: "#5f0080",
+        color: "#fff",
+        borderRadius: "10px",
+        fontSize: "14px",
+        fontWeight: 600,
+        textDecoration: "none",
+      }}>
+        메인으로 가기
+      </Link>
     </div>
   );
 }
