@@ -9,7 +9,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 
 export default function ResumeTab() {
   const router = useRouter();
-  const { intro, coreCompetencies, careers, educations, skills, languages, experiences, links } = useProfileStore();
+  const { intro, coreCompetencies, careers, educations, skills, languages, experiences, links, loaded } = useProfileStore();
   const { name: signupName, phone, skillAreas, certificates, workTypePrefer, regionPrefer } = useSignupStore();
   const { userName } = useAuthStore();
   const name = userName || signupName || "";
@@ -69,6 +69,11 @@ export default function ResumeTab() {
   const completionRate = Math.round((completedCount / totalCount) * 100);
 
   const hasAnyContent = completedCount > 0;
+
+  // 데이터 로딩 중에는 빈 화면 (flash 방지)
+  if (!loaded || !dbJobType) {
+    return <div style={{ minHeight: "300px" }} />;
+  }
 
   if (!hasAnyContent) {
     return (
