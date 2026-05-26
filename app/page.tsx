@@ -26,6 +26,9 @@ import {
 } from "lucide-react";
 
 export default function HomePage() {
+  useEffect(() => {
+    useBookmarkStore.getState().loadFromServer();
+  }, []);
   return (
     <main className="main-page">
       <Header />
@@ -359,16 +362,17 @@ function JobCard({ id, brand, tag, tagType, title, location, type, deadline }: {
   title: string; location: string; type: string; deadline: string;
 }) {
   const router = useRouter();
-  const [bookmarked, setBookmarked] = useState(false);
-
+  const bookmarks = useBookmarkStore((s) => s.bookmarks);
+  const toggleBookmark = useBookmarkStore((s) => s.toggle);
+  const isBookmarked = bookmarks.includes(String(id));
   return (
     <div className="job-card" onClick={() => router.push(`/jobs/${id}`)} style={{ cursor: "pointer" }}>
       <div className="card-header">
         <span className="card-brand">{brand}</span>
-        <button className={`bookmark ${bookmarked ? "active" : ""}`}
-          onClick={(e) => { e.stopPropagation(); setBookmarked(!bookmarked); }}
+        <button className={`bookmark ${isBookmarked ? "active" : ""}`}
+          onClick={(e) => { e.stopPropagation(); toggleBookmark(id); }}
           aria-label="북마크">
-          <Bookmark size={18} fill={bookmarked ? "currentColor" : "none"} />
+          <Bookmark size={18} fill={isBookmarked ? "currentColor" : "none"} />
         </button>
       </div>
       <span className={`card-tag card-tag-${tagType}`}>{tag}</span>
