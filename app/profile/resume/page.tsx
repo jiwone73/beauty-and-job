@@ -260,6 +260,8 @@ function ResumePageContent() {
             { id: "career", label: "경력" },
             { id: "education", label: "학력" },
             { id: "skill", label: "스킬" },
+            { id: "language", label: "어학" },
+            { id: "experience", label: "프로젝트 · 활동" },
             { id: "portfolio", label: "포트폴리오" },
             { id: "link", label: "링크" },
           ] : [
@@ -268,6 +270,8 @@ function ResumePageContent() {
             { id: "career", label: "경력 (근무 매장)" },
             { id: "education", label: "학력" },
             { id: "skill", label: "전문 기술" },
+            { id: "language", label: "어학" },
+            { id: "experience", label: "프로젝트 · 활동" },
             { id: "portfolio", label: "포트폴리오" },
             { id: "link", label: "링크" },
           ]).map((sec) => (
