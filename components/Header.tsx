@@ -118,9 +118,6 @@ export default function Header({ onSearchClick }: HeaderProps) {
                 <span className="mob-menu-item-label">이력서 등록</span>
                 <span className="mob-menu-badge gray">경력직</span>
               </Link>
-              <Link href="/brands" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
-                <span className="mob-menu-item-label">회사 탐색</span>
-              </Link>
               <Link href="/company/login" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
                 <span className="mob-menu-item-label">기업 서비스</span>
                 <span className="mob-menu-badge purple">기업</span>

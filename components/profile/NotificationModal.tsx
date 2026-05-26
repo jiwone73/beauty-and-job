@@ -28,7 +28,6 @@ const NOTIFICATION_GROUPS = [
     group: "새로운 커리어",
     items: [
       { id: "recommend", title: "추천 포지션 알림", desc: "내 직무, 연차에 맞는 포지션을 알려드려요.", defaultOn: true },
-      { id: "brand", title: "관심 브랜드 공고 알림", desc: "내가 찜한 브랜드의 새 공고를 빠르게 만나봐요.", defaultOn: true },
     ],
   },
 ];
