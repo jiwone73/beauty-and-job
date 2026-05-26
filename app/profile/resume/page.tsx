@@ -1,6 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,7 +11,7 @@ import ResumePreview from "@/components/profile/ResumePreview";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
 
-export default function ResumePage() {
+function ResumePageContent() {
   const router = useRouter();
   const { name: signupName, birth, gender, job, jobCustom, phone } = useSignupStore();
   const { userName } = useAuthStore();
@@ -572,5 +571,12 @@ export default function ResumePage() {
         </div>
       )}
     </div>
+  );
+}
+export default function ResumePage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 40 }}>로딩 중...</div>}>
+      <ResumePageContent />
+    </Suspense>
   );
 }
