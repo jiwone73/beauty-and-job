@@ -18,7 +18,7 @@ function ResumePageContent() {
   const name = signupName || userName || "";
   const {
     intro, coreCompetencies, educations, careers,
-    skills, languages, links, email,
+    skills, languages, experiences, links, email,
     setIntro, setCoreCompetencies, setEmail,
   } = useProfileStore();
 
