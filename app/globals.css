@@ -3101,8 +3101,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #1a1a1a;
 }
 .rp-modal-body {
-  padding: 32px 40px;
+  padding: 40px 60px;
   overflow-y: auto;
+  background: #f3f3f3;
 }
 
 /* ============================================
