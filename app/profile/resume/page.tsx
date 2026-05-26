@@ -49,7 +49,7 @@ function ResumePageContent() {
       .then((r) => r.json())
       .then((res) => {
         if (res.success) {
-          if (res.data.email && !emailLocal) setEmailLocal(res.data.email);
+          if (res.data.email) setEmailLocal(res.data.email);
           if (res.data.job_type === "STORE") setResumeType("salon");
           else setResumeType("office");
           if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
@@ -565,6 +565,7 @@ function ResumePageContent() {
                 educations={educations}
                 skills={skills}
                 languages={languages}
+                experiences={experiences}
                 links={links}
                 portfolioUrl={portfolioUrl}
                 portfolioFilename={portfolioFilename}

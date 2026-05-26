@@ -4,6 +4,7 @@ import { forwardRef } from "react";
 import type {
   CareerEntry,
   EducationEntry,
+  ExperienceEntry,
   LanguageEntry,
   LinkEntry,
 } from "@/lib/store/profileStore";
@@ -20,6 +21,7 @@ interface Props {
   educations: EducationEntry[];
   skills: string[];
   languages: LanguageEntry[];
+  experiences: ExperienceEntry[];
   links: LinkEntry[];
   portfolioUrl: string | null;
   portfolioFilename: string | null;
@@ -37,6 +39,8 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     careers,
     educations,
     skills,
+    languages,
+    experiences,
     links,
     portfolioUrl,
     portfolioFilename,
@@ -127,7 +131,44 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           </div>
         </div>
       )}
-
+      {languages.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">어학</h2>
+          {languages.map((lang) => (
+            <div key={lang.id} className="rp-item">
+              <p className="rp-text" style={{ fontWeight: 600 }}>
+                {lang.language}
+                <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>
+                  {lang.level}
+                </span>
+              </p>
+              {lang.test && (
+                <p className="rp-text" style={{ color: "#888", fontSize: "13px" }}>
+                  {lang.test}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      {experiences.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">프로젝트 · 활동</h2>
+          {experiences.map((x) => (
+            <div key={x.id} className="rp-item">
+              <p className="rp-text" style={{ fontWeight: 600 }}>
+                {x.category && (
+                  <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>
+                )}
+                {x.title}
+              </p>
+              {x.description && (
+                <p className="rp-text" style={{ color: "#666" }}>{x.description}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
       {portfolioUrl && (
         <div className="rp-section">
           <h2 className="rp-section-title">포트폴리오</h2>
