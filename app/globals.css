@@ -3113,6 +3113,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
   color: #1a1a1a;
   line-height: 1.6;
+  padding: 48px 56px;
 }
 
 /* 상단 프로필 */
