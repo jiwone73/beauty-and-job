@@ -465,8 +465,8 @@ export default function ProfilePage() {
               <label className="cv-field-label">이메일 주소</label>
               <input className="cv-input" type="email" placeholder="example@email.com" defaultValue={emailInput} id="email-input" />
               <button className="cv-btn-primary" style={{marginTop:"16px"}} onClick={() => {
-                const val = (document.getElementById("email-input") as HTMLInputElement)?.value;
-                if (val) setEmailInput(val);
+                const val = (document.getElementById("birth-input") as HTMLInputElement)?.value;
+                if (val) useSignupStore.getState().setBasic({ birth: val });
                 setEditField(null);
               }}>저장</button>
             </div>
@@ -487,7 +487,7 @@ export default function ProfilePage() {
               <button className="cv-btn-primary" style={{marginTop:"16px"}} onClick={() => {
                 const val = (document.getElementById("birth-input") as HTMLInputElement)?.value;
                 if (val) useSignupStore.getState().setBasic({ birth: val });
-                setOpenModal(null);
+                setEditField(null);
               }}>저장</button>
             </div>
           </div>

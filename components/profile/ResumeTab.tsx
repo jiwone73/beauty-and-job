@@ -10,7 +10,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 export default function ResumeTab() {
   const router = useRouter();
   const { intro, coreCompetencies, careers, educations, skills, languages, experiences, links } = useProfileStore();
-  const { name: signupName, phone } = useSignupStore();
+  const { name: signupName, phone, skillAreas, certificates, workTypePrefer, regionPrefer } = useSignupStore();
   const { userName } = useAuthStore();
   const name = userName || signupName || "";
 
@@ -37,15 +37,29 @@ export default function ResumeTab() {
       .catch(console.error);
   }, []);
 
-  const items = [
+  const items = dbJobType === "STORE" ? [
+    // 매장·기술직용
     { label: "기본 정보", done: !!(name && phone && emailFromDb), required: true },
     { label: "소개", done: !!intro.trim(), required: true },
-    ...(dbJobType === "OFFICE"
-      ? [{ label: "핵심 역량", done: !!coreCompetencies.trim(), required: true }]
-      : []),
+    { label: "경력 (근무 매장)", done: careers.length > 0, required: true },
+    { label: "학력", done: educations.length > 0, required: false },
+    { label: "시술 분야 · 전문 영역", done: skillAreas.length > 0, required: true },
+    { label: "보유 자격증", done: certificates.length > 0, required: false },
+    { label: "희망 근무 형태", done: !!workTypePrefer, required: false, extra: workTypePrefer || undefined },
+    { label: "희망 근무 지역", done: !!regionPrefer, required: false, extra: regionPrefer || undefined },
+    { label: "프로젝트 · 활동", done: experiences.length > 0, required: false },
+    { label: "포트폴리오", done: !!portfolioUrl, required: false, extra: portfolioFilename || undefined },
+    { label: "링크", done: links.length > 0, required: false },
+  ] : [
+    // 기업·사무직용
+    { label: "기본 정보", done: !!(name && phone && emailFromDb), required: true },
+    { label: "소개", done: !!intro.trim(), required: true },
+    { label: "핵심 역량", done: !!coreCompetencies.trim(), required: true },
     { label: "경력", done: careers.length > 0, required: true },
     { label: "학력", done: educations.length > 0, required: false },
     { label: "스킬", done: skills.length > 0, required: false },
+    { label: "어학", done: languages.length > 0, required: false },
+    { label: "프로젝트 · 활동", done: experiences.length > 0, required: false },
     { label: "포트폴리오", done: !!portfolioUrl, required: false, extra: portfolioFilename || undefined },
     { label: "링크", done: links.length > 0, required: false },
   ];
