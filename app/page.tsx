@@ -316,23 +316,21 @@ function SectionPick() {
     return `D-${dDay}`;
   };
 
-  const mappedJobs = jobs.length > 0
-    ? jobs.map((j: any) => ({
-        id: j.id,
-        brand: j.brand_name || j.company_name,
-        tag:
-          j.experience_level === "NEW"
-            ? "신입"
-            : j.experience_level === "EXPERIENCED"
-            ? "경력"
-            : "경력 무관",
-        tagType: "primary",
-        title: j.title,
-        location: j.location || "협의",
-        type: j.work_type || "정규직",
-        deadline: formatDeadline(j.deadline),
-      }))
-    : PICK_JOBS;
+  const mappedJobs = jobs.map((j: any) => ({
+    id: j.id,
+    brand: j.brand_name || j.company_name,
+    tag:
+      j.experience_level === "NEW"
+        ? "신입"
+        : j.experience_level === "EXPERIENCED"
+        ? "경력"
+        : "경력 무관",
+    tagType: "primary",
+    title: j.title,
+    location: j.location || "협의",
+    type: j.work_type || "정규직",
+    deadline: formatDeadline(j.deadline),
+  }));
 
   return (
     <section className="section">
@@ -420,17 +418,15 @@ function SectionStorePick() {
     return `D-${dDay}`;
   };
 
-  const mappedJobs = jobs.length > 0
-    ? jobs.map((j: any) => ({
-        id: j.id,
-        brand: j.brand_name || j.company_name,
-        tag: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
-        title: j.title,
-        location: j.location || "협의",
-        type: j.work_type || "정규직",
-        deadline: formatDeadline(j.deadline),
-      }))
-    : STORE_PICK_JOBS;
+  const mappedJobs = jobs.map((j: any) => ({
+    id: j.id,
+    brand: j.brand_name || j.company_name,
+    tag: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
+    title: j.title,
+    location: j.location || "협의",
+    type: j.work_type || "정규직",
+    deadline: formatDeadline(j.deadline),
+  }));
 
   return (
     <section className="section section-divider">
@@ -487,17 +483,15 @@ function SectionCorpPick() {
     return `D-${dDay}`;
   };
 
-  const mappedJobs = jobs.length > 0
-    ? jobs.map((j: any) => ({
-        id: j.id,
-        brand: j.brand_name || j.company_name,
-        tag: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
-        title: j.title,
-        location: j.location || "협의",
-        type: j.work_type || "정규직",
-        deadline: formatDeadline(j.deadline),
-      }))
-    : CORP_PICK_JOBS;
+  const mappedJobs = jobs.map((j: any) => ({
+    id: j.id,
+    brand: j.brand_name || j.company_name,
+    tag: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
+    title: j.title,
+    location: j.location || "협의",
+    type: j.work_type || "정규직",
+    deadline: formatDeadline(j.deadline),
+  }));
 
   return (
     <section className="section section-divider">
@@ -697,15 +691,13 @@ function SectionPremium() {
     return "협의";
   };
 
-  const mappedJobs = jobs.length > 0
-    ? jobs.map((j: any) => ({
-        id: j.id,
-        brand: j.brand_name || j.company_name,
-        title: j.title,
-        meta: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
-        salary: formatSalary(j),
-      }))
-    : PREMIUM_JOBS;
+  const mappedJobs = jobs.map((j: any) => ({
+    id: j.id,
+    brand: j.brand_name || j.company_name,
+    title: j.title,
+    meta: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
+    salary: formatSalary(j),
+  }));
 
   return (
     <section className="section section-premium-bg">
