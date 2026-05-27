@@ -28,7 +28,7 @@ const SKILL_RECOMMENDATIONS: Record<string, string[]> = {
 
 export default function SkillModal({ isOpen, onClose }: Props) {
   const { skills, addSkill, removeSkill } = useProfileStore();
-  const { job } = useSignupStore();
+  const { officeJobAreas } = useSignupStore();
   const [input, setInput] = useState("");
   if (!isOpen) return null;
 
