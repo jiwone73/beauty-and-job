@@ -61,7 +61,11 @@ function ResumePageContent() {
       .catch(console.error);
   }, []);
 
-  const jobDisplay = job === "직접입력" ? jobCustom : job || "직군 미설정";
+  const jobDisplay =
+    (job === "직접입력" ? jobCustom : job) ||
+    officeJobAreas[0] ||
+    skillAreas[0] ||
+    "직군 미설정";
   const birthDisplay = birth
     ? `${birth.slice(0, 4)}년 (${gender === "남성" ? "남" : "여"})`
     : "";
