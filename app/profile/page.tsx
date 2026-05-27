@@ -136,6 +136,65 @@ export default function ProfilePage() {
 
   const customAreas = skillAreas.filter((a) => !PRESET_SKILL_AREAS.includes(a));
   const customOfficeAreas = officeJobAreas.filter((a) => !PRESET_OFFICE_JOB_AREAS.includes(a));
+
+  // 프로필 사진 업로드
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 1024 * 1024) {
+      alert("파일 크기는 1MB 이하여야 합니다.");
+      return;
+    }
+    if (!["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)) {
+      alert("JPG, PNG, WebP 이미지만 업로드 가능합니다.");
+      return;
+    }
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    setAvatarUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const res = await fetch("/api/users/me/avatar", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAvatarUrl(data.data.avatar_url);
+      } else {
+        alert(data.error?.message || "업로드에 실패했습니다.");
+      }
+    } catch {
+      alert("네트워크 오류가 발생했습니다.");
+    } finally {
+      setAvatarUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  // 프로필 사진 삭제
+  const handleAvatarDelete = async () => {
+    if (!confirm("프로필 사진을 삭제하시겠어요?")) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    setAvatarUploading(true);
+    try {
+      const res = await fetch("/api/users/me/avatar", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAvatarUrl(null);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
   const addCustomOfficeArea = () => {
     const v = customOfficeAreaInput.trim();
     if (!v) return;
