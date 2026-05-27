@@ -32,6 +32,7 @@ function ResumePageContent() {
   const previewRef = useRef<HTMLDivElement>(null);
 
   const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -53,6 +54,7 @@ function ResumePageContent() {
           if (res.data.job_type === "STORE") setResumeType("salon");
           else setResumeType("office");
           if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
+          if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
           if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
         }
       })
@@ -632,6 +634,7 @@ function ResumePageContent() {
                 links={links}
                 portfolioUrl={portfolioUrl}
                 portfolioFilename={portfolioFilename}
+                avatarUrl={avatarUrl}
                 resumeType={resumeType}
                 officeJobAreas={officeJobAreas}
                 skillAreas={skillAreas}

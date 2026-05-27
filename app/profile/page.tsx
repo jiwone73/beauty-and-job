@@ -229,44 +229,7 @@ export default function ProfilePage() {
         </div>
       </header>
       <div className="profile-summary">
-        {/* 프로필 사진 */}
-        <div style={{display:"flex", flexDirection:"column", alignItems:"center", marginBottom:"16px"}}>
-          <div style={{
-            width:"96px",
-            height:"96px",
-            borderRadius:"50%",
-            background:"#f0e8f8",
-            display:"flex",
-            alignItems:"center",
-            justifyContent:"center",
-            overflow:"hidden",
-            position:"relative",
-            border:"2px solid #ede0f8",
-          }}>
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="프로필" style={{width:"100%", height:"100%", objectFit:"cover"}} />
-            ) : (
-              <span style={{fontSize:"32px", color:"#a888c0"}}>👤</span>
-            )}
-            {avatarUploading && (
-              <div style={{position:"absolute", inset:0, background:"rgba(255,255,255,0.8)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"11px", color:"#5f0080", fontWeight:600}}>
-                업로드 중...
-              </div>
-            )}
-          </div>
-          <div style={{display:"flex", gap:"8px", marginTop:"8px"}}>
-            <label style={{padding:"4px 10px", borderRadius:"6px", border:"1px solid #5f0080", background:"#fff", color:"#5f0080", fontSize:"11px", fontWeight:600, cursor:"pointer"}}>
-              {avatarUrl ? "변경" : "사진 추가"}
-              <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleAvatarUpload} style={{display:"none"}} />
-            </label>
-            {avatarUrl && (
-              <button onClick={handleAvatarDelete} style={{padding:"4px 10px", borderRadius:"6px", border:"1px solid #e0e0e0", background:"#fff", color:"#888", fontSize:"11px", cursor:"pointer"}}>
-                삭제
-              </button>
-            )}
-          </div>
-          <p style={{fontSize:"10px", color:"#aaa", marginTop:"4px"}}>JPG/PNG/WebP, 1MB 이하</p>
-        </div>
+        
         <div className="profile-name-row"><h1 className="profile-name">{name || "회원"}</h1></div>
         <button className="profile-job-row" onClick={() => router.push("/")}>
           <span className="profile-job">{jobDisplay}</span>
@@ -345,7 +308,48 @@ export default function ProfilePage() {
                 <h2 className="profile-section-title">기본 정보 <CheckCircle2 size={16} className="profile-check" /></h2>
               </div>
               <div className="profile-info-card">
-                <InfoRow label="이름" value={name || "정보 없음"} />
+                {/* 사진 + 이름 통합 */}
+                <div style={{padding:"16px 14px", borderBottom:"1px solid #f0e8f8", display:"flex", alignItems:"center", gap:"14px"}}>
+                  <div style={{
+                    flexShrink: 0,
+                    width:"80px",
+                    height:"80px",
+                    borderRadius:"50%",
+                    background:"#f0e8f8",
+                    display:"flex",
+                    alignItems:"center",
+                    justifyContent:"center",
+                    overflow:"hidden",
+                    position:"relative",
+                    border:"2px solid #ede0f8",
+                  }}>
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="프로필" style={{width:"100%", height:"100%", objectFit:"cover"}} />
+                    ) : (
+                      <span style={{fontSize:"30px", color:"#a888c0"}}>👤</span>
+                    )}
+                    {avatarUploading && (
+                      <div style={{position:"absolute", inset:0, background:"rgba(255,255,255,0.8)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"10px", color:"#5f0080", fontWeight:600}}>
+                        업로드중
+                      </div>
+                    )}
+                  </div>
+                  <div style={{flex:1, minWidth:0}}>
+                    <p style={{fontSize:"16px", fontWeight:600, margin:"0 0 6px"}}>{name || "회원"}</p>
+                    <div style={{display:"flex", gap:"6px", marginBottom:"4px"}}>
+                      <label style={{padding:"3px 10px", borderRadius:"6px", border:"1px solid #5f0080", background:"#fff", color:"#5f0080", fontSize:"11px", fontWeight:600, cursor:"pointer"}}>
+                        {avatarUrl ? "변경" : "사진 추가"}
+                        <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleAvatarUpload} style={{display:"none"}} />
+                      </label>
+                      {avatarUrl && (
+                        <button onClick={handleAvatarDelete} style={{padding:"3px 10px", borderRadius:"6px", border:"1px solid #e0e0e0", background:"#fff", color:"#888", fontSize:"11px", cursor:"pointer"}}>
+                          삭제
+                        </button>
+                      )}
+                    </div>
+                    <p style={{fontSize:"10px", color:"#aaa", margin:0}}>JPG/PNG/WebP, 1MB 이하</p>
+                  </div>
+                </div>
                 <InfoRow label="휴대전화" value={userPhone || phone || "정보 없음"} />
                 <InfoRow label="생년월일" value={birth ? `${birth.slice(0,4)}.${birth.slice(4,6) || "00"}.${birth.slice(6,8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => setEditField("birth")} />
                 <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setEditField("gender")} />

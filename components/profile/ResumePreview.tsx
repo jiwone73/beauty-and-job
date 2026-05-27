@@ -31,6 +31,7 @@ interface Props {
   certificates: string[];
   workTypePrefer: string;
   regionPrefer: string;
+  avatarUrl?: string | null;
 }
 
 const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
@@ -56,23 +57,39 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     certificates,
     workTypePrefer,
     regionPrefer,
+    avatarUrl,
   },
   ref
 ) {
   return (
     <div ref={ref} className="rp-wrap">
-      <div className="rp-header">
-        <h1 className="rp-name">{name || "이름"}</h1>
-        <p className="rp-meta">
-          {birthDisplay}
-          {birthDisplay && jobDisplay ? " · " : ""}
-          {jobDisplay}
-        </p>
-        <p className="rp-contact">
-          {phone || ""}
-          {phone && email ? " · " : ""}
-          {email || ""}
-        </p>
+      <div className="rp-header" style={{display:"flex", alignItems:"center", gap:"20px"}}>
+        <div style={{flex:1, minWidth:0}}>
+          <h1 className="rp-name">{name || "이름"}</h1>
+          <p className="rp-meta">
+            {birthDisplay}
+            {birthDisplay && jobDisplay ? " · " : ""}
+            {jobDisplay}
+          </p>
+          <p className="rp-contact">
+            {phone || ""}
+            {phone && email ? " · " : ""}
+            {email || ""}
+          </p>
+        </div>
+        {avatarUrl && (
+          <div style={{
+            flexShrink: 0,
+            width: "96px",
+            height: "120px",
+            borderRadius: "4px",
+            overflow: "hidden",
+            border: "1px solid #e0e0e0",
+            background: "#f5f5f5",
+          }}>
+            <img src={avatarUrl} alt="프로필" style={{width: "100%", height: "100%", objectFit: "cover"}} />
+          </div>
+        )}
       </div>
 
       {intro && (
