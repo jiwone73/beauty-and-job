@@ -228,46 +228,7 @@ export default function ProfilePage() {
           </button>
         </div>
       </header>
-      <div className="profile-summary">
-        
-        <div className="profile-name-row"><h1 className="profile-name">{name || "회원"}</h1></div>
-        <button className="profile-job-row" onClick={() => router.push("/")}>
-          <span className="profile-job">{jobDisplay}</span>
-          <span className="profile-divider">·</span>
-          <span className="profile-career">{careerDisplay}</span>
-          <ChevronRight size={16} className="profile-chevron" />
-        </button>
-        <div className="profile-tags">
-          {allCategories.length > 0
-            ? allCategories.map((cat) => <span key={cat} className="profile-tag">{cat}</span>)
-            : <span className="profile-tag profile-tag-empty">카테고리 미설정</span>}
-          {allCountries.map((country) => <span key={country} className="profile-tag">{country}</span>)}
-        </div>
-        <div className="profile-stats">
-          <div className="profile-stat">
-            <div className="profile-stat-value">{appliedCount}</div>
-            <div className="profile-stat-label">지원 완료</div>
-          </div>
-          <div className="profile-stat-divider" />
-          <div className="profile-stat">
-            <div className="profile-stat-value">{bookmarkCount}</div>
-            <div className="profile-stat-label">관심 공고</div>
-          </div>
-        </div>
-      </div>
-
-      {!bannerClosed && (
-        <div className="profile-agent-banner">
-          <button className="profile-banner-close" onClick={() => setBannerClosed(true)} aria-label="닫기">
-            <X size={16} />
-          </button>
-          <div className="profile-banner-text">
-            <strong>뷰티앤잡 에이전트 제안받기</strong>
-            <span>프로필을 채우면 더 많은 커리어 제안을 받아요.</span>
-          </div>
-        </div>
-      )}
-
+      
       <div className="profile-tabs">
         <button className={`profile-tab ${activeTab === "profile" ? "active" : ""}`} onClick={() => setActiveTab("profile")}>프로필</button>
         <button className={`profile-tab ${activeTab === "resume" ? "active" : ""}`} onClick={() => setActiveTab("resume")}>이력서</button>
@@ -282,12 +243,7 @@ export default function ProfilePage() {
           <BookmarksTab />
         ) : activeTab === "profile" ? (
           <>
-            <div className="profile-promo">
-              <div className="profile-promo-icon"><Award size={20} /></div>
-              <div className="profile-promo-text">
-                <strong>뷰티 경력직</strong>이라면,<br />맞춤 채용 제안을 받아보세요
-              </div>
-            </div>
+            
 
             {dbJobType && (
               <div style={{margin:"16px 0",padding:"14px 16px",background:"#fff",border:"1px solid #f0e8f8",borderRadius:"12px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
