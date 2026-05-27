@@ -468,8 +468,8 @@ export default function ProfilePage() {
               {experiences.map((exp) => (
                 <div key={exp.id} className="profile-list-item">
                   <div className="profile-list-info">
-                    <span className="profile-list-category">{exp.category}</span>
                     <span className="profile-list-title">{exp.title}</span>
+                    {exp.description && <span className="profile-list-sub">{exp.description}</span>}
                   </div>
                   <button className="profile-list-remove" onClick={() => removeExperience(exp.id)}>×</button>
                 </div>
