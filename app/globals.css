@@ -259,8 +259,8 @@
 /* ===========================================
    메인 페이지 - 섹션 공통
    =========================================== */
-.section { padding: 72px 0; background: transparent; }
-.section-last { padding-bottom: 96px; }
+.section { padding: 36px 0; background: transparent; }
+.section-last { padding-bottom: 48px; }
 
 .container {
   max-width: 1280px;
