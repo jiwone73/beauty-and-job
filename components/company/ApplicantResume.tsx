@@ -22,9 +22,11 @@ interface Props {
   resume: Resume | null;
   resumeType: "office" | "salon";
   loading?: boolean;
+  avatarUrl?: string | null;
+  applicantName?: string;
 }
 
-export default function ApplicantResume({ resume, resumeType, loading }: Props) {
+export default function ApplicantResume({ resume, resumeType, loading, avatarUrl, applicantName }: Props) {
   if (loading) {
     return (
       <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>
@@ -68,6 +70,35 @@ export default function ApplicantResume({ resume, resumeType, loading }: Props) 
 
   return (
     <div style={{ padding: "16px 0" }}>
+      {/* 지원자 사진 + 이름 헤더 */}
+      <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px", paddingBottom: "16px", borderBottom: "1px solid #f0e8f8" }}>
+        <div style={{
+          width: "72px",
+          height: "72px",
+          borderRadius: "50%",
+          background: "#f0e8f8",
+          border: "2px solid #ede0f8",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}>
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          ) : (
+            <span style={{ fontSize: "28px", color: "#a888c0" }}>👤</span>
+          )}
+        </div>
+        {applicantName && (
+          <div>
+            <p style={{ fontSize: "16px", fontWeight: 600, margin: 0 }}>{applicantName}</p>
+            <p style={{ fontSize: "12px", color: "#888", margin: "4px 0 0" }}>
+              {resumeType === "office" ? "🏢 기업·브랜드 지원자" : "🏪 매장·기술직 지원자"}
+            </p>
+          </div>
+        )}
+      </div>
       {/* 소개 */}
       {profile?.intro && (
         <div style={sectionStyle}>

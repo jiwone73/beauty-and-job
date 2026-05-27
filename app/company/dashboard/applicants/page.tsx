@@ -301,6 +301,8 @@ function ApplicantsContent() {
                   resume={resumeData}
                   resumeType={selected.user_job_type === "STORE" ? "salon" : "office"}
                   loading={resumeLoading}
+                  avatarUrl={(selected as any).user_avatar_url}
+                  applicantName={selected.user_name}
                 />
               </div>
             </div>
