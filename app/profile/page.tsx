@@ -89,6 +89,7 @@ export default function ProfilePage() {
         if (res.success) {
           if (res.data.job_type) setDbJobType(res.data.job_type);
           if (res.data.email) setEmailInput(res.data.email);
+          if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
         }
       })
       .catch(console.error);
