@@ -13,13 +13,14 @@ export async function GET(req: NextRequest) {
   const userId = auth!.sub;
 
   // 모든 데이터를 병렬로 가져오기
-  const [profile, careers, educations, experiences, languages, links] = await Promise.all([
+  const [profile, careers, educations, experiences, languages, links, certificates] = await Promise.all([
     pool.query(`SELECT * FROM user_profiles WHERE user_id = $1`, [userId]),
     pool.query(`SELECT * FROM user_careers WHERE user_id = $1 ORDER BY start_date DESC`, [userId]),
     pool.query(`SELECT * FROM user_educations WHERE user_id = $1 ORDER BY start_date DESC`, [userId]),
     pool.query(`SELECT * FROM user_experiences WHERE user_id = $1 ORDER BY created_at DESC`, [userId]),
     pool.query(`SELECT * FROM user_languages WHERE user_id = $1 ORDER BY created_at`, [userId]),
     pool.query(`SELECT * FROM user_links WHERE user_id = $1 ORDER BY created_at`, [userId]),
+    pool.query(`SELECT * FROM user_certificates WHERE user_id = $1 ORDER BY issued_ym DESC`, [userId]),
   ]);
 
   // profile이 없으면 빈 객체로
@@ -45,6 +46,7 @@ export async function GET(req: NextRequest) {
     experiences: experiences.rows,
     languages: languages.rows,
     links: links.rows,
+    certificates: certificates.rows,
   });
 }
 
@@ -64,6 +66,7 @@ export async function PUT(req: NextRequest) {
     experiences = [],
     languages = [],
     links = [],
+    certificates = [],
   } = body;
 
   const client = await pool.connect();
@@ -155,6 +158,16 @@ export async function PUT(req: NextRequest) {
         `INSERT INTO user_links (user_id, category, url)
          VALUES ($1, $2, $3)`,
         [userId, lk.category || "", lk.url || ""]
+      );
+    }
+
+    // 7. certificates (별도 테이블 user_certificates)
+    await client.query(`DELETE FROM user_certificates WHERE user_id = $1`, [userId]);
+    for (const cert of certificates) {
+      await client.query(
+        `INSERT INTO user_certificates (user_id, name, issuer, issued_ym)
+         VALUES ($1, $2, $3, $4)`,
+        [userId, cert.name || "", cert.issuer || "", cert.issued_ym || cert.issuedYm || ""]
       );
     }
 

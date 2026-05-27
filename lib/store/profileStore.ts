@@ -39,6 +39,13 @@ export interface LinkEntry {
   url: string;
 }
 
+export interface CertificateEntry {
+  id: string;
+  name: string;
+  issuer: string;
+  issued_ym: string;
+}
+
 export interface ProfileState {
   isCareerVerified: boolean;
   verifiedDate: string;
@@ -48,6 +55,7 @@ export interface ProfileState {
   skills: string[];
   languages: LanguageEntry[];
   links: LinkEntry[];
+  certificates: CertificateEntry[];
   intro: string;
   coreCompetencies: string;
   email: string;
@@ -67,6 +75,8 @@ export interface ProfileState {
   removeLanguage: (id: string) => void;
   addLink: (entry: LinkEntry) => void;
   removeLink: (id: string) => void;
+  addCertificate: (entry: CertificateEntry) => void;
+  removeCertificate: (id: string) => void;
   setIntro: (intro: string) => void;
   setCoreCompetencies: (comp: string) => void;
   setEmail: (email: string) => void;
@@ -99,6 +109,7 @@ export const useProfileStore = create<ProfileState>()(
         skills: [],
         languages: [],
         links: [],
+        certificates: [],
         intro: "",
         coreCompetencies: "",
         email: "",
@@ -113,6 +124,7 @@ export const useProfileStore = create<ProfileState>()(
           skills: [],
           languages: [],
           links: [],
+          certificates: [],
           intro: "",
           coreCompetencies: "",
           email: "",
@@ -173,6 +185,14 @@ export const useProfileStore = create<ProfileState>()(
           set((s) => ({ links: s.links.filter((l) => l.id !== id) }));
           autoSync();
         },
+        addCertificate: (entry) => {
+          set((s) => ({ certificates: [...s.certificates, entry] }));
+          autoSync();
+        },
+        removeCertificate: (id) => {
+          set((s) => ({ certificates: s.certificates.filter((c) => c.id !== id) }));
+          autoSync();
+        },
         setIntro: (intro) => {
           set({ intro });
           autoSync();
@@ -196,7 +216,7 @@ export const useProfileStore = create<ProfileState>()(
             });
             const data = await res.json();
             if (data.success && data.data) {
-              const { profile, careers, educations, experiences, languages, links } = data.data;
+              const { profile, careers, educations, experiences, languages, links, certificates } = data.data;
               set({
                 intro: profile?.intro || "",
                 coreCompetencies: profile?.core_competencies || "",
@@ -237,6 +257,12 @@ export const useProfileStore = create<ProfileState>()(
                   id: lk.id,
                   category: lk.category || "",
                   url: lk.url || "",
+                })),
+                certificates: (certificates || []).map((c: any) => ({
+                  id: c.id,
+                  name: c.name || "",
+                  issuer: c.issuer || "",
+                  issued_ym: c.issued_ym || "",
                 })),
                 loaded: true,
               });
@@ -289,6 +315,7 @@ export const useProfileStore = create<ProfileState>()(
                 experiences: s.experiences,
                 languages: s.languages,
                 links: s.links,
+                certificates: s.certificates,
               }),
             });
           } catch (e) {

@@ -20,12 +20,13 @@ import SkillModal from "@/components/profile/SkillModal";
 import LanguageModal from "@/components/profile/LanguageModal";
 import LinkModal from "@/components/profile/LinkModal";
 import ExperienceModal from "@/components/profile/ExperienceModal";
+import CertificateModal from "@/components/profile/CertificateModal";
 import NotificationModal from "@/components/profile/NotificationModal";
 import ResumeTab from "@/components/profile/ResumeTab";
 
 type ModalType =
   | "career" | "careerEdit" | "education" | "skill" | "language"
-  | "link" | "experience" | "notification" | "brand"
+  | "link" | "experience" | "certificate" | "notification" | "brand"
   | null;
 
 const PRESET_SKILL_AREAS = ["헤어","네일","피부관리","메이크업","속눈썹","왁싱","스파·에스테틱","반영구"];
@@ -56,7 +57,8 @@ export default function ProfilePage() {
   const {
     isCareerVerified, verifiedDate, careers, educations, experiences,
     skills, languages, links, setCareerVerified,
-    removeEducation, removeSkill, removeLanguage, removeLink, removeExperience,
+    removeEducation, removeSkill, removeLanguage, removeLink, removeExperience, removeCertificate,
+    certificates: profileCertificates,
   } = useProfileStore();
 
   const [activeTab, setActiveTab] = useState<"profile" | "resume" | "applied" | "bookmarks">("profile");
@@ -496,6 +498,30 @@ export default function ProfilePage() {
                 <Plus size={18} /><span>추가하기</span>
               </button>
             </section>
+
+            <section className="profile-section">
+              <div className="profile-section-head">
+                <h2 className="profile-section-title">
+                  자격증
+                  {profileCertificates.length > 0 && <CheckCircle2 size={16} className="profile-check profile-check-soft" />}
+                </h2>
+              </div>
+              {profileCertificates.map((cert) => (
+                <div key={cert.id} className="profile-list-item">
+                  <div className="profile-list-info">
+                    <span className="profile-list-title">{cert.name}</span>
+                    <span className="profile-list-sub">
+                      {cert.issuer && `${cert.issuer} · `}{cert.issued_ym}
+                    </span>
+                  </div>
+                  <button className="profile-list-remove" onClick={() => removeCertificate(cert.id)}>×</button>
+                </div>
+              ))}
+              <button className="profile-add-card" onClick={() => setOpenModal("certificate")}>
+                <Plus size={18} /><span>추가하기</span>
+              </button>
+            </section>
+
              {dbJobType !== "STORE" && (
             <section className="profile-section">
               <div className="profile-section-head">
@@ -629,6 +655,7 @@ export default function ProfilePage() {
       <LanguageModal isOpen={openModal === "language"} onClose={() => setOpenModal(null)} />
       <LinkModal isOpen={openModal === "link"} onClose={() => setOpenModal(null)} />
       <ExperienceModal isOpen={openModal === "experience"} onClose={() => setOpenModal(null)} />
+      <CertificateModal isOpen={openModal === "certificate"} onClose={() => setOpenModal(null)} />
       <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} />
     </main>
   );
