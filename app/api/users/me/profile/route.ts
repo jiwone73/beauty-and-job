@@ -78,8 +78,8 @@ export async function PUT(req: NextRequest) {
       `INSERT INTO user_profiles (
         user_id, intro, core_competencies, main_job_group, sub_job,
         is_career_verified, verified_date, skills,
-        skill_areas, certificates, work_type_prefer, region_prefer, office_job_areas, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
+        skill_areas, work_type_prefer, region_prefer, office_job_areas, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
       ON CONFLICT (user_id) DO UPDATE SET
         intro = EXCLUDED.intro,
         core_competencies = EXCLUDED.core_competencies,
@@ -89,7 +89,6 @@ export async function PUT(req: NextRequest) {
         verified_date = EXCLUDED.verified_date,
         skills = EXCLUDED.skills,
         skill_areas = EXCLUDED.skill_areas,
-        certificates = EXCLUDED.certificates,
         work_type_prefer = EXCLUDED.work_type_prefer,
         region_prefer = EXCLUDED.region_prefer,
         office_job_areas = EXCLUDED.office_job_areas,
@@ -104,7 +103,6 @@ export async function PUT(req: NextRequest) {
         profile.verified_date || "",
         profile.skills || [],
         profile.skill_areas || [],
-        profile.certificates || [],
         profile.work_type_prefer || "",
         profile.region_prefer || "",
         profile.office_job_areas || [],

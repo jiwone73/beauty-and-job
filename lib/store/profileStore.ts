@@ -305,7 +305,6 @@ export const useProfileStore = create<ProfileState>()(
                   skills: s.skills,
                   // signupStore 데이터 통합
                   skill_areas: signupData.skillAreas || [],
-                  certificates: signupData.certificates || [],
                   work_type_prefer: signupData.workTypePrefer || "",
                   region_prefer: signupData.regionPrefer || "",
                   office_job_areas: signupData.officeJobAreas || [],

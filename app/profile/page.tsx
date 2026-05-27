@@ -50,7 +50,7 @@ export default function ProfilePage() {
   const {
     name: signupName, birth, gender, job, jobCustom, careerYears,
     categories, categoryCustom, countries, countryCustom, phone,
-    skillAreas, certificates, workTypePrefer, regionPrefer, officeJobAreas, setStoreProfile,
+    skillAreas, workTypePrefer, regionPrefer, officeJobAreas, setStoreProfile,
   } = useSignupStore();
   const { userName, userPhone } = useAuthStore();
   const name = userName || signupName || "";
@@ -402,11 +402,6 @@ export default function ProfilePage() {
                     </button>
                   </div>
 
-                  <label style={{fontSize:"13px",fontWeight:600,color:"#333",display:"block",marginBottom:"6px"}}>보유 자격증</label>
-                  <input className="cv-input" placeholder="예: 미용사(일반), 피부미용사 (쉼표로 구분)"
-                    defaultValue={certificates.join(", ")}
-                    onBlur={(e) => setStoreProfile({ certificates: e.target.value.split(",").map(s=>s.trim()).filter(Boolean) })}
-                    style={{marginBottom:"16px"}} />
                   <label style={{fontSize:"13px",fontWeight:600,color:"#333",display:"block",marginBottom:"6px"}}>희망 근무 형태</label>
                   <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:"16px"}}>
                     {["풀타임","파트타임","주말근무 가능","시급"].map((w) => (
