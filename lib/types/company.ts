@@ -28,6 +28,7 @@ export interface CompanyApplication {
   user_name: string;
   user_phone?: string;
   user_email?: string;
+  user_job_type?: "OFFICE" | "STORE";
   job_posting_id: string;
   job_title: string;
 }
