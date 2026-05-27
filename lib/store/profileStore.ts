@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useSignupStore } from "./signupStore";
 
 /* ===== 타입 정의 ===== */
 export interface CareerEntry {
@@ -239,6 +240,14 @@ export const useProfileStore = create<ProfileState>()(
                 })),
                 loaded: true,
               });
+              // signupStore에도 데이터 동기화
+              useSignupStore.getState().setStoreProfile({
+                skillAreas: profile?.skill_areas || [],
+                certificates: profile?.certificates || [],
+                workTypePrefer: profile?.work_type_prefer || "",
+                regionPrefer: profile?.region_prefer || "",
+                officeJobAreas: profile?.office_job_areas || [],
+              });
             } else {
               set({ loaded: true });
             }
@@ -252,6 +261,8 @@ export const useProfileStore = create<ProfileState>()(
           const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
           if (!token) return;
           const s = get();
+          // signupStore에서 추가 데이터 가져오기
+          const signupData = useSignupStore.getState();
           try {
             await fetch("/api/users/me/profile", {
               method: "PUT",
@@ -266,6 +277,12 @@ export const useProfileStore = create<ProfileState>()(
                   is_career_verified: s.isCareerVerified,
                   verified_date: s.verifiedDate,
                   skills: s.skills,
+                  // signupStore 데이터 통합
+                  skill_areas: signupData.skillAreas || [],
+                  certificates: signupData.certificates || [],
+                  work_type_prefer: signupData.workTypePrefer || "",
+                  region_prefer: signupData.regionPrefer || "",
+                  office_job_areas: signupData.officeJobAreas || [],
                 },
                 careers: s.careers,
                 educations: s.educations,

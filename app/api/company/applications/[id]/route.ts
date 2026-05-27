@@ -10,7 +10,6 @@ export async function GET(
 ) {
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
-
   const result = await pool.query(
     `SELECT a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter, a.note,
             a.user_id, u.name AS user_name, u.email AS user_email, u.phone AS user_phone,
@@ -22,11 +21,9 @@ export async function GET(
      WHERE a.id = $1 AND jp.company_id = $2`,
     [params.id, auth!.sub]
   );
-
   if (result.rowCount === 0) {
     return err("APP_002", "지원 내역을 찾을 수 없습니다.", 404);
   }
-
   // 처음 조회 시 viewed_at 자동 기록
   if (!result.rows[0].viewed_at) {
     pool.query(
@@ -34,7 +31,6 @@ export async function GET(
       [params.id]
     ).catch((e) => console.error("[viewed_at update]", e));
   }
-
   return ok(result.rows[0]);
 }
 
