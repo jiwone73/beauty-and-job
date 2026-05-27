@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
+import ApplicantResume from "@/components/company/ApplicantResume";
 import { companyApplicationsApi } from "@/lib/api/company";
 import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company";
 
@@ -38,6 +39,30 @@ function ApplicantsContent() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("전체");
   const [selected, setSelected] = useState<CompanyApplication | null>(null);
+  const [resumeData, setResumeData] = useState<any>(null);
+  const [resumeLoading, setResumeLoading] = useState(false);
+
+  // selected 변경 시 이력서 데이터 fetch
+  useEffect(() => {
+    if (!selected) {
+      setResumeData(null);
+      return;
+    }
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    setResumeLoading(true);
+    fetch(`/api/company/applications/${selected.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && res.data.resume) {
+          setResumeData(res.data.resume);
+        }
+      })
+      .catch(console.error)
+      .finally(() => setResumeLoading(false));
+  }, [selected?.id]);
 
   const loadApplicants = async () => {
     setLoading(true);
@@ -224,7 +249,7 @@ function ApplicantsContent() {
 
       {selected && (
         <div className="admin-modal-overlay" onClick={() => setSelected(null)}>
-          <div className="admin-modal" style={{maxWidth:"480px"}} onClick={e => e.stopPropagation()}>
+          <div className="admin-modal" style={{maxWidth:"720px", maxHeight:"90vh", display:"flex", flexDirection:"column"}} onClick={e => e.stopPropagation()}>
             <div className="admin-modal-header">
               <h2 className="admin-modal-title">{selected.user_name}</h2>
               <button className="admin-modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
@@ -267,6 +292,16 @@ function ApplicantsContent() {
                     </button>
                   ))}
                 </div>
+              </div>
+              {/* 이력서 정보 */}
+              <div style={{marginTop:"24px", paddingTop:"24px", borderTop:"1px solid #ececec"}}>
+                <h3 style={{fontSize:"15px", fontWeight:700, marginBottom:"4px"}}>이력서</h3>
+                <p style={{fontSize:"12px", color:"#888", marginBottom:"8px"}}>지원자가 작성한 이력서 정보입니다</p>
+                <ApplicantResume
+                  resume={resumeData}
+                  resumeType={selected.user_job_type === "STORE" ? "salon" : "office"}
+                  loading={resumeLoading}
+                />
               </div>
             </div>
           </div>
