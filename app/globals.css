@@ -259,8 +259,8 @@
 /* ===========================================
    메인 페이지 - 섹션 공통
    =========================================== */
-.section { padding: 18px 0; background: transparent; }
-.section-last { padding-bottom: 24px; }
+.section { padding: 12px 0; background: transparent; }
+.section-last { padding-bottom: 17px; }
 
 .container {
   max-width: 1280px;
@@ -3968,7 +3968,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* ── 공통 ── */
 @media (max-width: 768px) {
   .container { padding: 0 16px; }
-  .section { padding: 18px 0; }
+  .section { padding: 12px 0; }
   .section-head { flex-direction: column; align-items: flex-start; gap: 8px; }
   .section-title { font-size: 20px; }
 
