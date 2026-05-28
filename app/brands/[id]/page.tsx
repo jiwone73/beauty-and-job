@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { MapPin, Globe, Briefcase, Calendar } from "lucide-react";
+import { workTypeLabel } from "@/lib/constants";
 
 type Company = {
   id: string;
@@ -159,7 +160,7 @@ export default function BrandDetailPage() {
                   )}
                   {job.work_type && (
                     <span className="flex items-center gap-1">
-                      <Briefcase size={14} /> {job.work_type}
+                      <Briefcase size={14} /> {workTypeLabel(job.work_type)}
                     </span>
                   )}
                   <span className="flex items-center gap-1">

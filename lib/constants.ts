@@ -127,3 +127,15 @@ export const DEMO_VERIFICATION_CODE = "123456";
 export const VERIFICATION_TIMER_SECONDS = 180;
 
 export const TOTAL_STEPS = 9;
+// 근무형태 영문 → 한글 변환
+export function workTypeLabel(value: string | null | undefined): string {
+  const map: Record<string, string> = {
+    FULL_TIME: "정규직",
+    PART_TIME: "파트타임",
+    CONTRACT: "계약직",
+    INTERN: "인턴",
+    FREELANCE: "프리랜서",
+  };
+  if (!value) return "정규직";
+  return map[value] || value;
+}

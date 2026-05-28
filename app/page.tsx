@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
 import HeroMobile from "@/components/HeroMobile";
+import { workTypeLabel } from "@/lib/constants";
 import { useEffect, useState, useCallback } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
@@ -328,7 +329,7 @@ function SectionPick() {
     tagType: "primary",
     title: j.title,
     location: j.location || "협의",
-    type: j.work_type || "정규직",
+    type: workTypeLabel(j.work_type),
     deadline: formatDeadline(j.deadline),
   }));
 
@@ -425,7 +426,7 @@ function SectionStorePick() {
     tag: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
     title: j.title,
     location: j.location || "협의",
-    type: j.work_type || "정규직",
+    type: workTypeLabel(j.work_type),
     deadline: formatDeadline(j.deadline),
   }));
 
@@ -490,7 +491,7 @@ function SectionCorpPick() {
     tag: j.experience_level === "NEW" ? "신입" : j.experience_level === "EXPERIENCED" ? "경력" : "경력 무관",
     title: j.title,
     location: j.location || "협의",
-    type: j.work_type || "정규직",
+    type: workTypeLabel(j.work_type),
     deadline: formatDeadline(j.deadline),
   }));
 
