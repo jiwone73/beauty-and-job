@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
     name,
     job_type,
     birth,
+    gender,
     desired_job_category_id,
     desired_location,
     agreed_term_ids
@@ -28,6 +29,8 @@ export async function POST(req: NextRequest) {
 
   // 생년월일 정규화 (YYYYMMDD 8자리만 허용, 그 외 NULL)
   const birthDate = typeof birth === 'string' && /^\d{8}$/.test(birth) ? birth : null
+  // 성별 정규화 (남성/여성만 허용, 그 외 NULL)
+  const genderVal = gender === '남성' || gender === '여성' ? gender : null
 
   const client = await pool.connect()
 
@@ -43,10 +46,10 @@ export async function POST(req: NextRequest) {
 
     // 유저 생성
     const userRes = await client.query(
-      `INSERT INTO users (phone, name, job_type, birth_date, status)
-       VALUES ($1, $2, $3, TO_DATE($4, 'YYYYMMDD'), 'ACTIVE')
+      `INSERT INTO users (phone, name, job_type, birth_date, gender, status)
+       VALUES ($1, $2, $3, TO_DATE($4, 'YYYYMMDD'), $5, 'ACTIVE')
        RETURNING id, name, phone, job_type, status, created_at`,
-      [phone, name, job_type, birthDate]
+      [phone, name, job_type, birthDate, genderVal]
     )
     const user = userRes.rows[0]
 

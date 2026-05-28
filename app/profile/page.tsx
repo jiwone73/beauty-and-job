@@ -655,7 +655,20 @@ export default function ProfilePage() {
             <div className="cv-body" style={{display:"flex", gap:"12px"}}>
               {["남성","여성"].map((g) => (
                 <button key={g} className={`company-wizard-card ${gender === g ? "active" : ""}`} style={{flex:1, padding:"20px", fontSize:"16px"}}
-                  onClick={() => { useSignupStore.getState().setBasic({ gender: g as "남성"|"여성" }); setEditField(null); }}>
+                  onClick={async () => {
+                    try {
+                      const token = localStorage.getItem("access_token");
+                      const res = await fetch("/api/users/me", {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                        body: JSON.stringify({ gender: g }),
+                      });
+                      const data = await res.json();
+                      if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
+                      useSignupStore.getState().setBasic({ gender: g as "남성"|"여성" });
+                      setEditField(null);
+                    } catch (e) { alert("네트워크 오류가 발생했습니다."); }
+                  }}>
                   {g === "남성" ? "👨 남성" : "👩 여성"}
                 </button>
               ))}

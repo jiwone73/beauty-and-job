@@ -69,6 +69,7 @@ export async function GET(req: NextRequest) {
         u.id,
         u.name,
         u.created_at,
+        u.gender,
         CASE WHEN u.birth_date IS NOT NULL
           THEN EXTRACT(YEAR FROM AGE(u.birth_date))::int
           ELSE NULL END AS age,
@@ -119,6 +120,7 @@ export async function GET(req: NextRequest) {
     const data = rows.map((r) => ({
       id: r.id,
       name: r.name,
+      gender: r.gender,
       age: r.age,
       intro: r.intro,
       mainJobGroup: r.main_job_group,

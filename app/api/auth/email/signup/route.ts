@@ -6,7 +6,7 @@ import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
 export async function POST(req: NextRequest) {
-  const { email, name, phone, password, birth, job_type = 'OFFICE', agreed_term_ids } = await req.json()
+  const { email, name, phone, password, birth, gender, job_type = 'OFFICE', agreed_term_ids } = await req.json()
 
   // 필수값 검증
   if (!email || !password || !name || !phone) {
@@ -30,6 +30,8 @@ export async function POST(req: NextRequest) {
 
   // 생년월일 정규화 (YYYYMMDD 8자리만 허용, 그 외 NULL)
   const birthDate = typeof birth === 'string' && /^\d{8}$/.test(birth) ? birth : null
+  // 성별 정규화 (남성/여성만 허용, 그 외 NULL)
+  const genderVal = gender === '남성' || gender === '여성' ? gender : null
 
   const client = await pool.connect()
   try {
@@ -52,10 +54,10 @@ export async function POST(req: NextRequest) {
     const passwordHash = await bcrypt.hash(password, 10)
 
     const userRes = await client.query(
-      `INSERT INTO users (email, password_hash, name, phone, job_type, birth_date, status)
-       VALUES ($1, $2, $3, $4, $5, TO_DATE($6, 'YYYYMMDD'), 'ACTIVE')
+      `INSERT INTO users (email, password_hash, name, phone, job_type, birth_date, gender, status)
+       VALUES ($1, $2, $3, $4, $5, TO_DATE($6, 'YYYYMMDD'), $7, 'ACTIVE')
        RETURNING id, email, name, phone, job_type, status, created_at`,
-      [email, passwordHash, name, phone, job_type, birthDate]
+      [email, passwordHash, name, phone, job_type, birthDate, genderVal]
     )
     const user = userRes.rows[0]
 

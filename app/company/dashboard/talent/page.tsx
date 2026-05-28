@@ -14,10 +14,22 @@ function careerLabel(years: number | null, count: number): string {
   return `경력 ${years}년`;
 }
 
-// 나이 + 경력 한 줄
-function metaLine(age: number | null, years: number | null, count: number): string {
+// 성별 약어
+function genderLabel(gender: string | null): string | null {
+  if (gender === "남성") return "남";
+  if (gender === "여성") return "여";
+  return null;
+}
+
+// 성별 + 나이 + 경력 한 줄
+function metaLine(gender: string | null, age: number | null, years: number | null, count: number): string {
   const c = careerLabel(years, count);
-  return age ? `${age}세 · ${c}` : c;
+  const parts: string[] = [];
+  const g = genderLabel(gender);
+  if (g) parts.push(g);
+  if (age) parts.push(`${age}세`);
+  parts.push(c);
+  return parts.join(" · ");
 }
 
 export default function TalentPage() {
@@ -128,7 +140,7 @@ export default function TalentPage() {
                 <div className="talent-avatar">{t.name?.slice(0, 1) || "?"}</div>
                 <div className="talent-info">
                   <h3 className="talent-name">{t.name}</h3>
-                  <p className="talent-meta">{metaLine(t.age, t.careerYears, t.careerCount)}</p>
+                  <p className="talent-meta">{metaLine(t.gender, t.age, t.careerYears, t.careerCount)}</p>
                   {t.regionPrefer && <p className="talent-location">{t.regionPrefer}</p>}
                 </div>
                 <button className={`talent-scrap-btn ${t.scrapped ? "scrapped" : ""}`}
@@ -169,7 +181,7 @@ export default function TalentPage() {
               <div>
                 <h2 className="admin-modal-title">{selected.name}</h2>
                 <p style={{ fontSize: "13px", color: "#888", margin: "4px 0 0" }}>
-                  {metaLine(selected.age, selected.careerYears, selected.careerCount)}
+                  {metaLine(selected.gender, selected.age, selected.careerYears, selected.careerCount)}
                 </p>
               </div>
               <button className="admin-modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
@@ -182,6 +194,7 @@ export default function TalentPage() {
               )}
               <div className="admin-detail-grid">
                 {([
+                  ["성별", selected.gender],
                   ["나이", selected.age ? `${selected.age}세` : null],
                   ["직군", selected.mainJobGroup],
                   ["세부직무", selected.subJob],
