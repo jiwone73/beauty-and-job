@@ -12,7 +12,7 @@ import { useApplicationStore } from "@/lib/store/applicationStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useProfileStore } from "@/lib/store/profileStore";
-import { CAREER_LABELS } from "@/lib/constants";
+import { CAREER_LABELS, STORE_SKILL_AREAS } from "@/lib/constants";
 import CareerVerifyModal from "@/components/profile/CareerVerifyModal";
 import CareerEditModal from "@/components/profile/CareerEditModal";
 import EducationModal from "@/components/profile/EducationModal";
@@ -29,7 +29,7 @@ type ModalType =
   | "link" | "experience" | "certificate" | "notification" | "brand"
   | null;
 
-const PRESET_SKILL_AREAS = ["헤어","네일","피부관리","메이크업","속눈썹","왁싱","스파·에스테틱","반영구"];
+const PRESET_SKILL_AREAS: string[] = [...STORE_SKILL_AREAS];
 const PRESET_OFFICE_JOB_AREAS = [
   "브랜드 마케팅",
   "디지털·퍼포먼스 마케팅",

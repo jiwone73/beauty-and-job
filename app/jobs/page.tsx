@@ -2,6 +2,7 @@
 import Header from "@/components/Header";
 
 import { useState, useRef, useEffect, Suspense } from "react";
+import { OFFICE_JOB_GROUPS, STORE_SKILL_AREAS } from "@/lib/constants";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -44,7 +45,6 @@ const JOBS = [
 ];
 
 
-const STORE_JOB_TYPES = ["뷰티어드바이저", "메이크업아티스트", "헤어디자이너", "네일아티스트", "피부관리사", "매장관리자"];
 
 const STORE_JOBS = [
   { id: 101, brand: "올리브영", tags: ["리테일"], title: "뷰티어드바이저 (강남점)", jobType: "뷰티어드바이저", career: "경력 무관", region: "서울 강남", extraCount: 0, type: "매장", thumbnail: null, color: "#e8f5e9" },
@@ -59,7 +59,6 @@ const STORE_JOBS = [
 
 const ALL_JOBS = [...JOBS, ...STORE_JOBS];
 
-const JOB_TYPES = ["마케팅", "MD", "영업", "디자인", "연구개발(RA)", "SCM·물류", "HR", "경영지원"];
 const CAREER_OPTIONS = ["신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상", "경력 무관"];
 const CATEGORIES = ["스킨케어", "색조", "헤어", "바디", "향수", "건기식", "디바이스", "맨즈케어", "네일", "뷰티툴", "OEM", "ODM", "플랫폼", "유통사", "MCN"];
 
@@ -104,7 +103,8 @@ function JobsPageInner() {
             tags: [],
             category: null,
             title: j.title,
-            jobType: '',
+            jobType: (j.categories || []).join(' · '),
+            categories: j.categories || [],
             career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
             region: j.location || '국내',
             type: j.job_type === 'OFFICE' ? '기업' : '매장',
@@ -131,10 +131,10 @@ function JobsPageInner() {
     toggleBookmarkStore(id);
   };
 
-  const currentJobTypes = jobTypeFilter === "매장" ? STORE_JOB_TYPES : JOB_TYPES;
+  const currentJobTypes = jobTypeFilter === "매장" ? STORE_SKILL_AREAS : OFFICE_JOB_GROUPS;
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter;
-    const matchJob = selectedJob === "직군 전체" || j.jobType.includes(selectedJob);
+    const matchJob = selectedJob === "직군 전체" || (j.categories || []).includes(selectedJob);
     const matchCareer = selectedCareer === "경력 전체" || j.career.includes(selectedCareer.replace("년", "").replace("신입", "신입"));
     const matchCategory = !selectedCategory || j.tags.includes(selectedCategory);
     const matchSearch = !searchQuery || j.title.includes(searchQuery) || j.brand.includes(searchQuery);

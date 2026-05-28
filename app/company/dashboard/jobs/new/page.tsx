@@ -8,25 +8,9 @@ import {
   Bell, LogOut, ChevronLeft
 } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
+import { OFFICE_JOB_GROUPS, STORE_SKILL_AREAS } from "@/lib/constants";
 
-const JOB_GROUPS = {
-  "기업": {
-    "브랜드·마케팅": ["브랜드 마케터", "디지털·퍼포먼스 마케터", "콘텐츠 마케터", "SNS·인플루언서 마케팅", "글로벌 마케팅"],
-    "상품·MD": ["MD (상품기획)", "이커머스 MD", "바이어", "PB 상품기획", "VMD"],
-    "영업·유통": ["국내 영업", "해외 영업 (글로벌)", "수출입 담당", "B2B 영업"],
-    "연구개발": ["화장품 연구원 (제형)", "제품 개발 R&D", "RA (품질·인증)", "패키지 개발"],
-    "디자인": ["패키지 디자인", "브랜드·그래픽 디자인", "UI/UX 디자인", "영상·콘텐츠 디자인"],
-    "SCM·물류": ["SCM 담당", "물류 담당", "구매 담당", "수입통관"],
-    "경영지원": ["HR·채용", "재무·회계", "경영기획·전략", "CS·CX"],
-  },
-  "매장": {
-    "네일": ["네일 아티스트", "젤네일 전문가", "네일샵 매니저", "네일 강사"],
-    "헤어": ["헤어 디자이너", "헤어 어시스턴트", "살롱 매니저"],
-    "피부·에스테틱": ["피부관리사", "에스테티션", "피부 강사"],
-    "메이크업": ["메이크업 아티스트", "메이크업 강사"],
-    "기타 뷰티": ["속눈썹·눈썹 아티스트", "왁싱 전문가", "반영구 아티스트"],
-  },
-};
+
 
 const REGIONS = ["서울", "경기·인천", "부산·경남", "대구·경북", "광주·전남", "대전·충청", "기타 지방", "글로벌"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
@@ -47,19 +31,19 @@ export default function CompanyJobNewPage() {
       })
       .catch(console.error);
   }, []);
-  const [selectedGroup, setSelectedGroup] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
   const [form, setForm] = useState({
-    title: "", category: "", career: "", region: "",
+    title: "", career: "", region: "",
     type: "정규직", deadline: "", salary: "", description: "",
     requirements: "", preferred: "", benefits: "",
   });
   const [saved, setSaved] = useState(false);
 
-  const currentGroups = JOB_GROUPS[jobGroupType];
+  const chipOptions = jobGroupType === "매장" ? STORE_SKILL_AREAS : OFFICE_JOB_GROUPS;
 
   const handleSubmit = async (status: "draft" | "publish") => {
     if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
-    if (!form.category) { alert("직군을 선택해주세요."); return; }
+    if (categories.length === 0) { alert(jobGroupType === "매장" ? "시술 분야를 선택해주세요." : "직군을 선택해주세요."); return; }
 
     const token = localStorage.getItem("access_token");
     if (!token) { alert("로그인이 필요합니다."); return; }
@@ -102,6 +86,7 @@ export default function CompanyJobNewPage() {
           work_type: workType,
           experience_level: expLevel,
           deadline: form.deadline || null,
+          categories,
         }),
       });
       const data = await res.json();
@@ -164,26 +149,37 @@ export default function CompanyJobNewPage() {
             </div>
 
             <div className="admin-form-row">
-              <label className="admin-form-label">직군 그룹 *</label>
-              <select className="admin-form-select" value={selectedGroup}
-                onChange={(e) => { setSelectedGroup(e.target.value); setForm({...form, category: ""}); }}>
-                <option value="">그룹 선택</option>
-                {Object.keys(currentGroups).map(g => <option key={g} value={g}>{g}</option>)}
-              </select>
-            </div>
-
-            {selectedGroup && (
-              <div className="admin-form-row">
-                <label className="admin-form-label">세부 직군 *</label>
-                <select className="admin-form-select" value={form.category}
-                  onChange={(e) => setForm({...form, category: e.target.value})}>
-                  <option value="">선택</option>
-                  {(currentGroups as any)[selectedGroup]?.map((o: string) => (
-                    <option key={o} value={o}>{o}</option>
-                  ))}
-                </select>
+              <label className="admin-form-label">
+                {jobGroupType === "매장" ? "시술 분야 * (복수 선택 가능)" : "직군 * (복수 선택 가능)"}
+              </label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "4px" }}>
+                {chipOptions.map((c) => {
+                  const active = categories.includes(c);
+                  return (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() =>
+                        setCategories(active ? categories.filter((x) => x !== c) : [...categories, c])
+                      }
+                      style={{
+                        padding: "8px 16px",
+                        borderRadius: "20px",
+                        border: active ? "1.5px solid #e84a5f" : "1.5px solid #e0e0e0",
+                        background: active ? "#fef0f2" : "#fff",
+                        color: active ? "#e84a5f" : "#666",
+                        fontSize: "14px",
+                        fontWeight: active ? 600 : 400,
+                        cursor: "pointer",
+                        transition: "all 0.15s",
+                      }}
+                    >
+                      {c}
+                    </button>
+                  );
+                })}
               </div>
-            )}
+            </div>
 
             <div className="admin-form-row-2col">
               <div className="admin-form-row">
