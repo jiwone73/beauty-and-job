@@ -151,6 +151,7 @@ export default function JobDetailPage() {
           if (j.has_applied) setDbApplied(true);
           setJob({
             id: j.id,
+            companyId: j.company?.id || '',
             brand: j.company?.brand_name || j.company?.company_name || '',
             brandDesc: j.company?.description || '',
             tags: [],
@@ -222,7 +223,13 @@ export default function JobDetailPage() {
 
           <div className="job-detail-info-box">
             <div className="job-detail-brand-row">
-              <span className="job-detail-brand">{job.brand}</span>
+              <span
+                className="job-detail-brand"
+                style={{ cursor: job.companyId ? "pointer" : "default" }}
+                onClick={() => { if (job.companyId) router.push(`/brands/${job.companyId}`); }}
+              >
+                {job.brand}
+              </span>
               {job.tags?.map((tag: string) => (
                 <span key={tag} className="job-detail-tag">· {tag}</span>
               ))}
