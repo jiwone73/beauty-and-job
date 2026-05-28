@@ -60,7 +60,6 @@ const STORE_JOBS = [
 const ALL_JOBS = [...JOBS, ...STORE_JOBS];
 
 const CAREER_OPTIONS = ["신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상", "경력 무관"];
-const CATEGORIES = ["스킨케어", "색조", "헤어", "바디", "향수", "건기식", "디바이스", "맨즈케어", "네일", "뷰티툴", "OEM", "ODM", "플랫폼", "유통사", "MCN"];
 
 function JobsPageInner() {
   const { job, careers: signupCareers } = useSignupStore() as any;
@@ -78,7 +77,6 @@ function JobsPageInner() {
   const [selectedCareer, setSelectedCareer] = useState(initCareer);
   const [selectedRegion, setSelectedRegion] = useState(initRegion);
   const [selectedBrand, setSelectedBrand] = useState(initBrand);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sort, setSort] = useState<"latest" | "popular">("latest");
   const [showSearch, setShowSearch] = useState(false);
   const [showJobDrop, setShowJobDrop] = useState(false);
@@ -136,11 +134,10 @@ function JobsPageInner() {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter;
     const matchJob = selectedJob === "직군 전체" || (j.categories || []).includes(selectedJob);
     const matchCareer = selectedCareer === "경력 전체" || j.career.includes(selectedCareer.replace("년", "").replace("신입", "신입"));
-    const matchCategory = !selectedCategory || j.tags.includes(selectedCategory);
     const matchSearch = !searchQuery || j.title.includes(searchQuery) || j.brand.includes(searchQuery);
     const matchRegion = !selectedRegion || j.region.includes(selectedRegion);
     const matchBrand = !selectedBrand || j.brand.includes(selectedBrand);
-    return matchType && matchJob && matchCareer && matchCategory && matchSearch && matchRegion && matchBrand;
+    return matchType && matchJob && matchCareer && matchSearch && matchRegion && matchBrand;
   });
 
   return (
@@ -260,22 +257,6 @@ function JobsPageInner() {
           </div>
         </div>
 
-        {/* ===== 카테고리 탭 ===== */}
-        <div className="jobs-category-row">
-          <span className="jobs-category-label">카테고리</span>
-          <div className="jobs-category-tabs">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                className={`jobs-category-tab ${selectedCategory === cat ? "active" : ""}`}
-                onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-          <button className="jobs-category-arrow"><ChevronRight size={18} /></button>
-        </div>
 
         {/* ===== 채용공고 그리드 ===== */}
         {filteredJobs.length > 0 ? (
@@ -318,7 +299,7 @@ function JobsPageInner() {
           <div className="jobs-empty">
             <div className="jobs-empty-icon">🔍</div>
             <p className="jobs-empty-title">조건에 맞는 포지션이 없어요.</p>
-            <button className="jobs-empty-reset" onClick={() => { setSelectedJob("직군 전체"); setSelectedCareer("경력 전체"); setSelectedCategory(null); setSearchQuery(""); }}>
+            <button className="jobs-empty-reset" onClick={() => { setSelectedJob("직군 전체"); setSelectedCareer("경력 전체"); setSearchQuery(""); }}>
               필터 초기화
             </button>
           </div>
