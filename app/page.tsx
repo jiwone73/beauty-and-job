@@ -529,7 +529,7 @@ const BEAUTY_SERVICES = [
 
 function SectionBeautyServices() {
   return (
-    <section className="section section-divider">
+    <section className="section section-divider" style={{marginTop:"-40px"}}>
       <div className="container">
         <div className="section-inner-divider" style={{marginBottom:"48px"}} />
         <div className="section-head">
