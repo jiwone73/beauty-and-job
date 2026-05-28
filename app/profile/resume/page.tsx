@@ -70,11 +70,16 @@ function ResumePageContent() {
     ? `${birth.slice(0, 4)}년 (${gender === "남성" ? "남" : "여"})`
     : "";
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIntro(introLocal);
     setCoreCompetencies(coreLocal);
     setEmail(emailLocal);
-    alert("저장되었습니다.");
+    try {
+      await useProfileStore.getState().syncToDb();
+      alert("저장되었습니다.");
+    } catch (e) {
+      alert("저장에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   const processFile = async (file: File) => {
