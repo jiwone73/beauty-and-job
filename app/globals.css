@@ -6900,7 +6900,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .hero-wrap {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 16px 32px 32px;
+  padding: 16px 32px 12px;
 }
 .hero-banner-top::before {
   content: "";
@@ -7486,7 +7486,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   /* 배너 + 카드 PC 너비 유지 */
   .hero-wrap {
     min-width: 800px;
-    padding: 12px 20px 24px;
+    padding: 12px 20px 12px;
   }
 
   /* 검색바 줄바꿈 방지 */
@@ -7499,7 +7499,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) {
   /* 히어로 가로스크롤 제거 */
   .hero { overflow-x: visible; }
-  .hero-wrap { min-width: 0; padding: 12px 16px 20px; }
+  .hero-wrap { min-width: 0; padding: 12px 16px 12px; }
 
   /* 2열 → 1열 전환 */
   .hero-inner {
