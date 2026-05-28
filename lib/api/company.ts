@@ -68,3 +68,49 @@ export const companyMeApi = {
 export const companyDashboardApi = {
   stats: () => api.get<ApiResponse<DashboardStats>>("/api/company/dashboard/stats"),
 };
+
+// === 인재 검색 ===
+export type TalentItem = {
+  id: string;
+  name: string;
+  age: number | null;
+  intro: string | null;
+  mainJobGroup: string | null;
+  subJob: string | null;
+  skills: string[];
+  skillAreas: string[];
+  officeJobAreas: string[];
+  regionPrefer: string | null;
+  workTypePrefer: string | null;
+  careerYears: number | null;
+  careerCount: number;
+  education: string | null;
+  scrapped: boolean;
+};
+
+export const companyTalentApi = {
+  list: (params?: {
+    search?: string;
+    jobGroup?: string;
+    careerFilter?: string;
+    ageGroup?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const qs = new URLSearchParams();
+    if (params?.search) qs.set("search", params.search);
+    if (params?.jobGroup && params.jobGroup !== "전체") qs.set("jobGroup", params.jobGroup);
+    if (params?.careerFilter && params.careerFilter !== "전체")
+      qs.set("careerFilter", params.careerFilter);
+    if (params?.ageGroup && params.ageGroup !== "전체")
+      qs.set("ageGroup", params.ageGroup);
+    if (params?.page) qs.set("page", String(params.page));
+    if (params?.limit) qs.set("limit", String(params.limit));
+    const query = qs.toString() ? `?${qs}` : "";
+    return api.get<ApiResponse<TalentItem[]>>(`/api/company/talent${query}`);
+  },
+  scrap: (userId: string) =>
+    api.post<ApiResponse<{ scrapped: boolean }>>(`/api/company/talent/${userId}/scrap`, {}),
+  unscrap: (userId: string) =>
+    api.delete<ApiResponse<{ scrapped: boolean }>>(`/api/company/talent/${userId}/scrap`),
+};

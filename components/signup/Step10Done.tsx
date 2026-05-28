@@ -39,7 +39,7 @@ export default function Step10Done() {
         ? termsData.data.filter((t: any) => t.is_required).map((t: any) => t.id)
         : [];
 
-      const { jobType: storeJobType } = useSignupStore.getState();
+      const { jobType: storeJobType, birth: storeBirth } = useSignupStore.getState();
       const signupRes = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -47,6 +47,7 @@ export default function Step10Done() {
           phone,
           name,
           job_type: storeJobType === 'store' ? 'STORE' : 'OFFICE',
+          birth: storeBirth,
           desired_location: allCountries[0] || '',
           agreed_term_ids: requiredTermIds,
         }),

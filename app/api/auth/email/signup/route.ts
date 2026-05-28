@@ -6,7 +6,7 @@ import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
 export async function POST(req: NextRequest) {
-  const { email, name, phone, password, job_type = 'OFFICE', agreed_term_ids } = await req.json()
+  const { email, name, phone, password, birth, job_type = 'OFFICE', agreed_term_ids } = await req.json()
 
   // 필수값 검증
   if (!email || !password || !name || !phone) {
@@ -27,6 +27,9 @@ export async function POST(req: NextRequest) {
   if (!agreed_term_ids || agreed_term_ids.length === 0) {
     return err('TERM_001', '필수 약관에 동의해주세요.')
   }
+
+  // 생년월일 정규화 (YYYYMMDD 8자리만 허용, 그 외 NULL)
+  const birthDate = typeof birth === 'string' && /^\d{8}$/.test(birth) ? birth : null
 
   const client = await pool.connect()
   try {
@@ -49,10 +52,10 @@ export async function POST(req: NextRequest) {
     const passwordHash = await bcrypt.hash(password, 10)
 
     const userRes = await client.query(
-      `INSERT INTO users (email, password_hash, name, phone, job_type, status)
-       VALUES ($1, $2, $3, $4, $5, 'ACTIVE')
+      `INSERT INTO users (email, password_hash, name, phone, job_type, birth_date, status)
+       VALUES ($1, $2, $3, $4, $5, TO_DATE($6, 'YYYYMMDD'), 'ACTIVE')
        RETURNING id, email, name, phone, job_type, status, created_at`,
-      [email, passwordHash, name, phone, job_type]
+      [email, passwordHash, name, phone, job_type, birthDate]
     )
     const user = userRes.rows[0]
 

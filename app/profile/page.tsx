@@ -615,10 +615,30 @@ export default function ProfilePage() {
             <div className="cv-body">
               <label className="cv-field-label">생년월일 (예: 19900115)</label>
               <input className="cv-input" type="text" placeholder="YYYYMMDD" id="birth-input" defaultValue={birth} maxLength={8} />
-              <button className="cv-btn-primary" style={{marginTop:"16px"}} onClick={() => {
-                const val = (document.getElementById("birth-input") as HTMLInputElement)?.value;
-                if (val) useSignupStore.getState().setBasic({ birth: val });
-                setEditField(null);
+              <button className="cv-btn-primary" style={{marginTop:"16px"}} onClick={async () => {
+                const raw = (document.getElementById("birth-input") as HTMLInputElement)?.value || "";
+                const val = raw.replace(/\D/g, "");
+                if (!/^\d{8}$/.test(val)) {
+                  alert("생년월일을 YYYYMMDD 8자리로 입력해주세요. (예: 19900115)");
+                  return;
+                }
+                try {
+                  const token = localStorage.getItem("access_token");
+                  const res = await fetch("/api/users/me", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ birth: val }),
+                  });
+                  const data = await res.json();
+                  if (!data.success) {
+                    alert(data.error?.message || "저장에 실패했습니다.");
+                    return;
+                  }
+                  useSignupStore.getState().setBasic({ birth: val });
+                  setEditField(null);
+                } catch (e) {
+                  alert("네트워크 오류가 발생했습니다.");
+                }
               }}>저장</button>
             </div>
           </div>
