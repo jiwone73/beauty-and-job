@@ -335,7 +335,7 @@ function SectionPick() {
   return (
     <section className="section section-divider">
       <div className="container">
-        <div className="section-inner-divider" style={{marginBottom:"48px"}} />
+        <div className="section-inner-divider" style={{marginBottom:"24px"}} />
         <div className="section-head">
           <div>
             <h2 className="section-title">
