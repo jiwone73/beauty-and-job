@@ -48,13 +48,13 @@ export default function LoginStartPage() {
           className="w-full h-[52px] bg-[#FEE500] text-[#1a1a1a] rounded-lg font-semibold text-[15px] flex items-center justify-center gap-2 mb-3 hover:opacity-90 transition"
         >
           <span>💬</span>
-          <span>카카오 계정으로 계속하기</span>
+          <span>카카오로 시작하기</span>
         </button>
 
         {/* 이메일 로그인 */}
         <Link href="/login/email">
           <button className="w-full h-[52px] bg-white border border-[#e0e0e0] text-[#1a1a1a] rounded-lg font-semibold text-[15px] hover:bg-[#fafafa] transition">
-            이메일로 계속하기
+            이메일로 시작하기
           </button>
         </Link>
 
