@@ -76,7 +76,6 @@ export default function CompanyLayout({ children, activePage }: {
       <aside className={`company-sidebar ${sidebarOpen ? "" : "company-sidebar-closed"}`}>
         <div className="company-sidebar-logo">
           <Link href={base} className="company-logo-link">
-            <div className="company-logo-avatar">{companyInfo.name.slice(0, 1)}</div>
             {sidebarOpen && (
               <div className="company-logo-info">
                 <span className="company-logo-name">{companyInfo.name}</span>
@@ -116,7 +115,6 @@ export default function CompanyLayout({ children, activePage }: {
               <span className="company-notif-dot" />
             </button>
             <div className="company-profile">
-              <div className="company-avatar">{companyInfo.name.slice(0, 1)}</div>
               <span className="company-name">{companyInfo.name}</span>
             </div>
           </div>
