@@ -16,7 +16,7 @@ interface Term {
 export default function SignupEmailPage() {
   const router = useRouter();
   const { login } = useAuthStore();
-  const [jobType, setJobType] = useState<"OFFICE" | "STORE">("OFFICE");
+  const [jobType, setJobType] = useState<"OFFICE" | "STORE" | "">("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -71,7 +71,8 @@ export default function SignupEmailPage() {
     }
   };
 
-  const isFormValid =
+  const isFormValid =\n    jobType !== "" &&
+    jobType !== "" &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
     name.trim().length > 0 &&
     phone.replace(/\D/g, "").length >= 10 &&
@@ -109,6 +110,7 @@ export default function SignupEmailPage() {
       login({
         userName: data.data.user.name,
         userPhone: data.data.user.phone,
+        userJobType: data.data.user.job_type || "",
       });
       router.push("/profile");
     } catch (e) {
@@ -194,6 +196,15 @@ export default function SignupEmailPage() {
                 )}
               </button>
             </div>
+            {jobType === "" && (
+              <p className="text-[12px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
+            )}
+            {jobType === "" && (
+              <p className="text-[12px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
+            )}
+            {jobType === "" && (
+              <p className="text-[12px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
+            )}
           </div>
 
           {/* 이메일 */}
