@@ -71,8 +71,14 @@ export default function SignupEmailPage() {
     }
   };
 
-  const isFormValid =\n    jobType !== "" &&
+  const isFormValid =
     jobType !== "" &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+    name.trim().length > 0 &&
+    phone.replace(/\D/g, "").length >= 10 &&
+    isPasswordValid(password) &&
+    password === passwordConfirm &&
+    allRequiredAgreed;
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
     name.trim().length > 0 &&
     phone.replace(/\D/g, "").length >= 10 &&
