@@ -205,12 +205,6 @@ export default function SignupEmailPage() {
             {jobType === "" && (
               <p className="text-[12px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
             )}
-            {jobType === "" && (
-              <p className="text-[12px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
-            )}
-            {jobType === "" && (
-              <p className="text-[12px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
-            )}
           </div>
 
           {/* 이메일 */}

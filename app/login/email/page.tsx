@@ -37,6 +37,7 @@ export default function LoginEmailPage() {
       login({
         userName: data.data.user.name,
         userPhone: data.data.user.phone,
+        userJobType: data.data.user.job_type || "",
       });
       router.push("/profile");
     } catch (e) {
