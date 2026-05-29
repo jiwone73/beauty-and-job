@@ -148,6 +148,10 @@ export default function ProfilePage() {
     const token = localStorage.getItem('access_token');
     if (!token) return;
     setOfficeJobAreas(newAreas);
+    useAuthStore.getState().login({
+      ...useAuthStore.getState(),
+      userJobAreas: newAreas,
+    });
     await fetch('/api/users/me', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
