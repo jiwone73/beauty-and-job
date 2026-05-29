@@ -1,6 +1,6 @@
 // 기업 대시보드에서 사용하는 공통 타입 정의
 
-export type CompanyType = "OFFICE" | "STORE";
+export type CompanyType = "OFFICE" | "STORE" | "BOTH";
 export type JobStatus = "ACTIVE" | "CLOSED" | "DRAFT" | "PAUSED";
 export type ApplicationStatus = "APPLIED" | "REVIEWING" | "INTERVIEW" | "PASSED" | "REJECTED";
 
