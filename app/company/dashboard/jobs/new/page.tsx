@@ -19,7 +19,7 @@ const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트",
 export default function CompanyJobNewPage() {
   const router = useRouter();
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
-  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | null>(null);
+  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH" | null>(null);
 
   // 회사 타입에 맞게 jobGroupType 자동 설정
   useEffect(() => {
