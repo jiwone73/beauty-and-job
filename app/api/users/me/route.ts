@@ -75,6 +75,11 @@ export async function PATCH(req: NextRequest) {
     sets.push(`gender = $${idx++}`);
     params.push(genderVal);
   }
+  if (office_job_areas !== undefined) {
+    sets.push(`office_job_areas = $${idx++}`);
+    params.push(office_job_areas);
+  }
+
 
   if (sets.length === 0) {
     return err("USER_002", "수정할 항목이 없습니다.", 400);
