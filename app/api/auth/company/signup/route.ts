@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 기업 유형 검증
-  if (!['OFFICE', 'STORE'].includes(company_type)) {
+  if (!['OFFICE', 'STORE', 'BOTH'].includes(company_type)) {
     return err('USER_002', '올바른 기업 유형을 선택해주세요.')
   }
 
