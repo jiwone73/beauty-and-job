@@ -50,8 +50,9 @@ export default function ProfilePage() {
   const {
     name: signupName, birth, gender, job, jobCustom, careerYears,
     categories, categoryCustom, countries, countryCustom, phone,
-    skillAreas, workTypePrefer, regionPrefer, officeJobAreas, setStoreProfile,
+    skillAreas, workTypePrefer, regionPrefer, setStoreProfile,
   } = useSignupStore();
+  const [officeJobAreas, setOfficeJobAreas] = useState<string[]>([]);
   const { userName, userPhone } = useAuthStore();
   const name = userName || signupName || "";
   const {
@@ -93,7 +94,7 @@ export default function ProfilePage() {
           if (res.data.email) setEmailInput(res.data.email);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
           if (res.data.office_job_areas?.length > 0) {
-            setStoreProfile({ officeJobAreas: res.data.office_job_areas });
+            setOfficeJobAreas(res.data.office_job_areas);
           }
         }
       })
@@ -146,7 +147,7 @@ export default function ProfilePage() {
   const saveOfficeJobAreas = async (newAreas: string[]) => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
-    setStoreProfile({ officeJobAreas: newAreas });
+    setOfficeJobAreas(newAreas);
     await fetch('/api/users/me', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -219,7 +220,7 @@ export default function ProfilePage() {
       setCustomOfficeAreaInput("");
       return;
     }
-    setStoreProfile({ officeJobAreas: [...officeJobAreas, v] });
+    setOfficeJobAreas([...officeJobAreas, v]);
     setCustomOfficeAreaInput("");
   };
 
