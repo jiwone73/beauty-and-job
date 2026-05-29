@@ -38,6 +38,7 @@ export default function LoginEmailPage() {
         userName: data.data.user.name,
         userPhone: data.data.user.phone,
         userJobType: data.data.user.job_type || "",
+        userJobAreas: data.data.user.office_job_areas || [],
       });
       router.push("/profile");
     } catch (e) {

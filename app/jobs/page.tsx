@@ -57,7 +57,7 @@ const STORE_JOBS = [
 const CAREER_OPTIONS = ["신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상", "경력 무관"];
 
 function JobsPageInner() {
-  const { userJobType } = useAuthStore();
+  const { userJobType, userJobAreas } = useAuthStore();
   const searchParams = useSearchParams();
 
   const initType = searchParams.get("type") || "전체";
@@ -123,8 +123,11 @@ function JobsPageInner() {
     const urlType = searchParams.get("type");
     if (!urlJob && !urlType && userJobType) {
       setJobTypeFilter(userJobType === "OFFICE" ? "기업" : "매장");
+      if (userJobAreas && userJobAreas.length > 0) {
+        setSelectedJobs(userJobAreas);
+      }
     }
-  }, [userJobType]);
+  }, [userJobType, userJobAreas]);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 

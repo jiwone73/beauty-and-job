@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   try {
     const res = await client.query(
       `SELECT 
-        id, email, name, phone, job_type, status, created_at,
+        id, email, name, phone, job_type, office_job_areas, status, created_at,
         portfolio_url, portfolio_filename, portfolio_uploaded_at,
         avatar_url, birth_date
        FROM users WHERE id = $1`,

@@ -6,8 +6,9 @@ export interface AuthState {
   userName: string;
   userPhone: string;
   userJobType: "OFFICE" | "STORE" | "";
+  userJobAreas: string[];
 
-  login: (data: { userName?: string; userPhone?: string; userJobType?: "OFFICE" | "STORE" | "" }) => void;
+  login: (data: { userName?: string; userPhone?: string; userJobType?: "OFFICE" | "STORE" | ""; userJobAreas?: string[] }) => void;
   logout: () => void;
 }
 
@@ -18,6 +19,7 @@ export const useAuthStore = create<AuthState>()(
       userName: "",
       userPhone: "",
       userJobType: "",
+      userJobAreas: [],
 
       login: (data) =>
         set({
@@ -25,6 +27,7 @@ export const useAuthStore = create<AuthState>()(
           userName: data.userName || "",
           userPhone: data.userPhone || "",
           userJobType: data.userJobType || "",
+          userJobAreas: data.userJobAreas || [],
         }),
 
       logout: () =>
@@ -33,6 +36,7 @@ export const useAuthStore = create<AuthState>()(
           userName: "",
           userPhone: "",
           userJobType: "",
+          userJobAreas: [],
         }),
     }),
     { name: "beautynjob-auth" }
