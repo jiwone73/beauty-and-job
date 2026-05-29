@@ -103,7 +103,7 @@ function JobsPageInner() {
             categories: j.categories || [],
             career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
             region: j.location || '국내',
-            type: j.job_type === 'OFFICE' ? '기업' : '매장',
+            type: j.job_type === 'OFFICE' ? '기업' : j.job_type === 'STORE' ? '매장' : 'both',
             thumbnail: j.logo_url,
             color: '#e8f0fe',
           }));
@@ -142,7 +142,7 @@ function JobsPageInner() {
   const currentJobTypes = jobTypeFilter === "매장" ? STORE_SKILL_AREAS : OFFICE_JOB_GROUPS;
 
   const filteredJobs = (apiJobs || []).filter((j: any) => {
-    const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter;
+    const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
     const matchCareer = selectedCareer === "경력 전체" || j.career.includes(selectedCareer.replace("년", "").replace("신입", "신입"));
     const matchSearch = !searchQuery || j.title.includes(searchQuery) || j.brand.includes(searchQuery);
