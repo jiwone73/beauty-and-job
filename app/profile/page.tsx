@@ -322,11 +322,6 @@ export default function ProfilePage() {
                         {area}
                       </button>
                     ))}
-                        style={{padding:"6px 14px",borderRadius:"20px",border:"1.5px solid #5f0080",background:"#f3e5f5",color:"#5f0080",fontSize:"13px",fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"4px"}}>
-                        {area}
-                        <span style={{fontSize:"15px",lineHeight:1,marginLeft:"2px"}}>×</span>
-                      </button>
-                    ))}
                   </div>
                 </div>
               </section>
