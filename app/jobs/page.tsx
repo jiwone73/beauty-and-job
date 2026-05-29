@@ -239,12 +239,17 @@ function JobsPageInner() {
                 <ChevronDown size={16} />
               </button>
               {showJobDrop && (
-                <div className="jobs-dropdown" style={{ minWidth: 180 }}>
+                <div className="jobs-dropdown" style={{ minWidth: 200 }}>
                   <button
                     className={`jobs-dropdown-item ${selectedJobs.length === 0 ? "active" : ""}`}
                     onClick={() => { setSelectedJobs([]); setShowJobDrop(false); }}
                   >
-                    {selectedJobs.length === 0 ? "✓ " : ""}직군 전체
+                    <span className="jobs-dropdown-checkbox">
+                      <svg className="jobs-dropdown-checkbox-check" width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
+                    직군 전체
                   </button>
                   {currentJobTypes.map((jt) => (
                     <button
@@ -258,7 +263,12 @@ function JobsPageInner() {
                         );
                       }}
                     >
-                      {selectedJobs.includes(jt) ? "✓ " : ""}{jt}
+                      <span className="jobs-dropdown-checkbox">
+                        <svg className="jobs-dropdown-checkbox-check" width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </span>
+                      {jt}
                     </button>
                   ))}
                 </div>
