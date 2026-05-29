@@ -36,7 +36,7 @@ export default function CompanyLayout({ children, activePage }: {
         if (res.success && res.data) {
           setCompanyInfo({
             name: res.data.company_name || "",
-            category: res.data.company_type === "OFFICE" ? "기업·브랜드" : "매장·살롱",
+            category: res.data.company_type === "OFFICE" ? "기업·브랜드" : res.data.company_type === "STORE" ? "매장·살롱" : "기업+매장",
           });
         }
       })
