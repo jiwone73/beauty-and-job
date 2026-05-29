@@ -31,18 +31,18 @@ type ModalType =
 
 const PRESET_SKILL_AREAS: string[] = [...STORE_SKILL_AREAS];
 const PRESET_OFFICE_JOB_AREAS = [
-  "브랜드 마케팅",
-  "디지털·퍼포먼스 마케팅",
-  "콘텐츠·PR·SNS",
+  "마케팅",
   "MD·상품기획",
-  "영업·채널영업",
-  "글로벌 사업",
+  "영업·글로벌",
   "R&D·연구개발",
   "디자인·VMD",
-  "생산·품질",
-  "구매·SCM·물류",
-  "경영지원",
-  "데이터·IT",
+  "SCM·물류·구매",
+  "경영·재무·회계",
+  "HR·교육",
+  "IT·데이터",
+  "CS·고객경험",
+  "법무·컴플라이언스",
+  "기타",
 ];
 
 export default function ProfilePage() {
@@ -72,8 +72,6 @@ export default function ProfilePage() {
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [customAreaInput, setCustomAreaInput] = useState("");
-  const [customOfficeAreaInput, setCustomOfficeAreaInput] = useState("");
   const [appliedCount, setAppliedCount] = useState(0);
   const [bookmarkCount, setBookmarkCount] = useState(0);
 
@@ -129,20 +127,6 @@ export default function ProfilePage() {
     ? `${birth.slice(0, 4)}년${gender ? ` (${gender === "남성" ? "남" : "여"})` : ""}`
     : "정보 없음";
   const careerDisplay = CAREER_LABELS[careerYears] || "경력 미설정";
-
-  const addCustomArea = () => {
-    const v = customAreaInput.trim();
-    if (!v) return;
-    if (skillAreas.includes(v)) {
-      setCustomAreaInput("");
-      return;
-    }
-    setStoreProfile({ skillAreas: [...skillAreas, v] });
-    setCustomAreaInput("");
-  };
-
-  const customAreas = skillAreas.filter((a) => !PRESET_SKILL_AREAS.includes(a));
-  const customOfficeAreas = officeJobAreas.filter((a) => !PRESET_OFFICE_JOB_AREAS.includes(a));
 
   const saveOfficeJobAreas = async (newAreas: string[]) => {
     const token = localStorage.getItem('access_token');
@@ -217,17 +201,6 @@ export default function ProfilePage() {
       setAvatarUploading(false);
     }
   };
-  const addCustomOfficeArea = () => {
-    const v = customOfficeAreaInput.trim();
-    if (!v) return;
-    if (officeJobAreas.includes(v)) {
-      setCustomOfficeAreaInput("");
-      return;
-    }
-    setOfficeJobAreas([...officeJobAreas, v]);
-    setCustomOfficeAreaInput("");
-  };
-
   const handleCareerComplete = () => {
     const today = new Date();
     const date = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, "0")}.${String(today.getDate()).padStart(2, "0")}`;
@@ -340,7 +313,7 @@ export default function ProfilePage() {
                   <h2 className="profile-section-title">직군 영역</h2>
                 </div>
                 <div className="profile-info-card" style={{padding:"16px"}}>
-                  <p style={{fontSize:"13px",color:"#888",marginBottom:"12px"}}>해당하는 직군 영역을 선택하거나 직접 입력해 주세요 (1~3개 권장)</p>
+                  <p style={{fontSize:"13px",color:"#888",marginBottom:"12px"}}>해당하는 직군 영역을 선택해 주세요 (1~3개 권장)</p>
                   <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
                     {PRESET_OFFICE_JOB_AREAS.map((area) => (
                       <button key={area}
@@ -349,31 +322,11 @@ export default function ProfilePage() {
                         {area}
                       </button>
                     ))}
-                    {customOfficeAreas.map((area) => (
-                      <button key={area}
-                        onClick={() => saveOfficeJobAreas(officeJobAreas.filter(a=>a!==area))}
                         style={{padding:"6px 14px",borderRadius:"20px",border:"1.5px solid #5f0080",background:"#f3e5f5",color:"#5f0080",fontSize:"13px",fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"4px"}}>
                         {area}
                         <span style={{fontSize:"15px",lineHeight:1,marginLeft:"2px"}}>×</span>
                       </button>
                     ))}
-                  </div>
-                  <div style={{display:"flex",gap:"6px"}}>
-                    <input
-                      className="cv-input"
-                      placeholder="직접 입력 (예: 사업개발, 법무, 신사업기획 등)"
-                      value={customOfficeAreaInput}
-                      onChange={(e) => setCustomOfficeAreaInput(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomOfficeArea(); } }}
-                      style={{flex:1,fontSize:"13px"}}
-                    />
-                    <button
-                      onClick={addCustomOfficeArea}
-                      disabled={!customOfficeAreaInput.trim()}
-                      style={{padding:"0 14px",borderRadius:"8px",border:"none",background: customOfficeAreaInput.trim() ? "#5f0080" : "#e0e0e0",color:"#fff",fontSize:"13px",fontWeight:600,cursor: customOfficeAreaInput.trim() ? "pointer" : "not-allowed"}}
-                    >
-                      추가
-                    </button>
                   </div>
                 </div>
               </section>
@@ -384,7 +337,7 @@ export default function ProfilePage() {
                   <h2 className="profile-section-title">시술 분야 · 전문 영역</h2>
                 </div>
                 <div className="profile-info-card" style={{padding:"16px"}}>
-                  <p style={{fontSize:"13px",color:"#888",marginBottom:"12px"}}>해당하는 시술 분야를 선택하거나 직접 입력해 주세요</p>
+                  <p style={{fontSize:"13px",color:"#888",marginBottom:"12px"}}>해당하는 시술 분야를 선택해 주세요</p>
                   <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
                     {PRESET_SKILL_AREAS.map((area) => (
                       <button key={area}
@@ -393,32 +346,6 @@ export default function ProfilePage() {
                         {area}
                       </button>
                     ))}
-                    {customAreas.map((area) => (
-                      <button key={area}
-                        onClick={() => setStoreProfile({ skillAreas: skillAreas.filter(a=>a!==area) })}
-                        style={{padding:"6px 14px",borderRadius:"20px",border:"1.5px solid #5f0080",background:"#f3e5f5",color:"#5f0080",fontSize:"13px",fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"4px"}}>
-                        {area}
-                        <span style={{fontSize:"15px",lineHeight:1,marginLeft:"2px"}}>×</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div style={{display:"flex",gap:"6px",marginBottom:"20px"}}>
-                    <input
-                      className="cv-input"
-                      placeholder="직접 입력 (예: 두피관리, 타투, 브로우 등)"
-                      value={customAreaInput}
-                      onChange={(e) => setCustomAreaInput(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomArea(); } }}
-                      style={{flex:1,fontSize:"13px"}}
-                    />
-                    <button
-                      onClick={addCustomArea}
-                      disabled={!customAreaInput.trim()}
-                      style={{padding:"0 14px",borderRadius:"8px",border:"none",background: customAreaInput.trim() ? "#5f0080" : "#e0e0e0",color:"#fff",fontSize:"13px",fontWeight:600,cursor: customAreaInput.trim() ? "pointer" : "not-allowed"}}
-                    >
-                      추가
-                    </button>
                   </div>
 
                   <label style={{fontSize:"13px",fontWeight:600,color:"#333",display:"block",marginBottom:"6px"}}>희망 근무 형태</label>
