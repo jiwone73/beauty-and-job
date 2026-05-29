@@ -5,9 +5,8 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { OFFICE_JOB_GROUPS, STORE_SKILL_AREAS } from "@/lib/constants";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
-import { useSignupStore } from "@/lib/store/signupStore";
+import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 
 /* ===== 더미 데이터 ===== */
@@ -44,8 +43,6 @@ const JOBS = [
   { id: 30, brand: "메디큐브", tags: ["디바이스", "홈케어"], category: null, title: "데이터 분석가 (마케팅)", jobType: "경영·전략", career: "경력 2-4년", region: "국내", type: "기업", thumbnail: null, color: "#fff8e1" },
 ];
 
-
-
 const STORE_JOBS = [
   { id: 101, brand: "올리브영", tags: ["리테일"], title: "뷰티어드바이저 (강남점)", jobType: "뷰티어드바이저", career: "경력 무관", region: "서울 강남", extraCount: 0, type: "매장", thumbnail: null, color: "#e8f5e9" },
   { id: 102, brand: "아리따움", tags: ["스킨케어", "색조"], title: "뷰티 컨설턴트", jobType: "뷰티어드바이저", career: "경력 1년 이상", region: "서울", extraCount: 0, type: "매장", thumbnail: null, color: "#fce4ec" },
@@ -57,23 +54,24 @@ const STORE_JOBS = [
   { id: 108, brand: "세포라", tags: ["멀티브랜드"], title: "뷰티 어드바이저 (세포라 코리아)", jobType: "뷰티어드바이저", career: "경력 1년 이상", region: "서울", extraCount: 0, type: "매장", thumbnail: null, color: "#ede7f6" },
 ];
 
-const ALL_JOBS = [...JOBS, ...STORE_JOBS];
-
 const CAREER_OPTIONS = ["신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상", "경력 무관"];
 
 function JobsPageInner() {
-  const { job, careers: signupCareers } = useSignupStore() as any;
+  const { userJobType } = useAuthStore();
   const searchParams = useSearchParams();
 
   const initType = searchParams.get("type") || "전체";
-  const initJob = searchParams.get("job") || "직군 전체";
   const initCareer = searchParams.get("career") || "경력 전체";
   const initRegion = searchParams.get("region") || "";
   const initBrand = searchParams.get("brand") || "";
   const initSearch = searchParams.get("q") || "";
 
   const [jobTypeFilter, setJobTypeFilter] = useState(initType);
-  const [selectedJob, setSelectedJob] = useState(initJob);
+  const [selectedJobs, setSelectedJobs] = useState<string[]>(() => {
+    const urlJob = searchParams.get("job");
+    if (urlJob && urlJob !== "직군 전체") return [urlJob];
+    return [];
+  });
   const [selectedCareer, setSelectedCareer] = useState(initCareer);
   const [selectedRegion, setSelectedRegion] = useState(initRegion);
   const [selectedBrand, setSelectedBrand] = useState(initBrand);
@@ -119,6 +117,15 @@ function JobsPageInner() {
     loadBookmarks();
   }, [loadBookmarks]);
 
+  // 로그인 사용자 job_type 기반 탭 자동 세팅
+  useEffect(() => {
+    const urlJob = searchParams.get("job");
+    const urlType = searchParams.get("type");
+    if (!urlJob && !urlType && userJobType) {
+      setJobTypeFilter(userJobType === "OFFICE" ? "기업" : "매장");
+    }
+  }, [userJobType]);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const POPULAR_SEARCHES = ["아누아", "성분에디터", "퓌", "메디힐", "메디큐브", "넘버즈인", "유무", "브이티", "달바", "온그리디언츠", "마녀공장", "이퀄베리", "닥터엘시아"];
@@ -130,9 +137,10 @@ function JobsPageInner() {
   };
 
   const currentJobTypes = jobTypeFilter === "매장" ? STORE_SKILL_AREAS : OFFICE_JOB_GROUPS;
+
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter;
-    const matchJob = selectedJob === "직군 전체" || (j.categories || []).includes(selectedJob);
+    const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
     const matchCareer = selectedCareer === "경력 전체" || j.career.includes(selectedCareer.replace("년", "").replace("신입", "신입"));
     const matchSearch = !searchQuery || j.title.includes(searchQuery) || j.brand.includes(searchQuery);
     const matchRegion = !selectedRegion || j.region.includes(selectedRegion);
@@ -203,28 +211,55 @@ function JobsPageInner() {
       )}
 
       <div className="jobs-container">
-        {/* ===== 필터 바 ===== */}
+        {/* ===== 필터 탭 ===== */}
         <div className="jobs-type-tabs">
           {["전체", "기업", "매장"].map((t) => (
             <button key={t}
               className={`jobs-type-tab ${jobTypeFilter === t ? "active" : ""}`}
-              onClick={() => { setJobTypeFilter(t); setSelectedJob("직군 전체"); }}>
+              onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); }}>
               {t === "기업" ? "🏢 기업 공고" : t === "매장" ? "🏪 매장 공고" : "전체"}
             </button>
           ))}
         </div>
+
+        {/* ===== 필터 바 ===== */}
         <div className="jobs-filter-bar">
           <div className="jobs-filter-left">
-            {/* 직군 드롭다운 */}
+            {/* 직군 드롭다운 (멀티 선택) */}
             <div className="jobs-dropdown-wrap">
-              <button className="jobs-filter-btn" onClick={() => { setShowJobDrop(!showJobDrop); setShowCareerDrop(false); }}>
-                {selectedJob} <ChevronDown size={16} />
+              <button
+                className={`jobs-filter-btn ${selectedJobs.length > 0 ? "active" : ""}`}
+                onClick={() => { setShowJobDrop(!showJobDrop); setShowCareerDrop(false); }}
+              >
+                {selectedJobs.length === 0
+                  ? "직군 전체"
+                  : selectedJobs.length === 1
+                  ? selectedJobs[0]
+                  : `${selectedJobs[0]} 외 ${selectedJobs.length - 1}`}
+                <ChevronDown size={16} />
               </button>
               {showJobDrop && (
-                <div className="jobs-dropdown">
-                  <button className={`jobs-dropdown-item ${selectedJob === "직군 전체" ? "active" : ""}`} onClick={() => { setSelectedJob("직군 전체"); setShowJobDrop(false); }}>직군 전체</button>
+                <div className="jobs-dropdown" style={{ minWidth: 180 }}>
+                  <button
+                    className={`jobs-dropdown-item ${selectedJobs.length === 0 ? "active" : ""}`}
+                    onClick={() => { setSelectedJobs([]); setShowJobDrop(false); }}
+                  >
+                    {selectedJobs.length === 0 ? "✓ " : ""}직군 전체
+                  </button>
                   {currentJobTypes.map((jt) => (
-                    <button key={jt} className={`jobs-dropdown-item ${selectedJob === jt ? "active" : ""}`} onClick={() => { setSelectedJob(jt); setShowJobDrop(false); }}>{jt}</button>
+                    <button
+                      key={jt}
+                      className={`jobs-dropdown-item ${selectedJobs.includes(jt) ? "active" : ""}`}
+                      onClick={() => {
+                        setSelectedJobs((prev) =>
+                          prev.includes(jt)
+                            ? prev.filter((j) => j !== jt)
+                            : [...prev, jt]
+                        );
+                      }}
+                    >
+                      {selectedJobs.includes(jt) ? "✓ " : ""}{jt}
+                    </button>
                   ))}
                 </div>
               )}
@@ -232,14 +267,28 @@ function JobsPageInner() {
 
             {/* 경력 드롭다운 */}
             <div className="jobs-dropdown-wrap">
-              <button className="jobs-filter-btn" onClick={() => { setShowCareerDrop(!showCareerDrop); setShowJobDrop(false); }}>
+              <button
+                className={`jobs-filter-btn ${selectedCareer !== "경력 전체" ? "active" : ""}`}
+                onClick={() => { setShowCareerDrop(!showCareerDrop); setShowJobDrop(false); }}
+              >
                 {selectedCareer} <ChevronDown size={16} />
               </button>
               {showCareerDrop && (
                 <div className="jobs-dropdown">
-                  <button className={`jobs-dropdown-item ${selectedCareer === "경력 전체" ? "active" : ""}`} onClick={() => { setSelectedCareer("경력 전체"); setShowCareerDrop(false); }}>경력 전체</button>
+                  <button
+                    className={`jobs-dropdown-item ${selectedCareer === "경력 전체" ? "active" : ""}`}
+                    onClick={() => { setSelectedCareer("경력 전체"); setShowCareerDrop(false); }}
+                  >
+                    경력 전체
+                  </button>
                   {CAREER_OPTIONS.map((c) => (
-                    <button key={c} className={`jobs-dropdown-item ${selectedCareer === c ? "active" : ""}`} onClick={() => { setSelectedCareer(c); setShowCareerDrop(false); }}>{c}</button>
+                    <button
+                      key={c}
+                      className={`jobs-dropdown-item ${selectedCareer === c ? "active" : ""}`}
+                      onClick={() => { setSelectedCareer(c); setShowCareerDrop(false); }}
+                    >
+                      {c}
+                    </button>
                   ))}
                 </div>
               )}
@@ -257,13 +306,11 @@ function JobsPageInner() {
           </div>
         </div>
 
-
         {/* ===== 채용공고 그리드 ===== */}
         {filteredJobs.length > 0 ? (
           <div className="jobs-grid">
             {filteredJobs.map((job) => (
               <Link key={job.id} href={`/jobs/${job.id}`} className="jobs-card">
-                {/* 썸네일 */}
                 <div className="jobs-card-thumb" style={{ background: job.color }}>
                   <div className="jobs-card-thumb-placeholder">
                     <span>{job.brand[0]}</span>
@@ -276,8 +323,6 @@ function JobsPageInner() {
                     <Bookmark size={18} fill={bookmarks.includes(String(job.id)) ? "currentColor" : "none"} />
                   </button>
                 </div>
-
-                {/* 카드 정보 */}
                 <div className="jobs-card-body">
                   <div className="jobs-card-brand-row">
                     <span className="jobs-card-brand">{job.brand}</span>
@@ -299,7 +344,7 @@ function JobsPageInner() {
           <div className="jobs-empty">
             <div className="jobs-empty-icon">🔍</div>
             <p className="jobs-empty-title">조건에 맞는 포지션이 없어요.</p>
-            <button className="jobs-empty-reset" onClick={() => { setSelectedJob("직군 전체"); setSelectedCareer("경력 전체"); setSearchQuery(""); }}>
+            <button className="jobs-empty-reset" onClick={() => { setSelectedJobs([]); setSelectedCareer("경력 전체"); setSearchQuery(""); }}>
               필터 초기화
             </button>
           </div>
