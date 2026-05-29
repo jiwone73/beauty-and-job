@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Mail, Building2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 
@@ -53,14 +54,16 @@ export default function LoginStartPage() {
 
         {/* 이메일 회원가입 */}
         <Link href="/signup/email">
-          <button className="w-full h-[52px] bg-white border border-[#e0e0e0] text-[#1a1a1a] rounded-lg font-semibold text-[15px] hover:bg-[#fafafa] transition">
-            이메일로 시작하기
+          <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#1a1a1a] rounded-lg font-semibold text-[15px] hover:border-[#5f0080] hover:bg-[#fafafa] transition flex items-center justify-center gap-2">
+            <Mail size={18} />
+            <span>이메일로 시작하기</span>
           </button>
         </Link>
         {/* 기업회원 */}
         <Link href="/company/signup" className="mt-3 block">
-          <button className="w-full h-[52px] bg-white border border-[#e0e0e0] text-[#1a1a1a] rounded-lg font-semibold text-[15px] hover:bg-[#fafafa] transition">
-            기업회원 시작하기
+          <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#1a1a1a] rounded-lg font-semibold text-[15px] hover:border-[#5f0080] hover:bg-[#fafafa] transition flex items-center justify-center gap-2">
+            <Building2 size={18} />
+            <span>기업회원 시작하기</span>
           </button>
         </Link>
 
