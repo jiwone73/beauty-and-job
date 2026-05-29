@@ -51,12 +51,20 @@ export default function LoginStartPage() {
           <span>카카오로 시작하기</span>
         </button>
 
-        {/* 이메일 로그인 */}
-        <Link href="/login/email">
+        {/* 이메일 회원가입 */}
+        <Link href="/signup/email">
           <button className="w-full h-[52px] bg-white border border-[#e0e0e0] text-[#1a1a1a] rounded-lg font-semibold text-[15px] hover:bg-[#fafafa] transition">
             이메일로 시작하기
           </button>
         </Link>
+
+        {/* 이미 계정이 있으신가요 */}
+        <div className="mt-4 text-center">
+          <span className="text-[13px] text-[#6b6b6b]">이미 계정이 있으신가요? </span>
+          <Link href="/login/email" className="text-[13px] text-[#5f0080] font-semibold hover:underline">
+            로그인
+          </Link>
+        </div>
 
         {/* 기업회원 */}
         <div className="mt-8 text-center">
