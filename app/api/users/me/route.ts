@@ -50,7 +50,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { birth, gender } = body;
+  const { birth, gender, office_job_areas } = body;
 
   const sets: string[] = [];
   const params: any[] = [];

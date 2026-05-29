@@ -92,6 +92,9 @@ export default function ProfilePage() {
           if (res.data.job_type) setDbJobType(res.data.job_type);
           if (res.data.email) setEmailInput(res.data.email);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
+          if (res.data.office_job_areas?.length > 0) {
+            setStoreProfile({ officeJobAreas: res.data.office_job_areas });
+          }
         }
       })
       .catch(console.error);
@@ -139,6 +142,17 @@ export default function ProfilePage() {
 
   const customAreas = skillAreas.filter((a) => !PRESET_SKILL_AREAS.includes(a));
   const customOfficeAreas = officeJobAreas.filter((a) => !PRESET_OFFICE_JOB_AREAS.includes(a));
+
+  const saveOfficeJobAreas = async (newAreas) => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    setStoreProfile({ officeJobAreas: newAreas });
+    await fetch('/api/users/me', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ office_job_areas: newAreas }),
+    });
+  };
 
   // 프로필 사진 업로드
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -325,14 +339,14 @@ export default function ProfilePage() {
                   <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
                     {PRESET_OFFICE_JOB_AREAS.map((area) => (
                       <button key={area}
-                        onClick={() => setStoreProfile({ officeJobAreas: officeJobAreas.includes(area) ? officeJobAreas.filter(a=>a!==area) : [...officeJobAreas, area] })}
+                        onClick={() => saveOfficeJobAreas(officeJobAreas.includes(area) ? officeJobAreas.filter(a=>a!==area) : [...officeJobAreas, area])}
                         style={{padding:"6px 14px",borderRadius:"20px",border:`1.5px solid ${officeJobAreas.includes(area)?"#5f0080":"#e0e0e0"}`,background:officeJobAreas.includes(area)?"#f3e5f5":"#fff",color:officeJobAreas.includes(area)?"#5f0080":"#888",fontSize:"13px",fontWeight:officeJobAreas.includes(area)?600:400,cursor:"pointer"}}>
                         {area}
                       </button>
                     ))}
                     {customOfficeAreas.map((area) => (
                       <button key={area}
-                        onClick={() => setStoreProfile({ officeJobAreas: officeJobAreas.filter(a=>a!==area) })}
+                        onClick={() => saveOfficeJobAreas(officeJobAreas.filter(a=>a!==area))}
                         style={{padding:"6px 14px",borderRadius:"20px",border:"1.5px solid #5f0080",background:"#f3e5f5",color:"#5f0080",fontSize:"13px",fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"4px"}}>
                         {area}
                         <span style={{fontSize:"15px",lineHeight:1,marginLeft:"2px"}}>×</span>
