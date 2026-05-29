@@ -71,8 +71,6 @@ export default function LoginStartPage() {
             로그인
           </Link>
         </div>
-          </Link>
-        </div>
 
         {/* 하단 약관 */}
         <div className="mt-12 flex justify-center gap-4 text-[12px] text-[#9a9a9a]">
