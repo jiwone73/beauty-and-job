@@ -143,7 +143,7 @@ export default function ProfilePage() {
   const customAreas = skillAreas.filter((a) => !PRESET_SKILL_AREAS.includes(a));
   const customOfficeAreas = officeJobAreas.filter((a) => !PRESET_OFFICE_JOB_AREAS.includes(a));
 
-  const saveOfficeJobAreas = async (newAreas) => {
+  const saveOfficeJobAreas = async (newAreas: string[]) => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
     setStoreProfile({ officeJobAreas: newAreas });
