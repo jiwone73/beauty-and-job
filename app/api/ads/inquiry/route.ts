@@ -27,6 +27,6 @@ export async function POST(req: NextRequest) {
     }
   } catch (e) {
     console.error('ad inquiry error:', e)
-    return err('문의 저장 중 오류가 발생했습니다.', 500)
+    return err('SERVER_ERROR', '문의 저장 중 오류가 발생했습니다.', 500)
   }
 }
