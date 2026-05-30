@@ -278,10 +278,6 @@ export default function CompanySignupPage() {
             {loading ? "가입 중..." : "기업회원 가입"}
           </button>
 
-          <div className="mt-6 text-center text-[13px] text-[#6b6b6b]">
-            이미 계정이 있으신가요?{" "}
-            <Link href="/company/login" className="text-[#5f0080] font-semibold hover:underline">로그인</Link>
-          </div>
         </div>
       </div>
     </div>

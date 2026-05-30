@@ -333,15 +333,6 @@ export default function SignupEmailPage() {
             {loading ? "가입 중..." : "가입하기"}
           </button>
 
-          <div className="mt-6 text-center text-[13px] text-[#6b6b6b]">
-            이미 계정이 있으신가요?{" "}
-            <Link
-              href="/login/email"
-              className="text-[#5f0080] font-semibold hover:underline"
-            >
-              로그인
-            </Link>
-          </div>
         </div>
       </div>
     </div>
