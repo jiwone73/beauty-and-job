@@ -8625,7 +8625,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .co-btn-white:hover { opacity: 0.88; }
 
 /* ── 섹션 공통 ── */
-.co-section { padding: 64px 20px; }
+.co-section { padding: 32px 20px; }
 .co-section.gray { background: #f9fafb; }
 .co-section-inner { max-width: 960px; margin: 0 auto; }
 .co-section-title {
@@ -9055,7 +9055,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .co-btn-white:hover { opacity: 0.88; }
 
 /* ── 섹션 공통 ── */
-.co-section { padding: 64px 20px; }
+.co-section { padding: 32px 20px; }
 .co-section.gray { background: #f9fafb; }
 .co-section-inner { max-width: 960px; margin: 0 auto; }
 .co-section-title {

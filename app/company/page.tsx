@@ -156,7 +156,7 @@ export default function CompanyPage() {
             <p className="co-split-desc">화장품 브랜드, 프랜차이즈, 병원·클리닉, 교육기관 등 뷰티 관련 기업의 전문직 채용을 지원합니다.</p>
             <div className="co-tag-wrap">
               {OFFICE_JOB_GROUPS.map((t) => (
-                <span key={t} className="co-job-tag purple">{t}</span>
+                <span key={t} className="co-job-tag">{t}</span>
               ))}
             </div>
           </div>
