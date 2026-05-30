@@ -240,9 +240,9 @@ export default function AdsLandingPage() {
             어떤 상품이 맞는지 모르겠다면 문의 주세요.<br />
             담당자가 1 영업일 이내에 맞춤 제안을 드립니다.
           </p>
-          <a href="mailto:ad@beautynjob.com" className="ads-cta-btn">
+          <Link href="/company/ads/inquiry" className="ads-cta-btn">
             📩 광고상품 문의하기
-          </a>
+          </Link>
           <p className="ads-cta-email">또는 이메일: ad@beautynjob.com</p>
         </div>
       </section>
