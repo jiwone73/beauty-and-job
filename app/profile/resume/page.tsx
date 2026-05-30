@@ -40,7 +40,10 @@ function ResumePageContent() {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    if (!token) return;
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
 
     // DB에서 프로필 동기화
     useProfileStore.getState().loadFromServer();
