@@ -65,7 +65,7 @@ export default function LoginEmailPage() {
           </div>
 
           <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-8">
-            이메일로 로그인
+            개인회원 로그인
           </h1>
 
           {/* 이메일 입력 */}
@@ -119,7 +119,7 @@ export default function LoginEmailPage() {
           {/* 하단 링크 */}
           <div className="mt-6 flex justify-center gap-4 text-[13px] text-[#6b6b6b]">
             <Link href="/signup/email" className="hover:text-[#5f0080] hover:underline">
-              이메일로 회원가입
+              개인회원 가입
             </Link>
             <span>·</span>
             <Link href="/login/password-reset" className="hover:text-[#5f0080] hover:underline">
