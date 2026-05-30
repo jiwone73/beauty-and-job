@@ -9824,7 +9824,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 }
 .co-combined-title {
-  font-size: 18px; font-weight: 800; color: #111; margin-bottom: 4px;
+  font-size: clamp(20px, 3vw, 28px); font-weight: 800; color: #111; margin-bottom: 4px;
 }
 .co-combined-sub {
   font-size: 13px; color: #888; margin-bottom: 20px;

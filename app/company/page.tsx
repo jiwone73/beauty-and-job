@@ -151,7 +151,7 @@ export default function CompanyPage() {
             <p>기업 맞춤 채용</p>
           </div>
           <div className="co-split-text">
-            <span className="co-label-tag purple">기업·브랜드 채용</span>
+            <span className="co-label-tag">기업·브랜드 채용</span>
             <h2 className="co-split-title">본사직·전문직 채용,<br />전문적으로 진행하세요</h2>
             <p className="co-split-desc">화장품 브랜드, 프랜차이즈, 병원·클리닉, 교육기관 등 뷰티 관련 기업의 전문직 채용을 지원합니다.</p>
             <div className="co-tag-wrap">
