@@ -9990,3 +9990,39 @@ input[type="range"].career-slider::-moz-range-thumb {
 .legal-section h3 { font-size: 17px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; }
 .legal-section p { font-size: 14px; color: #444; line-height: 1.75; margin-bottom: 6px; }
 .legal-footer { margin-top: 40px; padding-top: 24px; border-top: 1px solid #eee; color: #999; font-size: 13px; }
+
+
+/* ===== 기업 소개 회원유형 A안: 카드 3개 가로 + 이용절차 아래 ===== */
+.co-combined-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 48px !important;
+}
+.co-combined-left { max-width: none !important; flex: none !important; width: 100% !important; }
+.co-combined-right {
+  width: 100% !important;
+  flex-shrink: 1 !important;
+}
+.co-type-stack {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 16px !important;
+}
+.co-type-card {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  padding: 24px 20px !important;
+}
+.co-type-card .co-type-btn { width: 100%; justify-content: center; margin-top: auto; }
+.co-type-body { width: 100%; }
+/* 이용 절차를 가로 4단으로 */
+.co-steps-vertical {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 20px !important;
+}
+@media (max-width: 768px) {
+  .co-type-stack { grid-template-columns: 1fr !important; }
+  .co-steps-vertical { grid-template-columns: 1fr !important; }
+}
