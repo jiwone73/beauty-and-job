@@ -1,31 +1,32 @@
 "use client";
+import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
-import { Eye, EyeOff, Lock, User, Building2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
-
+import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 
 export default function CompanyLoginPage() {
   const router = useRouter();
   const { login } = useAuthStore();
-  const [id, setId] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!id.trim()) { setError("이메일을 입력해주세요."); return; }
-    if (!password.trim()) { setError("비밀번호를 입력해주세요."); return; }
-    setLoading(true);
+    if (!email.trim() || !password.trim()) {
+      setError("이메일과 비밀번호를 입력해주세요.");
+      return;
+    }
     setError("");
+    setLoading(true);
     try {
       const res = await fetch("/api/auth/company/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: id.trim(), password }),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
       const data = await res.json();
       if (!data.success) {
@@ -46,67 +47,80 @@ export default function CompanyLoginPage() {
   };
 
   return (
-    <div className="admin-login-page">
-      <div className="admin-login-card">
-        <div className="admin-login-logo">
-          <Image src="/images/logo.png" alt="뷰티앤잡" width={130} height={33} priority />
-          <span className="admin-login-badge" style={{background:"#5f0080"}}>기업</span>
-        </div>
-
-        <h1 className="admin-login-title">기업 로그인</h1>
-        <p className="admin-login-sub">기업 담당자 전용 채용관리 서비스입니다</p>
-
-        <div className="admin-login-field">
-          <label className="admin-login-label">이메일</label>
-          <div className="admin-login-input-wrap">
-            <User size={16} className="admin-login-input-icon" />
-            <input
-              className={`admin-login-input ${error ? "error" : ""}`}
-              type="text"
-              placeholder="이메일"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-            />
-          </div>
-        </div>
-
-        <div className="admin-login-field">
-          <label className="admin-login-label">비밀번호</label>
-          <div className="admin-login-input-wrap">
-            <Lock size={16} className="admin-login-input-icon" />
-            <input
-              className={`admin-login-input ${error ? "error" : ""}`}
-              type={showPw ? "text" : "password"}
-              placeholder="비밀번호"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-            />
-            <button className="admin-login-eye" onClick={() => setShowPw(!showPw)} type="button">
-              {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          </div>
-        </div>
-
-        {error && <p className="admin-login-error">{error}</p>}
-
-        <button
-          className="admin-login-btn"
-          onClick={handleLogin}
-          disabled={loading}
-          style={{background: loading ? "#999" : "#5f0080"}}>
-          {loading ? "로그인 중..." : "로그인"}
+    <div className="min-h-screen flex flex-col bg-white">
+      {/* 헤더 */}
+      <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
+        <button onClick={() => router.back()} className="p-2">
+          <ChevronLeft size={22} />
         </button>
+      </header>
 
-        <p className="admin-login-hint">
-          이메일과 비밀번호를 입력해주세요
-        </p>
+      <div className="flex-1 flex items-center justify-center px-5">
+        <div className="w-full max-w-[400px]">
+          {/* 로고 */}
+          <div className="flex justify-center mb-8">
+            <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} />
+          </div>
 
-        <div style={{textAlign:"center", marginTop:"20px", paddingTop:"20px", borderTop:"1px solid #f0f0f0"}}>
-          <Link href="/company/signup" style={{fontSize:"13px", color:"#5f0080", fontWeight:600}}>
-            기업 회원가입 →
-          </Link>
+          <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-8">
+            기업회원 로그인
+          </h1>
+
+          {/* 이메일 입력 */}
+          <div className="mb-3">
+            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">이메일</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="이메일을 입력해주세요"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+            />
+          </div>
+
+          {/* 비밀번호 입력 */}
+          <div className="mb-2">
+            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">비밀번호</label>
+            <div className="relative">
+              <input
+                type={showPw ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="비밀번호를 입력해주세요"
+                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
+                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw(!showPw)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a9a9a]"
+              >
+                {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+
+          {/* 에러 메시지 */}
+          {error && (
+            <p className="text-[13px] text-[#e74c3c] mb-3">{error}</p>
+          )}
+
+          {/* 로그인 버튼 */}
+          <button
+            onClick={handleLogin}
+            disabled={loading}
+            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-semibold text-[15px] mt-4 disabled:opacity-50 hover:opacity-90 transition"
+          >
+            {loading ? "로그인 중..." : "로그인"}
+          </button>
+
+          {/* 하단 링크 */}
+          <div className="mt-6 flex justify-center text-[13px] text-[#6b6b6b]">
+            <Link href="/company/signup" className="hover:text-[#5f0080] hover:underline">
+              기업회원 가입
+            </Link>
+          </div>
         </div>
       </div>
     </div>
