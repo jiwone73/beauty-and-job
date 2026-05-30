@@ -28,5 +28,7 @@ export async function POST(req: NextRequest) {
 
   await sendSMS(cleanPhone, `[뷰티앤잡] 인증번호는 ${code} 입니다.`)
 
-  return ok({ expires_in: 180 })
+  // [개발용] SMS 미연동 상태에서 테스트 위해 응답에 코드 포함
+  // 상용화 시 dev_code 줄 제거
+  return ok({ expires_in: 180, dev_code: code })
 }

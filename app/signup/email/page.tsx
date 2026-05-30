@@ -108,7 +108,7 @@ export default function SignupEmailPage() {
       const data = await res.json();
       if (data.success) {
         setCodeSent(true);
-        setPhoneMsg("인증번호를 발송했어요. (3분 이내 입력)");
+        setPhoneMsg(data.data?.dev_code ? `[개발용] 인증번호: ${data.data.dev_code}` : "인증번호를 발송했어요. (3분 이내 입력)");
       } else {
         setPhoneMsg(data.error?.message || "발송에 실패했습니다.");
       }
