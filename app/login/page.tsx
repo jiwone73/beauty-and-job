@@ -26,7 +26,7 @@ export default function LoginStartPage() {
       <div className="w-full max-w-[400px]">
         {/* 로고 */}
         <div className="flex justify-center mb-6">
-          <Image src="/images/logo.png" alt="뷰티앤잡" width={140} height={40} priority />
+          <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={140} height={40} priority /></Link>
         </div>
 
         {/* 슬로건 */}

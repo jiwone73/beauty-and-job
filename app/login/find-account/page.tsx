@@ -91,7 +91,7 @@ export default function FindAccountPage() {
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
           <div className="flex justify-center mb-8">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} />
+            <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} /></Link>
           </div>
 
           <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-2">계정 찾기</h1>

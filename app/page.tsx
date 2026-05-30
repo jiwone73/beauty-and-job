@@ -830,7 +830,7 @@ function Footer() {
       <div className="footer-new-top">
         {/* 로고 + 태그라인만 */}
         <div className="footer-new-brand">
-          <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} className="footer-new-logo" />
+          <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} className="footer-new-logo" /></Link>
           <p className="footer-new-tagline">뷰티 산업 종사자를 위한 단 하나의 커리어 플랫폼</p>
         </div>
 

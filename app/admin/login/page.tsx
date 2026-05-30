@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
@@ -42,7 +43,7 @@ export default function AdminLoginPage() {
       <div className="admin-login-card">
         {/* 로고 */}
         <div className="admin-login-logo">
-          <Image src="/images/logo.png" alt="뷰티앤잡" width={130} height={33} priority />
+          <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={130} height={33} priority /></Link>
           <span className="admin-login-badge">관리자</span>
         </div>
 

@@ -138,7 +138,7 @@ export default function CompanySignupPage() {
       <div className="flex-1 flex justify-center px-5 py-8">
         <div className="w-full max-w-[480px]">
           <div className="flex justify-center mb-6">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} />
+            <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} /></Link>
           </div>
 
           <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-2">

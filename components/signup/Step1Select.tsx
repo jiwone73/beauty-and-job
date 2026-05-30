@@ -46,14 +46,14 @@ export default function Step1Select({ onSelectPhone, onSelectKakao }: Props) {
 
       {/* 로고 */}
       <div className="flex justify-center mb-6">
-        <Image
+        <Link href="/"><Image
           src="/images/logo.png"
           alt="뷰티앤잡"
           width={140}
           height={36}
           priority
           className="h-9 w-auto"
-        />
+        /></Link>
       </div>
 
       <h1 className="text-center text-xl font-bold text-[#1a1a1a] mb-2 tracking-tight">

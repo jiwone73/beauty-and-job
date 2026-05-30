@@ -85,7 +85,7 @@ export default function PasswordResetRequestPage() {
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
           <div className="flex justify-center mb-6">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} />
+            <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} /></Link>
           </div>
           <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-3">
             비밀번호 재설정
