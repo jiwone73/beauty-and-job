@@ -119,7 +119,7 @@ export default function CompanyLayout({ children, activePage }: {
             <button className="company-logout-btn" onClick={() => {
               localStorage.removeItem("access_token");
               useAuthStore.getState().logout();
-              router.push("/login");
+              router.push("/company/login");
             }}>
               <LogOut size={15} /> 로그아웃
             </button>
