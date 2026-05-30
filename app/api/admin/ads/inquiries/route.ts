@@ -56,8 +56,8 @@ export async function PATCH(req: NextRequest) {
   if (authErr) return authErr
 
   const { id, status } = await req.json()
-  if (!id || !status) return err('id, status 필요', 400)
-  if (!['new', 'contacted', 'done'].includes(status)) return err('잘못된 status', 400)
+if (!id || !status) return err('BAD_REQUEST', 'id, status 필요', 400)
+if (!['new', 'contacted', 'done'].includes(status)) return err('BAD_REQUEST', '잘못된 status', 400)
 
   const client = await pool.connect()
   try {

@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const { company_name, contact_name, phone, email, product, message } = body
 
     if (!company_name || !contact_name || !phone || !message) {
-      return err('필수 항목을 모두 입력해주세요.', 400)
+      return err('BAD_REQUEST', '필수 항목을 모두 입력해주세요.', 400)
     }
 
     const client = await pool.connect()
