@@ -66,6 +66,10 @@ export default function CompanyDashboard() {
       return;
     }
     const headers = { Authorization: `Bearer ${token}` };
+    fetch("/api/company/me", { headers })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setCompanyType(res.data.company_type); })
+      .catch(console.error);
 
     Promise.all([
       fetch("/api/company/dashboard/stats", { headers }).then((r) => r.json()),
