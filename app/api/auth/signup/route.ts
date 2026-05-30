@@ -8,7 +8,7 @@ import { signAccessToken } from '@/lib/jwt'
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const {
-    phone,
+    phone: rawPhone,
     name,
     job_type,
     birth,
@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
     agreed_term_ids
   } = body
 
+  const phone = (rawPhone || '').replace(/\D/g, '')
   if (!phone || !name || !job_type) {
     return err('AUTH_001', '필수 정보가 누락됐습니다.')
   }

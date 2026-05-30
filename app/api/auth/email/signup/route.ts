@@ -6,7 +6,8 @@ import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
 export async function POST(req: NextRequest) {
-  const { email, name, phone, password, birth, gender, job_type = 'OFFICE', agreed_term_ids } = await req.json()
+  const { email, name, phone: rawPhone, password, birth, gender, job_type = 'OFFICE', agreed_term_ids } = await req.json()
+  const phone = (rawPhone || '').replace(/\D/g, '')
 
   // 필수값 검증
   if (!email || !password || !name || !phone) {

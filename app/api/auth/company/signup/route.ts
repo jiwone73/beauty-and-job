@@ -10,11 +10,12 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const {
     company_name, brand_name, business_number, company_type,
-    email, phone, password, address, website_url, description,
+    email, phone: rawPhone, password, address, website_url, description,
     agreed_term_ids
   } = body
 
   // 필수값 검증
+  const phone = (rawPhone || '').replace(/\D/g, '')
   if (!company_name || !business_number || !company_type || !email || !phone || !password) {
     return err('USER_002', '필수 항목을 모두 입력해주세요.')
   }
