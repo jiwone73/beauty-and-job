@@ -67,6 +67,8 @@ export default function CompanyPage() {
                     <ul className="co-type-list">
                       <li><CheckCircle2 size={13} /> 채용공고 무료 등록</li>
                       <li><CheckCircle2 size={13} /> 상단 노출로 더 많은 지원자</li>
+                      <li><CheckCircle2 size={13} /> 지원자 연락처 무료 확인</li>
+                      <li><CheckCircle2 size={13} /> 간편한 현장직 공고 관리</li>
                     </ul>
                   </div>
                 </div>
@@ -80,6 +82,8 @@ export default function CompanyPage() {
                     <ul className="co-type-list">
                       <li><CheckCircle2 size={13} /> 채용공고 무료 등록</li>
                       <li><CheckCircle2 size={13} /> 인재 검색·추천 서비스</li>
+                      <li><CheckCircle2 size={13} /> 지원자 연락처 무료 확인</li>
+                      <li><CheckCircle2 size={13} /> 프리미엄 상단 노출</li>
                     </ul>
                   </div>
                 </div>
@@ -92,6 +96,8 @@ export default function CompanyPage() {
                     <ul className="co-type-list">
                       <li><CheckCircle2 size={13} /> 사무직·현장직 무료 등록</li>
                       <li><CheckCircle2 size={13} /> 통합 대시보드로 한번에 관리</li>
+                      <li><CheckCircle2 size={13} /> 매장·기업 지원자 통합 관리</li>
+                      <li><CheckCircle2 size={13} /> 인재 검색·추천 서비스</li>
                     </ul>
                   </div>
                 </div>
@@ -118,46 +124,6 @@ export default function CompanyPage() {
               </div>
             </div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* ── 3. 매장·샵 채용 서비스 ── */}
-      <section className="co-section gray">
-        <div className="co-section-inner co-split">
-          <div className="co-split-text">
-            <span className="co-label-tag">매장·샵 채용</span>
-            <h2 className="co-split-title">현장직 채용,<br />지금 바로 시작하세요</h2>
-            <p className="co-split-desc">헤어·네일·피부·메이크업 매장의 현장직 채용을 쉽고 빠르게 시작할 수 있습니다.</p>
-            <div className="co-tag-wrap">
-              {STORE_SKILL_AREAS.map((t) => (
-                <span key={t} className="co-job-tag">{t}</span>
-              ))}
-            </div>
-          </div>
-          <div className="co-split-visual store">
-            <div className="co-split-emoji">🏪</div>
-            <p>매장 맞춤 채용</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 4. 기업·브랜드 채용 서비스 ── */}
-      <section className="co-section">
-        <div className="co-section-inner co-split reverse">
-          <div className="co-split-visual corp">
-            <div className="co-split-emoji">🏢</div>
-            <p>기업 맞춤 채용</p>
-          </div>
-          <div className="co-split-text">
-            <span className="co-label-tag">기업·브랜드 채용</span>
-            <h2 className="co-split-title">본사직·전문직 채용,<br />전문적으로 진행하세요</h2>
-            <p className="co-split-desc">화장품 브랜드, 프랜차이즈, 교육기관, 유통사 등 뷰티 관련 기업의 전문직 채용을 지원합니다.</p>
-            <div className="co-tag-wrap">
-              {OFFICE_JOB_GROUPS.map((t) => (
-                <span key={t} className="co-job-tag">{t}</span>
-              ))}
-            </div>
           </div>
         </div>
       </section>
