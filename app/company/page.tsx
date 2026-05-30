@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, ChevronDown, ChevronUp, Building2, Store, Star, Zap, Megaphone, ArrowRight, Layers } from "lucide-react";
+import { OFFICE_JOB_GROUPS, STORE_SKILL_AREAS } from "@/lib/constants";
 
 const FAQS = [
   { q: "채용공고 등록은 무료인가요?", a: "네, 기본 채용공고 등록은 완전 무료입니다. 상단 노출·프리미엄 배너 등 유료 상품은 선택 사항입니다." },
@@ -69,9 +70,6 @@ export default function CompanyPage() {
                       <li><CheckCircle2 size={13} /> 현장직 지원자 매칭</li>
                     </ul>
                   </div>
-                  <Link href="/company/signup?type=store" className="co-type-btn">
-                    시작하기 <ArrowRight size={14} />
-                  </Link>
                 </div>
 
                 {/* 기업회원 */}
@@ -85,9 +83,6 @@ export default function CompanyPage() {
                       <li><CheckCircle2 size={13} /> 광고·노출 상품 이용 가능</li>
                     </ul>
                   </div>
-                  <Link href="/company/signup?type=corp" className="co-type-btn">
-                    시작하기 <ArrowRight size={14} />
-                  </Link>
                 </div>
                 {/* 기업+매장 회원 */}
                 <div className="co-type-card">
@@ -100,9 +95,6 @@ export default function CompanyPage() {
                       <li><CheckCircle2 size={13} /> 통합 대시보드 관리</li>
                     </ul>
                   </div>
-                  <Link href="/company/signup?type=both" className="co-type-btn">
-                    시작하기 <ArrowRight size={14} />
-                  </Link>
                 </div>
               </div>
             </div>
@@ -139,13 +131,10 @@ export default function CompanyPage() {
             <h2 className="co-split-title">현장직 채용,<br />지금 바로 시작하세요</h2>
             <p className="co-split-desc">헤어·네일·피부·메이크업 매장의 현장직 채용을 쉽고 빠르게 시작할 수 있습니다.</p>
             <div className="co-tag-wrap">
-              {["헤어디자이너","네일아티스트","피부관리사","에스테틱","속눈썹","왁싱","메이크업","매장관리자"].map((t) => (
+              {STORE_SKILL_AREAS.map((t) => (
                 <span key={t} className="co-job-tag">{t}</span>
               ))}
             </div>
-            <Link href="/company/signup?type=store" className="co-btn-primary" style={{ marginTop: 24, display: "inline-flex" }}>
-              매장 채용공고 등록하기 <ArrowRight size={15} style={{ marginLeft: 6 }} />
-            </Link>
           </div>
           <div className="co-split-visual store">
             <div className="co-split-emoji">🏪</div>
@@ -166,14 +155,22 @@ export default function CompanyPage() {
             <h2 className="co-split-title">본사직·전문직 채용,<br />전문적으로 진행하세요</h2>
             <p className="co-split-desc">화장품 브랜드, 프랜차이즈, 병원·클리닉, 교육기관 등 뷰티 관련 기업의 전문직 채용을 지원합니다.</p>
             <div className="co-tag-wrap">
-              {["뷰티MD","브랜드마케터","BA","영업관리","교육강사","상품기획","콘텐츠마케터","병원 코디네이터"].map((t) => (
+              {OFFICE_JOB_GROUPS.map((t) => (
                 <span key={t} className="co-job-tag purple">{t}</span>
               ))}
             </div>
-            <Link href="/company/signup?type=corp" className="co-btn-primary purple" style={{ marginTop: 24, display: "inline-flex" }}>
-              기업 채용공고 등록하기 <ArrowRight size={15} style={{ marginLeft: 6 }} />
-            </Link>
           </div>
+        </div>
+      </section>
+
+      {/* ── 가입 CTA ── */}
+      <section className="co-section">
+        <div className="co-section-inner" style={{ textAlign: "center" }}>
+          <h2 className="co-section-title">지금 바로 시작하세요</h2>
+          <p className="co-section-sub">매장, 기업, 기업+매장 — 가입 시 유형을 선택할 수 있어요</p>
+          <Link href="/company/signup" className="co-btn-primary purple" style={{ marginTop: 24, display: "inline-flex" }}>
+            기업회원 가입하기 <ArrowRight size={15} style={{ marginLeft: 6 }} />
+          </Link>
         </div>
       </section>
 
