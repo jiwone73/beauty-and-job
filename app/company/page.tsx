@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, ChevronDown, ChevronUp, Building2, Store, Star, Zap, Megaphone, ArrowRight } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronUp, Building2, Store, Star, Zap, Megaphone, ArrowRight, Layers } from "lucide-react";
 
 const FAQS = [
   { q: "채용공고 등록은 무료인가요?", a: "네, 기본 채용공고 등록은 완전 무료입니다. 상단 노출·프리미엄 배너 등 유료 상품은 선택 사항입니다." },
@@ -86,6 +86,21 @@ export default function CompanyPage() {
                     </ul>
                   </div>
                   <Link href="/company/signup?type=corp" className="co-type-btn">
+                    시작하기 <ArrowRight size={14} />
+                  </Link>
+                </div>
+                {/* 기업+매장 회원 */}
+                <div className="co-type-card">
+                  <div className="co-type-icon"><Layers size={28} /></div>
+                  <div className="co-type-body">
+                    <h3 className="co-type-name">기업 + 매장 회원</h3>
+                    <p className="co-type-desc">본사와 직영·가맹 매장을 함께 운영하는 브랜드</p>
+                    <ul className="co-type-list">
+                      <li><CheckCircle2 size={13} /> 사무직·현장직 동시 채용</li>
+                      <li><CheckCircle2 size={13} /> 통합 대시보드 관리</li>
+                    </ul>
+                  </div>
+                  <Link href="/company/signup?type=both" className="co-type-btn">
                     시작하기 <ArrowRight size={14} />
                   </Link>
                 </div>
