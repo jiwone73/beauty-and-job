@@ -10,7 +10,6 @@ const FAQS = [
   { q: "매장도 기업회원으로 가입해야 하나요?", a: "아니요. 헤어샵, 네일샵, 피부관리실 등 매장은 매장회원으로 가입하시면 됩니다. 가입 시 유형을 선택할 수 있습니다." },
   { q: "기업회원과 매장회원은 무엇이 다른가요?", a: "매장회원은 현장직 채용에 최적화되어 있고, 기업회원은 본사 사무직·전문직 채용과 프리미엄 서비스를 이용할 수 있습니다." },
   { q: "광고도 신청할 수 있나요?", a: "네. 메인 AD 배너, 프리미엄 상단공고, 뷰티앤잡 Pick 등 다양한 광고 상품을 운영 중입니다." },
-  { q: "채용성공형 서비스도 가능한가요?", a: "네. 채용 성사 시에만 수수료가 발생하는 성과형 인재 매칭 서비스도 운영 중입니다. 별도 상담 후 진행됩니다." },
 ];
 
 const AD_PRODUCTS = [
@@ -42,7 +41,7 @@ export default function CompanyPage() {
             <span className="co-hero-point">뷰티앤잡</span>에서 시작하세요
           </h1>
           <p className="co-hero-desc">
-            헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 병원·클리닉, 교육기관까지<br />
+            헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 교육기관까지<br />
             뷰티 분야에 맞는 채용공고와 인재추천 서비스를 제공합니다.
           </p>
         </div>
@@ -55,8 +54,8 @@ export default function CompanyPage() {
 
             {/* 왼쪽: 회원 유형 카드 */}
             <div className="co-combined-left">
-              <h2 className="co-combined-title">어떤 유형으로 시작하시나요?</h2>
-              <p className="co-combined-sub">가입 유형에 따라 맞춤 서비스를 제공합니다</p>
+              <h2 className="co-combined-title">하나의 플랫폼에서<br />매장과 기업 채용을 한번에</h2>
+              <p className="co-combined-sub">매장, 기업, 기업+매장 — 운영 형태에 맞춰 자유롭게 채용하세요</p>
 
               <div className="co-type-stack">
                 {/* 매장회원 */}
@@ -64,10 +63,10 @@ export default function CompanyPage() {
                   <div className="co-type-icon"><Store size={28} /></div>
                   <div className="co-type-body">
                     <h3 className="co-type-name">매장회원</h3>
-                    <p className="co-type-desc">헤어샵·네일샵·피부관리실·에스테틱·왁싱샵·속눈썹샵 운영자</p>
+                    <p className="co-type-desc">헤어·네일·피부·메이크업 등 뷰티 매장 운영자</p>
                     <ul className="co-type-list">
-                      <li><CheckCircle2 size={13} /> 무료 채용공고 등록</li>
-                      <li><CheckCircle2 size={13} /> 현장직 지원자 매칭</li>
+                      <li><CheckCircle2 size={13} /> 채용공고 무료 등록</li>
+                      <li><CheckCircle2 size={13} /> 상단 노출로 더 많은 지원자</li>
                     </ul>
                   </div>
                 </div>
@@ -77,10 +76,10 @@ export default function CompanyPage() {
 <div className="co-type-icon"><Building2 size={28} /></div>
                   <div className="co-type-body">
                     <h3 className="co-type-name">기업회원</h3>
-                    <p className="co-type-desc">화장품 브랜드·프랜차이즈·병원·클리닉·교육기관·유통사</p>
+                    <p className="co-type-desc">화장품 브랜드·프랜차이즈·교육기관·유통사</p>
                     <ul className="co-type-list">
-                      <li><CheckCircle2 size={13} /> 무료 공고 + 프리미엄 서비스</li>
-                      <li><CheckCircle2 size={13} /> 광고·노출 상품 이용 가능</li>
+                      <li><CheckCircle2 size={13} /> 채용공고 무료 등록</li>
+                      <li><CheckCircle2 size={13} /> 인재 검색·추천 서비스</li>
                     </ul>
                   </div>
                 </div>
@@ -91,8 +90,8 @@ export default function CompanyPage() {
                     <h3 className="co-type-name">기업 + 매장 회원</h3>
                     <p className="co-type-desc">본사와 직영·가맹 매장을 함께 운영하는 브랜드</p>
                     <ul className="co-type-list">
-                      <li><CheckCircle2 size={13} /> 사무직·현장직 동시 채용</li>
-                      <li><CheckCircle2 size={13} /> 통합 대시보드 관리</li>
+                      <li><CheckCircle2 size={13} /> 사무직·현장직 무료 등록</li>
+                      <li><CheckCircle2 size={13} /> 통합 대시보드로 한번에 관리</li>
                     </ul>
                   </div>
                 </div>
@@ -153,7 +152,7 @@ export default function CompanyPage() {
           <div className="co-split-text">
             <span className="co-label-tag">기업·브랜드 채용</span>
             <h2 className="co-split-title">본사직·전문직 채용,<br />전문적으로 진행하세요</h2>
-            <p className="co-split-desc">화장품 브랜드, 프랜차이즈, 병원·클리닉, 교육기관 등 뷰티 관련 기업의 전문직 채용을 지원합니다.</p>
+            <p className="co-split-desc">화장품 브랜드, 프랜차이즈, 교육기관, 유통사 등 뷰티 관련 기업의 전문직 채용을 지원합니다.</p>
             <div className="co-tag-wrap">
               {OFFICE_JOB_GROUPS.map((t) => (
                 <span key={t} className="co-job-tag">{t}</span>
@@ -192,9 +191,6 @@ export default function CompanyPage() {
           <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 32, flexWrap: "wrap" }}>
             <Link href="/company/ads" className="co-cta-product-btn purple">
               📋 광고·노출 상품 보기
-            </Link>
-            <Link href="/company/matching" className="co-cta-product-btn green">
-              🤝 채용성공형 매칭 알아보기
             </Link>
           </div>
         </div>
