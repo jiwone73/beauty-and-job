@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { useAuthStore } from "@/lib/store/authStore";
 import {
   Briefcase, Users, FileText, Settings,
   Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown
@@ -117,6 +118,7 @@ export default function CompanyLayout({ children, activePage }: {
             </button>
             <button className="company-logout-btn" onClick={() => {
               localStorage.removeItem("access_token");
+              useAuthStore.getState().logout();
               router.push("/login");
             }}>
               <LogOut size={15} /> 로그아웃
