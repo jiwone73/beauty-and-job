@@ -112,9 +112,9 @@ export default function LoginStartPage() {
 
         {/* 하단 약관 */}
         <div className="mt-12 flex justify-center gap-4 text-[12px] text-[#9a9a9a]">
-          <Link href="/terms" className="hover:underline">이용약관</Link>
+          <Link href="/support/terms" className="hover:underline">이용약관</Link>
           <span>·</span>
-          <Link href="/privacy" className="hover:underline">개인정보처리방침</Link>
+          <Link href="/support/privacy" className="hover:underline">개인정보처리방침</Link>
         </div>
       </div>
     </div>
