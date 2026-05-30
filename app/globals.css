@@ -9966,3 +9966,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-profile-item:hover { background: #f7f7f8; }
 .company-profile-item.logout { color: #e74c3c; }
 .company-profile-divider { height: 1px; background: #f0f0f0; margin: 4px 0; }
+
+.company-logout-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid #e0e0e0; cursor: pointer;
+  padding: 8px 14px; border-radius: 8px; font-size: 14px; color: #666;
+  font-family: inherit; transition: all 0.15s;
+}
+.company-logout-btn:hover { border-color: #e74c3c; color: #e74c3c; }
