@@ -56,6 +56,8 @@ export default function CompanyDashboard() {
   const [jobs, setJobs] = useState<JobItem[]>([]);
   const [applicants, setApplicants] = useState<ApplicantItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH" | null>(null);
+  const [jobTypeTab, setJobTypeTab] = useState<"전체" | "OFFICE" | "STORE">("전체");
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -78,6 +80,18 @@ export default function CompanyDashboard() {
       .catch((e) => console.error("[dashboard load]", e))
       .finally(() => setLoading(false));
   }, []);
+
+  // 기업/매장 탭 변경 시 stats 재조회
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    const headers = { Authorization: `Bearer ${token}` };
+    const query = jobTypeTab === "전체" ? "" : `?job_type=${jobTypeTab}`;
+    fetch(`/api/company/dashboard/stats${query}`, { headers })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setStats(res.data); })
+      .catch(console.error);
+  }, [jobTypeTab]);
 
   // 통계 카드 데이터
   const statCards = [

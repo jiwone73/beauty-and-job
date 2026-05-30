@@ -9,24 +9,32 @@ export async function GET(req: NextRequest) {
   if (authErr) return authErr
 
   const companyId = auth!.sub
+  const jobTypeParam = req.nextUrl.searchParams.get('job_type') // OFFICE | STORE | null
+  const jobTypeFilter = jobTypeParam === 'OFFICE' || jobTypeParam === 'STORE'
+    ? ` AND jp.job_type = '${jobTypeParam}'`
+    : ''
+  // job_postings 단독 쿼리용 (별칭 없음)
+  const jobTypeFilterNoAlias = jobTypeParam === 'OFFICE' || jobTypeParam === 'STORE'
+    ? ` AND job_type = '${jobTypeParam}'`
+    : ''
 
   // 4가지 통계 한 번에 조회
   const [activeJobs, totalApplications, todayApplications, scrappedTalents] = await Promise.all([
     pool.query(
       `SELECT COUNT(*)::int AS cnt FROM job_postings 
-       WHERE company_id = $1 AND status = 'ACTIVE'`,
+       WHERE company_id = $1 AND status = 'ACTIVE'${jobTypeFilterNoAlias}`,
       [companyId]
     ),
     pool.query(
       `SELECT COUNT(*)::int AS cnt FROM applications a
        JOIN job_postings jp ON jp.id = a.job_posting_id
-       WHERE jp.company_id = $1`,
+       WHERE jp.company_id = $1${jobTypeFilter}`,
       [companyId]
     ),
     pool.query(
       `SELECT COUNT(*)::int AS cnt FROM applications a
        JOIN job_postings jp ON jp.id = a.job_posting_id
-       WHERE jp.company_id = $1 AND a.applied_at::date = CURRENT_DATE`,
+       WHERE jp.company_id = $1 AND a.applied_at::date = CURRENT_DATE${jobTypeFilter}`,
       [companyId]
     ),
     pool.query(
@@ -41,7 +49,7 @@ export async function GET(req: NextRequest) {
      FROM (SELECT generate_series(CURRENT_DATE - INTERVAL '6 days', CURRENT_DATE, '1 day') AS day) d
      LEFT JOIN applications a 
        ON a.applied_at::date = d.day 
-       AND a.job_posting_id IN (SELECT id FROM job_postings WHERE company_id = $1)
+       AND a.job_posting_id IN (SELECT id FROM job_postings WHERE company_id = $1${jobTypeFilterNoAlias})
      GROUP BY d.day
      ORDER BY d.day`,
     [companyId]
