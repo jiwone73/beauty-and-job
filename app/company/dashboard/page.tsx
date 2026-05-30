@@ -176,8 +176,8 @@ export default function CompanyDashboard() {
       <div className="company-card">
         <div className="company-card-head">
           <h2 className="company-card-title">내 채용공고</h2>
-          <Link href="/company/dashboard/jobs/new" className="company-primary-btn">
-            <Plus size={15} /> 공고 등록
+          <Link href="/company/dashboard/jobs" className="company-text-link">
+            전체 보기 →
           </Link>
         </div>
         {jobs.length === 0 ? (
@@ -202,7 +202,7 @@ export default function CompanyDashboard() {
               {jobs.map((job) => (
                 <tr key={job.id}>
                   <td className="company-td-name">{job.title}</td>
-                  <td className="company-td-sub">{job.job_type === "OFFICE" ? "기업" : "매장"}</td>
+                  <td className="company-td-sub">{job.job_type === "STORE" ? "매장" : "기업"}</td>
                   <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
                   <td className="company-td-sub">{job.application_count}명</td>
                   <td className="company-td-sub">{job.view_count.toLocaleString()}</td>

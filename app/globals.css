@@ -9932,3 +9932,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #7c3aed;
   border-color: #7c3aed;
 }
+
+.company-text-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5f0080;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.company-text-link:hover {
+  opacity: 0.7;
+}
