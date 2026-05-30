@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   // 가입된 계정 조회
   const userRes = await pool.query(
-    `SELECT email, created_at FROM users WHERE phone = $1 ORDER BY created_at ASC`,
+    `SELECT email, created_at FROM users WHERE replace(phone, '-', '') = $1 ORDER BY created_at ASC`,
     [cleanPhone]
   )
 
