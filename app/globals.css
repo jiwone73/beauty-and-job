@@ -9974,3 +9974,19 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-family: inherit; transition: all 0.15s;
 }
 .company-logout-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
+/* 법적 문서 (약관/개인정보) */
+.legal-layout { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
+.legal-title { font-size: 26px; font-weight: 700; color: #1a1a1a; margin-bottom: 28px; }
+.legal-toc {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 24px; background: #faf7fc; border: 1px solid #f0e8f8;
+  border-radius: 12px; margin-bottom: 40px;
+}
+.legal-toc-item { font-size: 14px; color: #5f0080; text-decoration: none; font-weight: 500; }
+.legal-toc-item:hover { text-decoration: underline; }
+.legal-intro { font-size: 15px; color: #555; line-height: 1.7; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #eee; }
+.legal-section { margin-bottom: 28px; scroll-margin-top: 80px; }
+.legal-section h3 { font-size: 17px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; }
+.legal-section p { font-size: 14px; color: #444; line-height: 1.75; margin-bottom: 6px; }
+.legal-footer { margin-top: 40px; padding-top: 24px; border-top: 1px solid #eee; color: #999; font-size: 13px; }
