@@ -125,6 +125,10 @@ export default function LoginEmailPage() {
             <Link href="/login/password-reset" className="hover:text-[#5f0080] hover:underline">
               비밀번호 재설정
             </Link>
+            <span>·</span>
+            <Link href="/login/find-account" className="hover:text-[#5f0080] hover:underline">
+              계정 찾기
+            </Link>
           </div>
         </div>
       </div>
