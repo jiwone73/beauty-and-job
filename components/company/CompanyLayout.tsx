@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
   Briefcase, Users, FileText, Settings,
-  Bell, LogOut, Search, BookmarkCheck, Menu, X
+  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown
 } from "lucide-react";
 
 
@@ -25,6 +25,7 @@ export default function CompanyLayout({ children, activePage }: {
   const router = useRouter();
   const pathname = usePathname();
   const [companyInfo, setCompanyInfo] = useState({ name: "", category: "" });
+  const [profileOpen, setProfileOpen] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -114,8 +115,25 @@ export default function CompanyLayout({ children, activePage }: {
               <Bell size={18} />
               <span className="company-notif-dot" />
             </button>
-            <div className="company-profile">
-              <span className="company-name">{companyInfo.name}</span>
+            <div className="company-profile-wrap">
+              <button className="company-profile-btn" onClick={() => setProfileOpen(!profileOpen)}>
+                <span className="company-name">{companyInfo.name}</span>
+                <ChevronDown size={16} color="#888" />
+              </button>
+              {profileOpen && (
+                <div className="company-profile-dropdown">
+                  <button className="company-profile-item" onClick={() => { setProfileOpen(false); router.push("/company/dashboard/settings"); }}>
+                    <Settings size={15} /> 기업 정보
+                  </button>
+                  <div className="company-profile-divider" />
+                  <button className="company-profile-item logout" onClick={() => {
+                    localStorage.removeItem("access_token");
+                    router.push("/login");
+                  }}>
+                    <LogOut size={15} /> 로그아웃
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>
