@@ -10026,3 +10026,16 @@ input[type="range"].career-slider::-moz-range-thumb {
   .co-type-stack { grid-template-columns: 1fr !important; }
   .co-steps-vertical { grid-template-columns: 1fr !important; }
 }
+
+.card-ad-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #888;
+  background: #f0f0f0;
+  border-radius: 4px;
+  vertical-align: middle;
+  letter-spacing: 0.3px;
+}

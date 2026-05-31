@@ -341,15 +341,15 @@ function SectionPick() {
           <div>
             <h2 className="section-title">
               <Sparkles size={24} className="title-icon" />
-              뷰티앤잡 Pick
+              지금 주목할 공고
             </h2>
-            <p className="section-sub">뷰티앤잡이 직접 엄선한 이번 주의 추천 채용공고</p>
+            <p className="section-sub">눈여겨볼 만한 채용 소식을 모았어요</p>
           </div>
           <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
         <div className="card-grid card-grid-4">
           {mappedJobs.map((job: any) => (
-            <JobCard key={job.id} {...job} />
+            <JobCard key={job.id} {...job} isAd />
           ))}
         </div>
       </div>
@@ -357,9 +357,9 @@ function SectionPick() {
   );
 }
 
-function JobCard({ id, brand, tag, tagType, title, location, type, deadline }: {
+function JobCard({ id, brand, tag, tagType, title, location, type, deadline, isAd }: {
   id: number | string; brand: string; tag: string; tagType: string;
-  title: string; location: string; type: string; deadline: string;
+  title: string; location: string; type: string; deadline: string; isAd?: boolean;
 }) {
   const router = useRouter();
   const bookmarks = useBookmarkStore((s) => s.bookmarks);
@@ -368,7 +368,10 @@ function JobCard({ id, brand, tag, tagType, title, location, type, deadline }: {
   return (
     <div className="job-card" onClick={() => router.push(`/jobs/${id}`)} style={{ cursor: "pointer" }}>
       <div className="card-header">
-        <span className="card-brand">{brand}</span>
+        <span className="card-brand">
+          {brand}
+          <span className="card-ad-badge">AD</span>
+        </span>
         <button className={`bookmark ${isBookmarked ? "active" : ""}`}
           onClick={(e) => { e.stopPropagation(); toggleBookmark(id); }}
           aria-label="북마크">
