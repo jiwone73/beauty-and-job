@@ -47,11 +47,41 @@ export async function GET(req: NextRequest) {
       ORDER BY jp.created_at DESC LIMIT 5
     `)
 
+    // 최근 7일 개인/기업 가입 추이
+    const signupTrend = await client.query(`
+      SELECT d::date AS day,
+        (SELECT COUNT(*) FROM users WHERE created_at::date = d::date) AS users,
+        (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date) AS companies
+      FROM generate_series(now()::date - interval '6 day', now()::date, interval '1 day') d
+      ORDER BY day
+    `)
+
+    // 최근 7일 지원 추이
+    const applyTrend = await client.query(`
+      SELECT d::date AS day,
+        (SELECT COUNT(*) FROM applications WHERE applied_at::date = d::date) AS count
+      FROM generate_series(now()::date - interval '6 day', now()::date, interval '1 day') d
+      ORDER BY day
+    `)
+
+    // 직군별 공고 분포
+    const jobDist = await client.query(`
+      SELECT jc.name, COUNT(*) AS value
+      FROM job_postings jp
+      JOIN job_categories jc ON jc.id = jp.job_category_id
+      WHERE jp.status = 'ACTIVE'
+      GROUP BY jc.name
+      ORDER BY value DESC
+    `)
+
     return ok({
       counts: counts.rows[0],
       recent_users: recentUsers.rows,
       recent_companies: recentCompanies.rows,
       recent_jobs: recentJobs.rows,
+      signup_trend: signupTrend.rows,
+      apply_trend: applyTrend.rows,
+      job_dist: jobDist.rows,
     })
   } finally {
     client.release()

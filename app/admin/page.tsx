@@ -12,60 +12,32 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
 
-/* ============================================
-   더미 데이터
-   ============================================ */
-const SIGNUP_DATA = [
-  { day: "1/14", 개인: 15, 기업: 3 },
-  { day: "1/15", 개인: 22, 기업: 3 },
-  { day: "1/16", 개인: 19, 기업: 3 },
-  { day: "1/17", 개인: 28, 기업: 3 },
-  { day: "1/18", 개인: 25, 기업: 3 },
-  { day: "1/19", 개인: 16, 기업: 3 },
-  { day: "1/20", 개인: 21, 기업: 3 },
-];
-
-const APPLY_DATA = [
-  { day: "1/14", 지원수: 65 },
-  { day: "1/15", 지원수: 78 },
-  { day: "1/16", 지원수: 91 },
-  { day: "1/17", 지원수: 82 },
-  { day: "1/18", 지원수: 95 },
-  { day: "1/19", 지원수: 71 },
-  { day: "1/20", 지원수: 87 },
-];
-
-const JOB_DIST = [
-  { name: "마케팅", value: 38 },
-  { name: "MD", value: 22 },
-  { name: "영업", value: 15 },
-  { name: "디자인", value: 10 },
-  { name: "연구개발", value: 8 },
-  { name: "기타", value: 7 },
-];
-
 const PIE_COLORS = ["#5f0080", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
-const RECENT_JOBS = [
-  { id: 1, jobGroup: "기업", company: "올리브영", title: "디지털 마케팅 매니저", date: "2025.01.20", status: "승인대기" },
-  { id: 2, jobGroup: "기업", company: "아모레퍼시픽", title: "글로벌 브랜드 마케터", date: "2025.01.20", status: "승인완료" },
-  { id: 3, jobGroup: "기업", company: "LG생활건강", title: "e커머스 MD", date: "2025.01.19", status: "승인완료" },
-  { id: 4, jobGroup: "매장", company: "코스맥스", title: "뷰티어드바이저 (강남점)", date: "2025.01.19", status: "반려" },
-  { id: 5, jobGroup: "매장", company: "에이피알", title: "매장 스태프 (홍대점)", date: "2025.01.18", status: "승인대기" },
-];
+const JOB_TYPE_LABEL: Record<string, string> = {
+  OFFICE: "기업",
+  STORE: "매장",
+};
 
-const RECENT_INDIVIDUAL = [
-  { id: 1, name: "김지수", email: "jisoo@email.com", job: "마케팅", date: "2025.01.20", joinType: "카카오" },
-  { id: 2, name: "박민준", email: "minjun@email.com", job: "MD", date: "2025.01.19", joinType: "카카오" },
-  { id: 3, name: "이수진", email: "sujin@email.com", job: "영업", date: "2025.01.19", joinType: "SMS" },
-  { id: 4, name: "최유나", email: "yuna@email.com", job: "디자인", date: "2025.01.17", joinType: "카카오" },
-];
+const STATUS_LABEL: Record<string, string> = {
+  ACTIVE: "승인완료",
+  DRAFT: "임시저장",
+  CLOSED: "마감",
+  HIDDEN: "숨김",
+  EXPIRED: "만료",
+};
 
-const RECENT_COMPANY = [
-  { id: 1, name: "(주)올리브영", email: "hr@oliveyoung.com", category: "리테일", date: "2025.01.20", jobs: 12 },
-  { id: 2, name: "(주)아모레퍼시픽", email: "recruit@amore.com", category: "화장품 브랜드", date: "2025.01.18", jobs: 8 },
-  { id: 3, name: "(주)에이피알", email: "hr@apr.com", category: "화장품 브랜드", date: "2025.01.10", jobs: 9 },
-];
+function fmtDate(d: string | null) {
+  if (!d) return "-";
+  const dt = new Date(d);
+  return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
+}
+
+function fmtDay(d: string | null) {
+  if (!d) return "";
+  const dt = new Date(d);
+  return `${dt.getMonth() + 1}/${dt.getDate()}`;
+}
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
@@ -83,6 +55,26 @@ export default function AdminDashboard() {
   const c = stats?.counts;
   const fmt = (n: any) => (n == null ? "-" : Number(n).toLocaleString());
 
+  const signupData = (stats?.signup_trend || []).map((r: any) => ({
+    day: fmtDay(r.day),
+    개인: Number(r.users),
+    기업: Number(r.companies),
+  }));
+
+  const applyData = (stats?.apply_trend || []).map((r: any) => ({
+    day: fmtDay(r.day),
+    지원수: Number(r.count),
+  }));
+
+  const jobDist = (stats?.job_dist || []).map((r: any) => ({
+    name: r.name,
+    value: Number(r.value),
+  }));
+
+  const recentUsers = stats?.recent_users || [];
+  const recentCompanies = stats?.recent_companies || [];
+  const recentJobs = stats?.recent_jobs || [];
+
   return (
     <AdminLayout activeMenu="dashboard">
 
@@ -92,7 +84,7 @@ export default function AdminDashboard() {
           { label: "총 가입자", value: fmt(c ? Number(c.total_users) + Number(c.total_companies) : null), unit: "명", sub: `개인 ${fmt(c?.total_users)} · 기업 ${fmt(c?.total_companies)}`, trend: 0, icon: Users, color: "#5f0080" },
           { label: "진행중 채용공고", value: fmt(c?.active_jobs), unit: "건", sub: `기업 ${fmt(c?.office_jobs)}건 · 매장 ${fmt(c?.store_jobs)}건`, trend: 0, icon: Briefcase, color: "#0ea5e9" },
           { label: "오늘 지원수", value: fmt(c?.today_applications), unit: "건", sub: "오늘 접수", trend: 0, icon: CheckCircle, color: "#10b981" },
-          { label: "승인 대기 공고", value: fmt(c?.pending_companies), unit: "건", sub: "즉시 처리 필요", trend: 0, icon: Clock, color: "#f59e0b" },
+          { label: "승인 대기 기업", value: fmt(c?.pending_companies), unit: "건", sub: "즉시 처리 필요", trend: 0, icon: Clock, color: "#f59e0b" },
         ].map((stat) => (
           <div key={stat.label} className="admin-stat-card">
             <div className="admin-stat-top">
@@ -122,13 +114,12 @@ export default function AdminDashboard() {
         <Link href="/admin/members" className="admin-card-more">전체보기 →</Link>
       </div>
 
-      {/* 개인회원 미니 통계 */}
       <div className="admin-mini-stat-row">
         {[
-          { label: "전체 기업회원", value: fmt(c?.total_companies), unit: "개사" },
-          { label: "오늘 신규 가입", value: fmt(c?.today_companies), unit: "개사" },
-          { label: "진행중 공고", value: fmt(c?.active_jobs), unit: "건" },
-          { label: "승인 대기", value: fmt(c?.pending_companies), unit: "건" },
+          { label: "전체 개인회원", value: fmt(c?.total_users), unit: "명" },
+          { label: "오늘 신규 가입", value: fmt(c?.today_users), unit: "명" },
+          { label: "완성 이력서", value: fmt(c?.published_resumes), unit: "건" },
+          { label: "오늘 지원", value: fmt(c?.today_applications), unit: "건" },
         ].map((s) => (
           <div key={s.label} className="admin-mini-stat-card">
             <span className="admin-mini-stat-label">{s.label}</span>
@@ -138,16 +129,15 @@ export default function AdminDashboard() {
       </div>
 
       <div className="admin-dashboard-grid">
-        {/* 개인회원 가입 추이 */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">개인회원 가입 추이 (최근 7일)</h2>
           </div>
           <div style={{padding:"16px 8px"}}>
             <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={SIGNUP_DATA}>
+              <LineChart data={signupData}>
                 <XAxis dataKey="day" tick={{fontSize:12}} />
-                <YAxis tick={{fontSize:12}} />
+                <YAxis tick={{fontSize:12}} allowDecimals={false} />
                 <Tooltip />
                 <Line type="monotone" dataKey="개인" stroke="#5f0080" strokeWidth={2.5}
                   dot={{fill:"#5f0080", r:4}} activeDot={{r:6}} />
@@ -156,27 +146,22 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 최근 가입 개인회원 */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">최근 가입 개인회원</h2>
           </div>
           <table className="admin-table">
             <thead>
-              <tr><th>이름</th><th>직군</th><th>가입방법</th><th>가입일</th></tr>
+              <tr><th>이름</th><th>직군</th><th>가입일</th></tr>
             </thead>
             <tbody>
-              {RECENT_INDIVIDUAL.map((m) => (
-                <tr key={m.id}>
+              {recentUsers.length === 0 ? (
+                <tr><td colSpan={3} style={{textAlign:"center", color:"#999", padding:"24px"}}>데이터가 없습니다.</td></tr>
+              ) : recentUsers.map((m: any, i: number) => (
+                <tr key={i}>
                   <td className="admin-td-brand">{m.name}</td>
-                  <td className="admin-td-date">{m.job}</td>
-                  <td>
-                    <span className="admin-badge" style={{
-                      background: m.joinType === "카카오" ? "#FEE500" : "#f3f4f6",
-                      color: m.joinType === "카카오" ? "#3A1D1D" : "#374151"
-                    }}>{m.joinType}</span>
-                  </td>
-                  <td className="admin-td-date">{m.date}</td>
+                  <td className="admin-td-date">{JOB_TYPE_LABEL[m.job_type] || m.job_type || "-"}</td>
+                  <td className="admin-td-date">{fmtDate(m.created_at)}</td>
                 </tr>
               ))}
             </tbody>
@@ -193,13 +178,12 @@ export default function AdminDashboard() {
         <Link href="/admin/members/companies" className="admin-card-more">전체보기 →</Link>
       </div>
 
-      {/* 기업회원 미니 통계 */}
       <div className="admin-mini-stat-row">
         {[
-          { label: "전체 개인회원", value: fmt(c?.total_users), unit: "명" },
-          { label: "오늘 신규 가입", value: fmt(c?.today_users), unit: "명" },
-          { label: "완성 이력서", value: fmt(c?.published_resumes), unit: "건" },
-          { label: "오늘 지원", value: fmt(c?.today_applications), unit: "건" },
+          { label: "전체 기업회원", value: fmt(c?.total_companies), unit: "개사" },
+          { label: "오늘 신규 가입", value: fmt(c?.today_companies), unit: "개사" },
+          { label: "진행중 공고", value: fmt(c?.active_jobs), unit: "건" },
+          { label: "승인 대기", value: fmt(c?.pending_companies), unit: "건" },
         ].map((s) => (
           <div key={s.label} className="admin-mini-stat-card">
             <span className="admin-mini-stat-label">{s.label}</span>
@@ -209,16 +193,15 @@ export default function AdminDashboard() {
       </div>
 
       <div className="admin-dashboard-grid">
-        {/* 기업회원 가입 추이 */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">기업회원 가입 추이 (최근 7일)</h2>
           </div>
           <div style={{padding:"16px 8px"}}>
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={SIGNUP_DATA}>
+              <BarChart data={signupData}>
                 <XAxis dataKey="day" tick={{fontSize:12}} />
-                <YAxis tick={{fontSize:12}} />
+                <YAxis tick={{fontSize:12}} allowDecimals={false} />
                 <Tooltip />
                 <Bar dataKey="기업" fill="#0ea5e9" radius={[4,4,0,0]} />
               </BarChart>
@@ -226,22 +209,22 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 최근 가입 기업회원 */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">최근 가입 기업회원</h2>
           </div>
           <table className="admin-table">
             <thead>
-              <tr><th>기업명</th><th>카테고리</th><th>공고수</th><th>가입일</th></tr>
+              <tr><th>기업명</th><th>공고수</th><th>가입일</th></tr>
             </thead>
             <tbody>
-              {RECENT_COMPANY.map((c) => (
-                <tr key={c.id}>
-                  <td className="admin-td-brand">{c.name}</td>
-                  <td className="admin-td-date">{c.category}</td>
-                  <td className="admin-td-date">{c.jobs}건</td>
-                  <td className="admin-td-date">{c.date}</td>
+              {recentCompanies.length === 0 ? (
+                <tr><td colSpan={3} style={{textAlign:"center", color:"#999", padding:"24px"}}>데이터가 없습니다.</td></tr>
+              ) : recentCompanies.map((co: any, i: number) => (
+                <tr key={i}>
+                  <td className="admin-td-brand">{co.company_name}</td>
+                  <td className="admin-td-date">{fmt(co.job_count)}건</td>
+                  <td className="admin-td-date">{fmtDate(co.created_at)}</td>
                 </tr>
               ))}
             </tbody>
@@ -259,16 +242,15 @@ export default function AdminDashboard() {
       </div>
 
       <div className="admin-chart-grid">
-        {/* 지원수 추이 */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">일별 지원수 (최근 7일)</h2>
           </div>
           <div style={{padding:"16px 8px"}}>
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={APPLY_DATA}>
+              <BarChart data={applyData}>
                 <XAxis dataKey="day" tick={{fontSize:12}} />
-                <YAxis tick={{fontSize:12}} />
+                <YAxis tick={{fontSize:12}} allowDecimals={false} />
                 <Tooltip />
                 <Bar dataKey="지원수" fill="#10b981" radius={[4,4,0,0]} />
               </BarChart>
@@ -276,7 +258,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 직군별 분포 */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">직군별 채용공고 분포</h2>
@@ -284,9 +265,9 @@ export default function AdminDashboard() {
           <div style={{padding:"8px"}}>
             <ResponsiveContainer width="100%" height={180}>
               <PieChart>
-                <Pie data={JOB_DIST} cx="50%" cy="50%" innerRadius={50} outerRadius={75}
+                <Pie data={jobDist} cx="50%" cy="50%" innerRadius={50} outerRadius={75}
                   dataKey="value" paddingAngle={3}>
-                  {JOB_DIST.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                  {jobDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                 </Pie>
                 <Tooltip formatter={(v) => [`${v}건`, ""]} />
                 <Legend iconType="circle" iconSize={8}
@@ -296,7 +277,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 최근 채용공고 */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">최근 채용공고</h2>
@@ -306,24 +286,30 @@ export default function AdminDashboard() {
               <tr><th>유형</th><th>기업</th><th>공고명</th><th>등록일</th><th>상태</th></tr>
             </thead>
             <tbody>
-              {RECENT_JOBS.map((job) => (
-                <tr key={job.id}>
-                  <td>
-                    <span className={`jobs-type-badge ${job.jobGroup === "매장" ? "store" : "corp"}`}>
-                      {job.jobGroup === "매장" ? "🏪 매장" : "🏢 기업"}
-                    </span>
-                  </td>
-                  <td className="admin-td-brand">{job.company}</td>
-                  <td className="admin-td-title">{job.title}</td>
-                  <td className="admin-td-date">{job.date}</td>
-                  <td>
-                    <span className={`admin-badge admin-badge-${
-                      job.status === "승인완료" ? "success" :
-                      job.status === "승인대기" ? "warning" : "danger"
-                    }`}>{job.status}</span>
-                  </td>
-                </tr>
-              ))}
+              {recentJobs.length === 0 ? (
+                <tr><td colSpan={5} style={{textAlign:"center", color:"#999", padding:"24px"}}>데이터가 없습니다.</td></tr>
+              ) : recentJobs.map((job: any, i: number) => {
+                const isStore = job.job_type === "STORE";
+                const statusLabel = STATUS_LABEL[job.status] || job.status;
+                return (
+                  <tr key={i}>
+                    <td>
+                      <span className={`jobs-type-badge ${isStore ? "store" : "corp"}`}>
+                        {isStore ? "🏪 매장" : "🏢 기업"}
+                      </span>
+                    </td>
+                    <td className="admin-td-brand">{job.company_name}</td>
+                    <td className="admin-td-title">{job.title}</td>
+                    <td className="admin-td-date">{fmtDate(job.created_at)}</td>
+                    <td>
+                      <span className={`admin-badge admin-badge-${
+                        job.status === "ACTIVE" ? "success" :
+                        job.status === "DRAFT" ? "warning" : "danger"
+                      }`}>{statusLabel}</span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
