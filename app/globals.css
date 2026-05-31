@@ -9643,8 +9643,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .ads-cta-desc { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.7; margin-bottom: 28px; }
 .ads-cta-btn {
   display: inline-block; background: #7c3aed; color: #fff;
-  font-size: clamp(20px, 3vw, 26px); font-weight: 800; padding: 18px 40px;
-  border-radius: 14px; text-decoration: none; transition: opacity 0.15s;
+  font-size: clamp(14px, 2.1vw, 18px); font-weight: 800; padding: 13px 28px;
+  border-radius: 10px; text-decoration: none; transition: opacity 0.15s;
 }
 .ads-cta-btn:hover { opacity: 0.9; }
 .ads-cta-email { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 14px; }
