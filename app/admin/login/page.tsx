@@ -6,11 +6,7 @@ import Image from "next/image";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 
-// 테스트 관리자 계정
-const ADMIN_ACCOUNTS: Record<string, { name: string; password: string }> = {
-  "admin": { name: "슈퍼관리자", password: "admin1234" },
-  "beauty": { name: "뷰티앤잡 운영팀", password: "beauty1234" },
-};
+
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -26,15 +22,25 @@ export default function AdminLoginPage() {
     if (!password.trim()) { setError("비밀번호를 입력해주세요."); return; }
     setLoading(true);
     setError("");
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-
-    const account = ADMIN_ACCOUNTS[id];
-    if (account && account.password === password) {
-      login({ userName: account.name, userPhone: "" });
+    try {
+      const res = await fetch("/api/auth/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ login_id: id, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error?.message || "로그인에 실패했습니다.");
+        return;
+      }
+      // 토큰 저장
+      localStorage.setItem("admin_token", data.data.access_token);
+      login({ userName: data.data.admin.name, userPhone: "" });
       router.push("/admin");
-    } else {
-      setError("아이디 또는 비밀번호가 올바르지 않습니다.");
+    } catch (e) {
+      setError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -43,8 +43,11 @@ export default function AdminAdsPage() {
   const fetchData = async (status?: string) => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("admin_token");
       const qs = status ? `?status=${status}` : "";
-      const res = await fetch(`/api/admin/ads/inquiries${qs}`);
+      const res = await fetch(`/api/admin/ads/inquiries${qs}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       setItems(data.data?.items || []);
     } finally {
@@ -59,9 +62,13 @@ export default function AdminAdsPage() {
   const updateStatus = async (id: number, status: string) => {
     setUpdating(true);
     try {
+      const token = localStorage.getItem("admin_token");
       await fetch("/api/admin/ads/inquiries", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ id, status }),
       });
       setSelected((p) => p ? { ...p, status } : p);
