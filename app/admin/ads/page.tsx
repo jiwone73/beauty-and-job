@@ -82,7 +82,7 @@ export default function AdminAdsPage() {
 
   return (
     <AdminLayout activeMenu="ads">
-      <div className="p-6 max-w-6xl mx-auto">
+      <div className="p-6 w-full max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-900">광고 문의 목록</h1>
           <div className="flex gap-2">

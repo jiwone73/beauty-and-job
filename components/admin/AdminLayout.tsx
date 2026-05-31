@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import {
-  LayoutDashboard, Users, Briefcase, BookOpen,
+  LayoutDashboard, Users, Briefcase, BookOpen, Megaphone,
   LogOut, Bell, Menu, X, ChevronDown, ChevronRight
 } from "lucide-react";
 
@@ -42,6 +42,7 @@ const NAV_ITEMS = [
       { id: "insights-new", label: "글 작성", href: "/admin/insights/new" },
     ]
   },
+  { id: "ads", label: "광고 문의", icon: Megaphone, href: "/admin/ads" },
 ];
 
 const PAGE_TITLES: Record<string, string> = {
