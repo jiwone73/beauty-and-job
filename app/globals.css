@@ -9522,9 +9522,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   height: 56px; display: flex; align-items: center; justify-content: space-between;
 }
 .ads-back {
-  display: flex; align-items: center; gap: 4px;
+  display: inline-flex; align-items: center; gap: 4px;
   font-size: 13px; color: #666; text-decoration: none;
-  width: 80px;
+  width: auto; white-space: nowrap;
 }
 .ads-back:hover { color: #7c3aed; }
 
