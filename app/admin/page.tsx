@@ -125,10 +125,10 @@ export default function AdminDashboard() {
       {/* 개인회원 미니 통계 */}
       <div className="admin-mini-stat-row">
         {[
-          { label: "전체 개인회원", value: fmt(c?.total_users), unit: "명" },
-          { label: "오늘 신규 가입", value: fmt(c?.today_users), unit: "명" },
-          { label: "완성 이력서", value: fmt(c?.published_resumes), unit: "건" },
-          { label: "오늘 지원", value: fmt(c?.today_applications), unit: "건" },
+          { label: "전체 기업회원", value: fmt(c?.total_companies), unit: "개사" },
+          { label: "오늘 신규 가입", value: fmt(c?.today_companies), unit: "개사" },
+          { label: "진행중 공고", value: fmt(c?.active_jobs), unit: "건" },
+          { label: "승인 대기", value: fmt(c?.pending_companies), unit: "건" },
         ].map((s) => (
           <div key={s.label} className="admin-mini-stat-card">
             <span className="admin-mini-stat-label">{s.label}</span>
@@ -197,10 +197,7 @@ export default function AdminDashboard() {
       <div className="admin-mini-stat-row">
         {[
           { label: "전체 개인회원", value: fmt(c?.total_users), unit: "명" },
-          { label: "오늘 신규 가입", value: fmt(c?.today_users), u{ label: "전체 기업회원", value: fmt(c?.total_companies), unit: "개사" },
-          { label: "오늘 신규 가입", value: fmt(c?.today_companies), unit: "개사" },
-          { label: "진행중 공고", value: fmt(c?.active_jobs), unit: "건" },
-          { label: "승인 대기", value: fmt(c?.pending_companies), unit: "건" },nit: "명" },
+          { label: "오늘 신규 가입", value: fmt(c?.today_users), unit: "명" },
           { label: "완성 이력서", value: fmt(c?.published_resumes), unit: "건" },
           { label: "오늘 지원", value: fmt(c?.today_applications), unit: "건" },
         ].map((s) => (
