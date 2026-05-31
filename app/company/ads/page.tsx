@@ -210,7 +210,12 @@ export default function AdsLandingPage() {
           </div>
         </div>
       </section>
-
+      {/* 광고 문의 버튼 */}
+      <div className="ads-inner" style={{ textAlign: "center", padding: "8px 0 40px" }}>
+        <Link href="/company/ads/inquiry" className="ads-cta-btn">
+          📩 광고상품 문의하기
+        </Link>
+      </div>
       {/* FAQ */}
       <section className="ads-section gray">
         <div className="ads-inner">
@@ -232,20 +237,7 @@ export default function AdsLandingPage() {
         </div>
       </section>
 
-      {/* 하단 CTA */}
-      <section className="ads-cta">
-        <div className="ads-inner" style={{ textAlign: "center" }}>
-          <h2 className="ads-cta-title">광고 집행이 처음이신가요?</h2>
-          <p className="ads-cta-desc">
-            어떤 상품이 맞는지 모르겠다면 문의 주세요.<br />
-            담당자가 1 영업일 이내에 맞춤 제안을 드립니다.
-          </p>
-          <Link href="/company/ads/inquiry" className="ads-cta-btn">
-            📩 광고상품 문의하기
-          </Link>
-          <p className="ads-cta-email">또는 이메일: ad@beautynjob.com</p>
-        </div>
-      </section>
+      
     </div>
   );
 }
