@@ -341,9 +341,9 @@ function SectionPick() {
           <div>
             <h2 className="section-title">
               <Sparkles size={24} className="title-icon" />
-              지금 주목할 공고
+              뷰티앤잡 Pick
             </h2>
-            <p className="section-sub">눈여겨볼 만한 채용 소식을 모았어요</p>
+            <p className="section-sub">뷰티앤잡이 선별한 추천 채용공고</p>
           </div>
           <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
