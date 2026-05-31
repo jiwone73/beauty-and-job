@@ -262,16 +262,22 @@ export default function AdminDashboard() {
           <div className="admin-card-head">
             <h2 className="admin-card-title">직군별 채용공고 분포</h2>
           </div>
-          <div style={{padding:"8px"}}>
-            <ResponsiveContainer width="100%" height={180}>
+          <div style={{padding:"16px 8px"}}>
+            <ResponsiveContainer width="100%" height={260}>
               <PieChart>
-                <Pie data={jobDist} cx="50%" cy="50%" innerRadius={50} outerRadius={75}
+                <Pie data={jobDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
                   dataKey="value" paddingAngle={3}>
                   {jobDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                 </Pie>
                 <Tooltip formatter={(v) => [`${v}건`, ""]} />
-                <Legend iconType="circle" iconSize={8}
-                  formatter={(v) => <span style={{fontSize:12}}>{v}</span>} />
+                <Legend
+                  layout="vertical"
+                  align="right"
+                  verticalAlign="middle"
+                  iconType="circle"
+                  iconSize={8}
+                  formatter={(v) => <span style={{fontSize:12}}>{v}</span>}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
