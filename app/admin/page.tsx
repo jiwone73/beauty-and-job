@@ -1,5 +1,5 @@
 "use client";
-
+import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import Link from "next/link";
 import {
@@ -68,16 +68,31 @@ const RECENT_COMPANY = [
 ];
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    fetch("/api/admin/dashboard/stats", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setStats(res.data); })
+      .catch(console.error);
+  }, []);
+
+  const c = stats?.counts;
+  const fmt = (n: any) => (n == null ? "-" : Number(n).toLocaleString());
+
   return (
     <AdminLayout activeMenu="dashboard">
 
       {/* ── 1. 전체 요약 카드 ── */}
       <div className="admin-stat-grid">
         {[
-          { label: "총 가입자", value: "1,284", unit: "명", sub: "개인 972 · 기업 312", trend: 12, icon: Users, color: "#5f0080" },
-          { label: "진행중 채용공고", value: "142", unit: "건", sub: "기업 118건 · 매장 24건", trend: 5, icon: Briefcase, color: "#0ea5e9" },
-          { label: "오늘 지원수", value: "87", unit: "건", sub: "어제 대비 -3%", trend: -3, icon: CheckCircle, color: "#10b981" },
-          { label: "승인 대기 공고", value: "8", unit: "건", sub: "즉시 처리 필요", trend: 0, icon: Clock, color: "#f59e0b" },
+          { label: "총 가입자", value: fmt(c ? Number(c.total_users) + Number(c.total_companies) : null), unit: "명", sub: `개인 ${fmt(c?.total_users)} · 기업 ${fmt(c?.total_companies)}`, trend: 0, icon: Users, color: "#5f0080" },
+          { label: "진행중 채용공고", value: fmt(c?.active_jobs), unit: "건", sub: `기업 ${fmt(c?.office_jobs)}건 · 매장 ${fmt(c?.store_jobs)}건`, trend: 0, icon: Briefcase, color: "#0ea5e9" },
+          { label: "오늘 지원수", value: fmt(c?.today_applications), unit: "건", sub: "오늘 접수", trend: 0, icon: CheckCircle, color: "#10b981" },
+          { label: "승인 대기 공고", value: fmt(c?.pending_companies), unit: "건", sub: "즉시 처리 필요", trend: 0, icon: Clock, color: "#f59e0b" },
         ].map((stat) => (
           <div key={stat.label} className="admin-stat-card">
             <div className="admin-stat-top">
@@ -110,10 +125,10 @@ export default function AdminDashboard() {
       {/* 개인회원 미니 통계 */}
       <div className="admin-mini-stat-row">
         {[
-          { label: "전체 개인회원", value: "972", unit: "명" },
-          { label: "오늘 신규 가입", value: "21", unit: "명" },
-          { label: "완성 이력서", value: "856", unit: "건" },
-          { label: "오늘 지원", value: "87", unit: "건" },
+          { label: "전체 개인회원", value: fmt(c?.total_users), unit: "명" },
+          { label: "오늘 신규 가입", value: fmt(c?.today_users), unit: "명" },
+          { label: "완성 이력서", value: fmt(c?.published_resumes), unit: "건" },
+          { label: "오늘 지원", value: fmt(c?.today_applications), unit: "건" },
         ].map((s) => (
           <div key={s.label} className="admin-mini-stat-card">
             <span className="admin-mini-stat-label">{s.label}</span>
@@ -181,10 +196,13 @@ export default function AdminDashboard() {
       {/* 기업회원 미니 통계 */}
       <div className="admin-mini-stat-row">
         {[
-          { label: "전체 기업회원", value: "312", unit: "개사" },
-          { label: "오늘 신규 가입", value: "3", unit: "개사" },
-          { label: "진행중 공고", value: "142", unit: "건" },
-          { label: "승인 대기", value: "8", unit: "건" },
+          { label: "전체 개인회원", value: fmt(c?.total_users), unit: "명" },
+          { label: "오늘 신규 가입", value: fmt(c?.today_users), u{ label: "전체 기업회원", value: fmt(c?.total_companies), unit: "개사" },
+          { label: "오늘 신규 가입", value: fmt(c?.today_companies), unit: "개사" },
+          { label: "진행중 공고", value: fmt(c?.active_jobs), unit: "건" },
+          { label: "승인 대기", value: fmt(c?.pending_companies), unit: "건" },nit: "명" },
+          { label: "완성 이력서", value: fmt(c?.published_resumes), unit: "건" },
+          { label: "오늘 지원", value: fmt(c?.today_applications), unit: "건" },
         ].map((s) => (
           <div key={s.label} className="admin-mini-stat-card">
             <span className="admin-mini-stat-label">{s.label}</span>
