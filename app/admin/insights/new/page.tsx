@@ -12,13 +12,31 @@ export default function AdminInsightsNewPage() {
   const [preview, setPreview] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const handleSave = (status: "임시저장" | "게시중") => {
+  const handleSave = async (status: "임시저장" | "게시중") => {
     if (!form.title.trim()) { alert("제목을 입력해주세요."); return; }
     if (!form.category) { alert("카테고리를 선택해주세요."); return; }
     if (!form.content.trim()) { alert("본문을 입력해주세요."); return; }
-    setSaved(true);
-    setForm({ ...form, status });
-    setTimeout(() => router.push("/admin/insights"), 800);
+    try {
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch("/api/admin/insights", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          title: form.title,
+          category: form.category,
+          content: form.content,
+          read_time: form.readTime,
+          tags: form.tags,
+          status,
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) { alert("저장에 실패했습니다."); return; }
+      setSaved(true);
+      setTimeout(() => router.push("/admin/insights"), 600);
+    } catch {
+      alert("저장 중 오류가 발생했습니다.");
+    }
   };
 
   return (
