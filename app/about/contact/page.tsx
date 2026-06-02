@@ -2,10 +2,29 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", category: "", content: "" });
   const [done, setDone] = useState(false);
-  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); setDone(true); };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await fetch("/api/ads/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contact_name: form.name,
+          email: form.email,
+          product: form.category,
+          message: form.content,
+          type: "기타",
+        }),
+      });
+    } catch {}
+    setDone(true);
+  };
+
   return (
     <div className="info-page">
       <header className="info-header">

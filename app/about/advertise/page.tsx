@@ -5,7 +5,23 @@ import Image from "next/image";
 export default function AdvertisePage() {
   const [form, setForm] = useState({ company: "", name: "", email: "", content: "" });
   const [done, setDone] = useState(false);
-  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); setDone(true); };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await fetch("/api/ads/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          company_name: form.company,
+          contact_name: form.name,
+          email: form.email,
+          message: form.content,
+          type: "광고",
+        }),
+      });
+    } catch {}
+    setDone(true);
+  };
   return (
     <div className="info-page">
       <header className="info-header">

@@ -6,9 +6,9 @@ import { ok, err } from '@/lib/api'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { company_name, contact_name, phone, email, product, message } = body
+    const { company_name, contact_name, phone, email, product, message, type } = body
 
-    if (!company_name || !contact_name || !phone || !message) {
+    if (!contact_name || !message) {
       return err('BAD_REQUEST', '필수 항목을 모두 입력해주세요.', 400)
     }
 
@@ -16,10 +16,10 @@ export async function POST(req: NextRequest) {
     try {
       const result = await client.query(
         `INSERT INTO ad_inquiries
-          (company_name, contact_name, phone, email, product, message, status)
-         VALUES ($1, $2, $3, $4, $5, $6, 'new')
+          (company_name, contact_name, phone, email, product, message, status, type)
+         VALUES ($1, $2, $3, $4, $5, $6, 'new', $7)
          RETURNING id, created_at`,
-        [company_name, contact_name, phone, email || null, product || null, message]
+        [company_name || null, contact_name, phone || null, email || null, product || null, message, type || '광고']
       )
       return ok({ id: result.rows[0].id, created_at: result.rows[0].created_at })
     } finally {

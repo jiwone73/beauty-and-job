@@ -43,7 +43,7 @@ const NAV_ITEMS = [
       { id: "insights-new", label: "글 작성", href: "/admin/insights/new" },
     ]
   },
-  { id: "ads", label: "광고 문의", icon: Megaphone, href: "/admin/ads" },
+  { id: "ads", label: "문의 관리", icon: Megaphone, href: "/admin/ads" },
 ];
 
 const PAGE_TITLES: Record<string, string> = {
@@ -63,6 +63,7 @@ const PAGE_TITLES: Record<string, string> = {
   "resumes-applications": "입사지원 관리",
   "insights": "인사이트",
   "insights-new": "글 작성",
+  "ads": "문의 관리",
 };
 
 export default function AdminLayout({ children, activeMenu }: { children: React.ReactNode; activeMenu: string }) {

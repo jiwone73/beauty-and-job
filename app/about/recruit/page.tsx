@@ -23,7 +23,7 @@ export default function RecruitPage() {
           <h2>채용 공고</h2>
           <div className="recruit-empty">
             <p>현재 진행 중인 채용 공고가 없습니다.<br />채용 시 공지드릴게요.</p>
-            <Link href="/about/contact" className="contact-submit-btn" style={{display:"inline-block", marginTop:"16px", textDecoration:"none"}}>채용 문의하기</Link>
+            
           </div>
         </div>
       </main>

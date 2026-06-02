@@ -751,59 +751,37 @@ function SectionPremium() {
    푸터
    ============================================ */
 function Footer() {
+  const topNav = [
+    { label: "회사 소개", href: "/about" },
+    { label: "채용", href: "/about/recruit" },
+    { label: "제휴 문의", href: "/about/partnership" },
+    { label: "광고 문의", href: "/about/advertise" },
+    { label: "기타 문의", href: "/about/contact" },
+  ];
+  const Sep = () => <span style={{ margin: "0 8px", color: "#e2e2e2" }}>|</span>;
   return (
-    <footer className="footer-new">
-      <div className="footer-new-top">
-        {/* 로고 + 태그라인만 */}
-        <div className="footer-new-brand">
-          <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} className="footer-new-logo" /></Link>
-          <p className="footer-new-tagline">뷰티 산업 종사자를 위한 단 하나의 커리어 플랫폼</p>
+    <footer style={{ background: "#faf8fc", borderTop: "1px solid #eee", padding: "40px 0 48px", marginTop: 60 }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
+          <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} /></Link>
+          <nav style={{ display: "flex", flexWrap: "wrap", gap: 26 }}>
+            {topNav.map((l) => (
+              <Link key={l.href} href={l.href} style={{ fontSize: 14, fontWeight: 600, color: "#3a3a3a", textDecoration: "none" }}>{l.label}</Link>
+            ))}
+          </nav>
         </div>
 
-        {/* 링크 컬럼 */}
-        <div className="footer-new-links">
-          <div className="footer-new-col">
-            <h4>회사</h4>
-            <Link href="/about">회사 소개</Link>
-            <Link href="/about/recruit">채용</Link>
-            <Link href="/about/partnership">제휴 문의</Link>
-            <Link href="/about/advertise">광고 문의</Link>
-            <Link href="/about/contact">기타 문의</Link>
-          </div>
-          <div className="footer-new-col">
-            <h4>고객지원</h4>
-            <Link href="/support">고객센터</Link>
-            <Link href="/support/faq">자주 묻는 질문</Link>
-            <Link href="/support/terms">이용약관</Link>
-            <Link href="/support/privacy">개인정보처리방침</Link>
-          </div>
+        <div style={{ fontSize: 13, color: "#9a9aa3", lineHeight: 2 }}>
+          <div><span style={{ fontWeight: 600, color: "#6b6b73" }}>(주)뷰티앤잡</span><Sep />대표이사 :</div>
+          <div>주소 :<Sep />전화번호 :</div>
+          <div>사업자등록번호 :<Sep />통신판매업신고번호 :<Sep />유료직업소개사업 등록번호 :<Sep />직업정보제공사업 신고번호 :</div>
         </div>
 
-        {/* 기업회원 CTA */}
-        <div className="footer-new-cta">
-          <p className="footer-new-cta-text">우리 회사도 채용하고 싶다면?</p>
-          <Link href="/company" className="footer-new-cta-btn">기업회원 바로가기</Link>
-        </div>
-      </div>
-
-      <div className="footer-new-divider" />
-
-      <div className="footer-new-bottom">
-        <div className="footer-new-company-row">
-          <span className="footer-new-company-name">(주)뷰티앤잡</span>
-        </div>
-        <div className="footer-new-details">
-          <span>주소 :</span>
-          <span>사업자등록번호 :</span>
-          <span>통신판매업신고번호 :</span>
-          <span>유료직업소개사업 등록번호 :</span>
-          <span>직업정보제공사업 신고번호 :</span>
-        </div>
-        <div className="footer-new-copy">
-          <span>© 2025 Beauty&amp;Job. All rights reserved.</span>
-          <div className="footer-new-policies">
-            <Link href="/support/terms" className="footer-new-info-link">이용약관</Link>
-            <Link href="/support/privacy" className="footer-new-info-link">개인정보 처리방침</Link>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
+          <span style={{ fontSize: 13, color: "#9a9aa3" }}>© 2025 Beauty&amp;Job. All rights reserved.</span>
+          <div style={{ display: "flex", gap: 20 }}>
+            <Link href="/support/terms" style={{ fontSize: 13, color: "#666", textDecoration: "none" }}>이용약관</Link>
+            <Link href="/support/privacy" style={{ fontSize: 13, color: "#5f0080", textDecoration: "none", fontWeight: 600 }}>개인정보 처리방침</Link>
           </div>
         </div>
       </div>

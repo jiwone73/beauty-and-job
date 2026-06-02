@@ -5,8 +5,21 @@ import Image from "next/image";
 export default function PartnershipPage() {
   const [form, setForm] = useState({ company: "", name: "", email: "", content: "" });
   const [done, setDone] = useState(false);
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      await fetch("/api/ads/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          company_name: form.company,
+          contact_name: form.name,
+          email: form.email,
+          message: form.content,
+          type: "제휴",
+        }),
+      });
+    } catch {}
     setDone(true);
   };
   return (
