@@ -564,15 +564,24 @@ function SectionBeautyServices() {
 /* ============================================
    섹션 2: 뷰티 업계 인사이트 (4장)
    ============================================ */
-const INSIGHTS_DATA = [
-  { id: 1, category: "트렌드", title: "2025 뷰티 산업, 무엇이 달라지나?", desc: "K-뷰티의 글로벌 확장과 클린뷰티 트렌드가 만드는 새로운 기회", date: "2025.01.15", emoji: "✨" },
-  { id: 2, category: "커리어", title: "뷰티 MD가 되기 위한 5가지 필수 역량", desc: "현직 MD가 알려주는 진짜 실전 노하우와 커리어 패스 가이드", date: "2025.01.12", emoji: "💼" },
-  { id: 3, category: "연봉정보", title: "뷰티 업계 직무별 연봉 리포트 2025", desc: "마케팅, MD, 디자인 등 주요 직무 연봉 데이터 전격 공개", date: "2025.01.10", emoji: "📊" },
-  { id: 4, category: "인터뷰", title: "아모레퍼시픽 10년차 마케터가 말하는 뷰티 커리어", desc: "현직자가 직접 전하는 뷰티 업계 취업 & 이직 현실 이야기", date: "2025.01.08", emoji: "🎤" },
-];
-
+const INSIGHT_EMOJI: Record<string, string> = {
+  "트렌드": "✨", "커리어": "💼", "연봉정보": "📊",
+  "브랜드스토리": "🏢", "취업팁": "🎯",
+};
+function fmtInsightDate(d: string) {
+  const dt = new Date(d);
+  return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
+}
 function SectionInsights() {
   const router = useRouter();
+  const [items, setItems] = useState<any[]>([]);
+  useEffect(() => {
+    fetch("/api/insights?limit=4")
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setItems(res.data.items); })
+      .catch(() => {});
+  }, []);
+  if (items.length === 0) return null;
   return (
     <section className="section section-divider">
       <div className="container">
@@ -585,15 +594,15 @@ function SectionInsights() {
           <Link href="/insights" className="see-all">전체보기 →</Link>
         </div>
         <div className="card-grid card-grid-4">
-          {INSIGHTS_DATA.map((item) => (
+          {items.map((item) => (
             <article key={item.id} className="insight-card-new"
               onClick={() => router.push(`/insights/${item.id}`)}
               style={{ cursor: "pointer" }}>
-              <div className="insight-card-new-img">{item.emoji}</div>
+              <div className="insight-card-new-img">{INSIGHT_EMOJI[item.category] || "📖"}</div>
               <span className="insight-category">{item.category}</span>
               <h3 className="insight-card-new-title">{item.title}</h3>
-              <p className="insight-card-new-desc">{item.desc}</p>
-              <time className="insight-card-new-date">{item.date}</time>
+              <p className="insight-card-new-desc">{(item.tags || []).join(" · ") || (item.read_time ? `${item.read_time}분 읽기` : "")}</p>
+              <time className="insight-card-new-date">{fmtInsightDate(item.created_at)}</time>
             </article>
           ))}
         </div>
