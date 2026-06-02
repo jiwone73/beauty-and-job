@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import {
-  LayoutDashboard, Users, Briefcase, BookOpen, Megaphone,
+  LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Store,
   LogOut, Bell, Menu, X, ChevronDown, ChevronRight
 } from "lucide-react";
 
@@ -26,6 +26,7 @@ const NAV_ITEMS = [
       { id: "members-favorites", label: "관심기업", href: "/admin/members/companies/favorites" },
     ]
   },
+  { id: "brands", label: "브랜드 관리", icon: Store, href: "/admin/brands" },
   {
     id: "resumes", label: "인재정보", icon: Users, href: "/admin/resumes",
     children: [
@@ -55,6 +56,7 @@ const PAGE_TITLES: Record<string, string> = {
   "members-companies": "기업회원",
   "members-blocked": "열람제한기업",
   "members-favorites": "관심기업",
+  "brands": "브랜드 관리",
   "resumes": "인재정보",
   "resumes-scrapped": "스크랩 이력서",
   "resumes-viewed": "열람 이력서",
