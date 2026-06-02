@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
+import bcrypt from 'bcryptjs'
 
 // 환경변수에서 어드민 계정 로드
 // 형식: ADMIN_ACCOUNTS="admin:admin1234:슈퍼관리자,beauty:beauty1234:운영팀"
@@ -26,8 +27,17 @@ export async function POST(req: NextRequest) {
 
     const accounts = getAdminAccounts()
     const account = accounts[login_id]
-
-    if (!account || account.password !== password) {
+    // account.password = base64 인코딩된 bcrypt 해시 → 디코딩 후 비교
+    let passwordOk = false
+    if (account) {
+      try {
+        const hash = Buffer.from(account.password, 'base64').toString('utf-8')
+        passwordOk = bcrypt.compareSync(password, hash)
+      } catch {
+        passwordOk = false
+      }
+    }
+    if (!account || !passwordOk) {
       return err('AUTH_003', '아이디 또는 비밀번호가 올바르지 않습니다.', 401)
     }
 
