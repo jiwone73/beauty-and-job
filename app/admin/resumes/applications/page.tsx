@@ -1,31 +1,80 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumeTabs from "@/components/admin/ResumeTabs";
 import { Search } from "lucide-react";
 
-const APPLICATIONS = [
-  { id: 1, applicant: "김지수", job: "마케팅", company: "(주)올리브영", position: "디지털 마케팅 매니저", date: "2025.01.20", status: "서류검토중" },
-  { id: 2, applicant: "박민준", job: "MD", company: "아모레퍼시픽", position: "글로벌 브랜드 마케터", date: "2025.01.19", status: "면접예정" },
-  { id: 3, applicant: "최유나", job: "디자인", company: "에이피알", position: "퍼포먼스 마케터", date: "2025.01.18", status: "합격" },
-  { id: 4, applicant: "정다은", job: "마케팅", company: "닥터자르트", position: "브랜드 콘텐츠 기획자", date: "2025.01.17", status: "불합격" },
-  { id: 5, applicant: "한소희", job: "SCM", company: "코스맥스", position: "화장품 연구원", date: "2025.01.16", status: "서류검토중" },
-];
-
+const STATUS_TO_LABEL: Record<string, string> = {
+  APPLIED: "지원완료",
+  VIEWED: "열람됨",
+  INTERVIEW: "면접예정",
+  PASSED: "합격",
+  REJECTED: "불합격",
+  WITHDRAWN: "지원취소",
+};
 const STATUS_COLOR: Record<string, string> = {
-  "서류검토중": "admin-badge-warning",
-  "면접예정": "admin-badge-info",
-  "합격": "admin-badge-success",
-  "불합격": "admin-badge-danger",
+  APPLIED: "admin-badge-neutral",
+  VIEWED: "admin-badge-info",
+  INTERVIEW: "admin-badge-warning",
+  PASSED: "admin-badge-success",
+  REJECTED: "admin-badge-danger",
+  WITHDRAWN: "admin-badge-neutral",
+};
+const STATUS_OPTIONS = ["전체", "지원완료", "열람됨", "면접예정", "합격", "불합격", "지원취소"];
+
+type App = {
+  id: string;
+  status: string;
+  applied_at: string;
+  applicant_name: string;
+  position: string;
+  company_name: string;
+  job_category: string | null;
 };
 
+function fmtDate(d: string | null) {
+  if (!d) return "-";
+  const dt = new Date(d);
+  return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
+}
+
 export default function AdminApplicationsPage() {
+  const [apps, setApps] = useState<App[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
 
-  const filtered = APPLICATIONS.filter(a => {
-    const matchSearch = !search || a.applicant.includes(search) || a.company.includes(search) || a.position.includes(search);
-    const matchStatus = statusFilter === "전체" || a.status === statusFilter;
+  const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
+
+  const fetchApps = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/applications", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setApps(data.success ? data.data.items : []);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => { fetchApps(); }, [fetchApps]);
+
+  const changeStatus = async (id: string, label: string) => {
+    const key = Object.keys(STATUS_TO_LABEL).find((k) => STATUS_TO_LABEL[k] === label);
+    if (!key) return;
+    await fetch("/api/admin/applications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ id, status: key }),
+    });
+    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: key } : a)));
+  };
+
+  const filtered = apps.filter((a) => {
+    const matchSearch = !search || (a.applicant_name || "").includes(search) || (a.company_name || "").includes(search) || (a.position || "").includes(search);
+    const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[a.status] === statusFilter;
     return matchSearch && matchStatus;
   });
 
@@ -42,7 +91,7 @@ export default function AdminApplicationsPage() {
           <div className="admin-filter-group">
             <span className="admin-filter-label">지원상태</span>
             <div className="admin-filter-tabs">
-              {["전체", "서류검토중", "면접예정", "합격", "불합격"].map((s) => (
+              {STATUS_OPTIONS.map((s) => (
                 <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
                   onClick={() => setStatusFilter(s)}>{s}</button>
               ))}
@@ -52,23 +101,41 @@ export default function AdminApplicationsPage() {
       </div>
       <div className="admin-card">
         <div className="admin-table-meta">총 <strong>{filtered.length}</strong>건</div>
-        <table className="admin-table">
-          <thead>
-            <tr><th>지원일</th><th>지원자</th><th>직군</th><th>기업</th><th>포지션</th><th>상태</th></tr>
-          </thead>
-          <tbody>
-            {filtered.map((a) => (
-              <tr key={a.id}>
-                <td className="admin-td-date">{a.date}</td>
-                <td className="admin-td-brand">{a.applicant}</td>
-                <td className="admin-td-date">{a.job}</td>
-                <td className="admin-td-brand">{a.company}</td>
-                <td className="admin-td-title">{a.position}</td>
-                <td><span className={`admin-badge ${STATUS_COLOR[a.status]}`}>{a.status}</span></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {loading ? (
+          <div className="admin-empty">불러오는 중...</div>
+        ) : (
+          <table className="admin-table">
+            <thead>
+              <tr><th>지원일</th><th>지원자</th><th>직군</th><th>기업</th><th>포지션</th><th>상태</th></tr>
+            </thead>
+            <tbody>
+              {filtered.map((a) => (
+                <tr key={a.id}>
+                  <td className="admin-td-date">{fmtDate(a.applied_at)}</td>
+                  <td className="admin-td-brand">{a.applicant_name}</td>
+                  <td className="admin-td-date">{a.job_category || "-"}</td>
+                  <td className="admin-td-brand">{a.company_name}</td>
+                  <td className="admin-td-title">{a.position}</td>
+                  <td>
+                    <select
+                      className={`admin-status-select`}
+                      value={STATUS_TO_LABEL[a.status]}
+                      onChange={(e) => changeStatus(a.id, e.target.value)}
+                    >
+                      <option value="지원완료">지원완료</option>
+                      <option value="열람됨">열람됨</option>
+                      <option value="면접예정">면접예정</option>
+                      <option value="합격">합격</option>
+                      <option value="불합격">불합격</option>
+                      <option value="지원취소">지원취소</option>
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
     </AdminLayout>
   );
