@@ -233,6 +233,31 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── 4. 채용공고 섹션 ── */}
+      {/* ── 콘텐츠 현황 ── */}
+      <div className="admin-section-header">
+        <div className="admin-section-title-wrap">
+          <CheckCircle size={20} className="admin-section-icon individual" />
+          <h2 className="admin-section-heading">콘텐츠 현황</h2>
+        </div>
+        <Link href="/admin/resumes" className="admin-card-more">전체보기 →</Link>
+      </div>
+
+      <div className="admin-mini-stat-row">
+        {[
+          { label: "전체 이력서", value: fmt(c?.total_resumes), unit: "건" },
+          { label: "공개 이력서", value: fmt(c?.public_resumes), unit: "건" },
+          { label: "이력서 보유율", value: c ? Math.round((Number(c.users_with_resume) / Math.max(Number(c.total_users), 1)) * 100) : "-", unit: "%" },
+          { label: "누적 지원수", value: fmt(c?.total_applications), unit: "건" },
+          { label: "공고당 평균지원", value: c?.avg_applications_per_job ?? "-", unit: "건" },
+        ].map((s) => (
+          <div key={s.label} className="admin-mini-stat-card">
+            <span className="admin-mini-stat-label">{s.label}</span>
+            <span className="admin-mini-stat-value">{s.value}<span className="admin-mini-unit">{s.unit}</span></span>
+          </div>
+        ))}
+      </div>
+
+      {/* ── 4. 채용공고 섹션 ── */}
       <div className="admin-section-header">
         <div className="admin-section-title-wrap">
           <Briefcase size={20} className="admin-section-icon jobs" />

@@ -23,7 +23,14 @@ export async function GET(req: NextRequest) {
         (SELECT COUNT(*) FROM job_postings WHERE job_type = 'OFFICE' AND status = 'ACTIVE') AS office_jobs,
         (SELECT COUNT(*) FROM job_postings WHERE job_type = 'STORE' AND status = 'ACTIVE') AS store_jobs,
         (SELECT COUNT(*) FROM applications WHERE applied_at::date = now()::date) AS today_applications,
-        (SELECT COUNT(*) FROM resumes WHERE status = 'PUBLISHED') AS published_resumes
+        (SELECT COUNT(*) FROM applications) AS total_applications,
+        (SELECT COUNT(*) FROM resumes WHERE status = 'PUBLISHED') AS published_resumes,
+        (SELECT COUNT(*) FROM resumes) AS total_resumes,
+        (SELECT COUNT(*) FROM resumes WHERE is_public = true) AS public_resumes,
+        (SELECT COUNT(DISTINCT user_id) FROM resumes) AS users_with_resume,
+        (SELECT ROUND(AVG(cnt), 1) FROM (
+          SELECT COUNT(*) AS cnt FROM applications GROUP BY job_posting_id
+        ) t) AS avg_applications_per_job
     `)
 
     // 최근 가입 개인회원
