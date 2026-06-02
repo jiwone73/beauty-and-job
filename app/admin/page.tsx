@@ -266,7 +266,7 @@ export default function AdminDashboard() {
         <Link href="/admin/jobs" className="admin-card-more">전체보기 →</Link>
       </div>
 
-      <div className="admin-chart-grid">
+      <div className="admin-dashboard-grid">
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">일별 지원수 (최근 7일)</h2>
@@ -307,7 +307,9 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
           </div>
         </div>
+      </div>
 
+      {/* 최근 채용공고 (전체 너비) */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">최근 채용공고</h2>
@@ -344,8 +346,7 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
-      </div>
-
+  
     </AdminLayout>
   );
 }
