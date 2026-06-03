@@ -141,6 +141,17 @@ export default function CareerEditModal({ isOpen, onClose }: Props) {
             />
             <span>현재 재직 중</span>
           </label>
+          <div>
+            <label className="cv-field-label">주요 업무 및 성과</label>
+            <textarea
+              className="cv-input"
+              placeholder="담당했던 업무와 성과를 자유롭게 작성해주세요."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              style={{ resize: "vertical", lineHeight: 1.5, fontFamily: "inherit" }}
+            />
+          </div>
           <button
             className="cv-btn-primary"
             onClick={handleSave}
