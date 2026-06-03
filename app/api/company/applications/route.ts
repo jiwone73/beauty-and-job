@@ -38,14 +38,13 @@ export async function GET(req: NextRequest) {
        u.email AS user_email,
        u.phone AS user_phone,
        u.gender AS user_gender,
-       up.job_type AS user_job_type,
-       up.avatar_url AS user_avatar_url,
+       u.job_type AS user_job_type,
+       u.avatar_url AS user_avatar_url,
        jp.id AS job_id, jp.title AS job_title,
        jp.experience_level
      FROM applications a
      JOIN job_postings jp ON jp.id = a.job_posting_id
      JOIN users u ON u.id = a.user_id
-     LEFT JOIN user_profiles up ON up.user_id = u.id
      WHERE ${whereClause}
      ORDER BY a.applied_at DESC
      LIMIT $${idx++} OFFSET $${idx++}`,
