@@ -78,8 +78,7 @@ export default function AdminApplicationsPage() {
   });
 
   return (
-    <AdminLayout activeMenu="resumes">
-      <h2 style={{ fontSize: "20px", fontWeight: 700, margin: "0 0 20px" }}>입사지원 관리</h2>
+    <AdminLayout activeMenu="resumes-applications">
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
