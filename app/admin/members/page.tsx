@@ -37,6 +37,7 @@ export default function AdminMembersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
+  const [jobTypeFilter, setJobTypeFilter] = useState("전체");
   const [checked, setChecked] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const PER_PAGE = 20;
@@ -98,7 +99,8 @@ export default function AdminMembersPage() {
       (m.email || "").includes(search) ||
       (m.phone || "").includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[m.status] === statusFilter;
-    return matchSearch && matchStatus;
+    const matchJobType = jobTypeFilter === "전체" || JOB_TYPE_LABEL[m.job_type || ""] === jobTypeFilter;
+    return matchSearch && matchStatus && matchJobType;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -134,6 +136,15 @@ export default function AdminMembersPage() {
             <Search size={16} className="admin-search-icon" />
             <input className="admin-search-input" placeholder="이름, 이메일, 연락처 검색"
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
+          </div>
+          <div className="admin-filter-group">
+            <span className="admin-filter-label">직군</span>
+            <div className="admin-filter-tabs">
+              {["전체", "기업사무직", "매장기술직"].map((t) => (
+                <button key={t} className={`admin-filter-tab ${jobTypeFilter === t ? "active" : ""}`}
+                  onClick={() => { setJobTypeFilter(t); setPage(1); }}>{t}</button>
+              ))}
+            </div>
           </div>
           <div className="admin-filter-group">
             <span className="admin-filter-label">계정상태</span>
