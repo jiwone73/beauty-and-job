@@ -128,66 +128,67 @@ export async function PUT(req: NextRequest) {
         [userId, `${uName}의 이력서`, uJobType, profile.intro || "", profile.region_prefer || ""]
       );
     }
-    // 2. careers: delete-then-insert
-    await client.query(`DELETE FROM user_careers WHERE user_id = $1`, [userId]);
-    for (const c of careers) {
+    // 2~7. 하위 항목들: delete 후 멀티 INSERT (쿼리 수 최소화)
+    const bulkInsert = async (
+      table: string,
+      cols: string[],
+      rows: any[],
+      mapRow: (r: any) => any[]
+    ) => {
+      await client.query(`DELETE FROM ${table} WHERE user_id = $1`, [userId]);
+      if (!rows || rows.length === 0) return;
+      const colList = ["user_id", ...cols].join(", ");
+      const values: any[] = [];
+      const placeholders: string[] = [];
+      let idx = 1;
+      for (const r of rows) {
+        const rowVals = [userId, ...mapRow(r)];
+        const ph = rowVals.map(() => `$${idx++}`);
+        placeholders.push(`(${ph.join(", ")})`);
+        values.push(...rowVals);
+      }
       await client.query(
-        `INSERT INTO user_careers (user_id, company, department, position, start_date, end_date, is_verified, description)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [userId, c.company || "", c.department || "", c.position || "", c.start_date || c.startDate || "", c.end_date || c.endDate || "", c.is_verified || c.isVerified || false, c.description || ""]
+        `INSERT INTO ${table} (${colList}) VALUES ${placeholders.join(", ")}`,
+        values
       );
-    }
+    };
 
-    // 3. educations
-    await client.query(`DELETE FROM user_educations WHERE user_id = $1`, [userId]);
-    for (const e of educations) {
-      await client.query(
-        `INSERT INTO user_educations (user_id, school, major, status, start_date, end_date, description)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [userId, e.school || "", e.major || "", e.status || "", e.start_date || e.startDate || "", e.end_date || e.endDate || "", e.description || ""]
-      );
-    }
-
-    // 4. experiences
-    await client.query(`DELETE FROM user_experiences WHERE user_id = $1`, [userId]);
-    for (const x of experiences) {
-      await client.query(
-        `INSERT INTO user_experiences (user_id, category, title, description)
-         VALUES ($1, $2, $3, $4)`,
-        [userId, x.category || "", x.title || "", x.description || ""]
-      );
-    }
-
-    // 5. languages
-    await client.query(`DELETE FROM user_languages WHERE user_id = $1`, [userId]);
-    for (const l of languages) {
-      await client.query(
-        `INSERT INTO user_languages (user_id, language, level, test)
-         VALUES ($1, $2, $3, $4)`,
-        [userId, l.language || "", l.level || "", l.test || ""]
-      );
-    }
-
-    // 6. links
-    await client.query(`DELETE FROM user_links WHERE user_id = $1`, [userId]);
-    for (const lk of links) {
-      await client.query(
-        `INSERT INTO user_links (user_id, category, url)
-         VALUES ($1, $2, $3)`,
-        [userId, lk.category || "", lk.url || ""]
-      );
-    }
-
-    // 7. certificates (별도 테이블 user_certificates)
-    await client.query(`DELETE FROM user_certificates WHERE user_id = $1`, [userId]);
-    for (const cert of certificates) {
-      await client.query(
-        `INSERT INTO user_certificates (user_id, name, issuer, issued_ym)
-         VALUES ($1, $2, $3, $4)`,
-        [userId, cert.name || "", cert.issuer || "", cert.issued_ym || cert.issuedYm || ""]
-      );
-    }
-
+    await bulkInsert(
+      "user_careers",
+      ["company", "department", "position", "start_date", "end_date", "is_verified", "description"],
+      careers,
+      (c) => [c.company || "", c.department || "", c.position || "", c.start_date || c.startDate || "", c.end_date || c.endDate || "", c.is_verified || c.isVerified || false, c.description || ""]
+    );
+    await bulkInsert(
+      "user_educations",
+      ["school", "major", "status", "start_date", "end_date", "description"],
+      educations,
+      (e) => [e.school || "", e.major || "", e.status || "", e.start_date || e.startDate || "", e.end_date || e.endDate || "", e.description || ""]
+    );
+    await bulkInsert(
+      "user_experiences",
+      ["category", "title", "description"],
+      experiences,
+      (x) => [x.category || "", x.title || "", x.description || ""]
+    );
+    await bulkInsert(
+      "user_languages",
+      ["language", "level", "test"],
+      languages,
+      (l) => [l.language || "", l.level || "", l.test || ""]
+    );
+    await bulkInsert(
+      "user_links",
+      ["category", "url"],
+      links,
+      (lk) => [lk.category || "", lk.url || ""]
+    );
+    await bulkInsert(
+      "user_certificates",
+      ["name", "issuer", "issued_ym"],
+      certificates,
+      (cert) => [cert.name || "", cert.issuer || "", cert.issued_ym || cert.issuedYm || ""]
+    );
     await client.query("COMMIT");
     return ok({ saved: true });
   } catch (e: any) {
