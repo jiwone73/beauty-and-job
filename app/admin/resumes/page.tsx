@@ -391,7 +391,7 @@ export default function AdminResumesPage() {
                 <h3 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "12px" }}>전체 이력서</h3>
                 <ApplicantResume
                   resume={resumeData}
-                  resumeType={selected.job_type === "STORE" ? "salon" : "office"}
+                  resumeType={resumeData?.resume?.job_type === "STORE" ? "salon" : "office"}
                   loading={resumeLoading}
                   avatarUrl={resumeData?.resume?.avatar_url}
                   applicantName={selected.name}
