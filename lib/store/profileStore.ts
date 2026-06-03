@@ -11,6 +11,7 @@ export interface CareerEntry {
   startDate: string;
   endDate: string;
   isVerified: boolean;
+  description: string;
 }
 export interface EducationEntry {
   id: string;

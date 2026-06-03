@@ -113,9 +113,9 @@ export async function PUT(req: NextRequest) {
     await client.query(`DELETE FROM user_careers WHERE user_id = $1`, [userId]);
     for (const c of careers) {
       await client.query(
-        `INSERT INTO user_careers (user_id, company, department, position, start_date, end_date, is_verified)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [userId, c.company || "", c.department || "", c.position || "", c.start_date || c.startDate || "", c.end_date || c.endDate || "", c.is_verified || c.isVerified || false]
+        `INSERT INTO user_careers (user_id, company, department, position, start_date, end_date, is_verified, description)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [userId, c.company || "", c.department || "", c.position || "", c.start_date || c.startDate || "", c.end_date || c.endDate || "", c.is_verified || c.isVerified || false, c.description || ""]
       );
     }
 

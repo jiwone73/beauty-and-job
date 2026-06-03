@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumeTabs from "@/components/admin/ResumeTabs";
 import ResumePreview from "@/components/profile/ResumePreview";
-import { Search, Trash2, Download, X } from "lucide-react";
+import { Search, Trash2, Download, X, Printer } from "lucide-react";
 
 const DEGREE_LABEL: Record<string, string> = {
   HIGH_SCHOOL: "고등학교",
@@ -133,6 +133,23 @@ export default function AdminResumesPage() {
       setIsDownloading(false);
     }
   };
+  const handlePrint = async () => {
+    if (!previewRef.current) return;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(previewRef.current, {
+        scale: 2, useCORS: true, backgroundColor: "#ffffff",
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.write(`<html><head><title>이력서 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" onload="window.print();window.close()" /></body></html>`);
+      w.document.close();
+    } catch (e) {
+      alert("인쇄 준비 중 오류가 발생했습니다.");
+    }
+  };
 
   // API 응답(snake_case) → ResumePreview props(camelCase) 변환
   const mapResume = (data: any) => {
@@ -141,7 +158,7 @@ export default function AdminResumesPage() {
       careers: (data?.careers || []).map((c: any) => ({
         id: String(c.id), company: c.company || "", department: c.department || "",
         position: c.position || "", startDate: c.start_date || "", endDate: c.end_date || "",
-        isVerified: c.is_verified || false,
+        isVerified: c.is_verified || false, description: c.description || "",
       })),
       educations: (data?.educations || []).map((e: any) => ({
         id: String(e.id), school: e.school || "", major: e.major || "",
@@ -420,6 +437,10 @@ export default function AdminResumesPage() {
                 <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading}>
                   <Download size={16} />
                   <span>{isDownloading ? "저장 중..." : "PDF 다운로드"}</span>
+                </button>
+                <button className="resume-action-btn" onClick={handlePrint}>
+                  <Printer size={16} />
+                  <span>인쇄</span>
                 </button>
                 <button className="resume-action-btn" onClick={() => handleDelete(selected.id)}
                   style={{ color: "#ef4444", borderColor: "#ef4444" }}>

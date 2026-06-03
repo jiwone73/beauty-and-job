@@ -17,6 +17,7 @@ export default function CareerEditModal({ isOpen, onClose }: Props) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isCurrent, setIsCurrent] = useState(false);
+  const [description, setDescription] = useState("");
 
   if (!isOpen) return null;
 
@@ -27,6 +28,7 @@ export default function CareerEditModal({ isOpen, onClose }: Props) {
     setStartDate("");
     setEndDate("");
     setIsCurrent(false);
+    setDescription("");
   };
 
   const formatDate = (d: string) => {
@@ -57,6 +59,7 @@ export default function CareerEditModal({ isOpen, onClose }: Props) {
       startDate: formatDate(startDate),
       endDate: isCurrent ? "재직 중" : formatDate(endDate),
       isVerified: false,
+      description: description.trim(),
     };
     addCareer(entry);
     reset();

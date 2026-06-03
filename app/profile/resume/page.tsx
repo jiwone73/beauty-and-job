@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, Download, Eye, Plus, X, FileText, Trash2, Upload } from "lucide-react";
+import { ChevronLeft, Download, Eye, Plus, X, FileText, Trash2, Upload, Printer } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -209,7 +209,23 @@ function ResumePageContent() {
       setIsDownloading(false);
     }
   };
-
+const handlePrint = async () => {
+    if (!previewRef.current) return;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(previewRef.current, {
+        scale: 2, useCORS: true, backgroundColor: "#ffffff",
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.write(`<html><head><title>이력서 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" onload="window.print();window.close()" /></body></html>`);
+      w.document.close();
+    } catch (e) {
+      alert("인쇄 준비 중 오류가 발생했습니다.");
+    }
+  };
   // URL ?action=preview 또는 ?action=download 자동 트리거
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -623,6 +639,11 @@ function ResumePageContent() {
                   <Download size={16} />
                   <span>{isDownloading ? "저장 중..." : "PDF 다운로드"}</span>
                 </button>
+                <button className="resume-action-btn" onClick={handlePrint}>
+                  <Printer size={16} />
+                  <span>인쇄</span>
+                </button>
+                
                 <button className="rp-modal-close" onClick={() => setShowPreview(false)}>
                   <X size={20} />
                 </button>

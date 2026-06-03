@@ -164,6 +164,11 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
                   {c.department} · {c.position}
                 </p>
               )}
+              {c.description && (
+                <p className="rp-item-desc" style={{ whiteSpace: "pre-line", marginTop: "6px", fontSize: "13px", color: "#555", lineHeight: 1.6 }}>
+                  {c.description}
+                </p>
+              )}
             </div>
           ))}
         </div>
