@@ -22,8 +22,6 @@ const NAV_ITEMS = [
     children: [
       { id: "members", label: "개인회원", href: "/admin/members" },
       { id: "members-companies", label: "기업회원", href: "/admin/members/companies" },
-      { id: "members-blocked", label: "열람제한기업", href: "/admin/members/companies/blocked" },
-      { id: "members-favorites", label: "관심기업", href: "/admin/members/companies/favorites" },
     ]
   },
   { id: "brands", label: "브랜드 관리", icon: Store, href: "/admin/brands" },

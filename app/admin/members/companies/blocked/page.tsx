@@ -24,7 +24,7 @@ export default function AdminBlockedCompaniesPage() {
   });
 
   return (
-    <AdminLayout activeMenu="members">
+    <AdminLayout activeMenu="members-companies">
       <MemberTabs />
 
       <div className="admin-toolbar">

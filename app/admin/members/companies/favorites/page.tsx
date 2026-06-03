@@ -27,7 +27,7 @@ export default function AdminFavoriteCompaniesPage() {
   });
 
   return (
-    <AdminLayout activeMenu="members">
+    <AdminLayout activeMenu="members-companies">
       <MemberTabs />
 
       <div className="admin-toolbar">
