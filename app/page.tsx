@@ -288,12 +288,7 @@ function HeroVisual() {
 /* ============================================
    섹션 1: 뷰티앤잡 Pick
    ============================================ */
-const PICK_JOBS = [
-  { id: 1, brand: "올리브영", tag: "경력 3~5년", tagType: "primary", title: "올리브영 MD - 색조 카테고리 매니저", location: "서울 중구", type: "정규직", deadline: "D-7" },
-  { id: 2, brand: "아모레퍼시픽", tag: "신입/경력", tagType: "soft", title: "헤라 브랜드 마케팅 매니저", location: "서울 용산구", type: "정규직", deadline: "D-12" },
-  { id: 3, brand: "LG생활건강", tag: "경력 5년+", tagType: "primary", title: "더후 글로벌 영업 PM", location: "서울 종로구", type: "정규직", deadline: "D-3" },
-  { id: 4, brand: "닥터지", tag: "경력 2~4년", tagType: "soft", title: "퍼포먼스 마케터 (그로스)", location: "서울 강남구", type: "정규직", deadline: "D-15" },
-];
+
 
 function SectionPick() {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -347,11 +342,15 @@ function SectionPick() {
           </div>
           <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
-        <div className="card-grid card-grid-4">
-          {mappedJobs.map((job: any) => (
-            <JobCard key={job.id} {...job} isAd />
-          ))}
-        </div>
+        {mappedJobs.length === 0 ? (
+          <p className="empty-state">등록된 공고가 없습니다.</p>
+        ) : (
+          <div className="card-grid card-grid-4">
+            {mappedJobs.map((job: any) => (
+              <JobCard key={job.id} {...job} isAd />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -446,11 +445,15 @@ function SectionStorePick() {
           </div>
           <Link href="/jobs?type=매장" className="see-all">전체보기 →</Link>
         </div>
-        <div className="card-grid card-grid-4">
-          {mappedJobs.map((job: any) => (
-            <JobCard key={job.id} {...job} tagType="soft" />
-          ))}
-        </div>
+        {mappedJobs.length === 0 ? (
+          <p className="empty-state">등록된 공고가 없습니다.</p>
+        ) : (
+          <div className="card-grid card-grid-4">
+            {mappedJobs.map((job: any) => (
+              <JobCard key={job.id} {...job} tagType="soft" />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -459,12 +462,7 @@ function SectionStorePick() {
 /* ============================================
    섹션: 기업·브랜드 채용관
    ============================================ */
-const CORP_PICK_JOBS = [
-  { id: 201, brand: "아모레퍼시픽", tag: "경력 5년+", title: "글로벌 브랜드 마케터", location: "서울 용산구", type: "정규직", deadline: "D-7" },
-  { id: 202, brand: "코스맥스", tag: "경력 3년+", title: "화장품 연구원 (제형)", location: "경기 성남", type: "정규직", deadline: "D-11" },
-  { id: 203, brand: "달바", tag: "경력 3년+", title: "유럽 수출 영업 담당자", location: "서울", type: "정규직", deadline: "D-9" },
-  { id: 204, brand: "에이피알", tag: "경력 2~5년", title: "퍼포먼스 마케터", location: "서울 강남", type: "정규직", deadline: "D-6" },
-];
+
 
 function SectionCorpPick() {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -511,11 +509,15 @@ function SectionCorpPick() {
           </div>
           <Link href="/jobs?type=기업" className="see-all">전체보기 →</Link>
         </div>
-        <div className="card-grid card-grid-4">
-          {mappedJobs.map((job: any) => (
-            <JobCard key={job.id} {...job} tagType="primary" />
-          ))}
-        </div>
+        {mappedJobs.length === 0 ? (
+          <p className="empty-state">등록된 공고가 없습니다.</p>
+        ) : (
+          <div className="card-grid card-grid-4">
+            {mappedJobs.map((job: any) => (
+              <JobCard key={job.id} {...job} tagType="primary" />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
