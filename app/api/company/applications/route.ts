@@ -10,21 +10,46 @@ export async function GET(req: NextRequest) {
 
   const companyId = auth!.sub
   const { searchParams } = new URL(req.url)
-  const limit = parseInt(searchParams.get('limit') || '10')
+  const jobId = searchParams.get('job_id')
+  const status = searchParams.get('status')
+  const page = parseInt(searchParams.get('page') || '1')
+  const limit = parseInt(searchParams.get('limit') || '100')
+  const offset = (page - 1) * limit
+
+  const where: string[] = ['jp.company_id = $1']
+  const params: any[] = [companyId]
+  let idx = 2
+
+  if (jobId) {
+    where.push(`a.job_posting_id = $${idx++}`)
+    params.push(jobId)
+  }
+  if (status) {
+    where.push(`a.status = $${idx++}`)
+    params.push(status)
+  }
+
+  const whereClause = where.join(' AND ')
 
   const result = await pool.query(
-    `SELECT 
+    `SELECT
        a.id, a.status, a.applied_at, a.viewed_at,
        u.name AS user_name,
+       u.email AS user_email,
+       u.phone AS user_phone,
+       u.gender AS user_gender,
+       up.job_type AS user_job_type,
+       up.avatar_url AS user_avatar_url,
        jp.id AS job_id, jp.title AS job_title,
        jp.experience_level
      FROM applications a
      JOIN job_postings jp ON jp.id = a.job_posting_id
      JOIN users u ON u.id = a.user_id
-     WHERE jp.company_id = $1
+     LEFT JOIN user_profiles up ON up.user_id = u.id
+     WHERE ${whereClause}
      ORDER BY a.applied_at DESC
-     LIMIT $2`,
-    [companyId, limit]
+     LIMIT $${idx++} OFFSET $${idx++}`,
+    [...params, limit, offset]
   )
 
   return ok(result.rows)
