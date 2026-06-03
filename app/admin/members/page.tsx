@@ -1,6 +1,7 @@
 "use client";
+import { useState, useEffect, useCallback } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Search, Trash2, X } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 
 const JOB_TYPE_LABEL: Record<string, string> = {
   OFFICE: "기업사무직",
