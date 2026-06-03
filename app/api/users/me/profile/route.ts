@@ -108,26 +108,22 @@ export async function PUT(req: NextRequest) {
         profile.office_job_areas || [],
       ]
     );
-// 1-2. resumes upsert (관리자 이력서 관리 노출용)
-    const uRes = await client.query(`SELECT name, job_type FROM users WHERE id = $1`, [userId]);
-    const uName = uRes.rows[0]?.name || "이력서";
-    const uJobType = uRes.rows[0]?.job_type || "OFFICE";
-    const existRes = await client.query(`SELECT id FROM resumes WHERE user_id = $1 LIMIT 1`, [userId]);
-    if (existRes.rows.length > 0) {
-      await client.query(
-        `UPDATE resumes SET
-           title = $2, job_type = $3, introduction = $4,
-           desired_location = $5, is_public = true, status = 'PUBLISHED', updated_at = NOW()
-         WHERE user_id = $1`,
-        [userId, `${uName}의 이력서`, uJobType, profile.intro || "", profile.region_prefer || ""]
-      );
-    } else {
-      await client.query(
-        `INSERT INTO resumes (user_id, title, job_type, introduction, desired_location, is_public, status)
-         VALUES ($1, $2, $3, $4, $5, true, 'PUBLISHED')`,
-        [userId, `${uName}의 이력서`, uJobType, profile.intro || "", profile.region_prefer || ""]
-      );
-    }
+    // 1-2. resumes upsert (관리자 이력서 관리 노출용) - ON CONFLICT 한 방 처리
+    const uJobType = profile.office_job_areas?.length ? "OFFICE" : (profile.skill_areas?.length ? "STORE" : "OFFICE");
+    await client.query(
+      `INSERT INTO resumes (user_id, title, job_type, introduction, desired_location, is_public, status)
+       VALUES ($1, (SELECT COALESCE(name,'이력서') || '의 이력서' FROM users WHERE id = $1),
+               COALESCE((SELECT job_type FROM users WHERE id = $1), $2), $3, $4, true, 'PUBLISHED')
+       ON CONFLICT (user_id) DO UPDATE SET
+         title = EXCLUDED.title,
+         job_type = EXCLUDED.job_type,
+         introduction = EXCLUDED.introduction,
+         desired_location = EXCLUDED.desired_location,
+         is_public = true,
+         status = 'PUBLISHED',
+         updated_at = NOW()`,
+      [userId, uJobType, profile.intro || "", profile.region_prefer || ""]
+    );
     // 2~7. 하위 항목들: delete 후 멀티 INSERT (쿼리 수 최소화)
     const bulkInsert = async (
       table: string,
