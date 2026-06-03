@@ -438,7 +438,7 @@ export default function AdminResumesPage() {
                 <ResumePreview
                   ref={previewRef}
                   name={selected.name}
-                  birthDisplay={selected.birth_date ? `${String(selected.birth_date).slice(0, 4)}년 (${selected.gender === "FEMALE" ? "여" : selected.gender === "MALE" ? "남" : ""})` : ""}
+                  birthDisplay={selected.birth_date ? `${String(selected.birth_date).slice(0, 4)}년 (${new Date().getFullYear() - Number(String(selected.birth_date).slice(0, 4))}세, ${selected.gender === "FEMALE" ? "여" : selected.gender === "MALE" ? "남" : ""})` : ""}
                   jobDisplay={selected.job_category || ""}
                   phone={selected.phone || ""}
                   email={selected.email || ""}

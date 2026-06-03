@@ -70,7 +70,7 @@ function ResumePageContent() {
     skillAreas[0] ||
     "직군 미설정";
   const birthDisplay = birth
-    ? `${birth.slice(0, 4)}년 (${gender === "남성" ? "남" : "여"})`
+    ? `${birth.slice(0, 4)}년 (${new Date().getFullYear() - Number(birth.slice(0, 4))}세, ${gender === "남성" ? "남" : "여"})`
     : "";
 
   const handleSave = async () => {
