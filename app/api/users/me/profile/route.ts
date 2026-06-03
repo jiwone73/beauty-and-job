@@ -70,9 +70,13 @@ export async function PUT(req: NextRequest) {
   } = body;
 
   const client = await pool.connect();
+  const t0 = Date.now();
+  const client = await pool.connect();
+  const tConnect = Date.now();
   try {
     await client.query("BEGIN");
-
+await client.query("BEGIN");
+    const tBegin = Date.now();
     // 1. user_profiles upsert
     await client.query(
       `INSERT INTO user_profiles (
@@ -186,7 +190,8 @@ export async function PUT(req: NextRequest) {
       (cert) => [cert.name || "", cert.issuer || "", cert.issued_ym || cert.issuedYm || ""]
     );
     await client.query("COMMIT");
-    return ok({ saved: true });
+    const tCommit = Date.now();
+    return ok({ saved: true, timing: { connect: tConnect - t0, begin: tBegin - tConnect, work: tCommit - tBegin, total: tCommit - t0 } });
   } catch (e: any) {
     await client.query("ROLLBACK");
     console.error("[profile sync]", e);
