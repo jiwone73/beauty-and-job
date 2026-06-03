@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import MemberTabs from "@/components/admin/MemberTabs";
 import { Search, Trash2, X } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
@@ -114,9 +113,7 @@ export default function AdminCompaniesPage() {
   };
 
   return (
-    <AdminLayout activeMenu="members">
-      <MemberTabs />
-
+    <AdminLayout activeMenu="members-companies">
       <div className="admin-mini-stats">
         {Object.entries(counts).map(([label, count]) => (
           <div key={label} className="admin-mini-stat">
