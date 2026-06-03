@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumeTabs from "@/components/admin/ResumeTabs";
 import ResumePreview from "@/components/profile/ResumePreview";
-import { Search, Trash2, Download } from "lucide-react";
+import { Search, Trash2, Download, X } from "lucide-react";
 
 const DEGREE_LABEL: Record<string, string> = {
   HIGH_SCHOOL: "고등학교",
