@@ -129,13 +129,12 @@ await client.query("BEGIN");
     );
     // 2~7. 하위 항목들: DELETE 6개를 한 번에 (왕복 최소화) 후 멀티 INSERT
     await client.query(
-      `DELETE FROM user_careers WHERE user_id = $1;
-       DELETE FROM user_educations WHERE user_id = $1;
-       DELETE FROM user_experiences WHERE user_id = $1;
-       DELETE FROM user_languages WHERE user_id = $1;
-       DELETE FROM user_links WHERE user_id = $1;
-       DELETE FROM user_certificates WHERE user_id = $1;`,
-      [userId]
+      `DELETE FROM user_careers WHERE user_id = '${userId}';
+       DELETE FROM user_educations WHERE user_id = '${userId}';
+       DELETE FROM user_experiences WHERE user_id = '${userId}';
+       DELETE FROM user_languages WHERE user_id = '${userId}';
+       DELETE FROM user_links WHERE user_id = '${userId}';
+       DELETE FROM user_certificates WHERE user_id = '${userId}';`
     );
     const bulkInsert = async (
       table: string,
