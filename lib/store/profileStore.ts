@@ -96,9 +96,11 @@ export function genId(): string {
 export const useProfileStore = create<ProfileState>()(
   persist(
     (set, get) => {
+      let autoSyncTimer: any = null;
       // 헬퍼: 액션 후 자동 DB 동기화
       const autoSync = () => {
-        setTimeout(() => get().syncToDb(), 100);
+        if (autoSyncTimer) clearTimeout(autoSyncTimer);
+        autoSyncTimer = setTimeout(() => get().syncToDb(), 2000);
       };
 
       return {
