@@ -411,84 +411,46 @@ export default function AdminResumesPage() {
         )}
         {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
-
-      {selected && (
-        <div className="admin-modal-overlay" onClick={() => setSelected(null)}>
-          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h2 className="admin-modal-title">이력서 상세</h2>
-              <button className="admin-modal-close" onClick={() => setSelected(null)}>✕</button>
-            </div>
-            <div className="admin-modal-body">
-              <div className="admin-resume-modal-profile">
-                <div className="admin-resume-photo large">
-                  <span>{(selected.name || "?").slice(0, 1)}</span>
-                </div>
-                <div>
-                  <h3>{selected.name} · {genderLabel(selected.gender)}{calcAge(selected.birth_date) ? ` · ${calcAge(selected.birth_date)}세` : ""}</h3>
-                  <p>{selected.job_category || "-"} · {CAREER_LABEL[selected.career_type || ""] || "-"}</p>
-                </div>
-              </div>
-              <div className="admin-detail-grid">
-                {[
-                  ["이력서 제목", selected.title || "-"],
-                  ["희망지역", selected.desired_location || "-"],
-                  ["희망연봉", salaryLabel(selected)],
-                  ["학력", eduLabel(selected)],
-                  ["이메일", selected.email],
-                  ["연락처", selected.phone || "-"],
-                  ["등록일", fmtDate(selected.created_at)],
-                  ["완성여부", isComplete(selected) ? "완성" : "미완성"],
-                  ["공개여부", selected.is_public ? "공개" : "비공개"],
-                ].map(([label, value]) => (
-                  <div key={label} className="admin-detail-row">
-                    <span className="admin-detail-label">{label}</span>
-                    <span className="admin-detail-value">{value}</span>
-                  </div>
-                ))}
-                <div className="admin-detail-row">
-                  <span className="admin-detail-label">스킬</span>
-                  <div style={{display:"flex", gap:"6px", flexWrap:"wrap"}}>
-                    {(selected.skills || []).length === 0 ? "-" : selected.skills.map((sk, i) => (
-                      <span key={i} className="admin-resume-tag">{sk}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid #ececec" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                  <h3 style={{ fontSize: "15px", fontWeight: 700, margin: 0 }}>전체 이력서</h3>
-                  <button className="admin-secondary-btn" onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading}>
-                    <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 다운로드"}
-                  </button>
-                </div>
-                {resumeLoading ? (
-                  <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
-                ) : resumeData ? (
-                  <ResumePreview
-                    ref={previewRef}
-                    name={selected.name}
-                    birthDisplay={calcAge(selected.birth_date) ? `${calcAge(selected.birth_date)}세` : ""}
-                    jobDisplay={selected.job_category || ""}
-                    phone={selected.phone || ""}
-                    email={selected.email || ""}
-                    portfolioUrl={resumeData?.resume?.portfolio_url || null}
-                    portfolioFilename={resumeData?.resume?.portfolio_filename || null}
-                    avatarUrl={resumeData?.resume?.avatar_url || null}
-                    resumeType={resumeData?.resume?.job_type === "STORE" ? "salon" : "office"}
-                    {...mapResume(resumeData)}
-                  />
-                ) : (
-                  <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
-                )}
-              </div>
-
-              <div className="admin-modal-actions">
-                <button className="admin-danger-btn" onClick={() => handleDelete(selected.id)}>
-                  <Trash2 size={15} /> 삭제
+{selected && (
+        <div className="rp-modal-overlay" onClick={() => setSelected(null)}>
+          <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="rp-modal-header">
+              <h2 className="rp-modal-title">이력서 미리보기</h2>
+              <div className="rp-modal-actions">
+                <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading}>
+                  <Download size={16} />
+                  <span>{isDownloading ? "저장 중..." : "PDF 다운로드"}</span>
+                </button>
+                <button className="resume-action-btn" onClick={() => handleDelete(selected.id)}
+                  style={{ color: "#ef4444", borderColor: "#ef4444" }}>
+                  <Trash2 size={16} />
+                  <span>삭제</span>
+                </button>
+                <button className="rp-modal-close" onClick={() => setSelected(null)}>
+                  <X size={20} />
                 </button>
               </div>
+            </div>
+            <div className="rp-modal-body">
+              {resumeLoading ? (
+                <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
+              ) : resumeData ? (
+                <ResumePreview
+                  ref={previewRef}
+                  name={selected.name}
+                  birthDisplay={calcAge(selected.birth_date) ? `${calcAge(selected.birth_date)}세` : ""}
+                  jobDisplay={selected.job_category || ""}
+                  phone={selected.phone || ""}
+                  email={selected.email || ""}
+                  portfolioUrl={resumeData?.resume?.portfolio_url || null}
+                  portfolioFilename={resumeData?.resume?.portfolio_filename || null}
+                  avatarUrl={resumeData?.resume?.avatar_url || null}
+                  resumeType={resumeData?.resume?.job_type === "STORE" ? "salon" : "office"}
+                  {...mapResume(resumeData)}
+                />
+              ) : (
+                <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
+              )}
             </div>
           </div>
         </div>
