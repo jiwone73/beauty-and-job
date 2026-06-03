@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumeTabs from "@/components/admin/ResumeTabs";
-import ApplicantResume from "@/components/company/ApplicantResume";
-import { Search, Trash2 } from "lucide-react";
+import ResumePreview from "@/components/profile/ResumePreview";
+import { Search, Trash2, Download } from "lucide-react";
 
 const DEGREE_LABEL: Record<string, string> = {
   HIGH_SCHOOL: "고등학교",
@@ -98,6 +98,75 @@ export default function AdminResumesPage() {
   const [selected, setSelected] = useState<Resume | null>(null);
   const [resumeData, setResumeData] = useState<any>(null);
   const [resumeLoading, setResumeLoading] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (!previewRef.current) return;
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const jsPDF = (await import("jspdf")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(previewRef.current, {
+        scale: 2, useCORS: true, backgroundColor: "#ffffff",
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let heightLeft = pdfHeight;
+      let position = 0;
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      pdf.save(selected?.name ? `${selected.name}_이력서.pdf` : "이력서.pdf");
+    } catch (e) {
+      alert("다운로드 중 오류가 발생했습니다.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  // API 응답(snake_case) → ResumePreview props(camelCase) 변환
+  const mapResume = (data: any) => {
+    const p = data?.profile || {};
+    return {
+      careers: (data?.careers || []).map((c: any) => ({
+        id: String(c.id), company: c.company || "", department: c.department || "",
+        position: c.position || "", startDate: c.start_date || "", endDate: c.end_date || "",
+        isVerified: c.is_verified || false,
+      })),
+      educations: (data?.educations || []).map((e: any) => ({
+        id: String(e.id), school: e.school || "", major: e.major || "",
+        status: e.status || "", startDate: e.start_date || "", endDate: e.end_date || "",
+        description: e.description || "",
+      })),
+      experiences: (data?.experiences || []).map((x: any) => ({
+        id: String(x.id), category: x.category || "", title: x.title || "", description: x.description || "",
+      })),
+      languages: (data?.languages || []).map((l: any) => ({
+        id: String(l.id), language: l.language || "", level: l.level || "", test: l.test || "",
+      })),
+      links: (data?.links || []).map((lk: any) => ({
+        id: String(lk.id), category: lk.category || "", url: lk.url || "",
+      })),
+      skills: p.skills || [],
+      skillAreas: p.skill_areas || [],
+      officeJobAreas: p.office_job_areas || [],
+      certificates: p.certificates || [],
+      intro: p.intro || "",
+      coreCompetencies: p.core_competencies || "",
+      workTypePrefer: p.work_type_prefer || "",
+      regionPrefer: p.region_prefer || "",
+    };
+  };
 
   useEffect(() => {
     if (!selected) { setResumeData(null); return; }
@@ -388,14 +457,31 @@ export default function AdminResumesPage() {
               </div>
 
               <div style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid #ececec" }}>
-                <h3 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "12px" }}>전체 이력서</h3>
-                <ApplicantResume
-                  resume={resumeData}
-                  resumeType={resumeData?.resume?.job_type === "STORE" ? "salon" : "office"}
-                  loading={resumeLoading}
-                  avatarUrl={resumeData?.resume?.avatar_url}
-                  applicantName={selected.name}
-                />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                  <h3 style={{ fontSize: "15px", fontWeight: 700, margin: 0 }}>전체 이력서</h3>
+                  <button className="admin-secondary-btn" onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading}>
+                    <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 다운로드"}
+                  </button>
+                </div>
+                {resumeLoading ? (
+                  <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
+                ) : resumeData ? (
+                  <ResumePreview
+                    ref={previewRef}
+                    name={selected.name}
+                    birthDisplay={calcAge(selected.birth_date) ? `${calcAge(selected.birth_date)}세` : ""}
+                    jobDisplay={selected.job_category || ""}
+                    phone={selected.phone || ""}
+                    email={selected.email || ""}
+                    portfolioUrl={resumeData?.resume?.portfolio_url || null}
+                    portfolioFilename={resumeData?.resume?.portfolio_filename || null}
+                    avatarUrl={resumeData?.resume?.avatar_url || null}
+                    resumeType={resumeData?.resume?.job_type === "STORE" ? "salon" : "office"}
+                    {...mapResume(resumeData)}
+                  />
+                ) : (
+                  <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
+                )}
               </div>
 
               <div className="admin-modal-actions">
