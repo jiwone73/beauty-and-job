@@ -54,6 +54,7 @@ export default function AdminCompaniesPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
+  const [typeFilter, setTypeFilter] = useState("전체");
   const [selected, setSelected] = useState<Company | null>(null);
   const [detailTab, setDetailTab] = useState<"account" | "brand" | "jobs">("account");
   const [page, setPage] = useState(1);
@@ -99,7 +100,8 @@ export default function AdminCompaniesPage() {
   const filtered = companies.filter((c) => {
     const matchSearch = !search || c.company_name?.includes(search) || c.email?.includes(search) || (c.business_number || "").includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[c.status] === statusFilter;
-    return matchSearch && matchStatus;
+    const matchType = typeFilter === "전체" || TYPE_LABEL[c.company_type] === typeFilter;
+    return matchSearch && matchStatus && matchType;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -131,6 +133,15 @@ export default function AdminCompaniesPage() {
             <Search size={16} className="admin-search-icon" />
             <input className="admin-search-input" placeholder="기업명, 이메일, 사업자번호 검색"
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
+          </div>
+          <div className="admin-filter-group">
+            <span className="admin-filter-label">유형</span>
+            <div className="admin-filter-tabs">
+              {["전체", "기업", "매장", "기업+매장"].map((t) => (
+                <button key={t} className={`admin-filter-tab ${typeFilter === t ? "active" : ""}`}
+                  onClick={() => { setTypeFilter(t); setPage(1); }}>{t}</button>
+              ))}
+            </div>
           </div>
           <div className="admin-filter-group">
             <span className="admin-filter-label">승인상태</span>
