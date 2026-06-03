@@ -108,7 +108,26 @@ export async function PUT(req: NextRequest) {
         profile.office_job_areas || [],
       ]
     );
-
+// 1-2. resumes upsert (관리자 이력서 관리 노출용)
+    const uRes = await client.query(`SELECT name, job_type FROM users WHERE id = $1`, [userId]);
+    const uName = uRes.rows[0]?.name || "이력서";
+    const uJobType = uRes.rows[0]?.job_type || "OFFICE";
+    const existRes = await client.query(`SELECT id FROM resumes WHERE user_id = $1 LIMIT 1`, [userId]);
+    if (existRes.rows.length > 0) {
+      await client.query(
+        `UPDATE resumes SET
+           title = $2, job_type = $3, introduction = $4,
+           desired_location = $5, is_public = true, status = 'PUBLISHED', updated_at = NOW()
+         WHERE user_id = $1`,
+        [userId, `${uName}의 이력서`, uJobType, profile.intro || "", profile.region_prefer || ""]
+      );
+    } else {
+      await client.query(
+        `INSERT INTO resumes (user_id, title, job_type, introduction, desired_location, is_public, status)
+         VALUES ($1, $2, $3, $4, $5, true, 'PUBLISHED')`,
+        [userId, `${uName}의 이력서`, uJobType, profile.intro || "", profile.region_prefer || ""]
+      );
+    }
     // 2. careers: delete-then-insert
     await client.query(`DELETE FROM user_careers WHERE user_id = $1`, [userId]);
     for (const c of careers) {
