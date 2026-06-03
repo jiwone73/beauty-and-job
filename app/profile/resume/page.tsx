@@ -269,7 +269,6 @@ const handlePrint = async () => {
               <Download size={16} />
               <span>{isDownloading ? "저장 중..." : "다운로드"}</span>
             </button>
-            <button className="resume-save-btn" onClick={handleSave}>저장</button>
           </div>
         </div>
       </header>
