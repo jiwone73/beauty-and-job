@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumeTabs from "@/components/admin/ResumeTabs";
+import ApplicantResume from "@/components/company/ApplicantResume";
 import { Search, Trash2 } from "lucide-react";
 
 const DEGREE_LABEL: Record<string, string> = {
@@ -95,6 +96,21 @@ export default function AdminResumesPage() {
   const [completeFilter, setCompleteFilter] = useState("전체");
   const [publicFilter, setPublicFilter] = useState("전체");
   const [selected, setSelected] = useState<Resume | null>(null);
+  const [resumeData, setResumeData] = useState<any>(null);
+  const [resumeLoading, setResumeLoading] = useState(false);
+
+  useEffect(() => {
+    if (!selected) { setResumeData(null); return; }
+    const token = localStorage.getItem("admin_token");
+    setResumeLoading(true);
+    fetch(`/api/admin/resumes/${selected.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setResumeData(res.data); })
+      .catch(console.error)
+      .finally(() => setResumeLoading(false));
+  }, [selected?.id]);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
 
@@ -370,6 +386,18 @@ export default function AdminResumesPage() {
                   </div>
                 </div>
               </div>
+
+              <div style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid #ececec" }}>
+                <h3 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "12px" }}>전체 이력서</h3>
+                <ApplicantResume
+                  resume={resumeData}
+                  resumeType={selected.job_type === "STORE" ? "salon" : "office"}
+                  loading={resumeLoading}
+                  avatarUrl={resumeData?.resume?.avatar_url}
+                  applicantName={selected.name}
+                />
+              </div>
+
               <div className="admin-modal-actions">
                 <button className="admin-danger-btn" onClick={() => handleDelete(selected.id)}>
                   <Trash2 size={15} /> 삭제
