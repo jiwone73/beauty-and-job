@@ -69,7 +69,6 @@ export async function PUT(req: NextRequest) {
     certificates = [],
   } = body;
 
-  const client = await pool.connect();
   const t0 = Date.now();
   const client = await pool.connect();
   const tConnect = Date.now();
