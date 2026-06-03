@@ -28,7 +28,7 @@ const NAV_ITEMS = [
   {
     id: "resumes", label: "인재정보", icon: Users, href: "/admin/resumes",
     children: [
-      { id: "resumes", label: "전체 이력서", href: "/admin/resumes" },
+      { id: "resumes", label: "이력서 관리", href: "/admin/resumes" },
       { id: "resumes-applications", label: "입사지원 관리", href: "/admin/resumes/applications" },
     ]
   },

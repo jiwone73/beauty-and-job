@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import ResumeTabs from "@/components/admin/ResumeTabs";
 import { Search } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
@@ -80,7 +79,7 @@ export default function AdminApplicationsPage() {
 
   return (
     <AdminLayout activeMenu="resumes">
-      <ResumeTabs />
+      <h2 style={{ fontSize: "20px", fontWeight: 700, margin: "0 0 20px" }}>입사지원 관리</h2>
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
