@@ -100,7 +100,7 @@ const previewRef = useRef<HTMLDivElement>(null);
   // selected 변경 시 풀 이력서 fetch
   useEffect(() => {
     if (!selected) { setResumeData(null); return; }
-    const token = localStorage.getItem("company_token") || localStorage.getItem("access_token");
+    const token = localStorage.getItem("access_token");
     setResumeLoading(true);
     fetch(`/api/company/talent/${(selected as any).id}/resume`, {
       headers: { Authorization: `Bearer ${token}` },
