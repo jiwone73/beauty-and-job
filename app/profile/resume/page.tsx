@@ -8,6 +8,7 @@ import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumePreview from "@/components/profile/ResumePreview";
+import CareerEditModal from "@/components/profile/CareerEditModal";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -20,6 +21,12 @@ function ResumePageContent() {
     intro, coreCompetencies, educations, careers,
     skills, languages, experiences, links, email,
     setIntro, setCoreCompetencies, setEmail,
+    addLink, updateLink, removeLink,
+    addSkill, removeSkill,
+    addLanguage, updateLanguage, removeLanguage,
+    addExperience, updateExperience, removeExperience,
+    addEducation, updateEducation, removeEducation,
+    addCareer, updateCareer, removeCareer,
   } = useProfileStore();
 
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -36,6 +43,8 @@ function ResumePageContent() {
   const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [careerModalOpen, setCareerModalOpen] = useState(false);
+  const [editCareer, setEditCareer] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -369,14 +378,14 @@ const handlePrint = async () => {
           <section id="section-career" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">{resumeType === "office" ? "경력" : "경력 (근무 매장)"}</h2>
-              <button className="resume-add-btn" onClick={() => router.push("/profile")}>
+              <button className="resume-add-btn" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
                 <Plus size={14} /> 경력 추가
               </button>
             </div>
             {careers.length === 0 ? (
               <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
-                  <Plus size={16} /> 프로필에서 경력 추가하기
+                <button className="resume-empty-btn" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
+                  <Plus size={16} /> 경력 추가하기
                 </button>
               </div>
             ) : (
@@ -384,9 +393,16 @@ const handlePrint = async () => {
                 <div key={c.id} className="resume-career-item">
                   <div className="resume-career-head">
                     <strong>{c.company}</strong>
-                    <span className="resume-career-period">{c.startDate} - {c.endDate}</span>
+                    <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                      <button onClick={() => { setEditCareer(c); setCareerModalOpen(true); }}
+                        style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>수정</button>
+                      <button onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}
+                        style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>삭제</button>
+                    </span>
                   </div>
+                  <span className="resume-career-period">{c.startDate} - {c.endDate}</span>
                   {c.department && <p className="resume-career-dept">{c.department} · {c.position}</p>}
+                  {c.description && <p className="resume-career-dept" style={{ whiteSpace: "pre-line", marginTop: "4px", color: "#555" }}>{c.description}</p>}
                 </div>
               ))
             )}
@@ -678,6 +694,12 @@ const handlePrint = async () => {
           </div>
         </div>
       )}
+
+      <CareerEditModal
+        isOpen={careerModalOpen}
+        onClose={() => { setCareerModalOpen(false); setEditCareer(null); }}
+        editTarget={editCareer}
+      />
     </div>
   );
 }
