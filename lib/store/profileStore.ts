@@ -65,16 +65,21 @@ export interface ProfileState {
   // 액션
   setCareerVerified: (verified: boolean, date?: string) => void;
   addCareer: (entry: CareerEntry) => void;
+  updateCareer: (id: string, entry: CareerEntry) => void;
   removeCareer: (id: string) => void;
   addEducation: (entry: EducationEntry) => void;
+  updateEducation: (id: string, entry: EducationEntry) => void;
   removeEducation: (id: string) => void;
   addExperience: (entry: ExperienceEntry) => void;
+  updateExperience: (id: string, entry: ExperienceEntry) => void;
   removeExperience: (id: string) => void;
   addSkill: (skill: string) => void;
   removeSkill: (skill: string) => void;
   addLanguage: (entry: LanguageEntry) => void;
+  updateLanguage: (id: string, entry: LanguageEntry) => void;
   removeLanguage: (id: string) => void;
   addLink: (entry: LinkEntry) => void;
+  updateLink: (id: string, entry: LinkEntry) => void;
   removeLink: (id: string) => void;
   addCertificate: (entry: CertificateEntry) => void;
   removeCertificate: (id: string) => void;
@@ -142,6 +147,10 @@ export const useProfileStore = create<ProfileState>()(
           set((s) => ({ careers: [...s.careers, entry] }));
           autoSync();
         },
+        updateCareer: (id, entry) => {
+          set((s) => ({ careers: s.careers.map((c) => (c.id === id ? entry : c)) }));
+          autoSync();
+        },
         removeCareer: (id) => {
           set((s) => ({ careers: s.careers.filter((c) => c.id !== id) }));
           autoSync();
@@ -150,12 +159,20 @@ export const useProfileStore = create<ProfileState>()(
           set((s) => ({ educations: [...s.educations, entry] }));
           autoSync();
         },
+        updateEducation: (id, entry) => {
+          set((s) => ({ educations: s.educations.map((e) => (e.id === id ? entry : e)) }));
+          autoSync();
+        },
         removeEducation: (id) => {
           set((s) => ({ educations: s.educations.filter((e) => e.id !== id) }));
           autoSync();
         },
         addExperience: (entry) => {
           set((s) => ({ experiences: [...s.experiences, entry] }));
+          autoSync();
+        },
+        updateExperience: (id, entry) => {
+          set((s) => ({ experiences: s.experiences.map((x) => (x.id === id ? entry : x)) }));
           autoSync();
         },
         removeExperience: (id) => {
@@ -176,12 +193,20 @@ export const useProfileStore = create<ProfileState>()(
           set((s) => ({ languages: [...s.languages, entry] }));
           autoSync();
         },
+        updateLanguage: (id, entry) => {
+          set((s) => ({ languages: s.languages.map((l) => (l.id === id ? entry : l)) }));
+          autoSync();
+        },
         removeLanguage: (id) => {
           set((s) => ({ languages: s.languages.filter((l) => l.id !== id) }));
           autoSync();
         },
         addLink: (entry) => {
           set((s) => ({ links: [...s.links, entry] }));
+          autoSync();
+        },
+        updateLink: (id, entry) => {
+          set((s) => ({ links: s.links.map((lk) => (lk.id === id ? entry : lk)) }));
           autoSync();
         },
         removeLink: (id) => {
