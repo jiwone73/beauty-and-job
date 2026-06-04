@@ -9,6 +9,7 @@ import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumePreview from "@/components/profile/ResumePreview";
 import CareerEditModal from "@/components/profile/CareerEditModal";
+import LinkModal from "@/components/profile/LinkModal";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -45,6 +46,8 @@ function ResumePageContent() {
   const [isDragOver, setIsDragOver] = useState(false);
   const [careerModalOpen, setCareerModalOpen] = useState(false);
   const [editCareer, setEditCareer] = useState<any>(null);
+  const [linkModalOpen, setLinkModalOpen] = useState(false);
+  const [editLink, setEditLink] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -614,7 +617,7 @@ const handlePrint = async () => {
           <section id="section-link" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">링크</h2>
-              <button className="resume-add-btn" onClick={() => router.push("/profile")}>
+              <button className="resume-add-btn" onClick={() => { setEditLink(null); setLinkModalOpen(true); }}>
                 <Plus size={14} /> 추가
               </button>
             </div>
@@ -623,12 +626,18 @@ const handlePrint = async () => {
                 <div key={link.id} className="resume-link-item">
                   <span className="resume-link-category">{link.category}</span>
                   <a href={link.url} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
+                  <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                    <button onClick={() => { setEditLink(link); setLinkModalOpen(true); }}
+                      style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>수정</button>
+                    <button onClick={() => { if (confirm("이 링크를 삭제할까요?")) removeLink(link.id); }}
+                      style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>삭제</button>
+                  </span>
                 </div>
               ))
             ) : (
               <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
-                  <Plus size={16} /> 프로필에서 링크 추가하기
+                <button className="resume-empty-btn" onClick={() => { setEditLink(null); setLinkModalOpen(true); }}>
+                  <Plus size={16} /> 링크 추가하기
                 </button>
               </div>
             )}
@@ -699,6 +708,11 @@ const handlePrint = async () => {
         isOpen={careerModalOpen}
         onClose={() => { setCareerModalOpen(false); setEditCareer(null); }}
         editTarget={editCareer}
+      />
+      <LinkModal
+        isOpen={linkModalOpen}
+        onClose={() => { setLinkModalOpen(false); setEditLink(null); }}
+        editTarget={editLink}
       />
     </div>
   );
