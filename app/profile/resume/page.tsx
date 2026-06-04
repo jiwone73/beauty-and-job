@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, Download, Eye, Plus, X, FileText, Trash2, Upload, Printer } from "lucide-react";
+import { ChevronLeft, Download, Eye, Plus, X, FileText, Trash2, Upload, Printer, Pencil } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -448,8 +448,8 @@ const handlePrint = async () => {
                   </span>
                 )}
               </h2>
-              <button className="resume-add-btn" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
-                <Plus size={14} /> 경력 추가
+              <button className="resume-icon-btn" aria-label="경력 추가" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
+                <Plus size={18} />
               </button>
             </div>
             {careers.length === 0 ? (
@@ -463,11 +463,13 @@ const handlePrint = async () => {
                 <div key={c.id} className="resume-career-item">
                   <div className="resume-career-head">
                     <strong>{c.company}</strong>
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-                      <button onClick={() => { setEditCareer(c); setCareerModalOpen(true); }}
-                        style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>수정</button>
-                      <button onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}
-                        style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>삭제</button>
+                    <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
+                      <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCareer(c); setCareerModalOpen(true); }}>
+                        <Pencil size={15} />
+                      </button>
+                      <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}>
+                        <Trash2 size={15} />
+                      </button>
                     </span>
                   </div>
                   <span className="resume-career-period">{c.startDate} - {c.endDate}</span>
@@ -481,8 +483,8 @@ const handlePrint = async () => {
           <section id="section-education" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">학력</h2>
-              <button className="resume-add-btn" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
-                <Plus size={14} /> 학교 추가
+              <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
+                <Plus size={18} />
               </button>
             </div>
             {educations.length === 0 ? (
@@ -496,11 +498,13 @@ const handlePrint = async () => {
                 <div key={edu.id} className="resume-edu-item">
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <strong>{edu.school}</strong>
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-                      <button onClick={() => { setEditEdu(edu); setEduModalOpen(true); }}
-                        style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>수정</button>
-                      <button onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(edu.id); }}
-                        style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>삭제</button>
+                    <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
+                      <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditEdu(edu); setEduModalOpen(true); }}>
+                        <Pencil size={15} />
+                      </button>
+                      <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(edu.id); }}>
+                        <Trash2 size={15} />
+                      </button>
                     </span>
                   </div>
                   <span className="resume-edu-info">{edu.major} · {edu.status}</span>
@@ -513,8 +517,8 @@ const handlePrint = async () => {
           <section id="section-skill" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">스킬</h2>
-              <button className="resume-add-btn" onClick={() => setSkillModalOpen(true)}>
-                <Plus size={14} /> 추가
+              <button className="resume-icon-btn" aria-label="스킬 추가" onClick={() => setSkillModalOpen(true)}>
+                <Plus size={18} />
               </button>
             </div>
             {skills.length > 0 ? (
@@ -533,8 +537,8 @@ const handlePrint = async () => {
           <section id="section-language" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">어학</h2>
-              <button className="resume-add-btn" onClick={() => { setEditLang(null); setLangModalOpen(true); }}>
-                <Plus size={14} /> 추가
+              <button className="resume-icon-btn" aria-label="어학 추가" onClick={() => { setEditLang(null); setLangModalOpen(true); }}>
+                <Plus size={18} />
               </button>
             </div>
             {languages.length > 0 ? (
@@ -544,11 +548,13 @@ const handlePrint = async () => {
                     <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
                       {lang.language}
                       <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
-                      <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-                        <button onClick={() => { setEditLang(lang); setLangModalOpen(true); }}
-                          style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>수정</button>
-                        <button onClick={() => { if (confirm("이 어학을 삭제할까요?")) removeLanguage(lang.id); }}
-                          style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>삭제</button>
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
+                        <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLang(lang); setLangModalOpen(true); }}>
+                          <Pencil size={15} />
+                        </button>
+                        <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 어학을 삭제할까요?")) removeLanguage(lang.id); }}>
+                          <Trash2 size={15} />
+                        </button>
                       </span>
                     </p>
                     {lang.test && (
@@ -568,8 +574,8 @@ const handlePrint = async () => {
           <section id="section-experience" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">활동/수상</h2>
-              <button className="resume-add-btn" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
-                <Plus size={14} /> 추가
+              <button className="resume-icon-btn" aria-label="활동 추가" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
+              <Plus size={18} />
               </button>
             </div>
             {experiences.length > 0 ? (
@@ -581,11 +587,13 @@ const handlePrint = async () => {
                         <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>
                       )}
                       {x.title}
-                      <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-                        <button onClick={() => { setEditExp(x); setExpModalOpen(true); }}
-                          style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>수정</button>
-                        <button onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}
-                          style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>삭제</button>
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
+                        <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditExp(x); setExpModalOpen(true); }}>
+                          <Pencil size={15} />
+                        </button>
+                        <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
+                          <Trash2 size={15} />
+                        </button>
                       </span>
                     </p>
                     {x.description && (
@@ -704,8 +712,8 @@ const handlePrint = async () => {
           <section id="section-link" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">링크</h2>
-              <button className="resume-add-btn" onClick={() => { setEditLink(null); setLinkModalOpen(true); }}>
-                <Plus size={14} /> 추가
+              <button className="resume-icon-btn" aria-label="링크 추가" onClick={() => { setEditLink(null); setLinkModalOpen(true); }}>
+                <Plus size={18} />
               </button>
             </div>
             {links.length > 0 ? (
@@ -713,11 +721,13 @@ const handlePrint = async () => {
                 <div key={link.id} className="resume-link-item">
                   <span className="resume-link-category">{link.category}</span>
                   <a href={link.url} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
-                  <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-                    <button onClick={() => { setEditLink(link); setLinkModalOpen(true); }}
-                      style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>수정</button>
-                    <button onClick={() => { if (confirm("이 링크를 삭제할까요?")) removeLink(link.id); }}
-                      style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>삭제</button>
+                  <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
+                    <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLink(link); setLinkModalOpen(true); }}>
+                      <Pencil size={15} />
+                    </button>
+                    <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 링크를 삭제할까요?")) removeLink(link.id); }}>
+                      <Trash2 size={15} />
+                    </button>
                   </span>
                 </div>
               ))
