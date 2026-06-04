@@ -96,6 +96,44 @@ function ResumePageContent() {
     ? `${birth.slice(0, 4)}년 (${new Date().getFullYear() - Number(birth.slice(0, 4))}세, ${gender === "남성" ? "남" : "여"})`
     : "";
 
+  // 경력 항목 기간 합산 → 총 경력 (겹치는 기간 중복 제거)
+  const calcTotalCareer = () => {
+    if (!careers || careers.length === 0) return "";
+    const periods: [number, number][] = [];
+    for (const c of careers) {
+      const s = String(c.startDate || "").match(/(\d{4})[.\-/]?(\d{1,2})?/);
+      if (!s) continue;
+      const startM = Number(s[1]) * 12 + (Number(s[2] || "1") - 1);
+      let endM: number;
+      if (!c.endDate || c.endDate === "재직 중") {
+        const now = new Date();
+        endM = now.getFullYear() * 12 + now.getMonth();
+      } else {
+        const e = String(c.endDate).match(/(\d{4})[.\-/]?(\d{1,2})?/);
+        if (!e) continue;
+        endM = Number(e[1]) * 12 + (Number(e[2] || "1") - 1);
+      }
+      if (endM >= startM) periods.push([startM, endM]);
+    }
+    if (periods.length === 0) return "";
+    periods.sort((a, b) => a[0] - b[0]);
+    let totalMonths = 0;
+    let [curS, curE] = periods[0];
+    for (let i = 1; i < periods.length; i++) {
+      const [s, e] = periods[i];
+      if (s <= curE) { curE = Math.max(curE, e); }
+      else { totalMonths += curE - curS; curS = s; curE = e; }
+    }
+    totalMonths += curE - curS;
+    const years = Math.floor(totalMonths / 12);
+    const months = totalMonths % 12;
+    if (years === 0 && months === 0) return "";
+    if (years === 0) return `총 ${months}개월`;
+    if (months === 0) return `총 ${years}년`;
+    return `총 ${years}년 ${months}개월`;
+  };
+  const totalCareer = calcTotalCareer();
+
   const handleSave = async () => {
     setIntro(introLocal);
     setCoreCompetencies(coreLocal);
@@ -391,7 +429,14 @@ const handlePrint = async () => {
 
           <section id="section-career" className="resume-section">
             <div className="resume-section-head">
-              <h2 className="resume-section-title">{resumeType === "office" ? "경력" : "경력 (근무 매장)"}</h2>
+              <h2 className="resume-section-title">
+                {resumeType === "office" ? "경력" : "경력 (근무 매장)"}
+                {totalCareer && (
+                  <span style={{ marginLeft: "8px", fontSize: "14px", fontWeight: 500, color: "#5f0080" }}>
+                    · {totalCareer}
+                  </span>
+                )}
+              </h2>
               <button className="resume-add-btn" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
                 <Plus size={14} /> 경력 추가
               </button>
