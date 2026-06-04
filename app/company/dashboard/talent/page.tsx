@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Search, BookmarkCheck, Bookmark, X, FileText } from "lucide-react";
+import { Search, BookmarkCheck, Bookmark, X, FileText, Download, Printer } from "lucide-react";
 import { companyTalentApi, type TalentItem } from "@/lib/api/company";
 import ResumePreview from "@/components/profile/ResumePreview";
 
@@ -44,7 +44,59 @@ export default function TalentPage() {
   const [selected, setSelected] = useState<TalentItem | null>(null);
   const [resumeData, setResumeData] = useState<any>(null);
   const [resumeLoading, setResumeLoading] = useState(false);
+const previewRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
+  const handleDownloadPdf = async () => {
+    if (!previewRef.current) return;
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const jsPDF = (await import("jspdf")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(previewRef.current, {
+        scale: 2, useCORS: true, backgroundColor: "#ffffff",
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let heightLeft = pdfHeight;
+      let position = 0;
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      pdf.save(selected?.name ? `${selected.name}_이력서.pdf` : "이력서.pdf");
+    } catch (e) {
+      alert("다운로드 중 오류가 발생했습니다.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handlePrint = async () => {
+    if (!previewRef.current) return;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(previewRef.current, {
+        scale: 2, useCORS: true, backgroundColor: "#ffffff",
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.write(`<html><head><title>이력서 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" onload="window.print();window.close()" /></body></html>`);
+      w.document.close();
+    } catch (e) {
+      alert("인쇄 준비 중 오류가 발생했습니다.");
+    }
+  };
   // selected 변경 시 풀 이력서 fetch
   useEffect(() => {
     if (!selected) { setResumeData(null); return; }
@@ -234,8 +286,15 @@ export default function TalentPage() {
         <div className="rp-modal-overlay" onClick={() => setSelected(null)}>
           <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
             <div className="rp-modal-header">
-              <h2 className="rp-modal-title">이력서 미리보기</h2>
               <div className="rp-modal-actions">
+                <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading}>
+                  <Download size={16} />
+                  <span>{isDownloading ? "저장 중..." : "PDF 다운로드"}</span>
+                </button>
+                <button className="resume-action-btn" onClick={handlePrint}>
+                  <Printer size={16} />
+                  <span>인쇄</span>
+                </button>
                 <button
                   className={`resume-action-btn ${selected.scrapped ? "scrapped" : ""}`}
                   onClick={() => toggleScrap(selected)}>
@@ -253,6 +312,7 @@ export default function TalentPage() {
                 <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
               ) : resumeData ? (
                 <ResumePreview
+                  ref={previewRef}
                   name={resumeData.user?.name || selected.name}
                   birthDisplay={
                     resumeData.user?.birth_date
