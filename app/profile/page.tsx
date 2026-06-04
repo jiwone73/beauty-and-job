@@ -67,6 +67,8 @@ export default function ProfilePage() {
   const [openModal, setOpenModal] = useState<ModalType>(null);
   const [editCareer, setEditCareer] = useState<any>(null);
   const [editField, setEditField] = useState<string | null>(null);
+  const [birthInput, setBirthInput] = useState("");
+  const [emailEditInput, setEmailEditInput] = useState("");
   const [emailInput, setEmailInput] = useState("");
   const [showJobModal, setShowJobModal] = useState(false);
   const [selectedJobTemp, setSelectedJobTemp] = useState("");
@@ -340,7 +342,42 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <InfoRow label="휴대전화" value={userPhone || phone || "정보 없음"} />
-                <InfoRow label="생년월일" value={birth ? `${birth.slice(0,4)}.${birth.slice(4,6) || "00"}.${birth.slice(6,8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => setEditField("birth")} />
+                {editField === "birth" ? (
+                  <div className="profile-info-row" style={{ cursor: "default" }}>
+                    <span className="profile-info-label">생년월일</span>
+                    <span style={{ marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
+                      <input
+                        type="text" placeholder="YYYYMMDD" maxLength={8}
+                        value={birthInput}
+                        onChange={(e) => setBirthInput(e.target.value.replace(/\D/g, ""))}
+                        style={{ width: "120px", padding: "6px 10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px" }}
+                      />
+                      <button
+                        style={{ padding: "6px 14px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
+                        onClick={async () => {
+                          if (!/^\d{8}$/.test(birthInput)) { alert("생년월일을 YYYYMMDD 8자리로 입력해주세요. (예: 19900115)"); return; }
+                          try {
+                            const token = localStorage.getItem("access_token");
+                            const res = await fetch("/api/users/me", {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                              body: JSON.stringify({ birth: birthInput }),
+                            });
+                            const data = await res.json();
+                            if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
+                            useSignupStore.getState().setBasic({ birth: birthInput });
+                            setEditField(null);
+                          } catch (e) { alert("네트워크 오류가 발생했습니다."); }
+                        }}>
+                        저장
+                      </button>
+                      <button onClick={() => setEditField(null)}
+                        style={{ padding: "6px 10px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>취소</button>
+                    </span>
+                  </div>
+                ) : (
+                  <InfoRow label="생년월일" value={birth ? `${birth.slice(0,4)}.${birth.slice(4,6) || "00"}.${birth.slice(6,8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => { setBirthInput(birth || ""); setEditField("birth"); }} />
+                )}
                 {editField === "gender" ? (
                   <div className="profile-info-row is-last" style={{ cursor: "default" }}>
                     <span className="profile-info-label">성별</span>
@@ -379,7 +416,43 @@ export default function ProfilePage() {
                 ) : (
                   <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setEditField("gender")} />
                 )}
-                <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => setEditField("email")} isLast />
+                {editField === "email" ? (
+                  <div className="profile-info-row is-last" style={{ cursor: "default" }}>
+                    <span className="profile-info-label">이메일</span>
+                    <span style={{ marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
+                      <input
+                        type="email" placeholder="example@email.com"
+                        value={emailEditInput}
+                        onChange={(e) => setEmailEditInput(e.target.value)}
+                        style={{ width: "200px", padding: "6px 10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px" }}
+                      />
+                      <button
+                        style={{ padding: "6px 14px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
+                        onClick={async () => {
+                          const val = emailEditInput.trim();
+                          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { alert("올바른 이메일 형식을 입력해주세요."); return; }
+                          try {
+                            const token = localStorage.getItem("access_token");
+                            const res = await fetch("/api/users/me", {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                              body: JSON.stringify({ email: val }),
+                            });
+                            const data = await res.json();
+                            if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
+                            setEmailInput(val);
+                            setEditField(null);
+                          } catch (e) { alert("네트워크 오류가 발생했습니다."); }
+                        }}>
+                        저장
+                      </button>
+                      <button onClick={() => setEditField(null)}
+                        style={{ padding: "6px 10px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>취소</button>
+                    </span>
+                  </div>
+                ) : (
+                  <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => { setEmailEditInput(emailInput || ""); setEditField("email"); }} isLast />
+                )}
               </div>
             </section>
             {dbJobType === "OFFICE" && (
@@ -612,66 +685,6 @@ export default function ProfilePage() {
         </button>
       </div>
 
-      {editField === "email" && (
-        <div className="cv-overlay" onClick={() => setEditField(null)}>
-          <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="cv-header">
-              <div style={{width:36}} />
-              <h2 className="cv-title">이메일 입력</h2>
-              <button className="cv-close" onClick={() => setEditField(null)}>✕</button>
-            </div>
-            <div className="cv-body">
-              <label className="cv-field-label">이메일 주소</label>
-              <input className="cv-input" type="email" placeholder="example@email.com" defaultValue={emailInput} id="email-input" />
-              <button className="cv-btn-primary" style={{marginTop:"16px"}} onClick={() => {
-                const val = (document.getElementById("birth-input") as HTMLInputElement)?.value;
-                if (val) useSignupStore.getState().setBasic({ birth: val });
-                setEditField(null);
-              }}>저장</button>
-            </div>
-          </div>
-        </div>
-      )}
-      {editField === "birth" && (
-        <div className="cv-overlay" onClick={() => setOpenModal(null)}>
-          <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="cv-header">
-              <div style={{width:36}} />
-              <h2 className="cv-title">생년월일 입력</h2>
-              <button className="cv-close" onClick={() => setEditField(null)}>✕</button>
-            </div>
-            <div className="cv-body">
-              <label className="cv-field-label">생년월일 (예: 19900115)</label>
-              <input className="cv-input" type="text" placeholder="YYYYMMDD" id="birth-input" defaultValue={birth} maxLength={8} />
-              <button className="cv-btn-primary" style={{marginTop:"16px"}} onClick={async () => {
-                const raw = (document.getElementById("birth-input") as HTMLInputElement)?.value || "";
-                const val = raw.replace(/\D/g, "");
-                if (!/^\d{8}$/.test(val)) {
-                  alert("생년월일을 YYYYMMDD 8자리로 입력해주세요. (예: 19900115)");
-                  return;
-                }
-                try {
-                  const token = localStorage.getItem("access_token");
-                  const res = await fetch("/api/users/me", {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ birth: val }),
-                  });
-                  const data = await res.json();
-                  if (!data.success) {
-                    alert(data.error?.message || "저장에 실패했습니다.");
-                    return;
-                  }
-                  useSignupStore.getState().setBasic({ birth: val });
-                  setEditField(null);
-                } catch (e) {
-                  alert("네트워크 오류가 발생했습니다.");
-                }
-              }}>저장</button>
-            </div>
-          </div>
-        </div>
-      )}
       <CareerVerifyModal isOpen={openModal === "career"} onClose={() => setOpenModal(null)} onComplete={handleCareerComplete} userName={name} userBirth={birth} userGender={gender} userPhone={phone} />
       <CareerEditModal
         isOpen={openModal === "careerEdit"}
