@@ -227,7 +227,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       )}
       {experiences.length > 0 && (
         <div className="rp-section">
-          <h2 className="rp-section-title">프로젝트 · 활동</h2>
+          <h2 className="rp-section-title">활동/수상</h2>
           {experiences.map((x) => (
             <div key={x.id} className="rp-item">
               <p className="rp-text" style={{ fontWeight: 600 }}>

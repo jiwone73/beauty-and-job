@@ -309,11 +309,6 @@ const handlePrint = async () => {
           <Link href="/" className="resume-logo">
             <Image src="/images/logo.png" alt="뷰티앤잡" width={110} height={28} priority />
           </Link>
-          <nav className="resume-gnb">
-            <Link href="/jobs" className="resume-gnb-item">채용공고</Link>
-            <Link href="/profile/resume" className="resume-gnb-item">이력서 등록</Link>
-            <Link href="/insights" className="resume-gnb-item">뷰티 인사이트</Link>
-          </nav>
           <div className="resume-header-actions">
             <button className="resume-back-btn" onClick={() => router.push("/profile")}>
               <ChevronLeft size={16} />
@@ -336,9 +331,6 @@ const handlePrint = async () => {
 
       <div className="resume-subheader">
         <h1 className="resume-subheader-title">이력서 편집</h1>
-        <span className="text-sm text-gray-500">
-          {resumeType === "office" ? "🏢 기업·브랜드" : "🏪 매장·기술직"}
-        </span>
       </div>
 
       <div className="resume-layout">
@@ -351,7 +343,7 @@ const handlePrint = async () => {
             { id: "education", label: "학력" },
             { id: "skill", label: "스킬" },
             { id: "language", label: "어학" },
-            { id: "experience", label: "프로젝트 · 활동" },
+            { id: "experience", label: "활동/수상" },
             { id: "portfolio", label: "포트폴리오" },
             { id: "link", label: "링크" },
           ] : [
@@ -360,7 +352,7 @@ const handlePrint = async () => {
             { id: "career", label: "경력 (근무 매장)" },
             { id: "education", label: "학력" },
             { id: "language", label: "어학" },
-            { id: "experience", label: "프로젝트 · 활동" },
+            { id: "experience", label: "활동/수상" },
             { id: "portfolio", label: "포트폴리오" },
             { id: "link", label: "링크" },
           ]).map((sec) => (
@@ -379,6 +371,25 @@ const handlePrint = async () => {
         </aside>
 
         <main className="resume-editor">
+          <div style={{
+            margin: "0 0 16px",
+            padding: "16px 18px",
+            background: "#fff",
+            border: "1px solid #f0e8f8",
+            borderRadius: "12px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}>
+            <span style={{ fontSize: "22px" }}>{resumeType === "salon" ? "🏪" : "🏢"}</span>
+            <div>
+              <p style={{ fontSize: "12px", color: "#888", marginBottom: "2px" }}>작성 중인 이력서 유형</p>
+              <p style={{ fontSize: "15px", fontWeight: 600, color: "#1a1a1a" }}>
+                {resumeType === "salon" ? "매장·기술직 이력서" : "기업·브랜드 이력서"}
+              </p>
+            </div>
+          </div>
+
           <section id="section-basic" className="resume-section">
             <h2 className="resume-section-title">기본 정보</h2>
             <div className="resume-basic-info">
@@ -556,7 +567,7 @@ const handlePrint = async () => {
           </section>
           <section id="section-experience" className="resume-section">
             <div className="resume-section-head">
-              <h2 className="resume-section-title">프로젝트 · 활동</h2>
+              <h2 className="resume-section-title">활동/수상</h2>
               <button className="resume-add-btn" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
                 <Plus size={14} /> 추가
               </button>

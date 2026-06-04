@@ -47,13 +47,12 @@ export default function ExperienceModal({ isOpen, onClose, editTarget }: Props) 
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
           <button className="cv-back" onClick={onClose}><ChevronLeft size={20} /></button>
-          <h2 className="cv-title">{isEdit ? "관련 경험 수정" : "관련 경험 및 기타"}</h2>
+          <h2 className="cv-title">{isEdit ? "활동/수상 수정" : "활동/수상 추가"}</h2>
           <div style={{ width: 36 }} />
         </div>
         <div className="cv-body">
           <label className="cv-field-label cv-required">제목</label>
-          <input className="cv-input" placeholder="경험 제목을 입력해 주세요." value={title} onChange={(e) => setTitle(e.target.value)} />
-
+          <input className="cv-input" placeholder="예) 헤어쇼 대상, OO 공모전 입선, 대외활동" value={title} onChange={(e) => setTitle(e.target.value)} />
           <label className="cv-field-label">설명</label>
           <textarea className="cv-textarea" placeholder="경험에 대해 설명해 주세요." maxLength={1000} value={desc} onChange={(e) => setDesc(e.target.value)} />
 

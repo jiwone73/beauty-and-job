@@ -531,7 +531,7 @@
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 12px 24px;
+  padding: 12px 32px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -1599,7 +1599,7 @@ input[type="range"].career-slider::-moz-range-thumb {
    이력서 에디터 페이지
    =========================================== */
 .resume-page { min-height: 100vh; background: transparent; }
-.resume-header { background: white; border-bottom: 1px solid var(--color-border); padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 50; }
+.resume-header { background: white; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 50; }
 .resume-back-btn { display: flex; align-items: center; gap: 4px; background: transparent; border: none; cursor: pointer; font-size: 14px; color: var(--color-text-sub); transition: color 0.15s; font-family: inherit; }
 .resume-back-btn:hover { color: var(--color-primary); }
 .resume-header-title { font-size: 16px; font-weight: 700; color: var(--color-text); flex: 1; text-align: center; }
@@ -1611,13 +1611,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 .resume-layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 64px); max-width: 1080px; margin: 0 auto; }
 
-.resume-sidebar { background: white; border-right: 1px solid var(--color-border); padding: 24px 16px; }
+.resume-sidebar { background: white; border-right: 1px solid var(--color-border); padding: 24px 16px 24px 24px; }
 .resume-sidebar-title { font-size: 12px; font-weight: 700; color: var(--color-text-mute); letter-spacing: 0.5px; margin-bottom: 8px; padding: 0 8px; }
 .resume-sidebar-item { width: 100%; background: transparent; border: none; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: var(--color-text-sub); cursor: pointer; text-align: left; transition: all 0.15s; font-family: inherit; margin-bottom: 2px; }
 .resume-sidebar-item:hover { background: transparent; color: var(--color-text); }
 .resume-sidebar-item.active { background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600; }
 
-.resume-editor { padding: 32px; max-width: 800px; }
+.resume-editor { padding: 32px; }
 
 .resume-section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -1710,7 +1710,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 검색 모달 */
 .jobs-search-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 200; display: flex; flex-direction: column; }
 .jobs-search-modal { background: white; width: 100%; max-width: 600px; margin: 0 auto; border-radius: 0 0 16px 16px; overflow: hidden; }
-.jobs-search-bar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--color-border); }
+.jobs-search-bar { display: flex; align-items: center; gap: 10px; padding: 12px 24px; border-bottom: 1px solid var(--color-border); }
 .jobs-search-back { background: transparent; border: none; cursor: pointer; color: #333; display: flex; padding: 4px; }
 .jobs-search-bar-icon { color: var(--color-text-mute); flex-shrink: 0; }
 .jobs-search-input { flex: 1; border: none; outline: none; font-size: 16px; font-family: inherit; color: var(--color-text); }
@@ -2924,7 +2924,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  max-width: 1400px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 0 24px;
   gap: 32px;
@@ -2939,7 +2939,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   align-items: center;
   gap: 28px;
-  flex: 1;
+  margin-left: 40px;
 }
 .resume-gnb-item {
   font-size: 15px;
@@ -3013,13 +3013,27 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-subheader {
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1080px;
+  margin: 0 auto;
   padding: 16px 24px;
+}
+.resume-subheader-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.resume-subheader-badge {
+  font-size: 14px;
+  color: #888;
 }
 .resume-subheader-title {
   font-size: 18px;
   font-weight: 700;
   color: #1a1a1a;
-  text-align: center;
 }
 
 /* 모바일 대응 */
@@ -3553,7 +3567,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .auth-dropdown-item {
   display: block;
   width: 100%;
-  padding: 12px 16px;
+  padding: 12px 24px;
   font-size: 14px;
   color: #1a1a1a;
   background: none;
@@ -6428,8 +6442,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 12px 28px;
+  gap: 16px;
+  padding: 12px 24px;
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
 }
