@@ -1,18 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft } from "lucide-react";
-import { useProfileStore, genId } from "@/lib/store/profileStore";
+import { useProfileStore, genId, type EducationEntry } from "@/lib/store/profileStore";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  editTarget?: EducationEntry | null;
 }
 
 const STATUS_OPTIONS = ["졸업", "재학", "휴학", "중퇴", "수료"];
 
-export default function EducationModal({ isOpen, onClose }: Props) {
-  const { addEducation } = useProfileStore();
+// "2020.04" → ["2020", "04"]
+function splitYM(d: string): [string, string] {
+  if (!d) return ["", ""];
+  const m = d.match(/(\d{4})[.\-/](\d{1,2})/);
+  if (!m) return ["", ""];
+  return [m[1], m[2].padStart(2, "0")];
+}
+
+export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
+  const { addEducation, updateEducation } = useProfileStore();
   const [school, setSchool] = useState("");
   const [status, setStatus] = useState("");
   const [startY, setStartY] = useState("");
@@ -23,21 +32,42 @@ export default function EducationModal({ isOpen, onClose }: Props) {
   const [desc, setDesc] = useState("");
   const [showStatus, setShowStatus] = useState(false);
 
+  const isEdit = !!editTarget;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (editTarget) {
+      setSchool(editTarget.school || "");
+      setStatus(editTarget.status || "");
+      const [sy, sm] = splitYM(editTarget.startDate);
+      const [ey, em] = splitYM(editTarget.endDate);
+      setStartY(sy); setStartM(sm); setEndY(ey); setEndM(em);
+      setMajor(editTarget.major || "");
+      setDesc(editTarget.description || "");
+    } else {
+      setSchool(""); setStatus(""); setStartY(""); setStartM("");
+      setEndY(""); setEndM(""); setMajor(""); setDesc("");
+    }
+    setShowStatus(false);
+  }, [isOpen, editTarget]);
+
   if (!isOpen) return null;
 
   const isValid = school.trim() && startY && startM && major.trim();
 
   const handleSubmit = () => {
     if (!isValid) return;
-    addEducation({
-      id: genId(),
+    const entry: EducationEntry = {
+      id: editTarget?.id || genId(),
       school: school.trim(),
       status,
       startDate: `${startY}.${startM}`,
       endDate: endY && endM ? `${endY}.${endM}` : "",
       major: major.trim(),
       description: desc.trim(),
-    });
+    };
+    if (isEdit) updateEducation(entry.id, entry);
+    else addEducation(entry);
     onClose();
   };
 
@@ -46,7 +76,7 @@ export default function EducationModal({ isOpen, onClose }: Props) {
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
           <button className="cv-back" onClick={onClose}><ChevronLeft size={20} /></button>
-          <h2 className="cv-title">학력</h2>
+          <h2 className="cv-title">{isEdit ? "학력 수정" : "학력"}</h2>
           <div style={{ width: 36 }} />
         </div>
         <div className="cv-body">

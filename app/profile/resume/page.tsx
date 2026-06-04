@@ -10,6 +10,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import ResumePreview from "@/components/profile/ResumePreview";
 import CareerEditModal from "@/components/profile/CareerEditModal";
 import LinkModal from "@/components/profile/LinkModal";
+import EducationModal from "@/components/profile/EducationModal";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -48,6 +49,8 @@ function ResumePageContent() {
   const [editCareer, setEditCareer] = useState<any>(null);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [editLink, setEditLink] = useState<any>(null);
+  const [eduModalOpen, setEduModalOpen] = useState(false);
+  const [editEdu, setEditEdu] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -414,20 +417,28 @@ const handlePrint = async () => {
           <section id="section-education" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">학력</h2>
-              <button className="resume-add-btn" onClick={() => router.push("/profile")}>
+              <button className="resume-add-btn" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
                 <Plus size={14} /> 학교 추가
               </button>
             </div>
             {educations.length === 0 ? (
               <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
-                  <Plus size={16} /> 프로필에서 학력 추가하기
+                <button className="resume-empty-btn" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
+                  <Plus size={16} /> 학력 추가하기
                 </button>
               </div>
             ) : (
               educations.map((edu) => (
                 <div key={edu.id} className="resume-edu-item">
-                  <strong>{edu.school}</strong>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <strong>{edu.school}</strong>
+                    <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                      <button onClick={() => { setEditEdu(edu); setEduModalOpen(true); }}
+                        style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>수정</button>
+                      <button onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(edu.id); }}
+                        style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>삭제</button>
+                    </span>
+                  </div>
                   <span className="resume-edu-info">{edu.major} · {edu.status}</span>
                   <span className="resume-edu-period">{edu.startDate} - {edu.endDate}</span>
                 </div>
@@ -713,6 +724,11 @@ const handlePrint = async () => {
         isOpen={linkModalOpen}
         onClose={() => { setLinkModalOpen(false); setEditLink(null); }}
         editTarget={editLink}
+      />
+      <EducationModal
+        isOpen={eduModalOpen}
+        onClose={() => { setEduModalOpen(false); setEditEdu(null); }}
+        editTarget={editEdu}
       />
     </div>
   );
