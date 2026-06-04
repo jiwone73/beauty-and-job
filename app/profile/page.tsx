@@ -341,7 +341,44 @@ export default function ProfilePage() {
                 </div>
                 <InfoRow label="휴대전화" value={userPhone || phone || "정보 없음"} />
                 <InfoRow label="생년월일" value={birth ? `${birth.slice(0,4)}.${birth.slice(4,6) || "00"}.${birth.slice(6,8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => setEditField("birth")} />
-                <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setEditField("gender")} />
+                {editField === "gender" ? (
+                  <div className="profile-info-row is-last" style={{ cursor: "default" }}>
+                    <span className="profile-info-label">성별</span>
+                    <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                      {["남성", "여성"].map((g) => (
+                        <button key={g}
+                          style={{
+                            padding: "6px 16px", borderRadius: "20px", fontSize: "14px", cursor: "pointer",
+                            border: gender === g ? "1.5px solid #5f0080" : "1px solid #ddd",
+                            background: gender === g ? "#5f0080" : "#fff",
+                            color: gender === g ? "#fff" : "#666",
+                          }}
+                          onClick={async () => {
+                            try {
+                              const token = localStorage.getItem("access_token");
+                              const res = await fetch("/api/users/me", {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                body: JSON.stringify({ gender: g }),
+                              });
+                              const data = await res.json();
+                              if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
+                              useSignupStore.getState().setBasic({ gender: g as "남성" | "여성" });
+                              setEditField(null);
+                            } catch (e) { alert("네트워크 오류가 발생했습니다."); }
+                          }}>
+                          {g}
+                        </button>
+                      ))}
+                      <button onClick={() => setEditField(null)}
+                        style={{ padding: "6px 12px", borderRadius: "20px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>
+                        취소
+                      </button>
+                    </span>
+                  </div>
+                ) : (
+                  <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setEditField("gender")} />
+                )}
                 <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => setEditField("email")} isLast />
               </div>
             </section>
@@ -631,38 +668,6 @@ export default function ProfilePage() {
                   alert("네트워크 오류가 발생했습니다.");
                 }
               }}>저장</button>
-            </div>
-          </div>
-        </div>
-      )}
-      {editField === "gender" && (
-        <div className="cv-overlay" onClick={() => setOpenModal(null)}>
-          <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="cv-header">
-              <div style={{width:36}} />
-              <h2 className="cv-title">성별 선택</h2>
-              <button className="cv-close" onClick={() => setEditField(null)}>✕</button>
-            </div>
-            <div className="cv-body" style={{display:"flex", gap:"12px"}}>
-              {["남성","여성"].map((g) => (
-                <button key={g} className={`company-wizard-card ${gender === g ? "active" : ""}`} style={{flex:1, padding:"20px", fontSize:"16px"}}
-                  onClick={async () => {
-                    try {
-                      const token = localStorage.getItem("access_token");
-                      const res = await fetch("/api/users/me", {
-                        method: "PATCH",
-                        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                        body: JSON.stringify({ gender: g }),
-                      });
-                      const data = await res.json();
-                      if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
-                      useSignupStore.getState().setBasic({ gender: g as "남성"|"여성" });
-                      setEditField(null);
-                    } catch (e) { alert("네트워크 오류가 발생했습니다."); }
-                  }}>
-                  {g === "남성" ? "👨 남성" : "👩 여성"}
-                </button>
-              ))}
             </div>
           </div>
         </div>
