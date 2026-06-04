@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Search, BookmarkCheck, Bookmark, X, FileText } from "lucide-react";
 import { companyTalentApi, type TalentItem } from "@/lib/api/company";
+import ResumePreview from "@/components/profile/ResumePreview";
 
 const JOB_FILTERS = ["전체", "마케팅", "MD", "영업", "디자인", "연구개발", "SCM", "경영지원", "HR"];
 const CAREER_FILTERS = ["전체", "신입", "1-3년", "3-5년", "5년+"];
@@ -41,6 +42,61 @@ export default function TalentPage() {
   const [careerFilter, setCareerFilter] = useState("전체");
   const [ageFilter, setAgeFilter] = useState("전체");
   const [selected, setSelected] = useState<TalentItem | null>(null);
+  const [resumeData, setResumeData] = useState<any>(null);
+  const [resumeLoading, setResumeLoading] = useState(false);
+
+  // selected 변경 시 풀 이력서 fetch
+  useEffect(() => {
+    if (!selected) { setResumeData(null); return; }
+    const token = localStorage.getItem("company_token") || localStorage.getItem("access_token");
+    setResumeLoading(true);
+    fetch(`/api/company/talent/${(selected as any).id}/resume`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setResumeData(res.data); })
+      .catch((e) => console.error("[talent resume]", e))
+      .finally(() => setResumeLoading(false));
+  }, [selected]);
+
+  const calcAgeFromBirth = (birth: string | null) => {
+    if (!birth) return null;
+    const y = Number(String(birth).slice(0, 4));
+    return y ? new Date().getFullYear() - y : null;
+  };
+
+  const mapResume = (data: any) => {
+    const p = data?.profile || {};
+    return {
+      careers: (data?.careers || []).map((c: any) => ({
+        id: String(c.id), company: c.company || "", department: c.department || "",
+        position: c.position || "", startDate: c.start_date || "", endDate: c.end_date || "",
+        isVerified: c.is_verified || false, description: c.description || "",
+      })),
+      educations: (data?.educations || []).map((e: any) => ({
+        id: String(e.id), school: e.school || "", major: e.major || "",
+        status: e.status || "", startDate: e.start_date || "", endDate: e.end_date || "",
+        description: e.description || "",
+      })),
+      experiences: (data?.experiences || []).map((x: any) => ({
+        id: String(x.id), category: x.category || "", title: x.title || "", description: x.description || "",
+      })),
+      languages: (data?.languages || []).map((l: any) => ({
+        id: String(l.id), language: l.language || "", level: l.level || "", test: l.test || "",
+      })),
+      links: (data?.links || []).map((lk: any) => ({
+        id: String(lk.id), category: lk.category || "", url: lk.url || "",
+      })),
+      skills: p.skills || [],
+      skillAreas: p.skill_areas || [],
+      officeJobAreas: p.office_job_areas || [],
+      certificates: p.certificates || [],
+      intro: p.intro || "",
+      coreCompetencies: p.core_competencies || "",
+      workTypePrefer: p.work_type_prefer || "",
+      regionPrefer: p.region_prefer || "",
+    };
+  };
 
   // 목록 조회
   const fetchTalents = useCallback(async () => {
@@ -173,63 +229,48 @@ export default function TalentPage() {
         </div>
       )}
 
-      {/* 이력서 상세 모달 */}
+      {/* 이력서 상세 모달 */} 
       {selected && (
-        <div className="admin-modal-overlay" onClick={() => setSelected(null)}>
-          <div className="admin-modal" style={{ maxWidth: "520px" }} onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <div>
-                <h2 className="admin-modal-title">{selected.name}</h2>
-                <p style={{ fontSize: "13px", color: "#888", margin: "4px 0 0" }}>
-                  {metaLine(selected.gender, selected.age, selected.careerYears, selected.careerCount)}
-                </p>
-              </div>
-              <button className="admin-modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
-            </div>
-            <div className="admin-modal-body">
-              {selected.intro && (
-                <p style={{ fontSize: "14px", color: "#444", lineHeight: 1.6, marginBottom: "16px" }}>
-                  {selected.intro}
-                </p>
-              )}
-              <div className="admin-detail-grid">
-                {([
-                  ["성별", selected.gender],
-                  ["나이", selected.age ? `${selected.age}세` : null],
-                  ["직군", selected.mainJobGroup],
-                  ["세부직무", selected.subJob],
-                  ["경력", careerLabel(selected.careerYears, selected.careerCount)],
-                  ["희망지역", selected.regionPrefer],
-                  ["희망고용형태", selected.workTypePrefer],
-                  ["학력", selected.education],
-                ] as [string, string | null][])
-                  .filter(([, v]) => v)
-                  .map(([label, value]) => (
-                    <div key={label} className="admin-detail-row">
-                      <span className="admin-detail-label">{label}</span>
-                      <span className="admin-detail-value">{value}</span>
-                    </div>
-                  ))}
-                {selected.skills?.length > 0 && (
-                  <div className="admin-detail-row">
-                    <span className="admin-detail-label">스킬</span>
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                      {selected.skills.map((sk) => (
-                        <span key={sk} className="talent-tag">{sk}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="admin-modal-actions">
+        <div className="rp-modal-overlay" onClick={() => setSelected(null)}>
+          <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="rp-modal-header">
+              <h2 className="rp-modal-title">이력서 미리보기</h2>
+              <div className="rp-modal-actions">
                 <button
-                  className={`company-action-btn ${selected.scrapped ? "scrapped" : "secondary"}`}
+                  className={`resume-action-btn ${selected.scrapped ? "scrapped" : ""}`}
                   onClick={() => toggleScrap(selected)}>
                   {selected.scrapped
-                    ? (<><BookmarkCheck size={15} /> 스크랩 해제</>)
-                    : (<><Bookmark size={15} /> 스크랩</>)}
+                    ? (<><BookmarkCheck size={16} /> <span>스크랩 해제</span></>)
+                    : (<><Bookmark size={16} /> <span>스크랩</span></>)}
+                </button>
+                <button className="rp-modal-close" onClick={() => setSelected(null)}>
+                  <X size={20} />
                 </button>
               </div>
+            </div>
+            <div className="rp-modal-body">
+              {resumeLoading ? (
+                <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
+              ) : resumeData ? (
+                <ResumePreview
+                  name={resumeData.user?.name || selected.name}
+                  birthDisplay={
+                    resumeData.user?.birth_date
+                      ? `${String(resumeData.user.birth_date).slice(0, 4)}년 (${calcAgeFromBirth(resumeData.user.birth_date)}세, ${resumeData.user.gender === "FEMALE" ? "여" : resumeData.user.gender === "MALE" ? "남" : ""})`
+                      : ""
+                  }
+                  jobDisplay={resumeData.user?.job_type === "STORE" ? "매장·기술직" : "기업·사무직"}
+                  phone={resumeData.user?.phone || ""}
+                  email={resumeData.user?.email || ""}
+                  portfolioUrl={resumeData.user?.portfolio_url || null}
+                  portfolioFilename={resumeData.user?.portfolio_filename || null}
+                  avatarUrl={resumeData.user?.avatar_url || null}
+                  resumeType={resumeData.user?.job_type === "STORE" ? "salon" : "office"}
+                  {...mapResume(resumeData)}
+                />
+              ) : (
+                <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
+              )}
             </div>
           </div>
         </div>
