@@ -7,6 +7,7 @@ import type {
   ExperienceEntry,
   LanguageEntry,
   LinkEntry,
+  CertificateEntry,
 } from "@/lib/store/profileStore";
 
 interface Props {
@@ -28,7 +29,7 @@ interface Props {
   resumeType: "office" | "salon";
   officeJobAreas: string[];
   skillAreas: string[];
-  certificates: string[];
+  certificates: CertificateEntry[];
   workTypePrefer: string;
   regionPrefer: string;
   avatarUrl?: string | null;
@@ -127,12 +128,20 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           </div>
         </div>
       )}
-      {resumeType === "salon" && certificates.length > 0 && (
+      {certificates.length > 0 && (
         <div className="rp-section">
-          <h2 className="rp-section-title">보유 자격증</h2>
-          <div className="rp-chips">
+          <h2 className="rp-section-title">자격증</h2>
+          <div className="rp-list">
             {certificates.map((cert) => (
-              <span key={cert} className="rp-chip">{cert}</span>
+              <div key={cert.id} className="rp-list-item">
+                <p style={{ fontWeight: 600 }}>
+                  {cert.name}
+                  {cert.issued_ym && (
+                    <span style={{ marginLeft: "10px", fontWeight: 400, color: "#666", fontSize: "13px" }}>{cert.issued_ym}</span>
+                  )}
+                </p>
+                {cert.issuer && <p style={{ color: "#888", fontSize: "13px" }}>{cert.issuer}</p>}
+              </div>
             ))}
           </div>
         </div>
