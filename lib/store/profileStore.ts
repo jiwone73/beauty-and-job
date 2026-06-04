@@ -82,6 +82,7 @@ export interface ProfileState {
   updateLink: (id: string, entry: LinkEntry) => void;
   removeLink: (id: string) => void;
   addCertificate: (entry: CertificateEntry) => void;
+  updateCertificate: (id: string, entry: CertificateEntry) => void;
   removeCertificate: (id: string) => void;
   setIntro: (intro: string) => void;
   setCoreCompetencies: (comp: string) => void;
@@ -215,6 +216,10 @@ export const useProfileStore = create<ProfileState>()(
         },
         addCertificate: (entry) => {
           set((s) => ({ certificates: [...s.certificates, entry] }));
+          autoSync();
+        },
+        updateCertificate: (id, entry) => {
+          set((s) => ({ certificates: s.certificates.map((c) => (c.id === id ? entry : c)) }));
           autoSync();
         },
         removeCertificate: (id) => {

@@ -14,12 +14,13 @@ import EducationModal from "@/components/profile/EducationModal";
 import LanguageModal from "@/components/profile/LanguageModal";
 import ExperienceModal from "@/components/profile/ExperienceModal";
 import SkillModal from "@/components/profile/SkillModal";
+import CertificateModal from "@/components/profile/CertificateModal";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
 
 function ResumePageContent() {
   const router = useRouter();
-  const { name: signupName, birth, gender, job, jobCustom, phone, officeJobAreas, skillAreas, certificates, workTypePrefer, regionPrefer } = useSignupStore();
+  const { name: signupName, birth, gender, job, jobCustom, phone, officeJobAreas, skillAreas, workTypePrefer, regionPrefer } = useSignupStore();
   const { userName } = useAuthStore();
   const name = signupName || userName || "";
   const {
@@ -31,7 +32,7 @@ function ResumePageContent() {
     addLanguage, updateLanguage, removeLanguage,
     addExperience, updateExperience, removeExperience,
     addEducation, updateEducation, removeEducation,
-    addCareer, updateCareer, removeCareer,
+    addCareer, updateCareer, removeCareer, certificates, removeCertificate, updateCertificate,
   } = useProfileStore();
 
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -59,6 +60,8 @@ function ResumePageContent() {
   const [expModalOpen, setExpModalOpen] = useState(false);
   const [editExp, setEditExp] = useState<any>(null);
   const [skillModalOpen, setSkillModalOpen] = useState(false);
+  const [certModalOpen, setCertModalOpen] = useState(false);
+  const [editCert, setEditCert] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -343,6 +346,7 @@ const handlePrint = async () => {
             { id: "education", label: "학력" },
             { id: "skill", label: "스킬" },
             { id: "language", label: "어학" },
+            { id: "certificate", label: "자격증" },
             { id: "experience", label: "활동/수상" },
             { id: "portfolio", label: "포트폴리오" },
             { id: "link", label: "링크" },
@@ -352,6 +356,7 @@ const handlePrint = async () => {
             { id: "career", label: "경력 (근무 매장)" },
             { id: "education", label: "학력" },
             { id: "language", label: "어학" },
+            { id: "certificate", label: "자격증" },
             { id: "experience", label: "활동/수상" },
             { id: "portfolio", label: "포트폴리오" },
             { id: "link", label: "링크" },
@@ -405,6 +410,7 @@ const handlePrint = async () => {
                   placeholder="이메일을 입력해 주세요."
                   value={emailLocal}
                   onChange={(e) => setEmailLocal(e.target.value)}
+                  onBlur={() => setEmail(emailLocal)}
                 />
               </div>
             </div>
@@ -423,6 +429,7 @@ const handlePrint = async () => {
               maxLength={300}
               value={introLocal}
               onChange={(e) => setIntroLocal(e.target.value)}
+              onBlur={() => setIntro(introLocal)}
             />
             {resumeType === "office" && (
               <>
@@ -433,6 +440,7 @@ const handlePrint = async () => {
                   maxLength={300}
                   value={coreLocal}
                   onChange={(e) => setCoreLocal(e.target.value)}
+                  onBlur={() => setCoreCompetencies(coreLocal)}
                 />
               </>
             )}
@@ -571,6 +579,46 @@ const handlePrint = async () => {
               </div>
             )}
           </section>
+          <section id="section-certificate" className="resume-section">
+            <div className="resume-section-head">
+              <h2 className="resume-section-title">자격증</h2>
+              <button className="resume-icon-btn" aria-label="자격증 추가" onClick={() => { setEditCert(null); setCertModalOpen(true); }}>
+                <Plus size={18} />
+              </button>
+            </div>
+            {certificates.length > 0 ? (
+              <div className="resume-list">
+                {certificates.map((cert) => (
+                  <div key={cert.id} className="resume-list-item">
+                    <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
+                      {cert.name}
+                      {cert.issued_ym && (
+                        <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666", fontSize: "13px" }}>{cert.issued_ym}</span>
+                      )}
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
+                        <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCert(cert); setCertModalOpen(true); }}>
+                          <Pencil size={15} />
+                        </button>
+                        <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 자격증을 삭제할까요?")) removeCertificate(cert.id); }}>
+                          <Trash2 size={15} />
+                        </button>
+                      </span>
+                    </p>
+                    {cert.issuer && (
+                      <p style={{ color: "#888", fontSize: "13px" }}>{cert.issuer}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="resume-empty-section">
+                <button className="resume-empty-btn" onClick={() => { setEditCert(null); setCertModalOpen(true); }}>
+                  <Plus size={16} /> 자격증 추가하기
+                </button>
+              </div>
+            )}
+          </section>
+
           <section id="section-experience" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">활동/수상</h2>
@@ -829,6 +877,11 @@ const handlePrint = async () => {
       <SkillModal
         isOpen={skillModalOpen}
         onClose={() => setSkillModalOpen(false)}
+      />
+      <CertificateModal
+        isOpen={certModalOpen}
+        onClose={() => { setCertModalOpen(false); setEditCert(null); }}
+        editTarget={editCert}
       />
     </div>
   );
