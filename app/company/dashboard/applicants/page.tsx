@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import ApplicantResume from "@/components/company/ApplicantResume";
+import ResumePreview from "@/components/profile/ResumePreview";
 import { companyApplicationsApi } from "@/lib/api/company";
 import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company";
 
@@ -41,7 +41,39 @@ function ApplicantsContent() {
   const [selected, setSelected] = useState<CompanyApplication | null>(null);
   const [resumeData, setResumeData] = useState<any>(null);
   const [resumeLoading, setResumeLoading] = useState(false);
-
+// API 응답(snake_case) → ResumePreview props(camelCase) 변환
+  const mapResume = (data: any) => {
+    const p = data?.profile || {};
+    return {
+      careers: (data?.careers || []).map((c: any) => ({
+        id: String(c.id), company: c.company || "", department: c.department || "",
+        position: c.position || "", startDate: c.start_date || "", endDate: c.end_date || "",
+        isVerified: c.is_verified || false, description: c.description || "",
+      })),
+      educations: (data?.educations || []).map((e: any) => ({
+        id: String(e.id), school: e.school || "", major: e.major || "",
+        status: e.status || "", startDate: e.start_date || "", endDate: e.end_date || "",
+        description: e.description || "",
+      })),
+      experiences: (data?.experiences || []).map((x: any) => ({
+        id: String(x.id), category: x.category || "", title: x.title || "", description: x.description || "",
+      })),
+      languages: (data?.languages || []).map((l: any) => ({
+        id: String(l.id), language: l.language || "", level: l.level || "", test: l.test || "",
+      })),
+      links: (data?.links || []).map((lk: any) => ({
+        id: String(lk.id), category: lk.category || "", url: lk.url || "",
+      })),
+      skills: p.skills || [],
+      skillAreas: p.skill_areas || [],
+      officeJobAreas: p.office_job_areas || [],
+      certificates: p.certificates || [],
+      intro: p.intro || "",
+      coreCompetencies: p.core_competencies || "",
+      workTypePrefer: p.work_type_prefer || "",
+      regionPrefer: p.region_prefer || "",
+    };
+  };
   // selected 변경 시 이력서 데이터 fetch
   useEffect(() => {
     if (!selected) {
@@ -297,13 +329,24 @@ function ApplicantsContent() {
               <div style={{marginTop:"24px", paddingTop:"24px", borderTop:"1px solid #ececec"}}>
                 <h3 style={{fontSize:"15px", fontWeight:700, marginBottom:"4px"}}>이력서</h3>
                 <p style={{fontSize:"12px", color:"#888", marginBottom:"8px"}}>지원자가 작성한 이력서 정보입니다</p>
-                <ApplicantResume
-                  resume={resumeData}
-                  resumeType={selected.user_job_type === "STORE" ? "salon" : "office"}
-                  loading={resumeLoading}
-                  avatarUrl={(selected as any).user_avatar_url}
-                  applicantName={selected.user_name}
-                />
+                {resumeLoading ? (
+                  <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
+                ) : resumeData ? (
+                  <ResumePreview
+                    name={selected.user_name}
+                    birthDisplay=""
+                    jobDisplay={selected.user_job_type === "STORE" ? "매장·기술직" : "기업·사무직"}
+                    phone={selected.user_phone || ""}
+                    email={selected.user_email || ""}
+                    portfolioUrl={(selected as any).portfolio_url || null}
+                    portfolioFilename={(selected as any).portfolio_filename || null}
+                    avatarUrl={(selected as any).user_avatar_url || null}
+                    resumeType={selected.user_job_type === "STORE" ? "salon" : "office"}
+                    {...mapResume(resumeData)}
+                  />
+                ) : (
+                  <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
+                )}
               </div>
             </div>
           </div>

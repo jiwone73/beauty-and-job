@@ -32,7 +32,31 @@ export async function GET(
       [params.id]
     ).catch((e) => console.error("[viewed_at update]", e));
   }
-  return ok(result.rows[0]);
+
+  // 이력서 풀데이터 조회 (구직자/관리자와 동일한 ResumePreview용)
+  const appUserId = result.rows[0].user_id;
+  const [profile, careers, educations, experiences, languages, links, certificates] = await Promise.all([
+    pool.query(`SELECT * FROM user_profiles WHERE user_id = $1`, [appUserId]),
+    pool.query(`SELECT * FROM user_careers WHERE user_id = $1 ORDER BY start_date DESC`, [appUserId]),
+    pool.query(`SELECT * FROM user_educations WHERE user_id = $1 ORDER BY start_date DESC`, [appUserId]),
+    pool.query(`SELECT * FROM user_experiences WHERE user_id = $1 ORDER BY created_at DESC`, [appUserId]),
+    pool.query(`SELECT * FROM user_languages WHERE user_id = $1 ORDER BY created_at`, [appUserId]),
+    pool.query(`SELECT * FROM user_links WHERE user_id = $1 ORDER BY created_at`, [appUserId]),
+    pool.query(`SELECT * FROM user_certificates WHERE user_id = $1 ORDER BY issued_ym DESC`, [appUserId]),
+  ]);
+
+  return ok({
+    ...result.rows[0],
+    resume: {
+      profile: profile.rows[0] || {},
+      careers: careers.rows,
+      educations: educations.rows,
+      experiences: experiences.rows,
+      languages: languages.rows,
+      links: links.rows,
+      certificates: certificates.rows,
+    },
+  });
 }
 
 // 지원자 상태/메모 수정
