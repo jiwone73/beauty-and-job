@@ -1,12 +1,12 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft } from "lucide-react";
-import { useProfileStore, genId } from "@/lib/store/profileStore";
+import { useProfileStore, genId, type LanguageEntry } from "@/lib/store/profileStore";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  editTarget?: LanguageEntry | null;
 }
 
 const LANGUAGES = ["영어", "일본어", "중국어", "한국어", "스페인어", "프랑스어", "독일어", "기타"];
@@ -17,12 +17,27 @@ const LEVELS = [
   { value: "기본 레벨", desc: "메일/DM/오프라인 행사에서의 기본 소통이 가능해요." },
 ];
 
-export default function LanguageModal({ isOpen, onClose }: Props) {
-  const { addLanguage } = useProfileStore();
+export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
+  const { addLanguage, updateLanguage } = useProfileStore();
   const [lang, setLang] = useState("");
   const [level, setLevel] = useState("");
   const [showLang, setShowLang] = useState(false);
   const [showLevel, setShowLevel] = useState(false);
+
+  const isEdit = !!editTarget;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (editTarget) {
+      setLang(editTarget.language || "");
+      setLevel(editTarget.level || "");
+    } else {
+      setLang("");
+      setLevel("");
+    }
+    setShowLang(false);
+    setShowLevel(false);
+  }, [isOpen, editTarget]);
 
   if (!isOpen) return null;
 
@@ -30,9 +45,11 @@ export default function LanguageModal({ isOpen, onClose }: Props) {
 
   const handleSubmit = () => {
     if (!isValid) return;
-    addLanguage({ id: genId(), language: lang, level, test: "" });
-    setLang("");
-    setLevel("");
+    if (isEdit) {
+      updateLanguage(editTarget!.id, { id: editTarget!.id, language: lang, level, test: editTarget!.test || "" });
+    } else {
+      addLanguage({ id: genId(), language: lang, level, test: "" });
+    }
     onClose();
   };
 
@@ -41,7 +58,7 @@ export default function LanguageModal({ isOpen, onClose }: Props) {
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
           <button className="cv-back" onClick={onClose}><ChevronLeft size={20} /></button>
-          <h2 className="cv-title">어학</h2>
+          <h2 className="cv-title">{isEdit ? "어학 수정" : "어학"}</h2>
           <div style={{ width: 36 }} />
         </div>
         <div className="cv-body">
@@ -57,7 +74,6 @@ export default function LanguageModal({ isOpen, onClose }: Props) {
               ))}
             </div>
           )}
-
           <label className="cv-field-label cv-required">수준</label>
           <button className="cv-select-btn" onClick={() => { setShowLevel(!showLevel); setShowLang(false); }}>
             <span className={level ? "" : "cv-placeholder"}>{level || "수준을 선택해 주세요"}</span>
@@ -73,9 +89,7 @@ export default function LanguageModal({ isOpen, onClose }: Props) {
               ))}
             </div>
           )}
-
           <button className="cv-btn-text-add">+ 어학시험 추가</button>
-
           <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
         </div>
       </div>

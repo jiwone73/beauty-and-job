@@ -11,6 +11,9 @@ import ResumePreview from "@/components/profile/ResumePreview";
 import CareerEditModal from "@/components/profile/CareerEditModal";
 import LinkModal from "@/components/profile/LinkModal";
 import EducationModal from "@/components/profile/EducationModal";
+import LanguageModal from "@/components/profile/LanguageModal";
+import ExperienceModal from "@/components/profile/ExperienceModal";
+import SkillModal from "@/components/profile/SkillModal";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -51,6 +54,11 @@ function ResumePageContent() {
   const [editLink, setEditLink] = useState<any>(null);
   const [eduModalOpen, setEduModalOpen] = useState(false);
   const [editEdu, setEditEdu] = useState<any>(null);
+  const [langModalOpen, setLangModalOpen] = useState(false);
+  const [editLang, setEditLang] = useState<any>(null);
+  const [expModalOpen, setExpModalOpen] = useState(false);
+  const [editExp, setEditExp] = useState<any>(null);
+  const [skillModalOpen, setSkillModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -449,7 +457,7 @@ const handlePrint = async () => {
           <section id="section-skill" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">스킬</h2>
-              <button className="resume-add-btn" onClick={() => router.push("/profile")}>
+              <button className="resume-add-btn" onClick={() => setSkillModalOpen(true)}>
                 <Plus size={14} /> 추가
               </button>
             </div>
@@ -459,8 +467,8 @@ const handlePrint = async () => {
               </div>
             ) : (
               <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
-                  <Plus size={16} /> 프로필에서 스킬 추가하기
+                <button className="resume-empty-btn" onClick={() => setSkillModalOpen(true)}>
+                  <Plus size={16} /> 스킬 추가하기
                 </button>
               </div>
            )}
@@ -469,7 +477,7 @@ const handlePrint = async () => {
           <section id="section-language" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">어학</h2>
-              <button className="resume-add-btn" onClick={() => router.push("/profile")}>
+              <button className="resume-add-btn" onClick={() => { setEditLang(null); setLangModalOpen(true); }}>
                 <Plus size={14} /> 추가
               </button>
             </div>
@@ -477,9 +485,15 @@ const handlePrint = async () => {
               <div className="resume-list">
                 {languages.map((lang) => (
                   <div key={lang.id} className="resume-list-item">
-                    <p style={{ fontWeight: 600, marginBottom: "4px" }}>
+                    <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
                       {lang.language}
                       <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                        <button onClick={() => { setEditLang(lang); setLangModalOpen(true); }}
+                          style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>수정</button>
+                        <button onClick={() => { if (confirm("이 어학을 삭제할까요?")) removeLanguage(lang.id); }}
+                          style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>삭제</button>
+                      </span>
                     </p>
                     {lang.test && (
                       <p style={{ color: "#888", fontSize: "13px" }}>{lang.test}</p>
@@ -489,8 +503,8 @@ const handlePrint = async () => {
               </div>
             ) : (
               <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
-                  <Plus size={16} /> 프로필에서 어학 추가하기
+                <button className="resume-empty-btn" onClick={() => { setEditLang(null); setLangModalOpen(true); }}>
+                  <Plus size={16} /> 어학 추가하기
                 </button>
               </div>
             )}
@@ -498,7 +512,7 @@ const handlePrint = async () => {
           <section id="section-experience" className="resume-section">
             <div className="resume-section-head">
               <h2 className="resume-section-title">프로젝트 · 활동</h2>
-              <button className="resume-add-btn" onClick={() => router.push("/profile")}>
+              <button className="resume-add-btn" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
                 <Plus size={14} /> 추가
               </button>
             </div>
@@ -506,11 +520,17 @@ const handlePrint = async () => {
               <div className="resume-list">
                 {experiences.map((x) => (
                   <div key={x.id} className="resume-list-item">
-                    <p style={{ fontWeight: 600, marginBottom: "4px" }}>
+                    <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
                       {x.category && (
                         <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>
                       )}
                       {x.title}
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                        <button onClick={() => { setEditExp(x); setExpModalOpen(true); }}
+                          style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>수정</button>
+                        <button onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}
+                          style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>삭제</button>
+                      </span>
                     </p>
                     {x.description && (
                       <p style={{ color: "#666", fontSize: "14px" }}>{x.description}</p>
@@ -520,8 +540,8 @@ const handlePrint = async () => {
               </div>
             ) : (
               <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => router.push("/profile")}>
-                  <Plus size={16} /> 프로필에서 활동 추가하기
+                <button className="resume-empty-btn" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
+                  <Plus size={16} /> 활동 추가하기
                 </button>
               </div>
             )}
@@ -729,6 +749,20 @@ const handlePrint = async () => {
         isOpen={eduModalOpen}
         onClose={() => { setEduModalOpen(false); setEditEdu(null); }}
         editTarget={editEdu}
+      />
+      <LanguageModal
+        isOpen={langModalOpen}
+        onClose={() => { setLangModalOpen(false); setEditLang(null); }}
+        editTarget={editLang}
+      />
+      <ExperienceModal
+        isOpen={expModalOpen}
+        onClose={() => { setExpModalOpen(false); setEditExp(null); }}
+        editTarget={editExp}
+      />
+      <SkillModal
+        isOpen={skillModalOpen}
+        onClose={() => setSkillModalOpen(false)}
       />
     </div>
   );

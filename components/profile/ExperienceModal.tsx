@@ -1,18 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft } from "lucide-react";
-import { useProfileStore, genId } from "@/lib/store/profileStore";
+import { useProfileStore, genId, type ExperienceEntry } from "@/lib/store/profileStore";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  editTarget?: ExperienceEntry | null;
 }
 
-export default function ExperienceModal({ isOpen, onClose }: Props) {
-  const { addExperience } = useProfileStore();
+export default function ExperienceModal({ isOpen, onClose, editTarget }: Props) {
+  const { addExperience, updateExperience } = useProfileStore();
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
+
+  const isEdit = !!editTarget;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (editTarget) {
+      setTitle(editTarget.title || "");
+      setDesc(editTarget.description || "");
+    } else {
+      setTitle("");
+      setDesc("");
+    }
+  }, [isOpen, editTarget]);
 
   if (!isOpen) return null;
 
@@ -20,9 +34,11 @@ export default function ExperienceModal({ isOpen, onClose }: Props) {
 
   const handleSubmit = () => {
     if (!isValid) return;
-    addExperience({ id: genId(), category: "", title: title.trim(), description: desc.trim() });
-    setTitle("");
-    setDesc("");
+    if (isEdit) {
+      updateExperience(editTarget!.id, { id: editTarget!.id, category: editTarget!.category || "", title: title.trim(), description: desc.trim() });
+    } else {
+      addExperience({ id: genId(), category: "", title: title.trim(), description: desc.trim() });
+    }
     onClose();
   };
 
@@ -31,7 +47,7 @@ export default function ExperienceModal({ isOpen, onClose }: Props) {
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
           <button className="cv-back" onClick={onClose}><ChevronLeft size={20} /></button>
-          <h2 className="cv-title">관련 경험 및 기타</h2>
+          <h2 className="cv-title">{isEdit ? "관련 경험 수정" : "관련 경험 및 기타"}</h2>
           <div style={{ width: 36 }} />
         </div>
         <div className="cv-body">
