@@ -1,16 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useProfileStore, type CareerEntry } from "@/lib/store/profileStore";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  editTarget?: CareerEntry | null;
 }
 
-export default function CareerEditModal({ isOpen, onClose }: Props) {
-  const { addCareer } = useProfileStore();
+// "2024.05" → "2024-05" (month input용)
+function toInputMonth(d: string): string {
+  if (!d || d === "재직 중") return "";
+  const m = d.match(/(\d{4})[.\-/](\d{1,2})/);
+  if (!m) return "";
+  return `${m[1]}-${m[2].padStart(2, "0")}`;
+}
+
+export default function CareerEditModal({ isOpen, onClose, editTarget }: Props) {
+  const { addCareer, updateCareer } = useProfileStore();
   const [company, setCompany] = useState("");
   const [department, setDepartment] = useState("");
   const [position, setPosition] = useState("");
@@ -19,17 +28,26 @@ export default function CareerEditModal({ isOpen, onClose }: Props) {
   const [isCurrent, setIsCurrent] = useState(false);
   const [description, setDescription] = useState("");
 
-  if (!isOpen) return null;
+  const isEdit = !!editTarget;
 
-  const reset = () => {
-    setCompany("");
-    setDepartment("");
-    setPosition("");
-    setStartDate("");
-    setEndDate("");
-    setIsCurrent(false);
-    setDescription("");
-  };
+  // 수정 모드: 모달 열릴 때 기존 값 채우기 / 추가 모드: 비우기
+  useEffect(() => {
+    if (!isOpen) return;
+    if (editTarget) {
+      setCompany(editTarget.company || "");
+      setDepartment(editTarget.department || "");
+      setPosition(editTarget.position || "");
+      setStartDate(toInputMonth(editTarget.startDate));
+      setIsCurrent(editTarget.endDate === "재직 중");
+      setEndDate(editTarget.endDate === "재직 중" ? "" : toInputMonth(editTarget.endDate));
+      setDescription(editTarget.description || "");
+    } else {
+      setCompany(""); setDepartment(""); setPosition("");
+      setStartDate(""); setEndDate(""); setIsCurrent(false); setDescription("");
+    }
+  }, [isOpen, editTarget]);
+
+  if (!isOpen) return null;
 
   const formatDate = (d: string) => {
     if (!d) return "";
@@ -52,32 +70,28 @@ export default function CareerEditModal({ isOpen, onClose }: Props) {
     }
 
     const entry: CareerEntry = {
-      id: `career-${Date.now()}`,
+      id: editTarget?.id || `career-${Date.now()}`,
       company: company.trim(),
       department: department.trim(),
       position: position.trim(),
       startDate: formatDate(startDate),
       endDate: isCurrent ? "재직 중" : formatDate(endDate),
-      isVerified: false,
+      isVerified: editTarget?.isVerified || false,
       description: description.trim(),
     };
-    addCareer(entry);
-    reset();
-    onClose();
-  };
 
-  const handleClose = () => {
-    reset();
+    if (isEdit) updateCareer(entry.id, entry);
+    else addCareer(entry);
     onClose();
   };
 
   return (
-    <div className="cv-overlay" onClick={handleClose}>
+    <div className="cv-overlay" onClick={onClose}>
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
           <div style={{ width: 36 }} />
-          <h2 className="cv-title">경력 추가</h2>
-          <button className="cv-close" onClick={handleClose}><X size={20} /></button>
+          <h2 className="cv-title">{isEdit ? "경력 수정" : "경력 추가"}</h2>
+          <button className="cv-close" onClick={onClose}><X size={20} /></button>
         </div>
         <div className="cv-body" style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
           <div>

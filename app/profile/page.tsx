@@ -58,13 +58,14 @@ export default function ProfilePage() {
   const {
     isCareerVerified, verifiedDate, careers, educations, experiences,
     skills, languages, links, setCareerVerified,
-    removeEducation, removeSkill, removeLanguage, removeLink, removeExperience, removeCertificate,
+    removeCareer, removeEducation, removeSkill, removeLanguage, removeLink, removeExperience, removeCertificate,
     certificates: profileCertificates,
   } = useProfileStore();
 
   const [activeTab, setActiveTab] = useState<"profile" | "resume" | "applied" | "bookmarks">("profile");
   const [bannerClosed, setBannerClosed] = useState(false);
   const [openModal, setOpenModal] = useState<ModalType>(null);
+  const [editCareer, setEditCareer] = useState<any>(null);
   const [editField, setEditField] = useState<string | null>(null);
   const [emailInput, setEmailInput] = useState("");
   const [showJobModal, setShowJobModal] = useState(false);
@@ -404,7 +405,7 @@ export default function ProfilePage() {
                   경력
                   {isCareerVerified && <CheckCircle2 size={16} className="profile-check" />}
                 </h2>
-                <button className="profile-section-add" onClick={() => setOpenModal("careerEdit")}>
+                <button className="profile-section-add" onClick={() => { setEditCareer(null); setOpenModal("careerEdit"); }}>
                   <Plus size={14} /> 추가
                 </button>
               </div>
@@ -421,6 +422,18 @@ export default function ProfilePage() {
                     <div className="profile-career-entry-head">
                       <strong>{c.company}</strong>
                       {c.isVerified && <span className="profile-verified-badge">✓ 인증</span>}
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                        <button
+                          onClick={() => { setEditCareer(c); setOpenModal("careerEdit"); }}
+                          style={{ background: "none", border: "none", color: "#5f0080", fontSize: "12px", cursor: "pointer" }}>
+                          수정
+                        </button>
+                        <button
+                          onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}
+                          style={{ background: "none", border: "none", color: "#e74c3c", fontSize: "12px", cursor: "pointer" }}>
+                          삭제
+                        </button>
+                      </span>
                     </div>
                     <span className="profile-career-entry-period">{c.startDate} - {c.endDate}</span>
                     {(c.department || c.position) && (
@@ -655,7 +668,11 @@ export default function ProfilePage() {
         </div>
       )}
       <CareerVerifyModal isOpen={openModal === "career"} onClose={() => setOpenModal(null)} onComplete={handleCareerComplete} userName={name} userBirth={birth} userGender={gender} userPhone={phone} />
-      <CareerEditModal isOpen={openModal === "careerEdit"} onClose={() => setOpenModal(null)} />
+      <CareerEditModal
+        isOpen={openModal === "careerEdit"}
+        onClose={() => { setOpenModal(null); setEditCareer(null); }}
+        editTarget={editCareer}
+      />
       <EducationModal isOpen={openModal === "education"} onClose={() => setOpenModal(null)} />
       <SkillModal isOpen={openModal === "skill"} onClose={() => setOpenModal(null)} />
       <LanguageModal isOpen={openModal === "language"} onClose={() => setOpenModal(null)} />
