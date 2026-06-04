@@ -21,7 +21,11 @@ export default function ResumeTab() {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    if (!token) return;
+    if (!token) {
+      useProfileStore.setState({ loaded: true });
+      return;
+    }
+    useProfileStore.getState().loadFromServer();
     fetch("/api/users/me", {
       headers: { Authorization: `Bearer ${token}` },
     })

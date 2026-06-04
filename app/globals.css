@@ -1609,7 +1609,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-save-btn { background: var(--color-text); color: white; border: none; border-radius: 8px; padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; font-family: inherit; }
 .resume-save-btn:hover { background: #000; }
 
-.resume-layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 64px); }
+.resume-layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 64px); max-width: 1080px; margin: 0 auto; }
 
 .resume-sidebar { background: white; border-right: 1px solid var(--color-border); padding: 24px 16px; }
 .resume-sidebar-title { font-size: 12px; font-weight: 700; color: var(--color-text-mute); letter-spacing: 0.5px; margin-bottom: 8px; padding: 0 8px; }
@@ -3016,8 +3016,6 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 16px 24px;
 }
 .resume-subheader-title {
-  max-width: 1400px;
-  margin: 0 auto;
   font-size: 18px;
   font-weight: 700;
   color: #1a1a1a;
@@ -6429,7 +6427,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-subheader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 12px;
   padding: 12px 28px;
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
