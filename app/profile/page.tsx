@@ -126,7 +126,44 @@ export default function ProfilePage() {
   const birthDisplay = birth
     ? `${birth.slice(0, 4)}년${gender ? ` (${gender === "남성" ? "남" : "여"})` : ""}`
     : "정보 없음";
-  const careerDisplay = CAREER_LABELS[careerYears] || "경력 미설정";
+  // 경력 항목들의 기간을 합산하여 총 경력 자동 계산 (겹치는 기간 중복 제거)
+  const calcTotalCareer = () => {
+    if (!careers || careers.length === 0) return "신입";
+    const periods: [number, number][] = [];
+    for (const c of careers) {
+      const s = String(c.startDate || "").match(/(\d{4})[.\-/]?(\d{1,2})?/);
+      if (!s) continue;
+      const startM = Number(s[1]) * 12 + (Number(s[2] || "1") - 1);
+      let endM: number;
+      if (!c.endDate || c.endDate === "재직 중") {
+        const now = new Date();
+        endM = now.getFullYear() * 12 + now.getMonth();
+      } else {
+        const e = String(c.endDate).match(/(\d{4})[.\-/]?(\d{1,2})?/);
+        if (!e) continue;
+        endM = Number(e[1]) * 12 + (Number(e[2] || "1") - 1);
+      }
+      if (endM >= startM) periods.push([startM, endM]);
+    }
+    if (periods.length === 0) return "신입";
+    // 겹치는 기간 병합
+    periods.sort((a, b) => a[0] - b[0]);
+    let totalMonths = 0;
+    let [curS, curE] = periods[0];
+    for (let i = 1; i < periods.length; i++) {
+      const [s, e] = periods[i];
+      if (s <= curE) { curE = Math.max(curE, e); }
+      else { totalMonths += curE - curS; curS = s; curE = e; }
+    }
+    totalMonths += curE - curS;
+    const years = Math.floor(totalMonths / 12);
+    const months = totalMonths % 12;
+    if (years === 0 && months === 0) return "신입";
+    if (years === 0) return `경력 ${months}개월`;
+    if (months === 0) return `경력 ${years}년`;
+    return `경력 ${years}년 ${months}개월`;
+  };
+  const careerDisplay = calcTotalCareer();
 
   const saveOfficeJobAreas = async (newAreas: string[]) => {
     const token = localStorage.getItem('access_token');
