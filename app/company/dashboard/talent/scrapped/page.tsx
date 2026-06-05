@@ -1,30 +1,157 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Search, BookmarkCheck, X, FileText } from "lucide-react";
+import { Search, BookmarkCheck, X, FileText, Download, Printer } from "lucide-react";
+import ResumePreview from "@/components/profile/ResumePreview";
 
-const SCRAPPED_TALENTS = [
-  { id: 2, name: "박민준", age: 31, gender: "남", job: "MD", career: "경력 5년", location: "서울 종로구", education: "대학교(4년제) 졸업", salary: "5,500만원", skills: ["상품기획", "바잉", "이커머스"], title: "글로벌 뷰티 MD 전문가", scrappedAt: "2025.01.20" },
-  { id: 6, name: "한소희", age: 30, gender: "여", job: "SCM", career: "경력 6년", location: "경기 화성시", education: "대학교(4년제) 졸업", salary: "6,000만원", skills: ["SCM", "물류관리", "수입통관"], title: "뷰티 SCM 물류 전문가", scrappedAt: "2025.01.18" },
-];
+function calcAgeFromBirth(birth: string | null): number {
+  if (!birth) return 0;
+  const y = parseInt(String(birth).slice(0, 4));
+  return new Date().getFullYear() - y;
+}
 
-type Talent = typeof SCRAPPED_TALENTS[0];
+function careerLabel(years: number | null, count: number): string {
+  if (!count || years === null || years === 0) return "신입";
+  return `경력 ${years}년`;
+}
+
+function metaLine(gender: string | null, age: number | null, years: number | null, count: number): string {
+  const c = careerLabel(years, count);
+  const parts: string[] = [];
+  if (gender === "FEMALE") parts.push("여");
+  else if (gender === "MALE") parts.push("남");
+  if (age) parts.push(`${age}세`);
+  parts.push(c);
+  return parts.join(" · ");
+}
 
 export default function ScrappedTalentPage() {
-  const [talents, setTalents] = useState(SCRAPPED_TALENTS);
+  const [talents, setTalents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<Talent | null>(null);
+  const [selected, setSelected] = useState<any | null>(null);
+  const [resumeData, setResumeData] = useState<any>(null);
+  const [resumeLoading, setResumeLoading] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  const filtered = talents.filter(t =>
-    !search || t.name.includes(search) || t.job.includes(search) || t.skills.some(s => s.includes(search))
-  );
+  const token = typeof window !== "undefined"
+    ? (localStorage.getItem("access_token") || "")
+    : "";
 
-  const handleUnscrap = (id: number) => {
-    if (confirm("스크랩을 해제하시겠습니까?")) {
-      setTalents(talents.filter(t => t.id !== id));
-      if (selected?.id === id) setSelected(null);
+  const mapResume = (data: any) => {
+    const p = data?.profile || {};
+    return {
+      careers: (data?.careers || []).map((c: any) => ({
+        id: String(c.id), company: c.company || "", department: c.department || "",
+        position: c.position || "", startDate: c.start_date || "", endDate: c.end_date || "",
+        isVerified: c.is_verified || false, description: c.description || "",
+      })),
+      educations: (data?.educations || []).map((e: any) => ({
+        id: String(e.id), school: e.school || "", major: e.major || "",
+        status: e.status || "", startDate: e.start_date || "", endDate: e.end_date || "",
+        description: e.description || "",
+      })),
+      experiences: (data?.experiences || []).map((x: any) => ({
+        id: String(x.id), category: x.category || "", title: x.title || "", description: x.description || "",
+      })),
+      languages: (data?.languages || []).map((l: any) => ({
+        id: String(l.id), language: l.language || "", level: l.level || "", test: l.test || "",
+      })),
+      links: (data?.links || []).map((lk: any) => ({
+        id: String(lk.id), category: lk.category || "", url: lk.url || "",
+      })),
+      skills: p.skills || [],
+      skillAreas: p.skill_areas || [],
+      officeJobAreas: p.office_job_areas || [],
+      certificates: p.certificates || [],
+      intro: p.intro || "",
+      coreCompetencies: p.core_competencies || "",
+      workTypePrefer: p.work_type_prefer || "",
+      regionPrefer: p.region_prefer || "",
+    };
+  };
+
+  useEffect(() => {
+    const fetchScrapped = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/company/talent/scrapped", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setTalents(data.talents || []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchScrapped();
+  }, [token]);
+
+  useEffect(() => {
+    if (!selected) { setResumeData(null); return; }
+    setResumeLoading(true);
+    fetch(`/api/company/talent/${selected.user_id}/resume`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(d => setResumeData(d))
+      .catch(e => console.error(e))
+      .finally(() => setResumeLoading(false));
+  }, [selected]);
+
+  const handleUnscrap = async (userId: string) => {
+    if (!confirm("스크랩을 해제하시겠습니까?")) return;
+    try {
+      await fetch(`/api/company/talent/${userId}/scrap`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTalents(prev => prev.filter(t => t.user_id !== userId));
+      if (selected?.user_id === userId) setSelected(null);
+    } catch (e) {
+      console.error(e);
     }
   };
+
+  const handleDownloadPdf = async () => {
+    if (!previewRef.current || !selected) return;
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const jsPDF = (await import("jspdf")).default;
+      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const imgH = (canvas.height * pageW) / canvas.width;
+      let y = 0;
+      while (y < imgH) {
+        if (y > 0) pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, -y, pageW, imgH);
+        y += pageH;
+      }
+      pdf.save(`${selected.name || "이력서"}_이력서.pdf`);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handlePrint = () => {
+    if (!previewRef.current) return;
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.write(`<html><head><title>이력서</title><style>body{margin:0;padding:20px;font-family:sans-serif;}</style></head><body>${previewRef.current.innerHTML}</body></html>`);
+    w.document.close();
+    w.print();
+  };
+
+  const filtered = talents.filter(t =>
+    !search || (t.name || "").includes(search) || (t.job_category || "").includes(search)
+  );
 
   return (
     <CompanyLayout activePage="scrapped">
@@ -32,81 +159,101 @@ export default function ScrappedTalentPage() {
         <div className="company-toolbar-left">
           <div className="admin-search-wrap">
             <Search size={16} className="admin-search-icon" />
-            <input className="admin-search-input" placeholder="이름, 직군, 스킬 검색"
-              value={search} onChange={(e) => setSearch(e.target.value)} />
+            <input className="admin-search-input" placeholder="이름, 직군 검색"
+              value={search} onChange={e => setSearch(e.target.value)} />
           </div>
         </div>
-        <div style={{fontSize:"13px", color:"#888"}}>
-          총 <strong style={{color:"#1a1a1a"}}>{filtered.length}</strong>명
+        <div style={{ fontSize: "13px", color: "#888" }}>
+          총 <strong style={{ color: "#1a1a1a" }}>{filtered.length}</strong>명
         </div>
       </div>
 
-      <div className="talent-grid">
-        {filtered.map((t) => (
-          <div key={t.id} className="talent-card">
-            <div className="talent-card-head">
-              <div className="talent-avatar">{t.name.slice(0, 1)}</div>
-              <div className="talent-info">
-                <h3 className="talent-name">{t.name}</h3>
-                <p className="talent-meta">{t.gender} · {t.age}세 · {t.career}</p>
-                <p className="talent-location">{t.location}</p>
+      {loading ? (
+        <div className="admin-empty">불러오는 중...</div>
+      ) : (
+        <div className="talent-grid">
+          {filtered.map(t => (
+            <div key={t.user_id} className="talent-card">
+              <div className="talent-card-head">
+                <div className="talent-avatar">{(t.name || "?").slice(0, 1)}</div>
+                <div className="talent-info">
+                  <h3 className="talent-name">{t.name}</h3>
+                  <p className="talent-meta">
+                    {metaLine(t.gender, t.age, t.career_years, t.career_count)}
+                  </p>
+                  <p className="talent-location">{t.location || "지역 미설정"}</p>
+                </div>
+                <button className="talent-scrap-btn scrapped" onClick={() => handleUnscrap(t.user_id)}>
+                  <BookmarkCheck size={20} />
+                </button>
               </div>
-              <button className="talent-scrap-btn scrapped" onClick={() => handleUnscrap(t.id)}>
-                <BookmarkCheck size={20} />
-              </button>
-            </div>
-            <p className="talent-title" onClick={() => setSelected(t)}>{t.title}</p>
-            <div className="talent-tags">
-              {t.skills.map(sk => <span key={sk} className="talent-tag">{sk}</span>)}
-            </div>
-            <div className="talent-card-footer">
-              <div className="talent-detail">
-                <span>{t.job}</span><span>·</span>
-                <span>{t.salary}</span><span>·</span>
-                <span className="talent-scrap-date">스크랩 {t.scrappedAt}</span>
-              </div>
-              <button className="company-action-btn" onClick={() => setSelected(t)}>
-                <FileText size={14} /> 이력서 보기
-              </button>
-            </div>
-          </div>
-        ))}
-        {filtered.length === 0 && <div className="admin-empty">스크랩한 인재가 없습니다.</div>}
-      </div>
-
-      {selected && (
-        <div className="admin-modal-overlay" onClick={() => setSelected(null)}>
-          <div className="admin-modal" style={{maxWidth:"520px"}} onClick={e => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <div>
-                <h2 className="admin-modal-title">{selected.name}</h2>
-                <p style={{fontSize:"13px", color:"#888", margin:"4px 0 0"}}>
-                  {selected.gender} · {selected.age}세 · {selected.career}
-                </p>
-              </div>
-              <button className="admin-modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
-            </div>
-            <div className="admin-modal-body">
-              <div className="admin-detail-grid">
-                {[
-                  ["직군", selected.job],
-                  ["경력", selected.career],
-                  ["희망지역", selected.location],
-                  ["학력", selected.education],
-                  ["희망연봉", selected.salary],
-                  ["스크랩일", selected.scrappedAt],
-                ].map(([label, value]) => (
-                  <div key={label} className="admin-detail-row">
-                    <span className="admin-detail-label">{label}</span>
-                    <span className="admin-detail-value">{value}</span>
-                  </div>
+              <p className="talent-title" onClick={() => setSelected(t)}>
+                {t.headline || t.job_category || "프로필 미작성"}
+              </p>
+              <div className="talent-tags">
+                {(t.skills || []).slice(0, 3).map((sk: string) => (
+                  <span key={sk} className="talent-tag">{sk}</span>
                 ))}
               </div>
-              <div className="admin-modal-actions">
-                <button className="admin-danger-btn" onClick={() => handleUnscrap(selected.id)}>
+              <div className="talent-card-footer">
+                <div className="talent-detail">
+                  <span>{t.job_category || "-"}</span>
+                </div>
+                <button className="company-action-btn" onClick={() => setSelected(t)}>
+                  <FileText size={14} /> 이력서 보기
+                </button>
+              </div>
+            </div>
+          ))}
+          {filtered.length === 0 && (
+            <div className="admin-empty">스크랩한 인재가 없습니다.</div>
+          )}
+        </div>
+      )}
+
+      {selected && (
+        <div className="rp-modal-overlay" onClick={() => setSelected(null)}>
+          <div className="rp-modal" onClick={e => e.stopPropagation()}>
+            <div className="rp-modal-header">
+              <div className="rp-modal-actions">
+                <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading}>
+                  <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 저장"}
+                </button>
+                <button className="resume-action-btn" onClick={handlePrint}>
+                  <Printer size={15} /> 인쇄
+                </button>
+                <button className="resume-action-btn danger" onClick={() => handleUnscrap(selected.user_id)}>
                   스크랩 해제
                 </button>
               </div>
+              <button className="admin-modal-close" onClick={() => setSelected(null)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="rp-modal-body" ref={previewRef}>
+              {resumeLoading ? (
+                <div className="admin-empty">이력서 불러오는 중...</div>
+              ) : resumeData ? (
+                <ResumePreview
+                  ref={previewRef}
+                  name={resumeData.user?.name || selected.name}
+                  birthDisplay={
+                    resumeData.user?.birth_date
+                      ? `${String(resumeData.user.birth_date).slice(0, 4)}년 (${calcAgeFromBirth(resumeData.user.birth_date)}세, ${resumeData.user.gender === "FEMALE" ? "여" : resumeData.user.gender === "MALE" ? "남" : ""})`
+                      : ""
+                  }
+                  jobDisplay={resumeData.user?.job_type === "STORE" ? "매장·기술직" : "기업·사무직"}
+                  phone={resumeData.user?.phone || ""}
+                  email={resumeData.user?.email || ""}
+                  portfolioUrl={resumeData.user?.portfolio_url || null}
+                  portfolioFilename={resumeData.user?.portfolio_filename || null}
+                  avatarUrl={resumeData.user?.avatar_url || null}
+                  resumeType={resumeData.user?.job_type === "STORE" ? "salon" : "office"}
+                  {...mapResume(resumeData)}
+                />
+              ) : (
+                <div className="admin-empty">이력서 데이터를 불러올 수 없습니다.</div>
+              )}
             </div>
           </div>
         </div>
