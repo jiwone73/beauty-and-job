@@ -339,40 +339,60 @@ const handlePrint = async () => {
       <div className="resume-layout">
         <aside className="resume-sidebar">
           <p className="resume-sidebar-title">섹션 구성</p>
-          {(resumeType === "office" ? [
-            { id: "basic", label: "기본 정보" },
-            { id: "intro", label: "소개 · 핵심역량" },
-            { id: "career", label: "경력" },
-            { id: "education", label: "학력" },
-            { id: "skill", label: "스킬" },
-            { id: "language", label: "어학" },
-            { id: "certificate", label: "자격증" },
-            { id: "experience", label: "활동/수상" },
-            { id: "portfolio", label: "포트폴리오" },
-            { id: "link", label: "링크" },
-          ] : [
-            { id: "basic", label: "기본 정보" },
-            { id: "intro", label: "소개" },
-            { id: "career", label: "경력 (근무 매장)" },
-            { id: "education", label: "학력" },
-            { id: "language", label: "어학" },
-            { id: "certificate", label: "자격증" },
-            { id: "experience", label: "활동/수상" },
-            { id: "portfolio", label: "포트폴리오" },
-            { id: "link", label: "링크" },
-          ]).map((sec) => (
-            <button
-              key={sec.id}
-              className={`resume-sidebar-item ${activeSection === sec.id ? "active" : ""}`}
-              onClick={() => {
-                setActiveSection(sec.id);
-                const el = document.getElementById(`section-${sec.id}`);
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-            >
-              {sec.label}
-            </button>
-          ))}
+          {(() => {
+            const sections = resumeType === "office" ? [
+              { id: "basic", label: "기본 정보", done: !!(phone && emailLocal) },
+              { id: "intro", label: "소개 · 핵심역량", done: !!(introLocal.trim() && coreLocal.trim()) },
+              { id: "career", label: "경력", done: careers.length > 0 },
+              { id: "education", label: "학력", done: educations.length > 0 },
+              { id: "skill", label: "스킬", done: skills.length > 0 },
+              { id: "language", label: "어학", done: languages.length > 0 },
+              { id: "certificate", label: "자격증", done: certificates.length > 0 },
+              { id: "experience", label: "활동/수상", done: experiences.length > 0 },
+              { id: "portfolio", label: "포트폴리오", done: !!portfolioUrl },
+              { id: "link", label: "링크", done: links.length > 0 },
+            ] : [
+              { id: "basic", label: "기본 정보", done: !!(phone && emailLocal) },
+              { id: "intro", label: "소개", done: !!introLocal.trim() },
+              { id: "career", label: "경력 (근무 매장)", done: careers.length > 0 },
+              { id: "education", label: "학력", done: educations.length > 0 },
+              { id: "language", label: "어학", done: languages.length > 0 },
+              { id: "certificate", label: "자격증", done: certificates.length > 0 },
+              { id: "experience", label: "활동/수상", done: experiences.length > 0 },
+              { id: "portfolio", label: "포트폴리오", done: !!portfolioUrl },
+              { id: "link", label: "링크", done: links.length > 0 },
+            ];
+            const doneCount = sections.filter((s) => s.done).length;
+            const rate = Math.round((doneCount / sections.length) * 100);
+            return (
+              <>
+                <div className="resume-completion">
+                  <div className="resume-completion-head">
+                    <span>완성도</span>
+                    <strong>{rate}%</strong>
+                  </div>
+                  <div className="resume-completion-bar">
+                    <div className="resume-completion-fill" style={{ width: `${rate}%` }} />
+                  </div>
+                  <p className="resume-completion-text">{doneCount}/{sections.length} 항목 완료</p>
+                </div>
+                {sections.map((sec) => (
+                  <button
+                    key={sec.id}
+                    className={`resume-sidebar-item ${activeSection === sec.id ? "active" : ""}`}
+                    onClick={() => {
+                      setActiveSection(sec.id);
+                      const el = document.getElementById(`section-${sec.id}`);
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                  >
+                    <span className="resume-sidebar-check">{sec.done ? "✓" : "○"}</span>
+                    {sec.label}
+                  </button>
+                ))}
+              </>
+            );
+          })()}
         </aside>
 
         <main className="resume-editor">

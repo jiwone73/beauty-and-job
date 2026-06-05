@@ -10,7 +10,7 @@ import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { STORE_SKILL_AREAS } from "@/lib/constants";
 import NotificationModal from "@/components/profile/NotificationModal";
-import ResumeTab from "@/components/profile/ResumeTab";
+
 
 type ModalType = "notification" | null;
 
@@ -384,9 +384,7 @@ export default function ProfilePage() {
               </button>
             </div>
           </>
-        ) : (
-          <ResumeTab />
-        )}
+        ) : null}
       </div>
 
       <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} />

@@ -10062,3 +10062,51 @@ input[type="range"].career-slider::-moz-range-thumb {
   vertical-align: middle;
   letter-spacing: 0.3px;
 }
+/* 이력서 편집 사이드 완성도 */
+.resume-completion {
+  padding: 14px;
+  background: #faf5ff;
+  border: 1px solid #f0e8f8;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+.resume-completion-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.resume-completion-head span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.resume-completion-head strong {
+  font-size: 18px;
+  font-weight: 700;
+  color: #5f0080;
+}
+.resume-completion-bar {
+  height: 8px;
+  background: #f3e5f5;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.resume-completion-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5f0080, #9c27b0);
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+.resume-completion-text {
+  font-size: 11px;
+  color: #888;
+  margin-top: 8px;
+}
+.resume-sidebar-check {
+  display: inline-block;
+  width: 16px;
+  margin-right: 6px;
+  color: #5f0080;
+  font-weight: 700;
+}
