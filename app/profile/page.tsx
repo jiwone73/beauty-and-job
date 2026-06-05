@@ -254,10 +254,10 @@ export default function ProfilePage() {
                 {editField === "gender" ? (
                   <div className="profile-info-row is-last" style={{ cursor: "default" }}>
                     <span className="profile-info-label">성별</span>
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                    <span style={{ marginLeft: "auto", display: "flex", gap: "6px", flexWrap: "nowrap", flexShrink: 0 }}>
                       {["남성", "여성"].map((g) => (
                         <button key={g}
-                          style={{ padding: "6px 16px", borderRadius: "20px", fontSize: "14px", cursor: "pointer", border: gender === g ? "1.5px solid #5f0080" : "1px solid #ddd", background: gender === g ? "#5f0080" : "#fff", color: gender === g ? "#fff" : "#666" }}
+                          style={{ padding: "6px 14px", borderRadius: "20px", fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap", border: gender === g ? "1.5px solid #5f0080" : "1px solid #ddd", background: gender === g ? "#5f0080" : "#fff", color: gender === g ? "#fff" : "#666" }}
                           onClick={async () => {
                             try {
                               const token = localStorage.getItem("access_token");
