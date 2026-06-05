@@ -293,10 +293,12 @@ export default function JobDetailPage() {
           </section>
 
           {/* 포지션 소개 */}
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">포지션 소개</h2>
-            <p className="job-detail-desc">{job.description?.trim()}</p>
-          </section>
+          {job.description?.trim() && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">포지션 소개</h2>
+              <p className="job-detail-desc">{job.description.trim()}</p>
+            </section>
+          )}
           {/* 상세 이미지 */}
           {job.detailImages?.length > 0 && (
             <section className="job-detail-section">
@@ -311,53 +313,61 @@ export default function JobDetailPage() {
           )}
 
           {/* 주요 업무 */}
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">주요 업무</h2>
-            <ul className="job-detail-list">
-              {job.responsibilities?.map((item: string, i: number) => (
-                <li key={i} className="job-detail-list-item">
-                  <CheckCircle2 size={16} className="job-detail-list-icon" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {job.responsibilities?.length > 0 && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">주요 업무</h2>
+              <ul className="job-detail-list">
+                {job.responsibilities.map((item: string, i: number) => (
+                  <li key={i} className="job-detail-list-item">
+                    <CheckCircle2 size={16} className="job-detail-list-icon" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/* 자격 요건 */}
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">자격 요건</h2>
-            <ul className="job-detail-list">
-              {job.requirements?.map((item: string, i: number) => (
-                <li key={i} className="job-detail-list-item">
-                  <CheckCircle2 size={16} className="job-detail-list-icon" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {job.requirements?.length > 0 && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">자격 요건</h2>
+              <ul className="job-detail-list">
+                {job.requirements.map((item: string, i: number) => (
+                  <li key={i} className="job-detail-list-item">
+                    <CheckCircle2 size={16} className="job-detail-list-icon" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/* 우대 사항 */}
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">우대 사항</h2>
-            <ul className="job-detail-list">
-              {job.preferreds?.map((item: string, i: number) => (
-                <li key={i} className="job-detail-list-item">
-                  <CheckCircle2 size={16} className="job-detail-list-icon check-soft" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {job.preferreds?.length > 0 && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">우대 사항</h2>
+              <ul className="job-detail-list">
+                {job.preferreds.map((item: string, i: number) => (
+                  <li key={i} className="job-detail-list-item">
+                    <CheckCircle2 size={16} className="job-detail-list-icon check-soft" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/* 복리후생 */}
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">복리후생</h2>
-            <div className="job-detail-benefits">
-              {job.benefits?.map((item: string, i: number) => (
-                <span key={i} className="job-detail-benefit-chip">{item}</span>
-              ))}
-            </div>
-          </section>
+          {job.benefits?.length > 0 && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">복리후생</h2>
+              <div className="job-detail-benefits">
+                {job.benefits.map((item: string, i: number) => (
+                  <span key={i} className="job-detail-benefit-chip">{item}</span>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* 채용 절차 */}
           <section className="job-detail-section">
