@@ -80,7 +80,7 @@ export default function ScrappedTalentPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        setTalents(data.talents || []);
+        setTalents(data.data?.talents || data.talents || []);
       } catch (e) {
         console.error(e);
       } finally {
@@ -97,7 +97,7 @@ export default function ScrappedTalentPage() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.json())
-      .then(d => setResumeData(d))
+      .then(d => setResumeData(d.data || d))
       .catch(e => console.error(e))
       .finally(() => setResumeLoading(false));
   }, [selected]);
