@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server'
 import crypto from 'crypto'
 import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
+import { sendPasswordResetEmail } from '@/lib/email'
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json()
@@ -38,9 +39,12 @@ export async function POST(req: NextRequest) {
       [owner.type, owner.id, token, expiresAt]
     )
 
-    // TODO: 실제 이메일 발송 (Resend 연동 후)
     const resetUrl = `https://beauty-and-job.vercel.app/login/password-reset/${token}`
-    console.log(`\n[비밀번호 재설정 이메일]\nTo: ${email}\nLink: ${resetUrl}\n`)
+    try {
+      await sendPasswordResetEmail(email, resetUrl)
+    } catch (e) {
+      console.error("이메일 발송 실패:", e)
+    }
   }
 
   return ok({ message: '비밀번호 재설정 메일을 발송했습니다.' })
