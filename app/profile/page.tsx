@@ -286,38 +286,40 @@ export default function ProfilePage() {
                 )}
 
                 {editField === "email" ? (
-                  <div className="profile-info-row is-last" style={{ cursor: "default" }}>
-                    <span className="profile-info-label">이메일</span>
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" }}>
-                      <input
-                        type="email" placeholder="example@email.com"
-                        value={emailEditInput}
-                        onChange={(e) => setEmailEditInput(e.target.value)}
-                        style={{ width: "200px", padding: "6px 10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px" }}
-                      />
-                      <button
-                        style={{ padding: "6px 14px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
-                        onClick={async () => {
-                          const val = emailEditInput.trim();
-                          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { alert("올바른 이메일 형식을 입력해주세요."); return; }
-                          try {
-                            const token = localStorage.getItem("access_token");
-                            const res = await fetch("/api/users/me", {
-                              method: "PATCH",
-                              headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                              body: JSON.stringify({ email: val }),
-                            });
-                            const data = await res.json();
-                            if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
-                            setEmailInput(val);
-                            setEditField(null);
-                          } catch { alert("네트워크 오류가 발생했습니다."); }
-                        }}>
-                        저장
-                      </button>
-                      <button onClick={() => setEditField(null)}
-                        style={{ padding: "6px 10px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>취소</button>
-                    </span>
+                  <div className="profile-info-row is-last" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <span className="profile-info-label">이메일</span>
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                        <button
+                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
+                          onClick={async () => {
+                            const val = emailEditInput.trim();
+                            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { alert("올바른 이메일 형식을 입력해주세요."); return; }
+                            try {
+                              const token = localStorage.getItem("access_token");
+                              const res = await fetch("/api/users/me", {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                body: JSON.stringify({ email: val }),
+                              });
+                              const data = await res.json();
+                              if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
+                              setEmailInput(val);
+                              setEditField(null);
+                            } catch { alert("네트워크 오류가 발생했습니다."); }
+                          }}>
+                          저장
+                        </button>
+                        <button onClick={() => setEditField(null)}
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>취소</button>
+                      </span>
+                    </div>
+                    <input
+                      type="email" placeholder="example@email.com"
+                      value={emailEditInput}
+                      onChange={(e) => setEmailEditInput(e.target.value)}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px" }}
+                    />
                   </div>
                 ) : (
                   <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => { setEmailEditInput(emailInput || ""); setEditField("email"); }} isLast />
