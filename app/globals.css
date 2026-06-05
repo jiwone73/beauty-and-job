@@ -1422,14 +1422,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 .profile-bottom-cta {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  border-top: 1px solid var(--color-border);
-  padding: 12px 20px;
-  z-index: 40;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
 }
 .profile-resume-btn {
   max-width: 600px;

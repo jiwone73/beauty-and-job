@@ -378,16 +378,15 @@ export default function ProfilePage() {
                 </div>
               </section>
             )}
+            <div className="profile-bottom-cta">
+              <button className="profile-resume-btn" onClick={() => router.push("/profile/resume")}>
+                현재 프로필로 이력서 만들기
+              </button>
+            </div>
           </>
         ) : (
           <ResumeTab />
         )}
-      </div>
-
-      <div className="profile-bottom-cta">
-        <button className="profile-resume-btn" onClick={() => router.push("/profile/resume")}>
-          현재 프로필로 이력서 만들기
-        </button>
       </div>
 
       <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} />
