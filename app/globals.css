@@ -10110,3 +10110,15 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #5f0080;
   font-weight: 700;
 }
+/* 모바일에서 프로필/이력서 페이지 좌우 여백 축소 */
+@media (max-width: 768px) {
+  .profile-content {
+    padding: 0 12px;
+  }
+  .resume-editor {
+    padding: 12px 10px;
+  }
+  .resume-section {
+    padding: 16px 12px;
+  }
+}
