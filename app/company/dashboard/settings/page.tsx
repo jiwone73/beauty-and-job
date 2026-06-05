@@ -11,6 +11,8 @@ export default function CompanySettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState("");
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
 
   const [form, setForm] = useState({
     company_name: "",
@@ -26,6 +28,7 @@ export default function CompanySettingsPage() {
       try {
         const res = await companyMeApi.get();
         setInfo(res.data);
+        setLogoUrl((res.data as any).logo_url || null);
         setForm({
           company_name: res.data.company_name || "",
           brand_name: res.data.brand_name || "",
@@ -41,6 +44,48 @@ export default function CompanySettingsPage() {
       }
     })();
   }, []);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) { alert("로그인이 필요합니다."); return; }
+    setLogoUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/company/me/logo", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLogoUrl(data.data.logo_url);
+      } else {
+        alert(data.error?.message || "로고 업로드에 실패했습니다.");
+      }
+    } finally {
+      setLogoUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleLogoDelete = async () => {
+    if (!confirm("로고를 삭제하시겠습니까?")) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    try {
+      const res = await fetch("/api/company/me/logo", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) setLogoUrl(null);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleSave = async () => {
     if (!form.company_name.trim()) {
@@ -90,6 +135,44 @@ export default function CompanySettingsPage() {
               </span>
             </div>
             <div className="admin-form-body">
+              <div className="admin-form-row">
+                <label className="admin-form-label">회사 로고</label>
+                <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
+                  공고 상단에 표시되는 대표 이미지예요. 한 번 등록하면 모든 공고에 자동 적용돼요. (JPG·PNG·WebP, 2MB 이하)
+                </p>
+                <div style={{display:"flex", alignItems:"center", gap:"16px"}}>
+                  <div style={{width:"96px", height:"96px", borderRadius:"12px", border:"1px solid #eee",
+                    background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
+                    overflow:"hidden", flexShrink:0}}>
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="회사 로고"
+                        style={{width:"100%", height:"100%", objectFit:"cover"}} />
+                    ) : (
+                      <span style={{fontSize:"28px", fontWeight:700, color:"#c4b5d4"}}>
+                        {form.company_name?.[0] || "?"}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{display:"flex", flexDirection:"column", gap:"8px"}}>
+                    <label style={{display:"inline-flex", alignItems:"center", gap:"6px",
+                      padding:"8px 14px", border:"1.5px solid #c4b5d4", borderRadius:"8px",
+                      cursor: logoUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"13px",
+                      fontWeight:500, background:"#fff", width:"fit-content"}}>
+                      {logoUploading ? "업로드 중..." : logoUrl ? "로고 변경" : "로고 등록"}
+                      <input type="file" accept="image/jpeg,image/png,image/webp"
+                        disabled={logoUploading} onChange={handleLogoUpload} style={{display:"none"}} />
+                    </label>
+                    {logoUrl && (
+                      <button type="button" onClick={handleLogoDelete}
+                        style={{padding:"8px 14px", border:"1px solid #eee", borderRadius:"8px",
+                          cursor:"pointer", color:"#888", fontSize:"13px", background:"#fff",
+                          width:"fit-content"}}>
+                        삭제
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">기업명 *</label>
                 <input className="admin-form-input" placeholder="기업명"

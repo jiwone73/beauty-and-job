@@ -75,6 +75,7 @@ export async function GET(
     work_type: job.work_type,
     experience_level: job.experience_level,
     deadline: job.deadline,
+    detail_images: job.detail_images || [],
     view_count: job.view_count,
     application_count: job.application_count,
     created_at: job.created_at,

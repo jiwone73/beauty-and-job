@@ -167,6 +167,7 @@ export default function JobDetailPage() {
             responsibilities: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],
             qualifications: j.preferred_qualifications ? j.preferred_qualifications.split('\n').filter(Boolean) : [],
             logo_url: j.company?.logo_url,
+            detailImages: j.detail_images || [],
           });
         }
       })
@@ -216,9 +217,14 @@ export default function JobDetailPage() {
         <main className="job-detail-main">
           {/* 썸네일 + 기본 정보 */}
           <div className="job-detail-hero" style={{ background: job.color }}>
-            <div className="job-detail-hero-placeholder">
-              <span>{job.brand[0]}</span>
-            </div>
+            {job.logo_url ? (
+              <img src={job.logo_url} alt={job.brand}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              <div className="job-detail-hero-placeholder">
+                <span>{job.brand[0]}</span>
+              </div>
+            )}
           </div>
 
           <div className="job-detail-info-box">
@@ -291,6 +297,18 @@ export default function JobDetailPage() {
             <h2 className="job-detail-section-title">포지션 소개</h2>
             <p className="job-detail-desc">{job.description?.trim()}</p>
           </section>
+          {/* 상세 이미지 */}
+          {job.detailImages?.length > 0 && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">상세 이미지</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {job.detailImages.map((img: { url: string; name: string }, i: number) => (
+                  <img key={i} src={img.url} alt={img.name || `상세 이미지 ${i + 1}`}
+                    style={{ width: "100%", borderRadius: "12px", border: "1px solid #eee" }} />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* 주요 업무 */}
           <section className="job-detail-section">

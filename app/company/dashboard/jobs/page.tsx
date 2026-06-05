@@ -222,7 +222,7 @@ export default function CompanyJobsPage() {
                   </td>
                   <td>
                     <span style={{color:"#5f0080", fontWeight:600, cursor:"pointer"}}
-                      onClick={() => setSelected(job)}>
+                      onClick={() => router.push(`/jobs/${job.id}`)}>
                       {job.title}
                     </span>
                   </td>
