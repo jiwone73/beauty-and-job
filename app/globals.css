@@ -10122,3 +10122,12 @@ input[type="range"].career-slider::-moz-range-thumb {
     padding: 16px 12px;
   }
 }
+/* 모바일에서 이력서 미리보기 여백 축소 */
+@media (max-width: 768px) {
+  .rp-modal-body {
+    padding: 16px 8px;
+  }
+  .rp-wrap {
+    padding: 24px 18px;
+  }
+}
