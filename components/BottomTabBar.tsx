@@ -5,11 +5,10 @@ import { Home, Briefcase, FileText, BookOpen, User } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 
 const TABS = [
-  { href: "/",               label: "홈",    icon: Home,      auth: false },
-  { href: "/jobs",           label: "채용",  icon: Briefcase, auth: false },
-  { href: "/profile/resume", label: "이력서", icon: FileText,  auth: true  },
-  { href: "/insights",       label: "인사이트", icon: BookOpen, auth: false },
-  { href: "/profile",        label: "마이",  icon: User,      auth: true  },
+  { href: "/",         label: "홈",    icon: Home,      auth: false },
+  { href: "/jobs",     label: "채용",  icon: Briefcase, auth: false },
+  { href: "/insights", label: "인사이트", icon: BookOpen, auth: false },
+  { href: "/profile",  label: "마이",  icon: User,      auth: true  },
 ];
 
 export default function BottomTabBar() {
