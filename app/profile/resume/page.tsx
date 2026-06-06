@@ -315,6 +315,12 @@ const handlePrint = async () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 모바일 완성도 (사이드바와 동일 기준)
+  const progressItems = resumeType === "office"
+    ? [!!(phone && emailLocal), !!(introLocal.trim() && coreLocal.trim()), careers.length > 0, educations.length > 0, skills.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0]
+    : [!!(phone && emailLocal), !!introLocal.trim(), careers.length > 0, educations.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0];
+  const progressRate = Math.round((progressItems.filter(Boolean).length / progressItems.length) * 100);
+
   return (
     <div className="resume-page">
       <header className="resume-header">
@@ -406,6 +412,15 @@ const handlePrint = async () => {
         </aside>
 
         <main className="resume-editor">
+          <div className="resume-mobile-progress">
+            <div className="rmp-head">
+              <span>완성도</span>
+              <strong>{progressRate}%</strong>
+            </div>
+            <div className="rmp-bar">
+              <div className="rmp-fill" style={{ width: `${progressRate}%` }} />
+            </div>
+          </div>
           <div style={{
             margin: "0 0 16px",
             padding: "16px 18px",

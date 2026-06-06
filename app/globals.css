@@ -10136,3 +10136,13 @@ input[type="range"].career-slider::-moz-range-thumb {
     padding: 24px 18px;
   }
 }
+/* 모바일 완성도 바 (이력서 편집) */
+   .resume-mobile-progress { display: none; }
+   .rmp-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+   .rmp-head span { font-size: 13px; font-weight: 600; color: var(--color-text-sub); }
+   .rmp-head strong { font-size: 15px; font-weight: 700; color: var(--color-primary); }
+   .rmp-bar { height: 6px; background: var(--color-primary-soft); border-radius: 100px; overflow: hidden; }
+   .rmp-fill { height: 100%; background: var(--color-primary); border-radius: 100px; transition: width 0.3s; }
+   @media (max-width: 768px) {
+     .resume-mobile-progress { display: block; margin-bottom: 16px; padding: 14px 16px; background: #fff; border: 1px solid var(--color-border); border-radius: 12px; }
+   }
