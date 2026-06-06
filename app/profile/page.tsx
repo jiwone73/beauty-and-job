@@ -9,6 +9,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { STORE_SKILL_AREAS } from "@/lib/constants";
+import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import NotificationModal from "@/components/profile/NotificationModal";
 
 
@@ -25,7 +26,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const {
     name: signupName, birth, gender, phone,
-    skillAreas, workTypePrefer, regionPrefer, setStoreProfile,
+    skillAreas, workTypePrefer, setStoreProfile,
   } = useSignupStore();
 
   const [officeJobAreas, setOfficeJobAreas] = useState<string[]>([]);
@@ -43,6 +44,15 @@ export default function ProfilePage() {
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
+
+  // 거주지 주소 + 희망 근무지역
+  const [addressRoad, setAddressRoad] = useState("");
+  const [addressDetail, setAddressDetail] = useState("");
+  const [regionSido, setRegionSido] = useState("");
+  const [regionSigungu, setRegionSigungu] = useState("");
+  const [preferredRegions, setPreferredRegions] = useState<{ sido: string; sigungu: string }[]>([]);
+  const [prefSido, setPrefSido] = useState("");
+  const [prefSigungu, setPrefSigungu] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -62,12 +72,78 @@ export default function ProfilePage() {
           if (res.data.office_job_areas?.length > 0) {
             setOfficeJobAreas(res.data.office_job_areas);
           }
+          if (res.data.address_road) setAddressRoad(res.data.address_road);
+          if (res.data.address_detail) setAddressDetail(res.data.address_detail);
+          if (res.data.region_sido) setRegionSido(res.data.region_sido);
+          if (res.data.region_sigungu) setRegionSigungu(res.data.region_sigungu);
+          if (Array.isArray(res.data.preferred_regions)) setPreferredRegions(res.data.preferred_regions);
         }
       })
       .catch(console.error);
 
     useBookmarkStore.getState().loadFromServer();
   }, []);
+
+  // 공통 PATCH 헬퍼
+  const patchUser = async (body: Record<string, any>) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return false;
+    try {
+      const res = await fetch("/api/users/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return false; }
+      return true;
+    } catch { alert("네트워크 오류가 발생했습니다."); return false; }
+  };
+
+  // 카카오(다음) 우편번호 검색
+  const openPostcode = () => {
+    const run = () => {
+      new (window as any).daum.Postcode({
+        oncomplete: async (data: any) => {
+          const road = data.roadAddress || data.jibunAddress || data.address || "";
+          setAddressRoad(road);
+          setRegionSido(data.sido || "");
+          setRegionSigungu(data.sigungu || "");
+          await patchUser({
+            address_road: road,
+            region_sido: data.sido || "",
+            region_sigungu: data.sigungu || "",
+          });
+        },
+      }).open();
+    };
+    if ((window as any).daum?.Postcode) { run(); return; }
+    const script = document.createElement("script");
+    script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.onload = run;
+    document.body.appendChild(script);
+  };
+
+  // 희망 근무지역 추가
+  const addPreferredRegion = async () => {
+    if (!prefSido) { alert("시/도를 선택해주세요."); return; }
+    const sigungu = prefSido === "세종특별자치시" ? "" : prefSigungu;
+    if (prefSido !== "세종특별자치시" && !sigungu) { alert("시/군/구를 선택해주세요."); return; }
+    if (preferredRegions.length >= 5) { alert("희망 근무지역은 최대 5개까지 선택할 수 있어요."); return; }
+    if (preferredRegions.some((r) => r.sido === prefSido && r.sigungu === sigungu)) {
+      alert("이미 추가된 지역이에요."); return;
+    }
+    const next = [...preferredRegions, { sido: prefSido, sigungu }];
+    setPreferredRegions(next);
+    setPrefSido(""); setPrefSigungu("");
+    await patchUser({ preferred_regions: next });
+  };
+
+  const removePreferredRegion = async (idx: number) => {
+    const next = preferredRegions.filter((_, i) => i !== idx);
+    setPreferredRegions(next);
+    await patchUser({ preferred_regions: next });
+  };
 
   const saveOfficeJobAreas = async (newAreas: string[]) => {
     const token = localStorage.getItem("access_token");
@@ -331,6 +407,68 @@ export default function ProfilePage() {
               </div>
             </section>
 
+            {/* 거주지 · 희망 근무지역 (OFFICE/STORE 공통) */}
+            <section className="profile-section">
+              <div className="profile-section-head">
+                <h2 className="profile-section-title">거주지 · 희망 근무지역</h2>
+              </div>
+              <div className="profile-info-card" style={{ padding: "16px" }}>
+                <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "8px" }}>거주지 주소</label>
+                <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+                  <input readOnly value={addressRoad} placeholder="주소 검색을 눌러주세요"
+                    onClick={openPostcode}
+                    style={{ flex: 1, padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
+                  <button onClick={openPostcode}
+                    style={{ padding: "10px 16px", borderRadius: "8px", border: "1px solid #5f0080", background: "#5f0080", color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                    주소 검색
+                  </button>
+                </div>
+                {addressRoad && (
+                  <input value={addressDetail} placeholder="상세주소 (동·호수 등)"
+                    onChange={(e) => setAddressDetail(e.target.value)}
+                    onBlur={() => patchUser({ address_detail: addressDetail })}
+                    style={{ width: "100%", padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", marginBottom: "20px", boxSizing: "border-box" }} />
+                )}
+
+                <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "4px" }}>
+                  희망 근무지역 <span style={{ color: "#aaa", fontWeight: 400 }}>(최대 5개)</span>
+                </label>
+                <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "10px" }}>일하고 싶은 지역을 시/군/구 단위로 추가해주세요</p>
+                <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+                  <select value={prefSido} onChange={(e) => { setPrefSido(e.target.value); setPrefSigungu(""); }}
+                    style={{ flex: 1, minWidth: 0, padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", background: "#fff" }}>
+                    <option value="">시/도</option>
+                    {SIDO_LIST.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <select value={prefSigungu} onChange={(e) => setPrefSigungu(e.target.value)}
+                    disabled={!prefSido || prefSido === "세종특별자치시"}
+                    style={{ flex: 1, minWidth: 0, padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", background: (!prefSido || prefSido === "세종특별자치시") ? "#f5f5f5" : "#fff" }}>
+                    <option value="">{prefSido === "세종특별자치시" ? "해당 없음" : "시/군/구"}</option>
+                    {getSigunguList(prefSido).map((g) => <option key={g} value={g}>{g}</option>)}
+                  </select>
+                  <button onClick={addPreferredRegion}
+                    style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "2px", whiteSpace: "nowrap" }}>
+                    <Plus size={15} /> 추가
+                  </button>
+                </div>
+                {preferredRegions.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    {preferredRegions.map((r, i) => (
+                      <span key={`${r.sido}-${r.sigungu}-${i}`}
+                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 8px 6px 12px", borderRadius: "20px", background: "#f3e5f5", color: "#5f0080", fontSize: "13px", fontWeight: 600 }}>
+                        {r.sigungu ? `${r.sido} ${r.sigungu}` : r.sido}
+                        <button onClick={() => removePreferredRegion(i)}
+                          style={{ display: "flex", border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0 }}
+                          aria-label="삭제">
+                          <X size={14} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+
             {dbJobType === "OFFICE" && (
               <section className="profile-section">
                 <div className="profile-section-head">
@@ -368,7 +506,7 @@ export default function ProfilePage() {
                     ))}
                   </div>
                   <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "6px" }}>희망 근무 형태</label>
-                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                     {["풀타임", "파트타임", "주말근무 가능", "시급"].map((w) => (
                       <button key={w}
                         onClick={() => setStoreProfile({ workTypePrefer: workTypePrefer === w ? "" : w })}
@@ -377,10 +515,6 @@ export default function ProfilePage() {
                       </button>
                     ))}
                   </div>
-                  <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "6px" }}>희망 근무 지역</label>
-                  <input className="cv-input" placeholder="예: 서울 강남, 서울 홍대"
-                    defaultValue={regionPrefer}
-                    onBlur={(e) => setStoreProfile({ regionPrefer: e.target.value })} />
                 </div>
               </section>
             )}
