@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import {
-  LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Store,
+  LayoutDashboard, Users, Briefcase, Megaphone, Store,
   LogOut, Bell, Menu, X, ChevronDown, ChevronRight
 } from "lucide-react";
 
@@ -32,13 +32,6 @@ const NAV_ITEMS = [
       { id: "resumes-applications", label: "입사지원 관리", href: "/admin/resumes/applications" },
     ]
   },
-  {
-    id: "insights", label: "인사이트", icon: BookOpen, href: "/admin/insights",
-    children: [
-      { id: "insights", label: "글 목록", href: "/admin/insights" },
-      { id: "insights-new", label: "글 작성", href: "/admin/insights/new" },
-    ]
-  },
   { id: "ads", label: "문의 관리", icon: Megaphone, href: "/admin/ads" },
 ];
 
@@ -57,8 +50,6 @@ const PAGE_TITLES: Record<string, string> = {
   "resumes-scrapped": "스크랩 이력서",
   "resumes-viewed": "열람 이력서",
   "resumes-applications": "입사지원 관리",
-  "insights": "인사이트",
-  "insights-new": "글 작성",
   "ads": "문의 관리",
 };
 
@@ -66,7 +57,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [openMenus, setOpenMenus] = useState<string[]>(["jobs", "members", "resumes", "insights"]);
+  const [openMenus, setOpenMenus] = useState<string[]>(["jobs", "members", "resumes"]);
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {

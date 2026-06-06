@@ -85,8 +85,8 @@ export default function Header({ onSearchClick }: HeaderProps) {
             <Link href="/profile/resume" className="gnb-with-tag">
               이력서 등록
             </Link>
-            <Link href="/insights" className="gnb-with-tag">
-              뷰티 인사이트
+            <Link href="/stories" className="gnb-with-tag">
+              이야기
             </Link>
           </nav>
           <div className="header-right">
