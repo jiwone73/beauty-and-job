@@ -6173,12 +6173,17 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-sidebar-logo {
   padding: 20px 16px;
   border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .company-logo-link {
   display: flex;
   align-items: center;
   gap: 10px;
   text-decoration: none;
+  flex: 1;
+  min-width: 0;
 }
 .company-logo-avatar {
   width: 36px;

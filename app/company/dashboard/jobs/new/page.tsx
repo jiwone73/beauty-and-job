@@ -85,7 +85,15 @@ export default function CompanyJobNewPage() {
   const handleSubmit = async (status: "draft" | "publish") => {
     if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
     if (categories.length === 0) { alert(jobGroupType === "매장" ? "시술 분야를 선택해주세요." : "직군을 선택해주세요."); return; }
-
+    if (!form.career.trim()) { alert("경력 조건을 입력해주세요."); return; }
+    if (!form.region.trim()) { alert("근무지역을 입력해주세요."); return; }
+    // 본문 텍스트가 비어있고 이미지만 올린 경우: 검색 노출 경고 후 선택
+    if (!form.description.trim() && status === "publish") {
+      const proceed = confirm(
+        "상세 설명 없이 이미지만 등록하면 구직자 검색에 잘 노출되지 않을 수 있어요.\n\n검색 노출을 높이려면 '포지션 소개'에 텍스트를 입력하는 것을 권장해요.\n\n그래도 이대로 등록하시겠어요?"
+      );
+      if (!proceed) return;
+    }
     const token = localStorage.getItem("access_token");
     if (!token) { alert("로그인이 필요합니다."); return; }
 
@@ -286,8 +294,8 @@ export default function CompanyJobNewPage() {
           <div className="company-card-head"><h2 className="company-card-title">상세 내용</h2></div>
           <div className="admin-form-body">
             {[
-              { key: "description", label: "포지션 소개 *", placeholder: "이 포지션에 대한 소개를 입력하세요" },
-              { key: "requirements", label: "자격요건 *", placeholder: "필수 자격요건을 입력하세요" },
+              { key: "description", label: "포지션 소개 (검색 노출 권장)", placeholder: "이 포지션에 대한 소개를 입력하세요. 비워두고 상세 이미지로 대체할 수도 있어요." },
+              { key: "requirements", label: "자격요건", placeholder: "필수 자격요건을 입력하세요" },
               { key: "preferred", label: "우대사항", placeholder: "우대사항을 입력하세요" },
               { key: "benefits", label: jobGroupType === "매장" ? "근무조건·복지" : "복리후생", placeholder: "복리후생을 입력하세요" },
             ].map(({ key, label, placeholder }) => (

@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
   const result = await pool.query(
     `SELECT id, company_name, brand_name, business_number, company_type,
             email, phone, logo_url, description, website_url, address,
+            company_size, founded_year, region_sido, region_sigungu,
             status, created_at
      FROM companies WHERE id = $1`,
     [auth!.sub]
@@ -31,6 +32,7 @@ export async function PATCH(req: NextRequest) {
   const allowedFields = [
     "company_name", "brand_name", "phone",
     "logo_url", "description", "website_url", "address",
+    "company_size", "founded_year", "region_sido", "region_sigungu",
   ];
 
   const updates: string[] = [];
@@ -57,6 +59,7 @@ export async function PATCH(req: NextRequest) {
     WHERE id = $${idx++}
     RETURNING id, company_name, brand_name, business_number, company_type,
               email, phone, logo_url, description, website_url, address,
+              company_size, founded_year, region_sido, region_sigungu,
               status, created_at
   `;
 

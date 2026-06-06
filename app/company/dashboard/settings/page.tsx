@@ -4,6 +4,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import { Save } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import type { CompanyInfo } from "@/lib/types/company";
+import { SIDO_LIST, SIGUNGU_MAP } from "@/lib/regions";
 
 export default function CompanySettingsPage() {
   const [activeTab, setActiveTab] = useState<"brand" | "account">("brand");
@@ -21,6 +22,10 @@ export default function CompanySettingsPage() {
     website_url: "",
     address: "",
     phone: "",
+    company_size: "",
+    founded_year: "",
+    region_sido: "",
+    region_sigungu: "",
   });
 
   useEffect(() => {
@@ -36,6 +41,10 @@ export default function CompanySettingsPage() {
           website_url: res.data.website_url || "",
           address: (res.data as any).address || "",
           phone: (res.data as any).phone || "",
+          company_size: (res.data as any).company_size || "",
+          founded_year: (res.data as any).founded_year || "",
+          region_sido: (res.data as any).region_sido || "",
+          region_sigungu: (res.data as any).region_sigungu || "",
         });
       } catch (e) {
         console.error("[load company]", e);
@@ -126,7 +135,7 @@ export default function CompanySettingsPage() {
       </div>
 
       {activeTab === "brand" && (
-        <div className="admin-form-grid">
+        <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "800px" }}>
           <div className="company-card">
             <div className="company-card-head">
               <h2 className="company-card-title">브랜드 정보</h2>
@@ -195,12 +204,52 @@ export default function CompanySettingsPage() {
               </div>
 
               <div className="admin-form-row">
-                <label className="admin-form-label">주소</label>
-                <input className="admin-form-input" placeholder="예) 서울 강남구 테헤란로 123"
+                <label className="admin-form-label">지역</label>
+                <div style={{display:"flex", gap:"8px"}}>
+                  <select className="admin-form-select" style={{flex:1}}
+                    value={form.region_sido}
+                    onChange={(e) => setForm({ ...form, region_sido: e.target.value, region_sigungu: "" })}>
+                    <option value="">시/도 선택</option>
+                    {SIDO_LIST.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <select className="admin-form-select" style={{flex:1}}
+                    value={form.region_sigungu}
+                    disabled={!form.region_sido}
+                    onChange={(e) => setForm({ ...form, region_sigungu: e.target.value })}>
+                    <option value="">시/군/구 선택</option>
+                    {(SIGUNGU_MAP[form.region_sido] || []).map((g) => <option key={g} value={g}>{g}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="admin-form-row">
+                <label className="admin-form-label">상세주소</label>
+                <input className="admin-form-input" placeholder="예) 테헤란로 123, 5층"
                   value={form.address}
                   onChange={(e) => setForm({ ...form, address: e.target.value })} />
+                <p style={{fontSize:"12px", color:"#888", margin:"6px 0 0"}}>
+                  입력한 주소는 공고 상세에 지도로 표시돼요.
+                </p>
               </div>
-
+              <div className="admin-form-row">
+                <label className="admin-form-label">사원수</label>
+                <select className="admin-form-select"
+                  value={form.company_size}
+                  onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
+                  <option value="">선택</option>
+                  <option value="1~10명">1~10명</option>
+                  <option value="10~50명">10~50명</option>
+                  <option value="50~100명">50~100명</option>
+                  <option value="100~300명">100~300명</option>
+                  <option value="300~1000명">300~1000명</option>
+                  <option value="1000명 이상">1000명 이상</option>
+                </select>
+              </div>
+              <div className="admin-form-row">
+                <label className="admin-form-label">설립연도</label>
+                <input className="admin-form-input" placeholder="예) 2020"
+                  value={form.founded_year}
+                  onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
+              </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">기업 소개</label>
                 <textarea className="admin-form-textarea" rows={5}
@@ -214,7 +263,7 @@ export default function CompanySettingsPage() {
       )}
 
       {activeTab === "account" && (
-        <div className="admin-form-grid">
+        <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "800px" }}>
           <div className="company-card">
             <div className="company-card-head">
               <h2 className="company-card-title">계정 정보</h2>
@@ -259,7 +308,7 @@ export default function CompanySettingsPage() {
         </div>
       )}
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "20px", alignItems: "center" }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: "12px", margin: "24px 0 40px", alignItems: "center", maxWidth: "800px" }}>
         {savedMessage && (
           <span style={{ color: "#10b981", fontSize: "14px", fontWeight: 600 }}>
             {savedMessage}
@@ -269,9 +318,9 @@ export default function CompanySettingsPage() {
           className="company-primary-btn"
           onClick={handleSave}
           disabled={saving}
-          style={{ opacity: saving ? 0.7 : 1 }}
+          style={{ opacity: saving ? 0.7 : 1, minWidth: "200px", justifyContent: "center" }}
         >
-          <Save size={14} /> {saving ? "저장 중..." : "저장"}
+          <Save size={14} /> {saving ? "저장 중..." : "저장하기"}
         </button>
       </div>
     </CompanyLayout>

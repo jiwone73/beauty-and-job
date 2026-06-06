@@ -169,12 +169,22 @@ export default function JobDetailPage() {
             logo_url: j.company?.logo_url,
             detailImages: j.detail_images || [],
           });
+          // 로그인한 기업이 이 공고의 주인인지 판별
+          if (token) {
+            try {
+              const payload = JSON.parse(atob(token.split(".")[1]));
+              if (payload.owner_type === "company" && payload.sub === j.company?.id) {
+                setIsOwnerCompany(true);
+              }
+            } catch {}
+          }
         }
       })
       .catch(e => console.error('[load job]', e));
   }, [id]);
 
   const [bookmarked, setBookmarked] = useState(false);
+  const [isOwnerCompany, setIsOwnerCompany] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [applyDone, setApplyDone] = useState(false);
   const [dbApplied, setDbApplied] = useState(false);
@@ -421,8 +431,70 @@ export default function JobDetailPage() {
             <div className="job-detail-aside-deadline">
               마감일: <strong>{job.deadline}</strong>
             </div>
+            {isOwnerCompany ? (
+              <>
+                <div style={{
+                  background: "#f5f3ff", color: "#5f0080", borderRadius: "10px",
+                  padding: "12px 14px", fontSize: "13px", lineHeight: 1.5,
+                  textAlign: "center", marginBottom: "12px"
+                }}>
+                  구직자에게 보이는 미리보기 화면이에요.
+                </div>
+                <button
+                  className="job-detail-apply-btn"
+                  onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}
+                >
+                  공고 수정하기
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className={`job-detail-apply-btn ${alreadyApplied ? "applied" : ""}`}
+                  disabled={alreadyApplied}
+                  onClick={() => {
+                    if (alreadyApplied) return;
+                    if (!isLoggedIn) {
+                      setShowLoginModal(true);
+                    } else {
+                      setShowApplyModal(true);
+                    }
+                  }}
+                >
+                  {alreadyApplied ? "✓ 지원완료" : "지원하기"}
+                </button>
+                <button
+                  className={`job-detail-aside-bookmark ${bookmarked ? "active" : ""}`}
+                  onClick={() => setBookmarked(!bookmarked)}
+                >
+                  <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />
+                  {bookmarked ? "북마크 완료" : "북마크"}
+                </button>
+              </>
+            )}
+          </div>
+        </aside>
+      </div>
+
+      {/* 모바일 하단 CTA */}
+      <div className="job-detail-mobile-cta">
+        {isOwnerCompany ? (
+          <button
+            className="job-detail-mobile-apply"
+            onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}
+          >
+            공고 수정하기
+          </button>
+        ) : (
+          <>
             <button
-              className={`job-detail-apply-btn ${alreadyApplied ? "applied" : ""}`}
+              className={`job-detail-mobile-bookmark ${bookmarked ? "active" : ""}`}
+              onClick={() => setBookmarked(!bookmarked)}
+            >
+              <Bookmark size={20} fill={bookmarked ? "currentColor" : "none"} />
+            </button>
+            <button
+              className={`job-detail-mobile-apply ${alreadyApplied ? "applied" : ""}`}
               disabled={alreadyApplied}
               onClick={() => {
                 if (alreadyApplied) return;
@@ -435,39 +507,8 @@ export default function JobDetailPage() {
             >
               {alreadyApplied ? "✓ 지원완료" : "지원하기"}
             </button>
-            <button
-              className={`job-detail-aside-bookmark ${bookmarked ? "active" : ""}`}
-              onClick={() => setBookmarked(!bookmarked)}
-            >
-              <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />
-              {bookmarked ? "북마크 완료" : "북마크"}
-            </button>
-          </div>
-        </aside>
-      </div>
-
-      {/* 모바일 하단 CTA */}
-      <div className="job-detail-mobile-cta">
-        <button
-          className={`job-detail-mobile-bookmark ${bookmarked ? "active" : ""}`}
-          onClick={() => setBookmarked(!bookmarked)}
-        >
-          <Bookmark size={20} fill={bookmarked ? "currentColor" : "none"} />
-        </button>
-        <button
-          className={`job-detail-mobile-apply ${alreadyApplied ? "applied" : ""}`}
-          disabled={alreadyApplied}
-          onClick={() => {
-            if (alreadyApplied) return;
-            if (!isLoggedIn) {
-              setShowLoginModal(true);
-            } else {
-              setShowApplyModal(true);
-            }
-          }}
-        >
-          {alreadyApplied ? "✓ 지원완료" : "지원하기"}
-        </button>
+          </>
+        )}
       </div>
 
       {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} />}

@@ -78,15 +78,15 @@ export default function CompanyLayout({ children, activePage }: {
       <aside className={`company-sidebar ${sidebarOpen ? "" : "company-sidebar-closed"}`}>
         <div className="company-sidebar-logo">
           <Link href={base} className="company-logo-link">
-            {sidebarOpen && (
-              <div className="company-logo-info">
-                <span className="company-logo-name">{companyInfo.name}</span>
-                <span className="company-logo-category">{companyInfo.category}</span>
-              </div>
-            )}
+            <div className="company-logo-info">
+              <span className="company-logo-name">{companyInfo.name}</span>
+              <span className="company-logo-category">{companyInfo.category}</span>
+            </div>
           </Link>
-          <button className="company-sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            {sidebarOpen ? <X size={16} /> : <Menu size={16} />}
+          <button className="company-header-btn" onClick={() => router.push("/")}
+            style={{ marginLeft: "auto" }} aria-label="알림">
+            <Bell size={18} />
+            <span className="company-notif-dot" />
           </button>
         </div>
 
@@ -95,7 +95,7 @@ export default function CompanyLayout({ children, activePage }: {
             <Link key={item.id} href={item.href}
               className={`company-nav-item ${activePage === item.id ? "active" : ""}`}>
               <item.icon size={20} />
-              {sidebarOpen && <span>{item.label}</span>}
+              <span>{item.label}</span>
             </Link>
           ))}
         </nav>
@@ -103,7 +103,15 @@ export default function CompanyLayout({ children, activePage }: {
         <div className="company-sidebar-bottom">
           <button className="company-nav-item" onClick={() => router.push("/")}>
             <LogOut size={20} />
-            {sidebarOpen && <span>사이트로 이동</span>}
+            <span>사이트로 이동</span>
+          </button>
+          <button className="company-nav-item" onClick={() => {
+            localStorage.removeItem("access_token");
+            useAuthStore.getState().logout();
+            router.push("/company/login");
+          }}>
+            <LogOut size={20} />
+            <span>로그아웃</span>
           </button>
         </div>
       </aside>
@@ -111,19 +119,6 @@ export default function CompanyLayout({ children, activePage }: {
       <div className="company-main">
         <header className="company-header">
           <h1 className="company-page-title">{PAGE_TITLES[activePage] || "대시보드"}</h1>
-          <div className="company-header-right">
-            <button className="company-header-btn">
-              <Bell size={18} />
-              <span className="company-notif-dot" />
-            </button>
-            <button className="company-logout-btn" onClick={() => {
-              localStorage.removeItem("access_token");
-              useAuthStore.getState().logout();
-              router.push("/company/login");
-            }}>
-              <LogOut size={15} /> 로그아웃
-            </button>
-          </div>
         </header>
         <main className="company-content">{children}</main>
       </div>
