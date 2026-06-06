@@ -756,8 +756,7 @@ const handlePrint = async () => {
                   <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {portfolioFilename || "포트폴리오.pdf"}
                   </p>
-                  
-                  
+                  <a
                     href={portfolioUrl}
                     target="_blank"
                     rel="noopener noreferrer"
