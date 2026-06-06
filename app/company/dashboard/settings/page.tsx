@@ -4,7 +4,10 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import { Save } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import type { CompanyInfo } from "@/lib/types/company";
-import { SIDO_LIST, SIGUNGU_MAP } from "@/lib/regions";
+
+declare global {
+  interface Window { daum?: any; }
+}
 
 export default function CompanySettingsPage() {
   const [activeTab, setActiveTab] = useState<"brand" | "account">("brand");
@@ -95,7 +98,29 @@ export default function CompanySettingsPage() {
       console.error(e);
     }
   };
-
+  // 카카오 우편번호 검색
+  const handleAddressSearch = () => {
+    const open = () => {
+      new window.daum.Postcode({
+        oncomplete: (data: any) => {
+          setForm((prev) => ({
+            ...prev,
+            region_sido: data.sido || "",
+            region_sigungu: data.sigungu || "",
+            address: data.roadAddress || data.jibunAddress || "",
+          }));
+        },
+      }).open();
+    };
+    if (window.daum?.Postcode) {
+      open();
+    } else {
+      const script = document.createElement("script");
+      script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+      script.onload = open;
+      document.body.appendChild(script);
+    }
+  };
   const handleSave = async () => {
     if (!form.company_name.trim()) {
       alert("기업명은 필수입니다.");
@@ -204,30 +229,27 @@ export default function CompanySettingsPage() {
               </div>
 
               <div className="admin-form-row">
-                <label className="admin-form-label">지역</label>
+                <label className="admin-form-label">주소</label>
                 <div style={{display:"flex", gap:"8px"}}>
-                  <select className="admin-form-select" style={{flex:1}}
-                    value={form.region_sido}
-                    onChange={(e) => setForm({ ...form, region_sido: e.target.value, region_sigungu: "" })}>
-                    <option value="">시/도 선택</option>
-                    {SIDO_LIST.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                  <select className="admin-form-select" style={{flex:1}}
-                    value={form.region_sigungu}
-                    disabled={!form.region_sido}
-                    onChange={(e) => setForm({ ...form, region_sigungu: e.target.value })}>
-                    <option value="">시/군/구 선택</option>
-                    {(SIGUNGU_MAP[form.region_sido] || []).map((g) => <option key={g} value={g}>{g}</option>)}
-                  </select>
+                  <input className="admin-form-input" style={{flex:1, background:"#f9f9f9"}}
+                    placeholder="주소 검색을 눌러주세요" readOnly
+                    value={[form.region_sido, form.region_sigungu].filter(Boolean).join(" ")} />
+                  <button type="button" onClick={handleAddressSearch}
+                    style={{flexShrink:0, padding:"0 18px", borderRadius:"8px",
+                      border:"1px solid #5f0080", background:"#fff", color:"#5f0080",
+                      fontSize:"14px", fontWeight:600, cursor:"pointer"}}>
+                    주소 검색
+                  </button>
                 </div>
               </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">상세주소</label>
-                <input className="admin-form-input" placeholder="예) 테헤란로 123, 5층"
+                <input className="admin-form-input"
+                  placeholder="도로명 주소 (자동 입력) · 건물명·층·호수 직접 추가"
                   value={form.address}
                   onChange={(e) => setForm({ ...form, address: e.target.value })} />
                 <p style={{fontSize:"12px", color:"#888", margin:"6px 0 0"}}>
-                  입력한 주소는 공고 상세에 지도로 표시돼요.
+                  주소 검색 시 도로명 주소가 자동 입력돼요. 층·호수 등은 직접 추가하세요. 입력한 주소는 공고 상세에 지도로 표시돼요.
                 </p>
               </div>
               <div className="admin-form-row">
@@ -246,14 +268,15 @@ export default function CompanySettingsPage() {
               </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">설립연도</label>
-                <input className="admin-form-input" placeholder="예) 2020"
+                <input type="number" className="admin-form-input" placeholder="예) 2020"
+                  min="1900" max={new Date().getFullYear()}
                   value={form.founded_year}
                   onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
               </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">기업 소개</label>
                 <textarea className="admin-form-textarea" rows={5}
-                  placeholder="회사 소개를 입력해주세요."
+                  placeholder="회사를 소개하는 글을 입력해주세요. 여기에 작성한 내용은 채용공고 상세 페이지의 '회사 소개' 영역에 표시돼요."
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })} />
               </div>
