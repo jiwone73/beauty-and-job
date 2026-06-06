@@ -65,9 +65,9 @@ function ResumePageContent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 항목 접기/펴기 (경력·학력·자격증·활동) — 기본 접힘
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const toggleExpand = (key: string) =>
-    setExpanded((prev) => {
+    setCollapsed((prev) => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
       else next.add(key);
@@ -499,7 +499,7 @@ const handlePrint = async () => {
             ) : (
               careers.map((c) => {
                 const key = `career-${c.id}`;
-                const open = expanded.has(key);
+                const open = !collapsed.has(key);
                 return (
                   <div key={c.id} className="resume-career-item">
                     <div className="resume-career-head" onClick={() => toggleExpand(key)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
@@ -548,7 +548,7 @@ const handlePrint = async () => {
             ) : (
               educations.map((edu) => {
                 const key = `edu-${edu.id}`;
-                const open = expanded.has(key);
+                const open = !collapsed.has(key);
                 return (
                   <div key={edu.id} className="resume-edu-item">
                     <div onClick={() => toggleExpand(key)} style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
@@ -648,7 +648,7 @@ const handlePrint = async () => {
               <div className="resume-list">
                 {certificates.map((cert) => {
                   const key = `cert-${cert.id}`;
-                  const open = expanded.has(key);
+                  const open = !collapsed.has(key);
                   return (
                     <div key={cert.id} className="resume-list-item">
                       <p
@@ -696,7 +696,7 @@ const handlePrint = async () => {
               <div className="resume-list">
                 {experiences.map((x) => {
                   const key = `exp-${x.id}`;
-                  const open = expanded.has(key);
+                  const open = !collapsed.has(key);
                   return (
                     <div key={x.id} className="resume-list-item">
                       <p
