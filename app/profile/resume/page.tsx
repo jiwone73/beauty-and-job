@@ -1,915 +1,649 @@
 "use client";
-import { useState, useRef, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ChevronLeft, Download, Eye, Plus, X, FileText, Trash2, Upload, Printer, Pencil } from "lucide-react";
+import Link from "next/link";
+import { Settings, ChevronRight, Plus, CheckCircle2, X } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
-import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
-import ResumePreview from "@/components/profile/ResumePreview";
-import CareerEditModal from "@/components/profile/CareerEditModal";
-import LinkModal from "@/components/profile/LinkModal";
-import EducationModal from "@/components/profile/EducationModal";
-import LanguageModal from "@/components/profile/LanguageModal";
-import ExperienceModal from "@/components/profile/ExperienceModal";
-import SkillModal from "@/components/profile/SkillModal";
-import CertificateModal from "@/components/profile/CertificateModal";
+import { useBookmarkStore } from "@/lib/store/bookmarkStore";
+import { useProfileStore } from "@/lib/store/profileStore";
+import { STORE_SKILL_AREAS } from "@/lib/constants";
+import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
+import NotificationModal from "@/components/profile/NotificationModal";
 
-const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
 
-function ResumePageContent() {
+type ModalType = "notification" | null;
+
+const PRESET_SKILL_AREAS: string[] = [...STORE_SKILL_AREAS];
+const PRESET_OFFICE_JOB_AREAS = [
+  "마케팅", "MD·상품기획", "영업·글로벌", "R&D·연구개발", "디자인·VMD",
+  "SCM·물류·구매", "경영·재무·회계", "HR·교육", "IT·데이터",
+  "CS·고객경험", "법무·컴플라이언스", "기타",
+];
+
+export default function ProfilePage() {
   const router = useRouter();
-  const { name: signupName, birth, gender, job, jobCustom, phone, officeJobAreas, skillAreas, workTypePrefer, regionPrefer } = useSignupStore();
-  const { userName } = useAuthStore();
-  const name = signupName || userName || "";
   const {
-    intro, coreCompetencies, educations, careers,
-    skills, languages, experiences, links, email,
-    setIntro, setCoreCompetencies, setEmail,
-    addLink, updateLink, removeLink,
-    addSkill, removeSkill,
-    addLanguage, updateLanguage, removeLanguage,
-    addExperience, updateExperience, removeExperience,
-    addEducation, updateEducation, removeEducation,
-    addCareer, updateCareer, removeCareer, certificates, removeCertificate, updateCertificate,
-  } = useProfileStore();
+    name: signupName, birth, gender, phone,
+    skillAreas, workTypePrefer, setStoreProfile,
+  } = useSignupStore();
 
-  const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [resumeType, setResumeType] = useState<"office" | "salon">("office");
-  const [introLocal, setIntroLocal] = useState(intro);
-  const [coreLocal, setCoreLocal] = useState(coreCompetencies);
-  const [emailLocal, setEmailLocal] = useState(email);
-  const [showPreview, setShowPreview] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const previewRef = useRef<HTMLDivElement>(null);
+  const [officeJobAreas, setOfficeJobAreas] = useState<string[]>([]);
+  const { userName, userPhone } = useAuthStore();
+  const name = userName || signupName || "";
 
-  const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
+  const { setCareerVerified } = useProfileStore();
+
+  const [activeTab, setActiveTab] = useState<"profile" | "resume" | "applied" | "bookmarks">("profile");
+  const [openModal, setOpenModal] = useState<ModalType>(null);
+  const [editField, setEditField] = useState<string | null>(null);
+  const [birthInput, setBirthInput] = useState("");
+  const [emailEditInput, setEmailEditInput] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [careerModalOpen, setCareerModalOpen] = useState(false);
-  const [editCareer, setEditCareer] = useState<any>(null);
-  const [linkModalOpen, setLinkModalOpen] = useState(false);
-  const [editLink, setEditLink] = useState<any>(null);
-  const [eduModalOpen, setEduModalOpen] = useState(false);
-  const [editEdu, setEditEdu] = useState<any>(null);
-  const [langModalOpen, setLangModalOpen] = useState(false);
-  const [editLang, setEditLang] = useState<any>(null);
-  const [expModalOpen, setExpModalOpen] = useState(false);
-  const [editExp, setEditExp] = useState<any>(null);
-  const [skillModalOpen, setSkillModalOpen] = useState(false);
-  const [certModalOpen, setCertModalOpen] = useState(false);
-  const [editCert, setEditCert] = useState<any>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
+  // 거주지 주소 + 희망 근무지역
+  const [addressRoad, setAddressRoad] = useState("");
+  const [addressDetail, setAddressDetail] = useState("");
+  const [regionSido, setRegionSido] = useState("");
+  const [regionSigungu, setRegionSigungu] = useState("");
+  const [preferredRegions, setPreferredRegions] = useState<{ sido: string; sigungu: string }[]>([]);
+  const [prefSido, setPrefSido] = useState("");
+  const [prefSigungu, setPrefSigungu] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
+    if (!token) return;
 
-    // DB에서 프로필 동기화
     useProfileStore.getState().loadFromServer();
+
     fetch("/api/users/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
       .then((res) => {
         if (res.success) {
-          if (res.data.email) setEmailLocal(res.data.email);
-          if (res.data.job_type === "STORE") setResumeType("salon");
-          else setResumeType("office");
-          if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
+          if (res.data.job_type) setDbJobType(res.data.job_type);
+          if (res.data.email) setEmailInput(res.data.email);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
-          if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
+          if (res.data.office_job_areas?.length > 0) {
+            setOfficeJobAreas(res.data.office_job_areas);
+          }
+          if (res.data.address_road) setAddressRoad(res.data.address_road);
+          if (res.data.address_detail) setAddressDetail(res.data.address_detail);
+          if (res.data.region_sido) setRegionSido(res.data.region_sido);
+          if (res.data.region_sigungu) setRegionSigungu(res.data.region_sigungu);
+          if (Array.isArray(res.data.preferred_regions)) setPreferredRegions(res.data.preferred_regions);
         }
       })
       .catch(console.error);
+
+    useBookmarkStore.getState().loadFromServer();
   }, []);
 
-  const jobDisplay =
-    (job === "직접입력" ? jobCustom : job) ||
-    officeJobAreas[0] ||
-    skillAreas[0] ||
-    "직군 미설정";
-  const birthDisplay = birth
-    ? `${birth.slice(0, 4)}년 (${new Date().getFullYear() - Number(birth.slice(0, 4))}세, ${gender === "남성" ? "남" : "여"})`
-    : "";
-
-  // 경력 항목 기간 합산 → 총 경력 (겹치는 기간 중복 제거)
-  const calcTotalCareer = () => {
-    if (!careers || careers.length === 0) return "";
-    const periods: [number, number][] = [];
-    for (const c of careers) {
-      const s = String(c.startDate || "").match(/(\d{4})[.\-/]?(\d{1,2})?/);
-      if (!s) continue;
-      const startM = Number(s[1]) * 12 + (Number(s[2] || "1") - 1);
-      let endM: number;
-      if (!c.endDate || c.endDate === "재직 중") {
-        const now = new Date();
-        endM = now.getFullYear() * 12 + now.getMonth();
-      } else {
-        const e = String(c.endDate).match(/(\d{4})[.\-/]?(\d{1,2})?/);
-        if (!e) continue;
-        endM = Number(e[1]) * 12 + (Number(e[2] || "1") - 1);
-      }
-      if (endM >= startM) periods.push([startM, endM]);
-    }
-    if (periods.length === 0) return "";
-    periods.sort((a, b) => a[0] - b[0]);
-    let totalMonths = 0;
-    let [curS, curE] = periods[0];
-    for (let i = 1; i < periods.length; i++) {
-      const [s, e] = periods[i];
-      if (s <= curE) { curE = Math.max(curE, e); }
-      else { totalMonths += curE - curS; curS = s; curE = e; }
-    }
-    totalMonths += curE - curS;
-    const years = Math.floor(totalMonths / 12);
-    const months = totalMonths % 12;
-    if (years === 0 && months === 0) return "";
-    if (years === 0) return `총 ${months}개월`;
-    if (months === 0) return `총 ${years}년`;
-    return `총 ${years}년 ${months}개월`;
-  };
-  const totalCareer = calcTotalCareer();
-
-  const handleSave = async () => {
-    setIntro(introLocal);
-    setCoreCompetencies(coreLocal);
-    setEmail(emailLocal);
-    try {
-      await useProfileStore.getState().syncToDb();
-      alert("저장되었습니다.");
-    } catch (e) {
-      alert("저장에 실패했습니다. 다시 시도해주세요.");
-    }
-  };
-
-  const processFile = async (file: File) => {
-    if (file.type !== "application/pdf") {
-      alert("PDF 파일만 업로드 가능합니다.");
-      return;
-    }
-    if (file.size > MAX_PORTFOLIO_SIZE) {
-      alert("파일 크기는 5MB 이하여야 합니다.");
-      return;
-    }
-
+  // 공통 PATCH 헬퍼
+  const patchUser = async (body: Record<string, any>) => {
     const token = localStorage.getItem("access_token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
-
-    setIsUploading(true);
+    if (!token) return false;
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const res = await fetch("/api/users/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return false; }
+      return true;
+    } catch { alert("네트워크 오류가 발생했습니다."); return false; }
+  };
 
-      const res = await fetch("/api/users/me/portfolio", {
+  // 카카오(다음) 우편번호 검색
+  const openPostcode = () => {
+    const run = () => {
+      new (window as any).daum.Postcode({
+        oncomplete: async (data: any) => {
+          const road = data.roadAddress || data.jibunAddress || data.address || "";
+          setAddressRoad(road);
+          setRegionSido(data.sido || "");
+          setRegionSigungu(data.sigungu || "");
+          await patchUser({
+            address_road: road,
+            region_sido: data.sido || "",
+            region_sigungu: data.sigungu || "",
+          });
+        },
+      }).open();
+    };
+    if ((window as any).daum?.Postcode) { run(); return; }
+    const script = document.createElement("script");
+    script.src = "https://t1.daumcdn.net/mapjsdata/bundle/postcode/prod/postcode.v2.js";
+    script.onload = run;
+    document.body.appendChild(script);
+  };
+
+  // 희망 근무지역 추가
+  const addPreferredRegion = async () => {
+    if (!prefSido) { alert("시/도를 선택해주세요."); return; }
+    const sigungu = prefSido === "세종특별자치시" ? "" : prefSigungu;
+    if (prefSido !== "세종특별자치시" && !sigungu) { alert("시/군/구를 선택해주세요."); return; }
+    if (preferredRegions.length >= 5) { alert("희망 근무지역은 최대 5개까지 선택할 수 있어요."); return; }
+    if (preferredRegions.some((r) => r.sido === prefSido && r.sigungu === sigungu)) {
+      alert("이미 추가된 지역이에요."); return;
+    }
+    const next = [...preferredRegions, { sido: prefSido, sigungu }];
+    setPreferredRegions(next);
+    setPrefSido(""); setPrefSigungu("");
+    await patchUser({ preferred_regions: next });
+  };
+
+  const removePreferredRegion = async (idx: number) => {
+    const next = preferredRegions.filter((_, i) => i !== idx);
+    setPreferredRegions(next);
+    await patchUser({ preferred_regions: next });
+  };
+
+  const saveOfficeJobAreas = async (newAreas: string[]) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    setOfficeJobAreas(newAreas);
+    useAuthStore.getState().login({
+      ...useAuthStore.getState(),
+      userJobAreas: newAreas,
+    });
+    await fetch("/api/users/me", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ office_job_areas: newAreas }),
+    });
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 1024 * 1024) { alert("파일 크기는 1MB 이하여야 합니다."); return; }
+    if (!["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)) {
+      alert("JPG, PNG, WebP 이미지만 업로드 가능합니다."); return;
+    }
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    setAvatarUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const res = await fetch("/api/users/me/avatar", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
       const data = await res.json();
-      if (!data.success) {
-        alert(data.error?.message || "업로드에 실패했습니다.");
-        return;
-      }
-      setPortfolioUrl(data.data.portfolio_url);
-      setPortfolioFilename(data.data.portfolio_filename);
-      alert("포트폴리오가 업로드되었습니다.");
-    } catch (e) {
-      console.error(e);
-      alert("업로드 중 오류가 발생했습니다.");
+      if (data.success) setAvatarUrl(data.data.avatar_url);
+      else alert(data.error?.message || "업로드에 실패했습니다.");
+    } catch {
+      alert("네트워크 오류가 발생했습니다.");
     } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setAvatarUploading(false);
+      e.target.value = "";
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) processFile(file);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) processFile(file);
-  };
-
-  const handleDeletePortfolio = async () => {
-    if (!confirm("포트폴리오를 삭제하시겠어요?")) return;
+  const handleAvatarDelete = async () => {
+    if (!confirm("프로필 사진을 삭제하시겠어요?")) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
-
+    setAvatarUploading(true);
     try {
-      const res = await fetch("/api/users/me/portfolio", {
+      const res = await fetch("/api/users/me/avatar", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      if (!data.success) {
-        alert("삭제에 실패했습니다.");
-        return;
-      }
-      setPortfolioUrl(null);
-      setPortfolioFilename(null);
-      alert("포트폴리오가 삭제되었습니다.");
+      if (data.success) setAvatarUrl(null);
     } catch (e) {
       console.error(e);
-    }
-  };
-
-  const handleDownload = async () => {
-    setIsDownloading(true);
-    try {
-      const html2canvas = (await import("html2canvas")).default;
-      const jsPDF = (await import("jspdf")).default;
-      setShowPreview(true);
-      await new Promise((r) => setTimeout(r, 600));
-      if (!previewRef.current) return;
-      const canvas = await html2canvas(previewRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-      });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      let heightLeft = pdfHeight;
-      let position = 0;
-      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-      heightLeft -= pageHeight;
-      while (heightLeft > 0) {
-        position = heightLeft - pdfHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pageHeight;
-      }
-      const fileName = name ? `${name}_이력서.pdf` : "이력서.pdf";
-      pdf.save(fileName);
-      setShowPreview(false);
-    } catch (e) {
-      alert("다운로드 중 오류가 발생했습니다.");
-      setShowPreview(false);
     } finally {
-      setIsDownloading(false);
+      setAvatarUploading(false);
     }
   };
-const handlePrint = async () => {
-    if (!previewRef.current) return;
-    try {
-      const html2canvas = (await import("html2canvas")).default;
-      await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(previewRef.current, {
-        scale: 2, useCORS: true, backgroundColor: "#ffffff",
-      });
-      const imgData = canvas.toDataURL("image/png");
-      const w = window.open("", "_blank");
-      if (!w) return;
-      w.document.write(`<html><head><title>이력서 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" onload="window.print();window.close()" /></body></html>`);
-      w.document.close();
-    } catch (e) {
-      alert("인쇄 준비 중 오류가 발생했습니다.");
-    }
-  };
-  // URL ?action=preview 또는 ?action=download 자동 트리거
-  const searchParams = useSearchParams();
-  useEffect(() => {
-    const action = searchParams.get("action");
-    if (action === "preview") {
-      setShowPreview(true);
-    } else if (action === "download") {
-      setTimeout(() => handleDownload(), 500);
-    }
-    if (action) {
-      window.history.replaceState({}, "", "/profile/resume");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
-    <div className="resume-page">
-      <header className="resume-header">
-        <div className="resume-header-inner">
-          <Link href="/" className="resume-logo">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={110} height={28} priority />
+    <main className="profile-page">
+      <header className="profile-header">
+        <div className="profile-header-inner">
+          <Link href="/" className="profile-logo">
+            <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} priority />
           </Link>
-          <div className="resume-header-actions">
-            <button className="resume-back-btn" onClick={() => router.push("/profile")}>
-              <ChevronLeft size={16} />
-              <span>프로필</span>
-            </button>
-            <button className="resume-action-btn" onClick={() => setShowPreview(true)}>
-              <Eye size={16} /><span>미리보기</span>
-            </button>
-            <button
-              className="resume-action-btn"
-              onClick={handleDownload}
-              disabled={isDownloading}
-            >
-              <Download size={16} />
-              <span>{isDownloading ? "저장 중..." : "다운로드"}</span>
-            </button>
-          </div>
+          <button
+            className="profile-settings-btn"
+            onClick={() => setOpenModal("notification")}
+            aria-label="알림 설정"
+          >
+            <Settings size={22} />
+          </button>
         </div>
       </header>
 
-      <div className="resume-subheader">
-        <h1 className="resume-subheader-title">이력서 편집</h1>
+      <div className="profile-tabs">
+        <button className={`profile-tab ${activeTab === "profile" ? "active" : ""}`} onClick={() => setActiveTab("profile")}>프로필</button>
+        <button className="profile-tab" onClick={() => router.push("/profile/resume")}>이력서</button>
+        <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>지원현황</button>
+        <button className={`profile-tab ${activeTab === "bookmarks" ? "active" : ""}`} onClick={() => setActiveTab("bookmarks")}>관심공고</button>
       </div>
 
-      <div className="resume-layout">
-        <aside className="resume-sidebar">
-          <p className="resume-sidebar-title">섹션 구성</p>
-          {(() => {
-            const sections = resumeType === "office" ? [
-              { id: "basic", label: "기본 정보", done: !!(phone && emailLocal) },
-              { id: "intro", label: "소개 · 핵심역량", done: !!(introLocal.trim() && coreLocal.trim()) },
-              { id: "career", label: "경력", done: careers.length > 0 },
-              { id: "education", label: "학력", done: educations.length > 0 },
-              { id: "skill", label: "스킬", done: skills.length > 0 },
-              { id: "language", label: "어학", done: languages.length > 0 },
-              { id: "certificate", label: "자격증", done: certificates.length > 0 },
-              { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              { id: "portfolio", label: "포트폴리오", done: !!portfolioUrl },
-              { id: "link", label: "링크", done: links.length > 0 },
-            ] : [
-              { id: "basic", label: "기본 정보", done: !!(phone && emailLocal) },
-              { id: "intro", label: "소개", done: !!introLocal.trim() },
-              { id: "career", label: "경력 (근무 매장)", done: careers.length > 0 },
-              { id: "education", label: "학력", done: educations.length > 0 },
-              { id: "language", label: "어학", done: languages.length > 0 },
-              { id: "certificate", label: "자격증", done: certificates.length > 0 },
-              { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              { id: "portfolio", label: "포트폴리오", done: !!portfolioUrl },
-              { id: "link", label: "링크", done: links.length > 0 },
-            ];
-            const doneCount = sections.filter((s) => s.done).length;
-            const rate = Math.round((doneCount / sections.length) * 100);
-            return (
-              <>
-                <div className="resume-completion">
-                  <div className="resume-completion-head">
-                    <span>완성도</span>
-                    <strong>{rate}%</strong>
+      <div className="profile-content">
+        {activeTab === "applied" ? (
+          <AppliedTab />
+        ) : activeTab === "bookmarks" ? (
+          <BookmarksTab />
+        ) : activeTab === "profile" ? (
+          <>
+            {dbJobType && (
+              <div style={{ margin: "16px 0", padding: "14px 16px", background: "#fff", border: "1px solid #f0e8f8", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ fontSize: "20px" }}>{dbJobType === "STORE" ? "🏪" : "🏢"}</span>
+                  <div>
+                    <p style={{ fontSize: "11px", color: "#888", marginBottom: "2px" }}>지금 찾고 있는 채용</p>
+                    <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a" }}>
+                      {dbJobType === "STORE" ? "매장·샵 채용" : "기업·브랜드 채용"}
+                    </p>
                   </div>
-                  <div className="resume-completion-bar">
-                    <div className="resume-completion-fill" style={{ width: `${rate}%` }} />
-                  </div>
-                  <p className="resume-completion-text">{doneCount}/{sections.length} 항목 완료</p>
                 </div>
-                {sections.map((sec) => (
-                  <button
-                    key={sec.id}
-                    className={`resume-sidebar-item ${activeSection === sec.id ? "active" : ""}`}
-                    onClick={() => {
-                      setActiveSection(sec.id);
-                      const el = document.getElementById(`section-${sec.id}`);
-                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }}
-                  >
-                    <span className="resume-sidebar-check">{sec.done ? "✓" : "○"}</span>
-                    {sec.label}
-                  </button>
-                ))}
-              </>
-            );
-          })()}
-        </aside>
-
-        <main className="resume-editor">
-          <div style={{
-            margin: "0 0 16px",
-            padding: "16px 18px",
-            background: "#fff",
-            border: "1px solid #f0e8f8",
-            borderRadius: "12px",
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}>
-            <span style={{ fontSize: "22px" }}>{resumeType === "salon" ? "🏪" : "🏢"}</span>
-            <div>
-              <p style={{ fontSize: "12px", color: "#888", marginBottom: "2px" }}>작성 중인 이력서 유형</p>
-              <p style={{ fontSize: "15px", fontWeight: 600, color: "#1a1a1a" }}>
-                {resumeType === "salon" ? "매장·기술직 이력서" : "기업·브랜드 이력서"}
-              </p>
-            </div>
-          </div>
-
-          <section id="section-basic" className="resume-section">
-            <h2 className="resume-section-title">기본 정보</h2>
-            <div className="resume-basic-info">
-              <div className="resume-name-block">
-                <h3 className="resume-name">{name || "이름"}</h3>
-                <p className="resume-job-line">{birthDisplay} {birthDisplay && "·"} {jobDisplay}</p>
-                <p className="resume-contact">{phone || ""} {phone && emailLocal ? "·" : ""} {emailLocal}</p>
               </div>
-              <div className="resume-field-group">
-                <label className="resume-field-label">이메일</label>
-                <input
-                  className="resume-input"
-                  placeholder="이메일을 입력해 주세요."
-                  value={emailLocal}
-                  onChange={(e) => setEmailLocal(e.target.value)}
-                  onBlur={() => setEmail(emailLocal)}
-                />
-              </div>
-            </div>
-          </section>
-
-          <section id="section-intro" className="resume-section">
-            <div className="resume-section-head">
-              <h2 className="resume-section-title">소개 & 핵심역량</h2>
-            </div>
-            <label className="resume-field-label">소개 <span className="resume-required">* (0/300자)</span></label>
-            <textarea
-              className="resume-textarea"
-              placeholder={resumeType === "office"
-                ? `채용 담당자가 가장 먼저 읽게되는 글이에요.\n예시) 소비자 관점과 브랜드 관점을 모두 이해하는 3년차 뷰티 마케터입니다.`
-                : `나를 표현하는 한 줄 소개를 작성해보세요.\n예시) 섬세한 손기술과 트렌드 감각을 갖춘 5년 경력 네일 아티스트입니다.`}
-              maxLength={300}
-              value={introLocal}
-              onChange={(e) => setIntroLocal(e.target.value)}
-              onBlur={() => setIntro(introLocal)}
-            />
-            {resumeType === "office" && (
-              <>
-                <label className="resume-field-label">핵심 역량 <span className="resume-required">* (0/300자)</span></label>
-                <textarea
-                  className="resume-textarea"
-                  placeholder={`핵심역량 3~5가지를 정리해보세요`}
-                  maxLength={300}
-                  value={coreLocal}
-                  onChange={(e) => setCoreLocal(e.target.value)}
-                  onBlur={() => setCoreCompetencies(coreLocal)}
-                />
-              </>
             )}
-          </section>
 
-          <section id="section-career" className="resume-section">
-            <div className="resume-section-head">
-              <h2 className="resume-section-title">
-                {resumeType === "office" ? "경력" : "경력 (근무 매장)"}
-                {totalCareer && (
-                  <span style={{ marginLeft: "8px", fontSize: "14px", fontWeight: 500, color: "#5f0080" }}>
-                    · {totalCareer}
-                  </span>
+            <section className="profile-section">
+              <div className="profile-section-head">
+                <h2 className="profile-section-title">기본 정보 <CheckCircle2 size={16} className="profile-check" /></h2>
+              </div>
+              <div className="profile-info-card">
+                <div style={{ padding: "16px 14px", borderBottom: "1px solid #f0e8f8", display: "flex", alignItems: "center", gap: "14px" }}>
+                  <div style={{ flexShrink: 0, width: "80px", height: "80px", borderRadius: "50%", background: "#f0e8f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: "2px solid #ede0f8" }}>
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <span style={{ fontSize: "30px", color: "#a888c0" }}>👤</span>
+                    )}
+                    {avatarUploading && (
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#5f0080", fontWeight: 600 }}>
+                        업로드중
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: "16px", fontWeight: 600, margin: "0 0 6px" }}>{name || "회원"}</p>
+                    <div style={{ display: "flex", gap: "6px", marginBottom: "4px" }}>
+                      <label style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
+                        {avatarUrl ? "변경" : "사진 추가"}
+                        <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleAvatarUpload} style={{ display: "none" }} />
+                      </label>
+                      {avatarUrl && (
+                        <button onClick={handleAvatarDelete} style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0e0e0", background: "#fff", color: "#888", fontSize: "11px", cursor: "pointer" }}>
+                          삭제
+                        </button>
+                      )}
+                    </div>
+                    <p style={{ fontSize: "10px", color: "#aaa", margin: 0 }}>JPG/PNG/WebP, 1MB 이하</p>
+                  </div>
+                </div>
+
+                <InfoRow label="휴대전화" value={userPhone || phone || "정보 없음"} />
+
+                {editField === "birth" ? (
+                  <div className="profile-info-row" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <span className="profile-info-label">생년월일</span>
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                        <button
+                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
+                          onClick={async () => {
+                            if (!/^\d{8}$/.test(birthInput)) { alert("생년월일을 YYYYMMDD 8자리로 입력해주세요. (예: 19900115)"); return; }
+                            try {
+                              const token = localStorage.getItem("access_token");
+                              const res = await fetch("/api/users/me", {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                body: JSON.stringify({ birth: birthInput }),
+                              });
+                              const data = await res.json();
+                              if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
+                              useSignupStore.getState().setBasic({ birth: birthInput });
+                              setEditField(null);
+                            } catch { alert("네트워크 오류가 발생했습니다."); }
+                          }}>
+                          저장
+                        </button>
+                        <button onClick={() => setEditField(null)}
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>취소</button>
+                      </span>
+                    </div>
+                    <input
+                      type="text" placeholder="YYYYMMDD (예: 19900115)" maxLength={8}
+                      value={birthInput}
+                      onChange={(e) => setBirthInput(e.target.value.replace(/\D/g, ""))}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px" }}
+                    />
+                  </div>
+                ) : (
+                  <InfoRow label="생년월일" value={birth ? `${birth.slice(0, 4)}.${birth.slice(4, 6) || "00"}.${birth.slice(6, 8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => { setBirthInput(birth || ""); setEditField("birth"); }} />
                 )}
-              </h2>
-              <button className="resume-icon-btn" aria-label="경력 추가" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
-                <Plus size={18} />
-              </button>
-            </div>
-            {careers.length === 0 ? (
-              <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
-                  <Plus size={16} /> 경력 추가하기
-                </button>
-              </div>
-            ) : (
-              careers.map((c) => (
-                <div key={c.id} className="resume-career-item">
-                  <div className="resume-career-head">
-                    <strong>{c.company}</strong>
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                      <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCareer(c); setCareerModalOpen(true); }}>
-                        <Pencil size={15} />
-                      </button>
-                      <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}>
-                        <Trash2 size={15} />
-                      </button>
-                    </span>
-                  </div>
-                  <span className="resume-career-period">{c.startDate} - {c.endDate}</span>
-                  {c.department && <p className="resume-career-dept">{c.department} · {c.position}</p>}
-                  {c.description && <p className="resume-career-dept" style={{ whiteSpace: "pre-line", marginTop: "4px", color: "#555" }}>{c.description}</p>}
-                </div>
-              ))
-            )}
-          </section>
 
-          <section id="section-education" className="resume-section">
-            <div className="resume-section-head">
-              <h2 className="resume-section-title">학력</h2>
-              <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
-                <Plus size={18} />
-              </button>
-            </div>
-            {educations.length === 0 ? (
-              <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
-                  <Plus size={16} /> 학력 추가하기
-                </button>
-              </div>
-            ) : (
-              educations.map((edu) => (
-                <div key={edu.id} className="resume-edu-item">
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <strong>{edu.school}</strong>
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                      <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditEdu(edu); setEduModalOpen(true); }}>
-                        <Pencil size={15} />
+                {editField === "gender" ? (
+                  <div className="profile-info-row is-last" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <span className="profile-info-label">성별</span>
+                      <button onClick={() => setEditField(null)}
+                        style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>
+                        취소
                       </button>
-                      <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(edu.id); }}>
-                        <Trash2 size={15} />
-                      </button>
-                    </span>
-                  </div>
-                  <span className="resume-edu-info">{edu.major} · {edu.status}</span>
-                  <span className="resume-edu-period">{edu.startDate} - {edu.endDate}</span>
-                </div>
-              ))
-            )}
-          </section>
-          {resumeType === "office" && (
-          <section id="section-skill" className="resume-section">
-            <div className="resume-section-head">
-              <h2 className="resume-section-title">스킬</h2>
-              <button className="resume-icon-btn" aria-label="스킬 추가" onClick={() => setSkillModalOpen(true)}>
-                <Plus size={18} />
-              </button>
-            </div>
-            {skills.length > 0 ? (
-              <div className="resume-skill-chips">
-                {skills.map((sk) => <span key={sk} className="resume-skill-chip">{sk}</span>)}
-              </div>
-            ) : (
-              <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => setSkillModalOpen(true)}>
-                  <Plus size={16} /> 스킬 추가하기
-                </button>
-              </div>
-           )}
-          </section>
-          )}
-          <section id="section-language" className="resume-section">
-            <div className="resume-section-head">
-              <h2 className="resume-section-title">어학</h2>
-              <button className="resume-icon-btn" aria-label="어학 추가" onClick={() => { setEditLang(null); setLangModalOpen(true); }}>
-                <Plus size={18} />
-              </button>
-            </div>
-            {languages.length > 0 ? (
-              <div className="resume-list">
-                {languages.map((lang) => (
-                  <div key={lang.id} className="resume-list-item">
-                    <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
-                      {lang.language}
-                      <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
-                      <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                        <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLang(lang); setLangModalOpen(true); }}>
-                          <Pencil size={15} />
+                    </div>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      {["남성", "여성"].map((g) => (
+                        <button key={g}
+                          style={{ flex: 1, padding: "10px", borderRadius: "8px", fontSize: "14px", cursor: "pointer", border: gender === g ? "1.5px solid #5f0080" : "1px solid #ddd", background: gender === g ? "#5f0080" : "#fff", color: gender === g ? "#fff" : "#666", fontWeight: gender === g ? 600 : 400 }}
+                          onClick={async () => {
+                            try {
+                              const token = localStorage.getItem("access_token");
+                              const res = await fetch("/api/users/me", {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                body: JSON.stringify({ gender: g }),
+                              });
+                              const data = await res.json();
+                              if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
+                              useSignupStore.getState().setBasic({ gender: g as "남성" | "여성" });
+                              setEditField(null);
+                            } catch { alert("네트워크 오류가 발생했습니다."); }
+                          }}>
+                          {g}
                         </button>
-                        <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 어학을 삭제할까요?")) removeLanguage(lang.id); }}>
-                          <Trash2 size={15} />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setEditField("gender")} />
+                )}
+
+                {editField === "email" ? (
+                  <div className="profile-info-row is-last" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <span className="profile-info-label">이메일</span>
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                        <button
+                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
+                          onClick={async () => {
+                            const val = emailEditInput.trim();
+                            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { alert("올바른 이메일 형식을 입력해주세요."); return; }
+                            try {
+                              const token = localStorage.getItem("access_token");
+                              const res = await fetch("/api/users/me", {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                body: JSON.stringify({ email: val }),
+                              });
+                              const data = await res.json();
+                              if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
+                              setEmailInput(val);
+                              setEditField(null);
+                            } catch { alert("네트워크 오류가 발생했습니다."); }
+                          }}>
+                          저장
+                        </button>
+                        <button onClick={() => setEditField(null)}
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>취소</button>
+                      </span>
+                    </div>
+                    <input
+                      type="email" placeholder="example@email.com"
+                      value={emailEditInput}
+                      onChange={(e) => setEmailEditInput(e.target.value)}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px" }}
+                    />
+                  </div>
+                ) : (
+                  <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => { setEmailEditInput(emailInput || ""); setEditField("email"); }} isLast />
+                )}
+              </div>
+            </section>
+
+            {/* 거주지 · 희망 근무지역 (OFFICE/STORE 공통) */}
+            <section className="profile-section">
+              <div className="profile-section-head">
+                <h2 className="profile-section-title">거주지 · 희망 근무지역</h2>
+              </div>
+              <div className="profile-info-card" style={{ padding: "16px" }}>
+                <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "8px" }}>거주지 주소</label>
+                <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+                  <input readOnly value={addressRoad} placeholder="주소 검색을 눌러주세요"
+                    onClick={openPostcode}
+                    style={{ flex: 1, padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
+                  <button onClick={openPostcode}
+                    style={{ padding: "10px 16px", borderRadius: "8px", border: "1px solid #5f0080", background: "#5f0080", color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                    주소 검색
+                  </button>
+                </div>
+                {addressRoad && (
+                  <input value={addressDetail} placeholder="상세주소 (동·호수 등)"
+                    onChange={(e) => setAddressDetail(e.target.value)}
+                    onBlur={() => patchUser({ address_detail: addressDetail })}
+                    style={{ width: "100%", padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", marginBottom: "20px", boxSizing: "border-box" }} />
+                )}
+
+                <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "4px" }}>
+                  희망 근무지역 <span style={{ color: "#aaa", fontWeight: 400 }}>(최대 5개)</span>
+                </label>
+                <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "10px" }}>일하고 싶은 지역을 시/군/구 단위로 추가해주세요</p>
+                <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+                  <select value={prefSido} onChange={(e) => { setPrefSido(e.target.value); setPrefSigungu(""); }}
+                    style={{ flex: 1, minWidth: 0, padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", background: "#fff" }}>
+                    <option value="">시/도</option>
+                    {SIDO_LIST.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <select value={prefSigungu} onChange={(e) => setPrefSigungu(e.target.value)}
+                    disabled={!prefSido || prefSido === "세종특별자치시"}
+                    style={{ flex: 1, minWidth: 0, padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", background: (!prefSido || prefSido === "세종특별자치시") ? "#f5f5f5" : "#fff" }}>
+                    <option value="">{prefSido === "세종특별자치시" ? "해당 없음" : "시/군/구"}</option>
+                    {getSigunguList(prefSido).map((g) => <option key={g} value={g}>{g}</option>)}
+                  </select>
+                  <button onClick={addPreferredRegion}
+                    style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "2px", whiteSpace: "nowrap" }}>
+                    <Plus size={15} /> 추가
+                  </button>
+                </div>
+                {preferredRegions.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    {preferredRegions.map((r, i) => (
+                      <span key={`${r.sido}-${r.sigungu}-${i}`}
+                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 8px 6px 12px", borderRadius: "20px", background: "#f3e5f5", color: "#5f0080", fontSize: "13px", fontWeight: 600 }}>
+                        {r.sigungu ? `${r.sido} ${r.sigungu}` : r.sido}
+                        <button onClick={() => removePreferredRegion(i)}
+                          style={{ display: "flex", border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0 }}
+                          aria-label="삭제">
+                          <X size={14} />
                         </button>
                       </span>
-                    </p>
-                    {lang.test && (
-                      <p style={{ color: "#888", fontSize: "13px" }}>{lang.test}</p>
-                    )}
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            ) : (
-              <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => { setEditLang(null); setLangModalOpen(true); }}>
-                  <Plus size={16} /> 어학 추가하기
-                </button>
-              </div>
-            )}
-          </section>
-          <section id="section-certificate" className="resume-section">
-            <div className="resume-section-head">
-              <h2 className="resume-section-title">자격증</h2>
-              <button className="resume-icon-btn" aria-label="자격증 추가" onClick={() => { setEditCert(null); setCertModalOpen(true); }}>
-                <Plus size={18} />
-              </button>
-            </div>
-            {certificates.length > 0 ? (
-              <div className="resume-list">
-                {certificates.map((cert) => (
-                  <div key={cert.id} className="resume-list-item">
-                    <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
-                      {cert.name}
-                      {cert.issued_ym && (
-                        <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666", fontSize: "13px" }}>{cert.issued_ym}</span>
-                      )}
-                      <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                        <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCert(cert); setCertModalOpen(true); }}>
-                          <Pencil size={15} />
-                        </button>
-                        <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 자격증을 삭제할까요?")) removeCertificate(cert.id); }}>
-                          <Trash2 size={15} />
-                        </button>
-                      </span>
-                    </p>
-                    {cert.issuer && (
-                      <p style={{ color: "#888", fontSize: "13px" }}>{cert.issuer}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => { setEditCert(null); setCertModalOpen(true); }}>
-                  <Plus size={16} /> 자격증 추가하기
-                </button>
-              </div>
-            )}
-          </section>
+            </section>
 
-          <section id="section-experience" className="resume-section">
-            <div className="resume-section-head">
-              <h2 className="resume-section-title">활동/수상</h2>
-              <button className="resume-icon-btn" aria-label="활동 추가" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
-              <Plus size={18} />
-              </button>
-            </div>
-            {experiences.length > 0 ? (
-              <div className="resume-list">
-                {experiences.map((x) => (
-                  <div key={x.id} className="resume-list-item">
-                    <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
-                      {x.category && (
-                        <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>
-                      )}
-                      {x.title}
-                      <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                        <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditExp(x); setExpModalOpen(true); }}>
-                          <Pencil size={15} />
-                        </button>
-                        <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
-                          <Trash2 size={15} />
-                        </button>
-                      </span>
-                    </p>
-                    {x.description && (
-                      <p style={{ color: "#666", fontSize: "14px" }}>{x.description}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
-                  <Plus size={16} /> 활동 추가하기
-                </button>
-              </div>
-            )}
-          </section>
-          <section id="section-portfolio" className="resume-section">
-            <div className="resume-section-head">
-              <h2 className="resume-section-title">포트폴리오</h2>
-            </div>
-            <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
-              PDF 파일을 첨부해 주세요 (최대 5MB).
-              {resumeType === "salon" && " 시술 사진을 모은 PDF를 추천드려요."}
-            </p>
-
-            {portfolioUrl ? (
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                padding: "16px",
-                background: "#f9f5fc",
-                border: "1.5px solid #e0d0f0",
-                borderRadius: "12px",
-              }}>
-                <FileText size={32} color="#5f0080" />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {portfolioFilename || "포트폴리오.pdf"}
-                  </p>
-                  
-                  <a
-                    href={portfolioUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ fontSize: "12px", color: "#5f0080", textDecoration: "underline" }}
-                  >
-                    파일 열기
-                  </a>
+            {dbJobType === "OFFICE" && (
+              <section className="profile-section">
+                <div className="profile-section-head">
+                  <h2 className="profile-section-title">직군 영역</h2>
                 </div>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  style={{
-                    padding: "8px 14px", borderRadius: "8px", border: "1px solid #5f0080",
-                    background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600,
-                    cursor: isUploading ? "not-allowed" : "pointer"
-                  }}
-                >
-                  {isUploading ? "업로드 중..." : "교체"}
-                </button>
-                <button
-                  onClick={handleDeletePortfolio}
-                  style={{
-                    padding: "8px", borderRadius: "8px", border: "1px solid #e74c3c",
-                    background: "#fff", color: "#e74c3c", cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center"
-                  }}
-                  aria-label="삭제"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ) : (
-              <div
-                onClick={() => !isUploading && fileInputRef.current?.click()}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                style={{
-                  width: "100%", padding: "40px 16px",
-                  borderRadius: "12px",
-                  border: `2px dashed ${isDragOver ? "#5f0080" : "#d0c0e0"}`,
-                  background: isDragOver ? "#f3e5f5" : "#fafafa",
-                  color: "#5f0080",
-                  fontSize: "14px", fontWeight: 600,
-                  cursor: isUploading ? "not-allowed" : "pointer",
-                  display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
-                  transition: "all 0.15s ease",
-                  textAlign: "center"
-                }}
-              >
-                <Upload size={32} />
-                <span>
-                  {isUploading
-                    ? "업로드 중..."
-                    : isDragOver
-                      ? "여기에 놓으세요"
-                      : "PDF를 끌어다 놓거나 클릭하여 업로드"}
-                </span>
-                <span style={{ fontSize: "11px", color: "#888", fontWeight: 400 }}>
-                  PDF · 최대 5MB
-                </span>
-              </div>
+                <div className="profile-info-card" style={{ padding: "16px" }}>
+                  <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>해당하는 직군 영역을 선택해 주세요 (1~3개 권장)</p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+                    {PRESET_OFFICE_JOB_AREAS.map((area) => (
+                      <button key={area}
+                        onClick={() => saveOfficeJobAreas(officeJobAreas.includes(area) ? officeJobAreas.filter(a => a !== area) : [...officeJobAreas, area])}
+                        style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${officeJobAreas.includes(area) ? "#5f0080" : "#e0e0e0"}`, background: officeJobAreas.includes(area) ? "#f3e5f5" : "#fff", color: officeJobAreas.includes(area) ? "#5f0080" : "#888", fontSize: "13px", fontWeight: officeJobAreas.includes(area) ? 600 : 400, cursor: "pointer" }}>
+                        {area}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </section>
             )}
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="application/pdf"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
-          </section>
-
-          <section id="section-link" className="resume-section">
-            <div className="resume-section-head">
-              <h2 className="resume-section-title">링크</h2>
-              <button className="resume-icon-btn" aria-label="링크 추가" onClick={() => { setEditLink(null); setLinkModalOpen(true); }}>
-                <Plus size={18} />
+            {dbJobType === "STORE" && (
+              <section className="profile-section">
+                <div className="profile-section-head">
+                  <h2 className="profile-section-title">시술 분야 · 전문 영역</h2>
+                </div>
+                <div className="profile-info-card" style={{ padding: "16px" }}>
+                  <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>해당하는 시술 분야를 선택해 주세요</p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+                    {PRESET_SKILL_AREAS.map((area) => (
+                      <button key={area}
+                        onClick={() => setStoreProfile({ skillAreas: skillAreas.includes(area) ? skillAreas.filter(a => a !== area) : [...skillAreas, area] })}
+                        style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${skillAreas.includes(area) ? "#5f0080" : "#e0e0e0"}`, background: skillAreas.includes(area) ? "#f3e5f5" : "#fff", color: skillAreas.includes(area) ? "#5f0080" : "#888", fontSize: "13px", fontWeight: skillAreas.includes(area) ? 600 : 400, cursor: "pointer" }}>
+                        {area}
+                      </button>
+                    ))}
+                  </div>
+                  <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "6px" }}>희망 근무 형태</label>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    {["풀타임", "파트타임", "주말근무 가능", "시급"].map((w) => (
+                      <button key={w}
+                        onClick={() => setStoreProfile({ workTypePrefer: workTypePrefer === w ? "" : w })}
+                        style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${workTypePrefer === w ? "#5f0080" : "#e0e0e0"}`, background: workTypePrefer === w ? "#f3e5f5" : "#fff", color: workTypePrefer === w ? "#5f0080" : "#888", fontSize: "13px", fontWeight: workTypePrefer === w ? 600 : 400, cursor: "pointer" }}>
+                        {w}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+            <div className="profile-bottom-cta">
+              <button className="profile-resume-btn" onClick={() => router.push("/profile/resume")}>
+                현재 프로필로 이력서 만들기
               </button>
             </div>
-            {links.length > 0 ? (
-              links.map((link) => (
-                <div key={link.id} className="resume-link-item">
-                  <span className="resume-link-category">{link.category}</span>
-                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
-                  <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                    <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLink(link); setLinkModalOpen(true); }}>
-                      <Pencil size={15} />
-                    </button>
-                    <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 링크를 삭제할까요?")) removeLink(link.id); }}>
-                      <Trash2 size={15} />
-                    </button>
-                  </span>
-                </div>
-              ))
-            ) : (
-              <div className="resume-empty-section">
-                <button className="resume-empty-btn" onClick={() => { setEditLink(null); setLinkModalOpen(true); }}>
-                  <Plus size={16} /> 링크 추가하기
-                </button>
-              </div>
-            )}
-          </section>
-
-          <div className="resume-bottom-save">
-            <button className="resume-save-btn-full" onClick={handleSave}>저장하기</button>
-          </div>
-        </main>
+          </>
+        ) : null}
       </div>
 
-      {showPreview && (
-        <div className="rp-modal-overlay" onClick={() => setShowPreview(false)}>
-          <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="rp-modal-header">
-              <h2 className="rp-modal-title">이력서 미리보기</h2>
-              <div className="rp-modal-actions">
-                <button
-                  className="resume-action-btn"
-                  onClick={handleDownload}
-                  disabled={isDownloading}
-                >
-                  <Download size={16} />
-                  <span>{isDownloading ? "저장 중..." : "PDF 다운로드"}</span>
-                </button>
-                <button className="resume-action-btn" onClick={handlePrint}>
-                  <Printer size={16} />
-                  <span>인쇄</span>
-                </button>
-                
-                <button className="rp-modal-close" onClick={() => setShowPreview(false)}>
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-            <div className="rp-modal-body">
-              <ResumePreview
-                ref={previewRef}
-                name={name}
-                birthDisplay={birthDisplay}
-                jobDisplay={jobDisplay}
-                phone={phone}
-                email={emailLocal || email}
-                intro={introLocal}
-                coreCompetencies={coreLocal}
-                careers={careers}
-                educations={educations}
-                skills={skills}
-                languages={languages}
-                experiences={experiences}
-                links={links}
-                portfolioUrl={portfolioUrl}
-                portfolioFilename={portfolioFilename}
-                avatarUrl={avatarUrl}
-                resumeType={resumeType}
-                officeJobAreas={officeJobAreas}
-                skillAreas={skillAreas}
-                certificates={certificates}
-                workTypePrefer={workTypePrefer}
-                regionPrefer={regionPrefer}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} />
+    </main>
+  );
+}
 
-      <CareerEditModal
-        isOpen={careerModalOpen}
-        onClose={() => { setCareerModalOpen(false); setEditCareer(null); }}
-        editTarget={editCareer}
-      />
-      <LinkModal
-        isOpen={linkModalOpen}
-        onClose={() => { setLinkModalOpen(false); setEditLink(null); }}
-        editTarget={editLink}
-      />
-      <EducationModal
-        isOpen={eduModalOpen}
-        onClose={() => { setEduModalOpen(false); setEditEdu(null); }}
-        editTarget={editEdu}
-      />
-      <LanguageModal
-        isOpen={langModalOpen}
-        onClose={() => { setLangModalOpen(false); setEditLang(null); }}
-        editTarget={editLang}
-      />
-      <ExperienceModal
-        isOpen={expModalOpen}
-        onClose={() => { setExpModalOpen(false); setEditExp(null); }}
-        editTarget={editExp}
-      />
-      <SkillModal
-        isOpen={skillModalOpen}
-        onClose={() => setSkillModalOpen(false)}
-      />
-      <CertificateModal
-        isOpen={certModalOpen}
-        onClose={() => { setCertModalOpen(false); setEditCert(null); }}
-        editTarget={editCert}
-      />
+function InfoRow({ label, value, isEmpty, isLast, onClick }: {
+  label: string; value: string; isEmpty?: boolean; isLast?: boolean; onClick?: () => void;
+}) {
+  return (
+    <button className={`profile-info-row ${isLast ? "is-last" : ""}`} onClick={onClick} disabled={!onClick}>
+      <span className="profile-info-label">{label}</span>
+      <span className={`profile-info-value ${isEmpty ? "is-empty" : ""}`}>{value}</span>
+      <ChevronRight size={16} className="profile-info-chevron" />
+    </button>
+  );
+}
+
+function AppliedTab() {
+  const [apps, setApps] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) { setLoading(false); return; }
+    fetch("/api/users/me/applications", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setApps(res.data || []); })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const statusLabel: Record<string, string> = {
+    APPLIED: "서류검토중", REVIEWING: "서류검토중", PASSED: "합격", REJECTED: "불합격", INTERVIEW: "면접예정",
+  };
+  const statusStyle: Record<string, string> = {
+    APPLIED: "applied-status-review", REVIEWING: "applied-status-review", PASSED: "applied-status-pass",
+    REJECTED: "applied-status-fail", INTERVIEW: "applied-status-interview",
+  };
+
+  if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;
+  if (apps.length === 0) return (
+    <div className="profile-empty-tab">
+      <div className="profile-empty-icon">📋</div>
+      <p>아직 지원한 공고가 없어요</p>
+      <a href="/jobs" className="profile-empty-btn">채용공고 보러가기</a>
+    </div>
+  );
+
+  return (
+    <div className="profile-tab-content">
+      <div className="applied-list">
+        {apps.map((app) => {
+          const date = new Date(app.applied_at);
+          const dateStr = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
+          return (
+            <div key={app.id} className="applied-item">
+              <div className="applied-item-left">
+                <span className="applied-brand">{app.brand_name || app.company_name}</span>
+                <h3 className="applied-title">{app.job_title}</h3>
+                <span className="applied-date">지원일 {dateStr}</span>
+              </div>
+              <span className={`applied-status ${statusStyle[app.status] || "applied-status-review"}`}>
+                {statusLabel[app.status] || app.status}
+              </span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
-export default function ResumePage() {
+
+function BookmarksTab() {
+  const [bookmarkedJobs, setBookmarkedJobs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) { setLoading(false); return; }
+    fetch("/api/users/me/bookmarks", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setBookmarkedJobs(res.data || []); })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const formatDeadline = (deadline: string | null) => {
+    if (!deadline) return "상시";
+    const today = new Date();
+    const dl = new Date(deadline);
+    const dDay = Math.ceil((dl.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (dDay < 0) return "마감";
+    if (dDay === 0) return "오늘 마감";
+    return `D-${dDay}`;
+  };
+
+  if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;
+  if (bookmarkedJobs.length === 0) return (
+    <div className="profile-empty-tab">
+      <div className="profile-empty-icon">🔖</div>
+      <p>저장한 공고가 없어요<br />관심있는 공고를 북마크해보세요</p>
+      <a href="/jobs" className="profile-empty-btn">채용공고 보러가기</a>
+    </div>
+  );
+
   return (
-    <Suspense fallback={<div style={{ padding: 40 }}>로딩 중...</div>}>
-      <ResumePageContent />
-    </Suspense>
+    <div className="profile-tab-content">
+      <div className="bookmark-list">
+        {bookmarkedJobs.map((job) => (
+          <a key={job.id} href={`/jobs/${job.job_posting_id}`} className="bookmark-item">
+            <div className="bookmark-item-left">
+              <span className="bookmark-brand">{job.brand_name || job.company_name}</span>
+              <h3 className="bookmark-title">{job.title}</h3>
+              <span className="bookmark-location">📍 {job.location || "협의"}</span>
+            </div>
+            <span className="bookmark-deadline">{formatDeadline(job.deadline)}</span>
+          </a>
+        ))}
+      </div>
+    </div>
   );
 }
