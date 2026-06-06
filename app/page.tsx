@@ -63,7 +63,7 @@ export default function HomePage() {
       <SectionPick />
       <SectionStorePick />
       <SectionCorpPick />
-      <SectionInsights />
+      <SectionStories />
       <SectionBeautyServices />
       <SectionNewsletter />
       <Footer />
@@ -190,7 +190,7 @@ function Hero() {
                   무료 이력서 등록하기 ›
                 </Link>
               </div>
-              <Link href="/insights" className="hero-right-card card-link">
+              <Link href="/stories" className="hero-right-card card-link">
                 <div className="hero-right-card-visual card2">
                   <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
                     <rect x="20" y="15" width="35" height="45" rx="5" fill="#fce4f0" />
@@ -203,8 +203,8 @@ function Hero() {
                     <path d="M27 28 L48 18" stroke="#e8a0c0" strokeWidth="1.5" strokeDasharray="2 2"/>
                   </svg>
                 </div>
-                <h3 className="hero-right-card-title accent">취업 전략까지</h3>
-                <p className="hero-right-card-desc">직무별 준비 팁, 지원 우선순위,<br />커리어 방향까지 한눈에 확인하세요</p>
+                <h3 className="hero-right-card-title accent">뷰티 현장 이야기</h3>
+                <p className="hero-right-card-desc">선배들의 생생한 꿀팁과<br />공감 이야기를 만나보세요</p>
               </Link>
             </div>
           </div>
@@ -401,23 +401,22 @@ function SectionBeautyServices() {
 }
 
 /* ============================================
-   섹션: 뷰티 인사이트
+   섹션: 이야기
    ============================================ */
-const INSIGHT_EMOJI: Record<string, string> = {
-  "트렌드": "✨", "커리어": "💼", "연봉정보": "📊",
-  "브랜드스토리": "🏢", "취업팁": "🎯",
+const STORY_EMOJI: Record<string, string> = {
+  "공감": "💬", "꿀팁": "💡", "질문": "❓", "정보": "📌",
 };
-function fmtInsightDate(d: string) {
+function fmtStoryDate(d: string) {
   const dt = new Date(d);
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
-function SectionInsights() {
+function SectionStories() {
   const router = useRouter();
   const [items, setItems] = useState<any[]>([]);
   useEffect(() => {
-    fetch("/api/insights?limit=4")
+    fetch("/api/community/posts?limit=4")
       .then((r) => r.json())
-      .then((res) => { if (res.success) setItems(res.data.items); })
+      .then((res) => { if (res.success && Array.isArray(res.data)) setItems(res.data); })
       .catch(() => {});
   }, []);
   if (items.length === 0) return null;
@@ -427,21 +426,21 @@ function SectionInsights() {
         <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
         <div className="section-head">
           <div>
-            <h2 className="section-title">📖 뷰티 인사이트</h2>
-            <p className="section-sub">최신 트렌드와 커리어 정보를 한눈에</p>
+            <h2 className="section-title">💬 이야기</h2>
+            <p className="section-sub">뷰티 현장 사람들의 공감과 꿀팁</p>
           </div>
-          <Link href="/insights" className="see-all">전체보기 →</Link>
+          <Link href="/stories" className="see-all">전체보기 →</Link>
         </div>
         <div className="card-grid card-grid-4">
           {items.map((item) => (
             <article key={item.id} className="insight-card-new"
-              onClick={() => router.push(`/insights/${item.id}`)}
+              onClick={() => router.push(`/stories/${item.id}`)}
               style={{ cursor: "pointer" }}>
-              <div className="insight-card-new-img">{INSIGHT_EMOJI[item.category] || "📖"}</div>
+              <div className="insight-card-new-img">{STORY_EMOJI[item.category] || "💬"}</div>
               <span className="insight-category">{item.category}</span>
-              <h3 className="insight-card-new-title">{item.title}</h3>
-              <p className="insight-card-new-desc">{(item.tags || []).join(" · ") || (item.read_time ? `${item.read_time}분 읽기` : "")}</p>
-              <time className="insight-card-new-date">{fmtInsightDate(item.created_at)}</time>
+              <h3 className="insight-card-new-title">{item.title || item.body}</h3>
+              <p className="insight-card-new-desc">❤ {item.like_count} · 💬 {item.comment_count}</p>
+              <time className="insight-card-new-date">{fmtStoryDate(item.published_at || item.created_at)}</time>
             </article>
           ))}
         </div>
