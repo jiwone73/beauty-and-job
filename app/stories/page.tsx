@@ -3,12 +3,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-const CATEGORIES = ["전체", "공감", "꿀팁", "질문"];
+const CATEGORIES = ["전체", "공감", "꿀팁", "질문", "정보"];
 
-const CAT_STYLE: Record<string, { bg: string; color: string }> = {
-  공감: { bg: "#f3e5f5", color: "#5f0080" },
-  꿀팁: { bg: "#e8f5e9", color: "#2e7d32" },
-  질문: { bg: "#fff3e0", color: "#e65100" },
+const CAT_STYLE: Record<string, { bg: string; color: string; emoji: string }> = {
+  공감: { bg: "#f3e5f5", color: "#5f0080", emoji: "💬" },
+  꿀팁: { bg: "#e8f5e9", color: "#2e7d32", emoji: "💡" },
+  질문: { bg: "#fff3e0", color: "#e65100", emoji: "❓" },
+  정보: { bg: "#e3f2fd", color: "#1565c0", emoji: "📌" },
 };
 
 export default function StoriesPage() {
@@ -19,8 +20,8 @@ export default function StoriesPage() {
   useEffect(() => {
     setLoading(true);
     const url = cat === "전체"
-      ? "/api/community/posts"
-      : `/api/community/posts?category=${encodeURIComponent(cat)}`;
+      ? "/api/community/posts?limit=50"
+      : `/api/community/posts?category=${encodeURIComponent(cat)}&limit=50`;
     fetch(url)
       .then((r) => r.json())
       .then((res) => { if (res.success) setPosts(res.data || []); })
@@ -30,6 +31,11 @@ export default function StoriesPage() {
 
   const fmtDate = (d: string) => {
     const dt = new Date(d);
+    const diff = Math.floor((Date.now() - dt.getTime()) / 60000);
+    if (diff < 1) return "방금 전";
+    if (diff < 60) return `${diff}분 전`;
+    if (diff < 1440) return `${Math.floor(diff / 60)}시간 전`;
+    if (diff < 10080) return `${Math.floor(diff / 1440)}일 전`;
     return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
   };
 
@@ -39,12 +45,46 @@ export default function StoriesPage() {
         <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} priority /></Link>
       </header>
 
-      <div style={{ padding: "8px 0 16px" }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1a1a1a", marginBottom: 4 }}>이야기</h1>
-        <p style={{ fontSize: 14, color: "#888" }}>뷰티 현장 사람들의 공감과 꿀팁</p>
+      {/* 인트로 배너 */}
+      <div style={{
+        background: "#f3edfa", borderRadius: 16, padding: "22px 24px", marginBottom: 20,
+        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+      }}>
+        <div>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#5f0080", marginBottom: 8 }}>이야기</h1>
+          <p style={{ fontSize: 14, color: "#8a6aa8", lineHeight: 1.6 }}>
+            진상 손님부터 독립 고민까지,<br />
+            공감·꿀팁·정보가 모이는 뷰티 현장 이야기.
+          </p>
+        </div>
+        <svg width="140" height="108" viewBox="0 0 140 108" fill="none" style={{ flexShrink: 0 }}>
+          <rect x="62" y="12" width="62" height="70" rx="8" fill="#fff" />
+          <rect x="67" y="17" width="52" height="60" rx="5" fill="#faf7fd" />
+          <circle cx="76" cy="30" r="5" fill="#2e7d32" />
+          <path d="M73.5 30 l2 2 l3.5 -3.5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <rect x="85" y="28" width="26" height="4" rx="2" fill="#d8c4ec" />
+          <circle cx="76" cy="45" r="5" fill="#2e7d32" />
+          <path d="M73.5 45 l2 2 l3.5 -3.5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <rect x="85" y="43" width="22" height="4" rx="2" fill="#d8c4ec" />
+          <circle cx="76" cy="60" r="5" fill="#2e7d32" />
+          <path d="M73.5 60 l2 2 l3.5 -3.5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <rect x="85" y="58" width="28" height="4" rx="2" fill="#d8c4ec" />
+          <ellipse cx="30" cy="22" rx="18" ry="10" fill="#fff" />
+          <path d="M22 30 L19 37 L31 31 Z" fill="#fff" />
+          <circle cx="22" cy="22" r="2" fill="#b794d4" />
+          <circle cx="30" cy="22" r="2" fill="#b794d4" />
+          <circle cx="38" cy="22" r="2" fill="#b794d4" />
+          <circle cx="38" cy="66" r="18" fill="#f7d9bf" />
+          <path d="M21 64 Q38 42 55 64 Q51 52 38 51 Q25 52 21 64 Z" fill="#5f0080" />
+          <circle cx="33" cy="66" r="1.8" fill="#4a3a3a" />
+          <circle cx="44" cy="66" r="1.8" fill="#4a3a3a" />
+          <path d="M34 73 Q38 77 43 73" stroke="#4a3a3a" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+          <rect x="18" y="90" width="40" height="6" rx="3" fill="#d8c4ec" />
+        </svg>
       </div>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, overflowX: "auto", paddingBottom: 4 }}>
+      {/* 카테고리 탭 */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 18, overflowX: "auto", paddingBottom: 4 }}>
         {CATEGORIES.map((c) => (
           <button key={c} onClick={() => setCat(c)}
             style={{
@@ -69,21 +109,32 @@ export default function StoriesPage() {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {posts.map((p) => {
-            const cs = CAT_STYLE[p.category] || { bg: "#f0f0f0", color: "#666" };
+            const cs = CAT_STYLE[p.category] || { bg: "#f0f0f0", color: "#666", emoji: "💬" };
             return (
               <Link key={p.id} href={`/stories/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                <div style={{ background: "#fff", border: "1px solid #f0e8f8", borderRadius: 14, padding: 16, cursor: "pointer" }}>
-                  <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 100, fontSize: 12, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 10 }}>
-                    {p.category}
-                  </span>
-                  {p.title && <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a", marginBottom: 6 }}>{p.title}</h2>}
-                  <p style={{ fontSize: 14, color: "#555", lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                    {p.body}
-                  </p>
-                  <div style={{ display: "flex", gap: 14, marginTop: 12, fontSize: 13, color: "#999" }}>
-                    <span>❤ {p.like_count}</span>
-                    <span>💬 {p.comment_count}</span>
-                    <span style={{ marginLeft: "auto" }}>{fmtDate(p.published_at || p.created_at)}</span>
+                <div style={{
+                  background: "#fff", border: "1px solid #f0e8f8", borderRadius: 14,
+                  padding: 18, display: "flex", gap: 14, alignItems: "flex-start", cursor: "pointer",
+                }}>
+                  <div style={{
+                    flexShrink: 0, width: 44, height: 44, borderRadius: 12,
+                    background: cs.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22,
+                  }}>
+                    {cs.emoji}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "inline-block", padding: "2px 9px", borderRadius: 100, fontSize: 11, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 7 }}>
+                      {p.category}
+                    </span>
+                    {p.title && <h2 style={{ fontSize: 15.5, fontWeight: 700, color: "#1a1a1a", marginBottom: 5, lineHeight: 1.4 }}>{p.title}</h2>}
+                    <p style={{ fontSize: 13.5, color: "#666", lineHeight: 1.55, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", marginBottom: 10 }}>
+                      {p.body}
+                    </p>
+                    <div style={{ display: "flex", gap: 12, fontSize: 12.5, color: "#aaa" }}>
+                      <span>❤ {p.like_count}</span>
+                      <span>💬 {p.comment_count}</span>
+                      <span style={{ marginLeft: "auto" }}>{fmtDate(p.published_at || p.created_at)}</span>
+                    </div>
                   </div>
                 </div>
               </Link>
