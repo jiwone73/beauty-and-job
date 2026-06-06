@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -16,7 +16,7 @@ const REGIONS = ["서울", "경기·인천", "부산·경남", "대구·경북",
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트", "프리랜서"];
 
-export default function CompanyJobNewPage() {
+function CompanyJobNewForm() {
   const router = useRouter();
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
   const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH" | null>(null);
@@ -458,5 +458,13 @@ export default function CompanyJobNewPage() {
 
       </div>
     </CompanyLayout>
+  );
+}
+
+export default function CompanyJobNewPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>}>
+      <CompanyJobNewForm />
+    </Suspense>
   );
 }
