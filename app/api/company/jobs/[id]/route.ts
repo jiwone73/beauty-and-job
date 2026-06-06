@@ -35,19 +35,20 @@ export async function PATCH(
   // 수정 가능한 필드 목록 (whitelist 방식 - 보안)
   const allowedFields = [
     "title", "description", "requirements", "preferred_qualifications",
-    "salary_min", "salary_max", "salary_type",
+    "benefits", "salary_min", "salary_max", "salary_type",
     "location", "address", "work_type", "experience_level",
-    "deadline", "status",
+    "deadline", "status", "categories", "detail_images",
+    "hiring_process", "notes",
   ];
 
   const updates: string[] = [];
   const values: any[] = [];
   let idx = 1;
-
+  const jsonbFields = ["detail_images", "hiring_process"];
   for (const field of allowedFields) {
     if (body[field] !== undefined) {
       updates.push(`${field} = $${idx++}`);
-      values.push(body[field]);
+      values.push(jsonbFields.includes(field) ? JSON.stringify(body[field]) : body[field]);
     }
   }
 

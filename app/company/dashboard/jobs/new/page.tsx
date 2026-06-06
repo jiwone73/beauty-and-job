@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import {
   Briefcase, Users, FileText, Settings,
@@ -46,6 +46,55 @@ export default function CompanyJobNewPage() {
   const [uploading, setUploading] = useState(false);
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
+  const searchParams = useSearchParams();
+  const editId = searchParams?.get("id") || null;
+
+  // 편집 모드: 기존 공고 데이터 로드
+  useEffect(() => {
+    if (!editId) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch(`/api/company/jobs/${editId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (!res.success || !res.data) return;
+        const j = res.data;
+        // 경력 역변환
+        const career = j.experience_level === "NEW" ? "신입"
+          : j.experience_level === "EXPERIENCED" ? "2년 이상"
+          : "경력 무관";
+        // 근무형태 역변환
+        const type = j.work_type === "PART_TIME" ? "파트타임"
+          : j.work_type === "CONTRACT" ? "계약직"
+          : "정규직";
+        // 급여 역변환 (만원 단위)
+        const salary = j.salary_min
+          ? (j.salary_max
+              ? `${j.salary_min / 10000}-${j.salary_max / 10000}만원`
+              : `${j.salary_min / 10000}만원`)
+          : "";
+        setForm({
+          title: j.title || "",
+          career,
+          region: j.location || "",
+          type,
+          deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, ".") : "",
+          salary,
+          description: j.description || "",
+          requirements: j.requirements || "",
+          preferred: j.preferred_qualifications || "",
+          benefits: j.benefits || "",
+        });
+        setCategories(j.categories || []);
+        setDetailImages(j.detail_images || []);
+        setHiringProcess(j.hiring_process || []);
+        setNotes(j.notes || "");
+      })
+      .catch(console.error);
+  }, [editId]);
+
   const addProcessStep = () => {
     if (hiringProcess.length >= 6) { alert("채용 절차는 최대 6단계까지 추가할 수 있어요."); return; }
     setHiringProcess([...hiringProcess, ""]);
@@ -128,34 +177,39 @@ export default function CompanyJobNewPage() {
     }
 
     try {
-      const res = await fetch("/api/company/jobs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: form.title,
-          job_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
-          description: form.description || null,
-          requirements: form.requirements || null,
-          preferred_qualifications: form.preferred || null,
-          salary_min: salaryMin,
-          salary_max: salaryMax,
-          salary_type: salaryMin ? "ANNUAL" : null,
-          location: form.region || null,
-          work_type: workType,
-          experience_level: expLevel,
-          deadline: form.deadline || null,
-          categories,
-          detail_images: detailImages,
-          hiring_process: hiringProcess.filter((s) => s.trim()),
-          notes: notes.trim() || null,
-        }),
-      });
+      const payload: any = {
+        title: form.title,
+        job_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
+        description: form.description || null,
+        requirements: form.requirements || null,
+        preferred_qualifications: form.preferred || null,
+        benefits: form.benefits || null,
+        salary_min: salaryMin,
+        salary_max: salaryMax,
+        salary_type: salaryMin ? "ANNUAL" : null,
+        location: form.region || null,
+        work_type: workType,
+        experience_level: expLevel,
+        deadline: form.deadline || null,
+        categories,
+        detail_images: detailImages,
+        hiring_process: hiringProcess.filter((s) => s.trim()),
+        notes: notes.trim() || null,
+      };
+      const res = await fetch(
+        editId ? `/api/company/jobs/${editId}` : "/api/company/jobs",
+        {
+          method: editId ? "PATCH" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
       const data = await res.json();
       if (!data.success) {
-        alert(data.error?.message || "공고 등록에 실패했습니다.");
+        alert(data.error?.message || (editId ? "공고 수정에 실패했습니다." : "공고 등록에 실패했습니다."));
         return;
       }
       setSaved(true);
@@ -172,12 +226,12 @@ export default function CompanyJobNewPage() {
           <ChevronLeft size={18} /> 목록으로
         </button>
         <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#1a1a1a", margin: 0 }}>
-          채용공고 등록
+          {editId ? "채용공고 수정" : "채용공고 등록"}
         </h2>
         <div className="admin-form-actions">
           <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}>임시저장</button>
           <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
-            {saved ? "✅ 등록완료" : "공고 등록"}
+            {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
           </button>
         </div>
       </div>
