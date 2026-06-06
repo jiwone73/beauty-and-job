@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, Download, Eye, Plus, X, FileText, Trash2, Upload, Printer, Pencil } from "lucide-react";
+import { ChevronLeft, ChevronDown, Download, Eye, Plus, X, FileText, Trash2, Upload, Printer, Pencil } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -63,6 +63,16 @@ function ResumePageContent() {
   const [certModalOpen, setCertModalOpen] = useState(false);
   const [editCert, setEditCert] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 항목 접기/펴기 (경력·학력·자격증·활동) — 기본 접힘
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const toggleExpand = (key: string) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -487,24 +497,38 @@ const handlePrint = async () => {
                 </button>
               </div>
             ) : (
-              careers.map((c) => (
-                <div key={c.id} className="resume-career-item">
-                  <div className="resume-career-head">
-                    <strong>{c.company}</strong>
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                      <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCareer(c); setCareerModalOpen(true); }}>
-                        <Pencil size={15} />
-                      </button>
-                      <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}>
-                        <Trash2 size={15} />
-                      </button>
-                    </span>
+              careers.map((c) => {
+                const key = `career-${c.id}`;
+                const open = expanded.has(key);
+                return (
+                  <div key={c.id} className="resume-career-item">
+                    <div className="resume-career-head" onClick={() => toggleExpand(key)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+                      <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+                      <strong>{c.company}</strong>
+                      {!open && (
+                        <span style={{ marginLeft: "8px", fontSize: "13px", fontWeight: 400, color: "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {c.startDate} - {c.endDate}
+                        </span>
+                      )}
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                        <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCareer(c); setCareerModalOpen(true); }}>
+                          <Pencil size={15} />
+                        </button>
+                        <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}>
+                          <Trash2 size={15} />
+                        </button>
+                      </span>
+                    </div>
+                    {open && (
+                      <>
+                        <span className="resume-career-period">{c.startDate} - {c.endDate}</span>
+                        {c.department && <p className="resume-career-dept">{c.department} · {c.position}</p>}
+                        {c.description && <p className="resume-career-dept" style={{ whiteSpace: "pre-line", marginTop: "4px", color: "#555" }}>{c.description}</p>}
+                      </>
+                    )}
                   </div>
-                  <span className="resume-career-period">{c.startDate} - {c.endDate}</span>
-                  {c.department && <p className="resume-career-dept">{c.department} · {c.position}</p>}
-                  {c.description && <p className="resume-career-dept" style={{ whiteSpace: "pre-line", marginTop: "4px", color: "#555" }}>{c.description}</p>}
-                </div>
-              ))
+                );
+              })
             )}
           </section>
 
@@ -522,23 +546,37 @@ const handlePrint = async () => {
                 </button>
               </div>
             ) : (
-              educations.map((edu) => (
-                <div key={edu.id} className="resume-edu-item">
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <strong>{edu.school}</strong>
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                      <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditEdu(edu); setEduModalOpen(true); }}>
-                        <Pencil size={15} />
-                      </button>
-                      <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(edu.id); }}>
-                        <Trash2 size={15} />
-                      </button>
-                    </span>
+              educations.map((edu) => {
+                const key = `edu-${edu.id}`;
+                const open = expanded.has(key);
+                return (
+                  <div key={edu.id} className="resume-edu-item">
+                    <div onClick={() => toggleExpand(key)} style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                      <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+                      <strong>{edu.school}</strong>
+                      {!open && (
+                        <span style={{ marginLeft: "8px", fontSize: "13px", fontWeight: 400, color: "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {edu.startDate} - {edu.endDate}
+                        </span>
+                      )}
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                        <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditEdu(edu); setEduModalOpen(true); }}>
+                          <Pencil size={15} />
+                        </button>
+                        <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(edu.id); }}>
+                          <Trash2 size={15} />
+                        </button>
+                      </span>
+                    </div>
+                    {open && (
+                      <>
+                        <span className="resume-edu-info">{edu.major} · {edu.status}</span>
+                        <span className="resume-edu-period">{edu.startDate} - {edu.endDate}</span>
+                      </>
+                    )}
                   </div>
-                  <span className="resume-edu-info">{edu.major} · {edu.status}</span>
-                  <span className="resume-edu-period">{edu.startDate} - {edu.endDate}</span>
-                </div>
-              ))
+                );
+              })
             )}
           </section>
           {resumeType === "office" && (
@@ -608,27 +646,35 @@ const handlePrint = async () => {
             </div>
             {certificates.length > 0 ? (
               <div className="resume-list">
-                {certificates.map((cert) => (
-                  <div key={cert.id} className="resume-list-item">
-                    <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
-                      {cert.name}
-                      {cert.issued_ym && (
-                        <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666", fontSize: "13px" }}>{cert.issued_ym}</span>
+                {certificates.map((cert) => {
+                  const key = `cert-${cert.id}`;
+                  const open = expanded.has(key);
+                  return (
+                    <div key={cert.id} className="resume-list-item">
+                      <p
+                        onClick={() => toggleExpand(key)}
+                        style={{ fontWeight: 600, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}
+                      >
+                        <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+                        {cert.name}
+                        {cert.issued_ym && (
+                          <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666", fontSize: "13px" }}>{cert.issued_ym}</span>
+                        )}
+                        <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                          <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCert(cert); setCertModalOpen(true); }}>
+                            <Pencil size={15} />
+                          </button>
+                          <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 자격증을 삭제할까요?")) removeCertificate(cert.id); }}>
+                            <Trash2 size={15} />
+                          </button>
+                        </span>
+                      </p>
+                      {open && cert.issuer && (
+                        <p style={{ color: "#888", fontSize: "13px", paddingLeft: "22px" }}>{cert.issuer}</p>
                       )}
-                      <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                        <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCert(cert); setCertModalOpen(true); }}>
-                          <Pencil size={15} />
-                        </button>
-                        <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 자격증을 삭제할까요?")) removeCertificate(cert.id); }}>
-                          <Trash2 size={15} />
-                        </button>
-                      </span>
-                    </p>
-                    {cert.issuer && (
-                      <p style={{ color: "#888", fontSize: "13px" }}>{cert.issuer}</p>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div className="resume-empty-section">
@@ -648,27 +694,35 @@ const handlePrint = async () => {
             </div>
             {experiences.length > 0 ? (
               <div className="resume-list">
-                {experiences.map((x) => (
-                  <div key={x.id} className="resume-list-item">
-                    <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
-                      {x.category && (
-                        <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>
+                {experiences.map((x) => {
+                  const key = `exp-${x.id}`;
+                  const open = expanded.has(key);
+                  return (
+                    <div key={x.id} className="resume-list-item">
+                      <p
+                        onClick={() => toggleExpand(key)}
+                        style={{ fontWeight: 600, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}
+                      >
+                        <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+                        {x.category && (
+                          <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>
+                        )}
+                        {x.title}
+                        <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                          <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditExp(x); setExpModalOpen(true); }}>
+                            <Pencil size={15} />
+                          </button>
+                          <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
+                            <Trash2 size={15} />
+                          </button>
+                        </span>
+                      </p>
+                      {open && x.description && (
+                        <p style={{ color: "#666", fontSize: "14px", paddingLeft: "22px" }}>{x.description}</p>
                       )}
-                      {x.title}
-                      <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                        <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditExp(x); setExpModalOpen(true); }}>
-                          <Pencil size={15} />
-                        </button>
-                        <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
-                          <Trash2 size={15} />
-                        </button>
-                      </span>
-                    </p>
-                    {x.description && (
-                      <p style={{ color: "#666", fontSize: "14px" }}>{x.description}</p>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div className="resume-empty-section">
@@ -703,7 +757,7 @@ const handlePrint = async () => {
                     {portfolioFilename || "포트폴리오.pdf"}
                   </p>
                   
-                  <a
+                  
                     href={portfolioUrl}
                     target="_blank"
                     rel="noopener noreferrer"
