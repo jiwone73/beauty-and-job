@@ -21,7 +21,12 @@ export async function GET(
        c.logo_url,
        c.company_type,
        c.description AS company_description,
-       c.website_url
+       c.website_url,
+       c.address AS company_address,
+       c.region_sido AS company_region_sido,
+       c.region_sigungu AS company_region_sigungu,
+       c.company_size,
+       c.founded_year
      FROM job_postings jp
      JOIN companies c ON c.id = jp.company_id
      WHERE jp.id = $1 AND jp.status = 'ACTIVE'`,
@@ -76,6 +81,8 @@ export async function GET(
     experience_level: job.experience_level,
     deadline: job.deadline,
     detail_images: job.detail_images || [],
+    hiring_process: job.hiring_process || [],
+    notes: job.notes || '',
     view_count: job.view_count,
     application_count: job.application_count,
     created_at: job.created_at,
@@ -86,7 +93,12 @@ export async function GET(
       logo_url: job.logo_url,
       company_type: job.company_type,
       description: job.company_description,
-      website_url: job.website_url
+      website_url: job.website_url,
+      address: job.company_address,
+      region_sido: job.company_region_sido,
+      region_sigungu: job.company_region_sigungu,
+      company_size: job.company_size,
+      founded_year: job.founded_year
     },
     is_bookmarked,
     has_applied

@@ -136,7 +136,7 @@ export default function JobDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
-  const [job, setJob] = useState<any>(JOBS_DATA[id] || JOBS_DATA["1"]);
+  const [job, setJob] = useState<any>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -160,14 +160,25 @@ export default function JobDetailPage() {
             career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
             region: j.location || '',
             employType: j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직',
-            deadline: j.deadline || '상시채용',
+            deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, '.') : '상시채용',
             salary: j.salary_min ? `${(j.salary_min/10000).toLocaleString()}만원 ~` : '협의',
             color: '#e8f0fe',
             description: j.description || '',
-            responsibilities: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],
-            qualifications: j.preferred_qualifications ? j.preferred_qualifications.split('\n').filter(Boolean) : [],
+            requirements: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],
+            preferreds: j.preferred_qualifications ? j.preferred_qualifications.split('\n').filter(Boolean) : [],
+            benefits: j.benefits ? j.benefits.split('\n').filter(Boolean) : [],
+            responsibilities: [],
+            process: j.hiring_process || [],
+            notes: j.notes || '',
             logo_url: j.company?.logo_url,
             detailImages: j.detail_images || [],
+            companyInfo: {
+              name: j.company?.company_name || '',
+              size: j.company?.company_size || '',
+              location: [j.company?.region_sido, j.company?.region_sigungu, j.company?.address].filter(Boolean).join(' ') || '',
+              founded: j.company?.founded_year || '',
+            },
+            companyAddress: [j.company?.region_sido, j.company?.region_sigungu, j.company?.address].filter(Boolean).join(' '),
           });
           // 로그인한 기업이 이 공고의 주인인지 판별
           if (token) {
@@ -194,7 +205,15 @@ export default function JobDetailPage() {
   const { apply, isApplied } = useApplicationStore();
   const alreadyApplied = job ? isApplied(String(job.id)) : false;
   const { toggle: toggleBookmark, isBookmarked } = useBookmarkStore();
-
+  if (!job) {
+    return (
+      <div className="job-detail-page">
+        <div style={{ padding: "80px 20px", textAlign: "center", color: "#888" }}>
+          불러오는 중...
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="job-detail-page">
       {/* 헤더 */}
@@ -281,7 +300,9 @@ export default function JobDetailPage() {
           {/* 회사 소개 */}
           <section className="job-detail-section">
             <h2 className="job-detail-section-title">회사 소개</h2>
-            <p className="job-detail-brand-desc">{job.brandDesc}</p>
+            {job.brandDesc?.trim() && (
+              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line" }}>{job.brandDesc}</p>
+            )}
             <div className="job-detail-company-info">
               <div className="job-detail-company-row">
                 <span className="job-detail-company-label">회사명</span>
@@ -300,6 +321,19 @@ export default function JobDetailPage() {
                 <span>{job.companyInfo?.founded}</span>
               </div>
             </div>
+            {job.companyAddress?.trim() && (
+              <div style={{ marginTop: "20px" }}>
+                <iframe
+                  title="회사 위치"
+                  width="100%"
+                  height="280"
+                  style={{ border: 0, borderRadius: "12px" }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(job.companyAddress)}&output=embed&hl=ko`}
+                />
+              </div>
+            )}
           </section>
 
           {/* 포지션 소개 */}
@@ -380,21 +414,33 @@ export default function JobDetailPage() {
           )}
 
           {/* 채용 절차 */}
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">채용 절차</h2>
-            <div className="job-detail-process">
-              {job.process?.map((step: string, i: number) => (
-                <div key={i} className="job-detail-process-step">
-                  <div className="job-detail-process-num">{i + 1}</div>
-                  <span className="job-detail-process-label">{step}</span>
-                  {i < job.process.length - 1 && (
-                    <ChevronRight size={16} className="job-detail-process-arrow" />
-                  )}
+          {(job.process?.length > 0 || job.notes?.trim()) && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">채용 절차</h2>
+              {job.process?.length > 0 && (
+                <div className="job-detail-process">
+                  {job.process.map((step: string, i: number) => (
+                    <div key={i} className="job-detail-process-step">
+                      <div className="job-detail-process-num">{i + 1}</div>
+                      <span className="job-detail-process-label">{step}</span>
+                      {i < job.process.length - 1 && (
+                        <ChevronRight size={16} className="job-detail-process-arrow" />
+                      )}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </section>
-
+              )}
+              {job.notes?.trim() && (
+                <div style={{
+                  marginTop: job.process?.length > 0 ? "20px" : "0",
+                  padding: "14px 16px", background: "#faf8fc", borderRadius: "8px",
+                  fontSize: "14px", color: "#555", lineHeight: 1.6, whiteSpace: "pre-line"
+                }}>
+                  {job.notes}
+                </div>
+              )}
+            </section>
+          )}
           {/* 관련 공고 */}
           <section className="job-detail-section">
             <h2 className="job-detail-section-title">관련 채용공고</h2>

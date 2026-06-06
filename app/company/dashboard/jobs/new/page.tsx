@@ -44,6 +44,18 @@ export default function CompanyJobNewPage() {
   const [saved, setSaved] = useState(false);
   const [detailImages, setDetailImages] = useState<{ url: string; name: string }[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [hiringProcess, setHiringProcess] = useState<string[]>([]);
+  const [notes, setNotes] = useState("");
+  const addProcessStep = () => {
+    if (hiringProcess.length >= 6) { alert("채용 절차는 최대 6단계까지 추가할 수 있어요."); return; }
+    setHiringProcess([...hiringProcess, ""]);
+  };
+  const updateProcessStep = (idx: number, value: string) => {
+    setHiringProcess(hiringProcess.map((s, i) => (i === idx ? value : s)));
+  };
+  const removeProcessStep = (idx: number) => {
+    setHiringProcess(hiringProcess.filter((_, i) => i !== idx));
+  };
   const chipOptions = jobGroupType === "매장" ? STORE_SKILL_AREAS : OFFICE_JOB_GROUPS;
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,6 +149,8 @@ export default function CompanyJobNewPage() {
           deadline: form.deadline || null,
           categories,
           detail_images: detailImages,
+          hiring_process: hiringProcess.filter((s) => s.trim()),
+          notes: notes.trim() || null,
         }),
       });
       const data = await res.json();
@@ -157,6 +171,9 @@ export default function CompanyJobNewPage() {
         <button className="admin-back-btn" onClick={() => router.push("/company/dashboard/jobs")}>
           <ChevronLeft size={18} /> 목록으로
         </button>
+        <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#1a1a1a", margin: 0 }}>
+          채용공고 등록
+        </h2>
         <div className="admin-form-actions">
           <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}>임시저장</button>
           <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
@@ -289,6 +306,47 @@ export default function CompanyJobNewPage() {
           </div>
         </div>
 
+        {/* 채용 절차 */}
+        <div className="company-card" style={{overflow:"visible"}}>
+          <div className="company-card-head"><h2 className="company-card-title">채용 절차</h2></div>
+          <div className="admin-form-body">
+            <p style={{fontSize:"13px", color:"#888", margin:"0 0 4px"}}>
+              지원자가 거치는 전형 단계를 순서대로 입력하세요. (예: 서류 전형 → 면접 → 최종 합격)
+            </p>
+            {hiringProcess.map((step, idx) => (
+              <div key={idx} style={{display:"flex", alignItems:"center", gap:"8px"}}>
+                <span style={{flexShrink:0, width:"28px", height:"28px", borderRadius:"50%",
+                  background:"#f5f3ff", color:"#5f0080", fontSize:"13px", fontWeight:700,
+                  display:"flex", alignItems:"center", justifyContent:"center"}}>{idx + 1}</span>
+                <input className="admin-form-input" style={{flex:1}}
+                  placeholder={`${idx + 1}단계 (예: 서류 전형)`}
+                  value={step}
+                  onChange={(e) => updateProcessStep(idx, e.target.value)} />
+                <button type="button" onClick={() => removeProcessStep(idx)}
+                  style={{flexShrink:0, width:"32px", height:"32px", borderRadius:"8px",
+                    border:"1px solid #eee", background:"#fff", color:"#888", cursor:"pointer",
+                    fontSize:"16px", lineHeight:"1"}}>×</button>
+              </div>
+            ))}
+            {hiringProcess.length < 6 && (
+              <button type="button" onClick={addProcessStep}
+                style={{display:"inline-flex", alignItems:"center", gap:"8px", padding:"10px 16px",
+                  border:"1.5px dashed #c4b5d4", borderRadius:"8px", cursor:"pointer",
+                  color:"#5f0080", fontSize:"14px", fontWeight:500, background:"#fdfbff",
+                  width:"fit-content"}}>
+                + 단계 추가
+              </button>
+            )}
+
+            <div className="admin-form-row" style={{marginTop:"20px"}}>
+              <label className="admin-form-label">비고 · 유의사항 <span style={{color:"#888", fontWeight:400, fontSize:"13px"}}>(선택)</span></label>
+              <textarea className="admin-form-textarea" rows={4}
+                placeholder="지원 시 유의사항이나 안내문을 자유롭게 입력하세요.&#10;예) ※ 서류 합격자에 한하여 개별 연락드립니다.&#10;※ 3개월 수습 후 정규직 전환 평가가 진행됩니다."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)} />
+            </div>
+          </div>
+        </div>
         {/* 상세 내용 */}
         <div className="company-card" style={{overflow:"visible"}}>
           <div className="company-card-head"><h2 className="company-card-title">상세 내용</h2></div>
@@ -343,6 +401,7 @@ export default function CompanyJobNewPage() {
             </div>
           </div>
         </div>
+
       </div>
     </CompanyLayout>
   );

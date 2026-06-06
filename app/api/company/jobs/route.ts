@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     title, job_type, job_category_id, description, requirements,
     preferred_qualifications, salary_min, salary_max, salary_type,
     location, address, work_type, experience_level, deadline, categories,
-    detail_images
+    detail_images, hiring_process, notes
   } = body
 
   if (!title || !job_type) {
@@ -71,9 +71,9 @@ export async function POST(req: NextRequest) {
        company_id, title, job_type, job_category_id, description,
        requirements, preferred_qualifications, salary_min, salary_max,
        salary_type, location, address, work_type, experience_level,
-       deadline, categories, detail_images, status
+       deadline, categories, detail_images, hiring_process, notes, status
      ) VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 'ACTIVE'
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, 'ACTIVE'
      ) RETURNING id, title, status, created_at`,
     [
       auth!.sub, title, job_type, job_category_id || null, description || null,
@@ -81,9 +81,10 @@ export async function POST(req: NextRequest) {
       salary_min || null, salary_max || null, salary_type || null,
       location || null, address || null, work_type || null,
       experience_level || 'ANY', deadline || null, categories || [],
-      JSON.stringify(detail_images || [])
+      JSON.stringify(detail_images || []),
+      JSON.stringify(hiring_process || []),
+      notes || null
     ]
   )
-
   return ok(result.rows[0], 201)
 }
