@@ -80,7 +80,7 @@ function CompanyJobNewForm() {
           career,
           region: j.location || "",
           type,
-          deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, ".") : "",
+          deadline: j.deadline ? String(j.deadline).slice(0, 10) : "",
           salary,
           description: j.description || "",
           requirements: j.requirements || "",
@@ -353,7 +353,8 @@ function CompanyJobNewForm() {
               </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">마감일</label>
-                <input className="admin-form-input" placeholder="예) 2025.02.28"
+                <input type="date" className="admin-form-input"
+                  min={new Date().toISOString().slice(0, 10)}
                   value={form.deadline} onChange={(e) => setForm({...form, deadline: e.target.value})} />
               </div>
             </div>
