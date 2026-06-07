@@ -4,6 +4,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import HeroMobile from "@/components/HeroMobile";
 import { workTypeLabel } from "@/lib/constants";
+import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import { useEffect, useState } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
@@ -85,20 +86,19 @@ function MobileDetector() {
   return isMobile ? <HeroMobile /> : <Hero />;
 }
 
-const REGION_OPTIONS = ["지역 전체", "서울", "경기", "인천", "부산", "대구", "광주", "대전", "해외"];
-
 function Hero() {
   const router = useRouter();
-  const [region, setRegion] = useState("지역 전체");
+  const [sido, setSido] = useState("");
+  const [sigungu, setSigungu] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showRegionDrop, setShowRegionDrop] = useState(false);
-  const [jobType, setJobType] = useState<"기업" | "매장">("기업");
-
+  const [jobType, setJobType] = useState<"기업" | "매장">("매장");
+  const sigunguList = sido ? getSigunguList(sido) : [];
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     params.set("type", jobType);
-    if (region !== "지역 전체") params.set("region", region);
+    if (sido) params.set("sido", sido);
+    if (sigungu) params.set("sigungu", sigungu);
     if (searchQuery.trim()) params.set("q", searchQuery.trim());
     router.push(`/jobs${params.toString() ? "?" + params.toString() : ""}`);
   };
@@ -121,47 +121,44 @@ function Hero() {
             <p className="hero-sub">
               뷰티 업계 채용, 이직, 커리어까지<br />한 번에
             </p>
-            <form className="hero-search-bar" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
+            <form className="hero-search-bar-v2" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
+              <p className="hero-search-guide">어떤 일자리를 찾으세요?</p>
               <div className="hero-type-toggle">
-                <button type="button"
-                  className={`hero-type-btn ${jobType === "기업" ? "active" : ""}`}
-                  onClick={() => setJobType("기업")}>
-                  🏢 기업
-                </button>
                 <button type="button"
                   className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`}
                   onClick={() => setJobType("매장")}>
-                  🏪 매장
+                  매장직
+                </button>
+                <button type="button"
+                  className={`hero-type-btn ${jobType === "기업" ? "active" : ""}`}
+                  onClick={() => setJobType("기업")}>
+                  사무직
                 </button>
               </div>
-              <div className="hero-search-divider" />
-              <div className="hero-region-wrap">
-                <button type="button" className="hero-region-btn"
-                  onClick={() => setShowRegionDrop(!showRegionDrop)}>
-                  <MapPin size={14} />
-                  <span>{region}</span>
-                  <i className="caret" />
-                </button>
-                {showRegionDrop && (
-                  <div className="hero-region-drop">
-                    {REGION_OPTIONS.map((o) => (
-                      <button key={o} type="button"
-                        className={`hero-region-item ${region === o ? "selected" : ""}`}
-                        onClick={() => { setRegion(o); setShowRegionDrop(false); }}>
-                        {o}
-                      </button>
-                    ))}
-                  </div>
-                )}
+              <div className="hero-search-row-region">
+                <select className="hero-region-select" value={sido}
+                  onChange={(e) => { setSido(e.target.value); setSigungu(""); }}>
+                  <option value="">전체</option>
+                  {SIDO_LIST.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <select className="hero-region-select" value={sigungu}
+                  disabled={!sido || sido === "세종특별자치시"}
+                  onChange={(e) => setSigungu(e.target.value)}>
+                  <option value="">전체</option>
+                  {sigunguList.map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
               </div>
-              <div className="hero-search-divider" />
-              <input className="hero-search-input" type="text"
-                placeholder="직무, 회사, 키워드로 검색"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)} />
-              <button type="submit" className="hero-search-btn">
-                <Search size={20} />
-              </button>
+              <div className="hero-search-row-input">
+                <input className="hero-search-input-v2" type="text"
+                  placeholder={jobType === "매장"
+                    ? "헤어 디자이너, 네일리스트, 실장…"
+                    : "마케터, MD, 뷰티 연구원…"}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)} />
+                <button type="submit" className="hero-search-btn-v2" aria-label="검색">
+                  <Search size={20} />
+                </button>
+              </div>
             </form>
           </div>
 

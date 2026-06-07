@@ -87,9 +87,18 @@ function JobsPageInner() {
   const toggleBookmarkStore = useBookmarkStore((s) => s.toggle);
   const loadBookmarks = useBookmarkStore((s) => s.loadFromServer);
   const [apiJobs, setApiJobs] = useState<any[] | null>(null);
-
   useEffect(() => {
-    fetch('/api/jobs')
+    const qs = new URLSearchParams();
+    const t = searchParams.get("type");
+    const sd = searchParams.get("sido");
+    const sg = searchParams.get("sigungu");
+    const kw = searchParams.get("q");
+    if (t && t !== "전체") qs.set("type", t);
+    if (sd) qs.set("sido", sd);
+    if (sg) qs.set("sigungu", sg);
+    if (kw) qs.set("q", kw);
+    qs.set("limit", "100");
+    fetch(`/api/jobs?${qs.toString()}`)
       .then(r => r.json())
       .then(res => {
         if (res.success && Array.isArray(res.data)) {
@@ -103,7 +112,7 @@ function JobsPageInner() {
             categories: j.categories || [],
             career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
             region: j.location || '국내',
-            type: j.job_type === 'OFFICE' ? '기업' : j.job_type === 'STORE' ? '매장' : 'both',
+            type: j.company_type === 'OFFICE' ? '기업' : j.company_type === 'STORE' ? '매장' : '기업',
             thumbnail: j.logo_url,
             color: '#e8f0fe',
           }));
@@ -111,7 +120,7 @@ function JobsPageInner() {
         }
       })
       .catch(e => console.error('[load jobs]', e));
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     loadBookmarks();

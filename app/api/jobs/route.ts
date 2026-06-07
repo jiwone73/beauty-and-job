@@ -4,15 +4,23 @@ import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok } from '@/lib/api'
 
+const TYPE_MAP: Record<string, string[]> = {
+  "기업": ["OFFICE", "BOTH"],
+  "매장": ["STORE", "BOTH"],
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const jobType = searchParams.get('job_type')
   const location = searchParams.get('location')
+  const type = searchParams.get('type')
+  const sido = searchParams.get('sido')
+  const sigungu = searchParams.get('sigungu')
+  const q = searchParams.get('q')
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
   const offset = (page - 1) * limit
 
-  // 동적 WHERE 절 조립
   const where: string[] = []
   const params: any[] = []
   let idx = 1
@@ -25,10 +33,27 @@ export async function GET(req: NextRequest) {
     where.push(`location ILIKE $${idx++}`)
     params.push(`%${location}%`)
   }
+  if (type && TYPE_MAP[type]) {
+    const types = TYPE_MAP[type]
+    const placeholders = types.map(() => `$${idx++}`).join(', ')
+    where.push(`company_type IN (${placeholders})`)
+    params.push(...types)
+  }
+  if (sigungu) {
+    where.push(`location ILIKE $${idx++}`)
+    params.push(`%${sigungu}%`)
+  } else if (sido) {
+    where.push(`location ILIKE $${idx++}`)
+    params.push(`%${sido.slice(0, 2)}%`)
+  }
+  if (q) {
+    where.push(`(title ILIKE $${idx} OR brand_name ILIKE $${idx} OR company_name ILIKE $${idx} OR job_type ILIKE $${idx})`)
+    params.push(`%${q}%`)
+    idx++
+  }
 
   const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : ''
 
-  // 목록 조회
   const listQuery = `
     SELECT id, title, job_type, company_id, company_name, brand_name, logo_url, company_type,
            location, work_type, salary_min, salary_max, salary_type,
@@ -40,7 +65,6 @@ export async function GET(req: NextRequest) {
   `
   params.push(limit, offset)
 
-  // 카운트
   const countQuery = `SELECT COUNT(*)::int AS total FROM v_active_jobs ${whereClause}`
   const countParams = params.slice(0, params.length - 2)
 
