@@ -7666,6 +7666,11 @@ input[type="range"].career-slider::-moz-range-thumb {
   flex-direction: column;
   gap: 8px;
 }
+.hero-m-search-label {
+  font-size: 13px;
+  color: #888;
+  margin: 0 0 2px 2px;
+}
 .hero-m-region-row {
   display: flex;
   gap: 8px;
