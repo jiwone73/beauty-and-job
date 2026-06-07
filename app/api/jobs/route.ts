@@ -4,9 +4,9 @@ import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok } from '@/lib/api'
 
-const TYPE_MAP: Record<string, string[]> = {
-  "기업": ["OFFICE", "BOTH"],
-  "매장": ["STORE", "BOTH"],
+const TYPE_MAP: Record<string, string> = {
+  "기업": "OFFICE",
+  "매장": "STORE",
 }
 
 export async function GET(req: NextRequest) {
@@ -34,10 +34,8 @@ export async function GET(req: NextRequest) {
     params.push(`%${location}%`)
   }
   if (type && TYPE_MAP[type]) {
-    const types = TYPE_MAP[type]
-    const placeholders = types.map(() => `$${idx++}`).join(', ')
-    where.push(`company_type IN (${placeholders})`)
-    params.push(...types)
+    where.push(`job_type = $${idx++}`)
+    params.push(TYPE_MAP[type])
   }
   if (sigungu) {
     where.push(`location ILIKE $${idx++}`)
