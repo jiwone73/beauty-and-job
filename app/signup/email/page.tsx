@@ -172,6 +172,7 @@ export default function SignupEmailPage() {
       }
       localStorage.setItem("access_token", data.data.access_token);
       login({
+        ownerType: "user",
         userName: data.data.user.name,
         userPhone: data.data.user.phone,
         userJobType: data.data.user.job_type || "",

@@ -35,6 +35,7 @@ export default function CompanyLoginPage() {
       }
       localStorage.setItem("access_token", data.data.access_token);
       login({
+        ownerType: "company",
         userName: data.data.company.company_name,
         userPhone: data.data.company.phone || "",
       });

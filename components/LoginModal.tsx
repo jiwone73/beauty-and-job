@@ -36,7 +36,7 @@ export default function LoginModal({ onClose }: Props) {
     if (code !== "123456") { setError("인증번호가 올바르지 않습니다. (테스트: 123456)"); return; }
     const name = userName.trim() || "사용자";
     useSignupStore.getState().reset();
-    login({ userName: name, userPhone: phone });
+    login({ ownerType: "user", userName: name, userPhone: phone });
     setSignupPhone(phone);
     setBasic({ name });
     setPhoneVerified(true);

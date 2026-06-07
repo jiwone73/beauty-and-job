@@ -227,7 +227,7 @@ function JobsPageInner() {
             <button key={t}
               className={`jobs-type-tab ${jobTypeFilter === t ? "active" : ""}`}
               onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); }}>
-              {t === "기업" ? "🏢 기업 공고" : t === "매장" ? "🏪 매장 공고" : "전체"}
+              {t === "기업" ? "🏢 사무직" : t === "매장" ? "🏪 매장직" : "전체"}
             </button>
           ))}
         </div>

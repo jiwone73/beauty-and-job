@@ -305,7 +305,7 @@ function SectionStorePick() {
         <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
         <div className="section-head">
           <div>
-            <h2 className="section-title">🏪 매장·샵 채용관</h2>
+            <h2 className="section-title">🏪 매장직 채용</h2>
             <p className="section-sub">우리 동네 샵부터 프랜차이즈 매장까지</p>
           </div>
           <Link href="/jobs?type=매장" className="see-all">전체보기 →</Link>
@@ -342,7 +342,7 @@ function SectionCorpPick() {
         <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
         <div className="section-head">
           <div>
-            <h2 className="section-title">🏢 기업·브랜드 채용관</h2>
+            <h2 className="section-title">🏢 사무직 채용</h2>
             <p className="section-sub">마케팅·MD·영업·연구개발 등 커리어를 키울 수 있는 포지션</p>
           </div>
           <Link href="/jobs?type=기업" className="see-all">전체보기 →</Link>

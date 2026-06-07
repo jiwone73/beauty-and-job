@@ -150,7 +150,10 @@ export default function ProfilePage() {
     if (!token) return;
     setOfficeJobAreas(newAreas);
     useAuthStore.getState().login({
-      ...useAuthStore.getState(),
+      ownerType: useAuthStore.getState().ownerType ?? "user",
+      userName: useAuthStore.getState().userName,
+      userPhone: useAuthStore.getState().userPhone,
+      userJobType: useAuthStore.getState().userJobType,
       userJobAreas: newAreas,
     });
     await fetch("/api/users/me", {

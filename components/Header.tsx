@@ -12,7 +12,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 
 function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const router = useRouter();
-  const { isLoggedIn, userName, logout } = useAuthStore();
+  const { isLoggedIn, ownerType, userName, logout } = useAuthStore();
   const [open, setOpen] = useState(false);
 
   if (isLoggedIn) {
@@ -28,8 +28,15 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
           </button>
           {open && (
             <div className="auth-dropdown auth-dropdown-right">
-              <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>내 프로필</button>
-              <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/resume"); }}>이력서</button>
+              {ownerType === "user" && (
+                <>
+                  <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>내 프로필</button>
+                  <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/resume"); }}>이력서</button>
+                </>
+              )}
+              {ownerType === "company" && (
+                <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/company/dashboard"); }}>대시보드</button>
+              )}
               <div className="auth-dropdown-divider" />
               <button className="auth-dropdown-item auth-logout" onClick={() => {
                 useSignupStore.getState().reset();
@@ -66,7 +73,7 @@ interface HeaderProps {
 export default function Header({ onSearchClick }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, ownerType } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const handleSearch = () => {
     if (onSearchClick) onSearchClick();
@@ -85,7 +92,11 @@ export default function Header({ onSearchClick }: HeaderProps) {
               type="button"
               className="gnb-with-tag"
               style={{ background: "none", border: "none", cursor: "pointer", font: "inherit", color: "inherit", padding: 0 }}
-              onClick={() => router.push(isLoggedIn ? "/profile" : "/jobseeker")}>
+              onClick={() => {
+                if (!isLoggedIn) router.push("/jobseeker");
+                else if (ownerType === "company") router.push("/company/dashboard");
+                else router.push("/profile");
+              }}>
               이력서 등록
             </button>
             <Link href="/stories" className="gnb-with-tag">
@@ -115,7 +126,12 @@ export default function Header({ onSearchClick }: HeaderProps) {
             </div>
             <nav className="mob-menu-nav">
               <button type="button" className="mob-menu-item" style={{ background: "none", border: "none", width: "100%", cursor: "pointer", font: "inherit" }}
-                onClick={() => { setMenuOpen(false); router.push(isLoggedIn ? "/profile" : "/jobseeker"); }}>
+                onClick={() => {
+                  setMenuOpen(false);
+                  if (!isLoggedIn) router.push("/jobseeker");
+                  else if (ownerType === "company") router.push("/company/dashboard");
+                  else router.push("/profile");
+                }}>
                 <span className="mob-menu-item-label">이력서 등록</span>
                 <span className="mob-menu-badge gray">경력직</span>
               </button>

@@ -3,12 +3,19 @@ import { persist } from "zustand/middleware";
 
 export interface AuthState {
   isLoggedIn: boolean;
+  ownerType: "user" | "company" | null;
   userName: string;
   userPhone: string;
   userJobType: "OFFICE" | "STORE" | "";
   userJobAreas: string[];
 
-  login: (data: { userName?: string; userPhone?: string; userJobType?: "OFFICE" | "STORE" | ""; userJobAreas?: string[] }) => void;
+  login: (data: {
+    ownerType: "user" | "company";
+    userName?: string;
+    userPhone?: string;
+    userJobType?: "OFFICE" | "STORE" | "";
+    userJobAreas?: string[];
+  }) => void;
   logout: () => void;
 }
 
@@ -16,6 +23,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       isLoggedIn: false,
+      ownerType: null,
       userName: "",
       userPhone: "",
       userJobType: "",
@@ -24,6 +32,7 @@ export const useAuthStore = create<AuthState>()(
       login: (data) =>
         set({
           isLoggedIn: true,
+          ownerType: data.ownerType,
           userName: data.userName || "",
           userPhone: data.userPhone || "",
           userJobType: data.userJobType || "",
@@ -33,6 +42,7 @@ export const useAuthStore = create<AuthState>()(
       logout: () =>
         set({
           isLoggedIn: false,
+          ownerType: null,
           userName: "",
           userPhone: "",
           userJobType: "",

@@ -61,7 +61,7 @@ export default function Step10Done() {
       }
 
       localStorage.setItem('access_token', signupData.data.access_token);
-      login({ userName: name, userPhone: phone });
+      login({ ownerType: "user", userName: name, userPhone: phone });
       reset();
       return true;
     } catch (e) {

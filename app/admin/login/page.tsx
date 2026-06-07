@@ -35,7 +35,7 @@ export default function AdminLoginPage() {
       }
       // 토큰 저장
       localStorage.setItem("admin_token", data.data.access_token);
-      login({ userName: data.data.admin.name, userPhone: "" });
+      login({ ownerType: "user", userName: data.data.admin.name, userPhone: "" });
       router.push("/admin");
     } catch (e) {
       setError("네트워크 오류가 발생했습니다.");
