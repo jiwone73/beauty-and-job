@@ -104,7 +104,7 @@ function Hero() {
   };
 
   return (
-    <section className="hero" onClick={() => setShowRegionDrop(false)}>
+    <section className="hero">
       <div className="hero-wrap">
         <div className="hero-banner-top-inner">
           <span className="hero-banner-badge">AD</span>

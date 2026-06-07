@@ -10224,7 +10224,6 @@ input[type="range"].career-slider::-moz-range-thumb {
   .hero-search-input-v2 { font-size: 14px; padding: 11px 12px; }
   .hero-search-btn-v2 { width: 44px; height: 42px; }
 }
-cat >> app/globals.css << 'EOF'
 
 /* Hero 검색박스 v2 - 2줄 레이아웃 */
 .hero-search-row-region {
