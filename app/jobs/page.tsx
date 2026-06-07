@@ -153,11 +153,9 @@ function JobsPageInner() {
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
-    const matchCareer = selectedCareer === "경력 전체" || j.career.includes(selectedCareer.replace("년", "").replace("신입", "신입"));
-    const matchSearch = !searchQuery || j.title.includes(searchQuery) || j.brand.includes(searchQuery);
-    const matchRegion = !selectedRegion || j.region.includes(selectedRegion);
-    const matchBrand = !selectedBrand || j.brand.includes(selectedBrand);
-    return matchType && matchJob && matchCareer && matchSearch && matchRegion && matchBrand;
+    const matchCareer = selectedCareer === "경력 전체" || (j.career || "").includes(selectedCareer.replace("년", ""));
+    const matchBrand = !selectedBrand || (j.brand || "").includes(selectedBrand);
+    return matchType && matchJob && matchCareer && matchBrand;
   });
 
   return (

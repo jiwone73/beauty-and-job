@@ -64,15 +64,14 @@ interface HeaderProps {
 }
 
 export default function Header({ onSearchClick }: HeaderProps) {
-  const pathname = usePathname();
   const router = useRouter();
+  const pathname = usePathname();
+  const { isLoggedIn } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
-
   const handleSearch = () => {
     if (onSearchClick) onSearchClick();
     else router.push("/jobs");
   };
-
   return (
     <>
       <header className="header">
@@ -82,9 +81,13 @@ export default function Header({ onSearchClick }: HeaderProps) {
           </Link>
           <nav className="gnb">
             <Link href="/jobs" className={pathname === "/jobs" ? "gnb-active" : ""}>채용공고</Link>
-            <Link href="/profile/resume" className="gnb-with-tag">
+            <button
+              type="button"
+              className="gnb-with-tag"
+              style={{ background: "none", border: "none", cursor: "pointer", font: "inherit", color: "inherit", padding: 0 }}
+              onClick={() => router.push(isLoggedIn ? "/profile" : "/jobseeker")}>
               이력서 등록
-            </Link>
+            </button>
             <Link href="/stories" className="gnb-with-tag">
               현장이야기
             </Link>
@@ -111,10 +114,11 @@ export default function Header({ onSearchClick }: HeaderProps) {
               <button className="mob-menu-close" onClick={() => setMenuOpen(false)}><X size={22} /></button>
             </div>
             <nav className="mob-menu-nav">
-              <Link href="/profile/resume" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
+              <button type="button" className="mob-menu-item" style={{ background: "none", border: "none", width: "100%", cursor: "pointer", font: "inherit" }}
+                onClick={() => { setMenuOpen(false); router.push(isLoggedIn ? "/profile" : "/jobseeker"); }}>
                 <span className="mob-menu-item-label">이력서 등록</span>
                 <span className="mob-menu-badge gray">경력직</span>
-              </Link>
+              </button>
               <Link href="/company/login" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
                 <span className="mob-menu-item-label">기업 서비스</span>
                 <span className="mob-menu-badge purple">기업</span>

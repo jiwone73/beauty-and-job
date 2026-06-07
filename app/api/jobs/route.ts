@@ -47,9 +47,10 @@ export async function GET(req: NextRequest) {
     params.push(`%${sido.slice(0, 2)}%`)
   }
   if (q) {
-    where.push(`(title ILIKE $${idx} OR brand_name ILIKE $${idx} OR company_name ILIKE $${idx} OR job_type ILIKE $${idx})`)
-    params.push(`%${q}%`)
-    idx++
+    const kw = `%${q}%`
+    where.push(`(title ILIKE $${idx} OR brand_name ILIKE $${idx + 1} OR company_name ILIKE $${idx + 2})`)
+    params.push(kw, kw, kw)
+    idx += 3
   }
 
   const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : ''

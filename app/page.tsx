@@ -164,8 +164,8 @@ function Hero() {
 
           <div className="hero-right">
             <div className="hero-right-header">
-              <span className="hero-ai-icon">✨</span>
-              <span className="hero-right-title">AI 맞춤 커리어 추천</span>
+              <span className="hero-ai-icon">🔥</span>
+              <span className="hero-right-title">지금은 상단 노출 0원 · 연말까지만 (~12/31)</span>
             </div>
             <div className="hero-right-cards">
               <div className="hero-right-card">
@@ -181,13 +181,13 @@ function Hero() {
                     <path d="M46 52l4 4 8-8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
-                <h3 className="hero-right-card-title">이력서 등록하면</h3>
-                <p className="hero-right-card-desc">내 경력과 관심사에 맞는<br />채용정보를 추천해드려요</p>
-                <Link href="/login" className="hero-right-card-btn">
+                <h3 className="hero-right-card-title">이력서 등록하면<br />먼저 연락와요</h3>
+                <p className="hero-right-card-desc">등록만 해두면 매장·기업이 먼저 제안하고, 내 이력서가 검색 맨 위에 노출돼요</p>
+                <Link href="/jobseeker" className="hero-right-card-btn">
                   무료 이력서 등록하기 ›
                 </Link>
               </div>
-              <Link href="/stories" className="hero-right-card card-link">
+              <div className="hero-right-card">
                 <div className="hero-right-card-visual card2">
                   <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
                     <rect x="20" y="15" width="35" height="45" rx="5" fill="#fce4f0" />
@@ -200,9 +200,12 @@ function Hero() {
                     <path d="M27 28 L48 18" stroke="#e8a0c0" strokeWidth="1.5" strokeDasharray="2 2"/>
                   </svg>
                 </div>
-                <h3 className="hero-right-card-title accent">뷰티 현장 이야기</h3>
-                <p className="hero-right-card-desc">선배들의 생생한 꿀팁과<br />공감 이야기를 만나보세요</p>
-              </Link>
+                <h3 className="hero-right-card-title">공고 올리면<br />인재가 바로 보여요</h3>
+                <p className="hero-right-card-desc">공고 등록도, 상단 노출도, 인재 연락처 열람도 지금은 전부 0원</p>
+                <Link href="/company" className="hero-right-card-btn">
+                  채용공고 등록하기 ›
+                </Link>
+              </div>
             </div>
           </div>
         </div>
