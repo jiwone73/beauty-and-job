@@ -94,7 +94,7 @@ export default function HeroMobile() {
       <div className="hero-m-ai-wrap">
         <div className="hero-m-ai-header">
           <span>🔥</span>
-          <span className="hero-m-ai-title">지금은 상단 노출 0원 · 연말까지만 (~12/31)</span>
+          <span className="hero-m-ai-title">뷰티앤잡 런칭 이벤트 · 지금은 완전 무료 (~12/31)</span>
         </div>
         <div className="hero-m-ai-cards">
           <Link href="/jobseeker" className="hero-m-ai-card">

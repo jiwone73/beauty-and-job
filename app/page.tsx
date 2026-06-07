@@ -165,7 +165,7 @@ function Hero() {
           <div className="hero-right">
             <div className="hero-right-header">
               <span className="hero-ai-icon">🔥</span>
-              <span className="hero-right-title">지금은 상단 노출 0원 · 연말까지만 (~12/31)</span>
+              <span className="hero-right-title">뷰티앤잡 런칭 이벤트 · 지금은 완전 무료 (~12/31)</span>
             </div>
             <div className="hero-right-cards">
               <div className="hero-right-card">
