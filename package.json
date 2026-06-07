@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.102.0",
     "@hookform/resolvers": "^3.9.0",
     "@supabase/supabase-js": "^2.106.1",
     "@types/jsonwebtoken": "^9.0.10",

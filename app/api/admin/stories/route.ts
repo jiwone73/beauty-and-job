@@ -47,19 +47,26 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// PATCH: 글/댓글 상태 변경. body: { target_type, target_id, status }
+// PATCH: 글/댓글 상태 변경 또는 글 내용 수정.
+// body: { target_type, target_id, status? , title?, body?, category? }
 export async function PATCH(req: NextRequest) {
   const { res: authErr } = requireAuth(req, "admin");
   if (authErr) return authErr;
 
   let target_type = "";
   let target_id = "";
-  let status = "";
+  let status: string | undefined;
+  let title: string | undefined;
+  let body: string | undefined;
+  let category: string | undefined;
   try {
     const json = await req.json();
     target_type = json.target_type;
     target_id = json.target_id;
-    status = json.status;
+    if (typeof json.status === "string") status = json.status;
+    if (typeof json.title === "string") title = json.title;
+    if (typeof json.body === "string") body = json.body;
+    if (typeof json.category === "string") category = json.category;
   } catch {
     return err("REQ_001", "잘못된 요청입니다.", 400);
   }
@@ -70,26 +77,53 @@ export async function PATCH(req: NextRequest) {
     return err("REQ_002", "대상이 올바르지 않습니다.", 400);
   }
   if (!target_id) return err("REQ_003", "대상이 없습니다.", 400);
-  const allowed = target_type === "post" ? postStatuses : commentStatuses;
-  if (!allowed.includes(status)) {
-    return err("REQ_004", "상태값이 올바르지 않습니다.", 400);
+
+  if (status !== undefined) {
+    const allowed = target_type === "post" ? postStatuses : commentStatuses;
+    if (!allowed.includes(status)) {
+      return err("REQ_004", "상태값이 올바르지 않습니다.", 400);
+    }
+  }
+
+  const editingContent =
+    target_type === "post" && (title !== undefined || body !== undefined || category !== undefined);
+
+  if (status === undefined && !editingContent) {
+    return err("REQ_005", "변경할 내용이 없습니다.", 400);
   }
 
   const client = await pool.connect();
   try {
-    if (target_type === "post") {
-      await client.query(`UPDATE community_posts SET status = $1 WHERE id = $2`, [status, target_id]);
-    } else {
+    if (target_type === "comment") {
       await client.query(`UPDATE community_comments SET status = $1 WHERE id = $2`, [status, target_id]);
+      return ok({ updated: true, status });
     }
-    return ok({ updated: true, status });
+
+    const sets: string[] = [];
+    const params: any[] = [];
+    let idx = 1;
+    if (status !== undefined) { sets.push(`status = $${idx++}`); params.push(status); }
+    if (category !== undefined) { sets.push(`category = $${idx++}`); params.push(category); }
+    if (title !== undefined) { sets.push(`title = $${idx++}`); params.push(title.trim() || null); }
+    if (body !== undefined) { sets.push(`body = $${idx++}`); params.push(body.trim()); }
+    if (status === "published") {
+      sets.push(`published_at = COALESCE(published_at, now())`);
+    }
+    params.push(target_id);
+
+    await client.query(
+      `UPDATE community_posts SET ${sets.join(", ")} WHERE id = $${idx}`,
+      params
+    );
+    return ok({ updated: true });
   } catch (e) {
     console.error("[admin stories PATCH]", e);
-    return err("SERVER_001", "상태 변경에 실패했습니다.", 500);
+    return err("SERVER_001", "수정에 실패했습니다.", 500);
   } finally {
     client.release();
   }
 }
+
 
 // POST: 운영자 발제 글 작성. body: { category, title, body, status? }
 export async function POST(req: NextRequest) {

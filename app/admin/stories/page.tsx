@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 
 const CATEGORIES = ["공감", "꿀팁", "질문", "정보"];
@@ -9,13 +9,44 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export default function AdminStoriesPage() {
-  const [tab, setTab] = useState<"posts" | "comments">("posts");
+  const [tab, setTab] = useState<"posts" | "pending" | "comments">("posts");
   const [posts, setPosts] = useState<any[]>([]);
   const [comments, setComments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [writing, setWriting] = useState(false);
   const [form, setForm] = useState({ category: "공감", title: "", body: "" });
   const [busy, setBusy] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [edit, setEdit] = useState({ category: "공감", title: "", body: "" });
+
+  const openExpand = (p: any) => {
+    if (expandedId === p.id) { setExpandedId(null); return; }
+    setExpandedId(p.id);
+    setEdit({ category: p.category || "공감", title: p.title || "", body: p.body || "" });
+  };
+
+  const saveEdit = async (id: string, alsoStatus?: string) => {
+    setBusy(true);
+    try {
+      await fetch("/api/admin/stories", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({
+          target_type: "post",
+          target_id: id,
+          category: edit.category,
+          title: edit.title,
+          body: edit.body,
+          ...(alsoStatus ? { status: alsoStatus } : {}),
+        }),
+      });
+      setExpandedId(null);
+      fetchPosts();
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
 
@@ -42,8 +73,8 @@ export default function AdminStoriesPage() {
   };
 
   useEffect(() => {
-    if (tab === "posts") fetchPosts();
-    else fetchComments();
+    if (tab === "comments") fetchComments();
+    else fetchPosts();
   }, [tab]);
 
   const changeStatus = async (target_type: "post" | "comment", target_id: string, status: string) => {
@@ -83,29 +114,60 @@ export default function AdminStoriesPage() {
     }
   };
 
-  const fmt = (d: string) => {
-    const dt = new Date(d);
-    return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
+  const generateAI = async () => {
+    setGenerating(true);
+    try {
+      const res = await fetch("/api/admin/stories/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("AI가 발제 글을 만들었어요. '승인 대기' 탭에서 확인하세요.");
+        setTab("pending");
+        fetchPosts();
+      } else {
+        alert(data.error?.message || "생성에 실패했습니다.");
+      }
+    } catch {
+      alert("생성에 실패했습니다.");
+    } finally {
+      setGenerating(false);
+    }
   };
+
+  const visiblePosts = posts.filter((p) =>
+    tab === "pending" ? p.status === "pending" : p.status !== "pending"
+  );
+  const pendingCount = posts.filter((p) => p.status === "pending").length;
 
   return (
     <AdminLayout activeMenu="stories">
       <div style={{ padding: "8px 0" }}>
-        {/* 탭 + 글쓰기 버튼 */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-          <button onClick={() => setTab("posts")}
-            style={tabStyle(tab === "posts")}>글 관리</button>
-          <button onClick={() => setTab("comments")}
-            style={tabStyle(tab === "comments")}>신고 댓글</button>
-          {tab === "posts" && (
-            <button onClick={() => setWriting((v) => !v)}
-              style={{ marginLeft: "auto", padding: "8px 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
-              {writing ? "닫기" : "+ 발제 글 작성"}
-            </button>
+          <button onClick={() => setTab("posts")} style={tabStyle(tab === "posts")}>글 관리</button>
+          <button onClick={() => setTab("pending")} style={tabStyle(tab === "pending")}>
+            승인 대기{pendingCount > 0 ? ` (${pendingCount})` : ""}
+          </button>
+          <button onClick={() => setTab("comments")} style={tabStyle(tab === "comments")}>신고 댓글</button>
+
+          {tab !== "comments" && (
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+              <button onClick={generateAI} disabled={generating}
+                style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                {generating ? "생성 중..." : "✨ AI 글 생성"}
+              </button>
+              {tab === "posts" && (
+                <button onClick={() => setWriting((v) => !v)}
+                  style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                  {writing ? "닫기" : "+ 발제 글 작성"}
+                </button>
+              )}
+            </div>
           )}
         </div>
 
-        {/* 글 작성 폼 */}
         {tab === "posts" && writing && (
           <div style={{ background: "#faf8fc", border: "1px solid #eee", borderRadius: 12, padding: 18, marginBottom: 20 }}>
             <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
@@ -135,59 +197,11 @@ export default function AdminStoriesPage() {
 
         {loading ? (
           <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
-        ) : tab === "posts" ? (
+        ) : tab === "comments" ? (
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
-                <th style={th}>카테고리</th>
-                <th style={th}>제목/내용</th>
-                <th style={th}>공감</th>
-                <th style={th}>댓글</th>
-                <th style={th}>신고</th>
-                <th style={th}>상태</th>
-                <th style={th}>관리</th>
-              </tr>
-            </thead>
-            <tbody>
-              {posts.map((p) => (
-                <tr key={p.id} style={{ borderBottom: "1px solid #f0f0f0", background: p.status === "hidden" ? "#fff5f5" : "#fff" }}>
-                  <td style={td}>{p.category}</td>
-                  <td style={{ ...td, maxWidth: 320 }}>
-                    <div style={{ fontWeight: 600, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title || "(제목 없음)"}</div>
-                    <div style={{ color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.body}</div>
-                  </td>
-                  <td style={td}>{p.like_count}</td>
-                  <td style={td}>{p.comment_count}</td>
-                  <td style={{ ...td, color: p.report_count > 0 ? "#d32f2f" : "#bbb", fontWeight: p.report_count > 0 ? 700 : 400 }}>{p.report_count}</td>
-                  <td style={td}>
-                    <span style={{ fontSize: 12, color: p.status === "hidden" ? "#d32f2f" : "#2e7d32", fontWeight: 600 }}>
-                      {STATUS_LABELS[p.status] || p.status}
-                    </span>
-                  </td>
-                  <td style={td}>
-                    {p.status === "hidden" ? (
-                      <button onClick={() => changeStatus("post", p.id, "published")} disabled={busy} style={btnGreen}>복구</button>
-                    ) : (
-                      <button onClick={() => changeStatus("post", p.id, "hidden")} disabled={busy} style={btnRed}>숨김</button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {posts.length === 0 && (
-                <tr><td colSpan={7} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>글이 없습니다.</td></tr>
-              )}
-            </tbody>
-          </table>
-        ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
-            <thead>
-              <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
-                <th style={th}>작성자</th>
-                <th style={th}>내용</th>
-                <th style={th}>원글</th>
-                <th style={th}>신고</th>
-                <th style={th}>상태</th>
-                <th style={th}>관리</th>
+                <th style={th}>작성자</th><th style={th}>내용</th><th style={th}>원글</th><th style={th}>신고</th><th style={th}>상태</th><th style={th}>관리</th>
               </tr>
             </thead>
             <tbody>
@@ -197,22 +211,108 @@ export default function AdminStoriesPage() {
                   <td style={{ ...td, maxWidth: 300, color: "#444" }}>{c.body}</td>
                   <td style={{ ...td, maxWidth: 160, color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.post_title || "-"}</td>
                   <td style={{ ...td, color: c.report_count > 0 ? "#d32f2f" : "#bbb", fontWeight: 700 }}>{c.report_count}</td>
+                  <td style={td}><span style={{ fontSize: 12, color: c.status === "hidden" ? "#d32f2f" : "#2e7d32", fontWeight: 600 }}>{c.status === "hidden" ? "숨김" : "노출"}</span></td>
                   <td style={td}>
-                    <span style={{ fontSize: 12, color: c.status === "hidden" ? "#d32f2f" : "#2e7d32", fontWeight: 600 }}>
-                      {c.status === "hidden" ? "숨김" : "노출"}
-                    </span>
-                  </td>
-                  <td style={td}>
-                    {c.status === "hidden" ? (
-                      <button onClick={() => changeStatus("comment", c.id, "visible")} disabled={busy} style={btnGreen}>복구</button>
-                    ) : (
-                      <button onClick={() => changeStatus("comment", c.id, "hidden")} disabled={busy} style={btnRed}>숨김</button>
-                    )}
+                    {c.status === "hidden"
+                      ? <button onClick={() => changeStatus("comment", c.id, "visible")} disabled={busy} style={btnGreen}>복구</button>
+                      : <button onClick={() => changeStatus("comment", c.id, "hidden")} disabled={busy} style={btnRed}>숨김</button>}
                   </td>
                 </tr>
               ))}
-              {comments.length === 0 && (
-                <tr><td colSpan={6} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>신고된 댓글이 없습니다.</td></tr>
+              {comments.length === 0 && <tr><td colSpan={6} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>신고된 댓글이 없습니다.</td></tr>}
+            </tbody>
+          </table>
+        ) : (
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
+            <thead>
+              <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
+                <th style={th}>카테고리</th><th style={th}>제목/내용</th>
+                {tab === "pending" ? <th style={th}>출처</th> : <><th style={th}>출처</th><th style={th}>공감</th><th style={th}>댓글</th><th style={th}>조회</th><th style={th}>신고</th></>}
+                <th style={th}>상태</th><th style={th}>관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visiblePosts.map((p) => (
+                <Fragment key={p.id}>
+                <tr style={{ borderBottom: "1px solid #f0f0f0", background: p.status === "hidden" ? "#fff5f5" : p.status === "pending" ? "#fffdf5" : "#fff" }}>
+                  <td style={td}>{p.category}</td>
+                  <td style={{ ...td, maxWidth: 340, cursor: "pointer" }} onClick={() => openExpand(p)}>
+                    <div style={{ fontWeight: 600, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
+                      <span style={{ color: "#bbb", fontSize: 11 }}>{expandedId === p.id ? "▼" : "▶"}</span>
+                      {p.title || "(제목 없음)"}
+                    </div>
+                    <div style={{ color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 320 }}>{p.body}</div>
+                  </td>
+                  {tab === "pending" ? (
+                    <td style={{ ...td, color: "#888" }}>{p.source === "ai" ? "🤖 AI" : p.source === "user_story" ? "사용자" : "운영자"}</td>
+                  ) : (
+                    <>
+                      <td style={{ ...td, color: "#888" }}>{p.source === "ai" ? "🤖 AI" : p.source === "user_story" ? "사용자" : "운영자"}</td>
+                      <td style={td}>{p.like_count}</td>
+                      <td style={td}>{p.comment_count}</td>
+                      <td style={td}>{p.view_count ?? 0}</td>
+                      <td style={{ ...td, color: p.report_count > 0 ? "#d32f2f" : "#bbb", fontWeight: p.report_count > 0 ? 700 : 400 }}>{p.report_count}</td>
+                    </>
+                  )}
+                  <td style={td}><span style={{ fontSize: 12, color: p.status === "hidden" ? "#d32f2f" : p.status === "pending" ? "#e65100" : "#2e7d32", fontWeight: 600 }}>{STATUS_LABELS[p.status] || p.status}</span></td>
+                  <td style={td}>
+                    {tab === "pending" ? (
+                      <div style={{ display: "flex", gap: 6 }}>
+                        <button onClick={() => changeStatus("post", p.id, "published")} disabled={busy} style={btnGreen}>승인</button>
+                        <button onClick={() => changeStatus("post", p.id, "hidden")} disabled={busy} style={btnRed}>반려</button>
+                      </div>
+                    ) : p.status === "hidden" ? (
+                      <button onClick={() => changeStatus("post", p.id, "published")} disabled={busy} style={btnGreen}>복구</button>
+                    ) : (
+                      <button onClick={() => changeStatus("post", p.id, "hidden")} disabled={busy} style={btnRed}>숨김</button>
+                    )}
+                  </td>
+                </tr>
+                {expandedId === p.id && (
+                  <tr style={{ background: "#faf8fc" }}>
+                    <td colSpan={tab === "pending" ? 5 : 9} style={{ padding: "16px 12px" }}>
+                      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                        {CATEGORIES.map((c) => (
+                          <button key={c} onClick={() => setEdit((e) => ({ ...e, category: c }))}
+                            style={{ padding: "5px 13px", borderRadius: 100, fontSize: 12.5, cursor: "pointer",
+                              border: edit.category === c ? "1.5px solid #5f0080" : "1px solid #ddd",
+                              background: edit.category === c ? "#5f0080" : "#fff",
+                              color: edit.category === c ? "#fff" : "#666" }}>
+                            {c}
+                          </button>
+                        ))}
+                      </div>
+                      <input value={edit.title} onChange={(e) => setEdit((s) => ({ ...s, title: e.target.value }))}
+                        placeholder="제목 (선택)"
+                        style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
+                      <textarea value={edit.body} onChange={(e) => setEdit((s) => ({ ...s, body: e.target.value }))}
+                        rows={5}
+                        style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, lineHeight: 1.7, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button onClick={() => saveEdit(p.id)} disabled={busy}
+                          style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}>
+                          저장
+                        </button>
+                        {tab === "pending" && (
+                          <button onClick={() => saveEdit(p.id, "published")} disabled={busy}
+                            style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#2e7d32", color: "#fff", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}>
+                            저장 후 승인
+                          </button>
+                        )}
+                        <button onClick={() => setExpandedId(null)}
+                          style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#888", fontSize: 13.5, cursor: "pointer", marginLeft: "auto" }}>
+                          닫기
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+                </Fragment>
+              ))}
+              {visiblePosts.length === 0 && (
+                <tr><td colSpan={tab === "pending" ? 5 : 9} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
+                  {tab === "pending" ? "승인 대기 중인 글이 없습니다. 'AI 글 생성'을 눌러보세요." : "글이 없습니다."}
+                </td></tr>
               )}
             </tbody>
           </table>
