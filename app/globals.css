@@ -7660,30 +7660,50 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 /* 검색바 */
+.hero-m-search-wrap {
+  margin: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hero-m-region-row {
+  display: flex;
+  gap: 8px;
+}
+.hero-m-select {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 10px;
+  background: #fff;
+  border: 1.5px solid #e0d0f0;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #5f0080;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235f0080' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+.hero-m-select:disabled {
+  color: #bbb;
+  background-color: #f7f7f7;
+  cursor: not-allowed;
+}
 .hero-m-search {
   display: flex;
   align-items: center;
-  margin: 0 20px;
   background: #fff;
   border: 1.5px solid #e0d0f0;
   border-radius: 12px;
   padding: 0 4px 0 12px;
   height: 48px;
   gap: 8px;
-}
-.hero-m-region-wrap { position: relative; flex-shrink: 0; }
-.hero-m-region-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  font-size: 13px;
-  color: #5f0080;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  white-space: nowrap;
 }
 .hero-m-input {
   flex: 1;

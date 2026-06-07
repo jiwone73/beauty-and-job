@@ -2,28 +2,30 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, MapPin } from "lucide-react";
-
-const REGION_OPTIONS = ["지역 전체", "서울", "경기", "인천", "부산", "대구", "광주", "대전", "해외"];
+import { Search } from "lucide-react";
+import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 
 export default function HeroMobile() {
   const router = useRouter();
   const [jobType, setJobType] = useState<"기업" | "매장">("기업");
-  const [region, setRegion] = useState("지역 전체");
+  const [sido, setSido] = useState("");
+  const [sigungu, setSigungu] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showRegion, setShowRegion] = useState(false);
+
+  const sigunguOptions = sido ? getSigunguList(sido) : [];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     params.set("type", jobType);
-    if (region !== "지역 전체") params.set("region", region);
+    if (sido) params.set("sido", sido);
+    if (sigungu) params.set("sigungu", sigungu);
     if (searchQuery.trim()) params.set("q", searchQuery.trim());
     router.push(`/jobs?${params.toString()}`);
   };
 
   return (
-    <section className="hero-m" onClick={() => setShowRegion(false)}>
+    <section className="hero-m">
 
       {/* 배너 */}
       <div className="hero-m-banner">
@@ -46,39 +48,46 @@ export default function HeroMobile() {
           <button key={t} type="button"
             className={`hero-m-toggle-btn ${jobType === t ? "active" : ""}`}
             onClick={() => setJobType(t)}>
-            {t === "기업" ? "🏢 기업" : "🏪 매장"}
+            {t === "기업" ? "🏢 사무직" : "🏪 매장직"}
           </button>
         ))}
       </div>
 
-      {/* 검색바 */}
-      <form className="hero-m-search" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
-        <div className="hero-m-region-wrap">
-          <button type="button" className="hero-m-region-btn"
-            onClick={(e) => { e.stopPropagation(); setShowRegion(!showRegion); }}>
-            <MapPin size={13} />
-            <span>{region}</span>
-            <i className="caret" />
-          </button>
-          {showRegion && (
-            <div className="hero-region-drop">
-              {REGION_OPTIONS.map((o) => (
-                <button key={o} type="button"
-                  className={`hero-region-item ${region === o ? "selected" : ""}`}
-                  onClick={() => { setRegion(o); setShowRegion(false); }}>
-                  {o}
-                </button>
-              ))}
-            </div>
-          )}
+      {/* 검색 영역 (2단) */}
+      <form className="hero-m-search-wrap" onSubmit={handleSearch}>
+        {/* 윗줄: 시도 + 구군 */}
+        <div className="hero-m-region-row">
+          <select
+            className="hero-m-select"
+            value={sido}
+            onChange={(e) => { setSido(e.target.value); setSigungu(""); }}>
+            <option value="">시·도 전체</option>
+            {SIDO_LIST.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+          <select
+            className="hero-m-select"
+            value={sigungu}
+            disabled={!sido}
+            onChange={(e) => setSigungu(e.target.value)}>
+            <option value="">{sido ? "구·군 전체" : "시·도 먼저"}</option>
+            {sigunguOptions.map((g) => (
+              <option key={g} value={g}>{g}</option>
+            ))}
+          </select>
         </div>
-        <input className="hero-m-input" type="text"
-          placeholder="직무, 회사, 키워드로 검색"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)} />
-        <button type="submit" className="hero-m-search-btn">
-          <Search size={18} />
-        </button>
+
+        {/* 아랫줄: 키워드 + 검색버튼 */}
+        <div className="hero-m-search">
+          <input className="hero-m-input" type="text"
+            placeholder="직무, 회사, 키워드로 검색"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} />
+          <button type="submit" className="hero-m-search-btn">
+            <Search size={18} />
+          </button>
+        </div>
       </form>
 
       {/* 프로모션 카드 */}
