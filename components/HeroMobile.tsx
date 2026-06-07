@@ -42,6 +42,9 @@ export default function HeroMobile() {
         </h1>
       </div>
 
+      {/* 검색 라벨 */}
+      <p className="hero-m-search-label">어떤 일자리를 찾으세요?</p>
+
       {/* 기업/매장 토글 */}
       <div className="hero-m-toggle">
         {(["기업", "매장"] as const).map((t) => (
@@ -55,7 +58,6 @@ export default function HeroMobile() {
 
       {/* 검색 영역 (2단) */}
       <form className="hero-m-search-wrap" onSubmit={handleSearch}>
-        <p className="hero-m-search-label">어떤 일자리를 찾으세요?</p>
         {/* 윗줄: 시도 + 구군 */}
         <div className="hero-m-region-row">
           <select
