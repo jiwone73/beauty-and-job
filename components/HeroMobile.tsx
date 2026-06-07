@@ -81,23 +81,24 @@ export default function HeroMobile() {
         </button>
       </form>
 
-      {/* AI 추천 카드 */}
+      {/* 프로모션 카드 */}
       <div className="hero-m-ai-wrap">
         <div className="hero-m-ai-header">
-          <span>✨</span>
-          <span className="hero-m-ai-title">AI 맞춤 커리어 추천</span>
+          <span>🔥</span>
+          <span className="hero-m-ai-title">지금은 상단 노출 0원 · 연말까지만 (~12/31)</span>
         </div>
         <div className="hero-m-ai-cards">
-          <Link href="/profile/resume" className="hero-m-ai-card">
+          <Link href="/jobseeker" className="hero-m-ai-card">
             <div className="hero-m-ai-card-icon">📄</div>
-            <strong>이력서 등록하면</strong>
-            <p>내 경력과 관심사에 맞는 채용정보를 추천해드려요</p>
+            <strong>이력서 등록하면<br />먼저 연락와요</strong>
+            <p>등록만 해두면 매장·기업이 먼저 제안하고, 내 이력서가 검색 맨 위에 노출돼요</p>
             <span className="hero-m-ai-card-btn">무료 이력서 등록하기 ›</span>
           </Link>
-          <Link href="/salary" className="hero-m-ai-card">
+          <Link href="/company" className="hero-m-ai-card">
             <div className="hero-m-ai-card-icon">📊</div>
-            <strong>취업 전략까지</strong>
-            <p>직무별 트렌드, 자료 분석순위, 커리어 성장전략</p>
+            <strong>공고 올리면<br />인재가 바로 보여요</strong>
+            <p>공고 등록도, 상단 노출도, 인재 연락처 열람도 지금은 전부 0원</p>
+            <span className="hero-m-ai-card-btn">채용공고 등록하기 ›</span>
           </Link>
         </div>
       </div>
