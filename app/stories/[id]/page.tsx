@@ -2,11 +2,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { ThumbsUp } from "lucide-react";
 
 const CAT_STYLE: Record<string, { bg: string; color: string }> = {
   공감: { bg: "#f3e5f5", color: "#5f0080" },
   꿀팁: { bg: "#e8f5e9", color: "#2e7d32" },
   질문: { bg: "#fff3e0", color: "#e65100" },
+  정보: { bg: "#e3f2fd", color: "#1565c0" },
 };
 
 export default function StoryDetailPage() {
@@ -101,6 +103,32 @@ export default function StoryDetailPage() {
     }
   };
 
+  const handleReport = async (target_type: "post" | "comment", target_id: string) => {
+    const token = getToken();
+    if (!token) {
+      alert("로그인이 필요해요.");
+      router.push("/login");
+      return;
+    }
+    if (!confirm("이 내용을 신고할까요? 신고가 누적되면 자동으로 숨겨져요.")) return;
+    const reason = prompt("신고 사유를 적어주세요. (선택)") || "";
+    try {
+      const r = await fetch(`/api/community/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ target_type, target_id, reason }),
+      });
+      const res = await r.json();
+      if (res.success) {
+        alert(res.data.hidden ? "신고가 접수되어 숨김 처리되었어요." : "신고가 접수되었어요. 감사합니다.");
+      } else {
+        alert(res.error?.message || "신고 처리에 실패했어요.");
+      }
+    } catch {
+      alert("신고 처리에 실패했어요.");
+    }
+  };
+
   if (loading) {
     return (
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px" }}>
@@ -125,25 +153,30 @@ export default function StoryDetailPage() {
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 40px" }}>
       <header style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 0" }}>
         <button onClick={() => router.back()} style={{ background: "none", border: "none", fontSize: 24, cursor: "pointer", color: "#333", lineHeight: 1 }}>‹</button>
-        <Link href="/stories" style={{ fontSize: 15, fontWeight: 600, color: "#5f0080", textDecoration: "none" }}>이야기</Link>
+        <Link href="/stories" style={{ fontSize: 15, fontWeight: 600, color: "#5f0080", textDecoration: "none" }}>현장이야기</Link>
       </header>
 
       <article style={{ paddingBottom: 24, borderBottom: "8px solid #f7f3fb", marginBottom: 20 }}>
         <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 100, fontSize: 12, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 12 }}>{post.category}</span>
         {post.title && <h1 style={{ fontSize: 20, fontWeight: 700, color: "#1a1a1a", marginBottom: 10, lineHeight: 1.4 }}>{post.title}</h1>}
         <p style={{ fontSize: 15, color: "#333", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{post.body}</p>
-        <p style={{ fontSize: 13, color: "#aaa", marginTop: 16 }}>{fmtDate(post.published_at || post.created_at)}</p>
-
-        <button onClick={handleLike}
-          style={{
-            display: "flex", alignItems: "center", gap: 6, margin: "24px auto 0",
-            padding: "10px 28px", borderRadius: 100, cursor: "pointer", fontSize: 15, fontWeight: 600,
-            border: liked ? "1.5px solid #5f0080" : "1.5px solid #e0d4ed",
-            background: liked ? "#5f0080" : "#fff",
-            color: liked ? "#fff" : "#5f0080",
-          }}>
-          {liked ? "❤️" : "🤍"} 공감 {likeCount}
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 18 }}>
+          <button onClick={handleLike}
+            style={{
+              display: "flex", alignItems: "center", gap: 6, background: "none", border: "none",
+              cursor: "pointer", fontSize: 14, fontWeight: 500, padding: 0,
+              color: liked ? "#5f0080" : "#888",
+            }}>
+            <ThumbsUp size={18} strokeWidth={2} fill={liked ? "#5f0080" : "none"} />
+            공감 {likeCount}
+          </button>
+          <span style={{ fontSize: 13, color: "#bbb" }}>조회 {post.view_count ?? 0}</span>
+          <span style={{ fontSize: 13, color: "#bbb" }}>{fmtDate(post.published_at || post.created_at)}</span>
+          <button onClick={() => handleReport("post", post.id)}
+            style={{ background: "none", border: "none", fontSize: 12.5, color: "#bbb", cursor: "pointer", marginLeft: "auto" }}>
+            신고
+          </button>
+        </div>
       </article>
 
       <section>
@@ -169,7 +202,13 @@ export default function StoryDetailPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             {comments.map((c) => (
               <div key={c.id} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#5f0080" }}>{c.anon_label || "익명"}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#5f0080" }}>{c.anon_label || "익명"}</span>
+                  <button onClick={() => handleReport("comment", c.id)}
+                    style={{ background: "none", border: "none", fontSize: 11.5, color: "#ccc", cursor: "pointer", marginLeft: "auto" }}>
+                    신고
+                  </button>
+                </div>
                 <p style={{ fontSize: 14, color: "#333", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{c.body}</p>
                 <span style={{ fontSize: 12, color: "#bbb" }}>{fmtDate(c.created_at)}</span>
               </div>

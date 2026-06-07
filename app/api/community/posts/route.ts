@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     }
     params.push(limit, offset);
     const res = await client.query(
-      `SELECT id, category, title, body, like_count, comment_count, created_at, published_at
+      `SELECT id, category, title, body, like_count, comment_count, view_count, created_at, published_at
          FROM community_posts
         WHERE ${where}
         ORDER BY published_at DESC NULLS LAST

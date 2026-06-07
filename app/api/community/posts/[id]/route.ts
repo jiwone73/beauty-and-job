@@ -8,8 +8,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   const { id } = params;
   const client = await pool.connect();
   try {
+    // 조회수 +1 (게시글일 때만)
+    await client.query(
+      `UPDATE community_posts SET view_count = view_count + 1
+        WHERE id = $1 AND status = 'published'`,
+      [id]
+    );
     const postRes = await client.query(
-      `SELECT id, category, title, body, like_count, comment_count, created_at, published_at
+      `SELECT id, category, title, body, like_count, comment_count, view_count, created_at, published_at
          FROM community_posts
         WHERE id = $1 AND status = 'published'`,
       [id]

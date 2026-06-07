@@ -426,7 +426,7 @@ function SectionStories() {
         <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
         <div className="section-head">
           <div>
-            <h2 className="section-title">💬 이야기</h2>
+            <h2 className="section-title">💬 현장이야기</h2>
             <p className="section-sub">뷰티 현장 사람들의 공감과 꿀팁</p>
           </div>
           <Link href="/stories" className="see-all">전체보기 →</Link>

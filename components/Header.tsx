@@ -86,7 +86,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
               이력서 등록
             </Link>
             <Link href="/stories" className="gnb-with-tag">
-              이야기
+              현장이야기
             </Link>
           </nav>
           <div className="header-right">

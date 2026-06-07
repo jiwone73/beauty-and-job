@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ThumbsUp } from "lucide-react";
 
 const CATEGORIES = ["전체", "공감", "꿀팁", "질문", "정보"];
 
@@ -51,7 +52,7 @@ export default function StoriesPage() {
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#5f0080", marginBottom: 8 }}>이야기</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#5f0080", marginBottom: 8 }}>현장이야기</h1>
           <p style={{ fontSize: 14, color: "#8a6aa8", lineHeight: 1.6 }}>
             진상 손님부터 독립 고민까지,<br />
             공감·꿀팁·정보가 모이는 뷰티 현장 이야기.
@@ -131,8 +132,9 @@ export default function StoriesPage() {
                       {p.body}
                     </p>
                     <div style={{ display: "flex", gap: 12, fontSize: 12.5, color: "#aaa" }}>
-                      <span>❤ {p.like_count}</span>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><ThumbsUp size={13} strokeWidth={2} /> {p.like_count}</span>
                       <span>💬 {p.comment_count}</span>
+                      <span>조회 {p.view_count ?? 0}</span>
                       <span style={{ marginLeft: "auto" }}>{fmtDate(p.published_at || p.created_at)}</span>
                     </div>
                   </div>
