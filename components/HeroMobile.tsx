@@ -61,7 +61,7 @@ export default function HeroMobile() {
             className="hero-m-select"
             value={sido}
             onChange={(e) => { setSido(e.target.value); setSigungu(""); }}>
-            <option value="">시·도 전체</option>
+            <option value="">전체</option>
             {SIDO_LIST.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
@@ -71,7 +71,7 @@ export default function HeroMobile() {
             value={sigungu}
             disabled={!sido}
             onChange={(e) => setSigungu(e.target.value)}>
-            <option value="">{sido ? "구·군 전체" : "시·도 먼저"}</option>
+            <option value="">전체</option>
             {sigunguOptions.map((g) => (
               <option key={g} value={g}>{g}</option>
             ))}
@@ -81,7 +81,7 @@ export default function HeroMobile() {
         {/* 아랫줄: 키워드 + 검색버튼 */}
         <div className="hero-m-search">
           <input className="hero-m-input" type="text"
-            placeholder="직무, 회사, 키워드로 검색"
+            placeholder={jobType === "매장" ? "헤어 디자이너, 네일리스트, 실장…" : "마케터, MD, 영업, 연구원…"}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)} />
           <button type="submit" className="hero-m-search-btn">
