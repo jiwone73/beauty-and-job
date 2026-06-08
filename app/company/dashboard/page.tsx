@@ -149,7 +149,7 @@ export default function CompanyDashboard() {
       {/* 통계 카드 */}
       <div className="company-stat-grid">
         {statCards.map((stat) => (
-          <div key={stat.label} className="company-stat-card">
+          <div key={stat.label} className="company-stat-card" onClick={() => router.push(stat.href)} style={{ cursor: "pointer" }}>
             <div className="company-stat-icon" style={{ background: stat.color + "18", color: stat.color }}>
               <stat.icon size={22} />
             </div>
