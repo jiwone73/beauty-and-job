@@ -115,14 +115,8 @@ export default function StoriesPage() {
               <Link key={p.id} href={`/stories/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                 <div style={{
                   background: "#fff", border: "1px solid #f0e8f8", borderRadius: 14,
-                  padding: 18, display: "flex", gap: 14, alignItems: "flex-start", cursor: "pointer",
+                  padding: 18, cursor: "pointer",
                 }}>
-                  <div style={{
-                    flexShrink: 0, width: 44, height: 44, borderRadius: 12,
-                    background: cs.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22,
-                  }}>
-                    {cs.emoji}
-                  </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: "inline-block", padding: "2px 9px", borderRadius: 100, fontSize: 11, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 7 }}>
                       {p.category}
