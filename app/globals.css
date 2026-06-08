@@ -7666,7 +7666,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .hero-m-search-label {
   font-size: 13px;
   color: #888;
-  margin: 0 2px 6px;
+  margin: 0 20px 6px;
 }
 .hero-m-searchbar {
   display: flex;
