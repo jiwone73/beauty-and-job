@@ -211,7 +211,7 @@ function Hero() {
                 <h3 className="hero-right-card-title">공고 올리면<br />인재가 바로 보여요</h3>
                 <p className="hero-right-card-desc">공고 등록도, 상단 노출도, 인재 연락처 열람도 지금은 전부 0원</p>
                 <Link href="/company" className="hero-right-card-btn">
-                  채용공고 등록하기 ›
+                  무료 채용공고 등록하기 ›
                 </Link>
               </div>
             </div>
