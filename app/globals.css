@@ -7324,13 +7324,14 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 메인 검색바 기업/매장 토글 */
 .hero-type-toggle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   background: #f3eaff;
   border-radius: 8px;
   padding: 3px;
   gap: 2px;
   flex-shrink: 0;
+  width: fit-content;
 }
 .hero-type-btn {
   padding: 6px 14px;
