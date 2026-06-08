@@ -41,16 +41,23 @@ export async function POST(
   if (dupRes.rowCount && dupRes.rowCount > 0) {
     return err('APP_001', '이미 지원하신 공고입니다.', 409)
   }
-  // 이력서 완성도 게이트: 경력 또는 학력이 1개 이상 있어야 지원 가능
-  const resumeCheck = await pool.query(
-    `SELECT
-       (SELECT COUNT(*) FROM user_careers WHERE user_id = $1)::int AS careers,
-       (SELECT COUNT(*) FROM user_educations WHERE user_id = $1)::int AS educations`,
+  // 프로필 완성도 게이트: 필수 항목이 모두 채워져야 지원 가능
+  const profileCheck = await pool.query(
+    `SELECT phone, birth_date, gender, email, region_sido, preferred_regions, job_type
+     FROM users WHERE id = $1`,
     [auth!.sub]
   )
-  const { careers, educations } = resumeCheck.rows[0]
-  if (careers === 0 && educations === 0) {
-    return err('APP_002', '지원하려면 이력서를 먼저 작성해주세요. (경력 또는 학력 1개 이상)', 422)
+  const p = profileCheck.rows[0] || {}
+  const missing: string[] = []
+  if (!p.phone) missing.push('휴대전화')
+  if (!p.birth_date) missing.push('생년월일')
+  if (!p.gender) missing.push('성별')
+  if (!p.email) missing.push('이메일')
+  if (!p.region_sido) missing.push('거주지')
+  if (!Array.isArray(p.preferred_regions) || p.preferred_regions.length === 0) missing.push('희망 근무지역')
+  if (!p.job_type) missing.push('직군')
+  if (missing.length > 0) {
+    return err('APP_002', `지원하려면 프로필을 완성해주세요. (미입력: ${missing.join(', ')})`, 422)
   }
   // 지원 등록
   const result = await pool.query(
