@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Settings, ChevronRight, Plus, CheckCircle2, X } from "lucide-react";
+import { Settings, ChevronRight, Plus, CheckCircle2, X, MapPin } from "lucide-react";
+import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
@@ -53,6 +54,7 @@ export default function ProfilePage() {
   const [preferredRegions, setPreferredRegions] = useState<{ sido: string; sigungu: string }[]>([]);
   const [prefSido, setPrefSido] = useState("");
   const [prefSigungu, setPrefSigungu] = useState("");
+  const [prefModalOpen, setPrefModalOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -122,6 +124,36 @@ export default function ProfilePage() {
     script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     script.onload = run;
     document.body.appendChild(script);
+  };
+
+  // 프로필 → 모달 형식: [{sido,sigungu}] → ["서울특별시 강남구","경기도 전체"]
+  const toModalRegions = (regions: { sido: string; sigungu: string }[]) =>
+    regions
+      .filter((r) => r.sido !== "지역 무관")
+      .map((r) => (r.sigungu ? `${r.sido} ${r.sigungu}` : `${r.sido} 전체`));
+
+  // 모달 → 프로필 형식: ["서울특별시 강남구","경기도 전체"] → [{sido,sigungu}]
+  const fromModalRegions = (arr: string[]) =>
+    arr.map((s) => {
+      const lastSpace = s.lastIndexOf(" ");
+      const sido = s.slice(0, lastSpace);
+      const tail = s.slice(lastSpace + 1);
+      return { sido, sigungu: tail === "전체" ? "" : tail };
+    });
+
+  // 모달에서 "적용하기" → 프로필 형식으로 저장
+  const applyPrefModal = async (modalRegions: string[]) => {
+    const next = fromModalRegions(modalRegions);
+    setPreferredRegions(next);
+    await patchUser({ preferred_regions: next });
+  };
+
+  // "지역 무관" 토글
+  const toggleAnyRegion = async () => {
+    const isAny = preferredRegions.some((r) => r.sido === "지역 무관");
+    const next = isAny ? [] : [{ sido: "지역 무관", sigungu: "" }];
+    setPreferredRegions(next);
+    await patchUser({ preferred_regions: next });
   };
 
   // 희망 근무지역 추가
@@ -444,44 +476,52 @@ export default function ProfilePage() {
                 )}
 
                 <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "4px" }}>
-                  희망 근무지역 <span style={{ color: "#aaa", fontWeight: 400 }}>(최대 5개)</span>
+                  희망 근무지역
                 </label>
-                <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "10px" }}>일하고 싶은 지역을 시/군/구 단위로 추가해주세요</p>
-                <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
-                  <select value={prefSido} onChange={(e) => { setPrefSido(e.target.value); setPrefSigungu(""); }}
-                    style={{ flex: 1, minWidth: 0, padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", background: "#fff" }}>
-                    <option value="">시/도</option>
-                    <option value="지역 무관">지역 무관 (전국)</option>
-                    {SIDO_LIST.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                  <select value={prefSigungu} onChange={(e) => setPrefSigungu(e.target.value)}
-                    disabled={!prefSido || prefSido === "세종특별자치시"}
-                    style={{ flex: 1, minWidth: 0, padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", background: (!prefSido || prefSido === "세종특별자치시") ? "#f5f5f5" : "#fff" }}>
-                    <option value="">{prefSido === "세종특별자치시" ? "해당 없음" : "시/군/구"}</option>
-                    {getSigunguList(prefSido).map((g) => <option key={g} value={g}>{g}</option>)}
-                  </select>
-                  <button onClick={addPreferredRegion}
-                    style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "2px", whiteSpace: "nowrap" }}>
-                    <Plus size={15} /> 추가
-                  </button>
-                </div>
-                {preferredRegions.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                    {preferredRegions.map((r, i) => (
-                      <span key={`${r.sido}-${r.sigungu}-${i}`}
-                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 8px 6px 12px", borderRadius: "20px", background: "#f3e5f5", color: "#5f0080", fontSize: "13px", fontWeight: 600 }}>
-                        {r.sigungu ? `${r.sido} ${r.sigungu}` : r.sido}
-                        <button onClick={() => removePreferredRegion(i)}
-                          style={{ display: "flex", border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0 }}
-                          aria-label="삭제">
-                          <X size={14} />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
+                <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "10px" }}>일하고 싶은 지역을 선택해주세요</p>
+
+                {/* 지역 무관 체크 */}
+                <label style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px", cursor: "pointer", fontSize: "14px", color: "#333" }}>
+                  <input type="checkbox"
+                    checked={preferredRegions.some((r) => r.sido === "지역 무관")}
+                    onChange={toggleAnyRegion}
+                    style={{ width: "16px", height: "16px", accentColor: "#5f0080", cursor: "pointer" }} />
+                  지역 무관 (전국 어디든 좋아요)
+                </label>
+
+                {/* 지역 선택 버튼 (지역 무관이면 비활성) */}
+                {!preferredRegions.some((r) => r.sido === "지역 무관") && (
+                  <>
+                    <button onClick={() => setPrefModalOpen(true)}
+                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: "pointer", marginBottom: "10px" }}>
+                      <MapPin size={15} /> 지역 선택
+                    </button>
+                    {preferredRegions.length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                        {preferredRegions.map((r, i) => (
+                          <span key={`${r.sido}-${r.sigungu}-${i}`}
+                            style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 8px 6px 12px", borderRadius: "20px", background: "#f3e5f5", color: "#5f0080", fontSize: "13px", fontWeight: 600 }}>
+                            {r.sigungu ? `${r.sido} ${r.sigungu}` : `${r.sido} 전체`}
+                            <button onClick={() => removePreferredRegion(i)}
+                              style={{ display: "flex", border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0 }}
+                              aria-label="삭제">
+                              <X size={14} />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </section>
+
+            <RegionSelectModal
+              open={prefModalOpen}
+              initial={toModalRegions(preferredRegions)}
+              onClose={() => setPrefModalOpen(false)}
+              onApply={applyPrefModal}
+            />
 
             {dbJobType === "OFFICE" && (
               <section className="profile-section">
