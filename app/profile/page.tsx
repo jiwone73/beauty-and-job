@@ -127,13 +127,23 @@ export default function ProfilePage() {
   // 희망 근무지역 추가
   const addPreferredRegion = async () => {
     if (!prefSido) { alert("시/도를 선택해주세요."); return; }
+    // 지역 무관: 다른 지역 모두 지우고 이것만 남김
+    if (prefSido === "지역 무관") {
+      const only = [{ sido: "지역 무관", sigungu: "" }];
+      setPreferredRegions(only);
+      setPrefSido(""); setPrefSigungu("");
+      await patchUser({ preferred_regions: only });
+      return;
+    }
     const sigungu = prefSido === "세종특별자치시" ? "" : prefSigungu;
     if (prefSido !== "세종특별자치시" && !sigungu) { alert("시/군/구를 선택해주세요."); return; }
     if (preferredRegions.length >= 5) { alert("희망 근무지역은 최대 5개까지 선택할 수 있어요."); return; }
     if (preferredRegions.some((r) => r.sido === prefSido && r.sigungu === sigungu)) {
       alert("이미 추가된 지역이에요."); return;
     }
-    const next = [...preferredRegions, { sido: prefSido, sigungu }];
+    // 기존에 "지역 무관"이 있으면 제거하고 구체 지역 추가
+    const base = preferredRegions.filter((r) => r.sido !== "지역 무관");
+    const next = [...base, { sido: prefSido, sigungu }];
     setPreferredRegions(next);
     setPrefSido(""); setPrefSigungu("");
     await patchUser({ preferred_regions: next });
@@ -441,6 +451,7 @@ export default function ProfilePage() {
                   <select value={prefSido} onChange={(e) => { setPrefSido(e.target.value); setPrefSigungu(""); }}
                     style={{ flex: 1, minWidth: 0, padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", background: "#fff" }}>
                     <option value="">시/도</option>
+                    <option value="지역 무관">지역 무관 (전국)</option>
                     {SIDO_LIST.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                   <select value={prefSigungu} onChange={(e) => setPrefSigungu(e.target.value)}
