@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search, MapPin, ChevronDown } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
+import { useAuthStore } from "@/lib/store/authStore";
 
 const shortSido = (s: string) =>
   s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "");
@@ -14,6 +15,28 @@ export default function HeroMobile() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const { isLoggedIn, ownerType } = useAuthStore();
+
+  // 로그인(개인회원) 시 프로필의 직군·희망지역을 검색바 기본값으로 자동 채움
+  useEffect(() => {
+    if (!isLoggedIn || ownerType !== "user") return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        const u = res.data || res;
+        if (u?.job_type === "OFFICE") setJobType("기업");
+        else if (u?.job_type === "STORE") setJobType("매장");
+        if (Array.isArray(u?.preferred_regions)) {
+          const regions = u.preferred_regions
+            .filter((r: any) => r.sido && r.sido !== "지역 무관")
+            .map((r: any) => (r.sigungu ? `${r.sido} ${r.sigungu}` : `${r.sido} 전체`));
+          if (regions.length) setSelected(regions);
+        }
+      })
+      .catch(() => {});
+  }, [isLoggedIn, ownerType]);
 
   const regionLabel = (() => {
     if (selected.length === 0) return "지역 전체";
