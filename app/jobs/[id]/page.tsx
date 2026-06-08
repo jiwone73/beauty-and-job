@@ -597,6 +597,12 @@ export default function JobDetailPage() {
                   });
                   const data = await res.json();
                   if (!data.success) {
+                    if (data.error?.code === "APP_002") {
+                      if (confirm("지원하려면 이력서를 먼저 작성해야 해요.\n지금 이력서를 작성하시겠어요?")) {
+                        router.push("/profile/resume");
+                      }
+                      return;
+                    }
                     alert(data.error?.message || "지원에 실패했습니다.");
                     return;
                   }

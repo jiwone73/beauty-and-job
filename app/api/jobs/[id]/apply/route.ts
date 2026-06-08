@@ -41,7 +41,17 @@ export async function POST(
   if (dupRes.rowCount && dupRes.rowCount > 0) {
     return err('APP_001', '이미 지원하신 공고입니다.', 409)
   }
-
+  // 이력서 완성도 게이트: 경력 또는 학력이 1개 이상 있어야 지원 가능
+  const resumeCheck = await pool.query(
+    `SELECT
+       (SELECT COUNT(*) FROM user_careers WHERE user_id = $1)::int AS careers,
+       (SELECT COUNT(*) FROM user_educations WHERE user_id = $1)::int AS educations`,
+    [auth!.sub]
+  )
+  const { careers, educations } = resumeCheck.rows[0]
+  if (careers === 0 && educations === 0) {
+    return err('APP_002', '지원하려면 이력서를 먼저 작성해주세요. (경력 또는 학력 1개 이상)', 422)
+  }
   // 지원 등록
   const result = await pool.query(
     `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, status)
