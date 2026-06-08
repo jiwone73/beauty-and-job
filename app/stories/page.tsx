@@ -52,7 +52,7 @@ export default function StoriesPage() {
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#5f0080", marginBottom: 8 }}>현장이야기</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#5f0080", marginBottom: 8, whiteSpace: "nowrap" }}>현장이야기</h1>
           <p style={{ fontSize: 14, color: "#8a6aa8", lineHeight: 1.6 }}>
             진상 손님부터 독립 고민까지,<br />
             공감·꿀팁·정보가 모이는 뷰티 현장 이야기.
@@ -85,11 +85,11 @@ export default function StoriesPage() {
       </div>
 
       {/* 카테고리 탭 */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 18, overflowX: "auto", paddingBottom: 4 }}>
+      <div style={{ display: "flex", gap: 6, marginBottom: 18 }}>
         {CATEGORIES.map((c) => (
           <button key={c} onClick={() => setCat(c)}
             style={{
-              padding: "8px 16px", borderRadius: 100, fontSize: 14, whiteSpace: "nowrap", cursor: "pointer",
+              flex: 1, padding: "8px 4px", borderRadius: 100, fontSize: 13, whiteSpace: "nowrap", cursor: "pointer",
               border: cat === c ? "1.5px solid #5f0080" : "1px solid #e0e0e0",
               background: cat === c ? "#5f0080" : "#fff",
               color: cat === c ? "#fff" : "#666",
