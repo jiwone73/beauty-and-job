@@ -43,7 +43,7 @@ export async function POST(
   }
   // 프로필 완성도 게이트: 필수 항목이 모두 채워져야 지원 가능
   const profileCheck = await pool.query(
-    `SELECT phone, birth_date, gender, email, region_sido, preferred_regions, job_type
+    `SELECT name, phone, birth_date, gender, email, region_sido, preferred_regions, job_type
      FROM users WHERE id = $1`,
     [auth!.sub]
   )
@@ -77,7 +77,7 @@ export async function POST(
     await pool.query(
       `INSERT INTO notifications (company_id, type, title, message, related_id, related_type)
        VALUES ($1, 'NEW_APPLICANT', $2, $3, $4, 'application')`,
-      [job.company_id, '새 지원자가 있어요', `'${job.title}' 공고에 새 지원자가 지원했어요.`, result.rows[0].id]
+      [job.company_id, '새 지원자가 있어요', `${p.name || '지원자'}님이 '${job.title}'에 지원했어요.`, result.rows[0].id]
     )
   } catch (e) {
     console.error('[notification] NEW_APPLICANT 생성 실패', e)
