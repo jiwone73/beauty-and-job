@@ -142,7 +142,7 @@ function Hero() {
                   사무직
                 </button>
               </div>
-              <div className="hero-search-row-region">
+              <div className="hero-searchbar-v2">
                 <button type="button"
                   className={`hero-region-trigger ${selected.length ? "active" : ""}`}
                   onClick={() => setModalOpen(true)}>
@@ -150,8 +150,7 @@ function Hero() {
                   <span>{regionLabel}</span>
                   <ChevronDown size={15} />
                 </button>
-              </div>
-              <div className="hero-search-row-input">
+                <span className="hero-searchbar-divider" />
                 <input className="hero-search-input-v2" type="text"
                   placeholder={jobType === "매장"
                     ? "헤어 디자이너, 네일리스트, 실장…"
