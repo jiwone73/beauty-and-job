@@ -17,7 +17,7 @@ export async function POST(
 
   // 공고 존재 + 활성 상태 확인
   const jobRes = await pool.query(
-    `SELECT id, status, deadline FROM job_postings WHERE id = $1`,
+    `SELECT id, status, deadline, company_id, title FROM job_postings WHERE id = $1`,
     [jobPostingId]
   )
 
@@ -72,6 +72,16 @@ export async function POST(
     `UPDATE job_postings SET application_count = application_count + 1 WHERE id = $1`,
     [jobPostingId]
   )
+  // 기업에게 새 지원자 알림 (실패해도 지원은 성공 처리)
+  try {
+    await pool.query(
+      `INSERT INTO notifications (company_id, type, title, message, related_id, related_type)
+       VALUES ($1, 'NEW_APPLICANT', $2, $3, $4, 'application')`,
+      [job.company_id, '새 지원자가 있어요', `'${job.title}' 공고에 새 지원자가 지원했어요.`, result.rows[0].id]
+    )
+  } catch (e) {
+    console.error('[notification] NEW_APPLICANT 생성 실패', e)
+  }
 
   return ok(result.rows[0], 201)
 }

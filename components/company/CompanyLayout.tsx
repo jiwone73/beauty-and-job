@@ -27,6 +27,9 @@ export default function CompanyLayout({ children, activePage }: {
   const pathname = usePathname();
   const [companyInfo, setCompanyInfo] = useState({ name: "", category: "" });
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notifs, setNotifs] = useState<any[]>([]);
+  const [unread, setUnread] = useState(0);
+  const [notifOpen, setNotifOpen] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -44,6 +47,46 @@ export default function CompanyLayout({ children, activePage }: {
       })
       .catch((e) => console.error("[company info]", e));
   }, []);
+
+  const loadNotifs = () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/company/notifications", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setNotifs(res.data.notifications || []);
+          setUnread(res.data.unread || 0);
+        }
+      })
+      .catch((e) => console.error("[notifs]", e));
+  };
+  useEffect(() => { loadNotifs(); }, []);
+
+  const handleNotifClick = async (n: any) => {
+    const token = localStorage.getItem("access_token");
+    if (!n.is_read && token) {
+      await fetch(`/api/company/notifications/${n.id}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {});
+    }
+    setNotifOpen(false);
+    loadNotifs();
+    if (n.related_type === "application") router.push(`${base}/applicants`);
+  };
+
+  const markAllRead = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    await fetch("/api/company/notifications", {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+    loadNotifs();
+  };
+
+  // /company/dashboard/* 이면 기존 base, 아니면 /{companyId} base
 
   // /company/dashboard/* 이면 기존 base, 아니면 /{companyId} base
   const segments = pathname.split("/").filter(Boolean);
@@ -83,11 +126,37 @@ export default function CompanyLayout({ children, activePage }: {
               <span className="company-logo-category">{companyInfo.category}</span>
             </div>
           </Link>
-          <button className="company-header-btn" onClick={() => router.push("/")}
-            style={{ marginLeft: "auto" }} aria-label="알림">
-            <Bell size={18} />
-            <span className="company-notif-dot" />
-          </button>
+          <div style={{ marginLeft: "auto", position: "relative" }}>
+            <button className="company-header-btn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">
+              <Bell size={18} />
+              {unread > 0 && <span className="company-notif-badge">{unread > 9 ? "9+" : unread}</span>}
+            </button>
+            {notifOpen && (
+              <>
+                <div style={{ position: "fixed", inset: 0, zIndex: 90 }} onClick={() => setNotifOpen(false)} />
+                <div className="company-notif-dropdown">
+                  <div className="company-notif-head">
+                    <span>알림</span>
+                    {unread > 0 && <button onClick={markAllRead} className="company-notif-readall">모두 읽음</button>}
+                  </div>
+                  <div className="company-notif-list">
+                    {notifs.length === 0 ? (
+                      <p className="company-notif-empty">새 알림이 없어요</p>
+                    ) : (
+                      notifs.map((n) => (
+                        <button key={n.id} className={`company-notif-item ${n.is_read ? "" : "unread"}`}
+                          onClick={() => handleNotifClick(n)}>
+                          <span className="company-notif-title">{n.title}</span>
+                          <span className="company-notif-msg">{n.message}</span>
+                          <span className="company-notif-time">{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         <nav className="company-nav">

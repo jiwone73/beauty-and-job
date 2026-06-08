@@ -6256,6 +6256,83 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-radius: 50%;
   border: 2px solid #fff;
 }
+.company-header-btn { position: relative; }
+.company-notif-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #e2402d;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.company-notif-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 300px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  z-index: 100;
+  overflow: hidden;
+}
+.company-notif-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.company-notif-readall {
+  background: none;
+  border: none;
+  color: #5f0080;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.company-notif-list {
+  max-height: 360px;
+  overflow-y: auto;
+}
+.company-notif-empty {
+  padding: 30px 14px;
+  text-align: center;
+  color: #aaa;
+  font-size: 13px;
+  margin: 0;
+}
+.company-notif-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f5f5f5;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+.company-notif-item:hover { background: #faf7fc; }
+.company-notif-item.unread { background: #faf2fc; }
+.company-notif-title { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+.company-notif-msg { font-size: 12px; color: #666; line-height: 1.4; }
+.company-notif-time { font-size: 11px; color: #aaa; margin-top: 2px; }
 .company-profile { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .company-avatar {
   width: 32px; height: 32px;
