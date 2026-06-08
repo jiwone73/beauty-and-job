@@ -7666,37 +7666,43 @@ input[type="range"].career-slider::-moz-range-thumb {
 .hero-m-search-label {
   font-size: 13px;
   color: #888;
-  margin: 0 20px 6px;
+  margin: 0 2px 6px;
 }
-.hero-m-search-row {
+.hero-m-searchbar {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  height: 48px;
+  background: #fff;
+  border: 1.5px solid #e0d0f0;
+  border-radius: 12px;
+  padding: 0 4px 0 10px;
 }
 .hero-m-region-btn {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 3px;
-  height: 48px;
-  padding: 0 10px;
-  background: #fff;
-  border: 1.5px solid #e0d0f0;
-  border-radius: 12px;
-  font-size: 14px;
+  gap: 2px;
+  background: none;
+  border: none;
+  font-size: 13px;
   color: #5f0080;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   white-space: nowrap;
-  max-width: 130px;
+  padding: 0;
+  max-width: 96px;
 }
 .hero-m-region-btn span {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.hero-m-region-btn.active {
-  border-color: #5f0080;
-  background: #faf2fc;
+.hero-m-divider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 20px;
+  background: #e0d0f0;
+  margin: 0 8px;
 }
 .hero-m-input {
   flex: 1;
