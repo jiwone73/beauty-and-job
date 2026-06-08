@@ -7662,23 +7662,22 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 검색바 */
 .hero-m-search-wrap {
   margin: 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 .hero-m-search-label {
   font-size: 13px;
   color: #888;
   margin: 0 20px 6px;
 }
-.hero-m-region-row {
+.hero-m-search-row {
   display: flex;
   gap: 8px;
 }
-.hero-m-select {
-  flex: 1;
-  min-width: 0;
-  height: 44px;
+.hero-m-region-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 48px;
   padding: 0 10px;
   background: #fff;
   border: 1.5px solid #e0d0f0;
@@ -7688,19 +7687,19 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  -webkit-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235f0080' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  padding-right: 28px;
+  white-space: nowrap;
+  max-width: 130px;
 }
-.hero-m-select:disabled {
-  color: #bbb;
-  background-color: #f7f7f7;
-  cursor: not-allowed;
+.hero-m-region-btn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hero-m-region-btn.active {
+  border-color: #5f0080;
+  background: #faf2fc;
 }
 .hero-m-search {
+  flex: 1;
   display: flex;
   align-items: center;
   background: #fff;
@@ -7709,6 +7708,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 0 4px 0 12px;
   height: 48px;
   gap: 8px;
+  min-width: 0;
 }
 .hero-m-input {
   flex: 1;
@@ -7733,6 +7733,150 @@ input[type="range"].career-slider::-moz-range-thumb {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+/* 지역 선택 모달 */
+.region-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+.region-modal {
+  width: 100%;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  animation: region-slide-up 0.25s ease;
+}
+@keyframes region-slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.region-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 0.5px solid #eee;
+}
+.region-modal-spacer { width: 18px; }
+.region-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.region-modal-close {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+}
+.region-modal-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.region-sido-col {
+  width: 38%;
+  border-right: 0.5px solid #eee;
+  background: #faf7fc;
+  overflow-y: auto;
+}
+.region-sido-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 13px 14px;
+  background: none;
+  border: none;
+  border-left: 3px solid transparent;
+  font-size: 14px;
+  color: #888;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.region-sido-item.active {
+  background: #fff;
+  color: #5f0080;
+  font-weight: 600;
+  border-left-color: #5f0080;
+}
+.region-sido-badge {
+  flex-shrink: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #5f0080;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.region-gugun-col {
+  flex: 1;
+  overflow-y: auto;
+}
+.region-gugun-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 14px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #555;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.region-gugun-all { font-weight: 600; color: #1a1a1a; }
+.region-check {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.region-check.on {
+  background: #5f0080;
+  border-color: #5f0080;
+}
+.region-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 16px;
+  border-top: 0.5px solid #eee;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+.region-apply-btn {
+  height: 40px;
+  padding: 0 28px;
+  border-radius: 9px;
+  background: #5f0080;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 /* AI 추천 카드 */

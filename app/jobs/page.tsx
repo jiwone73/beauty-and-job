@@ -92,8 +92,10 @@ function JobsPageInner() {
     const t = searchParams.get("type");
     const sd = searchParams.get("sido");
     const sg = searchParams.get("sigungu");
+    const rg = searchParams.get("regions");
     const kw = searchParams.get("q");
     if (t && t !== "전체") qs.set("type", t);
+    if (rg) qs.set("regions", rg);
     if (sd) qs.set("sido", sd);
     if (sg) qs.set("sigungu", sg);
     if (kw) qs.set("q", kw);

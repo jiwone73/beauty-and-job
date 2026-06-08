@@ -2,27 +2,70 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, MapPin, ChevronDown, X, Check } from "lucide-react";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 
 export default function HeroMobile() {
   const router = useRouter();
   const [jobType, setJobType] = useState<"기업" | "매장">("기업");
-  const [sido, setSido] = useState("");
-  const [sigungu, setSigungu] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const sigunguOptions = sido ? getSigunguList(sido) : [];
+  // 지역 모달
+  const [modalOpen, setModalOpen] = useState(false);
+  const [activeSido, setActiveSido] = useState(SIDO_LIST[0]);
+  // 확정된 선택값: ["서울특별시 강남구", "경기도 전체", ...]
+  const [selected, setSelected] = useState<string[]>([]);
+  // 모달 작업용 임시 선택값
+  const [draft, setDraft] = useState<string[]>([]);
+
+  const openModal = () => {
+    setDraft(selected);
+    setActiveSido(SIDO_LIST[0]);
+    setModalOpen(true);
+  };
+
+  const toggleItem = (sido: string, gugun: string) => {
+    const key = `${sido} ${gugun}`;
+    setDraft((prev) => {
+      if (gugun === "전체") {
+        // 전체 선택 시 해당 시도의 개별 구군 제거 + 전체 토글
+        const withoutSido = prev.filter((x) => !x.startsWith(`${sido} `));
+        const wasAll = prev.includes(key);
+        return wasAll ? withoutSido : [...withoutSido, key];
+      }
+      // 개별 구군: 전체가 켜져있으면 전체 해제하고 이 구군만
+      const withoutAll = prev.filter((x) => x !== `${sido} 전체`);
+      return withoutAll.includes(key)
+        ? withoutAll.filter((x) => x !== key)
+        : [...withoutAll, key];
+    });
+  };
+
+  const countForSido = (sido: string) =>
+    draft.filter((x) => x.startsWith(`${sido} `)).length;
+
+  const applyRegions = () => {
+    setSelected(draft);
+    setModalOpen(false);
+  };
+
+  // 버튼 표시 텍스트
+  const regionLabel = (() => {
+    if (selected.length === 0) return "지역 전체";
+    const first = selected[0].split(" ").pop();
+    return selected.length === 1 ? first : `${first} 외 ${selected.length - 1}`;
+  })();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     params.set("type", jobType);
-    if (sido) params.set("sido", sido);
-    if (sigungu) params.set("sigungu", sigungu);
+    if (selected.length) params.set("regions", selected.join(","));
     if (searchQuery.trim()) params.set("q", searchQuery.trim());
     router.push(`/jobs?${params.toString()}`);
   };
+
+  const sigunguOptions = ["전체", ...getSigunguList(activeSido)];
 
   return (
     <section className="hero-m">
@@ -56,40 +99,25 @@ export default function HeroMobile() {
         ))}
       </div>
 
-      {/* 검색 영역 (2단) */}
+      {/* 검색 영역 (2줄: 지역버튼 + 키워드) */}
       <form className="hero-m-search-wrap" onSubmit={handleSearch}>
-        {/* 윗줄: 시도 + 구군 */}
-        <div className="hero-m-region-row">
-          <select
-            className="hero-m-select"
-            value={sido}
-            onChange={(e) => { setSido(e.target.value); setSigungu(""); }}>
-            <option value="">전체</option>
-            {SIDO_LIST.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-          <select
-            className="hero-m-select"
-            value={sigungu}
-            disabled={!sido}
-            onChange={(e) => setSigungu(e.target.value)}>
-            <option value="">전체</option>
-            {sigunguOptions.map((g) => (
-              <option key={g} value={g}>{g}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* 아랫줄: 키워드 + 검색버튼 */}
-        <div className="hero-m-search">
-          <input className="hero-m-input" type="text"
-            placeholder={jobType === "매장" ? "헤어 디자이너, 네일리스트, 실장…" : "마케터, MD, 영업, 연구원…"}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)} />
-          <button type="submit" className="hero-m-search-btn">
-            <Search size={18} />
+        <div className="hero-m-search-row">
+          <button type="button"
+            className={`hero-m-region-btn ${selected.length ? "active" : ""}`}
+            onClick={openModal}>
+            <MapPin size={15} />
+            <span>{regionLabel}</span>
+            <ChevronDown size={14} />
           </button>
+          <div className="hero-m-search">
+            <input className="hero-m-input" type="text"
+              placeholder={jobType === "매장" ? "헤어 디자이너, 네일리스트…" : "마케터, MD, 영업…"}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)} />
+            <button type="submit" className="hero-m-search-btn">
+              <Search size={18} />
+            </button>
+          </div>
         </div>
       </form>
 
@@ -114,6 +142,61 @@ export default function HeroMobile() {
           </Link>
         </div>
       </div>
+
+      {/* 지역 선택 모달 */}
+      {modalOpen && (
+        <div className="region-modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="region-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="region-modal-head">
+              <span className="region-modal-spacer" />
+              <span className="region-modal-title">지역 선택</span>
+              <button type="button" className="region-modal-close" onClick={() => setModalOpen(false)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="region-modal-body">
+              {/* 시도 목록 */}
+              <div className="region-sido-col">
+                {SIDO_LIST.map((s) => {
+                  const cnt = countForSido(s);
+                  return (
+                    <button key={s} type="button"
+                      className={`region-sido-item ${activeSido === s ? "active" : ""}`}
+                      onClick={() => setActiveSido(s)}>
+                      <span>{s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "")}</span>
+                      {cnt > 0 && <span className="region-sido-badge">{cnt}</span>}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* 구군 목록 */}
+              <div className="region-gugun-col">
+                {sigunguOptions.map((g) => {
+                  const checked = draft.includes(`${activeSido} ${g}`);
+                  return (
+                    <button key={g} type="button"
+                      className="region-gugun-item"
+                      onClick={() => toggleItem(activeSido, g)}>
+                      <span className={`region-check ${checked ? "on" : ""}`}>
+                        {checked && <Check size={12} />}
+                      </span>
+                      <span className={g === "전체" ? "region-gugun-all" : ""}>{g}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="region-modal-foot">
+              <button type="button" className="region-apply-btn" onClick={applyRegions}>
+                적용하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </section>
   );

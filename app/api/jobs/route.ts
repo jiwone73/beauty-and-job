@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get('type')
   const sido = searchParams.get('sido')
   const sigungu = searchParams.get('sigungu')
+  const regions = searchParams.get('regions')
   const q = searchParams.get('q')
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
@@ -37,7 +38,17 @@ export async function GET(req: NextRequest) {
     where.push(`job_type = $${idx++}`)
     params.push(TYPE_MAP[type])
   }
-  if (sigungu) {
+  if (regions) {
+    const list = regions.split(',').map((s) => s.trim()).filter(Boolean)
+    if (list.length) {
+      const ors = list.map((r) => {
+        const keyword = r.endsWith(' 전체') ? r.replace(' 전체', '').slice(0, 2) : r.split(' ').pop()
+        params.push(`%${keyword}%`)
+        return `location ILIKE $${idx++}`
+      })
+      where.push(`(${ors.join(' OR ')})`)
+    }
+  } else if (sigungu) {
     where.push(`location ILIKE $${idx++}`)
     params.push(`%${sigungu}%`)
   } else if (sido) {
