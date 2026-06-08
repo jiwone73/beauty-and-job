@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
 import HeroMobile from "@/components/HeroMobile";
+import RegionSelectModal from "@/components/RegionSelectModal";
 import { workTypeLabel } from "@/lib/constants";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import { useEffect, useState } from "react";
@@ -20,6 +21,7 @@ import {
   Mail,
   CheckCircle,
   MapPin,
+  ChevronDown,
 } from "lucide-react";
 
 /* ============================================
@@ -88,17 +90,22 @@ function MobileDetector() {
 
 function Hero() {
   const router = useRouter();
-  const [sido, setSido] = useState("");
-  const [sigungu, setSigungu] = useState("");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [jobType, setJobType] = useState<"기업" | "매장">("매장");
-  const sigunguList = sido ? getSigunguList(sido) : [];
+  const shortSido = (s: string) => s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "");
+  const regionLabel = selected.length === 0
+    ? "지역 전체"
+    : (() => {
+        const first = selected[0].split(" ").map((p, i) => i === 0 ? shortSido(p) : p).join(" ");
+        return selected.length === 1 ? first : `${first} 외 ${selected.length - 1}`;
+      })();
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     params.set("type", jobType);
-    if (sido) params.set("sido", sido);
-    if (sigungu) params.set("sigungu", sigungu);
+    if (selected.length) params.set("regions", selected.join(","));
     if (searchQuery.trim()) params.set("q", searchQuery.trim());
     router.push(`/jobs${params.toString() ? "?" + params.toString() : ""}`);
   };
@@ -136,17 +143,13 @@ function Hero() {
                 </button>
               </div>
               <div className="hero-search-row-region">
-                <select className="hero-region-select" value={sido}
-                  onChange={(e) => { setSido(e.target.value); setSigungu(""); }}>
-                  <option value="">전체</option>
-                  {SIDO_LIST.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
-                <select className="hero-region-select" value={sigungu}
-                  disabled={!sido || sido === "세종특별자치시"}
-                  onChange={(e) => setSigungu(e.target.value)}>
-                  <option value="">전체</option>
-                  {sigunguList.map((g) => <option key={g} value={g}>{g}</option>)}
-                </select>
+                <button type="button"
+                  className={`hero-region-trigger ${selected.length ? "active" : ""}`}
+                  onClick={() => setModalOpen(true)}>
+                  <MapPin size={16} />
+                  <span>{regionLabel}</span>
+                  <ChevronDown size={15} />
+                </button>
               </div>
               <div className="hero-search-row-input">
                 <input className="hero-search-input-v2" type="text"
@@ -160,6 +163,12 @@ function Hero() {
                 </button>
               </div>
             </form>
+            <RegionSelectModal
+              open={modalOpen}
+              initial={selected}
+              onClose={() => setModalOpen(false)}
+              onApply={setSelected}
+            />
           </div>
 
           <div className="hero-right">

@@ -7698,18 +7698,6 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-color: #5f0080;
   background: #faf2fc;
 }
-.hero-m-search {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border: 1.5px solid #e0d0f0;
-  border-radius: 12px;
-  padding: 0 4px 0 12px;
-  height: 48px;
-  gap: 8px;
-  min-width: 0;
-}
 .hero-m-input {
   flex: 1;
   border: none;
@@ -7722,9 +7710,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .hero-m-input::placeholder { color: #bbb; }
 .hero-m-search-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
   background: #5f0080;
   color: #fff;
   border: none;
@@ -7734,7 +7722,26 @@ input[type="range"].career-slider::-moz-range-thumb {
   justify-content: center;
   flex-shrink: 0;
 }
-
+.hero-region-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 52px;
+  padding: 0 16px;
+  background: #fff;
+  border: 1.5px solid #e0d0f0;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #5f0080;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.hero-region-trigger.active {
+  border-color: #5f0080;
+  background: #faf2fc;
+}
 /* 지역 선택 모달 */
 .region-modal-overlay {
   position: fixed;
@@ -7859,22 +7866,75 @@ input[type="range"].career-slider::-moz-range-thumb {
   background: #5f0080;
   border-color: #5f0080;
 }
+.region-selected-bar {
+  border-top: 0.5px solid #eee;
+  padding: 12px 16px;
+}
+.region-selected-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.region-selected-label {
+  font-size: 13px;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+.region-reset {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+.region-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.region-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px 5px 10px;
+  background: #f4ecf8;
+  border: 1px solid #e0d0f0;
+  border-radius: 16px;
+  font-size: 13px;
+  color: #5f0080;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.region-chip button {
+  display: flex;
+  background: none;
+  border: none;
+  color: #9a7bb0;
+  cursor: pointer;
+  padding: 0;
+}
 .region-modal-foot {
   display: flex;
-  justify-content: flex-end;
   padding: 12px 16px;
   border-top: 0.5px solid #eee;
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
 }
 .region-apply-btn {
-  height: 40px;
-  padding: 0 28px;
-  border-radius: 9px;
+  flex: 1;
+  width: 100%;
+  height: 50px;
+  border-radius: 12px;
   background: #5f0080;
   color: #fff;
   border: none;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   font-family: inherit;
   cursor: pointer;
 }
