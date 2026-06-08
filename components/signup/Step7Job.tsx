@@ -66,8 +66,8 @@ export default function Step7Job({ onNext }: Props) {
                   🏢
                 </div>
                 <div>
-                  <p className="text-[16px] font-bold text-[#1a1a1a] mb-1">기업·사무직</p>
-                  <p className="text-[13px] text-[#888]">마케팅, MD, 영업, 디자인, 연구개발 등</p>
+                  <p className="text-[16px] font-bold text-[#1a1a1a] mb-1">사무직</p>
+                  <p className="text-[13px] text-[#888]">기업·브랜드 본사 · 마케팅·MD·영업·연구</p>
                 </div>
                 <ArrowRight size={20} className="ml-auto text-[#ccc] group-hover:text-primary" />
               </div>
@@ -84,8 +84,8 @@ export default function Step7Job({ onNext }: Props) {
                   💄
                 </div>
                 <div>
-                  <p className="text-[16px] font-bold text-[#1a1a1a] mb-1">매장·기술직</p>
-                  <p className="text-[13px] text-[#888]">네일, 헤어, 피부관리, 메이크업 등</p>
+                  <p className="text-[16px] font-bold text-[#1a1a1a] mb-1">매장직</p>
+                  <p className="text-[13px] text-[#888]">뷰티샵·살롱 현장 · 헤어·네일·피부·메이크업</p>
                 </div>
                 <ArrowRight size={20} className="ml-auto text-[#ccc] group-hover:text-primary" />
               </div>
