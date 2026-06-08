@@ -7781,6 +7781,23 @@ input[type="range"].career-slider::-moz-range-thumb {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
+@media (min-width: 769px) {
+  .region-modal-overlay {
+    align-items: center;
+    justify-content: center;
+  }
+  .region-modal {
+    width: 460px;
+    max-width: 90vw;
+    max-height: 600px;
+    border-radius: 16px;
+    animation: region-fade-in 0.2s ease;
+  }
+}
+@keyframes region-fade-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
 .region-modal-head {
   display: flex;
   align-items: center;
