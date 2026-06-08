@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Users, Briefcase, BookmarkCheck, TrendingUp, Plus, Inbox } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -52,6 +53,7 @@ function formatDate(iso: string) {
 }
 
 export default function CompanyDashboard() {
+  const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [jobs, setJobs] = useState<JobItem[]>([]);
   const [applicants, setApplicants] = useState<ApplicantItem[]>([]);
@@ -99,10 +101,10 @@ export default function CompanyDashboard() {
 
   // 통계 카드 데이터
   const statCards = [
-    { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#5f0080", icon: Briefcase },
-    { label: "총 지원자", value: stats?.total_applications ?? 0, unit: "명", color: "#0ea5e9", icon: Users },
-    { label: "오늘 지원", value: stats?.today_applications ?? 0, unit: "명", color: "#10b981", icon: TrendingUp },
-    { label: "스크랩한 인재", value: stats?.scrapped_talents ?? 0, unit: "명", color: "#f59e0b", icon: BookmarkCheck },
+    { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#5f0080", icon: Briefcase, href: "/company/dashboard/jobs" },
+    { label: "총 지원자", value: stats?.total_applications ?? 0, unit: "명", color: "#0ea5e9", icon: Users, href: "/company/dashboard/applicants" },
+    { label: "오늘 지원", value: stats?.today_applications ?? 0, unit: "명", color: "#10b981", icon: TrendingUp, href: "/company/dashboard/applicants" },
+    { label: "스크랩한 인재", value: stats?.scrapped_talents ?? 0, unit: "명", color: "#f59e0b", icon: BookmarkCheck, href: "/company/dashboard/talent/scrapped" },
   ];
 
   const chartData = (stats?.trends ?? []).map((t) => ({ day: t.label, 지원수: t.value }));
