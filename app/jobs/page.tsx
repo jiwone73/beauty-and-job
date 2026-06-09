@@ -2,7 +2,7 @@
 import Header from "@/components/Header";
 
 import { useState, useRef, useEffect, Suspense } from "react";
-import { OFFICE_JOB_GROUPS, STORE_SKILL_AREAS } from "@/lib/constants";
+import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
@@ -128,8 +128,10 @@ function JobsPageInner() {
     loadBookmarks();
   }, [loadBookmarks]);
 
-  // 로그인 사용자 job_type 기반 탭 자동 세팅
+  // 로그인 사용자 직군 기반 탭/직군 자동 세팅 (1회만, 단방향 — 프로필 저장은 호출 안 함)
+  const seededFilter = useRef(false);
   useEffect(() => {
+    if (seededFilter.current) return;
     const urlJob = searchParams.get("job");
     const urlType = searchParams.get("type");
     if (!urlJob && !urlType && userJobType) {
@@ -137,6 +139,7 @@ function JobsPageInner() {
       if (userJobAreas && userJobAreas.length > 0) {
         setSelectedJobs(userJobAreas);
       }
+      seededFilter.current = true;
     }
   }, [userJobType, userJobAreas]);
 
@@ -149,8 +152,6 @@ function JobsPageInner() {
     e.stopPropagation();
     toggleBookmarkStore(id);
   };
-
-  const currentJobTypes = jobTypeFilter === "매장" ? STORE_SKILL_AREAS : OFFICE_JOB_GROUPS;
 
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
@@ -237,11 +238,11 @@ function JobsPageInner() {
         {/* ===== 필터 바 ===== */}
         <div className="jobs-filter-bar">
           <div className="jobs-filter-left">
-            {/* 직군 드롭다운 (멀티 선택) */}
+            {/* 직군 선택 (모달) */}
             <div className="jobs-dropdown-wrap">
               <button
                 className={`jobs-filter-btn ${selectedJobs.length > 0 ? "active" : ""}`}
-                onClick={() => { setShowJobDrop(!showJobDrop); setShowCareerDrop(false); }}
+                onClick={() => { setShowJobDrop(true); setShowCareerDrop(false); }}
               >
                 {selectedJobs.length === 0
                   ? "직군 전체"
@@ -250,41 +251,14 @@ function JobsPageInner() {
                   : `${selectedJobs[0]} 외 ${selectedJobs.length - 1}`}
                 <ChevronDown size={16} />
               </button>
-              {showJobDrop && (
-                <div className="jobs-dropdown" style={{ minWidth: 200 }}>
-                  <button
-                    className={`jobs-dropdown-item ${selectedJobs.length === 0 ? "active" : ""}`}
-                    onClick={() => { setSelectedJobs([]); setShowJobDrop(false); }}
-                  >
-                    <span className="jobs-dropdown-checkbox">
-                      <svg className="jobs-dropdown-checkbox-check" width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </span>
-                    직군 전체
-                  </button>
-                  {currentJobTypes.map((jt) => (
-                    <button
-                      key={jt}
-                      className={`jobs-dropdown-item ${selectedJobs.includes(jt) ? "active" : ""}`}
-                      onClick={() => {
-                        setSelectedJobs((prev) =>
-                          prev.includes(jt)
-                            ? prev.filter((j) => j !== jt)
-                            : [...prev, jt]
-                        );
-                      }}
-                    >
-                      <span className="jobs-dropdown-checkbox">
-                        <svg className="jobs-dropdown-checkbox-check" width="10" height="8" viewBox="0 0 10 8" fill="none">
-                          <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </span>
-                      {jt}
-                    </button>
-                  ))}
-                </div>
-              )}
+              <JobGroupSelectModal
+                open={showJobDrop}
+                jobType={jobTypeFilter === "매장" ? "STORE" : "OFFICE"}
+                selected={selectedJobs}
+                onChange={setSelectedJobs}
+                onClose={() => setShowJobDrop(false)}
+                title="직군 선택"
+              />
             </div>
 
             {/* 경력 드롭다운 */}

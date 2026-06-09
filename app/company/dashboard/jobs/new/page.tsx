@@ -8,9 +8,7 @@ import {
   Bell, LogOut, ChevronLeft
 } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
-import { OFFICE_JOB_GROUPS, STORE_SKILL_AREAS } from "@/lib/constants";
-
-
+import JobGroupField from "@/components/JobGroupField";
 
 const REGIONS = ["서울", "경기·인천", "부산·경남", "대구·경북", "광주·전남", "대전·충청", "기타 지방", "글로벌"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
@@ -105,7 +103,7 @@ function CompanyJobNewForm() {
   const removeProcessStep = (idx: number) => {
     setHiringProcess(hiringProcess.filter((_, i) => i !== idx));
   };
-  const chipOptions = jobGroupType === "매장" ? STORE_SKILL_AREAS : OFFICE_JOB_GROUPS;
+  
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -288,33 +286,13 @@ function CompanyJobNewForm() {
               <label className="admin-form-label">
                 {jobGroupType === "매장" ? "시술 분야 * (복수 선택 가능)" : "직군 * (복수 선택 가능)"}
               </label>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "4px" }}>
-                {chipOptions.map((c) => {
-                  const active = categories.includes(c);
-                  return (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() =>
-                        setCategories(active ? categories.filter((x) => x !== c) : [...categories, c])
-                      }
-                      style={{
-                        padding: "8px 16px",
-                        borderRadius: "20px",
-                        border: active ? "1.5px solid #e84a5f" : "1.5px solid #e0e0e0",
-                        background: active ? "#fef0f2" : "#fff",
-                        color: active ? "#e84a5f" : "#666",
-                        fontSize: "14px",
-                        fontWeight: active ? 600 : 400,
-                        cursor: "pointer",
-                        transition: "all 0.15s",
-                      }}
-                    >
-                      {c}
-                    </button>
-                  );
-                })}
-              </div>
+              <JobGroupField
+                jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
+                value={categories}
+                onChange={setCategories}
+                maxSelect={5}
+                placeholder={jobGroupType === "매장" ? "시술 분야를 선택해주세요" : "직군을 선택해주세요"}
+              />
             </div>
 
             <div className="admin-form-row-2col">

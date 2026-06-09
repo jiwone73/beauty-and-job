@@ -9,19 +9,12 @@ import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useProfileStore } from "@/lib/store/profileStore";
-import { STORE_SKILL_AREAS } from "@/lib/constants";
+import JobGroupField from "@/components/JobGroupField";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import NotificationModal from "@/components/profile/NotificationModal";
 
 
 type ModalType = "notification" | null;
-
-const PRESET_SKILL_AREAS: string[] = [...STORE_SKILL_AREAS];
-const PRESET_OFFICE_JOB_AREAS = [
-  "마케팅", "MD·상품기획", "영업·글로벌", "R&D·연구개발", "디자인·VMD",
-  "SCM·물류·구매", "경영·재무·회계", "HR·교육", "IT·데이터",
-  "CS·고객경험", "법무·컴플라이언스", "기타",
-];
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -634,13 +627,12 @@ export default function ProfilePage() {
                 <div className="profile-info-card" style={{ padding: "16px" }}>
                   <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>해당하는 직군 영역을 선택해 주세요 (1~3개 권장)</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-                    {PRESET_OFFICE_JOB_AREAS.map((area) => (
-                      <button key={area}
-                        onClick={() => saveOfficeJobAreas(officeJobAreas.includes(area) ? officeJobAreas.filter(a => a !== area) : [...officeJobAreas, area])}
-                        style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${officeJobAreas.includes(area) ? "#5f0080" : "#e0e0e0"}`, background: officeJobAreas.includes(area) ? "#f3e5f5" : "#fff", color: officeJobAreas.includes(area) ? "#5f0080" : "#888", fontSize: "13px", fontWeight: officeJobAreas.includes(area) ? 600 : 400, cursor: "pointer" }}>
-                        {area}
-                      </button>
-                    ))}
+                    <JobGroupField
+             jobType="OFFICE"
+             value={officeJobAreas}
+             onChange={saveOfficeJobAreas}
+             placeholder="직군을 선택해주세요"
+               />
                   </div>
                 </div>
               </section>
@@ -654,13 +646,12 @@ export default function ProfilePage() {
                 <div className="profile-info-card" style={{ padding: "16px" }}>
                   <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>해당하는 시술 분야를 선택해 주세요</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-                    {PRESET_SKILL_AREAS.map((area) => (
-                      <button key={area}
-                        onClick={() => setStoreProfile({ skillAreas: skillAreas.includes(area) ? skillAreas.filter(a => a !== area) : [...skillAreas, area] })}
-                        style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${skillAreas.includes(area) ? "#5f0080" : "#e0e0e0"}`, background: skillAreas.includes(area) ? "#f3e5f5" : "#fff", color: skillAreas.includes(area) ? "#5f0080" : "#888", fontSize: "13px", fontWeight: skillAreas.includes(area) ? 600 : 400, cursor: "pointer" }}>
-                        {area}
-                      </button>
-                    ))}
+                    <JobGroupField
+  jobType="STORE"
+  value={skillAreas}
+  onChange={(v) => setStoreProfile({ skillAreas: v })}
+  placeholder="시술 분야를 선택해주세요"
+/>
                   </div>
                   <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "6px" }}>희망 근무 형태</label>
                   <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
