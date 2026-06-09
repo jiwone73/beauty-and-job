@@ -126,18 +126,22 @@ for (let i = 3; i <= 12; i++) {
   JOBS_DATA[String(i)] = { ...JOBS_DATA["1"], id: i };
 }
 
-const RELATED_JOBS = [
-  { id: 2, brand: "윗유", title: "[글로벌] 틱톡샵 어필리에이트 마케터", career: "신입~경력무관", region: "북미", color: "#e8f0fe" },
-  { id: 3, brand: "아누아", title: "[인턴] 북미 틱톡샵 인플루언서 마케터", career: "신입", region: "북미", color: "#e8f5e9" },
-  { id: 7, brand: "하우스 오브 밸런스", title: "일본 온라인 MD", career: "경력 2-7년", region: "일본", color: "#fce4ec" },
-];
+
 
 export default function JobDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
   const [job, setJob] = useState<any>(null);
+  const [related, setRelated] = useState<any[]>([]);
 
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/jobs/${id}/related`)
+      .then(r => r.json())
+      .then(res => { if (res.success && res.data) setRelated(res.data.related || []); })
+      .catch(() => {});
+  }, [id]);
   useEffect(() => {
     if (!id) return;
     const token = localStorage.getItem("access_token");
@@ -442,23 +446,30 @@ export default function JobDetailPage() {
             </section>
           )}
           {/* 관련 공고 */}
+          {related.length > 0 && (
           <section className="job-detail-section">
             <h2 className="job-detail-section-title">관련 채용공고</h2>
             <div className="job-detail-related">
-              {RELATED_JOBS.filter(r => r.id !== job.id).map((related) => (
-                <Link key={related.id} href={`/jobs/${related.id}`} className="job-detail-related-card">
-                  <div className="job-detail-related-thumb" style={{ background: related.color }}>
-                    <span>{related.brand[0]}</span>
-                  </div>
-                  <div className="job-detail-related-info">
-                    <span className="job-detail-related-brand">{related.brand}</span>
-                    <p className="job-detail-related-title">{related.title}</p>
-                    <span className="job-detail-related-meta">{related.career} · {related.region}</span>
-                  </div>
-                </Link>
-              ))}
+              {related.map((r) => {
+                const brand = r.brand_name || r.company_name || "";
+                const exp = r.experience_level === 'NEW' ? '신입' : r.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관';
+                const regionShort = r.location ? String(r.location).split(" ").slice(0, 2).join(" ") : "";
+                return (
+                  <Link key={r.id} href={`/jobs/${r.id}`} className="job-detail-related-card">
+                    <div className="job-detail-related-thumb" style={{ background: "#f3e5f5", overflow: "hidden" }}>
+                      {r.logo_url ? <img src={r.logo_url} alt={brand} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span>{brand[0]}</span>}
+                    </div>
+                    <div className="job-detail-related-info">
+                      <span className="job-detail-related-brand">{brand}</span>
+                      <p className="job-detail-related-title">{r.title}</p>
+                      <span className="job-detail-related-meta">{exp}{regionShort ? ` · ${regionShort}` : ""}</span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </section>
+          )}
         </main>
 
         {/* 오른쪽: 지원하기 사이드바 (PC) */}
