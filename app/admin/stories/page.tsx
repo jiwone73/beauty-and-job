@@ -19,6 +19,8 @@ export default function AdminStoriesPage() {
   const [generating, setGenerating] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [edit, setEdit] = useState({ category: "공감", title: "", body: "" });
+  const [autogen, setAutogen] = useState(false);
+  const [autogenSaving, setAutogenSaving] = useState(false);
 
   const openExpand = (p: any) => {
     if (expandedId === p.id) { setExpandedId(null); return; }
@@ -49,6 +51,36 @@ export default function AdminStoriesPage() {
   };
 
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
+
+  const fetchAutogen = async () => {
+    try {
+      const res = await fetch("/api/admin/settings", { headers: { Authorization: `Bearer ${token()}` } });
+      const json = await res.json();
+      if (json.success) setAutogen(json.data?.story_autogen === "on");
+    } catch (e) {
+      console.error("[fetchAutogen]", e);
+    }
+  };
+  const toggleAutogen = async () => {
+    const next = autogen ? "off" : "on";
+    setAutogenSaving(true);
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ key: "story_autogen", value: next }),
+      });
+      const json = await res.json();
+      if (json.success) setAutogen(next === "on");
+      else alert(json.error?.message || "변경에 실패했습니다.");
+    } catch (e) {
+      console.error("[toggleAutogen]", e);
+      alert("변경에 실패했습니다.");
+    } finally {
+      setAutogenSaving(false);
+    }
+  };
+  useEffect(() => { fetchAutogen(); }, []);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -153,7 +185,15 @@ export default function AdminStoriesPage() {
           <button onClick={() => setTab("comments")} style={tabStyle(tab === "comments")}>신고 댓글</button>
 
           {tab !== "comments" && (
-            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+            <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+              <button onClick={toggleAutogen} disabled={autogenSaving}
+                title="현장이야기 매일 자동 생성 on/off"
+                style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 13, fontWeight: 600, color: "#555", cursor: "pointer" }}>
+                자동 생성
+                <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#5f0080" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
+                  <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
+                </span>
+              </button>
               <button onClick={generateAI} disabled={generating}
                 style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
                 {generating ? "생성 중..." : "✨ AI 글 생성"}

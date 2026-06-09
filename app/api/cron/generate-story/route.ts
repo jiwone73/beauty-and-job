@@ -9,6 +9,16 @@ const CATEGORIES = ["공감", "꿀팁", "질문", "정보"];
 
 // Vercel Cron 이 매일 호출 (GET). AI 발제 글 1개 생성 -> pending 저장.
 export async function GET(req: NextRequest) {
+  // 자동 생성 on/off — 관리자페이지 토글 (app_settings.story_autogen)
+  try {
+    const s = await pool.query(`SELECT value FROM app_settings WHERE key = 'story_autogen'`);
+    if (s.rows[0]?.value !== "on") {
+      return ok({ disabled: true, message: "현장이야기 자동 생성이 꺼져 있습니다." });
+    }
+  } catch (e) {
+    console.error("[cron autogen check]", e);
+    return err("SERVER_001", "설정 확인 실패", 500);
+  }
   const authHeader = req.headers.get("authorization") || "";
   const { searchParams } = new URL(req.url);
   const querySecret = searchParams.get("secret") || "";
