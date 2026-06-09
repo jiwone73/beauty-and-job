@@ -25,12 +25,36 @@ export async function GET(
   if (result.rowCount === 0) {
     return err("APP_002", "지원 내역을 찾을 수 없습니다.", 404);
   }
-  // 처음 조회 시 viewed_at 자동 기록
+  // 처음 조회 시 viewed_at 자동 기록 + 구직자에게 열람 알림
   if (!result.rows[0].viewed_at) {
     pool.query(
       `UPDATE applications SET viewed_at = NOW() WHERE id = $1`,
       [params.id]
     ).catch((e) => console.error("[viewed_at update]", e));
+
+    // 구직자에게 "기업이 내 지원서를 열람" 알림 (처음 열람 시 1회)
+    (async () => {
+      try {
+        const co = await pool.query(
+          `SELECT company_name FROM companies WHERE id = $1`,
+          [auth!.sub]
+        );
+        const companyName = co.rows[0]?.company_name || "기업";
+        const row = result.rows[0];
+        await pool.query(
+          `INSERT INTO notifications (user_id, type, title, message, related_id, related_type)
+           VALUES ($1, 'APP_VIEWED', $2, $3, $4, 'application')`,
+          [
+            row.user_id,
+            "기업이 내 지원서를 확인했어요",
+            `${companyName}에서 '${row.job_title}' 지원서를 열람했어요.`,
+            row.id,
+          ]
+        );
+      } catch (e) {
+        console.error("[notification] APP_VIEWED 생성 실패", e);
+      }
+    })();
   }
 
   // 이력서 풀데이터 조회 (구직자/관리자와 동일한 ResumePreview용)

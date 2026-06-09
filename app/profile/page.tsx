@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Settings, ChevronRight, Plus, CheckCircle2, X, MapPin } from "lucide-react";
+import { Settings, ChevronRight, Plus, CheckCircle2, X, MapPin, Bell } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -55,6 +55,47 @@ export default function ProfilePage() {
   const [prefSido, setPrefSido] = useState("");
   const [prefSigungu, setPrefSigungu] = useState("");
   const [prefModalOpen, setPrefModalOpen] = useState(false);
+  const [notifs, setNotifs] = useState<any[]>([]);
+  const [unreadNotif, setUnreadNotif] = useState(0);
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  const loadNotifs = () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/users/me/notifications", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && res.data) {
+          setNotifs(res.data.notifications || []);
+          setUnreadNotif(res.data.unread || 0);
+        }
+      })
+      .catch((e) => console.error("[notifs]", e));
+  };
+  useEffect(() => { loadNotifs(); }, []);
+
+  const handleNotifClick = async (n: any) => {
+    const token = localStorage.getItem("access_token");
+    if (!n.is_read && token) {
+      await fetch(`/api/users/me/notifications/${n.id}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {});
+    }
+    setNotifOpen(false);
+    loadNotifs();
+    if (n.related_type === "application") setActiveTab("applied");
+  };
+
+  const markAllReadNotif = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    await fetch("/api/users/me/notifications", {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+    loadNotifs();
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -260,6 +301,41 @@ export default function ProfilePage() {
           <Link href="/" className="profile-logo">
             <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} priority />
           </Link>
+          <div style={{ position: "relative", display: "inline-flex" }}>
+            <button
+              className="profile-settings-btn"
+              onClick={() => setNotifOpen((v) => !v)}
+              aria-label="알림"
+            >
+              <Bell size={22} />
+              {unreadNotif > 0 && <span className="company-notif-badge">{unreadNotif > 9 ? "9+" : unreadNotif}</span>}
+            </button>
+            {notifOpen && (
+              <>
+                <div style={{ position: "fixed", inset: 0, zIndex: 90 }} onClick={() => setNotifOpen(false)} />
+                <div className="company-notif-dropdown" style={{ left: "auto", right: 0 }}>
+                  <div className="company-notif-head">
+                    <span>알림</span>
+                    {unreadNotif > 0 && <button onClick={markAllReadNotif} className="company-notif-readall">모두 읽음</button>}
+                  </div>
+                  <div className="company-notif-list">
+                    {notifs.length === 0 ? (
+                      <p className="company-notif-empty">새 알림이 없어요</p>
+                    ) : (
+                      notifs.map((n) => (
+                        <button key={n.id} className={`company-notif-item ${n.is_read ? "" : "unread"}`}
+                          onClick={() => handleNotifClick(n)}>
+                          <span className="company-notif-title">{n.title}</span>
+                          <span className="company-notif-msg">{n.message}</span>
+                          <span className="company-notif-time">{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           <button
             className="profile-settings-btn"
             onClick={() => setOpenModal("notification")}
