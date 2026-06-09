@@ -25,6 +25,7 @@ export default function CompanySettingsPage() {
     website_url: "",
     address: "",
     phone: "",
+    representative_name: "",
     company_size: "",
     founded_year: "",
     region_sido: "",
@@ -44,6 +45,7 @@ export default function CompanySettingsPage() {
           website_url: res.data.website_url || "",
           address: (res.data as any).address || "",
           phone: (res.data as any).phone || "",
+          representative_name: (res.data as any).representative_name || "",
           company_size: (res.data as any).company_size || "",
           founded_year: (res.data as any).founded_year || "",
           region_sido: (res.data as any).region_sido || "",
@@ -308,9 +310,9 @@ export default function CompanySettingsPage() {
 
               <div className="admin-form-row">
                 <label className="admin-form-label">대표자명</label>
-                <input className="admin-form-input"
-                  value={info?.representative_name || ""} disabled
-                  style={{ background: "#f5f5f5", color: "#888" }} />
+                <input className="admin-form-input" placeholder="대표자명을 입력해주세요"
+                  value={form.representative_name}
+                  onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
               </div>
 
               <div className="admin-form-row">

@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest) {
 
   // 수정 가능한 필드 (whitelist - 보안)
   const allowedFields = [
-    "company_name", "brand_name", "phone",
+    "company_name", "brand_name", "representative_name", "phone",
     "logo_url", "description", "website_url", "address",
     "company_size", "founded_year", "region_sido", "region_sigungu",
   ];
