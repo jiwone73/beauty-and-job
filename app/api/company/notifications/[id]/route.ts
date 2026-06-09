@@ -16,3 +16,16 @@ export async function PATCH(
   );
   return ok({ updated: true });
 }
+// 개별 삭제
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { auth, res: authErr } = requireAuth(req, "company");
+  if (authErr) return authErr;
+  await pool.query(
+    `DELETE FROM notifications WHERE id = $1 AND company_id = $2`,
+    [params.id, auth!.sub]
+  );
+  return ok({ deleted: true });
+}

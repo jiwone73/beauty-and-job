@@ -96,6 +96,26 @@ export default function ProfilePage() {
     }).catch(() => {});
     loadNotifs();
   };
+  const deleteNotif = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    await fetch(`/api/users/me/notifications/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+    loadNotifs();
+  };
+  const deleteAllNotif = async () => {
+    if (!confirm("모든 알림을 삭제할까요?")) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    await fetch("/api/users/me/notifications", {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+    loadNotifs();
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -316,19 +336,26 @@ export default function ProfilePage() {
                 <div className="company-notif-dropdown" style={{ left: "auto", right: 0 }}>
                   <div className="company-notif-head">
                     <span>알림</span>
-                    {unreadNotif > 0 && <button onClick={markAllReadNotif} className="company-notif-readall">모두 읽음</button>}
+                    <span style={{ display: "flex", gap: 10 }}>
+                      {unreadNotif > 0 && <button onClick={markAllReadNotif} className="company-notif-readall">모두 읽음</button>}
+                      {notifs.length > 0 && <button onClick={deleteAllNotif} className="company-notif-readall" style={{ color: "#999" }}>전체 삭제</button>}
+                    </span>
                   </div>
                   <div className="company-notif-list">
                     {notifs.length === 0 ? (
                       <p className="company-notif-empty">새 알림이 없어요</p>
                     ) : (
                       notifs.map((n) => (
-                        <button key={n.id} className={`company-notif-item ${n.is_read ? "" : "unread"}`}
-                          onClick={() => handleNotifClick(n)}>
+                        <div key={n.id} className={`company-notif-item ${n.is_read ? "" : "unread"}`}
+                          onClick={() => handleNotifClick(n)} style={{ position: "relative" }}>
                           <span className="company-notif-title">{n.title}</span>
                           <span className="company-notif-msg">{n.message}</span>
                           <span className="company-notif-time">{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
-                        </button>
+                          <button onClick={(e) => deleteNotif(n.id, e)} aria-label="삭제"
+                            style={{ position: "absolute", top: 10, right: 10, border: "none", background: "transparent", color: "#bbb", cursor: "pointer", padding: 2, lineHeight: 0 }}>
+                            <X size={14} />
+                          </button>
+                        </div>
                       ))
                     )}
                   </div>

@@ -85,6 +85,26 @@ export default function CompanyLayout({ children, activePage }: {
     }).catch(() => {});
     loadNotifs();
   };
+  const deleteNotif = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    await fetch(`/api/company/notifications/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+    loadNotifs();
+  };
+  const deleteAllNotif = async () => {
+    if (!confirm("모든 알림을 삭제할까요?")) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    await fetch("/api/company/notifications", {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+    loadNotifs();
+  };
 
   // /company/dashboard/* 이면 기존 base, 아니면 /{companyId} base
 

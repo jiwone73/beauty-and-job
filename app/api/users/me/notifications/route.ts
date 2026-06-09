@@ -41,10 +41,19 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const userId = getUserId(req);
   if (!userId) return err("AUTH_001", "인증이 필요합니다.", 401);
-
   await pool.query(
     `UPDATE notifications SET is_read = true WHERE user_id = $1 AND is_read = false`,
     [userId]
   );
   return ok({ updated: true });
+}
+// 전체 삭제
+export async function DELETE(req: NextRequest) {
+  const userId = getUserId(req);
+  if (!userId) return err("AUTH_001", "인증이 필요합니다.", 401);
+  await pool.query(
+    `DELETE FROM notifications WHERE user_id = $1`,
+    [userId]
+  );
+  return ok({ deleted: true });
 }

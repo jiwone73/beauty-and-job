@@ -27,10 +27,19 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
-
   await pool.query(
     `UPDATE notifications SET is_read = true WHERE company_id = $1 AND is_read = false`,
     [auth!.sub]
   );
   return ok({ updated: true });
+}
+// 전체 삭제
+export async function DELETE(req: NextRequest) {
+  const { auth, res: authErr } = requireAuth(req, "company");
+  if (authErr) return authErr;
+  await pool.query(
+    `DELETE FROM notifications WHERE company_id = $1`,
+    [auth!.sub]
+  );
+  return ok({ deleted: true });
 }
