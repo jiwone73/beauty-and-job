@@ -33,6 +33,7 @@ export default function CompanySettingsPage() {
   });
   const [pwForm, setPwForm] = useState({ current_password: "", new_password: "", confirm_password: "" });
   const [pwSaving, setPwSaving] = useState(false);
+  const [showPw, setShowPw] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -355,17 +356,21 @@ export default function CompanySettingsPage() {
 
               <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px" }}>
                 <label className="admin-form-label">비밀번호 변경</label>
-                <input className="admin-form-input" type="password" placeholder="현재 비밀번호"
+                <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="현재 비밀번호"
                   value={pwForm.current_password}
                   onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })} />
-                <input className="admin-form-input" type="password" placeholder="새 비밀번호 (8자 이상)"
+                <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 (8자 이상)"
                   style={{ marginTop: "8px" }}
                   value={pwForm.new_password}
                   onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })} />
-                <input className="admin-form-input" type="password" placeholder="새 비밀번호 확인"
+                <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 확인"
                   style={{ marginTop: "8px" }}
                   value={pwForm.confirm_password}
                   onChange={(e) => setPwForm({ ...pwForm, confirm_password: e.target.value })} />
+                <label style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#666", cursor: "pointer", alignSelf: "flex-start" }}>
+                  <input type="checkbox" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} />
+                  비밀번호 표시
+                </label>
                 <button
                   type="button"
                   onClick={handleChangePassword}
