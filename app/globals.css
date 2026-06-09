@@ -5318,7 +5318,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   align-items: center;
 }
 .admin-modal-close:hover { background: #f5f5f5; color: #1a1a1a; }
-.admin-modal-body { padding: 24px; }
+.admin-modal-body { padding: 24px; flex: 1; overflow-y: auto; min-height: 0; }
 .admin-detail-grid { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
 .admin-detail-row {
   display: flex;
