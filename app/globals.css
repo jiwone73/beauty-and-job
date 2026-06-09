@@ -6286,6 +6286,15 @@ input[type="range"].career-slider::-moz-range-thumb {
   z-index: 100;
   overflow: hidden;
 }
+@media (max-width: 768px) {
+  .company-notif-dropdown {
+    position: fixed;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+}
 .company-notif-head {
   display: flex;
   align-items: center;
