@@ -14,7 +14,6 @@ export const OFFICE_JOB_GROUPS = [
   "법무·컴플라이언스",
   "기타",
 ] as const;
-
 // 매장직 시술분야 (매장 공고 필터 = 매장직 프로필 시술분야)
 export const STORE_SKILL_AREAS = [
   "헤어",

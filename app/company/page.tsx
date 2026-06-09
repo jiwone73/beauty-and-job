@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, ChevronDown, ChevronUp, Building2, Store, Star, Zap, Megaphone, ArrowRight, Layers } from "lucide-react";
-import { OFFICE_JOB_GROUPS, STORE_SKILL_AREAS } from "@/lib/constants";
 
 const FAQS = [
   { q: "채용공고 등록은 무료인가요?", a: "네, 기본 채용공고 등록은 완전 무료입니다. 상단 노출·프리미엄 배너 등 유료 상품은 선택 사항입니다." },
