@@ -124,7 +124,13 @@ export async function PATCH(
     RETURNING a.id, a.status, a.note, a.updated_at
   `;
 
-  const result = await pool.query(query, values);
+  let result;
+  try {
+    result = await pool.query(query, values);
+  } catch (e: any) {
+    console.error("[PATCH application]", e);
+    return err("APP_003", e?.message || "상태 변경에 실패했습니다.", 400);
+  }
 
   if (result.rowCount === 0) {
     return err("APP_002", "지원 내역을 찾을 수 없거나 권한이 없습니다.", 404);

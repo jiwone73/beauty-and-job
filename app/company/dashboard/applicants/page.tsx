@@ -10,7 +10,7 @@ import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company"
 
 const STATUS_LABEL: Record<ApplicationStatus, string> = {
   APPLIED: "신규",
-  REVIEWING: "검토중",
+  VIEWED: "검토중",
   INTERVIEW: "면접예정",
   PASSED: "합격",
   REJECTED: "불합격",
@@ -18,7 +18,7 @@ const STATUS_LABEL: Record<ApplicationStatus, string> = {
 
 const STATUS_BADGE_CLASS: Record<ApplicationStatus, string> = {
   APPLIED: "company-badge-info",
-  REVIEWING: "company-badge-warning",
+  VIEWED: "company-badge-warning",
   INTERVIEW: "company-badge-info",
   PASSED: "company-badge-success",
   REJECTED: "company-badge-danger",
@@ -135,7 +135,7 @@ function ApplicantsContent() {
   const counts = {
     전체: applicants.length,
     신규: applicants.filter(a => a.status === "APPLIED").length,
-    검토중: applicants.filter(a => a.status === "REVIEWING").length,
+    검토중: applicants.filter(a => a.status === "VIEWED").length,
     면접예정: applicants.filter(a => a.status === "INTERVIEW").length,
     합격: applicants.filter(a => a.status === "PASSED").length,
     불합격: applicants.filter(a => a.status === "REJECTED").length,
@@ -266,7 +266,7 @@ function ApplicantsContent() {
                       style={{ fontSize: "12px", padding: "4px 8px" }}
                     >
                       <option value="APPLIED">신규</option>
-                      <option value="REVIEWING">검토중</option>
+                      <option value="VIEWED">검토중</option>
                       <option value="INTERVIEW">면접예정</option>
                       <option value="PASSED">합격</option>
                       <option value="REJECTED">불합격</option>
@@ -305,7 +305,7 @@ function ApplicantsContent() {
               <div style={{marginTop:"20px"}}>
                 <p style={{fontSize:"13px", color:"#666", marginBottom:"8px"}}>상태 변경</p>
                 <div style={{display:"flex", gap:"6px", flexWrap:"wrap"}}>
-                  {(["APPLIED", "REVIEWING", "INTERVIEW", "PASSED", "REJECTED"] as ApplicationStatus[]).map(s => (
+                  {(["APPLIED", "VIEWED", "INTERVIEW", "PASSED", "REJECTED"] as ApplicationStatus[]).map(s => (
                     <button
                       key={s}
                       onClick={() => handleStatusChange(selected.id, s)}
