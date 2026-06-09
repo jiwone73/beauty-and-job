@@ -31,6 +31,8 @@ export default function CompanySettingsPage() {
     region_sido: "",
     region_sigungu: "",
   });
+  const [pwForm, setPwForm] = useState({ current_password: "", new_password: "", confirm_password: "" });
+  const [pwSaving, setPwSaving] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -123,6 +125,35 @@ export default function CompanySettingsPage() {
       document.body.appendChild(script);
     }
   };
+  const handleChangePassword = async () => {
+    if (!pwForm.current_password || !pwForm.new_password) {
+      alert("현재 비밀번호와 새 비밀번호를 입력해주세요.");
+      return;
+    }
+    if (pwForm.new_password.length < 8) {
+      alert("새 비밀번호는 8자 이상이어야 합니다.");
+      return;
+    }
+    if (pwForm.new_password !== pwForm.confirm_password) {
+      alert("새 비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    setPwSaving(true);
+    try {
+      await companyMeApi.changePassword({
+        current_password: pwForm.current_password,
+        new_password: pwForm.new_password,
+      });
+      alert("비밀번호가 변경되었습니다.");
+      setPwForm({ current_password: "", new_password: "", confirm_password: "" });
+    } catch (e: any) {
+      alert(e?.message || "비밀번호 변경에 실패했어요. 현재 비밀번호를 확인해주세요.");
+      console.error("[changePassword]", e);
+    } finally {
+      setPwSaving(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!form.company_name.trim()) {
       alert("기업명은 필수입니다.");
@@ -324,9 +355,24 @@ export default function CompanySettingsPage() {
 
               <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px" }}>
                 <label className="admin-form-label">비밀번호 변경</label>
-                <p style={{ fontSize: "12px", color: "#888", padding: "8px 0" }}>
-                  비밀번호 변경 기능은 곧 제공됩니다.
-                </p>
+                <input className="admin-form-input" type="password" placeholder="현재 비밀번호"
+                  value={pwForm.current_password}
+                  onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })} />
+                <input className="admin-form-input" type="password" placeholder="새 비밀번호 (8자 이상)"
+                  style={{ marginTop: "8px" }}
+                  value={pwForm.new_password}
+                  onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })} />
+                <input className="admin-form-input" type="password" placeholder="새 비밀번호 확인"
+                  style={{ marginTop: "8px" }}
+                  value={pwForm.confirm_password}
+                  onChange={(e) => setPwForm({ ...pwForm, confirm_password: e.target.value })} />
+                <button
+                  type="button"
+                  onClick={handleChangePassword}
+                  disabled={pwSaving}
+                  style={{ marginTop: "12px", padding: "10px 16px", borderRadius: "8px", border: "none", background: "#5f0080", color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer", alignSelf: "flex-start" }}>
+                  {pwSaving ? "변경 중..." : "비밀번호 변경"}
+                </button>
               </div>
             </div>
           </div>

@@ -62,6 +62,8 @@ export const companyMeApi = {
   get: () => api.get<ApiResponse<CompanyInfo>>("/api/company/me"),
   update: (body: Partial<CompanyInfo>) =>
     api.patch<ApiResponse<CompanyInfo>>("/api/company/me", body),
+  changePassword: (body: { current_password: string; new_password: string }) =>
+    api.patch<ApiResponse<{ success: boolean }>>("/api/company/me/password", body),
 };
 
 // === 대시보드 통계 ===
