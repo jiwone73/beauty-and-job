@@ -220,7 +220,6 @@ export default function CompanySignupPage() {
 
           {/* 채용 유형 (최상단) */}
           <div className="mb-6">
-            <h2 className="text-[16px] font-bold text-[#1a1a1a] mb-1">어떤 인재를 찾고 계세요?</h2>
             <p className="text-[13px] text-[#9a9a9a] mb-3">채용 형태에 맞는 유형을 선택해주세요</p>
             <div className="grid grid-cols-3 gap-2">
               {COMPANY_TYPES.map((t) => (
