@@ -70,16 +70,6 @@ export default function AdminMembersPage() {
     setMembers((prev) => prev.map((m) => m.id === id ? { ...m, status } : m));
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("이 회원을 삭제하시겠습니까?")) return;
-    await fetch(`/api/admin/members?id=${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setMembers((prev) => prev.filter((m) => m.id !== id));
-    setChecked((prev) => prev.filter((x) => x !== id));
-  };
-
   const handleBulkDelete = async () => {
     if (!checked.length) return;
     if (!confirm(`선택한 ${checked.length}명을 삭제하시겠습니까?`)) return;
@@ -108,8 +98,16 @@ export default function AdminMembersPage() {
 
   const toggleCheck = (id: string) =>
     setChecked((c) => c.includes(id) ? c.filter((x) => x !== id) : [...c, id]);
-  const toggleAll = () =>
-    setChecked(checked.length === filtered.length ? [] : filtered.map((m) => m.id));
+
+  const allPageSelected = paginated.length > 0 && paginated.every((m) => checked.includes(m.id));
+  const toggleAllPage = () => {
+    const pageIds = paginated.map((m) => m.id);
+    if (allPageSelected) {
+      setChecked((prev) => prev.filter((id) => !pageIds.includes(id)));
+    } else {
+      setChecked((prev) => Array.from(new Set([...prev, ...pageIds])));
+    }
+  };
 
   const counts = {
     전체: members.length,
@@ -156,17 +154,26 @@ export default function AdminMembersPage() {
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: "8px" }}>
-          {checked.length > 0 && (
-            <button className="admin-danger-btn" onClick={handleBulkDelete}>
-              <Trash2 size={15} /> 선택삭제 ({checked.length})
-            </button>
-          )}
-        </div>
       </div>
 
       <div className="admin-card">
-        <div className="admin-table-meta">총 <strong>{filtered.length.toLocaleString()}</strong>명</div>
+        <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>총 <strong>{filtered.length.toLocaleString()}</strong>명</span>
+          <button
+            onClick={handleBulkDelete}
+            disabled={checked.length === 0}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "6px 14px", borderRadius: 6, border: "none",
+              background: checked.length ? "#e74c3c" : "#ededed",
+              color: checked.length ? "#fff" : "#aaa",
+              fontSize: 13, fontWeight: 600,
+              cursor: checked.length ? "pointer" : "default",
+            }}
+          >
+            <Trash2 size={15} /> 선택 삭제{checked.length ? ` (${checked.length})` : ""}
+          </button>
+        </div>
         {loading ? (
           <div className="admin-empty">불러오는 중...</div>
         ) : filtered.length === 0 ? (
@@ -175,10 +182,10 @@ export default function AdminMembersPage() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th style={{ width: "36px" }}>
+                <th style={{ width: "36px", textAlign: "center" }}>
                   <input type="checkbox"
-                    checked={checked.length === filtered.length && filtered.length > 0}
-                    onChange={toggleAll} />
+                    checked={allPageSelected}
+                    onChange={toggleAllPage} />
                 </th>
                 <th>가입일</th>
                 <th>이름</th>
@@ -188,13 +195,12 @@ export default function AdminMembersPage() {
                 <th>직군</th>
                 <th>최근 로그인</th>
                 <th>상태</th>
-                <th>관리</th>
               </tr>
             </thead>
             <tbody>
               {paginated.map((m) => (
                 <tr key={m.id} style={{ background: checked.includes(m.id) ? "#faf5ff" : "" }}>
-                  <td>
+                  <td style={{ textAlign: "center" }}>
                     <input type="checkbox"
                       checked={checked.includes(m.id)}
                       onChange={() => toggleCheck(m.id)} />
@@ -225,10 +231,6 @@ export default function AdminMembersPage() {
                       <option value="INACTIVE">휴면</option>
                       <option value="SUSPENDED">정지</option>
                     </select>
-                  </td>
-                  <td>
-                    <button className="admin-danger-btn" style={{ padding: "4px 10px", fontSize: "12px" }}
-                      onClick={() => handleDelete(m.id)}>삭제</button>
                   </td>
                 </tr>
               ))}
