@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,6 +31,7 @@ export default function CompanySignupPage() {
     passwordConfirm: "",
     address: "",
     website_url: "",
+    business_license_path: "",
   });
   const [showPw, setShowPw] = useState(false);
   const [terms, setTerms] = useState<Term[]>([]);
@@ -38,6 +39,8 @@ export default function CompanySignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [licenseName, setLicenseName] = useState("");
+  const [licenseUploading, setLicenseUploading] = useState(false);
 
   useEffect(() => {
     fetch("/api/terms")
@@ -48,6 +51,30 @@ export default function CompanySignupPage() {
   }, []);
 
   const update = (k: string, v: string) => setForm({ ...form, [k]: v });
+
+  // 사업자등록증 업로드
+  const handleLicenseUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLicenseUploading(true);
+    setError("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/company/signup-license", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error?.message || "사업자등록증 업로드에 실패했습니다.");
+        return;
+      }
+      setForm((prev) => ({ ...prev, business_license_path: data.data.path }));
+      setLicenseName(file.name);
+    } catch {
+      setError("업로드 중 오류가 발생했습니다.");
+    } finally {
+      setLicenseUploading(false);
+    }
+  };
 
   // 사업자번호 형식 (000-00-00000)
   const formatBizNum = (v: string) => {
@@ -93,6 +120,7 @@ export default function CompanySignupPage() {
     form.company_name &&
     form.business_number.replace(/\D/g, "").length === 10 &&
     form.company_type &&
+    form.business_license_path &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
     form.phone.replace(/\D/g, "").length >= 9 &&
     isPasswordValid(form.password) &&
@@ -119,11 +147,9 @@ export default function CompanySignupPage() {
         return;
       }
       if (data.data?.access_token) {
-        // 자동 승인된 경우 → 즉시 로그인
         localStorage.setItem("access_token", data.data.access_token);
         router.push("/company/dashboard");
       } else {
-        // 승인 대기 → 완료 화면
         setSubmitted(true);
       }
     } catch (e) {
@@ -244,6 +270,22 @@ export default function CompanySignupPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* 사업자등록증 */}
+          <div className="mb-4">
+            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">사업자등록증 *</label>
+            <label className="flex items-center justify-between gap-2 w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] cursor-pointer hover:border-[#5f0080]">
+              <span className={`truncate ${form.business_license_path ? "text-[#1a1a1a]" : "text-[#9a9a9a]"}`}>
+                {licenseUploading ? "업로드 중..." : (licenseName || "이미지 또는 PDF 첨부")}
+              </span>
+              <span className="shrink-0 text-[13px] text-[#5f0080] font-semibold">
+                {form.business_license_path ? "변경" : "파일 선택"}
+              </span>
+              <input type="file" accept="image/*,application/pdf" className="hidden"
+                onChange={handleLicenseUpload} disabled={licenseUploading} />
+            </label>
+            <p className="text-[12px] text-[#9a9a9a] mt-1.5">JPG·PNG·WebP·PDF · 최대 5MB · 관리자 승인 확인용</p>
           </div>
 
           {/* 담당자 정보 */}
