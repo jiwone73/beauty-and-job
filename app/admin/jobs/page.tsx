@@ -1,9 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Search, Plus, Trash2, X } from "lucide-react";
+import { Search, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
-
 const STATUS_TO_LABEL: Record<string, string> = {
   ACTIVE: "승인완료",
   DRAFT: "승인대기",
@@ -17,7 +16,6 @@ const LABEL_TO_STATUS: Record<string, string> = {
   반려: "HIDDEN",
 };
 const STATUS_OPTIONS = ["전체", "승인대기", "승인완료", "반려"];
-
 type Job = {
   id: string;
   title: string;
@@ -30,28 +28,23 @@ type Job = {
   category_name: string | null;
   created_at: string;
 };
-
 const EXP_LABEL: Record<string, string> = {
   NEW: "신입",
   EXPERIENCED: "경력",
   ANY: "경력무관",
 };
-
 function fmtDate(d: string) {
   const dt = new Date(d);
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
-
 export default function AdminJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");
-  const [selected, setSelected] = useState<Job | null>(null);
-
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
-
   const fetchJobs = useCallback(async () => {
     setLoading(true);
     try {
@@ -64,9 +57,7 @@ export default function AdminJobsPage() {
       setLoading(false);
     }
   }, [token]);
-
   useEffect(() => { fetchJobs(); }, [fetchJobs]);
-
   const changeStatus = async (id: string, label: string) => {
     const status = LABEL_TO_STATUS[label];
     if (!status) return;
@@ -76,35 +67,54 @@ export default function AdminJobsPage() {
       body: JSON.stringify({ id, status }),
     });
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, status } : j)));
-    if (selected?.id === id) setSelected((p) => (p ? { ...p, status } : p));
   };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("삭제하시겠습니까? 관련 지원 내역도 함께 삭제됩니다.")) return;
-    await fetch(`/api/admin/jobs?id=${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setJobs((prev) => prev.filter((j) => j.id !== id));
-    setSelected(null);
-  };
-
   const groupOf = (jobType: string) => (jobType === "STORE" ? "매장" : "기업");
-
   const filtered = jobs.filter((j) => {
     const matchGroup = jobGroupFilter === "전체" || groupOf(j.job_type) === jobGroupFilter;
     const matchSearch = !search || j.title.includes(search) || j.company_name.includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[j.status] === statusFilter;
     return matchGroup && matchSearch && matchStatus;
   });
-
+  const allChecked = filtered.length > 0 && filtered.every((j) => checkedIds.has(j.id));
+  const toggleCheck = (id: string) => {
+    setCheckedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+  const toggleAll = () => {
+    setCheckedIds((prev) => {
+      const next = new Set(prev);
+      if (filtered.length > 0 && filtered.every((j) => next.has(j.id))) {
+        filtered.forEach((j) => next.delete(j.id));
+      } else {
+        filtered.forEach((j) => next.add(j.id));
+      }
+      return next;
+    });
+  };
+  const handleBulkDelete = async () => {
+    if (checkedIds.size === 0) return;
+    if (!confirm(`선택한 ${checkedIds.size}건을 삭제하시겠습니까? 관련 지원 내역도 함께 삭제됩니다.`)) return;
+    const ids = Array.from(checkedIds);
+    await Promise.all(
+      ids.map((id) =>
+        fetch(`/api/admin/jobs?id=${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      )
+    );
+    setJobs((prev) => prev.filter((j) => !checkedIds.has(j.id)));
+    setCheckedIds(new Set());
+  };
   const counts = {
     전체: jobs.length,
     승인대기: jobs.filter((j) => j.status === "DRAFT").length,
     승인완료: jobs.filter((j) => j.status === "ACTIVE").length,
     반려: jobs.filter((j) => j.status === "HIDDEN").length,
   };
-
   return (
     <AdminLayout activeMenu="jobs">
       <div className="admin-mini-stats">
@@ -115,7 +125,6 @@ export default function AdminJobsPage() {
           </div>
         ))}
       </div>
-
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
@@ -153,15 +162,31 @@ export default function AdminJobsPage() {
           </Link>
         </div>
       </div>
-
       <div className="admin-card">
-        <div className="admin-table-meta">총 <strong>{filtered.length}</strong>건</div>
+        <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span>총 <strong>{filtered.length}</strong>건{checkedIds.size > 0 ? ` · ${checkedIds.size}건 선택` : ""}</span>
+          <button
+            onClick={handleBulkDelete}
+            disabled={checkedIds.size === 0}
+            style={{
+              display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8,
+              border: "none", fontSize: 13, fontWeight: 600,
+              cursor: checkedIds.size === 0 ? "not-allowed" : "pointer",
+              background: checkedIds.size === 0 ? "#eee" : "#d32f2f",
+              color: checkedIds.size === 0 ? "#aaa" : "#fff",
+            }}>
+            <Trash2 size={15} /> 선택 삭제{checkedIds.size > 0 ? ` (${checkedIds.size})` : ""}
+          </button>
+        </div>
         {loading ? (
           <div className="admin-empty">불러오는 중...</div>
         ) : (
           <table className="admin-table">
             <thead>
               <tr>
+                <th style={{ width: 40 }}>
+                  <input type="checkbox" checked={allChecked} onChange={toggleAll} />
+                </th>
                 <th>유형</th>
                 <th>기업</th>
                 <th>공고명</th>
@@ -177,6 +202,10 @@ export default function AdminJobsPage() {
               {filtered.map((job) => (
                 <tr key={job.id}>
                   <td>
+                    <input type="checkbox" checked={checkedIds.has(job.id)}
+                      onChange={() => toggleCheck(job.id)} />
+                  </td>
+                  <td>
                     <span className={`jobs-type-badge ${job.job_type === "STORE" ? "store" : "corp"}`}>
                       {job.job_type === "STORE" ? "🏪 매장" : "🏢 기업"}
                     </span>
@@ -185,7 +214,7 @@ export default function AdminJobsPage() {
                   <td>
                     <span className="admin-td-title"
                       style={{color:"#5f0080", cursor:"pointer", fontWeight:600}}
-                      onClick={() => setSelected(job)}>
+                      onClick={() => window.open(`/jobs/${job.id}`, "_blank")}>
                       {job.title}
                     </span>
                   </td>
@@ -215,58 +244,6 @@ export default function AdminJobsPage() {
         )}
         {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
-
-      {selected && (
-        <div className="admin-modal-overlay" onClick={() => setSelected(null)}>
-          <div className="admin-modal" style={{maxWidth:"560px"}} onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <div>
-                <span className="admin-badge admin-badge-neutral" style={{marginBottom:"6px", display:"inline-block"}}>{selected.category_name || "-"}</span>
-                <h2 className="admin-modal-title">{selected.title}</h2>
-                <p style={{fontSize:"13px", color:"#888", margin:"4px 0 0"}}>{selected.company_name}</p>
-              </div>
-              <button className="admin-modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
-            </div>
-            <div className="admin-modal-body">
-              <div className="admin-detail-grid">
-                {[
-                  ["기업", selected.company_name],
-                  ["직군", selected.category_name || "-"],
-                  ["경력", EXP_LABEL[selected.experience_level] || selected.experience_level],
-                  ["지역", selected.location || "-"],
-                  ["등록일", fmtDate(selected.created_at)],
-                  ["조회수", (selected.view_count || 0).toLocaleString() + "회"],
-                ].map(([label, value]) => (
-                  <div key={label} className="admin-detail-row">
-                    <span className="admin-detail-label">{label}</span>
-                    <span className="admin-detail-value">{value}</span>
-                  </div>
-                ))}
-                <div className="admin-detail-row">
-                  <span className="admin-detail-label">상태</span>
-                  <select
-                    className={`admin-status-select admin-status-${
-                      selected.status === "ACTIVE" ? "success" :
-                      selected.status === "DRAFT" ? "warning" : "danger"
-                    }`}
-                    value={STATUS_TO_LABEL[selected.status] || "승인대기"}
-                    onChange={(e) => changeStatus(selected.id, e.target.value)}
-                  >
-                    <option value="승인대기">승인대기</option>
-                    <option value="승인완료">승인완료</option>
-                    <option value="반려">반려</option>
-                  </select>
-                </div>
-              </div>
-              <div className="admin-modal-actions">
-                <button className="admin-danger-btn" onClick={() => handleDelete(selected.id)}>
-                  <Trash2 size={15} /> 삭제
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </AdminLayout>
   );
 }
