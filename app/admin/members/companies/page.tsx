@@ -15,13 +15,6 @@ const TYPE_LABEL: Record<string, string> = {
   STORE: "매장",
   BOTH: "기업+매장",
 };
-const JOB_STATUS_LABEL: Record<string, string> = {
-  ACTIVE: "진행중",
-  DRAFT: "승인대기",
-  HIDDEN: "반려",
-  CLOSED: "마감",
-  EXPIRED: "만료",
-};
 const STATUS_OPTIONS = ["전체", "승인대기", "승인완료", "정지", "반려"];
 
 type Job = { title: string; status: string; created_at: string };
@@ -37,6 +30,7 @@ type Company = {
   description: string | null;
   website_url: string | null;
   address: string | null;
+  business_license_url: string | null;
   status: string;
   created_at: string;
   job_count: number;
@@ -49,14 +43,16 @@ function fmtDate(d: string | null) {
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
 
+const isPdf = (u: string) => u.split("?")[0].toLowerCase().endsWith(".pdf");
+
 export default function AdminCompaniesPage() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
   const [typeFilter, setTypeFilter] = useState("전체");
-  const [selected, setSelected] = useState<Company | null>(null);
-  const [detailTab, setDetailTab] = useState<"account" | "brand" | "jobs">("account");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const PER_PAGE = 10;
 
@@ -84,17 +80,24 @@ export default function AdminCompaniesPage() {
       body: JSON.stringify({ id, status: newStatus }),
     });
     setCompanies((prev) => prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c)));
-    if (selected?.id === id) setSelected((p) => (p ? { ...p, status: newStatus } : p));
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("이 기업을 삭제하시겠습니까? 등록된 공고·지원 내역도 함께 삭제됩니다.")) return;
-    await fetch(`/api/admin/companies?id=${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setCompanies((prev) => prev.filter((c) => c.id !== id));
-    setSelected(null);
+  const toggleOne = (id: string) =>
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`선택한 ${selectedIds.length}개 기업을 삭제하시겠습니까?\n등록된 공고·지원 내역도 함께 삭제됩니다.`)) return;
+    await Promise.all(
+      selectedIds.map((id) =>
+        fetch(`/api/admin/companies?id=${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      )
+    );
+    setCompanies((prev) => prev.filter((c) => !selectedIds.includes(c.id)));
+    setSelectedIds([]);
   };
 
   const filtered = companies.filter((c) => {
@@ -106,6 +109,16 @@ export default function AdminCompaniesPage() {
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
+
+  const allPageSelected = paginated.length > 0 && paginated.every((c) => selectedIds.includes(c.id));
+  const toggleAllPage = () => {
+    const pageIds = paginated.map((c) => c.id);
+    if (allPageSelected) {
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+    } else {
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...pageIds])));
+    }
+  };
 
   const counts = {
     전체: companies.length,
@@ -161,35 +174,68 @@ export default function AdminCompaniesPage() {
       </div>
 
       <div className="admin-card">
-        <div className="admin-table-meta">총 <strong>{filtered.length}</strong>개사</div>
+        <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>총 <strong>{filtered.length}</strong>개사</span>
+          <button
+            onClick={handleBulkDelete}
+            disabled={selectedIds.length === 0}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "6px 14px", borderRadius: 6, border: "none",
+              background: selectedIds.length ? "#e74c3c" : "#ededed",
+              color: selectedIds.length ? "#fff" : "#aaa",
+              fontSize: 13, fontWeight: 600,
+              cursor: selectedIds.length ? "pointer" : "default",
+            }}
+          >
+            <Trash2 size={15} /> 선택 삭제{selectedIds.length ? ` (${selectedIds.length})` : ""}
+          </button>
+        </div>
         {loading ? (
           <div className="admin-empty">불러오는 중...</div>
         ) : (
           <table className="admin-table">
             <thead>
               <tr>
+                <th style={{ width: 40, textAlign: "center" }}>
+                  <input type="checkbox" checked={allPageSelected} onChange={toggleAllPage} style={{ cursor: "pointer" }} />
+                </th>
                 <th>가입일</th>
                 <th>기업명</th>
                 <th>유형</th>
                 <th>이메일</th>
                 <th>연락처</th>
                 <th>사업자번호</th>
+                <th>사업자등록증</th>
                 <th>공고</th>
                 <th>상태</th>
               </tr>
             </thead>
             <tbody>
               {paginated.map((c) => (
-                <tr key={c.id} style={{cursor:"pointer"}}
-                  onClick={() => { setSelected(c); setDetailTab("account"); }}>
+                <tr key={c.id} style={{ background: selectedIds.includes(c.id) ? "#faf5ff" : undefined }}>
+                  <td style={{ textAlign: "center" }}>
+                    <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
+                  </td>
                   <td className="admin-td-date">{fmtDate(c.created_at)}</td>
                   <td className="admin-td-brand">{c.company_name}</td>
                   <td className="admin-td-date">{TYPE_LABEL[c.company_type] || c.company_type}</td>
                   <td className="admin-td-date">{c.email}</td>
                   <td className="admin-td-date">{c.phone || "-"}</td>
                   <td className="admin-td-date">{c.business_number || "-"}</td>
+                  <td>
+                    {c.business_license_url ? (
+                      <button
+                        onClick={() => setPreviewUrl(c.business_license_url)}
+                        style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                        등록증 보기
+                      </button>
+                    ) : (
+                      <span style={{ color: "#bbb", fontSize: 13 }}>미제출</span>
+                    )}
+                  </td>
                   <td className="admin-td-date">{c.job_count}건</td>
-                  <td onClick={(e) => e.stopPropagation()}>
+                  <td>
                     <select
                       className={`admin-status-select admin-status-${
                         c.status === "ACTIVE" ? "success" :
@@ -226,134 +272,25 @@ export default function AdminCompaniesPage() {
         )}
       </div>
 
-      {selected && (
-        <div className="admin-modal-overlay" onClick={() => setSelected(null)}>
-          <div className="admin-modal" style={{maxWidth:"600px"}} onClick={(e) => e.stopPropagation()}>
+      {/* 사업자등록증 미리보기 모달 */}
+      {previewUrl && (
+        <div className="admin-modal-overlay" onClick={() => setPreviewUrl(null)}>
+          <div className="admin-modal" style={{ maxWidth: 760, width: "90%" }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
-              <div>
-                <h2 className="admin-modal-title">{selected.company_name}</h2>
-                <span className="admin-td-date" style={{fontSize:"12px"}}>{TYPE_LABEL[selected.company_type] || selected.company_type}</span>
-              </div>
-              <button className="admin-modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
+              <h2 className="admin-modal-title">사업자등록증</h2>
+              <button className="admin-modal-close" onClick={() => setPreviewUrl(null)}><X size={20} /></button>
             </div>
-
-            <div className="admin-modal-tabs">
-              {(["account", "brand", "jobs"] as const).map((tab) => (
-                <button key={tab}
-                  className={`admin-modal-tab ${detailTab === tab ? "active" : ""}`}
-                  onClick={() => setDetailTab(tab)}>
-                  {tab === "account" ? "계정 정보" : tab === "brand" ? "브랜드 정보" : `채용공고 ${selected.job_count}건`}
-                </button>
-              ))}
+            <div style={{ maxHeight: "75vh", overflow: "auto", padding: 16, background: "#f3f3f3" }}>
+              {isPdf(previewUrl) ? (
+                <iframe src={previewUrl} title="사업자등록증" style={{ width: "100%", height: "72vh", border: "none", background: "#fff", borderRadius: 6 }} />
+              ) : (
+                <img src={previewUrl} alt="사업자등록증" style={{ width: "100%", height: "auto", display: "block", borderRadius: 6 }} />
+              )}
             </div>
-
-            <div className="admin-modal-body">
-              {detailTab === "account" && (
-                <>
-                  <div className="admin-detail-grid">
-                    {[
-                      ["기업명", selected.company_name],
-                      ["브랜드명", selected.brand_name || "-"],
-                      ["이메일", selected.email],
-                      ["연락처", selected.phone || "-"],
-                      ["사업자번호", selected.business_number || "-"],
-                      ["유형", TYPE_LABEL[selected.company_type] || selected.company_type],
-                      ["가입일", fmtDate(selected.created_at)],
-                    ].map(([label, value]) => (
-                      <div key={label} className="admin-detail-row">
-                        <span className="admin-detail-label">{label}</span>
-                        <span className="admin-detail-value">{value}</span>
-                      </div>
-                    ))}
-                    <div className="admin-detail-row">
-                      <span className="admin-detail-label">상태</span>
-                      <select
-                        className={`admin-status-select admin-status-${
-                          selected.status === "ACTIVE" ? "success" :
-                          selected.status === "PENDING" ? "warning" : "danger"
-                        }`}
-                        value={STATUS_TO_LABEL[selected.status]}
-                        onChange={(e) => {
-                          const label = e.target.value;
-                          const key = Object.keys(STATUS_TO_LABEL).find((k) => STATUS_TO_LABEL[k] === label);
-                          if (key) changeStatus(selected.id, key);
-                        }}
-                      >
-                        <option value="승인대기">승인대기</option>
-                        <option value="승인완료">승인완료</option>
-                        <option value="정지">정지</option>
-                        <option value="반려">반려</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="admin-modal-actions">
-                    <button className="admin-danger-btn" onClick={() => handleDelete(selected.id)}>
-                      <Trash2 size={15} /> 삭제
-                    </button>
-                  </div>
-                </>
-              )}
-
-              {detailTab === "brand" && (
-                <div>
-                  <div className="admin-brand-logo-row">
-                    <div className="admin-brand-logo">
-                      {selected.logo_url
-                        ? <img src={selected.logo_url} alt="" style={{width:"100%", height:"100%", objectFit:"cover", borderRadius:"8px"}} />
-                        : selected.company_name.slice(0, 2)}
-                    </div>
-                    <div>
-                      <strong style={{fontSize:"15px"}}>{selected.brand_name || selected.company_name}</strong>
-                      <p style={{fontSize:"12px", color:"#888", margin:"2px 0 0"}}>{selected.address || "주소 미등록"}</p>
-                    </div>
-                  </div>
-                  <div className="admin-detail-grid" style={{marginTop:"16px"}}>
-                    <div className="admin-detail-row">
-                      <span className="admin-detail-label">소개</span>
-                      <span className="admin-detail-value" style={{fontSize:"13px", lineHeight:"1.6"}}>{selected.description || "등록된 소개가 없습니다."}</span>
-                    </div>
-                    <div className="admin-detail-row">
-                      <span className="admin-detail-label">웹사이트</span>
-                      <span className="admin-detail-value">
-                        {selected.website_url
-                          ? <a href={selected.website_url} target="_blank" rel="noreferrer" style={{color:"#5f0080"}}>{selected.website_url}</a>
-                          : "-"}
-                      </span>
-                    </div>
-                    <div className="admin-detail-row">
-                      <span className="admin-detail-label">주소</span>
-                      <span className="admin-detail-value">{selected.address || "-"}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {detailTab === "jobs" && (
-                <div>
-                  {(!selected.jobs || selected.jobs.length === 0) ? (
-                    <div className="admin-empty">등록된 채용공고가 없습니다.</div>
-                  ) : (
-                    <table className="admin-table">
-                      <thead>
-                        <tr><th>공고명</th><th>등록일</th><th>상태</th></tr>
-                      </thead>
-                      <tbody>
-                        {selected.jobs.map((job, i) => (
-                          <tr key={i}>
-                            <td className="admin-td-title">{job.title}</td>
-                            <td className="admin-td-date">{fmtDate(job.created_at)}</td>
-                            <td>
-                              <span className={`admin-badge ${job.status === "ACTIVE" ? "admin-badge-success" : "admin-badge-neutral"}`}>
-                                {JOB_STATUS_LABEL[job.status] || job.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                </div>
-              )}
+            <div style={{ display: "flex", justifyContent: "flex-end", padding: "12px 16px", borderTop: "1px solid #ececec" }}>
+              <a href={previewUrl} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "#5f0080", fontWeight: 600 }}>
+                새 탭에서 열기 ↗
+              </a>
             </div>
           </div>
         </div>
