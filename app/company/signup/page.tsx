@@ -218,33 +218,10 @@ export default function CompanySignupPage() {
             뷰티앤잡에서 우수한 인재를 만나보세요
           </p>
 
-          {/* 기업 정보 */}
-          <div className="mb-3">
-            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">회사명 *</label>
-            <input type="text" value={form.company_name}
-              onChange={(e) => update("company_name", e.target.value)}
-              placeholder="예) 올리브영"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
-          </div>
-
-          <div className="mb-3">
-            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">브랜드명 (선택)</label>
-            <input type="text" value={form.brand_name}
-              onChange={(e) => update("brand_name", e.target.value)}
-              placeholder="대표 브랜드명"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
-          </div>
-
-          <div className="mb-3">
-            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">사업자등록번호 *</label>
-            <input type="text" value={form.business_number}
-              onChange={(e) => update("business_number", formatBizNum(e.target.value))}
-              placeholder="000-00-00000"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">기업 유형 *</label>
+          {/* 채용 유형 (최상단) */}
+          <div className="mb-6">
+            <h2 className="text-[16px] font-bold text-[#1a1a1a] mb-1">어떤 인재를 찾고 계세요?</h2>
+            <p className="text-[13px] text-[#9a9a9a] mb-3">채용 형태에 맞는 유형을 선택해주세요</p>
             <div className="grid grid-cols-3 gap-2">
               {COMPANY_TYPES.map((t) => (
                 <button
@@ -270,6 +247,31 @@ export default function CompanySignupPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* 기업 정보 */}
+          <div className="mb-3">
+            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">회사명 *</label>
+            <input type="text" value={form.company_name}
+              onChange={(e) => update("company_name", e.target.value)}
+              placeholder="예) 올리브영"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
+          </div>
+
+          <div className="mb-3">
+            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">브랜드명 (선택)</label>
+            <input type="text" value={form.brand_name}
+              onChange={(e) => update("brand_name", e.target.value)}
+              placeholder="대표 브랜드명"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
+          </div>
+
+          <div className="mb-3">
+            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">사업자등록번호 *</label>
+            <input type="text" value={form.business_number}
+              onChange={(e) => update("business_number", formatBizNum(e.target.value))}
+              placeholder="000-00-00000"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
           </div>
 
           {/* 사업자등록증 */}
