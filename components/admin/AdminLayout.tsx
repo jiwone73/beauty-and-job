@@ -39,7 +39,6 @@ const PAGE_TITLES: Record<string, string> = {
   "jobs": "채용공고",
   "jobs-scrapped": "스크랩 채용공고",
   "jobs-viewed": "열람한 채용공고",
-  "jobs-upload": "채용공고 업로드",
   "members": "회원관리",
   "members-companies": "기업회원",
   "members-blocked": "열람제한기업",
