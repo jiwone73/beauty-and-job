@@ -245,3 +245,59 @@ export async function sendNewApplicantEmail(
     `,
   });
 }
+
+export async function sendResumeViewedEmail(
+  to: string, name: string, jobTitle: string, companyName: string, viewedAt: string
+) {
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject: "[뷰티앤잡] 기업이 이력서를 확인했어요",
+    html: `
+      <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
+          <tr><td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
+              <tr>
+                <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
+                  <img src="${LOGO_URL}" alt="뷰티앤잡" height="30" style="display:block;border:0;height:30px;" />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:32px 32px 28px;">
+                  <p style="font-size:20px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">기업이 이력서를 확인했어요</p>
+                  <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">${name} 님, 지원하신 공고의 기업이 이력서를 열람했어요.</p>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8fe;border:1px solid #ece7f6;border-radius:10px;">
+                    <tr>
+                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">공고</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;font-weight:700;">${jobTitle}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">기업</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;">${companyName}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:14px 20px;font-size:14px;color:#888780;">열람일시</td>
+                      <td align="right" style="padding:14px 20px;font-size:14px;color:#7c3aed;font-weight:700;">${viewedAt}</td>
+                    </tr>
+                  </table>
+                  <p style="font-size:14px;color:#5f5e5a;line-height:1.7;margin:22px 0 24px;">지금 서류 검토가 진행되고 있어요. 결과는 기업이 개별적으로 연락드려요. 비슷한 다른 공고에도 함께 지원해보세요.</p>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
+                    <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
+                      <a href="${SITE_URL}/profile?tab=applied" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">지원 현황 보기</a>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#f6f3fb" style="padding:18px 32px;">
+                  <p style="font-size:12px;color:#888780;margin:0;">뷰티앤잡 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티앤잡</p>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </div>
+    `,
+  });
+}

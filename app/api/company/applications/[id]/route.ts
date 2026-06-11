@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
+import { sendResumeViewedEmail } from "@/lib/email";
 
 // 지원자 단건 조회 (상세)
 export async function GET(
@@ -51,6 +52,13 @@ export async function GET(
             row.id,
           ]
         );
+
+        if (row.user_email) {
+          const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
+          const viewedAt = `${kst.getUTCFullYear()}.${String(kst.getUTCMonth() + 1).padStart(2, "0")}.${String(kst.getUTCDate()).padStart(2, "0")} ${String(kst.getUTCHours()).padStart(2, "0")}:${String(kst.getUTCMinutes()).padStart(2, "0")}`;
+          sendResumeViewedEmail(row.user_email, row.user_name || "회원", row.job_title, companyName, viewedAt)
+            .catch((e) => console.error("[email] 열람 알림 발송 실패", e));
+        }
       } catch (e) {
         console.error("[notification] APP_VIEWED 생성 실패", e);
       }
