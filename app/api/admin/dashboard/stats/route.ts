@@ -71,13 +71,12 @@ export async function GET(req: NextRequest) {
       ORDER BY day
     `)
 
-    // 직군별 공고 분포
+    // 직군별 공고 분포 (categories[] 배열 기준 — jobGroups SoT 연동)
     const jobDist = await client.query(`
-      SELECT jc.name, COUNT(*) AS value
-      FROM job_postings jp
-      JOIN job_categories jc ON jc.id = jp.job_category_id
+      SELECT cat AS name, COUNT(*)::int AS value
+      FROM job_postings jp, unnest(jp.categories) AS cat
       WHERE jp.status = 'ACTIVE'
-      GROUP BY jc.name
+      GROUP BY cat
       ORDER BY value DESC
     `)
 
