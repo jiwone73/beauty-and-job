@@ -329,8 +329,7 @@ export default function JobPostForm({
             </div>
           </div>
         </div>
-
-        {/* 상세 내용 */}
+{/* 상세 내용 */}
         <div className="company-card" style={{ overflow: "visible" }}>
           <div className="company-card-head"><h2 className="company-card-title">상세 내용</h2></div>
           <div className="admin-form-body">
@@ -344,3 +343,45 @@ export default function JobPostForm({
                 <label className="admin-form-label">{label}</label>
                 <textarea className="admin-form-textarea" placeholder={placeholder}
                   value={(form as any)[key]}
+                  onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
+              </div>
+            ))}
+
+            <div className="admin-form-row">
+              <label className="admin-form-label">
+                상세 이미지 첨부 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(선택, 최대 5장 · 각 5MB)</span>
+              </label>
+              <p style={{ fontSize: "13px", color: "#888", margin: "0 0 12px" }}>
+                직접 디자인한 채용 공고 이미지나 매장 사진을 첨부할 수 있어요. 단, 검색 노출을 위해 위 텍스트 항목도 함께 작성해주세요.
+              </p>
+              {detailImages.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginBottom: "12px" }}>
+                  {detailImages.map((img, idx) => (
+                    <div key={idx} style={{ position: "relative", width: "120px" }}>
+                      <img src={img.url} alt={img.name}
+                        style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "8px", border: "1px solid #eee" }} />
+                      <button type="button" onClick={() => removeImage(idx)}
+                        style={{ position: "absolute", top: "4px", right: "4px", width: "24px", height: "24px",
+                          borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none",
+                          cursor: "pointer", fontSize: "14px", lineHeight: "1", display: "flex",
+                          alignItems: "center", justifyContent: "center" }}>×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {detailImages.length < 5 && (
+                <label style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 16px",
+                  border: "1.5px dashed #c4b5d4", borderRadius: "8px", cursor: uploading ? "wait" : "pointer",
+                  color: "#5f0080", fontSize: "14px", fontWeight: 500, background: "#fdfbff" }}>
+                  {uploading ? "업로드 중..." : "+ 이미지 추가"}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" multiple
+                    disabled={uploading} onChange={handleImageUpload} style={{ display: "none" }} />
+                </label>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
