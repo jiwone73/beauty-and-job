@@ -46,45 +46,81 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// 공고 직접 등록 (관리자 — company_id를 직접 받음)
+// 공고 직접 등록 (관리자 — 회원 선택 또는 비회원 직접 입력)
 export async function POST(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')
   if (authErr) return authErr
 
   const body = await req.json()
   const {
-    company_id, title, job_type, job_category_id, description, requirements,
+    company_id, new_company,
+    title, job_type, job_category_id, description, requirements,
     preferred_qualifications, salary_min, salary_max, salary_type,
     location, address, work_type, experience_level, deadline, categories,
-    detail_images, hiring_process, notes, benefits
+    detail_images, hiring_process, notes, benefits, created_by
   } = body
 
-  if (!company_id) return err('JOB_001', '기업을 선택해주세요.')
   if (!title || !job_type) return err('JOB_002', '제목과 채용유형은 필수입니다.')
 
   const client = await pool.connect()
   try {
+    await client.query('BEGIN')
+
+    let finalCompanyId: string | null = company_id || null
+
+    // 비회원 기업 직접 입력 → companies에 가벼운 레코드 생성(동명 비회원 있으면 재사용)
+    if (!finalCompanyId) {
+      const nm = new_company || {}
+      const nmName = (nm.company_name || '').trim()
+      if (!nmName) {
+        await client.query('ROLLBACK')
+        return err('JOB_001', '기업을 선택하거나 비회원 회사명을 입력해주세요.')
+      }
+      const existing = await client.query(
+        `SELECT id FROM companies WHERE company_name = $1 AND is_member = false LIMIT 1`,
+        [nmName]
+      )
+      if (existing.rowCount && existing.rows[0]) {
+        finalCompanyId = existing.rows[0].id
+      } else {
+        const companyRes = await client.query(
+          `INSERT INTO companies (company_name, brand_name, company_type, is_member, status)
+           VALUES ($1, $2, $3, false, 'ACTIVE'::company_status)
+           RETURNING id`,
+          [nmName, (nm.brand_name || '').trim() || null, job_type]
+        )
+        finalCompanyId = companyRes.rows[0].id
+      }
+    }
+
     const result = await client.query(
       `INSERT INTO job_postings (
          company_id, title, job_type, job_category_id, description,
          requirements, preferred_qualifications, salary_min, salary_max,
          salary_type, location, address, work_type, experience_level,
-         deadline, categories, detail_images, hiring_process, notes, benefits, status
+         deadline, categories, detail_images, hiring_process, notes, benefits,
+         status, created_by
        ) VALUES (
-         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 'ACTIVE'
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 'ACTIVE', $21
        ) RETURNING id, title, status, created_at`,
       [
-        company_id, title, job_type, job_category_id || null, description || null,
+        finalCompanyId, title, job_type, job_category_id || null, description || null,
         requirements || null, preferred_qualifications || null,
         salary_min || null, salary_max || null, salary_type || null,
         location || null, address || null, work_type || null,
         experience_level || 'ANY', deadline || null, categories || [],
         JSON.stringify(detail_images || []),
         JSON.stringify(hiring_process || []),
-        notes || null, benefits || null
+        notes || null, benefits || null,
+        created_by || 'admin'
       ]
     )
+
+    await client.query('COMMIT')
     return ok(result.rows[0], 201)
+  } catch (e) {
+    await client.query('ROLLBACK')
+    throw e
   } finally {
     client.release()
   }
