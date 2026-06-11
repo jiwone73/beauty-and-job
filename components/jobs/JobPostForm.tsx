@@ -3,8 +3,8 @@ import { useState, useEffect, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import JobGroupField from "@/components/JobGroupField";
+import RegionSelectModal from "@/components/RegionSelectModal";
 
-const REGIONS = ["서울", "경기·인천", "부산·경남", "대구·경북", "광주·전남", "대전·충청", "기타 지방", "글로벌"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트", "프리랜서"];
 
@@ -36,8 +36,10 @@ export default function JobPostForm({
   const [newBrandName, setNewBrandName] = useState("");
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
   const [categories, setCategories] = useState<string[]>([]);
+  const [regionList, setRegionList] = useState<string[]>([]);
+  const [regionModalOpen, setRegionModalOpen] = useState(false);
   const [form, setForm] = useState({
-    title: "", career: "", region: "",
+    title: "", career: "",
     type: "정규직", deadline: "", salary: "", description: "",
     requirements: "", preferred: "", benefits: "",
   });
@@ -65,12 +67,13 @@ export default function JobPostForm({
         ? (j.salary_max ? `${j.salary_min / 10000}-${j.salary_max / 10000}만원` : `${j.salary_min / 10000}만원`)
         : "";
       setForm({
-        title: j.title || "", career, region: j.location || "", type,
+        title: j.title || "", career, type,
         deadline: j.deadline ? String(j.deadline).slice(0, 10) : "",
         salary, description: j.description || "", requirements: j.requirements || "",
         preferred: j.preferred_qualifications || "", benefits: j.benefits || "",
       });
       setCategories(j.categories || []);
+      setRegionList(j.location ? String(j.location).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
       setDetailImages(j.detail_images || []);
       setHiringProcess(j.hiring_process || []);
       setNotes(j.notes || "");
@@ -126,7 +129,7 @@ export default function JobPostForm({
     if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
     if (categories.length === 0) { alert(jobGroupType === "매장" ? "시술 분야를 선택해주세요." : "직군을 선택해주세요."); return; }
     if (!form.career.trim()) { alert("경력 조건을 입력해주세요."); return; }
-    if (!form.region.trim()) { alert("근무지역을 입력해주세요."); return; }
+    if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
     if (!form.description.trim() && status === "publish") {
       const proceed = confirm(
         "상세 설명 없이 이미지만 등록하면 구직자 검색에 잘 노출되지 않을 수 있어요.\n\n검색 노출을 높이려면 '포지션 소개'에 텍스트를 입력하는 것을 권장해요.\n\n그래도 이대로 등록하시겠어요?"
@@ -154,7 +157,7 @@ export default function JobPostForm({
       benefits: form.benefits || null,
       salary_min: salaryMin, salary_max: salaryMax,
       salary_type: salaryMin ? "ANNUAL" : null,
-      location: form.region || null,
+      location: regionList.join(", ") || null,
       work_type: workType,
       experience_level: expLevel,
       deadline: form.deadline || null,
@@ -333,11 +336,21 @@ export default function JobPostForm({
 
             <div className="admin-form-row">
               <label className="admin-form-label">근무지역 *</label>
-              <select className="admin-form-select" value={form.region}
-                onChange={(e) => setForm({ ...form, region: e.target.value })}>
-                <option value="">선택</option>
-                {REGIONS.map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
+              <button type="button" onClick={() => setRegionModalOpen(true)}
+                style={{ width: "100%", textAlign: "left", padding: "10px 14px", border: "1px solid #ddd", borderRadius: "8px", background: "#fff", fontSize: "14px", color: regionList.length ? "#1a1a1a" : "#999", cursor: "pointer" }}>
+                {regionList.length ? `${regionList.length}개 지역 선택됨` : "지역을 선택해주세요"}
+              </button>
+              {regionList.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "8px" }}>
+                  {regionList.map((r) => (
+                    <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "999px", fontSize: "13px", color: "#5f0080" }}>
+                      {r}
+                      <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
+                        style={{ background: "none", border: "none", color: "#5f0080", cursor: "pointer", fontSize: "14px", lineHeight: "1", padding: 0 }}>×</button>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="admin-form-row-2col">
@@ -448,6 +461,13 @@ export default function JobPostForm({
           </div>
         </div>
       </div>
+
+      <RegionSelectModal
+        open={regionModalOpen}
+        initial={regionList}
+        onClose={() => setRegionModalOpen(false)}
+        onApply={(regions) => { setRegionList(regions); setRegionModalOpen(false); }}
+      />
     </>
   );
 }
