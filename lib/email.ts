@@ -4,6 +4,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const FROM = "뷰티앤잡 <noreply@beautynjob.co.kr>";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beauty-and-job.vercel.app";
+const SITE_HOST = SITE_URL.replace(/^https?:\/\//, "");
 const LOGO_URL = `${SITE_URL}/images/logo.png`;
 
 export async function sendPasswordResetEmail(to: string, resetUrl: string) {
@@ -46,8 +47,8 @@ export async function sendWelcomeEmail(to: string, name: string) {
     to,
     subject: "[뷰티앤잡] 가입을 환영해요",
     html: `
-      <div style="background:#f3f1f6;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f1f6;">
+      <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
           <tr><td align="center">
             <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;">
               <tr>
@@ -115,7 +116,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
               <tr>
                 <td bgcolor="#f6f3fb" style="padding:22px 32px;">
                   <p style="font-size:13px;color:#5f5e5a;margin:0 0 10px;line-height:1.6;">도움이 필요하면 언제든 문의해 주세요.</p>
-                  <p style="font-size:12px;color:#888780;margin:0 0 4px;">뷰티앤잡 · beautynjob.co.kr</p>
+                  <p style="font-size:12px;color:#888780;margin:0 0 4px;">뷰티앤잡 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a></p>
                   <p style="font-size:12px;color:#888780;margin:0 0 8px;">이 메일은 회원가입 안내를 위해 발송되었습니다.</p>
                   <p style="font-size:12px;color:#888780;margin:0;">
                     <a href="${SITE_URL}/about/contact" style="color:#8b5cf6;text-decoration:none;">문의하기</a>
