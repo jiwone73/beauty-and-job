@@ -15,7 +15,7 @@ export async function GET(
     `SELECT a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter, a.note,
             a.user_id, u.name AS user_name, u.email AS user_email, u.phone AS user_phone,
             u.job_type AS user_job_type, u.portfolio_url, u.portfolio_filename,
-            u.avatar_url AS user_avatar_url,
+            u.avatar_url AS user_avatar_url, u.notification_settings,
             a.job_posting_id, jp.title AS job_title
      FROM applications a
      JOIN users u ON u.id = a.user_id
@@ -33,7 +33,6 @@ export async function GET(
       [params.id]
     ).catch((e) => console.error("[viewed_at update]", e));
 
-    // 구직자에게 "기업이 내 지원서를 열람" 알림 (처음 열람 시 1회)
     (async () => {
       try {
         const co = await pool.query(
@@ -53,7 +52,8 @@ export async function GET(
           ]
         );
 
-        if (row.user_email) {
+        const settings = row.notification_settings || {};
+        if (row.user_email && settings.resume_viewed !== false) {
           const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
           const viewedAt = `${kst.getUTCFullYear()}.${String(kst.getUTCMonth() + 1).padStart(2, "0")}.${String(kst.getUTCDate()).padStart(2, "0")} ${String(kst.getUTCHours()).padStart(2, "0")}:${String(kst.getUTCMinutes()).padStart(2, "0")}`;
           sendResumeViewedEmail(row.user_email, row.user_name || "회원", row.job_title, companyName, viewedAt)
@@ -65,7 +65,6 @@ export async function GET(
     })();
   }
 
-  // 이력서 풀데이터 조회 (구직자/관리자와 동일한 ResumePreview용)
   const appUserId = result.rows[0].user_id;
   const [profile, careers, educations, experiences, languages, links, certificates] = await Promise.all([
     pool.query(`SELECT * FROM user_profiles WHERE user_id = $1`, [appUserId]),
@@ -101,7 +100,6 @@ export async function PATCH(
 
   const body = await req.json().catch(() => ({}));
 
-  // 수정 가능한 필드 (whitelist)
   const allowedFields = ["status", "note"];
   const updates: string[] = [];
   const values: any[] = [];
@@ -121,7 +119,6 @@ export async function PATCH(
   updates.push(`updated_at = NOW()`);
   values.push(params.id, auth!.sub);
 
-  // 권한 체크: 본인 회사 공고에 지원한 사람만 수정 가능
   const query = `
     UPDATE applications a
     SET ${updates.join(", ")}

@@ -1,21 +1,17 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-
 interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
-
-interface ToggleItem {
-  id: string;
-  title: string;
-  desc: string;
-  defaultOn: boolean;
-}
-
 const NOTIFICATION_GROUPS = [
+  {
+    group: "지원·이력서 알림",
+    items: [
+      { id: "resume_viewed", title: "이력서 열람 알림", desc: "기업이 내 지원 이력서를 열람하면 이메일로 알려드려요.", defaultOn: true },
+    ],
+  },
   {
     group: "뷰티앤잡 소식받기",
     items: [
@@ -31,17 +27,53 @@ const NOTIFICATION_GROUPS = [
     ],
   },
 ];
-
 export default function NotificationModal({ isOpen, onClose }: Props) {
   const [toggles, setToggles] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     NOTIFICATION_GROUPS.forEach((g) => g.items.forEach((item) => { init[item.id] = item.defaultOn; }));
     return init;
   });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/users/me/notification-settings", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) {
+          const saved = res.data.notification_settings || {};
+          setToggles((prev) => {
+            const next = { ...prev };
+            Object.keys(next).forEach((k) => { if (typeof saved[k] === "boolean") next[k] = saved[k]; });
+            return next;
+          });
+        }
+      })
+      .catch(console.error);
+  }, [isOpen]);
 
   if (!isOpen) return null;
-
   const toggle = (id: string) => setToggles((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  const handleSave = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) { onClose(); return; }
+    setSaving(true);
+    try {
+      await fetch("/api/users/me/notification-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ settings: toggles }),
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSaving(false);
+      onClose();
+    }
+  };
 
   return (
     <div className="cv-overlay" onClick={onClose}>
@@ -53,7 +85,6 @@ export default function NotificationModal({ isOpen, onClose }: Props) {
         </div>
         <div className="cv-body">
           <p className="cv-desc">나에게 필요한 알림을 맞춤으로 설정해보세요.</p>
-
           {NOTIFICATION_GROUPS.map((group) => (
             <div key={group.group} className="noti-group">
               <h3 className="noti-group-title">{group.group}</h3>
@@ -74,8 +105,9 @@ export default function NotificationModal({ isOpen, onClose }: Props) {
               ))}
             </div>
           ))}
-
-          <button className="cv-btn-primary" onClick={onClose}>저장</button>
+          <button className="cv-btn-primary" onClick={handleSave} disabled={saving}>
+            {saving ? "저장 중..." : "저장"}
+          </button>
         </div>
       </div>
     </div>
