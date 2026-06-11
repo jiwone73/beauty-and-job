@@ -26,6 +26,7 @@ type Job = {
   view_count: number;
   company_name: string;
   category_name: string | null;
+  categories: string[] | null;
   created_at: string;
 };
 const EXP_LABEL: Record<string, string> = {
@@ -218,7 +219,12 @@ export default function AdminJobsPage() {
                       {job.title}
                     </span>
                   </td>
-                  <td className="admin-td-date">{job.category_name || "-"}</td>
+                  <td className="admin-td-date">
+                    {job.categories && job.categories.length > 0
+                      ? job.categories.slice(0, 2).join(", ") +
+                        (job.categories.length > 2 ? ` 외 ${job.categories.length - 2}` : "")
+                      : "-"}
+                  </td>
                   <td className="admin-td-date">{EXP_LABEL[job.experience_level] || job.experience_level}</td>
                   <td className="admin-td-date">{job.location || "-"}</td>
                   <td className="admin-td-date">{fmtDate(job.created_at)}</td>

@@ -33,7 +33,8 @@ export async function GET(req: NextRequest) {
         jp.id, jp.title, jp.job_type, jp.status, jp.location,
         jp.experience_level, jp.view_count, jp.application_count, jp.created_at,
         c.company_name,
-        jc.name AS category_name
+        jc.name AS category_name,
+        jp.categories
       FROM job_postings jp
       JOIN companies c ON c.id = jp.company_id
       LEFT JOIN job_categories jc ON jc.id = jp.job_category_id
