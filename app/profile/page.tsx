@@ -704,14 +704,38 @@ function InfoRow({ label, value, isEmpty, isLast, onClick }: {
 function AppliedTab() {
   const [apps, setApps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) { setLoading(false); return; }
-    fetch("/api/users/me/applications", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((res) => { if (res.success) setApps(res.data || []); })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    let cancelled = false;
+    const load = async (attempt = 0): Promise<void> => {
+      try {
+        const r = await fetch("/api/users/me/applications", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const res = await r.json();
+        if (cancelled) return;
+        if (res.success) {
+          setApps(res.data || []);
+          setError(false);
+          setLoading(false);
+        } else {
+          throw new Error(res.error?.message || "응답 실패");
+        }
+      } catch (e) {
+        if (cancelled) return;
+        if (attempt < 2) {
+          setTimeout(() => load(attempt + 1), 600); // 콜드스타트/일시 실패 시 재시도 (최대 3회)
+        } else {
+          console.error("[applications]", e);
+          setError(true);
+          setLoading(false);
+        }
+      }
+    };
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   const statusLabel: Record<string, string> = {
@@ -725,6 +749,12 @@ function AppliedTab() {
   };
 
   if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;
+  if (error) return (
+    <div className="profile-empty-tab">
+      <div className="profile-empty-icon">⚠️</div>
+      <p>지원 내역을 불러오지 못했어요.<br />잠시 후 새로고침해 주세요.</p>
+    </div>
+  );
   if (apps.length === 0) return (
     <div className="profile-empty-tab">
       <div className="profile-empty-icon">📋</div>
