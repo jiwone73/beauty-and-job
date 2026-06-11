@@ -30,6 +30,10 @@ export default function ProfilePage() {
   const { setCareerVerified } = useProfileStore();
 
   const [activeTab, setActiveTab] = useState<"profile" | "resume" | "applied" | "bookmarks">("profile");
+  useEffect(() => {
+    const tab = new URLSearchParams(window.location.search).get("tab");
+    if (tab === "applied" || tab === "bookmarks" || tab === "profile") setActiveTab(tab as any);
+  }, []);
   const [openModal, setOpenModal] = useState<ModalType>(null);
   const [editField, setEditField] = useState<string | null>(null);
   const [birthInput, setBirthInput] = useState("");
