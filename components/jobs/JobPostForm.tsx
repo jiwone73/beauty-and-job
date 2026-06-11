@@ -17,7 +17,7 @@ export interface JobPostFormProps {
   companyType?: "OFFICE" | "STORE" | "BOTH" | null;
   companies?: Company[];
   uploadImage: (file: File) => Promise<{ success: boolean; url?: string; name?: string; error?: string }>;
-  onSubmit: (payload: any, status: "draft" | "publish", companyId: string | null) => Promise<{ success: boolean; error?: string }>;
+  onSubmit: (payload: any, status: "draft" | "publish", company: { companyId: string | null; newCompany: { company_name: string; brand_name: string } | null }) => Promise<{ success: boolean; error?: string }>;
   loadEditData?: (editId: string) => Promise<any | null>;
 }
 
@@ -28,6 +28,12 @@ export default function JobPostForm({
   const router = useRouter();
 
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const [companyQuery, setCompanyQuery] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [showCompanyList, setShowCompanyList] = useState(false);
+  const [nonMember, setNonMember] = useState(false);
+  const [newCompanyName, setNewCompanyName] = useState("");
+  const [newBrandName, setNewBrandName] = useState("");
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
   const [categories, setCategories] = useState<string[]>([]);
   const [form, setForm] = useState({
@@ -41,14 +47,12 @@ export default function JobPostForm({
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
 
-  // 회사 타입에 맞게 채용유형 자동 설정 (company 모드)
   useEffect(() => {
     if (companyType === "BOTH") setJobGroupType("기업");
     else if (companyType === "STORE") setJobGroupType("매장");
     else if (companyType === "OFFICE") setJobGroupType("기업");
   }, [companyType]);
 
-  // 편집 모드: 기존 공고 로드
   useEffect(() => {
     if (!editId || !loadEditData) return;
     loadEditData(editId).then((j) => {
@@ -112,7 +116,13 @@ export default function JobPostForm({
     setDetailImages((prev) => prev.filter((_, i) => i !== idx));
 
   const handleSubmit = async (status: "draft" | "publish") => {
-    if (mode === "admin" && !companyId) { alert("기업을 선택해주세요."); return; }
+    if (mode === "admin") {
+      if (nonMember) {
+        if (!newCompanyName.trim()) { alert("비회원 회사명을 입력해주세요."); return; }
+      } else if (!companyId) {
+        alert("기업을 선택해주세요."); return;
+      }
+    }
     if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
     if (categories.length === 0) { alert(jobGroupType === "매장" ? "시술 분야를 선택해주세요." : "직군을 선택해주세요."); return; }
     if (!form.career.trim()) { alert("경력 조건을 입력해주세요."); return; }
@@ -154,7 +164,10 @@ export default function JobPostForm({
       notes: notes.trim() || null,
     };
 
-    const result = await onSubmit(payload, status, companyId);
+    const company = nonMember
+      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim() } }
+      : { companyId, newCompany: null };
+    const result = await onSubmit(payload, status, company);
     if (!result.success) {
       alert(result.error || (editId ? "공고 수정에 실패했습니다." : "공고 등록에 실패했습니다."));
       return;
@@ -189,15 +202,67 @@ export default function JobPostForm({
             {mode === "admin" && (
               <div className="admin-form-row">
                 <label className="admin-form-label">기업 선택 *</label>
-                <select className="admin-form-select" value={companyId || ""}
-                  onChange={(e) => setCompanyId(e.target.value || null)}>
-                  <option value="">기업을 선택하세요</option>
-                  {companies.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.company_name}{c.brand_name ? ` (${c.brand_name})` : ""}
-                    </option>
-                  ))}
-                </select>
+
+                {nonMember ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <input className="admin-form-input" placeholder="회사명 (필수)"
+                      value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} />
+                    <input className="admin-form-input" placeholder="브랜드명 (선택)"
+                      value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} />
+                    <button type="button"
+                      onClick={() => { setNonMember(false); setNewCompanyName(""); setNewBrandName(""); }}
+                      style={{ alignSelf: "flex-start", background: "none", border: "none", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", padding: 0 }}>
+                      ← 회원 기업에서 선택
+                    </button>
+                  </div>
+                ) : companyId ? (
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "12px 16px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "8px" }}>
+                    <span style={{ fontSize: "14px", fontWeight: 600, color: "#5f0080" }}>{companyName}</span>
+                    <button type="button"
+                      onClick={() => { setCompanyId(null); setCompanyName(""); }}
+                      style={{ background: "none", border: "none", color: "#888", fontSize: "13px", cursor: "pointer" }}>
+                      변경
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ position: "relative" }}>
+                      <input className="admin-form-input" placeholder="기업명 검색"
+                        value={companyQuery}
+                        onChange={(e) => { setCompanyQuery(e.target.value); setShowCompanyList(true); }}
+                        onFocus={() => setShowCompanyList(true)} />
+                      {showCompanyList && companyQuery.trim() && (
+                        <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, marginTop: "4px", background: "#fff", border: "1px solid #e0e0e0", borderRadius: "8px", maxHeight: "240px", overflowY: "auto", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
+                          {(() => {
+                            const q = companyQuery.trim().toLowerCase();
+                            const matched = companies.filter((c) =>
+                              c.company_name.toLowerCase().includes(q) || (c.brand_name || "").toLowerCase().includes(q)
+                            ).slice(0, 30);
+                            if (matched.length === 0) {
+                              return <div style={{ padding: "10px 14px", fontSize: "13px", color: "#999" }}>검색 결과가 없어요</div>;
+                            }
+                            return matched.map((c) => (
+                              <div key={c.id}
+                                onClick={() => {
+                                  setCompanyId(c.id);
+                                  setCompanyName(c.company_name + (c.brand_name ? ` (${c.brand_name})` : ""));
+                                  setShowCompanyList(false); setCompanyQuery("");
+                                }}
+                                style={{ padding: "10px 14px", fontSize: "14px", cursor: "pointer", borderBottom: "1px solid #f3f3f3" }}>
+                                {c.company_name}{c.brand_name ? <span style={{ color: "#888" }}> ({c.brand_name})</span> : null}
+                              </div>
+                            ));
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                    <button type="button"
+                      onClick={() => { setNonMember(true); setCompanyId(null); setCompanyName(""); setCompanyQuery(""); setShowCompanyList(false); }}
+                      style={{ marginTop: "8px", background: "none", border: "none", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", padding: 0 }}>
+                      + 비회원 기업으로 직접 입력
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -329,7 +394,8 @@ export default function JobPostForm({
             </div>
           </div>
         </div>
-{/* 상세 내용 */}
+
+        {/* 상세 내용 */}
         <div className="company-card" style={{ overflow: "visible" }}>
           <div className="company-card-head"><h2 className="company-card-title">상세 내용</h2></div>
           <div className="admin-form-body">

@@ -32,11 +32,18 @@ function AdminJobNewForm() {
     return { success: false, error: data.error?.message };
   };
 
-  const onSubmit = async (payload: any, _status: "draft" | "publish", companyId: string | null) => {
+  const onSubmit = async (
+    payload: any,
+    _status: "draft" | "publish",
+    company: { companyId: string | null; newCompany: { company_name: string; brand_name: string } | null }
+  ) => {
+    const body: any = { ...payload };
+    if (company.companyId) body.company_id = company.companyId;
+    if (company.newCompany) body.new_company = company.newCompany;
     const res = await fetch("/api/admin/jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ ...payload, company_id: companyId }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     if (data.success) return { success: true };
