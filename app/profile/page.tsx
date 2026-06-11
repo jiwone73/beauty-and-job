@@ -715,11 +715,13 @@ function AppliedTab() {
   }, []);
 
   const statusLabel: Record<string, string> = {
-    APPLIED: "서류검토중", REVIEWING: "서류검토중", PASSED: "합격", REJECTED: "불합격", INTERVIEW: "면접예정",
+    APPLIED: "서류검토중", REVIEWING: "서류검토중", VIEWED: "열람됨",
+    INTERVIEW: "면접예정", PASSED: "합격", REJECTED: "불합격", WITHDRAWN: "지원취소",
   };
   const statusStyle: Record<string, string> = {
-    APPLIED: "applied-status-review", REVIEWING: "applied-status-review", PASSED: "applied-status-pass",
-    REJECTED: "applied-status-fail", INTERVIEW: "applied-status-interview",
+    APPLIED: "applied-status-review", REVIEWING: "applied-status-review", VIEWED: "applied-status-review",
+    INTERVIEW: "applied-status-interview", PASSED: "applied-status-pass",
+    REJECTED: "applied-status-fail", WITHDRAWN: "applied-status-fail",
   };
 
   if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;
