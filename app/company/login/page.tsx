@@ -117,13 +117,17 @@ export default function CompanyLoginPage() {
           </button>
 
           {/* 하단 링크 */}
-          <div className="mt-6 flex justify-center gap-4 text-[13px] text-[#6b6b6b]">
-            <Link href="/company/signup" className="hover:text-[#5f0080] hover:underline">
+          <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] text-[#6b6b6b]">
+            <Link href="/company/signup" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
               기업회원 가입
             </Link>
-            <span>·</span>
-            <Link href="/login/password-reset" className="hover:text-[#5f0080] hover:underline">
+            <span className="text-[#d0d0d0]">·</span>
+            <Link href="/login/password-reset" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
               비밀번호 재설정
+            </Link>
+            <span className="text-[#d0d0d0]">·</span>
+            <Link href="/company/login/find-account" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
+              계정 찾기
             </Link>
           </div>
         </div>
