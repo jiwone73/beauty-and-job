@@ -495,7 +495,7 @@
   align-items: center;
   gap: 32px;
   color: white;
-  min-height: 140px;
+  min-height: 155px;
 }
 
 .newsletter-title {
@@ -3680,8 +3680,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 8px 0;
-  gap: 12px;
+  padding: 0;
+  gap: 6px;
 }
 .newsletter-success-icon { color: #fff; }
 .newsletter-success-title {
@@ -3693,7 +3693,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .newsletter-success-desc {
   font-size: 14px;
   color: rgba(255, 255, 255, 0.9);
-  line-height: 1.7;
+  line-height: 1.4;
   margin: 0;
 }
 .newsletter-reset-btn {

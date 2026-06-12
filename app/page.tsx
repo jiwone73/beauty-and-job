@@ -514,7 +514,7 @@ function SectionNewsletter() {
         <div className="newsletter-box">
           {submitted ? (
             <div className="newsletter-success">
-              <CheckCircle size={40} className="newsletter-success-icon" />
+              <CheckCircle size={28} className="newsletter-success-icon" />
               <h3 className="newsletter-success-title">구독 신청이 완료되었습니다! 🎉</h3>
               <p className="newsletter-success-desc">
                 <strong>{email}</strong>으로 매주 월요일 뷰티 업계 소식을 보내드릴게요.<br />
