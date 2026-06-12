@@ -317,7 +317,7 @@ export async function sendJobRecommendationEmail(
   unsubscribeUrl: string
 ) {
   const heading = groupLabel
-    ? `${name} 님께 맞는<br/>${groupLabel} 새 공고예요`
+    ? `${name} 님께 맞는<br/>${groupLabel} 관련 새 공고에요`
     : `${name} 님께 맞는<br/>새 공고를 찾았어요`;
 
   const cardsHtml = jobs
