@@ -14,6 +14,8 @@ export default function AdminNewslettersPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [autogen, setAutogen] = useState(false);
   const [autogenSaving, setAutogenSaving] = useState(false);
+  const [checked, setChecked] = useState<string[]>([]);
+  const [deleting, setDeleting] = useState(false);
 
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
 
@@ -128,6 +130,37 @@ export default function AdminNewslettersPage() {
     }
   };
 
+  const toggleCheck = (id: string) =>
+    setChecked((c) => c.includes(id) ? c.filter((x) => x !== id) : [...c, id]);
+
+  const allChecked = list.length > 0 && list.every((n) => checked.includes(n.id));
+  const toggleAll = () => {
+    if (allChecked) setChecked([]);
+    else setChecked(list.map((n) => n.id));
+  };
+
+  const handleBulkDelete = async () => {
+    if (!checked.length) return;
+    if (!confirm(`선택한 ${checked.length}건을 완전히 삭제할까요? (복구 불가)`)) return;
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/admin/newsletters", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ ids: checked }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setChecked([]);
+        fetchList();
+      } else {
+        alert(data.error?.message || "삭제에 실패했습니다.");
+      }
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <AdminLayout activeMenu="newsletters">
       <div style={{ padding: "8px 0" }}>
@@ -149,18 +182,38 @@ export default function AdminNewslettersPage() {
           </div>
         </div>
 
+        <div style={{ display: "flex", marginBottom: 12 }}>
+          <button onClick={handleBulkDelete} disabled={checked.length === 0 || deleting}
+            style={{
+              display: "flex", alignItems: "center", gap: 6, marginLeft: "auto",
+              padding: "7px 14px", borderRadius: 8, border: "none",
+              background: checked.length ? "#e74c3c" : "#ededed",
+              color: checked.length ? "#fff" : "#aaa",
+              fontSize: 13, fontWeight: 600,
+              cursor: checked.length ? "pointer" : "default",
+            }}>
+            선택 삭제{checked.length ? ` (${checked.length})` : ""}
+          </button>
+        </div>
+
         {loading ? (
           <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
         ) : (
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
+                <th style={{ ...th, width: 36, textAlign: "center" }}>
+                  <input type="checkbox" checked={allChecked} onChange={toggleAll} />
+                </th>
                 <th style={th}>제목</th><th style={th}>상태</th><th style={th}>생성일</th><th style={th}>발송수</th><th style={th}>관리</th>
               </tr>
             </thead>
             <tbody>
               {list.map((n) => (
-                <tr key={n.id} style={{ borderBottom: "1px solid #f0f0f0", background: n.status === "sent" ? "#f6fbf6" : "#fff" }}>
+                <tr key={n.id} style={{ borderBottom: "1px solid #f0f0f0", background: checked.includes(n.id) ? "#faf5ff" : n.status === "sent" ? "#f6fbf6" : "#fff" }}>
+                  <td style={{ ...td, textAlign: "center" }}>
+                    <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
+                  </td>
                   <td style={{ ...td, maxWidth: 360, fontWeight: 600, color: "#1a1a1a" }}>{n.title}</td>
                   <td style={td}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: n.status === "sent" ? "#2e7d32" : "#e65100" }}>
@@ -181,7 +234,7 @@ export default function AdminNewslettersPage() {
                 </tr>
               ))}
               {list.length === 0 && (
-                <tr><td colSpan={5} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
+                <tr><td colSpan={6} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
                   생성된 뉴스레터가 없습니다. '뉴스레터 생성'을 눌러보세요.
                 </td></tr>
               )}
