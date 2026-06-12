@@ -98,6 +98,8 @@ export default function AdminResumesPage() {
   const [selected, setSelected] = useState<Resume | null>(null);
   const [resumeData, setResumeData] = useState<any>(null);
   const [resumeLoading, setResumeLoading] = useState(false);
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -232,7 +234,37 @@ export default function AdminResumesPage() {
       headers: { Authorization: `Bearer ${token}` },
     });
     setResumes((prev) => prev.filter((x) => x.id !== id));
+    setCheckedIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
     setSelected(null);
+  };
+
+  const handleBulkDelete = async () => {
+    if (checkedIds.size === 0) return;
+    if (!confirm(`선택한 ${checkedIds.size}건을 삭제하시겠습니까?`)) return;
+    setBulkDeleting(true);
+    try {
+      await Promise.all(
+        Array.from(checkedIds).map((id) =>
+          fetch(`/api/admin/resumes?id=${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        )
+      );
+      setResumes((prev) => prev.filter((x) => !checkedIds.has(x.id)));
+      setCheckedIds(new Set());
+      if (selected && checkedIds.has(selected.id)) setSelected(null);
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
+  const toggleCheck = (id: string) => {
+    setCheckedIds((prev) => {
+      const s = new Set(prev);
+      s.has(id) ? s.delete(id) : s.add(id);
+      return s;
+    });
   };
 
   const filtered = resumes.filter((r) => {
@@ -241,6 +273,24 @@ export default function AdminResumesPage() {
     const matchPublic = publicFilter === "전체" || (publicFilter === "공개" ? r.is_public : !r.is_public);
     return matchSearch && matchComplete && matchPublic;
   });
+
+  const isAllChecked = filtered.length > 0 && filtered.every((r) => checkedIds.has(r.id));
+
+  const toggleAll = () => {
+    if (isAllChecked) {
+      setCheckedIds((prev) => {
+        const s = new Set(prev);
+        filtered.forEach((r) => s.delete(r.id));
+        return s;
+      });
+    } else {
+      setCheckedIds((prev) => {
+        const s = new Set(prev);
+        filtered.forEach((r) => s.add(r.id));
+        return s;
+      });
+    }
+  };
 
   const total = resumes.length;
   const completeCnt = resumes.filter(isComplete).length;
@@ -344,13 +394,33 @@ export default function AdminResumesPage() {
       </div>
 
       <div className="admin-card">
-        <div className="admin-table-meta">총 <strong>{filtered.length}</strong>건</div>
+        <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span>총 <strong>{filtered.length}</strong>건</span>
+          {checkedIds.size > 0 && (
+            <button
+              onClick={handleBulkDelete}
+              disabled={bulkDeleting}
+              style={{
+                display: "flex", alignItems: "center", gap: "4px",
+                padding: "5px 12px", borderRadius: "6px", fontSize: "13px",
+                background: "#ef4444", color: "#fff", border: "none", cursor: "pointer",
+                opacity: bulkDeleting ? 0.6 : 1,
+              }}
+            >
+              <Trash2 size={14} />
+              {bulkDeleting ? "삭제 중..." : `선택 삭제 (${checkedIds.size})`}
+            </button>
+          )}
+        </div>
         {loading ? (
           <div className="admin-empty">불러오는 중...</div>
         ) : (
           <table className="admin-table">
             <thead>
               <tr>
+                <th style={{ width: "36px", textAlign: "center" }}>
+                  <input type="checkbox" checked={isAllChecked} onChange={toggleAll} />
+                </th>
                 <th>이름</th>
                 <th>이력서 정보</th>
                 <th>경력</th>
@@ -368,6 +438,13 @@ export default function AdminResumesPage() {
                 const age = calcAge(r.birth_date);
                 return (
                   <tr key={r.id}>
+                    <td style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={checkedIds.has(r.id)}
+                        onChange={() => toggleCheck(r.id)}
+                      />
+                    </td>
                     <td>
                       <div className="admin-resume-member">
                         <div className="admin-resume-photo">
