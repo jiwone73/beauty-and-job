@@ -486,13 +486,27 @@ function SectionNewsletter() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) { setError("이메일 주소를 입력해주세요."); return; }
     if (!emailRegex.test(email)) { setError("올바른 이메일 형식을 입력해주세요."); return; }
     setError("");
-    setSubmitted(true);
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error?.message || "구독 신청에 실패했습니다.");
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError("네트워크 오류가 발생했습니다.");
+    }
   };
   return (
     <section className="section">
