@@ -396,21 +396,20 @@ export default function AdminResumesPage() {
       <div className="admin-card">
         <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span>총 <strong>{filtered.length}</strong>건</span>
-          {checkedIds.size > 0 && (
-            <button
-              onClick={handleBulkDelete}
-              disabled={bulkDeleting}
-              style={{
-                display: "flex", alignItems: "center", gap: "4px",
-                padding: "5px 12px", borderRadius: "6px", fontSize: "13px",
-                background: "#ef4444", color: "#fff", border: "none", cursor: "pointer",
-                opacity: bulkDeleting ? 0.6 : 1,
-              }}
-            >
-              <Trash2 size={14} />
-              {bulkDeleting ? "삭제 중..." : `선택 삭제 (${checkedIds.size})`}
-            </button>
-          )}
+          <button
+            onClick={handleBulkDelete}
+            disabled={checkedIds.size === 0 || bulkDeleting}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "6px 14px", borderRadius: 6, border: "none",
+              background: checkedIds.size ? "#e74c3c" : "#ededed",
+              color: checkedIds.size ? "#fff" : "#aaa",
+              fontSize: 13, fontWeight: 600,
+              cursor: checkedIds.size ? "pointer" : "default",
+            }}
+          >
+            <Trash2 size={15} /> {bulkDeleting ? "삭제 중..." : `선택 삭제${checkedIds.size ? ` (${checkedIds.size})` : ""}`}
+          </button>
         </div>
         {loading ? (
           <div className="admin-empty">불러오는 중...</div>
@@ -430,14 +429,13 @@ export default function AdminResumesPage() {
                 <th>연봉</th>
                 <th>학력</th>
                 <th>연락처</th>
-                <th>관리</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((r) => {
                 const age = calcAge(r.birth_date);
                 return (
-                  <tr key={r.id}>
+                  <tr key={r.id} style={{ background: checkedIds.has(r.id) ? "#faf5ff" : "" }}>
                     <td style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
                       <input
                         type="checkbox"
@@ -490,12 +488,6 @@ export default function AdminResumesPage() {
                     <td className="admin-td-date">
                       <div>{r.email}</div>
                       <div>{r.phone || "-"}</div>
-                    </td>
-                    <td>
-                      <button title="삭제" onClick={() => handleDelete(r.id)}
-                        style={{color:"#ef4444", background:"none", border:"none", cursor:"pointer"}}>
-                        <Trash2 size={16} />
-                      </button>
                     </td>
                   </tr>
                 );
