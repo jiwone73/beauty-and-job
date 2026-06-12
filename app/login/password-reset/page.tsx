@@ -1,12 +1,17 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, Mail, CheckCircle } from "lucide-react";
+import { ChevronLeft, CheckCircle } from "lucide-react";
 
-export default function PasswordResetRequestPage() {
+function PasswordResetRequestForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const accountType = searchParams.get("type") === "company" ? "company" : "user";
+  const isCompany = accountType === "company";
+  const loginPath = isCompany ? "/company/login" : "/login/email";
+
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +28,7 @@ export default function PasswordResetRequestPage() {
       const res = await fetch("/api/auth/password/reset-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, accountType }),
       });
       const data = await res.json();
       if (!data.success) {
@@ -42,7 +47,7 @@ export default function PasswordResetRequestPage() {
     return (
       <div className="min-h-screen flex flex-col bg-white">
         <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
-          <button onClick={() => router.push("/login/email")} className="p-2">
+          <button onClick={() => router.push(loginPath)} className="p-2">
             <ChevronLeft size={22} />
           </button>
         </header>
@@ -64,7 +69,7 @@ export default function PasswordResetRequestPage() {
               메일이 안 오면 스팸 메일함을 확인해주세요<br />
               링크는 30분간 유효합니다
             </p>
-            <Link href="/login/email">
+            <Link href={loginPath}>
               <button className="w-full h-[48px] bg-[#5f0080] text-white rounded-lg font-semibold text-[14px] hover:opacity-90 transition">
                 로그인으로 돌아가기
               </button>
@@ -88,10 +93,10 @@ export default function PasswordResetRequestPage() {
             <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} /></Link>
           </div>
           <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-3">
-            비밀번호 재설정
+            {isCompany ? "기업 비밀번호 재설정" : "비밀번호 재설정"}
           </h1>
           <p className="text-[13px] text-[#6b6b6b] text-center mb-8">
-            가입하신 이메일을 입력해주세요<br />
+            {isCompany ? "기업회원으로 가입하신 이메일을 입력해주세요" : "가입하신 이메일을 입력해주세요"}<br />
             비밀번호 재설정 링크를 보내드릴게요
           </p>
           <div className="mb-4">
@@ -114,12 +119,20 @@ export default function PasswordResetRequestPage() {
             {loading ? "발송 중..." : "재설정 메일 보내기"}
           </button>
           <div className="mt-6 text-center">
-            <Link href="/login/email" className="text-[13px] text-[#6b6b6b] hover:text-[#5f0080] hover:underline">
+            <Link href={loginPath} className="text-[13px] text-[#6b6b6b] hover:text-[#5f0080] hover:underline">
               로그인으로 돌아가기
             </Link>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PasswordResetRequestPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <PasswordResetRequestForm />
+    </Suspense>
   );
 }

@@ -5,7 +5,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
-
 export default function CompanyLoginPage() {
   const router = useRouter();
   const { login } = useAuthStore();
@@ -14,7 +13,6 @@ export default function CompanyLoginPage() {
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       setError("이메일과 비밀번호를 입력해주세요.");
@@ -46,7 +44,6 @@ export default function CompanyLoginPage() {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* 헤더 */}
@@ -55,18 +52,15 @@ export default function CompanyLoginPage() {
           <ChevronLeft size={22} />
         </button>
       </header>
-
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
           {/* 로고 */}
           <div className="flex justify-center mb-8">
             <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} /></Link>
           </div>
-
           <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-8">
             기업회원 로그인
           </h1>
-
           {/* 이메일 입력 */}
           <div className="mb-3">
             <label className="block text-[13px] text-[#6b6b6b] mb-1.5">이메일</label>
@@ -79,7 +73,6 @@ export default function CompanyLoginPage() {
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             />
           </div>
-
           {/* 비밀번호 입력 */}
           <div className="mb-2">
             <label className="block text-[13px] text-[#6b6b6b] mb-1.5">비밀번호</label>
@@ -101,12 +94,10 @@ export default function CompanyLoginPage() {
               </button>
             </div>
           </div>
-
           {/* 에러 메시지 */}
           {error && (
             <p className="text-[13px] text-[#e74c3c] mb-3">{error}</p>
           )}
-
           {/* 로그인 버튼 */}
           <button
             onClick={handleLogin}
@@ -115,14 +106,13 @@ export default function CompanyLoginPage() {
           >
             {loading ? "로그인 중..." : "로그인"}
           </button>
-
           {/* 하단 링크 */}
           <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] text-[#6b6b6b]">
             <Link href="/company/signup" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
               기업회원 가입
             </Link>
             <span className="text-[#d0d0d0]">·</span>
-            <Link href="/login/password-reset" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
+            <Link href="/login/password-reset?type=company" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
               비밀번호 재설정
             </Link>
             <span className="text-[#d0d0d0]">·</span>
