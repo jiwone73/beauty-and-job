@@ -290,7 +290,7 @@ export default function JobDetailPage() {
               </div>
               <div className="job-detail-meta-item">
                 <Clock size={15} className="job-detail-meta-icon" />
-                <span>~{job.deadline}</span>
+                <span>{job.deadline === "상시채용" ? "상시채용" : `~${job.deadline}`}</span>
               </div>
             </div>
 
@@ -486,7 +486,7 @@ export default function JobDetailPage() {
               <div className="job-detail-aside-salary">{job.salary}</div>
             )}
             <div className="job-detail-aside-deadline">
-              마감일: <strong>{job.deadline}</strong>
+              {job.deadline === "상시채용" ? <strong>상시채용</strong> : <>마감일: <strong>{job.deadline}</strong></>}
             </div>
             {isOwnerCompany ? (
               <>

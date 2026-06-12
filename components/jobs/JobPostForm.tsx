@@ -44,6 +44,7 @@ export default function JobPostForm({
     requirements: "", preferred: "", benefits: "",
   });
   const [saved, setSaved] = useState(false);
+  const [alwaysOpen, setAlwaysOpen] = useState(false);
   const [detailImages, setDetailImages] = useState<{ url: string; name: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
@@ -72,6 +73,7 @@ export default function JobPostForm({
         salary, description: j.description || "", requirements: j.requirements || "",
         preferred: j.preferred_qualifications || "", benefits: j.benefits || "",
       });
+      setAlwaysOpen(!j.deadline);
       setCategories(j.categories || []);
       setRegionList(j.location ? String(j.location).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
       setDetailImages(j.detail_images || []);
@@ -364,7 +366,18 @@ export default function JobPostForm({
                 <label className="admin-form-label">마감일</label>
                 <input type="date" className="admin-form-input"
                   min={new Date().toISOString().slice(0, 10)}
-                  value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} />
+                  value={form.deadline}
+                  disabled={alwaysOpen}
+                  onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+                  style={alwaysOpen ? { background: "#f5f5f5", color: "#aaa", cursor: "not-allowed" } : undefined} />
+                <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "8px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                  <input type="checkbox" checked={alwaysOpen}
+                    onChange={(e) => {
+                      setAlwaysOpen(e.target.checked);
+                      if (e.target.checked) setForm({ ...form, deadline: "" });
+                    }} />
+                  상시채용 (마감일 없음)
+                </label>
               </div>
             </div>
           </div>
