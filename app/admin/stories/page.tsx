@@ -21,6 +21,7 @@ export default function AdminStoriesPage() {
   const [edit, setEdit] = useState({ category: "공감", title: "", body: "" });
   const [autogen, setAutogen] = useState(false);
   const [autogenSaving, setAutogenSaving] = useState(false);
+  const [checked, setChecked] = useState<string[]>([]);
 
   const openExpand = (p: any) => {
     if (expandedId === p.id) { setExpandedId(null); return; }
@@ -169,20 +170,47 @@ export default function AdminStoriesPage() {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (!checked.length) return;
+    if (!confirm(`선택한 ${checked.length}건을 완전히 삭제하시겠습니까? (복구 불가)`)) return;
+    setBusy(true);
+    try {
+      await fetch("/api/admin/stories", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ ids: checked }),
+      });
+      setChecked([]);
+      fetchPosts();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const toggleCheck = (id: string) =>
+    setChecked((c) => c.includes(id) ? c.filter((x) => x !== id) : [...c, id]);
+
   const visiblePosts = posts.filter((p) =>
     tab === "pending" ? p.status === "pending" : p.status !== "pending"
   );
   const pendingCount = posts.filter((p) => p.status === "pending").length;
 
+  const allChecked = visiblePosts.length > 0 && visiblePosts.every((p) => checked.includes(p.id));
+  const toggleAll = () => {
+    const ids = visiblePosts.map((p) => p.id);
+    if (allChecked) setChecked((prev) => prev.filter((id) => !ids.includes(id)));
+    else setChecked((prev) => Array.from(new Set([...prev, ...ids])));
+  };
+
   return (
     <AdminLayout activeMenu="stories">
       <div style={{ padding: "8px 0" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-          <button onClick={() => setTab("posts")} style={tabStyle(tab === "posts")}>글 관리</button>
-          <button onClick={() => setTab("pending")} style={tabStyle(tab === "pending")}>
+          <button onClick={() => { setTab("posts"); setChecked([]); }} style={tabStyle(tab === "posts")}>글 관리</button>
+          <button onClick={() => { setTab("pending"); setChecked([]); }} style={tabStyle(tab === "pending")}>
             승인 대기{pendingCount > 0 ? ` (${pendingCount})` : ""}
           </button>
-          <button onClick={() => setTab("comments")} style={tabStyle(tab === "comments")}>신고 댓글</button>
+          <button onClick={() => { setTab("comments"); setChecked([]); }} style={tabStyle(tab === "comments")}>신고 댓글</button>
 
           {tab !== "comments" && (
             <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
@@ -263,9 +291,29 @@ export default function AdminStoriesPage() {
             </tbody>
           </table>
         ) : (
+          <>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+            <button
+              onClick={handleBulkDelete}
+              disabled={checked.length === 0 || busy}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "6px 14px", borderRadius: 6, border: "none",
+                background: checked.length ? "#e74c3c" : "#ededed",
+                color: checked.length ? "#fff" : "#aaa",
+                fontSize: 13, fontWeight: 600,
+                cursor: checked.length ? "pointer" : "default",
+              }}
+            >
+              선택 삭제{checked.length ? ` (${checked.length})` : ""}
+            </button>
+          </div>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
+                <th style={{ ...th, width: 36, textAlign: "center" }}>
+                  <input type="checkbox" checked={allChecked} onChange={toggleAll} />
+                </th>
                 <th style={th}>카테고리</th><th style={th}>제목/내용</th>
                 {tab === "pending" ? <th style={th}>출처</th> : <><th style={th}>출처</th><th style={th}>공감</th><th style={th}>댓글</th><th style={th}>조회</th><th style={th}>신고</th></>}
                 <th style={th}>상태</th><th style={th}>관리</th>
@@ -274,7 +322,10 @@ export default function AdminStoriesPage() {
             <tbody>
               {visiblePosts.map((p) => (
                 <Fragment key={p.id}>
-                <tr style={{ borderBottom: "1px solid #f0f0f0", background: p.status === "hidden" ? "#fff5f5" : p.status === "pending" ? "#fffdf5" : "#fff" }}>
+                <tr style={{ borderBottom: "1px solid #f0f0f0", background: checked.includes(p.id) ? "#faf5ff" : p.status === "hidden" ? "#fff5f5" : p.status === "pending" ? "#fffdf5" : "#fff" }}>
+                  <td style={{ ...td, textAlign: "center" }}>
+                    <input type="checkbox" checked={checked.includes(p.id)} onChange={() => toggleCheck(p.id)} />
+                  </td>
                   <td style={td}>{p.category}</td>
                   <td style={{ ...td, maxWidth: 340, cursor: "pointer" }} onClick={() => openExpand(p)}>
                     <div style={{ fontWeight: 600, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
@@ -310,7 +361,7 @@ export default function AdminStoriesPage() {
                 </tr>
                 {expandedId === p.id && (
                   <tr style={{ background: "#faf8fc" }}>
-                    <td colSpan={tab === "pending" ? 5 : 9} style={{ padding: "16px 12px" }}>
+                    <td colSpan={tab === "pending" ? 6 : 10} style={{ padding: "16px 12px" }}>
                       <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                         {CATEGORIES.map((c) => (
                           <button key={c} onClick={() => setEdit((e) => ({ ...e, category: c }))}
@@ -350,12 +401,13 @@ export default function AdminStoriesPage() {
                 </Fragment>
               ))}
               {visiblePosts.length === 0 && (
-                <tr><td colSpan={tab === "pending" ? 5 : 9} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
+                <tr><td colSpan={tab === "pending" ? 6 : 10} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
                   {tab === "pending" ? "승인 대기 중인 글이 없습니다. 'AI 글 생성'을 눌러보세요." : "글이 없습니다."}
                 </td></tr>
               )}
             </tbody>
           </table>
+          </>
         )}
       </div>
     </AdminLayout>

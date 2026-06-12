@@ -17,6 +17,7 @@ export default function StoriesPage() {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [cat, setCat] = useState("전체");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -84,6 +85,26 @@ export default function StoriesPage() {
         </svg>
       </div>
 
+      {/* 검색 필드 */}
+      <div style={{ position: "relative", marginBottom: 14 }}>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="제목·내용 검색"
+          style={{
+            width: "100%", padding: "11px 40px 11px 16px", borderRadius: 100,
+            border: "1px solid #e0d4f0", fontSize: 14, boxSizing: "border-box",
+            outline: "none", background: "#fff",
+          }}
+        />
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+          style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+          <circle cx="11" cy="11" r="7" stroke="#b9a3d6" strokeWidth="2" />
+          <path d="M21 21l-4.3-4.3" stroke="#b9a3d6" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </div>
+
       {/* 카테고리 탭 */}
       <div style={{ display: "flex", gap: 6, marginBottom: 18 }}>
         {CATEGORIES.map((c) => (
@@ -100,16 +121,24 @@ export default function StoriesPage() {
         ))}
       </div>
 
-      {loading ? (
-        <p style={{ textAlign: "center", color: "#888", padding: "40px 0" }}>불러오는 중...</p>
-      ) : posts.length === 0 ? (
+      {(() => {
+        const q = search.trim().toLowerCase();
+        const filtered = q
+          ? posts.filter((p) =>
+              (p.title || "").toLowerCase().includes(q) ||
+              (p.body || "").toLowerCase().includes(q)
+            )
+          : posts;
+        return loading ? (
+          <p style={{ textAlign: "center", color: "#888", padding: "40px 0" }}>불러오는 중...</p>
+        ) : filtered.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px 0", color: "#999" }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>💬</div>
-          <p>아직 글이 없어요</p>
+          <p>{q ? "검색 결과가 없어요" : "아직 글이 없어요"}</p>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {posts.map((p) => {
+          {filtered.map((p) => {
             const cs = CAT_STYLE[p.category] || { bg: "#f0f0f0", color: "#666", emoji: "💬" };
             return (
               <Link key={p.id} href={`/stories/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
@@ -137,7 +166,8 @@ export default function StoriesPage() {
             );
           })}
         </div>
-      )}
+        );
+      })()}
     </main>
   );
 }

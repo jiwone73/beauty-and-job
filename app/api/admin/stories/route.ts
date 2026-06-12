@@ -161,3 +161,39 @@ export async function POST(req: NextRequest) {
     client.release();
   }
 }
+
+// DELETE: 글 완전 삭제. ?id=단일 또는 body { ids: string[] } 일괄
+export async function DELETE(req: NextRequest) {
+  const { res: authErr } = requireAuth(req, "admin");
+  if (authErr) return authErr;
+
+  const { searchParams } = new URL(req.url);
+  const singleId = searchParams.get("id");
+
+  let ids: string[] = [];
+  if (singleId) {
+    ids = [singleId];
+  } else {
+    try {
+      const json = await req.json();
+      if (Array.isArray(json.ids)) ids = json.ids.filter((x: any) => typeof x === "string");
+    } catch {
+      // body 없음
+    }
+  }
+
+  if (ids.length === 0) return err("REQ_001", "삭제할 대상이 없습니다.", 400);
+
+  const client = await pool.connect();
+  try {
+    await client.query(`DELETE FROM community_comments WHERE post_id = ANY($1::uuid[])`, [ids]);
+    await client.query(`DELETE FROM community_reports WHERE target_type = 'post' AND target_id = ANY($1::uuid[])`, [ids]);
+    const result = await client.query(`DELETE FROM community_posts WHERE id = ANY($1::uuid[])`, [ids]);
+    return ok({ deleted: result.rowCount });
+  } catch (e) {
+    console.error("[admin stories DELETE]", e);
+    return err("SERVER_001", "삭제에 실패했습니다.", 500);
+  } finally {
+    client.release();
+  }
+}
