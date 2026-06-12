@@ -12,6 +12,8 @@ export default function AdminNewslettersPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [autogen, setAutogen] = useState(false);
+  const [autogenSaving, setAutogenSaving] = useState(false);
 
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
 
@@ -25,7 +27,38 @@ export default function AdminNewslettersPage() {
       setLoading(false);
     }
   };
-  useEffect(() => { fetchList(); }, []);
+
+  const fetchAutogen = async () => {
+    try {
+      const res = await fetch("/api/admin/settings", { headers: { Authorization: `Bearer ${token()}` } });
+      const json = await res.json();
+      if (json.success) setAutogen(json.data?.newsletter_autogen === "on");
+    } catch (e) {
+      console.error("[fetchAutogen]", e);
+    }
+  };
+
+  const toggleAutogen = async () => {
+    const next = autogen ? "off" : "on";
+    setAutogenSaving(true);
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ key: "newsletter_autogen", value: next }),
+      });
+      const json = await res.json();
+      if (json.success) setAutogen(next === "on");
+      else alert(json.error?.message || "변경에 실패했습니다.");
+    } catch (e) {
+      console.error("[toggleAutogen]", e);
+      alert("변경에 실패했습니다.");
+    } finally {
+      setAutogenSaving(false);
+    }
+  };
+
+  useEffect(() => { fetchList(); fetchAutogen(); }, []);
 
   const generate = async () => {
     setGenerating(true);
@@ -100,10 +133,20 @@ export default function AdminNewslettersPage() {
       <div style={{ padding: "8px 0" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>뉴스레터</h2>
-          <button onClick={generate} disabled={generating}
-            style={{ marginLeft: "auto", padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
-            {generating ? "생성 중..." : "✨ 뉴스레터 생성"}
-          </button>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+            <button onClick={toggleAutogen} disabled={autogenSaving}
+              title="매주 월요일 뉴스레터 자동 생성 on/off (발송은 수동)"
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 13, fontWeight: 600, color: "#555", cursor: "pointer" }}>
+              자동 생성
+              <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#5f0080" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
+                <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
+              </span>
+            </button>
+            <button onClick={generate} disabled={generating}
+              style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+              {generating ? "생성 중..." : "✨ 뉴스레터 생성"}
+            </button>
+          </div>
         </div>
 
         {loading ? (
