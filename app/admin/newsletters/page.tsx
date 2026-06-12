@@ -168,9 +168,9 @@ export default function AdminNewslettersPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>뉴스레터</h2>
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
             <button onClick={toggleAutogen} disabled={autogenSaving}
-              title="매주 월요일 뉴스레터 자동 생성 on/off (발송은 수동)"
+              title="매주 월요일 뉴스레터 자동 생성+발송 on/off"
               style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 13, fontWeight: 600, color: "#555", cursor: "pointer" }}>
-              자동 생성
+              자동 발송
               <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#5f0080" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
                 <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
               </span>

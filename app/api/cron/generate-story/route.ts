@@ -92,7 +92,7 @@ ${recentTitles || "(없음)"}`;
 
     const result = await client.query(
       `INSERT INTO community_posts (category, title, body, source, status, published_at)
-       VALUES ($1, $2, $3, 'ai', 'pending', NULL)
+       VALUES ($1, $2, $3, 'ai', 'published', NOW())
        RETURNING id, category, title, status`,
       [category, title || null, body]
     );
