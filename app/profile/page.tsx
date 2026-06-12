@@ -12,6 +12,7 @@ import { useProfileStore } from "@/lib/store/profileStore";
 import JobGroupField from "@/components/JobGroupField";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import NotificationModal from "@/components/profile/NotificationModal";
+import { validateBirth } from "@/lib/validateBirth";
 
 
 type ModalType = "notification" | null;
@@ -448,7 +449,8 @@ export default function ProfilePage() {
                         <button
                           style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
                           onClick={async () => {
-                            if (!/^\d{8}$/.test(birthInput)) { alert("생년월일을 YYYYMMDD 8자리로 입력해주세요. (예: 19900115)"); return; }
+                            const birthCheck = validateBirth(birthInput);
+                            if (!birthCheck.ok) { alert(birthCheck.message); return; }
                             try {
                               const token = localStorage.getItem("access_token");
                               const res = await fetch("/api/users/me", {
