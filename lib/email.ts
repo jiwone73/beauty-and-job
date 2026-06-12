@@ -393,5 +393,12 @@ export async function sendJobRecommendationEmail(
       </div>
     `,
   });
+}export async function sendNewsletterEmail(to: string, subject: string, html: string) {
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject,
+    html,
+  });
 }
   
