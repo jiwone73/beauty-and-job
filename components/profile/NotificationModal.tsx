@@ -15,7 +15,7 @@ const NOTIFICATION_GROUPS = [
   {
     group: "뷰티앤잡 소식받기",
     items: [
-      { id: "newsletter", title: "Dbd 뉴스레터 구독", desc: "데일리뷰티드롭의 아티클을 손쉽게 받아보세요.", defaultOn: false },
+      { id: "newsletter", title: "뷰티앤잡 뉴스레터 구독", desc: "엄선된 뷰티 채용 소식과 업계 인사이트를 메일로 받아보세요.", defaultOn: false },
       { id: "agent", title: "뷰티앤잡 에이전트 제안받기", desc: "프로필을 채우면 더 많은 커리어 제안을 받아요.", defaultOn: false },
     ],
   },
@@ -59,6 +59,13 @@ export default function NotificationModal({ isOpen, onClose }: Props) {
         if (res.success) setToggles((prev) => ({ ...prev, recommend: res.data.agreed }));
       })
       .catch(console.error);
+
+    fetch("/api/users/me/newsletter", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) setToggles((prev) => ({ ...prev, newsletter: res.data.subscribed }));
+      })
+      .catch(console.error);
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -78,6 +85,11 @@ export default function NotificationModal({ isOpen, onClose }: Props) {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ agreed: !!toggles.recommend }),
+      });
+      await fetch("/api/users/me/newsletter", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ subscribe: !!toggles.newsletter }),
       });
     } catch (e) {
       console.error(e);
