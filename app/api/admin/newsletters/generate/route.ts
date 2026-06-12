@@ -9,9 +9,9 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beauty-and-job.ver
 const LOGO_URL = `${SITE_URL}/images/logo.png`;
 const SITE_HOST = SITE_URL.replace(/^https?:\/\//, "");
 
-const NEWS_QUERY = "화장품";   // 원하는 키워드로 조정 가능 (예: "K뷰티", "뷰티 트렌드")
-const DISPLAY = 8;             // 네이버에서 가져올 기사 수
-const USE_COUNT = 6;           // 뉴스레터에 실제로 넣을 기사 수
+const NEWS_QUERY = "화장품";   // 검색 키워드 (예: "K뷰티", "뷰티 트렌드")
+const DISPLAY = 20;            // 네이버에서 넉넉히 수집
+const MAX_SELECT = 6;          // AI가 뷰티 관련으로 선별할 최대 개수
 
 function cleanText(s: string): string {
   return (s || "")
@@ -26,7 +26,7 @@ function cleanText(s: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  // 인증: 어드민 토큰 또는 cron 시크릿
+  // 인증: 어드민 또는 cron
   const cronSecret = req.headers.get("x-cron-secret");
   const isCron = cronSecret && cronSecret === process.env.CRON_SECRET;
   if (!isCron) {
@@ -56,33 +56,34 @@ export async function POST(req: NextRequest) {
     articles = (ndata.items || [])
       .map((it: any) => ({ title: cleanText(it.title), link: it.originallink || it.link }))
       .filter((a: any) => a.title && a.link)
-      .slice(0, USE_COUNT);
+      .slice(0, DISPLAY);
   } catch (e) {
     console.error("[newsletter naver]", e);
     return err("NEWS_001", "뉴스 수집 중 오류가 발생했습니다.", 502);
   }
   if (articles.length === 0) return err("NEWS_002", "수집된 뉴스가 없습니다.", 502);
 
-  // 2) AI 큐레이션 (인트로 + 기사별 코멘트)
-  let curation: { newsletter_title?: string; intro?: string; comments?: string[] };
+  // 2) AI 큐레이션 + 뷰티 관련 선별
+  let curation: { newsletter_title?: string; intro?: string; items?: { index: number; comment: string }[] };
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const titleList = articles.map((a, i) => `${i + 1}. ${a.title}`).join("\n");
     const sys = `당신은 한국 뷰티 산업 채용 플랫폼 "뷰티앤잡"의 주간 뉴스레터 에디터입니다.
-아래 뷰티 업계 뉴스 기사 제목 목록을 보고 큐레이션을 작성합니다.
+아래 뉴스 제목 목록 중 뷰티 업계(화장품·미용·메이크업·헤어·네일·피부미용·뷰티 브랜드/유통/트렌드)와 직접 관련된 기사만 골라 큐레이션합니다.
 
 규칙:
-- 기사 제목을 그대로 베끼지 말고 당신의 말로 코멘트를 쓰세요.
-- 제목에 없는 사실(숫자, 인용 등)을 절대 지어내지 마세요.
+- 뷰티와 무관하거나 관련성이 낮은 기사(일반 정치·경제, 단순 주가, 타 산업, 광고·홍보성)는 반드시 제외하세요.
+- 관련 있고 읽을 가치가 있는 기사만 최대 ${MAX_SELECT}개 선별하세요. 적으면 적은 대로 괜찮습니다.
+- 제목을 그대로 베끼지 말고 당신의 말로 코멘트(1문장, 왜 읽어볼 만한지)를 쓰세요.
+- 제목에 없는 사실(숫자·인용 등)을 절대 지어내지 마세요.
 - 따뜻하고 간결한 구어체. 과한 이모지 금지.
-- comments 배열은 입력 기사 순서와 정확히 일치해야 하며, 각 항목은 1문장(왜 읽어볼 만한지)입니다.
 
-반드시 아래 JSON만 출력하세요. 그 외 텍스트/마크다운 코드블록 금지.
-{"newsletter_title": "이번 주 뉴스레터 제목 (30자 이내)", "intro": "인트로 (2~3문장, 이번 주 흐름 요약)", "comments": ["기사1 코멘트", "기사2 코멘트", ...]}`;
-    const user = `이번 주 뷰티 업계 뉴스 제목:\n${titleList}`;
+반드시 아래 JSON만 출력하세요. items의 index는 입력 목록의 번호입니다. 그 외 텍스트/마크다운 금지.
+{"newsletter_title":"제목(30자 이내)","intro":"인트로(2~3문장, 이번 주 흐름 요약)","items":[{"index":번호,"comment":"코멘트"}]}`;
+    const user = `이번 주 뉴스 제목 목록:\n${titleList}`;
     const msg = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 800,
+      max_tokens: 1000,
       system: sys,
       messages: [{ role: "user", content: user }],
     });
@@ -99,18 +100,31 @@ export async function POST(req: NextRequest) {
 
   const newsletterTitle = (curation.newsletter_title || "이번 주 뷰티 업계 소식").trim();
   const intro = (curation.intro || "").trim();
-  const comments = Array.isArray(curation.comments) ? curation.comments : [];
+
+  // AI가 선별한 기사만 추림 (유효한 index만)
+  const rawItems = Array.isArray(curation.items) ? curation.items : [];
+  const selected = rawItems
+    .map((it) => {
+      const a = articles[Number(it.index) - 1];
+      if (!a) return null;
+      return { ...a, comment: cleanText(it.comment || "") };
+    })
+    .filter((x): x is { title: string; link: string; comment: string } => x !== null)
+    .slice(0, MAX_SELECT);
+
+  if (selected.length === 0) {
+    return err("NEWS_003", "이번 주 뷰티 업계 관련 뉴스를 찾지 못했습니다.", 502);
+  }
 
   // 3) HTML 조합 (제목 + AI 코멘트 + 원문 링크)
-  const cardsHtml = articles.map((a, i) => {
-    const comment = cleanText(comments[i] || "");
+  const cardsHtml = selected.map((a) => {
     return `
       <tr><td style="padding:0 0 12px;">
         <a href="${a.link}" target="_blank" style="text-decoration:none;color:inherit;display:block;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;border:1px solid #eeeeee;border-radius:10px;">
             <tr><td style="padding:16px 18px;">
               <p style="font-size:15px;font-weight:700;color:#1a1a1a;margin:0 0 6px;line-height:1.45;">${a.title}</p>
-              ${comment ? `<p style="font-size:13px;color:#5f5e5a;margin:0 0 8px;line-height:1.6;">${comment}</p>` : ""}
+              ${a.comment ? `<p style="font-size:13px;color:#5f5e5a;margin:0 0 8px;line-height:1.6;">${a.comment}</p>` : ""}
               <span style="font-size:13px;color:#7c3aed;">원문 보기 ›</span>
             </td></tr>
           </table>
@@ -164,7 +178,7 @@ export async function POST(req: NextRequest) {
        RETURNING id, title, status, created_at`,
       [newsletterTitle, intro || null, contentHtml]
     );
-    return ok({ ...result.rows[0], article_count: articles.length });
+    return ok({ ...result.rows[0], article_count: selected.length });
   } catch (e: any) {
     console.error("[newsletter save]", e?.message || e);
     return err("SERVER_001", "뉴스레터 저장에 실패했습니다.", 500);
