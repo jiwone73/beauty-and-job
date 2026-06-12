@@ -22,6 +22,8 @@ export default function AdminStoriesPage() {
   const [autogen, setAutogen] = useState(false);
   const [autogenSaving, setAutogenSaving] = useState(false);
   const [checked, setChecked] = useState<string[]>([]);
+  const [catFilter, setCatFilter] = useState("전체");
+  const [searchQ, setSearchQ] = useState("");
 
   const openExpand = (p: any) => {
     if (expandedId === p.id) { setExpandedId(null); return; }
@@ -190,9 +192,13 @@ export default function AdminStoriesPage() {
   const toggleCheck = (id: string) =>
     setChecked((c) => c.includes(id) ? c.filter((x) => x !== id) : [...c, id]);
 
-  const visiblePosts = posts.filter((p) =>
-    tab === "pending" ? p.status === "pending" : p.status !== "pending"
-  );
+  const visiblePosts = posts.filter((p) => {
+    const tabMatch = tab === "pending" ? p.status === "pending" : p.status !== "pending";
+    const catMatch = catFilter === "전체" || p.category === catFilter;
+    const q = searchQ.trim().toLowerCase();
+    const searchMatch = !q || (p.title || "").toLowerCase().includes(q) || (p.body || "").toLowerCase().includes(q);
+    return tabMatch && catMatch && searchMatch;
+  });
   const pendingCount = posts.filter((p) => p.status === "pending").length;
 
   const allChecked = visiblePosts.length > 0 && visiblePosts.every((p) => checked.includes(p.id));
@@ -292,13 +298,44 @@ export default function AdminStoriesPage() {
           </table>
         ) : (
           <>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
+            <div style={{ position: "relative", flex: "1 1 200px", minWidth: 180 }}>
+              <input
+                type="text"
+                value={searchQ}
+                onChange={(e) => setSearchQ(e.target.value)}
+                placeholder="제목·내용 검색"
+                style={{
+                  width: "100%", padding: "8px 34px 8px 12px", borderRadius: 8,
+                  border: "1px solid #ddd", fontSize: 13, boxSizing: "border-box", outline: "none",
+                }}
+              />
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                <circle cx="11" cy="11" r="7" stroke="#bbb" strokeWidth="2" />
+                <path d="M21 21l-4.3-4.3" stroke="#bbb" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div style={{ display: "flex", gap: 6 }}>
+              {["전체", "공감", "꿀팁", "질문", "정보"].map((c) => (
+                <button key={c} onClick={() => setCatFilter(c)}
+                  style={{
+                    padding: "7px 13px", borderRadius: 8, fontSize: 13, cursor: "pointer",
+                    border: catFilter === c ? "1.5px solid #5f0080" : "1px solid #ddd",
+                    background: catFilter === c ? "#5f0080" : "#fff",
+                    color: catFilter === c ? "#fff" : "#666",
+                    fontWeight: catFilter === c ? 600 : 400,
+                  }}>
+                  {c}
+                </button>
+              ))}
+            </div>
             <button
               onClick={handleBulkDelete}
               disabled={checked.length === 0 || busy}
               style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "6px 14px", borderRadius: 6, border: "none",
+                display: "flex", alignItems: "center", gap: 6, marginLeft: "auto",
+                padding: "7px 14px", borderRadius: 8, border: "none",
                 background: checked.length ? "#e74c3c" : "#ededed",
                 color: checked.length ? "#fff" : "#aaa",
                 fontSize: 13, fontWeight: 600,
