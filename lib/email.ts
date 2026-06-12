@@ -304,7 +304,7 @@ export async function sendResumeViewedEmail(
 export async function sendJobRecommendationEmail(
   to: string,
   name: string,
-  jobTypeLabel: string,
+  groupLabel: string | null,
   jobs: {
     id: string;
     title: string;
@@ -316,6 +316,10 @@ export async function sendJobRecommendationEmail(
   }[],
   unsubscribeUrl: string
 ) {
+  const heading = groupLabel
+    ? `${name} 님께 맞는<br/>${groupLabel} 새 공고예요`
+    : `${name} 님께 맞는<br/>새 공고를 찾았어요`;
+
   const cardsHtml = jobs
     .map((j) => {
       const company = j.brand_name || j.company_name || "";
@@ -350,7 +354,7 @@ export async function sendJobRecommendationEmail(
   return resend.emails.send({
     from: FROM,
     to,
-    subject: `[프로모션] ${name} 님께 딱 맞는 뷰티 채용공고가 도착했어요 💜`,
+    subject: `[프로모션] ${name} 님, 오늘의 추천 포지션이 도착했어요`,
     html: `
       <div style="background:#f7f6f9;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -363,8 +367,7 @@ export async function sendJobRecommendationEmail(
               </tr>
               <tr>
                 <td style="padding:30px 28px 8px;">
-                  <p style="font-size:19px;font-weight:700;color:#1a1a1a;margin:0 0 6px;line-height:1.45;">${name} 님,<br/>새로 올라온 ${jobTypeLabel} 공고예요</p>
-                  <p style="font-size:13px;color:#8b8b8b;margin:0 0 22px;">지금 뷰티앤잡에 올라온 맞춤 채용공고예요.</p>
+                  <p style="font-size:19px;font-weight:700;color:#1a1a1a;margin:0 0 22px;line-height:1.45;">${heading}</p>
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                     ${cardsHtml}
                   </table>
@@ -391,3 +394,4 @@ export async function sendJobRecommendationEmail(
     `,
   });
 }
+  
