@@ -517,12 +517,9 @@ function SectionNewsletter() {
               <CheckCircle size={40} className="newsletter-success-icon" />
               <h3 className="newsletter-success-title">구독 신청이 완료되었습니다! 🎉</h3>
               <p className="newsletter-success-desc">
-                <strong>{email}</strong>으로 매주 화요일 뷰티 업계 소식을 보내드릴게요.<br />
+                <strong>{email}</strong>으로 매주 월요일 뷰티 업계 소식을 보내드릴게요.<br />
                 스팸 폴더도 한 번 확인해주세요.
               </p>
-              <button className="newsletter-reset-btn" onClick={() => { setSubmitted(false); setEmail(""); }}>
-                다른 이메일로 구독하기
-              </button>
             </div>
           ) : (
             <>
@@ -530,7 +527,7 @@ function SectionNewsletter() {
                 <Mail size={28} className="newsletter-icon" />
                 <h2 className="newsletter-title">뷰티앤잡 뉴스레터 구독하기</h2>
                 <p className="newsletter-sub">
-                  매주 화요일, 엄선된 뷰티 채용 소식과 업계 인사이트를 메일함에서 만나보세요
+                  매주 월요일, 엄선된 뷰티 채용 소식과 업계 인사이트를 메일함에서 만나보세요
                 </p>
               </div>
               <form className="newsletter-form" onSubmit={handleSubmit}>

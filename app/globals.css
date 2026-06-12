@@ -487,14 +487,15 @@
    섹션 3: 뉴스레터
    =========================================== */
 .newsletter-box {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #7a1fa0 100%);
+  background: linear-gradient(135deg, #3a0a4d 0%, #5f0080 100%);
   border-radius: 16px;
-  padding: 40px 48px;
+  padding: 28px 48px;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 32px;
   color: white;
+  min-height: 140px;
 }
 
 .newsletter-title {
@@ -3643,7 +3644,7 @@ input[type="range"].career-slider::-moz-range-thumb {
    뉴스레터 수정
    ============================================ */
 .newsletter-icon {
-  color: #5f0080;
+  color: #fff;
   margin-bottom: 8px;
 }
 .newsletter-input-wrap {
@@ -3674,6 +3675,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 구독 완료 상태 */
 .newsletter-success {
+  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3681,16 +3683,16 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 8px 0;
   gap: 12px;
 }
-.newsletter-success-icon { color: #5f0080; }
+.newsletter-success-icon { color: #fff; }
 .newsletter-success-title {
   font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #fff;
   margin: 0;
 }
 .newsletter-success-desc {
   font-size: 14px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.9);
   line-height: 1.7;
   margin: 0;
 }
