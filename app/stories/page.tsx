@@ -85,41 +85,83 @@ export default function StoriesPage() {
         </svg>
       </div>
 
-      {/* 검색 필드 */}
-      <div style={{ position: "relative", marginBottom: 14 }}>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="제목·내용 검색"
-          style={{
-            width: "100%", padding: "11px 40px 11px 16px", borderRadius: 100,
-            border: "1px solid #e0d4f0", fontSize: 14, boxSizing: "border-box",
-            outline: "none", background: "#fff",
-          }}
-        />
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-          style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-          <circle cx="11" cy="11" r="7" stroke="#b9a3d6" strokeWidth="2" />
-          <path d="M21 21l-4.3-4.3" stroke="#b9a3d6" strokeWidth="2" strokeLinecap="round" />
-        </svg>
+      {/* 검색 + 카테고리 필터 바 */}
+      <div className="stories-filter-bar">
+        <div className="stories-search-wrap">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="제목·내용 검색"
+            style={{
+              width: "100%", padding: "11px 40px 11px 16px", borderRadius: 100,
+              border: "1px solid #e0d4f0", fontSize: 14, boxSizing: "border-box",
+              outline: "none", background: "#fff",
+            }}
+          />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+            style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+            <circle cx="11" cy="11" r="7" stroke="#b9a3d6" strokeWidth="2" />
+            <path d="M21 21l-4.3-4.3" stroke="#b9a3d6" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </div>
+
+        <div className="stories-cat-tabs">
+          {CATEGORIES.map((c) => (
+            <button key={c} onClick={() => setCat(c)}
+              className="stories-cat-btn"
+              style={{
+                border: cat === c ? "1.5px solid #5f0080" : "1px solid #e0e0e0",
+                background: cat === c ? "#5f0080" : "#fff",
+                color: cat === c ? "#fff" : "#666",
+                fontWeight: cat === c ? 600 : 400,
+              }}>
+              {c}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* 카테고리 탭 */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 18 }}>
-        {CATEGORIES.map((c) => (
-          <button key={c} onClick={() => setCat(c)}
-            style={{
-              flex: 1, padding: "8px 4px", borderRadius: 100, fontSize: 13, whiteSpace: "nowrap", cursor: "pointer",
-              border: cat === c ? "1.5px solid #5f0080" : "1px solid #e0e0e0",
-              background: cat === c ? "#5f0080" : "#fff",
-              color: cat === c ? "#fff" : "#666",
-              fontWeight: cat === c ? 600 : 400,
-            }}>
-            {c}
-          </button>
-        ))}
-      </div>
+      <style jsx>{`
+        .stories-filter-bar {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 18px;
+        }
+        .stories-search-wrap {
+          position: relative;
+          flex: 1;
+        }
+        .stories-cat-tabs {
+          display: flex;
+          gap: 6px;
+        }
+        .stories-cat-btn {
+          flex: 1;
+          padding: 8px 4px;
+          border-radius: 100px;
+          font-size: 13px;
+          white-space: nowrap;
+          cursor: pointer;
+        }
+        @media (min-width: 768px) {
+          .stories-filter-bar {
+            flex-direction: row;
+            align-items: center;
+          }
+          .stories-search-wrap {
+            flex: 1 1 auto;
+          }
+          .stories-cat-tabs {
+            flex: 0 0 auto;
+          }
+          .stories-cat-btn {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+          }
+        }
+      `}</style>
 
       {(() => {
         const q = search.trim().toLowerCase();
