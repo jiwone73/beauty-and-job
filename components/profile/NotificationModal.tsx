@@ -17,7 +17,6 @@ const NOTIFICATION_GROUPS = [
     items: [
       { id: "newsletter", title: "Dbd 뉴스레터 구독", desc: "데일리뷰티드롭의 아티클을 손쉽게 받아보세요.", defaultOn: false },
       { id: "agent", title: "뷰티앤잡 에이전트 제안받기", desc: "프로필을 채우면 더 많은 커리어 제안을 받아요.", defaultOn: false },
-      { id: "offline", title: "오프라인 네트워킹 소식 받기", desc: "뷰티앤잡의 뷰티클럽 행사에 초대드려요.", defaultOn: true },
     ],
   },
   {
