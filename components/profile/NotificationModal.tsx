@@ -23,7 +23,7 @@ const NOTIFICATION_GROUPS = [
   {
     group: "새로운 커리어",
     items: [
-      { id: "recommend", title: "추천 포지션 알림", desc: "내 직무, 연차에 맞는 포지션을 알려드려요.", defaultOn: true },
+      { id: "recommend", title: "추천 포지션 알림", desc: "내 직무·지역에 맞는 채용공고를 이메일로 추천해드려요.", defaultOn: true },
     ],
   },
 ];
@@ -39,6 +39,7 @@ export default function NotificationModal({ isOpen, onClose }: Props) {
     if (!isOpen) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
+
     fetch("/api/users/me/notification-settings", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((res) => {
@@ -50,6 +51,13 @@ export default function NotificationModal({ isOpen, onClose }: Props) {
             return next;
           });
         }
+      })
+      .catch(console.error);
+
+    fetch("/api/users/me/recommendation-consent", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) setToggles((prev) => ({ ...prev, recommend: res.data.agreed }));
       })
       .catch(console.error);
   }, [isOpen]);
@@ -66,6 +74,11 @@ export default function NotificationModal({ isOpen, onClose }: Props) {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ settings: toggles }),
+      });
+      await fetch("/api/users/me/recommendation-consent", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ agreed: !!toggles.recommend }),
       });
     } catch (e) {
       console.error(e);

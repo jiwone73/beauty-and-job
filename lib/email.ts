@@ -301,3 +301,93 @@ export async function sendResumeViewedEmail(
     `,
   });
 }
+export async function sendJobRecommendationEmail(
+  to: string,
+  name: string,
+  jobTypeLabel: string,
+  jobs: {
+    id: string;
+    title: string;
+    location: string | null;
+    experience_level: string | null;
+    brand_name: string | null;
+    company_name: string;
+    logo_url: string | null;
+  }[],
+  unsubscribeUrl: string
+) {
+  const cardsHtml = jobs
+    .map((j) => {
+      const company = j.brand_name || j.company_name || "";
+      const logo = j.logo_url || LOGO_URL;
+      const meta = [j.experience_level, j.location].filter(Boolean).join(" · ");
+      const jobUrl = `${SITE_URL}/jobs/${j.id}`;
+      return `
+        <tr>
+          <td style="padding:0 0 12px;">
+            <a href="${jobUrl}" style="text-decoration:none;color:inherit;display:block;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;border:1px solid #eeeeee;border-radius:10px;">
+                <tr>
+                  <td width="58" valign="middle" style="padding:14px 0 14px 14px;">
+                    <img src="${logo}" alt="${company}" width="44" height="44" style="display:block;width:44px;height:44px;border-radius:8px;border:1px solid #f0f0f0;object-fit:cover;" />
+                  </td>
+                  <td valign="middle" style="padding:14px 12px;">
+                    <p style="font-size:12px;color:#8b8b8b;margin:0 0 2px;">${company}</p>
+                    <p style="font-size:15px;font-weight:700;color:#1a1a1a;margin:0 0 4px;line-height:1.4;">${j.title}</p>
+                    <p style="font-size:12px;color:#8b8b8b;margin:0;">${meta}</p>
+                  </td>
+                  <td width="44" valign="middle" align="right" style="padding:14px 14px 14px 0;">
+                    <span style="font-size:13px;color:#7c3aed;white-space:nowrap;">보기 ›</span>
+                  </td>
+                </tr>
+              </table>
+            </a>
+          </td>
+        </tr>`;
+    })
+    .join("");
+
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject: `[프로모션] ${name} 님께 딱 맞는 뷰티 채용공고가 도착했어요 💜`,
+    html: `
+      <div style="background:#f7f6f9;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;">
+              <tr>
+                <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
+                  <img src="${LOGO_URL}" alt="뷰티앤잡" height="30" style="display:block;border:0;height:30px;" />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 28px 8px;">
+                  <p style="font-size:19px;font-weight:700;color:#1a1a1a;margin:0 0 6px;line-height:1.45;">${name} 님,<br/>새로 올라온 ${jobTypeLabel} 공고예요</p>
+                  <p style="font-size:13px;color:#8b8b8b;margin:0 0 22px;">지금 뷰티앤잡에 올라온 맞춤 채용공고예요.</p>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    ${cardsHtml}
+                  </table>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:16px auto 28px;">
+                    <tr><td align="center" bgcolor="#5f0080" style="border-radius:8px;">
+                      <a href="${SITE_URL}/jobs" style="display:inline-block;padding:13px 34px;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;">공고 더 보러 가기</a>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#f6f3fb" style="padding:20px 28px;">
+                  <p style="font-size:12px;color:#888780;margin:0 0 6px;line-height:1.6;">뷰티앤잡은 회원님의 메일함을 존중합니다.<br/>이 메일은 광고성 정보 수신에 동의하신 분께 발송되었습니다.</p>
+                  <p style="font-size:12px;color:#888780;margin:0;">
+                    뷰티앤잡 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a><br/>
+                    <a href="${unsubscribeUrl}" style="color:#8b5cf6;text-decoration:none;">추천 메일 수신거부</a> &nbsp;·&nbsp; © 2026 뷰티앤잡
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </div>
+    `,
+  });
+}
