@@ -11,7 +11,7 @@ const shortSido = (s: string) =>
 
 export default function HeroMobile() {
   const router = useRouter();
-  const [jobType, setJobType] = useState<"기업" | "매장">("기업");
+  const [jobType, setJobType] = useState<"기업" | "매장">("매장");
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -57,8 +57,8 @@ export default function HeroMobile() {
     <section className="hero-m">
 
       <div className="hero-m-banner">
-        <span className="hero-m-banner-ad">AD</span>
-        <p className="hero-m-banner-text">🎀 뷰티앤잡 × 아모레퍼시픽 — 봄 채용 시즌 공개!</p>
+        <span className="hero-m-banner-ad">OPEN</span>
+        <p className="hero-m-banner-text">🔥 뷰티앤잡 오픈 준비 중 · 등록은 지금 무료</p>
         <Link href="/jobs" className="hero-m-banner-link">보기 →</Link>
       </div>
 
@@ -109,15 +109,15 @@ export default function HeroMobile() {
         <div className="hero-m-ai-cards">
           <Link href="/jobseeker" className="hero-m-ai-card">
             <div className="hero-m-ai-card-icon">📄</div>
-            <strong>이력서 등록하면<br />먼저 연락와요</strong>
-            <p>등록만 해두면 매장·기업이 먼저 제안하고, 내 이력서가 검색 맨 위에 노출돼요</p>
+            <strong>이력서를 등록하면<br />제안을 받을 수 있어요</strong>
+            <p>등록한 이력서는 뷰티기업과 샵의 인재 검색에 노출돼요</p>
             <span className="hero-m-ai-card-btn">무료 이력서 등록하기 ›</span>
           </Link>
           <Link href="/company" className="hero-m-ai-card">
             <div className="hero-m-ai-card-icon">📊</div>
-            <strong>공고 올리면<br />인재가 바로 보여요</strong>
-            <p>공고 등록도, 상단 노출도, 인재 연락처 열람도 지금은 전부 0원</p>
-            <span className="hero-m-ai-card-btn">채용공고 등록하기 ›</span>
+            <strong>공고를 등록하면<br />인재에게 노출돼요</strong>
+            <p>채용공고 등록·상단 노출·인재 연락처 열람도 런칭 기간 무료예요</p>
+            <span className="hero-m-ai-card-btn">무료 채용공고 등록하기 ›</span>
           </Link>
         </div>
       </div>
