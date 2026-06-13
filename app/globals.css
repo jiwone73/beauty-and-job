@@ -3987,7 +3987,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) {
   .container { padding: 0 16px; }
   .section { padding: 12px 0; }
-  .section-head { flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+  .section-head { flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
   .section-head > div { flex: 1; min-width: 0; }
   .see-all { flex-shrink: 0; white-space: nowrap; }
   .section-title { font-size: 20px; }
