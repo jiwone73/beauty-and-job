@@ -217,29 +217,6 @@ export default function SignupEmailPage() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => setJobType("OFFICE")}
-                className={`relative flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
-                  jobType === "OFFICE"
-                    ? "border-purple-500 bg-purple-50 text-purple-700"
-                    : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
-                }`}
-              >
-                <span className="text-2xl mb-1">🏢</span>
-                <span className="text-sm font-semibold">기업·브랜드</span>
-                <span className="text-xs mt-0.5 text-center leading-tight">
-                  사무직 · 마케팅 · MD
-                </span>
-                {jobType === "OFFICE" && (
-                  <span className="absolute top-2 right-2 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
-                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </span>
-                )}
-              </button>
-
-              <button
-                type="button"
                 onClick={() => setJobType("STORE")}
                 className={`relative flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
                   jobType === "STORE"
@@ -260,12 +237,33 @@ export default function SignupEmailPage() {
                   </span>
                 )}
               </button>
+              <button
+                type="button"
+                onClick={() => setJobType("OFFICE")}
+                className={`relative flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+                  jobType === "OFFICE"
+                    ? "border-purple-500 bg-purple-50 text-purple-700"
+                    : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
+                }`}
+              >
+                <span className="text-2xl mb-1">🏢</span>
+                <span className="text-sm font-semibold">기업·브랜드</span>
+                <span className="text-xs mt-0.5 text-center leading-tight">
+                  사무직 · 마케팅 · MD
+                </span>
+                {jobType === "OFFICE" && (
+                  <span className="absolute top-2 right-2 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
+                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </span>
+                )}
+              </button>
             </div>
             {jobType === "" && (
               <p className="text-[12px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
             )}
           </div>
-
           {/* 이메일 */}
           <div className="mb-4">
             <label className="block text-[13px] text-[#6b6b6b] mb-1.5">이메일</label>
@@ -277,7 +275,6 @@ export default function SignupEmailPage() {
               className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
             />
           </div>
-
           {/* 이름 */}
           <div className="mb-4">
             <label className="block text-[13px] text-[#6b6b6b] mb-1.5">이름</label>
@@ -289,7 +286,6 @@ export default function SignupEmailPage() {
               className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
             />
           </div>
-
           {/* 휴대폰 번호 + 인증 */}
           <div className="mb-4">
             <label className="block text-[13px] text-[#6b6b6b] mb-1.5">휴대폰 번호</label>
@@ -339,7 +335,6 @@ export default function SignupEmailPage() {
               </p>
             )}
           </div>
-
           {/* 비밀번호 */}
           <div className="mb-2">
             <label className="block text-[13px] text-[#6b6b6b] mb-1.5">비밀번호</label>
@@ -373,7 +368,6 @@ export default function SignupEmailPage() {
               <p className="text-[12px] text-[#e74c3c] mt-1">비밀번호가 일치하지 않습니다.</p>
             )}
           </div>
-
           {/* 약관 동의 */}
           <div className="mt-6 pt-6 border-t border-[#ececec]">
             <label className="flex items-center gap-2 mb-3 cursor-pointer">

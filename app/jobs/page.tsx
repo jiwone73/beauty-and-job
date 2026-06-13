@@ -238,7 +238,7 @@ function JobsPageInner() {
       <div className="jobs-container">
         {/* ===== 필터 탭 ===== */}
         <div className="jobs-type-tabs">
-          {["전체", "기업", "매장"].map((t) => (
+          {["전체", "매장", "기업"].map((t) => (
             <button key={t}
               className={`jobs-type-tab ${jobTypeFilter === t ? "active" : ""}`}
               onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); }}>
