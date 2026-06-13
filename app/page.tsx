@@ -329,6 +329,7 @@ function SectionStorePick() {
       .catch(console.error);
   }, []);
   const mappedJobs = jobs.map(mapJob);
+  if (mappedJobs.length === 0) return null;
   return (
     <section className="section section-divider">
       <div className="container">
@@ -366,6 +367,7 @@ function SectionCorpPick() {
       .catch(console.error);
   }, []);
   const mappedJobs = jobs.map(mapJob);
+  if (mappedJobs.length === 0) return null;
   return (
     <section className="section section-divider">
       <div className="container">
