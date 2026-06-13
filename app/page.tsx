@@ -67,7 +67,7 @@ export default function HomePage() {
       <SectionPick />
       <SectionStorePick />
       <SectionCorpPick />
-      <SectionJobGroups />
+      {/* <SectionJobGroups /> 공고 충분히 쌓이면 노출 */}
       <SectionStories />
       <SectionBeautyServices />
       <SectionNewsletter />
