@@ -10588,3 +10588,16 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin: 0 0 2px 2px;
   font-weight: 500;
 }
+/* ===== 상세 필터 시트 ===== */
+.filter-sheet-body { padding: 20px; overflow-y: auto; }
+.filter-section { margin-bottom: 24px; }
+.filter-section:last-child { margin-bottom: 0; }
+.filter-section-title { font-size: 14px; font-weight: 700; color: var(--color-text); margin-bottom: 12px; }
+.filter-chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-chip { padding: 8px 14px; border: 1.5px solid var(--color-border); border-radius: 100px; background: white; font-size: 13px; font-weight: 500; color: var(--color-text); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.filter-chip:hover { border-color: var(--color-primary); }
+.filter-chip.on { border-color: var(--color-primary); background: var(--color-primary); color: white; }
+.filter-sheet-foot { display: flex; gap: 10px; }
+.filter-reset-btn { display: inline-flex; align-items: center; gap: 6px; padding: 0 18px; border: 1.5px solid var(--color-border); border-radius: 10px; background: white; font-size: 14px; font-weight: 600; color: #666; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.filter-reset-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.filter-sheet-foot .region-apply-btn { flex: 1; }

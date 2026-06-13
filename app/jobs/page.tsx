@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { useState, useRef, useEffect, Suspense } from "react";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
+import FilterSheet from "@/components/FilterSheet";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
@@ -91,7 +92,7 @@ function JobsPageInner() {
   const [sort, setSort] = useState<"latest" | "popular">("latest");
   const [showSearch, setShowSearch] = useState(false);
   const [showJobDrop, setShowJobDrop] = useState(false);
-  const [showCareerDrop, setShowCareerDrop] = useState(false);
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [showRegionDrop, setShowRegionDrop] = useState(false);
   const [showBrandDrop, setShowBrandDrop] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
@@ -254,7 +255,7 @@ function JobsPageInner() {
             <div className="jobs-dropdown-wrap">
               <button
                 className={`jobs-filter-btn ${selectedJobs.length > 0 ? "active" : ""}`}
-                onClick={() => { setShowJobDrop(true); setShowCareerDrop(false); }}
+                onClick={() => { setShowJobDrop(true); }}
               >
                 {selectedJobs.length === 0
                   ? "직군 전체"
@@ -293,33 +294,21 @@ function JobsPageInner() {
               />
             </div>
 
-            {/* 경력 드롭다운 */}
+            {/* 상세 필터 */}
             <div className="jobs-dropdown-wrap">
               <button
                 className={`jobs-filter-btn ${selectedCareer !== "경력 전체" ? "active" : ""}`}
-                onClick={() => { setShowCareerDrop(!showCareerDrop); setShowJobDrop(false); }}
+                onClick={() => setShowFilterSheet(true)}
               >
-                {selectedCareer} <ChevronDown size={16} />
+                {selectedCareer !== "경력 전체" ? `경력 · ${selectedCareer}` : "상세 필터"}
+                <ChevronDown size={16} />
               </button>
-              {showCareerDrop && (
-                <div className="jobs-dropdown">
-                  <button
-                    className={`jobs-dropdown-item ${selectedCareer === "경력 전체" ? "active" : ""}`}
-                    onClick={() => { setSelectedCareer("경력 전체"); setShowCareerDrop(false); }}
-                  >
-                    경력 전체
-                  </button>
-                  {CAREER_OPTIONS.map((c) => (
-                    <button
-                      key={c}
-                      className={`jobs-dropdown-item ${selectedCareer === c ? "active" : ""}`}
-                      onClick={() => { setSelectedCareer(c); setShowCareerDrop(false); }}
-                    >
-                      {c}
-                    </button>
-                  ))}
-                </div>
-              )}
+              <FilterSheet
+                open={showFilterSheet}
+                initial={{ career: selectedCareer }}
+                onClose={() => setShowFilterSheet(false)}
+                onApply={(f) => setSelectedCareer(f.career)}
+              />
             </div>
           </div>
 
