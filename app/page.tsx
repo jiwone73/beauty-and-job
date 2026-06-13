@@ -591,7 +591,7 @@ function Footer() {
           <div>사업자등록번호 :<Sep />통신판매업신고번호 :<Sep />유료직업소개사업 등록번호 :<Sep />직업정보제공사업 신고번호 :</div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
-          <span style={{ fontSize: 13, color: "#9a9aa3" }}>© 2025 Beauty&amp;Job. All rights reserved.</span>
+          <span style={{ fontSize: 13, color: "#9a9aa3" }}>© {new Date().getFullYear()} Beauty&amp;Job. All rights reserved.</span>
           <div style={{ display: "flex", gap: 20 }}>
             <Link href="/support/terms" style={{ fontSize: 13, color: "#666", textDecoration: "none" }}>이용약관</Link>
             <Link href="/support/privacy" style={{ fontSize: 13, color: "#5f0080", textDecoration: "none", fontWeight: 600 }}>개인정보 처리방침</Link>
