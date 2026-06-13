@@ -136,9 +136,9 @@ function Hero() {
     <section className="hero">
       <div className="hero-wrap">
         <div className="hero-banner-top-inner">
-          <span className="hero-banner-badge">AD</span>
-          <p className="hero-banner-title">🎀 뷰티앤잡 × 아모레퍼시픽 — 봄 채용 시즌 공개!</p>
-          <p className="hero-banner-sub">마케터·MD·연구원 등 50개+ 포지션 지금 확인하세요</p>
+          <span className="hero-banner-badge">OPEN</span>
+          <p className="hero-banner-title">🔥 뷰티앤잡 오픈 준비 중 · 채용공고와 이력서 등록은 지금 무료</p>
+          <p className="hero-banner-sub">런칭 기간 동안 등록·상단노출·인재 연락처 열람까지 0원</p>
           <Link href="/jobs" className="hero-banner-link">공고 보기 →</Link>
         </div>
         <div className="hero-inner">
@@ -148,7 +148,7 @@ function Hero() {
               <span className="hero-title-point">뷰티앤잡</span>
             </h1>
             <p className="hero-sub">
-              뷰티 업계 채용, 이직, 커리어까지<br />한 번에
+              브랜드 본사부터 살롱·샵 현장직까지<br />뷰티업계 일자리를 한곳에서
             </p>
             <form className="hero-search-bar-v2" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
               <p className="hero-search-guide">어떤 일자리를 찾으세요?</p>
@@ -211,8 +211,8 @@ function Hero() {
                     <path d="M46 52l4 4 8-8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
-                <h3 className="hero-right-card-title">이력서 등록하면<br />먼저 연락와요</h3>
-                <p className="hero-right-card-desc">등록만 해두면 매장·기업이 먼저 제안하고, 내 이력서가 검색 맨 위에 노출돼요</p>
+                <h3 className="hero-right-card-title">이력서를 등록하면<br />제안을 받을 수 있어요</h3>
+                <p className="hero-right-card-desc">등록한 이력서는 뷰티기업과 샵의 인재 검색에 노출돼요</p>
                 <Link href="/jobseeker" className="hero-right-card-btn">
                   무료 이력서 등록하기 ›
                 </Link>
@@ -230,8 +230,8 @@ function Hero() {
                     <path d="M27 28 L48 18" stroke="#e8a0c0" strokeWidth="1.5" strokeDasharray="2 2"/>
                   </svg>
                 </div>
-                <h3 className="hero-right-card-title">공고 올리면<br />인재가 바로 보여요</h3>
-                <p className="hero-right-card-desc">공고 등록도, 상단 노출도, 인재 연락처 열람도 지금은 전부 0원</p>
+                <h3 className="hero-right-card-title">공고를 등록하면<br />인재에게 노출돼요</h3>
+                <p className="hero-right-card-desc">채용공고 등록·상단 노출·인재 연락처 열람도 런칭 기간 무료예요</p>
                 <Link href="/company" className="hero-right-card-btn">
                   무료 채용공고 등록하기 ›
                 </Link>
@@ -245,7 +245,7 @@ function Hero() {
 }
 
 /* ============================================
-   섹션 1: 뷰티앤잡 Pick
+   섹션 1: 뷰티앤잡 추천 공고
    ============================================ */
 function SectionPick() {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -264,9 +264,9 @@ function SectionPick() {
           <div>
             <h2 className="section-title">
               <Sparkles size={24} className="title-icon" />
-              뷰티앤잡 Pick
+              뷰티앤잡 추천 공고
             </h2>
-            <p className="section-sub">뷰티앤잡이 선별한 추천 채용공고</p>
+            <p className="section-sub">지금 확인하면 좋은 뷰티업계 공고를 모았어요</p>
           </div>
           <Link href="/jobs" className="see-all">전체보기 →</Link>
         </div>
@@ -275,7 +275,7 @@ function SectionPick() {
         ) : (
           <div className="card-grid card-grid-4">
             {mappedJobs.map((job: any) => (
-              <JobCard key={job.id} {...job} tagType="primary" isAd />
+              <JobCard key={job.id} {...job} tagType="primary" />
             ))}
           </div>
         )}
@@ -318,7 +318,7 @@ function JobCard({ id, brand, tag, tagType, title, location, type, deadline, isA
 }
 
 /* ============================================
-   섹션: 매장·샵 채용관
+   섹션: 살롱·샵 매장직 채용
    ============================================ */
 function SectionStorePick() {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -335,8 +335,8 @@ function SectionStorePick() {
         <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
         <div className="section-head">
           <div>
-            <h2 className="section-title">🏪 매장직 채용</h2>
-            <p className="section-sub">우리 동네 샵부터 프랜차이즈 매장까지</p>
+            <h2 className="section-title">🏪 살롱·샵 매장직 채용</h2>
+            <p className="section-sub">헤어·피부·네일·속눈썹·왁싱 등 현장 채용공고를 확인해보세요</p>
           </div>
           <Link href="/jobs?type=매장" className="see-all">전체보기 →</Link>
         </div>
@@ -355,7 +355,7 @@ function SectionStorePick() {
 }
 
 /* ============================================
-   섹션: 기업·브랜드 채용관
+   섹션: 뷰티기업 사무직 채용
    ============================================ */
 function SectionCorpPick() {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -372,8 +372,8 @@ function SectionCorpPick() {
         <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
         <div className="section-head">
           <div>
-            <h2 className="section-title">🏢 사무직 채용</h2>
-            <p className="section-sub">마케팅·MD·영업·연구개발 등 커리어를 키울 수 있는 포지션</p>
+            <h2 className="section-title">🏢 뷰티기업 사무직 채용</h2>
+            <p className="section-sub">브랜드 본사·MD·마케팅·영업·CS 등 오피스 채용공고를 모았어요</p>
           </div>
           <Link href="/jobs?type=기업" className="see-all">전체보기 →</Link>
         </div>
