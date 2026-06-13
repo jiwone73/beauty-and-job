@@ -268,7 +268,7 @@ function SectionPick() {
             </h2>
             <p className="section-sub">지금 확인하면 좋은 뷰티업계 공고를 모았어요</p>
           </div>
-          <Link href="/jobs" className="see-all">전체보기 →</Link>
+          <Link href="/jobs" className="see-all">전체보기</Link>
         </div>
         {mappedJobs.length === 0 ? (
           <p className="empty-state">등록된 공고가 없습니다.</p>
@@ -338,7 +338,7 @@ function SectionStorePick() {
             <h2 className="section-title">🏪 살롱·샵 매장직 채용</h2>
             <p className="section-sub">헤어·피부·네일·속눈썹·왁싱 등 현장 채용공고를 확인해보세요</p>
           </div>
-          <Link href="/jobs?type=매장" className="see-all">전체보기 →</Link>
+          <Link href="/jobs?type=매장" className="see-all">전체보기</Link>
         </div>
         {mappedJobs.length === 0 ? (
           <p className="empty-state">등록된 공고가 없습니다.</p>
@@ -375,7 +375,7 @@ function SectionCorpPick() {
             <h2 className="section-title">🏢 뷰티기업 사무직 채용</h2>
             <p className="section-sub">브랜드 본사·MD·마케팅·영업·CS 등 오피스 채용공고를 모았어요</p>
           </div>
-          <Link href="/jobs?type=기업" className="see-all">전체보기 →</Link>
+          <Link href="/jobs?type=기업" className="see-all">전체보기</Link>
         </div>
         {mappedJobs.length === 0 ? (
           <p className="empty-state">등록된 공고가 없습니다.</p>
@@ -459,7 +459,7 @@ function SectionStories() {
             <h2 className="section-title">💬 현장이야기</h2>
             <p className="section-sub">뷰티 현장 사람들의 공감과 꿀팁</p>
           </div>
-          <Link href="/stories" className="see-all">전체보기 →</Link>
+          <Link href="/stories" className="see-all">전체보기</Link>
         </div>
         <div className="card-grid card-grid-4">
           {items.map((item) => (
