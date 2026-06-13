@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 
-const ALLOWED_KEYS = ["story_autogen"];
+const ALLOWED_KEYS = ["story_autogen", "newsletter_autogen"];
 
 export async function GET(req: NextRequest) {
   const { res: authErr } = requireAuth(req, "admin");
