@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
+import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
@@ -82,6 +83,11 @@ function JobsPageInner() {
   const [selectedCareer, setSelectedCareer] = useState(initCareer);
   const [selectedRegion, setSelectedRegion] = useState(initRegion);
   const [selectedBrand, setSelectedBrand] = useState(initBrand);
+  const [selectedRegions, setSelectedRegions] = useState<string[]>(() => {
+    const rg = searchParams.get("regions");
+    return rg ? rg.split(",") : [];
+  });
+  const [showRegionModal, setShowRegionModal] = useState(false);
   const [sort, setSort] = useState<"latest" | "popular">("latest");
   const [showSearch, setShowSearch] = useState(false);
   const [showJobDrop, setShowJobDrop] = useState(false);
@@ -99,10 +105,9 @@ function JobsPageInner() {
     const t = searchParams.get("type");
     const sd = searchParams.get("sido");
     const sg = searchParams.get("sigungu");
-    const rg = searchParams.get("regions");
     const kw = searchParams.get("q");
     if (t && t !== "전체") qs.set("type", t);
-    if (rg) qs.set("regions", rg);
+    if (selectedRegions.length) qs.set("regions", selectedRegions.join(","));
     if (sd) qs.set("sido", sd);
     if (sg) qs.set("sigungu", sg);
     if (kw) qs.set("q", kw);
@@ -129,7 +134,7 @@ function JobsPageInner() {
         }
       })
       .catch(e => console.error('[load jobs]', e));
-  }, [searchParams]);
+  }, [searchParams, selectedRegions]);
 
   useEffect(() => {
     loadBookmarks();
@@ -268,6 +273,26 @@ function JobsPageInner() {
               />
             </div>
 
+            {/* 지역 선택 (모달) */}
+            <div className="jobs-dropdown-wrap">
+              <button
+                className={`jobs-filter-btn ${selectedRegions.length > 0 ? "active" : ""}`}
+                onClick={() => setShowRegionModal(true)}>
+                {selectedRegions.length === 0
+                  ? "지역 전체"
+                  : selectedRegions.length === 1
+                  ? selectedRegions[0]
+                  : `${selectedRegions[0]} 외 ${selectedRegions.length - 1}`}
+                <ChevronDown size={16} />
+              </button>
+              <RegionSelectModal
+                open={showRegionModal}
+                initial={selectedRegions}
+                onClose={() => setShowRegionModal(false)}
+                onApply={setSelectedRegions}
+              />
+            </div>
+
             {/* 경력 드롭다운 */}
             <div className="jobs-dropdown-wrap">
               <button
@@ -347,7 +372,7 @@ function JobsPageInner() {
           <div className="jobs-empty">
             <div className="jobs-empty-icon">🔍</div>
             <p className="jobs-empty-title">조건에 맞는 포지션이 없어요.</p>
-            <button className="jobs-empty-reset" onClick={() => { setSelectedJobs([]); setSelectedCareer("경력 전체"); setSearchQuery(""); }}>
+            <button className="jobs-empty-reset" onClick={() => { setSelectedJobs([]); setSelectedCareer("경력 전체"); setSearchQuery(""); setSelectedRegions([]); }}>
               필터 초기화
             </button>
           </div>
