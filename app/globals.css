@@ -4029,7 +4029,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobs-gnb { display: none; }
   .jobs-container { padding: 0 16px; }
   .jobs-filter-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
-  .jobs-filter-left { flex-wrap: wrap; gap: 8px; }
+  .jobs-filter-left { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; }
+  .jobs-filter-left .jobs-dropdown-wrap { min-width: 0; }
+  .jobs-filter-left .jobs-filter-btn { width: 100%; justify-content: space-between; padding: 9px 10px; font-size: 13px; gap: 2px; overflow: hidden; white-space: nowrap; }
   .jobs-filter-right { width: 100%; justify-content: space-between; }
   .jobs-card-grid { grid-template-columns: 1fr; }
 
