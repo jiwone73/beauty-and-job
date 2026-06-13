@@ -11,7 +11,7 @@ const shortSido = (s: string) =>
 
 export default function HeroMobile() {
   const router = useRouter();
-  const [jobType, setJobType] = useState<"기업" | "매장">("매장");
+  const [jobType, setJobType] = useState<"전체" | "기업" | "매장">("전체");
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -47,7 +47,7 @@ export default function HeroMobile() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    params.set("type", jobType);
+    if (jobType !== "전체") params.set("type", jobType);
     if (selected.length) params.set("regions", selected.join(","));
     if (searchQuery.trim()) params.set("q", searchQuery.trim());
     router.push(`/jobs?${params.toString()}`);
@@ -72,11 +72,11 @@ export default function HeroMobile() {
       <p className="hero-m-search-label">어떤 일자리를 찾으세요?</p>
 
       <div className="hero-m-toggle">
-        {(["기업", "매장"] as const).map((t) => (
+        {(["전체", "매장", "기업"] as const).map((t) => (
           <button key={t} type="button"
             className={`hero-m-toggle-btn ${jobType === t ? "active" : ""}`}
             onClick={() => setJobType(t)}>
-            {t === "기업" ? "🏢 사무직" : "🏪 매장직"}
+            {t === "전체" ? "전체" : t === "기업" ? "🏢 사무직" : "🏪 매장직"}
           </button>
         ))}
       </div>
@@ -92,7 +92,7 @@ export default function HeroMobile() {
           </button>
           <span className="hero-m-divider" />
           <input className="hero-m-input" type="text"
-            placeholder={jobType === "매장" ? "헤어, 네일, 실장…" : "마케터, MD, 영업…"}
+            placeholder={jobType === "매장" ? "헤어, 네일, 실장…" : jobType === "기업" ? "마케터, MD, 영업…" : "지역, 직무, 회사명…"}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)} />
           <button type="submit" className="hero-m-search-btn">

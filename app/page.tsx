@@ -94,7 +94,7 @@ function Hero() {
   const [selected, setSelected] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [jobType, setJobType] = useState<"기업" | "매장">("매장");
+  const [jobType, setJobType] = useState<"전체" | "기업" | "매장">("전체");
   const shortSido = (s: string) => s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "");
 
   // 로그인(개인회원) 시 프로필의 직군·희망지역을 검색바 기본값으로 자동 채움
@@ -126,7 +126,7 @@ function Hero() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    params.set("type", jobType);
+    if (jobType !== "전체") params.set("type", jobType);
     if (selected.length) params.set("regions", selected.join(","));
     if (searchQuery.trim()) params.set("q", searchQuery.trim());
     router.push(`/jobs${params.toString() ? "?" + params.toString() : ""}`);
@@ -154,6 +154,11 @@ function Hero() {
               <p className="hero-search-guide">어떤 일자리를 찾으세요?</p>
               <div className="hero-type-toggle">
                 <button type="button"
+                  className={`hero-type-btn ${jobType === "전체" ? "active" : ""}`}
+                  onClick={() => setJobType("전체")}>
+                  전체
+                </button>
+                <button type="button"
                   className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`}
                   onClick={() => setJobType("매장")}>
                   매장직
@@ -176,7 +181,9 @@ function Hero() {
                 <input className="hero-search-input-v2" type="text"
                   placeholder={jobType === "매장"
                     ? "헤어 디자이너, 네일리스트, 실장…"
-                    : "마케터, MD, 뷰티 연구원…"}
+                    : jobType === "기업"
+                    ? "마케터, MD, 뷰티 연구원…"
+                    : "지역, 직무, 회사명으로 검색"}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)} />
                 <button type="submit" className="hero-search-btn-v2" aria-label="검색">
