@@ -82,7 +82,7 @@ export default function AdminDashboard() {
       <div className="admin-stat-grid">
         {[
           { label: "총 가입자", value: fmt(c ? Number(c.total_users) + Number(c.total_companies) : null), unit: "명", sub: `개인 ${fmt(c?.total_users)} · 기업 ${fmt(c?.total_companies)}`, trend: 0, icon: Users, color: "#5f0080" },
-          { label: "진행중 채용공고", value: fmt(c?.active_jobs), unit: "건", sub: `기업 ${fmt(c?.office_jobs)}건 · 매장 ${fmt(c?.store_jobs)}건`, trend: 0, icon: Briefcase, color: "#0ea5e9" },
+          { label: "진행중 채용공고", value: fmt(c?.active_jobs), unit: "건", sub: `매장 ${fmt(c?.store_jobs)}건 · 기업 ${fmt(c?.office_jobs)}건`, trend: 0, icon: Briefcase, color: "#0ea5e9" },
           { label: "오늘 지원수", value: fmt(c?.today_applications), unit: "건", sub: "오늘 접수", trend: 0, icon: CheckCircle, color: "#10b981" },
           { label: "승인 대기 기업", value: fmt(c?.pending_companies), unit: "건", sub: "즉시 처리 필요", trend: 0, icon: Clock, color: "#f59e0b" },
         ].map((stat) => (

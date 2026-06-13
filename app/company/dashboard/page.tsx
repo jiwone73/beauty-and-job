@@ -126,8 +126,8 @@ export default function CompanyDashboard() {
         <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
           {[
             { value: "전체", label: "전체" },
-            { value: "OFFICE", label: "🏢 기업" },
             { value: "STORE", label: "🏪 매장" },
+            { value: "OFFICE", label: "🏢 기업" },
           ].map((t) => (
             <button
               key={t.value}

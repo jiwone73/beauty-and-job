@@ -150,7 +150,7 @@ export default function AdminCompaniesPage() {
           <div className="admin-filter-group">
             <span className="admin-filter-label">유형</span>
             <div className="admin-filter-tabs">
-              {["전체", "기업", "매장", "기업+매장"].map((t) => (
+              {["전체", "매장", "기업", "기업+매장"].map((t) => (
                 <button key={t} className={`admin-filter-tab ${typeFilter === t ? "active" : ""}`}
                   onClick={() => { setTypeFilter(t); setPage(1); }}>{t}</button>
               ))}

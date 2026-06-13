@@ -143,7 +143,7 @@ export default function CompanyJobsPage() {
           <div className="admin-filter-group">
             <span className="admin-filter-label">유형</span>
             <div className="admin-filter-tabs">
-              {["전체", "기업", "매장"].map(g => (
+              {["전체", "매장", "기업"].map(g => (
                 <button key={g} className={`admin-filter-tab ${jobGroupFilter === g ? "active" : ""}`}
                   onClick={() => setJobGroupFilter(g)}>{g}</button>
               ))}

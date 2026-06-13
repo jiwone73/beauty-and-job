@@ -138,7 +138,7 @@ export default function AdminMembersPage() {
           <div className="admin-filter-group">
             <span className="admin-filter-label">직군</span>
             <div className="admin-filter-tabs">
-              {["전체", "기업사무직", "매장기술직"].map((t) => (
+              {["전체", "매장기술직", "기업사무직"].map((t) => (
                 <button key={t} className={`admin-filter-tab ${jobTypeFilter === t ? "active" : ""}`}
                   onClick={() => { setJobTypeFilter(t); setPage(1); }}>{t}</button>
               ))}
