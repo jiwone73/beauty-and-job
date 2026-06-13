@@ -6,6 +6,7 @@ import HeroMobile from "@/components/HeroMobile";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { workTypeLabel } from "@/lib/constants";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
+import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS } from "@/lib/data/jobGroups";
 import { useEffect, useState } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
@@ -66,6 +67,7 @@ export default function HomePage() {
       <SectionPick />
       <SectionStorePick />
       <SectionCorpPick />
+      <SectionJobGroups />
       <SectionStories />
       <SectionBeautyServices />
       <SectionNewsletter />
@@ -448,6 +450,52 @@ const STORY_EMOJI: Record<string, string> = {
 function fmtStoryDate(d: string) {
   const dt = new Date(d);
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
+}
+/* ============================================
+   섹션: 직무별 채용 바로가기
+   ============================================ */
+function SectionJobGroups() {
+  const [tab, setTab] = useState<"매장" | "기업">("매장");
+  const groups = tab === "매장" ? STORE_JOB_GROUPS : OFFICE_JOB_GROUPS;
+  return (
+    <section className="section section-divider">
+      <div className="container">
+        <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
+        <div className="section-head">
+          <div>
+            <h2 className="section-title">직무별 채용 바로가기</h2>
+            <p className="section-sub">찾는 직무를 눌러 바로 확인해보세요</p>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+          {(["매장", "기업"] as const).map((t) => (
+            <button key={t} onClick={() => setTab(t)}
+              style={{
+                padding: "8px 18px", borderRadius: 100, fontSize: 14, fontWeight: 600, cursor: "pointer",
+                border: tab === t ? "1.5px solid #5f0080" : "1px solid #ddd",
+                background: tab === t ? "#5f0080" : "#fff",
+                color: tab === t ? "#fff" : "#666",
+              }}>
+              {t === "매장" ? "🏪 매장직" : "🏢 사무직"}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {groups.map((g) => (
+            <Link key={g.group}
+              href={`/jobs?type=${tab}&group=${encodeURIComponent(g.group)}`}
+              style={{
+                padding: "10px 18px", borderRadius: 10, fontSize: 14, fontWeight: 500,
+                border: "1px solid #eadcf3", background: "#faf5ff", color: "#5f0080",
+                textDecoration: "none",
+              }}>
+              {g.group}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
 function SectionStories() {
   const router = useRouter();

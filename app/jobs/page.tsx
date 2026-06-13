@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
+import { getJobSubGroups } from "@/lib/data/jobGroups";
 
 /* ===== 더미 데이터 ===== */
 const JOBS = [
@@ -68,6 +69,12 @@ function JobsPageInner() {
 
   const [jobTypeFilter, setJobTypeFilter] = useState(initType);
   const [selectedJobs, setSelectedJobs] = useState<string[]>(() => {
+    const urlGroup = searchParams.get("group");
+    if (urlGroup) {
+      const t = searchParams.get("type");
+      const jt = t === "매장" ? "STORE" : "OFFICE";
+      return getJobSubGroups(jt as any, urlGroup);
+    }
     const urlJob = searchParams.get("job");
     if (urlJob && urlJob !== "직군 전체") return [urlJob];
     return [];
