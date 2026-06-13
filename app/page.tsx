@@ -524,8 +524,10 @@ function SectionNewsletter() {
           ) : (
             <>
               <div className="newsletter-text">
-                <Mail size={28} className="newsletter-icon" />
-                <h2 className="newsletter-title">뷰티앤잡 뉴스레터 구독하기</h2>
+                <h2 className="newsletter-title">
+                  <Mail size={22} className="newsletter-icon" />
+                  뷰티앤잡 뉴스레터 구독하기
+                </h2>
                 <p className="newsletter-sub">
                   매주 월요일, 엄선된 뷰티 채용 소식과 업계 인사이트를 메일함에서 만나보세요
                 </p>

@@ -503,6 +503,9 @@
   font-weight: 800;
   margin-bottom: 8px;
   letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .newsletter-sub {
@@ -931,6 +934,7 @@ input[type="range"].career-slider::-moz-range-thumb {
     grid-template-columns: 1fr;
     text-align: center;
   }
+  .newsletter-title { justify-content: center; }
   .newsletter-form { min-width: 0; }
 
   .footer-top {
@@ -3645,7 +3649,8 @@ input[type="range"].career-slider::-moz-range-thumb {
    ============================================ */
 .newsletter-icon {
   color: #fff;
-  margin-bottom: 8px;
+  margin-bottom: 0;
+  flex-shrink: 0;
 }
 .newsletter-input-wrap {
   display: flex;
