@@ -2,11 +2,25 @@
 import { useState, useEffect } from "react";
 import { X, RotateCcw } from "lucide-react";
 
-const CAREER_OPTIONS = ["신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상", "경력 무관"];
+const CAREER_OPTS = [
+  { label: "전체", value: "경력 전체" },
+  { label: "신입", value: "NEW" },
+  { label: "경력", value: "EXPERIENCED" },
+  { label: "무관", value: "ANY" },
+];
+
+const EMPLOYMENT_OPTS = [
+  { label: "전체", value: "고용형태 전체" },
+  { label: "정규직", value: "정규직" },
+  { label: "계약직", value: "계약직" },
+  { label: "인턴", value: "인턴" },
+  { label: "아르바이트", value: "아르바이트" },
+  { label: "프리랜서", value: "프리랜서" },
+];
 
 export interface FilterDraft {
-  career: string; // "경력 전체" 또는 옵션값
-  // 추후: employment, benefits[], salaryMin, salaryMax 등 추가 예정
+  career: string;      // "경력 전체" | "NEW" | "EXPERIENCED" | "ANY"
+  employment: string;  // "고용형태 전체" | "정규직" | ...
 }
 
 interface Props {
@@ -25,7 +39,7 @@ export default function FilterSheet({ open, initial, onClose, onApply }: Props) 
 
   if (!open) return null;
 
-  const reset = () => setDraft({ career: "경력 전체" });
+  const reset = () => setDraft({ career: "경력 전체", employment: "고용형태 전체" });
 
   return (
     <div className="region-modal-overlay" onClick={onClose}>
@@ -43,22 +57,31 @@ export default function FilterSheet({ open, initial, onClose, onApply }: Props) 
           <div className="filter-section">
             <div className="filter-section-title">경력</div>
             <div className="filter-chip-grid">
-              <button type="button"
-                className={`filter-chip ${draft.career === "경력 전체" ? "on" : ""}`}
-                onClick={() => setDraft({ ...draft, career: "경력 전체" })}>
-                전체
-              </button>
-              {CAREER_OPTIONS.map((c) => (
-                <button key={c} type="button"
-                  className={`filter-chip ${draft.career === c ? "on" : ""}`}
-                  onClick={() => setDraft({ ...draft, career: c })}>
-                  {c}
+              {CAREER_OPTS.map((o) => (
+                <button key={o.value} type="button"
+                  className={`filter-chip ${draft.career === o.value ? "on" : ""}`}
+                  onClick={() => setDraft({ ...draft, career: o.value })}>
+                  {o.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* 다음 단계에서 여기에 고용형태 · 복리후생 · 급여 섹션 추가 */}
+          {/* 고용형태 */}
+          <div className="filter-section">
+            <div className="filter-section-title">고용형태</div>
+            <div className="filter-chip-grid">
+              {EMPLOYMENT_OPTS.map((o) => (
+                <button key={o.value} type="button"
+                  className={`filter-chip ${draft.employment === o.value ? "on" : ""}`}
+                  onClick={() => setDraft({ ...draft, employment: o.value })}>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 다음 단계: 복리후생 · 급여 섹션 */}
         </div>
 
         <div className="region-modal-foot filter-sheet-foot">

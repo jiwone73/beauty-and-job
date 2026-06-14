@@ -82,6 +82,7 @@ function JobsPageInner() {
     return [];
   });
   const [selectedCareer, setSelectedCareer] = useState(initCareer);
+  const [selectedEmployment, setSelectedEmployment] = useState("고용형태 전체");
   const [selectedRegion, setSelectedRegion] = useState(initRegion);
   const [selectedBrand, setSelectedBrand] = useState(initBrand);
   const [selectedRegions, setSelectedRegions] = useState<string[]>(() => {
@@ -169,9 +170,10 @@ function JobsPageInner() {
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
-    const matchCareer = selectedCareer === "경력 전체" || (j.career || "").includes(selectedCareer.replace("년", ""));
+    const matchCareer = selectedCareer === "경력 전체" || j.experience_level === selectedCareer;
+    const matchEmployment = selectedEmployment === "고용형태 전체" || j.employment_type === selectedEmployment;
     const matchBrand = !selectedBrand || (j.brand || "").includes(selectedBrand);
-    return matchType && matchJob && matchCareer && matchBrand;
+    return matchType && matchJob && matchCareer && matchEmployment && matchBrand;
   });
 
   return (
@@ -297,17 +299,20 @@ function JobsPageInner() {
             {/* 상세 필터 */}
             <div className="jobs-dropdown-wrap">
               <button
-                className={`jobs-filter-btn ${selectedCareer !== "경력 전체" ? "active" : ""}`}
+                className={`jobs-filter-btn ${(selectedCareer !== "경력 전체" || selectedEmployment !== "고용형태 전체") ? "active" : ""}`}
                 onClick={() => setShowFilterSheet(true)}
               >
-                {selectedCareer !== "경력 전체" ? `경력 · ${selectedCareer}` : "상세 필터"}
+                {(() => {
+                  const n = (selectedCareer !== "경력 전체" ? 1 : 0) + (selectedEmployment !== "고용형태 전체" ? 1 : 0);
+                  return n > 0 ? `상세 필터 · ${n}` : "상세 필터";
+                })()}
                 <ChevronDown size={16} />
               </button>
               <FilterSheet
                 open={showFilterSheet}
-                initial={{ career: selectedCareer }}
+                initial={{ career: selectedCareer, employment: selectedEmployment }}
                 onClose={() => setShowFilterSheet(false)}
-                onApply={(f) => setSelectedCareer(f.career)}
+                onApply={(f) => { setSelectedCareer(f.career); setSelectedEmployment(f.employment); }}
               />
             </div>
           </div>
@@ -361,7 +366,7 @@ function JobsPageInner() {
           <div className="jobs-empty">
             <div className="jobs-empty-icon">🔍</div>
             <p className="jobs-empty-title">조건에 맞는 포지션이 없어요.</p>
-            <button className="jobs-empty-reset" onClick={() => { setSelectedJobs([]); setSelectedCareer("경력 전체"); setSearchQuery(""); setSelectedRegions([]); }}>
+            <button className="jobs-empty-reset" onClick={() => { setSelectedJobs([]); setSelectedCareer("경력 전체"); setSelectedEmployment("고용형태 전체"); setSearchQuery(""); setSelectedRegions([]); }}>
               필터 초기화
             </button>
           </div>
