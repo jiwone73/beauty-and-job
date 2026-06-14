@@ -10622,3 +10622,6 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-completion-head { display: flex; align-items: center; gap: 6px; margin: 0; flex-shrink: 0; }
 .resume-completion-bar { flex: 1; max-width: 280px; margin: 0; }
 .resume-completion-text { margin: 0; white-space: nowrap; flex-shrink: 0; color: var(--color-text-mute); }
+/* 프로필 헤더: 종(알림)을 설정 옆 오른쪽으로 */
+.profile-header-inner .profile-settings-btn:first-of-type { margin-left: auto; }
+.profile-header-inner .profile-settings-btn + .profile-settings-btn { margin-left: 6px; }
