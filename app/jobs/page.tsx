@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { useState, useRef, useEffect, Suspense } from "react";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
-import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS } from "@/components/FilterSheet";
+import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER } from "@/components/FilterSheet";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
@@ -97,6 +97,7 @@ function JobsPageInner() {
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [showCareerDrop, setShowCareerDrop] = useState(false);
   const [showEmploymentDrop, setShowEmploymentDrop] = useState(false);
+  const [showBenefitDrop, setShowBenefitDrop] = useState(false);
   const [showRegionDrop, setShowRegionDrop] = useState(false);
   const [showBrandDrop, setShowBrandDrop] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
@@ -304,7 +305,7 @@ function JobsPageInner() {
             <div className="jobs-dropdown-wrap jobs-pc-only">
               <button
                 className={`jobs-filter-btn ${selectedCareer !== "경력 전체" ? "active" : ""}`}
-                onClick={() => { setShowCareerDrop(!showCareerDrop); setShowJobDrop(false); setShowEmploymentDrop(false); }}
+                onClick={() => { setShowCareerDrop(!showCareerDrop); setShowJobDrop(false); setShowEmploymentDrop(false); setShowBenefitDrop(false); }}
               >
                 {CAREER_OPTS.find((o) => o.value === selectedCareer && o.value !== "경력 전체")?.label || "경력"}
                 <ChevronDown size={16} />
@@ -326,7 +327,7 @@ function JobsPageInner() {
             <div className="jobs-dropdown-wrap jobs-pc-only">
               <button
                 className={`jobs-filter-btn ${selectedEmployment !== "고용형태 전체" ? "active" : ""}`}
-                onClick={() => { setShowEmploymentDrop(!showEmploymentDrop); setShowJobDrop(false); setShowCareerDrop(false); }}
+                onClick={() => { setShowEmploymentDrop(!showEmploymentDrop); setShowJobDrop(false); setShowCareerDrop(false); setShowBenefitDrop(false); }}
               >
                 {selectedEmployment !== "고용형태 전체" ? selectedEmployment : "고용형태"}
                 <ChevronDown size={16} />
@@ -338,6 +339,28 @@ function JobsPageInner() {
                       className={`jobs-dropdown-item ${selectedEmployment === o.value ? "active" : ""}`}
                       onClick={() => { setSelectedEmployment(o.value); setShowEmploymentDrop(false); }}>
                       {o.value === "고용형태 전체" ? "고용형태 전체" : o.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 복리후생 (PC) */}
+            <div className="jobs-dropdown-wrap jobs-pc-only">
+              <button
+                className={`jobs-filter-btn ${selectedBenefits.length > 0 ? "active" : ""}`}
+                onClick={() => { setShowBenefitDrop(!showBenefitDrop); setShowJobDrop(false); setShowCareerDrop(false); setShowEmploymentDrop(false); }}
+              >
+                {selectedBenefits.length > 0 ? `복리후생 · ${selectedBenefits.length}` : "복리후생"}
+                <ChevronDown size={16} />
+              </button>
+              {showBenefitDrop && (
+                <div className="jobs-dropdown jobs-dropdown-benefit">
+                  {BENEFIT_FILTER.map((b) => (
+                    <button key={b} type="button"
+                      className={`jobs-dropdown-item ${selectedBenefits.includes(b) ? "active" : ""}`}
+                      onClick={() => setSelectedBenefits(selectedBenefits.includes(b) ? selectedBenefits.filter((x) => x !== b) : [...selectedBenefits, b])}>
+                      {b}
                     </button>
                   ))}
                 </div>
