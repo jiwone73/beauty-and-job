@@ -324,6 +324,13 @@ export default function ProfilePage() {
       <header className="profile-header">
         <div className="profile-header-inner">
           
+          <div className="profile-tabs">
+            <button className={`profile-tab ${activeTab === "profile" ? "active" : ""}`} onClick={() => setActiveTab("profile")}>프로필</button>
+            <button className="profile-tab" onClick={() => router.push("/profile/resume")}>이력서</button>
+            <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>지원현황</button>
+            <button className={`profile-tab ${activeTab === "bookmarks" ? "active" : ""}`} onClick={() => setActiveTab("bookmarks")}>관심공고</button>
+          </div>
+          <div className="profile-actions">
           <div style={{ position: "relative", display: "inline-flex" }}>
             <button
               className="profile-settings-btn"
@@ -373,15 +380,9 @@ export default function ProfilePage() {
           >
             <Settings size={22} />
           </button>
+          </div>
         </div>
       </header>
-
-      <div className="profile-tabs">
-        <button className={`profile-tab ${activeTab === "profile" ? "active" : ""}`} onClick={() => setActiveTab("profile")}>프로필</button>
-        <button className="profile-tab" onClick={() => router.push("/profile/resume")}>이력서</button>
-        <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>지원현황</button>
-        <button className={`profile-tab ${activeTab === "bookmarks" ? "active" : ""}`} onClick={() => setActiveTab("bookmarks")}>관심공고</button>
-      </div>
 
       <div className="profile-content">
         {activeTab === "applied" ? (
@@ -391,16 +392,10 @@ export default function ProfilePage() {
         ) : activeTab === "profile" ? (
           <>
             {dbJobType && (
-              <div style={{ margin: "16px 0", padding: "14px 16px", background: "#fff", border: "1px solid #f0e8f8", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "20px" }}>{dbJobType === "STORE" ? "🏪" : "🏢"}</span>
-                  <div>
-                    <p style={{ fontSize: "11px", color: "#888", marginBottom: "2px" }}>지금 찾고 있는 채용</p>
-                    <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a" }}>
-                      {dbJobType === "STORE" ? "매장·샵 채용" : "기업·브랜드 채용"}
-                    </p>
-                  </div>
-                </div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", margin: "16px 0", padding: "7px 14px", background: "#faf5ff", border: "1px solid #f0e8f8", borderRadius: "999px" }}>
+                <span style={{ fontSize: "15px" }}>{dbJobType === "STORE" ? "🏪" : "🏢"}</span>
+                <span style={{ fontSize: "12px", color: "#888" }}>지금 찾는 채용</span>
+                <span style={{ fontSize: "13px", fontWeight: 600, color: "#5f0080" }}>{dbJobType === "STORE" ? "매장·샵 채용" : "기업·브랜드 채용"}</span>
               </div>
             )}
 

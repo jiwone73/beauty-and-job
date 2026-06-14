@@ -10616,15 +10616,25 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobs-dropdown-multi { display: flex; align-items: center; gap: 8px; }
 .jobs-dropdown-multi .jobs-checkbox { width: 16px; height: 16px; border: 1.5px solid #ccc; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; color: #fff; flex-shrink: 0; }
 .jobs-dropdown-multi .jobs-checkbox.on { background: var(--color-primary); border-color: var(--color-primary); }
-/* 프로필 탭 2단 레이아웃 (PC 2단 / 모바일 1단) + 폭 정렬 */
-.profile-content { max-width: 1040px; }
-.profile-header-inner { max-width: 1040px; }
-.profile-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  align-items: start;
+/* 프로필 레이아웃 (헤더 폭 정렬 + 탭/아이콘 한 줄 + 2단) */
+.profile-header { position: static; }
+.profile-header-inner {
+  max-width: 1280px;
+  padding: 0 32px;
+  justify-content: space-between;
+  align-items: flex-end;
 }
+.profile-tabs { max-width: none; margin: 0; padding: 0; border-bottom: none; }
+.profile-actions { display: flex; align-items: center; gap: 8px; padding-bottom: 10px; }
+.profile-tab.active { color: #5f0080; border-bottom-color: #5f0080; }
+.profile-content { max-width: 1280px; padding: 0 32px; }
+.profile-resume-btn { background: #5f0080; color: #fff; }
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
 @media (max-width: 768px) {
+  .profile-header-inner { padding: 8px 16px 0; gap: 8px; }
+  .profile-tabs { gap: 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .profile-tab { white-space: nowrap; padding: 10px 2px; }
+  .profile-actions { flex-shrink: 0; padding-bottom: 6px; }
+  .profile-content { padding: 0 16px; }
   .profile-grid { grid-template-columns: 1fr; }
 }
