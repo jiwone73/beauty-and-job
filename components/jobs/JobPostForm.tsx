@@ -54,6 +54,7 @@ export default function JobPostForm({
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [benefitTags, setBenefitTags] = useState<string[]>([]);
+  const [salaryNego, setSalaryNego] = useState(false);
 
   useEffect(() => {
     if (companyType === "BOTH") setJobGroupType("기업");
@@ -70,9 +71,7 @@ export default function JobPostForm({
       const type = j.employment_type
         || (j.work_type === "PART_TIME" ? "파트타임"
           : j.work_type === "CONTRACT" ? "계약직" : "정규직");
-      const salary = j.salary_min
-        ? (j.salary_max ? `${j.salary_min / 10000}-${j.salary_max / 10000}만원` : `${j.salary_min / 10000}만원`)
-        : "";
+      const salary = j.salary_min ? String(j.salary_min / 10000) : "";
       setForm({
         title: j.title || "", career, type,
         deadline: j.deadline ? String(j.deadline).slice(0, 10) : "",
@@ -86,6 +85,7 @@ export default function JobPostForm({
       setHiringProcess(j.hiring_process || []);
       setNotes(j.notes || "");
       setBenefitTags(j.benefit_tags || []);
+      setSalaryNego(!j.salary_min);
       if (j.job_type) setJobGroupType(j.job_type === "STORE" ? "매장" : "기업");
       if (j.company_id) setCompanyId(j.company_id);
     }).catch(console.error);
@@ -150,11 +150,10 @@ export default function JobPostForm({
       : form.career.match(/\d+년/) ? "EXPERIENCED" : "ANY";
     const workType = form.type === "파트타임" ? "PART_TIME"
       : form.type === "계약직" ? "CONTRACT" : "FULL_TIME";
-    let salaryMin: number | null = null, salaryMax: number | null = null;
-    const salaryNums = form.salary.match(/\d+/g);
-    if (salaryNums && salaryNums.length > 0) {
-      salaryMin = parseInt(salaryNums[0]) * 10000;
-      if (salaryNums.length > 1) salaryMax = parseInt(salaryNums[1]) * 10000;
+    let salaryMin: number | null = null;
+    if (!salaryNego && form.salary) {
+      const n = parseInt(String(form.salary).replace(/[^0-9]/g, ""));
+      if (n > 0) salaryMin = n * 10000;
     }
 
     const payload: any = {
@@ -164,8 +163,8 @@ export default function JobPostForm({
       requirements: form.requirements || null,
       preferred_qualifications: form.preferred || null,
       benefits: form.benefits || null,
-      salary_min: salaryMin, salary_max: salaryMax,
-      salary_type: salaryMin ? "ANNUAL" : null,
+      salary_min: salaryMin, salary_max: null,
+      salary_type: salaryMin ? (jobGroupType === "매장" ? "MONTHLY" : "ANNUAL") : null,
       location: regionList.join(", ") || null,
       work_type: workType,
       employment_type: form.type,
@@ -367,9 +366,17 @@ export default function JobPostForm({
             <div className="admin-form-row-2col">
               <div className="admin-form-row">
                 <label className="admin-form-label">{jobGroupType === "매장" ? "급여" : "연봉"}</label>
-                <input className="admin-form-input"
-                  placeholder={jobGroupType === "매장" ? "예) 월 250만원" : "예) 4,000~5,000만원"}
-                  value={form.salary} onChange={(e) => setForm({ ...form, salary: e.target.value })} />
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <input className="admin-form-input" type="number" disabled={salaryNego}
+                    placeholder={jobGroupType === "매장" ? "예) 250" : "예) 4000"}
+                    value={salaryNego ? "" : form.salary}
+                    onChange={(e) => setForm({ ...form, salary: e.target.value })}
+                    style={{ flex: 1 }} />
+                  <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap" }}>만원</span>
+                  <label style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "13px", color: "#555", whiteSpace: "nowrap", cursor: "pointer" }}>
+                    <input type="checkbox" checked={salaryNego} onChange={(e) => setSalaryNego(e.target.checked)} /> 협의
+                  </label>
+                </div>
               </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">마감일</label>
