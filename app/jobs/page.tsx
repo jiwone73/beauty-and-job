@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { useState, useRef, useEffect, Suspense } from "react";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
-import FilterSheet from "@/components/FilterSheet";
+import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS } from "@/components/FilterSheet";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
@@ -94,6 +94,8 @@ function JobsPageInner() {
   const [showSearch, setShowSearch] = useState(false);
   const [showJobDrop, setShowJobDrop] = useState(false);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const [showCareerDrop, setShowCareerDrop] = useState(false);
+  const [showEmploymentDrop, setShowEmploymentDrop] = useState(false);
   const [showRegionDrop, setShowRegionDrop] = useState(false);
   const [showBrandDrop, setShowBrandDrop] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
@@ -296,8 +298,52 @@ function JobsPageInner() {
               />
             </div>
 
-            {/* 상세 필터 */}
-            <div className="jobs-dropdown-wrap">
+            {/* 경력 (PC) */}
+            <div className="jobs-dropdown-wrap jobs-pc-only">
+              <button
+                className={`jobs-filter-btn ${selectedCareer !== "경력 전체" ? "active" : ""}`}
+                onClick={() => { setShowCareerDrop(!showCareerDrop); setShowJobDrop(false); setShowEmploymentDrop(false); }}
+              >
+                {CAREER_OPTS.find((o) => o.value === selectedCareer && o.value !== "경력 전체")?.label || "경력"}
+                <ChevronDown size={16} />
+              </button>
+              {showCareerDrop && (
+                <div className="jobs-dropdown">
+                  {CAREER_OPTS.map((o) => (
+                    <button key={o.value}
+                      className={`jobs-dropdown-item ${selectedCareer === o.value ? "active" : ""}`}
+                      onClick={() => { setSelectedCareer(o.value); setShowCareerDrop(false); }}>
+                      {o.value === "경력 전체" ? "경력 전체" : o.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 고용형태 (PC) */}
+            <div className="jobs-dropdown-wrap jobs-pc-only">
+              <button
+                className={`jobs-filter-btn ${selectedEmployment !== "고용형태 전체" ? "active" : ""}`}
+                onClick={() => { setShowEmploymentDrop(!showEmploymentDrop); setShowJobDrop(false); setShowCareerDrop(false); }}
+              >
+                {selectedEmployment !== "고용형태 전체" ? selectedEmployment : "고용형태"}
+                <ChevronDown size={16} />
+              </button>
+              {showEmploymentDrop && (
+                <div className="jobs-dropdown">
+                  {EMPLOYMENT_OPTS.map((o) => (
+                    <button key={o.value}
+                      className={`jobs-dropdown-item ${selectedEmployment === o.value ? "active" : ""}`}
+                      onClick={() => { setSelectedEmployment(o.value); setShowEmploymentDrop(false); }}>
+                      {o.value === "고용형태 전체" ? "고용형태 전체" : o.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 상세 필터 (모바일) */}
+            <div className="jobs-dropdown-wrap jobs-mobile-only">
               <button
                 className={`jobs-filter-btn ${(selectedCareer !== "경력 전체" || selectedEmployment !== "고용형태 전체") ? "active" : ""}`}
                 onClick={() => setShowFilterSheet(true)}

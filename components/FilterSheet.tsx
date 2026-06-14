@@ -2,14 +2,14 @@
 import { useState, useEffect } from "react";
 import { X, RotateCcw } from "lucide-react";
 
-const CAREER_OPTS = [
+export const CAREER_OPTS = [
   { label: "전체", value: "경력 전체" },
   { label: "신입", value: "NEW" },
-  { label: "경력", value: "EXPERIENCED" },
-  { label: "무관", value: "ANY" },
+  { label: "경력직", value: "EXPERIENCED" },
+  { label: "경력무관", value: "ANY" },
 ];
 
-const EMPLOYMENT_OPTS = [
+export const EMPLOYMENT_OPTS = [
   { label: "전체", value: "고용형태 전체" },
   { label: "정규직", value: "정규직" },
   { label: "계약직", value: "계약직" },

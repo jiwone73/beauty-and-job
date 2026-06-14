@@ -10601,3 +10601,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 .filter-reset-btn { display: inline-flex; align-items: center; gap: 6px; padding: 0 18px; border: 1.5px solid var(--color-border); border-radius: 10px; background: white; font-size: 14px; font-weight: 600; color: #666; cursor: pointer; font-family: inherit; white-space: nowrap; }
 .filter-reset-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .filter-sheet-foot .region-apply-btn { flex: 1; }
+/* 채용공고 필터 PC/모바일 분기 */
+.jobs-mobile-only { display: none; }
+@media (max-width: 768px) {
+  .jobs-filter-left .jobs-pc-only { display: none; }
+  .jobs-filter-left .jobs-mobile-only { display: flex; }
+}
