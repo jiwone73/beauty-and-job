@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
 
   const listQuery = `
     SELECT id, title, job_type, company_id, company_name, brand_name, logo_url, company_type,
-           location, work_type, salary_min, salary_max, salary_type,
+           location, work_type, employment_type, salary_min, salary_max, salary_type,
            experience_level, is_featured, deadline, created_at, categories
     FROM v_active_jobs
     ${whereClause}
