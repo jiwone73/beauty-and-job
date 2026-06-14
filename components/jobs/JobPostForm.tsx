@@ -1,7 +1,8 @@
 "use client";
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import JobPreview from "@/components/jobs/JobPreview";
 import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
 
@@ -55,6 +56,9 @@ export default function JobPostForm({
   const [notes, setNotes] = useState("");
   const [benefitTags, setBenefitTags] = useState<string[]>([]);
   const [salaryNego, setSalaryNego] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (companyType === "BOTH") setJobGroupType("기업");
@@ -126,7 +130,42 @@ export default function JobPostForm({
 
   const removeImage = (idx: number) =>
     setDetailImages((prev) => prev.filter((_, i) => i !== idx));
+const handleDownloadPdf = async () => {
+    if (!previewRef.current) return;
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const jsPDF = (await import("jspdf")).default;
+      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#fff" });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let heightLeft = pdfHeight, position = 0;
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      pdf.save(`${form.title || "채용공고"}.pdf`);
+    } catch { alert("다운로드 중 오류가 발생했습니다."); }
+    finally { setIsDownloading(false); }
+  };
 
+  const handlePrint = async () => {
+    if (!previewRef.current) return;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#fff" });
+      const imgData = canvas.toDataURL("image/png");
+      const w = window.open();
+      if (w) w.document.write(`<html><head><title>채용공고 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" onload="window.print();window.close()" /></body></html>`);
+    } catch { alert("인쇄 준비 중 오류가 발생했습니다."); }
+  };
   const handleSubmit = async (status: "draft" | "publish") => {
     if (mode === "admin") {
       if (nonMember) {
@@ -200,6 +239,7 @@ export default function JobPostForm({
         </h2>
         <div className="admin-form-actions">
           <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}>임시저장</button>
+          <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}>미리보기</button>
           <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
             {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
           </button>
@@ -510,6 +550,44 @@ export default function JobPostForm({
         onClose={() => setRegionModalOpen(false)}
         onApply={(regions) => { setRegionList(regions); setRegionModalOpen(false); }}
       />
+      {showPreview && (
+        <div onClick={() => setShowPreview(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "40px 20px" }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "720px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
+              <span style={{ fontSize: "16px", fontWeight: 700 }}>공고 미리보기</span>
+              <button onClick={() => setShowPreview(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
+            </div>
+            <div style={{ padding: "24px", maxHeight: "60vh", overflowY: "auto" }}>
+              <JobPreview ref={previewRef}
+                title={form.title}
+                company={mode === "admin" ? (nonMember ? newCompanyName : companyName) : ""}
+                jobGroupType={jobGroupType}
+                categories={categories}
+                career={form.career}
+                employment={form.type}
+                regions={regionList}
+                salary={form.salary}
+                salaryNego={salaryNego}
+                deadline={form.deadline}
+                alwaysOpen={alwaysOpen}
+                benefitTags={benefitTags}
+                benefits={form.benefits}
+                description={form.description}
+                requirements={form.requirements}
+                preferred={form.preferred}
+                hiringProcess={hiringProcess}
+                notes={notes}
+                detailImages={detailImages}
+              />
+            </div>
+            <div style={{ display: "flex", gap: "8px", padding: "16px 20px", borderTop: "1px solid #eee", justifyContent: "flex-end" }}>
+              <button className="admin-secondary-btn" onClick={handlePrint}>인쇄</button>
+              <button className="admin-secondary-btn" onClick={handleDownloadPdf}>{isDownloading ? "저장 중..." : "PDF 다운로드"}</button>
+              <button className="company-primary-btn" onClick={() => { setShowPreview(false); handleSubmit("publish"); }}>이대로 등록</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
