@@ -323,9 +323,7 @@ export default function ProfilePage() {
       <Header />
       <header className="profile-header">
         <div className="profile-header-inner">
-          <Link href="/" className="profile-logo">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} priority />
-          </Link>
+          
           <div style={{ position: "relative", display: "inline-flex" }}>
             <button
               className="profile-settings-btn"
@@ -406,6 +404,7 @@ export default function ProfilePage() {
               </div>
             )}
 
+            <div className="profile-grid">
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">기본 정보 <CheckCircle2 size={16} className="profile-check" /></h2>
@@ -679,6 +678,7 @@ export default function ProfilePage() {
                 </div>
               </section>
             )}
+            </div>
             <div className="profile-bottom-cta">
               <button className="profile-resume-btn" onClick={() => router.push("/profile/resume")}>
                 현재 프로필로 이력서 만들기
