@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { useState, useRef, useEffect, Suspense } from "react";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
-import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER } from "@/components/FilterSheet";
+import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER, SALARY_STORE, SALARY_OFFICE } from "@/components/FilterSheet";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
@@ -99,6 +99,8 @@ function JobsPageInner() {
   const [showCareerDrop, setShowCareerDrop] = useState(false);
   const [showEmploymentDrop, setShowEmploymentDrop] = useState(false);
   const [showBenefitDrop, setShowBenefitDrop] = useState(false);
+  const [showSalaryDrop, setShowSalaryDrop] = useState(false);
+  useEffect(() => { setSelectedSalary(0); }, [jobTypeFilter]);
   const [showRegionDrop, setShowRegionDrop] = useState(false);
   const [showBrandDrop, setShowBrandDrop] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
@@ -172,6 +174,7 @@ function JobsPageInner() {
     toggleBookmarkStore(id);
   };
 
+  const salaryOpts = jobTypeFilter === "매장" ? SALARY_STORE : SALARY_OFFICE;
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
@@ -307,7 +310,7 @@ function JobsPageInner() {
             <div className="jobs-dropdown-wrap jobs-pc-only">
               <button
                 className={`jobs-filter-btn ${selectedCareer !== "경력 전체" ? "active" : ""}`}
-                onClick={() => { setShowCareerDrop(!showCareerDrop); setShowJobDrop(false); setShowEmploymentDrop(false); setShowBenefitDrop(false); }}
+                onClick={() => { setShowCareerDrop(!showCareerDrop); setShowJobDrop(false); setShowEmploymentDrop(false); setShowBenefitDrop(false); setShowSalaryDrop(false); }}
               >
                 {CAREER_OPTS.find((o) => o.value === selectedCareer && o.value !== "경력 전체")?.label || "경력"}
                 <ChevronDown size={16} />
@@ -329,7 +332,7 @@ function JobsPageInner() {
             <div className="jobs-dropdown-wrap jobs-pc-only">
               <button
                 className={`jobs-filter-btn ${selectedEmployment !== "고용형태 전체" ? "active" : ""}`}
-                onClick={() => { setShowEmploymentDrop(!showEmploymentDrop); setShowJobDrop(false); setShowCareerDrop(false); setShowBenefitDrop(false); }}
+                onClick={() => { setShowEmploymentDrop(!showEmploymentDrop); setShowJobDrop(false); setShowCareerDrop(false); setShowBenefitDrop(false); setShowSalaryDrop(false); }}
               >
                 {selectedEmployment !== "고용형태 전체" ? selectedEmployment : "고용형태"}
                 <ChevronDown size={16} />
@@ -351,7 +354,7 @@ function JobsPageInner() {
             <div className="jobs-dropdown-wrap jobs-pc-only">
               <button
                 className={`jobs-filter-btn ${selectedBenefits.length > 0 ? "active" : ""}`}
-                onClick={() => { setShowBenefitDrop(!showBenefitDrop); setShowJobDrop(false); setShowCareerDrop(false); setShowEmploymentDrop(false); }}
+                onClick={() => { setShowBenefitDrop(!showBenefitDrop); setShowJobDrop(false); setShowCareerDrop(false); setShowEmploymentDrop(false); setShowSalaryDrop(false); }}
               >
                 {selectedBenefits.length > 0 ? `복리후생 · ${selectedBenefits.length}` : "복리후생"}
                 <ChevronDown size={16} />
@@ -368,6 +371,30 @@ function JobsPageInner() {
                 </div>
               )}
             </div>
+
+            {/* 급여 (PC) */}
+            {jobTypeFilter !== "전체" && (
+              <div className="jobs-dropdown-wrap jobs-pc-only">
+                <button
+                  className={`jobs-filter-btn ${selectedSalary > 0 ? "active" : ""}`}
+                  onClick={() => { setShowSalaryDrop(!showSalaryDrop); setShowJobDrop(false); setShowCareerDrop(false); setShowEmploymentDrop(false); setShowBenefitDrop(false); }}
+                >
+                  {selectedSalary > 0 ? (salaryOpts.find((o) => o.value === selectedSalary)?.label || (jobTypeFilter === "매장" ? "급여" : "연봉")) : (jobTypeFilter === "매장" ? "급여" : "연봉")}
+                  <ChevronDown size={16} />
+                </button>
+                {showSalaryDrop && (
+                  <div className="jobs-dropdown">
+                    {salaryOpts.map((o) => (
+                      <button key={o.value} type="button"
+                        className={`jobs-dropdown-item ${selectedSalary === o.value ? "active" : ""}`}
+                        onClick={() => { setSelectedSalary(o.value); setShowSalaryDrop(false); }}>
+                        {o.value === 0 ? (jobTypeFilter === "매장" ? "급여 전체" : "연봉 전체") : o.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* 상세 필터 (모바일) */}
             <div className="jobs-dropdown-wrap jobs-mobile-only">
