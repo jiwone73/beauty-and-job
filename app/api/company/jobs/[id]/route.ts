@@ -35,7 +35,7 @@ export async function PATCH(
   // 수정 가능한 필드 목록 (whitelist 방식 - 보안)
   const allowedFields = [
     "title", "description", "requirements", "preferred_qualifications",
-    "benefits", "salary_min", "salary_max", "salary_type",
+    "benefits", "employment_type", "benefit_tags", "salary_min", "salary_max", "salary_type",
     "location", "address", "work_type", "experience_level",
     "deadline", "status", "categories", "detail_images",
     "hiring_process", "notes",

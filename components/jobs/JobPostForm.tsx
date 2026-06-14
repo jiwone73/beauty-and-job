@@ -67,8 +67,9 @@ export default function JobPostForm({
       if (!j) return;
       const career = j.experience_level === "NEW" ? "신입"
         : j.experience_level === "EXPERIENCED" ? "2년 이상" : "경력 무관";
-      const type = j.work_type === "PART_TIME" ? "파트타임"
-        : j.work_type === "CONTRACT" ? "계약직" : "정규직";
+      const type = j.employment_type
+        || (j.work_type === "PART_TIME" ? "파트타임"
+          : j.work_type === "CONTRACT" ? "계약직" : "정규직");
       const salary = j.salary_min
         ? (j.salary_max ? `${j.salary_min / 10000}-${j.salary_max / 10000}만원` : `${j.salary_min / 10000}만원`)
         : "";
@@ -84,6 +85,7 @@ export default function JobPostForm({
       setDetailImages(j.detail_images || []);
       setHiringProcess(j.hiring_process || []);
       setNotes(j.notes || "");
+      setBenefitTags(j.benefit_tags || []);
       if (j.job_type) setJobGroupType(j.job_type === "STORE" ? "매장" : "기업");
       if (j.company_id) setCompanyId(j.company_id);
     }).catch(console.error);
