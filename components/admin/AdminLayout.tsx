@@ -7,7 +7,6 @@ import {
   LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Mail,
   LogOut, Menu, X, ChevronDown, ChevronRight
 } from "lucide-react";
-
 const NAV_ITEMS = [
   { id: "dashboard", label: "대시보드", icon: LayoutDashboard, href: "/admin" },
   {
@@ -185,9 +184,9 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
         </nav>
 
         <div className="admin-sidebar-bottom">
-          <button className="admin-nav-item" onClick={() => router.push("/admin/login")}>
+          <button className="admin-nav-item" onClick={() => router.push("/")}>
             <LogOut size={20} />
-            {sidebarOpen && <span>로그아웃</span>}
+            {sidebarOpen && <span>사이트로 이동</span>}
           </button>
         </div>
       </aside>

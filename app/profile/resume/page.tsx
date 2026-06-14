@@ -3,6 +3,7 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import Header from "@/components/Header";
 import { ChevronLeft, ChevronDown, Download, Eye, Plus, X, FileText, Trash2, Upload, Printer, Pencil } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -323,6 +324,7 @@ const handlePrint = async () => {
 
   return (
     <div className="resume-page">
+      <Header />
       <header className="resume-header">
         <div className="resume-header-inner">
           <Link href="/" className="resume-logo">
