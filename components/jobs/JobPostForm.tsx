@@ -7,6 +7,10 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트", "프리랜서"];
+const BENEFIT_OPTIONS: Record<string, string[]> = {
+  매장: ["기숙사 제공", "교육비 지원", "인센티브", "4대보험", "주말·공휴일 휴무", "정규직 전환", "식대 지원", "주차 가능"],
+  기업: ["4대보험", "인센티브/성과급", "정규직 전환", "재택근무", "유연근무", "자기계발비", "식대 지원", "주차 가능"],
+};
 
 type Company = { id: string; company_name: string; brand_name: string | null };
 
@@ -49,6 +53,7 @@ export default function JobPostForm({
   const [uploading, setUploading] = useState(false);
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
+  const [benefitTags, setBenefitTags] = useState<string[]>([]);
 
   useEffect(() => {
     if (companyType === "BOTH") setJobGroupType("기업");
@@ -163,6 +168,7 @@ export default function JobPostForm({
       work_type: workType,
       employment_type: form.type,
       experience_level: expLevel,
+      benefit_tags: benefitTags,
       deadline: form.deadline || null,
       categories,
       detail_images: detailImages,
@@ -426,6 +432,19 @@ export default function JobPostForm({
         <div className="company-card" style={{ overflow: "visible" }}>
           <div className="company-card-head"><h2 className="company-card-title">상세 내용</h2></div>
           <div className="admin-form-body">
+            {/* 복리후생 체크박스 (필터용) */}
+            <div className="admin-form-row">
+              <label className="admin-form-label">복리후생 · 근무조건 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(해당 항목 선택 · 필터에 사용)</span></label>
+              <div className="benefit-chip-grid">
+                {(jobGroupType === "매장" ? BENEFIT_OPTIONS.매장 : BENEFIT_OPTIONS.기업).map((b) => (
+                  <button key={b} type="button"
+                    className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`}
+                    onClick={() => setBenefitTags(benefitTags.includes(b) ? benefitTags.filter((x) => x !== b) : [...benefitTags, b])}>
+                    {b}
+                  </button>
+                ))}
+              </div>
+            </div>
             {[
               { key: "description", label: "포지션 소개 (검색 노출 권장)", placeholder: "이 포지션에 대한 소개를 입력하세요. 비워두고 상세 이미지로 대체할 수도 있어요." },
               { key: "requirements", label: "자격요건", placeholder: "필수 자격요건을 입력하세요" },
