@@ -10637,4 +10637,5 @@ input[type="range"].career-slider::-moz-range-thumb {
   .profile-actions { flex-shrink: 0; padding-bottom: 6px; }
   .profile-content { padding: 0 16px; }
   .profile-grid { grid-template-columns: 1fr; }
+  .profile-col { display: flex; flex-direction: column; gap: 16px; }
 }

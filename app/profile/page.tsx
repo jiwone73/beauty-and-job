@@ -400,6 +400,7 @@ export default function ProfilePage() {
             )}
 
             <div className="profile-grid">
+            <div className="profile-col">
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">기본 정보 <CheckCircle2 size={16} className="profile-check" /></h2>
@@ -555,6 +556,8 @@ export default function ProfilePage() {
               </div>
             </section>
 
+            </div>
+            <div className="profile-col">
             {/* 거주지 · 희망 근무지역 (OFFICE/STORE 공통) */}
             <section className="profile-section">
               <div className="profile-section-head">
@@ -673,6 +676,7 @@ export default function ProfilePage() {
                 </div>
               </section>
             )}
+            </div>
             </div>
             <div className="profile-bottom-cta">
               <button className="profile-resume-btn" onClick={() => router.push("/profile/resume")}>
