@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Mail,
-  LogOut, Bell, Menu, X, ChevronDown, ChevronRight
+  LogOut, Menu, X, ChevronDown, ChevronRight
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -59,6 +59,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [openMenus, setOpenMenus] = useState<string[]>(["jobs", "members", "resumes"]);
   const [authChecked, setAuthChecked] = useState(false);
+  const [newInquiries, setNewInquiries] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
@@ -68,6 +69,18 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
       setAuthChecked(true);
     }
   }, [router]);
+
+  // 미처리(신규) 문의 개수 — 사이드바 "문의 관리" 배지용
+  useEffect(() => {
+    if (!authChecked) return;
+    const token = localStorage.getItem("admin_token");
+    fetch("/api/admin/ads/inquiries?status=new", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((d) => setNewInquiries(d?.data?.items?.length || 0))
+      .catch(() => {});
+  }, [authChecked, pathname]);
 
   if (!authChecked) {
     return (
@@ -104,7 +117,9 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
         </div>
 
         <nav className="admin-nav">
-          {NAV_ITEMS.map((item) => (
+          {NAV_ITEMS.map((item) => {
+            const badgeCount = item.id === "ads" ? newInquiries : 0;
+            return (
             <div key={item.id}>
               {item.children ? (
                 <>
@@ -142,13 +157,31 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
                 </>
               ) : (
                 <Link href={item.href}
-                  className={`admin-nav-item ${activeMenu === item.id ? "active" : ""}`}>
+                  className={`admin-nav-item ${activeMenu === item.id ? "active" : ""}`}
+                  style={{ position: "relative" }}>
                   <item.icon size={20} />
-                  {sidebarOpen && <span>{item.label}</span>}
+                  {sidebarOpen && <span style={{ flex: 1 }}>{item.label}</span>}
+                  {badgeCount > 0 && (
+                    sidebarOpen ? (
+                      <span style={{
+                        marginLeft: "auto", minWidth: "18px", height: "18px", padding: "0 6px",
+                        borderRadius: "999px", background: "#ef4444", color: "#fff",
+                        fontSize: "11px", fontWeight: 700, lineHeight: "18px", textAlign: "center",
+                      }}>
+                        {badgeCount > 99 ? "99+" : badgeCount}
+                      </span>
+                    ) : (
+                      <span style={{
+                        position: "absolute", top: "8px", right: "10px",
+                        width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444",
+                      }} />
+                    )
+                  )}
                 </Link>
               )}
             </div>
-          ))}
+            );
+          })}
         </nav>
 
         <div className="admin-sidebar-bottom">
@@ -167,10 +200,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
             </h1>
           </div>
           <div className="admin-header-right">
-            <button className="admin-header-btn">
-              <Bell size={18} />
-              <span className="admin-notif-dot" />
-            </button>
+            
             <div className="admin-profile">
               <div className="admin-avatar">A</div>
               <span className="admin-name">관리자</span>
