@@ -4,19 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
-import { useAuthStore } from "@/lib/store/authStore";
-
-
-
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { login } = useAuthStore();
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const handleLogin = async () => {
     if (!id.trim()) { setError("아이디를 입력해주세요."); return; }
     if (!password.trim()) { setError("비밀번호를 입력해주세요."); return; }
@@ -33,9 +27,8 @@ export default function AdminLoginPage() {
         setError(data.error?.message || "로그인에 실패했습니다.");
         return;
       }
-      // 토큰 저장
+      // 토큰 저장 (관리자 세션은 admin_token 전용 — 공개 사이트 세션은 건드리지 않음)
       localStorage.setItem("admin_token", data.data.access_token);
-      login({ ownerType: "user", userName: data.data.admin.name, userPhone: "" });
       router.push("/admin");
     } catch (e) {
       setError("네트워크 오류가 발생했습니다.");
