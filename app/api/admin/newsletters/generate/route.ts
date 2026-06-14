@@ -149,9 +149,10 @@ export async function POST(req: NextRequest) {
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   ${cardsHtml}
                 </table>
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:16px auto 28px;">
+                <p style="font-size:13px;color:#666666;text-align:center;margin:18px 0 14px;line-height:1.6;">오늘 소식이 흥미로웠다면, 뷰티앤잡에서 더 많은 이야기와 채용 정보를 만나보세요.</p>
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 28px;">
                   <tr><td align="center" bgcolor="#5f0080" style="border-radius:8px;">
-                    <a href="${SITE_URL}/jobs" style="display:inline-block;padding:13px 34px;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;">뷰티앤잡에서 공고 보기</a>
+                    <a href="${SITE_URL}" style="display:inline-block;padding:13px 34px;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;">뷰티앤잡 둘러보기</a>
                   </td></tr>
                 </table>
               </td>
