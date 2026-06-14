@@ -64,9 +64,22 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
     const token = localStorage.getItem("admin_token");
     if (!token) {
       router.replace("/admin/login");
-    } else {
-      setAuthChecked(true);
+      return;
     }
+    // 토큰 유효성 서버 검증 (만료/무효면 강제 로그아웃)
+    fetch("/api/admin/verify", { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => {
+        if (!res.ok) {
+          localStorage.removeItem("admin_token");
+          router.replace("/admin/login");
+        } else {
+          setAuthChecked(true);
+        }
+      })
+      .catch(() => {
+        // 네트워크 일시 오류 시엔 락아웃하지 않음 (데이터 API가 어차피 서버단에서 보호)
+        setAuthChecked(true);
+      });
   }, [router]);
 
   // 미처리(신규) 문의 개수 — 사이드바 "문의 관리" 배지용
