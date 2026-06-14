@@ -26,10 +26,13 @@ export const BENEFIT_FILTER = [
 
 export const SALARY_STORE = [
   { label: "전체", value: 0 },
+  { label: "월 100만+", value: 1000000 },
   { label: "월 150만+", value: 1500000 },
   { label: "월 200만+", value: 2000000 },
   { label: "월 250만+", value: 2500000 },
   { label: "월 300만+", value: 3000000 },
+  { label: "월 400만+", value: 4000000 },
+  { label: "월 500만+", value: 5000000 },
 ];
 
 export const SALARY_OFFICE = [
@@ -38,6 +41,8 @@ export const SALARY_OFFICE = [
   { label: "3000만+", value: 30000000 },
   { label: "4000만+", value: 40000000 },
   { label: "5000만+", value: 50000000 },
+  { label: "7000만+", value: 70000000 },
+  { label: "1억+", value: 100000000 },
 ];
 
 export interface FilterDraft {
