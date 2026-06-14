@@ -9,7 +9,7 @@ const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트", "프리랜서"];
 const BENEFIT_OPTIONS: Record<string, string[]> = {
   매장: ["기숙사 제공", "교육비 지원", "인센티브", "4대보험", "주말·공휴일 휴무", "정규직 전환", "식대 지원", "주차 가능"],
-  기업: ["4대보험", "인센티브/성과급", "정규직 전환", "재택근무", "유연근무", "자기계발비", "식대 지원", "주차 가능"],
+  기업: ["4대보험", "인센티브", "정규직 전환", "재택근무", "유연근무", "자기계발비", "식대 지원", "주차 가능"],
 };
 
 type Company = { id: string; company_name: string; brand_name: string | null };

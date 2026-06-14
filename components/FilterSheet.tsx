@@ -18,9 +18,16 @@ export const EMPLOYMENT_OPTS = [
   { label: "프리랜서", value: "프리랜서" },
 ];
 
+export const BENEFIT_FILTER = [
+  "기숙사 제공", "교육비 지원", "인센티브", "4대보험",
+  "주말·공휴일 휴무", "정규직 전환", "재택근무", "유연근무",
+  "자기계발비", "식대 지원", "주차 가능",
+];
+
 export interface FilterDraft {
-  career: string;      // "경력 전체" | "NEW" | "EXPERIENCED" | "ANY"
-  employment: string;  // "고용형태 전체" | "정규직" | ...
+  career: string;
+  employment: string;
+  benefits: string[];
 }
 
 interface Props {
@@ -39,7 +46,9 @@ export default function FilterSheet({ open, initial, onClose, onApply }: Props) 
 
   if (!open) return null;
 
-  const reset = () => setDraft({ career: "경력 전체", employment: "고용형태 전체" });
+  const reset = () => setDraft({ career: "경력 전체", employment: "고용형태 전체", benefits: [] });
+  const toggleBenefit = (b: string) =>
+    setDraft((d) => ({ ...d, benefits: d.benefits.includes(b) ? d.benefits.filter((x) => x !== b) : [...d.benefits, b] }));
 
   return (
     <div className="region-modal-overlay" onClick={onClose}>
@@ -81,7 +90,19 @@ export default function FilterSheet({ open, initial, onClose, onApply }: Props) 
             </div>
           </div>
 
-          {/* 다음 단계: 복리후생 · 급여 섹션 */}
+          {/* 복리후생 */}
+          <div className="filter-section">
+            <div className="filter-section-title">복리후생 · 근무조건</div>
+            <div className="filter-chip-grid">
+              {BENEFIT_FILTER.map((b) => (
+                <button key={b} type="button"
+                  className={`filter-chip ${draft.benefits.includes(b) ? "on" : ""}`}
+                  onClick={() => toggleBenefit(b)}>
+                  {b}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="region-modal-foot filter-sheet-foot">
