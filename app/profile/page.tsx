@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import Header from "@/components/Header";
 import { Settings, ChevronRight, Plus, CheckCircle2, X, MapPin, Bell } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
@@ -319,6 +320,7 @@ export default function ProfilePage() {
 
   return (
     <main className="profile-page">
+      <Header />
       <header className="profile-header">
         <div className="profile-header-inner">
           <Link href="/" className="profile-logo">
