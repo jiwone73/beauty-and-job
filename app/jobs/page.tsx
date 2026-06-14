@@ -363,8 +363,9 @@ function JobsPageInner() {
                 <div className="jobs-dropdown jobs-dropdown-benefit">
                   {BENEFIT_FILTER.map((b) => (
                     <button key={b} type="button"
-                      className={`jobs-dropdown-item ${selectedBenefits.includes(b) ? "active" : ""}`}
+                      className={`jobs-dropdown-item jobs-dropdown-multi ${selectedBenefits.includes(b) ? "active" : ""}`}
                       onClick={() => setSelectedBenefits(selectedBenefits.includes(b) ? selectedBenefits.filter((x) => x !== b) : [...selectedBenefits, b])}>
+                      <span className="jobs-check">{selectedBenefits.includes(b) ? "✓" : ""}</span>
                       {b}
                     </button>
                   ))}

@@ -10613,3 +10613,5 @@ input[type="range"].career-slider::-moz-range-thumb {
 .benefit-chip:hover { border-color: var(--color-primary); }
 .benefit-chip.on { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
 .jobs-dropdown-benefit { min-width: 200px; max-height: 320px; overflow-y: auto; }
+.jobs-dropdown-multi { display: flex; align-items: center; gap: 6px; }
+.jobs-dropdown-multi .jobs-check { display: inline-block; width: 14px; flex-shrink: 0; color: var(--color-primary); font-weight: 700; }
