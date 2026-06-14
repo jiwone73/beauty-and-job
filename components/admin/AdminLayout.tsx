@@ -193,6 +193,13 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
             <LogOut size={20} />
             {sidebarOpen && <span>사이트로 이동</span>}
           </button>
+          <button className="admin-nav-item" onClick={() => {
+            localStorage.removeItem("admin_token");
+            router.push("/admin/login");
+          }}>
+            <LogOut size={20} />
+            {sidebarOpen && <span>로그아웃</span>}
+          </button>
         </div>
       </aside>
 
