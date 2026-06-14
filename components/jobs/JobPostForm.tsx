@@ -455,10 +455,10 @@ export default function JobPostForm({
               </div>
             </div>
             {[
+              { key: "benefits", label: jobGroupType === "매장" ? "근무조건·복지" : "복리후생", placeholder: "복리후생을 입력하세요" },
               { key: "description", label: "포지션 소개 (검색 노출 권장)", placeholder: "이 포지션에 대한 소개를 입력하세요. 비워두고 상세 이미지로 대체할 수도 있어요." },
               { key: "requirements", label: "자격요건", placeholder: "필수 자격요건을 입력하세요" },
               { key: "preferred", label: "우대사항", placeholder: "우대사항을 입력하세요" },
-              { key: "benefits", label: jobGroupType === "매장" ? "근무조건·복지" : "복리후생", placeholder: "복리후생을 입력하세요" },
             ].map(({ key, label, placeholder }) => (
               <div key={key} className="admin-form-row">
                 <label className="admin-form-label">{label}</label>
