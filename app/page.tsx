@@ -24,34 +24,19 @@ import {
   MapPin,
   ChevronDown,
 } from "lucide-react";
-
+import JobCard from "@/components/JobCard";
+import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
 /* ============================================
    공통 유틸
    ============================================ */
-function formatDeadline(deadline: string | null) {
-  if (!deadline) return "상시";
-  const today = new Date();
-  const dl = new Date(deadline);
-  const dDay = Math.ceil((dl.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  if (dDay < 0) return "마감";
-  if (dDay === 0) return "오늘 마감";
-  return `D-${dDay}`;
-}
-
-function expLevelLabel(level: string) {
-  if (level === "NEW") return "신입";
-  if (level === "EXPERIENCED") return "경력";
-  return "경력 무관";
-}
-
 function mapJob(j: any) {
   return {
     id: j.id,
-    brand: j.brand_name || j.company_name,
-    tag: expLevelLabel(j.experience_level),
     title: j.title,
-    location: j.location || "협의",
-    type: workTypeLabel(j.work_type),
+    company: j.brand_name || j.company_name,
+    region: j.location || "협의",
+    career: expLevelLabel(j.experience_level),
+    employment: j.employment_type || null,
     deadline: formatDeadline(j.deadline),
   };
 }
@@ -284,7 +269,7 @@ function SectionPick() {
         ) : (
           <div className="card-grid card-grid-4">
             {mappedJobs.map((job: any) => (
-              <JobCard key={job.id} {...job} tagType="primary" />
+              <JobCard key={job.id} data={job} variant="grid" />
             ))}
           </div>
         )}
@@ -293,38 +278,7 @@ function SectionPick() {
   );
 }
 
-function JobCard({ id, brand, tag, tagType, title, location, type, deadline, isAd }: {
-  id: number | string; brand: string; tag: string; tagType: string;
-  title: string; location: string; type: string; deadline: string; isAd?: boolean;
-}) {
-  const router = useRouter();
-  const bookmarks = useBookmarkStore((s) => s.bookmarks);
-  const toggleBookmark = useBookmarkStore((s) => s.toggle);
-  const isBookmarked = bookmarks.includes(String(id));
-  return (
-    <div className="job-card" onClick={() => router.push(`/jobs/${id}`)} style={{ cursor: "pointer" }}>
-      <div className="card-header">
-        <span className="card-brand">
-          {brand}
-          {isAd && <span className="card-ad-badge">AD</span>}
-        </span>
-        <button className={`bookmark ${isBookmarked ? "active" : ""}`}
-          onClick={(e) => { e.stopPropagation(); toggleBookmark(id); }}
-          aria-label="북마크">
-          <Bookmark size={18} fill={isBookmarked ? "currentColor" : "none"} />
-        </button>
-      </div>
-      <span className={`card-tag card-tag-${tagType}`}>{tag}</span>
-      <h3 className="card-title">{title}</h3>
-      <div className="card-meta">
-        <span>{location}</span>
-        <span className="dot">·</span>
-        <span>{type}</span>
-      </div>
-      <div className="card-deadline">{deadline}</div>
-    </div>
-  );
-}
+
 
 /* ============================================
    섹션: 살롱·샵 매장직 채용
@@ -355,7 +309,7 @@ function SectionStorePick() {
         ) : (
           <div className="card-grid card-grid-4">
             {mappedJobs.map((job: any) => (
-              <JobCard key={job.id} {...job} tagType="soft" />
+              <JobCard key={job.id} data={job} variant="grid" />
             ))}
           </div>
         )}
@@ -393,7 +347,7 @@ function SectionCorpPick() {
         ) : (
           <div className="card-grid card-grid-4">
             {mappedJobs.map((job: any) => (
-              <JobCard key={job.id} {...job} tagType="primary" />
+              <JobCard key={job.id} data={job} variant="grid" />
             ))}
           </div>
         )}

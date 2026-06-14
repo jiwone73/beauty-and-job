@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search, X, ArrowRight } from "lucide-react";
+import JobCard from "@/components/JobCard";
+import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
 
 const PURPLE = "#5f0080";
 const RECOMMEND = ["네일", "헤어", "피부관리", "속눈썹", "메이크업", "마케팅", "MD", "상품기획", "디자인", "영업"];
@@ -12,22 +14,23 @@ type Job = {
   id: number | string;
   brand: string;
   title: string;
-  firstCat: string | null;
-  jobType: string;
   region: string;
   type: string;
+  career: string;
+  employment: string | null;
+  deadline: string;
 };
 
 function mapJob(j: any): Job {
-  const cats: string[] = j.categories || [];
   return {
     id: j.id,
     brand: j.brand_name || j.company_name || "",
     title: j.title,
-    firstCat: cats[0] || null,
-    jobType: cats.join(" · "),
     region: j.location || "국내",
     type: j.company_type === "OFFICE" ? "기업" : j.company_type === "STORE" ? "매장" : "기업",
+    career: expLevelLabel(j.experience_level),
+    employment: j.employment_type || null,
+    deadline: formatDeadline(j.deadline),
   };
 }
 
@@ -37,21 +40,6 @@ function typeBadge(type: string) {
     : { color: "#0f6e56", bg: "#e1f5ee" };
 }
 
-/* ===== 채용공고 행 ===== */
-function JobRow({ job }: { job: Job }) {
-  return (
-    <Link href={`/jobs/${job.id}`} className="srch-row">
-      <div className="srch-logo srch-logo-square">{job.brand?.[0] || "·"}</div>
-      <div className="srch-row-body">
-        <p className="srch-row-title">{job.title}</p>
-        <p className="srch-row-sub">{job.brand} · {job.region}</p>
-      </div>
-      {job.firstCat && <span className="srch-tag">{job.firstCat}</span>}
-    </Link>
-  );
-}
-
-/* ===== 회사 행 ===== */
 function CompanyRow({ name, count, type, onGo }: { name: string; count: number; type: string; onGo: () => void }) {
   const b = typeBadge(type);
   return (
@@ -66,7 +54,6 @@ function CompanyRow({ name, count, type, onGo }: { name: string; count: number; 
   );
 }
 
-/* ===== 섹션 헤더 ===== */
 function SectionHead({ label, count, onMore }: { label: string; count: number; onMore?: () => void }) {
   return (
     <div className="srch-sec-head">
@@ -78,6 +65,10 @@ function SectionHead({ label, count, onMore }: { label: string; count: number; o
       )}
     </div>
   );
+}
+
+function toCard(j: Job) {
+  return { id: j.id, title: j.title, company: j.brand, region: j.region, career: j.career, employment: j.employment, deadline: j.deadline };
 }
 
 function SearchInner() {
@@ -105,7 +96,6 @@ function SearchInner() {
       .finally(() => setLoading(false));
   }, [q]);
 
-  // 공고에서 회사(브랜드) 파생
   const companies = useMemo(() => {
     if (!jobs) return [];
     const map = new Map<string, { name: string; count: number; type: string }>();
@@ -126,7 +116,7 @@ function SearchInner() {
 
   const jobCount = jobs?.length ?? 0;
   const companyCount = companies.length;
-  const storyCount = 0; // TODO: 현장이야기 검색 API 연동 시 교체
+  const storyCount = 0;
 
   const goCompanyJobs = (name: string) => router.push(`/jobs?q=${encodeURIComponent(name)}`);
 
@@ -134,7 +124,6 @@ function SearchInner() {
     <div className="srch-page">
       <Header />
       <div className="srch-container">
-        {/* 검색바 */}
         <div className="srch-bar">
           <Search size={20} color={PURPLE} />
           <input
@@ -152,7 +141,6 @@ function SearchInner() {
           )}
         </div>
 
-        {/* q 없음 → 추천 검색어 */}
         {!q && (
           <div className="srch-empty-state">
             <p className="srch-guide">찾고 싶은 키워드를 입력해 주세요.</p>
@@ -165,7 +153,6 @@ function SearchInner() {
           </div>
         )}
 
-        {/* q 있음 → 탭 + 결과 */}
         {q && (
           <>
             <div className="srch-tabs">
@@ -190,14 +177,13 @@ function SearchInner() {
               </div>
             ) : (
               <>
-                {/* 전체 탭 */}
                 {tab === "all" && (
                   <>
                     {jobCount > 0 && (
                       <section className="srch-section">
                         <SectionHead label="채용공고" count={jobCount} onMore={() => router.push(`/jobs?q=${encodeURIComponent(q)}`)} />
                         <div className="srch-list">
-                          {jobs!.slice(0, 3).map((j) => <JobRow key={j.id} job={j} />)}
+                          {jobs!.slice(0, 3).map((j) => <JobCard key={j.id} variant="list" data={toCard(j)} />)}
                         </div>
                       </section>
                     )}
@@ -214,13 +200,12 @@ function SearchInner() {
                   </>
                 )}
 
-                {/* 채용공고 탭 */}
                 {tab === "jobs" && (
                   <section className="srch-section">
                     {jobCount > 0 ? (
                       <>
                         <div className="srch-list">
-                          {jobs!.map((j) => <JobRow key={j.id} job={j} />)}
+                          {jobs!.map((j) => <JobCard key={j.id} variant="list" data={toCard(j)} />)}
                         </div>
                         <button className="srch-bottom-more" onClick={() => router.push(`/jobs?q=${encodeURIComponent(q)}`)}>
                           채용공고에서 직군·지역으로 좁혀보기 <ArrowRight size={15} />
@@ -230,7 +215,6 @@ function SearchInner() {
                   </section>
                 )}
 
-                {/* 회사 탭 */}
                 {tab === "company" && (
                   <section className="srch-section">
                     {companyCount > 0 ? (
@@ -243,7 +227,6 @@ function SearchInner() {
                   </section>
                 )}
 
-                {/* 현장이야기 탭 (준비 중) */}
                 {tab === "stories" && (
                   <div className="srch-noresult">
                     <div className="srch-noresult-icon">📝</div>
@@ -282,12 +265,10 @@ function SearchInner() {
         .srch-row { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 12px 14px; text-decoration: none; }
         .srch-row:hover { border-color: #ddd; }
         .srch-logo { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
-        .srch-logo-square { background: ${PURPLE}; color: #fff; border-radius: 8px; }
         .srch-logo-circle { background: #f3e8fb; color: ${PURPLE}; border-radius: 50%; }
         .srch-row-body { flex: 1; min-width: 0; }
-        .srch-row-title { margin: 0 0 3px; font-size: 15px; font-weight: 500; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .srch-row-sub { margin: 0; font-size: 13px; color: #888; }
-        .srch-tag { flex-shrink: 0; font-size: 12px; color: ${PURPLE}; background: #f3e8fb; padding: 4px 10px; border-radius: 8px; }
+        .srch-row-title { font-size: 15px; font-weight: 500; color: #222; margin: 0; }
+        .srch-row-sub { margin: 3px 0 0; font-size: 13px; color: #888; }
         .srch-badge { flex-shrink: 0; font-size: 12px; padding: 4px 10px; border-radius: 8px; }
         .srch-loading, .srch-noresult { text-align: center; padding: 60px 20px; color: #888; }
         .srch-noresult-icon { font-size: 36px; margin-bottom: 12px; }

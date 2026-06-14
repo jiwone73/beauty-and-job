@@ -1,6 +1,5 @@
 "use client";
 import Header from "@/components/Header";
-
 import { useState, useRef, useEffect, Suspense } from "react";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
@@ -11,6 +10,8 @@ import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { getJobSubGroups } from "@/lib/data/jobGroups";
+import JobCard from "@/components/JobCard";
+import { formatDeadline } from "@/lib/jobFormat";
 
 /* ===== 더미 데이터 ===== */
 const JOBS = [
@@ -138,6 +139,8 @@ function JobsPageInner() {
             type: j.company_type === 'OFFICE' ? '기업' : j.company_type === 'STORE' ? '매장' : '기업',
             thumbnail: j.logo_url,
             color: '#e8f0fe',
+            deadline: formatDeadline(j.deadline),
+            employment: j.employment_type || null,
           }));
           setApiJobs(mapped);
         }
@@ -434,34 +437,15 @@ function JobsPageInner() {
         {filteredJobs.length > 0 ? (
           <div className="jobs-grid">
             {filteredJobs.map((job) => (
-              <Link key={job.id} href={`/jobs/${job.id}`} className="jobs-card">
-                <div className="jobs-card-thumb" style={{ background: job.color }}>
-                  <div className="jobs-card-thumb-placeholder">
-                    <span>{job.brand[0]}</span>
-                  </div>
-                  <button
-                    className={`jobs-card-bookmark ${bookmarks.includes(String(job.id)) ? "active" : ""}`}
-                    onClick={(e) => toggleBookmark(job.id, e)}
-                    aria-label="북마크"
-                  >
-                    <Bookmark size={18} fill={bookmarks.includes(String(job.id)) ? "currentColor" : "none"} />
-                  </button>
-                </div>
-                <div className="jobs-card-body">
-                  <div className="jobs-card-brand-row">
-                    <span className="jobs-card-brand">{job.brand}</span>
-                    {job.tags.slice(0, 2).map((tag: string) => (
-                      <span key={tag} className="jobs-card-tag">· {tag}</span>
-                    ))}
-                    {job.extraCount && (
-                      <span className="jobs-card-tag-extra">+{job.extraCount}</span>
-                    )}
-                  </div>
-                  <h3 className="jobs-card-title">{job.title}</h3>
-                  <p className="jobs-card-meta">{job.jobType} | {job.career}</p>
-                  <p className="jobs-card-region">{job.region}</p>
-                </div>
-              </Link>
+              <JobCard key={job.id} data={{
+                id: job.id,
+                title: job.title,
+                company: job.brand,
+                region: job.region,
+                career: job.career,
+                employment: job.employment,
+                deadline: job.deadline,
+              }} variant="grid" />
             ))}
           </div>
         ) : (
