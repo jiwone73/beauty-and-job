@@ -76,8 +76,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
   const { isLoggedIn, ownerType } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const handleSearch = () => {
-    if (onSearchClick) onSearchClick();
-    else router.push("/jobs");
+    router.push("/search");
   };
   return (
     <>
