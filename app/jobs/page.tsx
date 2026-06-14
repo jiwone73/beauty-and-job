@@ -365,7 +365,7 @@ function JobsPageInner() {
                     <button key={b} type="button"
                       className={`jobs-dropdown-item jobs-dropdown-multi ${selectedBenefits.includes(b) ? "active" : ""}`}
                       onClick={() => setSelectedBenefits(selectedBenefits.includes(b) ? selectedBenefits.filter((x) => x !== b) : [...selectedBenefits, b])}>
-                      <span className="jobs-check">{selectedBenefits.includes(b) ? "✓" : ""}</span>
+                      <span className={`jobs-checkbox ${selectedBenefits.includes(b) ? "on" : ""}`}>{selectedBenefits.includes(b) ? "✓" : ""}</span>
                       {b}
                     </button>
                   ))}
