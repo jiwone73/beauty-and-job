@@ -161,6 +161,7 @@ export default function JobPostForm({
       salary_type: salaryMin ? "ANNUAL" : null,
       location: regionList.join(", ") || null,
       work_type: workType,
+      employment_type: form.type,
       experience_level: expLevel,
       deadline: form.deadline || null,
       categories,
