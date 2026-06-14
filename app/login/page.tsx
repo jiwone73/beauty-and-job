@@ -71,25 +71,22 @@ export default function LoginStartPage() {
               <span>💬</span>
               <span>카카오로 시작하기</span>
             </button>
-
-            {/* 이메일 가입 */}
-            <Link href="/signup/email">
+            {/* 이메일 로그인 */}
+            <Link href="/login/email">
               <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#1a1a1a] rounded-lg font-semibold text-[15px] hover:border-[#5f0080] hover:bg-[#fafafa] transition flex items-center justify-center gap-2">
                 <Mail size={18} />
-                <span>이메일로 시작하기</span>
+                <span>이메일로 로그인</span>
               </button>
             </Link>
-
-            {/* 로그인 */}
+            {/* 회원가입 */}
             <div className="mt-6 text-center">
-              <span className="text-[13px] text-[#6b6b6b]">이미 계정이 있으신가요? </span>
-              <Link href="/login/email" className="text-[13px] text-[#5f0080] font-semibold hover:underline">
-                로그인
+              <span className="text-[13px] text-[#6b6b6b]">아직 회원이 아니신가요? </span>
+              <Link href="/signup/email" className="text-[13px] text-[#5f0080] font-semibold hover:underline">
+                이메일로 회원가입
               </Link>
             </div>
           </>
         )}
-
         {tab === "company" && (
           <>
             {/* 기업 이메일 가입 */}
@@ -99,7 +96,6 @@ export default function LoginStartPage() {
                 <span>이메일로 시작하기</span>
               </button>
             </Link>
-
             {/* 기업 로그인 */}
             <div className="mt-6 text-center">
               <span className="text-[13px] text-[#6b6b6b]">이미 계정이 있으신가요? </span>
