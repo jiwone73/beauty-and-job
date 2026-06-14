@@ -69,7 +69,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
     // 토큰 유효성 서버 검증 (만료/무효면 강제 로그아웃)
     fetch("/api/admin/verify", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
-        if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
           localStorage.removeItem("admin_token");
           router.replace("/admin/login");
         } else {
@@ -77,7 +77,6 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
         }
       })
       .catch(() => {
-        // 네트워크 일시 오류 시엔 락아웃하지 않음 (데이터 API가 어차피 서버단에서 보호)
         setAuthChecked(true);
       });
   }, [router]);
