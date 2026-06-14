@@ -24,20 +24,38 @@ export const BENEFIT_FILTER = [
   "자기계발비", "식대 지원", "주차 가능",
 ];
 
+export const SALARY_STORE = [
+  { label: "전체", value: 0 },
+  { label: "월 150만+", value: 1500000 },
+  { label: "월 200만+", value: 2000000 },
+  { label: "월 250만+", value: 2500000 },
+  { label: "월 300만+", value: 3000000 },
+];
+
+export const SALARY_OFFICE = [
+  { label: "전체", value: 0 },
+  { label: "2500만+", value: 25000000 },
+  { label: "3000만+", value: 30000000 },
+  { label: "4000만+", value: 40000000 },
+  { label: "5000만+", value: 50000000 },
+];
+
 export interface FilterDraft {
   career: string;
   employment: string;
   benefits: string[];
+  salary: number;
 }
 
 interface Props {
   open: boolean;
+  jobType: string; // "전체" | "매장" | "기업"
   initial: FilterDraft;
   onClose: () => void;
   onApply: (f: FilterDraft) => void;
 }
 
-export default function FilterSheet({ open, initial, onClose, onApply }: Props) {
+export default function FilterSheet({ open, jobType, initial, onClose, onApply }: Props) {
   const [draft, setDraft] = useState<FilterDraft>(initial);
 
   useEffect(() => {
@@ -46,9 +64,11 @@ export default function FilterSheet({ open, initial, onClose, onApply }: Props) 
 
   if (!open) return null;
 
-  const reset = () => setDraft({ career: "경력 전체", employment: "고용형태 전체", benefits: [] });
+  const reset = () => setDraft({ career: "경력 전체", employment: "고용형태 전체", benefits: [], salary: 0 });
   const toggleBenefit = (b: string) =>
     setDraft((d) => ({ ...d, benefits: d.benefits.includes(b) ? d.benefits.filter((x) => x !== b) : [...d.benefits, b] }));
+
+  const salaryOpts = jobType === "매장" ? SALARY_STORE : jobType === "기업" ? SALARY_OFFICE : null;
 
   return (
     <div className="region-modal-overlay" onClick={onClose}>
@@ -89,6 +109,22 @@ export default function FilterSheet({ open, initial, onClose, onApply }: Props) 
               ))}
             </div>
           </div>
+
+          {/* 급여 (유형 선택 시에만) */}
+          {salaryOpts && (
+            <div className="filter-section">
+              <div className="filter-section-title">{jobType === "매장" ? "급여 (월급)" : "연봉"}</div>
+              <div className="filter-chip-grid">
+                {salaryOpts.map((o) => (
+                  <button key={o.value} type="button"
+                    className={`filter-chip ${draft.salary === o.value ? "on" : ""}`}
+                    onClick={() => setDraft({ ...draft, salary: o.value })}>
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* 복리후생 */}
           <div className="filter-section">
