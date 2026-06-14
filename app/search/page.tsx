@@ -259,7 +259,7 @@ function SearchInner() {
         )}
       </div>
 
-      <style jsx>{`
+      <style jsx global>{`
         .srch-container { max-width: 760px; margin: 0 auto; padding: 28px 20px 80px; }
         .srch-bar { display: flex; align-items: center; gap: 10px; background: #fff; border: 1.5px solid ${PURPLE}; border-radius: 12px; padding: 12px 16px; }
         .srch-input { flex: 1; border: none; outline: none; font-size: 16px; background: transparent; color: #222; }
