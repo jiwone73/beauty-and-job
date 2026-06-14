@@ -72,13 +72,18 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
   // 미처리(신규) 문의 개수 — 사이드바 "문의 관리" 배지용
   useEffect(() => {
     if (!authChecked) return;
-    const token = localStorage.getItem("admin_token");
-    fetch("/api/admin/ads/inquiries?status=new", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((d) => setNewInquiries(d?.data?.items?.length || 0))
-      .catch(() => {});
+    const fetchNewInquiries = () => {
+      const token = localStorage.getItem("admin_token");
+      fetch("/api/admin/ads/inquiries?status=new", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => r.json())
+        .then((d) => setNewInquiries(d?.data?.items?.length || 0))
+        .catch(() => {});
+    };
+    fetchNewInquiries();
+    window.addEventListener("admin:inquiries-changed", fetchNewInquiries);
+    return () => window.removeEventListener("admin:inquiries-changed", fetchNewInquiries);
   }, [authChecked, pathname]);
 
   if (!authChecked) {

@@ -76,6 +76,7 @@ export default function AdminAdsPage() {
       setItems((prev) =>
         prev.map((item) => (item.id === id ? { ...item, status } : item))
       );
+      window.dispatchEvent(new Event("admin:inquiries-changed"));
     } finally {
       setUpdating(false);
     }

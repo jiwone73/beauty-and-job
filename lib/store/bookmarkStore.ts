@@ -1,5 +1,5 @@
 import { create } from "zustand";
-
+import { useAuthStore } from "./authStore";
 interface BookmarkState {
   bookmarks: string[]; // UUID 배열
   loaded: boolean;
@@ -15,7 +15,8 @@ export const useBookmarkStore = create<BookmarkState>()((set, get) => ({
 
   loadFromServer: async () => {
     const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-    if (!token) {
+    const ownerType = useAuthStore.getState().ownerType;
+    if (!token || ownerType !== "user") {
       set({ loaded: true });
       return;
     }
