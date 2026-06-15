@@ -37,6 +37,7 @@ function mapJob(j: any) {
     career: expLevelLabel(j.experience_level),
     employment: j.employment_type || null,
     deadline: formatDeadline(j.deadline),
+    image: (Array.isArray(j.detail_images) && j.detail_images[0]) || j.logo_url || null,
   };
 }
 
