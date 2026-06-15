@@ -49,6 +49,7 @@ export default function HomePage() {
     <main className="main-page">
       <Header />
       <MobileDetector />
+      <SectionActiveHiring />
       <SectionPick />
       {/* <SectionJobGroups /> 공고 충분히 쌓이면 노출 */}
       <SectionStories />
@@ -237,8 +238,42 @@ function Hero() {
 }
 
 /* ============================================
-   섹션 1: 뷰티앤잡 추천 공고
+   섹션 1: 뷰티앤잡 추천 공고<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#5f0080", background: "#f3eafa", verticalAlign: "middle" }}>📊 직군 맞춤 선별</span>
    ============================================ */
+/* ============================================
+   섹션: 지금 적극 채용 중
+   ============================================ */
+function SectionActiveHiring() {
+  const [jobs, setJobs] = useState<any[]>([]);
+  useEffect(() => {
+    fetch("/api/jobs?active=1&limit=4")
+      .then((r) => r.json())
+      .then((res) => { if (res.success && Array.isArray(res.data)) setJobs(res.data); else setJobs([]); })
+      .catch(console.error);
+  }, []);
+  const mappedJobs = jobs.map(mapJob);
+  if (mappedJobs.length === 0) return null;
+  return (
+    <section className="section section-divider">
+      <div className="container">
+        <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
+        <div className="section-head">
+          <div>
+            <h2 className="section-title">🔥 지금 적극 채용 중<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#5f0080", background: "#f3eafa", verticalAlign: "middle" }}>📊 데이터 기반 선별</span></h2>
+            <p className="section-sub">여러 채용 지표를 분석해, 지금 가장 적극적으로 채용 중인 곳만 엄선했어요</p>
+          </div>
+          <Link href="/jobs" className="see-all">전체보기</Link>
+        </div>
+        <div className="card-grid card-grid-4">
+          {mappedJobs.map((job: any) => (
+            <JobCard key={job.id} data={job} variant="grid" />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function SectionPick() {
   const [tab, setTab] = useState<"전체" | "매장" | "사무직">("전체");
   const [jobs, setJobs] = useState<any[]>([]);
@@ -261,28 +296,24 @@ function SectionPick() {
               <Sparkles size={24} className="title-icon" />
               뷰티앤잡 추천 공고
             </h2>
-            <p className="section-sub">지금 확인하면 좋은 뷰티업계 공고를 모았어요</p>
+            <p className="section-sub">직군과 최신 등록을 반영해, 지금 보면 좋은 공고를 골랐어요</p>
           </div>
           <Link href={seeAll} className="see-all">전체보기</Link>
         </div>
 
-        <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
-          {(["전체", "매장", "사무직"] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTab(t)}
-              style={{
-                padding: "8px 18px", borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: "pointer",
-                border: tab === t ? "1px solid #5f0080" : "1px solid #e0e0e0",
-                background: tab === t ? "#5f0080" : "#fff",
-                color: tab === t ? "#fff" : "#666",
-                transition: "all 0.15s",
-              }}
-            >
-              {t}
-            </button>
-          ))}
+        <div style={{ marginBottom: 24 }}>
+          <div className="hero-type-toggle">
+            {(["전체", "매장", "사무직"] as const).map((t) => (
+              <button
+                key={t}
+                type="button"
+                className={`hero-type-btn ${tab === t ? "active" : ""}`}
+                onClick={() => setTab(t)}
+              >
+                {t === "매장" ? "매장직" : t}
+              </button>
+            ))}
+          </div>
         </div>
 
         {mappedJobs.length === 0 ? (

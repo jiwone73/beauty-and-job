@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
   const sigungu = searchParams.get('sigungu')
   const regions = searchParams.get('regions')
   const q = searchParams.get('q')
+  const active = searchParams.get('active')
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
   const offset = (page - 1) * limit
@@ -61,6 +62,12 @@ export async function GET(req: NextRequest) {
     params.push(kw, kw, kw)
     idx += 3
   }
+  if (active) {
+    where.push(`deadline IS NOT NULL`)
+    where.push(`deadline::date >= CURRENT_DATE`)
+    where.push(`deadline::date <= CURRENT_DATE + 14`)
+    where.push(`(deadline::date - created_at::date) <= 30`)
+  }
 
   const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : ''
 
@@ -70,7 +77,7 @@ export async function GET(req: NextRequest) {
            experience_level, is_featured, deadline, created_at, categories, benefit_tags
     FROM v_active_jobs
     ${whereClause}
-    ORDER BY is_featured DESC, created_at DESC
+    ORDER BY ${active ? 'deadline::date ASC, created_at DESC' : 'is_featured DESC, created_at DESC'}
     LIMIT $${idx++} OFFSET $${idx++}
   `
   params.push(limit, offset)
