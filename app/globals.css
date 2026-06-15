@@ -10621,7 +10621,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-completion-text { margin: 0; white-space: nowrap; flex-shrink: 0; color: var(--color-text-mute); }
 /* 프로필 헤더: 로고는 왼쪽, 종+설정은 오른쪽으로 묶기 */
 .profile-header-inner { justify-content: flex-start; gap: 8px; }
-.profile-logo { margin-right: auto; }
+.profile-header-nav { margin-right: auto; font-size: 15px; font-weight: 600; color: #2b2b2b; text-decoration: none; white-space: nowrap; }
+.profile-header-nav:hover { color: #5f0080; }
 /* 섹션구성 접기/펴기 */
 .resume-sidebar-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 0; margin: 0; cursor: pointer; font: inherit; }
 .resume-sidebar-toggle .resume-sidebar-title { width: auto; margin: 0; }

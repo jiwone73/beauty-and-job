@@ -329,6 +329,10 @@ export default function ProfilePage() {
           <Link href="/" className="profile-logo">
             <Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} priority />
           </Link>
+          <Link href="/" className="profile-logo">
+            ...로고 이미지...
+          </Link>
+          <Link href="/jobs" className="profile-header-nav">채용공고</Link>
           <div style={{ position: "relative", display: "inline-flex" }}>
             <button
               className="profile-settings-btn"
