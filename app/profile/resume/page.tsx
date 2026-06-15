@@ -343,7 +343,7 @@ const handlePrint = async () => {
           </div>
         </div>
       </header>
-      <div className="profile-tabs">
+      <div className="profile-tabs resume-nav">
         <button className="profile-tab" onClick={() => router.push("/profile")}>프로필</button>
         <button className="profile-tab active" onClick={() => router.push("/profile/resume")}>이력서</button>
         <button className="profile-tab" onClick={() => router.push("/profile?tab=applied")}>지원현황</button>

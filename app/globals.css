@@ -1608,13 +1608,14 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-action-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .resume-save-btn { background: var(--color-text); color: white; border: none; border-radius: 8px; padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; font-family: inherit; }
 .resume-save-btn:hover { background: #000; }
-.resume-layout { display: grid; grid-template-columns: 1fr; min-height: calc(100vh - 64px); max-width: 600px; margin: 0 auto; }
+.resume-layout { display: grid; grid-template-columns: 1fr; min-height: calc(100vh - 64px); max-width: 600px; margin: 0 auto; padding: 0 24px; }
 .resume-sidebar { background: white; border-bottom: 1px solid var(--color-border); padding: 16px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .resume-sidebar-title { width: 100%; font-size: 12px; font-weight: 700; color: var(--color-text-mute); letter-spacing: 0.5px; margin: 0; padding: 0; }
 .resume-sidebar-item { background: #f7f7f8; border: 1px solid var(--color-border); border-radius: 100px; padding: 6px 14px; font-size: 13px; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .resume-sidebar-item:hover { background: #efeff1; color: var(--color-text); }
 .resume-sidebar-item.active { background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600; }
-.resume-editor { padding: 32px; }
+.resume-nav { padding: 0 24px; }
+@media (max-width: 768px) { .resume-layout { padding: 0; } }
 .resume-section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .resume-section-title { font-size: 17px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; }
