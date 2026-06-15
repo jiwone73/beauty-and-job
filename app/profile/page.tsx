@@ -473,7 +473,7 @@ export default function ProfilePage() {
                               });
                               const data = await res.json();
                               if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
-                              useSignupStore.getState().setBasic({ phone: d });
+                            
                               setPhoneOverride(d);
                               setEditField(null);
                             } catch { alert("네트워크 오류가 발생했습니다."); }
