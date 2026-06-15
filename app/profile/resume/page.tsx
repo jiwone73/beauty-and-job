@@ -3,7 +3,6 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, ChevronDown, Download, Eye, Plus, X, FileText, Trash2, Upload, Printer, Pencil } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -329,10 +328,7 @@ const handlePrint = async () => {
             <Image src="/images/logo.png" alt="뷰티앤잡" width={110} height={28} priority />
           </Link>
           <div className="resume-header-actions">
-            <button className="resume-back-btn" onClick={() => router.push("/profile")}>
-              <ChevronLeft size={16} />
-              <span>프로필</span>
-            </button>
+            
             <button className="resume-action-btn" onClick={() => setShowPreview(true)}>
               <Eye size={16} /><span>미리보기</span>
             </button>
