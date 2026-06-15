@@ -10701,3 +10701,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   .profile-header-nav, .resume-header-nav { display: none !important; }
   .profile-logo { margin-right: auto; }
 }
+
+/* 탭-헤더 여백 축소 + 이력서편집 바 제거 + 이메일↔소개 여백 축소 */
+.profile-tabs { margin-top: 10px !important; }
+.resume-subheader { display: none !important; }
+#section-basic { padding-bottom: 14px; margin-bottom: 8px; }
+#section-intro { padding-top: 14px; }

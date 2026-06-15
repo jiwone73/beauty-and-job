@@ -823,7 +823,7 @@ const handlePrint = async () => {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 style={{
-                  width: "100%", padding: "40px 16px",
+                  width: "100%", padding: "12px 16px",
                   borderRadius: "12px",
                   border: `2px dashed ${isDragOver ? "#5f0080" : "#d0c0e0"}`,
                   background: isDragOver ? "#f3e5f5" : "#fafafa",
@@ -835,7 +835,7 @@ const handlePrint = async () => {
                   textAlign: "center"
                 }}
               >
-                <Upload size={32} />
+                <Upload size={26} />
                 <span>
                   {isUploading
                     ? "업로드 중..."

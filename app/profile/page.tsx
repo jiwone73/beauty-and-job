@@ -145,7 +145,7 @@ export default function ProfilePage() {
           if (Array.isArray(res.data.preferred_regions)) setPreferredRegions(res.data.preferred_regions);
           // 생년월일/성별 DB값을 signup store에 복원 (새로고침해도 표시 유지)
           useSignupStore.getState().setBasic({
-            birth: (res.data.birth_date || "").replace(/-/g, ""),
+            birth: (res.data.birth_date || "").split("T")[0].replace(/-/g, ""),
             gender: (res.data.gender || "") as "남성" | "여성",
           });
         }
