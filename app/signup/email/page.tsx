@@ -296,13 +296,13 @@ export default function SignupEmailPage() {
                 onChange={(e) => { setPhone(formatPhone(e.target.value)); setPhoneVerified(false); setCodeSent(false); }}
                 placeholder="(예시) 010-1234-5678"
                 disabled={phoneVerified}
-                className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080] disabled:bg-[#f5f5f5]"
+                className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080] disabled:bg-[#f5f5f5]"
               />
               <button
                 type="button"
                 onClick={handleSendCode}
                 disabled={sending || phoneVerified || phone.replace(/\D/g, "").length < 10}
-                className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] font-semibold border border-[#5f0080] text-[#5f0080] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition"
+                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] font-semibold border border-[#5f0080] text-[#5f0080] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition"
               >
                 {phoneVerified ? "인증완료" : codeSent ? "재전송" : sending ? "전송중" : "인증번호 받기"}
               </button>

@@ -82,7 +82,7 @@ export default function LoginStartPage() {
             <div className="mt-6 text-center">
               <span className="text-[13px] text-[#6b6b6b]">아직 회원이 아니신가요? </span>
               <Link href="/signup/email" className="text-[13px] text-[#5f0080] font-semibold hover:underline">
-                이메일로 회원가입
+                회원가입하기
               </Link>
             </div>
           </>
@@ -100,7 +100,7 @@ export default function LoginStartPage() {
             <div className="mt-6 text-center">
               <span className="text-[13px] text-[#6b6b6b]">아직 회원이 아니신가요? </span>
               <Link href="/company/signup" className="text-[13px] text-[#5f0080] font-semibold hover:underline">
-                이메일로 회원가입
+                회원가입하기
               </Link>
             </div>
           </>
