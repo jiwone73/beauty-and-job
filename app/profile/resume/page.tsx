@@ -36,6 +36,8 @@ function ResumePageContent() {
   } = useProfileStore();
 
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [sectionsOpen, setSectionsOpen] = useState(true);
+  useEffect(() => { setSectionsOpen(window.innerWidth >= 768); }, []);
   const [resumeType, setResumeType] = useState<"office" | "salon">("office");
   const [introLocal, setIntroLocal] = useState(intro);
   const [coreLocal, setCoreLocal] = useState(coreCompetencies);
@@ -356,7 +358,15 @@ const handlePrint = async () => {
 
       <div className="resume-layout">
         <aside className="resume-sidebar">
-          <p className="resume-sidebar-title">섹션 구성</p>
+          <button
+            type="button"
+            className="resume-sidebar-toggle"
+            onClick={() => setSectionsOpen((o) => !o)}
+            aria-expanded={sectionsOpen}
+          >
+            <span className="resume-sidebar-title">섹션 구성</span>
+            <ChevronDown size={18} style={{ color: "#888", transform: sectionsOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }} />
+          </button>
           {(() => {
             const sections = resumeType === "office" ? [
               { id: "basic", label: "기본 정보", done: !!(phone && emailLocal) },
@@ -394,7 +404,7 @@ const handlePrint = async () => {
                   </div>
                   <p className="resume-completion-text">{doneCount}/{sections.length} 항목 완료</p>
                 </div>
-                {sections.map((sec) => (
+                {sectionsOpen && sections.map((sec) => (
                   <button
                     key={sec.id}
                     className={`resume-sidebar-item ${activeSection === sec.id ? "active" : ""}`}
