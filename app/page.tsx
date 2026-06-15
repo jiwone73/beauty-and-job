@@ -595,6 +595,8 @@ function Footer() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
           <span style={{ fontSize: 13, color: "#9a9aa3" }}>© {new Date().getFullYear()} Beauty&amp;Job. All rights reserved.</span>
           <div style={{ display: "flex", gap: 20 }}>
+            <Link href="/support" style={{ fontSize: 13, color: "#666", textDecoration: "none" }}>고객센터</Link>
+            <Link href="/notice" style={{ fontSize: 13, color: "#666", textDecoration: "none" }}>공지사항</Link>
             <Link href="/support/terms" style={{ fontSize: 13, color: "#666", textDecoration: "none" }}>이용약관</Link>
             <Link href="/support/privacy" style={{ fontSize: 13, color: "#5f0080", textDecoration: "none", fontWeight: 600 }}>개인정보 처리방침</Link>
           </div>

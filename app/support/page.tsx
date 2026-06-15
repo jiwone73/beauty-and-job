@@ -34,6 +34,7 @@ export default function SupportPage() {
       </header>
       <div className="info-nav">
         <Link href="/support" className="info-nav-item active">고객센터</Link>
+        <Link href="/notice" className="info-nav-item">공지사항</Link>
         <Link href="/support/faq" className="info-nav-item">자주 묻는 질문</Link>
         <Link href="/support/terms" className="info-nav-item">이용약관</Link>
         <Link href="/support/privacy" className="info-nav-item">개인정보처리방침</Link>
