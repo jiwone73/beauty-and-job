@@ -10677,3 +10677,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobs-grid .jobcard .jobcard-meta { font-size: 11px; }
   .jobs-grid .jobcard .jobcard-deadline { font-size: 11px; }
 }
+
+/* 프로필 헤더 채용공고 위치 — 이력서와 통일 (x=166) */
+.profile-header-inner { padding-left: 24px; padding-right: 24px; }
+.profile-header-nav { margin-left: 24px; }
