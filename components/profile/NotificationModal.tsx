@@ -16,7 +16,7 @@ const NOTIFICATION_GROUPS = [
     group: "뷰티앤잡 소식받기",
     items: [
       { id: "newsletter", title: "뷰티앤잡 뉴스레터 구독", desc: "엄선된 뷰티 채용 소식과 업계 인사이트를 메일로 받아보세요.", defaultOn: false },
-      { id: "agent", title: "뷰티앤잡 에이전트 제안받기", desc: "프로필을 채우면 더 많은 커리어 제안을 받아요.", defaultOn: false },
+      { id: "agent", title: "기업 채용 제안받기", desc: "프로필을 공개하면 기업이 직접 채용 제안을 보낼 수 있어요.", defaultOn: false },
     ],
   },
   {
