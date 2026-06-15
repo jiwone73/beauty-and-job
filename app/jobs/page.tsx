@@ -445,6 +445,7 @@ function JobsPageInner() {
                 career: job.career,
                 employment: job.employment,
                 deadline: job.deadline,
+                image: job.thumbnail,
               }} variant="grid" />
             ))}
           </div>
