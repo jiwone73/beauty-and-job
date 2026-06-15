@@ -487,7 +487,7 @@
    섹션 3: 뉴스레터
    =========================================== */
 .newsletter-box {
-  background: linear-gradient(120deg, #ff5e8a 0%, #ff8fa3 50%, #ffb37a 100%);
+  background: linear-gradient(120deg, #9b5de5 0%, #f15bb5 100%);
   border-radius: 16px;
   padding: 28px 48px;
   display: grid;
@@ -7045,7 +7045,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-radius: 50%;
 }
 .hero-banner-top-inner {
-  background-color: #e879c5;
+  background: linear-gradient(120deg, #9b5de5 0%, #f15bb5 100%);
   background-image:
     radial-gradient(at 12% 20%, #c084fc 0, transparent 55%),
     radial-gradient(at 85% 12%, #fda4af 0, transparent 50%),
