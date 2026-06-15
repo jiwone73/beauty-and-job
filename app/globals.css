@@ -10681,3 +10681,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 프로필 헤더 채용공고 위치 — 이력서와 통일 (x=166) */
 .profile-header-inner { padding-left: 24px; padding-right: 24px; }
 .profile-header-nav { margin-left: 24px; }
+
+/* === 모바일 상단 배너 — 연보라 D + 로켓 + sheen (데스크탑과 통일) === */
+.hero-m-banner{ position:relative; overflow:hidden; background:linear-gradient(120deg,#fdfbff 0%,#f7f1fd 100%)!important; border:1px solid rgba(124,58,237,.10); }
+.hero-m-banner::before{ content:""; position:absolute; top:0; left:0; width:28%; height:100%; background:linear-gradient(90deg,transparent,rgba(196,160,247,.55),transparent); animation:heroSheen 3.4s ease-in-out infinite; pointer-events:none; z-index:0; }
+.hero-m-banner>*{ position:relative; z-index:1; }
+.hero-m-banner-ad{ width:28px!important; height:28px!important; padding:0!important; border-radius:50%!important; background:linear-gradient(135deg,#7c3aed,#ec4899)!important; color:#fff!important; display:inline-flex!important; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(124,58,237,.3); flex-shrink:0; }
+.hero-m-banner-text{ color:#1f1f1f!important; text-shadow:none!important; }
+.hero-m-banner-link{ color:#5f0080!important; text-shadow:none!important; }

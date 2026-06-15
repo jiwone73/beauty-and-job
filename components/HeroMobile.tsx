@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, MapPin, ChevronDown } from "lucide-react";
+import { Search, MapPin, ChevronDown, Rocket } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useAuthStore } from "@/lib/store/authStore";
 
@@ -57,8 +57,8 @@ export default function HeroMobile() {
     <section className="hero-m">
 
       <div className="hero-m-banner">
-        <span className="hero-m-banner-ad">OPEN</span>
-        <p className="hero-m-banner-text">🔥 뷰티앤잡 오픈 준비 중 · 등록은 지금 무료</p>
+        <span className="hero-m-banner-ad"><Rocket size={16} /></span>
+        <p className="hero-m-banner-text">뷰티앤잡 오픈 준비 중 · 지금은 완전 무료</p>
         <Link href="/jobs" className="hero-m-banner-link">보기 →</Link>
       </div>
 

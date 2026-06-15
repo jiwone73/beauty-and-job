@@ -135,7 +135,7 @@ function Hero() {
               <span className="hero-title-point">뷰티앤잡</span>
             </h1>
             <p className="hero-sub">
-              브랜드 본사부터 살롱·샵 현장직까지<br />뷰티업계 일자리를 한곳에서
+              살롱·샵 현장직부터 브랜드 본사까지<br />뷰티업계 일자리를 한곳에서
             </p>
             <form className="hero-search-bar-v2" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
               <p className="hero-search-guide">어떤 일자리를 찾으세요?</p>
