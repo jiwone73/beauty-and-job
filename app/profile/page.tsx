@@ -43,6 +43,14 @@ export default function ProfilePage() {
   const [openModal, setOpenModal] = useState<ModalType>(null);
   const [editField, setEditField] = useState<string | null>(null);
   const [birthInput, setBirthInput] = useState("");
+  const [phoneInput, setPhoneInput] = useState("");
+  const [phoneOverride, setPhoneOverride] = useState("");
+  const formatPhone = (v: string) => {
+    const d = (v || "").replace(/\D/g, "");
+    if (d.length === 11) return d.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+    if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+    return d;
+  };
   const [emailEditInput, setEmailEditInput] = useState("");
   const [emailInput, setEmailInput] = useState("");
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
@@ -328,7 +336,8 @@ export default function ProfilePage() {
         <div className="profile-header-inner">
           <Link href="/" className="profile-logo">
             <Image src="/images/logo.png" alt="뷰티앤잡" width={110} height={28} priority />
-          </Link>
+          </Link>
+
           <Link href="/jobs" className="profile-header-nav">채용공고</Link>
           <div style={{ position: "relative", display: "inline-flex" }}>
             <button
@@ -445,7 +454,46 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <InfoRow label="휴대전화" value={userPhone || phone || "정보 없음"} />
+                {editField === "phone" ? (
+                  <div className="profile-info-row" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <span className="profile-info-label">휴대전화</span>
+                      <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                        <button
+                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
+                          onClick={async () => {
+                            const d = phoneInput.replace(/\D/g, "");
+                            if (d.length < 10 || d.length > 11) { alert("휴대전화번호를 정확히 입력해주세요."); return; }
+                            try {
+                              const token = localStorage.getItem("access_token");
+                              const res = await fetch("/api/users/me", {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                body: JSON.stringify({ phone: d }),
+                              });
+                              const data = await res.json();
+                              if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
+                              useSignupStore.getState().setBasic({ phone: d });
+                              setPhoneOverride(d);
+                              setEditField(null);
+                            } catch { alert("네트워크 오류가 발생했습니다."); }
+                          }}>
+                          저장
+                        </button>
+                        <button onClick={() => setEditField(null)}
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>취소</button>
+                      </span>
+                    </div>
+                    <input
+                      type="tel" inputMode="numeric" placeholder="010-0000-0000" maxLength={13}
+                      value={formatPhone(phoneInput)}
+                      onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px" }}
+                    />
+                  </div>
+                ) : (
+                  <InfoRow label="휴대전화" value={formatPhone(phoneOverride || userPhone || phone || "") || "정보 없음"} isEmpty={!(phoneOverride || userPhone || phone)} onClick={() => { setPhoneInput((phoneOverride || userPhone || phone || "").replace(/\D/g, "")); setEditField("phone"); }} />
+                )}
 
                 {editField === "birth" ? (
                   <div className="profile-info-row" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
