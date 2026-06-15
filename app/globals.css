@@ -10630,3 +10630,5 @@ input[type="range"].career-slider::-moz-range-thumb {
   .resume-sidebar { display: flex; }
   .resume-mobile-progress { display: none; }
 }
+.resume-header-nav { margin-right: auto; font-size: 15px; font-weight: 600; color: #2b2b2b; text-decoration: none; white-space: nowrap; }
+.resume-header-nav:hover { color: #5f0080; }

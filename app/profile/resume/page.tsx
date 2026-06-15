@@ -330,6 +330,7 @@ const handlePrint = async () => {
           <Link href="/" className="resume-logo">
             <Image src="/images/logo.png" alt="뷰티앤잡" width={110} height={28} priority />
           </Link>
+          <Link href="/jobs" className="resume-header-nav">채용공고</Link>
           <div className="resume-header-actions">
             
             <button className="resume-action-btn" onClick={() => setShowPreview(true)}>
