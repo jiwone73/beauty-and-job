@@ -31,6 +31,11 @@ export default function ProfilePage() {
   const { setCareerVerified } = useProfileStore();
 
   const [activeTab, setActiveTab] = useState<"profile" | "resume" | "applied" | "bookmarks">("profile");
+  // URL ?tab= 으로 진입 시 해당 탭 활성화 (이력서 → 지원현황/관심공고 이동용)
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get("tab");
+    if (t === "applied" || t === "bookmarks" || t === "profile") setActiveTab(t);
+  }, []);
   useEffect(() => {
     const tab = new URLSearchParams(window.location.search).get("tab");
     if (tab === "applied" || tab === "bookmarks" || tab === "profile") setActiveTab(tab as any);
