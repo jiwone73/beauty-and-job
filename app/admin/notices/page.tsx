@@ -3,11 +3,18 @@ import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 
 type Notice = {
-  id: string; type: "notice" | "event"; title: string; body: string;
-  is_pinned: boolean; status: "draft" | "published"; published_at: string | null; created_at: string;
+  id: string; type: "notice" | "event"; target: "all" | "user" | "company";
+  title: string; body: string; is_pinned: boolean; status: "draft" | "published";
+  published_at: string | null; created_at: string;
 };
 
 const TYPE_LABELS: Record<string, string> = { notice: "공지", event: "이벤트" };
+const TARGET_LABELS: Record<string, string> = { all: "전체", user: "개인", company: "기업" };
+const targetStyle = (t: string) => {
+  if (t === "user") return { background: "#e6f0fb", color: "#1565c0" };
+  if (t === "company") return { background: "#e1f5ee", color: "#0f6e56" };
+  return { background: "#f1f1f1", color: "#666" };
+};
 
 function fmtDate(s: string | null) {
   if (!s) return "-";
@@ -17,16 +24,16 @@ function fmtDate(s: string | null) {
 
 export default function AdminNoticesPage() {
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
-
   const [list, setList] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [checked, setChecked] = useState<string[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [form, setForm] = useState({ type: "notice", title: "", body: "", is_pinned: false, status: "published" });
-  const [edit, setEdit] = useState({ type: "notice", title: "", body: "", is_pinned: false, status: "published" });
+  const [form, setForm] = useState({ type: "notice", target: "all", title: "", body: "", is_pinned: false, status: "published" });
+  const [edit, setEdit] = useState({ type: "notice", target: "all", title: "", body: "", is_pinned: false, status: "published" });
 
   const inputStyle = { width: "100%", padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14, boxSizing: "border-box" as const };
+  const selStyle = { padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14 };
 
   const fetchList = async () => {
     setLoading(true);
@@ -36,7 +43,6 @@ export default function AdminNoticesPage() {
       if (json.success) setList(json.data);
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
-
   useEffect(() => { fetchList(); }, []);
 
   const create = async () => {
@@ -51,7 +57,7 @@ export default function AdminNoticesPage() {
       });
       const json = await res.json();
       if (!json.success) { alert(json.error?.message || "작성 실패"); return; }
-      setForm({ type: "notice", title: "", body: "", is_pinned: false, status: "published" });
+      setForm({ type: "notice", target: "all", title: "", body: "", is_pinned: false, status: "published" });
       fetchList();
     } finally { setBusy(false); }
   };
@@ -59,7 +65,7 @@ export default function AdminNoticesPage() {
   const openExpand = (n: Notice) => {
     if (expandedId === n.id) { setExpandedId(null); return; }
     setExpandedId(n.id);
-    setEdit({ type: n.type, title: n.title, body: n.body, is_pinned: n.is_pinned, status: n.status });
+    setEdit({ type: n.type, target: n.target ?? "all", title: n.title, body: n.body, is_pinned: n.is_pinned, status: n.status });
   };
 
   const saveEdit = async (id: string) => {
@@ -113,13 +119,16 @@ export default function AdminNoticesPage() {
         <div style={{ border: "1px solid #eee", borderRadius: 12, padding: 20, marginBottom: 28 }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 14px" }}>새 공지 작성</h2>
           <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
-            <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
-              style={{ padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14 }}>
+            <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} style={selStyle}>
               <option value="notice">공지(필수)</option>
               <option value="event">이벤트·혜택(광고성)</option>
             </select>
-            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
-              style={{ padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14 }}>
+            <select value={form.target} onChange={(e) => setForm({ ...form, target: e.target.value })} style={selStyle}>
+              <option value="all">전체</option>
+              <option value="user">개인회원</option>
+              <option value="company">기업회원</option>
+            </select>
+            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} style={selStyle}>
               <option value="published">게시</option>
               <option value="draft">임시저장</option>
             </select>
@@ -154,11 +163,14 @@ export default function AdminNoticesPage() {
           <ul style={{ listStyle: "none", margin: 0, padding: 0, borderTop: "1px solid #eee" }}>
             {list.map((n) => (
               <li key={n.id} style={{ borderBottom: "1px solid #eee", padding: "12px 4px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
                     background: n.type === "event" ? "#fdeef5" : "#f3eafa", color: n.type === "event" ? "#c2185b" : "#5f0080" }}>
                     {TYPE_LABELS[n.type]}
+                  </span>
+                  <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, padding: "2px 7px", borderRadius: 6, ...targetStyle(n.target) }}>
+                    {TARGET_LABELS[n.target] || "전체"}
                   </span>
                   {n.is_pinned && <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "#5f0080", border: "1px solid #5f0080", borderRadius: 4, padding: "1px 5px" }}>고정</span>}
                   {n.status === "draft" && <span style={{ flexShrink: 0, fontSize: 11, color: "#999", border: "1px solid #ddd", borderRadius: 4, padding: "1px 5px" }}>임시</span>}
@@ -172,13 +184,16 @@ export default function AdminNoticesPage() {
                 {expandedId === n.id && (
                   <div style={{ marginTop: 12, padding: 16, background: "#faf7fd", borderRadius: 10 }}>
                     <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
-                      <select value={edit.type} onChange={(e) => setEdit({ ...edit, type: e.target.value })}
-                        style={{ padding: "8px 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }}>
+                      <select value={edit.type} onChange={(e) => setEdit({ ...edit, type: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 13 }}>
                         <option value="notice">공지(필수)</option>
                         <option value="event">이벤트·혜택(광고성)</option>
                       </select>
-                      <select value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value })}
-                        style={{ padding: "8px 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }}>
+                      <select value={edit.target} onChange={(e) => setEdit({ ...edit, target: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 13 }}>
+                        <option value="all">전체</option>
+                        <option value="user">개인회원</option>
+                        <option value="company">기업회원</option>
+                      </select>
+                      <select value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 13 }}>
                         <option value="published">게시</option>
                         <option value="draft">임시저장</option>
                       </select>
