@@ -31,7 +31,7 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
   const deadlineLabel = data.deadline === "상시" ? "상시채용" : data.deadline;
   const go = () => router.push(`/jobs/${data.id}`);
   const onMark = (e: React.MouseEvent) => { e.stopPropagation(); toggle(data.id); };
-  const meta = [data.region, data.career].filter(Boolean).join(" · ");
+  const meta = [data.region, data.career, showEmp ? data.employment : null].filter(Boolean).join(" · ");
 
   if (variant === "list") {
     return (
@@ -42,10 +42,8 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ margin: "0 0 3px", fontSize: 15, fontWeight: 600, color: "#222", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{data.title}</p>
           <p style={{ margin: "0 0 4px", fontSize: 13, color: "#555" }}>{data.company}</p>
-          <p style={{ margin: 0, fontSize: 12, color: "#999" }}>
-            {meta}{showEmp ? <> · <span style={{ color: "#b45309" }}>{data.employment}</span></> : ""}
-          </p>
-          <span style={{ display: "inline-block", marginTop: 5, fontSize: 12, fontWeight: 600, color: deadlineColor(deadlineLabel) }}>{deadlineLabel}</span>
+          <p style={{ margin: 0, fontSize: 13, color: "#888" }}>{meta}</p>
+          <span style={{ display: "inline-block", marginTop: 5, fontSize: 13, fontWeight: 600, color: deadlineColor(deadlineLabel) }}>{deadlineLabel}</span>
         </div>
         <button onClick={onMark} aria-label="북마크" style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: marked ? PURPLE : "#ccc" }}>
           <Bookmark size={18} fill={marked ? "currentColor" : "none"} />
@@ -54,7 +52,7 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
     );
   }
 
-  // ===== grid (메인·채용공고 공용) =====
+  // ===== grid (메인·채용공고 공용): 정사각형 60/40 =====
   return (
     <div className="jobcard" onClick={go}>
       <div className="jobcard-cover">
@@ -63,7 +61,6 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
         ) : (
           <span className="jobcard-cover-initial">{data.company?.[0] || "·"}</span>
         )}
-        {showEmp && <span className="jobcard-emp">{data.employment}</span>}
         <button onClick={onMark} aria-label="북마크" className={`jobcard-bookmark ${marked ? "on" : ""}`}>
           <Bookmark size={16} fill={marked ? "currentColor" : "none"} />
         </button>

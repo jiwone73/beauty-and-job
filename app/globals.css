@@ -10632,19 +10632,23 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .resume-header-nav { margin-right: auto; font-size: 15px; font-weight: 600; color: #2b2b2b; text-decoration: none; white-space: nowrap; }
 .resume-header-nav:hover { color: #5f0080; }
-/* ===== 공용 JobCard (메인·채용공고 통일) ===== */
-.jobcard { display: flex; flex-direction: column; background: #fff; border: 1px solid #eee; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .18s, box-shadow .18s; }
+/* ===== 공용 JobCard (메인·채용공고 통일) — 정사각형 60/40 ===== */
+.jobcard { aspect-ratio: 1 / 1; display: flex; flex-direction: column; background: #fff; border: 1px solid #eee; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .18s, box-shadow .18s; }
 .jobcard:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
-.jobcard-cover { position: relative; aspect-ratio: 4 / 3; background: linear-gradient(135deg, #f3eefb, #faf7fe); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.jobcard-cover-img { max-width: 76%; max-height: 68%; object-fit: contain; }
-.jobcard-cover-initial { font-size: 44px; font-weight: 800; color: rgba(95,0,128,.18); }
-.jobcard-emp { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,.62); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 100px; }
-.jobcard-bookmark { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #bbb; box-shadow: 0 2px 6px rgba(0,0,0,.12); transition: color .15s; }
+.jobcard-cover { position: relative; height: 60%; flex: 0 0 60%; overflow: hidden; background: linear-gradient(135deg,#f3eefb,#faf7fe); }
+.jobcard-cover-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.jobcard-cover-initial { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 800; color: rgba(95,0,128,.18); }
+.jobcard-bookmark { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #bbb; box-shadow: 0 2px 6px rgba(0,0,0,.12); transition: color .15s; z-index: 1; }
 .jobcard-bookmark:hover, .jobcard-bookmark.on { color: var(--color-primary); }
-.jobcard-body { display: flex; flex-direction: column; padding: 12px 14px 14px; }
-.jobcard-title { margin: 0 0 6px; font-size: 15px; font-weight: 600; color: #222; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 42px; }
-.jobcard-company { margin: 0 0 6px; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.jobcard-meta { margin: 0 0 10px; font-size: 12px; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.jobcard-deadline { font-size: 13px; font-weight: 700; }
+.jobcard-body { height: 40%; flex: 1 1 40%; display: flex; flex-direction: column; padding: 10px 14px 12px; overflow: hidden; }
+.jobcard-title { margin: 0 0 5px; font-size: 14px; font-weight: 600; color: #222; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jobcard-company { margin: 0 0 3px; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jobcard-meta { margin: 0; font-size: 13px; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jobcard-deadline { margin-top: auto; font-size: 13px; font-weight: 600; }
 @media (max-width: 768px) { .jobs-grid { margin-top: 16px; } }
-@media (max-width: 480px) { .jobcard-title { font-size: 14px; min-height: 38px; } .jobcard-body { padding: 10px 11px 12px; } }
+@media (max-width: 480px) {
+  .jobcard { aspect-ratio: auto; }
+  .jobcard-cover { height: auto; flex: none; aspect-ratio: 1 / 1; }
+  .jobcard-body { height: auto; flex: none; }
+  .jobcard-title { font-size: 13px; }
+}
