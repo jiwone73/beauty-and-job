@@ -10667,15 +10667,15 @@ input[type="range"].career-slider::-moz-range-thumb {
 .hero-banner-sub{ color:#5a5a6a!important; text-shadow:none!important; }
 .hero-banner-link{ color:#5f0080!important; text-shadow:none!important; }
 
-/* 채용공고 카드 — 모바일 이미지 50% / 설명 50% */
+/* 채용공고 카드 — 모바일 (안 깨지게: 이미지 4:3 + 본문 자동높이) */
 @media (max-width: 480px) {
-  .jobs-grid .jobcard { aspect-ratio: 1 / 1; }
-  .jobs-grid .jobcard .jobcard-cover { height: 50%; flex: 0 0 50%; aspect-ratio: auto; }
-  .jobs-grid .jobcard .jobcard-body { height: 50%; flex: 1 1 50%; padding: 7px 10px; }
-  .jobs-grid .jobcard .jobcard-title { font-size: 13px; margin-bottom: 2px; line-height: 1.3; }
+  .jobs-grid .jobcard { aspect-ratio: auto; }
+  .jobs-grid .jobcard .jobcard-cover { height: auto; flex: none; aspect-ratio: 4 / 3; }
+  .jobs-grid .jobcard .jobcard-body { height: auto; flex: none; padding: 8px 10px 10px; }
+  .jobs-grid .jobcard .jobcard-title { font-size: 12.5px; line-height: 1.3; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .jobs-grid .jobcard .jobcard-company { font-size: 11px; margin-bottom: 2px; }
-  .jobs-grid .jobcard .jobcard-meta { font-size: 11px; }
-  .jobs-grid .jobcard .jobcard-deadline { font-size: 11px; }
+  .jobs-grid .jobcard .jobcard-meta { font-size: 11px; margin-bottom: 4px; }
+  .jobs-grid .jobcard .jobcard-deadline { font-size: 11px; margin-top: 0; }
 }
 
 /* 프로필 헤더 채용공고 위치 — 이력서와 통일 (x=166) */
