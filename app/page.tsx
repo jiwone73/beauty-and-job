@@ -50,8 +50,6 @@ export default function HomePage() {
       <Header />
       <MobileDetector />
       <SectionPick />
-      <SectionStorePick />
-      <SectionCorpPick />
       {/* <SectionJobGroups /> 공고 충분히 쌓이면 노출 */}
       <SectionStories />
       <SectionBeautyServices />
@@ -242,14 +240,17 @@ function Hero() {
    섹션 1: 뷰티앤잡 추천 공고
    ============================================ */
 function SectionPick() {
+  const [tab, setTab] = useState<"전체" | "매장" | "사무직">("전체");
   const [jobs, setJobs] = useState<any[]>([]);
   useEffect(() => {
-    fetch("/api/jobs?limit=4")
+    const q = tab === "매장" ? "?job_type=STORE&limit=4" : tab === "사무직" ? "?job_type=OFFICE&limit=4" : "?limit=4";
+    fetch(`/api/jobs${q}`)
       .then((r) => r.json())
-      .then((res) => { if (res.success && Array.isArray(res.data)) setJobs(res.data); })
+      .then((res) => { if (res.success && Array.isArray(res.data)) setJobs(res.data); else setJobs([]); })
       .catch(console.error);
-  }, []);
+  }, [tab]);
   const mappedJobs = jobs.map(mapJob);
+  const seeAll = tab === "매장" ? "/jobs?type=매장" : tab === "사무직" ? "/jobs?type=기업" : "/jobs";
   return (
     <section className="section section-divider">
       <div className="container">
@@ -262,8 +263,28 @@ function SectionPick() {
             </h2>
             <p className="section-sub">지금 확인하면 좋은 뷰티업계 공고를 모았어요</p>
           </div>
-          <Link href="/jobs" className="see-all">전체보기</Link>
+          <Link href={seeAll} className="see-all">전체보기</Link>
         </div>
+
+        <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
+          {(["전체", "매장", "사무직"] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTab(t)}
+              style={{
+                padding: "8px 18px", borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: "pointer",
+                border: tab === t ? "1px solid #5f0080" : "1px solid #e0e0e0",
+                background: tab === t ? "#5f0080" : "#fff",
+                color: tab === t ? "#fff" : "#666",
+                transition: "all 0.15s",
+              }}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
         {mappedJobs.length === 0 ? (
           <p className="empty-state">등록된 공고가 없습니다.</p>
         ) : (
@@ -279,82 +300,6 @@ function SectionPick() {
 }
 
 
-
-/* ============================================
-   섹션: 살롱·샵 매장직 채용
-   ============================================ */
-function SectionStorePick() {
-  const [jobs, setJobs] = useState<any[]>([]);
-  useEffect(() => {
-    fetch("/api/jobs?job_type=STORE&limit=4")
-      .then((r) => r.json())
-      .then((res) => { if (res.success && Array.isArray(res.data)) setJobs(res.data); })
-      .catch(console.error);
-  }, []);
-  const mappedJobs = jobs.map(mapJob);
-  if (mappedJobs.length === 0) return null;
-  return (
-    <section className="section section-divider">
-      <div className="container">
-        <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
-        <div className="section-head">
-          <div>
-            <h2 className="section-title">🏪 살롱·샵 매장직 채용</h2>
-            <p className="section-sub">헤어·피부·네일·속눈썹·왁싱 등 현장 채용공고를 확인해보세요</p>
-          </div>
-          <Link href="/jobs?type=매장" className="see-all">전체보기</Link>
-        </div>
-        {mappedJobs.length === 0 ? (
-          <p className="empty-state">등록된 공고가 없습니다.</p>
-        ) : (
-          <div className="card-grid card-grid-4">
-            {mappedJobs.map((job: any) => (
-              <JobCard key={job.id} data={job} variant="grid" />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
-/* ============================================
-   섹션: 뷰티기업 사무직 채용
-   ============================================ */
-function SectionCorpPick() {
-  const [jobs, setJobs] = useState<any[]>([]);
-  useEffect(() => {
-    fetch("/api/jobs?job_type=OFFICE&limit=4")
-      .then((r) => r.json())
-      .then((res) => { if (res.success && Array.isArray(res.data)) setJobs(res.data); })
-      .catch(console.error);
-  }, []);
-  const mappedJobs = jobs.map(mapJob);
-  if (mappedJobs.length === 0) return null;
-  return (
-    <section className="section section-divider">
-      <div className="container">
-        <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
-        <div className="section-head">
-          <div>
-            <h2 className="section-title">🏢 뷰티기업 사무직 채용</h2>
-            <p className="section-sub">브랜드 본사·MD·마케팅·영업·CS 등 오피스 채용공고를 모았어요</p>
-          </div>
-          <Link href="/jobs?type=기업" className="see-all">전체보기</Link>
-        </div>
-        {mappedJobs.length === 0 ? (
-          <p className="empty-state">등록된 공고가 없습니다.</p>
-        ) : (
-          <div className="card-grid card-grid-4">
-            {mappedJobs.map((job: any) => (
-              <JobCard key={job.id} data={job} variant="grid" />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
 
 /* ============================================
    섹션: 추천 뷰티 서비스
