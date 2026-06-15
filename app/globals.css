@@ -10657,3 +10657,12 @@ input[type="range"].career-slider::-moz-range-thumb {
 .hero-banner-top-inner .hero-banner-sub,
 .hero-banner-top-inner .hero-banner-link { text-shadow: 0 1px 3px rgba(0,0,0,.25); }
 .newsletter-title, .newsletter-sub { text-shadow: 0 1px 2px rgba(0,0,0,.12); }
+/* === 최상단 배너 — 연보라 D + 로켓 + sheen 반짝 === */
+.hero-banner-top-inner{ background:linear-gradient(120deg,#fdfbff 0%,#f7f1fd 100%)!important; border:1px solid rgba(124,58,237,.10); overflow:hidden; }
+.hero-banner-top-inner::before{ content:""; position:absolute; top:0; left:0; width:24%; height:100%; background:linear-gradient(90deg,transparent,rgba(196,160,247,.55),transparent); animation:heroSheen 3.4s ease-in-out infinite; pointer-events:none; z-index:0; }
+.hero-banner-top-inner>*{ position:relative; z-index:1; }
+@keyframes heroSheen{ 0%{transform:translateX(-170%) skewX(-18deg)} 55%,100%{transform:translateX(560%) skewX(-18deg)} }
+.hero-banner-badge{ width:34px!important; height:34px!important; padding:0!important; border-radius:50%!important; background:linear-gradient(135deg,#7c3aed,#ec4899)!important; color:#fff!important; display:inline-flex!important; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(124,58,237,.3); flex-shrink:0; }
+.hero-banner-title{ color:#1f1f1f!important; text-shadow:none!important; }
+.hero-banner-sub{ color:#5a5a6a!important; text-shadow:none!important; }
+.hero-banner-link{ color:#5f0080!important; text-shadow:none!important; }

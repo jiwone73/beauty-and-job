@@ -22,8 +22,7 @@ import {
   Mail,
   CheckCircle,
   MapPin,
-  ChevronDown,
-} from "lucide-react";
+  ChevronDown, Rocket } from "lucide-react";
 import JobCard from "@/components/JobCard";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
 /* ============================================
@@ -123,8 +122,8 @@ function Hero() {
     <section className="hero">
       <div className="hero-wrap">
         <div className="hero-banner-top-inner">
-          <span className="hero-banner-badge">OPEN</span>
-          <p className="hero-banner-title">🔥 뷰티앤잡 오픈 준비 중 · 채용공고와 이력서 등록은 지금 무료</p>
+          <span className="hero-banner-badge"><Rocket size={18} /></span>
+          <p className="hero-banner-title">뷰티앤잡 오픈 준비 중 · 지금은 완전 무료</p>
           <p className="hero-banner-sub">런칭 기간 동안 등록·상단노출·인재 연락처 열람까지 0원</p>
           <Link href="/jobs" className="hero-banner-link">공고 보기 →</Link>
         </div>
