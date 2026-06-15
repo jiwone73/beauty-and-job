@@ -90,7 +90,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
             <button
               type="button"
               className="gnb-with-tag"
-              style={{ background: "none", border: "none", cursor: "pointer", font: "inherit", color: "inherit", padding: 0 }}
+              style={{ background: "none", border: "none", cursor: "pointer" }}
               onClick={() => {
                 if (!isLoggedIn) router.push("/jobseeker");
                 else if (ownerType === "company") router.push("/company/dashboard");

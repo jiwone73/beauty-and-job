@@ -76,7 +76,7 @@
   flex: 1;
   margin-left: 8px;
 }
-.gnb a {
+.gnb a, .gnb button {
   font-size: 15px;
   font-weight: 500;
   color: #2b2b2b;
