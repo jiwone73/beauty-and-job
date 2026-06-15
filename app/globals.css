@@ -7045,7 +7045,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-radius: 50%;
 }
 .hero-banner-top-inner {
-  background: linear-gradient(120deg, #7c3aed 0%, #06b6d4 100%);
+  background: linear-gradient(120deg, #ff5e8a 0%, #ff8fa3 50%, #ffb37a 100%);
   width: 100%;
   height: 80px;
   padding: 0 32px;
