@@ -110,7 +110,9 @@ export async function GET(req: NextRequest) {
   `
 
   params.push(limit, offset)
-  const countQuery = `SELECT COUNT(*)::int AS total FROM v_active_jobs ${active ? 'j' : ''} ${whereClause}`
+  const countQuery = active
+    ? `SELECT COUNT(*)::int AS total FROM v_active_jobs j ${whereClause}`
+    : `SELECT COUNT(*)::int AS total FROM v_active_jobs ${whereClause}`
   const countParams = params.slice(0, params.length - 2)
 
   const [listRes, countRes] = await Promise.all([
