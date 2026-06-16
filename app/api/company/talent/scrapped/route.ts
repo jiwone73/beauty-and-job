@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
       `SELECT
         u.id AS user_id,
         u.name,
+        u.avatar_url,
         u.gender,
         u.phone,
         u.job_type,
@@ -44,6 +45,7 @@ export async function GET(req: NextRequest) {
     const talents = rows.map((r) => ({
       user_id: r.user_id,
       name: r.name,
+      avatar_url: r.avatar_url,
       gender: r.gender,
       phone: r.phone,
       job_type: r.job_type,
