@@ -101,6 +101,8 @@ export async function GET(req: NextRequest) {
         up.skills,
         up.skill_areas,
         up.office_job_areas,
+        u.region_sido,
+        u.region_sigungu,
         up.region_prefer,
         up.work_type_prefer,
         (
@@ -160,7 +162,7 @@ export async function GET(req: NextRequest) {
       skills: r.skills || [],
       skillAreas: r.skill_areas || [],
       officeJobAreas: r.office_job_areas || [],
-      regionPrefer: r.region_prefer,
+      regionPrefer: [r.region_sido, r.region_sigungu].filter(Boolean).join(" ") || r.region_prefer || null,
       workTypePrefer: r.work_type_prefer,
       careerYears: r.career_years,
       careerCount: r.career_count,
