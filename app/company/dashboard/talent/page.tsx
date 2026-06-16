@@ -246,8 +246,8 @@ const previewRef = useRef<HTMLDivElement>(null);
             <div key={t.id} className="talent-card">
               <div className="talent-card-head">
                 <div className="talent-avatar" style={{ overflow: "hidden" }}>
-                  {t.avatar_url ? (
-                    <img src={t.avatar_url} alt={t.name}
+                  {t.avatarUrl ? (
+                    <img src={t.avatarUrl} alt={t.name}
                       style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
                     t.name?.slice(0, 1) || "?"

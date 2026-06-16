@@ -121,6 +121,7 @@ export async function GET(req: NextRequest) {
     const data = rows.map((r) => ({
       id: r.id,
       name: r.name,
+      avatarUrl: r.avatar_url,
       gender: r.gender,
       age: r.age,
       intro: r.intro,

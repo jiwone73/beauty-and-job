@@ -75,7 +75,7 @@ export const companyDashboardApi = {
 export type TalentItem = {
   id: string;
   name: string;
-  avatar_url: string | null;
+  avatarUrl: string | null;
   gender: string | null;
   age: number | null;
   intro: string | null;
