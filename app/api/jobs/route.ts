@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
     FROM v_active_jobs j
     LEFT JOIN (
       SELECT
-        job_id,
+        job_posting_id,
         COUNT(*) AS total_apps,
         COUNT(viewed_at) AS viewed_apps,
         CASE WHEN COUNT(*) > 0
@@ -94,8 +94,8 @@ export async function GET(req: NextRequest) {
           ELSE 0.5
         END AS view_rate
       FROM applications
-      GROUP BY job_id
-    ) app_stats ON app_stats.job_id = j.id
+      GROUP BY job_posting_id
+    ) app_stats ON app_stats.job_posting_id = j.id
     ${whereClause}
     ORDER BY ${activeOrderBy}
     LIMIT $${idx++} OFFSET $${idx++}
