@@ -112,9 +112,19 @@ export async function GET(req: NextRequest) {
         ) AS career_years,
         (SELECT COUNT(*)::int FROM user_careers WHERE user_id = u.id) AS career_count,
         (
-          SELECT school || CASE WHEN status IS NOT NULL AND status <> '' THEN ' ' || status ELSE '' END
+          SELECT json_build_object(
+            'school', school, 'major', major, 'status', status,
+            'start_date', start_date, 'end_date', end_date
+          )
           FROM user_educations WHERE user_id = u.id ORDER BY created_at DESC LIMIT 1
-        ) AS education,
+        ) AS education_detail,
+        (
+          SELECT json_build_object(
+            'company', company, 'department', department, 'position', position,
+            'start_date', start_date, 'end_date', end_date
+          )
+          FROM user_careers WHERE user_id = u.id ORDER BY start_date DESC LIMIT 1
+        ) AS career_detail,
         EXISTS(
           SELECT 1 FROM company_talent_scraps WHERE company_id = $1 AND user_id = u.id
         ) AS scrapped
@@ -154,7 +164,8 @@ export async function GET(req: NextRequest) {
       workTypePrefer: r.work_type_prefer,
       careerYears: r.career_years,
       careerCount: r.career_count,
-      education: r.education,
+      educationDetail: r.education_detail,
+      careerDetail: r.career_detail,
       scrapped: r.scrapped,
     }));
     return ok(data, 200, { total, page, limit });

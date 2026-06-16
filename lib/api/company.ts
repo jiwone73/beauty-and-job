@@ -88,7 +88,8 @@ export type TalentItem = {
   workTypePrefer: string | null;
   careerYears: number | null;
   careerCount: number;
-  education: string | null;
+  educationDetail: { school: string; major: string | null; status: string | null; start_date: string | null; end_date: string | null } | null;
+  careerDetail: { company: string; department: string | null; position: string | null; start_date: string | null; end_date: string | null } | null;
   scrapped: boolean;
 };
 

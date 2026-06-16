@@ -13,7 +13,7 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 type JobTab = "OFFICE" | "STORE";
 
 const CAREER_OPTIONS = ["전체", "신입", "1-3년", "3-5년", "5-10년", "10년+"];
-const AGE_FILTERS  = ["전체", "20대", "30대", "40+"];
+const AGE_FILTERS    = ["전체", "20대", "30대", "40+"];
 const GENDER_FILTERS = ["무관", "여성", "남성"];
 
 function careerLabel(years: number | null, count: number): string {
@@ -25,37 +25,32 @@ function genderLabel(gender: string | null): string | null {
   if (gender === "여성") return "여";
   return null;
 }
+function fmtDate(d: string | null): string {
+  if (!d) return "";
+  return String(d).slice(0, 7).replace("-", ".");
+}
 
 export default function TalentPage() {
-  const [activeTab, setActiveTab] = useState<JobTab>("OFFICE");
+  const [activeTab, setActiveTab] = useState<JobTab>("STORE");
   const [talents, setTalents]     = useState<TalentItem[]>([]);
   const [loading, setLoading]     = useState(true);
   const [total, setTotal]         = useState(0);
 
-  // 공통 필터
   const [search, setSearch]               = useState("");
   const [careerFilter, setCareerFilter]   = useState("전체");
-
-  // 직군 모달
-  const [jobGroupOpen, setJobGroupOpen]         = useState(false);
+  const [jobGroupOpen, setJobGroupOpen]   = useState(false);
   const [selectedJobGroups, setSelectedJobGroups] = useState<string[]>([]);
+  const [regionOpen, setRegionOpen]       = useState(false);
+  const [selectedRegions, setSelectedRegions]     = useState<string[]>([]);
+  const [ageFilter, setAgeFilter]         = useState("전체");
+  const [genderFilter, setGenderFilter]   = useState("무관");
 
-  // 지역 모달 (매장직만)
-  const [regionOpen, setRegionOpen]           = useState(false);
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-
-  // 매장직 전용
-  const [ageFilter, setAgeFilter]       = useState("전체");
-  const [genderFilter, setGenderFilter] = useState("무관");
-
-  // 이력서 모달
   const [selected, setSelected]           = useState<TalentItem | null>(null);
   const [resumeData, setResumeData]       = useState<any>(null);
   const [resumeLoading, setResumeLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
-  /* ── 탭 전환 ── */
   const handleTabSwitch = (tab: JobTab) => {
     setActiveTab(tab);
     setSearch("");
@@ -66,7 +61,6 @@ export default function TalentPage() {
     setGenderFilter("무관");
   };
 
-  /* ── PDF / 인쇄 ── */
   const handleDownloadPdf = async () => {
     if (!previewRef.current) return;
     setIsDownloading(true);
@@ -81,8 +75,7 @@ export default function TalentPage() {
       const pdfH = (canvas.height * pdfW) / canvas.width;
       const pageH = pdf.internal.pageSize.getHeight();
       let left = pdfH, pos = 0;
-      pdf.addImage(imgData, "PNG", 0, pos, pdfW, pdfH);
-      left -= pageH;
+      pdf.addImage(imgData, "PNG", 0, pos, pdfW, pdfH); left -= pageH;
       while (left > 0) { pos = left - pdfH; pdf.addPage(); pdf.addImage(imgData, "PNG", 0, pos, pdfW, pdfH); left -= pageH; }
       pdf.save(selected?.name ? `${selected.name}_이력서.pdf` : "이력서.pdf");
     } catch { alert("다운로드 중 오류가 발생했습니다."); }
@@ -102,7 +95,6 @@ export default function TalentPage() {
     } catch { alert("인쇄 준비 중 오류가 발생했습니다."); }
   };
 
-  /* ── 이력서 fetch ── */
   useEffect(() => {
     if (!selected) { setResumeData(null); return; }
     const token = localStorage.getItem("access_token");
@@ -134,7 +126,6 @@ export default function TalentPage() {
     };
   };
 
-  /* ── 목록 조회 ── */
   const fetchTalents = useCallback(async () => {
     setLoading(true);
     try {
@@ -165,7 +156,6 @@ export default function TalentPage() {
     return () => clearTimeout(t);
   }, [fetchTalents]);
 
-  /* ── 스크랩 ── */
   const toggleScrap = async (item: TalentItem) => {
     const next = !item.scrapped;
     const update = (on: boolean) => {
@@ -207,16 +197,83 @@ export default function TalentPage() {
               transition: "all .15s",
             }}
           >
-            {tab === "OFFICE" ? "🏢 사무직" : "🏪 매장직"}
+            {tab === "STORE" ? "🏪 매장직" : "🏢 사무직"}
           </button>
         ))}
       </div>
 
-      {/* 필터 바 */}
-      <div className="company-toolbar" style={{ flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+      {/* 필터 */}
+      <div style={{ marginBottom: 12 }}>
 
-        {/* 키워드 */}
-        <div className="admin-search-wrap">
+        {/* 1열: 직군·지역·경력·연령·성별·초기화 */}
+        <div style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap", marginBottom: 10 }}>
+
+          <button
+            onClick={() => setJobGroupOpen(true)}
+            className="admin-form-select"
+            style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", minWidth: 130, color: selectedJobGroups.length > 0 ? "#1a1a1a" : "#999" }}
+          >
+            <span style={{ flex: 1, textAlign: "left" }}>{jobGroupLabel}</span>
+            <ChevronDown size={14} />
+          </button>
+
+          {activeTab === "STORE" && (
+            <button
+              onClick={() => setRegionOpen(true)}
+              className="admin-form-select"
+              style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", minWidth: 130, color: selectedRegions.length > 0 ? "#1a1a1a" : "#999" }}
+            >
+              <MapPin size={14} style={{ flexShrink: 0 }} />
+              <span style={{ flex: 1, textAlign: "left" }}>{regionLabel}</span>
+              <ChevronDown size={14} />
+            </button>
+          )}
+
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>경력</span>
+            <select
+              className="admin-form-select"
+              style={{ fontSize: 13, padding: "8px 12px" }}
+              value={careerFilter}
+              onChange={(e) => setCareerFilter(e.target.value)}
+            >
+              {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+
+          {activeTab === "STORE" && (
+            <>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>연령</span>
+                <div className="admin-filter-tabs">
+                  {AGE_FILTERS.map((f) => (
+                    <button key={f} className={`admin-filter-tab ${ageFilter === f ? "active" : ""}`} onClick={() => setAgeFilter(f)}>{f}</button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>성별</span>
+                <div className="admin-filter-tabs">
+                  {GENDER_FILTERS.map((f) => (
+                    <button key={f} className={`admin-filter-tab ${genderFilter === f ? "active" : ""}`} onClick={() => setGenderFilter(f)}>{f}</button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginLeft: "auto" }}>
+            <button onClick={resetFilters} style={{ fontSize: 12, color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>
+              초기화
+            </button>
+            <span style={{ fontSize: 13, color: "#888" }}>
+              총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명
+            </span>
+          </div>
+        </div>
+
+        {/* 2열: 검색바 */}
+        <div className="admin-search-wrap" style={{ maxWidth: 400 }}>
           <Search size={16} className="admin-search-icon" />
           <input
             className="admin-search-input"
@@ -224,76 +281,6 @@ export default function TalentPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-        </div>
-
-        {/* 직군 모달 버튼 */}
-        <button
-          onClick={() => setJobGroupOpen(true)}
-          className="admin-form-select"
-          style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", minWidth: 130, color: selectedJobGroups.length > 0 ? "#1a1a1a" : "#999" }}
-        >
-          <span style={{ flex: 1, textAlign: "left" }}>{jobGroupLabel}</span>
-          <ChevronDown size={14} />
-        </button>
-
-        {/* 지역 모달 버튼 (매장직만) */}
-        {activeTab === "STORE" && (
-          <button
-            onClick={() => setRegionOpen(true)}
-            className="admin-form-select"
-            style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", minWidth: 130, color: selectedRegions.length > 0 ? "#1a1a1a" : "#999" }}
-          >
-            <MapPin size={14} style={{ flexShrink: 0 }} />
-            <span style={{ flex: 1, textAlign: "left" }}>{regionLabel}</span>
-            <ChevronDown size={14} />
-          </button>
-        )}
-
-        {/* 경력 드롭다운 */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>경력</span>
-          <select
-            className="admin-form-select"
-            style={{ fontSize: 13, padding: "8px 12px" }}
-            value={careerFilter}
-            onChange={(e) => setCareerFilter(e.target.value)}
-          >
-            {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-          </select>
-        </div>
-
-        {/* 연령 칩 (매장직만) */}
-        {activeTab === "STORE" && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>연령</span>
-            <div className="admin-filter-tabs">
-              {AGE_FILTERS.map((f) => (
-                <button key={f} className={`admin-filter-tab ${ageFilter === f ? "active" : ""}`} onClick={() => setAgeFilter(f)}>{f}</button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 성별 칩 (매장직만) */}
-        {activeTab === "STORE" && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>성별</span>
-            <div className="admin-filter-tabs">
-              {GENDER_FILTERS.map((f) => (
-                <button key={f} className={`admin-filter-tab ${genderFilter === f ? "active" : ""}`} onClick={() => setGenderFilter(f)}>{f}</button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 초기화 + 총원 — 오른쪽 끝 */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginLeft: "auto" }}>
-          <button onClick={resetFilters} style={{ fontSize: 12, color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>
-            초기화
-          </button>
-          <span style={{ fontSize: 13, color: "#888" }}>
-            총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명
-          </span>
         </div>
       </div>
 
@@ -322,6 +309,18 @@ export default function TalentPage() {
         <div className="admin-empty">검색 결과가 없습니다.</div>
       ) : (
         <div style={{ border: "1px solid #eee", borderRadius: 8, overflow: "hidden", background: "#fff" }}>
+          {/* 헤더 행 */}
+          <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 16px", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 12, color: "#999", fontWeight: 500 }}>
+            <div style={{ width: 40, flexShrink: 0 }} />
+            <div style={{ minWidth: 110, flexShrink: 0 }}>이름</div>
+            <div style={{ minWidth: 90, flexShrink: 0 }}>직군</div>
+            <div style={{ minWidth: 100, flexShrink: 0 }}>지역</div>
+            <div style={{ minWidth: 150, flexShrink: 0 }}>최종학력</div>
+            <div style={{ minWidth: 160, flexShrink: 0 }}>최근경력</div>
+            <div style={{ flex: 1 }}>스킬</div>
+            <div style={{ width: 100, flexShrink: 0 }} />
+          </div>
+
           {talents.map((t, idx) => (
             <div
               key={t.id}
@@ -329,44 +328,44 @@ export default function TalentPage() {
               onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
             >
-              {/* 아바타 */}
               <div className="talent-avatar" style={{ width: 40, height: 40, flexShrink: 0, overflow: "hidden" }}>
                 {t.avatarUrl
                   ? <img src={t.avatarUrl} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   : t.name?.slice(0, 1) || "?"}
               </div>
-
-              {/* 이름 + 메타 */}
               <div style={{ minWidth: 110, flexShrink: 0 }}>
                 <div style={{ fontWeight: 600, fontSize: 14, color: "#1a1a1a" }}>{t.name}</div>
                 <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
                   {[genderLabel(t.gender), t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
                 </div>
               </div>
-
-              {/* 직군 */}
-              <div style={{ minWidth: 90, fontSize: 13, color: "#555", flexShrink: 0 }}>
-                {t.mainJobGroup || "—"}
+              <div style={{ minWidth: 90, fontSize: 13, color: "#555", flexShrink: 0 }}>{t.mainJobGroup || "—"}</div>
+              <div style={{ minWidth: 100, fontSize: 12, color: "#999", flexShrink: 0 }}>{t.regionPrefer || "—"}</div>
+              <div style={{ minWidth: 150, flexShrink: 0, fontSize: 12 }}>
+                {t.educationDetail ? (
+                  <>
+                    <div style={{ fontWeight: 500, color: "#333" }}>{t.educationDetail.school}</div>
+                    <div style={{ color: "#999" }}>
+                      {[t.educationDetail.major, t.educationDetail.status, `${fmtDate(t.educationDetail.start_date)} - ${fmtDate(t.educationDetail.end_date)}`].filter(Boolean).join(" · ")}
+                    </div>
+                  </>
+                ) : <span style={{ color: "#ccc" }}>—</span>}
               </div>
-
-              {/* 지역 */}
-              <div style={{ minWidth: 100, fontSize: 12, color: "#999", flexShrink: 0 }}>
-                {t.regionPrefer || "—"}
+              <div style={{ minWidth: 160, flexShrink: 0, fontSize: 12 }}>
+                {t.careerDetail ? (
+                  <>
+                    <div style={{ fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
+                    <div style={{ color: "#999" }}>
+                      {[`${fmtDate(t.careerDetail.start_date)} - ${fmtDate(t.careerDetail.end_date)}`, t.careerDetail.department, t.careerDetail.position].filter(Boolean).join(" · ")}
+                    </div>
+                  </>
+                ) : <span style={{ color: "#ccc" }}>—</span>}
               </div>
-
-              {/* 스킬 칩 */}
               <div style={{ flex: 1, display: "flex", gap: 5, flexWrap: "wrap" }}>
                 {(t.skills || []).slice(0, 4).map((sk) => (
                   <span key={sk} className="talent-tag">{sk}</span>
                 ))}
               </div>
-
-              {/* 한줄소개 */}
-              <div style={{ flex: 1, fontSize: 12, color: "#bbb", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", maxWidth: 200 }}>
-                {t.intro || ""}
-              </div>
-
-              {/* 버튼 */}
               <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                 <button className="company-action-btn" onClick={(e) => { e.stopPropagation(); setSelected(t); }}>
                   <FileText size={14} /> 이력서
@@ -443,6 +442,7 @@ export default function TalentPage() {
           </div>
         </div>
       )}
+
     </CompanyLayout>
   );
 }
