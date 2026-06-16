@@ -64,15 +64,13 @@ export async function GET(req: NextRequest) {
   if (active) {
     where.push(`deadline IS NOT NULL`)
     where.push(`deadline::date >= CURRENT_DATE`)
-    where.push(`deadline::date <= CURRENT_DATE + 14`)
-    where.push(`(deadline::date - created_at::date) <= 30`)
   }
 
   const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : ''
 
   // active 모드: 2단계 정렬 (1단계 마감임박 + 2단계 기업 적극성)
   const activeOrderBy = `
-    deadline::date ASC,
+    (deadline::date - created_at::date) ASC,
     CASE
       WHEN app_stats.total_apps >= 3
       THEN COALESCE(app_stats.view_rate, 0.5)
