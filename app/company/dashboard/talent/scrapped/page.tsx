@@ -170,48 +170,45 @@ export default function ScrappedTalentPage() {
 
       {loading ? (
         <div className="admin-empty">불러오는 중...</div>
+      ) : filtered.length === 0 ? (
+        <div className="admin-empty">스크랩한 인재가 없습니다.</div>
       ) : (
-        <div className="talent-grid">
-          {filtered.map(t => (
-            <div key={t.user_id} className="talent-card">
-              <div className="talent-card-head">
-                <div className="talent-avatar" style={{ overflow: "hidden" }}>
-                  {t.avatar_url
-                    ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    : (t.name || "?").slice(0, 1)}
-                </div>
-                <div className="talent-info">
-                  <h3 className="talent-name">{t.name}</h3>
-                  <p className="talent-meta">
-                    {metaLine(t.gender, t.age, t.career_years, t.career_count)}
-                  </p>
-                  <p className="talent-location">{t.location || "지역 미설정"}</p>
-                </div>
-                <button className="talent-scrap-btn scrapped" onClick={() => handleUnscrap(t.user_id)}>
-                  <BookmarkCheck size={20} />
-                </button>
-              </div>
-              <p className="talent-title" onClick={() => setSelected(t)}>
-                {t.headline || t.job_category || "프로필 미작성"}
-              </p>
-              <div style={{ fontSize: 12, color: "#555" }}>
-                {(t.skills || []).slice(0, 4).join(", ")}
-              </div>
-              <div className="talent-card-footer">
-                <div className="talent-detail">
-                  <span>{t.job_category || "-"}</span>
-                </div>
-                <button className="company-action-btn" onClick={() => setSelected(t)}>
-                  <FileText size={14} /> 이력서 보기
-                </button>
-              </div>
-            </div>
-          ))}
-          {filtered.length === 0 && (
-            <div className="admin-empty">스크랩한 인재가 없습니다.</div>
-          )}
-        </div>
-      )}
+        <div style={{ border: "1px solid #eee", borderRadius: 8, overflow: "hidden", background: "#fff" }}>
+
+          {/* 헤더 */}
+          <div style={{ display: "flex", alignItems: "stretch", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 12, color: "#999", fontWeight: 500 }}>
+            <div style={{ width: 60, flexShrink: 0, borderRight: "1px solid #f0f0f0" }} />
+            <div style={{ flex: 1.3, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>이름</div>
+            <div style={{ flex: 1, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>직군</div>
+            <div style={{ flex: 1.1, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>지역</div>
+            <div style={{ flex: 1.7, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>최종학력</div>
+            <div style={{ flex: 1.8, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>최근경력</div>
+            <div style={{ flex: 1.8, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>스킬</div>
+            <div style={{ width: 150, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>관리</div>
+          </div>
+
+          {/* 바디 */}
+          {filtered.map((t, idx) => {
+            const cell = (flexVal: number, last = false): React.CSSProperties => ({
+              flex: flexVal, minWidth: 0, height: 68,
+              display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+              padding: "0 12px", borderRight: last ? "none" : "1px solid #f0f0f0",
+              textAlign: "center", overflow: "hidden",
+            });
+            const clamp1: React.CSSProperties = { display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis", wordBreak: "break-word", maxWidth: "100%" };
+            const clamp2: React.CSSProperties = { ...clamp1, WebkitLineClamp: 2, lineHeight: 1.35 };
+            return (
+              <div key={t.user_id}
+                style={{ display: "flex", alignItems: "stretch", borderBottom: idx < filtered.length - 1 ? "1px solid #f2f2f2" : "none", cursor: "pointer", transition: "background .1s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+              >
+                {/* 아바타 */}
+                <div style={{ width: 60, flexShrink: 0, height: 68, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>
+                  <div className="talent-avatar" style={{ width: 40, height: 40, overflow: "hidden" }}>
+                    {t.avatar_url
+                      ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      : (t.name || "?").slice(0, 1)}
 
       {selected && (
         <div className="rp-modal-overlay" onClick={() => setSelected(null)}>

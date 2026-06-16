@@ -23,7 +23,17 @@ export async function GET(req: NextRequest) {
         up.main_job_group,
         up.sub_job,
         up.skills,
+        u.region_sido,
+        u.region_sigungu,
         up.region_prefer AS location,
+        (
+          SELECT json_build_object('school', school, 'major', major, 'status', status)
+          FROM user_educations WHERE user_id = u.id ORDER BY created_at DESC LIMIT 1
+        ) AS education_detail,
+        (
+          SELECT json_build_object('company', company, 'department', department, 'position', position, 'end_date', end_date)
+          FROM user_careers WHERE user_id = u.id ORDER BY start_date DESC LIMIT 1
+        ) AS career_detail,
         (
           SELECT CASE
             WHEN MIN(start_date) ~ '^[0-9]{4}'
@@ -53,7 +63,9 @@ export async function GET(req: NextRequest) {
       headline: r.intro,
       job_category: r.main_job_group,
       skills: r.skills || [],
-      location: r.location,
+      location: [r.region_sido, r.region_sigungu].filter(Boolean).join(" ") || r.location || null,
+      educationDetail: r.education_detail,
+      careerDetail: r.career_detail,
       career_years: r.career_years,
       career_count: r.career_count,
       scrapped_at: r.scrapped_at,
