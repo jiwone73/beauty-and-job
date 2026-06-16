@@ -223,11 +223,11 @@ export default function JobPostForm({
     if (categories.length === 0) { alert(jobGroupType === "매장" ? "시술 분야를 선택해주세요." : "직군을 선택해주세요."); return; }
     if (!form.career.trim()) { alert("경력 조건을 입력해주세요."); return; }
     if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
-    if (!form.description.trim() && status === "publish") {
-      const proceed = confirm(
-        "상세 설명 없이 이미지만 등록하면 구직자 검색에 잘 노출되지 않을 수 있어요.\n\n검색 노출을 높이려면 '포지션 소개'에 텍스트를 입력하는 것을 권장해요.\n\n그래도 이대로 등록하시겠어요?"
-      );
-      if (!proceed) return;
+    // 상세 이미지가 없으면 포지션 소개는 필수, 있으면 선택
+    const hasDetailImages = detailImages.length > 0;
+    if (!hasDetailImages && !form.description.trim() && status === "publish") {
+      alert("포지션 소개를 입력하거나, 상세 이미지를 1장 이상 첨부해주세요.\n\n둘 중 하나는 반드시 필요해요.");
+      return;
     }
 
     const expLevel = form.career.includes("신입") ? "NEW"
@@ -277,7 +277,11 @@ export default function JobPostForm({
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   const textFieldMeta: Record<TextKey, { label: string; hint?: string; placeholder: string }> = {
     benefits: { label: benefitsLabel, placeholder: "복리후생·근무조건을 입력하세요" },
-    description: { label: "포지션 소개", hint: "검색 노출 권장", placeholder: "이 포지션에 대한 소개를 입력하세요. 비워두고 상세 이미지로 대체할 수도 있어요." },
+    description: {
+      label: "포지션 소개",
+      hint: detailImages.length > 0 ? "선택 (이미지로 대체됨)" : "필수 (이미지 없을 시)",
+      placeholder: "이 포지션에 대한 소개를 입력하세요. 비워두고 상세 이미지로 대체할 수도 있어요.",
+    },
     requirements: { label: "자격요건", placeholder: "필수 자격요건을 입력하세요" },
     preferred: { label: "우대사항", placeholder: "우대사항을 입력하세요" },
   };
@@ -306,7 +310,14 @@ export default function JobPostForm({
           )}
           <span style={{ fontSize: "14px", fontWeight: 600, color: "#333", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {meta.label}
-            {meta.hint && <span style={{ marginLeft: "6px", fontSize: "12px", fontWeight: 400, color: "#8b5cf6" }}>{meta.hint}</span>}
+            {meta.hint && (
+              <span style={{
+                marginLeft: "6px", fontSize: "12px", fontWeight: 500,
+                color: meta.hint.startsWith("필수") ? "#dc2626" : "#999",
+              }}>
+                {meta.hint.startsWith("필수") ? "★ " : ""}{meta.hint}
+              </span>
+            )}
           </span>
         </div>
         <button type="button" onClick={() => openTextModal(k)}
