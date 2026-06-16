@@ -66,9 +66,12 @@ export async function GET(req: NextRequest) {
 
   // 성별 (매장직)
   let genderClause = "";
-  if (gender && gender !== "무관") {
+  if (gender === "여성") {
     genderClause = `AND u.gender = $${idx++}`;
-    params.push(gender);
+    params.push("FEMALE");
+  } else if (gender === "남성") {
+    genderClause = `AND u.gender = $${idx++}`;
+    params.push("MALE");
   }
 
   // 경력 (CTE 이후)
