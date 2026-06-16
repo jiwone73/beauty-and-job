@@ -310,38 +310,38 @@ export default function TalentPage() {
       ) : (
         <div style={{ border: "1px solid #eee", borderRadius: 8, overflow: "hidden", background: "#fff" }}>
           {/* 헤더 행 */}
-          <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 16px", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 12, color: "#999", fontWeight: 500 }}>
-            <div style={{ width: 40, flexShrink: 0 }} />
-            <div style={{ minWidth: 110, flexShrink: 0 }}>이름</div>
-            <div style={{ minWidth: 90, flexShrink: 0 }}>직군</div>
-            <div style={{ minWidth: 100, flexShrink: 0 }}>지역</div>
-            <div style={{ minWidth: 180, flexShrink: 0 }}>최종학력</div>
-            <div style={{ minWidth: 190, flexShrink: 0 }}>최근경력</div>
-            <div style={{ flex: 1 }}>스킬</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 0, padding: "10px 16px 10px 0", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 12, color: "#999", fontWeight: 500 }}>
+            <div style={{ width: 56, flexShrink: 0 }} />
+            <div style={{ minWidth: 110, flexShrink: 0, padding: "0 14px", borderRight: "1px solid #f0f0f0", textAlign: "left" }}>이름</div>
+            <div style={{ minWidth: 90, flexShrink: 0, padding: "0 14px", borderRight: "1px solid #f0f0f0", textAlign: "left" }}>직군</div>
+            <div style={{ minWidth: 100, flexShrink: 0, padding: "0 14px", borderRight: "1px solid #f0f0f0", textAlign: "left" }}>지역</div>
+            <div style={{ minWidth: 180, flexShrink: 0, padding: "0 14px", borderRight: "1px solid #f0f0f0", textAlign: "left" }}>최종학력</div>
+            <div style={{ minWidth: 190, flexShrink: 0, padding: "0 14px", borderRight: "1px solid #f0f0f0", textAlign: "left" }}>최근경력</div>
+            <div style={{ flex: 1, padding: "0 14px", textAlign: "left" }}>스킬</div>
             <div style={{ width: 100, flexShrink: 0 }} />
           </div>
 
           {talents.map((t, idx) => (
             <div
               key={t.id}
-              style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", borderBottom: idx < talents.length - 1 ? "1px solid #f2f2f2" : "none", cursor: "pointer", transition: "background .1s" }}
+              style={{ display: "flex", alignItems: "center", gap: 0, padding: "12px 16px 12px 0", borderBottom: idx < talents.length - 1 ? "1px solid #f2f2f2" : "none", cursor: "pointer", transition: "background .1s" }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
             >
-              <div className="talent-avatar" style={{ width: 40, height: 40, flexShrink: 0, overflow: "hidden" }}>
+              <div className="talent-avatar" style={{ width: 40, height: 40, flexShrink: 0, overflow: "hidden", marginLeft: 16 }}>
                 {t.avatarUrl
                   ? <img src={t.avatarUrl} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   : t.name?.slice(0, 1) || "?"}
               </div>
-              <div style={{ minWidth: 110, flexShrink: 0 }}>
+              <div style={{ minWidth: 110, flexShrink: 0, padding: "0 14px", borderRight: "1px solid #f0f0f0" }}>
                 <div style={{ fontWeight: 600, fontSize: 14, color: "#1a1a1a" }}>{t.name}</div>
                 <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
                   {[genderLabel(t.gender), t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
                 </div>
               </div>
-              <div style={{ minWidth: 90, fontSize: 13, color: "#555", flexShrink: 0 }}>{t.mainJobGroup || "—"}</div>
-              <div style={{ minWidth: 100, fontSize: 12, color: "#999", flexShrink: 0 }}>{t.regionPrefer || "—"}</div>
-              <div style={{ minWidth: 180, flexShrink: 0, fontSize: 12 }}>
+              <div style={{ minWidth: 90, fontSize: 13, color: "#555", flexShrink: 0, padding: "0 14px", borderRight: "1px solid #f0f0f0" }}>{t.mainJobGroup || "—"}</div>
+              <div style={{ minWidth: 100, fontSize: 12, color: "#999", flexShrink: 0, padding: "0 14px", borderRight: "1px solid #f0f0f0" }}>{t.regionPrefer || "—"}</div>
+              <div style={{ minWidth: 180, flexShrink: 0, fontSize: 12, padding: "0 14px", borderRight: "1px solid #f0f0f0" }}>
                 {t.educationDetail ? (
                   <>
                     <div style={{ fontWeight: 500, color: "#333" }}>{t.educationDetail.school}</div>
@@ -349,7 +349,7 @@ export default function TalentPage() {
                   </>
                 ) : <span style={{ color: "#ccc" }}>—</span>}
               </div>
-              <div style={{ minWidth: 190, flexShrink: 0, fontSize: 12 }}>
+              <div style={{ minWidth: 190, flexShrink: 0, fontSize: 12, padding: "0 14px", borderRight: "1px solid #f0f0f0" }}>
                 {t.careerDetail ? (
                   <>
                     <div style={{ fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
@@ -357,7 +357,7 @@ export default function TalentPage() {
                   </>
                 ) : <span style={{ color: "#ccc" }}>—</span>}
               </div>
-              <div style={{ flex: 1, fontSize: 12, color: "#555" }}>
+              <div style={{ flex: 1, fontSize: 12, color: "#555", padding: "0 14px" }}>
                 {(t.skills || []).slice(0, 4).join(", ")}
               </div>
               <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
