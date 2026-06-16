@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   if (authErr) return authErr;
   const result = await pool.query(
     `SELECT id, company_name, brand_name, business_number, representative_name, company_type,
-            email, phone, logo_url, description, website_url, address,
+            email, phone, logo_url, cover_images, description, website_url, address,
             company_size, founded_year, region_sido, region_sigungu,
             status, created_at
      FROM companies WHERE id = $1`,

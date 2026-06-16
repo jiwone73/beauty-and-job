@@ -17,6 +17,8 @@ export default function CompanySettingsPage() {
   const [savedMessage, setSavedMessage] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
+  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const [coverUploading, setCoverUploading] = useState(false);
 
   const [form, setForm] = useState({
     company_name: "",
@@ -99,6 +101,49 @@ export default function CompanySettingsPage() {
       });
       const data = await res.json();
       if (data.success) setLogoUrl(null);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) { alert("로그인이 필요합니다."); return; }
+    setCoverUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/company/me/cover", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.success) {
+        const cov = data.data.cover_images;
+        setCoverUrl(Array.isArray(cov) && cov[0]?.url ? cov[0].url : null);
+      } else {
+        alert(data.error?.message || "이미지 업로드에 실패했습니다.");
+      }
+    } finally {
+      setCoverUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleCoverDelete = async () => {
+    if (!confirm("공고 노출 이미지를 삭제하시겠습니까?")) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    try {
+      const res = await fetch("/api/company/me/cover", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) setCoverUrl(null);
     } catch (e) {
       console.error(e);
     }
@@ -241,6 +286,44 @@ export default function CompanySettingsPage() {
                   </div>
                 </div>
               </div>
+
+              <div className="admin-form-row">
+                <label className="admin-form-label">공고 노출 이미지</label>
+                <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
+                  공고 카드와 상단에 크게 표시되는 대표 비주얼이에요. 매장 사진이나 분위기 이미지를 넣어보세요. 모든 공고에 자동 적용돼요. (가로형 권장, JPG·PNG·WebP, 2MB 이하)
+                </p>
+                <div style={{display:"flex", alignItems:"center", gap:"16px"}}>
+                  <div style={{width:"180px", height:"110px", borderRadius:"12px", border:"1px solid #eee",
+                    background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
+                    overflow:"hidden", flexShrink:0}}>
+                    {coverUrl ? (
+                      <img src={coverUrl} alt="공고 노출 이미지"
+                        style={{width:"100%", height:"100%", objectFit:"cover"}} />
+                    ) : (
+                      <span style={{fontSize:"13px", color:"#c4b5d4"}}>이미지 없음</span>
+                    )}
+                  </div>
+                  <div style={{display:"flex", flexDirection:"column", gap:"8px"}}>
+                    <label style={{display:"inline-flex", alignItems:"center", gap:"6px",
+                      padding:"8px 14px", border:"1.5px solid #c4b5d4", borderRadius:"8px",
+                      cursor: coverUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"13px",
+                      fontWeight:500, background:"#fff", width:"fit-content"}}>
+                      {coverUploading ? "업로드 중..." : coverUrl ? "이미지 변경" : "이미지 등록"}
+                      <input type="file" accept="image/jpeg,image/png,image/webp"
+                        disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
+                    </label>
+                    {coverUrl && (
+                      <button type="button" onClick={handleCoverDelete}
+                        style={{padding:"8px 14px", border:"1px solid #eee", borderRadius:"8px",
+                          cursor:"pointer", color:"#888", fontSize:"13px", background:"#fff",
+                          width:"fit-content"}}>
+                        삭제
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="admin-form-row">
                 <label className="admin-form-label">기업명 *</label>
                 <input className="admin-form-input" placeholder="기업명"
