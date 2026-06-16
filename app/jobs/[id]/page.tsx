@@ -175,6 +175,7 @@ export default function JobDetailPage() {
             process: j.hiring_process || [],
             notes: j.notes || '',
             logo_url: j.company?.logo_url,
+            cover_images: j.company?.cover_images || [],
             detailImages: j.detail_images || [],
             companyInfo: {
               name: j.company?.company_name || '',
@@ -193,6 +194,10 @@ export default function JobDetailPage() {
               }
             } catch {}
           }
+          // 어드민이 보는 경우도 미리보기 모드 (지원/북마크 숨김)
+          if (localStorage.getItem("admin_token")) {
+            setIsAdminPreview(true);
+          }
         }
       })
       .catch(e => console.error('[load job]', e));
@@ -200,6 +205,7 @@ export default function JobDetailPage() {
 
   const [bookmarked, setBookmarked] = useState(false);
   const [isOwnerCompany, setIsOwnerCompany] = useState(false);
+  const [isAdminPreview, setIsAdminPreview] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [applyDone, setApplyDone] = useState(false);
   const [dbApplied, setDbApplied] = useState(false);
@@ -250,14 +256,20 @@ export default function JobDetailPage() {
         <main className="job-detail-main">
           {/* 썸네일 + 기본 정보 */}
           <div className="job-detail-hero" style={{ background: job.color }}>
-            {job.logo_url ? (
-              <img src={job.logo_url} alt={job.brand}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            ) : (
-              <div className="job-detail-hero-placeholder">
-                <span>{job.brand[0]}</span>
-              </div>
-            )}
+            {(() => {
+              const heroImg =
+                (Array.isArray(job.cover_images) && job.cover_images[0]?.url) ||
+                job.logo_url ||
+                (Array.isArray(job.detailImages) && job.detailImages[0]?.url);
+              return heroImg ? (
+                <img src={heroImg} alt={job.brand}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <div className="job-detail-hero-placeholder">
+                  <span>{job.brand[0]}</span>
+                </div>
+              );
+            })()}
           </div>
 
           <div className="job-detail-info-box">
@@ -488,7 +500,15 @@ export default function JobDetailPage() {
             <div className="job-detail-aside-deadline">
               {job.deadline === "상시채용" ? <strong>상시채용</strong> : <>마감일: <strong>{job.deadline}</strong></>}
             </div>
-            {isOwnerCompany ? (
+            {isAdminPreview ? (
+              <div style={{
+                background: "#fff7ed", color: "#c2410c", borderRadius: "10px",
+                padding: "12px 14px", fontSize: "13px", lineHeight: 1.5,
+                textAlign: "center"
+              }}>
+                관리자 미리보기 화면이에요.<br />구직자에게는 지원·북마크 버튼이 보여요.
+              </div>
+            ) : isOwnerCompany ? (
               <>
                 <div style={{
                   background: "#f5f3ff", color: "#5f0080", borderRadius: "10px",
@@ -535,7 +555,11 @@ export default function JobDetailPage() {
 
       {/* 모바일 하단 CTA */}
       <div className="job-detail-mobile-cta">
-        {isOwnerCompany ? (
+        {isAdminPreview ? (
+          <button className="job-detail-mobile-apply" disabled style={{ opacity: 0.7 }}>
+            관리자 미리보기
+          </button>
+        ) : isOwnerCompany ? (
           <button
             className="job-detail-mobile-apply"
             onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}
