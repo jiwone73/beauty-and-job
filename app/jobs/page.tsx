@@ -137,7 +137,7 @@ function JobsPageInner() {
             career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
             region: j.location || '국내',
             type: j.company_type === 'OFFICE' ? '기업' : j.company_type === 'STORE' ? '매장' : '기업',
-            thumbnail: (Array.isArray(j.detail_images) && j.detail_images[0]) || j.logo_url,
+            thumbnail: (Array.isArray(j.detail_images) && j.detail_images[0]?.url) || j.logo_url,
             color: '#e8f0fe',
             deadline: formatDeadline(j.deadline),
             employment: j.employment_type || null,
