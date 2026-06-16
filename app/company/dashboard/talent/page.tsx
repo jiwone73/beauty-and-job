@@ -45,6 +45,7 @@ const clamp1: React.CSSProperties = {
 
 export default function TalentPage() {
   const [activeTab, setActiveTab]   = useState<JobTab>("STORE");
+  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH">("BOTH");
   const [talents, setTalents]       = useState<TalentItem[]>([]);
   const [loading, setLoading]       = useState(true);
   const [total, setTotal]           = useState(0);
@@ -159,6 +160,22 @@ export default function TalentPage() {
     finally { setLoading(false); }
   }, [activeTab, search, selectedJobGroups, careerFilter, selectedRegions, ageFilter, genderFilter]);
 
+  // 가입 업종 로드 → 탭 제어
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    fetch("/api/company/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        const ct = res?.data?.company_type as "OFFICE" | "STORE" | "BOTH" | undefined;
+        if (ct) {
+          setCompanyType(ct);
+          if (ct === "OFFICE") setActiveTab("OFFICE");
+          else setActiveTab("STORE");
+        }
+      })
+      .catch((e) => console.error("[company me]", e));
+  }, []);
+
   useEffect(() => {
     const t = setTimeout(fetchTalents, 300);
     return () => clearTimeout(t);
@@ -209,19 +226,21 @@ export default function TalentPage() {
   return (
     <CompanyLayout activePage="talent">
 
-      {/* 탭 */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
-          <button key={tab} onClick={() => handleTabSwitch(tab)} style={{
-            padding: "8px 20px", borderRadius: 6, fontSize: 14, fontWeight: 500, cursor: "pointer",
-            border: `1px solid ${activeTab === tab ? "#5f0080" : "#e0e0e0"}`,
-            background: activeTab === tab ? "#5f0080" : "#fff",
-            color: activeTab === tab ? "#fff" : "#555", transition: "all .15s",
-          }}>
-            {tab === "STORE" ? "🏪 매장직" : "🏢 사무직"}
-          </button>
-        ))}
-      </div>
+      {/* 탭 — BOTH만 둘 다 노출 */}
+      {companyType === "BOTH" && (
+        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
+            <button key={tab} onClick={() => handleTabSwitch(tab)} style={{
+              padding: "8px 20px", borderRadius: 6, fontSize: 14, fontWeight: 500, cursor: "pointer",
+              border: `1px solid ${activeTab === tab ? "#5f0080" : "#e0e0e0"}`,
+              background: activeTab === tab ? "#5f0080" : "#fff",
+              color: activeTab === tab ? "#fff" : "#555", transition: "all .15s",
+            }}>
+              {tab === "STORE" ? "🏪 매장직" : "🏢 사무직"}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* 필터 */}
       <div style={{ marginBottom: 12 }}>
