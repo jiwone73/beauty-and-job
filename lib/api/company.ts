@@ -95,20 +95,27 @@ export type TalentItem = {
 
 export const companyTalentApi = {
   list: (params?: {
+    jobType?: string;
     search?: string;
-    jobGroup?: string;
+    jobGroups?: string;
     careerFilter?: string;
+    regions?: string;
     ageGroup?: string;
+    gender?: string;
     page?: number;
     limit?: number;
   }) => {
     const qs = new URLSearchParams();
+    if (params?.jobType) qs.set("jobType", params.jobType);
     if (params?.search) qs.set("search", params.search);
-    if (params?.jobGroup && params.jobGroup !== "전체") qs.set("jobGroup", params.jobGroup);
+    if (params?.jobGroups) qs.set("jobGroups", params.jobGroups);
     if (params?.careerFilter && params.careerFilter !== "전체")
       qs.set("careerFilter", params.careerFilter);
+    if (params?.regions) qs.set("regions", params.regions);
     if (params?.ageGroup && params.ageGroup !== "전체")
       qs.set("ageGroup", params.ageGroup);
+    if (params?.gender && params.gender !== "무관")
+      qs.set("gender", params.gender);
     if (params?.page) qs.set("page", String(params.page));
     if (params?.limit) qs.set("limit", String(params.limit));
     const query = qs.toString() ? `?${qs}` : "";
