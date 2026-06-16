@@ -371,10 +371,8 @@ export default function TalentPage() {
                   </>
                 ) : <span style={{ color: "#ccc" }}>—</span>}
               </div>
-              <div style={{ flex: 1, display: "flex", gap: 5, flexWrap: "wrap" }}>
-                {(t.skills || []).slice(0, 4).map((sk) => (
-                  <span key={sk} className="talent-tag">{sk}</span>
-                ))}
+              <div style={{ flex: 1, fontSize: 12, color: "#555" }}>
+                {(t.skills || []).slice(0, 4).join(", ")}
               </div>
               <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                 <button className="company-action-btn" onClick={(e) => { e.stopPropagation(); setSelected(t); }}>

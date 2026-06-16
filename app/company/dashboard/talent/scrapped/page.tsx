@@ -190,10 +190,8 @@ export default function ScrappedTalentPage() {
               <p className="talent-title" onClick={() => setSelected(t)}>
                 {t.headline || t.job_category || "프로필 미작성"}
               </p>
-              <div className="talent-tags">
-                {(t.skills || []).slice(0, 3).map((sk: string) => (
-                  <span key={sk} className="talent-tag">{sk}</span>
-                ))}
+              <div style={{ fontSize: 12, color: "#555" }}>
+                {(t.skills || []).slice(0, 4).join(", ")}
               </div>
               <div className="talent-card-footer">
                 <div className="talent-detail">
