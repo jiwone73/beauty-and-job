@@ -12,7 +12,7 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 
 type JobTab = "OFFICE" | "STORE";
 
-const CAREER_OPTIONS = ["전체", "신입", "1-3년", "3-5년", "5년+"];
+const CAREER_OPTIONS = ["전체", "신입", "1-3년", "3-5년", "5-10년", "10년+"];
 const AGE_FILTERS  = ["전체", "20대", "30대", "40+"];
 const GENDER_FILTERS = ["무관", "여성", "남성"];
 
@@ -195,7 +195,7 @@ export default function TalentPage() {
 
       {/* 탭 */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        {(["OFFICE", "STORE"] as JobTab[]).map((tab) => (
+        {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabSwitch(tab)}
@@ -250,8 +250,8 @@ export default function TalentPage() {
         )}
 
         {/* 경력 드롭다운 */}
-        <div className="admin-filter-group">
-          <span className="admin-filter-label">경력</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>경력</span>
           <select
             className="admin-form-select"
             style={{ fontSize: 13, padding: "8px 12px" }}
@@ -264,8 +264,8 @@ export default function TalentPage() {
 
         {/* 연령 칩 (매장직만) */}
         {activeTab === "STORE" && (
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">연령</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>연령</span>
             <div className="admin-filter-tabs">
               {AGE_FILTERS.map((f) => (
                 <button key={f} className={`admin-filter-tab ${ageFilter === f ? "active" : ""}`} onClick={() => setAgeFilter(f)}>{f}</button>
@@ -276,8 +276,8 @@ export default function TalentPage() {
 
         {/* 성별 칩 (매장직만) */}
         {activeTab === "STORE" && (
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">성별</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>성별</span>
             <div className="admin-filter-tabs">
               {GENDER_FILTERS.map((f) => (
                 <button key={f} className={`admin-filter-tab ${genderFilter === f ? "active" : ""}`} onClick={() => setGenderFilter(f)}>{f}</button>
@@ -286,7 +286,7 @@ export default function TalentPage() {
           </div>
         )}
 
-        {/* 초기화 + 총원 */}
+        {/* 초기화 + 총원 — 오른쪽 끝 */}
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginLeft: "auto" }}>
           <button onClick={resetFilters} style={{ fontSize: 12, color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>
             초기화
