@@ -1755,7 +1755,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobs-category-arrow:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
 /* 카드 그리드 */
-.jobs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 24px; }
+.jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; margin-top: 24px; }
 .jobs-card { text-decoration: none; color: inherit; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s; }
 .jobs-card:hover { transform: translateY(-3px); }
 .jobs-card-thumb { aspect-ratio: 1 / 1; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
