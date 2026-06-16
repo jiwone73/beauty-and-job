@@ -245,7 +245,14 @@ const previewRef = useRef<HTMLDivElement>(null);
           {talents.map((t) => (
             <div key={t.id} className="talent-card">
               <div className="talent-card-head">
-                <div className="talent-avatar">{t.name?.slice(0, 1) || "?"}</div>
+                <div className="talent-avatar" style={{ overflow: "hidden" }}>
+                  {t.avatar_url ? (
+                    <img src={t.avatar_url} alt={t.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    t.name?.slice(0, 1) || "?"
+                  )}
+                </div>
                 <div className="talent-info">
                   <h3 className="talent-name">{t.name}</h3>
                   <p className="talent-meta">{metaLine(t.gender, t.age, t.careerYears, t.careerCount)}</p>

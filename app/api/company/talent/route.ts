@@ -68,6 +68,7 @@ export async function GET(req: NextRequest) {
       SELECT
         u.id,
         u.name,
+        u.avatar_url,
         u.created_at,
         u.gender,
         CASE WHEN u.birth_date IS NOT NULL
