@@ -37,6 +37,7 @@ type Resume = {
   created_at: string;
   updated_at: string;
   name: string;
+  avatar_url: string | null;
   email: string;
   phone: string | null;
   gender: string | null;
@@ -102,6 +103,7 @@ export default function AdminResumesPage() {
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [zoomAvatar, setZoomAvatar] = useState<string | null>(null);
 
   const handleDownloadPdf = async () => {
     if (!previewRef.current) return;
@@ -445,8 +447,16 @@ export default function AdminResumesPage() {
                     </td>
                     <td>
                       <div className="admin-resume-member">
-                        <div className="admin-resume-photo">
-                          <span>{(r.name || "?").slice(0, 1)}</span>
+                        <div
+                          className="admin-resume-photo"
+                          style={{ cursor: r.avatar_url ? "pointer" : "default", overflow: "hidden" }}
+                          onClick={(e) => { e.stopPropagation(); if (r.avatar_url) setZoomAvatar(r.avatar_url); }}
+                        >
+                          {r.avatar_url ? (
+                            <img src={r.avatar_url} alt={r.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          ) : (
+                            <span>{(r.name || "?").slice(0, 1)}</span>
+                          )}
                         </div>
                         <div className="admin-resume-member-info">
                           <strong>{r.name}</strong>
@@ -542,6 +552,33 @@ export default function AdminResumesPage() {
                 <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {zoomAvatar && (
+        <div
+          className="rp-modal-overlay"
+          onClick={() => setZoomAvatar(null)}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          <div onClick={(e) => e.stopPropagation()} style={{ position: "relative" }}>
+            <img
+              src={zoomAvatar}
+              alt="프로필 사진"
+              style={{ maxWidth: "80vw", maxHeight: "80vh", borderRadius: 12, objectFit: "contain" }}
+            />
+            <button
+              onClick={() => setZoomAvatar(null)}
+              style={{
+                position: "absolute", top: -14, right: -14, width: 32, height: 32,
+                borderRadius: "50%", border: "none", background: "#fff",
+                boxShadow: "0 2px 8px rgba(0,0,0,.2)", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >
+              <X size={18} />
+            </button>
           </div>
         </div>
       )}

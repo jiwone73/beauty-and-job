@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
         r.id, r.title, r.is_public, r.status,
         r.desired_location, r.desired_salary_min, r.desired_salary_max, r.desired_salary_type,
         r.career_type, r.created_at, r.updated_at,
-        u.name, u.email::text AS email, u.phone, u.gender, u.birth_date,
+        u.name, u.avatar_url, u.email::text AS email, u.phone, u.gender, u.birth_date,
         jc.name AS job_category,
         COALESCE(sk.skills, '[]'::json) AS skills,
         edu.school_name, edu.degree, edu.graduation_status
