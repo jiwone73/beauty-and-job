@@ -25,17 +25,18 @@ export async function GET(req: NextRequest) {
   const where: string[] = []
   const params: any[] = []
   let idx = 1
+  const prefix = active ? 'j.' : ''
 
   if (jobType) {
-    where.push(`job_type = $${idx++}`)
+    where.push(`${prefix}job_type = $${idx++}`)
     params.push(jobType)
   }
   if (location) {
-    where.push(`location ILIKE $${idx++}`)
+    where.push(`${prefix}location ILIKE $${idx++}`)
     params.push(`%${location}%`)
   }
   if (type && TYPE_MAP[type]) {
-    where.push(`job_type = $${idx++}`)
+    where.push(`${prefix}job_type = $${idx++}`)
     params.push(TYPE_MAP[type])
   }
   if (regions) {
@@ -44,39 +45,38 @@ export async function GET(req: NextRequest) {
       const ors = list.map((r) => {
         const keyword = r.endsWith(' 전체') ? r.replace(' 전체', '').slice(0, 2) : r.split(' ').pop()
         params.push(`%${keyword}%`)
-        return `location ILIKE $${idx++}`
+        return `${prefix}location ILIKE $${idx++}`
       })
       where.push(`(${ors.join(' OR ')})`)
     }
   } else if (sigungu) {
-    where.push(`location ILIKE $${idx++}`)
+    where.push(`${prefix}location ILIKE $${idx++}`)
     params.push(`%${sigungu}%`)
   } else if (sido) {
-    where.push(`location ILIKE $${idx++}`)
+    where.push(`${prefix}location ILIKE $${idx++}`)
     params.push(`%${sido.slice(0, 2)}%`)
   }
   if (q) {
     const kw = `%${q}%`
-    where.push(`(title ILIKE $${idx} OR brand_name ILIKE $${idx + 1} OR company_name ILIKE $${idx + 2})`)
+    where.push(`(${prefix}title ILIKE $${idx} OR ${prefix}brand_name ILIKE $${idx + 1} OR ${prefix}company_name ILIKE $${idx + 2})`)
     params.push(kw, kw, kw)
     idx += 3
   }
   if (active) {
-    where.push(`deadline IS NOT NULL`)
-    where.push(`deadline::date >= CURRENT_DATE`)
+    where.push(`j.deadline IS NOT NULL`)
+    where.push(`j.deadline::date >= CURRENT_DATE`)
   }
 
   const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : ''
 
-  // active 모드: 2단계 정렬 (1단계 마감임박 + 2단계 기업 적극성)
   const activeOrderBy = `
-    (deadline::date - created_at::date) ASC,
+    (j.deadline::date - j.created_at::date) ASC,
     CASE
       WHEN app_stats.total_apps >= 3
       THEN COALESCE(app_stats.view_rate, 0.5)
       ELSE 0.5
     END DESC,
-    created_at DESC
+    j.created_at DESC
   `
 
   const listQuery = active ? `
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
   `
 
   params.push(limit, offset)
-  const countQuery = `SELECT COUNT(*)::int AS total FROM v_active_jobs ${whereClause}`
+  const countQuery = `SELECT COUNT(*)::int AS total FROM v_active_jobs ${active ? 'j' : ''} ${whereClause}`
   const countParams = params.slice(0, params.length - 2)
 
   const [listRes, countRes] = await Promise.all([
