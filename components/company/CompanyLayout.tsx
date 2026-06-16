@@ -116,9 +116,9 @@ export default function CompanyLayout({ children, activePage }: {
   const NAV_ITEMS = [
     { id: "dashboard", label: "대시보드",      icon: Briefcase,    href: base },
     { id: "jobs",      label: "채용공고 관리", icon: FileText,     href: `${base}/jobs` },
-    { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants` },
     { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent` },
     { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped` },
+    { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants` },
     { id: "settings",  label: "기업 정보",     icon: Settings,     href: `${base}/settings` },
   ];
 
