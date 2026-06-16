@@ -1,5 +1,4 @@
 export const dynamic = "force-dynamic";
-
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok } from '@/lib/api'
@@ -71,17 +70,48 @@ export async function GET(req: NextRequest) {
 
   const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : ''
 
-  const listQuery = `
+  // active 모드: 2단계 정렬 (1단계 마감임박 + 2단계 기업 적극성)
+  const activeOrderBy = `
+    deadline::date ASC,
+    CASE
+      WHEN app_stats.total_apps >= 3
+      THEN COALESCE(app_stats.view_rate, 0.5)
+      ELSE 0.5
+    END DESC,
+    created_at DESC
+  `
+
+  const listQuery = active ? `
+    SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url, j.company_type,
+           j.location, j.work_type, j.employment_type, j.salary_min, j.salary_max, j.salary_type,
+           j.experience_level, j.is_featured, j.deadline, j.created_at, j.categories, j.benefit_tags
+    FROM v_active_jobs j
+    LEFT JOIN (
+      SELECT
+        job_id,
+        COUNT(*) AS total_apps,
+        COUNT(viewed_at) AS viewed_apps,
+        CASE WHEN COUNT(*) > 0
+          THEN COUNT(viewed_at)::float / COUNT(*)
+          ELSE 0.5
+        END AS view_rate
+      FROM applications
+      GROUP BY job_id
+    ) app_stats ON app_stats.job_id = j.id
+    ${whereClause}
+    ORDER BY ${activeOrderBy}
+    LIMIT $${idx++} OFFSET $${idx++}
+  ` : `
     SELECT id, title, job_type, company_id, company_name, brand_name, logo_url, company_type,
            location, work_type, employment_type, salary_min, salary_max, salary_type,
            experience_level, is_featured, deadline, created_at, categories, benefit_tags
     FROM v_active_jobs
     ${whereClause}
-    ORDER BY ${active ? 'deadline::date ASC, created_at DESC' : 'is_featured DESC, created_at DESC'}
+    ORDER BY is_featured DESC, created_at DESC
     LIMIT $${idx++} OFFSET $${idx++}
   `
-  params.push(limit, offset)
 
+  params.push(limit, offset)
   const countQuery = `SELECT COUNT(*)::int AS total FROM v_active_jobs ${whereClause}`
   const countParams = params.slice(0, params.length - 2)
 
