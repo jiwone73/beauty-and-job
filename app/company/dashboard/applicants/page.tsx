@@ -244,8 +244,15 @@ function ApplicantsContent() {
                 <tr key={a.id}>
                   <td className="company-td-sub">{formatDate(a.applied_at)}</td>
                   <td>
-                    <span className="company-td-name" style={{cursor:"pointer", color:"#5f0080", fontWeight:600}}
-                      onClick={() => setSelected(a)}>{a.user_name}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center" }}>
+                      <div className="talent-avatar" style={{ width: 32, height: 32, fontSize: 13, flexShrink: 0, overflow: "hidden" }}>
+                        {(a as any).user_avatar_url
+                          ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          : (a.user_name || "?").slice(0, 1)}
+                      </div>
+                      <span className="company-td-name" style={{cursor:"pointer", color:"#5f0080", fontWeight:600}}
+                        onClick={() => setSelected(a)}>{a.user_name}</span>
+                    </div>
                   </td>
                   <td className="company-td-sub">{a.job_title}</td>
                   <td>
