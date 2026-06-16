@@ -315,8 +315,8 @@ export default function TalentPage() {
             <div style={{ minWidth: 110, flexShrink: 0 }}>이름</div>
             <div style={{ minWidth: 90, flexShrink: 0 }}>직군</div>
             <div style={{ minWidth: 100, flexShrink: 0 }}>지역</div>
-            <div style={{ minWidth: 150, flexShrink: 0 }}>최종학력</div>
-            <div style={{ minWidth: 160, flexShrink: 0 }}>최근경력</div>
+            <div style={{ minWidth: 180, flexShrink: 0 }}>최종학력</div>
+            <div style={{ minWidth: 190, flexShrink: 0 }}>최근경력</div>
             <div style={{ flex: 1 }}>스킬</div>
             <div style={{ width: 100, flexShrink: 0 }} />
           </div>
@@ -341,23 +341,33 @@ export default function TalentPage() {
               </div>
               <div style={{ minWidth: 90, fontSize: 13, color: "#555", flexShrink: 0 }}>{t.mainJobGroup || "—"}</div>
               <div style={{ minWidth: 100, fontSize: 12, color: "#999", flexShrink: 0 }}>{t.regionPrefer || "—"}</div>
-              <div style={{ minWidth: 150, flexShrink: 0, fontSize: 12 }}>
+              <div style={{ minWidth: 180, flexShrink: 0, fontSize: 12 }}>
                 {t.educationDetail ? (
                   <>
-                    <div style={{ fontWeight: 500, color: "#333" }}>{t.educationDetail.school}</div>
-                    <div style={{ color: "#999" }}>
-                      {[t.educationDetail.major, t.educationDetail.status, `${fmtDate(t.educationDetail.start_date)} - ${fmtDate(t.educationDetail.end_date)}`].filter(Boolean).join(" · ")}
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ fontWeight: 500, color: "#333" }}>{t.educationDetail.school}</span>
+                      <span style={{ color: "#bbb", fontSize: 11 }}>{fmtDate(t.educationDetail.start_date)} - {fmtDate(t.educationDetail.end_date)}</span>
                     </div>
+                    {(t.educationDetail.major || t.educationDetail.status) && (
+                      <div style={{ color: "#999", marginTop: 2 }}>
+                        {[t.educationDetail.major, t.educationDetail.status].filter(Boolean).join(" · ")}
+                      </div>
+                    )}
                   </>
                 ) : <span style={{ color: "#ccc" }}>—</span>}
               </div>
-              <div style={{ minWidth: 160, flexShrink: 0, fontSize: 12 }}>
+              <div style={{ minWidth: 190, flexShrink: 0, fontSize: 12 }}>
                 {t.careerDetail ? (
                   <>
-                    <div style={{ fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
-                    <div style={{ color: "#999" }}>
-                      {[`${fmtDate(t.careerDetail.start_date)} - ${fmtDate(t.careerDetail.end_date)}`, t.careerDetail.department, t.careerDetail.position].filter(Boolean).join(" · ")}
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</span>
+                      <span style={{ color: "#bbb", fontSize: 11 }}>{fmtDate(t.careerDetail.start_date)} - {fmtDate(t.careerDetail.end_date)}</span>
                     </div>
+                    {(t.careerDetail.department || t.careerDetail.position) && (
+                      <div style={{ color: "#999", marginTop: 2 }}>
+                        {[t.careerDetail.department, t.careerDetail.position].filter(Boolean).join(" · ")}
+                      </div>
+                    )}
                   </>
                 ) : <span style={{ color: "#ccc" }}>—</span>}
               </div>
