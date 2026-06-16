@@ -341,35 +341,15 @@ export default function TalentPage() {
               </div>
               <div style={{ minWidth: 90, fontSize: 13, color: "#555", flexShrink: 0 }}>{t.mainJobGroup || "—"}</div>
               <div style={{ minWidth: 100, fontSize: 12, color: "#999", flexShrink: 0 }}>{t.regionPrefer || "—"}</div>
-              <div style={{ minWidth: 180, flexShrink: 0, fontSize: 12 }}>
-                {t.educationDetail ? (
-                  <>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <span style={{ fontWeight: 500, color: "#333" }}>{t.educationDetail.school}</span>
-                      <span style={{ color: "#bbb", fontSize: 11 }}>{fmtDate(t.educationDetail.start_date)} - {fmtDate(t.educationDetail.end_date)}</span>
-                    </div>
-                    {(t.educationDetail.major || t.educationDetail.status) && (
-                      <div style={{ color: "#999", marginTop: 2 }}>
-                        {[t.educationDetail.major, t.educationDetail.status].filter(Boolean).join(" · ")}
-                      </div>
-                    )}
-                  </>
-                ) : <span style={{ color: "#ccc" }}>—</span>}
+              <div style={{ minWidth: 180, flexShrink: 0, fontSize: 12, color: "#555" }}>
+                {t.educationDetail
+                  ? [t.educationDetail.school, t.educationDetail.major, t.educationDetail.status].filter(Boolean).join(" · ")
+                  : <span style={{ color: "#ccc" }}>—</span>}
               </div>
-              <div style={{ minWidth: 190, flexShrink: 0, fontSize: 12 }}>
-                {t.careerDetail ? (
-                  <>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <span style={{ fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</span>
-                      <span style={{ color: "#bbb", fontSize: 11 }}>{fmtDate(t.careerDetail.start_date)} - {fmtDate(t.careerDetail.end_date)}</span>
-                    </div>
-                    {(t.careerDetail.department || t.careerDetail.position) && (
-                      <div style={{ color: "#999", marginTop: 2 }}>
-                        {[t.careerDetail.department, t.careerDetail.position].filter(Boolean).join(" · ")}
-                      </div>
-                    )}
-                  </>
-                ) : <span style={{ color: "#ccc" }}>—</span>}
+              <div style={{ minWidth: 190, flexShrink: 0, fontSize: 12, color: "#555" }}>
+                {t.careerDetail
+                  ? [t.careerDetail.company, t.careerDetail.department, t.careerDetail.end_date ? "퇴직" : "재직중"].filter(Boolean).join(" · ")
+                  : <span style={{ color: "#ccc" }}>—</span>}
               </div>
               <div style={{ flex: 1, fontSize: 12, color: "#555" }}>
                 {(t.skills || []).slice(0, 4).join(", ")}
