@@ -175,7 +175,6 @@ export default function ScrappedTalentPage() {
       ) : (
         <div style={{ border: "1px solid #eee", borderRadius: 8, overflow: "hidden", background: "#fff" }}>
 
-          {/* 헤더 */}
           <div style={{ display: "flex", alignItems: "stretch", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 12, color: "#999", fontWeight: 500 }}>
             <div style={{ width: 60, flexShrink: 0, borderRight: "1px solid #f0f0f0" }} />
             <div style={{ flex: 1.3, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>이름</div>
@@ -187,7 +186,6 @@ export default function ScrappedTalentPage() {
             <div style={{ width: 150, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>관리</div>
           </div>
 
-          {/* 바디 */}
           {filtered.map((t, idx) => {
             const cell = (flexVal: number, last = false): React.CSSProperties => ({
               flex: flexVal, minWidth: 0, height: 68,
@@ -203,13 +201,68 @@ export default function ScrappedTalentPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
                 onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
               >
-                {/* 아바타 */}
                 <div style={{ width: 60, flexShrink: 0, height: 68, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>
                   <div className="talent-avatar" style={{ width: 40, height: 40, overflow: "hidden" }}>
                     {t.avatar_url
                       ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       : (t.name || "?").slice(0, 1)}
+                  </div>
+                </div>
 
+                <div style={cell(1.3)}>
+                  <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a" }}>{t.name}</div>
+                  <div style={{ ...clamp1, fontSize: 12, color: "#888", marginTop: 2 }}>
+                    {metaLine(t.gender, t.age, t.career_years, t.career_count)}
+                  </div>
+                </div>
+
+                <div style={{ ...cell(1), fontSize: 13, color: "#555" }}>
+                  <span style={clamp2}>{t.job_category || "—"}</span>
+                </div>
+
+                <div style={{ ...cell(1.1), fontSize: 12, color: "#999" }}>
+                  <span style={clamp2}>{t.location || "—"}</span>
+                </div>
+
+                <div style={{ ...cell(1.7), fontSize: 12 }}>
+                  {t.educationDetail ? (
+                    <>
+                      <div style={{ ...clamp1, fontWeight: 500, color: "#333" }}>{t.educationDetail.school}</div>
+                      <div style={{ ...clamp1, color: "#999", marginTop: 2 }}>
+                        {[t.educationDetail.major, t.educationDetail.status].filter(Boolean).join(" · ")}
+                      </div>
+                    </>
+                  ) : <span style={{ color: "#ccc" }}>—</span>}
+                </div>
+
+                <div style={{ ...cell(1.8), fontSize: 12 }}>
+                  {t.careerDetail ? (
+                    <>
+                      <div style={{ ...clamp1, fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
+                      <div style={{ ...clamp1, color: "#999", marginTop: 2 }}>
+                        {[t.careerDetail.department, t.careerDetail.end_date ? "퇴직" : "재직중"].filter(Boolean).join(" · ")}
+                      </div>
+                    </>
+                  ) : <span style={{ color: "#ccc" }}>—</span>}
+                </div>
+
+                <div style={{ ...cell(1.8), fontSize: 12, color: "#555" }}>
+                  <span style={clamp2}>{(t.skills || []).slice(0, 6).join(", ")}</span>
+                </div>
+
+                <div style={{ width: 150, flexShrink: 0, height: 68, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <button className="company-action-btn" style={{ whiteSpace: "nowrap" }} onClick={(e) => { e.stopPropagation(); setSelected(t); }}>
+                    <FileText size={14} /> 이력서
+                  </button>
+                  <button className="talent-scrap-btn scrapped" style={{ padding: "6px 8px" }} onClick={(e) => { e.stopPropagation(); handleUnscrap(t.user_id); }}>
+                    <BookmarkCheck size={16} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
       {selected && (
         <div className="rp-modal-overlay" onClick={() => setSelected(null)}>
           <div className="rp-modal" onClick={e => e.stopPropagation()}>
