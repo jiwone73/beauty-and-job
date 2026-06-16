@@ -10645,7 +10645,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobcard-cover-initial { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 800; color: rgba(95,0,128,.18); }
 .jobcard-bookmark { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #bbb; box-shadow: 0 2px 6px rgba(0,0,0,.12); transition: color .15s; z-index: 1; }
 .jobcard-bookmark:hover, .jobcard-bookmark.on { color: var(--color-primary); }
-.jobcard-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; padding: 10px 14px; overflow: hidden; min-height: 0; }
+.jobcard-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; padding: 6px 14px; overflow: hidden; min-height: 0; }
 .jobcard-title { margin: 0 0 5px; font-size: 14px; font-weight: 600; color: #222; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .jobcard-company { margin: 0 0 3px; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .jobcard-meta { margin: 0; font-size: 13px; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -10675,8 +10675,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 채용공고 카드 — 모바일 (안 깨지게: 이미지 4:3 + 본문 자동높이) */
 @media (max-width: 480px) {
   .jobs-grid .jobcard { aspect-ratio: auto; }
-  .jobs-grid .jobcard .jobcard-cover { height: auto; flex: none; aspect-ratio: 4 / 3; }
-  .jobs-grid .jobcard .jobcard-body { height: auto; flex: none; padding: 8px 10px 10px; }
+  .jobs-grid .jobcard .jobcard-cover { height: auto; flex: none; aspect-ratio: 16 / 10; }
+  .jobs-grid .jobcard .jobcard-body { height: auto; flex: none; padding: 5px 10px 6px; }
   .jobs-grid .jobcard .jobcard-title { font-size: 12.5px; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .jobs-grid .jobcard .jobcard-company { font-size: 11px; margin-bottom: 2px; }
   .jobs-grid .jobcard .jobcard-meta { font-size: 11px; margin-bottom: 4px; }
