@@ -16,8 +16,11 @@ const CAREER_OPTIONS  = ["전체", "신입", "1-3년", "3-5년", "5-10년", "10�
 const AGE_FILTERS     = ["전체", "20대", "30대", "40+"];
 const GENDER_FILTERS  = ["무관", "여성", "남성"];
 
-const COL = { avatar: 60, name: 130, job: 100, region: 120, edu: 180, career: 190, skill: 220, action: 150 };
-const ROW_H = 64;
+// 컬럼 flex 비율 (가로 반응형) — avatar/action만 고정폭
+const FLEX = { name: 1.3, job: 1, region: 1.1, edu: 1.7, career: 1.8, skill: 1.8 };
+const W_AVATAR = 60;
+const W_ACTION = 150;
+const ROW_H = 68;
 const divider = "1px solid #f0f0f0";
 
 function careerLabel(years: number | null, count: number): string {
@@ -29,6 +32,16 @@ function genderLabel(gender: string | null): string | null {
   if (gender === "여성") return "여";
   return null;
 }
+
+// 2줄 클램프
+const clamp2: React.CSSProperties = {
+  display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+  overflow: "hidden", textOverflow: "ellipsis", wordBreak: "break-word", lineHeight: 1.35,
+};
+const clamp1: React.CSSProperties = {
+  display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical",
+  overflow: "hidden", textOverflow: "ellipsis", wordBreak: "break-word",
+};
 
 export default function TalentPage() {
   const [activeTab, setActiveTab]   = useState<JobTab>("STORE");
@@ -174,19 +187,24 @@ export default function TalentPage() {
     ? selectedRegions.slice(0, 2).join(", ") + (selectedRegions.length > 2 ? ` 외 ${selectedRegions.length - 2}` : "")
     : "지역 선택";
 
-  // 셀 공통: 가운데 정렬 + 고정높이 + 구분선
-  const cellBase = (w: number, last = false): React.CSSProperties => ({
-    width: w, minWidth: w, flexShrink: 0,
+  // flex 셀: 비율 기반 + 고정 높이 + 가운데 정렬 + 구분선
+  const cell = (flexVal: number, last = false): React.CSSProperties => ({
+    flex: flexVal, minWidth: 0,
     height: ROW_H,
     display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
-    padding: "0 10px",
+    padding: "0 12px",
     borderRight: last ? "none" : divider,
     textAlign: "center",
     overflow: "hidden",
   });
-  const ellipsis: React.CSSProperties = {
-    maxWidth: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-  };
+  const headCell = (flexVal: number, last = false): React.CSSProperties => ({
+    flex: flexVal, minWidth: 0,
+    height: 40,
+    display: "flex", alignItems: "center", justifyContent: "center",
+    padding: "0 12px",
+    borderRight: last ? "none" : divider,
+    textAlign: "center",
+  });
 
   return (
     <CompanyLayout activePage="talent">
@@ -290,14 +308,14 @@ export default function TalentPage() {
 
           {/* 헤더 */}
           <div style={{ display: "flex", alignItems: "stretch", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 12, color: "#999", fontWeight: 500 }}>
-            <div style={{ width: COL.avatar, flexShrink: 0, borderRight: divider }} />
-            <div style={{ ...cellBase(COL.name), height: 40 }}>이름</div>
-            <div style={{ ...cellBase(COL.job), height: 40 }}>직군</div>
-            <div style={{ ...cellBase(COL.region), height: 40 }}>지역</div>
-            <div style={{ ...cellBase(COL.edu), height: 40 }}>최종학력</div>
-            <div style={{ ...cellBase(COL.career), height: 40 }}>최근경력</div>
-            <div style={{ ...cellBase(COL.skill), height: 40 }}>스킬</div>
-            <div style={{ ...cellBase(COL.action, true), height: 40 }}>관리</div>
+            <div style={{ width: W_AVATAR, flexShrink: 0, borderRight: divider }} />
+            <div style={headCell(FLEX.name)}>이름</div>
+            <div style={headCell(FLEX.job)}>직군</div>
+            <div style={headCell(FLEX.region)}>지역</div>
+            <div style={headCell(FLEX.edu)}>최종학력</div>
+            <div style={headCell(FLEX.career)}>최근경력</div>
+            <div style={headCell(FLEX.skill)}>스킬</div>
+            <div style={{ width: W_ACTION, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>관리</div>
           </div>
 
           {/* 바디 */}
@@ -308,7 +326,7 @@ export default function TalentPage() {
               onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
             >
               {/* 아바타 */}
-              <div style={{ width: COL.avatar, flexShrink: 0, height: ROW_H, display: "flex", alignItems: "center", justifyContent: "center", borderRight: divider }}>
+              <div style={{ width: W_AVATAR, flexShrink: 0, height: ROW_H, display: "flex", alignItems: "center", justifyContent: "center", borderRight: divider }}>
                 <div className="talent-avatar" style={{ width: 40, height: 40, overflow: "hidden" }}>
                   {t.avatarUrl
                     ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -317,29 +335,29 @@ export default function TalentPage() {
               </div>
 
               {/* 이름 */}
-              <div style={cellBase(COL.name)}>
-                <div style={{ ...ellipsis, fontWeight: 600, fontSize: 14, color: "#1a1a1a" }}>{t.name}</div>
-                <div style={{ ...ellipsis, fontSize: 12, color: "#888", marginTop: 2 }}>
+              <div style={cell(FLEX.name)}>
+                <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a" }}>{t.name}</div>
+                <div style={{ ...clamp1, fontSize: 12, color: "#888", marginTop: 2 }}>
                   {[genderLabel(t.gender), t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
                 </div>
               </div>
 
               {/* 직군 */}
-              <div style={{ ...cellBase(COL.job), fontSize: 13, color: "#555" }}>
-                <span style={ellipsis}>{t.mainJobGroup || "—"}</span>
+              <div style={{ ...cell(FLEX.job), fontSize: 13, color: "#555" }}>
+                <span style={clamp2}>{t.mainJobGroup || "—"}</span>
               </div>
 
               {/* 지역 */}
-              <div style={{ ...cellBase(COL.region), fontSize: 12, color: "#999" }}>
-                <span style={ellipsis}>{t.regionPrefer || "—"}</span>
+              <div style={{ ...cell(FLEX.region), fontSize: 12, color: "#999" }}>
+                <span style={clamp2}>{t.regionPrefer || "—"}</span>
               </div>
 
               {/* 최종학력 */}
-              <div style={{ ...cellBase(COL.edu), fontSize: 12 }}>
+              <div style={{ ...cell(FLEX.edu), fontSize: 12 }}>
                 {t.educationDetail ? (
                   <>
-                    <div style={{ ...ellipsis, fontWeight: 500, color: "#333" }}>{t.educationDetail.school}</div>
-                    <div style={{ ...ellipsis, color: "#999", marginTop: 2 }}>
+                    <div style={{ ...clamp1, fontWeight: 500, color: "#333" }}>{t.educationDetail.school}</div>
+                    <div style={{ ...clamp1, color: "#999", marginTop: 2 }}>
                       {[t.educationDetail.major, t.educationDetail.status].filter(Boolean).join(" · ")}
                     </div>
                   </>
@@ -347,11 +365,11 @@ export default function TalentPage() {
               </div>
 
               {/* 최근경력 */}
-              <div style={{ ...cellBase(COL.career), fontSize: 12 }}>
+              <div style={{ ...cell(FLEX.career), fontSize: 12 }}>
                 {t.careerDetail ? (
                   <>
-                    <div style={{ ...ellipsis, fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
-                    <div style={{ ...ellipsis, color: "#999", marginTop: 2 }}>
+                    <div style={{ ...clamp1, fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
+                    <div style={{ ...clamp1, color: "#999", marginTop: 2 }}>
                       {[t.careerDetail.department, t.careerDetail.end_date ? "퇴직" : "재직중"].filter(Boolean).join(" · ")}
                     </div>
                   </>
@@ -359,12 +377,12 @@ export default function TalentPage() {
               </div>
 
               {/* 스킬 */}
-              <div style={{ ...cellBase(COL.skill), fontSize: 12, color: "#555" }}>
-                <span style={ellipsis}>{(t.skills || []).slice(0, 4).join(", ")}</span>
+              <div style={{ ...cell(FLEX.skill), fontSize: 12, color: "#555" }}>
+                <span style={clamp2}>{(t.skills || []).slice(0, 6).join(", ")}</span>
               </div>
 
               {/* 관리 버튼 */}
-              <div style={{ width: COL.action, flexShrink: 0, height: ROW_H, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+              <div style={{ width: W_ACTION, flexShrink: 0, height: ROW_H, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                 <button className="company-action-btn" style={{ whiteSpace: "nowrap" }} onClick={(e) => { e.stopPropagation(); setSelected(t); }}>
                   <FileText size={14} /> 이력서
                 </button>
