@@ -12,6 +12,7 @@ import { useProfileStore } from "@/lib/store/profileStore";
 import JobGroupField from "@/components/JobGroupField";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import NotificationModal from "@/components/profile/NotificationModal";
+import CompanyBlockModal from "@/components/CompanyBlockModal";
 import { validateBirth } from "@/lib/validateBirth";
 
 
@@ -732,6 +733,17 @@ export default function ProfilePage() {
                 </div>
               </section>
             )}
+            <section className="profile-section">
+              <div className="profile-section-head">
+                <h2 className="profile-section-title">이력서 공개 설정</h2>
+              </div>
+              <p style={{ fontSize: 13, color: "#888", margin: "0 0 12px", lineHeight: 1.6 }}>
+                특정 기업이 인재검색에서 내 프로필·이력서를 볼 수 없도록 차단할 수 있어요.
+              </p>
+              <button className="profile-resume-btn" style={{ background: "#fff", color: "#5f0080", border: "1px solid #5f0080" }} onClick={() => setShowBlockModal(true)}>
+                기업 차단 관리
+              </button>
+            </section>
             <div className="profile-bottom-cta">
               <button className="profile-resume-btn" onClick={() => router.push("/profile/resume")}>
                 현재 프로필로 이력서 만들기
@@ -742,6 +754,7 @@ export default function ProfilePage() {
       </div>
 
       <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} />
+      <CompanyBlockModal open={showBlockModal} onClose={() => setShowBlockModal(false)} />
     </main>
   );
 }
