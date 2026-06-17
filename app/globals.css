@@ -10713,7 +10713,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 #section-basic { padding-bottom: 14px; margin-bottom: 8px; }
 #section-intro { padding-top: 14px; }
 /* 메인 카드 이미지 — 채용공고 페이지와 동일 비율(1:1)로 통일 */
-.card-grid .jobcard-cover { aspect-ratio: 1 / 1; }
+.card-grid .jobcard-cover { aspect-ratio: 1 / 0.8; }
 
 /* 모바일에서 전체보기 등 숨김 */
 @media (max-width: 768px) {
