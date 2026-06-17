@@ -10763,3 +10763,25 @@ input[type="range"].career-slider::-moz-range-thumb {
   .co-hero-title br, .js-hero-title br,
   .co-hero-desc br, .js-hero-sub br { display: none; }
 }
+/* ===== jobseeker·company 히어로 통일 스타일 ===== */
+.co-hero-title, .js-hero-title {
+  font-size: clamp(24px, 5.5vw, 36px) !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+  color: #1a1a1a !important;
+  margin: 0 0 16px !important;
+}
+.co-hero-point { color: #5f0080 !important; }
+.co-hero-desc, .js-hero-sub {
+  font-size: clamp(15px, 3.6vw, 17px) !important;
+  color: #666 !important;
+  line-height: 1.7 !important;
+  margin: 0 !important;
+}
+/* 모바일: 강제 줄바꿈 해제해 자연스럽게 흐르게 */
+.co-hero-title br, .js-hero-title br,
+.co-hero-desc br, .js-hero-sub br { display: none; }
+@media (min-width: 600px) {
+  .co-hero-title br, .js-hero-title br,
+  .co-hero-desc br, .js-hero-sub br { display: inline; }
+}
