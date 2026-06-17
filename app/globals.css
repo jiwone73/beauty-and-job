@@ -10719,3 +10719,5 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
 }
+/* D-day는 메인(card-grid)에만 노출, 채용공고 페이지(jobs-grid)는 숨김 */
+.jobs-grid .jobcard-deadline { display: none; }

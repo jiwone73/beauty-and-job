@@ -69,7 +69,7 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
         <p className="jobcard-title">{data.title}</p>
         <p className="jobcard-company">{data.company}</p>
         <p className="jobcard-meta">{meta}</p>
-        
+        <span className="jobcard-deadline" style={{ color: deadlineColor(deadlineLabel) }}>{deadlineLabel}</span>
       </div>
     </div>
   );
