@@ -48,6 +48,10 @@ export async function GET(req: NextRequest) {
       JOIN users u ON u.id = s.user_id
       JOIN user_profiles up ON up.user_id = u.id
       WHERE s.company_id = $1
+        AND NOT EXISTS (
+          SELECT 1 FROM user_company_blocks b
+          WHERE b.user_id = u.id AND b.company_id = $1
+        )
       ORDER BY s.created_at DESC`,
       [auth!.sub]
     );

@@ -69,6 +69,7 @@ export default function ProfilePage() {
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unreadNotif, setUnreadNotif] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [showBlockModal, setShowBlockModal] = useState(false);
 
   const loadNotifs = () => {
     const token = localStorage.getItem("access_token");

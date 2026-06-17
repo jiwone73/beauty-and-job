@@ -136,6 +136,10 @@ export async function GET(req: NextRequest) {
       FROM users u
       JOIN user_profiles up ON up.user_id = u.id
       WHERE u.status = 'ACTIVE'
+        AND NOT EXISTS (
+          SELECT 1 FROM user_company_blocks b
+          WHERE b.user_id = u.id AND b.company_id = $1
+        )
         ${jobTypeClause}
         ${jobGroupClause}
         ${searchClause}
