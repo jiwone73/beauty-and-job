@@ -10712,3 +10712,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-subheader { display: none !important; }
 #section-basic { padding-bottom: 14px; margin-bottom: 8px; }
 #section-intro { padding-top: 14px; }
+/* 메인 카드 이미지 영역 10% 축소 (채용공고 페이지 jobs-grid는 제외) */
+.card-grid .jobcard-cover { flex: 0 0 52%; }
+
+/* 모바일에서 전체보기 등 숨김 */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+}
