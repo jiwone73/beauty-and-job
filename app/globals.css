@@ -10652,9 +10652,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobcard-deadline { margin-top: 6px; font-size: 13px; font-weight: 600; }
 @media (max-width: 768px) { .jobs-grid { margin-top: 16px; } }
 @media (max-width: 480px) {
-  .jobcard { aspect-ratio: auto; }
-  .jobcard-cover { height: auto; flex: none; aspect-ratio: 1 / 1; }
-  .jobcard-body { height: auto; flex: none; }
+  .jobcard { aspect-ratio: 1 / 1; }
+  .jobcard-cover { flex: 0 0 50%; aspect-ratio: auto; }
+  .jobcard-body { flex: 0 0 50%; }
   .jobcard-title { font-size: 13px; }
 }
 /* 화사한 배너 배경 대응 — 텍스트 가독성 */
