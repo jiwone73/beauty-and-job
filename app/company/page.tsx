@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { CheckCircle2, ChevronDown, ChevronUp, Building2, Store, Star, Zap, Megaphone, ArrowRight, Layers } from "lucide-react";
 
 const FAQS = [
@@ -30,6 +31,13 @@ export default function CompanyPage() {
 
   return (
     <div className="co-page">
+      <header style={{ borderBottom: "1px solid #eee", padding: "16px 20px", background: "#fff" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <Link href="/">
+            <Image src="/images/logo.png" alt="뷰티앤잡" width={140} height={40} priority />
+          </Link>
+        </div>
+      </header>
 
       {/* ── 1. 히어로 ── */}
       <section className="co-hero">
