@@ -10740,3 +10740,26 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (min-width: 600px) {
   .js-hero-title br, .js-hero-sub br { display: inline; }
 }
+/* ===== jobseeker·company 히어로 통일 ===== */
+.co-hero-title,
+.js-hero-title {
+  font-size: clamp(24px, 5.5vw, 38px);
+  font-weight: 800;
+  line-height: 1.35;
+  color: #1a1a1a;
+  margin: 0 0 18px;
+}
+.co-hero-desc,
+.js-hero-sub {
+  font-size: clamp(15px, 3.5vw, 17px);
+  color: #666;
+  line-height: 1.7;
+  margin: 0;
+}
+.co-hero-point { color: #5f0080; }
+
+/* 모바일에선 강제 줄바꿈 해제 */
+@media (max-width: 600px) {
+  .co-hero-title br, .js-hero-title br,
+  .co-hero-desc br, .js-hero-sub br { display: none; }
+}
