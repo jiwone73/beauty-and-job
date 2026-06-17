@@ -10734,3 +10734,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (min-width: 769px) {
   .jobcard-body { justify-content: center; }
 }
+/* jobseeker 히어로 — 모바일 자동 조절 */
+.js-hero-title { font-size: clamp(22px, 6vw, 32px); }
+.js-hero-title br, .js-hero-sub br { display: none; }
+@media (min-width: 600px) {
+  .js-hero-title br, .js-hero-sub br { display: inline; }
+}

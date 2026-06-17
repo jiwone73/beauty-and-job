@@ -24,10 +24,10 @@ export default function JobSeekerPage() {
           <span style={{ display: "inline-block", background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 600, padding: "6px 16px", borderRadius: 100, marginBottom: 20 }}>
             오픈 기념 이벤트 · ~12/31
           </span>
-          <h1 style={{ fontSize: 32, fontWeight: 800, color: "#1a1a1a", margin: "0 0 16px", lineHeight: 1.4 }}>
+          <h1 className="js-hero-title" style={{ fontWeight: 800, color: "#1a1a1a", margin: "0 0 16px", lineHeight: 1.4 }}>
             사무직·매장직 맞춤 채용,<br />뷰티앤잡에서 시작하세요
           </h1>
-          <p style={{ fontSize: 16, color: "#666", margin: 0, lineHeight: 1.7 }}>
+          <p className="js-hero-sub" style={{ fontSize: 16, color: "#666", margin: 0, lineHeight: 1.7 }}>
             이벤트 기간 동안 내 이력서를 기업 검색 상단에<br />맞춤 추천까지 더해 채용 확률을 높여보세요
           </p>
         </div>
