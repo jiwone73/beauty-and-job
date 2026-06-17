@@ -10730,4 +10730,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .card-grid .jobcard { aspect-ratio: 1 / 1.1 !important; }
   .card-grid .jobcard-cover { flex: 0 0 54.5% !important; aspect-ratio: auto !important; }
   .card-grid .jobcard-body { flex: 0 0 45.5% !important; }
+}/* PC: 카드 본문 가운데 정렬 (모바일은 상단 정렬 유지) */
+@media (min-width: 769px) {
+  .jobcard-body { justify-content: center; }
 }
