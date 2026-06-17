@@ -10722,10 +10722,12 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* D-day는 메인(card-grid)에만 노출, 채용공고 페이지(jobs-grid)는 숨김 */
 .jobs-grid .jobcard-deadline { display: none; }
 /* 메인 카드만 이미지 60% / 본문 40% */
-.card-grid .jobcard-cover { flex: 0 0 60%; }
-.card-grid .jobcard-body { flex: 0 0 40%; }
+.card-grid .jobcard { aspect-ratio: 1 / 1.1 !important; }
+.card-grid .jobcard-cover { flex: 0 0 54.5% !important; aspect-ratio: auto !important; }
+.card-grid .jobcard-body { flex: 0 0 45.5% !important; }
 
 @media (max-width: 480px) {
-  .card-grid .jobcard-cover { flex: 0 0 60%; }
-  .card-grid .jobcard-body { flex: 0 0 40%; }
+  .card-grid .jobcard { aspect-ratio: 1 / 1.1 !important; }
+  .card-grid .jobcard-cover { flex: 0 0 54.5% !important; aspect-ratio: auto !important; }
+  .card-grid .jobcard-body { flex: 0 0 45.5% !important; }
 }
