@@ -1429,7 +1429,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .profile-bottom-cta {
   max-width: 600px;
   margin: 0 auto;
-  padding: 24px 20px 40px;
+  padding: 24px 0 40px;
 }
 .profile-resume-btn {
   max-width: 600px;
