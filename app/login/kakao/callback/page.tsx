@@ -22,11 +22,9 @@ export default function KakaoCallbackPage() {
       return;
     }
 
-    // 쿠키 즉시 폐기
     document.cookie = "kakao_auth=; Max-Age=0; path=/";
 
     try {
-      // base64url → JSON (UTF-8 안전)
       let b64 = raw.replace(/-/g, "+").replace(/_/g, "/");
       while (b64.length % 4) b64 += "=";
       const bin = atob(b64);
@@ -42,7 +40,13 @@ export default function KakaoCallbackPage() {
         userJobType: data.user.job_type || "",
         userJobAreas: data.user.office_job_areas || [],
       });
-      router.replace("/profile");
+
+      // ✅ 여기가 핵심 변경: job_type 없으면 온보딩, 있으면 프로필
+      if (!data.user.job_type) {
+        router.replace("/onboarding/job-type");
+      } else {
+        router.replace("/profile");
+      }
     } catch (e) {
       console.error("[kakao parse]", e, raw);
       router.replace("/login?kakao_error=parse");
