@@ -46,6 +46,12 @@ export default function ProfilePage() {
   const [birthInput, setBirthInput] = useState("");
   const [phoneInput, setPhoneInput] = useState("");
   const [phoneOverride, setPhoneOverride] = useState("");
+  const [phoneCode, setPhoneCode] = useState("");
+  const [phoneCodeSent, setPhoneCodeSent] = useState(false);
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [phoneSending, setPhoneSending] = useState(false);
+  const [phoneVerifying, setPhoneVerifying] = useState(false);
+  const [phoneMsg, setPhoneMsg] = useState("");
   const formatPhone = (v: string) => {
     const d = (v || "").replace(/\D/g, "");
     if (d.length === 11) return d.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
@@ -462,10 +468,11 @@ export default function ProfilePage() {
                       <span className="profile-info-label">휴대전화</span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button
-                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
+                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: phoneVerified ? "#5f0080" : "#e0e0e0", color: phoneVerified ? "#fff" : "#9a9a9a", cursor: phoneVerified ? "pointer" : "not-allowed" }}
+                          disabled={!phoneVerified}
                           onClick={async () => {
                             const d = phoneInput.replace(/\D/g, "");
-                            if (d.length < 10 || d.length > 11) { alert("휴대전화번호를 정확히 입력해주세요."); return; }
+                            if (!phoneVerified) { alert("휴대폰 인증을 완료해주세요."); return; }
                             try {
                               const token = localStorage.getItem("access_token");
                               const res = await fetch("/api/users/me", {
@@ -475,26 +482,84 @@ export default function ProfilePage() {
                               });
                               const data = await res.json();
                               if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
-                            
                               setPhoneOverride(d);
                               setEditField(null);
+                              setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg("");
                             } catch { alert("네트워크 오류가 발생했습니다."); }
                           }}>
                           저장
                         </button>
-                        <button onClick={() => setEditField(null)}
+                        <button onClick={() => { setEditField(null); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); }}
                           style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                       </span>
                     </div>
-                    <input
-                      type="tel" inputMode="numeric" placeholder="010-0000-0000" maxLength={13}
-                      value={formatPhone(phoneInput)}
-                      onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 11))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px" }}
-                    />
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <input
+                        type="tel" inputMode="numeric" placeholder="010-0000-0000" maxLength={13}
+                        value={formatPhone(phoneInput)}
+                        disabled={phoneVerified}
+                        onChange={(e) => { setPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 11)); setPhoneVerified(false); setPhoneCodeSent(false); }}
+                        style={{ flex: 1, minWidth: 0, padding: "8px 10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", background: phoneVerified ? "#f5f5f5" : "#fff" }}
+                      />
+                      <button
+                        disabled={phoneSending || phoneVerified || phoneInput.replace(/\D/g, "").length < 10}
+                        onClick={async () => {
+                          const d = phoneInput.replace(/\D/g, "");
+                          setPhoneSending(true); setPhoneMsg("");
+                          try {
+                            const res = await fetch("/api/auth/phone/send", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ phone: d, purpose: "signup" }),
+                            });
+                            const data = await res.json();
+                            if (!data.success) { setPhoneMsg(data.error?.message || "전송에 실패했습니다."); return; }
+                            setPhoneCodeSent(true);
+                            setPhoneMsg(data.data?.dev_code ? `인증번호를 전송했어요. (테스트: ${data.data.dev_code})` : "인증번호를 전송했어요.");
+                          } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); }
+                          finally { setPhoneSending(false); }
+                        }}
+                        style={{ padding: "0 14px", height: "38px", whiteSpace: "nowrap", borderRadius: "8px", fontSize: "13px", fontWeight: 600, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", cursor: "pointer", opacity: (phoneVerified || phoneInput.replace(/\D/g, "").length < 10) ? 0.4 : 1 }}>
+                        {phoneVerified ? "인증완료" : phoneCodeSent ? "재전송" : phoneSending ? "전송중" : "인증번호 받기"}
+                      </button>
+                    </div>
+                    {phoneCodeSent && !phoneVerified && (
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <input
+                          type="tel" inputMode="numeric" placeholder="인증번호 6자리" maxLength={6}
+                          value={phoneCode}
+                          onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                          style={{ flex: 1, minWidth: 0, padding: "8px 10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px" }}
+                        />
+                        <button
+                          disabled={phoneVerifying || phoneCode.length < 6}
+                          onClick={async () => {
+                            const d = phoneInput.replace(/\D/g, "");
+                            setPhoneVerifying(true); setPhoneMsg("");
+                            try {
+                              const res = await fetch("/api/auth/phone/verify", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ phone: d, code: phoneCode, purpose: "signup" }),
+                              });
+                              const data = await res.json();
+                              if (!data.success) { setPhoneMsg(data.error?.message || "인증에 실패했습니다."); return; }
+                              setPhoneVerified(true);
+                              setPhoneMsg("휴대폰 인증이 완료됐어요.");
+                            } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); }
+                            finally { setPhoneVerifying(false); }
+                          }}
+                          style={{ padding: "0 14px", height: "38px", whiteSpace: "nowrap", borderRadius: "8px", fontSize: "13px", fontWeight: 600, border: "none", background: "#5f0080", color: "#fff", cursor: "pointer", opacity: phoneCode.length < 6 ? 0.4 : 1 }}>
+                          확인
+                        </button>
+                      </div>
+                    )}
+                    {phoneMsg && (
+                      <p style={{ fontSize: "12px", margin: 0, color: phoneVerified ? "#10b981" : "#9a9a9a" }}>{phoneMsg}</p>
+                    )}
                   </div>
                 ) : (
-                  <InfoRow label="휴대전화" value={formatPhone(phoneOverride || userPhone || phone || "") || "정보 없음"} isEmpty={!(phoneOverride || userPhone || phone)} onClick={() => { setPhoneInput((phoneOverride || userPhone || phone || "").replace(/\D/g, "")); setEditField("phone"); }} />
+                  <InfoRow label="휴대전화" value={formatPhone(phoneOverride || userPhone || phone || "") || "정보 없음"} isEmpty={!(phoneOverride || userPhone || phone)} onClick={() => { setPhoneInput((phoneOverride || userPhone || phone || "").replace(/\D/g, "")); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); setEditField("phone"); }} />
                 )}
 
                 {editField === "birth" ? (
