@@ -438,7 +438,7 @@ const handlePrint = async () => {
             margin: "0 0 16px",
             padding: "16px 18px",
             background: "#fff",
-            border: "1px solid #f0e8f8",
+            border: "1px solid #e0d0f0",
             borderRadius: "12px",
             display: "flex",
             alignItems: "center",
@@ -797,8 +797,8 @@ const handlePrint = async () => {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
                   style={{
-                    padding: "8px 14px", borderRadius: "8px", border: "1px solid #5f0080",
-                    background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600,
+                    padding: "8px 14px", borderRadius: "8px", border: "1px solid #e0d0f0",
+                    background: "#fff", color: "#333", fontSize: "13px", fontWeight: 600,
                     cursor: isUploading ? "not-allowed" : "pointer"
                   }}
                 >
