@@ -6,7 +6,7 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER, SALARY_STORE, SALARY_OFFICE } from "@/components/FilterSheet";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Bookmark, ChevronDown, X, Settings, ChevronRight } from "lucide-react";
+import { Search, Bookmark, ChevronDown, ChevronRight } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { getJobSubGroups } from "@/lib/data/jobGroups";
@@ -104,7 +104,7 @@ function JobsPageInner() {
   useEffect(() => { setSelectedSalary(0); }, [jobTypeFilter]);
   const [showRegionDrop, setShowRegionDrop] = useState(false);
   const [showBrandDrop, setShowBrandDrop] = useState(false);
-  const [showCustom, setShowCustom] = useState(false);
+  
   const [searchQuery, setSearchQuery] = useState(initSearch);
   const bookmarks = useBookmarkStore((s) => s.bookmarks);
   const toggleBookmarkStore = useBookmarkStore((s) => s.toggle);
@@ -224,32 +224,7 @@ function JobsPageInner() {
         </div>
       )}
 
-      {/* ===== 맞춤 공고 설정 모달 ===== */}
-      {showCustom && (
-        <div className="cv-overlay" onClick={() => setShowCustom(false)}>
-          <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="cv-header">
-              <div style={{ width: 36 }} />
-              <h2 className="cv-title">맞춤 공고 설정</h2>
-              <button className="cv-close" onClick={() => setShowCustom(false)}><X size={20} /></button>
-            </div>
-            <div className="cv-body">
-              <p className="cv-desc">내가 다녔던 회사를 등록하면 해당 회사의 공고는 숨겨지고, 신규 채용 알림도 자동으로 제외돼요.</p>
-              <label className="cv-field-label">회사 검색</label>
-              <div className="cv-skill-input-row">
-                <input className="cv-input" placeholder="회사명을 검색하거나 직접 입력해 주세요." />
-                <button className="cv-skill-add-btn">추가하기</button>
-              </div>
-              <p className="jobs-custom-hint">내가 다녔던 회사를 간편하게 선택해보세요.</p>
-              <button className="jobs-custom-career-btn">아이엔지로보틱스</button>
-              <div style={{ display: "flex", gap: 8, marginTop: 24 }}>
-                <button className="cv-btn-primary" style={{ background: "white", color: "#333", border: "1px solid #ddd", marginTop: 0 }}>경력 업데이트</button>
-                <button className="cv-btn-primary" style={{ marginTop: 0 }}>저장하기</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      
 
       <div className="jobs-container">
         {/* ===== 필터 탭 ===== */}
@@ -423,9 +398,7 @@ function JobsPageInner() {
           </div>
 
           <div className="jobs-filter-right">
-            <button className="jobs-custom-btn" onClick={() => setShowCustom(true)}>
-              <Settings size={15} /> 맞춤공고 설정
-            </button>
+            
             <div className="jobs-sort-group">
               <button className={`jobs-sort-btn ${sort === "latest" ? "active" : ""}`} onClick={() => setSort("latest")}>최신순</button>
               <button className={`jobs-sort-btn ${sort === "popular" ? "active" : ""}`} onClick={() => setSort("popular")}>인기순</button>
