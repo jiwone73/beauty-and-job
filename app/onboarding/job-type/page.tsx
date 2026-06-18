@@ -49,9 +49,9 @@ export default function OnboardingJobTypePage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <p className="text-[13px] text-[#7c3aed] font-semibold mb-2">거의 다 왔어요!</p>
+          <p className="text-[13px] text-[#5f0080] font-semibold mb-2">거의 다 왔어요!</p>
           <h1 className="text-[22px] font-bold text-[#111]">어떤 일을 찾고 계세요?</h1>
-          <p className="text-[14px] text-[#6b6b6b] mt-2">맞춤 공고를 보여드릴게요</p>
+          <p className="text-[14px] text-[#6b6b6b] mt-2">관심 분야 공고를 먼저 보여드릴게요</p>
         </div>
 
         <div className="flex flex-col gap-3 mb-8">
@@ -59,8 +59,8 @@ export default function OnboardingJobTypePage() {
             onClick={() => setSelected("STORE")}
             className={"w-full rounded-xl border-2 p-5 text-left transition-all " +
               (selected === "STORE"
-                ? "border-[#7c3aed] bg-[#f5f0ff]"
-                : "border-[#e5e5e5] bg-white hover:border-[#c4b5fd]")}
+                ? "border-[#5f0080] bg-[#f5ebfa]"
+                : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1">💄 매장직</p>
             <p className="text-[13px] text-[#6b6b6b]">
@@ -72,8 +72,8 @@ export default function OnboardingJobTypePage() {
             onClick={() => setSelected("OFFICE")}
             className={"w-full rounded-xl border-2 p-5 text-left transition-all " +
               (selected === "OFFICE"
-                ? "border-[#7c3aed] bg-[#f5f0ff]"
-                : "border-[#e5e5e5] bg-white hover:border-[#c4b5fd]")}
+                ? "border-[#5f0080] bg-[#f5ebfa]"
+                : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1">🏢 사무직</p>
             <p className="text-[13px] text-[#6b6b6b]">
@@ -89,7 +89,7 @@ export default function OnboardingJobTypePage() {
         <button
           onClick={handleSubmit}
           disabled={!selected || loading}
-          className="w-full h-[52px] rounded-xl bg-[#7c3aed] text-white font-semibold text-[15px] disabled:opacity-40 transition-opacity"
+          className="w-full h-[52px] rounded-lg bg-[#5f0080] text-white font-semibold text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition"
         >
           {loading ? "저장 중..." : "시작하기"}
         </button>
