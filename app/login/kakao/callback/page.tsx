@@ -15,7 +15,7 @@ export default function KakaoCallbackPage() {
     const raw = document.cookie
       .split("; ")
       .find((c) => c.startsWith("kakao_auth="))
-      ?.split("=")[1];
+      ?.slice("kakao_auth=".length);
 
     if (!raw) {
       router.replace("/login?kakao_error=session");
@@ -26,7 +26,14 @@ export default function KakaoCallbackPage() {
     document.cookie = "kakao_auth=; Max-Age=0; path=/";
 
     try {
-      const data = JSON.parse(decodeURIComponent(raw));
+      // base64url → JSON (UTF-8 안전)
+      let b64 = raw.replace(/-/g, "+").replace(/_/g, "/");
+      while (b64.length % 4) b64 += "=";
+      const bin = atob(b64);
+      const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+      const json = new TextDecoder().decode(bytes);
+      const data = JSON.parse(json);
+
       localStorage.setItem("access_token", data.access_token);
       login({
         ownerType: "user",
@@ -37,6 +44,7 @@ export default function KakaoCallbackPage() {
       });
       router.replace("/profile");
     } catch (e) {
+      console.error("[kakao parse]", e, raw);
       router.replace("/login?kakao_error=parse");
     }
   }, [router, login]);

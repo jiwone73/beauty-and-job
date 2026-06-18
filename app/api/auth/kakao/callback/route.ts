@@ -142,11 +142,13 @@ export async function GET(req: NextRequest) {
       isNew,
     };
 
+    /* 수정 — 교체 */
+    const b64 = Buffer.from(JSON.stringify(payload), "utf-8").toString("base64url");
     const res = NextResponse.redirect(`${base}/login/kakao/callback`);
-    res.cookies.set("kakao_auth", encodeURIComponent(JSON.stringify(payload)), {
+    res.cookies.set("kakao_auth", b64, {
       maxAge: 60,
       path: "/",
-      httpOnly: false, // 클라 JS가 읽어야 함 (기존 access_token도 localStorage 방식이라 동일 등급)
+      httpOnly: false, // 클라 JS가 읽어야 함
       sameSite: "lax",
     });
     return res;
