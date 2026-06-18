@@ -3,6 +3,7 @@ import "./globals.css";
 import BottomTabBar from "@/components/BottomTabBar";
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: "뷰티앤잡 | 뷰티 커리어의 시작과 성장",
   description:
     "전문가 채용부터 업계 트렌드까지, 뷰티 산업 종사자를 위한 채용 플랫폼 뷰티앤잡",
