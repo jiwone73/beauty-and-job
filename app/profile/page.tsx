@@ -442,7 +442,7 @@ export default function ProfilePage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: "16px", fontWeight: 600, margin: "0 0 6px" }}>{name || "회원"}</p>
                     <div style={{ display: "flex", gap: "6px", marginBottom: "4px" }}>
-                      <label style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
+                      <label style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
                         {avatarUrl ? "변경" : "사진 추가"}
                         <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleAvatarUpload} style={{ display: "none" }} />
                       </label>
@@ -656,7 +656,7 @@ export default function ProfilePage() {
                 {!preferredRegions.some((r) => r.sido === "지역 무관") && (
                   <>
                     <button onClick={() => setPrefModalOpen(true)}
-                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: "pointer", marginBottom: "10px" }}>
+                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: "pointer", marginBottom: "10px" }}>
                       <MapPin size={15} /> 지역 선택
                     </button>
                     {preferredRegions.length > 0 && (
@@ -737,15 +737,17 @@ export default function ProfilePage() {
               <div className="profile-section-head">
                 <h2 className="profile-section-title">이력서 공개 설정</h2>
               </div>
-              <p style={{ fontSize: 13, color: "#888", margin: "0 0 12px", lineHeight: 1.6 }}>
-                특정 기업이 인재검색에서 내 프로필·이력서를 볼 수 없도록 차단할 수 있어요.
-              </p>
-              <button className="profile-resume-btn" style={{ background: "#fff", color: "#5f0080", border: "1px solid #5f0080" }} onClick={() => setShowBlockModal(true)}>
-                기업 차단 관리
-              </button>
+              <div className="profile-info-card" style={{ padding: "16px" }}>
+                <p style={{ fontSize: 13, color: "#888", margin: "0 0 12px", lineHeight: 1.6 }}>
+                  특정 기업이 인재검색에서 내 프로필·이력서를 볼 수 없도록 차단할 수 있어요.
+                </p>
+                <button className="profile-resume-btn" style={{ background: "#fff", color: "#5f0080", border: "1px solid #e0d0f0", width: "auto", height: "auto", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", fontSize: "14px" }} onClick={() => setShowBlockModal(true)}>
+                  기업 차단 관리
+                </button>
+              </div>
             </section>
             <div className="profile-bottom-cta">
-              <button className="profile-resume-btn" onClick={() => router.push("/profile/resume")}>
+              <button className="resume-save-btn-full" onClick={() => router.push("/profile/resume")}>
                 현재 프로필로 이력서 만들기
               </button>
             </div>
