@@ -408,7 +408,7 @@ export default function ProfilePage() {
         ) : activeTab === "profile" ? (
           <>
             {dbJobType && (
-              <div style={{ margin: "16px 0", padding: "14px 16px", background: "#fff", border: "1px solid #f0e8f8", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ margin: "16px 0", padding: "14px 16px", background: "#fff", border: "1px solid #e0d0f0", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "20px" }}>{dbJobType === "STORE" ? "🏪" : "🏢"}</span>
                   <div>
@@ -426,8 +426,8 @@ export default function ProfilePage() {
                 <h2 className="profile-section-title">기본 정보 <CheckCircle2 size={16} className="profile-check" /></h2>
               </div>
               <div className="profile-info-card">
-                <div style={{ padding: "16px 14px", borderBottom: "1px solid #f0e8f8", display: "flex", alignItems: "center", gap: "14px" }}>
-                  <div style={{ flexShrink: 0, width: "80px", height: "80px", borderRadius: "50%", background: "#f0e8f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: "2px solid #ede0f8" }}>
+                <div style={{ padding: "16px 14px", borderBottom: "1px solid #e0d0f0", display: "flex", alignItems: "center", gap: "14px" }}>
+                  <div style={{ flexShrink: 0, width: "80px", height: "80px", borderRadius: "50%", background: "#f0e8f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: "2px solid #e0d0f0" }}>
                     {avatarUrl ? (
                       <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     ) : (
@@ -442,12 +442,12 @@ export default function ProfilePage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: "16px", fontWeight: 600, margin: "0 0 6px" }}>{name || "회원"}</p>
                     <div style={{ display: "flex", gap: "6px", marginBottom: "4px" }}>
-                      <label style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
+                      <label style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
                         {avatarUrl ? "변경" : "사진 추가"}
                         <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleAvatarUpload} style={{ display: "none" }} />
                       </label>
                       {avatarUrl && (
-                        <button onClick={handleAvatarDelete} style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0e0e0", background: "#fff", color: "#888", fontSize: "11px", cursor: "pointer" }}>
+                        <button onClick={handleAvatarDelete} style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "11px", cursor: "pointer" }}>
                           삭제
                         </button>
                       )}
@@ -483,14 +483,14 @@ export default function ProfilePage() {
                           저장
                         </button>
                         <button onClick={() => setEditField(null)}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>취소</button>
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                       </span>
                     </div>
                     <input
                       type="tel" inputMode="numeric" placeholder="010-0000-0000" maxLength={13}
                       value={formatPhone(phoneInput)}
                       onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 11))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px" }}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px" }}
                     />
                   </div>
                 ) : (
@@ -523,14 +523,14 @@ export default function ProfilePage() {
                           저장
                         </button>
                         <button onClick={() => setEditField(null)}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>취소</button>
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                       </span>
                     </div>
                     <input
                       type="text" placeholder="YYYYMMDD (예: 19900115)" maxLength={8}
                       value={birthInput}
                       onChange={(e) => setBirthInput(e.target.value.replace(/\D/g, ""))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px" }}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px" }}
                     />
                   </div>
                 ) : (
@@ -542,14 +542,14 @@ export default function ProfilePage() {
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <span className="profile-info-label">성별</span>
                       <button onClick={() => setEditField(null)}
-                        style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>
+                        style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", cursor: "pointer" }}>
                         취소
                       </button>
                     </div>
                     <div style={{ display: "flex", gap: "8px" }}>
                       {["남성", "여성"].map((g) => (
                         <button key={g}
-                          style={{ flex: 1, padding: "10px", borderRadius: "8px", fontSize: "14px", cursor: "pointer", border: gender === g ? "1.5px solid #5f0080" : "1px solid #ddd", background: gender === g ? "#5f0080" : "#fff", color: gender === g ? "#fff" : "#666", fontWeight: gender === g ? 600 : 400 }}
+                          style={{ flex: 1, padding: "10px", borderRadius: "8px", fontSize: "14px", cursor: "pointer", border: gender === g ? "1.5px solid #5f0080" : "1px solid #e0d0f0", background: gender === g ? "#5f0080" : "#fff", color: gender === g ? "#fff" : "#333", fontWeight: gender === g ? 600 : 400 }}
                           onClick={async () => {
                             try {
                               const token = localStorage.getItem("access_token");
@@ -599,14 +599,14 @@ export default function ProfilePage() {
                           저장
                         </button>
                         <button onClick={() => setEditField(null)}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #ddd", background: "#fff", color: "#999", cursor: "pointer" }}>취소</button>
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                       </span>
                     </div>
                     <input
                       type="email" placeholder="example@email.com"
                       value={emailEditInput}
                       onChange={(e) => setEmailEditInput(e.target.value)}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px" }}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px" }}
                     />
                   </div>
                 ) : (
@@ -625,7 +625,7 @@ export default function ProfilePage() {
                 <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
                   <input readOnly value={addressRoad} placeholder="주소 검색을 눌러주세요"
                     onClick={openPostcode}
-                    style={{ flex: 1, padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
+                    style={{ flex: 1, padding: "10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
                   <button onClick={openPostcode}
                     style={{ padding: "10px 16px", borderRadius: "8px", border: "1px solid #5f0080", background: "#5f0080", color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
                     주소 검색
@@ -635,7 +635,7 @@ export default function ProfilePage() {
                   <input value={addressDetail} placeholder="상세주소 (동·호수 등)"
                     onChange={(e) => setAddressDetail(e.target.value)}
                     onBlur={() => patchUser({ address_detail: addressDetail })}
-                    style={{ width: "100%", padding: "10px", border: "1px solid #ddd", borderRadius: "8px", fontSize: "14px", marginBottom: "20px", boxSizing: "border-box" }} />
+                    style={{ width: "100%", padding: "10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", marginBottom: "20px", boxSizing: "border-box" }} />
                 )}
 
                 <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "4px" }}>
@@ -656,7 +656,7 @@ export default function ProfilePage() {
                 {!preferredRegions.some((r) => r.sido === "지역 무관") && (
                   <>
                     <button onClick={() => setPrefModalOpen(true)}
-                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: "pointer", marginBottom: "10px" }}>
+                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "14px", fontWeight: 600, cursor: "pointer", marginBottom: "10px" }}>
                       <MapPin size={15} /> 지역 선택
                     </button>
                     {preferredRegions.length > 0 && (
@@ -725,7 +725,7 @@ export default function ProfilePage() {
                     {["풀타임", "파트타임", "주말근무 가능", "시급"].map((w) => (
                       <button key={w}
                         onClick={() => setStoreProfile({ workTypePrefer: workTypePrefer === w ? "" : w })}
-                        style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${workTypePrefer === w ? "#5f0080" : "#e0e0e0"}`, background: workTypePrefer === w ? "#f3e5f5" : "#fff", color: workTypePrefer === w ? "#5f0080" : "#888", fontSize: "13px", fontWeight: workTypePrefer === w ? 600 : 400, cursor: "pointer" }}>
+                        style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${workTypePrefer === w ? "#5f0080" : "#e0d0f0"}`, background: workTypePrefer === w ? "#f3e5f5" : "#fff", color: workTypePrefer === w ? "#5f0080" : "#333", fontSize: "13px", fontWeight: workTypePrefer === w ? 600 : 400, cursor: "pointer" }}>
                         {w}
                       </button>
                     ))}
@@ -741,7 +741,7 @@ export default function ProfilePage() {
                 <p style={{ fontSize: 13, color: "#888", margin: "0 0 12px", lineHeight: 1.6 }}>
                   특정 기업이 인재검색에서 내 프로필·이력서를 볼 수 없도록 차단할 수 있어요.
                 </p>
-                <button className="profile-resume-btn" style={{ background: "#fff", color: "#5f0080", border: "1px solid #e0d0f0", width: "auto", height: "auto", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", fontSize: "14px" }} onClick={() => setShowBlockModal(true)}>
+                <button className="profile-resume-btn" style={{ background: "#fff", color: "#333", border: "1px solid #e0d0f0", width: "auto", height: "auto", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", fontSize: "14px" }} onClick={() => setShowBlockModal(true)}>
                   기업 차단 관리
                 </button>
               </div>
@@ -760,7 +760,6 @@ export default function ProfilePage() {
     </main>
   );
 }
-
 function InfoRow({ label, value, isEmpty, isLast, onClick }: {
   label: string; value: string; isEmpty?: boolean; isLast?: boolean; onClick?: () => void;
 }) {
