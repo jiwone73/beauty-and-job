@@ -2183,8 +2183,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   .job-detail-mobile-cta { display: flex; }
 }
 @media (max-width: 640px) {
-  .job-detail-layout { padding: 16px 16px 100px; }
+  .job-detail-layout { padding: 16px 0 100px; }
   .job-detail-header-inner { padding: 0 16px; }
+  .job-detail-info-box { padding: 20px 16px; }
   .job-detail-title { font-size: 20px; }
   .job-detail-meta-grid { grid-template-columns: 1fr; }
 }
