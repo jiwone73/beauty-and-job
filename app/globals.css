@@ -2093,7 +2093,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 메인 */
 .job-detail-main { display: flex; flex-direction: column; gap: 0; }
 
-.job-detail-hero { height: 280px; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: center; }
+.job-detail-hero { aspect-ratio: 15 / 7; max-height: 280px; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .job-detail-hero-placeholder { display: flex; align-items: center; justify-content: center; }
 .job-detail-hero-placeholder span { font-size: 80px; font-weight: 900; color: rgba(0,0,0,0.15); }
 
