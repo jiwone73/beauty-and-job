@@ -18,7 +18,7 @@ export default function LoginStartPage() {
   }, [isLoggedIn, router]);
 
   const handleKakao = () => {
-    alert("카카오 로그인은 준비 중입니다.\n(검수 완료 후 사용 가능)");
+    window.location.href = "/api/auth/kakao";
   };
 
   return (
