@@ -1,5 +1,6 @@
 "use client";
 import LoginModal from "@/components/LoginModal";
+import KakaoMap from "@/components/KakaoMap";
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -182,6 +183,8 @@ export default function JobDetailPage() {
               size: j.company?.company_size || '',
               location: [j.company?.region_sido, j.company?.region_sigungu, j.company?.address].filter(Boolean).join(' ') || '',
               founded: j.company?.founded_year || '',
+              latitude: j.company?.latitude ?? null,
+              longitude: j.company?.longitude ?? null,
             },
             companyAddress: [j.company?.region_sido, j.company?.region_sigungu, j.company?.address].filter(Boolean).join(' '),
           });
@@ -342,7 +345,15 @@ export default function JobDetailPage() {
                 <span>{job.companyInfo?.founded}</span>
               </div>
             </div>
-            {job.companyAddress?.trim() && (
+            {job.companyInfo?.latitude && job.companyInfo?.longitude ? (
+              <div style={{ marginTop: "20px" }}>
+                <KakaoMap
+                  latitude={Number(job.companyInfo.latitude)}
+                  longitude={Number(job.companyInfo.longitude)}
+                  name={job.companyInfo?.name}
+                />
+              </div>
+            ) : job.companyAddress?.trim() ? (
               <div style={{ marginTop: "20px" }}>
                 <iframe
                   title="회사 위치"
@@ -354,7 +365,7 @@ export default function JobDetailPage() {
                   src={`https://maps.google.com/maps?q=${encodeURIComponent(job.companyAddress)}&output=embed&hl=ko`}
                 />
               </div>
-            )}
+            ) : null}
           </section>
 
           {/* 포지션 소개 */}

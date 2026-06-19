@@ -26,7 +26,9 @@ export async function GET(
        c.region_sido AS company_region_sido,
        c.region_sigungu AS company_region_sigungu,
        c.company_size,
-       c.founded_year
+       c.founded_year,
+       c.latitude AS company_latitude,
+       c.longitude AS company_longitude
      FROM job_postings jp
      JOIN companies c ON c.id = jp.company_id
      WHERE jp.id = $1 AND jp.status = 'ACTIVE'`,
@@ -99,7 +101,9 @@ export async function GET(
       region_sido: job.company_region_sido,
       region_sigungu: job.company_region_sigungu,
       company_size: job.company_size,
-      founded_year: job.founded_year
+      founded_year: job.founded_year,
+      latitude: job.company_latitude,
+      longitude: job.company_longitude
     },
     is_bookmarked,
     has_applied
