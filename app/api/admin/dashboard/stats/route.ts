@@ -71,32 +71,43 @@ export async function GET(req: NextRequest) {
       ORDER BY day
     `)
 
-    // 직군별 공고 분포 (categories[] 배열 기준 — jobGroups SoT 연동)
-    const jobDist = await client.query(`
+    // 직군별 공고 분포 (매장/사무 분리)
+    const jobDistStore = await client.query(`
       SELECT cat AS name, COUNT(*)::int AS value
       FROM job_postings jp, unnest(jp.categories) AS cat
-      WHERE jp.status = 'ACTIVE'
-      GROUP BY cat
-      ORDER BY value DESC
+      WHERE jp.status = 'ACTIVE' AND jp.job_type = 'STORE'
+      GROUP BY cat ORDER BY value DESC
     `)
-
-    // 직군별 회원 분포 (office_job_areas[] 배열 기준 — jobGroups SoT 연동)
-    const userDist = await client.query(`
+    const jobDistOffice = await client.query(`
+      SELECT cat AS name, COUNT(*)::int AS value
+      FROM job_postings jp, unnest(jp.categories) AS cat
+      WHERE jp.status = 'ACTIVE' AND jp.job_type = 'OFFICE'
+      GROUP BY cat ORDER BY value DESC
+    `)
+    // 직군별 회원 분포 (매장/사무 분리)
+    const userDistStore = await client.query(`
       SELECT area AS name, COUNT(*)::int AS value
       FROM users u, unnest(u.office_job_areas) AS area
-      WHERE u.office_job_areas IS NOT NULL
-      GROUP BY area
-      ORDER BY value DESC
+      WHERE u.job_type = 'STORE'
+      GROUP BY area ORDER BY value DESC
+    `)
+    const userDistOffice = await client.query(`
+      SELECT area AS name, COUNT(*)::int AS value
+      FROM users u, unnest(u.office_job_areas) AS area
+      WHERE u.job_type = 'OFFICE'
+      GROUP BY area ORDER BY value DESC
     `)
     return ok({
       counts: counts.rows[0],
-      user_dist: userDist.rows,
+      job_dist_store: jobDistStore.rows,
+      job_dist_office: jobDistOffice.rows,
+      user_dist_store: userDistStore.rows,
+      user_dist_office: userDistOffice.rows,
       recent_users: recentUsers.rows,
       recent_companies: recentCompanies.rows,
       recent_jobs: recentJobs.rows,
       signup_trend: signupTrend.rows,
       apply_trend: applyTrend.rows,
-      job_dist: jobDist.rows,
     })
   } finally {
     client.release()

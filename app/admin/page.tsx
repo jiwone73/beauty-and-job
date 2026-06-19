@@ -41,6 +41,8 @@ function fmtDay(d: string | null) {
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
+  const [distTab, setDistTab] = useState<"STORE" | "OFFICE">("STORE");
+
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
@@ -66,14 +68,13 @@ export default function AdminDashboard() {
     지원수: Number(r.count),
   }));
 
-  const jobDist = (stats?.job_dist || []).map((r: any) => ({
-    name: r.name,
-    value: Number(r.value),
-  }));
-  const userDist = (stats?.user_dist || []).map((r: any) => ({
-    name: r.name,
-    value: Number(r.value),
-  }));
+  const mapDist = (rows: any) => (rows || []).map((r: any) => ({ name: r.name, value: Number(r.value) }));
+  const jobDistStore = mapDist(stats?.job_dist_store);
+  const jobDistOffice = mapDist(stats?.job_dist_office);
+  const userDistStore = mapDist(stats?.user_dist_store);
+  const userDistOffice = mapDist(stats?.user_dist_office);
+  const jobDist = distTab === "STORE" ? jobDistStore : jobDistOffice;
+  const userDist = distTab === "STORE" ? userDistStore : userDistOffice;
 
   const recentUsers = stats?.recent_users || [];
   const recentCompanies = stats?.recent_companies || [];
@@ -288,8 +289,18 @@ export default function AdminDashboard() {
         </div>
 
         <div className="admin-card">
-          <div className="admin-card-head">
+          <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2 className="admin-card-title">직군별 채용공고 분포</h2>
+            <div style={{ display: "flex", gap: 4 }}>
+              <button onClick={() => setDistTab("STORE")}
+                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: distTab === "STORE" ? "#5f0080" : "#f0e9f5", color: distTab === "STORE" ? "#fff" : "#5f0080" }}>
+                🏪 매장
+              </button>
+              <button onClick={() => setDistTab("OFFICE")}
+                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: distTab === "OFFICE" ? "#5f0080" : "#f0e9f5", color: distTab === "OFFICE" ? "#fff" : "#5f0080" }}>
+                🏢 사무
+              </button>
+            </div>
           </div>
           <div style={{padding:"16px 8px"}}>
             <ResponsiveContainer width="100%" height={260}>
@@ -312,7 +323,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-
       {/* 최근 채용공고 (전체 너비) */}
         <div className="admin-card">
           <div className="admin-card-head">
