@@ -262,8 +262,7 @@ export default function JobDetailPage() {
             {(() => {
               const heroImg =
                 (Array.isArray(job.cover_images) && job.cover_images[0]?.url) ||
-                (Array.isArray(job.detailImages) && job.detailImages[0]?.url) ||
-                job.logo_url;
+                (Array.isArray(job.detailImages) && job.detailImages[0]?.url);
               return heroImg ? (
                 <img src={heroImg} alt={job.brand}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }} />
