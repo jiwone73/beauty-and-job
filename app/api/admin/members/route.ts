@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const result = await client.query(`
       SELECT
         id, name, email::text AS email, phone, job_type, status,
-        kakao_id, naver_id, last_login_at, created_at
+        kakao_id, naver_id, last_login_at, created_at, avatar_url
       FROM users
       ORDER BY created_at DESC
     `)

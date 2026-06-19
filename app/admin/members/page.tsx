@@ -30,6 +30,7 @@ type Member = {
   kakao_id: string | null;
   last_login_at: string | null;
   created_at: string;
+  avatar_url: string | null;
 };
 
 export default function AdminMembersPage() {
@@ -206,7 +207,18 @@ export default function AdminMembersPage() {
                       onChange={() => toggleCheck(m.id)} />
                   </td>
                   <td className="admin-td-date">{fmtDate(m.created_at)}</td>
-                  <td className="admin-td-brand">{m.name}</td>
+                  <td className="admin-td-brand">
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                        {m.avatar_url ? (
+                          <img src={m.avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : (
+                          m.name?.[0] || "·"
+                        )}
+                      </div>
+                      <span>{m.name}</span>
+                    </div>
+                  </td>
                   <td>
                     {m.kakao_id ? (
                       <span className="admin-badge" style={{ background: "#FEE500", color: "#3A1D1D" }}>카카오</span>
