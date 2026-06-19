@@ -838,6 +838,7 @@ function InfoRow({ label, value, isEmpty, isLast, onClick }: {
 }
 
 function AppliedTab() {
+  const router = useRouter();
   const [apps, setApps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -906,7 +907,7 @@ function AppliedTab() {
           const date = new Date(app.applied_at);
           const dateStr = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
           return (
-            <div key={app.id} className="applied-item">
+            <div key={app.id} className="applied-item" onClick={() => app.job_id && router.push(`/jobs/${app.job_id}`)} style={{ cursor: "pointer" }}>
               <div className="applied-item-left">
                 <span className="applied-brand">{app.brand_name || app.company_name}</span>
                 <h3 className="applied-title">{app.job_title}</h3>
