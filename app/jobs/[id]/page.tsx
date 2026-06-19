@@ -273,11 +273,15 @@ export default function JobDetailPage() {
                 </div>
               );
             })()}
-            {job.logo_url && (
-              <div className="job-detail-hero-logo">
+            <div className="job-detail-hero-logo">
+              {job.logo_url ? (
                 <img src={job.logo_url} alt={`${job.brand} 로고`} />
-              </div>
-            )}
+              ) : (
+                <span style={{ fontSize: 22, fontWeight: 800, color: "#5f0080" }}>
+                  {job.brand?.[0] || "·"}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="job-detail-info-box">
