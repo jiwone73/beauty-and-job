@@ -70,6 +70,10 @@ export default function AdminDashboard() {
     name: r.name,
     value: Number(r.value),
   }));
+  const userDist = (stats?.user_dist || []).map((r: any) => ({
+    name: r.name,
+    value: Number(r.value),
+  }));
 
   const recentUsers = stats?.recent_users || [];
   const recentCompanies = stats?.recent_companies || [];

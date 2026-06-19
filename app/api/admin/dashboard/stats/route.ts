@@ -80,8 +80,17 @@ export async function GET(req: NextRequest) {
       ORDER BY value DESC
     `)
 
+    // 직군별 회원 분포 (office_job_areas[] 배열 기준 — jobGroups SoT 연동)
+    const userDist = await client.query(`
+      SELECT area AS name, COUNT(*)::int AS value
+      FROM users u, unnest(u.office_job_areas) AS area
+      WHERE u.office_job_areas IS NOT NULL
+      GROUP BY area
+      ORDER BY value DESC
+    `)
     return ok({
       counts: counts.rows[0],
+      user_dist: userDist.rows,
       recent_users: recentUsers.rows,
       recent_companies: recentCompanies.rows,
       recent_jobs: recentJobs.rows,
