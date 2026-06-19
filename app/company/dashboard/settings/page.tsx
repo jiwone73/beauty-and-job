@@ -43,6 +43,8 @@ export default function CompanySettingsPage() {
         const res = await companyMeApi.get();
         setInfo(res.data);
         setLogoUrl((res.data as any).logo_url || null);
+        const cov = (res.data as any).cover_images;
+        setCoverUrl(Array.isArray(cov) && cov[0]?.url ? cov[0].url : null);
         setForm({
           company_name: res.data.company_name || "",
           brand_name: res.data.brand_name || "",
