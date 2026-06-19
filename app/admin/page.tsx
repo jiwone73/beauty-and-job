@@ -42,7 +42,8 @@ function fmtDay(d: string | null) {
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
-  const [distTab, setDistTab] = useState<"STORE" | "OFFICE">("STORE");
+  const [jobTab, setJobTab] = useState<"STORE" | "OFFICE">("STORE");
+  const [userTab, setUserTab] = useState<"STORE" | "OFFICE">("STORE");
 
 
   useEffect(() => {
@@ -83,8 +84,8 @@ export default function AdminDashboard() {
     });
     return Object.entries(m).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
   };
-  const jobDist = distTab === "STORE" ? rollup(jobDistStore, "STORE") : rollup(jobDistOffice, "OFFICE");
-  const userDist = distTab === "STORE" ? rollup(userDistStore, "STORE") : rollup(userDistOffice, "OFFICE");
+  const jobDist = jobTab === "STORE" ? rollup(jobDistStore, "STORE") : rollup(jobDistOffice, "OFFICE");
+  const userDist = userTab === "STORE" ? rollup(userDistStore, "STORE") : rollup(userDistOffice, "OFFICE");
 
   const recentUsers = stats?.recent_users || [];
   const recentCompanies = stats?.recent_companies || [];
@@ -157,6 +158,40 @@ export default function AdminDashboard() {
                 <Line type="monotone" dataKey="개인" stroke="#5f0080" strokeWidth={2.5}
                   dot={{fill:"#5f0080", r:4}} activeDot={{r:6}} />
               </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="admin-card">
+          <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h2 className="admin-card-title">직군별 회원 분포</h2>
+            <div style={{ display: "flex", gap: 4 }}>
+              <button onClick={() => setUserTab("STORE")}
+                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: userTab === "STORE" ? "#5f0080" : "#f0e9f5", color: userTab === "STORE" ? "#fff" : "#5f0080" }}>
+                🏪 매장
+              </button>
+              <button onClick={() => setUserTab("OFFICE")}
+                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: userTab === "OFFICE" ? "#5f0080" : "#f0e9f5", color: userTab === "OFFICE" ? "#fff" : "#5f0080" }}>
+                🏢 사무
+              </button>
+            </div>
+          </div>
+          <div style={{padding:"16px 8px"}}>
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie data={userDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
+                  dataKey="value" paddingAngle={3}>
+                  {userDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                </Pie>
+                <Tooltip formatter={(v) => [`${v}명`, ""]} />
+                <Legend
+                  layout="vertical"
+                  align="right"
+                  verticalAlign="middle"
+                  iconType="circle"
+                  iconSize={8}
+                  formatter={(v) => <span style={{fontSize:12}}>{v}</span>}
+                />
+              </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
@@ -302,12 +337,12 @@ export default function AdminDashboard() {
           <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2 className="admin-card-title">직군별 채용공고 분포</h2>
             <div style={{ display: "flex", gap: 4 }}>
-              <button onClick={() => setDistTab("STORE")}
-                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: distTab === "STORE" ? "#5f0080" : "#f0e9f5", color: distTab === "STORE" ? "#fff" : "#5f0080" }}>
+              <button onClick={() => setJobTab("STORE")}
+                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: jobTab === "STORE" ? "#5f0080" : "#f0e9f5", color: jobTab === "STORE" ? "#fff" : "#5f0080" }}>
                 🏪 매장
               </button>
-              <button onClick={() => setDistTab("OFFICE")}
-                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: distTab === "OFFICE" ? "#5f0080" : "#f0e9f5", color: distTab === "OFFICE" ? "#fff" : "#5f0080" }}>
+              <button onClick={() => setJobTab("OFFICE")}
+                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: jobTab === "OFFICE" ? "#5f0080" : "#f0e9f5", color: jobTab === "OFFICE" ? "#fff" : "#5f0080" }}>
                 🏢 사무
               </button>
             </div>
@@ -320,40 +355,6 @@ export default function AdminDashboard() {
                   {jobDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                 </Pie>
                 <Tooltip formatter={(v) => [`${v}건`, ""]} />
-                <Legend
-                  layout="vertical"
-                  align="right"
-                  verticalAlign="middle"
-                  iconType="circle"
-                  iconSize={8}
-                  formatter={(v) => <span style={{fontSize:12}}>{v}</span>}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-        <div className="admin-card">
-          <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h2 className="admin-card-title">직군별 회원 분포</h2>
-            <div style={{ display: "flex", gap: 4 }}>
-              <button onClick={() => setDistTab("STORE")}
-                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: distTab === "STORE" ? "#5f0080" : "#f0e9f5", color: distTab === "STORE" ? "#fff" : "#5f0080" }}>
-                🏪 매장
-              </button>
-              <button onClick={() => setDistTab("OFFICE")}
-                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: distTab === "OFFICE" ? "#5f0080" : "#f0e9f5", color: distTab === "OFFICE" ? "#fff" : "#5f0080" }}>
-                🏢 사무
-              </button>
-            </div>
-          </div>
-          <div style={{padding:"16px 8px"}}>
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie data={userDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
-                  dataKey="value" paddingAngle={3}>
-                  {userDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                </Pie>
-                <Tooltip formatter={(v) => [`${v}명`, ""]} />
                 <Legend
                   layout="vertical"
                   align="right"
