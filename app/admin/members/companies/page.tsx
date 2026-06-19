@@ -218,7 +218,18 @@ export default function AdminCompaniesPage() {
                     <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
                   </td>
                   <td className="admin-td-date">{fmtDate(c.created_at)}</td>
-                  <td className="admin-td-brand">{c.company_name}</td>
+                  <td className="admin-td-brand">
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 6, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                        {c.logo_url ? (
+                          <img src={c.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : (
+                          c.company_name?.[0] || "·"
+                        )}
+                      </div>
+                      <span>{c.company_name}</span>
+                    </div>
+                  </td>
                   <td className="admin-td-date">{TYPE_LABEL[c.company_type] || c.company_type}</td>
                   <td className="admin-td-date">{c.email}</td>
                   <td className="admin-td-date">{c.phone || "-"}</td>

@@ -259,8 +259,8 @@ export default function JobDetailPage() {
             {(() => {
               const heroImg =
                 (Array.isArray(job.cover_images) && job.cover_images[0]?.url) ||
-                job.logo_url ||
-                (Array.isArray(job.detailImages) && job.detailImages[0]?.url);
+                (Array.isArray(job.detailImages) && job.detailImages[0]?.url) ||
+                job.logo_url;
               return heroImg ? (
                 <img src={heroImg} alt={job.brand}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -270,6 +270,11 @@ export default function JobDetailPage() {
                 </div>
               );
             })()}
+            {job.logo_url && (
+              <div className="job-detail-hero-logo">
+                <img src={job.logo_url} alt={`${job.brand} 로고`} />
+              </div>
+            )}
           </div>
 
           <div className="job-detail-info-box">
