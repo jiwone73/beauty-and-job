@@ -2138,11 +2138,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 관련 공고 */
 .job-detail-related { display: flex; flex-direction: column; gap: 12px; }
-.job-detail-related-card { display: flex; gap: 14px; text-decoration: none; color: inherit; padding: 12px; border-radius: 10px; transition: background 0.15s; }
+.job-detail-related-card { display: flex; gap: 14px; text-decoration: none; color: inherit; padding: 12px 12px 12px 0; border-radius: 10px; transition: background 0.15s; }
 .job-detail-related-card:hover { background: transparent; }
 .job-detail-related-thumb { width: 64px; height: 64px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .job-detail-related-thumb span { font-size: 24px; font-weight: 900; color: rgba(0,0,0,0.15); }
-.job-detail-related-info { display: flex; flex-direction: column; gap: 3px; }
+.job-detail-related-info { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 3px; text-align: left; }
 .job-detail-related-brand { font-size: 12px; color: var(--color-text-mute); }
 .job-detail-related-title { font-size: 14px; font-weight: 600; color: var(--color-text); line-height: 1.4; }
 .job-detail-related-meta { font-size: 12px; color: var(--color-text-mute); }
