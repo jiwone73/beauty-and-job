@@ -11,6 +11,7 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
+import { getGroupOfItem } from "@/lib/data/jobGroups";
 
 const PIE_COLORS = ["#5f0080", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
@@ -73,8 +74,17 @@ export default function AdminDashboard() {
   const jobDistOffice = mapDist(stats?.job_dist_office);
   const userDistStore = mapDist(stats?.user_dist_store);
   const userDistOffice = mapDist(stats?.user_dist_office);
-  const jobDist = distTab === "STORE" ? jobDistStore : jobDistOffice;
-  const userDist = distTab === "STORE" ? userDistStore : userDistOffice;
+  // 소분류 분포 → 대분류(1뎁스)로 합산
+  const rollup = (rows: any[], jt: "STORE" | "OFFICE") => {
+    const m: Record<string, number> = {};
+    (rows || []).forEach((r: any) => {
+      const g = getGroupOfItem(jt, r.name) || "기타";
+      m[g] = (m[g] || 0) + Number(r.value);
+    });
+    return Object.entries(m).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  };
+  const jobDist = distTab === "STORE" ? rollup(jobDistStore, "STORE") : rollup(jobDistOffice, "OFFICE");
+  const userDist = distTab === "STORE" ? rollup(userDistStore, "STORE") : rollup(userDistOffice, "OFFICE");
 
   const recentUsers = stats?.recent_users || [];
   const recentCompanies = stats?.recent_companies || [];
@@ -310,6 +320,40 @@ export default function AdminDashboard() {
                   {jobDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                 </Pie>
                 <Tooltip formatter={(v) => [`${v}건`, ""]} />
+                <Legend
+                  layout="vertical"
+                  align="right"
+                  verticalAlign="middle"
+                  iconType="circle"
+                  iconSize={8}
+                  formatter={(v) => <span style={{fontSize:12}}>{v}</span>}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="admin-card">
+          <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h2 className="admin-card-title">직군별 회원 분포</h2>
+            <div style={{ display: "flex", gap: 4 }}>
+              <button onClick={() => setDistTab("STORE")}
+                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: distTab === "STORE" ? "#5f0080" : "#f0e9f5", color: distTab === "STORE" ? "#fff" : "#5f0080" }}>
+                🏪 매장
+              </button>
+              <button onClick={() => setDistTab("OFFICE")}
+                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: distTab === "OFFICE" ? "#5f0080" : "#f0e9f5", color: distTab === "OFFICE" ? "#fff" : "#5f0080" }}>
+                🏢 사무
+              </button>
+            </div>
+          </div>
+          <div style={{padding:"16px 8px"}}>
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie data={userDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
+                  dataKey="value" paddingAngle={3}>
+                  {userDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                </Pie>
+                <Tooltip formatter={(v) => [`${v}명`, ""]} />
                 <Legend
                   layout="vertical"
                   align="right"
