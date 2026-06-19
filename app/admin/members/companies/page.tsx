@@ -24,6 +24,7 @@ type Company = {
   brand_name: string | null;
   business_number: string | null;
   company_type: string;
+  cover_images: any;
   email: string;
   phone: string | null;
   logo_url: string | null;
@@ -221,11 +222,15 @@ export default function AdminCompaniesPage() {
                   <td className="admin-td-brand">
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <div style={{ width: 28, height: 28, borderRadius: 6, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
-                        {c.logo_url ? (
-                          <img src={c.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        ) : (
-                          c.company_name?.[0] || "·"
-                        )}
+                        {(() => {
+                          const cover = Array.isArray(c.cover_images) && c.cover_images[0]?.url ? c.cover_images[0].url : null;
+                          const img = c.logo_url || (c.company_type === "STORE" ? cover : null);
+                          return img ? (
+                            <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          ) : (
+                            c.company_name?.[0] || "·"
+                          );
+                        })()}
                       </div>
                       <span>{c.company_name}</span>
                     </div>

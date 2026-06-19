@@ -25,7 +25,7 @@ export default function CompanyLayout({ children, activePage }: {
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "" });
+  const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "" });
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unread, setUnread] = useState(0);
@@ -43,6 +43,8 @@ export default function CompanyLayout({ children, activePage }: {
             name: res.data.company_name || "",
             category: res.data.company_type === "OFFICE" ? "기업·브랜드" : res.data.company_type === "STORE" ? "매장·살롱" : "기업+매장",
             logo: res.data.logo_url || "",
+            type: res.data.company_type || "",
+            cover: (Array.isArray(res.data.cover_images) && res.data.cover_images[0]?.url) ? res.data.cover_images[0].url : "",
           });
         }
       })
@@ -143,11 +145,14 @@ export default function CompanyLayout({ children, activePage }: {
         <div className="company-sidebar-logo">
           <Link href={base} className="company-logo-link">
             <div className="company-logo-mark">
-              {companyInfo.logo ? (
-                <img src={companyInfo.logo} alt={`${companyInfo.name} 로고`} />
-              ) : (
-                <span>{companyInfo.name?.[0] || "·"}</span>
-              )}
+              {(() => {
+                const img = companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
+                return img ? (
+                  <img src={img} alt={`${companyInfo.name}`} />
+                ) : (
+                  <span>{companyInfo.name?.[0] || "·"}</span>
+                );
+              })()}
             </div>
             <div className="company-logo-info">
               <span className="company-logo-name">{companyInfo.name}</span>
