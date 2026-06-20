@@ -148,6 +148,21 @@ export default function AdminDashboard() {
   const appDistJt = indivTab === "OFFICE" ? "OFFICE" : "STORE";
   const appDist = rollup(appDistRaw, appDistJt);
 
+  // ── 프로필 직군 분포 (회원이 설정한 직군, indivTab 연동)
+  const userDistRaw = indivTab === "STORE" ? mapDist(stats?.user_dist_store)
+    : indivTab === "OFFICE" ? mapDist(stats?.user_dist_office)
+    : [...mapDist(stats?.user_dist_store), ...mapDist(stats?.user_dist_office)];
+  const userDist = (() => {
+    // ALL일 땐 store+office 각각 롤업 후 병합
+    if (indivTab === "STORE") return rollup(mapDist(stats?.user_dist_store), "STORE");
+    if (indivTab === "OFFICE") return rollup(mapDist(stats?.user_dist_office), "OFFICE");
+    const s = rollup(mapDist(stats?.user_dist_store), "STORE");
+    const o = rollup(mapDist(stats?.user_dist_office), "OFFICE");
+    const m: Record<string, number> = {};
+    [...s, ...o].forEach((r) => { m[r.name] = (m[r.name] || 0) + r.value; });
+    return Object.entries(m).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  })();
+
   // ── 나이대 × 성별
   const demographicsRaw = indivTab === "STORE" ? stats?.demographics_store
     : indivTab === "OFFICE" ? stats?.demographics_office
@@ -373,7 +388,26 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
           </div>
         </div>
-
+        {/* 프로필 직군 분포 (회원이 설정한 직군) */}
+        <div className="admin-card">
+          <div className="admin-card-head">
+            <h2 className="admin-card-title">프로필 직군 분포</h2>
+          </div>
+          <div style={{ padding: "16px 8px" }}>
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie data={userDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
+                  dataKey="value" paddingAngle={3}>
+                  {userDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                </Pie>
+                <Tooltip formatter={(v) => [`${v}명`, ""]} />
+                <Legend layout="vertical" align="right" verticalAlign="middle"
+                  iconType="circle" iconSize={8}
+                  formatter={(v) => <span style={{ fontSize: 12 }}>{v}</span>} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
         {/* 입사 지원 추이 */}
         <TrendCard title="입사 지원 추이" type="apply" render={(rows, range) => {
           const data = rows.map((r: any) => ({
