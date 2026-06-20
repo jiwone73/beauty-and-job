@@ -284,9 +284,10 @@ export default function AdminDashboard() {
             unit: "건",
           },
           {
-            label: `전체 이력서 (공개 ${fmt(indivTab === "STORE" ? c?.public_resumes_store : indivTab === "OFFICE" ? c?.public_resumes_office : c?.public_resumes)})`,
+            label: "전체 이력서",
             value: fmt(indivTab === "STORE" ? c?.total_resumes_store : indivTab === "OFFICE" ? c?.total_resumes_office : c?.total_resumes),
             unit: "건",
+            sub: `공개 ${fmt(indivTab === "STORE" ? c?.public_resumes_store : indivTab === "OFFICE" ? c?.public_resumes_office : c?.public_resumes)}`,
           },
           {
             label: "이력서 보유율",
@@ -302,7 +303,10 @@ export default function AdminDashboard() {
         ].map((s) => (
           <div key={s.label} className="admin-mini-stat-card">
             <span className="admin-mini-stat-label">{s.label}</span>
-            <span className="admin-mini-stat-value">{s.value}<span className="admin-mini-unit">{s.unit}</span></span>
+            <span className="admin-mini-stat-value">
+              {s.value}<span className="admin-mini-unit">{s.unit}</span>
+              {(s as any).sub && <span style={{ fontSize: 11, color: "#999", fontWeight: 400, marginLeft: 6 }}>({(s as any).sub})</span>}
+            </span>
           </div>
         ))}
       </div>
