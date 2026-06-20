@@ -105,8 +105,11 @@ export default function AdminDashboard() {
           const inner = (
             <>
               <div className="admin-stat-top">
-                <div className="admin-stat-icon" style={{ background: stat.color + "18", color: stat.color }}>
-                  <stat.icon size={22} />
+                <div className="admin-stat-icon-label">
+                  <div className="admin-stat-icon" style={{ background: stat.color + "18", color: stat.color }}>
+                    <stat.icon size={16} />
+                  </div>
+                  <div className="admin-stat-label">{stat.label}</div>
                 </div>
                 <div className={`admin-stat-trend ${stat.trend > 0 ? "up" : stat.trend < 0 ? "down" : "neutral"}`}>
                   {stat.trend > 0 ? <TrendingUp size={14} /> : stat.trend < 0 ? <TrendingDown size={14} /> : null}
@@ -116,7 +119,6 @@ export default function AdminDashboard() {
               <div className="admin-stat-value">
                 {stat.value}<span className="admin-stat-unit">{stat.unit}</span>
               </div>
-              <div className="admin-stat-label">{stat.label}</div>
               <div className="admin-stat-sub-text">{stat.sub}</div>
             </>
           );

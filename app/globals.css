@@ -4930,15 +4930,21 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+}
+.admin-stat-icon-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .admin-stat-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 .admin-stat-trend {
   display: flex;
