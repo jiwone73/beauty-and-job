@@ -233,12 +233,19 @@ export default function AdminDashboard() {
           { label: "전체 기업회원", value: fmt(c?.total_companies), unit: "개사" },
           { label: "오늘 신규 가입", value: fmt(c?.today_companies), unit: "개사" },
           { label: "진행중 공고", value: fmt(c?.active_jobs), unit: "건" },
-          { label: "승인 대기", value: fmt(c?.pending_companies), unit: "건" },
+          { label: "승인 대기", value: fmt(c?.pending_companies), unit: "건", href: "/admin/members/companies?status=pending" },
         ].map((s) => (
-          <div key={s.label} className="admin-mini-stat-card">
-            <span className="admin-mini-stat-label">{s.label}</span>
-            <span className="admin-mini-stat-value">{s.value}<span className="admin-mini-unit">{s.unit}</span></span>
-          </div>
+          s.href ? (
+            <Link key={s.label} href={s.href} className="admin-mini-stat-card" style={{ cursor: "pointer", textDecoration: "none", color: "inherit" }}>
+              <span className="admin-mini-stat-label">{s.label}</span>
+              <span className="admin-mini-stat-value">{s.value}<span className="admin-mini-unit">{s.unit}</span></span>
+            </Link>
+          ) : (
+            <div key={s.label} className="admin-mini-stat-card">
+              <span className="admin-mini-stat-label">{s.label}</span>
+              <span className="admin-mini-stat-value">{s.value}<span className="admin-mini-unit">{s.unit}</span></span>
+            </div>
+          )
         ))}
       </div>
 
