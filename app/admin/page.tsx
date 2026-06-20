@@ -277,7 +277,7 @@ export default function AdminDashboard() {
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                 <Tooltip />
                 <Line type="monotone" dataKey="개인" stroke="#5f0080" strokeWidth={2.5}
-                  dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} />
+                  dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} connectNulls />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -337,7 +337,7 @@ export default function AdminDashboard() {
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                 <Tooltip />
                 <Line type="monotone" dataKey="지원수" stroke="#10b981" strokeWidth={2.5}
-                  dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} />
+                  dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} connectNulls />
               </LineChart>
             </ResponsiveContainer>
           </div>
