@@ -118,6 +118,51 @@ export async function GET(req: NextRequest) {
       WHERE jp.status = 'ACTIVE' AND jp.job_type = 'OFFICE'
       GROUP BY cat ORDER BY value DESC
     `)
+    // 직군별 입사지원 분포 (지원 공고의 직군 집계, job_type별)
+    const appDistStore = await client.query(`
+      SELECT cat AS name, COUNT(*)::int AS value
+      FROM applications a
+      JOIN job_postings jp ON jp.id = a.job_posting_id, unnest(jp.categories) AS cat
+      WHERE jp.job_type = 'STORE'
+      GROUP BY cat ORDER BY value DESC
+    `)
+    const appDistOffice = await client.query(`
+      SELECT cat AS name, COUNT(*)::int AS value
+      FROM applications a
+      JOIN job_postings jp ON jp.id = a.job_posting_id, unnest(jp.categories) AS cat
+      WHERE jp.job_type = 'OFFICE'
+      GROUP BY cat ORDER BY value DESC
+    `)
+    const appDistAll = await client.query(`
+      SELECT cat AS name, COUNT(*)::int AS value
+      FROM applications a
+      JOIN job_postings jp ON jp.id = a.job_posting_id, unnest(jp.categories) AS cat
+      GROUP BY cat ORDER BY value DESC
+    `)
+    // 일별 공고 등록 수 (최근 7일, company_type별)
+    const jobTrend = await client.query(`
+      SELECT d::date AS day,
+        (SELECT COUNT(*) FROM job_postings WHERE created_at::date = d::date) AS total,
+        (SELECT COUNT(*) FROM job_postings WHERE created_at::date = d::date AND job_type = 'STORE') AS store,
+        (SELECT COUNT(*) FROM job_postings WHERE created_at::date = d::date AND job_type = 'OFFICE') AS office,
+        (SELECT COUNT(*) FROM job_postings jp JOIN companies c2 ON c2.id = jp.company_id WHERE jp.created_at::date = d::date AND c2.company_type = 'BOTH') AS both
+      FROM generate_series(now()::date - interval '6 day', now()::date, interval '1 day') d
+      ORDER BY day
+    `)
+    // 직군별 채용공고 분포 — BOTH(매장+기업 회사가 올린 공고)
+    const jobDistBoth = await client.query(`
+      SELECT cat AS name, COUNT(*)::int AS value
+      FROM job_postings jp
+      JOIN companies c2 ON c2.id = jp.company_id, unnest(jp.categories) AS cat
+      WHERE jp.status = 'ACTIVE' AND c2.company_type = 'BOTH'
+      GROUP BY cat ORDER BY value DESC
+    `)
+    const jobDistAll = await client.query(`
+      SELECT cat AS name, COUNT(*)::int AS value
+      FROM job_postings jp, unnest(jp.categories) AS cat
+      WHERE jp.status = 'ACTIVE'
+      GROUP BY cat ORDER BY value DESC
+    `)
     // 직군별 회원 분포 (매장/사무 분리)
     const userDistStore = await client.query(`
       SELECT area AS name, COUNT(*)::int AS value
@@ -195,6 +240,12 @@ export async function GET(req: NextRequest) {
       counts: counts.rows[0],
       job_dist_store: jobDistStore.rows,
       job_dist_office: jobDistOffice.rows,
+      job_dist_both: jobDistBoth.rows,
+      job_dist_all: jobDistAll.rows,
+      app_dist_store: appDistStore.rows,
+      app_dist_office: appDistOffice.rows,
+      app_dist_all: appDistAll.rows,
+      job_trend: jobTrend.rows,
       user_dist_store: userDistStore.rows,
       user_dist_office: userDistOffice.rows,
       
