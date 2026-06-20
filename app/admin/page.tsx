@@ -52,6 +52,45 @@ function RangeToggle({ range, onChange }: { range: string; onChange: (r: "7d" | 
 }
 
 // ── 독립 추이 카드: 자체 기간 state + 자체 fetch (4개가 서로 독립)
+// ── 파이차트 + 2열 범례 카드 (범례를 HTML로 직접 그림)
+function PieCard({ title, data, unit, colors }: {
+  title: string; data: { name: string; value: number }[]; unit: string; colors: string[];
+}) {
+  return (
+    <div className="admin-card">
+      <div className="admin-card-head">
+        <h2 className="admin-card-title">{title}</h2>
+      </div>
+      <div style={{ padding: "16px 8px", display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ flex: "0 0 45%" }}>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie data={data} cx="50%" cy="50%" innerRadius={45} outerRadius={72} dataKey="value" paddingAngle={3}>
+                {data.map((_, i) => <Cell key={i} fill={colors[i % colors.length]} />)}
+              </Pie>
+              <Tooltip formatter={(v) => [`${v}${unit}`, ""]} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div style={{
+          flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr",
+          gap: "6px 8px", fontSize: 11, alignContent: "center",
+        }}>
+          {data.map((d, i) => (
+            <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 5, minWidth: 0 }}>
+              <span style={{
+                width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+                background: colors[i % colors.length],
+              }} />
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TrendCard({
   title, type, subFilter, render,
 }: {
@@ -389,46 +428,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* 프로필 직군 분포 (회원이 설정한 직군) */}
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">프로필 직군 분포</h2>
-          </div>
-          <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie data={userDist} cx="32%" cy="50%" innerRadius={45} outerRadius={72}
-                  dataKey="value" paddingAngle={3}>
-                  {userDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                </Pie>
-                <Tooltip formatter={(v) => [`${v}명`, ""]} />
-                <Legend layout="vertical" align="right" verticalAlign="middle"
-                  iconType="circle" iconSize={8}
-                  wrapperStyle={{ width: "42%", display: "flex", flexWrap: "wrap" }}
-                  formatter={(v) => <span style={{ fontSize: 11 }}>{v}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <PieCard title="프로필 직군 분포" data={userDist} unit="명" colors={PIE_COLORS} />
         {/* 직군별 입사지원 분포 */}
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">직군별 입사지원 분포</h2>
-          </div>
-          <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={320}>
-              <PieChart>
-                <Pie data={appDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
-                  dataKey="value" paddingAngle={3}>
-                  {appDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                </Pie>
-                <Tooltip formatter={(v) => [`${v}건`, ""]} />
-                <Legend layout="vertical" align="right" verticalAlign="middle"
-                  iconType="circle" iconSize={8}
-                  formatter={(v) => <span style={{ fontSize: 12 }}>{v}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <PieCard title="직군별 입사지원 분포" data={appDist} unit="건" colors={PIE_COLORS} />
         
       </div>
       {/* ══════════════════════════════════════════
@@ -534,25 +536,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* 직군별 채용공고 분포 */}
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">직군별 채용공고 분포</h2>
-          </div>
-          <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={320}>
-              <PieChart>
-                <Pie data={jobDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
-                  dataKey="value" paddingAngle={3}>
-                  {jobDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                </Pie>
-                <Tooltip formatter={(v) => [`${v}건`, ""]} />
-                <Legend layout="vertical" align="right" verticalAlign="middle"
-                  iconType="circle" iconSize={8}
-                  formatter={(v) => <span style={{ fontSize: 12 }}>{v}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <PieCard title="직군별 채용공고 분포" data={jobDist} unit="건" colors={PIE_COLORS} />
 
         {/* 일별 공고 등록수 */}
         <TrendCard
