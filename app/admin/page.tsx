@@ -394,16 +394,17 @@ export default function AdminDashboard() {
             <h2 className="admin-card-title">프로필 직군 분포</h2>
           </div>
           <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={320}>
+            <ResponsiveContainer width="100%" height={260}>
               <PieChart>
-                <Pie data={userDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
+                <Pie data={userDist} cx="32%" cy="50%" innerRadius={45} outerRadius={72}
                   dataKey="value" paddingAngle={3}>
                   {userDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                 </Pie>
                 <Tooltip formatter={(v) => [`${v}명`, ""]} />
                 <Legend layout="vertical" align="right" verticalAlign="middle"
                   iconType="circle" iconSize={8}
-                  formatter={(v) => <span style={{ fontSize: 12 }}>{v}</span>} />
+                  wrapperStyle={{ width: "42%", display: "flex", flexWrap: "wrap" }}
+                  formatter={(v) => <span style={{ fontSize: 11 }}>{v}</span>} />
               </PieChart>
             </ResponsiveContainer>
           </div>
