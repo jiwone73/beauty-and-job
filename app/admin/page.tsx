@@ -185,8 +185,13 @@ export default function AdminDashboard() {
         {[
           { label: "전체 개인회원", value: fmt(indivTab === "STORE" ? c?.store_users : indivTab === "OFFICE" ? c?.office_users : c?.total_users), unit: "명" },
           { label: "오늘 신규 가입", value: fmt(indivTab === "STORE" ? c?.today_users_store : indivTab === "OFFICE" ? c?.today_users_office : c?.today_users), unit: "명" },
-          { label: "완성 이력서", value: fmt(indivTab === "STORE" ? c?.published_resumes_store : indivTab === "OFFICE" ? c?.published_resumes_office : c?.published_resumes), unit: "건" },
-          { label: "오늘 지원", value: fmt(indivTab === "STORE" ? c?.today_applications_store : indivTab === "OFFICE" ? c?.today_applications_office : c?.today_applications), unit: "건" },
+          { label: "전체 이력서", value: fmt(indivTab === "STORE" ? c?.total_resumes_store : indivTab === "OFFICE" ? c?.total_resumes_office : c?.total_resumes), unit: "건" },
+          { label: "공개 이력서", value: fmt(indivTab === "STORE" ? c?.public_resumes_store : indivTab === "OFFICE" ? c?.public_resumes_office : c?.public_resumes), unit: "건" },
+          { label: "이력서 보유율", value: (() => {
+              const have = indivTab === "STORE" ? c?.users_with_resume_store : indivTab === "OFFICE" ? c?.users_with_resume_office : c?.users_with_resume;
+              const total = indivTab === "STORE" ? c?.store_users : indivTab === "OFFICE" ? c?.office_users : c?.total_users;
+              return c ? Math.round((Number(have) / Math.max(Number(total), 1)) * 100) : "-";
+            })(), unit: "%" },
         ].map((s) => (
           <div key={s.label} className="admin-mini-stat-card">
             <span className="admin-mini-stat-label">{s.label}</span>
@@ -310,29 +315,6 @@ export default function AdminDashboard() {
         </div>
       </div>
       {/* ── 4. 채용공고 섹션 ── */}
-      {/* ── 콘텐츠 현황 ── */}
-      <div className="admin-section-header">
-        <div className="admin-section-title-wrap">
-          <CheckCircle size={20} className="admin-section-icon individual" />
-          <h2 className="admin-section-heading">콘텐츠 현황</h2>
-        </div>
-        <Link href="/admin/resumes" className="admin-card-more">전체보기 →</Link>
-      </div>
-
-      <div className="admin-mini-stat-row">
-        {[
-          { label: "전체 이력서", value: fmt(c?.total_resumes), unit: "건" },
-          { label: "공개 이력서", value: fmt(c?.public_resumes), unit: "건" },
-          { label: "이력서 보유율", value: c ? Math.round((Number(c.users_with_resume) / Math.max(Number(c.total_users), 1)) * 100) : "-", unit: "%" },
-          { label: "누적 지원수", value: fmt(c?.total_applications), unit: "건" },
-          { label: "공고당 평균지원", value: c?.avg_applications_per_job ?? "-", unit: "건" },
-        ].map((s) => (
-          <div key={s.label} className="admin-mini-stat-card">
-            <span className="admin-mini-stat-label">{s.label}</span>
-            <span className="admin-mini-stat-value">{s.value}<span className="admin-mini-unit">{s.unit}</span></span>
-          </div>
-        ))}
-      </div>
 
       {/* ── 4. 채용공고 섹션 ── */}
       <div className="admin-section-header">

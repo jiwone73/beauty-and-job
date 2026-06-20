@@ -41,8 +41,14 @@ export async function GET(req: NextRequest) {
         (SELECT COUNT(*) FROM applications) AS total_applications,
         (SELECT COUNT(*) FROM resumes WHERE status = 'PUBLISHED') AS published_resumes,
         (SELECT COUNT(*) FROM resumes) AS total_resumes,
+        (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE u.job_type = 'STORE') AS total_resumes_store,
+        (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE u.job_type = 'OFFICE') AS total_resumes_office,
         (SELECT COUNT(*) FROM resumes WHERE is_public = true) AS public_resumes,
+        (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE r.is_public = true AND u.job_type = 'STORE') AS public_resumes_store,
+        (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE r.is_public = true AND u.job_type = 'OFFICE') AS public_resumes_office,
         (SELECT COUNT(DISTINCT user_id) FROM resumes) AS users_with_resume,
+        (SELECT COUNT(DISTINCT r.user_id) FROM resumes r JOIN users u ON u.id = r.user_id WHERE u.job_type = 'STORE') AS users_with_resume_store,
+        (SELECT COUNT(DISTINCT r.user_id) FROM resumes r JOIN users u ON u.id = r.user_id WHERE u.job_type = 'OFFICE') AS users_with_resume_office,
         (SELECT ROUND(AVG(cnt), 1) FROM (
           SELECT COUNT(*) AS cnt FROM applications GROUP BY job_posting_id
         ) t) AS avg_applications_per_job
