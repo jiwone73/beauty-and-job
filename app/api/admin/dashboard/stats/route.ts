@@ -108,30 +108,26 @@ export async function GET(req: NextRequest) {
       ORDER BY value DESC
     `)
 
-    // 나이대 분포 (birth_date 'YYYYMMDD' 앞 4자리로 출생연도 추출)
+    // 나이대 분포 (birth_date는 date 타입 → EXTRACT로 출생연도 추출)
     const ageDist = await client.query(`
       SELECT name, value FROM (
         SELECT
           CASE
-            WHEN birth_date IS NULL OR LENGTH(birth_date) < 4 THEN '미입력'
-            ELSE (
-              CASE
-                WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 20 THEN '10대'
-                WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 30 THEN '20대'
-                WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 40 THEN '30대'
-                WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 50 THEN '40대'
-                ELSE '50대+'
-              END
-            )
+            WHEN birth_date IS NULL THEN '미입력'
+            WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 20 THEN '10대'
+            WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 30 THEN '20대'
+            WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 40 THEN '30대'
+            WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 50 THEN '40대'
+            ELSE '50대+'
           END AS name,
           COUNT(*)::int AS value,
           MIN(
             CASE
-              WHEN birth_date IS NULL OR LENGTH(birth_date) < 4 THEN 999
-              WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 20 THEN 1
-              WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 30 THEN 2
-              WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 40 THEN 3
-              WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 50 THEN 4
+              WHEN birth_date IS NULL THEN 999
+              WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 20 THEN 1
+              WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 30 THEN 2
+              WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 40 THEN 3
+              WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 50 THEN 4
               ELSE 5
             END
           ) AS sort_order
