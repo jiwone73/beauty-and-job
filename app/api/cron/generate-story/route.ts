@@ -4,11 +4,25 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
 import Anthropic from "@anthropic-ai/sdk";
+import { refreshSampleData } from "@/lib/sampleDataRefresh"; // ⚠️ 상용화 시 삭제
 
 const CATEGORIES = ["공감", "꿀팁", "질문", "정보"];
 
 // Vercel Cron 이 매일 호출 (GET). AI 발제 글 1개 생성 -> pending 저장.
 export async function GET(req: NextRequest) {
+  // ⚠️ 샘플 데이터 자동 갱신 (항상 실행, 상용화 시 이 블록 삭제)
+  try {
+    const sampleClient = await pool.connect();
+    try {
+      const r = await refreshSampleData(sampleClient);
+      console.log("[sample refresh]", r);
+    } finally {
+      sampleClient.release();
+    }
+  } catch (e) {
+    console.error("[sample refresh fail]", e);
+  }
+
   // 자동 생성 on/off — 관리자페이지 토글 (app_settings.story_autogen)
   try {
     const s = await pool.query(`SELECT value FROM app_settings WHERE key = 'story_autogen'`);
@@ -30,6 +44,19 @@ export async function GET(req: NextRequest) {
 
   if (!okAuth) {
     return err("AUTH_001", "인증되지 않은 요청입니다.", 401);
+  }
+
+  // ⚠️ 샘플 데이터 자동 갱신 (인증 통과 후 항상 실행, 상용화 시 이 블록 삭제)
+  try {
+    const sampleClient = await pool.connect();
+    try {
+      const r = await refreshSampleData(sampleClient);
+      console.log("[sample refresh]", r);
+    } finally {
+      sampleClient.release();
+    }
+  } catch (e) {
+    console.error("[sample refresh fail]", e);
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
