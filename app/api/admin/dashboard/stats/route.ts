@@ -7,10 +7,14 @@ export async function GET(req: NextRequest) {
   if (authErr) return authErr
 
   // 추이 기간 파라미터: 7d(기본) | 1m
-  const range = new URL(req.url).searchParams.get('range') === '1m' ? '1m' : '7d'
-  const trendCfg = range === '1m'
-    ? { start: "date_trunc('week', now()) - interval '3 week'", step: "interval '1 week'", trunc: 'week' }
-    : { start: "now()::date - interval '6 day'", step: "interval '1 day'", trunc: 'day' }
+  const rangeParam = new URL(req.url).searchParams.get('range')
+  const range = rangeParam === '1m' ? '1m' : rangeParam === '3m' ? '3m' : '7d'
+  const trendCfg =
+    range === '3m'
+      ? { start: "date_trunc('week', now()) - interval '12 week'", step: "interval '1 week'", trunc: 'week' }
+    : range === '1m'
+      ? { start: "date_trunc('week', now()) - interval '3 week'", step: "interval '1 week'", trunc: 'week' }
+      : { start: "now()::date - interval '6 day'", step: "interval '1 day'", trunc: 'day' }
 
   const client = await pool.connect()
   try {
