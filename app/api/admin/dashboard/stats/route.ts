@@ -16,6 +16,12 @@ export async function GET(req: NextRequest) {
         (SELECT COUNT(*) FROM users WHERE job_type = 'OFFICE') AS office_users,
         (SELECT COUNT(*) FROM users WHERE job_type = 'STORE') AS store_users,
         (SELECT COUNT(*) FROM users WHERE created_at::date = now()::date) AS today_users,
+        (SELECT COUNT(*) FROM users WHERE created_at::date = now()::date AND job_type = 'OFFICE') AS today_users_office,
+        (SELECT COUNT(*) FROM users WHERE created_at::date = now()::date AND job_type = 'STORE') AS today_users_store,
+        (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE r.status = 'PUBLISHED' AND u.job_type = 'OFFICE') AS published_resumes_office,
+        (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE r.status = 'PUBLISHED' AND u.job_type = 'STORE') AS published_resumes_store,
+        (SELECT COUNT(*) FROM applications a JOIN users u ON u.id = a.user_id WHERE a.applied_at::date = now()::date AND u.job_type = 'OFFICE') AS today_applications_office,
+        (SELECT COUNT(*) FROM applications a JOIN users u ON u.id = a.user_id WHERE a.applied_at::date = now()::date AND u.job_type = 'STORE') AS today_applications_store,
         (SELECT COUNT(*) FROM companies) AS total_companies,
         (SELECT COUNT(*) FROM companies WHERE created_at::date = now()::date) AS today_companies,
         (SELECT COUNT(*) FROM companies WHERE status = 'PENDING') AS pending_companies,
@@ -54,10 +60,12 @@ export async function GET(req: NextRequest) {
       ORDER BY jp.created_at DESC LIMIT 5
     `)
 
-    // 최근 7일 개인/기업 가입 추이
+    // 최근 7일 개인/기업 가입 추이 (개인은 job_type별 분리)
     const signupTrend = await client.query(`
       SELECT d::date AS day,
         (SELECT COUNT(*) FROM users WHERE created_at::date = d::date) AS users,
+        (SELECT COUNT(*) FROM users WHERE created_at::date = d::date AND job_type = 'STORE') AS users_store,
+        (SELECT COUNT(*) FROM users WHERE created_at::date = d::date AND job_type = 'OFFICE') AS users_office,
         (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date) AS companies
       FROM generate_series(now()::date - interval '6 day', now()::date, interval '1 day') d
       ORDER BY day
@@ -98,8 +106,8 @@ export async function GET(req: NextRequest) {
       GROUP BY area ORDER BY value DESC
     `)
 
-    // // 나이대 × 성별 교차 분포 (누적 막대용)
-    const demographics = await client.query(`
+    // 나이대 × 성별 교차 분포 (누적 막대용) — job_type 필터별 3벌
+    const demographicsQuery = (jobTypeFilter: string) => `
       SELECT
         age_group AS name,
         COUNT(*) FILTER (WHERE gender_norm = '남성')::int AS "남성",
@@ -130,10 +138,14 @@ export async function GET(req: NextRequest) {
             ELSE 5
           END AS age_order
         FROM users
+        ${jobTypeFilter}
       ) t
       GROUP BY age_group
       ORDER BY sort_order
-    `)
+    `
+    const demographicsAll = await client.query(demographicsQuery(""))
+    const demographicsStore = await client.query(demographicsQuery("WHERE job_type = 'STORE'"))
+    const demographicsOffice = await client.query(demographicsQuery("WHERE job_type = 'OFFICE'"))
 
     return ok({
       counts: counts.rows[0],
@@ -146,7 +158,9 @@ export async function GET(req: NextRequest) {
       recent_jobs: recentJobs.rows,
       signup_trend: signupTrend.rows,
       apply_trend: applyTrend.rows,
-      demographics: demographics.rows,
+      demographics_all: demographicsAll.rows,
+      demographics_store: demographicsStore.rows,
+      demographics_office: demographicsOffice.rows,
     })
   } finally {
     client.release()

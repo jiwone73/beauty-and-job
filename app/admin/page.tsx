@@ -44,6 +44,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
   const [jobTab, setJobTab] = useState<"STORE" | "OFFICE">("STORE");
   const [userTab, setUserTab] = useState<"STORE" | "OFFICE">("STORE");
+  const [indivTab, setIndivTab] = useState<"ALL" | "STORE" | "OFFICE">("ALL");
 
 
   useEffect(() => {
@@ -61,7 +62,9 @@ export default function AdminDashboard() {
 
   const signupData = (stats?.signup_trend || []).map((r: any) => ({
     day: fmtDay(r.day),
-    개인: Number(r.users),
+    개인: indivTab === "STORE" ? Number(r.users_store)
+        : indivTab === "OFFICE" ? Number(r.users_office)
+        : Number(r.users),
     기업: Number(r.companies),
   }));
 
@@ -75,7 +78,10 @@ export default function AdminDashboard() {
   const jobDistOffice = mapDist(stats?.job_dist_office);
   const userDistStore = mapDist(stats?.user_dist_store);
   const userDistOffice = mapDist(stats?.user_dist_office);
-  const demographics = (stats?.demographics || []).map((r: any) => ({
+  const demographicsRaw = indivTab === "STORE" ? stats?.demographics_store
+    : indivTab === "OFFICE" ? stats?.demographics_office
+    : stats?.demographics_all;
+  const demographics = (demographicsRaw || []).map((r: any) => ({
     name: r.name,
     남성: Number(r["남성"] || 0),
     여성: Number(r["여성"] || 0),
@@ -145,16 +151,26 @@ export default function AdminDashboard() {
         <div className="admin-section-title-wrap">
           <UserCheck size={20} className="admin-section-icon individual" />
           <h2 className="admin-section-heading">개인회원 현황</h2>
+          <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
+            {([["ALL","전체"],["STORE","🏪 매장"],["OFFICE","🏢 사무"]] as const).map(([val, label]) => (
+              <button key={val} onClick={() => setIndivTab(val)}
+                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none",
+                  background: indivTab === val ? "#5f0080" : "#f0e9f5",
+                  color: indivTab === val ? "#fff" : "#5f0080" }}>
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
         <Link href="/admin/members" className="admin-card-more">전체보기 →</Link>
       </div>
 
       <div className="admin-mini-stat-row">
         {[
-          { label: "전체 개인회원", value: fmt(c?.total_users), unit: "명" },
-          { label: "오늘 신규 가입", value: fmt(c?.today_users), unit: "명" },
-          { label: "완성 이력서", value: fmt(c?.published_resumes), unit: "건" },
-          { label: "오늘 지원", value: fmt(c?.today_applications), unit: "건" },
+          { label: "전체 개인회원", value: fmt(indivTab === "STORE" ? c?.store_users : indivTab === "OFFICE" ? c?.office_users : c?.total_users), unit: "명" },
+          { label: "오늘 신규 가입", value: fmt(indivTab === "STORE" ? c?.today_users_store : indivTab === "OFFICE" ? c?.today_users_office : c?.today_users), unit: "명" },
+          { label: "완성 이력서", value: fmt(indivTab === "STORE" ? c?.published_resumes_store : indivTab === "OFFICE" ? c?.published_resumes_office : c?.published_resumes), unit: "건" },
+          { label: "오늘 지원", value: fmt(indivTab === "STORE" ? c?.today_applications_store : indivTab === "OFFICE" ? c?.today_applications_office : c?.today_applications), unit: "건" },
         ].map((s) => (
           <div key={s.label} className="admin-mini-stat-card">
             <span className="admin-mini-stat-label">{s.label}</span>
