@@ -100,25 +100,36 @@ export default function AdminDashboard() {
           { label: "총 가입자", value: fmt(c ? Number(c.total_users) + Number(c.total_companies) : null), unit: "명", sub: `개인 ${fmt(c?.total_users)} · 기업 ${fmt(c?.total_companies)}`, trend: 0, icon: Users, color: "#5f0080" },
           { label: "진행중 채용공고", value: fmt(c?.active_jobs), unit: "건", sub: `매장 ${fmt(c?.store_jobs)}건 · 기업 ${fmt(c?.office_jobs)}건`, trend: 0, icon: Briefcase, color: "#0ea5e9" },
           { label: "오늘 지원수", value: fmt(c?.today_applications), unit: "건", sub: "오늘 접수", trend: 0, icon: CheckCircle, color: "#10b981" },
-          { label: "승인 대기 기업", value: fmt(c?.pending_companies), unit: "건", sub: "즉시 처리 필요", trend: 0, icon: Clock, color: "#f59e0b" },
-        ].map((stat) => (
-          <div key={stat.label} className="admin-stat-card">
-            <div className="admin-stat-top">
-              <div className="admin-stat-icon" style={{ background: stat.color + "18", color: stat.color }}>
-                <stat.icon size={22} />
+          { label: "승인 대기 기업", value: fmt(c?.pending_companies), unit: "건", sub: "즉시 처리 필요", trend: 0, icon: Clock, color: "#f59e0b", href: "/admin/members/companies?status=pending" },
+        ].map((stat) => {
+          const inner = (
+            <>
+              <div className="admin-stat-top">
+                <div className="admin-stat-icon" style={{ background: stat.color + "18", color: stat.color }}>
+                  <stat.icon size={22} />
+                </div>
+                <div className={`admin-stat-trend ${stat.trend > 0 ? "up" : stat.trend < 0 ? "down" : "neutral"}`}>
+                  {stat.trend > 0 ? <TrendingUp size={14} /> : stat.trend < 0 ? <TrendingDown size={14} /> : null}
+                  {stat.trend !== 0 && `${Math.abs(stat.trend)}%`}
+                </div>
               </div>
-              <div className={`admin-stat-trend ${stat.trend > 0 ? "up" : stat.trend < 0 ? "down" : "neutral"}`}>
-                {stat.trend > 0 ? <TrendingUp size={14} /> : stat.trend < 0 ? <TrendingDown size={14} /> : null}
-                {stat.trend !== 0 && `${Math.abs(stat.trend)}%`}
+              <div className="admin-stat-value">
+                {stat.value}<span className="admin-stat-unit">{stat.unit}</span>
               </div>
+              <div className="admin-stat-label">{stat.label}</div>
+              <div className="admin-stat-sub-text">{stat.sub}</div>
+            </>
+          );
+          return stat.href ? (
+            <Link key={stat.label} href={stat.href} className="admin-stat-card" style={{ cursor: "pointer", textDecoration: "none", color: "inherit" }}>
+              {inner}
+            </Link>
+          ) : (
+            <div key={stat.label} className="admin-stat-card">
+              {inner}
             </div>
-            <div className="admin-stat-value">
-              {stat.value}<span className="admin-stat-unit">{stat.unit}</span>
-            </div>
-            <div className="admin-stat-label">{stat.label}</div>
-            <div className="admin-stat-sub-text">{stat.sub}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* ── 2. 개인회원 섹션 ── */}
