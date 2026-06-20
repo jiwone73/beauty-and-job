@@ -48,26 +48,7 @@ export async function GET(req: NextRequest) {
         ) t) AS avg_applications_per_job
     `)
 
-    // 최근 가입 개인회원
-    const recentUsers = await client.query(`
-      SELECT name, job_type, created_at
-      FROM users ORDER BY created_at DESC LIMIT 5
-    `)
-
-    // 최근 가입 기업회원
-    const recentCompanies = await client.query(`
-      SELECT company_name, company_type, created_at,
-        (SELECT COUNT(*) FROM job_postings WHERE company_id = companies.id) AS job_count
-      FROM companies ORDER BY created_at DESC LIMIT 5
-    `)
-
-    // 최근 공고
-    const recentJobs = await client.query(`
-      SELECT jp.title, jp.job_type, jp.status, jp.created_at, c.company_name
-      FROM job_postings jp
-      JOIN companies c ON c.id = jp.company_id
-      ORDER BY jp.created_at DESC LIMIT 5
-    `)
+    
 
     // 최근 7일 개인/기업 가입 추이 (개인은 job_type별 분리)
     const signupTrend = await client.query(`
@@ -192,9 +173,7 @@ export async function GET(req: NextRequest) {
       job_dist_office: jobDistOffice.rows,
       user_dist_store: userDistStore.rows,
       user_dist_office: userDistOffice.rows,
-      recent_users: recentUsers.rows,
-      recent_companies: recentCompanies.rows,
-      recent_jobs: recentJobs.rows,
+      
       signup_trend: signupTrend.rows,
       apply_trend: applyTrend.rows,
       app_status_dist: appStatusDist.rows,

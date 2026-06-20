@@ -103,9 +103,7 @@ export default function AdminDashboard() {
   const jobDist = jobTab === "STORE" ? rollup(jobDistStore, "STORE") : rollup(jobDistOffice, "OFFICE");
   const userDist = userTab === "STORE" ? rollup(userDistStore, "STORE") : rollup(userDistOffice, "OFFICE");
 
-  const recentUsers = stats?.recent_users || [];
-  const recentCompanies = stats?.recent_companies || [];
-  const recentJobs = stats?.recent_jobs || [];
+  
   const appStatusData = (stats?.app_status_dist || []).map((r: any) => ({
     name: r.name,
     value: Number(r.value),
@@ -226,27 +224,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">최근 가입 개인회원</h2>
-          </div>
-          <table className="admin-table">
-            <thead>
-              <tr><th>이름</th><th>직군</th><th>가입일</th></tr>
-            </thead>
-            <tbody>
-              {recentUsers.length === 0 ? (
-                <tr><td colSpan={3} style={{textAlign:"center", color:"#999", padding:"24px"}}>데이터가 없습니다.</td></tr>
-              ) : recentUsers.map((m: any, i: number) => (
-                <tr key={i}>
-                  <td className="admin-td-brand">{m.name}</td>
-                  <td className="admin-td-date">{JOB_TYPE_LABEL[m.job_type] || m.job_type || "-"}</td>
-                  <td className="admin-td-date">{fmtDate(m.created_at)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        
       </div>
 
       {/* ── 3. 기업회원 섹션 ── */}
@@ -306,27 +284,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">최근 가입 기업회원</h2>
-          </div>
-          <table className="admin-table">
-            <thead>
-              <tr><th>기업명</th><th>공고수</th><th>가입일</th></tr>
-            </thead>
-            <tbody>
-              {recentCompanies.length === 0 ? (
-                <tr><td colSpan={3} style={{textAlign:"center", color:"#999", padding:"24px"}}>데이터가 없습니다.</td></tr>
-              ) : recentCompanies.map((co: any, i: number) => (
-                <tr key={i}>
-                  <td className="admin-td-brand">{co.company_name}</td>
-                  <td className="admin-td-date">{fmt(co.job_count)}건</td>
-                  <td className="admin-td-date">{fmtDate(co.created_at)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        
       </div>
 
       {/* ── 4. 채용공고 섹션 ── */}
@@ -415,43 +373,7 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-      {/* 최근 채용공고 (전체 너비) */}
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">최근 채용공고</h2>
-          </div>
-          <table className="admin-table">
-            <thead>
-              <tr><th>유형</th><th>기업</th><th>공고명</th><th>등록일</th><th>상태</th></tr>
-            </thead>
-            <tbody>
-              {recentJobs.length === 0 ? (
-                <tr><td colSpan={5} style={{textAlign:"center", color:"#999", padding:"24px"}}>데이터가 없습니다.</td></tr>
-              ) : recentJobs.map((job: any, i: number) => {
-                const isStore = job.job_type === "STORE";
-                const statusLabel = STATUS_LABEL[job.status] || job.status;
-                return (
-                  <tr key={i}>
-                    <td>
-                      <span className={`jobs-type-badge ${isStore ? "store" : "corp"}`}>
-                        {isStore ? "🏪 매장" : "🏢 기업"}
-                      </span>
-                    </td>
-                    <td className="admin-td-brand">{job.company_name}</td>
-                    <td className="admin-td-title">{job.title}</td>
-                    <td className="admin-td-date">{fmtDate(job.created_at)}</td>
-                    <td>
-                      <span className={`admin-badge admin-badge-${
-                        job.status === "ACTIVE" ? "success" :
-                        job.status === "DRAFT" ? "warning" : "danger"
-                      }`}>{statusLabel}</span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+      
 
       {/* ── 입사지원 현황 ── */}
       <div className="admin-section-header">
