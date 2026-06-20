@@ -346,6 +346,24 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
           );
         }} />
+        {/* 입사 지원 추이 */}
+        <TrendCard title="입사 지원 추이" type="apply" render={(rows, range) => {
+          const data = rows.map((r) => ({
+            day: fmtTrendDay(r.day, range),
+            지원수: Number(r.count) || null,
+          }));
+          return (
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart data={data}>
+                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <Tooltip />
+                <Line type="monotone" dataKey="지원수" stroke="#10b981" strokeWidth={2.5}
+                  dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} connectNulls isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          );
+        }} />
 
         {/* 나이대 × 성별 */}
         <div className="admin-card">
@@ -408,24 +426,7 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
           </div>
         </div>
-        {/* 입사 지원 추이 */}
-        <TrendCard title="입사 지원 추이" type="apply" render={(rows, range) => {
-          const data = rows.map((r: any) => ({
-            day: fmtTrendDay(r.day, range),
-            지원수: Number(r.count) || null,
-          }));
-          return (
-            <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={data}>
-                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip />
-                <Line type="monotone" dataKey="지원수" stroke="#10b981" strokeWidth={2.5}
-                  dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} connectNulls isAnimationActive={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          );
-        }} />
+        
       </div>
       {/* ══════════════════════════════════════════
           3. 기업회원 현황
