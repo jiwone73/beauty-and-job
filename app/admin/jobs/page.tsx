@@ -190,7 +190,7 @@ export default function AdminJobsPage() {
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
                 <th>유형</th>
-                <th style={{ width: 40 }}>로고</th>
+                npm run build && git add -A && git commit -m "fix: 어드민 공고 테이블 로고 단독 헤더 제거" && git push
                 <th>기업</th>
                 <th>공고명</th>
                 <th>직군</th>
