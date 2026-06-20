@@ -6146,7 +6146,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 미니 통계 행 */
 .admin-mini-stat-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
 }
 .admin-mini-stat-card {

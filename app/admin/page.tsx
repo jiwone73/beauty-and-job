@@ -319,8 +319,25 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
 
+        {/* 일별 지원 추이 */}
+        <div className="admin-card">
+          <div className="admin-card-head">
+            <h2 className="admin-card-title">일별 지원 추이 (최근 7일)</h2>
+          </div>
+          <div style={{ padding: "16px 8px" }}>
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart data={applyData}>
+                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <Tooltip />
+                <Line type="monotone" dataKey="지원수" stroke="#10b981" strokeWidth={2.5}
+                  dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
       {/* ══════════════════════════════════════════
           3. 기업회원 현황
           탭: 전체 / 매장 / 기업 / 매장+기업
@@ -438,58 +455,8 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
 
-      {/* ══════════════════════════════════════════
-          4. 입사지원 현황
-          미니통계: 누적/오늘/공고당 평균
-          차트: 일별 지원 추이(라인) / 지원 상태별 분포(파이)
-          + 일별 공고 등록수(바) — corpTab 연동
-      ══════════════════════════════════════════ */}
-      <div className="admin-section-header">
-        <div className="admin-section-title-wrap">
-          <CheckCircle size={20} className="admin-section-icon jobs" />
-          <h2 className="admin-section-heading">입사지원 · 채용공고 현황</h2>
-        </div>
-        <Link href="/admin/resumes/applications" className="admin-card-more">전체보기 →</Link>
-      </div>
-
-      {/* 미니통계 */}
-      <div className="admin-mini-stat-row">
-        {[
-          { label: "누적 지원수", value: fmt(c?.total_applications), unit: "건" },
-          { label: "오늘 지원", value: fmt(c?.today_applications), unit: "건" },
-          { label: "공고당 평균", value: fmt(c?.avg_applications_per_job), unit: "건" },
-          { label: "진행중 공고", value: fmt(c?.active_jobs), unit: "건" },
-        ].map((s) => (
-          <div key={s.label} className="admin-mini-stat-card">
-            <span className="admin-mini-stat-label">{s.label}</span>
-            <span className="admin-mini-stat-value">{s.value}<span className="admin-mini-unit">{s.unit}</span></span>
-          </div>
-        ))}
-      </div>
-
-      {/* 차트 3개 */}
-      <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
-        {/* 일별 지원 추이 */}
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">일별 지원 추이 (최근 7일)</h2>
-          </div>
-          <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={applyData}>
-                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip />
-                <Line type="monotone" dataKey="지원수" stroke="#10b981" strokeWidth={2.5}
-                  dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* 일별 공고 등록수 (corpTab 연동) */}
+        {/* 일별 공고 등록수 */}
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">일별 공고 등록수 (최근 7일)</h2>
@@ -508,29 +475,8 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
           </div>
         </div>
-
-        {/* 지원 상태별 분포 */}
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">지원 상태별 분포</h2>
-          </div>
-          <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie data={appStatusData} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
-                  dataKey="value" paddingAngle={3}>
-                  {appStatusData.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                </Pie>
-                <Tooltip formatter={(v) => [`${v}건`, ""]} />
-                <Legend layout="vertical" align="right" verticalAlign="middle"
-                  iconType="circle" iconSize={8}
-                  formatter={(v) => <span style={{ fontSize: 12 }}>{v}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
       </div>
-
+      
     </AdminLayout>
   );
 }
