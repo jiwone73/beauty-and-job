@@ -75,6 +75,8 @@ export default function AdminDashboard() {
   const jobDistOffice = mapDist(stats?.job_dist_office);
   const userDistStore = mapDist(stats?.user_dist_store);
   const userDistOffice = mapDist(stats?.user_dist_office);
+  const genderDist = mapDist(stats?.gender_dist);
+  const ageDist = mapDist(stats?.age_dist);
   // 소분류 분포 → 대분류(1뎁스)로 합산
   const rollup = (rows: any[], jt: "STORE" | "OFFICE") => {
     const m: Record<string, number> = {};
@@ -171,6 +173,49 @@ export default function AdminDashboard() {
                 <Line type="monotone" dataKey="개인" stroke="#5f0080" strokeWidth={2.5}
                   dot={{fill:"#5f0080", r:4}} activeDot={{r:6}} />
               </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 성별 분포 */}
+        <div className="admin-card">
+          <div className="admin-card-head">
+            <h2 className="admin-card-title">성별 분포</h2>
+          </div>
+          <div style={{padding:"16px 8px"}}>
+            <ResponsiveContainer width="100%" height={180}>
+              <PieChart>
+                <Pie data={genderDist} cx="40%" cy="50%" innerRadius={45} outerRadius={72}
+                  dataKey="value" paddingAngle={3}>
+                  {genderDist.map((d: any, i: number) => (
+                    <Cell key={i} fill={
+                      d.name === "남성" ? "#0ea5e9" :
+                      d.name === "여성" ? "#ec4899" : "#cbd5e1"
+                    } />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(v) => [`${v}명`, ""]} />
+                <Legend layout="vertical" align="right" verticalAlign="middle"
+                  iconType="circle" iconSize={8}
+                  formatter={(v) => <span style={{fontSize:12}}>{v}</span>} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 나이대 분포 */}
+        <div className="admin-card">
+          <div className="admin-card-head">
+            <h2 className="admin-card-title">나이대 분포</h2>
+          </div>
+          <div style={{padding:"16px 8px"}}>
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={ageDist}>
+                <XAxis dataKey="name" tick={{fontSize:12}} />
+                <YAxis tick={{fontSize:12}} allowDecimals={false} />
+                <Tooltip formatter={(v) => [`${v}명`, ""]} />
+                <Bar dataKey="value" fill="#5f0080" radius={[6, 6, 0, 0]} maxBarSize={48} />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>

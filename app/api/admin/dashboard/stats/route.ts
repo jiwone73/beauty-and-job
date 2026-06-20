@@ -97,6 +97,50 @@ export async function GET(req: NextRequest) {
       WHERE u.job_type = 'OFFICE'
       GROUP BY area ORDER BY value DESC
     `)
+
+    // 성별 분포
+    const genderDist = await client.query(`
+      SELECT
+        COALESCE(gender, '미입력') AS name,
+        COUNT(*)::int AS value
+      FROM users
+      GROUP BY COALESCE(gender, '미입력')
+      ORDER BY value DESC
+    `)
+
+    // 나이대 분포 (birth_date 'YYYYMMDD' 앞 4자리로 출생연도 추출)
+    const ageDist = await client.query(`
+      SELECT name, value FROM (
+        SELECT
+          CASE
+            WHEN birth_date IS NULL OR LENGTH(birth_date) < 4 THEN '미입력'
+            ELSE (
+              CASE
+                WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 20 THEN '10대'
+                WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 30 THEN '20대'
+                WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 40 THEN '30대'
+                WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 50 THEN '40대'
+                ELSE '50대+'
+              END
+            )
+          END AS name,
+          COUNT(*)::int AS value,
+          MIN(
+            CASE
+              WHEN birth_date IS NULL OR LENGTH(birth_date) < 4 THEN 999
+              WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 20 THEN 1
+              WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 30 THEN 2
+              WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 40 THEN 3
+              WHEN (EXTRACT(YEAR FROM now())::int - LEFT(birth_date, 4)::int) < 50 THEN 4
+              ELSE 5
+            END
+          ) AS sort_order
+        FROM users
+        GROUP BY 1
+      ) t
+      ORDER BY sort_order
+    `)
+
     return ok({
       counts: counts.rows[0],
       job_dist_store: jobDistStore.rows,
@@ -108,6 +152,8 @@ export async function GET(req: NextRequest) {
       recent_jobs: recentJobs.rows,
       signup_trend: signupTrend.rows,
       apply_trend: applyTrend.rows,
+      gender_dist: genderDist.rows,
+      age_dist: ageDist.rows,
     })
   } finally {
     client.release()
