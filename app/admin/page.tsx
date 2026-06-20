@@ -284,13 +284,8 @@ export default function AdminDashboard() {
             unit: "건",
           },
           {
-            label: "전체 이력서",
+            label: `전체 이력서 (공개 ${fmt(indivTab === "STORE" ? c?.public_resumes_store : indivTab === "OFFICE" ? c?.public_resumes_office : c?.public_resumes)})`,
             value: fmt(indivTab === "STORE" ? c?.total_resumes_store : indivTab === "OFFICE" ? c?.total_resumes_office : c?.total_resumes),
-            unit: "건",
-          },
-          {
-            label: "공개 이력서",
-            value: fmt(indivTab === "STORE" ? c?.public_resumes_store : indivTab === "OFFICE" ? c?.public_resumes_office : c?.public_resumes),
             unit: "건",
           },
           {
