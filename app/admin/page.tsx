@@ -47,19 +47,14 @@ export default function AdminDashboard() {
   // ── 가입 추이 (개인/기업 탭 연동)
   const signupData = (stats?.signup_trend || []).map((r: any) => ({
     day: fmtDay(r.day),
-    개인: indivTab === "STORE" ? Number(r.users_store)
-        : indivTab === "OFFICE" ? Number(r.users_office)
-        : Number(r.users),
-    기업: corpTab === "STORE" ? Number(r.companies_store)
-        : corpTab === "OFFICE" ? Number(r.companies_office)
-        : corpTab === "BOTH" ? Number(r.companies_both)
-        : Number(r.companies),
+    개인: Number(indivTab === "STORE" ? r.users_store : indivTab === "OFFICE" ? r.users_office : r.users) || null,
+    기업: Number(corpTab === "STORE" ? r.companies_store : corpTab === "OFFICE" ? r.companies_office : corpTab === "BOTH" ? r.companies_both : r.companies) || null,
   }));
 
   // ── 지원 추이
   const applyData = (stats?.apply_trend || []).map((r: any) => ({
     day: fmtDay(r.day),
-    지원수: Number(r.count),
+    지원수: Number(r.count) || null,
   }));
 
   // ── 일별 공고 등록 수 (corpTab 연동)
