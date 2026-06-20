@@ -98,20 +98,21 @@ export async function GET(req: NextRequest) {
       GROUP BY area ORDER BY value DESC
     `)
 
-    // 성별 분포
-    const genderDist = await client.query(`
+    // // 나이대 × 성별 교차 분포 (누적 막대용)
+    const demographics = await client.query(`
       SELECT
-        COALESCE(gender, '미입력') AS name,
-        COUNT(*)::int AS value
-      FROM users
-      GROUP BY COALESCE(gender, '미입력')
-      ORDER BY value DESC
-    `)
-
-    // 나이대 분포 (birth_date는 date 타입 → EXTRACT로 출생연도 추출)
-    const ageDist = await client.query(`
-      SELECT name, value FROM (
+        age_group AS name,
+        COUNT(*) FILTER (WHERE gender_norm = '남성')::int AS "남성",
+        COUNT(*) FILTER (WHERE gender_norm = '여성')::int AS "여성",
+        COUNT(*) FILTER (WHERE gender_norm = '미입력')::int AS "미입력",
+        MIN(age_order) AS sort_order
+      FROM (
         SELECT
+          CASE
+            WHEN gender IN ('남성', 'MALE', 'M', 'male') THEN '남성'
+            WHEN gender IN ('여성', 'FEMALE', 'F', 'female') THEN '여성'
+            ELSE '미입력'
+          END AS gender_norm,
           CASE
             WHEN birth_date IS NULL THEN '미입력'
             WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 20 THEN '10대'
@@ -119,21 +120,18 @@ export async function GET(req: NextRequest) {
             WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 40 THEN '30대'
             WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 50 THEN '40대'
             ELSE '50대+'
-          END AS name,
-          COUNT(*)::int AS value,
-          MIN(
-            CASE
-              WHEN birth_date IS NULL THEN 999
-              WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 20 THEN 1
-              WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 30 THEN 2
-              WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 40 THEN 3
-              WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 50 THEN 4
-              ELSE 5
-            END
-          ) AS sort_order
+          END AS age_group,
+          CASE
+            WHEN birth_date IS NULL THEN 999
+            WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 20 THEN 1
+            WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 30 THEN 2
+            WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 40 THEN 3
+            WHEN (EXTRACT(YEAR FROM age(birth_date))::int) < 50 THEN 4
+            ELSE 5
+          END AS age_order
         FROM users
-        GROUP BY 1
       ) t
+      GROUP BY age_group
       ORDER BY sort_order
     `)
 
@@ -148,8 +146,7 @@ export async function GET(req: NextRequest) {
       recent_jobs: recentJobs.rows,
       signup_trend: signupTrend.rows,
       apply_trend: applyTrend.rows,
-      gender_dist: genderDist.rows,
-      age_dist: ageDist.rows,
+      demographics: demographics.rows,
     })
   } finally {
     client.release()

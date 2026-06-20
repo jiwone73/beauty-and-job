@@ -75,8 +75,12 @@ export default function AdminDashboard() {
   const jobDistOffice = mapDist(stats?.job_dist_office);
   const userDistStore = mapDist(stats?.user_dist_store);
   const userDistOffice = mapDist(stats?.user_dist_office);
-  const genderDist = mapDist(stats?.gender_dist);
-  const ageDist = mapDist(stats?.age_dist);
+  const demographics = (stats?.demographics || []).map((r: any) => ({
+    name: r.name,
+    남성: Number(r["남성"] || 0),
+    여성: Number(r["여성"] || 0),
+    미입력: Number(r["미입력"] || 0),
+  }));
   // 소분류 분포 → 대분류(1뎁스)로 합산
   const rollup = (rows: any[], jt: "STORE" | "OFFICE") => {
     const m: Record<string, number> = {};
@@ -177,79 +181,23 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 성별 분포 */}
+        {/* 나이대 × 성별 분포 (누적 막대) */}
         <div className="admin-card">
           <div className="admin-card-head">
-            <h2 className="admin-card-title">성별 분포</h2>
+            <h2 className="admin-card-title">나이대 · 성별 분포</h2>
           </div>
           <div style={{padding:"16px 8px"}}>
             <ResponsiveContainer width="100%" height={180}>
-              <PieChart>
-                <Pie data={genderDist} cx="40%" cy="50%" innerRadius={45} outerRadius={72}
-                  dataKey="value" paddingAngle={3}>
-                  {genderDist.map((d: any, i: number) => (
-                    <Cell key={i} fill={
-                      d.name === "남성" ? "#0ea5e9" :
-                      d.name === "여성" ? "#ec4899" : "#cbd5e1"
-                    } />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v) => [`${v}명`, ""]} />
-                <Legend layout="vertical" align="right" verticalAlign="middle"
-                  iconType="circle" iconSize={8}
-                  formatter={(v) => <span style={{fontSize:12}}>{v}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* 나이대 분포 */}
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">나이대 분포</h2>
-          </div>
-          <div style={{padding:"16px 8px"}}>
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={ageDist}>
+              <BarChart data={demographics}>
                 <XAxis dataKey="name" tick={{fontSize:12}} />
                 <YAxis tick={{fontSize:12}} allowDecimals={false} />
                 <Tooltip formatter={(v) => [`${v}명`, ""]} />
-                <Bar dataKey="value" fill="#5f0080" radius={[6, 6, 0, 0]} maxBarSize={48} />
+                <Legend iconType="circle" iconSize={8}
+                  formatter={(v) => <span style={{fontSize:12}}>{v}</span>} />
+                <Bar dataKey="남성" stackId="a" fill="#0ea5e9" maxBarSize={48} />
+                <Bar dataKey="여성" stackId="a" fill="#ec4899" maxBarSize={48} />
+                <Bar dataKey="미입력" stackId="a" fill="#cbd5e1" radius={[6, 6, 0, 0]} maxBarSize={48} />
               </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-        <div className="admin-card">
-          <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h2 className="admin-card-title">직군별 회원 분포</h2>
-            <div style={{ display: "flex", gap: 4 }}>
-              <button onClick={() => setUserTab("STORE")}
-                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: userTab === "STORE" ? "#5f0080" : "#f0e9f5", color: userTab === "STORE" ? "#fff" : "#5f0080" }}>
-                🏪 매장
-              </button>
-              <button onClick={() => setUserTab("OFFICE")}
-                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", background: userTab === "OFFICE" ? "#5f0080" : "#f0e9f5", color: userTab === "OFFICE" ? "#fff" : "#5f0080" }}>
-                🏢 사무
-              </button>
-            </div>
-          </div>
-          <div style={{padding:"16px 8px"}}>
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie data={userDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
-                  dataKey="value" paddingAngle={3}>
-                  {userDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                </Pie>
-                <Tooltip formatter={(v) => [`${v}명`, ""]} />
-                <Legend
-                  layout="vertical"
-                  align="right"
-                  verticalAlign="middle"
-                  iconType="circle"
-                  iconSize={8}
-                  formatter={(v) => <span style={{fontSize:12}}>{v}</span>}
-                />
-              </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
