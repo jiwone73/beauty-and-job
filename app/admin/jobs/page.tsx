@@ -25,6 +25,7 @@ type Job = {
   experience_level: string;
   view_count: number;
   company_name: string;
+  logo_url: string | null;
   category_name: string | null;
   categories: string[] | null;
   created_at: string;
@@ -189,6 +190,7 @@ export default function AdminJobsPage() {
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
                 <th>유형</th>
+                <th style={{ width: 40 }}>로고</th>
                 <th>기업</th>
                 <th>공고명</th>
                 <th>직군</th>
@@ -210,6 +212,23 @@ export default function AdminJobsPage() {
                     <span className={`jobs-type-badge ${job.job_type === "STORE" ? "store" : "corp"}`}>
                       {job.job_type === "STORE" ? "🏪 매장" : "🏢 기업"}
                     </span>
+                  </td>
+                  <td>
+                    {job.logo_url ? (
+                      <img
+                        src={job.logo_url}
+                        alt={job.company_name}
+                        style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", border: "1px solid #f0f0f0" }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: 28, height: 28, borderRadius: 6, background: "#f3e8ff",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 11, fontWeight: 700, color: "#7c3aed"
+                      }}>
+                        {job.company_name.charAt(0)}
+                      </div>
+                    )}
                   </td>
                   <td className="admin-td-brand">{job.company_name}</td>
                   <td>

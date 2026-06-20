@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       SELECT
         jp.id, jp.title, jp.job_type, jp.status, jp.location,
         jp.experience_level, jp.view_count, jp.application_count, jp.created_at,
-        c.company_name,
+        c.company_name, c.logo_url,
         jc.name AS category_name,
         jp.categories
       FROM job_postings jp
