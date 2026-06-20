@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import MemberTabs from "@/components/admin/MemberTabs";
 import { Search, Trash2, X } from "lucide-react";
@@ -46,11 +47,13 @@ function fmtDate(d: string | null) {
 
 const isPdf = (u: string) => u.split("?")[0].toLowerCase().endsWith(".pdf");
 
-export default function AdminCompaniesPage() {
+function AdminCompaniesContent() {
+  const searchParams = useSearchParams();
+  const initialStatus = searchParams.get("status") === "pending" ? "승인대기" : "전체";
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("전체");
+  const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [typeFilter, setTypeFilter] = useState("전체");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -312,5 +315,12 @@ export default function AdminCompaniesPage() {
         </div>
       )}
     </AdminLayout>
+  );
+}
+export default function AdminCompaniesPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 40, textAlign: "center", color: "#888" }}>불러오는 중...</div>}>
+      <AdminCompaniesContent />
+    </Suspense>
   );
 }
