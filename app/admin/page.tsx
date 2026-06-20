@@ -499,7 +499,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* 차트 3개 */}
-      <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+      <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
         {/* 기업 가입 추이 */}
         <TrendCard title="기업회원 가입 추이" type="company" render={(rows, range) => {
           const data = rows.map((r: any) => ({
@@ -518,29 +518,9 @@ export default function AdminDashboard() {
           );
         }} />
 
-        {/* 기업 규모별 분포 */}
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">기업 규모별 분포 (사원수)</h2>
-          </div>
-          <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={companySizeData}>
-                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={50} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip formatter={(v) => [`${v}개사`, ""]} />
-                <Bar dataKey="value" fill="#0ea5e9" radius={[6, 6, 0, 0]} maxBarSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* 직군별 채용공고 분포 */}
-        <PieCard title="직군별 채용공고 분포" data={jobDist} unit="건" colors={PIE_COLORS} />
-
         {/* 일별 공고 등록수 */}
         <TrendCard
-          title="일별 공고 등록수"
+          title="공고 등록수 추이"
           type="job"
           subFilter={corpTab === "ALL" ? "전체" : corpTab === "STORE" ? "매장" : corpTab === "OFFICE" ? "기업" : "매장+기업"}
           render={(rows, range) => {
@@ -563,6 +543,28 @@ export default function AdminDashboard() {
             );
           }}
         />
+      </div>
+      <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        {/* 기업 규모별 분포 */}
+        <div className="admin-card">
+          <div className="admin-card-head">
+            <h2 className="admin-card-title">기업 규모별 분포 (사원수)</h2>
+          </div>
+          <div style={{ padding: "16px 8px" }}>
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={companySizeData}>
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={50} />
+                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <Tooltip formatter={(v) => [`${v}개사`, ""]} />
+                <Bar dataKey="value" fill="#0ea5e9" radius={[6, 6, 0, 0]} maxBarSize={40} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 직군별 채용공고 분포 */}
+        <PieCard title="직군별 채용공고 분포" data={jobDist} unit="건" colors={PIE_COLORS} />
+
       </div>
       
     </AdminLayout>
