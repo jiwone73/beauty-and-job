@@ -213,24 +213,27 @@ export default function AdminJobsPage() {
                       {job.job_type === "STORE" ? "🏪 매장" : "🏢 기업"}
                     </span>
                   </td>
+                  
                   <td>
-                    {job.logo_url ? (
-                      <img
-                        src={job.logo_url}
-                        alt={job.company_name}
-                        style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", border: "1px solid #f0f0f0" }}
-                      />
-                    ) : (
-                      <div style={{
-                        width: 28, height: 28, borderRadius: 6, background: "#f3e8ff",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 11, fontWeight: 700, color: "#7c3aed"
-                      }}>
-                        {job.company_name.charAt(0)}
-                      </div>
-                    )}
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {job.logo_url ? (
+                        <img
+                          src={job.logo_url}
+                          alt={job.company_name}
+                          style={{ width: 26, height: 26, borderRadius: 6, objectFit: "cover", border: "1px solid #f0f0f0", flexShrink: 0 }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: 26, height: 26, borderRadius: 6, background: "#f3e8ff",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 11, fontWeight: 700, color: "#7c3aed", flexShrink: 0
+                        }}>
+                          {job.company_name.charAt(0)}
+                        </div>
+                      )}
+                      <span className="admin-td-brand">{job.company_name}</span>
+                    </div>
                   </td>
-                  <td className="admin-td-brand">{job.company_name}</td>
                   <td>
                     <span className="admin-td-title"
                       style={{color:"#5f0080", cursor:"pointer", fontWeight:600}}
