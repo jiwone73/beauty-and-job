@@ -394,7 +394,7 @@ export default function AdminDashboard() {
             <h2 className="admin-card-title">프로필 직군 분포</h2>
           </div>
           <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={260}>
+            <ResponsiveContainer width="100%" height={320}>
               <PieChart>
                 <Pie data={userDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
                   dataKey="value" paddingAngle={3}>
@@ -414,7 +414,7 @@ export default function AdminDashboard() {
             <h2 className="admin-card-title">직군별 입사지원 분포</h2>
           </div>
           <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={260}>
+            <ResponsiveContainer width="100%" height={320}>
               <PieChart>
                 <Pie data={appDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
                   dataKey="value" paddingAngle={3}>
@@ -538,7 +538,7 @@ export default function AdminDashboard() {
             <h2 className="admin-card-title">직군별 채용공고 분포</h2>
           </div>
           <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={260}>
+            <ResponsiveContainer width="100%" height={320}>
               <PieChart>
                 <Pie data={jobDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
                   dataKey="value" paddingAngle={3}>
