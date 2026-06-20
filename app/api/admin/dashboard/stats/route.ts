@@ -90,7 +90,34 @@ export async function GET(req: NextRequest) {
       FROM generate_series(now()::date - interval '6 day', now()::date, interval '1 day') d
       ORDER BY day
     `)
-
+    // 지원 상태별 분포
+    const appStatusDist = await client.query(`
+      SELECT name, value, sort_order FROM (
+        SELECT
+          CASE status
+            WHEN 'APPLIED' THEN '지원완료'
+            WHEN 'VIEWED' THEN '열람됨'
+            WHEN 'INTERVIEW' THEN '면접예정'
+            WHEN 'PASSED' THEN '합격'
+            WHEN 'REJECTED' THEN '불합격'
+            WHEN 'WITHDRAWN' THEN '지원취소'
+            ELSE status::text
+          END AS name,
+          COUNT(*)::int AS value,
+          CASE status
+            WHEN 'APPLIED' THEN 1
+            WHEN 'VIEWED' THEN 2
+            WHEN 'INTERVIEW' THEN 3
+            WHEN 'PASSED' THEN 4
+            WHEN 'REJECTED' THEN 5
+            WHEN 'WITHDRAWN' THEN 6
+            ELSE 9
+          END AS sort_order
+        FROM applications
+        GROUP BY status
+      ) t
+      ORDER BY sort_order
+    `)
     // 직군별 공고 분포 (매장/사무 분리)
     const jobDistStore = await client.query(`
       SELECT cat AS name, COUNT(*)::int AS value
@@ -170,6 +197,7 @@ export async function GET(req: NextRequest) {
       recent_jobs: recentJobs.rows,
       signup_trend: signupTrend.rows,
       apply_trend: applyTrend.rows,
+      app_status_dist: appStatusDist.rows,
       demographics_all: demographicsAll.rows,
       demographics_store: demographicsStore.rows,
       demographics_office: demographicsOffice.rows,
