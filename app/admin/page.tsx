@@ -72,7 +72,10 @@ export default function AdminDashboard() {
   const rollup = (rows: any[], jt: "STORE" | "OFFICE") => {
     const m: Record<string, number> = {};
     (rows || []).forEach((r: any) => {
-      const g = getGroupOfItem(jt, r.name) || "기타";
+      // 지정된 jobType 우선, 못 찾으면 반대쪽도 탐색 (ALL 탭 대응)
+      const g = getGroupOfItem(jt, r.name)
+        || getGroupOfItem(jt === "STORE" ? "OFFICE" : "STORE", r.name)
+        || "기타";
       m[g] = (m[g] || 0) + Number(r.value);
     });
     return Object.entries(m).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
