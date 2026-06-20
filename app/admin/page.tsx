@@ -327,7 +327,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* 차트 3개 */}
-      <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+      <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
         {/* 가입 추이 */}
         <TrendCard title="개인회원 가입 추이" type="signup" render={(rows, range) => {
           const data = rows.map((r: any) => ({
@@ -364,6 +364,8 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
           );
         }} />
+      </div>
+      <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
 
         {/* 나이대 × 성별 */}
         <div className="admin-card">
@@ -386,26 +388,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 직군별 입사지원 분포 */}
-        <div className="admin-card">
-          <div className="admin-card-head">
-            <h2 className="admin-card-title">직군별 입사지원 분포</h2>
-          </div>
-          <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie data={appDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
-                  dataKey="value" paddingAngle={3}>
-                  {appDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                </Pie>
-                <Tooltip formatter={(v) => [`${v}건`, ""]} />
-                <Legend layout="vertical" align="right" verticalAlign="middle"
-                  iconType="circle" iconSize={8}
-                  formatter={(v) => <span style={{ fontSize: 12 }}>{v}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
         {/* 프로필 직군 분포 (회원이 설정한 직군) */}
         <div className="admin-card">
           <div className="admin-card-head">
@@ -419,6 +401,26 @@ export default function AdminDashboard() {
                   {userDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                 </Pie>
                 <Tooltip formatter={(v) => [`${v}명`, ""]} />
+                <Legend layout="vertical" align="right" verticalAlign="middle"
+                  iconType="circle" iconSize={8}
+                  formatter={(v) => <span style={{ fontSize: 12 }}>{v}</span>} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        {/* 직군별 입사지원 분포 */}
+        <div className="admin-card">
+          <div className="admin-card-head">
+            <h2 className="admin-card-title">직군별 입사지원 분포</h2>
+          </div>
+          <div style={{ padding: "16px 8px" }}>
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie data={appDist} cx="40%" cy="50%" innerRadius={50} outerRadius={80}
+                  dataKey="value" paddingAngle={3}>
+                  {appDist.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                </Pie>
+                <Tooltip formatter={(v) => [`${v}건`, ""]} />
                 <Legend layout="vertical" align="right" verticalAlign="middle"
                   iconType="circle" iconSize={8}
                   formatter={(v) => <span style={{ fontSize: 12 }}>{v}</span>} />
