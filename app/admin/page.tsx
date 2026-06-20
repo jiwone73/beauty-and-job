@@ -230,6 +230,11 @@ export default function AdminDashboard() {
             unit: "명",
           },
           {
+            label: "오늘 입사지원",
+            value: fmt(indivTab === "STORE" ? c?.today_applications_store : indivTab === "OFFICE" ? c?.today_applications_office : c?.today_applications),
+            unit: "건",
+          },
+          {
             label: "전체 이력서",
             value: fmt(indivTab === "STORE" ? c?.total_resumes_store : indivTab === "OFFICE" ? c?.total_resumes_office : c?.total_resumes),
             unit: "건",
@@ -371,6 +376,11 @@ export default function AdminDashboard() {
             label: "오늘 신규 가입",
             value: fmt(corpTab === "STORE" ? c?.today_companies_store : corpTab === "OFFICE" ? c?.today_companies_office : corpTab === "BOTH" ? c?.today_companies_both : c?.today_companies),
             unit: "개사",
+          },
+          {
+            label: "오늘 공고 등록",
+            value: fmt(corpTab === "STORE" ? c?.today_jobs_store : corpTab === "OFFICE" ? c?.today_jobs_office : c?.today_jobs),
+            unit: "건",
           },
           {
             label: "진행중 공고",
