@@ -103,8 +103,18 @@ export default function AdminDashboard() {
   const jobDist = jobTab === "STORE" ? rollup(jobDistStore, "STORE") : rollup(jobDistOffice, "OFFICE");
   const userDist = userTab === "STORE" ? rollup(userDistStore, "STORE") : rollup(userDistOffice, "OFFICE");
 
-  
+  const recentUsers = stats?.recent_users || [];
+  const recentCompanies = stats?.recent_companies || [];
+  const recentJobs = stats?.recent_jobs || [];
   const appStatusData = (stats?.app_status_dist || []).map((r: any) => ({
+    name: r.name,
+    value: Number(r.value),
+  }));
+  const companySizeRaw = corpTab === "STORE" ? stats?.company_size_store
+    : corpTab === "OFFICE" ? stats?.company_size_office
+    : corpTab === "BOTH" ? stats?.company_size_both
+    : stats?.company_size_all;
+  const companySizeData = (companySizeRaw || []).map((r: any) => ({
     name: r.name,
     value: Number(r.value),
   }));
@@ -283,10 +293,22 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
           </div>
         </div>
-
-        
+        <div className="admin-card">
+          <div className="admin-card-head">
+            <h2 className="admin-card-title">기업 규모별 분포 (사원수)</h2>
+          </div>
+          <div style={{padding:"16px 8px"}}>
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={companySizeData}>
+                <XAxis dataKey="name" tick={{fontSize:10}} interval={0} angle={-20} textAnchor="end" height={50} />
+                <YAxis tick={{fontSize:12}} allowDecimals={false} />
+                <Tooltip formatter={(v) => [`${v}개사`, ""]} />
+                <Bar dataKey="value" fill="#0ea5e9" radius={[6,6,0,0]} maxBarSize={40} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
-
       {/* ── 4. 채용공고 섹션 ── */}
       {/* ── 콘텐츠 현황 ── */}
       <div className="admin-section-header">

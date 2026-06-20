@@ -167,6 +167,24 @@ export async function GET(req: NextRequest) {
     const demographicsStore = await client.query(demographicsQuery("WHERE job_type = 'STORE'"))
     const demographicsOffice = await client.query(demographicsQuery("WHERE job_type = 'OFFICE'"))
 
+    // 기업 규모별 분포 (company_type 필터별) — 막대 차트용
+    const companySizeQuery = (typeFilter: string) => `
+      SELECT label AS name, COUNT(c.id)::int AS value, ord AS sort_order
+      FROM (VALUES
+        ('1~10명', 1), ('10~50명', 2), ('50~100명', 3),
+        ('100~300명', 4), ('300~1000명', 5), ('1000명 이상', 6)
+      ) AS s(label, ord)
+      LEFT JOIN companies c
+        ON c.company_size = s.label
+        ${typeFilter ? `AND ${typeFilter}` : ""}
+      GROUP BY label, ord
+      ORDER BY ord
+    `
+    const companySizeAll = await client.query(companySizeQuery(""))
+    const companySizeStore = await client.query(companySizeQuery("c.company_type = 'STORE'"))
+    const companySizeOffice = await client.query(companySizeQuery("c.company_type = 'OFFICE'"))
+    const companySizeBoth = await client.query(companySizeQuery("c.company_type = 'BOTH'"))
+
     return ok({
       counts: counts.rows[0],
       job_dist_store: jobDistStore.rows,
@@ -180,6 +198,10 @@ export async function GET(req: NextRequest) {
       demographics_all: demographicsAll.rows,
       demographics_store: demographicsStore.rows,
       demographics_office: demographicsOffice.rows,
+      company_size_all: companySizeAll.rows,
+      company_size_store: companySizeStore.rows,
+      company_size_office: companySizeOffice.rows,
+      company_size_both: companySizeBoth.rows,
     })
   } finally {
     client.release()
