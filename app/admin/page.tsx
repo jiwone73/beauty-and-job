@@ -51,47 +51,73 @@ function RangeToggle({ range, onChange }: { range: string; onChange: (r: "7d" | 
   );
 }
 
+// ── 독립 추이 카드: 자체 기간 state + 자체 fetch (4개가 서로 독립)
+function TrendCard({
+  title, type, subFilter, render,
+}: {
+  title: string;
+  type: "signup" | "company" | "apply" | "job";
+  subFilter?: string;
+  render: (rows: any[], range: string) => React.ReactNode;
+}) {
+  const [range, setRange] = useState<"7d" | "1m" | "3m">("7d");
+  const [rows, setRows] = useState<any[]>([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    fetch(`/api/admin/dashboard/trend?type=${type}&range=${range}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setRows(res.data.rows || []); })
+      .catch(console.error);
+  }, [type, range]);
+
+  return (
+    <div className="admin-card">
+      <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h2 className="admin-card-title">{title}</h2>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {subFilter && <span style={{ fontSize: 11, color: "#888" }}>{subFilter}</span>}
+          <RangeToggle range={range} onChange={setRange} />
+        </div>
+      </div>
+      <div style={{ padding: "16px 8px" }}>
+        {render(rows, range)}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
   const [indivTab, setIndivTab] = useState<"ALL" | "STORE" | "OFFICE">("ALL");
   const [corpTab, setCorpTab] = useState<"ALL" | "STORE" | "OFFICE" | "BOTH">("ALL");
-  const [trendRange, setTrendRange] = useState<"7d" | "1m" | "3m">("7d");
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
-    fetch(`/api/admin/dashboard/stats?range=${trendRange}`, {
+    fetch(`/api/admin/dashboard/stats`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
       .then((res) => { if (res.success) setStats(res.data); })
       .catch(console.error);
-  }, [trendRange]);
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    fetch(`/api/admin/dashboard/stats`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setStats(res.data); })
+      .catch(console.error);
+  }, []);
 
   const c = stats?.counts;
   const fmt = (n: any) => (n == null ? "-" : Number(n).toLocaleString());
 
-  // ── 가입 추이 (개인/기업 탭 연동)
-  const signupData = (stats?.signup_trend || []).map((r: any) => ({
-    day: fmtTrendDay(r.day, trendRange),
-    개인: Number(indivTab === "STORE" ? r.users_store : indivTab === "OFFICE" ? r.users_office : r.users) || null,
-    기업: Number(corpTab === "STORE" ? r.companies_store : corpTab === "OFFICE" ? r.companies_office : corpTab === "BOTH" ? r.companies_both : r.companies) || null,
-  }));
-
-  // ── 지원 추이
-  const applyData = (stats?.apply_trend || []).map((r: any) => ({
-    day: fmtTrendDay(r.day, trendRange),
-    지원수: Number(r.count) || null,
-  }));
-
-  // ── 일별 공고 등록 수 (corpTab 연동)
-  const jobTrendData = (stats?.job_trend || []).map((r: any) => ({
-    day: fmtTrendDay(r.day, trendRange),
-    등록수: corpTab === "STORE" ? Number(r.store)
-          : corpTab === "OFFICE" ? Number(r.office)
-          : corpTab === "BOTH" ? Number(r.both)
-          : Number(r.total),
-  }));
-  const trendLabel = trendRange === "3m" ? "최근 12주" : trendRange === "1m" ? "최근 4주" : "최근 7일";
+  
   const mapDist = (rows: any) => (rows || []).map((r: any) => ({ name: r.name, value: Number(r.value) }));
 
   // ── 소분류 → 대분류 롤업
@@ -237,22 +263,7 @@ export default function AdminDashboard() {
             ))}
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ display: "flex", gap: 4 }}>
-            {([["7d","7일"],["1m","1개월"]] as const).map(([val, label]) => (
-              <button key={val} onClick={() => setTrendRange(val)}
-                style={{
-                  padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600,
-                  cursor: "pointer", border: "1px solid #e5e0eb",
-                  background: trendRange === val ? "#7c3aed" : "#fff",
-                  color: trendRange === val ? "#fff" : "#7c3aed",
-                }}>
-                {label}
-              </button>
-            ))}
-          </div>
-          </div>
-      </div>
+        </div>
 
       {/* 미니통계 */}
       <div className="admin-mini-stat-row">
@@ -304,14 +315,14 @@ export default function AdminDashboard() {
       {/* 차트 3개 */}
       <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
         {/* 가입 추이 */}
-        <div className="admin-card">
-          <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h2 className="admin-card-title">개인회원 가입 추이</h2>
-            <RangeToggle range={trendRange} onChange={setTrendRange} />
-          </div>
-          <div style={{ padding: "16px 8px" }}>
+        <TrendCard title="개인회원 가입 추이" type="signup" render={(rows, range) => {
+          const data = rows.map((r: any) => ({
+            day: fmtTrendDay(r.day, range),
+            개인: Number(indivTab === "STORE" ? r.users_store : indivTab === "OFFICE" ? r.users_office : r.users) || null,
+          }));
+          return (
             <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={signupData}>
+              <LineChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                 <Tooltip />
@@ -319,8 +330,8 @@ export default function AdminDashboard() {
                   dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} connectNulls isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
-          </div>
-        </div>
+          );
+        }} />
 
         {/* 나이대 × 성별 */}
         <div className="admin-card">
@@ -364,15 +375,15 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 일별 지원 추이 */}
-        <div className="admin-card">
-          <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h2 className="admin-card-title">일별 지원 추이</h2>
-            <RangeToggle range={trendRange} onChange={setTrendRange} />
-          </div>
-          <div style={{ padding: "16px 8px" }}>
+        {/* 입사 지원 추이 */}
+        <TrendCard title="입사 지원 추이" type="apply" render={(rows, range) => {
+          const data = rows.map((r: any) => ({
+            day: fmtTrendDay(r.day, range),
+            지원수: Number(r.count) || null,
+          }));
+          return (
             <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={applyData}>
+              <LineChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                 <Tooltip />
@@ -380,8 +391,8 @@ export default function AdminDashboard() {
                   dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} connectNulls isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
-          </div>
-        </div>
+          );
+        }} />
       </div>
       {/* ══════════════════════════════════════════
           3. 기업회원 현황
@@ -451,22 +462,22 @@ export default function AdminDashboard() {
       {/* 차트 3개 */}
       <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
         {/* 기업 가입 추이 */}
-        <div className="admin-card">
-          <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h2 className="admin-card-title">기업회원 가입 추이</h2>
-            <RangeToggle range={trendRange} onChange={setTrendRange} />
-          </div>
-          <div style={{ padding: "16px 8px" }}>
+        <TrendCard title="기업회원 가입 추이" type="company" render={(rows, range) => {
+          const data = rows.map((r: any) => ({
+            day: fmtTrendDay(r.day, range),
+            기업: Number(corpTab === "STORE" ? r.companies_store : corpTab === "OFFICE" ? r.companies_office : corpTab === "BOTH" ? r.companies_both : r.companies) || 0,
+          }));
+          return (
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={signupData}>
+              <BarChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                 <Tooltip />
                 <Bar dataKey="기업" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </div>
+          );
+        }} />
 
         {/* 기업 규모별 분포 */}
         <div className="admin-card">
@@ -507,22 +518,30 @@ export default function AdminDashboard() {
         </div>
 
         {/* 일별 공고 등록수 */}
-        <div className="admin-card">
-          <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h2 className="admin-card-title">일별 공고 등록수</h2>
-            <RangeToggle range={trendRange} onChange={setTrendRange} />
-          </div>
-          <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={jobTrendData}>
-                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip />
-                <Bar dataKey="등록수" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <TrendCard
+          title="일별 공고 등록수"
+          type="job"
+          subFilter={corpTab === "ALL" ? "전체" : corpTab === "STORE" ? "매장" : corpTab === "OFFICE" ? "기업" : "매장+기업"}
+          render={(rows, range) => {
+            const data = rows.map((r: any) => ({
+              day: fmtTrendDay(r.day, range),
+              등록수: corpTab === "STORE" ? Number(r.store)
+                    : corpTab === "OFFICE" ? Number(r.office)
+                    : corpTab === "BOTH" ? Number(r.both)
+                    : Number(r.total),
+            }));
+            return (
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={data}>
+                  <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                  <Tooltip />
+                  <Bar dataKey="등록수" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            );
+          }}
+        />
       </div>
       
     </AdminLayout>
