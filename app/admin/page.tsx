@@ -45,6 +45,7 @@ export default function AdminDashboard() {
   const [jobTab, setJobTab] = useState<"STORE" | "OFFICE">("STORE");
   const [userTab, setUserTab] = useState<"STORE" | "OFFICE">("STORE");
   const [indivTab, setIndivTab] = useState<"ALL" | "STORE" | "OFFICE">("ALL");
+  const [corpTab, setCorpTab] = useState<"ALL" | "STORE" | "OFFICE" | "BOTH">("ALL");
 
 
   useEffect(() => {
@@ -65,7 +66,10 @@ export default function AdminDashboard() {
     개인: indivTab === "STORE" ? Number(r.users_store)
         : indivTab === "OFFICE" ? Number(r.users_office)
         : Number(r.users),
-    기업: Number(r.companies),
+    기업: corpTab === "STORE" ? Number(r.companies_store)
+        : corpTab === "OFFICE" ? Number(r.companies_office)
+        : corpTab === "BOTH" ? Number(r.companies_both)
+        : Number(r.companies),
   }));
 
   const applyData = (stats?.apply_trend || []).map((r: any) => ({
@@ -246,15 +250,25 @@ export default function AdminDashboard() {
         <div className="admin-section-title-wrap">
           <Building2 size={20} className="admin-section-icon company" />
           <h2 className="admin-section-heading">기업회원 현황</h2>
+          <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
+            {([["ALL","전체"],["STORE","🏪 매장"],["OFFICE","🏢 기업"],["BOTH","🏪🏢 매장+기업"]] as const).map(([val, label]) => (
+              <button key={val} onClick={() => setCorpTab(val)}
+                style={{ padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none",
+                  background: corpTab === val ? "#5f0080" : "#f0e9f5",
+                  color: corpTab === val ? "#fff" : "#5f0080" }}>
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
         <Link href="/admin/members/companies" className="admin-card-more">전체보기 →</Link>
       </div>
 
       <div className="admin-mini-stat-row">
         {[
-          { label: "전체 기업회원", value: fmt(c?.total_companies), unit: "개사" },
-          { label: "오늘 신규 가입", value: fmt(c?.today_companies), unit: "개사" },
-          { label: "진행중 공고", value: fmt(c?.active_jobs), unit: "건" },
+          { label: "전체 기업회원", value: fmt(corpTab === "STORE" ? c?.store_companies : corpTab === "OFFICE" ? c?.office_companies : corpTab === "BOTH" ? c?.both_companies : c?.total_companies), unit: "개사" },
+          { label: "오늘 신규 가입", value: fmt(corpTab === "STORE" ? c?.today_companies_store : corpTab === "OFFICE" ? c?.today_companies_office : corpTab === "BOTH" ? c?.today_companies_both : c?.today_companies), unit: "개사" },
+          { label: "진행중 공고", value: fmt(corpTab === "STORE" ? c?.active_jobs_store : corpTab === "OFFICE" ? c?.active_jobs_office : corpTab === "BOTH" ? c?.active_jobs_both : c?.active_jobs), unit: "건" },
           { label: "승인 대기", value: fmt(c?.pending_companies), unit: "건", href: "/admin/members/companies?status=pending" },
         ].map((s) => (
           s.href ? (

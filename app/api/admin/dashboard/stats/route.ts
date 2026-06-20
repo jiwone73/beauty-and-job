@@ -23,9 +23,18 @@ export async function GET(req: NextRequest) {
         (SELECT COUNT(*) FROM applications a JOIN users u ON u.id = a.user_id WHERE a.applied_at::date = now()::date AND u.job_type = 'OFFICE') AS today_applications_office,
         (SELECT COUNT(*) FROM applications a JOIN users u ON u.id = a.user_id WHERE a.applied_at::date = now()::date AND u.job_type = 'STORE') AS today_applications_store,
         (SELECT COUNT(*) FROM companies) AS total_companies,
+        (SELECT COUNT(*) FROM companies WHERE company_type = 'STORE') AS store_companies,
+        (SELECT COUNT(*) FROM companies WHERE company_type = 'OFFICE') AS office_companies,
+        (SELECT COUNT(*) FROM companies WHERE company_type = 'BOTH') AS both_companies,
         (SELECT COUNT(*) FROM companies WHERE created_at::date = now()::date) AS today_companies,
+        (SELECT COUNT(*) FROM companies WHERE created_at::date = now()::date AND company_type = 'STORE') AS today_companies_store,
+        (SELECT COUNT(*) FROM companies WHERE created_at::date = now()::date AND company_type = 'OFFICE') AS today_companies_office,
+        (SELECT COUNT(*) FROM companies WHERE created_at::date = now()::date AND company_type = 'BOTH') AS today_companies_both,
         (SELECT COUNT(*) FROM companies WHERE status = 'PENDING') AS pending_companies,
         (SELECT COUNT(*) FROM job_postings WHERE status = 'ACTIVE') AS active_jobs,
+        (SELECT COUNT(*) FROM job_postings WHERE status = 'ACTIVE' AND job_type = 'STORE') AS active_jobs_store,
+        (SELECT COUNT(*) FROM job_postings WHERE status = 'ACTIVE' AND job_type = 'OFFICE') AS active_jobs_office,
+        (SELECT COUNT(*) FROM job_postings jp JOIN companies c2 ON c2.id = jp.company_id WHERE jp.status = 'ACTIVE' AND c2.company_type = 'BOTH') AS active_jobs_both,
         (SELECT COUNT(*) FROM job_postings WHERE job_type = 'OFFICE' AND status = 'ACTIVE') AS office_jobs,
         (SELECT COUNT(*) FROM job_postings WHERE job_type = 'STORE' AND status = 'ACTIVE') AS store_jobs,
         (SELECT COUNT(*) FROM applications WHERE applied_at::date = now()::date) AS today_applications,
@@ -66,7 +75,10 @@ export async function GET(req: NextRequest) {
         (SELECT COUNT(*) FROM users WHERE created_at::date = d::date) AS users,
         (SELECT COUNT(*) FROM users WHERE created_at::date = d::date AND job_type = 'STORE') AS users_store,
         (SELECT COUNT(*) FROM users WHERE created_at::date = d::date AND job_type = 'OFFICE') AS users_office,
-        (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date) AS companies
+        (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date) AS companies,
+        (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date AND company_type = 'STORE') AS companies_store,
+        (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date AND company_type = 'OFFICE') AS companies_office,
+        (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date AND company_type = 'BOTH') AS companies_both
       FROM generate_series(now()::date - interval '6 day', now()::date, interval '1 day') d
       ORDER BY day
     `)
