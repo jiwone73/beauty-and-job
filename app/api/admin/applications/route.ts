@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
       SELECT
         a.id, a.status, a.applied_at,
         u.name AS applicant_name,
+        u.avatar_url,
         jp.title AS position,
         c.company_name,
         jc.name AS job_category

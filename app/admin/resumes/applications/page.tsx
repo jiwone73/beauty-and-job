@@ -26,6 +26,7 @@ type App = {
   status: string;
   applied_at: string;
   applicant_name: string;
+  avatar_url: string | null;
   position: string;
   company_name: string;
   job_category: string | null;
@@ -110,7 +111,26 @@ export default function AdminApplicationsPage() {
               {filtered.map((a) => (
                 <tr key={a.id}>
                   <td className="admin-td-date">{fmtDate(a.applied_at)}</td>
-                  <td className="admin-td-brand">{a.applicant_name}</td>
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {a.avatar_url ? (
+                        <img
+                          src={a.avatar_url}
+                          alt={a.applicant_name}
+                          style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", border: "1px solid #f0f0f0", flexShrink: 0 }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: 28, height: 28, borderRadius: "50%", background: "#f3e8ff",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 12, fontWeight: 700, color: "#7c3aed", flexShrink: 0
+                        }}>
+                          {(a.applicant_name || "?").charAt(0)}
+                        </div>
+                      )}
+                      <span className="admin-td-brand">{a.applicant_name}</span>
+                    </div>
+                  </td>
                   <td className="admin-td-date">{a.job_category || "-"}</td>
                   <td className="admin-td-brand">{a.company_name}</td>
                   <td className="admin-td-title">{a.position}</td>
