@@ -2,10 +2,15 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, requireAuth } from '@/lib/api'
-
 export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')
   if (authErr) return authErr
+
+  // 추이 기간 파라미터: 7d(기본) | 1m
+  const range = new URL(req.url).searchParams.get('range') === '1m' ? '1m' : '7d'
+  const trendCfg = range === '1m'
+    ? { start: "date_trunc('week', now()) - interval '3 week'", step: "interval '1 week'", trunc: 'week' }
+    : { start: "now()::date - interval '6 day'", step: "interval '1 day'", trunc: 'day' }
 
   const client = await pool.connect()
   try {
@@ -62,22 +67,22 @@ export async function GET(req: NextRequest) {
     // 최근 7일 개인/기업 가입 추이 (개인은 job_type별 분리)
     const signupTrend = await client.query(`
       SELECT d::date AS day,
-        (SELECT COUNT(*) FROM users WHERE created_at::date = d::date) AS users,
-        (SELECT COUNT(*) FROM users WHERE created_at::date = d::date AND job_type = 'STORE') AS users_store,
-        (SELECT COUNT(*) FROM users WHERE created_at::date = d::date AND job_type = 'OFFICE') AS users_office,
-        (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date) AS companies,
-        (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date AND company_type = 'STORE') AS companies_store,
-        (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date AND company_type = 'OFFICE') AS companies_office,
-        (SELECT COUNT(*) FROM companies WHERE created_at::date = d::date AND company_type = 'BOTH') AS companies_both
-      FROM generate_series(now()::date - interval '6 day', now()::date, interval '1 day') d
+        (SELECT COUNT(*) FROM users WHERE date_trunc('${trendCfg.trunc}', created_at) = d) AS users,
+        (SELECT COUNT(*) FROM users WHERE date_trunc('${trendCfg.trunc}', created_at) = d AND job_type = 'STORE') AS users_store,
+        (SELECT COUNT(*) FROM users WHERE date_trunc('${trendCfg.trunc}', created_at) = d AND job_type = 'OFFICE') AS users_office,
+        (SELECT COUNT(*) FROM companies WHERE date_trunc('${trendCfg.trunc}', created_at) = d) AS companies,
+        (SELECT COUNT(*) FROM companies WHERE date_trunc('${trendCfg.trunc}', created_at) = d AND company_type = 'STORE') AS companies_store,
+        (SELECT COUNT(*) FROM companies WHERE date_trunc('${trendCfg.trunc}', created_at) = d AND company_type = 'OFFICE') AS companies_office,
+        (SELECT COUNT(*) FROM companies WHERE date_trunc('${trendCfg.trunc}', created_at) = d AND company_type = 'BOTH') AS companies_both
+      FROM generate_series(${trendCfg.start}, date_trunc('${trendCfg.trunc}', now()), ${trendCfg.step}) d
       ORDER BY day
     `)
 
     // 최근 7일 지원 추이
     const applyTrend = await client.query(`
       SELECT d::date AS day,
-        (SELECT COUNT(*) FROM applications WHERE applied_at::date = d::date) AS count
-      FROM generate_series(now()::date - interval '6 day', now()::date, interval '1 day') d
+        (SELECT COUNT(*) FROM applications WHERE date_trunc('${trendCfg.trunc}', applied_at) = d) AS count
+      FROM generate_series(${trendCfg.start}, date_trunc('${trendCfg.trunc}', now()), ${trendCfg.step}) d
       ORDER BY day
     `)
     // 지원 상태별 분포
@@ -145,11 +150,11 @@ export async function GET(req: NextRequest) {
     // 일별 공고 등록 수 (최근 7일, company_type별)
     const jobTrend = await client.query(`
       SELECT d::date AS day,
-        (SELECT COUNT(*) FROM job_postings WHERE created_at::date = d::date) AS total,
-        (SELECT COUNT(*) FROM job_postings WHERE created_at::date = d::date AND job_type = 'STORE') AS store,
-        (SELECT COUNT(*) FROM job_postings WHERE created_at::date = d::date AND job_type = 'OFFICE') AS office,
-        (SELECT COUNT(*) FROM job_postings jp JOIN companies c2 ON c2.id = jp.company_id WHERE jp.created_at::date = d::date AND c2.company_type = 'BOTH') AS both
-      FROM generate_series(now()::date - interval '6 day', now()::date, interval '1 day') d
+        (SELECT COUNT(*) FROM job_postings WHERE date_trunc('${trendCfg.trunc}', created_at) = d) AS total,
+        (SELECT COUNT(*) FROM job_postings WHERE date_trunc('${trendCfg.trunc}', created_at) = d AND job_type = 'STORE') AS store,
+        (SELECT COUNT(*) FROM job_postings WHERE date_trunc('${trendCfg.trunc}', created_at) = d AND job_type = 'OFFICE') AS office,
+        (SELECT COUNT(*) FROM job_postings jp JOIN companies c2 ON c2.id = jp.company_id WHERE date_trunc('${trendCfg.trunc}', jp.created_at) = d AND c2.company_type = 'BOTH') AS both
+      FROM generate_series(${trendCfg.start}, date_trunc('${trendCfg.trunc}', now()), ${trendCfg.step}) d
       ORDER BY day
     `)
     // 직군별 채용공고 분포 — BOTH(매장+기업 회사가 올린 공고)
@@ -252,6 +257,7 @@ export async function GET(req: NextRequest) {
       user_dist_store: userDistStore.rows,
       user_dist_office: userDistOffice.rows,
       
+      range,
       signup_trend: signupTrend.rows,
       apply_trend: applyTrend.rows,
       app_status_dist: appStatusDist.rows,

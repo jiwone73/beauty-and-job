@@ -25,47 +25,55 @@ function fmtDay(d: string | null) {
   const dt = new Date(d);
   return `${dt.getMonth() + 1}/${dt.getDate()}`;
 }
+function fmtTrendDay(d: string | null, range: string) {
+  if (!d) return "";
+  const dt = new Date(d);
+  return range === "1m"
+    ? `${dt.getMonth() + 1}/${dt.getDate()}~`
+    : `${dt.getMonth() + 1}/${dt.getDate()}`;
+}
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
   const [indivTab, setIndivTab] = useState<"ALL" | "STORE" | "OFFICE">("ALL");
   const [corpTab, setCorpTab] = useState<"ALL" | "STORE" | "OFFICE" | "BOTH">("ALL");
+  const [trendRange, setTrendRange] = useState<"7d" | "1m">("7d");
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
-    fetch("/api/admin/dashboard/stats", {
+    fetch(`/api/admin/dashboard/stats?range=${trendRange}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
       .then((res) => { if (res.success) setStats(res.data); })
       .catch(console.error);
-  }, []);
+  }, [trendRange]);
 
   const c = stats?.counts;
   const fmt = (n: any) => (n == null ? "-" : Number(n).toLocaleString());
 
   // ── 가입 추이 (개인/기업 탭 연동)
   const signupData = (stats?.signup_trend || []).map((r: any) => ({
-    day: fmtDay(r.day),
+    day: fmtTrendDay(r.day, trendRange),
     개인: Number(indivTab === "STORE" ? r.users_store : indivTab === "OFFICE" ? r.users_office : r.users) || null,
     기업: Number(corpTab === "STORE" ? r.companies_store : corpTab === "OFFICE" ? r.companies_office : corpTab === "BOTH" ? r.companies_both : r.companies) || null,
   }));
 
   // ── 지원 추이
   const applyData = (stats?.apply_trend || []).map((r: any) => ({
-    day: fmtDay(r.day),
+    day: fmtTrendDay(r.day, trendRange),
     지원수: Number(r.count) || null,
   }));
 
   // ── 일별 공고 등록 수 (corpTab 연동)
   const jobTrendData = (stats?.job_trend || []).map((r: any) => ({
-    day: fmtDay(r.day),
+    day: fmtTrendDay(r.day, trendRange),
     등록수: corpTab === "STORE" ? Number(r.store)
           : corpTab === "OFFICE" ? Number(r.office)
           : corpTab === "BOTH" ? Number(r.both)
           : Number(r.total),
   }));
-
+  const trendLabel = trendRange === "1m" ? "최근 4주" : "최근 7일";
   const mapDist = (rows: any) => (rows || []).map((r: any) => ({ name: r.name, value: Number(r.value) }));
 
   // ── 소분류 → 대분류 롤업
@@ -211,7 +219,22 @@ export default function AdminDashboard() {
             ))}
           </div>
         </div>
-        <Link href="/admin/members" className="admin-card-more">전체보기 →</Link>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ display: "flex", gap: 4 }}>
+            {([["7d","7일"],["1m","1개월"]] as const).map(([val, label]) => (
+              <button key={val} onClick={() => setTrendRange(val)}
+                style={{
+                  padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600,
+                  cursor: "pointer", border: "1px solid #e5e0eb",
+                  background: trendRange === val ? "#7c3aed" : "#fff",
+                  color: trendRange === val ? "#fff" : "#7c3aed",
+                }}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <Link href="/admin/members" className="admin-card-more">전체보기 →</Link>
+        </div>
       </div>
 
       {/* 미니통계 */}
@@ -266,7 +289,7 @@ export default function AdminDashboard() {
         {/* 가입 추이 */}
         <div className="admin-card">
           <div className="admin-card-head">
-            <h2 className="admin-card-title">개인회원 가입 추이 (최근 7일)</h2>
+            <h2 className="admin-card-title">개인회원 가입 추이 ({trendLabel})</h2>
           </div>
           <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={180}>
@@ -326,7 +349,7 @@ export default function AdminDashboard() {
         {/* 일별 지원 추이 */}
         <div className="admin-card">
           <div className="admin-card-head">
-            <h2 className="admin-card-title">일별 지원 추이 (최근 7일)</h2>
+            <h2 className="admin-card-title">일별 지원 추이 ({trendLabel})</h2>
           </div>
           <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={180}>
@@ -412,7 +435,7 @@ export default function AdminDashboard() {
         {/* 기업 가입 추이 */}
         <div className="admin-card">
           <div className="admin-card-head">
-            <h2 className="admin-card-title">기업회원 가입 추이 (최근 7일)</h2>
+            <h2 className="admin-card-title">기업회원 가입 추이 ({trendLabel})</h2>
           </div>
           <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={180}>
@@ -467,7 +490,7 @@ export default function AdminDashboard() {
         {/* 일별 공고 등록수 */}
         <div className="admin-card">
           <div className="admin-card-head">
-            <h2 className="admin-card-title">일별 공고 등록수 (최근 7일)</h2>
+            <h2 className="admin-card-title">일별 공고 등록수 ({trendLabel})</h2>
             <span style={{ fontSize: 11, color: "#888" }}>
               {corpTab === "ALL" ? "전체" : corpTab === "STORE" ? "매장" : corpTab === "OFFICE" ? "기업" : "매장+기업"} 기준
             </span>
