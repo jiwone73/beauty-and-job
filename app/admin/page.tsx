@@ -233,8 +233,7 @@ export default function AdminDashboard() {
               </button>
             ))}
           </div>
-          <Link href="/admin/members" className="admin-card-more">전체보기 →</Link>
-        </div>
+          </div>
       </div>
 
       {/* 미니통계 */}
@@ -382,8 +381,7 @@ export default function AdminDashboard() {
             ))}
           </div>
         </div>
-        <Link href="/admin/members/companies" className="admin-card-more">전체보기 →</Link>
-      </div>
+        </div>
 
       {/* 미니통계 */}
       <div className="admin-mini-stat-row">
