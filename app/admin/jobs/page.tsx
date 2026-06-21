@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
+import CompanyDetailModal from "@/components/admin/CompanyDetailModal";
 import { Search, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 const STATUS_TO_LABEL: Record<string, string> = {
@@ -25,8 +26,8 @@ type Job = {
   location: string | null;
   experience_level: string;
   view_count: number;
-  company_name: string;
   company_id: string;
+  company_name: string;
   logo_url: string | null;
   category_name: string | null;
   categories: string[] | null;
@@ -56,6 +57,8 @@ function AdminJobsPageInner() {
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
+  const [companyModal, setCompanyModal] = useState<any | null>(null);
+  const [companiesCache, setCompaniesCache] = useState<any[] | null>(null);
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
   const fetchJobs = useCallback(async () => {
     setLoading(true);
@@ -70,6 +73,22 @@ function AdminJobsPageInner() {
     }
   }, [token]);
   useEffect(() => { fetchJobs(); }, [fetchJobs]);
+
+  // 기업명 클릭 → 회사 정보 불러와 모달 (이동 없음)
+  const openCompany = async (companyId: string) => {
+    let list = companiesCache;
+    if (!list) {
+      const res = await fetch("/api/admin/companies", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      list = data.success ? data.data.items : [];
+      setCompaniesCache(list);
+    }
+    const match = (list || []).find((c) => String(c.id) === String(companyId));
+    if (match) setCompanyModal(match);
+  };
+
   const changeStatus = async (id: string, label: string) => {
     const status = LABEL_TO_STATUS[label];
     if (!status) return;
@@ -219,7 +238,6 @@ function AdminJobsPageInner() {
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
                 <th>유형</th>
-                
                 <th>기업</th>
                 <th>공고명</th>
                 <th>직군</th>
@@ -242,7 +260,6 @@ function AdminJobsPageInner() {
                       {job.job_type === "STORE" ? "🏪 매장" : "🏢 기업"}
                     </span>
                   </td>
-                  
                   <td>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       {job.logo_url ? (
@@ -260,14 +277,11 @@ function AdminJobsPageInner() {
                           {job.company_name.charAt(0)}
                         </div>
                       )}
-                      {job.company_id ? (
-                        <Link href={`/admin/members/companies?detail=${job.company_id}`}
-                          className="admin-td-brand" style={{ color: "#5f0080", cursor: "pointer", fontWeight: 600 }}>
-                          {job.company_name}
-                        </Link>
-                      ) : (
-                        <span className="admin-td-brand">{job.company_name}</span>
-                      )}
+                      <span className="admin-td-brand"
+                        style={{ color: "#5f0080", cursor: "pointer", fontWeight: 600 }}
+                        onClick={() => job.company_id && openCompany(job.company_id)}>
+                        {job.company_name}
+                      </span>
                     </div>
                   </td>
                   <td>
@@ -308,6 +322,10 @@ function AdminJobsPageInner() {
         )}
         {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
+
+      {companyModal && (
+        <CompanyDetailModal company={companyModal} onClose={() => setCompanyModal(null)} />
+      )}
     </AdminLayout>
   );
 }
