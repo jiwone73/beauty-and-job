@@ -10,11 +10,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   const client = await pool.connect()
   try {
     const result = await client.query(`
-      SELECT c.id, c.company_name AS name, c.logo_url
+      SELECT c.id, c.company_name AS name, c.logo_url, s.created_at AS scrapped_at
       FROM company_talent_scraps s
       JOIN companies c ON c.id = s.company_id
       WHERE s.user_id = $1
-      ORDER BY c.company_name
+      ORDER BY s.created_at DESC
     `, [params.id])
     return ok({ items: result.rows })
   } finally {

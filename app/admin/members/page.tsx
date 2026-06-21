@@ -88,7 +88,7 @@ function AdminMembersPageInner() {
   const [checked, setChecked] = useState<string[]>([]);
   const [selected, setSelected] = useState<Member | null>(null);
   const [scrapTarget, setScrapTarget] = useState<Member | null>(null);
-  const [scrapList, setScrapList] = useState<{ id: string; name: string; logo_url: string | null }[]>([]);
+  const [scrapList, setScrapList] = useState<{ id: string; name: string; logo_url: string | null; scrapped_at: string }[]>([]);
   const [scrapLoading, setScrapLoading] = useState(false);
 
   useEffect(() => {
@@ -425,7 +425,14 @@ function AdminMembersPageInner() {
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {scrapList.map((c) => (
-                  <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <a
+                    key={c.id}
+                    href={`/admin/jobs?search=${encodeURIComponent(c.name)}`}
+                    title={`${c.name}의 채용공고 보기`}
+                    style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: "inherit", padding: "6px 8px", borderRadius: 8, transition: "background 0.15s" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#f7f5fa")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                  >
                     <div style={{ width: 36, height: 36, borderRadius: 8, background: "#f3f0f7", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       {c.logo_url ? (
                         <img src={c.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -433,8 +440,13 @@ function AdminMembersPageInner() {
                         <span style={{ color: "#5f0080", fontWeight: 700 }}>{c.name?.[0]}</span>
                       )}
                     </div>
-                    <span style={{ fontWeight: 600 }}>{c.name}</span>
-                  </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600 }}>{c.name}</div>
+                      <div style={{ fontSize: 12, color: "#aaa", marginTop: 2 }}>
+                        {new Date(c.scrapped_at).toLocaleString("ko-KR", { dateStyle: "medium", timeStyle: "short" })} 스크랩
+                      </div>
+                    </div>
+                  </a>
                 ))}
               </div>
             )}

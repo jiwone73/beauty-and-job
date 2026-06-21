@@ -334,18 +334,7 @@ export default function AdminDashboard() {
             sub: `공개 ${fmt(indivTab === "STORE" ? c?.public_resumes_store : indivTab === "OFFICE" ? c?.public_resumes_office : c?.public_resumes)}`,
             href: `/admin/members`,
           },
-          {
-            label: "이력서 보유율",
-            value: (() => {
-              const have = indivTab === "STORE" ? c?.users_with_resume_store
-                : indivTab === "OFFICE" ? c?.users_with_resume_office : c?.users_with_resume;
-              const total = indivTab === "STORE" ? c?.store_users
-                : indivTab === "OFFICE" ? c?.office_users : c?.total_users;
-              return c ? Math.round((Number(have) / Math.max(Number(total), 1)) * 100) : "-";
-            })(),
-            unit: "%",
-            href: `/admin/resumes`,
-          },
+          
         ].map((s) => {
           const inner = (
             <>
