@@ -3,9 +3,7 @@ import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
 import { supabaseAdmin } from '@/lib/supabase'
-
 const LICENSE_BUCKET = "business-licenses";
-
 // 기업회원 목록 조회 (공고수 + 최근 공고 + 사업자등록증 서명URL 포함)
 export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')
@@ -17,6 +15,7 @@ export async function GET(req: NextRequest) {
         c.id, c.company_name, c.brand_name, c.business_number,
         c.company_type, c.email::text AS email, c.phone,
         c.logo_url, c.cover_images, c.description, c.website_url, c.address,
+        c.company_size, c.founded_year,
         c.status, c.business_license_path, c.created_at,
         COALESCE(j.cnt, 0) AS job_count,
         COALESCE(j.jobs, '[]'::json) AS jobs
@@ -24,13 +23,12 @@ export async function GET(req: NextRequest) {
       LEFT JOIN LATERAL (
         SELECT COUNT(*) AS cnt,
           json_agg(json_build_object(
-            'title', jp.title, 'status', jp.status, 'created_at', jp.created_at
+            'id', jp.id, 'title', jp.title, 'status', jp.status, 'created_at', jp.created_at
           ) ORDER BY jp.created_at DESC) AS jobs
         FROM job_postings jp WHERE jp.company_id = c.id
       ) j ON true
       ORDER BY c.created_at DESC
     `)
-
     // 사업자등록증은 비공개 버킷 → 30분짜리 서명 URL 생성
     const items = await Promise.all(
       result.rows.map(async (row) => {
@@ -45,13 +43,11 @@ export async function GET(req: NextRequest) {
         return { ...rest, business_license_url }
       })
     )
-
     return ok({ items })
   } finally {
     client.release()
   }
 }
-
 // 기업 상태 변경 (승인/반려/정지)
 export async function PATCH(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')
@@ -68,7 +64,6 @@ export async function PATCH(req: NextRequest) {
     client.release()
   }
 }
-
 // 기업 삭제
 export async function DELETE(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')

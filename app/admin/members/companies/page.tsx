@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import MemberTabs from "@/components/admin/MemberTabs";
-import { Search, Trash2, X } from "lucide-react";
+import { Search, Trash2, X, Download, Printer, FileText } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
   PENDING: "승인대기",
@@ -20,8 +20,14 @@ const STATUS_OPTIONS = ["전체", "승인대기", "승인완료", "정지", "반
 const JOB_STATUS_LABEL: Record<string, string> = {
   ACTIVE: "게시중", DRAFT: "승인대기", HIDDEN: "반려", CLOSED: "마감", EXPIRED: "만료",
 };
+const STATUS_CHIP: Record<string, { bg: string; color: string }> = {
+  ACTIVE: { bg: "#e8f5e9", color: "#1b7a3d" },
+  PENDING: { bg: "#fff4e0", color: "#a05a00" },
+  SUSPENDED: { bg: "#fdeaea", color: "#c0392b" },
+  REJECTED: { bg: "#f0f0f0", color: "#777" },
+};
 
-type Job = { title: string; status: string; created_at: string };
+type Job = { id: string; title: string; status: string; created_at: string };
 type Company = {
   id: string;
   company_name: string;
@@ -35,6 +41,8 @@ type Company = {
   description: string | null;
   website_url: string | null;
   address: string | null;
+  company_size: string | null;
+  founded_year: number | null;
   business_license_url: string | null;
   status: string;
   created_at: string;
@@ -71,6 +79,8 @@ function AdminCompaniesContent() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [companyDetail, setCompanyDetail] = useState<Company | null>(null);
+  const [companyPdfLoading, setCompanyPdfLoading] = useState(false);
+  const companyPreviewRef = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState(1);
   const PER_PAGE = 10;
 
@@ -97,6 +107,52 @@ function AdminCompaniesContent() {
     const match = companies.find((c) => String(c.id) === String(detailId));
     if (match) setCompanyDetail(match);
   }, [detailId, companies]);
+
+  const handleCompanyPdf = async () => {
+    if (!companyPreviewRef.current) return;
+    setCompanyPdfLoading(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const jsPDF = (await import("jspdf")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(companyPreviewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let heightLeft = pdfHeight; let position = 0;
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      pdf.save(companyDetail?.company_name ? `${companyDetail.company_name}_기업정보.pdf` : "기업정보.pdf");
+    } catch (e) {
+      alert("다운로드 중 오류가 발생했습니다.");
+    } finally {
+      setCompanyPdfLoading(false);
+    }
+  };
+
+  const handleCompanyPrint = async () => {
+    if (!companyPreviewRef.current) return;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(companyPreviewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const imgData = canvas.toDataURL("image/png");
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.write(`<html><head><title>기업정보 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" onload="window.print();window.close()" /></body></html>`);
+      w.document.close();
+    } catch (e) {
+      alert("인쇄 준비 중 오류가 발생했습니다.");
+    }
+  };
 
   const changeStatus = async (id: string, newStatus: string) => {
     await fetch("/api/admin/companies", {
@@ -160,6 +216,13 @@ function AdminCompaniesContent() {
     승인완료: companies.filter((c) => c.status === "ACTIVE").length,
     정지: companies.filter((c) => c.status === "SUSPENDED").length,
     반려: companies.filter((c) => c.status === "REJECTED").length,
+  };
+
+  const lbl: React.CSSProperties = { color: "#888" };
+  const modalBtn: React.CSSProperties = {
+    display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600,
+    padding: "6px 10px", borderRadius: 6, border: "1px solid #e3dceb", background: "#fff",
+    color: "#5f0080", cursor: "pointer",
   };
 
   return (
@@ -339,81 +402,100 @@ function AdminCompaniesContent() {
       {/* 기업 정보 미리보기 모달 */}
       {companyDetail && (
         <div className="admin-modal-overlay" onClick={() => setCompanyDetail(null)}>
-          <div className="admin-modal" style={{ maxWidth: 640, width: "92%" }} onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
+          <div className="admin-modal" style={{ maxWidth: 600, width: "92%", overflow: "hidden", padding: 0 }} onClick={(e) => e.stopPropagation()}>
+            {/* 헤더 액션바 (PDF·인쇄 캡처 제외) */}
+            <div className="admin-modal-header" style={{ padding: "14px 18px" }}>
               <h2 className="admin-modal-title">기업 정보</h2>
-              <button className="admin-modal-close" onClick={() => setCompanyDetail(null)}><X size={20} /></button>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                {companyDetail.business_license_url && (
+                  <button onClick={() => setPreviewUrl(companyDetail.business_license_url)} style={modalBtn}>
+                    <FileText size={15} /> 사업자등록증
+                  </button>
+                )}
+                <button onClick={handleCompanyPdf} disabled={companyPdfLoading} style={modalBtn}>
+                  <Download size={15} /> {companyPdfLoading ? "저장 중..." : "PDF"}
+                </button>
+                <button onClick={handleCompanyPrint} style={modalBtn}>
+                  <Printer size={15} /> 인쇄
+                </button>
+                <button className="admin-modal-close" onClick={() => setCompanyDetail(null)}><X size={20} /></button>
+              </div>
             </div>
-            <div style={{ maxHeight: "75vh", overflow: "auto", padding: 20 }}>
-              {/* 상단: 로고 + 이름 */}
-              <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
-                <div style={{ width: 56, height: 56, borderRadius: 10, background: "#5f0080", color: "#fff", fontSize: 22, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
-                  {(() => {
-                    const cover = Array.isArray(companyDetail.cover_images) && companyDetail.cover_images[0]?.url ? companyDetail.cover_images[0].url : null;
-                    const img = companyDetail.logo_url || (companyDetail.company_type === "STORE" ? cover : null);
-                    return img ? <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (companyDetail.company_name?.[0] || "·");
-                  })()}
-                </div>
-                <div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a" }}>{companyDetail.company_name}</div>
-                  <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
-                    {TYPE_LABEL[companyDetail.company_type] || companyDetail.company_type}
-                    {companyDetail.brand_name ? ` · ${companyDetail.brand_name}` : ""}
-                    {` · ${STATUS_TO_LABEL[companyDetail.status] || companyDetail.status}`}
+
+            {/* 본문 (PDF·인쇄 캡처 대상) */}
+            <div ref={companyPreviewRef} style={{ maxHeight: "72vh", overflow: "auto", background: "#fff" }}>
+              {/* 커버 + 로고 오버레이 */}
+              {(() => {
+                const cover = Array.isArray(companyDetail.cover_images) && companyDetail.cover_images[0]?.url ? companyDetail.cover_images[0].url : null;
+                return (
+                  <div style={{ position: "relative", height: 128, background: cover ? "#eee" : "#7c3aed" }}>
+                    {cover && <img src={cover} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />}
+                    <div style={{ position: "absolute", left: 20, bottom: -28, width: 64, height: 64, borderRadius: 12, background: "#5f0080", border: "3px solid #fff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 22, fontWeight: 700 }}>
+                      {companyDetail.logo_url
+                        ? <img src={companyDetail.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        : (companyDetail.company_name?.[0] || "·")}
+                    </div>
                   </div>
+                );
+              })()}
+
+              {/* 이름 + 배지 */}
+              <div style={{ padding: "38px 22px 0" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a" }}>{companyDetail.company_name}</span>
+                  <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: "#f3e8ff", color: "#5f0080" }}>{TYPE_LABEL[companyDetail.company_type] || companyDetail.company_type}</span>
+                  <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, ...(STATUS_CHIP[companyDetail.status] ? { background: STATUS_CHIP[companyDetail.status].bg, color: STATUS_CHIP[companyDetail.status].color } : { background: "#f0f0f0", color: "#777" }) }}>{STATUS_TO_LABEL[companyDetail.status] || companyDetail.status}</span>
                 </div>
+                {companyDetail.brand_name && <p style={{ fontSize: 13, color: "#888", margin: "4px 0 0" }}>{companyDetail.brand_name}</p>}
               </div>
 
-              {/* 기본 정보 */}
-              <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", rowGap: 10, columnGap: 12, fontSize: 14 }}>
-                <span style={{ color: "#888" }}>사업자번호</span><span>{companyDetail.business_number || "-"}</span>
-                <span style={{ color: "#888" }}>이메일</span><span>{companyDetail.email || "-"}</span>
-                <span style={{ color: "#888" }}>연락처</span><span>{companyDetail.phone || "-"}</span>
-                <span style={{ color: "#888" }}>주소</span><span>{companyDetail.address || "-"}</span>
-                <span style={{ color: "#888" }}>웹사이트</span>
-                <span>{companyDetail.website_url
-                  ? <a href={companyDetail.website_url} target="_blank" rel="noreferrer" style={{ color: "#5f0080" }}>{companyDetail.website_url}</a>
-                  : "-"}</span>
-                <span style={{ color: "#888" }}>가입일</span><span>{fmtDate(companyDetail.created_at)}</span>
+              {/* 기본 정보 그리드 */}
+              <div style={{ padding: "18px 22px 0" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "84px 1fr 84px 1fr", rowGap: 12, columnGap: 12, fontSize: 13, alignItems: "center" }}>
+                  <span style={lbl}>사업자번호</span><span>{companyDetail.business_number || "-"}</span>
+                  <span style={lbl}>설립연도</span><span>{companyDetail.founded_year ? `${companyDetail.founded_year}년` : "-"}</span>
+                  <span style={lbl}>사원수</span><span>{companyDetail.company_size || "-"}</span>
+                  <span style={lbl}>가입일</span><span>{fmtDate(companyDetail.created_at)}</span>
+                  <span style={lbl}>이메일</span><span style={{ color: "#5f0080", wordBreak: "break-all" }}>{companyDetail.email || "-"}</span>
+                  <span style={lbl}>연락처</span><span>{companyDetail.phone || "-"}</span>
+                  <span style={{ ...lbl, alignSelf: "start" }}>주소</span><span style={{ gridColumn: "span 3" }}>{companyDetail.address || "-"}</span>
+                  <span style={lbl}>웹사이트</span>
+                  <span style={{ gridColumn: "span 3", wordBreak: "break-all" }}>{companyDetail.website_url
+                    ? <a href={companyDetail.website_url} target="_blank" rel="noreferrer" style={{ color: "#5f0080" }}>{companyDetail.website_url}</a>
+                    : "-"}</span>
+                </div>
               </div>
 
               {/* 소개 */}
               {companyDetail.description && (
-                <div style={{ marginTop: 18 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#5f0080", marginBottom: 6 }}>기업 소개</div>
-                  <div style={{ fontSize: 14, color: "#333", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{companyDetail.description}</div>
+                <div style={{ padding: "20px 22px 0" }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#5f0080", marginBottom: 7 }}>기업 소개</div>
+                  <p style={{ fontSize: 13, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{companyDetail.description}</p>
                 </div>
               )}
 
               {/* 등록 공고 */}
-              <div style={{ marginTop: 18 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#5f0080", marginBottom: 6 }}>
-                  등록 공고 ({companyDetail.job_count}건)
-                </div>
+              <div style={{ padding: "20px 22px 24px" }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#5f0080", marginBottom: 8 }}>등록 공고 ({companyDetail.job_count}건)</div>
                 {companyDetail.jobs && companyDetail.jobs.length > 0 ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {companyDetail.jobs.map((j, i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, padding: "8px 12px", background: "#faf7fc", borderRadius: 6 }}>
-                        <span style={{ fontWeight: 500 }}>{j.title}</span>
-                        <span style={{ color: "#999", fontSize: 12 }}>{JOB_STATUS_LABEL[j.status] || j.status} · {fmtDate(j.created_at)}</span>
-                      </div>
-                    ))}
+                    {companyDetail.jobs.map((j, i) => {
+                      const closed = j.status === "CLOSED" || j.status === "EXPIRED" || j.status === "HIDDEN";
+                      const row = (
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", background: closed ? "#f5f5f5" : "#f3e8ff", borderRadius: 6, cursor: j.id ? "pointer" : "default" }}>
+                          <span style={{ fontSize: 13, color: closed ? "#888" : "#1a1a1a" }}>{j.title}</span>
+                          <span style={{ fontSize: 11, color: closed ? "#aaa" : "#5f0080", flexShrink: 0, marginLeft: 8 }}>{JOB_STATUS_LABEL[j.status] || j.status} · {fmtDate(j.created_at)}</span>
+                        </div>
+                      );
+                      return j.id
+                        ? <a key={i} href={`/jobs/${j.id}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>{row}</a>
+                        : <div key={i}>{row}</div>;
+                    })}
                   </div>
                 ) : (
                   <div style={{ fontSize: 13, color: "#aaa" }}>등록된 공고가 없습니다.</div>
                 )}
               </div>
-
-              {/* 사업자등록증 */}
-              {companyDetail.business_license_url && (
-                <div style={{ marginTop: 18 }}>
-                  <button
-                    onClick={() => setPreviewUrl(companyDetail.business_license_url)}
-                    style={{ padding: "8px 16px", borderRadius: 6, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-                    사업자등록증 보기
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>
