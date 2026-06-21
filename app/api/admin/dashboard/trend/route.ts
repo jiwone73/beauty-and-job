@@ -10,10 +10,12 @@ export async function GET(req: NextRequest) {
   const sp = new URL(req.url).searchParams
   const type = sp.get('type') || 'signup'
   const rangeParam = sp.get('range')
-  const range = rangeParam === '1m' ? '1m' : rangeParam === '3m' ? '3m' : '7d'
+  const range = rangeParam === '1m' ? '1m' : rangeParam === '3m' ? '3m' : rangeParam === '1y' ? '1y' : '7d'
 
   const cfg =
-    range === '3m'
+    range === '1y'
+      ? { start: "date_trunc('month', now()) - interval '11 month'", step: "interval '1 month'", trunc: 'month' }
+    : range === '3m'
       ? { start: "date_trunc('week', now()) - interval '12 week'", step: "interval '1 week'", trunc: 'week' }
     : range === '1m'
       ? { start: "date_trunc('week', now()) - interval '3 week'", step: "interval '1 week'", trunc: 'week' }

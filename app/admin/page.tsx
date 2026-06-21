@@ -28,15 +28,16 @@ function fmtDay(d: string | null) {
 function fmtTrendDay(d: string | null, range: string) {
   if (!d) return "";
   const dt = new Date(d);
+  if (range === "1y") return `${dt.getFullYear() % 100}/${dt.getMonth() + 1}`;
   return range === "1m" || range === "3m"
     ? `${dt.getMonth() + 1}/${dt.getDate()}~`
     : `${dt.getMonth() + 1}/${dt.getDate()}`;
 }
 
-function RangeToggle({ range, onChange }: { range: string; onChange: (r: "7d" | "1m" | "3m") => void }) {
+function RangeToggle({ range, onChange }: { range: string; onChange: (r: "7d" | "1m" | "3m" | "1y") => void }) {
   return (
     <div style={{ display: "flex", gap: 4 }}>
-      {([["7d", "7일"], ["1m", "1개월"], ["3m", "3개월"]] as const).map(([val, label]) => (
+      {([["7d", "7일"], ["1m", "1개월"], ["3m", "3개월"], ["1y", "1년"]] as const).map(([val, label]) => (
         <button key={val} onClick={() => onChange(val)}
           style={{
             padding: "3px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600,
@@ -99,7 +100,7 @@ function TrendCard({
   subFilter?: string;
   render: (rows: any[], range: string) => React.ReactNode;
 }) {
-  const [range, setRange] = useState<"7d" | "1m" | "3m">("7d");
+  const [range, setRange] = useState<"7d" | "1m" | "3m" | "1y">("7d");
   const [rows, setRows] = useState<any[]>([]);
 
   useEffect(() => {
@@ -523,7 +524,7 @@ export default function AdminDashboard() {
         <TrendCard
           title="공고 등록수 추이"
           type="job"
-          subFilter={corpTab === "ALL" ? "전체" : corpTab === "STORE" ? "매장" : corpTab === "OFFICE" ? "기업" : "매장+기업"}
+          subFilter={corpTab === "ALL" ? "" : corpTab === "STORE" ? "매장" : corpTab === "OFFICE" ? "기업" : "매장+기업"}
           render={(rows, range) => {
             const data = rows.map((r: any) => ({
               day: fmtTrendDay(r.day, range),
