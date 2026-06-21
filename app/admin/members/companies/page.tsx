@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import MemberTabs from "@/components/admin/MemberTabs";
-import Link from "next/link";
 import { Search, Trash2, X } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
@@ -18,6 +17,9 @@ const TYPE_LABEL: Record<string, string> = {
   BOTH: "기업+매장",
 };
 const STATUS_OPTIONS = ["전체", "승인대기", "승인완료", "정지", "반려"];
+const JOB_STATUS_LABEL: Record<string, string> = {
+  ACTIVE: "게시중", DRAFT: "승인대기", HIDDEN: "반려", CLOSED: "마감", EXPIRED: "만료",
+};
 
 type Job = { title: string; status: string; created_at: string };
 type Company = {
@@ -67,6 +69,7 @@ function AdminCompaniesContent() {
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [companyDetail, setCompanyDetail] = useState<Company | null>(null);
   const [page, setPage] = useState(1);
   const PER_PAGE = 10;
 
@@ -266,10 +269,10 @@ function AdminCompaniesContent() {
                           );
                         })()}
                       </div>
-                      <Link href={`/admin/jobs?search=${encodeURIComponent(c.company_name || "")}`}
-                        style={{ color: "#5f0080", textDecoration: "none", fontWeight: 600 }}>
+                      <span onClick={() => setCompanyDetail(c)}
+                        style={{ color: "#5f0080", cursor: "pointer", fontWeight: 600 }}>
                         {c.company_name}
-                      </Link>
+                      </span>
                     </div>
                   </td>
                   <td className="admin-td-date">{TYPE_LABEL[c.company_type] || c.company_type}</td>
@@ -324,6 +327,89 @@ function AdminCompaniesContent() {
           </div>
         )}
       </div>
+
+      {/* 기업 정보 미리보기 모달 */}
+      {companyDetail && (
+        <div className="admin-modal-overlay" onClick={() => setCompanyDetail(null)}>
+          <div className="admin-modal" style={{ maxWidth: 640, width: "92%" }} onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <h2 className="admin-modal-title">기업 정보</h2>
+              <button className="admin-modal-close" onClick={() => setCompanyDetail(null)}><X size={20} /></button>
+            </div>
+            <div style={{ maxHeight: "75vh", overflow: "auto", padding: 20 }}>
+              {/* 상단: 로고 + 이름 */}
+              <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
+                <div style={{ width: 56, height: 56, borderRadius: 10, background: "#5f0080", color: "#fff", fontSize: 22, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                  {(() => {
+                    const cover = Array.isArray(companyDetail.cover_images) && companyDetail.cover_images[0]?.url ? companyDetail.cover_images[0].url : null;
+                    const img = companyDetail.logo_url || (companyDetail.company_type === "STORE" ? cover : null);
+                    return img ? <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (companyDetail.company_name?.[0] || "·");
+                  })()}
+                </div>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a" }}>{companyDetail.company_name}</div>
+                  <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
+                    {TYPE_LABEL[companyDetail.company_type] || companyDetail.company_type}
+                    {companyDetail.brand_name ? ` · ${companyDetail.brand_name}` : ""}
+                    {` · ${STATUS_TO_LABEL[companyDetail.status] || companyDetail.status}`}
+                  </div>
+                </div>
+              </div>
+
+              {/* 기본 정보 */}
+              <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", rowGap: 10, columnGap: 12, fontSize: 14 }}>
+                <span style={{ color: "#888" }}>사업자번호</span><span>{companyDetail.business_number || "-"}</span>
+                <span style={{ color: "#888" }}>이메일</span><span>{companyDetail.email || "-"}</span>
+                <span style={{ color: "#888" }}>연락처</span><span>{companyDetail.phone || "-"}</span>
+                <span style={{ color: "#888" }}>주소</span><span>{companyDetail.address || "-"}</span>
+                <span style={{ color: "#888" }}>웹사이트</span>
+                <span>{companyDetail.website_url
+                  ? <a href={companyDetail.website_url} target="_blank" rel="noreferrer" style={{ color: "#5f0080" }}>{companyDetail.website_url}</a>
+                  : "-"}</span>
+                <span style={{ color: "#888" }}>가입일</span><span>{fmtDate(companyDetail.created_at)}</span>
+              </div>
+
+              {/* 소개 */}
+              {companyDetail.description && (
+                <div style={{ marginTop: 18 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#5f0080", marginBottom: 6 }}>기업 소개</div>
+                  <div style={{ fontSize: 14, color: "#333", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{companyDetail.description}</div>
+                </div>
+              )}
+
+              {/* 등록 공고 */}
+              <div style={{ marginTop: 18 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#5f0080", marginBottom: 6 }}>
+                  등록 공고 ({companyDetail.job_count}건)
+                </div>
+                {companyDetail.jobs && companyDetail.jobs.length > 0 ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {companyDetail.jobs.map((j, i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13, padding: "8px 12px", background: "#faf7fc", borderRadius: 6 }}>
+                        <span style={{ fontWeight: 500 }}>{j.title}</span>
+                        <span style={{ color: "#999", fontSize: 12 }}>{JOB_STATUS_LABEL[j.status] || j.status} · {fmtDate(j.created_at)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 13, color: "#aaa" }}>등록된 공고가 없습니다.</div>
+                )}
+              </div>
+
+              {/* 사업자등록증 */}
+              {companyDetail.business_license_url && (
+                <div style={{ marginTop: 18 }}>
+                  <button
+                    onClick={() => setPreviewUrl(companyDetail.business_license_url)}
+                    style={{ padding: "8px 16px", borderRadius: 6, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                    사업자등록증 보기
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 사업자등록증 미리보기 모달 */}
       {previewUrl && (
