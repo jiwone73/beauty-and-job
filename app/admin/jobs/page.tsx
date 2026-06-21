@@ -287,7 +287,7 @@ function AdminJobsPageInner() {
                   <td>
                     <span className="admin-td-title"
                       style={{color:"#5f0080", cursor:"pointer", fontWeight:600}}
-                      onClick={() => window.open(`/jobs/${job.id}`, "_blank")}>
+                      onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank")}>
                       {job.title}
                     </span>
                   </td>

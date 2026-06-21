@@ -11,7 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ChevronLeft, Bookmark, Share2, MapPin, Clock,
-  Users, Building2, CheckCircle2, ChevronRight,
+  Briefcase, Building2, CheckCircle2, ChevronRight,
 } from "lucide-react";
 
 /* ===== 더미 데이터 (나중에 API로 교체) ===== */
@@ -197,8 +197,9 @@ export default function JobDetailPage() {
               }
             } catch {}
           }
-          // 어드민 전용 세션일 때만 미리보기 (개인/기업으로 로그인한 상태면 일반 화면)
-          if (localStorage.getItem("admin_token") && !token) {
+          // admin 목록에서 미리보기로 진입(?preview=admin)했거나, 관리자 전용 세션이면 미리보기
+          const adminPreview = new URLSearchParams(window.location.search).get("preview") === "admin";
+          if (adminPreview || (localStorage.getItem("admin_token") && !token)) {
             setIsAdminPreview(true);
           }
         }
@@ -304,7 +305,7 @@ export default function JobDetailPage() {
                 <span>{job.region}</span>
               </div>
               <div className="job-detail-meta-item">
-                <Users size={15} className="job-detail-meta-icon" />
+                <Briefcase size={15} className="job-detail-meta-icon" />
                 <span>{job.career}</span>
               </div>
               <div className="job-detail-meta-item">
