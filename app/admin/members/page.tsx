@@ -31,6 +31,17 @@ function genderLabel(g: string | null) {
   if (g === "FEMALE" || g === "여" || g === "여성" || g === "F") return "여";
   return "";
 }
+const SIDO_SHORT: Record<string, string> = {
+  "서울특별시": "서울", "부산광역시": "부산", "대구광역시": "대구", "인천광역시": "인천",
+  "광주광역시": "광주", "대전광역시": "대전", "울산광역시": "울산", "세종특별자치시": "세종",
+  "경기도": "경기", "강원특별자치도": "강원", "강원도": "강원", "충청북도": "충북", "충청남도": "충남",
+  "전북특별자치도": "전북", "전라북도": "전북", "전라남도": "전남", "경상북도": "경북",
+  "경상남도": "경남", "제주특별자치도": "제주", "제주도": "제주",
+};
+function shortSido(s: string | null) {
+  if (!s) return "";
+  return SIDO_SHORT[s] || s;
+}
 function fmtDate(d: string | null) {
   if (!d) return "-";
   const dt = new Date(d);
@@ -49,6 +60,8 @@ type Member = {
   gender: string | null;
   birth_date: string | null;
   region_sido: string | null;
+  region_sigungu: string | null;
+  office_job_areas: string[] | null;
   portfolio_url: string | null;
   scrap_count: number;
   last_login_at: string | null;
@@ -261,8 +274,10 @@ function AdminMembersPageInner() {
                 </th>
                 <th>가입</th>
                 <th>이름</th>
+                <th>지역</th>
                 <th>이력서</th>
                 <th>직군</th>
+                <th>포폴</th>
                 <th>연락처</th>
                 <th>최근 로그인</th>
                 <th>상태</th>
@@ -308,17 +323,20 @@ function AdminMembersPageInner() {
                           ) : (
                             <span style={{ fontWeight: 600 }}>{m.name}</span>
                           )}
-                          <span style={{ fontSize: 12, color: "#888", marginLeft: 6 }}>
-                            {genderLabel(m.gender)}{age ? ` · ${age}세` : ""}
-                          </span>
                         </div>
-                        <div style={{ fontSize: 12, color: "#aaa", marginTop: 2 }}>{m.region_sido || "-"}</div>
-                      </div>
+                        <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                          {genderLabel(m.gender)}{age ? ` · ${age}세` : ""}
+                        </div>
+                        </div>
                     </div>
                   </td>
-                  {/* 이력서: 아이콘 / 스크랩·열람 */}
+                  {/* 지역 */}
+                  <td className="admin-td-date">
+                    {m.region_sido ? `${shortSido(m.region_sido)}${m.region_sigungu ? " " + m.region_sigungu : ""}` : "-"}
+                  </td>
+                  {/* 이력서: 아이콘 / 스크랩 */}
                   <td>
-                    <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       {m.resume_id ? (
                         <button onClick={() => setSelected(m)} title="이력서 보기" style={{ background: "none", border: "none", cursor: "pointer", color: "#5f0080", padding: 0 }}>
                           <FileText size={18} />
@@ -326,25 +344,29 @@ function AdminMembersPageInner() {
                       ) : (
                         <span style={{ color: "#ddd" }}><FileText size={18} /></span>
                       )}
-                    </div>
-                    <div style={{ marginTop: 4, display: "flex", gap: 10, fontSize: 12, alignItems: "center" }}>
                       <button
                         onClick={() => m.scrap_count > 0 && setScrapTarget(m)}
                         disabled={!m.scrap_count}
-                        style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "none", border: "none", padding: 0, font: "inherit", cursor: m.scrap_count ? "pointer" : "default", color: m.scrap_count ? "#5f0080" : "#ccc" }}
+                        style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "none", border: "none", padding: 0, font: "inherit", fontSize: 12, cursor: m.scrap_count ? "pointer" : "default", color: m.scrap_count ? "#5f0080" : "#ccc" }}
                         title="스크랩한 기업 보기"
                       >
                         <Bookmark size={13} /> {m.scrap_count || 0}
                       </button>
-                      <span style={{ color: "#ccc" }} title="열람(과금 기능 준비 중)">👁 —</span>
                     </div>
                   </td>
-                  {/* 직군 / 포폴 */}
+                  {/* 직군 (1depth) */}
                   <td className="admin-td-date">
-                    <div>{JOB_TYPE_LABEL[m.job_type || ""] || "-"}</div>
-                    <div style={{ marginTop: 4, fontSize: 12, color: m.portfolio_url ? "#5f0080" : "#bbb", display: "inline-flex", alignItems: "center", gap: 2 }}>
-                      <Paperclip size={12} /> {m.portfolio_url ? "포폴 있음" : "없음"}
-                    </div>
+                    {m.office_job_areas && m.office_job_areas.length > 0 ? m.office_job_areas[0] : "-"}
+                  </td>
+                  {/* 포트폴리오 */}
+                  <td style={{ textAlign: "center" }}>
+                    {m.portfolio_url ? (
+                      <a href={m.portfolio_url} target="_blank" rel="noopener noreferrer" title="포트폴리오 열기" style={{ color: "#5f0080" }}>
+                        <Paperclip size={16} />
+                      </a>
+                    ) : (
+                      <span style={{ color: "#ccc" }}>✕</span>
+                    )}
                   </td>
                   {/* 연락처: 이메일 / 전화 */}
                   <td className="admin-td-date">
