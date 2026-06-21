@@ -327,7 +327,6 @@ export default function TalentPage() {
 
           {/* 헤더 */}
           <div style={{ display: "flex", alignItems: "stretch", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 12, color: "#999", fontWeight: 500 }}>
-            <div style={{ width: W_AVATAR, flexShrink: 0, borderRight: divider }} />
             <div style={headCell(FLEX.name)}>이름</div>
             <div style={headCell(FLEX.job)}>직군</div>
             <div style={headCell(FLEX.region)}>지역</div>
@@ -344,20 +343,18 @@ export default function TalentPage() {
               onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
             >
-              {/* 아바타 */}
-              <div style={{ width: W_AVATAR, flexShrink: 0, height: ROW_H, display: "flex", alignItems: "center", justifyContent: "center", borderRight: divider }}>
-                <div className="talent-avatar" style={{ width: 40, height: 40, overflow: "hidden" }}>
+              {/* 이름 (아바타 통합) */}
+              <div style={{ ...cell(FLEX.name), display: "flex", alignItems: "center", gap: 10 }}>
+                <div className="talent-avatar" style={{ width: 40, height: 40, overflow: "hidden", flexShrink: 0 }}>
                   {t.avatarUrl
                     ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     : t.name?.slice(0, 1) || "?"}
                 </div>
-              </div>
-
-              {/* 이름 */}
-              <div style={cell(FLEX.name)}>
-                <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a" }}>{t.name}</div>
-                <div style={{ ...clamp1, fontSize: 12, color: "#888", marginTop: 2 }}>
-                  {[genderLabel(t.gender), t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a" }}>{t.name}</div>
+                  <div style={{ ...clamp1, fontSize: 12, color: "#888", marginTop: 2 }}>
+                    {[genderLabel(t.gender), t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
+                  </div>
                 </div>
               </div>
 
