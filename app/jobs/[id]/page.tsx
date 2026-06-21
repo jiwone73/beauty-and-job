@@ -202,6 +202,15 @@ export default function JobDetailPage() {
           if (adminPreview || (localStorage.getItem("admin_token") && !token)) {
             setIsAdminPreview(true);
           }
+          // 로고 클릭 목적지: 관리자→/admin, 기업→대시보드, 그 외→홈
+          if (adminPreview || (localStorage.getItem("admin_token") && !token)) {
+            setLogoHref("/admin");
+          } else if (token) {
+            try {
+              const pl = JSON.parse(atob(token.split(".")[1]));
+              setLogoHref(pl.owner_type === "company" ? "/company/dashboard" : "/");
+            } catch {}
+          }
         }
       })
       .catch(e => console.error('[load job]', e));
@@ -210,6 +219,7 @@ export default function JobDetailPage() {
   const [bookmarked, setBookmarked] = useState(false);
   const [isOwnerCompany, setIsOwnerCompany] = useState(false);
   const [isAdminPreview, setIsAdminPreview] = useState(false);
+  const [logoHref, setLogoHref] = useState("/");
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [applyDone, setApplyDone] = useState(false);
   const [dbApplied, setDbApplied] = useState(false);
@@ -237,7 +247,7 @@ export default function JobDetailPage() {
             <ChevronLeft size={20} />
             <span>채용공고</span>
           </button>
-          <Link href="/" className="job-detail-logo"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} priority /></Link>
+          <Link href={logoHref} className="job-detail-logo"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} priority /></Link>
           <div className="job-detail-header-actions">
             <button className="job-detail-share" onClick={() => {
               navigator.clipboard?.writeText(window.location.href);
