@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
+import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
 import { Search } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
@@ -50,6 +50,7 @@ function AdminApplicationsPageInner() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
   const [dateFilter, setDateFilter] = useState(initialDate);
+  const [selected, setSelected] = useState<App | null>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
 
@@ -157,10 +158,12 @@ function AdminApplicationsPageInner() {
                         </div>
                       )}
                       {a.resume_id ? (
-                        <Link href={`/admin/resumes?preview=${a.resume_id}`}
-                          className="admin-td-brand" style={{ color: "#5f0080", textDecoration: "none" }}>
+                        <button
+                          onClick={() => setSelected(a)}
+                          className="admin-td-brand"
+                          style={{ color: "#5f0080", textDecoration: "none", background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}>
                           {a.applicant_name}
-                        </Link>
+                        </button>
                       ) : (
                         <span className="admin-td-brand">{a.applicant_name}</span>
                       )}
@@ -190,6 +193,13 @@ function AdminApplicationsPageInner() {
         )}
         {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
+      {selected && selected.resume_id && (
+        <ResumePreviewModal
+          resumeId={selected.resume_id}
+          jobCategory={selected.job_category}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </AdminLayout>
   );
 }

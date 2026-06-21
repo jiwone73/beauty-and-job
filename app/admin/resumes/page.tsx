@@ -239,16 +239,7 @@ function AdminResumesPageInner() {
     setResumes((prev) => prev.map((x) => (x.id === r.id ? { ...x, is_public: next } : x)));
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("이 이력서를 삭제하시겠습니까?")) return;
-    await fetch(`/api/admin/resumes?id=${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setResumes((prev) => prev.filter((x) => x.id !== id));
-    setCheckedIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
-    setSelected(null);
-  };
+  
 
   const handleBulkDelete = async () => {
     if (checkedIds.size === 0) return;
@@ -522,11 +513,7 @@ function AdminResumesPageInner() {
                   <Printer size={16} />
                   <span>인쇄</span>
                 </button>
-                <button className="resume-action-btn" onClick={() => handleDelete(selected.id)}
-                  style={{ color: "#ef4444", borderColor: "#ef4444" }}>
-                  <Trash2 size={16} />
-                  <span>삭제</span>
-                </button>
+                
                 <button className="rp-modal-close" onClick={() => setSelected(null)}>
                   <X size={20} />
                 </button>
