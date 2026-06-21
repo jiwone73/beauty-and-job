@@ -379,8 +379,8 @@ export default function AdminDashboard() {
             개인: Number(indivTab === "STORE" ? r.users_store : indivTab === "OFFICE" ? r.users_office : r.users),
           }));
           return (
-            <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={data} margin={{ top: 18, right: 8, left: 0, bottom: 0 }}>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={data} margin={{ top: 30, right: 8, left: 0, bottom: 0 }}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
                   label={{ value: "명", position: "top", offset: 10, fill: "#9ca3af", fontSize: 11 }} />
@@ -398,7 +398,7 @@ export default function AdminDashboard() {
             지원수: Number(r.count),
           }));
           return (
-            <ResponsiveContainer width="100%" height={180}>
+            <ResponsiveContainer width="100%" height={200}>
               <LineChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
@@ -419,7 +419,7 @@ export default function AdminDashboard() {
             <h2 className="admin-card-title">나이대 · 성별 분포</h2>
           </div>
           <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={180}>
+            <ResponsiveContainer width="100%" height={200}>
               <BarChart data={demographics} margin={{ top: 18, right: 8, left: 0, bottom: 0 }}>
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
@@ -515,7 +515,7 @@ export default function AdminDashboard() {
             기업: Number(corpTab === "STORE" ? r.companies_store : corpTab === "OFFICE" ? r.companies_office : corpTab === "BOTH" ? r.companies_both : r.companies) || 0,
           }));
           return (
-            <ResponsiveContainer width="100%" height={180}>
+            <ResponsiveContainer width="100%" height={200}>
               <LineChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
@@ -542,7 +542,7 @@ export default function AdminDashboard() {
                     : Number(r.total),
             }));
             return (
-              <ResponsiveContainer width="100%" height={180}>
+              <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={data}>
                   <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
@@ -563,7 +563,7 @@ export default function AdminDashboard() {
             <h2 className="admin-card-title">기업 규모별 분포</h2>
           </div>
           <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={180}>
+            <ResponsiveContainer width="100%" height={200}>
               <BarChart data={companySizeData} margin={{ top: 18, right: 8, left: 0, bottom: 0 }}>
                 <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={50} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
