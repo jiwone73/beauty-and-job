@@ -508,12 +508,13 @@ export default function AdminDashboard() {
           }));
           return (
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={data}>
+              <LineChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="기업" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
-              </BarChart>
+                <Line type="monotone" dataKey="기업" stroke="#7c3aed" strokeWidth={2.5}
+                  dot={{ fill: "#7c3aed", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+              </LineChart>
             </ResponsiveContainer>
           );
         }} />
@@ -533,12 +534,13 @@ export default function AdminDashboard() {
             }));
             return (
               <ResponsiveContainer width="100%" height={180}>
-                <BarChart data={data}>
+                <LineChart data={data}>
                   <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                   <Tooltip />
-                  <Bar dataKey="등록수" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                </BarChart>
+                  <Line type="monotone" dataKey="등록수" stroke="#f59e0b" strokeWidth={2.5}
+                    dot={{ fill: "#f59e0b", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+                </LineChart>
               </ResponsiveContainer>
             );
           }}
