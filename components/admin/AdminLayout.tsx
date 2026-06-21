@@ -9,12 +9,7 @@ import {
 } from "lucide-react";
 const NAV_ITEMS = [
   { id: "dashboard", label: "대시보드", icon: LayoutDashboard, href: "/admin" },
-  {
-    id: "jobs", label: "채용공고", icon: Briefcase, href: "/admin/jobs",
-    children: [
-      { id: "jobs", label: "채용공고 목록", href: "/admin/jobs" },
-    ]
-  },
+  
   {
     id: "members", label: "회원관리", icon: Users, href: "/admin/members",
     children: [
