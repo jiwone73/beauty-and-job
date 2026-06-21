@@ -197,8 +197,8 @@ export default function JobDetailPage() {
               }
             } catch {}
           }
-          // 어드민이 보는 경우도 미리보기 모드 (지원/북마크 숨김)
-          if (localStorage.getItem("admin_token")) {
+          // 어드민 전용 세션일 때만 미리보기 (개인/기업으로 로그인한 상태면 일반 화면)
+          if (localStorage.getItem("admin_token") && !token) {
             setIsAdminPreview(true);
           }
         }

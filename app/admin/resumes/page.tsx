@@ -106,7 +106,7 @@ function AdminResumesPageInner() {
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [zoomAvatar, setZoomAvatar] = useState<string | null>(null);
+  
 
   const handleDownloadPdf = async () => {
     if (!previewRef.current) return;
@@ -433,7 +433,7 @@ function AdminResumesPageInner() {
                   <input type="checkbox" checked={isAllChecked} onChange={toggleAll} />
                 </th>
                 <th>이름</th>
-                <th>직군 / 스킬</th>
+                <th>직군</th>
                 <th>경력</th>
                 <th>희망지역</th>
                 <th>완성</th>
@@ -459,8 +459,7 @@ function AdminResumesPageInner() {
                       <div className="admin-resume-member">
                         <div
                           className="admin-resume-photo"
-                          style={{ cursor: r.avatar_url ? "pointer" : "default", overflow: "hidden" }}
-                          onClick={(e) => { e.stopPropagation(); if (r.avatar_url) setZoomAvatar(r.avatar_url); }}
+                          style={{ overflow: "hidden" }}
                         >
                           {r.avatar_url ? (
                             <img src={r.avatar_url} alt={r.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -474,17 +473,8 @@ function AdminResumesPageInner() {
                         </div>
                       </div>
                     </td>
-                    <td style={{cursor:"pointer"}} onClick={() => setSelected(r)}>
-                      <div className="admin-resume-info">
-                        <span className="admin-resume-job" style={{ color: "#5f0080", fontWeight: 600 }}>{r.job_category || "직군 미입력"}</span>
-                        <div className="admin-resume-tags">
-                          {(r.skills && r.skills.length > 0)
-                            ? r.skills.slice(0, 5).map((sk, i) => (
-                                <span key={i} className="admin-resume-tag">{sk}</span>
-                              ))
-                            : <span style={{ fontSize: 12, color: "#bbb" }}>스킬 미입력</span>}
-                        </div>
-                      </div>
+                    <td>
+                      <span className="admin-resume-job" style={{ color: "#333", fontWeight: 600 }}>{r.job_category || "직군 미입력"}</span>
                     </td>
                     <td className="admin-td-date">{CAREER_LABEL[r.career_type || ""] || "-"}</td>
                     <td className="admin-td-date">{r.desired_location || "-"}</td>
@@ -567,32 +557,7 @@ function AdminResumesPageInner() {
         </div>
       )}
 
-      {zoomAvatar && (
-        <div
-          className="rp-modal-overlay"
-          onClick={() => setZoomAvatar(null)}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-        >
-          <div onClick={(e) => e.stopPropagation()} style={{ position: "relative" }}>
-            <img
-              src={zoomAvatar}
-              alt="프로필 사진"
-              style={{ maxWidth: "80vw", maxHeight: "80vh", borderRadius: 12, objectFit: "contain" }}
-            />
-            <button
-              onClick={() => setZoomAvatar(null)}
-              style={{
-                position: "absolute", top: -14, right: -14, width: 32, height: 32,
-                borderRadius: "50%", border: "none", background: "#fff",
-                boxShadow: "0 2px 8px rgba(0,0,0,.2)", cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}
-            >
-              <X size={18} />
-            </button>
-          </div>
-        </div>
-      )}
+      
     </AdminLayout>
   );
 }
