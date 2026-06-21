@@ -50,7 +50,7 @@ function AdminJobsPageInner() {
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");

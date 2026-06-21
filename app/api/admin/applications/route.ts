@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
         a.id, a.status, a.applied_at,
         u.name AS applicant_name,
         u.avatar_url,
+        (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS resume_id,
         jp.title AS position,
         c.company_name,
         jc.name AS job_category

@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import MemberTabs from "@/components/admin/MemberTabs";
+import Link from "next/link";
 import { Search, Trash2, X } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
@@ -265,7 +266,10 @@ function AdminCompaniesContent() {
                           );
                         })()}
                       </div>
-                      <span>{c.company_name}</span>
+                      <Link href={`/admin/jobs?search=${encodeURIComponent(c.company_name || "")}`}
+                        style={{ color: "#5f0080", textDecoration: "none", fontWeight: 600 }}>
+                        {c.company_name}
+                      </Link>
                     </div>
                   </td>
                   <td className="admin-td-date">{TYPE_LABEL[c.company_type] || c.company_type}</td>

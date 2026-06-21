@@ -29,6 +29,7 @@ type App = {
   applied_at: string;
   applicant_name: string;
   avatar_url: string | null;
+  resume_id: string | null;
   position: string;
   company_name: string;
   job_category: string | null;
@@ -155,10 +156,14 @@ function AdminApplicationsPageInner() {
                           {(a.applicant_name || "?").charAt(0)}
                         </div>
                       )}
-                      <Link href={`/admin/resumes?search=${encodeURIComponent(a.applicant_name || "")}`}
-                        className="admin-td-brand" style={{ color: "#5f0080", textDecoration: "none" }}>
-                        {a.applicant_name}
-                      </Link>
+                      {a.resume_id ? (
+                        <Link href={`/admin/resumes?preview=${a.resume_id}`}
+                          className="admin-td-brand" style={{ color: "#5f0080", textDecoration: "none" }}>
+                          {a.applicant_name}
+                        </Link>
+                      ) : (
+                        <span className="admin-td-brand">{a.applicant_name}</span>
+                      )}
                     </div>
                   </td>
                   <td className="admin-td-date">{a.job_category || "-"}</td>
