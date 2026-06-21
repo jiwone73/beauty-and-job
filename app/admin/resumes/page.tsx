@@ -93,6 +93,7 @@ function isComplete(r: Resume) {
 
 function AdminResumesPageInner() {
   const searchParams = useSearchParams();
+  const previewId = searchParams.get("preview");
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("search") || "");
@@ -220,6 +221,13 @@ function AdminResumesPageInner() {
   }, [token]);
 
   useEffect(() => { fetchResumes(); }, [fetchResumes]);
+
+  // ?preview=이력서id 로 진입 시 해당 이력서 미리보기 모달 자동 오픈
+  useEffect(() => {
+    if (!previewId || resumes.length === 0) return;
+    const match = resumes.find((r) => String(r.id) === String(previewId));
+    if (match) setSelected(match);
+  }, [previewId, resumes]);
 
   const togglePublic = async (r: Resume) => {
     const next = !r.is_public;

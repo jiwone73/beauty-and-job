@@ -33,6 +33,7 @@ type Member = {
   last_login_at: string | null;
   created_at: string;
   avatar_url: string | null;
+  resume_id: string | null;
 };
 
 function AdminMembersPageInner() {
@@ -248,10 +249,14 @@ function AdminMembersPageInner() {
                           m.name?.[0] || "·"
                         )}
                       </div>
-                      <Link href={`/admin/resumes?search=${encodeURIComponent(m.name || "")}`}
-                        style={{ color: "#5f0080", textDecoration: "none", fontWeight: 600 }}>
-                        {m.name}
-                      </Link>
+                      {m.resume_id ? (
+                        <Link href={`/admin/resumes?preview=${m.resume_id}`}
+                          style={{ color: "#5f0080", textDecoration: "none", fontWeight: 600 }}>
+                          {m.name}
+                        </Link>
+                      ) : (
+                        <span>{m.name}</span>
+                      )}
                     </div>
                   </td>
                   <td>
