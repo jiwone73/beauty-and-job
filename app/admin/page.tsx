@@ -371,7 +371,7 @@ export default function AdminDashboard() {
         <TrendCard title="개인회원 가입 추이" type="signup" render={(rows, range) => {
           const data = rows.map((r: any) => ({
             day: fmtTrendDay(r.day, range),
-            개인: Number(indivTab === "STORE" ? r.users_store : indivTab === "OFFICE" ? r.users_office : r.users) || null,
+            개인: Number(indivTab === "STORE" ? r.users_store : indivTab === "OFFICE" ? r.users_office : r.users),
           }));
           return (
             <ResponsiveContainer width="100%" height={180}>
@@ -389,7 +389,7 @@ export default function AdminDashboard() {
         <TrendCard title="입사 지원 추이" type="apply" render={(rows, range) => {
           const data = rows.map((r) => ({
             day: fmtTrendDay(r.day, range),
-            지원수: Number(r.count) || null,
+            지원수: Number(r.count),
           }));
           return (
             <ResponsiveContainer width="100%" height={180}>
