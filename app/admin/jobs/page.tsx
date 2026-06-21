@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Search, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -39,11 +40,19 @@ function fmtDate(d: string) {
   const dt = new Date(d);
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
-export default function AdminJobsPage() {
+function AdminJobsPageInner() {
+  const searchParams = useSearchParams();
+  // 대시보드 카드에서 넘어온 초기 필터
+  const initialStatus =
+    searchParams.get("status") === "active" ? "승인완료" :
+    searchParams.get("status") === "pending" ? "승인대기" : "전체";
+  const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
+
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("전체");
+  const [statusFilter, setStatusFilter] = useState(initialStatus);
+  const [dateFilter, setDateFilter] = useState(initialDate);
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
@@ -71,11 +80,18 @@ export default function AdminJobsPage() {
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, status } : j)));
   };
   const groupOf = (jobType: string) => (jobType === "STORE" ? "매장" : "기업");
+  const isToday = (d: string) => {
+    const dt = new Date(d); const now = new Date();
+    return dt.getFullYear() === now.getFullYear()
+      && dt.getMonth() === now.getMonth()
+      && dt.getDate() === now.getDate();
+  };
   const filtered = jobs.filter((j) => {
     const matchGroup = jobGroupFilter === "전체" || groupOf(j.job_type) === jobGroupFilter;
     const matchSearch = !search || j.title.includes(search) || j.company_name.includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[j.status] === statusFilter;
-    return matchGroup && matchSearch && matchStatus;
+    const matchDate = dateFilter === "전체" || isToday(j.created_at);
+    return matchGroup && matchSearch && matchStatus && matchDate;
   });
   const allChecked = filtered.length > 0 && filtered.every((j) => checkedIds.has(j.id));
   const toggleCheck = (id: string) => {
@@ -155,6 +171,18 @@ export default function AdminJobsPage() {
                   )}
                 </button>
               ))}
+            </div>
+          </div>
+          <div className="admin-filter-group">
+            <span className="admin-filter-label">등록일</span>
+            <div className="admin-filter-tabs">
+              {["전체", "오늘"].map((d) => {
+                const val = d === "오늘" ? "today" : "전체";
+                return (
+                  <button key={d} className={`admin-filter-tab ${dateFilter === val ? "active" : ""}`}
+                    onClick={() => setDateFilter(val)}>{d}</button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -273,5 +301,13 @@ export default function AdminJobsPage() {
         {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
     </AdminLayout>
+  );
+}
+
+export default function AdminJobsPage() {
+  return (
+    <Suspense fallback={<AdminLayout activeMenu="jobs"><div className="admin-empty">불러오는 중...</div></AdminLayout>}>
+      <AdminJobsPageInner />
+    </Suspense>
   );
 }
