@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumeTabs from "@/components/admin/ResumeTabs";
 import ResumePreview from "@/components/profile/ResumePreview";
@@ -90,10 +91,11 @@ function isComplete(r: Resume) {
   return r.status === "PUBLISHED";
 }
 
-export default function AdminResumesPage() {
+function AdminResumesPageInner() {
+  const searchParams = useSearchParams();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [completeFilter, setCompleteFilter] = useState("전체");
   const [publicFilter, setPublicFilter] = useState("전체");
   const [selected, setSelected] = useState<Resume | null>(null);
@@ -583,5 +585,13 @@ export default function AdminResumesPage() {
         </div>
       )}
     </AdminLayout>
+  );
+}
+
+export default function AdminResumesPage() {
+  return (
+    <Suspense fallback={<AdminLayout activeMenu="resumes"><div className="admin-empty">불러오는 중...</div></AdminLayout>}>
+      <AdminResumesPageInner />
+    </Suspense>
   );
 }

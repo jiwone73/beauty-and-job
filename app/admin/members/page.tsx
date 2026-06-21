@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Search, Trash2 } from "lucide-react";
 
@@ -247,7 +248,10 @@ function AdminMembersPageInner() {
                           m.name?.[0] || "·"
                         )}
                       </div>
-                      <span>{m.name}</span>
+                      <Link href={`/admin/resumes?search=${encodeURIComponent(m.name || "")}`}
+                        style={{ color: "#5f0080", textDecoration: "none", fontWeight: 600 }}>
+                        {m.name}
+                      </Link>
                     </div>
                   </td>
                   <td>

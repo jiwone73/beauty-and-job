@@ -1,18 +1,37 @@
 "use client";
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Search, Trash2 } from "lucide-react";
-
-const JOB_TYPE_LABEL: Record<string, string> = {
-  OFFICE: "기업사무직",
-  STORE: "매장기술직",
-};
+import { Search } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
-  ACTIVE: "정상",
-  INACTIVE: "휴면",
-  SUSPENDED: "정지",
+  APPLIED: "지원완료",
+  VIEWED: "열람됨",
+  INTERVIEW: "면접예정",
+  PASSED: "합격",
+  REJECTED: "불합격",
+  WITHDRAWN: "지원취소",
+};
+const STATUS_COLOR: Record<string, string> = {
+  APPLIED: "admin-badge-neutral",
+  VIEWED: "admin-badge-info",
+  INTERVIEW: "admin-badge-warning",
+  PASSED: "admin-badge-success",
+  REJECTED: "admin-badge-danger",
+  WITHDRAWN: "admin-badge-neutral",
+};
+const STATUS_OPTIONS = ["전체", "지원완료", "열람됨", "면접예정", "합격", "불합격", "지원취소"];
+
+type App = {
+  id: string;
+  status: string;
+  applied_at: string;
+  applicant_name: string;
+  avatar_url: string | null;
+  position: string;
+  company_name: string;
+  job_category: string | null;
 };
 
 function fmtDate(d: string | null) {
@@ -21,77 +40,42 @@ function fmtDate(d: string | null) {
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
 
-type Member = {
-  id: string;
-  name: string;
-  email: string | null;
-  phone: string | null;
-  job_type: string | null;
-  status: string;
-  kakao_id: string | null;
-  last_login_at: string | null;
-  created_at: string;
-  avatar_url: string | null;
-};
-
-function AdminMembersPageInner() {
+function AdminApplicationsPageInner() {
   const searchParams = useSearchParams();
-  // 대시보드 카드에서 넘어온 초기 필터
-  const typeParam = searchParams.get("type");
-  const initialJobType =
-    typeParam === "STORE" ? "매장기술직" :
-    typeParam === "OFFICE" ? "기업사무직" : "전체";
   const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
 
-  const [members, setMembers] = useState<Member[]>([]);
+  const [apps, setApps] = useState<App[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
-  const [jobTypeFilter, setJobTypeFilter] = useState(initialJobType);
   const [dateFilter, setDateFilter] = useState(initialDate);
-  const [checked, setChecked] = useState<string[]>([]);
-  const [page, setPage] = useState(1);
-  const PER_PAGE = 20;
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
 
-  const fetchMembers = useCallback(async () => {
+  const fetchApps = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/members", {
+      const res = await fetch("/api/admin/applications", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      setMembers(data.success ? data.data.items : []);
-    } catch (e) {
-      console.error("[fetchMembers]", e);
+      setApps(data.success ? data.data.items : []);
     } finally {
       setLoading(false);
     }
   }, [token]);
 
-  useEffect(() => { fetchMembers(); }, [fetchMembers]);
+  useEffect(() => { fetchApps(); }, [fetchApps]);
 
-  const changeStatus = async (id: string, status: string) => {
-    await fetch("/api/admin/members", {
+  const changeStatus = async (id: string, label: string) => {
+    const key = Object.keys(STATUS_TO_LABEL).find((k) => STATUS_TO_LABEL[k] === label);
+    if (!key) return;
+    await fetch("/api/admin/applications", {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ id, status }),
+      body: JSON.stringify({ id, status: key }),
     });
-    setMembers((prev) => prev.map((m) => m.id === id ? { ...m, status } : m));
-  };
-
-  const handleBulkDelete = async () => {
-    if (!checked.length) return;
-    if (!confirm(`선택한 ${checked.length}명을 삭제하시겠습니까?`)) return;
-    await Promise.all(checked.map((id) =>
-      fetch(`/api/admin/members?id=${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      })
-    ));
-    setMembers((prev) => prev.filter((m) => !checked.includes(m.id)));
-    setChecked([]);
+    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: key } : a)));
   };
 
   const isToday = (d: string | null) => {
@@ -102,177 +86,96 @@ function AdminMembersPageInner() {
       && dt.getDate() === now.getDate();
   };
 
-  const filtered = members.filter((m) => {
-    const matchSearch = !search ||
-      m.name?.includes(search) ||
-      (m.email || "").includes(search) ||
-      (m.phone || "").includes(search);
-    const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[m.status] === statusFilter;
-    const matchJobType = jobTypeFilter === "전체" || JOB_TYPE_LABEL[m.job_type || ""] === jobTypeFilter;
-    const matchDate = dateFilter === "전체" || isToday(m.created_at);
-    return matchSearch && matchStatus && matchJobType && matchDate;
+  const filtered = apps.filter((a) => {
+    const matchSearch = !search || (a.applicant_name || "").includes(search) || (a.company_name || "").includes(search) || (a.position || "").includes(search);
+    const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[a.status] === statusFilter;
+    const matchDate = dateFilter === "전체" || isToday(a.applied_at);
+    return matchSearch && matchStatus && matchDate;
   });
 
-  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-  const totalPages = Math.ceil(filtered.length / PER_PAGE);
-
-  const toggleCheck = (id: string) =>
-    setChecked((c) => c.includes(id) ? c.filter((x) => x !== id) : [...c, id]);
-
-  const allPageSelected = paginated.length > 0 && paginated.every((m) => checked.includes(m.id));
-  const toggleAllPage = () => {
-    const pageIds = paginated.map((m) => m.id);
-    if (allPageSelected) {
-      setChecked((prev) => prev.filter((id) => !pageIds.includes(id)));
-    } else {
-      setChecked((prev) => Array.from(new Set([...prev, ...pageIds])));
-    }
-  };
-
-  const counts = {
-    전체: members.length,
-    정상: members.filter((m) => m.status === "ACTIVE").length,
-    휴면: members.filter((m) => m.status === "INACTIVE").length,
-    정지: members.filter((m) => m.status === "SUSPENDED").length,
-  };
-
   return (
-    <AdminLayout activeMenu="members">
-
-      <div className="admin-mini-stats">
-        {Object.entries(counts).map(([label, count]) => (
-          <div key={label} className="admin-mini-stat">
-            <span className="admin-mini-stat-label">{label}</span>
-            <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">명</span></span>
-          </div>
-        ))}
-      </div>
-
+    <AdminLayout activeMenu="resumes-applications">
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
             <Search size={16} className="admin-search-icon" />
-            <input className="admin-search-input" placeholder="이름, 이메일, 연락처 검색"
-              value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
+            <input className="admin-search-input" placeholder="지원자, 기업명, 포지션 검색"
+              value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           <div className="admin-filter-group">
-            <span className="admin-filter-label">직군</span>
+            <span className="admin-filter-label">지원상태</span>
             <div className="admin-filter-tabs">
-              {["전체", "매장기술직", "기업사무직"].map((t) => (
-                <button key={t} className={`admin-filter-tab ${jobTypeFilter === t ? "active" : ""}`}
-                  onClick={() => { setJobTypeFilter(t); setPage(1); }}>{t}</button>
-              ))}
-            </div>
-          </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">계정상태</span>
-            <div className="admin-filter-tabs">
-              {["전체", "정상", "휴면", "정지"].map((s) => (
+              {STATUS_OPTIONS.map((s) => (
                 <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
-                  onClick={() => { setStatusFilter(s); setPage(1); }}>{s}</button>
+                  onClick={() => setStatusFilter(s)}>{s}</button>
               ))}
             </div>
           </div>
           <div className="admin-filter-group">
-            <span className="admin-filter-label">가입일</span>
+            <span className="admin-filter-label">지원일</span>
             <div className="admin-filter-tabs">
               {["전체", "오늘"].map((d) => {
                 const val = d === "오늘" ? "today" : "전체";
                 return (
                   <button key={d} className={`admin-filter-tab ${dateFilter === val ? "active" : ""}`}
-                    onClick={() => { setDateFilter(val); setPage(1); }}>{d}</button>
+                    onClick={() => setDateFilter(val)}>{d}</button>
                 );
               })}
             </div>
           </div>
         </div>
       </div>
-
       <div className="admin-card">
-        <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>총 <strong>{filtered.length.toLocaleString()}</strong>명</span>
-          <button
-            onClick={handleBulkDelete}
-            disabled={checked.length === 0}
-            style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "6px 14px", borderRadius: 6, border: "none",
-              background: checked.length ? "#e74c3c" : "#ededed",
-              color: checked.length ? "#fff" : "#aaa",
-              fontSize: 13, fontWeight: 600,
-              cursor: checked.length ? "pointer" : "default",
-            }}
-          >
-            <Trash2 size={15} /> 선택 삭제{checked.length ? ` (${checked.length})` : ""}
-          </button>
-        </div>
+        <div className="admin-table-meta">총 <strong>{filtered.length}</strong>건</div>
         {loading ? (
           <div className="admin-empty">불러오는 중...</div>
-        ) : filtered.length === 0 ? (
-          <div className="admin-empty">검색 결과가 없습니다.</div>
         ) : (
           <table className="admin-table">
             <thead>
-              <tr>
-                <th style={{ width: "36px", textAlign: "center" }}>
-                  <input type="checkbox"
-                    checked={allPageSelected}
-                    onChange={toggleAllPage} />
-                </th>
-                <th>가입일</th>
-                <th>이름</th>
-                <th>가입방법</th>
-                <th>이메일</th>
-                <th>연락처</th>
-                <th>직군</th>
-                <th>최근 로그인</th>
-                <th>상태</th>
-              </tr>
+              <tr><th>지원일</th><th>지원자</th><th>직군</th><th>기업</th><th>포지션</th><th>상태</th></tr>
             </thead>
             <tbody>
-              {paginated.map((m) => (
-                <tr key={m.id} style={{ background: checked.includes(m.id) ? "#faf5ff" : "" }}>
-                  <td style={{ textAlign: "center" }}>
-                    <input type="checkbox"
-                      checked={checked.includes(m.id)}
-                      onChange={() => toggleCheck(m.id)} />
-                  </td>
-                  <td className="admin-td-date">{fmtDate(m.created_at)}</td>
-                  <td className="admin-td-brand">
+              {filtered.map((a) => (
+                <tr key={a.id}>
+                  <td className="admin-td-date">{fmtDate(a.applied_at)}</td>
+                  <td>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
-                        {m.avatar_url ? (
-                          <img src={m.avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        ) : (
-                          m.name?.[0] || "·"
-                        )}
-                      </div>
-                      <span>{m.name}</span>
+                      {a.avatar_url ? (
+                        <img
+                          src={a.avatar_url}
+                          alt={a.applicant_name}
+                          style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", border: "1px solid #f0f0f0", flexShrink: 0 }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: 28, height: 28, borderRadius: "50%", background: "#f3e8ff",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 12, fontWeight: 700, color: "#7c3aed", flexShrink: 0
+                        }}>
+                          {(a.applicant_name || "?").charAt(0)}
+                        </div>
+                      )}
+                      <Link href={`/admin/resumes?search=${encodeURIComponent(a.applicant_name || "")}`}
+                        className="admin-td-brand" style={{ color: "#5f0080", textDecoration: "none" }}>
+                        {a.applicant_name}
+                      </Link>
                     </div>
                   </td>
-                  <td>
-                    {m.kakao_id ? (
-                      <span className="admin-badge" style={{ background: "#FEE500", color: "#3A1D1D" }}>카카오</span>
-                    ) : (
-                      <span className="admin-badge admin-badge-neutral">이메일</span>
-                    )}
-                  </td>
-                  <td className="admin-td-date">{m.email || "-"}</td>
-                  <td className="admin-td-date">{m.phone || "-"}</td>
-                  <td className="admin-td-date">{JOB_TYPE_LABEL[m.job_type || ""] || "-"}</td>
-                  <td className="admin-td-date">{fmtDate(m.last_login_at)}</td>
+                  <td className="admin-td-date">{a.job_category || "-"}</td>
+                  <td className="admin-td-brand">{a.company_name}</td>
+                  <td className="admin-td-title">{a.position}</td>
                   <td>
                     <select
-                      className={`admin-status-select admin-status-${
-                        m.status === "ACTIVE" ? "success" :
-                        m.status === "SUSPENDED" ? "danger" : "warning"
-                      }`}
-                      value={m.status}
-                      onChange={(e) => changeStatus(m.id, e.target.value)}
+                      className={`admin-status-select`}
+                      value={STATUS_TO_LABEL[a.status]}
+                      onChange={(e) => changeStatus(a.id, e.target.value)}
                     >
-                      <option value="ACTIVE">정상</option>
-                      <option value="INACTIVE">휴면</option>
-                      <option value="SUSPENDED">정지</option>
+                      <option value="지원완료">지원완료</option>
+                      <option value="열람됨">열람됨</option>
+                      <option value="면접예정">면접예정</option>
+                      <option value="합격">합격</option>
+                      <option value="불합격">불합격</option>
+                      <option value="지원취소">지원취소</option>
                     </select>
                   </td>
                 </tr>
@@ -280,26 +183,16 @@ function AdminMembersPageInner() {
             </tbody>
           </table>
         )}
-
-        {totalPages > 1 && (
-          <div className="admin-pagination">
-            <button className="admin-page-btn" disabled={page === 1} onClick={() => setPage(page - 1)}>이전</button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <button key={p} className={`admin-page-btn ${page === p ? "active" : ""}`}
-                onClick={() => setPage(p)}>{p}</button>
-            ))}
-            <button className="admin-page-btn" disabled={page === totalPages} onClick={() => setPage(page + 1)}>다음</button>
-          </div>
-        )}
+        {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
     </AdminLayout>
   );
 }
 
-export default function AdminMembersPage() {
+export default function AdminApplicationsPage() {
   return (
-    <Suspense fallback={<AdminLayout activeMenu="members"><div className="admin-empty">불러오는 중...</div></AdminLayout>}>
-      <AdminMembersPageInner />
+    <Suspense fallback={<AdminLayout activeMenu="resumes-applications"><div className="admin-empty">불러오는 중...</div></AdminLayout>}>
+      <AdminApplicationsPageInner />
     </Suspense>
   );
 }
