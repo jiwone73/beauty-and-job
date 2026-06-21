@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Search, Trash2 } from "lucide-react";
 
@@ -33,12 +34,21 @@ type Member = {
   avatar_url: string | null;
 };
 
-export default function AdminMembersPage() {
+function AdminMembersPageInner() {
+  const searchParams = useSearchParams();
+  // 대시보드 카드에서 넘어온 초기 필터
+  const typeParam = searchParams.get("type");
+  const initialJobType =
+    typeParam === "STORE" ? "매장기술직" :
+    typeParam === "OFFICE" ? "기업사무직" : "전체";
+  const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
+
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
-  const [jobTypeFilter, setJobTypeFilter] = useState("전체");
+  const [jobTypeFilter, setJobTypeFilter] = useState(initialJobType);
+  const [dateFilter, setDateFilter] = useState(initialDate);
   const [checked, setChecked] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const PER_PAGE = 20;
@@ -84,6 +94,14 @@ export default function AdminMembersPage() {
     setChecked([]);
   };
 
+  const isToday = (d: string | null) => {
+    if (!d) return false;
+    const dt = new Date(d); const now = new Date();
+    return dt.getFullYear() === now.getFullYear()
+      && dt.getMonth() === now.getMonth()
+      && dt.getDate() === now.getDate();
+  };
+
   const filtered = members.filter((m) => {
     const matchSearch = !search ||
       m.name?.includes(search) ||
@@ -91,7 +109,8 @@ export default function AdminMembersPage() {
       (m.phone || "").includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[m.status] === statusFilter;
     const matchJobType = jobTypeFilter === "전체" || JOB_TYPE_LABEL[m.job_type || ""] === jobTypeFilter;
-    return matchSearch && matchStatus && matchJobType;
+    const matchDate = dateFilter === "전체" || isToday(m.created_at);
+    return matchSearch && matchStatus && matchJobType && matchDate;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -152,6 +171,18 @@ export default function AdminMembersPage() {
                 <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
                   onClick={() => { setStatusFilter(s); setPage(1); }}>{s}</button>
               ))}
+            </div>
+          </div>
+          <div className="admin-filter-group">
+            <span className="admin-filter-label">가입일</span>
+            <div className="admin-filter-tabs">
+              {["전체", "오늘"].map((d) => {
+                const val = d === "오늘" ? "today" : "전체";
+                return (
+                  <button key={d} className={`admin-filter-tab ${dateFilter === val ? "active" : ""}`}
+                    onClick={() => { setDateFilter(val); setPage(1); }}>{d}</button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -262,5 +293,13 @@ export default function AdminMembersPage() {
         )}
       </div>
     </AdminLayout>
+  );
+}
+
+export default function AdminMembersPage() {
+  return (
+    <Suspense fallback={<AdminLayout activeMenu="members"><div className="admin-empty">불러오는 중...</div></AdminLayout>}>
+      <AdminMembersPageInner />
+    </Suspense>
   );
 }

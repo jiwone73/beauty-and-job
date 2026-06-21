@@ -50,11 +50,20 @@ const isPdf = (u: string) => u.split("?")[0].toLowerCase().endsWith(".pdf");
 function AdminCompaniesContent() {
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get("status") === "pending" ? "승인대기" : "전체";
+  // 대시보드 카드에서 넘어온 초기 필터
+  const typeParam = searchParams.get("type");
+  const initialType =
+    typeParam === "STORE" ? "매장" :
+    typeParam === "OFFICE" ? "기업" :
+    typeParam === "BOTH" ? "기업+매장" : "전체";
+  const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
+
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(initialStatus);
-  const [typeFilter, setTypeFilter] = useState("전체");
+  const [typeFilter, setTypeFilter] = useState(initialType);
+  const [dateFilter, setDateFilter] = useState(initialDate);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -104,11 +113,20 @@ function AdminCompaniesContent() {
     setSelectedIds([]);
   };
 
+  const isToday = (d: string | null) => {
+    if (!d) return false;
+    const dt = new Date(d); const now = new Date();
+    return dt.getFullYear() === now.getFullYear()
+      && dt.getMonth() === now.getMonth()
+      && dt.getDate() === now.getDate();
+  };
+
   const filtered = companies.filter((c) => {
     const matchSearch = !search || c.company_name?.includes(search) || c.email?.includes(search) || (c.business_number || "").includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[c.status] === statusFilter;
     const matchType = typeFilter === "전체" || TYPE_LABEL[c.company_type] === typeFilter;
-    return matchSearch && matchStatus && matchType;
+    const matchDate = dateFilter === "전체" || isToday(c.created_at);
+    return matchSearch && matchStatus && matchType && matchDate;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -172,6 +190,18 @@ function AdminCompaniesContent() {
                   )}
                 </button>
               ))}
+            </div>
+          </div>
+          <div className="admin-filter-group">
+            <span className="admin-filter-label">가입일</span>
+            <div className="admin-filter-tabs">
+              {["전체", "오늘"].map((d) => {
+                const val = d === "오늘" ? "today" : "전체";
+                return (
+                  <button key={d} className={`admin-filter-tab ${dateFilter === val ? "active" : ""}`}
+                    onClick={() => { setDateFilter(val); setPage(1); }}>{d}</button>
+                );
+              })}
             </div>
           </div>
         </div>
