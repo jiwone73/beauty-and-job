@@ -163,7 +163,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
                       </div>
                     );
                     return j.id
-                      ? <a key={i} href={`/jobs/${j.id}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>{row}</a>
+                      ? <a key={i} href={`/jobs/${j.id}?preview=admin`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>{row}</a>
                       : <div key={i}>{row}</div>;
                   })}
                 </div>

@@ -239,12 +239,6 @@ export default function JobDetailPage() {
           </button>
           <Link href="/" className="job-detail-logo"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} priority /></Link>
           <div className="job-detail-header-actions">
-            <button
-              className={`job-detail-bookmark ${bookmarked ? "active" : ""}`}
-              onClick={() => setBookmarked(!bookmarked)}
-            >
-              <Bookmark size={20} fill={bookmarked ? "currentColor" : "none"} />
-            </button>
             <button className="job-detail-share" onClick={() => {
               navigator.clipboard?.writeText(window.location.href);
               alert("링크가 복사되었습니다.");
