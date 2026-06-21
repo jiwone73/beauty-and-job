@@ -433,7 +433,7 @@ function AdminResumesPageInner() {
                   <input type="checkbox" checked={isAllChecked} onChange={toggleAll} />
                 </th>
                 <th>이름</th>
-                <th>이력서 정보</th>
+                <th>직군 / 스킬</th>
                 <th>경력</th>
                 <th>희망지역</th>
                 <th>완성</th>
@@ -455,7 +455,7 @@ function AdminResumesPageInner() {
                         onChange={() => toggleCheck(r.id)}
                       />
                     </td>
-                    <td>
+                    <td style={{ cursor: "pointer" }} onClick={() => setSelected(r)}>
                       <div className="admin-resume-member">
                         <div
                           className="admin-resume-photo"
@@ -469,20 +469,21 @@ function AdminResumesPageInner() {
                           )}
                         </div>
                         <div className="admin-resume-member-info">
-                          <strong>{r.name}</strong>
+                          <strong style={{ color: "#5f0080" }}>{r.name}</strong>
                           <span>{genderLabel(r.gender)}{age ? ` · ${age}세` : ""}</span>
                         </div>
                       </div>
                     </td>
                     <td style={{cursor:"pointer"}} onClick={() => setSelected(r)}>
                       <div className="admin-resume-info">
-                        <p className="admin-resume-title" style={{color:"#5f0080"}}>{r.title || "(제목 없음)"}</p>
+                        <span className="admin-resume-job" style={{ color: "#5f0080", fontWeight: 600 }}>{r.job_category || "직군 미입력"}</span>
                         <div className="admin-resume-tags">
-                          {(r.skills || []).slice(0, 4).map((sk, i) => (
-                            <span key={i} className="admin-resume-tag">{sk}</span>
-                          ))}
+                          {(r.skills && r.skills.length > 0)
+                            ? r.skills.slice(0, 5).map((sk, i) => (
+                                <span key={i} className="admin-resume-tag">{sk}</span>
+                              ))
+                            : <span style={{ fontSize: 12, color: "#bbb" }}>스킬 미입력</span>}
                         </div>
-                        <span className="admin-resume-job">{r.job_category || "-"}</span>
                       </div>
                     </td>
                     <td className="admin-td-date">{CAREER_LABEL[r.career_type || ""] || "-"}</td>

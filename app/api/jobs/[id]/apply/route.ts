@@ -54,11 +54,30 @@ export async function POST(
   if (missing.length > 0) {
     return err('APP_002', `지원하려면 프로필을 완성해주세요. (미입력: ${missing.join(', ')})`, 422)
   }
+  // 이력서 필수: 이력서가 없으면 지원 불가
+  const resumeRes = await pool.query(
+    `SELECT id FROM resumes
+     WHERE user_id = $1
+     ORDER BY (status = 'PUBLISHED') DESC, is_primary DESC, updated_at DESC
+     LIMIT 1`,
+    [auth!.sub]
+  )
+  if (resumeRes.rowCount === 0) {
+    return err('APP_003', '지원하려면 이력서를 먼저 작성해주세요.', 422)
+  }
+  let finalResumeId = resumeRes.rows[0].id
+  if (resume_id) {
+    const own = await pool.query(
+      `SELECT id FROM resumes WHERE id = $1 AND user_id = $2`,
+      [resume_id, auth!.sub]
+    )
+    if (own.rowCount && own.rowCount > 0) finalResumeId = resume_id
+  }
   const result = await pool.query(
     `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, status)
      VALUES ($1, $2, $3, $4, 'APPLIED')
      RETURNING id, status, applied_at`,
-    [jobPostingId, auth!.sub, resume_id || null, cover_letter || null]
+    [jobPostingId, auth!.sub, finalResumeId, cover_letter || null]
   )
   await pool.query(
     `UPDATE job_postings SET application_count = application_count + 1 WHERE id = $1`,
