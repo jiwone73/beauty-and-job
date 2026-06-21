@@ -234,6 +234,7 @@ export default function AdminDashboard() {
             unit: "명",
             sub: `개인 ${fmt(c?.total_users)} · 기업 ${fmt(c?.total_companies)}`,
             icon: Users, color: "#5f0080",
+            href: "/admin/members",
           },
           {
             label: "진행중 채용공고",
@@ -241,6 +242,7 @@ export default function AdminDashboard() {
             unit: "건",
             sub: `매장 ${fmt(c?.store_jobs)}건 · 기업 ${fmt(c?.office_jobs)}건`,
             icon: Briefcase, color: "#0ea5e9",
+            href: "/admin/jobs?status=active",
           },
           {
             label: "오늘 지원수",
@@ -248,6 +250,7 @@ export default function AdminDashboard() {
             unit: "건",
             sub: "오늘 접수",
             icon: CheckCircle, color: "#10b981",
+            href: "/admin/resumes/applications?date=today",
           },
           {
             label: "승인 대기 기업",
@@ -310,22 +313,26 @@ export default function AdminDashboard() {
             label: "전체 개인회원",
             value: fmt(indivTab === "STORE" ? c?.store_users : indivTab === "OFFICE" ? c?.office_users : c?.total_users),
             unit: "명",
+            href: `/admin/members?type=${indivTab}`,
           },
           {
             label: "오늘 신규 가입",
             value: fmt(indivTab === "STORE" ? c?.today_users_store : indivTab === "OFFICE" ? c?.today_users_office : c?.today_users),
             unit: "명",
+            href: `/admin/members?type=${indivTab}&date=today`,
           },
           {
             label: "오늘 입사지원",
             value: fmt(indivTab === "STORE" ? c?.today_applications_store : indivTab === "OFFICE" ? c?.today_applications_office : c?.today_applications),
             unit: "건",
+            href: `/admin/resumes/applications?date=today`,
           },
           {
             label: "전체 이력서",
             value: fmt(indivTab === "STORE" ? c?.total_resumes_store : indivTab === "OFFICE" ? c?.total_resumes_office : c?.total_resumes),
             unit: "건",
             sub: `공개 ${fmt(indivTab === "STORE" ? c?.public_resumes_store : indivTab === "OFFICE" ? c?.public_resumes_office : c?.public_resumes)}`,
+            href: `/admin/resumes`,
           },
           {
             label: "이력서 보유율",
@@ -337,16 +344,27 @@ export default function AdminDashboard() {
               return c ? Math.round((Number(have) / Math.max(Number(total), 1)) * 100) : "-";
             })(),
             unit: "%",
+            href: `/admin/resumes`,
           },
-        ].map((s) => (
-          <div key={s.label} className="admin-mini-stat-card">
-            <span className="admin-mini-stat-label">{s.label}</span>
-            <span className="admin-mini-stat-value">
-              {s.value}<span className="admin-mini-unit">{s.unit}</span>
-              {(s as any).sub && <span style={{ fontSize: 11, color: "#999", fontWeight: 400, marginLeft: 6 }}>({(s as any).sub})</span>}
-            </span>
-          </div>
-        ))}
+        ].map((s) => {
+          const inner = (
+            <>
+              <span className="admin-mini-stat-label">{s.label}</span>
+              <span className="admin-mini-stat-value">
+                {s.value}<span className="admin-mini-unit">{s.unit}</span>
+                {(s as any).sub && <span style={{ fontSize: 11, color: "#999", fontWeight: 400, marginLeft: 6 }}>({(s as any).sub})</span>}
+              </span>
+            </>
+          );
+          return (s as any).href ? (
+            <Link key={s.label} href={(s as any).href} className="admin-mini-stat-card"
+              style={{ cursor: "pointer", textDecoration: "none", color: "inherit" }}>
+              {inner}
+            </Link>
+          ) : (
+            <div key={s.label} className="admin-mini-stat-card">{inner}</div>
+          );
+        })}
       </div>
 
       {/* 추이 2개 */}
@@ -445,21 +463,25 @@ export default function AdminDashboard() {
             label: "전체 기업회원",
             value: fmt(corpTab === "STORE" ? c?.store_companies : corpTab === "OFFICE" ? c?.office_companies : corpTab === "BOTH" ? c?.both_companies : c?.total_companies),
             unit: "개사",
+            href: `/admin/members/companies?type=${corpTab}`,
           },
           {
             label: "오늘 신규 가입",
             value: fmt(corpTab === "STORE" ? c?.today_companies_store : corpTab === "OFFICE" ? c?.today_companies_office : corpTab === "BOTH" ? c?.today_companies_both : c?.today_companies),
             unit: "개사",
+            href: `/admin/members/companies?type=${corpTab}&date=today`,
           },
           {
             label: "오늘 공고 등록",
             value: fmt(corpTab === "STORE" ? c?.today_jobs_store : corpTab === "OFFICE" ? c?.today_jobs_office : c?.today_jobs),
             unit: "건",
+            href: `/admin/jobs?date=today`,
           },
           {
             label: "진행중 공고",
             value: fmt(corpTab === "STORE" ? c?.active_jobs_store : corpTab === "OFFICE" ? c?.active_jobs_office : corpTab === "BOTH" ? c?.active_jobs_both : c?.active_jobs),
             unit: "건",
+            href: `/admin/jobs?status=active`,
           },
           {
             label: "승인 대기",
