@@ -23,9 +23,9 @@ const NAV_ITEMS = [
     ]
   },
   {
-    id: "resumes", label: "인재정보", icon: Users, href: "/admin/resumes",
+    id: "resumes", label: "입사지원", icon: Users, href: "/admin/resumes/applications",
     children: [
-      { id: "resumes", label: "이력서 관리", href: "/admin/resumes" },
+      
       { id: "resumes-applications", label: "입사지원 관리", href: "/admin/resumes/applications" },
     ]
   },
@@ -45,8 +45,7 @@ const PAGE_TITLES: Record<string, string> = {
   "members-blocked": "열람제한기업",
   "members-favorites": "관심기업",
   "resumes": "인재정보",
-  "resumes-scrapped": "스크랩 이력서",
-  "resumes-viewed": "열람 이력서",
+  
   "resumes-applications": "입사지원 관리",
   "stories": "현장이야기",
   "newsletters": "뉴스레터",

@@ -3,7 +3,8 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Search, Trash2 } from "lucide-react";
+import { Search, Trash2, FileText, Bookmark, Paperclip } from "lucide-react";
+import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
 
 const JOB_TYPE_LABEL: Record<string, string> = {
   OFFICE: "기업사무직",
@@ -16,6 +17,20 @@ const STATUS_TO_LABEL: Record<string, string> = {
   SUSPENDED: "정지",
 };
 
+function calcAge(birth: string | null) {
+  if (!birth) return null;
+  const b = new Date(birth);
+  const now = new Date();
+  let age = now.getFullYear() - b.getFullYear();
+  const m = now.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
+  return age;
+}
+function genderLabel(g: string | null) {
+  if (g === "MALE" || g === "남" || g === "남성" || g === "M") return "남";
+  if (g === "FEMALE" || g === "여" || g === "여성" || g === "F") return "여";
+  return "";
+}
 function fmtDate(d: string | null) {
   if (!d) return "-";
   const dt = new Date(d);
@@ -30,6 +45,12 @@ type Member = {
   job_type: string | null;
   status: string;
   kakao_id: string | null;
+  naver_id: string | null;
+  gender: string | null;
+  birth_date: string | null;
+  region_sido: string | null;
+  portfolio_url: string | null;
+  scrap_count: number;
   last_login_at: string | null;
   created_at: string;
   avatar_url: string | null;
@@ -52,6 +73,23 @@ function AdminMembersPageInner() {
   const [jobTypeFilter, setJobTypeFilter] = useState(initialJobType);
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [checked, setChecked] = useState<string[]>([]);
+  const [selected, setSelected] = useState<Member | null>(null);
+  const [scrapTarget, setScrapTarget] = useState<Member | null>(null);
+  const [scrapList, setScrapList] = useState<{ id: string; name: string; logo_url: string | null }[]>([]);
+  const [scrapLoading, setScrapLoading] = useState(false);
+
+  useEffect(() => {
+    if (!scrapTarget) return;
+    setScrapLoading(true);
+    const t = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
+    fetch(`/api/admin/members/${scrapTarget.id}/scraps`, {
+      headers: { Authorization: `Bearer ${t}` },
+    })
+      .then((r) => r.json())
+      .then((d) => setScrapList(d.data?.items || []))
+      .catch(() => setScrapList([]))
+      .finally(() => setScrapLoading(false));
+  }, [scrapTarget]);
   const [page, setPage] = useState(1);
   const PER_PAGE = 20;
 
@@ -221,25 +259,39 @@ function AdminMembersPageInner() {
                     checked={allPageSelected}
                     onChange={toggleAllPage} />
                 </th>
-                <th>가입일</th>
+                <th>가입</th>
                 <th>이름</th>
-                <th>가입방법</th>
-                <th>이메일</th>
-                <th>연락처</th>
+                <th>이력서</th>
                 <th>직군</th>
+                <th>연락처</th>
                 <th>최근 로그인</th>
                 <th>상태</th>
               </tr>
             </thead>
             <tbody>
-              {paginated.map((m) => (
+              {paginated.map((m) => {
+                const age = calcAge(m.birth_date);
+                return (
                 <tr key={m.id} style={{ background: checked.includes(m.id) ? "#faf5ff" : "" }}>
                   <td style={{ textAlign: "center" }}>
                     <input type="checkbox"
                       checked={checked.includes(m.id)}
                       onChange={() => toggleCheck(m.id)} />
                   </td>
-                  <td className="admin-td-date">{fmtDate(m.created_at)}</td>
+                  {/* 가입: 가입일 / 가입방법 */}
+                  <td className="admin-td-date">
+                    <div>{fmtDate(m.created_at)}</div>
+                    <div style={{ marginTop: 4 }}>
+                      {m.kakao_id ? (
+                        <span className="admin-badge" style={{ background: "#FEE500", color: "#3A1D1D", fontSize: 11 }}>카카오</span>
+                      ) : m.naver_id ? (
+                        <span className="admin-badge" style={{ background: "#03C75A", color: "#fff", fontSize: 11 }}>네이버</span>
+                      ) : (
+                        <span className="admin-badge admin-badge-neutral" style={{ fontSize: 11 }}>이메일</span>
+                      )}
+                    </div>
+                  </td>
+                  {/* 이름: 이름·나이·성별 / 지역 */}
                   <td className="admin-td-brand">
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
@@ -249,27 +301,59 @@ function AdminMembersPageInner() {
                           m.name?.[0] || "·"
                         )}
                       </div>
-                      {m.resume_id ? (
-                        <Link href={`/admin/resumes?preview=${m.resume_id}`}
-                          style={{ color: "#5f0080", textDecoration: "none", fontWeight: 600 }}>
-                          {m.name}
-                        </Link>
-                      ) : (
-                        <span>{m.name}</span>
-                      )}
+                      <div>
+                        <div>
+                          {m.resume_id ? (
+                            <button onClick={() => setSelected(m)} style={{ color: "#5f0080", fontWeight: 600, background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit" }}>{m.name}</button>
+                          ) : (
+                            <span style={{ fontWeight: 600 }}>{m.name}</span>
+                          )}
+                          <span style={{ fontSize: 12, color: "#888", marginLeft: 6 }}>
+                            {genderLabel(m.gender)}{age ? ` · ${age}세` : ""}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: 12, color: "#aaa", marginTop: 2 }}>{m.region_sido || "-"}</div>
+                      </div>
                     </div>
                   </td>
+                  {/* 이력서: 아이콘 / 스크랩·열람 */}
                   <td>
-                    {m.kakao_id ? (
-                      <span className="admin-badge" style={{ background: "#FEE500", color: "#3A1D1D" }}>카카오</span>
-                    ) : (
-                      <span className="admin-badge admin-badge-neutral">이메일</span>
-                    )}
+                    <div>
+                      {m.resume_id ? (
+                        <button onClick={() => setSelected(m)} title="이력서 보기" style={{ background: "none", border: "none", cursor: "pointer", color: "#5f0080", padding: 0 }}>
+                          <FileText size={18} />
+                        </button>
+                      ) : (
+                        <span style={{ color: "#ddd" }}><FileText size={18} /></span>
+                      )}
+                    </div>
+                    <div style={{ marginTop: 4, display: "flex", gap: 10, fontSize: 12, alignItems: "center" }}>
+                      <button
+                        onClick={() => m.scrap_count > 0 && setScrapTarget(m)}
+                        disabled={!m.scrap_count}
+                        style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "none", border: "none", padding: 0, font: "inherit", cursor: m.scrap_count ? "pointer" : "default", color: m.scrap_count ? "#5f0080" : "#ccc" }}
+                        title="스크랩한 기업 보기"
+                      >
+                        <Bookmark size={13} /> {m.scrap_count || 0}
+                      </button>
+                      <span style={{ color: "#ccc" }} title="열람(과금 기능 준비 중)">👁 —</span>
+                    </div>
                   </td>
-                  <td className="admin-td-date">{m.email || "-"}</td>
-                  <td className="admin-td-date">{m.phone || "-"}</td>
-                  <td className="admin-td-date">{JOB_TYPE_LABEL[m.job_type || ""] || "-"}</td>
+                  {/* 직군 / 포폴 */}
+                  <td className="admin-td-date">
+                    <div>{JOB_TYPE_LABEL[m.job_type || ""] || "-"}</div>
+                    <div style={{ marginTop: 4, fontSize: 12, color: m.portfolio_url ? "#5f0080" : "#bbb", display: "inline-flex", alignItems: "center", gap: 2 }}>
+                      <Paperclip size={12} /> {m.portfolio_url ? "포폴 있음" : "없음"}
+                    </div>
+                  </td>
+                  {/* 연락처: 이메일 / 전화 */}
+                  <td className="admin-td-date">
+                    <div>{m.email || "-"}</div>
+                    <div style={{ marginTop: 4, color: "#888" }}>{m.phone || "-"}</div>
+                  </td>
+                  {/* 최근 로그인 */}
                   <td className="admin-td-date">{fmtDate(m.last_login_at)}</td>
+                  {/* 상태 */}
                   <td>
                     <select
                       className={`admin-status-select admin-status-${
@@ -285,7 +369,8 @@ function AdminMembersPageInner() {
                     </select>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         )}
@@ -301,6 +386,42 @@ function AdminMembersPageInner() {
           </div>
         )}
       </div>
+    {scrapTarget && (
+        <div onClick={() => setScrapTarget(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 12, padding: 24, width: 400, maxHeight: "70vh", overflow: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700 }}>{scrapTarget.name}님을 스크랩한 기업</h3>
+              <button onClick={() => setScrapTarget(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, lineHeight: 1, color: "#888" }}>×</button>
+            </div>
+            {scrapLoading ? (
+              <div style={{ color: "#888", textAlign: "center", padding: 20 }}>불러오는 중…</div>
+            ) : scrapList.length === 0 ? (
+              <div style={{ color: "#888", textAlign: "center", padding: 20 }}>스크랩한 기업이 없습니다.</div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {scrapList.map((c) => (
+                  <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 8, background: "#f3f0f7", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      {c.logo_url ? (
+                        <img src={c.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <span style={{ color: "#5f0080", fontWeight: 700 }}>{c.name?.[0]}</span>
+                      )}
+                    </div>
+                    <span style={{ fontWeight: 600 }}>{c.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {selected && selected.resume_id && (
+        <ResumePreviewModal
+          resumeId={selected.resume_id}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </AdminLayout>
   );
 }

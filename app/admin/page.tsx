@@ -332,7 +332,7 @@ export default function AdminDashboard() {
             value: fmt(indivTab === "STORE" ? c?.total_resumes_store : indivTab === "OFFICE" ? c?.total_resumes_office : c?.total_resumes),
             unit: "건",
             sub: `공개 ${fmt(indivTab === "STORE" ? c?.public_resumes_store : indivTab === "OFFICE" ? c?.public_resumes_office : c?.public_resumes)}`,
-            href: `/admin/resumes`,
+            href: `/admin/members`,
           },
           {
             label: "이력서 보유율",

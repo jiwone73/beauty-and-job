@@ -11,8 +11,10 @@ export async function GET(req: NextRequest) {
     const result = await client.query(`
       SELECT
         id, name, email::text AS email, phone, job_type, status,
-        kakao_id, naver_id, last_login_at, created_at, avatar_url,
-        (SELECT r.id FROM resumes r WHERE r.user_id = users.id ORDER BY r.updated_at DESC LIMIT 1) AS resume_id
+        kakao_id, naver_id, gender, birth_date, region_sido, portfolio_url,
+        last_login_at, created_at, avatar_url,
+        (SELECT r.id FROM resumes r WHERE r.user_id = users.id ORDER BY r.updated_at DESC LIMIT 1) AS resume_id,
+        (SELECT COUNT(*)::int FROM company_talent_scraps s WHERE s.user_id = users.id) AS scrap_count
       FROM users
       ORDER BY created_at DESC
     `)
