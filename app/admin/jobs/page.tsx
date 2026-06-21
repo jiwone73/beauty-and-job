@@ -26,6 +26,7 @@ type Job = {
   experience_level: string;
   view_count: number;
   company_name: string;
+  company_id: string;
   logo_url: string | null;
   category_name: string | null;
   categories: string[] | null;
@@ -259,7 +260,14 @@ function AdminJobsPageInner() {
                           {job.company_name.charAt(0)}
                         </div>
                       )}
-                      <span className="admin-td-brand">{job.company_name}</span>
+                      {job.company_id ? (
+                        <Link href={`/admin/members/companies?detail=${job.company_id}`}
+                          className="admin-td-brand" style={{ color: "#5f0080", cursor: "pointer", fontWeight: 600 }}>
+                          {job.company_name}
+                        </Link>
+                      ) : (
+                        <span className="admin-td-brand">{job.company_name}</span>
+                      )}
                     </div>
                   </td>
                   <td>

@@ -60,6 +60,7 @@ function AdminCompaniesContent() {
     typeParam === "OFFICE" ? "기업" :
     typeParam === "BOTH" ? "기업+매장" : "전체";
   const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
+  const detailId = searchParams.get("detail");
 
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,6 +90,13 @@ function AdminCompaniesContent() {
   }, [token]);
 
   useEffect(() => { fetchCompanies(); }, [fetchCompanies]);
+
+  // ?detail=회사id 로 진입 시 해당 기업 정보 모달 자동 오픈
+  useEffect(() => {
+    if (!detailId || companies.length === 0) return;
+    const match = companies.find((c) => String(c.id) === String(detailId));
+    if (match) setCompanyDetail(match);
+  }, [detailId, companies]);
 
   const changeStatus = async (id: string, newStatus: string) => {
     await fetch("/api/admin/companies", {
