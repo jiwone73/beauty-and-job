@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Search, Trash2, FileText, Bookmark, Paperclip } from "lucide-react";
+import { Search, Trash2, FileText, Bookmark, Paperclip, Download } from "lucide-react";
 import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
 
 const JOB_TYPE_LABEL: Record<string, string> = {
@@ -277,7 +277,7 @@ function AdminMembersPageInner() {
                 <th>지역</th>
                 <th>이력서</th>
                 <th>직군</th>
-                <th>포폴</th>
+                <th>포트폴리오</th>
                 <th>연락처</th>
                 <th>최근 로그인</th>
                 <th>상태</th>
@@ -354,15 +354,18 @@ function AdminMembersPageInner() {
                       </button>
                     </div>
                   </td>
-                  {/* 직군 (1depth) */}
+                  {/* 직군 (대분류 / 1depth) */}
                   <td className="admin-td-date">
-                    {m.office_job_areas && m.office_job_areas.length > 0 ? m.office_job_areas[0] : "-"}
+                    <div>{m.job_type === "STORE" ? "매장직" : m.job_type === "OFFICE" ? "사무직" : "-"}</div>
+                    <div style={{ marginTop: 2, fontSize: 12, color: "#888" }}>
+                      {m.office_job_areas && m.office_job_areas.length > 0 ? m.office_job_areas[0] : "-"}
+                    </div>
                   </td>
                   {/* 포트폴리오 */}
                   <td style={{ textAlign: "center" }}>
                     {m.portfolio_url ? (
-                      <a href={m.portfolio_url} target="_blank" rel="noopener noreferrer" title="포트폴리오 열기" style={{ color: "#5f0080" }}>
-                        <Paperclip size={16} />
+                      <a href={`${m.portfolio_url}?download`} title="포트폴리오 다운로드" style={{ color: "#5f0080" }}>
+                        <Download size={16} />
                       </a>
                     ) : (
                       <span style={{ color: "#ccc" }}>✕</span>
