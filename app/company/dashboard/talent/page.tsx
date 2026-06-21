@@ -344,7 +344,7 @@ export default function TalentPage() {
               onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
             >
               {/* 이름 (아바타 통합) */}
-              <div style={{ ...cell(FLEX.name), display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ ...cell(FLEX.name), display: "flex", flexDirection: "row", alignItems: "center", gap: 10 }}>
                 <div className="talent-avatar" style={{ width: 40, height: 40, overflow: "hidden", flexShrink: 0 }}>
                   {t.avatarUrl
                     ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
