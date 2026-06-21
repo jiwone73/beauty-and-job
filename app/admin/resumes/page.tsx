@@ -315,40 +315,8 @@ function AdminResumesPageInner() {
             <span className="admin-rsc-sub blue">공개 {publicCnt}</span>
           </div>
         </div>
-        <div className="admin-resume-stat-card">
-          <div className="admin-rsc-label">완성여부</div>
-          <div className="admin-rsc-split">
-            <div className="admin-rsc-split-item">
-              <span className="admin-rsc-split-label">완성</span>
-              <span className="admin-rsc-split-value green">{completeCnt}</span>
-            </div>
-            <div className="admin-rsc-divider" />
-            <div className="admin-rsc-split-item">
-              <span className="admin-rsc-split-label">미완성</span>
-              <span className="admin-rsc-split-value orange">{total - completeCnt}</span>
-            </div>
-          </div>
-          <div className="admin-rsc-bar">
-            <div className="admin-rsc-bar-fill green" style={{width: `${pct(completeCnt)}%`}} />
-          </div>
-        </div>
-        <div className="admin-resume-stat-card">
-          <div className="admin-rsc-label">공개여부</div>
-          <div className="admin-rsc-split">
-            <div className="admin-rsc-split-item">
-              <span className="admin-rsc-split-label">공개</span>
-              <span className="admin-rsc-split-value blue">{publicCnt}</span>
-            </div>
-            <div className="admin-rsc-divider" />
-            <div className="admin-rsc-split-item">
-              <span className="admin-rsc-split-label">비공개</span>
-              <span className="admin-rsc-split-value gray">{total - publicCnt}</span>
-            </div>
-          </div>
-          <div className="admin-rsc-bar">
-            <div className="admin-rsc-bar-fill blue" style={{width: `${pct(publicCnt)}%`}} />
-          </div>
-        </div>
+        
+        
         <div className="admin-resume-stat-card">
           <div className="admin-rsc-label">성별</div>
           <div className="admin-rsc-split">
