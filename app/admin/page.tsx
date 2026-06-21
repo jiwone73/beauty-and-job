@@ -373,16 +373,17 @@ export default function AdminDashboard() {
       {/* 차트 3개 */}
       <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
         {/* 가입 추이 */}
-        <TrendCard title="개인회원 가입 추이" type="signup" caption="신규 가입 (명)" render={(rows, range) => {
+        <TrendCard title="개인회원 가입 추이" type="signup" render={(rows, range) => {
           const data = rows.map((r: any) => ({
             day: fmtTrendDay(r.day, range),
             개인: Number(indivTab === "STORE" ? r.users_store : indivTab === "OFFICE" ? r.users_office : r.users),
           }));
           return (
             <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={data}>
+              <LineChart data={data} margin={{ top: 18, right: 8, left: 0, bottom: 0 }}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
+                  label={{ value: "명", position: "top", offset: 10, fill: "#9ca3af", fontSize: 11 }} />
                 <Tooltip formatter={(v) => [`${v}명`, "신규 가입"]} />
                 <Line type="monotone" dataKey="개인" stroke="#5f0080" strokeWidth={2.5}
                   dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
@@ -391,7 +392,7 @@ export default function AdminDashboard() {
           );
         }} />
         {/* 입사 지원 추이 */}
-        <TrendCard title="입사 지원 추이" type="apply" caption="신규 지원 (건)" render={(rows, range) => {
+        <TrendCard title="입사 지원 추이" type="apply" render={(rows, range) => {
           const data = rows.map((r) => ({
             day: fmtTrendDay(r.day, range),
             지원수: Number(r.count),
@@ -400,7 +401,8 @@ export default function AdminDashboard() {
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
+                  label={{ value: "건", position: "top", offset: 10, fill: "#9ca3af", fontSize: 11 }} />
                 <Tooltip formatter={(v) => [`${v}건`, "입사지원"]} />
                 <Line type="monotone" dataKey="지원수" stroke="#10b981" strokeWidth={2.5}
                   dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
@@ -415,13 +417,13 @@ export default function AdminDashboard() {
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">나이대 · 성별 분포</h2>
-            <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>회원 수 기준 · 단위 명</div>
           </div>
           <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={demographics}>
+              <BarChart data={demographics} margin={{ top: 18, right: 8, left: 0, bottom: 0 }}>
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
+                  label={{ value: "명", position: "top", offset: 10, fill: "#9ca3af", fontSize: 11 }} />
                 <Tooltip formatter={(v) => [`${v}명`, ""]} />
                 <Legend iconType="circle" iconSize={8}
                   formatter={(v) => <span style={{ fontSize: 12 }}>{v}</span>} />
@@ -434,9 +436,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* 프로필 직군 분포 (회원이 설정한 직군) */}
-        <PieCard title="프로필 직군 분포" data={userDist} unit="명" colors={PIE_COLORS} caption="회원 수 기준 · 단위 명" />
+        <PieCard title="프로필 직군 분포" data={userDist} unit="명" colors={PIE_COLORS} caption="회원 수 (명)" />
         {/* 직군별 입사지원 분포 */}
-        <PieCard title="직군별 입사지원 분포" data={appDist} unit="건" colors={PIE_COLORS} caption="지원 건수 기준 · 단위 건" />
+        <PieCard title="직군별 입사지원 분포" data={appDist} unit="건" colors={PIE_COLORS} caption="지원 건수 (건)" />
         
       </div>
       {/* ══════════════════════════════════════════
@@ -507,7 +509,7 @@ export default function AdminDashboard() {
       {/* 차트 3개 */}
       <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
         {/* 기업 가입 추이 */}
-        <TrendCard title="기업회원 가입 추이" type="company" caption="신규 가입 (개사)" render={(rows, range) => {
+        <TrendCard title="기업회원 가입 추이" type="company" render={(rows, range) => {
           const data = rows.map((r: any) => ({
             day: fmtTrendDay(r.day, range),
             기업: Number(corpTab === "STORE" ? r.companies_store : corpTab === "OFFICE" ? r.companies_office : corpTab === "BOTH" ? r.companies_both : r.companies) || 0,
@@ -516,7 +518,8 @@ export default function AdminDashboard() {
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
+                  label={{ value: "개사", position: "top", offset: 10, fill: "#9ca3af", fontSize: 11 }} />
                 <Tooltip formatter={(v) => [`${v}개사`, "신규 가입"]} />
                 <Line type="monotone" dataKey="기업" stroke="#7c3aed" strokeWidth={2.5}
                   dot={{ fill: "#7c3aed", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
@@ -529,7 +532,6 @@ export default function AdminDashboard() {
         <TrendCard
           title="채용공고 등록 추이"
           type="job"
-          caption="신규 등록 (건)"
           subFilter={corpTab === "ALL" ? "" : corpTab === "STORE" ? "매장" : corpTab === "OFFICE" ? "기업" : "매장+기업"}
           render={(rows, range) => {
             const data = rows.map((r: any) => ({
@@ -543,7 +545,8 @@ export default function AdminDashboard() {
               <ResponsiveContainer width="100%" height={180}>
                 <LineChart data={data}>
                   <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                  <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
+                  label={{ value: "건", position: "top", offset: 10, fill: "#9ca3af", fontSize: 11 }} />
                   <Tooltip formatter={(v) => [`${v}건`, "공고 등록"]} />
                   <Line type="monotone" dataKey="등록수" stroke="#f59e0b" strokeWidth={2.5}
                     dot={{ fill: "#f59e0b", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
@@ -558,13 +561,13 @@ export default function AdminDashboard() {
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">기업 규모별 분포</h2>
-            <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>직원 수 기준 · 단위 개사</div>
           </div>
           <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={companySizeData}>
+              <BarChart data={companySizeData} margin={{ top: 18, right: 8, left: 0, bottom: 0 }}>
                 <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={50} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <YAxis tick={{ fontSize: 12 }} allowDecimals={false}
+                  label={{ value: "개사", position: "top", offset: 10, fill: "#9ca3af", fontSize: 11 }} />
                 <Tooltip formatter={(v) => [`${v}개사`, ""]} />
                 <Bar dataKey="value" fill="#0ea5e9" radius={[6, 6, 0, 0]} maxBarSize={40} />
               </BarChart>
@@ -573,7 +576,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* 직군별 채용공고 분포 */}
-        <PieCard title="직군별 채용공고 분포" data={jobDist} unit="건" colors={PIE_COLORS} />
+        <PieCard title="직군별 채용공고 분포" data={jobDist} unit="건" colors={PIE_COLORS} caption="공고 건수 (건)" />
 
       </div>
       
