@@ -54,13 +54,14 @@ function RangeToggle({ range, onChange }: { range: string; onChange: (r: "7d" | 
 
 // ── 독립 추이 카드: 자체 기간 state + 자체 fetch (4개가 서로 독립)
 // ── 파이차트 + 2열 범례 카드 (범례를 HTML로 직접 그림)
-function PieCard({ title, data, unit, colors }: {
-  title: string; data: { name: string; value: number }[]; unit: string; colors: string[];
+function PieCard({ title, data, unit, colors, caption }: {
+  title: string; data: { name: string; value: number }[]; unit: string; colors: string[]; caption?: string;
 }) {
   return (
     <div className="admin-card">
       <div className="admin-card-head">
         <h2 className="admin-card-title">{title}</h2>
+        {caption && <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{caption}</div>}
       </div>
       <div style={{ padding: "16px 8px", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ flex: "0 0 45%" }}>
@@ -93,16 +94,16 @@ function PieCard({ title, data, unit, colors }: {
 }
 
 function TrendCard({
-  title, type, subFilter, render,
+  title, type, subFilter, caption, render,
 }: {
   title: string;
   type: "signup" | "company" | "apply" | "job";
   subFilter?: string;
+  caption?: string;
   render: (rows: any[], range: string) => React.ReactNode;
 }) {
   const [range, setRange] = useState<"7d" | "1m" | "3m" | "1y">("7d");
   const [rows, setRows] = useState<any[]>([]);
-
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
     fetch(`/api/admin/dashboard/trend?type=${type}&range=${range}`, {
@@ -112,11 +113,14 @@ function TrendCard({
       .then((res) => { if (res.success) setRows(res.data.rows || []); })
       .catch(console.error);
   }, [type, range]);
-
+  const periodLabel = range === "7d" ? "일별" : range === "1y" ? "월별" : "주별";
   return (
     <div className="admin-card">
-      <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 className="admin-card-title">{title}</h2>
+      <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div>
+          <h2 className="admin-card-title">{title}</h2>
+          {caption && <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{periodLabel} {caption}</div>}
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {subFilter && <span style={{ fontSize: 11, color: "#888" }}>{subFilter}</span>}
           <RangeToggle range={range} onChange={setRange} />
@@ -369,7 +373,7 @@ export default function AdminDashboard() {
       {/* 차트 3개 */}
       <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
         {/* 가입 추이 */}
-        <TrendCard title="개인회원 가입 추이" type="signup" render={(rows, range) => {
+        <TrendCard title="개인회원 가입 추이" type="signup" caption="신규 가입 (명)" render={(rows, range) => {
           const data = rows.map((r: any) => ({
             day: fmtTrendDay(r.day, range),
             개인: Number(indivTab === "STORE" ? r.users_store : indivTab === "OFFICE" ? r.users_office : r.users),
@@ -379,15 +383,15 @@ export default function AdminDashboard() {
               <LineChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip />
+                <Tooltip formatter={(v) => [`${v}명`, "신규 가입"]} />
                 <Line type="monotone" dataKey="개인" stroke="#5f0080" strokeWidth={2.5}
-                  dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} connectNulls isAnimationActive={false} />
+                  dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           );
         }} />
         {/* 입사 지원 추이 */}
-        <TrendCard title="입사 지원 추이" type="apply" render={(rows, range) => {
+        <TrendCard title="입사 지원 추이" type="apply" caption="신규 지원 (건)" render={(rows, range) => {
           const data = rows.map((r) => ({
             day: fmtTrendDay(r.day, range),
             지원수: Number(r.count),
@@ -397,9 +401,9 @@ export default function AdminDashboard() {
               <LineChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip />
+                <Tooltip formatter={(v) => [`${v}건`, "입사지원"]} />
                 <Line type="monotone" dataKey="지원수" stroke="#10b981" strokeWidth={2.5}
-                  dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} connectNulls isAnimationActive={false} />
+                  dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           );
@@ -411,6 +415,7 @@ export default function AdminDashboard() {
         <div className="admin-card">
           <div className="admin-card-head">
             <h2 className="admin-card-title">나이대 · 성별 분포</h2>
+            <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>회원 수 기준 · 단위 명</div>
           </div>
           <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={180}>
@@ -429,9 +434,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* 프로필 직군 분포 (회원이 설정한 직군) */}
-        <PieCard title="프로필 직군 분포" data={userDist} unit="명" colors={PIE_COLORS} />
+        <PieCard title="프로필 직군 분포" data={userDist} unit="명" colors={PIE_COLORS} caption="회원 수 기준 · 단위 명" />
         {/* 직군별 입사지원 분포 */}
-        <PieCard title="직군별 입사지원 분포" data={appDist} unit="건" colors={PIE_COLORS} />
+        <PieCard title="직군별 입사지원 분포" data={appDist} unit="건" colors={PIE_COLORS} caption="지원 건수 기준 · 단위 건" />
         
       </div>
       {/* ══════════════════════════════════════════
@@ -502,7 +507,7 @@ export default function AdminDashboard() {
       {/* 차트 3개 */}
       <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
         {/* 기업 가입 추이 */}
-        <TrendCard title="기업회원 가입 추이" type="company" render={(rows, range) => {
+        <TrendCard title="기업회원 가입 추이" type="company" caption="신규 가입 (개사)" render={(rows, range) => {
           const data = rows.map((r: any) => ({
             day: fmtTrendDay(r.day, range),
             기업: Number(corpTab === "STORE" ? r.companies_store : corpTab === "OFFICE" ? r.companies_office : corpTab === "BOTH" ? r.companies_both : r.companies) || 0,
@@ -512,7 +517,7 @@ export default function AdminDashboard() {
               <LineChart data={data}>
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip />
+                <Tooltip formatter={(v) => [`${v}개사`, "신규 가입"]} />
                 <Line type="monotone" dataKey="기업" stroke="#7c3aed" strokeWidth={2.5}
                   dot={{ fill: "#7c3aed", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
               </LineChart>
@@ -522,8 +527,9 @@ export default function AdminDashboard() {
 
         {/* 일별 공고 등록수 */}
         <TrendCard
-          title="공고 등록수 추이"
+          title="채용공고 등록 추이"
           type="job"
+          caption="신규 등록 (건)"
           subFilter={corpTab === "ALL" ? "" : corpTab === "STORE" ? "매장" : corpTab === "OFFICE" ? "기업" : "매장+기업"}
           render={(rows, range) => {
             const data = rows.map((r: any) => ({
@@ -538,7 +544,7 @@ export default function AdminDashboard() {
                 <LineChart data={data}>
                   <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                  <Tooltip />
+                  <Tooltip formatter={(v) => [`${v}건`, "공고 등록"]} />
                   <Line type="monotone" dataKey="등록수" stroke="#f59e0b" strokeWidth={2.5}
                     dot={{ fill: "#f59e0b", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
                 </LineChart>
@@ -551,7 +557,8 @@ export default function AdminDashboard() {
         {/* 기업 규모별 분포 */}
         <div className="admin-card">
           <div className="admin-card-head">
-            <h2 className="admin-card-title">기업 규모별 분포 (사원수)</h2>
+            <h2 className="admin-card-title">기업 규모별 분포</h2>
+            <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>직원 수 기준 · 단위 개사</div>
           </div>
           <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={180}>
