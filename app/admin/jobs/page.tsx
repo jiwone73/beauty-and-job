@@ -264,7 +264,6 @@ function AdminJobsPageInner() {
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
                 <th>등록일</th>
-                <th>유형</th>
                 <th>등록상품</th>
                 <th>기업</th>
                 <th>공고명</th>
@@ -285,12 +284,6 @@ function AdminJobsPageInner() {
                   </td>
                   {/* 등록일 */}
                   <td className="admin-td-date">{fmtDate(job.created_at)}</td>
-                  {/* 유형 */}
-                  <td>
-                    <span className={`jobs-type-badge ${job.job_type === "STORE" ? "store" : "corp"}`}>
-                      {job.job_type === "STORE" ? "🏪 매장" : "🏢 기업"}
-                    </span>
-                  </td>
                   {/* 등록상품 */}
                   <td>
                     {(() => {
@@ -298,7 +291,7 @@ function AdminJobsPageInner() {
                       return <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, background: b.bg, color: b.color, whiteSpace: "nowrap" }}>{b.label}</span>;
                     })()}
                   </td>
-                  {/* 기업 */}
+                  {/* 기업 (+ 유형 텍스트) */}
                   <td>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       {job.logo_url ? (
@@ -311,16 +304,21 @@ function AdminJobsPageInner() {
                         <div style={{
                           width: 26, height: 26, borderRadius: 6, background: "#f3e8ff",
                           display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 11, fontWeight: 700, color: "#7c3aed", flexShrink: 0
+                          fontSize: 11, color: "#7c3aed", flexShrink: 0
                         }}>
                           {job.company_name.charAt(0)}
                         </div>
                       )}
-                      <span className="admin-td-brand"
-                        style={{ color: "#5f0080", cursor: "pointer", fontWeight: 600 }}
-                        onClick={() => job.company_id && openCompany(job.company_id)}>
-                        {job.company_name}
-                      </span>
+                      <div>
+                        <div className="admin-td-brand"
+                          style={{ color: "#5f0080", cursor: "pointer", fontWeight: 400 }}
+                          onClick={() => job.company_id && openCompany(job.company_id)}>
+                          {job.company_name}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                          {job.job_type === "STORE" ? "매장" : "기업"}
+                        </div>
+                      </div>
                     </div>
                   </td>
                   {/* 공고명 (길면 2줄) */}
@@ -328,9 +326,9 @@ function AdminJobsPageInner() {
                     <span className="admin-td-title"
                       title={job.title}
                       style={{
-                        color: "#5f0080", cursor: "pointer", fontWeight: 600,
+                        color: "#5f0080", cursor: "pointer", fontWeight: 400,
                         display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-                        overflow: "hidden", whiteSpace: "normal", maxWidth: 240, lineHeight: 1.35,
+                        overflow: "hidden", whiteSpace: "normal", maxWidth: 340, lineHeight: 1.4,
                       }}
                       onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank")}>
                       {job.title}
