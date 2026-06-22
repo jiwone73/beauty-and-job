@@ -326,7 +326,7 @@ function AdminJobsPageInner() {
                     <span className="admin-td-title"
                       title={job.title}
                       style={{
-                        color: "#5f0080", cursor: "pointer", fontWeight: 400,
+                        color: "#333", cursor: "pointer", fontWeight: 400,
                         display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
                         overflow: "hidden", whiteSpace: "normal", maxWidth: 340, lineHeight: 1.4,
                       }}
