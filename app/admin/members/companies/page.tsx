@@ -56,6 +56,22 @@ function fmtDate(d: string | null) {
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
 
+const SIDO_SHORT: Record<string, string> = {
+  "서울특별시": "서울", "부산광역시": "부산", "대구광역시": "대구", "인천광역시": "인천",
+  "광주광역시": "광주", "대전광역시": "대전", "울산광역시": "울산", "세종특별자치시": "세종",
+  "경기도": "경기", "강원특별자치도": "강원", "강원도": "강원", "충청북도": "충북", "충청남도": "충남",
+  "전북특별자치도": "전북", "전라북도": "전북", "전라남도": "전남", "경상북도": "경북",
+  "경상남도": "경남", "제주특별자치도": "제주", "제주도": "제주",
+};
+function regionFromAddress(addr: string | null) {
+  if (!addr) return "-";
+  const parts = addr.trim().split(/\s+/);
+  if (parts.length === 0 || !parts[0]) return "-";
+  const sido = SIDO_SHORT[parts[0]] || parts[0];
+  const sigungu = parts[1] || "";
+  return `${sido}${sigungu ? " " + sigungu : ""}`;
+}
+
 const isPdf = (u: string) => u.split("?")[0].toLowerCase().endsWith(".pdf");
 
 function AdminCompaniesContent() {
@@ -310,12 +326,11 @@ function AdminCompaniesContent() {
                   <input type="checkbox" checked={allPageSelected} onChange={toggleAllPage} style={{ cursor: "pointer" }} />
                 </th>
                 <th>가입일</th>
-                <th>기업명</th>
-                <th>유형</th>
-                <th>이메일</th>
+                <th>매장/기업명</th>
+                <th>지역</th>
+                <th>직원수</th>
                 <th>연락처</th>
                 <th>사업자번호</th>
-                <th>사업자등록증</th>
                 <th>공고</th>
                 <th>상태</th>
               </tr>
@@ -327,6 +342,7 @@ function AdminCompaniesContent() {
                     <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
                   </td>
                   <td className="admin-td-date">{fmtDate(c.created_at)}</td>
+                  {/* 매장/기업명 → 클릭 시 기업정보 모달 */}
                   <td className="admin-td-brand">
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <div style={{ width: 28, height: 28, borderRadius: 6, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
@@ -346,22 +362,41 @@ function AdminCompaniesContent() {
                       </span>
                     </div>
                   </td>
-                  <td className="admin-td-date">{TYPE_LABEL[c.company_type] || c.company_type}</td>
-                  <td className="admin-td-date">{c.email}</td>
+                  {/* 지역 */}
+                  <td className="admin-td-date">{regionFromAddress(c.address)}</td>
+                  {/* 직원수 */}
+                  <td className="admin-td-date">{c.company_size || "-"}</td>
+                  {/* 연락처 */}
                   <td className="admin-td-date">{c.phone || "-"}</td>
-                  <td className="admin-td-date">{c.business_number || "-"}</td>
-                  <td>
-                    {c.business_license_url ? (
-                      <button
-                        onClick={() => setPreviewUrl(c.business_license_url)}
-                        style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                        등록증 보기
-                      </button>
+                  {/* 사업자번호 / 등록증 아이콘 */}
+                  <td className="admin-td-date">
+                    <div>{c.business_number || "-"}</div>
+                    <div style={{ marginTop: 4 }}>
+                      {c.business_license_url ? (
+                        <button onClick={() => setPreviewUrl(c.business_license_url)} title="사업자등록증 보기"
+                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "#5f0080", display: "inline-flex", alignItems: "center" }}>
+                          <FileText size={16} />
+                        </button>
+                      ) : (
+                        <span style={{ color: "#ddd", display: "inline-flex", alignItems: "center" }} title="미제출">
+                          <FileText size={16} />
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  {/* 공고 → 클릭 시 해당 기업 공고 목록 */}
+                  <td className="admin-td-date">
+                    {c.job_count > 0 ? (
+                      <a href={`/admin/jobs?search=${encodeURIComponent(c.company_name)}`}
+                        title={`${c.company_name} 공고 보기`}
+                        style={{ color: "#5f0080", fontWeight: 600, textDecoration: "none" }}>
+                        {c.job_count}건
+                      </a>
                     ) : (
-                      <span style={{ color: "#bbb", fontSize: 13 }}>미제출</span>
+                      <span style={{ color: "#bbb" }}>0건</span>
                     )}
                   </td>
-                  <td className="admin-td-date">{c.job_count}건</td>
+                  {/* 상태 */}
                   <td>
                     <select
                       className={`admin-status-select admin-status-${
