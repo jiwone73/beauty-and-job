@@ -27,6 +27,7 @@ type Job = {
   location: string | null;
   experience_level: string;
   view_count: number;
+  application_count: number;
   company_id: string;
   company_name: string;
   logo_url: string | null;
@@ -270,7 +271,7 @@ function AdminJobsPageInner() {
                 <th>직군</th>
                 <th>경력</th>
                 <th>지역</th>
-                <th>조회수</th>
+                <th>지원자 </th>
                 <th>마감일</th>
                 <th>상태</th>
               </tr>
@@ -345,8 +346,8 @@ function AdminJobsPageInner() {
                   <td className="admin-td-date">{EXP_LABEL[job.experience_level] || job.experience_level}</td>
                   {/* 지역 (시도 축약) */}
                   <td className="admin-td-date">{shortLocation(job.location)}</td>
-                  {/* 조회수 */}
-                  <td className="admin-td-date">{(job.view_count || 0).toLocaleString()}</td>
+                  {/* 지원자 */}
+                  <td className="admin-td-date">{(job.application_count || 0).toLocaleString()}명</td>
                   {/* 마감일 */}
                   <td className="admin-td-date">
                     {(() => {
