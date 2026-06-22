@@ -10,13 +10,26 @@ export async function GET(req: NextRequest) {
   try {
     const result = await client.query(`
       SELECT
-        id, name, email::text AS email, phone, job_type, status,
-        kakao_id, naver_id, gender, birth_date, region_sido, region_sigungu, office_job_areas, portfolio_url,
-        last_login_at, created_at, avatar_url,
-        (SELECT r.id FROM resumes r WHERE r.user_id = users.id ORDER BY r.updated_at DESC LIMIT 1) AS resume_id,
-        (SELECT COUNT(*)::int FROM company_talent_scraps s WHERE s.user_id = users.id) AS scrap_count
-      FROM users
-      ORDER BY created_at DESC
+        u.id, u.name, u.email::text AS email, u.phone, u.job_type, u.status,
+        u.kakao_id, u.naver_id, u.gender, u.birth_date, u.region_sido, u.region_sigungu,
+        u.office_job_areas, u.portfolio_url, u.last_login_at, u.created_at, u.avatar_url,
+        (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS resume_id,
+        (SELECT r.career_type FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS career_type,
+        (SELECT COUNT(*)::int FROM company_talent_scraps s WHERE s.user_id = u.id) AS scrap_count,
+        (SELECT rc.company_name FROM resume_careers rc
+          JOIN resumes r ON r.id = rc.resume_id
+          WHERE r.user_id = u.id
+          ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_company,
+        (SELECT rc.start_date FROM resume_careers rc
+          JOIN resumes r ON r.id = rc.resume_id
+          WHERE r.user_id = u.id
+          ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_start_date,
+        (SELECT rc.is_current FROM resume_careers rc
+          JOIN resumes r ON r.id = rc.resume_id
+          WHERE r.user_id = u.id
+          ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_is_current
+      FROM users u
+      ORDER BY u.created_at DESC
     `)
     return ok({ items: result.rows })
   } finally {
