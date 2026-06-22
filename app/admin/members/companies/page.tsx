@@ -326,6 +326,7 @@ function AdminCompaniesContent() {
                   <input type="checkbox" checked={allPageSelected} onChange={toggleAllPage} style={{ cursor: "pointer" }} />
                 </th>
                 <th>가입일</th>
+                <th>유형</th>
                 <th>매장/기업명</th>
                 <th>지역</th>
                 <th>직원수</th>
@@ -342,6 +343,8 @@ function AdminCompaniesContent() {
                     <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
                   </td>
                   <td className="admin-td-date">{fmtDate(c.created_at)}</td>
+                  {/* 유형 */}
+                  <td className="admin-td-date">{TYPE_LABEL[c.company_type] || c.company_type}</td>
                   {/* 매장/기업명 → 클릭 시 기업정보 모달 */}
                   <td className="admin-td-brand">
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

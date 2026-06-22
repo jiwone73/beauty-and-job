@@ -5,6 +5,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import CompanyDetailModal from "@/components/admin/CompanyDetailModal";
 import { Search, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { formatDeadline } from "@/lib/jobFormat";
 const STATUS_TO_LABEL: Record<string, string> = {
   ACTIVE: "승인완료",
   DRAFT: "승인대기",
@@ -32,6 +33,7 @@ type Job = {
   category_name: string | null;
   categories: string[] | null;
   created_at: string;
+  deadline: string | null;
 };
 const EXP_LABEL: Record<string, string> = {
   NEW: "신입",
@@ -41,6 +43,21 @@ const EXP_LABEL: Record<string, string> = {
 function fmtDate(d: string) {
   const dt = new Date(d);
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
+}
+const SIDO_SHORT: Record<string, string> = {
+  "서울특별시": "서울", "부산광역시": "부산", "대구광역시": "대구", "인천광역시": "인천",
+  "광주광역시": "광주", "대전광역시": "대전", "울산광역시": "울산", "세종특별자치시": "세종",
+  "경기도": "경기", "강원특별자치도": "강원", "강원도": "강원", "충청북도": "충북", "충청남도": "충남",
+  "전북특별자치도": "전북", "전라북도": "전북", "전라남도": "전남", "경상북도": "경북",
+  "경상남도": "경남", "제주특별자치도": "제주", "제주도": "제주",
+};
+function shortLocation(loc: string | null) {
+  if (!loc) return "-";
+  const parts = loc.trim().split(/\s+/);
+  if (!parts[0]) return "-";
+  const sido = SIDO_SHORT[parts[0]] || parts[0];
+  const sigungu = parts[1] || "";
+  return `${sido}${sigungu ? " " + sigungu : ""}`;
 }
 function AdminJobsPageInner() {
   const searchParams = useSearchParams();
@@ -237,14 +254,15 @@ function AdminJobsPageInner() {
                 <th style={{ width: 40 }}>
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
+                <th>등록일</th>
                 <th>유형</th>
                 <th>기업</th>
                 <th>공고명</th>
                 <th>직군</th>
                 <th>경력</th>
                 <th>지역</th>
-                <th>등록일</th>
                 <th>조회수</th>
+                <th>마감일</th>
                 <th>상태</th>
               </tr>
             </thead>
@@ -255,11 +273,15 @@ function AdminJobsPageInner() {
                     <input type="checkbox" checked={checkedIds.has(job.id)}
                       onChange={() => toggleCheck(job.id)} />
                   </td>
+                  {/* 등록일 */}
+                  <td className="admin-td-date">{fmtDate(job.created_at)}</td>
+                  {/* 유형 */}
                   <td>
                     <span className={`jobs-type-badge ${job.job_type === "STORE" ? "store" : "corp"}`}>
                       {job.job_type === "STORE" ? "🏪 매장" : "🏢 기업"}
                     </span>
                   </td>
+                  {/* 기업 */}
                   <td>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       {job.logo_url ? (
@@ -284,6 +306,7 @@ function AdminJobsPageInner() {
                       </span>
                     </div>
                   </td>
+                  {/* 공고명 */}
                   <td>
                     <span className="admin-td-title"
                       style={{color:"#5f0080", cursor:"pointer", fontWeight:600}}
@@ -291,16 +314,34 @@ function AdminJobsPageInner() {
                       {job.title}
                     </span>
                   </td>
+                  {/* 직군 */}
                   <td className="admin-td-date">
                     {job.categories && job.categories.length > 0
                       ? job.categories.slice(0, 2).join(", ") +
                         (job.categories.length > 2 ? ` 외 ${job.categories.length - 2}` : "")
                       : "-"}
                   </td>
+                  {/* 경력 */}
                   <td className="admin-td-date">{EXP_LABEL[job.experience_level] || job.experience_level}</td>
-                  <td className="admin-td-date">{job.location || "-"}</td>
-                  <td className="admin-td-date">{fmtDate(job.created_at)}</td>
+                  {/* 지역 (시도 축약) */}
+                  <td className="admin-td-date">{shortLocation(job.location)}</td>
+                  {/* 조회수 */}
                   <td className="admin-td-date">{(job.view_count || 0).toLocaleString()}</td>
+                  {/* 마감일 */}
+                  <td className="admin-td-date">
+                    {(() => {
+                      const label = formatDeadline(job.deadline);
+                      const isClosed = label === "마감";
+                      const isAlways = label === "상시";
+                      return (
+                        <span style={{
+                          color: isClosed ? "#bbb" : isAlways ? "#888" : "#5f0080",
+                          fontWeight: isClosed || isAlways ? 400 : 600,
+                        }}>{label}</span>
+                      );
+                    })()}
+                  </td>
+                  {/* 상태 */}
                   <td>
                     <select
                       className={`admin-status-select admin-status-${
