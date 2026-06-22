@@ -67,8 +67,8 @@ function calcCareerYears(startDate: string | null): string | null {
   const months =
     (now.getFullYear() - start.getFullYear()) * 12 +
     (now.getMonth() - start.getMonth());
+  if (months < 12) return `${Math.max(months, 1)}개월`;
   const y = Math.floor(months / 12);
-  if (y < 1) return "1년차";
   return `${y}년`;
 }
 
@@ -313,7 +313,7 @@ function AdminMembersPageInner() {
                 const age = calcAge(m.birth_date);
                 const gender = genderLabel(m.gender);
                 const careerYears = m.career_type === "EXPERIENCED"
-                  ? calcCareerYears(m.recent_start_date)
+                  ? `경력 ${calcCareerYears(m.recent_start_date)}`
                   : m.career_type === "NEWCOMER" ? "신입" : null;
 
                 return (
@@ -368,15 +368,22 @@ function AdminMembersPageInner() {
                       </div>
                     </td>
 
-                    {/* 지역 */}
+                    {/* 지역: 시도 / 시군구 */}
                     <td className="admin-td-date">
-                      {m.region_sido ? `${shortSido(m.region_sido)}${m.region_sigungu ? " " + m.region_sigungu : ""}` : "-"}
+                      {m.region_sido ? (
+                        <>
+                          <div>{shortSido(m.region_sido)}</div>
+                          {m.region_sigungu && (
+                            <div style={{ marginTop: 2, fontSize: 12, color: "#888" }}>{m.region_sigungu}</div>
+                          )}
+                        </>
+                      ) : "-"}
                     </td>
 
                     {/* 직군: 대분류 / 세부 */}
                     <td className="admin-td-date">
                       <div>{m.job_type === "STORE" ? "매장직" : m.job_type === "OFFICE" ? "사무직" : "-"}</div>
-                      <div style={{ marginTop: 2, fontSize: 12, color: "#888" }}>
+                      <div style={{ marginTop: 2, fontSize: 12, color: "#888", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis" }} title={m.office_job_areas?.[0] || ""}>
                         {m.office_job_areas && m.office_job_areas.length > 0 ? m.office_job_areas[0] : "-"}
                       </div>
                     </td>
