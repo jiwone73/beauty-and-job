@@ -67,12 +67,9 @@ function calcCareerYears(startDate: string | null): string | null {
   const months =
     (now.getFullYear() - start.getFullYear()) * 12 +
     (now.getMonth() - start.getMonth());
-  if (months < 1) return "1개월 미만";
   const y = Math.floor(months / 12);
-  const m = months % 12;
-  if (y === 0) return `${m}개월`;
-  if (m === 0) return `${y}년`;
-  return `${y}년 ${m}개월`;
+  if (y < 1) return "1년차";
+  return `${y}년`;
 }
 
 type Member = {
@@ -293,7 +290,8 @@ function AdminMembersPageInner() {
         ) : filtered.length === 0 ? (
           <div className="admin-empty">검색 결과가 없습니다.</div>
         ) : (
-          <table className="admin-table">
+          <div style={{ overflowX: "auto" }}>
+          <table className="admin-table" style={{ minWidth: 980, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
                 <th style={{ width: 36, textAlign: "center" }}>
@@ -306,7 +304,7 @@ function AdminMembersPageInner() {
                 <th>연락처</th>
                 <th>최근경력</th>
                 <th>최초로그인</th>
-                <th>이력서</th>
+                <th>이력서/포트폴리오</th>
                 <th>상태</th>
               </tr>
             </thead>
@@ -357,7 +355,7 @@ function AdminMembersPageInner() {
                               <span style={{ fontWeight: 600 }}>{m.name}</span>
                             )}
                             {gender && (
-                              <span style={{ fontSize: 11, color: "#fff", background: gender === "남" ? "#7c8fcc" : "#e07fa0", borderRadius: 4, padding: "1px 5px", fontWeight: 600 }}>{gender}</span>
+                              <span style={{ fontSize: 12, color: "#888" }}>{gender}</span>
                             )}
                           </div>
                           {/* 2행: 나이 · 경력 */}
@@ -385,7 +383,7 @@ function AdminMembersPageInner() {
 
                     {/* 연락처: 이메일 / 전화 */}
                     <td className="admin-td-date">
-                      <div>{m.email || "-"}</div>
+                      <div style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis" }} title={m.email || ""}>{m.email || "-"}</div>
                       <div style={{ marginTop: 4, color: "#888" }}>{m.phone || "-"}</div>
                     </td>
 
@@ -393,7 +391,7 @@ function AdminMembersPageInner() {
                     <td className="admin-td-date">
                       {m.recent_company ? (
                         <>
-                          <div style={{ fontWeight: 500 }}>{m.recent_company}</div>
+                          <div style={{ fontWeight: 500, maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={m.recent_company}>{m.recent_company}</div>
                           <div style={{ marginTop: 2, fontSize: 12, color: "#888" }}>
                             {fmtYearMonth(m.recent_start_date)}
                             {m.recent_is_current
@@ -468,6 +466,7 @@ function AdminMembersPageInner() {
               })}
             </tbody>
           </table>
+          </div>
         )}
 
         {totalPages > 1 && (
