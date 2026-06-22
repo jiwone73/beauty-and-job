@@ -34,6 +34,7 @@ type Job = {
   categories: string[] | null;
   created_at: string;
   deadline: string | null;
+  product_type: string;
 };
 const EXP_LABEL: Record<string, string> = {
   NEW: "신입",
@@ -58,6 +59,13 @@ function shortLocation(loc: string | null) {
   const sido = SIDO_SHORT[parts[0]] || parts[0];
   const sigungu = parts[1] || "";
   return `${sido}${sigungu ? " " + sigungu : ""}`;
+}
+function productBadge(type: string | null) {
+  const t = type || "FREE";
+  if (t === "TOP") return { label: "상단노출", bg: "#f3e8ff", color: "#5f0080" };
+  if (t === "PREMIUM") return { label: "프리미엄", bg: "#5f0080", color: "#fff" };
+  if (t === "FREE") return { label: "무료", bg: "#f0f0f0", color: "#999" };
+  return { label: t, bg: "#f3e8ff", color: "#5f0080" };
 }
 function AdminJobsPageInner() {
   const searchParams = useSearchParams();
@@ -248,7 +256,8 @@ function AdminJobsPageInner() {
         {loading ? (
           <div className="admin-empty">불러오는 중...</div>
         ) : (
-          <table className="admin-table">
+          <div style={{ overflowX: "auto" }}>
+          <table className="admin-table" style={{ minWidth: 1100, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
                 <th style={{ width: 40 }}>
@@ -256,6 +265,7 @@ function AdminJobsPageInner() {
                 </th>
                 <th>등록일</th>
                 <th>유형</th>
+                <th>등록상품</th>
                 <th>기업</th>
                 <th>공고명</th>
                 <th>직군</th>
@@ -280,6 +290,13 @@ function AdminJobsPageInner() {
                     <span className={`jobs-type-badge ${job.job_type === "STORE" ? "store" : "corp"}`}>
                       {job.job_type === "STORE" ? "🏪 매장" : "🏢 기업"}
                     </span>
+                  </td>
+                  {/* 등록상품 */}
+                  <td>
+                    {(() => {
+                      const b = productBadge(job.product_type);
+                      return <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, background: b.bg, color: b.color, whiteSpace: "nowrap" }}>{b.label}</span>;
+                    })()}
                   </td>
                   {/* 기업 */}
                   <td>
@@ -306,10 +323,15 @@ function AdminJobsPageInner() {
                       </span>
                     </div>
                   </td>
-                  {/* 공고명 */}
+                  {/* 공고명 (길면 2줄) */}
                   <td>
                     <span className="admin-td-title"
-                      style={{color:"#5f0080", cursor:"pointer", fontWeight:600}}
+                      title={job.title}
+                      style={{
+                        color: "#5f0080", cursor: "pointer", fontWeight: 600,
+                        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+                        overflow: "hidden", whiteSpace: "normal", maxWidth: 240, lineHeight: 1.35,
+                      }}
                       onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank")}>
                       {job.title}
                     </span>
@@ -360,6 +382,7 @@ function AdminJobsPageInner() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
         {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
