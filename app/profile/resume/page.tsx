@@ -319,8 +319,8 @@ const handlePrint = async () => {
 
   // 모바일 완성도 (사이드바와 동일 기준)
   const progressItems = resumeType === "office"
-    ? [!!(phone && emailLocal), !!(introLocal.trim() && coreLocal.trim()), careers.length > 0, educations.length > 0, skills.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0]
-    : [!!(phone && emailLocal), !!introLocal.trim(), careers.length > 0, educations.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0];
+    ? [!!(phone && emailLocal), careers.length > 0, educations.length > 0, skills.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0]
+    : [!!(phone && emailLocal), careers.length > 0, educations.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0];
   const progressRate = Math.round((progressItems.filter(Boolean).length / progressItems.length) * 100);
 
   return (
@@ -371,7 +371,6 @@ const handlePrint = async () => {
           {(() => {
             const sections = resumeType === "office" ? [
               { id: "basic", label: "기본 정보", done: !!(phone && emailLocal) },
-              { id: "intro", label: "소개 · 핵심역량", done: !!(introLocal.trim() && coreLocal.trim()) },
               { id: "career", label: "경력", done: careers.length > 0 },
               { id: "education", label: "학력", done: educations.length > 0 },
               { id: "skill", label: "스킬", done: skills.length > 0 },
@@ -382,7 +381,6 @@ const handlePrint = async () => {
               { id: "link", label: "링크", done: links.length > 0 },
             ] : [
               { id: "basic", label: "기본 정보", done: !!(phone && emailLocal) },
-              { id: "intro", label: "소개", done: !!introLocal.trim() },
               { id: "career", label: "경력 (근무 매장)", done: careers.length > 0 },
               { id: "education", label: "학력", done: educations.length > 0 },
               { id: "language", label: "어학", done: languages.length > 0 },
@@ -474,35 +472,7 @@ const handlePrint = async () => {
             </div>
           </section>
 
-          <section id="section-intro" className="resume-section">
-            <div className="resume-section-head">
-              <h2 className="resume-section-title">소개 & 핵심역량</h2>
-            </div>
-            <label className="resume-field-label">소개 <span className="resume-required">* (0/300자)</span></label>
-            <textarea
-              className="resume-textarea"
-              placeholder={resumeType === "office"
-                ? `채용 담당자가 가장 먼저 읽게되는 글이에요.\n예시) 소비자 관점과 브랜드 관점을 모두 이해하는 3년차 뷰티 마케터입니다.`
-                : `나를 표현하는 한 줄 소개를 작성해보세요.\n예시) 섬세한 손기술과 트렌드 감각을 갖춘 5년 경력 네일 아티스트입니다.`}
-              maxLength={300}
-              value={introLocal}
-              onChange={(e) => setIntroLocal(e.target.value)}
-              onBlur={() => setIntro(introLocal)}
-            />
-            {resumeType === "office" && (
-              <>
-                <label className="resume-field-label">핵심 역량 <span className="resume-required">* (0/300자)</span></label>
-                <textarea
-                  className="resume-textarea"
-                  placeholder={`핵심역량 3~5가지를 정리해보세요`}
-                  maxLength={300}
-                  value={coreLocal}
-                  onChange={(e) => setCoreLocal(e.target.value)}
-                  onBlur={() => setCoreCompetencies(coreLocal)}
-                />
-              </>
-            )}
-          </section>
+          
 
           <section id="section-career" className="resume-section">
             <div className="resume-section-head">
@@ -927,8 +897,8 @@ const handlePrint = async () => {
                 jobDisplay={jobDisplay}
                 phone={phone}
                 email={emailLocal || email}
-                intro={introLocal}
-                coreCompetencies={coreLocal}
+                intro=""
+                coreCompetencies=""
                 careers={careers}
                 educations={educations}
                 skills={skills}
