@@ -39,10 +39,12 @@ const mapResume = (data: any) => {
 export default function ResumePreviewModal({
   resumeId,
   jobCategory,
+  coverLetter,
   onClose,
 }: {
   resumeId: string;
   jobCategory?: string | null;
+  coverLetter?: string | null;
   onClose: () => void;
 }) {
   const [data, setData] = useState<any>(null);
@@ -51,6 +53,7 @@ export default function ResumePreviewModal({
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!resumeId) { setLoading(false); return; }
     const token = localStorage.getItem("admin_token");
     setLoading(true);
     fetch(`/api/admin/resumes/${resumeId}`, {
@@ -135,6 +138,12 @@ export default function ResumePreviewModal({
           </div>
         </div>
         <div className="rp-modal-body">
+          {coverLetter && coverLetter.trim() && (
+            <div style={{ background: "#faf5ff", border: "1px solid #ecdcff", borderRadius: 10, padding: "16px 18px", margin: "0 0 18px" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 8 }}>지원 시 제출한 자기소개서</div>
+              <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
+            </div>
+          )}
           {loading ? (
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
           ) : data ? (

@@ -33,6 +33,7 @@ type App = {
   position: string;
   company_name: string;
   job_category: string | null;
+  cover_letter: string | null;
 };
 
 function fmtDate(d: string | null) {
@@ -157,7 +158,7 @@ function AdminApplicationsPageInner() {
                           {(a.applicant_name || "?").charAt(0)}
                         </div>
                       )}
-                      {a.resume_id ? (
+                      {a.resume_id || a.cover_letter ? (
                         <button
                           onClick={() => setSelected(a)}
                           className="admin-td-brand"
@@ -193,10 +194,11 @@ function AdminApplicationsPageInner() {
         )}
         {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
-      {selected && selected.resume_id && (
+      {selected && (selected.resume_id || selected.cover_letter) && (
         <ResumePreviewModal
-          resumeId={selected.resume_id}
+          resumeId={selected.resume_id || ""}
           jobCategory={selected.job_category}
+          coverLetter={selected.cover_letter}
           onClose={() => setSelected(null)}
         />
       )}
