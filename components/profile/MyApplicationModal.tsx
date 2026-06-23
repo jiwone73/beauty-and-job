@@ -86,10 +86,35 @@ export default function MyApplicationModal({
       await new Promise((r) => setTimeout(r, 300));
       const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
       const imgData = canvas.toDataURL("image/png");
-      const w = window.open("", "_blank");
-      if (!w) return;
-      w.document.write(`<html><head><title>이력서 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" onload="window.print();window.close()" /></body></html>`);
-      w.document.close();
+
+      // 팝업 차단을 피하기 위해 숨은 iframe으로 인쇄
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "fixed";
+      iframe.style.right = "0";
+      iframe.style.bottom = "0";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "0";
+      document.body.appendChild(iframe);
+
+      const doc = iframe.contentWindow?.document;
+      if (!doc) { document.body.removeChild(iframe); return; }
+      doc.open();
+      doc.write(`<html><head><title>이력서 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" /></body></html>`);
+      doc.close();
+
+      const img = doc.querySelector("img");
+      const triggerPrint = () => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        // 인쇄 대화상자 닫힌 뒤 정리
+        setTimeout(() => { if (iframe.parentNode) document.body.removeChild(iframe); }, 1000);
+      };
+      if (img && !img.complete) {
+        img.onload = triggerPrint;
+      } else {
+        setTimeout(triggerPrint, 200);
+      }
     } catch (e) {
       alert("인쇄 준비 중 오류가 발생했습니다.");
     }
