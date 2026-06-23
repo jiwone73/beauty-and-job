@@ -40,11 +40,13 @@ export default function ResumePreviewModal({
   resumeId,
   jobCategory,
   coverLetter,
+  snapshot,
   onClose,
 }: {
   resumeId: string;
   jobCategory?: string | null;
   coverLetter?: string | null;
+  snapshot?: any | null;
   onClose: () => void;
 }) {
   const [data, setData] = useState<any>(null);
@@ -53,6 +55,12 @@ export default function ResumePreviewModal({
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // 지원 시점 스냅샷이 있으면 그대로 렌더 (박제된 이력서)
+    if (snapshot) {
+      setData(snapshot);
+      setLoading(false);
+      return;
+    }
     if (!resumeId) { setLoading(false); return; }
     const token = localStorage.getItem("admin_token");
     setLoading(true);
@@ -63,7 +71,7 @@ export default function ResumePreviewModal({
       .then((res) => { if (res.success) setData(res.data); })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [resumeId]);
+  }, [resumeId, snapshot]);
 
   const handleDownloadPdf = async () => {
     if (!previewRef.current) return;
@@ -122,7 +130,7 @@ export default function ResumePreviewModal({
     <div className="rp-modal-overlay" onClick={onClose}>
       <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
         <div className="rp-modal-header">
-          <h2 className="rp-modal-title">이력서 미리보기</h2>
+          <h2 className="rp-modal-title">이력서 미리보기{snapshot ? " (지원 시점)" : ""}</h2>
           <div className="rp-modal-actions">
             <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || loading}>
               <Download size={16} />

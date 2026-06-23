@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   try {
     const result = await client.query(`
       SELECT
-        a.id, a.status, a.applied_at, a.cover_letter,
+        a.id, a.status, a.applied_at, a.cover_letter, a.resume_snapshot,
         u.name AS applicant_name,
         u.avatar_url,
         COALESCE(a.resume_id, (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1)) AS resume_id,

@@ -34,6 +34,7 @@ type App = {
   company_name: string;
   job_category: string | null;
   cover_letter: string | null;
+  resume_snapshot: any | null;
 };
 
 function fmtDate(d: string | null) {
@@ -194,11 +195,12 @@ function AdminApplicationsPageInner() {
         )}
         {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
-      {selected && (selected.resume_id || selected.cover_letter) && (
+      {selected && (selected.resume_id || selected.cover_letter || selected.resume_snapshot) && (
         <ResumePreviewModal
           resumeId={selected.resume_id || ""}
           jobCategory={selected.job_category}
           coverLetter={selected.cover_letter}
+          snapshot={selected.resume_snapshot}
           onClose={() => setSelected(null)}
         />
       )}
