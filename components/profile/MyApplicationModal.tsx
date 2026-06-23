@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ResumePreview from "@/components/profile/ResumePreview";
-import { X } from "lucide-react";
+import { X, Download, Printer } from "lucide-react";
 
 const mapResume = (data: any) => {
   const p = data?.profile || {};
@@ -45,6 +45,55 @@ export default function MyApplicationModal({
 }) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadPdf = async () => {
+    if (!previewRef.current) return;
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const jsPDF = (await import("jspdf")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let heightLeft = pdfHeight; let position = 0;
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      const nm = data?.user_name;
+      pdf.save(nm ? `${nm}_이력서.pdf` : "이력서.pdf");
+    } catch (e) {
+      alert("다운로드 중 오류가 발생했습니다.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handlePrint = async () => {
+    if (!previewRef.current) return;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const imgData = canvas.toDataURL("image/png");
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.write(`<html><head><title>이력서 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" onload="window.print();window.close()" /></body></html>`);
+      w.document.close();
+    } catch (e) {
+      alert("인쇄 준비 중 오류가 발생했습니다.");
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -71,7 +120,17 @@ export default function MyApplicationModal({
           <h2 className="rp-modal-title">
             내 지원서{data?.is_snapshot ? " (지원 시점)" : ""}
           </h2>
-          <button className="rp-modal-close" onClick={onClose}><X size={20} /></button>
+          <div className="rp-modal-actions">
+            <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || loading}>
+              <Download size={16} />
+              <span>{isDownloading ? "저장 중..." : "PDF 다운로드"}</span>
+            </button>
+            <button className="resume-action-btn" onClick={handlePrint}>
+              <Printer size={16} />
+              <span>인쇄</span>
+            </button>
+            <button className="rp-modal-close" onClick={onClose}><X size={20} /></button>
+          </div>
         </div>
         <div className="rp-modal-body">
           {loading ? (
