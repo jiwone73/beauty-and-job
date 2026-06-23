@@ -225,9 +225,29 @@ export default function JobDetailPage() {
   const [dbApplied, setDbApplied] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
+  const [coverLetter, setCoverLetter] = useState("");
+  const [coverLoaded, setCoverLoaded] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [applying, setApplying] = useState(false);
   const { isLoggedIn, userName } = useAuthStore();
   const { apply, isApplied } = useApplicationStore();
   const alreadyApplied = job ? isApplied(String(job.id)) : false;
+
+  // 지원 모달 열릴 때 최근 자기소개서 1회 불러오기
+  useEffect(() => {
+    if (!showApplyModal || coverLoaded) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/users/me/last-cover-letter", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.data?.cover_letter) setCoverLetter(d.data.cover_letter);
+      })
+      .catch(() => {})
+      .finally(() => setCoverLoaded(true));
+  }, [showApplyModal, coverLoaded]);
   const { toggle: toggleBookmark, isBookmarked } = useBookmarkStore();
   if (!job) {
     return (
@@ -620,60 +640,110 @@ export default function JobDetailPage() {
 
       {/* 지원하기 모달 */}
       {showApplyModal && (
-        <div className="cv-overlay" onClick={() => setShowApplyModal(false)}>
+        <div className="cv-overlay" onClick={() => { setShowApplyModal(false); setShowPreview(false); }}>
           <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
             <div className="cv-header">
               <div style={{ width: 36 }} />
               <h2 className="cv-title">지원하기</h2>
-              <button className="cv-close" onClick={() => setShowApplyModal(false)}>✕</button>
+              <button className="cv-close" onClick={() => { setShowApplyModal(false); setShowPreview(false); }}>✕</button>
             </div>
             <div className="cv-body">
               <div className="apply-modal-job">
                 <strong>{job.brand}</strong>
                 <p>{job.title}</p>
               </div>
-              <p className="cv-desc">
-                현재 프로필로 지원하시겠어요?<br />
-                프로필이 완성될수록 합격률이 높아져요.
-              </p>
-              <Link href="/profile" className="apply-modal-profile-btn">
-                프로필 완성하기 →
-              </Link>
-              <button className="cv-btn-primary" onClick={async () => {
-                const token = localStorage.getItem("access_token");
-                if (!token) {
-                  alert("로그인이 필요합니다.");
-                  return;
-                }
-                try {
-                  const res = await fetch(`/api/jobs/${params.id}/apply`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({}),
-                  });
-                  const data = await res.json();
-                  if (!data.success) {
-                    if (data.error?.code === "APP_002") {
-                      if (confirm(`${data.error.message}\n\n지금 프로필을 완성하시겠어요?`)) {
-                        router.push("/profile");
-                      }
-                      return;
-                    }
-                    alert(data.error?.message || "지원에 실패했습니다.");
-                    return;
-                  }
-                  alert("지원이 완료되었습니다!");
-                  setShowApplyModal(false);
-                } catch (e) {
-                  console.error(e);
-                  alert("지원 중 오류가 발생했습니다.");
-                }
-              }}>
-                현재 프로필로 지원하기
-              </button>
+
+              {!showPreview ? (
+                <>
+                  {coverLetter && coverLoaded && (
+                    <div style={{ background: "#fff8e1", border: "1px solid #ffe082", borderRadius: 8, padding: "10px 12px", fontSize: 13, color: "#8a6d00", marginBottom: 12, lineHeight: 1.5 }}>
+                      💡 이전에 작성한 자기소개서를 불러왔어요. <strong>지원하는 회사·포지션에 맞게 꼭 수정</strong>해주세요.
+                    </div>
+                  )}
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#333", marginBottom: 6 }}>
+                    자기소개서
+                  </label>
+                  <textarea
+                    value={coverLetter}
+                    onChange={(e) => setCoverLetter(e.target.value)}
+                    placeholder={`이 회사·포지션에 지원하는 이유와 본인의 강점을 작성해주세요.\n예) OO살롱 헤어디자이너 포지션에 지원합니다. 5년간 커트·펌을 전문으로...`}
+                    maxLength={2000}
+                    style={{ width: "100%", minHeight: 180, padding: 12, borderRadius: 8, border: "1px solid #ddd", fontSize: 14, lineHeight: 1.6, resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }}
+                  />
+                  <div style={{ textAlign: "right", fontSize: 12, color: "#aaa", marginTop: 4 }}>
+                    {coverLetter.length}/2000자
+                  </div>
+
+                  <Link href="/profile" className="apply-modal-profile-btn">
+                    프로필 완성하기 →
+                  </Link>
+                  <button
+                    className="cv-btn-primary"
+                    onClick={() => setShowPreview(true)}
+                  >
+                    미리보기
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div style={{ background: "#faf5ff", borderRadius: 8, padding: 16, marginBottom: 16 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "#5f0080", marginBottom: 8 }}>전송될 자기소개서</div>
+                    {coverLetter.trim() ? (
+                      <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
+                    ) : (
+                      <p style={{ fontSize: 13, color: "#aaa", margin: 0 }}>자기소개서 없이 프로필(이력서)만 제출됩니다.</p>
+                    )}
+                  </div>
+                  <p className="cv-desc" style={{ marginBottom: 12 }}>
+                    이 내용과 함께 현재 이력서가 전송됩니다.<br />
+                    제출 후에는 수정할 수 없어요.
+                  </p>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button
+                      onClick={() => setShowPreview(false)}
+                      style={{ flex: 1, padding: "13px 0", borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#555", fontSize: 15, fontWeight: 600, cursor: "pointer" }}
+                    >
+                      수정
+                    </button>
+                    <button
+                      className="cv-btn-primary"
+                      style={{ flex: 1, marginTop: 0 }}
+                      disabled={applying}
+                      onClick={async () => {
+                        const token = localStorage.getItem("access_token");
+                        if (!token) { alert("로그인이 필요합니다."); return; }
+                        setApplying(true);
+                        try {
+                          const res = await fetch(`/api/jobs/${params.id}/apply`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                            body: JSON.stringify({ cover_letter: coverLetter.trim() || null }),
+                          });
+                          const data = await res.json();
+                          if (!data.success) {
+                            if (data.error?.code === "APP_002") {
+                              if (confirm(`${data.error.message}\n\n지금 프로필을 완성하시겠어요?`)) router.push("/profile");
+                              return;
+                            }
+                            alert(data.error?.message || "지원에 실패했습니다.");
+                            return;
+                          }
+                          alert("지원이 완료되었습니다!");
+                          setShowApplyModal(false);
+                          setShowPreview(false);
+                        } catch (e) {
+                          console.error(e);
+                          alert("지원 중 오류가 발생했습니다.");
+                        } finally {
+                          setApplying(false);
+                        }
+                      }}
+                    >
+                      {applying ? "지원 중..." : "지원하기"}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
