@@ -13,6 +13,7 @@ import JobGroupField from "@/components/JobGroupField";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import NotificationModal from "@/components/profile/NotificationModal";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
+import MyApplicationModal from "@/components/profile/MyApplicationModal";
 import { validateBirth } from "@/lib/validateBirth";
 
 
@@ -842,6 +843,7 @@ function AppliedTab() {
   const [apps, setApps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [viewAppId, setViewAppId] = useState<string | null>(null);
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) { setLoading(false); return; }
@@ -912,6 +914,12 @@ function AppliedTab() {
                 <span className="applied-brand">{app.brand_name || app.company_name}</span>
                 <h3 className="applied-title">{app.job_title}</h3>
                 <span className="applied-date">지원일 {dateStr}</span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setViewAppId(app.id); }}
+                  style={{ marginTop: 8, padding: "5px 12px", borderRadius: 6, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
+                >
+                  내 지원서 보기
+                </button>
               </div>
               <span className={`applied-status ${statusStyle[app.status] || "applied-status-review"}`}>
                 {statusLabel[app.status] || app.status}
@@ -920,6 +928,9 @@ function AppliedTab() {
           );
         })}
       </div>
+      {viewAppId && (
+        <MyApplicationModal applicationId={viewAppId} onClose={() => setViewAppId(null)} />
+      )}
     </div>
   );
 }
