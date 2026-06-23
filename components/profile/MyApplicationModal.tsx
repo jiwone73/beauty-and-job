@@ -115,8 +115,8 @@ export default function MyApplicationModal({
 
   return (
     <div className="rp-modal-overlay" onClick={onClose}>
-      <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="rp-modal-header">
+      <div className="rp-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720, width: "94%", maxHeight: "92vh", display: "flex", flexDirection: "column" }}>
+        <div className="rp-modal-header" style={{ flexShrink: 0 }}>
           <h2 className="rp-modal-title">
             내 지원서{data?.is_snapshot ? " (지원 시점)" : ""}
           </h2>
@@ -132,7 +132,7 @@ export default function MyApplicationModal({
             <button className="rp-modal-close" onClick={onClose}><X size={20} /></button>
           </div>
         </div>
-        <div className="rp-modal-body">
+        <div className="rp-modal-body" style={{ overflowY: "auto", flex: 1 }}>
           {loading ? (
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
           ) : data ? (
@@ -147,6 +147,7 @@ export default function MyApplicationModal({
                 </div>
               )}
               <ResumePreview
+                ref={previewRef}
                 name={data.user_name || ""}
                 birthDisplay={birthDisplay}
                 jobDisplay={data.user_job_type === "STORE" ? "매장·기술직" : "기업·사무직"}
