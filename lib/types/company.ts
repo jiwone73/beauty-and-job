@@ -24,6 +24,7 @@ export interface CompanyApplication {
   status: ApplicationStatus;
   applied_at: string;
   viewed_at: string | null;
+  cover_letter: string | null;
   user_id: string;
   user_name: string;
   user_phone?: string;

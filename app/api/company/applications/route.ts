@@ -33,7 +33,8 @@ export async function GET(req: NextRequest) {
 
   const result = await pool.query(
     `SELECT
-       a.id, a.status, a.applied_at, a.viewed_at,
+       a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter,
+       COALESCE(a.resume_id, (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1)) AS resume_id,
        u.name AS user_name,
        u.email AS user_email,
        u.phone AS user_phone,

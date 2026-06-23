@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
 import { sendApplicationCompleteEmail, sendNewApplicantEmail } from '@/lib/email'
+import { buildResumeSnapshot } from '@/lib/resumeSnapshot'
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -73,11 +74,19 @@ export async function POST(
     )
     if (own.rowCount && own.rowCount > 0) finalResumeId = resume_id
   }
+  // 지원 시점 이력서 박제 (스냅샷)
+  let snapshot = null
+  try {
+    snapshot = await buildResumeSnapshot(auth!.sub, finalResumeId)
+  } catch (e) {
+    console.error('[apply] 이력서 스냅샷 생성 실패', e)
+  }
+
   const result = await pool.query(
-    `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, status)
-     VALUES ($1, $2, $3, $4, 'APPLIED')
+    `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, resume_snapshot, status)
+     VALUES ($1, $2, $3, $4, $5, 'APPLIED')
      RETURNING id, status, applied_at`,
-    [jobPostingId, auth!.sub, finalResumeId, cover_letter || null]
+    [jobPostingId, auth!.sub, finalResumeId, cover_letter || null, snapshot ? JSON.stringify(snapshot) : null]
   )
   await pool.query(
     `UPDATE job_postings SET application_count = application_count + 1 WHERE id = $1`,
