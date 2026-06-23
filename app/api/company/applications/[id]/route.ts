@@ -12,7 +12,7 @@ export async function GET(
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
   const result = await pool.query(
-    `SELECT a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter, a.note,
+    `SELECT a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter, a.note, a.resume_snapshot,
             a.user_id, u.name AS user_name, u.email AS user_email, u.phone AS user_phone,
             u.job_type AS user_job_type, u.portfolio_url, u.portfolio_filename,
             u.avatar_url AS user_avatar_url, u.notification_settings,
@@ -65,7 +65,28 @@ export async function GET(
     })();
   }
 
-  const appUserId = result.rows[0].user_id;
+  const row = result.rows[0];
+  const snap = row.resume_snapshot;
+
+  // 지원 시점 스냅샷이 있으면 박제본을 그대로 반환 (현재 이력서 조회 생략)
+  if (snap && (snap.profile || snap.careers)) {
+    return ok({
+      ...row,
+      is_snapshot: true,
+      resume: {
+        profile: snap.profile || {},
+        careers: snap.careers || [],
+        educations: snap.educations || [],
+        experiences: snap.experiences || [],
+        languages: snap.languages || [],
+        links: snap.links || [],
+        certificates: snap.certificates || [],
+      },
+    });
+  }
+
+  // 스냅샷이 없는 옛 지원 건 → 현재 이력서로 폴백
+  const appUserId = row.user_id;
   const [profile, careers, educations, experiences, languages, links, certificates] = await Promise.all([
     pool.query(`SELECT * FROM user_profiles WHERE user_id = $1`, [appUserId]),
     pool.query(`SELECT * FROM user_careers WHERE user_id = $1 ORDER BY start_date DESC`, [appUserId]),
@@ -77,7 +98,8 @@ export async function GET(
   ]);
 
   return ok({
-    ...result.rows[0],
+    ...row,
+    is_snapshot: false,
     resume: {
       profile: profile.rows[0] || {},
       careers: careers.rows,
