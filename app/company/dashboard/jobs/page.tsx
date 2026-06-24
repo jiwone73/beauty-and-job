@@ -202,6 +202,7 @@ export default function CompanyJobsPage() {
                 <th>공고명</th>
                 <th>등록일</th>
                 <th>마감일</th>
+                <th>복사</th>
                 <th>지원자</th>
                 <th>조회수</th>
                 <th>상태</th>
@@ -250,6 +251,10 @@ export default function CompanyJobsPage() {
                       <button className="company-action-btn"
                         onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
                         <Edit size={13} />수정
+                      </button>
+                      <button className="company-action-btn"
+                        onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
+                        복사
                       </button>
                     </div>
                   </td>

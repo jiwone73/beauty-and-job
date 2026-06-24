@@ -8,6 +8,7 @@ import { companyMeApi } from "@/lib/api/company";
 function CompanyJobNewForm() {
   const searchParams = useSearchParams();
   const editId = searchParams?.get("id") || null;
+  const copyId = searchParams?.get("copy") || null;
   const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH" | null>(null);
 
   useEffect(() => {
@@ -38,7 +39,12 @@ function CompanyJobNewForm() {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
-    return data.success ? data.data : null;
+    if (!data.success) return null;
+    // 복사 모드: 마감일·상태 초기화
+    if (copyId) {
+      return { ...data.data, id: undefined, status: "DRAFT", deadline: null, created_at: undefined };
+    }
+    return data.data;
   };
 
   const onSubmit = async (payload: any, _status: "draft" | "publish") => {
@@ -61,7 +67,7 @@ function CompanyJobNewForm() {
     <CompanyLayout activePage="jobs">
       <JobPostForm
         mode="company"
-        editId={editId}
+        editId={editId || copyId}
         listHref="/company/dashboard/jobs"
         companyType={companyType}
         uploadImage={uploadImage}
