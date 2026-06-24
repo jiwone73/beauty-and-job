@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
-import { Search } from "lucide-react";
+import { Search, FileText, Paperclip } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
   APPLIED: "지원완료",
@@ -29,6 +29,11 @@ type App = {
   applied_at: string;
   applicant_name: string;
   avatar_url: string | null;
+  gender: string | null;
+  birth_date: string | null;
+  portfolio_url: string | null;
+  recent_career: { start_date: string | null; is_current: boolean } | null;
+  career_count: number;
   resume_id: string | null;
   position: string;
   company_name: string;
@@ -37,6 +42,28 @@ type App = {
   resume_snapshot: any | null;
 };
 
+function calcAge(birth: string | null) {
+  if (!birth) return null;
+  const b = new Date(birth);
+  const now = new Date();
+  let age = now.getFullYear() - b.getFullYear();
+  const m = now.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
+  return age;
+}
+function genderLabel(g: string | null) {
+  if (g === "MALE" || g === "남" || g === "남성" || g === "M") return "남";
+  if (g === "FEMALE" || g === "여" || g === "여성" || g === "F") return "여";
+  return null;
+}
+function calcCareerYears(startDate: string | null): string | null {
+  if (!startDate) return null;
+  const start = new Date(startDate);
+  const now = new Date();
+  const months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+  if (months < 12) return `${Math.max(months, 1)}개월`;
+  return `${Math.floor(months / 12)}년`;
+}
 function fmtDate(d: string | null) {
   if (!d) return "-";
   const dt = new Date(d);
@@ -136,60 +163,114 @@ function AdminApplicationsPageInner() {
         ) : (
           <table className="admin-table">
             <thead>
-              <tr><th>지원일</th><th>지원자</th><th>직군</th><th>기업</th><th>포지션</th><th>상태</th></tr>
+              <tr>
+                <th>지원자</th>
+                <th>직군</th>
+                <th>매장/기업명</th>
+                <th>공고명</th>
+                <th>지원일</th>
+                <th>이력서/포트폴리오</th>
+                <th>상태</th>
+              </tr>
             </thead>
             <tbody>
-              {filtered.map((a) => (
-                <tr key={a.id}>
-                  <td className="admin-td-date">{fmtDate(a.applied_at)}</td>
-                  <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      {a.avatar_url ? (
-                        <img
-                          src={a.avatar_url}
-                          alt={a.applicant_name}
-                          style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", border: "1px solid #f0f0f0", flexShrink: 0 }}
-                        />
-                      ) : (
-                        <div style={{
-                          width: 28, height: 28, borderRadius: "50%", background: "#f3e8ff",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 12, fontWeight: 700, color: "#7c3aed", flexShrink: 0
-                        }}>
-                          {(a.applicant_name || "?").charAt(0)}
+              {filtered.map((a) => {
+                const age = calcAge(a.birth_date);
+                const gender = genderLabel(a.gender);
+                const career = a.career_count > 0
+                  ? `경력 ${calcCareerYears(a.recent_career?.start_date || null) || ""}`
+                  : "신입";
+                const hasResume = a.resume_id || a.cover_letter || a.resume_snapshot;
+                return (
+                  <tr key={a.id}>
+                    {/* 지원자: 아바타 + 이름·성별 / 나이·경력 */}
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        {a.avatar_url ? (
+                          <img
+                            src={a.avatar_url}
+                            alt={a.applicant_name}
+                            style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", border: "1px solid #f0f0f0", flexShrink: 0 }}
+                          />
+                        ) : (
+                          <div style={{
+                            width: 32, height: 32, borderRadius: "50%", background: "#f3e8ff",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 13, fontWeight: 700, color: "#7c3aed", flexShrink: 0
+                          }}>
+                            {(a.applicant_name || "?").charAt(0)}
+                          </div>
+                        )}
+                        <div style={{ textAlign: "left" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                            {hasResume ? (
+                              <button
+                                onClick={() => setSelected(a)}
+                                style={{ color: "#5f0080", fontWeight: 600, background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}>
+                                {a.applicant_name}
+                              </button>
+                            ) : (
+                              <span style={{ fontWeight: 600 }}>{a.applicant_name}</span>
+                            )}
+                            {gender && <span style={{ fontSize: 12, color: "#888" }}>{gender}</span>}
+                          </div>
+                          <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                            {[age ? `${age}세` : null, career].filter(Boolean).join(" · ")}
+                          </div>
                         </div>
-                      )}
-                      {a.resume_id || a.cover_letter ? (
-                        <button
-                          onClick={() => setSelected(a)}
-                          className="admin-td-brand"
-                          style={{ color: "#5f0080", textDecoration: "none", background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}>
-                          {a.applicant_name}
-                        </button>
-                      ) : (
-                        <span className="admin-td-brand">{a.applicant_name}</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="admin-td-date">{a.job_category || "-"}</td>
-                  <td className="admin-td-brand">{a.company_name}</td>
-                  <td className="admin-td-title">{a.position}</td>
-                  <td>
-                    <select
-                      className={`admin-status-select`}
-                      value={STATUS_TO_LABEL[a.status]}
-                      onChange={(e) => changeStatus(a.id, e.target.value)}
-                    >
-                      <option value="지원완료">지원완료</option>
-                      <option value="열람됨">열람됨</option>
-                      <option value="면접예정">면접예정</option>
-                      <option value="합격">합격</option>
-                      <option value="불합격">불합격</option>
-                      <option value="지원취소">지원취소</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
+                      </div>
+                    </td>
+                    {/* 직군 */}
+                    <td className="admin-td-date">{a.job_category || "-"}</td>
+                    {/* 매장/기업명 */}
+                    <td className="admin-td-brand">{a.company_name}</td>
+                    {/* 공고명 */}
+                    <td className="admin-td-title">{a.position}</td>
+                    {/* 지원일 */}
+                    <td className="admin-td-date">{fmtDate(a.applied_at)}</td>
+                    {/* 이력서/포트폴리오 */}
+                    <td>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                        {hasResume ? (
+                          <button onClick={() => setSelected(a)} title="이력서 보기"
+                            style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 13, fontWeight: 500, padding: 0 }}>
+                            <FileText size={15} /><span>이력서</span>
+                          </button>
+                        ) : (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#ccc", fontSize: 13 }}>
+                            <FileText size={15} /><span>이력서</span>
+                          </span>
+                        )}
+                        {a.portfolio_url ? (
+                          <a href={a.portfolio_url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기"
+                            style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 12, textDecoration: "none", fontWeight: 500 }}>
+                            <Paperclip size={13} /><span>포트폴리오</span>
+                          </a>
+                        ) : (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 12 }}>
+                            <Paperclip size={13} /><span>포트폴리오</span>
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    {/* 상태 */}
+                    <td>
+                      <select
+                        className={`admin-status-select`}
+                        value={STATUS_TO_LABEL[a.status]}
+                        onChange={(e) => changeStatus(a.id, e.target.value)}
+                      >
+                        <option value="지원완료">지원완료</option>
+                        <option value="열람됨">열람됨</option>
+                        <option value="면접예정">면접예정</option>
+                        <option value="합격">합격</option>
+                        <option value="불합격">불합격</option>
+                        <option value="지원취소">지원취소</option>
+                      </select>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
@@ -200,7 +281,6 @@ function AdminApplicationsPageInner() {
           resumeId={selected.resume_id || ""}
           jobCategory={selected.job_category}
           coverLetter={selected.cover_letter}
-          snapshot={selected.resume_snapshot}
           onClose={() => setSelected(null)}
         />
       )}

@@ -15,6 +15,18 @@ export async function GET(req: NextRequest) {
         a.id, a.status, a.applied_at, a.cover_letter, a.resume_snapshot,
         u.name AS applicant_name,
         u.avatar_url,
+        u.gender,
+        u.birth_date,
+        (
+          SELECT json_build_object(
+            'company', uc.company,
+            'start_date', uc.start_date,
+            'is_current', (uc.end_date IS NULL)
+          )
+          FROM user_careers uc WHERE uc.user_id = u.id
+          ORDER BY uc.start_date DESC LIMIT 1
+        ) AS recent_career,
+        (SELECT COUNT(*)::int FROM user_careers uc WHERE uc.user_id = u.id) AS career_count,
         COALESCE(a.resume_id, (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1)) AS resume_id,
         jp.title AS position,
         c.company_name,
