@@ -74,3 +74,53 @@ export async function GET(
     },
   });
 }
+// 구직자 본인 지원 취소 (지원완료 상태에서만 가능)
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { auth, res: authErr } = requireAuth(req, "user");
+  if (authErr) return authErr;
+
+  const client = await pool.connect();
+  try {
+    // 본인 지원 건 + 현재 상태 확인
+    const check = await client.query(
+      `SELECT a.id, a.status, a.job_posting_id
+       FROM applications a
+       WHERE a.id = $1 AND a.user_id = $2`,
+      [params.id, auth!.sub]
+    );
+    if (check.rowCount === 0) {
+      return err("APP_002", "지원 내역을 찾을 수 없습니다.", 404);
+    }
+
+    const app = check.rows[0];
+    if (app.status !== "APPLIED") {
+      return err("APP_003", "기업이 이미 열람한 지원은 취소할 수 없습니다.", 400);
+    }
+
+    // 상태를 WITHDRAWN으로 변경
+    await client.query(
+      `UPDATE applications
+       SET status = 'WITHDRAWN'::app_status, status_updated_at = now(), updated_at = now()
+       WHERE id = $1`,
+      [params.id]
+    );
+
+    // 공고 지원자 수 감소 (0 미만 방지)
+    await client.query(
+      `UPDATE job_postings
+       SET application_count = GREATEST(application_count - 1, 0)
+       WHERE id = $1`,
+      [app.job_posting_id]
+    );
+
+    return ok({ success: true });
+  } catch (e: any) {
+    console.error("[application cancel]", e);
+    return err("APP_004", "지원 취소 중 오류가 발생했습니다: " + e.message, 500);
+  } finally {
+    client.release();
+  }
+}

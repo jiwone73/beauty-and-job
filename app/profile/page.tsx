@@ -877,6 +877,25 @@ function AppliedTab() {
     return () => { cancelled = true; };
   }, []);
 
+  const handleCancel = async (appId: string) => {
+    if (!confirm("이 지원을 취소하시겠어요? 취소하면 되돌릴 수 없어요.")) return;
+    const token = localStorage.getItem("access_token");
+    try {
+      const res = await fetch(`/api/users/me/applications/${appId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setApps((prev) => prev.map((a) => a.id === appId ? { ...a, status: "WITHDRAWN" } : a));
+      } else {
+        alert(data.error?.message || "지원 취소에 실패했어요.");
+      }
+    } catch {
+      alert("지원 취소 중 오류가 발생했어요.");
+    }
+  };
+
   const statusLabel: Record<string, string> = {
     APPLIED: "서류검토중", REVIEWING: "서류검토중", VIEWED: "열람됨",
     INTERVIEW: "면접예정", PASSED: "합격", REJECTED: "불합격", WITHDRAWN: "지원취소",
@@ -914,12 +933,22 @@ function AppliedTab() {
                 <span className="applied-brand">{app.brand_name || app.company_name}</span>
                 <h3 className="applied-title">{app.job_title}</h3>
                 <span className="applied-date">지원일 {dateStr}</span>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setViewAppId(app.id); }}
-                  style={{ marginTop: 8, padding: "5px 12px", borderRadius: 6, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
-                >
-                  내 지원서 보기
-                </button>
+                <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setViewAppId(app.id); }}
+                    style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
+                  >
+                    내 지원서 보기
+                  </button>
+                  {app.status === "APPLIED" && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleCancel(app.id); }}
+                      style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
+                    >
+                      지원 취소
+                    </button>
+                  )}
+                </div>
               </div>
               <span className={`applied-status ${statusStyle[app.status] || "applied-status-review"}`}>
                 {statusLabel[app.status] || app.status}
