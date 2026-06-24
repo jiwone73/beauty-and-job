@@ -2,7 +2,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, X, FileText, Bookmark, Paperclip } from "lucide-react";
-import { buildMemberSubline } from "@/lib/memberFormat";
+import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ResumePreview from "@/components/profile/ResumePreview";
@@ -247,17 +247,29 @@ function ApplicantsContent() {
               {filtered.map((a) => (
                 <tr key={a.id}>
                   <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div className="talent-avatar" style={{ width: 32, height: 32, fontSize: 13, flexShrink: 0, overflow: "hidden" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div className="talent-avatar" style={{ width: 40, height: 40, fontSize: 14, flexShrink: 0, overflow: "hidden" }}>
                         {(a as any).user_avatar_url
                           ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           : (a.user_name || "?").slice(0, 1)}
                       </div>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
-                        <span className="company-td-name" style={{ cursor: "pointer", color: "#5f0080", fontWeight: 600 }}
-                          onClick={() => setSelected(a)}>{a.user_name}</span>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                          <span style={{ cursor: "pointer", color: "#5f0080", fontWeight: 600, fontSize: 14 }}
+                            onClick={() => setSelected(a)}>{a.user_name}</span>
+                          {genderLabel((a as any).user_gender) && (
+                            <span style={{ fontSize: 11, fontWeight: 400, color: "#999" }}>{genderLabel((a as any).user_gender)}</span>
+                          )}
+                        </div>
                         <span style={{ fontSize: 12, color: "#888" }}>
-                          {buildMemberSubline((a as any).user_gender, (a as any).user_birth_date, (a as any).career_type, (a as any).recent_start_date)}
+                          {(() => {
+                            const age = calcAge((a as any).user_birth_date);
+                            const ct = (a as any).career_type;
+                            const career = ct === "NEWCOMER"
+                              ? "신입"
+                              : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : "경력"; })();
+                            return [age != null ? `${age}세` : null, career].filter(Boolean).join(" · ");
+                          })()}
                         </span>
                       </div>
                     </div>
