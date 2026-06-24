@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import {
-  Users, Plus, Search, Edit, X, Trash2, Copy
+  Users, Plus, Search, Edit, X, Trash2, Copy, Ban
 } from "lucide-react";
 import { companyJobsApi } from "@/lib/api/company";
 import type { CompanyJob, JobStatus } from "@/lib/types/company";
@@ -240,7 +240,7 @@ export default function CompanyJobsPage() {
                     <div style={{display:"flex", gap:"6px", justifyContent:"center"}}>
                       {job.status === "ACTIVE" && (
                         <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:13, fontWeight:500, padding:"2px 4px"}}
-                          onClick={() => handleClose(job.id)}>마감</button>
+                          onClick={() => handleClose(job.id)}><Ban size={13} />마감</button>
                       )}
                       <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#5f0080", fontSize:13, fontWeight:500, padding:"2px 4px"}}
                         onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
