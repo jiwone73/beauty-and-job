@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import {
-  Users, Plus, Search, Edit, X, Trash2
+  Users, Plus, Search, Edit, X, Trash2, Copy
 } from "lucide-react";
 import { companyJobsApi } from "@/lib/api/company";
 import type { CompanyJob, JobStatus } from "@/lib/types/company";
@@ -234,27 +234,22 @@ export default function CompanyJobsPage() {
                     </Link>
                   </td>
                   <td className="company-td-sub">{job.view_count}</td>
-                  <td>
-                    <span className={`company-badge ${
-                      job.status === "ACTIVE" ? "company-badge-success" :
-                      job.status === "CLOSED" ? "company-badge-default" : "company-badge-warn"
-                    }`}>
-                      {STATUS_LABEL[job.status]}
-                    </span>
+                  <td style={{ color: job.status === "ACTIVE" ? "#10b981" : job.status === "CLOSED" ? "#888" : "#f59e0b", fontWeight: 500, fontSize: 13 }}>
+                    {STATUS_LABEL[job.status]}
                   </td>
                   <td>
                     <div style={{display:"flex", gap:"6px"}}>
                       {job.status === "ACTIVE" && (
-                        <button className="company-action-btn secondary"
+                        <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:13, fontWeight:500, padding:"2px 4px"}}
                           onClick={() => handleClose(job.id)}>마감</button>
                       )}
-                      <button className="company-action-btn"
+                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#5f0080", fontSize:13, fontWeight:500, padding:"2px 4px"}}
                         onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
                         <Edit size={13} />수정
                       </button>
-                      <button className="company-action-btn"
+                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#5f0080", fontSize:13, fontWeight:500, padding:"2px 4px"}}
                         onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
-                        복사
+                        <Copy size={13} />복사
                       </button>
                     </div>
                   </td>
