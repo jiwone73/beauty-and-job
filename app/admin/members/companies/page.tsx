@@ -376,12 +376,12 @@ function AdminCompaniesContent() {
                     <div style={{ marginTop: 4 }}>
                       {c.business_license_url ? (
                         <button onClick={() => setPreviewUrl(c.business_license_url)} title="사업자등록증 보기"
-                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "#5f0080", display: "inline-flex", alignItems: "center" }}>
-                          <FileText size={16} />
+                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "#5f0080", display: "inline-flex", alignItems: "center", gap: 3, fontSize: 12, fontWeight: 500 }}>
+                          <FileText size={14} /><span>사업자등록증</span>
                         </button>
                       ) : (
-                        <span style={{ color: "#ddd", display: "inline-flex", alignItems: "center" }} title="미제출">
-                          <FileText size={16} />
+                        <span style={{ color: "#ccc", display: "inline-flex", alignItems: "center", gap: 3, fontSize: 12 }} title="미제출">
+                          <FileText size={14} /><span>사업자등록증</span>
                         </span>
                       )}
                     </div>

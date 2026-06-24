@@ -264,15 +264,14 @@ function AdminJobsPageInner() {
                 <th style={{ width: 40 }}>
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
-                <th>등록일</th>
-                <th>등록상품</th>
-                <th>기업</th>
                 <th>공고명</th>
+                <th>기업</th>
+                <th>등록상품</th>
                 <th>직군</th>
-                <th>경력</th>
                 <th>지역</th>
-                <th>지원자 </th>
+                <th>지원자</th>
                 <th>마감일</th>
+                <th>등록일</th>
                 <th>상태</th>
               </tr>
             </thead>
@@ -283,14 +282,18 @@ function AdminJobsPageInner() {
                     <input type="checkbox" checked={checkedIds.has(job.id)}
                       onChange={() => toggleCheck(job.id)} />
                   </td>
-                  {/* 등록일 */}
-                  <td className="admin-td-date">{fmtDate(job.created_at)}</td>
-                  {/* 등록상품 */}
-                  <td>
-                    {(() => {
-                      const b = productBadge(job.product_type);
-                      return <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, background: b.bg, color: b.color, whiteSpace: "nowrap" }}>{b.label}</span>;
-                    })()}
+                  {/* 공고명 (길면 2줄) */}
+                  <td style={{ minWidth: 220 }}>
+                    <span
+                      title={job.title}
+                      style={{
+                        color: "#333", cursor: "pointer", fontWeight: 400,
+                        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+                        overflow: "hidden", whiteSpace: "normal", maxWidth: 460, lineHeight: 1.4,
+                      }}
+                      onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank")}>
+                      {job.title}
+                    </span>
                   </td>
                   {/* 기업 (+ 유형 텍스트) */}
                   <td>
@@ -322,18 +325,12 @@ function AdminJobsPageInner() {
                       </div>
                     </div>
                   </td>
-                  {/* 공고명 (길면 2줄) */}
-                  <td style={{ minWidth: 220 }}>
-                    <span
-                      title={job.title}
-                      style={{
-                        color: "#333", cursor: "pointer", fontWeight: 400,
-                        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-                        overflow: "hidden", whiteSpace: "normal", maxWidth: 460, lineHeight: 1.4,
-                      }}
-                      onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank")}>
-                      {job.title}
-                    </span>
+                  {/* 등록상품 */}
+                  <td>
+                    {(() => {
+                      const b = productBadge(job.product_type);
+                      return <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, background: b.bg, color: b.color, whiteSpace: "nowrap" }}>{b.label}</span>;
+                    })()}
                   </td>
                   {/* 직군 */}
                   <td className="admin-td-date">
@@ -342,8 +339,6 @@ function AdminJobsPageInner() {
                         (job.categories.length > 2 ? ` 외 ${job.categories.length - 2}` : "")
                       : "-"}
                   </td>
-                  {/* 경력 */}
-                  <td className="admin-td-date">{EXP_LABEL[job.experience_level] || job.experience_level}</td>
                   {/* 지역 (시도 축약) */}
                   <td className="admin-td-date">{shortLocation(job.location)}</td>
                   {/* 지원자 */}
@@ -362,6 +357,8 @@ function AdminJobsPageInner() {
                       );
                     })()}
                   </td>
+                  {/* 등록일 */}
+                  <td className="admin-td-date">{fmtDate(job.created_at)}</td>
                   {/* 상태 */}
                   <td>
                     <select
