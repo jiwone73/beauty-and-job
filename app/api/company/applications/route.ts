@@ -41,6 +41,8 @@ export async function GET(req: NextRequest) {
        u.gender AS user_gender,
        u.job_type AS user_job_type,
        u.avatar_url AS user_avatar_url,
+       u.portfolio_url, u.portfolio_filename,
+       EXISTS(SELECT 1 FROM company_talent_scraps s WHERE s.company_id = $1 AND s.user_id = u.id) AS scrapped,
        jp.id AS job_id, jp.title AS job_title,
        jp.experience_level
      FROM applications a
