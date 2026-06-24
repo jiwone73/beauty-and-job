@@ -235,9 +235,10 @@ function ApplicantsContent() {
           <table className="company-table">
             <thead>
               <tr>
-                <th>지원일</th>
                 <th>이름</th>
                 <th>지원 공고</th>
+                <th>지원일</th>
+                <th>연락처</th>
                 <th>상태</th>
                 <th>이력서/포트폴리오</th>
               </tr>
@@ -245,7 +246,6 @@ function ApplicantsContent() {
             <tbody>
               {filtered.map((a) => (
                 <tr key={a.id}>
-                  <td className="company-td-sub">{formatDate(a.applied_at)}</td>
                   <td>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <div className="talent-avatar" style={{ width: 32, height: 32, fontSize: 13, flexShrink: 0, overflow: "hidden" }}>
@@ -263,17 +263,23 @@ function ApplicantsContent() {
                     </div>
                   </td>
                   <td className="company-td-sub">{a.job_title}</td>
-                  
-                  <td>
-                    <span className={`company-badge ${STATUS_BADGE_CLASS[a.status]}`}>
-                      {STATUS_LABEL[a.status]}
-                    </span>
+                  <td className="company-td-sub">{formatDate(a.applied_at)}</td>
+                  <td style={{ fontSize: 12 }}>
+                    <div style={{ color: a.user_email ? "#333" : "#ccc", marginBottom: 2 }}>
+                      {a.user_email || "이메일 없음"}
+                    </div>
+                    <div style={{ color: a.user_phone ? "#555" : "#ccc" }}>
+                      {a.user_phone || "전화번호 없음"}
+                    </div>
+                  </td>
+                  <td style={{ color: "#5f0080", fontWeight: 500, fontSize: 13 }}>
+                    {STATUS_LABEL[a.status]}
                   </td>
                   <td>
                     <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <button onClick={() => setSelected(a)} title="이력서 보기"
-                          style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 12, fontWeight: 600, padding: 0 }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 13, fontWeight: 500, padding: 0 }}>
                           <FileText size={16} /><span>이력서</span>
                         </button>
                         <span title={(a as any).scrapped ? "스크랩한 인재" : "미스크랩"} style={{ display: "inline-flex" }}>
@@ -283,12 +289,12 @@ function ApplicantsContent() {
                       </div>
                       {(a as any).portfolio_url ? (
                         <a href={(a as any).portfolio_url} target="_blank" rel="noopener noreferrer" title={(a as any).portfolio_filename || "포트폴리오"}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 11, textDecoration: "none" }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 12, textDecoration: "none", fontWeight: 500 }}>
                           <Paperclip size={14} /><span>포트폴리오</span>
                         </a>
                       ) : (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#c8c8c8", fontSize: 11 }}>
-                          <Paperclip size={14} /><span>없음</span>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 12 }}>
+                          <Paperclip size={14} /><span>포트폴리오</span>
                         </span>
                       )}
                     </div>
