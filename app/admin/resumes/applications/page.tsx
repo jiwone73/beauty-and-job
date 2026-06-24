@@ -37,7 +37,7 @@ type App = {
   resume_id: string | null;
   position: string;
   company_name: string;
-  job_category: string | null;
+  job_categories: string[] | null;
   cover_letter: string | null;
   resume_snapshot: any | null;
 };
@@ -221,7 +221,12 @@ function AdminApplicationsPageInner() {
                       </div>
                     </td>
                     {/* 직군 */}
-                    <td className="admin-td-date">{a.job_category || "-"}</td>
+                    <td className="admin-td-date">
+                      {a.job_categories && a.job_categories.length > 0
+                        ? a.job_categories.slice(0, 2).join(", ") +
+                          (a.job_categories.length > 2 ? ` 외 ${a.job_categories.length - 2}` : "")
+                        : "-"}
+                    </td>
                     {/* 매장/기업명 */}
                     <td className="admin-td-brand">{a.company_name}</td>
                     {/* 공고명 */}
@@ -279,7 +284,7 @@ function AdminApplicationsPageInner() {
       {selected && (selected.resume_id || selected.cover_letter || selected.resume_snapshot) && (
         <ResumePreviewModal
           resumeId={selected.resume_id || ""}
-          jobCategory={selected.job_category}
+          jobCategory={selected.job_categories?.[0] || null}
           coverLetter={selected.cover_letter}
           onClose={() => setSelected(null)}
         />

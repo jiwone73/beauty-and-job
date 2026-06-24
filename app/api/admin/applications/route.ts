@@ -30,12 +30,11 @@ export async function GET(req: NextRequest) {
         COALESCE(a.resume_id, (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1)) AS resume_id,
         jp.title AS position,
         c.company_name,
-        jc.name AS job_category
+        jp.categories AS job_categories
       FROM applications a
       JOIN users u ON u.id = a.user_id
       JOIN job_postings jp ON jp.id = a.job_posting_id
       JOIN companies c ON c.id = jp.company_id
-      LEFT JOIN job_categories jc ON jc.id = jp.job_category_id
       ORDER BY a.applied_at DESC
     `)
     return ok({ items: result.rows })
