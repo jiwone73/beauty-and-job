@@ -268,7 +268,7 @@ function AdminApplicationsPageInner() {
                     </td>
                     {/* 상태 (읽기 전용) */}
                     <td>
-                      <span style={{ fontWeight: 500, color: "#555" }}>
+                      <span style={{ fontWeight: 500, color: "#5f0080" }}>
                         {STATUS_TO_LABEL[a.status] || a.status}
                       </span>
                     </td>
