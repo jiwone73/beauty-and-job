@@ -39,9 +39,15 @@ export async function GET(req: NextRequest) {
        u.email AS user_email,
        u.phone AS user_phone,
        u.gender AS user_gender,
+       u.birth_date AS user_birth_date,
        u.job_type AS user_job_type,
        u.avatar_url AS user_avatar_url,
        u.portfolio_url, u.portfolio_filename,
+       (SELECT r.career_type FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS career_type,
+       (SELECT rc.start_date FROM resume_careers rc
+          JOIN resumes r ON r.id = rc.resume_id
+          WHERE r.user_id = u.id
+          ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_start_date,
        EXISTS(SELECT 1 FROM company_talent_scraps s WHERE s.company_id = $1 AND s.user_id = u.id) AS scrapped,
        jp.id AS job_id, jp.title AS job_title,
        jp.experience_level
