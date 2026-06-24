@@ -40,6 +40,7 @@ function ApplicantsContent() {
   const [statusFilter, setStatusFilter] = useState<string>("전체");
   const [selected, setSelected] = useState<CompanyApplication | null>(null);
   const [resumeData, setResumeData] = useState<any>(null);
+  const [coverLetter, setCoverLetter] = useState<string>("");
   const [resumeLoading, setResumeLoading] = useState(false);
 // API 응답(snake_case) → ResumePreview props(camelCase) 변환
   const mapResume = (data: any) => {
@@ -78,6 +79,7 @@ function ApplicantsContent() {
   useEffect(() => {
     if (!selected) {
       setResumeData(null);
+      setCoverLetter("");
       return;
     }
     const token = localStorage.getItem("access_token");
@@ -88,8 +90,9 @@ function ApplicantsContent() {
     })
       .then(r => r.json())
       .then(res => {
-        if (res.success && res.data.resume) {
-          setResumeData(res.data.resume);
+        if (res.success) {
+          if (res.data.resume) setResumeData(res.data.resume);
+          setCoverLetter(res.data.cover_letter || "");
         }
       })
       .catch(console.error)
@@ -332,6 +335,13 @@ function ApplicantsContent() {
                   ))}
                 </div>
               </div>
+              {/* 자기소개서 */}
+              {coverLetter && coverLetter.trim() && (
+                <div style={{ marginTop: "24px", background: "#faf5ff", border: "1px solid #ecdcff", borderRadius: 10, padding: "16px 18px" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 8 }}>제출한 자기소개서</div>
+                  <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
+                </div>
+              )}
               {/* 이력서 정보 */}
               <div style={{marginTop:"24px", paddingTop:"24px", borderTop:"1px solid #ececec"}}>
                 <h3 style={{fontSize:"15px", fontWeight:700, marginBottom:"4px"}}>이력서</h3>
