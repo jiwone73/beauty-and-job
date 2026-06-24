@@ -6,7 +6,7 @@ export type TokenPayload = {
   role: string
 }
 export function signAccessToken(payload: TokenPayload) {
-  return jwt.sign(payload, SECRET, { expiresIn: '7d' })
+  return jwt.sign(payload, SECRET, { expiresIn: '30d' })
 }
 export function verifyAccessToken(token: string): TokenPayload {
   return jwt.verify(token, SECRET) as TokenPayload
