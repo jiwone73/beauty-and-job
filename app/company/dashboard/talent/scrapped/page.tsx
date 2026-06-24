@@ -268,7 +268,6 @@ export default function ScrappedTalentPage() {
                   {jtLabel && (
                     <div style={{
                       fontSize: 10, fontWeight: 600, padding: "1px 6px", borderRadius: 10, marginBottom: 3,
-                      background: jtLabel === "매장직" ? "#f3e8ff" : "#e8f0ff",
                       color: jtLabel === "매장직" ? "#5f0080" : "#1a4fb5",
                     }}>
                       {jtLabel}
