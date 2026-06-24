@@ -247,7 +247,7 @@ function ApplicantsContent() {
               {filtered.map((a) => (
                 <tr key={a.id}>
                   <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
                       <div className="talent-avatar" style={{ width: 40, height: 40, fontSize: 14, flexShrink: 0, overflow: "hidden" }}>
                         {(a as any).user_avatar_url
                           ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
