@@ -322,20 +322,6 @@ function AdminMembersPageInner() {
                       <input type="checkbox" checked={checked.includes(m.id)} onChange={() => toggleCheck(m.id)} />
                     </td>
 
-                    {/* 가입: 가입일 / 가입방법 */}
-                    <td className="admin-td-date">
-                      <div>{fmtDate(m.created_at)}</div>
-                      <div style={{ marginTop: 4 }}>
-                        {m.kakao_id ? (
-                          <span className="admin-badge" style={{ background: "#FEE500", color: "#3A1D1D", fontSize: 11 }}>카카오</span>
-                        ) : m.naver_id ? (
-                          <span className="admin-badge" style={{ background: "#03C75A", color: "#fff", fontSize: 11 }}>네이버</span>
-                        ) : (
-                          <span className="admin-badge admin-badge-neutral" style={{ fontSize: 11 }}>이메일</span>
-                        )}
-                      </div>
-                    </td>
-
                     {/* 이름: 아바타 + 이름·성별(1행) / 나이·경력(2행) */}
                     <td className="admin-td-brand">
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
