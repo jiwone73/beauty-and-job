@@ -1,8 +1,22 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Search, BookmarkCheck, X, FileText, Download, Printer } from "lucide-react";
+import { Search, BookmarkCheck, X, FileText, Paperclip, Download, Printer } from "lucide-react";
 import ResumePreview from "@/components/profile/ResumePreview";
+
+const ROW_H = 68;
+const FLEX = { name: 1.4, job: 1.1, region: 0.9, career: 1.8, contact: 1.4 };
+const W_ACTION = 120;
+const divider = "1px solid #f0f0f0";
+
+const clamp1: React.CSSProperties = {
+  display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical",
+  overflow: "hidden", textOverflow: "ellipsis", wordBreak: "break-word",
+};
+const clamp2: React.CSSProperties = {
+  display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+  overflow: "hidden", textOverflow: "ellipsis", wordBreak: "break-word", lineHeight: 1.35,
+};
 
 function calcAgeFromBirth(birth: string | null): number {
   if (!birth) return 0;
@@ -15,14 +29,24 @@ function careerLabel(years: number | null, count: number): string {
   return `경력 ${years}년`;
 }
 
-function metaLine(gender: string | null, age: number | null, years: number | null, count: number): string {
-  const c = careerLabel(years, count);
-  const parts: string[] = [];
-  if (gender === "FEMALE") parts.push("여");
-  else if (gender === "MALE") parts.push("남");
-  if (age) parts.push(`${age}세`);
-  parts.push(c);
-  return parts.join(" · ");
+function genderLabel(gender: string | null): string | null {
+  if (gender === "FEMALE" || gender === "여성" || gender === "F") return "여";
+  if (gender === "MALE" || gender === "남성" || gender === "M") return "남";
+  return null;
+}
+
+function shortenRegion(region: string | null | undefined): string {
+  if (!region) return "—";
+  return region
+    .replace(/특별자치도|특별자치시|특별시|광역시/g, "")
+    .replace(/\s+/g, " ")
+    .trim() || region;
+}
+
+function jobTypeLabel(jobType: string | null | undefined): string | null {
+  if (jobType === "STORE") return "매장직";
+  if (jobType === "OFFICE") return "사무직";
+  return null;
 }
 
 export default function ScrappedTalentPage() {
@@ -32,8 +56,8 @@ export default function ScrappedTalentPage() {
   const [selected, setSelected] = useState<any | null>(null);
   const [resumeData, setResumeData] = useState<any>(null);
   const [resumeLoading, setResumeLoading] = useState(false);
-  const previewRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const token = typeof window !== "undefined"
     ? (localStorage.getItem("access_token") || "")
@@ -153,6 +177,25 @@ export default function ScrappedTalentPage() {
     !search || (t.name || "").includes(search) || (t.job_category || "").includes(search)
   );
 
+  const cell = (flexVal: number, last = false): React.CSSProperties => ({
+    flex: flexVal, minWidth: 0,
+    height: ROW_H,
+    display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
+    padding: "0 12px",
+    borderRight: last ? "none" : divider,
+    textAlign: "center",
+    overflow: "hidden",
+  });
+
+  const headCell = (flexVal: number, last = false): React.CSSProperties => ({
+    flex: flexVal, minWidth: 0,
+    height: 40,
+    display: "flex", alignItems: "center", justifyContent: "center",
+    padding: "0 12px",
+    borderRight: last ? "none" : divider,
+    textAlign: "center",
+  });
+
   return (
     <CompanyLayout activePage="scrapped">
       <div className="company-toolbar">
@@ -175,67 +218,72 @@ export default function ScrappedTalentPage() {
       ) : (
         <div style={{ border: "1px solid #eee", borderRadius: 8, overflow: "hidden", background: "#fff" }}>
 
+          {/* 헤더 */}
           <div style={{ display: "flex", alignItems: "stretch", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 12, color: "#999", fontWeight: 500 }}>
-            <div style={{ width: 60, flexShrink: 0, borderRight: "1px solid #f0f0f0" }} />
-            <div style={{ flex: 1.3, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>이름</div>
-            <div style={{ flex: 1, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>직군</div>
-            <div style={{ flex: 1.1, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>지역</div>
-            <div style={{ flex: 1.7, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>최종학력</div>
-            <div style={{ flex: 1.8, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>최근경력</div>
-            <div style={{ flex: 1.8, minWidth: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>스킬</div>
-            <div style={{ width: 150, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>관리</div>
+            <div style={headCell(FLEX.name)}>이름</div>
+            <div style={headCell(FLEX.job)}>직군</div>
+            <div style={headCell(FLEX.region)}>지역</div>
+            <div style={headCell(FLEX.career)}>최근경력</div>
+            <div style={headCell(FLEX.contact)}>연락처</div>
+            <div style={{ width: W_ACTION, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#999", fontWeight: 500 }}>
+              이력서/포트폴리오
+            </div>
           </div>
 
+          {/* 바디 */}
           {filtered.map((t, idx) => {
-            const cell = (flexVal: number, last = false): React.CSSProperties => ({
-              flex: flexVal, minWidth: 0, height: 68,
-              display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
-              padding: "0 12px", borderRight: last ? "none" : "1px solid #f0f0f0",
-              textAlign: "center", overflow: "hidden",
-            });
-            const clamp1: React.CSSProperties = { display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis", wordBreak: "break-word", maxWidth: "100%" };
-            const clamp2: React.CSSProperties = { ...clamp1, WebkitLineClamp: 2, lineHeight: 1.35 };
+            const gl = genderLabel(t.gender);
+            const jtLabel = jobTypeLabel(t.job_type);
+            const region = shortenRegion(t.location || t.region_prefer);
+            const email = t.email as string | null;
+            const phone = t.phone as string | null;
+
             return (
-              <div key={t.user_id}
+              <div
+                key={t.user_id}
                 style={{ display: "flex", alignItems: "stretch", borderBottom: idx < filtered.length - 1 ? "1px solid #f2f2f2" : "none", cursor: "pointer", transition: "background .1s" }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
                 onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
               >
-                <div style={{ width: 60, flexShrink: 0, height: 68, display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #f0f0f0" }}>
-                  <div className="talent-avatar" style={{ width: 40, height: 40, overflow: "hidden" }}>
+                {/* 이름 */}
+                <div style={{ ...cell(FLEX.name), flexDirection: "row", alignItems: "center", gap: 10 }}>
+                  <div className="talent-avatar" style={{ width: 40, height: 40, overflow: "hidden", flexShrink: 0 }}>
                     {t.avatar_url
                       ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       : (t.name || "?").slice(0, 1)}
                   </div>
-                </div>
-
-                <div style={cell(1.3)}>
-                  <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a" }}>{t.name}</div>
-                  <div style={{ ...clamp1, fontSize: 12, color: "#888", marginTop: 2 }}>
-                    {metaLine(t.gender, t.age, t.career_years, t.career_count)}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
+                      <span>{t.name}</span>
+                      {gl && <span style={{ fontSize: 11, fontWeight: 400, color: "#999" }}>{gl}</span>}
+                    </div>
+                    <div style={{ ...clamp1, fontSize: 12, color: "#888", marginTop: 2 }}>
+                      {[t.age ? `${t.age}세` : null, careerLabel(t.career_years, t.career_count)].filter(Boolean).join(" · ")}
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ ...cell(1), fontSize: 13, color: "#555" }}>
-                  <span style={clamp2}>{t.job_category || "—"}</span>
+                {/* 직군: 1행 매장직/사무직 배지, 2행 세부직군 */}
+                <div style={cell(FLEX.job)}>
+                  {jtLabel && (
+                    <div style={{
+                      fontSize: 10, fontWeight: 600, padding: "1px 6px", borderRadius: 10, marginBottom: 3,
+                      background: jtLabel === "매장직" ? "#f3e8ff" : "#e8f0ff",
+                      color: jtLabel === "매장직" ? "#5f0080" : "#1a4fb5",
+                    }}>
+                      {jtLabel}
+                    </div>
+                  )}
+                  <span style={{ ...clamp2, fontSize: 12, color: "#555" }}>{t.job_category || "—"}</span>
                 </div>
 
-                <div style={{ ...cell(1.1), fontSize: 12, color: "#999" }}>
-                  <span style={clamp2}>{t.location || "—"}</span>
+                {/* 지역 */}
+                <div style={{ ...cell(FLEX.region), fontSize: 12, color: "#999" }}>
+                  <span style={clamp2}>{region}</span>
                 </div>
 
-                <div style={{ ...cell(1.7), fontSize: 12 }}>
-                  {t.educationDetail ? (
-                    <>
-                      <div style={{ ...clamp1, fontWeight: 500, color: "#333" }}>{t.educationDetail.school}</div>
-                      <div style={{ ...clamp1, color: "#999", marginTop: 2 }}>
-                        {[t.educationDetail.major, t.educationDetail.status].filter(Boolean).join(" · ")}
-                      </div>
-                    </>
-                  ) : <span style={{ color: "#ccc" }}>—</span>}
-                </div>
-
-                <div style={{ ...cell(1.8), fontSize: 12 }}>
+                {/* 최근경력 */}
+                <div style={{ ...cell(FLEX.career), fontSize: 12 }}>
                   {t.careerDetail ? (
                     <>
                       <div style={{ ...clamp1, fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
@@ -246,43 +294,78 @@ export default function ScrappedTalentPage() {
                   ) : <span style={{ color: "#ccc" }}>—</span>}
                 </div>
 
-                <div style={{ ...cell(1.8), fontSize: 12, color: "#555" }}>
-                  <span style={clamp2}>{(t.skills || []).slice(0, 6).join(", ")}</span>
+                {/* 연락처 */}
+                <div style={{ ...cell(FLEX.contact), fontSize: 12, alignItems: "flex-start", paddingLeft: 14 }}>
+                  <div style={{ ...clamp1, color: email ? "#333" : "#ccc", marginBottom: 2 }}>
+                    {email || "이메일 없음"}
+                  </div>
+                  <div style={{ ...clamp1, color: phone ? "#555" : "#ccc" }}>
+                    {phone || "전화번호 없음"}
+                  </div>
                 </div>
 
-                <div style={{ width: 150, flexShrink: 0, height: 68, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  <button className="company-action-btn" style={{ whiteSpace: "nowrap" }} onClick={(e) => { e.stopPropagation(); setSelected(t); }}>
-                    <FileText size={14} /> 이력서
-                  </button>
-                  <button className="talent-scrap-btn scrapped" style={{ padding: "6px 8px" }} onClick={(e) => { e.stopPropagation(); handleUnscrap(t.user_id); }}>
-                    <BookmarkCheck size={16} />
-                  </button>
+                {/* 이력서/포트폴리오 */}
+                <div style={{ width: W_ACTION, flexShrink: 0, height: ROW_H, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <button
+                      style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 13, fontWeight: 500, padding: "2px 4px" }}
+                      onClick={(e) => { e.stopPropagation(); setSelected(t); }}
+                    >
+                      <FileText size={14} />
+                      <span>이력서</span>
+                    </button>
+                    <button
+                      className="talent-scrap-btn scrapped"
+                      style={{ padding: "6px 8px" }}
+                      onClick={(e) => { e.stopPropagation(); handleUnscrap(t.user_id); }}
+                    >
+                      <BookmarkCheck size={16} />
+                    </button>
+                  </div>
+
+                  {t.portfolio_url ? (
+                    <a
+                      href={t.portfolio_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 12, textDecoration: "none", fontWeight: 500 }}
+                    >
+                      <Paperclip size={13} /><span>포트폴리오</span>
+                    </a>
+                  ) : (
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 12 }}>
+                      <Paperclip size={13} /><span>포트폴리오</span>
+                    </span>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
       )}
+
+      {/* 이력서 모달 */}
       {selected && (
         <div className="rp-modal-overlay" onClick={() => setSelected(null)}>
           <div className="rp-modal" onClick={e => e.stopPropagation()}>
             <div className="rp-modal-header">
               <div className="rp-modal-actions">
                 <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading}>
-                  <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 저장"}
+                  <Download size={15} /><span>{isDownloading ? "저장 중..." : "PDF 저장"}</span>
                 </button>
                 <button className="resume-action-btn" onClick={handlePrint}>
-                  <Printer size={15} /> 인쇄
+                  <Printer size={15} /><span>인쇄</span>
                 </button>
                 <button className="resume-action-btn danger" onClick={() => handleUnscrap(selected.user_id)}>
                   스크랩 해제
                 </button>
               </div>
-              <button className="admin-modal-close" onClick={() => setSelected(null)}>
+              <button className="rp-modal-close" onClick={() => setSelected(null)}>
                 <X size={20} />
               </button>
             </div>
-            <div className="rp-modal-body" ref={previewRef}>
+            <div className="rp-modal-body">
               {resumeLoading ? (
                 <div className="admin-empty">이력서 불러오는 중...</div>
               ) : resumeData ? (
