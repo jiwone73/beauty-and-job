@@ -92,6 +92,8 @@ export async function GET(req: NextRequest) {
       SELECT
         u.id,
         u.name,
+        u.email,
+        u.phone,
         u.avatar_url,
         u.portfolio_url,
         u.portfolio_filename,
@@ -162,6 +164,8 @@ export async function GET(req: NextRequest) {
     const data = rows.map((r) => ({
       id: r.id,
       name: r.name,
+      email: r.email || null,
+      phone: r.phone || null,
       avatarUrl: r.avatar_url,
       portfolioUrl: r.portfolio_url || null,
       gender: r.gender,
