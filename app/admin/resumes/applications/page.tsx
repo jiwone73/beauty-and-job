@@ -165,9 +165,9 @@ function AdminApplicationsPageInner() {
             <thead>
               <tr>
                 <th>지원자</th>
-                <th>직군</th>
                 <th>매장/기업명</th>
                 <th>공고명</th>
+                <th>직군</th>
                 <th>지원일</th>
                 <th>이력서/포트폴리오</th>
                 <th>상태</th>
@@ -220,6 +220,10 @@ function AdminApplicationsPageInner() {
                         </div>
                       </div>
                     </td>
+                    {/* 매장/기업명 */}
+                    <td className="admin-td-brand">{a.company_name}</td>
+                    {/* 공고명 */}
+                    <td className="admin-td-title">{a.position}</td>
                     {/* 직군 */}
                     <td className="admin-td-date">
                       {a.job_categories && a.job_categories.length > 0
@@ -227,10 +231,6 @@ function AdminApplicationsPageInner() {
                           (a.job_categories.length > 2 ? ` 외 ${a.job_categories.length - 2}` : "")
                         : "-"}
                     </td>
-                    {/* 매장/기업명 */}
-                    <td className="admin-td-brand">{a.company_name}</td>
-                    {/* 공고명 */}
-                    <td className="admin-td-title">{a.position}</td>
                     {/* 지원일 */}
                     <td className="admin-td-date">{fmtDate(a.applied_at)}</td>
                     {/* 이력서/포트폴리오 */}
