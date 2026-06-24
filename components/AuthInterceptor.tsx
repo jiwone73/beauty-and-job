@@ -6,6 +6,19 @@ export default function AuthInterceptor() {
     const originalFetch = window.fetch;
     let handling = false; // 중복 처리 방지
 
+    // 토큰이 실제로 만료됐는지 확인 (없거나 깨졌으면 만료로 간주)
+    const isTokenExpired = (key: string) => {
+      try {
+        const t = localStorage.getItem(key);
+        if (!t) return true;
+        const payload = JSON.parse(atob(t.split(".")[1]));
+        if (!payload?.exp) return true;
+        return payload.exp * 1000 < Date.now();
+      } catch {
+        return true;
+      }
+    };
+
     window.fetch = async (...args) => {
       const res = await originalFetch(...args);
 
@@ -20,8 +33,12 @@ export default function AuthInterceptor() {
       const isAuthEndpoint = url.includes("/api/auth/"); // 로그인·회원가입 등은 제외
       const isAdminLogin = url.includes("/api/auth/admin");
 
-      // API 호출인데 401 → 세션 만료로 간주 (단, 인증 엔드포인트 자체는 제외)
-      if (res.status === 401 && isApi && !isAuthEndpoint && !handling) {
+      // API 호출인데 401 → "토큰이 실제로 만료됐을 때만" 세션 만료로 처리
+      // (토큰이 유효한데 난 401은 권한 문제 등이므로 세션을 보존)
+      const path0 = window.location.pathname;
+      const tokenKey = path0.startsWith("/admin") ? "admin_token" : "access_token";
+      const expired = isTokenExpired(tokenKey);
+      if (res.status === 401 && isApi && !isAuthEndpoint && !handling && expired) {
         handling = true;
 
         const path = window.location.pathname;
