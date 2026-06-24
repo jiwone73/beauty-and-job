@@ -268,7 +268,7 @@ function AdminApplicationsPageInner() {
                     </td>
                     {/* 상태 (읽기 전용) */}
                     <td>
-                      <span className={`admin-badge ${STATUS_COLOR[a.status] || "admin-badge-neutral"}`}>
+                      <span style={{ fontWeight: 500, color: "#555" }}>
                         {STATUS_TO_LABEL[a.status] || a.status}
                       </span>
                     </td>
