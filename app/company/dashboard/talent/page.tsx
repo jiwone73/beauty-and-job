@@ -478,7 +478,7 @@ export default function TalentPage() {
                 </div>
 
                 {/* 연락처 */}
-                <div style={{ ...cell(FLEX.contact), fontSize: 12, alignItems: "flex-start", paddingLeft: 14 }}>
+                <div style={{ ...cell(FLEX.contact), fontSize: 12 }}>
                   <div style={{ ...clamp1, color: t.email ? "#333" : "#ccc", marginBottom: 2 }}>
                     {t.email || "이메일 없음"}
                   </div>
