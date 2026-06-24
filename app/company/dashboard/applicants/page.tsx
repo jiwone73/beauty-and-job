@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, X } from "lucide-react";
+import { Search, X, FileText, Bookmark, Paperclip } from "lucide-react";
+import { buildMemberSubline } from "@/lib/memberFormat";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ResumePreview from "@/components/profile/ResumePreview";
@@ -237,9 +238,8 @@ function ApplicantsContent() {
                 <th>지원일</th>
                 <th>이름</th>
                 <th>지원 공고</th>
-                <th>열람</th>
                 <th>상태</th>
-                <th>관리</th>
+                <th>이력서/포트폴리오</th>
               </tr>
             </thead>
             <tbody>
@@ -247,40 +247,51 @@ function ApplicantsContent() {
                 <tr key={a.id}>
                   <td className="company-td-sub">{formatDate(a.applied_at)}</td>
                   <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <div className="talent-avatar" style={{ width: 32, height: 32, fontSize: 13, flexShrink: 0, overflow: "hidden" }}>
                         {(a as any).user_avatar_url
                           ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           : (a.user_name || "?").slice(0, 1)}
                       </div>
-                      <span className="company-td-name" style={{cursor:"pointer", color:"#5f0080", fontWeight:600}}
-                        onClick={() => setSelected(a)}>{a.user_name}</span>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
+                        <span className="company-td-name" style={{ cursor: "pointer", color: "#5f0080", fontWeight: 600 }}
+                          onClick={() => setSelected(a)}>{a.user_name}</span>
+                        <span style={{ fontSize: 12, color: "#888" }}>
+                          {buildMemberSubline((a as any).user_gender, (a as any).user_birth_date, (a as any).career_type, (a as any).recent_start_date)}
+                        </span>
+                      </div>
                     </div>
                   </td>
                   <td className="company-td-sub">{a.job_title}</td>
-                  <td>
-                    <span className={`company-badge ${a.viewed_at ? "viewed" : "new"}`}>
-                      {a.viewed_at ? "열람" : "미열람"}
-                    </span>
-                  </td>
+                  
                   <td>
                     <span className={`company-badge ${STATUS_BADGE_CLASS[a.status]}`}>
                       {STATUS_LABEL[a.status]}
                     </span>
                   </td>
                   <td>
-                    <select
-                      className="admin-status-select"
-                      value={a.status}
-                      onChange={(e) => handleStatusChange(a.id, e.target.value as ApplicationStatus)}
-                      style={{ fontSize: "12px", padding: "4px 8px" }}
-                    >
-                      <option value="APPLIED">신규</option>
-                      <option value="VIEWED">검토중</option>
-                      <option value="INTERVIEW">면접예정</option>
-                      <option value="PASSED">합격</option>
-                      <option value="REJECTED">불합격</option>
-                    </select>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <button onClick={() => setSelected(a)} title="이력서 보기"
+                          style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 12, fontWeight: 600, padding: 0 }}>
+                          <FileText size={16} /><span>이력서</span>
+                        </button>
+                        <span title={(a as any).scrapped ? "스크랩한 인재" : "미스크랩"} style={{ display: "inline-flex" }}>
+                          <Bookmark size={15}
+                            style={{ color: (a as any).scrapped ? "#5f0080" : "#d0d0d0", fill: (a as any).scrapped ? "#5f0080" : "none" }} />
+                        </span>
+                      </div>
+                      {(a as any).portfolio_url ? (
+                        <a href={(a as any).portfolio_url} target="_blank" rel="noopener noreferrer" title={(a as any).portfolio_filename || "포트폴리오"}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 11, textDecoration: "none" }}>
+                          <Paperclip size={14} /><span>포트폴리오</span>
+                        </a>
+                      ) : (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#c8c8c8", fontSize: 11 }}>
+                          <Paperclip size={14} /><span>없음</span>
+                        </span>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
