@@ -940,7 +940,7 @@ function AppliedTab() {
                   >
                     내 지원서 보기
                   </button>
-                  {app.status === "APPLIED" && (
+                  {(app.status === "APPLIED" || app.status === "VIEWED") && (
                     <button
                       onClick={(e) => { e.stopPropagation(); handleCancel(app.id); }}
                       style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
@@ -950,7 +950,7 @@ function AppliedTab() {
                   )}
                 </div>
               </div>
-              <span className={`applied-status ${statusStyle[app.status] || "applied-status-review"}`}>
+              <span style={{ color: "#5f0080", fontWeight: 600, fontSize: 13 }}>
                 {statusLabel[app.status] || app.status}
               </span>
             </div>

@@ -96,8 +96,8 @@ export async function DELETE(
     }
 
     const app = check.rows[0];
-    if (app.status !== "APPLIED") {
-      return err("APP_003", "기업이 이미 열람한 지원은 취소할 수 없습니다.", 400);
+    if (app.status !== "APPLIED" && app.status !== "VIEWED") {
+      return err("APP_003", "면접 단계 이후에는 지원을 취소할 수 없습니다.", 400);
     }
 
     // 상태를 WITHDRAWN으로 변경
