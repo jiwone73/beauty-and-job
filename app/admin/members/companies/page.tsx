@@ -325,14 +325,13 @@ function AdminCompaniesContent() {
                 <th style={{ width: 40, textAlign: "center" }}>
                   <input type="checkbox" checked={allPageSelected} onChange={toggleAllPage} style={{ cursor: "pointer" }} />
                 </th>
-                <th>가입일</th>
-                <th>유형</th>
                 <th>매장/기업명</th>
                 <th>지역</th>
                 <th>직원수</th>
                 <th>연락처</th>
                 <th>사업자번호</th>
                 <th>공고</th>
+                <th>가입일</th>
                 <th>상태</th>
               </tr>
             </thead>
@@ -342,9 +341,6 @@ function AdminCompaniesContent() {
                   <td style={{ textAlign: "center" }}>
                     <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
                   </td>
-                  <td className="admin-td-date">{fmtDate(c.created_at)}</td>
-                  {/* 유형 */}
-                  <td className="admin-td-date">{TYPE_LABEL[c.company_type] || c.company_type}</td>
                   {/* 매장/기업명 → 클릭 시 기업정보 모달 */}
                   <td className="admin-td-brand">
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -360,8 +356,11 @@ function AdminCompaniesContent() {
                         })()}
                       </div>
                       <span onClick={() => setCompanyDetail(c)}
-                        style={{ color: "#5f0080", cursor: "pointer", fontWeight: 600 }}>
+                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#5f0080", cursor: "pointer", fontWeight: 600 }}>
                         {c.company_name}
+                        <span style={{ fontSize: 11, fontWeight: 500, color: "#999" }}>
+                          {TYPE_LABEL[c.company_type] || c.company_type}
+                        </span>
                       </span>
                     </div>
                   </td>
@@ -399,6 +398,8 @@ function AdminCompaniesContent() {
                       <span style={{ color: "#bbb" }}>0건</span>
                     )}
                   </td>
+                  {/* 가입일 */}
+                  <td className="admin-td-date">{fmtDate(c.created_at)}</td>
                   {/* 상태 */}
                   <td>
                     <select
