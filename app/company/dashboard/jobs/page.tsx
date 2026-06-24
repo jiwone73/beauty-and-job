@@ -202,7 +202,6 @@ export default function CompanyJobsPage() {
                 <th>공고명</th>
                 <th>등록일</th>
                 <th>마감일</th>
-                <th>복사</th>
                 <th>지원자</th>
                 <th>조회수</th>
                 <th>상태</th>
