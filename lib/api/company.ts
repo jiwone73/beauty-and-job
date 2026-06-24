@@ -76,6 +76,7 @@ export type TalentItem = {
   id: string;
   name: string;
   avatarUrl: string | null;
+  portfolioUrl: string | null;
   gender: string | null;
   age: number | null;
   intro: string | null;

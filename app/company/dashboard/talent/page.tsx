@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import {
-  Search, BookmarkCheck, Bookmark, X, FileText,
+  Search, BookmarkCheck, Bookmark, X, FileText, Paperclip,
   Download, Printer, MapPin, ChevronDown,
 } from "lucide-react";
 import { companyTalentApi, type TalentItem } from "@/lib/api/company";
@@ -333,7 +333,7 @@ export default function TalentPage() {
             <div style={headCell(FLEX.edu)}>최종학력</div>
             <div style={headCell(FLEX.career)}>최근경력</div>
             <div style={headCell(FLEX.skill)}>스킬</div>
-            <div style={{ width: W_ACTION, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>관리</div>
+            <div style={{ width: W_ACTION, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>이력서/포트폴리오</div>
           </div>
 
           {/* 바디 */}
@@ -351,9 +351,14 @@ export default function TalentPage() {
                     : t.name?.slice(0, 1) || "?"}
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a" }}>{t.name}</div>
+                  <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 6 }}>
+                    <span>{t.name}</span>
+                    {genderLabel(t.gender) && (
+                      <span style={{ fontSize: 12, fontWeight: 400, color: "#888" }}>{genderLabel(t.gender)}</span>
+                    )}
+                  </div>
                   <div style={{ ...clamp1, fontSize: 12, color: "#888", marginTop: 2 }}>
-                    {[genderLabel(t.gender), t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
+                    {[t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
                   </div>
                 </div>
               </div>
@@ -398,15 +403,28 @@ export default function TalentPage() {
               </div>
 
               {/* 관리 버튼 */}
-              <div style={{ width: W_ACTION, flexShrink: 0, height: ROW_H, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                <button className="company-action-btn" style={{ whiteSpace: "nowrap" }} onClick={(e) => { e.stopPropagation(); setSelected(t); }}>
-                  <FileText size={14} /> 이력서
-                </button>
-                <button className={`talent-scrap-btn ${t.scrapped ? "scrapped" : ""}`}
-                  style={{ padding: "6px 8px" }}
-                  onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
-                  {t.scrapped ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
-                </button>
+              <div style={{ width: W_ACTION, flexShrink: 0, height: ROW_H, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <button className="company-action-btn" style={{ whiteSpace: "nowrap" }} onClick={(e) => { e.stopPropagation(); setSelected(t); }}>
+                    <FileText size={14} /> 이력서
+                  </button>
+                  <button className={`talent-scrap-btn ${t.scrapped ? "scrapped" : ""}`}
+                    style={{ padding: "6px 8px" }}
+                    onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
+                    {t.scrapped ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
+                  </button>
+                </div>
+                {t.portfolioUrl ? (
+                  <a href={t.portfolioUrl} target="_blank" rel="noopener noreferrer" title="포트폴리오"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 11, textDecoration: "none" }}>
+                    <Paperclip size={14} /><span>포트폴리오</span>
+                  </a>
+                ) : (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#c8c8c8", fontSize: 11 }}>
+                    <Paperclip size={14} /><span>없음</span>
+                  </span>
+                )}
               </div>
             </div>
           ))}

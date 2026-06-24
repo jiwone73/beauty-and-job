@@ -93,6 +93,8 @@ export async function GET(req: NextRequest) {
         u.id,
         u.name,
         u.avatar_url,
+        u.portfolio_url,
+        u.portfolio_filename,
         u.created_at,
         u.gender,
         CASE WHEN u.birth_date IS NOT NULL
@@ -161,6 +163,7 @@ export async function GET(req: NextRequest) {
       id: r.id,
       name: r.name,
       avatarUrl: r.avatar_url,
+      portfolioUrl: r.portfolio_url || null,
       gender: r.gender,
       age: r.age,
       intro: r.intro,
