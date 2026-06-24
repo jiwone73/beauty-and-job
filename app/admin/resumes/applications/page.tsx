@@ -36,6 +36,7 @@ type App = {
   career_count: number;
   resume_id: string | null;
   position: string;
+  job_type: string | null;
   company_name: string;
   job_categories: string[] | null;
   cover_letter: string | null;
@@ -221,7 +222,14 @@ function AdminApplicationsPageInner() {
                       </div>
                     </td>
                     {/* 매장/기업명 */}
-                    <td className="admin-td-brand">{a.company_name}</td>
+                    <td className="admin-td-brand">
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                        {a.company_name}
+                        <span style={{ fontSize: 11, fontWeight: 500, color: "#999" }}>
+                          {a.job_type === "STORE" ? "매장" : "기업"}
+                        </span>
+                      </span>
+                    </td>
                     {/* 공고명 */}
                     <td className="admin-td-title">{a.position}</td>
                     {/* 직군 */}
@@ -258,20 +266,11 @@ function AdminApplicationsPageInner() {
                         )}
                       </div>
                     </td>
-                    {/* 상태 */}
+                    {/* 상태 (읽기 전용) */}
                     <td>
-                      <select
-                        className={`admin-status-select`}
-                        value={STATUS_TO_LABEL[a.status]}
-                        onChange={(e) => changeStatus(a.id, e.target.value)}
-                      >
-                        <option value="지원완료">지원완료</option>
-                        <option value="열람됨">열람됨</option>
-                        <option value="면접예정">면접예정</option>
-                        <option value="합격">합격</option>
-                        <option value="불합격">불합격</option>
-                        <option value="지원취소">지원취소</option>
-                      </select>
+                      <span className={`admin-badge ${STATUS_COLOR[a.status] || "admin-badge-neutral"}`}>
+                        {STATUS_TO_LABEL[a.status] || a.status}
+                      </span>
                     </td>
                   </tr>
                 );

@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
         (SELECT COUNT(*)::int FROM user_careers uc WHERE uc.user_id = u.id) AS career_count,
         COALESCE(a.resume_id, (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1)) AS resume_id,
         jp.title AS position,
+        jp.job_type,
         c.company_name,
         jp.categories AS job_categories
       FROM applications a
