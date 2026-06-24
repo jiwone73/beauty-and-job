@@ -5010,18 +5010,23 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-size: 12px;
   font-weight: 600;
   color: #888;
-  text-align: left;
+  text-align: center;
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
+  border-right: 1px solid #f0f0f0;
   white-space: nowrap;
 }
+.admin-table th:last-child { border-right: none; }
 .admin-table td {
   padding: 13px 16px;
   border-bottom: 1px solid #f9f9f9;
+  border-right: 1px solid #f0f0f0;
   font-size: 13px;
   color: #333;
+  text-align: center;
   vertical-align: middle;
 }
+.admin-table td:last-child { border-right: none; }
 .admin-table tr:last-child td { border-bottom: none; }
 .admin-table tr:hover td { background: #fafafa; }
 .admin-td-brand { font-weight: 600; color: #1a1a1a !important; }
