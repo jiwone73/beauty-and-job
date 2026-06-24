@@ -455,14 +455,6 @@ export default function TalentPage() {
 
                 {/* 직군: 1행 매장직/사무직 배지, 2행 세부직군 */}
                 <div style={cell(FLEX.job)}>
-                  {jtLabel && (
-                    <div style={{
-                      fontSize: 10, fontWeight: 600, padding: "1px 6px", borderRadius: 10, marginBottom: 3,
-                      color: jtLabel === "매장직" ? "#5f0080" : "#1a4fb5",
-                    }}>
-                      {jtLabel}
-                    </div>
-                  )}
                   <span style={{ ...clamp2, fontSize: 12, color: "#555" }}>{t.mainJobGroup || "—"}</span>
                 </div>
 
