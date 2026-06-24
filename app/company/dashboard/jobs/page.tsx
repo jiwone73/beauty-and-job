@@ -237,7 +237,7 @@ export default function CompanyJobsPage() {
                     {STATUS_LABEL[job.status]}
                   </td>
                   <td>
-                    <div style={{display:"flex", gap:"6px"}}>
+                    <div style={{display:"flex", gap:"6px", justifyContent:"center"}}>
                       {job.status === "ACTIVE" && (
                         <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:13, fontWeight:500, padding:"2px 4px"}}
                           onClick={() => handleClose(job.id)}>마감</button>
