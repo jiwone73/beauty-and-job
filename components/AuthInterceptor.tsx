@@ -30,10 +30,13 @@ export default function AuthInterceptor() {
         const isCompany = path.startsWith("/company");
         const isAdmin = path.startsWith("/admin");
 
-        // 토큰 정리
+        // 토큰 + zustand 인증/프로필 상태 모두 정리
         try {
           localStorage.removeItem("access_token");
           localStorage.removeItem("admin_token");
+          localStorage.removeItem("beautynjob-auth");
+          localStorage.removeItem("beautynjob-profile");
+          localStorage.removeItem("beautynjob-applications");
         } catch { /* noop */ }
 
         // 이미 로그인 화면이면 알림 생략
