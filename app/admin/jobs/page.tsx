@@ -265,7 +265,7 @@ function AdminJobsPageInner() {
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
                 <th>공고명</th>
-                <th>기업</th>
+                <th>매장/기업명</th>
                 <th>등록상품</th>
                 <th>직군</th>
                 <th>지역</th>
@@ -313,15 +313,13 @@ function AdminJobsPageInner() {
                           {job.company_name.charAt(0)}
                         </div>
                       )}
-                      <div>
-                        <div className="admin-td-brand"
-                          style={{ color: "#5f0080", cursor: "pointer", fontWeight: 400 }}
-                          onClick={() => job.company_id && openCompany(job.company_id)}>
-                          {job.company_name}
-                        </div>
-                        <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                      <div className="admin-td-brand"
+                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#5f0080", cursor: "pointer", fontWeight: 400 }}
+                        onClick={() => job.company_id && openCompany(job.company_id)}>
+                        {job.company_name}
+                        <span style={{ fontSize: 11, fontWeight: 500, color: "#999" }}>
                           {job.job_type === "STORE" ? "매장" : "기업"}
-                        </div>
+                        </span>
                       </div>
                     </div>
                   </td>
