@@ -297,13 +297,13 @@ function AdminMembersPageInner() {
                 <th style={{ width: 36, textAlign: "center" }}>
                   <input type="checkbox" checked={allPageSelected} onChange={toggleAllPage} />
                 </th>
-                <th>가입</th>
                 <th>이름</th>
-                <th>지역</th>
                 <th>직군</th>
+                <th>지역</th>
                 <th>연락처</th>
                 <th>최근경력</th>
-                <th>최초로그인</th>
+                <th>가입</th>
+                <th>최종로그인</th>
                 <th>이력서/포트폴리오</th>
                 <th>상태</th>
               </tr>
@@ -368,24 +368,19 @@ function AdminMembersPageInner() {
                       </div>
                     </td>
 
-                    {/* 지역: 시도 / 시군구 */}
-                    <td className="admin-td-date">
-                      {m.region_sido ? (
-                        <>
-                          <div>{shortSido(m.region_sido)}</div>
-                          {m.region_sigungu && (
-                            <div style={{ marginTop: 2, fontSize: 12, color: "#888" }}>{m.region_sigungu}</div>
-                          )}
-                        </>
-                      ) : "-"}
-                    </td>
-
                     {/* 직군: 대분류 / 세부 */}
                     <td className="admin-td-date">
                       <div>{m.job_type === "STORE" ? "매장직" : m.job_type === "OFFICE" ? "사무직" : "-"}</div>
                       <div style={{ marginTop: 2, fontSize: 12, color: "#888", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis" }} title={m.office_job_areas?.[0] || ""}>
                         {m.office_job_areas && m.office_job_areas.length > 0 ? m.office_job_areas[0] : "-"}
                       </div>
+                    </td>
+
+                    {/* 지역: 시도 시군구 한 줄 */}
+                    <td className="admin-td-date">
+                      {m.region_sido
+                        ? [shortSido(m.region_sido), m.region_sigungu].filter(Boolean).join(" ")
+                        : "-"}
                     </td>
 
                     {/* 연락처: 이메일 / 전화 */}
@@ -414,20 +409,36 @@ function AdminMembersPageInner() {
                       )}
                     </td>
 
-                    {/* 최초로그인 */}
+                    {/* 가입: 가입일 / 가입방법 */}
+                    <td className="admin-td-date">
+                      <div>{fmtDate(m.created_at)}</div>
+                      <div style={{ marginTop: 4 }}>
+                        {m.kakao_id ? (
+                          <span className="admin-badge" style={{ background: "#FEE500", color: "#3A1D1D", fontSize: 11 }}>카카오</span>
+                        ) : m.naver_id ? (
+                          <span className="admin-badge" style={{ background: "#03C75A", color: "#fff", fontSize: 11 }}>네이버</span>
+                        ) : (
+                          <span className="admin-badge admin-badge-neutral" style={{ fontSize: 11 }}>이메일</span>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* 최종로그인 */}
                     <td className="admin-td-date">{fmtDate(m.last_login_at)}</td>
 
                     {/* 이력서 + 포트폴리오 */}
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                        {/* 1행: 이력서 아이콘 + 스크랩 */}
+                        {/* 1행: 이력서 + 스크랩 */}
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           {m.resume_id ? (
-                            <button onClick={() => setSelected(m)} title="이력서 보기" style={{ background: "none", border: "none", cursor: "pointer", color: "#5f0080", padding: 0 }}>
-                              <FileText size={17} />
+                            <button onClick={() => setSelected(m)} title="이력서 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 13, fontWeight: 500, padding: 0 }}>
+                              <FileText size={15} /><span>이력서</span>
                             </button>
                           ) : (
-                            <span style={{ color: "#ddd" }}><FileText size={17} /></span>
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#ccc", fontSize: 13 }}>
+                              <FileText size={15} /><span>이력서</span>
+                            </span>
                           )}
                           <button
                             onClick={() => m.scrap_count > 0 && setScrapTarget(m)}
@@ -438,18 +449,16 @@ function AdminMembersPageInner() {
                             <Bookmark size={13} /> {m.scrap_count || 0}
                           </button>
                         </div>
-                        {/* 2행: 포트폴리오 아이콘 */}
-                        <div>
-                          {m.portfolio_url ? (
-                            <a href={m.portfolio_url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기" style={{ color: "#5f0080", display: "flex", alignItems: "center" }}>
-                              <Paperclip size={15} />
-                            </a>
-                          ) : (
-                            <span style={{ color: "#ddd", display: "flex", alignItems: "center" }}>
-                              <Paperclip size={15} />
-                            </span>
-                          )}
-                        </div>
+                        {/* 2행: 포트폴리오 */}
+                        {m.portfolio_url ? (
+                          <a href={m.portfolio_url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 12, textDecoration: "none", fontWeight: 500 }}>
+                            <Paperclip size={13} /><span>포트폴리오</span>
+                          </a>
+                        ) : (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 12 }}>
+                            <Paperclip size={13} /><span>포트폴리오</span>
+                          </span>
+                        )}
                       </div>
                     </td>
 
