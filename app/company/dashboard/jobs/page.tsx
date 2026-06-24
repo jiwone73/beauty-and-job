@@ -199,7 +199,8 @@ export default function CompanyJobsPage() {
                     checked={checked.length === filtered.length && filtered.length > 0}
                     onChange={toggleAll} />
                 </th>
-                <th>유형</th><th>공고명</th>
+                <th>공고명</th>
+                <th>등록일</th>
                 <th>마감일</th>
                 <th>지원자</th>
                 <th>조회수</th>
@@ -216,20 +217,18 @@ export default function CompanyJobsPage() {
                       onChange={() => toggleCheck(job.id)} />
                   </td>
                   <td>
-                    <span className={`jobs-type-badge ${job.job_type === "STORE" ? "store" : "corp"}`}>
-                      {job.job_type === "STORE" ? "🏪 매장" : "🏢 기업"}
-                    </span>
-                  </td>
-                  <td>
                     <span style={{color:"#5f0080", fontWeight:600, cursor:"pointer"}}
                       onClick={() => router.push(`/jobs/${job.id}`)}>
                       {job.title}
                     </span>
                   </td>
+                  <td className="company-td-sub">
+                    {new Date(job.created_at).toLocaleDateString("ko-KR")}
+                  </td>
                   <td className="company-td-sub">{formatDeadline(job.deadline)}</td>
                   <td>
                     <Link href={`/company/dashboard/applicants?job_id=${job.id}`}
-                      className="company-action-btn" style={{fontSize:"12px"}}>
+                      style={{display:"inline-flex", alignItems:"center", gap:4, color:"#5f0080", fontSize:13, fontWeight:500, textDecoration:"none"}}>
                       <Users size={13} /> {job.application_count}명
                     </Link>
                   </td>
