@@ -149,7 +149,7 @@ export default function MyApplicationModal({
 
   const r = data;
   const birthDisplay = r?.birth_date
-    ? `${String(r.birth_date).slice(0, 4)}년 (${new Date().getFullYear() - Number(String(r.birth_date).slice(0, 4))}세, ${r.gender === "FEMALE" ? "여" : r.gender === "MALE" ? "남" : ""})`
+    ? `${String(r.birth_date).slice(0, 4)}년 (${new Date().getFullYear() - Number(String(r.birth_date).slice(0, 4))}세${r.gender === "FEMALE" ? ", 여" : r.gender === "MALE" ? ", 남" : ""})`
     : "";
 
   return (
@@ -189,7 +189,7 @@ export default function MyApplicationModal({
                 ref={previewRef}
                 name={data.user_name || ""}
                 birthDisplay={birthDisplay}
-                jobDisplay={data.user_job_type === "STORE" ? "매장·기술직" : "기업·사무직"}
+                jobDisplay={data.user_job_type === "STORE" ? "매장직" : "사무직"}
                 phone={data.user_phone || ""}
                 email={data.user_email || ""}
                 portfolioUrl={data.portfolio_url || null}

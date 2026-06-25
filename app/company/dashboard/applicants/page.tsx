@@ -383,7 +383,7 @@ function ApplicantsContent() {
                   <ResumePreview
                     name={selected.user_name}
                     birthDisplay=""
-                    jobDisplay={selected.user_job_type === "STORE" ? "매장·기술직" : "기업·사무직"}
+                    jobDisplay={selected.user_job_type === "STORE" ? "매장직" : "사무직"}
                     phone={selected.user_phone || ""}
                     email={selected.user_email || ""}
                     portfolioUrl={(selected as any).portfolio_url || null}
