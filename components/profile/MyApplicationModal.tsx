@@ -58,17 +58,21 @@ export default function MyApplicationModal({
       const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
+      const margin = 8; // 상하 여백(mm)
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       const pageHeight = pdf.internal.pageSize.getHeight();
-      let heightLeft = pdfHeight; let position = 0;
+      const usableHeight = pageHeight - margin * 2;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      let heightLeft = pdfHeight;
+      let position = margin;
       pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-      heightLeft -= pageHeight;
+      heightLeft -= usableHeight;
       while (heightLeft > 0) {
-        position = heightLeft - pdfHeight;
+        position = margin - (pdfHeight - heightLeft);
         pdf.addPage();
         pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pageHeight;
+        heightLeft -= usableHeight;
       }
       const nm = data?.user_name;
       pdf.save(nm ? `${nm}_이력서.pdf` : "이력서.pdf");
