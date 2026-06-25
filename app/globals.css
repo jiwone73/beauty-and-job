@@ -5372,12 +5372,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 관리자 필터 그룹 */
 .admin-toolbar-left {
-  flex-direction: column !important;
-  align-items: flex-start !important;
+  flex-direction: row !important;
+  align-items: center !important;
   gap: 10px !important;
+  flex-wrap: wrap;
 }
 .admin-toolbar-left > .admin-search-wrap {
-  width: 100%;
+  width: 280px;
 }
 .admin-filter-group {
   display: flex;
