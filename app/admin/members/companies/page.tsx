@@ -197,19 +197,27 @@ function AdminCompaniesContent() {
     setSelectedIds([]);
   };
 
-  const isToday = (d: string | null) => {
-    if (!d) return false;
-    const dt = new Date(d); const now = new Date();
-    return dt.getFullYear() === now.getFullYear()
-      && dt.getMonth() === now.getMonth()
-      && dt.getDate() === now.getDate();
+  const matchPeriod = (d: string | null, period: string) => {
+    if (!d || period === "전체") return true;
+    const dt = new Date(d);
+    const now = new Date();
+    if (period === "today") {
+      return dt.getFullYear() === now.getFullYear()
+        && dt.getMonth() === now.getMonth()
+        && dt.getDate() === now.getDate();
+    }
+    const days = period === "7d" ? 7 : period === "1m" ? 30 : period === "3m" ? 90 : period === "1y" ? 365 : 0;
+    if (!days) return true;
+    const from = new Date();
+    from.setDate(from.getDate() - days);
+    return dt >= from;
   };
 
   const filtered = companies.filter((c) => {
     const matchSearch = !search || c.company_name?.includes(search) || c.email?.includes(search) || (c.business_number || "").includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[c.status] === statusFilter;
     const matchType = typeFilter === "전체" || TYPE_LABEL[c.company_type] === typeFilter;
-    const matchDate = dateFilter === "전체" || isToday(c.created_at);
+    const matchDate = matchPeriod(c.created_at, dateFilter);
     return matchSearch && matchStatus && matchType && matchDate;
   });
 
@@ -279,6 +287,10 @@ function AdminCompaniesContent() {
             onChange={(e) => { setDateFilter(e.target.value); setPage(1); }}>
             <option value="전체">가입일 전체</option>
             <option value="today">오늘</option>
+            <option value="7d">최근 7일</option>
+            <option value="1m">최근 1개월</option>
+            <option value="3m">최근 3개월</option>
+            <option value="1y">최근 1년</option>
           </select>
         </div>
       </div>
