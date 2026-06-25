@@ -134,27 +134,17 @@ function AdminApplicationsPageInner() {
             <input className="admin-search-input" placeholder="지원자, 기업명, 포지션 검색"
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">지원상태</span>
-            <div className="admin-filter-tabs">
-              {STATUS_OPTIONS.map((s) => (
-                <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
-                  onClick={() => setStatusFilter(s)}>{s}</button>
-              ))}
-            </div>
-          </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">지원일</span>
-            <div className="admin-filter-tabs">
-              {["전체", "오늘"].map((d) => {
-                const val = d === "오늘" ? "today" : "전체";
-                return (
-                  <button key={d} className={`admin-filter-tab ${dateFilter === val ? "active" : ""}`}
-                    onClick={() => setDateFilter(val)}>{d}</button>
-                );
-              })}
-            </div>
-          </div>
+          <select className="admin-form-select" value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>{s === "전체" ? "지원상태 전체" : s}</option>
+            ))}
+          </select>
+          <select className="admin-form-select" value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}>
+            <option value="전체">지원일 전체</option>
+            <option value="today">오늘</option>
+          </select>
         </div>
       </div>
       <div className="admin-card">

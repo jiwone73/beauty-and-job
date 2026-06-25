@@ -196,41 +196,26 @@ function AdminJobsPageInner() {
             <input className="admin-search-input" placeholder="공고명, 기업명 검색"
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">유형</span>
-            <div className="admin-filter-tabs">
-              {["전체", "매장", "기업"].map(g => (
-                <button key={g} className={`admin-filter-tab ${jobGroupFilter === g ? "active" : ""}`}
-                  onClick={() => setJobGroupFilter(g)}>{g}</button>
-              ))}
-            </div>
-          </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">승인상태</span>
-            <div className="admin-filter-tabs">
-              {STATUS_OPTIONS.map((s) => (
-                <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
-                  onClick={() => setStatusFilter(s)}>
-                  {s}
-                  {s === "승인대기" && counts.승인대기 > 0 && (
-                    <span className="admin-filter-count">{counts.승인대기}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">등록일</span>
-            <div className="admin-filter-tabs">
-              {["전체", "오늘"].map((d) => {
-                const val = d === "오늘" ? "today" : "전체";
-                return (
-                  <button key={d} className={`admin-filter-tab ${dateFilter === val ? "active" : ""}`}
-                    onClick={() => setDateFilter(val)}>{d}</button>
-                );
-              })}
-            </div>
-          </div>
+          <select className="admin-form-select" value={jobGroupFilter}
+            onChange={(e) => setJobGroupFilter(e.target.value)}>
+            {["전체", "매장", "기업"].map(g => (
+              <option key={g} value={g}>{g === "전체" ? "유형 전체" : g}</option>
+            ))}
+          </select>
+          <select className="admin-form-select" value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {s === "전체" ? "승인상태 전체" : s}
+                {s === "승인대기" && counts.승인대기 > 0 ? ` (${counts.승인대기})` : ""}
+              </option>
+            ))}
+          </select>
+          <select className="admin-form-select" value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}>
+            <option value="전체">등록일 전체</option>
+            <option value="today">오늘</option>
+          </select>
         </div>
         <div style={{display:"flex", gap:"8px"}}>
           <Link href="/admin/jobs/new" className="admin-primary-btn">
