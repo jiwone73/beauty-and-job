@@ -67,27 +67,31 @@ export default function MyApplicationModal({
 
       // 끊을 수 있는 경계(캔버스 픽셀 기준) 수집 — 항목/섹션 단위로만 페이지를 끊는다
       const rootTop = root.getBoundingClientRect().top;
-      // 개별 항목·칩그룹·텍스트 등 "끊겨선 안 되는 최소 단위"의 하단을 경계로 잡는다
-      const blockEls = Array.from(
-        root.querySelectorAll(".rp-item, .rp-list-item, .rp-chips, .rp-section > .rp-text, .rp-header")
-      ) as HTMLElement[];
-      const breakpoints: number[] = [];
-      blockEls.forEach((el) => {
-        // 섹션 제목이 이 블록 바로 위에 있으면, 제목 상단을 경계 시작으로 보정
-        const bottom = (el.getBoundingClientRect().bottom - rootTop) * scale;
-        breakpoints.push(bottom);
+      // "끊겨선 안 되는 최소 단위"의 경계를 수집한다.
+      // 각 섹션(rp-section)의 시작(상단)을 끊는 지점으로 삼으면,
+      // 섹션 제목 + 내용이 항상 한 덩어리로 다음 페이지에 함께 넘어간다.
+      const breakSet = new Set<number>();
+      // 섹션 시작 상단 — 여기서 끊으면 섹션이 통째로 다음 페이지로 감
+      Array.from(root.querySelectorAll(".rp-section")).forEach((el) => {
+        const top = ((el as HTMLElement).getBoundingClientRect().top - rootTop) * scale;
+        breakSet.add(Math.round(top));
       });
-      // 섹션 제목 단독 라인은 경계로 쓰지 않음(제목만 떨어지는 것 방지)
-      breakpoints.sort((a, b) => a - b);
+      // 섹션 내부 항목 하단 — 항목이 여러 개인 섹션에서 항목 사이를 끊을 수 있게
+      Array.from(root.querySelectorAll(".rp-item, .rp-list-item")).forEach((el) => {
+        const bottom = ((el as HTMLElement).getBoundingClientRect().bottom - rootTop) * scale;
+        breakSet.add(Math.round(bottom));
+      });
+      const breakpoints = Array.from(breakSet).sort((a, b) => a - b);
+      const SAFE_GAP = 12 * scale; // 끊는 지점 아래 안전 여백(구분선·여백 보호)
 
       let renderedHeight = 0;
       let pageIndex = 0;
       while (renderedHeight < canvas.height) {
         const maxEnd = renderedHeight + pxPerPage;
-        // 이 페이지 범위 안에 들어오는 마지막 섹션 경계를 찾는다
         let cut = maxEnd;
         if (maxEnd < canvas.height) {
-          const candidates = breakpoints.filter((bp) => bp > renderedHeight + 50 && bp <= maxEnd);
+          // 페이지 범위에 완전히 들어오는 마지막 경계에서 끊는다(안전 여백 확보)
+          const candidates = breakpoints.filter((bp) => bp > renderedHeight + 50 && bp <= maxEnd - SAFE_GAP);
           if (candidates.length > 0) {
             cut = Math.max(...candidates);
           }
