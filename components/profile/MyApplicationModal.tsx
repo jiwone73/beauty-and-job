@@ -47,6 +47,7 @@ export default function MyApplicationModal({
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
+  const coverRef = useRef<HTMLDivElement>(null);
   const handleDownloadPdf = async () => {
     if (!previewRef.current) return;
     setIsDownloading(true);
@@ -66,10 +67,13 @@ export default function MyApplicationModal({
       const contentWidth = pdfWidth - marginX * 2;
       const usableHeight = pageHeight - marginTop - marginBottom;
 
-      // 페이지에 쌓을 블록 단위: 헤더 + 각 섹션
-      const blocks = Array.from(
+      // 페이지에 쌓을 블록 단위: (자기소개서) + 헤더 + 각 섹션
+      const resumeBlocks = Array.from(
         root.querySelectorAll(".rp-header, .rp-section")
       ) as HTMLElement[];
+      const blocks = coverRef.current
+        ? [coverRef.current, ...resumeBlocks]
+        : resumeBlocks;
 
       let cursorY = marginTop;
       let first = true;
@@ -218,7 +222,7 @@ export default function MyApplicationModal({
                 <strong style={{ color: "#5f0080" }}>{data.company_name}</strong> · {data.job_title}
               </div>
               {data.cover_letter && data.cover_letter.trim() && (
-                <div style={{ background: "#faf5ff", border: "1px solid #ecdcff", borderRadius: 10, padding: "16px 18px", margin: "0 0 18px" }}>
+                <div ref={coverRef} style={{ background: "#faf5ff", border: "1px solid #ecdcff", borderRadius: 10, padding: "16px 18px", margin: "0 0 18px" }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 8 }}>제출한 자기소개서</div>
                   <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{data.cover_letter}</p>
                 </div>
