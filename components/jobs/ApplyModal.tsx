@@ -165,7 +165,7 @@ export default function ApplyModal({
   const wide = step === "preview" || step === "edit";
 
   return (
-    <div className="cv-overlay" onClick={onClose}>
+    <div className="cv-overlay">
       <div
         className="cv-modal"
         onClick={(e) => e.stopPropagation()}
