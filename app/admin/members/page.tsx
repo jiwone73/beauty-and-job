@@ -233,36 +233,23 @@ function AdminMembersPageInner() {
             <input className="admin-search-input" placeholder="이름, 이메일, 연락처 검색"
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
           </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">직군</span>
-            <div className="admin-filter-tabs">
-              {["전체", "매장기술직", "기업사무직"].map((t) => (
-                <button key={t} className={`admin-filter-tab ${jobTypeFilter === t ? "active" : ""}`}
-                  onClick={() => { setJobTypeFilter(t); setPage(1); }}>{t}</button>
-              ))}
-            </div>
-          </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">계정상태</span>
-            <div className="admin-filter-tabs">
-              {["전체", "정상", "휴면", "정지"].map((s) => (
-                <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
-                  onClick={() => { setStatusFilter(s); setPage(1); }}>{s}</button>
-              ))}
-            </div>
-          </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">가입일</span>
-            <div className="admin-filter-tabs">
-              {["전체", "오늘"].map((d) => {
-                const val = d === "오늘" ? "today" : "전체";
-                return (
-                  <button key={d} className={`admin-filter-tab ${dateFilter === val ? "active" : ""}`}
-                    onClick={() => { setDateFilter(val); setPage(1); }}>{d}</button>
-                );
-              })}
-            </div>
-          </div>
+          <select className="admin-form-select" value={jobTypeFilter}
+            onChange={(e) => { setJobTypeFilter(e.target.value); setPage(1); }}>
+            {["전체", "매장기술직", "기업사무직"].map((t) => (
+              <option key={t} value={t}>{t === "전체" ? "직군 전체" : t}</option>
+            ))}
+          </select>
+          <select className="admin-form-select" value={statusFilter}
+            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
+            {["전체", "정상", "휴면", "정지"].map((s) => (
+              <option key={s} value={s}>{s === "전체" ? "계정상태 전체" : s}</option>
+            ))}
+          </select>
+          <select className="admin-form-select" value={dateFilter}
+            onChange={(e) => { setDateFilter(e.target.value); setPage(1); }}>
+            <option value="전체">가입일 전체</option>
+            <option value="today">오늘</option>
+          </select>
         </div>
       </div>
 
