@@ -244,7 +244,9 @@ function AdminMembersPageInner() {
           <select className="admin-form-select" value={jobTypeFilter}
             onChange={(e) => { setJobTypeFilter(e.target.value); setPage(1); }}>
             {["전체", "매장기술직", "기업사무직"].map((t) => (
-              <option key={t} value={t}>{t === "전체" ? "직군 전체" : t}</option>
+              <option key={t} value={t}>
+                {t === "전체" ? "직군 전체" : t === "매장기술직" ? "매장직" : "사무직"}
+              </option>
             ))}
           </select>
           <select className="admin-form-select" value={statusFilter}
