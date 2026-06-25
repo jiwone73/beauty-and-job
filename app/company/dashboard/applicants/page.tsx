@@ -248,7 +248,7 @@ function ApplicantsContent() {
                 <tr key={a.id}>
                   <td>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-                      <div className="talent-avatar" style={{ width: 40, height: 40, fontSize: 14, flexShrink: 0, overflow: "hidden" }}>
+                      <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         {(a as any).user_avatar_url
                           ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           : (a.user_name || "?").slice(0, 1)}
