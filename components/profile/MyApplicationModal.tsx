@@ -47,7 +47,6 @@ export default function MyApplicationModal({
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
-
   const handleDownloadPdf = async () => {
     if (!previewRef.current) return;
     setIsDownloading(true);
@@ -58,63 +57,67 @@ export default function MyApplicationModal({
 
       const root = previewRef.current;
       const scale = 2;
-      const canvas = await html2canvas(root, { scale, useCORS: true, backgroundColor: "#ffffff" });
-
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const pxPerPage = Math.floor((canvas.width * pageHeight) / pdfWidth);
+      const marginTop = 6;     // 페이지 상단 여백(mm)
+      const marginBottom = 6;  // 페이지 하단 여백(mm)
+      const usableHeight = pageHeight - marginTop - marginBottom;
 
-      // 끊을 수 있는 경계(캔버스 픽셀 기준) 수집 — 항목/섹션 단위로만 페이지를 끊는다
-      const rootTop = root.getBoundingClientRect().top;
-      // "끊겨선 안 되는 최소 단위"의 경계를 수집한다.
-      // 각 섹션(rp-section)의 시작(상단)을 끊는 지점으로 삼으면,
-      // 섹션 제목 + 내용이 항상 한 덩어리로 다음 페이지에 함께 넘어간다.
-      const breakSet = new Set<number>();
-      // 섹션 시작 상단 — 여기서 끊으면 섹션이 통째로 다음 페이지로 감
-      Array.from(root.querySelectorAll(".rp-section")).forEach((el) => {
-        const top = ((el as HTMLElement).getBoundingClientRect().top - rootTop) * scale;
-        breakSet.add(Math.round(top));
-      });
-      // 섹션 내부 항목 하단 — 항목이 여러 개인 섹션에서 항목 사이를 끊을 수 있게
-      Array.from(root.querySelectorAll(".rp-item, .rp-list-item")).forEach((el) => {
-        const bottom = ((el as HTMLElement).getBoundingClientRect().bottom - rootTop) * scale;
-        breakSet.add(Math.round(bottom));
-      });
-      const breakpoints = Array.from(breakSet).sort((a, b) => a - b);
-      const SAFE_GAP = 12 * scale; // 끊는 지점 아래 안전 여백(구분선·여백 보호)
+      // 페이지에 쌓을 블록 단위: 헤더 + 각 섹션
+      const blocks = Array.from(
+        root.querySelectorAll(".rp-header, .rp-section")
+      ) as HTMLElement[];
 
-      let renderedHeight = 0;
-      let pageIndex = 0;
-      while (renderedHeight < canvas.height) {
-        const maxEnd = renderedHeight + pxPerPage;
-        let cut = maxEnd;
-        if (maxEnd < canvas.height) {
-          // 페이지 범위에 완전히 들어오는 마지막 경계에서 끊는다(안전 여백 확보)
-          const candidates = breakpoints.filter((bp) => bp > renderedHeight + 50 && bp <= maxEnd - SAFE_GAP);
-          if (candidates.length > 0) {
-            cut = Math.max(...candidates);
+      let cursorY = marginTop;
+      let first = true;
+
+      for (const block of blocks) {
+        // 블록 하나를 개별 캡처
+        const canvas = await html2canvas(block, { scale, useCORS: true, backgroundColor: "#ffffff" });
+        const imgW = pdfWidth;
+        const imgH = (canvas.height * imgW) / canvas.width;
+        const imgData = canvas.toDataURL("image/png");
+
+        // 블록이 한 페이지보다 큰 경우(아주 긴 섹션) → 페이지 높이로 잘라서 여러 장
+        if (imgH > usableHeight) {
+          // 현재 페이지에 남은 게 있으면 새 페이지에서 시작
+          if (!first && cursorY > marginTop) { pdf.addPage(); }
+          if (first) { first = false; }
+          const pxPerPage = Math.floor((canvas.width * usableHeight) / pdfWidth);
+          let rendered = 0;
+          let pageStart = true;
+          while (rendered < canvas.height) {
+            const sliceH = Math.min(pxPerPage, canvas.height - rendered);
+            const pageCanvas = document.createElement("canvas");
+            pageCanvas.width = canvas.width;
+            pageCanvas.height = sliceH;
+            const ctx = pageCanvas.getContext("2d");
+            if (ctx) {
+              ctx.fillStyle = "#ffffff";
+              ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+              ctx.drawImage(canvas, 0, rendered, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+            }
+            const sliceImg = pageCanvas.toDataURL("image/png");
+            const sliceHmm = (sliceH * pdfWidth) / canvas.width;
+            if (!pageStart) pdf.addPage();
+            pdf.addImage(sliceImg, "PNG", 0, marginTop, pdfWidth, sliceHmm);
+            rendered += sliceH;
+            pageStart = false;
           }
-        } else {
-          cut = canvas.height;
+          cursorY = pageHeight; // 다음 블록은 새 페이지에서
+          continue;
         }
-        const sliceHeight = Math.min(cut - renderedHeight, canvas.height - renderedHeight);
 
-        const pageCanvas = document.createElement("canvas");
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = sliceHeight;
-        const ctx = pageCanvas.getContext("2d");
-        if (ctx) {
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-          ctx.drawImage(canvas, 0, renderedHeight, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+        // 현재 페이지에 이 블록이 안 들어가면 새 페이지로
+        if (!first && cursorY + imgH > pageHeight - marginBottom) {
+          pdf.addPage();
+          cursorY = marginTop;
         }
-        const pageImg = pageCanvas.toDataURL("image/png");
-        const slicePdfHeight = (sliceHeight * pdfWidth) / canvas.width;
-        if (pageIndex > 0) pdf.addPage();
-        pdf.addImage(pageImg, "PNG", 0, 0, pdfWidth, slicePdfHeight);
-        renderedHeight += sliceHeight;
-        pageIndex++;
+        if (first) first = false;
+
+        pdf.addImage(imgData, "PNG", 0, cursorY, imgW, imgH);
+        cursorY += imgH;
       }
 
       const nm = data?.user_name;
