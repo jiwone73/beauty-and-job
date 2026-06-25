@@ -14,7 +14,7 @@ export default function CompanyBlockModal({ open, onClose }: { open: boolean; on
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
   const loadBlocked = useCallback(() => {
-    fetch("/api/users/me/blocks", { headers })
+    fetch("/api/users/blocks", { headers })
       .then((r) => r.json())
       .then((res) => { if (res.success) setBlocked(res.data || []); })
       .catch((e) => console.error("[blocks load]", e));
@@ -40,7 +40,7 @@ export default function CompanyBlockModal({ open, onClose }: { open: boolean; on
     setBlocked((prev) => [c, ...prev]);
     setQuery(""); setResults([]);
     try {
-      await fetch("/api/users/me/blocks", {
+      await fetch("/api/users/blocks", {
         method: "POST", headers,
         body: JSON.stringify({ companyId: c.companyId, companyName: c.companyName }),
       });
@@ -50,7 +50,7 @@ export default function CompanyBlockModal({ open, onClose }: { open: boolean; on
   const removeBlock = async (companyId: string) => {
     setBlocked((prev) => prev.filter((b) => b.companyId !== companyId));
     try {
-      await fetch(`/api/users/me/blocks/${companyId}`, { method: "DELETE", headers });
+      await fetch(`/api/users/blocks/${companyId}`, { method: "DELETE", headers });
     } catch (e) { console.error("[block remove]", e); loadBlocked(); }
   };
 
