@@ -280,19 +280,7 @@ function AdminCompaniesContent() {
               placeholder={blockedMode ? "회원명, 기업명 검색" : "기업명, 이메일, 사업자번호 검색"}
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
           </div>
-          <button
-            onClick={() => { setBlockedMode((v) => !v); setSearch(""); setPage(1); }}
-            className="admin-form-select"
-            style={{
-              cursor: "pointer",
-              background: blockedMode ? "#5f0080" : "#fff",
-              color: blockedMode ? "#fff" : "#555",
-              borderColor: blockedMode ? "#5f0080" : undefined,
-              fontWeight: 600,
-            }}
-          >
-            열람제한기업
-          </button>
+          
           {!blockedMode && (
           <select className="admin-form-select" value={typeFilter}
             onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}>
@@ -327,20 +315,37 @@ function AdminCompaniesContent() {
       <div className="admin-card">
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>총 <strong>{filtered.length}</strong>개사</span>
-          <button
-            onClick={handleBulkDelete}
-            disabled={selectedIds.length === 0}
-            style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "6px 14px", borderRadius: 6, border: "none",
-              background: selectedIds.length ? "#e74c3c" : "#ededed",
-              color: selectedIds.length ? "#fff" : "#aaa",
-              fontSize: 13, fontWeight: 600,
-              cursor: selectedIds.length ? "pointer" : "default",
-            }}
-          >
-            <Trash2 size={15} /> 선택 삭제{selectedIds.length ? ` (${selectedIds.length})` : ""}
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              onClick={() => { setBlockedMode((v) => !v); setSearch(""); setPage(1); }}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "6px 14px", borderRadius: 6,
+                border: `1px solid ${blockedMode ? "#5f0080" : "#e3dceb"}`,
+                background: blockedMode ? "#5f0080" : "#fff",
+                color: blockedMode ? "#fff" : "#5f0080",
+                fontSize: 13, fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              열람제한기업
+            </button>
+            {!blockedMode && (
+              <button
+                onClick={handleBulkDelete}
+                disabled={selectedIds.length === 0}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "6px 14px", borderRadius: 6, border: "none",
+                  background: selectedIds.length ? "#e74c3c" : "#ededed",
+                  color: selectedIds.length ? "#fff" : "#aaa",
+                  fontSize: 13, fontWeight: 600,
+                  cursor: selectedIds.length ? "pointer" : "default",
+                }}
+              >
+                <Trash2 size={15} /> 선택 삭제{selectedIds.length ? ` (${selectedIds.length})` : ""}
+              </button>
+            )}
+          </div>
         </div>
         {loading ? (
           <div className="admin-empty">불러오는 중...</div>
