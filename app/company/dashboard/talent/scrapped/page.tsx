@@ -246,8 +246,8 @@ export default function ScrappedTalentPage() {
                 onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
               >
                 {/* 이름 */}
-                <div style={{ ...cell(FLEX.name), flexDirection: "row", alignItems: "center", gap: 10 }}>
-                  <div className="talent-avatar" style={{ width: 40, height: 40, overflow: "hidden", flexShrink: 0 }}>
+                <div style={{ ...cell(FLEX.name), flexDirection: "row", alignItems: "center", gap: 10, justifyContent: "flex-start" }}>
+                  <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {t.avatar_url
                       ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       : (t.name || "?").slice(0, 1)}

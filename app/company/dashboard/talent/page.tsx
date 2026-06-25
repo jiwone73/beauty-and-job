@@ -437,10 +437,10 @@ export default function TalentPage() {
               >
                 {/* 이름 */}
                 <div style={{ ...cell(FLEX.name), flexDirection: "row", alignItems: "center", gap: 10 }}>
-                  <div className="talent-avatar" style={{ width: 40, height: 40, overflow: "hidden", flexShrink: 0 }}>
+                  <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {t.avatarUrl
                       ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      : t.name?.slice(0, 1) || "?"}
+                      : <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{t.name?.slice(0, 1) || "?"}</span>}
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
