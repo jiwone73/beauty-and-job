@@ -55,19 +55,41 @@ export default function MyApplicationModal({
       const html2canvas = (await import("html2canvas")).default;
       const jsPDF = (await import("jspdf")).default;
       await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const imgData = canvas.toDataURL("image/png");
+
+      const root = previewRef.current;
+      const scale = 2;
+      const canvas = await html2canvas(root, { scale, useCORS: true, backgroundColor: "#ffffff" });
+
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      // 한 페이지에 들어갈 캔버스 픽셀 높이
       const pxPerPage = Math.floor((canvas.width * pageHeight) / pdfWidth);
+
+      // 각 섹션의 하단 경계(캔버스 픽셀 기준) 수집 — 이 지점에서만 페이지를 끊는다
+      const rootTop = root.getBoundingClientRect().top;
+      const sectionEls = Array.from(root.querySelectorAll(".rp-section, .rp-header")) as HTMLElement[];
+      const breakpoints: number[] = [];
+      sectionEls.forEach((el) => {
+        const bottom = (el.getBoundingClientRect().bottom - rootTop) * scale;
+        breakpoints.push(bottom);
+      });
 
       let renderedHeight = 0;
       let pageIndex = 0;
       while (renderedHeight < canvas.height) {
-        const sliceHeight = Math.min(pxPerPage, canvas.height - renderedHeight);
-        // 페이지별로 캔버스 조각을 잘라 별도 캔버스에 그림
+        const maxEnd = renderedHeight + pxPerPage;
+        // 이 페이지 범위 안에 들어오는 마지막 섹션 경계를 찾는다
+        let cut = maxEnd;
+        if (maxEnd < canvas.height) {
+          const candidates = breakpoints.filter((bp) => bp > renderedHeight + 50 && bp <= maxEnd);
+          if (candidates.length > 0) {
+            cut = Math.max(...candidates);
+          }
+        } else {
+          cut = canvas.height;
+        }
+        const sliceHeight = Math.min(cut - renderedHeight, canvas.height - renderedHeight);
+
         const pageCanvas = document.createElement("canvas");
         pageCanvas.width = canvas.width;
         pageCanvas.height = sliceHeight;
@@ -84,6 +106,7 @@ export default function MyApplicationModal({
         renderedHeight += sliceHeight;
         pageIndex++;
       }
+
       const nm = data?.user_name;
       pdf.save(nm ? `${nm}_이력서.pdf` : "이력서.pdf");
     } catch (e) {
