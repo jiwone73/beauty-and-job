@@ -89,7 +89,6 @@ export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
               ))}
             </div>
           )}
-          <button className="cv-btn-text-add">+ 어학시험 추가</button>
           <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
         </div>
       </div>
