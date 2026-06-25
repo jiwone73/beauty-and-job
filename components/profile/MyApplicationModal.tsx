@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import ResumePreview from "@/components/profile/ResumePreview";
-import { X, Download, Printer } from "lucide-react";
+import { genderLabel } from "@/lib/memberFormat";import { X, Download, Printer } from "lucide-react";
 
 const mapResume = (data: any) => {
   const p = data?.profile || {};
@@ -149,7 +149,7 @@ export default function MyApplicationModal({
 
   const r = data;
   const birthDisplay = r?.birth_date
-    ? `${String(r.birth_date).slice(0, 4)}년 (${new Date().getFullYear() - Number(String(r.birth_date).slice(0, 4))}세${r.gender === "FEMALE" ? ", 여" : r.gender === "MALE" ? ", 남" : ""})`
+    ? `${String(r.birth_date).slice(0, 4)}년 (${new Date().getFullYear() - Number(String(r.birth_date).slice(0, 4))}세${genderLabel(r.gender) ? ", " + genderLabel(r.gender) : ""})`
     : "";
 
   return (
