@@ -65,14 +65,20 @@ export default function MyApplicationModal({
       const pageHeight = pdf.internal.pageSize.getHeight();
       const pxPerPage = Math.floor((canvas.width * pageHeight) / pdfWidth);
 
-      // 각 섹션의 하단 경계(캔버스 픽셀 기준) 수집 — 이 지점에서만 페이지를 끊는다
+      // 끊을 수 있는 경계(캔버스 픽셀 기준) 수집 — 항목/섹션 단위로만 페이지를 끊는다
       const rootTop = root.getBoundingClientRect().top;
-      const sectionEls = Array.from(root.querySelectorAll(".rp-section, .rp-header")) as HTMLElement[];
+      // 개별 항목·칩그룹·텍스트 등 "끊겨선 안 되는 최소 단위"의 하단을 경계로 잡는다
+      const blockEls = Array.from(
+        root.querySelectorAll(".rp-item, .rp-list-item, .rp-chips, .rp-section > .rp-text, .rp-header")
+      ) as HTMLElement[];
       const breakpoints: number[] = [];
-      sectionEls.forEach((el) => {
+      blockEls.forEach((el) => {
+        // 섹션 제목이 이 블록 바로 위에 있으면, 제목 상단을 경계 시작으로 보정
         const bottom = (el.getBoundingClientRect().bottom - rootTop) * scale;
         breakpoints.push(bottom);
       });
+      // 섹션 제목 단독 라인은 경계로 쓰지 않음(제목만 떨어지는 것 방지)
+      breakpoints.sort((a, b) => a - b);
 
       let renderedHeight = 0;
       let pageIndex = 0;
