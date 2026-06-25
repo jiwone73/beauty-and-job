@@ -62,6 +62,8 @@ export default function MyApplicationModal({
       const pageHeight = pdf.internal.pageSize.getHeight();
       const marginTop = 6;     // 페이지 상단 여백(mm)
       const marginBottom = 6;  // 페이지 하단 여백(mm)
+      const marginX = 10;      // 페이지 좌우 여백(mm)
+      const contentWidth = pdfWidth - marginX * 2;
       const usableHeight = pageHeight - marginTop - marginBottom;
 
       // 페이지에 쌓을 블록 단위: 헤더 + 각 섹션
@@ -75,7 +77,7 @@ export default function MyApplicationModal({
       for (const block of blocks) {
         // 블록 하나를 개별 캡처
         const canvas = await html2canvas(block, { scale, useCORS: true, backgroundColor: "#ffffff" });
-        const imgW = pdfWidth;
+        const imgW = contentWidth;
         const imgH = (canvas.height * imgW) / canvas.width;
         const imgData = canvas.toDataURL("image/png");
 
@@ -84,7 +86,7 @@ export default function MyApplicationModal({
           // 현재 페이지에 남은 게 있으면 새 페이지에서 시작
           if (!first && cursorY > marginTop) { pdf.addPage(); }
           if (first) { first = false; }
-          const pxPerPage = Math.floor((canvas.width * usableHeight) / pdfWidth);
+          const pxPerPage = Math.floor((canvas.width * usableHeight) / contentWidth);
           let rendered = 0;
           let pageStart = true;
           while (rendered < canvas.height) {
@@ -99,9 +101,9 @@ export default function MyApplicationModal({
               ctx.drawImage(canvas, 0, rendered, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
             }
             const sliceImg = pageCanvas.toDataURL("image/png");
-            const sliceHmm = (sliceH * pdfWidth) / canvas.width;
+            const sliceHmm = (sliceH * contentWidth) / canvas.width;
             if (!pageStart) pdf.addPage();
-            pdf.addImage(sliceImg, "PNG", 0, marginTop, pdfWidth, sliceHmm);
+            pdf.addImage(sliceImg, "PNG", marginX, marginTop, contentWidth, sliceHmm);
             rendered += sliceH;
             pageStart = false;
           }
@@ -116,7 +118,7 @@ export default function MyApplicationModal({
         }
         if (first) first = false;
 
-        pdf.addImage(imgData, "PNG", 0, cursorY, imgW, imgH);
+        pdf.addImage(imgData, "PNG", marginX, cursorY, imgW, imgH);
         cursorY += imgH;
       }
 
