@@ -58,21 +58,31 @@ export default function MyApplicationModal({
       const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
-      const margin = 8; // 상하 여백(mm)
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const usableHeight = pageHeight - margin * 2;
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      // 한 페이지에 들어갈 캔버스 픽셀 높이
+      const pxPerPage = Math.floor((canvas.width * pageHeight) / pdfWidth);
 
-      let heightLeft = pdfHeight;
-      let position = margin;
-      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-      heightLeft -= usableHeight;
-      while (heightLeft > 0) {
-        position = margin - (pdfHeight - heightLeft);
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-        heightLeft -= usableHeight;
+      let renderedHeight = 0;
+      let pageIndex = 0;
+      while (renderedHeight < canvas.height) {
+        const sliceHeight = Math.min(pxPerPage, canvas.height - renderedHeight);
+        // 페이지별로 캔버스 조각을 잘라 별도 캔버스에 그림
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeight;
+        const ctx = pageCanvas.getContext("2d");
+        if (ctx) {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+          ctx.drawImage(canvas, 0, renderedHeight, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+        }
+        const pageImg = pageCanvas.toDataURL("image/png");
+        const slicePdfHeight = (sliceHeight * pdfWidth) / canvas.width;
+        if (pageIndex > 0) pdf.addPage();
+        pdf.addImage(pageImg, "PNG", 0, 0, pdfWidth, slicePdfHeight);
+        renderedHeight += sliceHeight;
+        pageIndex++;
       }
       const nm = data?.user_name;
       pdf.save(nm ? `${nm}_이력서.pdf` : "이력서.pdf");
