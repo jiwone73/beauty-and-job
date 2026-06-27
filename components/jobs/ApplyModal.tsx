@@ -163,7 +163,7 @@ export default function ApplyModal({
   };
 
   // 큰 모달 (미리보기·수정 시 넓게)
-  const wide = step === "preview" || step === "edit";
+  const wide = true;
 
   return (
     <div className="cv-overlay">
