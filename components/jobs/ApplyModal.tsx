@@ -262,7 +262,7 @@ export default function ApplyModal({
           {/* ===== 화면 2: 미리보기 (자소서 + 전체 이력서) ===== */}
           {step === "preview" && (
             <>
-              <div style={{ border: "1px solid #eee", borderRadius: 10, overflow: "hidden", marginBottom: 16 }}>
+              <div style={{ marginBottom: 16 }}>
                 <div className="apply-cover-block">
                   <div className="apply-cover-title">자기소개서</div>
                   {coverLetter.trim() ? (
