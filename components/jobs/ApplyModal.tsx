@@ -44,6 +44,13 @@ export default function ApplyModal({
 
   const name = signupName || userName || "";
 
+  // 모달 열린 동안 배경 스크롤 잠금
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
   // 모달 열릴 때: store 로드 + 기본정보 + 최근 자소서
   useEffect(() => {
     const token = localStorage.getItem("access_token");
