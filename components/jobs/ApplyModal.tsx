@@ -204,9 +204,9 @@ export default function ApplyModal({
                   <p style={{ fontSize: 12, color: "#999", margin: "0 0 6px" }}>💡 추천 문구를 눌러 이어쓸 수 있어요</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     <button type="button"
-                      onClick={() => setCoverLetter((prev) => prev + `${jobBrand ? jobBrand + " " : ""}${jobTitle || "이 포지션"}에 지원합니다.\n\n`)}
+                      onClick={() => setCoverLetter((prev) => prev + `${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 포지션"} 채용 공고를 보고 지원하게 된 ${userName || ""}입니다.\n\n`)}
                       style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
-                      {`${jobBrand ? jobBrand + " " : ""}${jobTitle || "이 포지션"}에 지원합니다.`}
+                      {`${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 포지션"} 채용 공고를 보고 지원하게 된 ${userName || ""}입니다.`}
                     </button>
                     {coreCompetencies && coreCompetencies.trim() && (
                       <button type="button"
@@ -216,9 +216,9 @@ export default function ApplyModal({
                       </button>
                     )}
                     <button type="button"
-                      onClick={() => setCoverLetter((prev) => prev + `면접 기회를 주신다면 성실한 자세로 임하겠습니다. 감사합니다.\n\n`)}
+                      onClick={() => setCoverLetter((prev) => prev + `면접에서 제 경험과 역량을 더 구체적으로 말씀드릴 기회를 주시면 감사하겠습니다.\n\n`)}
                       style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
-                      면접 기회를 주신다면 성실히 임하겠습니다.
+                      면접에서 제 경험과 역량을 더 구체적으로 말씀드릴 기회를 주시면 감사하겠습니다.
                     </button>
                     {lastCoverLetter && (
                       <button type="button"
