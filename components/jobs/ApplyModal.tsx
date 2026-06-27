@@ -202,6 +202,24 @@ export default function ApplyModal({
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#333", marginBottom: 6 }}>
                 자기소개서
               </label>
+              {!coverLetter.trim() && (
+                <div style={{ marginBottom: 10 }}>
+                  <p style={{ fontSize: 12, color: "#999", margin: "0 0 6px" }}>💡 추천 문구로 시작해보세요</p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {[
+                      `${jobBrand ? jobBrand + " " : ""}${jobTitle || "이 포지션"}에 지원합니다. `,
+                      `안녕하세요, ${jobTitle || "해당 직무"}에 지원하는 ${userName || ""}입니다. `,
+                      `${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 직무"}로 성장하고 싶어 지원하게 되었습니다. `,
+                    ].map((tpl, i) => (
+                      <button key={i} type="button"
+                        onClick={() => setCoverLetter(tpl)}
+                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                        {tpl.trim()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               <textarea
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
