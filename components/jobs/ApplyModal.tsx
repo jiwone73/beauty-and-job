@@ -216,9 +216,9 @@ export default function ApplyModal({
                       </button>
                     )}
                     <button type="button"
-                      onClick={() => setCoverLetter((prev) => prev + `🙌 맺음말\n\n`)}
+                      onClick={() => setCoverLetter((prev) => prev + `면접에서 제 경험과 역량을 더 구체적으로 말씀드릴 기회를 주시면 감사하겠습니다.\n\n`)}
                       style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
-                      면접에서 제 경험과 역량을 더 구체적으로 말씀드릴 기회를 주시면 감사하겠습니다.
+                      🙌 맺음말
                     </button>
                     {lastCoverLetter && (
                       <button type="button"
