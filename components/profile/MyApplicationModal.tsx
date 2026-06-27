@@ -222,9 +222,10 @@ export default function MyApplicationModal({
                 <strong style={{ color: "#5f0080" }}>{data.company_name}</strong> · {data.job_title}
               </div>
               {data.cover_letter && data.cover_letter.trim() && (
-                <div ref={coverRef} style={{ background: "#faf5ff", border: "1px solid #ecdcff", borderRadius: 10, padding: "16px 18px", margin: "0 0 18px" }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 8 }}>제출한 자기소개서</div>
-                  <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{data.cover_letter}</p>
+                <div ref={coverRef} style={{ background: "#fff", padding: "32px 36px 28px", marginBottom: 16 }}>
+                  <h1 style={{ fontSize: 22, fontWeight: 800, color: "#1a1a1a", textAlign: "center", margin: "0 0 4px", letterSpacing: "0.05em" }}>자기소개서</h1>
+                  <div style={{ width: 48, height: 3, background: "#5f0080", margin: "0 auto 28px", borderRadius: 2 }} />
+                  <p style={{ fontSize: 14.5, color: "#333", lineHeight: 1.9, margin: 0, whiteSpace: "pre-wrap" }}>{data.cover_letter}</p>
                 </div>
               )}
               <ResumePreview
