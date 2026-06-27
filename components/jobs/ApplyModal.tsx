@@ -215,6 +215,11 @@ export default function ApplyModal({
                         {`저의 핵심 역량인 ${coreCompetencies.trim()}을(를) 바탕으로 ${jobTitle || "해당"} 직무에서 기여하고 싶습니다.`}
                       </button>
                     )}
+                    <button type="button"
+                      onClick={() => setCoverLetter((prev) => prev + `면접 기회를 주신다면 성실한 자세로 임하겠습니다. 감사합니다.\n\n`)}
+                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                      면접 기회를 주신다면 성실히 임하겠습니다.
+                    </button>
                     {lastCoverLetter && (
                       <button type="button"
                         onClick={() => setCoverLetter(lastCoverLetter)}
