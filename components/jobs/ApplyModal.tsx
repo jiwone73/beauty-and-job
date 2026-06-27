@@ -328,7 +328,7 @@ export default function ApplyModal({
                 />
               </div>
 
-              <div style={{ borderTop: "1px solid #eee", paddingTop: 16 }}>
+              <div style={{ borderTop: "1px solid #eee", paddingTop: 16, padding: "16px 16px 0" }}>
                 <ResumeEditor
                   resumeType={resumeType}
                   emailLocal={emailLocal}
@@ -341,7 +341,7 @@ export default function ApplyModal({
                 />
               </div>
 
-              <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+              <div style={{ display: "flex", gap: 8, marginTop: 16, padding: "0 16px 16px" }}>
                 <button
                   onClick={handleSaveResume}
                   disabled={saving}
