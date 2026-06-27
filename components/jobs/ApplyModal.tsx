@@ -242,8 +242,8 @@ export default function ApplyModal({
           {/* ===== 화면 2: 미리보기 (자소서 + 전체 이력서) ===== */}
           {step === "preview" && (
             <>
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#5f0080", marginBottom: 10 }}>자기소개서</div>
+              <div style={{ padding: "0 56px", marginTop: 48, marginBottom: 20 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 10 }}>자기소개서</div>
                 <div style={{ background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, padding: "18px 20px" }}>
                   {coverLetter.trim() ? (
                     <p style={{ fontSize: 15, color: "#333", lineHeight: 1.8, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
@@ -305,7 +305,7 @@ export default function ApplyModal({
           {/* ===== 화면 3: 이력서 수정 ===== */}
           {step === "edit" && (
             <>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#333", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 8 }}>
                 자기소개서
               </label>
               <textarea
