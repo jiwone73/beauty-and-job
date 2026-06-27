@@ -1622,10 +1622,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) { .resume-layout { padding: 0; } }
 .resume-section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.resume-section-title { font-size: 14px; font-weight: 700; color: #7c3aed; margin-bottom: 12px; }
+.resume-section-title { font-size: 14px; font-weight: 700; color: #5f0080; text-transform: none; letter-spacing: normal; margin-bottom: 12px; }
 .apply-resume-wrap .resume-section { padding: 16px 0; background: transparent; margin-bottom: 0; }
-.apply-cover-block { padding: 20px 0 0 !important; }
-@media (max-width: 640px) { .apply-cover-block { padding: 16px 0 0 !important; } }
+.apply-cover-block { padding: 20px 0 0; }
+@media (max-width: 640px) { .apply-cover-block { padding: 18px 0 0; } }
 .apply-cover-title { font-size: 14px; font-weight: 700; color: #1a1a1a; }
 @media (max-width: 640px) {
   .resume-section { padding: 14px 0; margin-bottom: 8px; }
@@ -1667,11 +1667,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-career-item:last-child, .resume-edu-item:last-child, .resume-exp-item:last-child, .resume-lang-item:last-child, .resume-link-item:last-child { border-bottom: none; }
 .resume-career-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 14px; font-weight: 400; }
 .resume-career-head strong { font-weight: 400; font-size: 14px; }
-.resume-career-period { font-size: 14px; color: var(--color-text-mute); font-weight: 400; padding-left: 22px; }
-.resume-career-dept { font-size: 14px; color: var(--color-text-sub); padding-left: 22px; }
+.resume-career-period { font-size: 14px; color: #888; font-weight: 400; padding-left: 22px; }
+.resume-career-dept { font-size: 14px; color: #666; padding-left: 22px; }
 .resume-edu-item strong, .resume-lang-item strong { display: block; font-size: 14px; font-weight: 400; margin-bottom: 3px; }
-.resume-edu-info, .resume-lang-level { font-size: 14px; color: var(--color-text-sub); display: block; padding-left: 22px; }
-.resume-edu-period { font-size: 14px; color: var(--color-text-mute); padding-left: 22px; }
+.resume-edu-info, .resume-lang-level { font-size: 14px; color: #666; display: block; padding-left: 22px; }
+.resume-edu-period { font-size: 14px; color: #888; padding-left: 22px; }
 .resume-item-text { font-size: 14px; }
 @media (max-width: 640px) {
   .resume-career-head, .resume-career-head strong, .resume-career-dept, .resume-career-period { font-size: 13px; }
@@ -3153,7 +3153,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
   color: #1a1a1a;
   line-height: 1.6;
-  padding: 48px 56px;
+  padding: 0;
 }
 
 /* 지원서 미리보기: 자기소개서 블록 (이력서와 한 문서로 통일) */
@@ -3162,7 +3162,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .apply-cover-block + .rp-wrap { padding-top: 0; }
 @media (max-width: 640px) { .apply-cover-block + .rp-wrap { padding-top: 0; } }.apply-cover-text { font-size: 14px; color: #333; line-height: 1.75; margin: 0 0 28px; padding-bottom: 28px; border-bottom: 1px solid #eee; }
 @media (max-width: 640px) {
-  .apply-cover-block { padding: 24px 18px 0; }
+  .apply-cover-block { padding: 18px 0 0; }
   .apply-cover-title { font-size: 14px; margin-bottom: 10px; }
   .apply-cover-text { font-size: 13px; line-height: 1.75; margin-bottom: 20px; padding-bottom: 20px; }
 }
@@ -3198,11 +3198,11 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-bottom: none;
 }
 .rp-section-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #5f0080;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  text-transform: none;
+  letter-spacing: normal;
   margin: 0 0 12px;
 }
 
