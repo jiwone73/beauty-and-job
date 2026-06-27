@@ -172,7 +172,7 @@ export default function ApplyModal({
         onClick={(e) => e.stopPropagation()}
         style={{
           maxWidth: wide ? 860 : 480,
-          width: "94%",
+          width: "100%",
           maxHeight: "92vh",
           display: "flex",
           flexDirection: "column",
