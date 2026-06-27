@@ -385,7 +385,7 @@ export default function ResumeEditor({
           <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "12px" }}>
             <FileText size={32} color="#5f0080" />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <p style={{ fontSize: "13px", fontWeight: 400, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {portfolioFilename || "포트폴리오.pdf"}
               </p>
               <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "12px", color: "#5f0080", textDecoration: "underline" }}>
@@ -401,7 +401,7 @@ export default function ResumeEditor({
           </div>
         ) : (
           <div onClick={() => !isUploading && fileInputRef.current?.click()} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
-            style={{ width: "100%", padding: "12px 16px", borderRadius: "12px", border: `2px dashed ${isDragOver ? "#5f0080" : "#d0c0e0"}`, background: isDragOver ? "#f3e5f5" : "#fafafa", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: isUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", transition: "all 0.15s ease", textAlign: "center" }}>
+            style={{ width: "100%", padding: "12px 16px", borderRadius: "12px", border: `2px dashed ${isDragOver ? "#5f0080" : "#d0c0e0"}`, background: isDragOver ? "#f3e5f5" : "#fafafa", color: "#5f0080", fontSize: "13px", fontWeight: 400, cursor: isUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", transition: "all 0.15s ease", textAlign: "center" }}>
             <Upload size={26} />
             <span>{isUploading ? "업로드 중..." : isDragOver ? "여기에 놓으세요" : "PDF를 끌어다 놓거나 클릭하여 업로드"}</span>
             <span style={{ fontSize: "11px", color: "#888", fontWeight: 400 }}>PDF · 최대 5MB</span>
