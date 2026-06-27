@@ -258,7 +258,7 @@ export default function ResumeEditor({
             {languages.map((lang) => (
               <div key={lang.id} className="resume-list-item">
                 <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
-                  {lang.language}
+                  <span style={{ whiteSpace: "nowrap" }}>{lang.language}</span>
                   <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
                   <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
                     <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLang(lang); setLangModalOpen(true); }}>
