@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Building2, Menu, X, ChevronDown } from "lucide-react";
+import { Search, Building2, FilePlus, ChevronDown } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
@@ -74,7 +74,6 @@ export default function Header({ onSearchClick }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { isLoggedIn, ownerType } = useAuthStore();
-  const [menuOpen, setMenuOpen] = useState(false);
   const handleSearch = () => {
     router.push("/search");
   };
@@ -94,7 +93,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
               onClick={() => {
                 if (!isLoggedIn) router.push("/jobseeker");
                 else if (ownerType === "company") router.push("/company/dashboard");
-                else router.push("/profile");
+                else router.push("/profile/resume");
               }}>
               이력서 등록
             </button>
@@ -107,45 +106,19 @@ export default function Header({ onSearchClick }: HeaderProps) {
               <Search size={20} />
             </button>
             <AuthButtons onLoginClick={() => router.push("/login")} />
-            <button className="icon-btn mob-hamburger" aria-label="메뉴" onClick={() => setMenuOpen(true)}>
-              <Menu size={22} />
+            <button className="icon-btn mob-hamburger" aria-label="이력서 등록" onClick={() => {
+              if (!isLoggedIn) router.push("/jobseeker");
+              else if (ownerType === "company") router.push("/company/dashboard");
+              else router.push("/profile/resume");
+            }}>
+              <FilePlus size={22} />
             </button>
           </div>
         </div>
       </header>
 
 
-      {/* 햄버거 메뉴 */}
-      {menuOpen && (
-        <div className="mob-menu-overlay" onClick={() => setMenuOpen(false)}>
-          <div className="mob-menu-drawer" onClick={(e) => e.stopPropagation()}>
-            <div className="mob-menu-head">
-              <span className="mob-menu-title">메뉴</span>
-              <button className="mob-menu-close" onClick={() => setMenuOpen(false)}><X size={22} /></button>
-            </div>
-            <nav className="mob-menu-nav">
-              <button type="button" className="mob-menu-item" style={{ background: "none", border: "none", width: "100%", cursor: "pointer", font: "inherit" }}
-                onClick={() => {
-                  setMenuOpen(false);
-                  if (!isLoggedIn) router.push("/jobseeker");
-                  else if (ownerType === "company") router.push("/company/dashboard");
-                  else router.push("/profile");
-                }}>
-                <span className="mob-menu-item-label">이력서 등록</span>
-                <span className="mob-menu-badge gray">경력직</span>
-              </button>
-              <Link href="/company/login" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
-                <span className="mob-menu-item-label">기업 서비스</span>
-                <span className="mob-menu-badge purple">기업</span>
-              </Link>
-              <div className="mob-menu-divider" />
-              <Link href="/support/faq" className="mob-menu-item" onClick={() => setMenuOpen(false)}>
-                <span className="mob-menu-item-label">고객지원</span>
-              </Link>
-            </nav>
-          </div>
-        </div>
-      )}
+      
     </>
   );
 }
