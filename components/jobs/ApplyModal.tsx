@@ -262,16 +262,15 @@ export default function ApplyModal({
           {/* ===== 화면 2: 미리보기 (자소서 + 전체 이력서) ===== */}
           {step === "preview" && (
             <>
-              <div style={{ marginTop: 8, marginBottom: 24 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>자기소개서</div>
-                {coverLetter.trim() ? (
-                  <p style={{ fontSize: 15, color: "#333", lineHeight: 1.8, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
-                ) : (
-                  <p style={{ fontSize: 15, color: "#aaa", margin: 0 }}>자기소개서 없이 이력서만 제출됩니다.</p>
-                )}
-              </div>
-
               <div style={{ border: "1px solid #eee", borderRadius: 10, overflow: "hidden", marginBottom: 16 }}>
+                <div className="apply-cover-block">
+                  <div className="apply-cover-title">자기소개서</div>
+                  {coverLetter.trim() ? (
+                    <p className="apply-cover-text" style={{ whiteSpace: "pre-wrap" }}>{coverLetter}</p>
+                  ) : (
+                    <p className="apply-cover-text" style={{ color: "#aaa" }}>자기소개서 없이 이력서만 제출됩니다.</p>
+                  )}
+                </div>
                 <ResumePreview
                   name={name}
                   birthDisplay={birthDisplay}
