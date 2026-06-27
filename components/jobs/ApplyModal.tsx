@@ -235,9 +235,11 @@ export default function ApplyModal({
                 {coverLetter.length}/2000자
               </div>
               </div>
-              <button className="cv-btn-primary" onClick={() => setStep("preview")}>
-                미리보기
-              </button>
+              <div style={{ padding: "0 16px" }}>
+                <button className="cv-btn-primary" style={{ width: "100%" }} onClick={() => setStep("preview")}>
+                  미리보기
+                </button>
+              </div>
             </>
           )}
 
