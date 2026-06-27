@@ -223,7 +223,7 @@ export default function ApplyModal({
                   </div>
                 </div>
               )}
-              <textarea
+              <textarea className="apply-textarea"
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
                 placeholder={`이 회사·포지션에 지원하는 이유와 본인의 강점을 작성해주세요.`}
@@ -242,12 +242,12 @@ export default function ApplyModal({
           {/* ===== 화면 2: 미리보기 (자소서 + 전체 이력서) ===== */}
           {step === "preview" && (
             <>
-              <div style={{ padding: "0 56px", marginTop: 48, marginBottom: 20 }}>
-                <div className="rp-section-title" style={{ color: "#1a1a1a" }}>자기소개서</div>
+              <div style={{ marginTop: 8, marginBottom: 24 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>자기소개서</div>
                 {coverLetter.trim() ? (
                   <p style={{ fontSize: 15, color: "#333", lineHeight: 1.8, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
                 ) : (
-                  <p style={{ fontSize: 14, color: "#aaa", margin: 0 }}>자기소개서 없이 이력서만 제출됩니다.</p>
+                  <p style={{ fontSize: 15, color: "#aaa", margin: 0 }}>자기소개서 없이 이력서만 제출됩니다.</p>
                 )}
               </div>
 
@@ -307,7 +307,7 @@ export default function ApplyModal({
                 <label className="rp-section-title" style={{ display: "block", color: "#1a1a1a" }}>
                   자기소개서
                 </label>
-                <textarea
+                <textarea className="apply-textarea"
                   value={coverLetter}
                   onChange={(e) => setCoverLetter(e.target.value)}
                   maxLength={2000}

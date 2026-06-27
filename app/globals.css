@@ -1474,7 +1474,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-input::placeholder { color: var(--color-text-mute); }
 .cv-textarea { width: 100%; min-height: 120px; padding: 14px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; color: var(--color-text); outline: none; resize: vertical; transition: border-color 0.15s; font-family: inherit; line-height: 1.6; }
 .cv-textarea:focus { border-color: var(--color-primary); }
-.cv-textarea::placeholder { color: var(--color-text-mute); }
+.apply-textarea { outline: none; transition: border-color 0.15s; }
+.apply-textarea:focus { border-color: #7c3aed !important; }.cv-textarea::placeholder { color: var(--color-text-mute); }
 .cv-char-count { text-align: right; font-size: 12px; color: var(--color-text-mute); margin-top: 4px; margin-bottom: 16px; }
 .cv-select-btn { width: 100%; height: 48px; padding: 0 14px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; color: var(--color-text); background: white; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.15s; font-family: inherit; text-align: left; }
 .cv-select-btn:hover { border-color: var(--color-primary-light); }
