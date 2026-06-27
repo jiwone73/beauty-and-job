@@ -1622,7 +1622,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) { .resume-layout { padding: 0; } }
 .resume-section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.resume-section-title { font-size: 14px; font-weight: 700; color: #5f0080; text-transform: none; letter-spacing: normal; margin-bottom: 12px; }
+.resume-section-title { font-size: 15px; font-weight: 700; color: #5f0080; text-transform: none; letter-spacing: normal; margin-bottom: 12px; }
 .apply-resume-wrap .resume-section { padding: 16px 0; background: transparent; margin-bottom: 0; }
 .apply-cover-block { padding: 20px 0 0; }
 @media (max-width: 640px) { .apply-cover-block { padding: 18px 0 0; } }
@@ -3198,7 +3198,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-bottom: none;
 }
 .rp-section-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #5f0080;
   text-transform: none;
