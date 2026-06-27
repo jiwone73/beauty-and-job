@@ -203,22 +203,16 @@ export default function ApplyModal({
                 <div style={{ marginBottom: 10 }}>
                   <p style={{ fontSize: 12, color: "#999", margin: "0 0 6px" }}>💡 추천 문구를 눌러 이어쓸 수 있어요</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                    {[
-                      `${jobBrand ? jobBrand + " " : ""}${jobTitle || "이 포지션"}에 지원합니다.\n\n`,
-                      `안녕하세요, ${jobTitle || "해당 직무"}에 지원하는 ${userName || ""}입니다.\n\n`,
-                      `${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 직무"}로 성장하고 싶어 지원하게 되었습니다.\n\n`,
-                    ].map((tpl, i) => (
-                      <button key={i} type="button"
-                        onClick={() => setCoverLetter((prev) => prev + tpl)}
-                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
-                        {tpl.trim()}
-                      </button>
-                    ))}
+                    <button type="button"
+                      onClick={() => setCoverLetter((prev) => prev + `${jobBrand ? jobBrand + " " : ""}${jobTitle || "이 포지션"}에 지원합니다.\n\n`)}
+                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                      {`${jobBrand ? jobBrand + " " : ""}${jobTitle || "이 포지션"}에 지원합니다.`}
+                    </button>
                     {coreCompetencies && coreCompetencies.trim() && (
                       <button type="button"
-                        onClick={() => setCoverLetter((prev) => prev + coreCompetencies.trim() + "\n\n")}
+                        onClick={() => setCoverLetter((prev) => prev + `저의 핵심 역량인 ${coreCompetencies.trim()}을(를) 바탕으로 ${jobTitle || "해당"} 직무에서 기여하고 싶습니다.\n\n`)}
                         style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #c9a8e8", background: "#f3e8ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4, fontWeight: 600 }}>
-                        ⭐ 내 핵심역량 넣기
+                        {`저의 핵심 역량인 ${coreCompetencies.trim()}을(를) 바탕으로 ${jobTitle || "해당"} 직무에서 기여하고 싶습니다.`}
                       </button>
                     )}
                     {lastCoverLetter && (
