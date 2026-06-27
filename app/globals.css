@@ -3236,6 +3236,13 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-weight: 400;
   color: #1a1a1a;
 }
+.rp-list-item > p:first-child {
+  font-size: 14px;
+  font-weight: 400;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.75;
+}
 .rp-period {
   font-size: 14px;
   color: #888;
@@ -3247,7 +3254,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin: 2px 0 0;
 }
 @media (max-width: 640px) {
-  .rp-text, .rp-item-head strong, .rp-period, .rp-item-sub { font-size: 13px; }
+  .rp-text, .rp-item-head strong, .rp-period, .rp-item-sub, .rp-list-item > p:first-child { font-size: 13px; }
 }
 
 /* 배지 */
