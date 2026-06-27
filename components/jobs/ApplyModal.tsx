@@ -242,8 +242,8 @@ export default function ApplyModal({
           {/* ===== 화면 2: 미리보기 (자소서 + 전체 이력서) ===== */}
           {step === "preview" && (
             <>
-              <div style={{ background: "#faf5ff", borderRadius: 8, padding: 16, marginBottom: 16 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: "#5f0080", marginBottom: 8 }}>자기소개서</div>
+              <div style={{ background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, padding: 16, marginBottom: 16 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#333", marginBottom: 8 }}>자기소개서</div>
                 {coverLetter.trim() ? (
                   <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
                 ) : (
@@ -283,16 +283,10 @@ export default function ApplyModal({
               </p>
               <div style={{ display: "flex", gap: 8 }}>
                 <button
-                  onClick={() => setStep("write")}
-                  style={{ flex: "0 0 auto", padding: "13px 18px", borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#555", fontSize: 15, fontWeight: 600, cursor: "pointer" }}
-                >
-                  자소서 수정
-                </button>
-                <button
                   onClick={() => setStep("edit")}
                   style={{ flex: "0 0 auto", padding: "13px 18px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 600, cursor: "pointer" }}
                 >
-                  이력서 수정
+                  수정하기
                 </button>
                 <button
                   className="cv-btn-primary"
@@ -338,7 +332,7 @@ export default function ApplyModal({
                   disabled={saving}
                   style={{ flex: 1, padding: "13px 0", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 600, cursor: "pointer" }}
                 >
-                  {saving ? "저장 중..." : "이력서 저장"}
+                  {saving ? "저장 중..." : "저장하기"}
                 </button>
                 <button
                   className="cv-btn-primary"
