@@ -257,7 +257,7 @@ export default function ResumeEditor({
           <div className="resume-list">
             {languages.map((lang) => (
               <div key={lang.id} className="resume-list-item">
-                <p style={{ fontWeight: 600, marginBottom: "4px", display: "flex", alignItems: "center" }}>
+                <p style={{ fontWeight: 400, fontSize: "13px", marginBottom: "4px", display: "flex", alignItems: "center" }}>
                   <span style={{ whiteSpace: "nowrap" }}>{lang.language}</span>
                   <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
                   <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
@@ -297,7 +297,7 @@ export default function ResumeEditor({
               const open = !collapsed.has(key);
               return (
                 <div key={cert.id} className="resume-list-item">
-                  <p onClick={() => toggleExpand(key)} style={{ fontWeight: 600, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
+                  <p onClick={() => toggleExpand(key)} style={{ fontWeight: 400, fontSize: "13px", marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
                     <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
                     {cert.name}
                     {cert.issued_ym && (
@@ -343,7 +343,7 @@ export default function ResumeEditor({
               const open = !collapsed.has(key);
               return (
                 <div key={x.id} className="resume-list-item">
-                  <p onClick={() => toggleExpand(key)} style={{ fontWeight: 600, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
+                  <p onClick={() => toggleExpand(key)} style={{ fontWeight: 400, fontSize: "13px", marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
                     <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
                     {x.category && <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>}
                     {x.title}

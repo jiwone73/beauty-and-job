@@ -1661,7 +1661,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 .resume-career-item, .resume-edu-item, .resume-exp-item, .resume-lang-item, .resume-link-item { padding: 12px 0; border-bottom: 1px solid var(--color-border); }
 .resume-career-item:last-child, .resume-edu-item:last-child, .resume-exp-item:last-child, .resume-lang-item:last-child, .resume-link-item:last-child { border-bottom: none; }
-.resume-career-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 15px; font-weight: 700; }
+.resume-career-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 13px; font-weight: 400; }
 .resume-career-period { font-size: 12px; color: var(--color-text-mute); font-weight: 400; }
 .resume-career-dept { font-size: 13px; color: var(--color-text-sub); }
 .resume-edu-item strong, .resume-lang-item strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
@@ -3207,8 +3207,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   gap: 8px;
 }
 .rp-item-head strong {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 400;
   color: #1a1a1a;
 }
 .rp-period {
