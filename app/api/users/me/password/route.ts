@@ -21,8 +21,8 @@ export async function PATCH(req: NextRequest) {
     if (result.rowCount === 0) {
       return err("USER_004", "계정을 찾을 수 없습니다.", 404);
     }
-    if (result.rows[0].kakao_id || !result.rows[0].password_hash) {
-      return err("AUTH_003", "카카오 로그인 계정은 비밀번호를 변경할 수 없습니다. 카카오 계정에서 변경해주세요.", 400);
+    if (!result.rows[0].password_hash) {
+      return err("AUTH_003", "비밀번호가 설정되지 않은 계정입니다. 소셜 로그인(카카오)으로 가입하셨다면 해당 서비스에서 변경해주세요.", 400);
     }
     const valid = await bcrypt.compare(current_password, result.rows[0].password_hash);
     if (!valid) {
