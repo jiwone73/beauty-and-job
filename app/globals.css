@@ -1457,7 +1457,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-title { font-size: 18px; font-weight: 700; color: var(--color-text); flex: 1; text-align: center; }
 .cv-back, .cv-close { width: 44px; height: 44px; font-size: 22px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--color-text-sub); cursor: pointer; border-radius: 8px; transition: background 0.15s; }
 .cv-back:hover, .cv-close:hover { background: transparent; }
-.cv-body { padding: 24px 20px 32px; }
+.cv-body { padding: 20px 16px 28px; }
+@media (max-width: 640px) { .cv-body { padding: 16px 14px 24px; } }
 .cv-heading { font-size: 20px; font-weight: 700; color: var(--color-text); line-height: 1.4; margin-bottom: 8px; letter-spacing: -0.3px; }
 .cv-desc { font-size: 14px; color: var(--color-text-sub); line-height: 1.6; margin-bottom: 24px; }
 .cv-field-label { display: block; font-size: 14px; font-weight: 600; color: var(--color-text); margin-top: 20px; margin-bottom: 8px; }
@@ -2183,7 +2184,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-mobile-apply { flex: 1; height: 48px; background: var(--color-primary); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
 /* 지원 모달 */
-.apply-modal-job { background: transparent; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+.apply-modal-job { background: transparent; border-radius: 8px; padding: 0 0 14px; margin-bottom: 16px; }
 .apply-modal-job strong { display: block; font-size: 13px; color: #7c3aed; margin-bottom: 4px; }
 .apply-modal-job p { font-size: 15px; font-weight: 600; color: #5f0080; }
 .apply-modal-profile-btn { display: block; text-align: center; background: transparent; border: 1.5px solid var(--color-primary); color: var(--color-primary); border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 8px; transition: all 0.15s; }

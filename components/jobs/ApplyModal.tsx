@@ -195,7 +195,7 @@ export default function ApplyModal({
           {/* ===== 화면 1: 작성 ===== */}
           {step === "write" && (
             <>
-              <div style={{ padding: "0 16px" }}>
+              <div style={{ padding: 0 }}>
               <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>
                 자기소개서
               </label>
@@ -244,7 +244,7 @@ export default function ApplyModal({
                 {coverLetter.length}/2000자
               </div>
               </div>
-              <div style={{ padding: "0 16px" }}>
+              <div style={{ padding: 0 }}>
                 <button className="cv-btn-primary" style={{ width: "100%" }} onClick={() => setStep("preview")}>
                   미리보기
                 </button>
@@ -255,7 +255,7 @@ export default function ApplyModal({
           {/* ===== 화면 2: 미리보기 (자소서 + 전체 이력서) ===== */}
           {step === "preview" && (
             <>
-              <div style={{ padding: "0 16px", marginTop: 8, marginBottom: 24 }}>
+              <div style={{ marginTop: 8, marginBottom: 24 }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>자기소개서</div>
                 {coverLetter.trim() ? (
                   <p style={{ fontSize: 15, color: "#333", lineHeight: 1.8, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
@@ -316,7 +316,7 @@ export default function ApplyModal({
           {/* ===== 화면 3: 이력서 수정 ===== */}
           {step === "edit" && (
             <>
-              <div style={{ padding: "0 16px", marginTop: 8 }}>
+              <div style={{ marginTop: 8 }}>
                 <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>
                   자기소개서
                 </label>
@@ -328,7 +328,7 @@ export default function ApplyModal({
                 />
               </div>
 
-              <div style={{ borderTop: "1px solid #eee", paddingTop: 16, padding: "16px 16px 0" }}>
+              <div style={{ borderTop: "1px solid #eee", paddingTop: 16 }}>
                 <ResumeEditor
                   resumeType={resumeType}
                   emailLocal={emailLocal}
@@ -341,7 +341,7 @@ export default function ApplyModal({
                 />
               </div>
 
-              <div style={{ display: "flex", gap: 8, marginTop: 16, padding: "0 16px 16px" }}>
+              <div style={{ display: "flex", gap: 8, marginTop: 16, paddingBottom: 16 }}>
                 <button
                   onClick={handleSaveResume}
                   disabled={saving}
