@@ -134,7 +134,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           <div className="rp-list">
             {certificates.map((cert) => (
               <div key={cert.id} className="rp-list-item">
-                <p style={{ fontWeight: 400 }}>
+                <p style={{ fontWeight: 400, fontSize: "13px" }}>
                   {cert.name}
                   {cert.issued_ym && (
                     <span style={{ marginLeft: "10px", fontWeight: 400, color: "#666", fontSize: "13px" }}>{cert.issued_ym}</span>
