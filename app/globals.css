@@ -2176,8 +2176,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 지원 모달 */
 .apply-modal-job { background: transparent; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
-.apply-modal-job strong { display: block; font-size: 13px; color: var(--color-text-sub); margin-bottom: 4px; }
-.apply-modal-job p { font-size: 15px; font-weight: 600; color: var(--color-text); }
+.apply-modal-job strong { display: block; font-size: 13px; color: #7c3aed; margin-bottom: 4px; }
+.apply-modal-job p { font-size: 15px; font-weight: 600; color: #5f0080; }
 .apply-modal-profile-btn { display: block; text-align: center; background: transparent; border: 1.5px solid var(--color-primary); color: var(--color-primary); border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 8px; transition: all 0.15s; }
 .apply-modal-profile-btn:hover { background: var(--color-primary-soft); }
 
