@@ -112,7 +112,7 @@ export default function LoginModal({ onClose }: Props) {
           <p className="lm-sub">전문가 채용부터 업계 트렌드까지, 뷰티앤잡</p>
         </div>
         <div className="lm-btns">
-          <a href="https://kauth.kakao.com/oauth/authorize?client_id=KAKAO_APP_KEY&redirect_uri=https://beauty-and-job.vercel.app&response_type=code"
+          <a href="/api/auth/kakao"
             className="lm-kakao-btn">
             <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
               <path d="M10 2C5.58 2 2 4.92 2 8.5c0 2.3 1.52 4.32 3.82 5.48L4.9 17.1c-.08.3.22.54.48.38L9.1 14.9c.3.03.6.05.9.05 4.42 0 8-2.92 8-6.5S14.42 2 10 2z" fill="#3C1E1E"/>
