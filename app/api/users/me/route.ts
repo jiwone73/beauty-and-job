@@ -144,3 +144,28 @@ export async function PATCH(req: NextRequest) {
     client.release();
   }
 }
+export async function DELETE(req: NextRequest) {
+  const auth = req.headers.get("authorization") || "";
+  const token = auth.replace("Bearer ", "").trim();
+  if (!token) return err("AUTH_001", "인증이 필요합니다.", 401);
+  let payload;
+  try {
+    payload = verifyAccessToken(token);
+  } catch {
+    return err("AUTH_001", "유효하지 않은 토큰입니다.", 401);
+  }
+  if (payload.owner_type !== "user") {
+    return err("AUTH_002", "사용자 권한이 필요합니다.", 403);
+  }
+  const client = await pool.connect();
+  try {
+    const upd = await client.query(
+      `UPDATE users SET status = 'WITHDRAWN', withdrawn_at = NOW() WHERE id = $1 AND status = 'ACTIVE'`,
+      [payload.sub]
+    );
+    if (upd.rowCount === 0) return err("USER_004", "처리할 수 없는 계정입니다.", 400);
+    return ok({ withdrawn: true });
+  } finally {
+    client.release();
+  }
+}

@@ -31,7 +31,7 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
               {ownerType === "user" && (
                 <>
                   <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>내 프로필</button>
-                  <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/resume"); }}>이력서</button>
+                  <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/settings"); }}>계정 설정</button>
                 </>
               )}
               {ownerType === "company" && (
