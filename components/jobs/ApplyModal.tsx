@@ -243,9 +243,9 @@ export default function ApplyModal({
           {step === "preview" && (
             <>
               <div style={{ padding: "0 56px", marginTop: 48, marginBottom: 20 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>자기소개서</div>
+                <div className="rp-section-title" style={{ color: "#1a1a1a" }}>자기소개서</div>
                 {coverLetter.trim() ? (
-                  <p style={{ fontSize: 15, color: "#333", lineHeight: 1.8, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
+                  <p style={{ fontSize: 14, color: "#333", lineHeight: 1.75, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
                 ) : (
                   <p style={{ fontSize: 14, color: "#aaa", margin: 0 }}>자기소개서 없이 이력서만 제출됩니다.</p>
                 )}
@@ -303,14 +303,14 @@ export default function ApplyModal({
           {/* ===== 화면 3: 이력서 수정 ===== */}
           {step === "edit" && (
             <>
-              <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 8 }}>
+              <label className="rp-section-title" style={{ display: "block", color: "#1a1a1a" }}>
                 자기소개서
               </label>
               <textarea
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
                 maxLength={2000}
-                style={{ width: "100%", minHeight: 120, padding: 12, borderRadius: 8, border: "1px solid #ddd", fontSize: 14, lineHeight: 1.6, resize: "vertical", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 20 }}
+                style={{ width: "100%", minHeight: 120, padding: 12, borderRadius: 8, border: "1px solid #ddd", fontSize: 14, lineHeight: 1.75, resize: "vertical", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 20 }}
               />
 
               <div style={{ borderTop: "1px solid #eee", paddingTop: 16 }}>
