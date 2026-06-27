@@ -334,7 +334,7 @@ export default function ApplyModal({
                 />
               </div>
 
-              <div style={{ borderTop: "1px solid #eee", paddingTop: 16 }}>
+              <div className="apply-resume-wrap" style={{ borderTop: "1px solid #eee", paddingTop: 16 }}>
                 <ResumeEditor
                   resumeType={resumeType}
                   emailLocal={emailLocal}

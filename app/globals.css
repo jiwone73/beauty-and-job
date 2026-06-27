@@ -1476,7 +1476,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-textarea { width: 100%; min-height: 120px; padding: 14px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; color: var(--color-text); outline: none; resize: vertical; transition: border-color 0.15s; font-family: inherit; line-height: 1.6; }
 .cv-textarea:focus { border-color: var(--color-primary); }
 
-.apply-textarea { outline: none; transition: border-color 0.15s; font-size: 14px; line-height: 1.75; }
+.apply-textarea { outline: none; transition: border-color 0.15s; font-size: 14px; line-height: 1.75; color: #333; }
 .apply-textarea:focus { border-color: #7c3aed !important; }.cv-textarea::placeholder { color: var(--color-text-mute); }
 .cv-chip-short { display: none; }
 @media (max-width: 640px) { .cv-chip-full { display: none; } .cv-chip-short { display: inline; } }.cv-char-count { text-align: right; font-size: 12px; color: var(--color-text-mute); margin-top: 4px; margin-bottom: 16px; }
@@ -1622,7 +1622,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) { .resume-layout { padding: 0; } }
 .resume-section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.resume-section-title { font-size: 13px; font-weight: 700; color: #5f0080; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+.resume-section-title { font-size: 14px; font-weight: 700; color: #7c3aed; margin-bottom: 12px; }
+.apply-resume-wrap .resume-section { padding: 16px 0; background: transparent; margin-bottom: 0; }
+.apply-cover-block { padding: 20px 0 0 !important; }
+@media (max-width: 640px) { .apply-cover-block { padding: 16px 0 0 !important; } }
+.apply-cover-title { font-size: 14px; font-weight: 700; color: #1a1a1a; }
 @media (max-width: 640px) {
   .resume-section { padding: 14px 0; margin-bottom: 8px; }
   .resume-section-title { margin-bottom: 10px; }
@@ -1661,18 +1665,19 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 .resume-career-item, .resume-edu-item, .resume-exp-item, .resume-lang-item, .resume-link-item { padding: 12px 0; border-bottom: 1px solid var(--color-border); }
 .resume-career-item:last-child, .resume-edu-item:last-child, .resume-exp-item:last-child, .resume-lang-item:last-child, .resume-link-item:last-child { border-bottom: none; }
-.resume-career-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 13px; font-weight: 400; }
+.resume-career-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 14px; font-weight: 400; }
 .resume-career-head strong { font-weight: 400; font-size: 14px; }
-.resume-career-period { font-size: 13px; color: var(--color-text-mute); font-weight: 400; padding-left: 22px; }
+.resume-career-period { font-size: 14px; color: var(--color-text-mute); font-weight: 400; padding-left: 22px; }
 .resume-career-dept { font-size: 14px; color: var(--color-text-sub); padding-left: 22px; }
+.resume-edu-item strong, .resume-lang-item strong { display: block; font-size: 14px; font-weight: 400; margin-bottom: 3px; }
+.resume-edu-info, .resume-lang-level { font-size: 14px; color: var(--color-text-sub); display: block; padding-left: 22px; }
+.resume-edu-period { font-size: 14px; color: var(--color-text-mute); padding-left: 22px; }
+.resume-item-text { font-size: 14px; }
 @media (max-width: 640px) {
-  .resume-career-head strong { font-size: 13px; }
-  .resume-career-dept { font-size: 13px; }
-  .resume-career-period { font-size: 12px; }
+  .resume-career-head, .resume-career-head strong, .resume-career-dept, .resume-career-period { font-size: 13px; }
+  .resume-edu-item strong, .resume-lang-item strong, .resume-edu-info, .resume-lang-level, .resume-edu-period { font-size: 13px; }
+  .resume-item-text { font-size: 13px; }
 }
-.resume-edu-item strong, .resume-lang-item strong { display: block; font-size: 13px; font-weight: 400; margin-bottom: 3px; }
-.resume-edu-info, .resume-lang-level { font-size: 13px; color: var(--color-text-sub); display: block; }
-.resume-edu-period { font-size: 12px; color: var(--color-text-mute); }
 .resume-exp-category { font-size: 11px; font-weight: 700; color: var(--color-primary); display: block; margin-bottom: 3px; }
 .resume-exp-desc { font-size: 13px; color: var(--color-text-sub); margin-top: 4px; }
 .resume-link-category { font-size: 12px; color: var(--color-text-mute); display: block; margin-bottom: 2px; }
@@ -3227,19 +3232,22 @@ input[type="range"].career-slider::-moz-range-thumb {
   gap: 8px;
 }
 .rp-item-head strong {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   color: #1a1a1a;
 }
 .rp-period {
-  font-size: 13px;
+  font-size: 14px;
   color: #888;
   white-space: nowrap;
 }
 .rp-item-sub {
-  font-size: 13px;
+  font-size: 14px;
   color: #666;
   margin: 2px 0 0;
+}
+@media (max-width: 640px) {
+  .rp-text, .rp-item-head strong, .rp-period, .rp-item-sub { font-size: 13px; }
 }
 
 /* 배지 */

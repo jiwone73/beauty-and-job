@@ -122,7 +122,7 @@ export default function ResumeEditor({
           <h2 className="resume-section-title">
             {resumeType === "office" ? "경력" : "경력 (근무 매장)"}
             {totalCareer && (
-              <span style={{ marginLeft: "8px", fontSize: "14px", fontWeight: 500, color: "#5f0080" }}>
+              <span style={{ marginLeft: "8px", fontSize: "14px", fontWeight: 700, color: "#7c3aed" }}>
                 · {totalCareer}
               </span>
             )}
@@ -257,7 +257,7 @@ export default function ResumeEditor({
           <div className="resume-list">
             {languages.map((lang) => (
               <div key={lang.id} className="resume-list-item">
-                <p style={{ fontWeight: 400, fontSize: "13px", marginBottom: "4px", display: "flex", alignItems: "center" }}>
+                <p className="resume-item-text" style={{ fontWeight: 400, marginBottom: "4px", display: "flex", alignItems: "center" }}>
                   <span style={{ whiteSpace: "nowrap" }}>{lang.language}</span>
                   <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
                   <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
@@ -269,7 +269,7 @@ export default function ResumeEditor({
                     </button>
                   </span>
                 </p>
-                {lang.test && <p style={{ color: "#888", fontSize: "13px" }}>{lang.test}</p>}
+                {lang.test && <p className="resume-item-text" style={{ color: "#888" }}>{lang.test}</p>}
               </div>
             ))}
           </div>
@@ -297,11 +297,11 @@ export default function ResumeEditor({
               const open = !collapsed.has(key);
               return (
                 <div key={cert.id} className="resume-list-item">
-                  <p onClick={() => toggleExpand(key)} style={{ fontWeight: 400, fontSize: "13px", marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
+                  <p className="resume-item-text" onClick={() => toggleExpand(key)} style={{ fontWeight: 400, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
                     <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
                     {cert.name}
                     {cert.issued_ym && (
-                      <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666", fontSize: "13px" }}>{cert.issued_ym}</span>
+                      <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{cert.issued_ym}</span>
                     )}
                     <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
                       <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCert(cert); setCertModalOpen(true); }}>
@@ -313,7 +313,7 @@ export default function ResumeEditor({
                     </span>
                   </p>
                   {open && cert.issuer && (
-                    <p style={{ color: "#888", fontSize: "13px", paddingLeft: "22px" }}>{cert.issuer}</p>
+                    <p className="resume-item-text" style={{ color: "#888", paddingLeft: "22px" }}>{cert.issuer}</p>
                   )}
                 </div>
               );
@@ -343,7 +343,7 @@ export default function ResumeEditor({
               const open = !collapsed.has(key);
               return (
                 <div key={x.id} className="resume-list-item">
-                  <p onClick={() => toggleExpand(key)} style={{ fontWeight: 400, fontSize: "13px", marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
+                  <p className="resume-item-text" onClick={() => toggleExpand(key)} style={{ fontWeight: 400, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
                     <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
                     {x.category && <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>}
                     {x.title}
@@ -357,7 +357,7 @@ export default function ResumeEditor({
                     </span>
                   </p>
                   {open && x.description && (
-                    <p style={{ color: "#666", fontSize: "14px", paddingLeft: "22px" }}>{x.description}</p>
+                    <p className="resume-item-text" style={{ color: "#666", paddingLeft: "22px" }}>{x.description}</p>
                   )}
                 </div>
               );
