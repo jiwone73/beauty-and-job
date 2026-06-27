@@ -218,13 +218,12 @@ export default function MyApplicationModal({
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
           ) : data ? (
             <>
-              <div style={{ background: "#f7f5fa", borderRadius: 10, padding: "12px 16px", marginBottom: 16, fontSize: 13, color: "#555" }}>
-                <strong style={{ color: "#5f0080" }}>{data.company_name}</strong> · {data.job_title}
-              </div>
               {data.cover_letter && data.cover_letter.trim() && (
                 <div ref={coverRef} style={{ background: "#fff", padding: "32px 36px 28px", marginBottom: 16 }}>
-                  <h1 style={{ fontSize: 22, fontWeight: 800, color: "#1a1a1a", textAlign: "center", margin: "0 0 4px", letterSpacing: "0.05em" }}>자기소개서</h1>
-                  <div style={{ width: 48, height: 3, background: "#5f0080", margin: "0 auto 28px", borderRadius: 2 }} />
+                  <h1 style={{ fontSize: 22, fontWeight: 800, color: "#1a1a1a", textAlign: "center", margin: "0 0 6px", letterSpacing: "0.05em" }}>자기소개서</h1>
+                  <p style={{ fontSize: 13, color: "#888", textAlign: "center", margin: "0 0 28px" }}>
+                    {data.company_name} · {data.job_title}
+                  </p>
                   <p style={{ fontSize: 14.5, color: "#333", lineHeight: 1.9, margin: 0, whiteSpace: "pre-wrap" }}>{data.cover_letter}</p>
                 </div>
               )}
