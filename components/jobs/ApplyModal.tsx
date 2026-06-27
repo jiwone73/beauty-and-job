@@ -195,7 +195,8 @@ export default function ApplyModal({
           {/* ===== 화면 1: 작성 ===== */}
           {step === "write" && (
             <>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#333", marginBottom: 6 }}>
+              <div style={{ padding: "0 16px" }}>
+              <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>
                 자기소개서
               </label>
               {!coverLetter.trim() && (
@@ -232,6 +233,7 @@ export default function ApplyModal({
               />
               <div style={{ textAlign: "right", fontSize: 12, color: "#aaa", marginTop: 4 }}>
                 {coverLetter.length}/2000자
+              </div>
               </div>
               <button className="cv-btn-primary" onClick={() => setStep("preview")}>
                 미리보기
