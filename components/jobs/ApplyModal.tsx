@@ -211,7 +211,7 @@ export default function ApplyModal({
                     {coreCompetencies && coreCompetencies.trim() && (
                       <button type="button"
                         onClick={() => setCoverLetter((prev) => prev + `저의 핵심 역량인 ${coreCompetencies.trim()}을(를) 바탕으로 ${jobTitle || "해당"} 직무에서 기여하고 싶습니다.\n\n`)}
-                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #c9a8e8", background: "#f3e8ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4, fontWeight: 600 }}>
+                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
                         ⭐ 핵심역량
                       </button>
                     )}
@@ -223,7 +223,7 @@ export default function ApplyModal({
                     {lastCoverLetter && (
                       <button type="button"
                         onClick={() => setCoverLetter(lastCoverLetter)}
-                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #ddd", background: "#f5f5f5", color: "#555", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
                         📋 이전 자소서 불러오기
                       </button>
                     )}
