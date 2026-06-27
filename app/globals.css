@@ -1454,7 +1454,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .cv-modal { background: white; border-radius: 16px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; position: relative; }
 .cv-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; background: white; z-index: 10; border-radius: 16px 16px 0 0; }
-.cv-title { font-size: 16px; font-weight: 700; color: var(--color-text); flex: 1; text-align: center; }
+.cv-title { font-size: 18px; font-weight: 700; color: var(--color-text); flex: 1; text-align: center; }
 .cv-back, .cv-close { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--color-text-sub); cursor: pointer; border-radius: 8px; transition: background 0.15s; }
 .cv-back:hover, .cv-close:hover { background: transparent; }
 .cv-body { padding: 24px 20px 32px; }

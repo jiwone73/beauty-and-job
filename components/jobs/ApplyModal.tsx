@@ -181,7 +181,7 @@ export default function ApplyModal({
         <div className="cv-header">
           <div style={{ width: 36 }} />
           <h2 className="cv-title">
-            {step === "write" ? "지원하기" : step === "preview" ? "지원서 미리보기" : "이력서 수정"}
+            {step === "write" ? "지원하기" : step === "preview" ? "지원서 미리보기" : "지원서 수정하기"}
           </h2>
           <button className="cv-close" onClick={onClose}>✕</button>
         </div>
@@ -303,7 +303,7 @@ export default function ApplyModal({
           {/* ===== 화면 3: 이력서 수정 ===== */}
           {step === "edit" && (
             <>
-              <div style={{ padding: "0 56px", marginTop: 8 }}>
+              <div style={{ marginTop: 8 }}>
                 <label className="rp-section-title" style={{ display: "block", color: "#1a1a1a" }}>
                   자기소개서
                 </label>
