@@ -15,14 +15,14 @@ export async function PATCH(req: NextRequest) {
   }
   try {
     const result = await pool.query(
-      `SELECT password_hash FROM users WHERE id = $1`,
+      `SELECT password_hash, kakao_id FROM users WHERE id = $1`,
       [auth!.sub]
     );
     if (result.rowCount === 0) {
       return err("USER_004", "계정을 찾을 수 없습니다.", 404);
     }
-    if (!result.rows[0].password_hash) {
-      return err("AUTH_003", "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다.", 400);
+    if (result.rows[0].kakao_id || !result.rows[0].password_hash) {
+      return err("AUTH_003", "카카오 로그인 계정은 비밀번호를 변경할 수 없습니다. 카카오 계정에서 변경해주세요.", 400);
     }
     const valid = await bcrypt.compare(current_password, result.rows[0].password_hash);
     if (!valid) {
