@@ -131,19 +131,17 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       {certificates.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">자격증</h2>
-          <div className="rp-list">
-            {certificates.map((cert) => (
-              <div key={cert.id} className="rp-list-item">
-                <p style={{ fontWeight: 400, fontSize: "13px" }}>
-                  {cert.name}
-                  {cert.issued_ym && (
-                    <span style={{ marginLeft: "10px", fontWeight: 400, color: "#666", fontSize: "13px" }}>{cert.issued_ym}</span>
-                  )}
-                </p>
-                {cert.issuer && <p style={{ color: "#888", fontSize: "13px" }}>{cert.issuer}</p>}
+          {certificates.map((cert) => (
+            <div key={cert.id} className="rp-item">
+              <div className="rp-item-head">
+                <strong>{cert.name}</strong>
+                {cert.issued_ym && (
+                  <span className="rp-period">{cert.issued_ym}</span>
+                )}
               </div>
-            ))}
-          </div>
+              {cert.issuer && <p className="rp-item-sub">{cert.issuer}</p>}
+            </div>
+          ))}
         </div>
       )}
       {resumeType === "salon" && (workTypePrefer || regionPrefer) && (
