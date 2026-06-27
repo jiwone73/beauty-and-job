@@ -1476,7 +1476,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-textarea { width: 100%; min-height: 120px; padding: 14px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; color: var(--color-text); outline: none; resize: vertical; transition: border-color 0.15s; font-family: inherit; line-height: 1.6; }
 .cv-textarea:focus { border-color: var(--color-primary); }
 
-.apply-textarea { outline: none; transition: border-color 0.15s; }
+.apply-textarea { outline: none; transition: border-color 0.15s; font-size: 14px; line-height: 1.75; }
 .apply-textarea:focus { border-color: #7c3aed !important; }.cv-textarea::placeholder { color: var(--color-text-mute); }
 .cv-chip-short { display: none; }
 @media (max-width: 640px) { .cv-chip-full { display: none; } .cv-chip-short { display: inline; } }.cv-char-count { text-align: right; font-size: 12px; color: var(--color-text-mute); margin-top: 4px; margin-bottom: 16px; }
@@ -3149,11 +3149,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 .apply-cover-block { padding: 40px 56px 0; }
 .apply-cover-title { font-size: 17px; font-weight: 700; color: #1a1a1a; margin-bottom: 14px; }
 .apply-cover-block + .rp-wrap { padding-top: 0; }
-@media (max-width: 640px) { .apply-cover-block + .rp-wrap { padding-top: 0; } }.apply-cover-text { font-size: 15px; color: #333; line-height: 1.9; margin: 0 0 28px; padding-bottom: 28px; border-bottom: 1px solid #eee; }
+@media (max-width: 640px) { .apply-cover-block + .rp-wrap { padding-top: 0; } }.apply-cover-text { font-size: 14px; color: #333; line-height: 1.75; margin: 0 0 28px; padding-bottom: 28px; border-bottom: 1px solid #eee; }
 @media (max-width: 640px) {
   .apply-cover-block { padding: 24px 18px 0; }
   .apply-cover-title { font-size: 14px; margin-bottom: 10px; }
-  .apply-cover-text { font-size: 13px; line-height: 1.8; margin-bottom: 20px; padding-bottom: 20px; }
+  .apply-cover-text { font-size: 13px; line-height: 1.75; margin-bottom: 20px; padding-bottom: 20px; }
 }
 /* 상단 프로필 */
 .rp-header {
@@ -3201,6 +3201,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #333;
   margin: 0;
   line-height: 1.75;
+}
+@media (max-width: 640px) {
+  .rp-text { font-size: 13px; }
+  .apply-textarea { font-size: 13px; }
 }
 
 /* 아이템 */

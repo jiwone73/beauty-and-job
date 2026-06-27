@@ -245,7 +245,7 @@ export default function ApplyModal({
                 onChange={(e) => setCoverLetter(e.target.value)}
                 placeholder={`이 회사·포지션에 지원하는 이유와 본인의 강점을 작성해주세요.`}
                 maxLength={2000}
-                style={{ width: "100%", minHeight: 320, padding: 12, borderRadius: 8, border: "1px solid #ddd", fontSize: 14, lineHeight: 1.6, resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }}
+                style={{ width: "100%", minHeight: 320, padding: 12, borderRadius: 8, border: "1px solid #ddd", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }}
               />
               <div style={{ textAlign: "right", fontSize: 12, color: "#aaa", marginTop: 4 }}>
                 {coverLetter.length}/2000자
@@ -330,7 +330,7 @@ export default function ApplyModal({
                   value={coverLetter}
                   onChange={(e) => setCoverLetter(e.target.value)}
                   maxLength={2000}
-                  style={{ width: "100%", minHeight: 120, padding: 12, borderRadius: 8, border: "1px solid #ddd", fontSize: 15, lineHeight: 1.8, resize: "vertical", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 20 }}
+                  style={{ width: "100%", minHeight: 120, padding: 12, borderRadius: 8, border: "1px solid #ddd", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 20 }}
                 />
               </div>
 
