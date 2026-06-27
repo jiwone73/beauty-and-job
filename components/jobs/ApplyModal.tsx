@@ -29,6 +29,7 @@ export default function ApplyModal({
 
   const [step, setStep] = useState<Step>("write");
   const [coverLetter, setCoverLetter] = useState("");
+  const [lastCoverLetter, setLastCoverLetter] = useState("");
   const [coverLoaded, setCoverLoaded] = useState(false);
   const [applying, setApplying] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -66,7 +67,7 @@ export default function ApplyModal({
     if (!coverLoaded) {
       fetch("/api/users/me/last-cover-letter", { headers: { Authorization: `Bearer ${token}` } })
         .then((r) => r.json())
-        .then((d) => { if (d.success && d.data?.cover_letter) setCoverLetter(d.data.cover_letter); })
+        .then((d) => { if (d.success && d.data?.cover_letter) setLastCoverLetter(d.data.cover_letter); })
         .catch(() => {})
         .finally(() => setCoverLoaded(true));
     }
@@ -194,11 +195,6 @@ export default function ApplyModal({
           {/* ===== 화면 1: 작성 ===== */}
           {step === "write" && (
             <>
-              {coverLetter && coverLoaded && (
-                <div style={{ background: "#fff8e1", border: "1px solid #ffe082", borderRadius: 8, padding: "10px 12px", fontSize: 13, color: "#8a6d00", marginBottom: 12, lineHeight: 1.5 }}>
-                  💡 이전에 작성한 자기소개서를 불러왔어요. <strong>지원하는 회사·포지션에 맞게 꼭 수정</strong>해주세요.
-                </div>
-              )}
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#333", marginBottom: 6 }}>
                 자기소개서
               </label>
@@ -207,9 +203,9 @@ export default function ApplyModal({
                   <p style={{ fontSize: 12, color: "#999", margin: "0 0 6px" }}>💡 추천 문구로 시작해보세요</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     {[
-                      `${jobBrand ? jobBrand + " " : ""}${jobTitle || "이 포지션"}에 지원합니다. `,
-                      `안녕하세요, ${jobTitle || "해당 직무"}에 지원하는 ${userName || ""}입니다. `,
-                      `${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 직무"}로 성장하고 싶어 지원하게 되었습니다. `,
+                      `${jobBrand ? jobBrand + " " : ""}${jobTitle || "이 포지션"}에 지원합니다.\n\n`,
+                      `안녕하세요, ${jobTitle || "해당 직무"}에 지원하는 ${userName || ""}입니다.\n\n`,
+                      `${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 직무"}로 성장하고 싶어 지원하게 되었습니다.\n\n`,
                     ].map((tpl, i) => (
                       <button key={i} type="button"
                         onClick={() => setCoverLetter(tpl)}
@@ -217,6 +213,13 @@ export default function ApplyModal({
                         {tpl.trim()}
                       </button>
                     ))}
+                    {lastCoverLetter && (
+                      <button type="button"
+                        onClick={() => setCoverLetter(lastCoverLetter)}
+                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #ddd", background: "#f5f5f5", color: "#555", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                        📋 이전 자소서 불러오기
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -225,7 +228,7 @@ export default function ApplyModal({
                 onChange={(e) => setCoverLetter(e.target.value)}
                 placeholder={`이 회사·포지션에 지원하는 이유와 본인의 강점을 작성해주세요.`}
                 maxLength={2000}
-                style={{ width: "100%", minHeight: 200, padding: 12, borderRadius: 8, border: "1px solid #ddd", fontSize: 14, lineHeight: 1.6, resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }}
+                style={{ width: "100%", minHeight: 320, padding: 12, borderRadius: 8, border: "1px solid #ddd", fontSize: 14, lineHeight: 1.6, resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }}
               />
               <div style={{ textAlign: "right", fontSize: 12, color: "#aaa", marginTop: 4 }}>
                 {coverLetter.length}/2000자
