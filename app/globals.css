@@ -1622,7 +1622,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .resume-section-title { font-size: 17px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; }
-@media (max-width: 640px) { .resume-section-title { font-size: 15px; margin-bottom: 12px; } }.resume-section-head .resume-section-title { margin-bottom: 0; }
+@media (max-width: 640px) {
+  .resume-section { padding: 18px; }
+  .resume-section-title { font-size: 15px; margin-bottom: 12px; }
+  .resume-list-item p { font-size: 14px; }
+  .resume-list-item span { font-size: 13px; }
+}
+.resume-section-head .resume-section-title { margin-bottom: 0; }
 .resume-add-btn { display: flex; align-items: center; gap: 4px; background: transparent; border: none; color: var(--color-primary); font-size: 13px; font-weight: 500; cursor: pointer; padding: 6px 10px; border-radius: 6px; transition: background 0.15s; font-family: inherit; }
 .resume-add-btn:hover { background: var(--color-primary-soft); }
 
