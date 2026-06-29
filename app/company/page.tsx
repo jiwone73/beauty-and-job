@@ -31,10 +31,10 @@ export default function CompanyPage() {
 
   return (
     <div className="co-page">
-      <header style={{ borderBottom: "1px solid #eee", padding: "16px 20px", background: "#fff" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+      <header style={{ borderBottom: "1px solid #eee", background: "#fff" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
           <Link href="/">
-            <Image src="/images/logo.png" alt="뷰티워크" width={140} height={40} priority />
+            <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
           </Link>
         </div>
       </header>

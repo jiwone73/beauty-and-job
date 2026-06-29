@@ -90,7 +90,7 @@ function PasswordResetRequestForm() {
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
           <div className="flex justify-center mb-6">
-            <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={32} /></Link>
+            <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
           <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-3">
             {isCompany ? "기업 비밀번호 재설정" : "비밀번호 재설정"}

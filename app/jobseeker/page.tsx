@@ -1,4 +1,5 @@
 "use client";
+import Header from "@/components/Header";
 import Link from "next/link";
 import Image from "next/image";
 import { TrendingUp, Sparkles, MessageCircle } from "lucide-react";
@@ -12,13 +13,7 @@ const BENEFITS = [
 export default function JobSeekerPage() {
   return (
     <main style={{ background: "#fff" }}>
-      <header style={{ borderBottom: "1px solid #eee", padding: "16px 20px" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <Link href="/">
-            <Image src="/images/logo.png" alt="뷰티워크" width={140} height={40} priority />
-          </Link>
-        </div>
-      </header>
+      <Header />
       <section style={{ background: "#f3e9fa", padding: "56px 20px", textAlign: "center" }}>
         <div style={{ maxWidth: 720, margin: "0 auto" }}>
           <span style={{ display: "inline-block", background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 600, padding: "6px 16px", borderRadius: 100, marginBottom: 20 }}>

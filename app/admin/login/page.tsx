@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
       <div className="admin-login-card">
         {/* 로고 */}
         <div className="admin-login-logo">
-          <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={130} height={33} priority /></Link>
+          <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority /></Link>
           <span className="admin-login-badge">관리자</span>
         </div>
 

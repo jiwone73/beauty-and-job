@@ -62,7 +62,7 @@ export default function LoginEmailPage() {
         <div className="w-full max-w-[400px]">
           {/* 로고 */}
           <div className="flex justify-center mb-8">
-            <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={32} /></Link>
+            <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
 
           <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-8">

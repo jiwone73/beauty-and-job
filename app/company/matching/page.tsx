@@ -61,7 +61,7 @@ export default function MatchingPage() {
             <ChevronLeft size={18} /> 기업서비스
           </Link>
           <Link href="/">
-            <Image src="/images/logo.png" alt="뷰티워크" width={110} height={30} />
+            <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} />
           </Link>
           <div style={{ width: 80 }} />
         </div>

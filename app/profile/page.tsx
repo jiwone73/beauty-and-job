@@ -344,7 +344,7 @@ export default function ProfilePage() {
       <header className="profile-header">
         <div className="profile-header-inner">
           <Link href="/" className="profile-logo">
-            <Image src="/images/logo.png" alt="뷰티워크" width={110} height={28} priority />
+            <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
           </Link>
 
           <Link href="/jobs" className="profile-header-nav">채용공고</Link>

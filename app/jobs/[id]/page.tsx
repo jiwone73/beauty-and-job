@@ -268,7 +268,7 @@ export default function JobDetailPage() {
             <ChevronLeft size={20} />
             <span>채용공고</span>
           </button>
-          <Link href={logoHref} className="job-detail-logo"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={32} priority /></Link>
+          <Link href={logoHref} className="job-detail-logo"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority /></Link>
           <div className="job-detail-header-actions">
             <button className="job-detail-share" onClick={() => {
               navigator.clipboard?.writeText(window.location.href);

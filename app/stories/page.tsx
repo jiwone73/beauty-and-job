@@ -44,7 +44,7 @@ export default function StoriesPage() {
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 80px" }}>
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 0" }}>
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={32} priority /></Link>
+        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority /></Link>
       </header>
 
       {/* 인트로 배너 */}

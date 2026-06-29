@@ -82,7 +82,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
       <header className="header">
         <div className="header-inner">
           <Link href="/" className="logo">
-            <Image src="/images/logo.png" alt="뷰티워크" width={140} height={40} priority />
+            <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
           </Link>
           <nav className="gnb">
             <Link href="/jobs" className={`gnb-with-tag ${pathname === "/jobs" ? "gnb-active" : ""}`}>채용공고</Link>
