@@ -15,7 +15,7 @@ export default function JobSeekerPage() {
       <header style={{ borderBottom: "1px solid #eee", padding: "16px 20px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <Link href="/">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={140} height={40} priority />
+            <Image src="/images/logo.png" alt="뷰티워크" width={140} height={40} priority />
           </Link>
         </div>
       </header>
@@ -25,7 +25,7 @@ export default function JobSeekerPage() {
             오픈 기념 이벤트 · ~12/31
           </span>
           <h1 className="js-hero-title">
-            사무직·매장직 맞춤 채용,<br /><span className="co-hero-point">뷰티앤잡</span>에서 시작하세요
+            사무직·매장직 맞춤 채용,<br /><span className="co-hero-point">뷰티워크</span>에서 시작하세요
           </h1>
           <p className="js-hero-sub">
             이벤트 기간 동안 내 이력서를 기업 검색 상단에<br />맞춤 추천까지 더해 채용 확률을 높여보세요

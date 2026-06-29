@@ -10,7 +10,7 @@ const FAQS = [
   { q: "채용공고 지원은 어떻게 하나요?", a: "원하는 채용공고 상세 페이지에서 '지원하기' 버튼을 클릭하면 이력서와 함께 지원할 수 있습니다." },
   { q: "기업 계정은 어떻게 만드나요?", a: "'기업 서비스' 메뉴를 통해 기업 회원 가입을 진행할 수 있습니다. 기업 인증 후 채용공고를 등록하실 수 있습니다." },
   { q: "뉴스레터 수신을 취소하고 싶어요.", a: "수신하신 뉴스레터 하단의 '수신 거부' 링크를 클릭하시거나, 고객센터로 문의해 주세요." },
-  { q: "개인정보는 어떻게 관리되나요?", a: "뷰티앤잡은 개인정보보호법에 따라 안전하게 개인정보를 관리합니다. 자세한 내용은 개인정보처리방침을 확인해주세요." },
+  { q: "개인정보는 어떻게 관리되나요?", a: "뷰티워크는 개인정보보호법에 따라 안전하게 개인정보를 관리합니다. 자세한 내용은 개인정보처리방침을 확인해주세요." },
 ];
 
 function FaqItem({ q, a }: { q: string; a: string }) {
@@ -30,7 +30,7 @@ export default function SupportPage() {
   return (
     <div className="info-page">
       <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={30} priority /></Link>
+        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={30} priority /></Link>
       </header>
       <div className="info-nav">
         <Link href="/support" className="info-nav-item active">고객센터</Link>
@@ -42,12 +42,12 @@ export default function SupportPage() {
       <main className="info-main">
         <div className="info-hero">
           <h1 className="info-hero-title">무엇을 도와드릴까요?</h1>
-          <p className="info-hero-desc">뷰티앤잡 이용 중 궁금한 점이 있으시면 아래에서 확인해보세요.</p>
+          <p className="info-hero-desc">뷰티워크 이용 중 궁금한 점이 있으시면 아래에서 확인해보세요.</p>
         </div>
         <div className="support-cards">
           {[
             { icon: "💬", title: "1:1 문의", desc: "평일 09:00 ~ 18:00", action: "문의하기" },
-            { icon: "📧", title: "이메일 문의", desc: "support@beautynjob.com", action: "메일 보내기" },
+            { icon: "📧", title: "이메일 문의", desc: "support@beautywork.co.kr", action: "메일 보내기" },
             { icon: "📋", title: "자주 묻는 질문", desc: "빠른 해결책을 찾아보세요", action: "바로가기" },
           ].map((c) => (
             <div key={c.title} className="support-card">

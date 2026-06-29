@@ -123,7 +123,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
         <div className="admin-sidebar-logo">
           <Link href="/admin" className="admin-logo-link">
             {sidebarOpen ? (
-              <Image src="/images/logo.png" alt="뷰티앤잡" width={110} height={28} priority />
+              <Image src="/images/logo.png" alt="뷰티워크" width={110} height={28} priority />
             ) : (
               <span className="admin-logo-icon">B</span>
             )}

@@ -9,12 +9,12 @@ const FAQS = [
   { q: "채용공고 등록은 무료인가요?", a: "네, 기본 채용공고 등록은 완전 무료입니다. 상단 노출·프리미엄 배너 등 유료 상품은 선택 사항입니다." },
   { q: "매장도 기업회원으로 가입해야 하나요?", a: "아니요. 헤어샵, 네일샵, 피부관리실 등 매장은 매장회원으로 가입하시면 됩니다. 가입 시 유형을 선택할 수 있습니다." },
   { q: "기업회원과 매장회원은 무엇이 다른가요?", a: "매장회원은 현장직 채용에 최적화되어 있고, 기업회원은 본사 사무직·전문직 채용과 프리미엄 서비스를 이용할 수 있습니다." },
-  { q: "광고도 신청할 수 있나요?", a: "네. 메인 AD 배너, 프리미엄 상단공고, 뷰티앤잡 Pick 등 다양한 광고 상품을 운영 중입니다." },
+  { q: "광고도 신청할 수 있나요?", a: "네. 메인 AD 배너, 프리미엄 상단공고, 뷰티워크 Pick 등 다양한 광고 상품을 운영 중입니다." },
 ];
 
 const AD_PRODUCTS = [
   { icon: "📢", title: "메인 AD 배너",     desc: "메인 상단 풀 배너. 최대 노출 효과",        price: "20만 원~" },
-  { icon: "⭐", title: "뷰티앤잡 Pick",    desc: "공고·브랜드 큐레이션 카드 노출",           price: "10만 원~" },
+  { icon: "⭐", title: "뷰티워크 Pick",    desc: "공고·브랜드 큐레이션 카드 노출",           price: "10만 원~" },
   { icon: "🔝", title: "프리미엄 상단공고", desc: "채용공고 목록 최상단 고정 노출",            price: "5만 원~" },
   { icon: "🛍️", title: "추천 뷰티 서비스", desc: "뷰티 서비스·제품 카드 광고 노출",          price: "별도 협의" },
 ];
@@ -22,7 +22,7 @@ const AD_PRODUCTS = [
 const STEPS = [
   { step: "01", title: "기업회원 가입",  desc: "매장 또는 기업 유형 선택 후 빠르게 가입" },
   { step: "02", title: "채용공고 등록",  desc: "직무·근무조건·급여 등 작성 후 등록" },
-  { step: "03", title: "관리자 검수",    desc: "뷰티앤잡 담당자가 공고를 검토·승인" },
+  { step: "03", title: "관리자 검수",    desc: "뷰티워크 담당자가 공고를 검토·승인" },
   { step: "04", title: "지원자 확인",    desc: "대시보드에서 지원자 관리 및 연락" },
 ];
 
@@ -34,7 +34,7 @@ export default function CompanyPage() {
       <header style={{ borderBottom: "1px solid #eee", padding: "16px 20px", background: "#fff" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <Link href="/">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={140} height={40} priority />
+            <Image src="/images/logo.png" alt="뷰티워크" width={140} height={40} priority />
           </Link>
         </div>
       </header>
@@ -45,7 +45,7 @@ export default function CompanyPage() {
           <span className="co-hero-badge">기업·매장 서비스</span>
           <h1 className="co-hero-title">
             뷰티 인재 채용,<br />
-            <span className="co-hero-point">뷰티앤잡</span>에서 시작하세요
+            <span className="co-hero-point">뷰티워크</span>에서 시작하세요
           </h1>
           <p className="co-hero-desc">
             헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 교육기관까지<br />

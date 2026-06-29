@@ -58,14 +58,14 @@ export default function HeroMobile() {
 
       <div className="hero-m-banner">
         <span className="hero-m-banner-ad"><Rocket size={16} /></span>
-        <p className="hero-m-banner-text">뷰티앤잡 오픈 준비 중 · 지금은 완전 무료</p>
+        <p className="hero-m-banner-text">뷰티워크 오픈 준비 중 · 지금은 완전 무료</p>
         <Link href="/jobs" className="hero-m-banner-link">보기 →</Link>
       </div>
 
       <div className="hero-m-title-wrap">
         <h1 className="hero-m-title">
           뷰티 커리어의 시작,<br />
-          <span className="hero-m-title-point">뷰티앤잡</span>
+          <span className="hero-m-title-point">뷰티워크</span>
         </h1>
       </div>
 
@@ -104,7 +104,7 @@ export default function HeroMobile() {
       <div className="hero-m-ai-wrap">
         <div className="hero-m-ai-header">
           <span>🔥</span>
-          <span className="hero-m-ai-title">뷰티앤잡 런칭 이벤트 · 지금은 완전 무료 (~12/31)</span>
+          <span className="hero-m-ai-title">뷰티워크 런칭 이벤트 · 지금은 완전 무료 (~12/31)</span>
         </div>
         <div className="hero-m-ai-cards">
           <Link href="/jobseeker" className="hero-m-ai-card">

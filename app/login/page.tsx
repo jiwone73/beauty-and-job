@@ -26,7 +26,7 @@ export default function LoginStartPage() {
       <div className="w-full max-w-[400px]">
         {/* 로고 */}
         <div className="flex justify-center mb-6">
-          <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={140} height={40} priority /></Link>
+          <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={140} height={40} priority /></Link>
         </div>
 
         {/* 슬로건 */}
@@ -34,7 +34,7 @@ export default function LoginStartPage() {
           뷰티 커리어의 시작과 성장
         </h1>
         <p className="text-center text-[14px] text-[#6b6b6b] mb-8">
-          전문가 채용부터 업계 트렌드까지, 뷰티앤잡
+          전문가 채용부터 업계 트렌드까지, 뷰티워크
         </p>
 
         {/* 탭 */}

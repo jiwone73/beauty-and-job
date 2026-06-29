@@ -25,7 +25,7 @@ export default function AdvertisePage() {
   return (
     <div className="info-page">
       <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={30} priority /></Link>
+        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={30} priority /></Link>
       </header>
       <div className="info-nav">
         <Link href="/about" className="info-nav-item">회사 소개</Link>
@@ -37,7 +37,7 @@ export default function AdvertisePage() {
       <main className="info-main">
         <div className="info-hero">
           <h1 className="info-hero-title">광고 문의</h1>
-          <p className="info-hero-desc">뷰티앤잡의 다양한 광고 상품을 통해 브랜드를 알려보세요.</p>
+          <p className="info-hero-desc">뷰티워크의 다양한 광고 상품을 통해 브랜드를 알려보세요.</p>
         </div>
         <div className="info-values" style={{marginBottom:"40px"}}>
           {[{icon:"🎯",title:"타겟 광고",desc:"뷰티 업계 종사자에게 직접 도달"},{icon:"📊",title:"높은 효율",desc:"업계 특화 플랫폼의 높은 전환율"},{icon:"💄",title:"브랜드 노출",desc:"메인/채용공고 등 다양한 지면"},{icon:"📈",title:"성과 분석",desc:"광고 효과 리포트 제공"}].map(v=>(

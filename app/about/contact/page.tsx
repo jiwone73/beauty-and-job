@@ -28,7 +28,7 @@ export default function ContactPage() {
   return (
     <div className="info-page">
       <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={30} priority /></Link>
+        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={30} priority /></Link>
       </header>
       <div className="info-nav">
         <Link href="/about" className="info-nav-item">회사 소개</Link>

@@ -71,7 +71,7 @@ export default function AdInquiryPage() {
       <div className="max-w-lg mx-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900">광고 문의</h1>
-          <p className="text-gray-500 text-sm mt-1">뷰티앤잡 광고 상품에 대해 문의해주세요. 담당자가 직접 연락드립니다.</p>
+          <p className="text-gray-500 text-sm mt-1">뷰티워크 광고 상품에 대해 문의해주세요. 담당자가 직접 연락드립니다.</p>
         </div>
         <div className="bg-white rounded-2xl shadow p-8 space-y-5">
           <div>

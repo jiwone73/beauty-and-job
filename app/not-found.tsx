@@ -40,7 +40,7 @@ export default function NotFound() {
         maxWidth: "400px",
       }}>
         요청하신 페이지가 사라졌거나 주소가 잘못된 것 같아요.<br />
-        뷰티앤잡에서 멋진 커리어를 찾아보세요!
+        뷰티워크에서 멋진 커리어를 찾아보세요!
       </p>
       <div style={{
         display: "flex",

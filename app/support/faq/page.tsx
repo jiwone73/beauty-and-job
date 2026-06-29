@@ -9,7 +9,7 @@ const FAQS = [
   { q: "채용공고 지원은 어떻게 하나요?", a: "원하는 채용공고 상세 페이지에서 '지원하기' 버튼을 클릭하면 됩니다." },
   { q: "기업 계정은 어떻게 만드나요?", a: "'기업 서비스' 메뉴를 통해 기업 회원 가입을 진행할 수 있습니다." },
   { q: "뉴스레터 수신을 취소하고 싶어요.", a: "수신하신 뉴스레터 하단의 '수신 거부' 링크를 클릭하시거나 고객센터로 문의해주세요." },
-  { q: "개인정보는 어떻게 관리되나요?", a: "뷰티앤잡은 개인정보보호법에 따라 안전하게 개인정보를 관리합니다." },
+  { q: "개인정보는 어떻게 관리되나요?", a: "뷰티워크는 개인정보보호법에 따라 안전하게 개인정보를 관리합니다." },
   { q: "비밀번호를 잊어버렸어요.", a: "로그인 페이지에서 '휴대폰 번호로 로그인'을 통해 재인증하실 수 있습니다." },
   { q: "회원 탈퇴는 어떻게 하나요?", a: "프로필 설정 페이지 하단에서 회원 탈퇴를 진행하실 수 있습니다." },
 ];
@@ -29,7 +29,7 @@ export default function FaqPage() {
   return (
     <div className="info-page">
       <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={30} priority /></Link>
+        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={30} priority /></Link>
       </header>
       <div className="info-nav">
         <Link href="/support" className="info-nav-item">고객센터</Link>

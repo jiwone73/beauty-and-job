@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const SECTIONS = [
-  { id: "s1", title: "제1조 (목적)", body: "이 약관은 뷰티앤잡(이하 \"회사\")이 운영하는 뷰티앤잡 서비스(이하 \"서비스\")의 이용과 관련하여 회사와 이용자의 권리·의무 및 책임사항, 이용조건 및 절차 등 기본적인 사항을 규정함을 목적으로 합니다." },
+  { id: "s1", title: "제1조 (목적)", body: "이 약관은 뷰티워크(이하 \"회사\")이 운영하는 뷰티워크 서비스(이하 \"서비스\")의 이용과 관련하여 회사와 이용자의 권리·의무 및 책임사항, 이용조건 및 절차 등 기본적인 사항을 규정함을 목적으로 합니다." },
   { id: "s2", title: "제2조 (정의)", body: "① \"서비스\"란 회사가 제공하는 뷰티 업계 채용정보 중개 및 커리어 관련 일체의 서비스를 의미합니다.\n② \"이용자\"란 이 약관에 따라 회사가 제공하는 서비스를 이용하는 개인회원, 기업회원 및 비회원을 말합니다.\n③ \"개인회원\"이란 구직 및 커리어 관리를 목적으로 가입한 회원을 말합니다.\n④ \"기업회원\"이란 인재 채용을 목적으로 가입한 사업자 회원을 말합니다.\n⑤ \"유료서비스\"란 회사가 유료로 제공하는 채용공고 상단 노출 등 부가 서비스를 말합니다." },
   { id: "s3", title: "제3조 (약관의 효력 및 변경)", body: "① 이 약관은 서비스 화면에 게시하거나 기타의 방법으로 이용자에게 공지함으로써 효력이 발생합니다.\n② 회사는 관련 법령을 위배하지 않는 범위에서 이 약관을 변경할 수 있으며, 변경 시 적용일자 및 변경사유를 명시하여 최소 7일 전(이용자에게 불리한 변경의 경우 30일 전)에 공지합니다.\n③ 이용자가 변경된 약관에 동의하지 않는 경우 서비스 이용을 중단하고 회원 탈퇴를 할 수 있습니다." },
   { id: "s4", title: "제4조 (회원가입)", body: "① 이용자는 회사가 정한 절차에 따라 회원정보를 기입한 후 이 약관에 동의함으로써 회원가입을 신청합니다.\n② 회사는 다음 각 호에 해당하는 신청에 대하여 승낙을 거부하거나 사후에 이용계약을 해지할 수 있습니다. 타인의 정보를 도용한 경우, 허위 정보를 기재한 경우, 만 14세 미만인 경우, 기타 회사가 정한 이용신청 요건이 미비된 경우." },
@@ -23,7 +23,7 @@ export default function TermsPage() {
   return (
     <div className="info-page">
       <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={30} priority /></Link>
+        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={30} priority /></Link>
       </header>
       <main className="info-main">
         <div className="legal-layout">
@@ -37,7 +37,7 @@ export default function TermsPage() {
             </div>
 
             <div className="legal-body">
-              <p className="legal-intro">이 약관은 뷰티앤잡이 제공하는 채용정보 서비스의 이용조건과 절차, 회사와 이용자의 권리·의무를 규정합니다.</p>
+              <p className="legal-intro">이 약관은 뷰티워크가 제공하는 채용정보 서비스의 이용조건과 절차, 회사와 이용자의 권리·의무를 규정합니다.</p>
               {SECTIONS.map((s) => (
                 <section key={s.id} id={s.id} className="legal-section">
                   <h3>{s.title}</h3>

@@ -6,7 +6,7 @@ export default function AboutPage() {
   return (
     <div className="info-page">
       <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={30} priority /></Link>
+        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={30} priority /></Link>
       </header>
       <div className="info-nav">
         <Link href="/about" className="info-nav-item active">회사 소개</Link>
@@ -17,8 +17,8 @@ export default function AboutPage() {
       </div>
       <main className="info-main">
         <div className="info-hero">
-          <h1 className="info-hero-title">뷰티 업계 커리어의 모든 것,<br /><span>뷰티앤잡</span></h1>
-          <p className="info-hero-desc">뷰티앤잡은 뷰티 산업 종사자와 기업을 연결하는 국내 최초 뷰티 특화 채용 플랫폼입니다.</p>
+          <h1 className="info-hero-title">뷰티 업계 커리어의 모든 것,<br /><span>뷰티워크</span></h1>
+          <p className="info-hero-desc">뷰티워크는 뷰티 산업 종사자와 기업을 연결하는 국내 최초 뷰티 특화 채용 플랫폼입니다.</p>
         </div>
         <div className="info-section">
           <h2>우리의 미션</h2>

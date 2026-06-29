@@ -2,7 +2,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM = "뷰티앤잡 <noreply@beautynjob.co.kr>";
+const FROM = "뷰티워크 <noreply@beautynjob.co.kr>";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beauty-and-job.vercel.app";
 const SITE_HOST = SITE_URL.replace(/^https?:\/\//, "");
 const LOGO_URL = `${SITE_URL}/images/logo.png`;
@@ -11,11 +11,11 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   return resend.emails.send({
     from: FROM,
     to,
-    subject: "[뷰티앤잡] 비밀번호 재설정 안내",
+    subject: "[뷰티워크] 비밀번호 재설정 안내",
     html: `
       <div style="max-width:480px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
         <div style="padding:24px 0;border-bottom:2px solid #5f0080;">
-          <span style="font-size:20px;font-weight:700;color:#5f0080;">뷰티앤잡</span>
+          <span style="font-size:20px;font-weight:700;color:#5f0080;">뷰티워크</span>
         </div>
         <div style="padding:32px 0;">
           <h1 style="font-size:18px;margin:0 0 16px;">비밀번호 재설정</h1>
@@ -34,7 +34,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
           </p>
         </div>
         <div style="padding:16px 0;border-top:1px solid #eee;font-size:11px;color:#aaa;">
-          © 뷰티앤잡 (Beauty & Job)
+          © 뷰티워크 (BeautyWork)
         </div>
       </div>
     `,
@@ -45,7 +45,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
   return resend.emails.send({
     from: FROM,
     to,
-    subject: "[뷰티앤잡] 가입을 환영해요",
+    subject: "[뷰티워크] 가입을 환영해요",
     html: `
       <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
@@ -53,7 +53,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
             <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;">
               <tr>
                 <td align="center" bgcolor="#f4eefc" style="padding:26px 32px;border-bottom:1px solid #e9ddf7;">
-                  <img src="${LOGO_URL}" alt="뷰티앤잡" height="32" style="display:block;border:0;height:32px;" />
+                  <img src="${LOGO_URL}" alt="뷰티워크" height="32" style="display:block;border:0;height:32px;" />
                 </td>
               </tr>
               <tr>
@@ -61,7 +61,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
                   <p style="font-size:21px;font-weight:700;color:#7c3aed;margin:0 0 6px;">환영합니다, ${name} 님</p>
                   <p style="font-size:15px;color:#5f5e5a;margin:0 0 18px;">뷰티 커리어의 시작을 함께할게요.</p>
                   <p style="font-size:15px;color:#444444;line-height:1.7;margin:0 0 24px;">
-                    가입해 주셔서 감사해요. 뷰티앤잡은 메이크업·헤어·네일·피부부터 매장직·사무직까지, 뷰티 업계 채용만 모았어요. 지금 이력서를 완성하면 더 많은 기업·매장에 내 프로필이 노출돼요.
+                    가입해 주셔서 감사해요. 뷰티워크는 메이크업·헤어·네일·피부부터 매장직·사무직까지, 뷰티 업계 채용만 모았어요. 지금 이력서를 완성하면 더 많은 기업·매장에 내 프로필이 노출돼요.
                   </p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
                     <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
@@ -116,13 +116,13 @@ export async function sendWelcomeEmail(to: string, name: string) {
               <tr>
                 <td bgcolor="#f6f3fb" style="padding:22px 32px;">
                   <p style="font-size:13px;color:#5f5e5a;margin:0 0 10px;line-height:1.6;">도움이 필요하면 언제든 문의해 주세요.</p>
-                  <p style="font-size:12px;color:#888780;margin:0 0 4px;">뷰티앤잡 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a></p>
+                  <p style="font-size:12px;color:#888780;margin:0 0 4px;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a></p>
                   <p style="font-size:12px;color:#888780;margin:0 0 8px;">이 메일은 회원가입 안내를 위해 발송되었습니다.</p>
                   <p style="font-size:12px;color:#888780;margin:0;">
                     <a href="${SITE_URL}/about/contact" style="color:#8b5cf6;text-decoration:none;">문의하기</a>
                     &nbsp;·&nbsp;
                     <a href="${SITE_URL}/about/contact" style="color:#888780;text-decoration:none;">수신거부</a>
-                    &nbsp;·&nbsp;© 2026 뷰티앤잡
+                    &nbsp;·&nbsp;© 2026 뷰티워크
                   </p>
                 </td>
               </tr>
@@ -140,7 +140,7 @@ export async function sendApplicationCompleteEmail(
   return resend.emails.send({
     from: FROM,
     to,
-    subject: "[뷰티앤잡] 지원이 완료됐어요",
+    subject: "[뷰티워크] 지원이 완료됐어요",
     html: `
       <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
@@ -148,7 +148,7 @@ export async function sendApplicationCompleteEmail(
             <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
               <tr>
                 <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
-                  <img src="${LOGO_URL}" alt="뷰티앤잡" height="30" style="display:block;border:0;height:30px;" />
+                  <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
                 </td>
               </tr>
               <tr>
@@ -179,7 +179,7 @@ export async function sendApplicationCompleteEmail(
               </tr>
               <tr>
                 <td bgcolor="#f6f3fb" style="padding:18px 32px;">
-                  <p style="font-size:12px;color:#888780;margin:0;">뷰티앤잡 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티앤잡</p>
+                  <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
                 </td>
               </tr>
             </table>
@@ -196,7 +196,7 @@ export async function sendNewApplicantEmail(
   return resend.emails.send({
     from: FROM,
     to,
-    subject: "[뷰티앤잡] 새 지원자가 도착했어요",
+    subject: "[뷰티워크] 새 지원자가 도착했어요",
     html: `
       <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
@@ -204,7 +204,7 @@ export async function sendNewApplicantEmail(
             <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
               <tr>
                 <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
-                  <img src="${LOGO_URL}" alt="뷰티앤잡" height="30" style="display:block;border:0;height:30px;" />
+                  <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
                 </td>
               </tr>
               <tr>
@@ -235,7 +235,7 @@ export async function sendNewApplicantEmail(
               </tr>
               <tr>
                 <td bgcolor="#f6f3fb" style="padding:18px 32px;">
-                  <p style="font-size:12px;color:#888780;margin:0;">뷰티앤잡 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티앤잡</p>
+                  <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
                 </td>
               </tr>
             </table>
@@ -252,7 +252,7 @@ export async function sendResumeViewedEmail(
   return resend.emails.send({
     from: FROM,
     to,
-    subject: "[뷰티앤잡] 기업이 이력서를 확인했어요",
+    subject: "[뷰티워크] 기업이 이력서를 확인했어요",
     html: `
       <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
@@ -260,7 +260,7 @@ export async function sendResumeViewedEmail(
             <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
               <tr>
                 <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
-                  <img src="${LOGO_URL}" alt="뷰티앤잡" height="30" style="display:block;border:0;height:30px;" />
+                  <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
                 </td>
               </tr>
               <tr>
@@ -291,7 +291,7 @@ export async function sendResumeViewedEmail(
               </tr>
               <tr>
                 <td bgcolor="#f6f3fb" style="padding:18px 32px;">
-                  <p style="font-size:12px;color:#888780;margin:0;">뷰티앤잡 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티앤잡</p>
+                  <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
                 </td>
               </tr>
             </table>
@@ -362,7 +362,7 @@ export async function sendJobRecommendationEmail(
             <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;">
               <tr>
                 <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
-                  <img src="${LOGO_URL}" alt="뷰티앤잡" height="30" style="display:block;border:0;height:30px;" />
+                  <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
                 </td>
               </tr>
               <tr>
@@ -380,10 +380,10 @@ export async function sendJobRecommendationEmail(
               </tr>
               <tr>
                 <td bgcolor="#f6f3fb" style="padding:20px 28px;">
-                  <p style="font-size:12px;color:#888780;margin:0 0 6px;line-height:1.6;">뷰티앤잡은 회원님의 메일함을 존중합니다.<br/>이 메일은 광고성 정보 수신에 동의하신 분께 발송되었습니다.</p>
+                  <p style="font-size:12px;color:#888780;margin:0 0 6px;line-height:1.6;">뷰티워크는 회원님의 메일함을 존중합니다.<br/>이 메일은 광고성 정보 수신에 동의하신 분께 발송되었습니다.</p>
                   <p style="font-size:12px;color:#888780;margin:0;">
-                    뷰티앤잡 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a><br/>
-                    <a href="${unsubscribeUrl}" style="color:#8b5cf6;text-decoration:none;">추천 메일 수신거부</a> &nbsp;·&nbsp; © 2026 뷰티앤잡
+                    뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a><br/>
+                    <a href="${unsubscribeUrl}" style="color:#8b5cf6;text-decoration:none;">추천 메일 수신거부</a> &nbsp;·&nbsp; © 2026 뷰티워크
                   </p>
                 </td>
               </tr>

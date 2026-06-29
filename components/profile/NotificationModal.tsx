@@ -13,10 +13,10 @@ const NOTIFICATION_GROUPS = [
     ],
   },
   {
-    group: "뷰티앤잡 소식받기",
+    group: "뷰티워크 소식받기",
     items: [
-      { id: "newsletter", title: "뷰티앤잡 뉴스레터 구독", desc: "엄선된 뷰티 채용 소식과 업계 인사이트를 메일로 받아보세요.", defaultOn: false },
-      { id: "event", title: "이벤트·혜택 소식 받기", desc: "뷰티앤잡의 이벤트와 혜택 소식을 메일로 받아보세요.", defaultOn: false },
+      { id: "newsletter", title: "뷰티워크 뉴스레터 구독", desc: "엄선된 뷰티 채용 소식과 업계 인사이트를 메일로 받아보세요.", defaultOn: false },
+      { id: "event", title: "이벤트·혜택 소식 받기", desc: "뷰티워크의 이벤트와 혜택 소식을 메일로 받아보세요.", defaultOn: false },
       { id: "agent", title: "기업 채용 제안받기", desc: "프로필을 공개하면 기업이 직접 채용 제안을 보낼 수 있어요.", defaultOn: false },
     ],
   },

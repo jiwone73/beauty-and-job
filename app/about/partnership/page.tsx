@@ -25,7 +25,7 @@ export default function PartnershipPage() {
   return (
     <div className="info-page">
       <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={30} priority /></Link>
+        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={30} priority /></Link>
       </header>
       <div className="info-nav">
         <Link href="/about" className="info-nav-item">회사 소개</Link>
@@ -37,7 +37,7 @@ export default function PartnershipPage() {
       <main className="info-main">
         <div className="info-hero">
           <h1 className="info-hero-title">제휴 문의</h1>
-          <p className="info-hero-desc">뷰티앤잡과 함께 성장할 파트너사를 환영합니다.</p>
+          <p className="info-hero-desc">뷰티워크와 함께 성장할 파트너사를 환영합니다.</p>
         </div>
         {done ? (
           <div className="info-section" style={{textAlign:"center",padding:"48px 0"}}>

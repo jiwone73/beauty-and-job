@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const titleList = articles.map((a, i) => `${i + 1}. ${a.title}`).join("\n");
-    const sys = `당신은 한국 뷰티 산업 채용 플랫폼 "뷰티앤잡"의 주간 뉴스레터 에디터입니다.
+    const sys = `당신은 한국 뷰티 산업 채용 플랫폼 "뷰티워크"의 주간 뉴스레터 에디터입니다.
 아래 뉴스 제목 목록 중 뷰티 업계(화장품·미용·메이크업·헤어·네일·피부미용·뷰티 브랜드/유통/트렌드)와 직접 관련된 기사만 골라 큐레이션합니다.
 
 규칙:
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
           <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;">
             <tr>
               <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
-                <img src="${LOGO_URL}" alt="뷰티앤잡" height="30" style="display:block;border:0;height:30px;" />
+                <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
               </td>
             </tr>
             <tr>
@@ -149,10 +149,10 @@ export async function POST(req: NextRequest) {
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   ${cardsHtml}
                 </table>
-                <p style="font-size:13px;color:#666666;text-align:center;margin:18px 0 14px;line-height:1.6;">오늘 소식이 흥미로웠다면, 뷰티앤잡에서 더 많은 이야기와 채용 정보를 만나보세요.</p>
+                <p style="font-size:13px;color:#666666;text-align:center;margin:18px 0 14px;line-height:1.6;">오늘 소식이 흥미로웠다면, 뷰티워크에서 더 많은 이야기와 채용 정보를 만나보세요.</p>
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 28px;">
                   <tr><td align="center" bgcolor="#5f0080" style="border-radius:8px;">
-                    <a href="${SITE_URL}" style="display:inline-block;padding:13px 34px;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;">뷰티앤잡 둘러보기</a>
+                    <a href="${SITE_URL}" style="display:inline-block;padding:13px 34px;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;">뷰티워크 둘러보기</a>
                   </td></tr>
                 </table>
               </td>
@@ -161,8 +161,8 @@ export async function POST(req: NextRequest) {
               <td bgcolor="#f6f3fb" style="padding:20px 28px;">
                 <p style="font-size:12px;color:#888780;margin:0 0 6px;line-height:1.6;">이 메일은 뉴스레터 수신에 동의하신 분께 발송되었습니다.</p>
                 <p style="font-size:12px;color:#888780;margin:0;">
-                  뷰티앤잡 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a><br/>
-                  <a href="{{UNSUBSCRIBE_URL}}" style="color:#8b5cf6;text-decoration:none;">뉴스레터 수신거부</a> &nbsp;·&nbsp; © 2026 뷰티앤잡
+                  뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a><br/>
+                  <a href="{{UNSUBSCRIBE_URL}}" style="color:#8b5cf6;text-decoration:none;">뉴스레터 수신거부</a> &nbsp;·&nbsp; © 2026 뷰티워크
                 </p>
               </td>
             </tr>

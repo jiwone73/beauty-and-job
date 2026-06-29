@@ -107,9 +107,9 @@ export default function LoginModal({ onClose }: Props) {
       <div className="lm-card" onClick={(e) => e.stopPropagation()}>
         <button className="lm-close" onClick={onClose}><X size={22} /></button>
         <div className="lm-header">
-          <Image src="/images/logo.png" alt="뷰티앤잡" width={130} height={34} priority />
+          <Image src="/images/logo.png" alt="뷰티워크" width={130} height={34} priority />
           <h2 className="lm-title">뷰티 커리어의 시작과 성장</h2>
-          <p className="lm-sub">전문가 채용부터 업계 트렌드까지, 뷰티앤잡</p>
+          <p className="lm-sub">전문가 채용부터 업계 트렌드까지, 뷰티워크</p>
         </div>
         <div className="lm-btns">
           <a href="/api/auth/kakao"

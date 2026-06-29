@@ -16,7 +16,7 @@ const COMPARE = [
 
 const PROCESS = [
   { step: "01", icon: "📋", title: "공고 등록",      desc1: "무료로 채용공고를 등록합니다.",           desc2: "직군·근무조건·급여 등 상세히 작성할수록 매칭 정확도가 높아져요." },
-  { step: "02", icon: "🤖", title: "AI 후보자 매칭", desc1: "뷰티앤잡 AI가 DB에서 조건에 맞는",       desc2: "후보자를 자동으로 탐색·추천합니다." },
+  { step: "02", icon: "🤖", title: "AI 후보자 매칭", desc1: "뷰티워크 AI가 DB에서 조건에 맞는",       desc2: "후보자를 자동으로 탐색·추천합니다." },
   { step: "03", icon: "📨", title: "후보자 제안",     desc1: "담당자가 후보자 프로필을 기업에 제안합니다.", desc2: "검토 후 면접 진행 여부를 결정해 주세요." },
   { step: "04", icon: "🤝", title: "면접·채용 확정", desc1: "면접 일정을 조율하고",                   desc2: "채용이 확정되면 알려주세요." },
   { step: "05", icon: "💳", title: "수수료 청구",     desc1: "채용 확정 후 수수료가 발생합니다.",       desc2: "채용이 성사되지 않으면 비용은 없습니다." },
@@ -61,7 +61,7 @@ export default function MatchingPage() {
             <ChevronLeft size={18} /> 기업서비스
           </Link>
           <Link href="/">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={110} height={30} />
+            <Image src="/images/logo.png" alt="뷰티워크" width={110} height={30} />
           </Link>
           <div style={{ width: 80 }} />
         </div>
@@ -216,11 +216,11 @@ export default function MatchingPage() {
             <Link href="/company/signup" className="mat-cta-btn primary">
               무료로 채용 의뢰하기 <ArrowRight size={16} />
             </Link>
-            <a href="mailto:match@beautynjob.com" className="mat-cta-btn outline">
+            <a href="mailto:match@beautywork.co.kr" className="mat-cta-btn outline">
               📩 매칭 서비스 문의
             </a>
           </div>
-          <p className="mat-cta-email">문의: match@beautynjob.com · 담당자 1 영업일 내 회신</p>
+          <p className="mat-cta-email">문의: match@beautywork.co.kr · 담당자 1 영업일 내 회신</p>
         </div>
       </section>
     </div>

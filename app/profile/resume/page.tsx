@@ -322,7 +322,7 @@ const handlePrint = async () => {
       <header className="resume-header">
         <div className="resume-header-inner">
           <Link href="/" className="resume-logo">
-            <Image src="/images/logo.png" alt="뷰티앤잡" width={110} height={28} priority />
+            <Image src="/images/logo.png" alt="뷰티워크" width={110} height={28} priority />
           </Link>
           <Link href="/jobs" className="resume-header-nav">채용공고</Link>
           <div className="resume-header-actions">

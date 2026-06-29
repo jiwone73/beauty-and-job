@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   <body style="font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#fafafa;">
     <div style="text-align:center;padding:32px;">
       <h1 style="color:#5f0080;font-size:22px;margin:0 0 12px;">수신거부 완료</h1>
-      <p style="color:#666;font-size:15px;line-height:1.6;">뷰티앤잡 뉴스레터 수신이 해제되었습니다.<br/>그동안 함께해 주셔서 감사합니다.</p>
+      <p style="color:#666;font-size:15px;line-height:1.6;">뷰티워크 뉴스레터 수신이 해제되었습니다.<br/>그동안 함께해 주셔서 감사합니다.</p>
     </div>
   </body></html>`;
   return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });

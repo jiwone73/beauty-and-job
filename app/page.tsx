@@ -123,7 +123,7 @@ function Hero() {
       <div className="hero-wrap">
         <div className="hero-banner-top-inner">
           <span className="hero-banner-badge"><Rocket size={18} /></span>
-          <p className="hero-banner-title">뷰티앤잡 오픈 준비 중 · 지금은 완전 무료</p>
+          <p className="hero-banner-title">뷰티워크 오픈 준비 중 · 지금은 완전 무료</p>
           <p className="hero-banner-sub">런칭 기간 동안 등록·상단노출·인재 연락처 열람까지 0원</p>
           <Link href="/jobs" className="hero-banner-link">공고 보기 →</Link>
         </div>
@@ -131,7 +131,7 @@ function Hero() {
           <div className="hero-text">
             <h1 className="hero-title">
               뷰티 커리어의 시작,<br />
-              <span className="hero-title-point">뷰티앤잡</span>
+              <span className="hero-title-point">뷰티워크</span>
             </h1>
             <p className="hero-sub">
               살롱·샵 현장직부터 브랜드 본사까지<br />뷰티업계 일자리를 한곳에서
@@ -188,7 +188,7 @@ function Hero() {
           <div className="hero-right">
             <div className="hero-right-header">
               <span className="hero-ai-icon">🔥</span>
-              <span className="hero-right-title">뷰티앤잡 런칭 이벤트 · 지금은 완전 무료 (~12/31)</span>
+              <span className="hero-right-title">뷰티워크 런칭 이벤트 · 지금은 완전 무료 (~12/31)</span>
             </div>
             <div className="hero-right-cards">
               <div className="hero-right-card">
@@ -238,7 +238,7 @@ function Hero() {
 }
 
 /* ============================================
-   섹션 1: 뷰티앤잡 추천 공고<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#5f0080", background: "#f3eafa", verticalAlign: "middle" }}>📊 직군 맞춤 선별</span>
+   섹션 1: 뷰티워크 추천 공고<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#5f0080", background: "#f3eafa", verticalAlign: "middle" }}>📊 직군 맞춤 선별</span>
    ============================================ */
 /* ============================================
    섹션: 지금 적극 채용 중
@@ -294,7 +294,7 @@ function SectionPick() {
           <div>
             <h2 className="section-title">
               <Sparkles size={24} className="title-icon" />
-              뷰티앤잡 추천 공고
+              뷰티워크 추천 공고
             </h2>
             <p className="section-sub">직군과 최신 등록을 반영해, 지금 보면 좋은 공고를 골랐어요</p>
           </div>
@@ -513,7 +513,7 @@ function SectionNewsletter() {
               <div className="newsletter-text">
                 <h2 className="newsletter-title">
                   <Mail size={22} className="newsletter-icon" />
-                  뷰티앤잡 뉴스레터 구독하기
+                  뷰티워크 뉴스레터 구독하기
                 </h2>
                 <p className="newsletter-sub">
                   매주 월요일, 엄선된 뷰티 채용 소식과 업계 인사이트를 메일함에서 만나보세요
@@ -556,7 +556,7 @@ function Footer() {
     <footer style={{ background: "#faf8fc", borderTop: "1px solid #eee", padding: "40px 0 48px", marginTop: 60 }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
-          <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={32} /></Link>
+          <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={32} /></Link>
           <nav style={{ display: "flex", flexWrap: "wrap", gap: 26 }}>
             {topNav.map((l) => (
               <Link key={l.href} href={l.href} style={{ fontSize: 14, fontWeight: 600, color: "#3a3a3a", textDecoration: "none" }}>{l.label}</Link>
@@ -564,7 +564,7 @@ function Footer() {
           </nav>
         </div>
         <div style={{ fontSize: 13, color: "#9a9aa3", lineHeight: 2 }}>
-          <div><span style={{ fontWeight: 600, color: "#6b6b73" }}>(주)뷰티앤잡</span><Sep />대표이사 :</div>
+          <div><span style={{ fontWeight: 600, color: "#6b6b73" }}>(주)뷰티워크</span><Sep />대표이사 :</div>
           <div>주소 :<Sep />전화번호 :</div>
           <div>사업자등록번호 :<Sep />통신판매업신고번호 :<Sep />유료직업소개사업 등록번호 :<Sep />직업정보제공사업 신고번호 :</div>
         </div>

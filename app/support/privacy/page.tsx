@@ -19,7 +19,7 @@ export default function PrivacyPage() {
   return (
     <div className="info-page">
       <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티앤잡" width={120} height={30} priority /></Link>
+        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={120} height={30} priority /></Link>
       </header>
       <main className="info-main">
         <div className="legal-layout">
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
             </div>
 
             <div className="legal-body">
-              <p className="legal-intro">뷰티앤잡은 「개인정보 보호법」 등 관련 법령을 준수하며, 이용자의 개인정보를 보호하기 위해 다음과 같은 처리방침을 두고 있습니다.</p>
+              <p className="legal-intro">뷰티워크는 「개인정보 보호법」 등 관련 법령을 준수하며, 이용자의 개인정보를 보호하기 위해 다음과 같은 처리방침을 두고 있습니다.</p>
               {SECTIONS.map((s) => (
                 <section key={s.id} id={s.id} className="legal-section">
                   <h3>{s.title}</h3>

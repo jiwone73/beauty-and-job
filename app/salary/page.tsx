@@ -182,7 +182,7 @@ export default function SalaryPage() {
           </div>
 
           <p className="salary-disclaimer">
-            * 위 데이터는 뷰티앤잡 자체 조사 및 공개 데이터를 기반으로 한 추정치입니다. 실제 연봉은 기업 규모, 개인 경력에 따라 다를 수 있습니다.
+            * 위 데이터는 뷰티워크 자체 조사 및 공개 데이터를 기반으로 한 추정치입니다. 실제 연봉은 기업 규모, 개인 경력에 따라 다를 수 있습니다.
           </p>
         </div>
 
@@ -190,7 +190,7 @@ export default function SalaryPage() {
         <div className="salary-cta-box">
           <div className="salary-cta-left">
             <h3>내 연봉, 적정한가요?</h3>
-            <p>뷰티앤잡 에이전트에게 연봉 분석과 이직 제안을 받아보세요.</p>
+            <p>뷰티워크 에이전트에게 연봉 분석과 이직 제안을 받아보세요.</p>
           </div>
           <div className="salary-cta-right">
             <Link href="/profile" className="salary-cta-btn primary">연봉 분석받기</Link>
