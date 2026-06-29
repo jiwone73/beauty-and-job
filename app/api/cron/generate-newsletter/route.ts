@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 
   const base =
     process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://beautywork.vercel.app");
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://beauty-work.vercel.app");
 
   // 1) 생성
   let newsletterId: string;

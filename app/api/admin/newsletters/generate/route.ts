@@ -5,7 +5,7 @@ import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import Anthropic from "@anthropic-ai/sdk";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beautywork.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beauty-work.vercel.app";
 const LOGO_URL = `${SITE_URL}/images/logo.png`;
 const SITE_HOST = SITE_URL.replace(/^https?:\/\//, "");
 

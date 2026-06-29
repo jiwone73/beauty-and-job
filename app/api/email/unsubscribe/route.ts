@@ -5,7 +5,7 @@ import crypto from "crypto";
 import pool from "@/lib/db";
 
 const RECOMMENDATION_TERM_ID = "fb392275-4dc3-45cd-ad26-c59b3e571cee";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beautywork.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beauty-work.vercel.app";
 
 function expected(userId: string) {
   return crypto.createHmac("sha256", process.env.CRON_SECRET || "").update(userId).digest("hex");

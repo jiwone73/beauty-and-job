@@ -279,7 +279,7 @@ function PCOnlyNotice() {
           fontWeight: 600,
           wordBreak: "break-all",
         }}>
-          beautywork.vercel.app
+          beauty-work.vercel.app
         </p>
       </div>
       <Link href="/" style={{
