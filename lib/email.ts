@@ -3,7 +3,7 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const FROM = "뷰티워크 <noreply@beautynjob.co.kr>";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beauty-and-job.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beautywork.vercel.app";
 const SITE_HOST = SITE_URL.replace(/^https?:\/\//, "");
 const LOGO_URL = `${SITE_URL}/images/logo.png`;
 

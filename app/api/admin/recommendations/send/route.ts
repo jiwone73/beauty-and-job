@@ -8,7 +8,7 @@ import { sendJobRecommendationEmail } from "@/lib/email";
 import { getGroupOfItem, getJobSubGroups, JobType } from "@/lib/data/jobGroups";
 
 const RECOMMENDATION_TERM_ID = "fb392275-4dc3-45cd-ad26-c59b3e571cee";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beauty-and-job.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beautywork.vercel.app";
 
 function unsubToken(userId: string) {
   return crypto.createHmac("sha256", process.env.CRON_SECRET || "").update(userId).digest("hex");

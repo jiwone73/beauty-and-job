@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       [owner.type, owner.id, token, expiresAt]
     )
 
-    const resetUrl = `https://beauty-and-job.vercel.app/login/password-reset/${token}`
+    const resetUrl = `https://beautywork.vercel.app/login/password-reset/${token}`
     try {
       await sendPasswordResetEmail(email, resetUrl)
     } catch (e) {

@@ -5,7 +5,7 @@ import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { sendNewsletterEmail } from "@/lib/email";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beauty-and-job.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beautywork.vercel.app";
 
 export async function POST(
   req: NextRequest,
