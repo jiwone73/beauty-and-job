@@ -32,7 +32,7 @@ export default function CompanyPage() {
   return (
     <div className="co-page">
       <header style={{ borderBottom: "1px solid #eee", background: "#fff" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 24px", display: "flex", alignItems: "center" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "16px 32px", display: "flex", alignItems: "center" }}>
           <Link href="/" style={{ display: "inline-flex", alignItems: "center" }}>
             <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
           </Link>

@@ -216,11 +216,11 @@ export default function MatchingPage() {
             <Link href="/company/signup" className="mat-cta-btn primary">
               무료로 채용 의뢰하기 <ArrowRight size={16} />
             </Link>
-            <a href="mailto:match@beautywork.co.kr" className="mat-cta-btn outline">
+            <a href="mailto:support@beautywork.co.kr" className="mat-cta-btn outline">
               📩 매칭 서비스 문의
             </a>
           </div>
-          <p className="mat-cta-email">문의: match@beautywork.co.kr · 담당자 1 영업일 내 회신</p>
+          <p className="mat-cta-email">문의: support@beautywork.co.kr · 담당자 1 영업일 내 회신</p>
         </div>
       </section>
     </div>
