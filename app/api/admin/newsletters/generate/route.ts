@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
 {"newsletter_title":"제목(30자 이내)","intro":"인트로(2~3문장, 이번 주 흐름 요약)","items":[{"index":번호,"comment":"코멘트"}]}`;
     const user = `이번 주 뉴스 제목 목록:\n${titleList}`;
     const msg = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-haiku-4-5",
       max_tokens: 1000,
       system: sys,
       messages: [{ role: "user", content: user }],

@@ -323,7 +323,7 @@ export async function sendJobRecommendationEmail(
   const cardsHtml = jobs
     .map((j) => {
       const company = j.brand_name || j.company_name || "";
-      const logo = j.logo_url || LOGO_URL;
+      const logo = (j.logo_url && j.logo_url.startsWith("http")) ? j.logo_url : LOGO_URL;
       const meta = [j.experience_level, j.location].filter(Boolean).join(" · ");
       const jobUrl = `${SITE_URL}/jobs/${j.id}`;
       return `
