@@ -71,7 +71,7 @@
 }
 
 .logo { display: flex; align-items: center; flex-shrink: 0; }
-.logo img { height: 32px; width: auto; }
+.logo img { height: 32px !important; width: auto !important; }
 
 .gnb {
   display: flex;

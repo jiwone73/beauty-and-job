@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Header from "@/components/Header";
 import { ThumbsUp } from "lucide-react";
 
 const CATEGORIES = ["전체", "공감", "꿀팁", "질문", "정보"];
@@ -42,10 +43,9 @@ export default function StoriesPage() {
   };
 
   return (
-    <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 80px" }}>
-      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 0" }}>
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority /></Link>
-      </header>
+    <main>
+      <Header />
+      <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 80px" }}>
 
       {/* 인트로 배너 */}
       <div style={{
@@ -210,6 +210,7 @@ export default function StoriesPage() {
         </div>
         );
       })()}
+    </div>
     </main>
   );
 }
