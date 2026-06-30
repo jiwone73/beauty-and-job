@@ -262,7 +262,7 @@ function SectionActiveHiring() {
             <h2 className="section-title">🔥 지금 적극 채용 중<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#5f0080", background: "#f3eafa", verticalAlign: "middle" }}>📊 데이터 기반 선별</span></h2>
             <p className="section-sub">여러 채용 지표를 분석해, 지금 가장 적극적으로 채용 중인 곳만 엄선했어요</p>
           </div>
-          <Link href="/jobs" className="see-all hide-mobile">전체보기</Link>
+          
         </div>
         <div className="card-grid card-grid-4">
           {mappedJobs.map((job: any) => (
