@@ -980,14 +980,15 @@ input[type="range"].career-slider::-moz-range-thumb {
   z-index: 50;
 }
 .profile-header-inner {
-  max-width: 600px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 14px 20px;
+  padding: 0 32px;
+  height: 72px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.profile-logo img { height: 28px; width: auto; }
+.profile-logo img { height: 32px; width: auto; }
 .profile-settings-btn {
   width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
@@ -4107,7 +4108,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .resume-action-btn span { display: none; }
 
   /* 프로필 */
-  .profile-header-inner { padding: 0 16px; }
+  .profile-header-inner { padding: 0 32px; }
   .profile-card { padding: 20px 16px; }
   .profile-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
@@ -10763,7 +10764,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 /* 프로필 헤더 채용공고 위치 — 이력서와 통일 (x=166) */
-.profile-header-inner { padding-left: 24px; padding-right: 24px; }
+.profile-header-inner { padding-left: 32px; padding-right: 32px; }
 .profile-header-nav { margin-left: 24px; }
 
 /* === 모바일 상단 배너 — 연보라 D + 로켓 + sheen (데스크탑과 통일) === */
@@ -10783,7 +10784,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 모바일: 헤더 채용공고 링크 숨김 (하단 고정탭에 채용 있음) */
 @media (max-width: 768px) {
   .profile-header-nav, .resume-header-nav { display: none !important; }
-  .profile-logo { margin-right: auto; }
+  
 }
 
 /* 탭-헤더 여백 축소 + 이력서편집 바 제거 + 이메일↔소개 여백 축소 */
