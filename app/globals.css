@@ -1130,7 +1130,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .profile-tabs {
   max-width: 600px;
   margin: 24px auto 0;
-  padding: 0 20px;
+  padding: 0 16px;
   display: flex;
   gap: 24px;
   background: transparent;
@@ -2193,7 +2193,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-aside-bookmark.active { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-pale); }
 
 /* 모바일 CTA */
-.job-detail-mobile-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--color-border); padding: 12px 20px; gap: 10px; z-index: 50; }
+.job-detail-mobile-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--color-border); padding: 12px 16px; gap: 10px; z-index: 50; }
 .job-detail-mobile-bookmark { width: 48px; height: 48px; background: white; border: 1.5px solid var(--color-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-sub); flex-shrink: 0; transition: all 0.15s; }
 .job-detail-mobile-bookmark.active { color: var(--color-primary); border-color: var(--color-primary); }
 .job-detail-mobile-apply { flex: 1; height: 48px; background: var(--color-primary); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
@@ -10566,10 +10566,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 모바일에서 프로필/이력서 페이지 좌우 여백 축소 */
 @media (max-width: 768px) {
   .profile-content {
-    padding: 0 20px;
+    padding: 0 16px;
   }
   .resume-editor {
-    padding: 12px 20px;
+    padding: 12px 16px;
   }
   .resume-section {
     padding: 16px 12px;
@@ -10769,7 +10769,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 /* 프로필 헤더 채용공고 위치 — 이력서와 통일 (x=166) */
-.profile-header-inner { padding-left: 20px; padding-right: 20px; }
+.profile-header-inner { padding-left: 16px; padding-right: 16px; }
 .profile-header-nav { margin-left: 24px; }
 
 /* === 모바일 상단 배너 — 연보라 D + 로켓 + sheen (데스크탑과 통일) === */
