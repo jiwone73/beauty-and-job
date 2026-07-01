@@ -319,13 +319,13 @@ const handlePrint = async () => {
 
   return (
     <div className="resume-page">
-      <header className="resume-header">
-        <div className="resume-header-inner">
-          <Link href="/" className="resume-logo">
+      <header className="profile-header">
+        <div className="profile-header-inner">
+          <Link href="/" className="profile-logo">
             <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
           </Link>
-          <Link href="/jobs" className="resume-header-nav">채용공고</Link>
-          <div className="resume-header-actions">
+          <Link href="/jobs" className="profile-header-nav">채용공고</Link>
+          <div className="resume-header-actions" style={{ marginLeft: "auto" }}>
             
             <button className="resume-action-btn" onClick={() => setShowPreview(true)}>
               <Eye size={16} /><span>미리보기</span>

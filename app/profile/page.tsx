@@ -348,7 +348,7 @@ export default function ProfilePage() {
           </Link>
 
           <Link href="/jobs" className="profile-header-nav">채용공고</Link>
-          <div style={{ position: "relative", display: "inline-flex" }}>
+          <div style={{ position: "relative", display: "inline-flex", marginLeft: "auto" }}>
             <button
               className="profile-settings-btn"
               onClick={() => setNotifOpen((v) => !v)}

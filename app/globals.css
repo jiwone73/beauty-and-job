@@ -980,9 +980,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   z-index: 50;
 }
 .profile-header-inner {
-  max-width: 1280px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 20px;
   height: 72px;
   display: flex;
   justify-content: space-between;
@@ -2949,11 +2949,12 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-header-inner {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   height: 72px;
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 32px;
-  gap: 32px;
+  gap: 8px;
 }
 .resume-logo {
   display: flex;
@@ -2983,6 +2984,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 .resume-back-btn {
   display: inline-flex;
@@ -3065,9 +3067,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 모바일 대응 */
 @media (max-width: 768px) {
   .resume-header-inner {
-    padding: 0 16px;
-    gap: 16px;
-    height: 56px;
+    padding: 0 32px;
+    gap: 8px;
+    height: 72px;
   }
   .resume-gnb {
     display: none;
@@ -4108,7 +4110,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .resume-action-btn span { display: none; }
 
   /* 프로필 */
-  .profile-header-inner { padding: 0 32px; }
+  .profile-header-inner { padding: 0 20px; }
   .profile-card { padding: 20px 16px; }
   .profile-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
@@ -10561,7 +10563,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 모바일에서 프로필/이력서 페이지 좌우 여백 축소 */
 @media (max-width: 768px) {
   .profile-content {
-    padding: 0 12px;
+    padding: 0 20px;
   }
   .resume-editor {
     padding: 12px 10px;
@@ -10764,7 +10766,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 /* 프로필 헤더 채용공고 위치 — 이력서와 통일 (x=166) */
-.profile-header-inner { padding-left: 32px; padding-right: 32px; }
+.profile-header-inner { padding-left: 20px; padding-right: 20px; }
 .profile-header-nav { margin-left: 24px; }
 
 /* === 모바일 상단 배너 — 연보라 D + 로켓 + sheen (데스크탑과 통일) === */
