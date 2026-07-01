@@ -2962,6 +2962,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   flex-shrink: 0;
   text-decoration: none;
 }
+.resume-logo img { height: 32px !important; width: auto !important; }
 .resume-gnb {
   display: flex;
   align-items: center;
