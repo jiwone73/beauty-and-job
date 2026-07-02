@@ -35,8 +35,8 @@ export default function JobGroupField({
         }
         .jgf-trigger:hover:not(:disabled) { border-color: #c9a3d6; }
         .jgf-trigger:disabled { opacity: 0.6; cursor: not-allowed; }
-        .jgf-text { color: #333; font-weight: 600; }
-        .jgf-ph { color: #333; font-weight: 600; }
+        .jgf-text { color: #333; font-weight: 400; }
+        .jgf-ph { color: #333; font-weight: 400; }
         .jgf-arrow { color: #999; font-size: 14px; }
         .jgf-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .jgf-chip {

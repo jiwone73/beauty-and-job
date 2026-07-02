@@ -757,7 +757,7 @@ export default function ProfilePage() {
                 {!preferredRegions.some((r) => r.sido === "지역 무관") && (
                   <>
                     <button onClick={() => setPrefModalOpen(true)}
-                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "14px", fontWeight: 600, cursor: "pointer", marginBottom: "10px" }}>
+                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "14px", fontWeight: 400, cursor: "pointer", marginBottom: "10px" }}>
                       <MapPin size={15} /> 지역 선택
                     </button>
                     {preferredRegions.length > 0 && (
