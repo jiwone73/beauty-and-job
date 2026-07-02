@@ -483,7 +483,7 @@ export default function ProfilePage() {
                 {editField === "phone" ? (
                   <div className="profile-info-row" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <span className="profile-info-label">휴대전화</span>
+                      <span className="profile-info-label">휴대전화<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button
                           style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: phoneVerified ? "#5f0080" : "#e0e0e0", color: phoneVerified ? "#fff" : "#9a9a9a", cursor: phoneVerified ? "pointer" : "not-allowed" }}
@@ -577,13 +577,13 @@ export default function ProfilePage() {
                     )}
                   </div>
                 ) : (
-                  <InfoRow label="휴대전화" value={formatPhone(phoneOverride || userPhone || phone || "") || "정보 없음"} isEmpty={!(phoneOverride || userPhone || phone)} onClick={() => { setPhoneInput((phoneOverride || userPhone || phone || "").replace(/\D/g, "")); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); setEditField("phone"); }} />
+                  <InfoRow label="휴대전화" value={formatPhone(phoneOverride || userPhone || phone || "") || "정보 없음"} isEmpty={!(phoneOverride || userPhone || phone)} onClick={() => { setPhoneInput((phoneOverride || userPhone || phone || "").replace(/\D/g, "")); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); setEditField("phone"); }} required />
                 )}
 
                 {editField === "birth" ? (
                   <div className="profile-info-row" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <span className="profile-info-label">생년월일</span>
+                      <span className="profile-info-label">생년월일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button
                           style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
@@ -617,13 +617,13 @@ export default function ProfilePage() {
                     />
                   </div>
                 ) : (
-                  <InfoRow label="생년월일" value={birth ? `${birth.slice(0, 4)}.${birth.slice(4, 6) || "00"}.${birth.slice(6, 8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => { setBirthInput(birth || ""); setEditField("birth"); }} />
+                  <InfoRow label="생년월일" value={birth ? `${birth.slice(0, 4)}.${birth.slice(4, 6) || "00"}.${birth.slice(6, 8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => { setBirthInput(birth || ""); setEditField("birth"); }} required />
                 )}
 
                 {editField === "gender" ? (
                   <div className="profile-info-row is-last" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <span className="profile-info-label">성별</span>
+                      <span className="profile-info-label">성별<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <button onClick={() => setEditField(null)}
                         style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", cursor: "pointer" }}>
                         취소
@@ -653,13 +653,13 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 ) : (
-                  <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setEditField("gender")} />
+                  <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setEditField("gender")} required />
                 )}
 
                 {editField === "email" ? (
                   <div className="profile-info-row is-last" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <span className="profile-info-label">이메일</span>
+                      <span className="profile-info-label">이메일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button
                           style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
@@ -693,7 +693,7 @@ export default function ProfilePage() {
                     />
                   </div>
                 ) : (
-                  <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => { setEmailEditInput(emailInput || ""); setEditField("email"); }} isLast />
+                  <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => { setEmailEditInput(emailInput || ""); setEditField("email"); }} isLast required />
                 )}
               </div>
             </section>
@@ -705,7 +705,7 @@ export default function ProfilePage() {
               </div>
               <div className="profile-info-card" style={{ padding: "16px" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                  <label style={{ fontSize: "13px", fontWeight: 600, color: "#333" }}>거주지 주소</label>
+                  <label style={{ fontSize: "13px", fontWeight: 600, color: "#333" }}>거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   {addressRoad && (
                     <button type="button" onClick={handleClearAddress}
                       style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", padding: "2px 4px", textDecoration: "underline" }}>
@@ -738,7 +738,7 @@ export default function ProfilePage() {
                 )}
 
                 <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "4px" }}>
-                  희망 근무지역
+                  희망 근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>
                 </label>
                 <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "10px" }}>일하고 싶은 지역을 선택해주세요</p>
 
@@ -788,7 +788,7 @@ export default function ProfilePage() {
             {dbJobType === "OFFICE" && (
               <section className="profile-section">
                 <div className="profile-section-head">
-                  <h2 className="profile-section-title">직군 영역</h2>
+                  <h2 className="profile-section-title">직군 영역<span style={{ color: "#e74c3c", marginLeft: "4px", fontSize: "14px" }}>*</span></h2>
                 </div>
                 <div className="profile-info-card" style={{ padding: "16px" }}>
                   <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>해당하는 직군 영역을 선택해 주세요 (1~3개 권장)</p>
@@ -847,12 +847,12 @@ export default function ProfilePage() {
     </main>
   );
 }
-function InfoRow({ label, value, isEmpty, isLast, onClick }: {
-  label: string; value: string; isEmpty?: boolean; isLast?: boolean; onClick?: () => void;
+function InfoRow({ label, value, isEmpty, isLast, onClick, required }: {
+  label: string; value: string; isEmpty?: boolean; isLast?: boolean; onClick?: () => void; required?: boolean;
 }) {
   return (
     <button className={`profile-info-row ${isLast ? "is-last" : ""}`} onClick={onClick} disabled={!onClick}>
-      <span className="profile-info-label">{label}</span>
+      <span className="profile-info-label">{label}{required && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</span>
       <span className={`profile-info-value ${isEmpty ? "is-empty" : ""}`}>{value}</span>
       <ChevronRight size={16} className="profile-info-chevron" />
     </button>
