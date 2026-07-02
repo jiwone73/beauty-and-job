@@ -799,7 +799,7 @@ export default function ProfilePage() {
              jobType="OFFICE"
              value={officeJobAreas}
              onChange={saveOfficeJobAreas}
-             placeholder="직군을 선택해주세요"
+             placeholder="직군 선택"
                />
                   </div>
                 </div>
