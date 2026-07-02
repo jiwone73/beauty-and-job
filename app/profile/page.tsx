@@ -697,14 +697,10 @@ export default function ProfilePage() {
               </div>
               <div className="profile-info-card" style={{ padding: "16px" }}>
                 <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "8px" }}>거주지 주소</label>
-                <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-                  <input readOnly value={addressRoad} placeholder="주소 검색을 눌러주세요"
+                <div style={{ marginBottom: "8px" }}>
+                  <input readOnly value={addressRoad} placeholder="터치하여 주소를 검색해주세요"
                     onClick={openPostcode}
-                    style={{ flex: 1, minWidth: 0, padding: "10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
-                  <button onClick={openPostcode}
-                    style={{ padding: "10px 16px", borderRadius: "8px", border: "1px solid #5f0080", background: "#5f0080", color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                    주소 검색
-                  </button>
+                    style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
                 </div>
                 {postcodeOpen && (
                   <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "#fff", display: "flex", flexDirection: "column" }}>
