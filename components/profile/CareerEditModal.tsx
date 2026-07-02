@@ -8,6 +8,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   editTarget?: CareerEntry | null;
+  resumeType?: "office" | "salon";
 }
 
 // "2024.05" → "2024-05" (month input용)
@@ -18,7 +19,7 @@ function toInputMonth(d: string): string {
   return `${m[1]}-${m[2].padStart(2, "0")}`;
 }
 
-export default function CareerEditModal({ isOpen, onClose, editTarget }: Props) {
+export default function CareerEditModal({ isOpen, onClose, editTarget, resumeType = "office" }: Props) {
   const { addCareer, updateCareer } = useProfileStore();
   const [company, setCompany] = useState("");
   const [department, setDepartment] = useState("");
@@ -103,20 +104,22 @@ export default function CareerEditModal({ isOpen, onClose, editTarget }: Props) 
               onChange={(e) => setCompany(e.target.value)}
             />
           </div>
-          <div>
-            <label className="cv-field-label">부서 / 팀</label>
-            <input
-              className="cv-input"
-              placeholder="예: 마케팅팀 (매장직은 비워두셔도 됩니다)"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-            />
-          </div>
+          {resumeType === "office" && (
+            <div>
+              <label className="cv-field-label">부서 / 팀</label>
+              <input
+                className="cv-input"
+                placeholder="예: 마케팅팀, MD팀"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+              />
+            </div>
+          )}
           <div>
             <label className="cv-field-label">직책 / 직무</label>
             <input
               className="cv-input"
-              placeholder="예: 대리, 매니저, 헤어 디자이너, 네일 아티스트"
+              placeholder={resumeType === "office" ? "예: 대리, 매니저, 팀장" : "예: 헤어 디자이너, 네일 아티스트"}
               value={position}
               onChange={(e) => setPosition(e.target.value)}
             />
@@ -162,7 +165,7 @@ export default function CareerEditModal({ isOpen, onClose, editTarget }: Props) 
               placeholder="담당했던 업무와 성과를 자유롭게 작성해주세요."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={4}
+              rows={6}
               style={{ resize: "vertical", lineHeight: 1.5, fontFamily: "inherit" }}
             />
           </div>

@@ -516,7 +516,7 @@ export default function ResumeEditor({
       </section>
 
       {/* 하위 모달들 */}
-      <CareerEditModal isOpen={careerModalOpen} onClose={() => { setCareerModalOpen(false); setEditCareer(null); }} editTarget={editCareer} />
+      <CareerEditModal isOpen={careerModalOpen} onClose={() => { setCareerModalOpen(false); setEditCareer(null); }} editTarget={editCareer} resumeType={resumeType} />
       <LinkModal isOpen={linkModalOpen} onClose={() => { setLinkModalOpen(false); setEditLink(null); }} editTarget={editLink} />
       <EducationModal isOpen={eduModalOpen} onClose={() => { setEduModalOpen(false); setEditEdu(null); }} editTarget={editEdu} />
       <LanguageModal isOpen={langModalOpen} onClose={() => { setLangModalOpen(false); setEditLang(null); }} editTarget={editLang} />
