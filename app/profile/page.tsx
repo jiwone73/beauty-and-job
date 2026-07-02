@@ -719,15 +719,17 @@ export default function ProfilePage() {
                     style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
                 </div>
                 {postcodeOpen && (
-                  <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "#fff", display: "flex", flexDirection: "column" }}>
-                    <div style={{ display: "flex", alignItems: "center", height: "52px", padding: "0 12px", borderBottom: "1px solid #eee", flexShrink: 0 }}>
-                      <button onClick={closePostcode} aria-label="뒤로가기"
-                        style={{ border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", padding: "8px", marginLeft: "-8px" }}>
-                        <ChevronRight size={22} style={{ transform: "rotate(180deg)" }} />
-                      </button>
-                      <span style={{ fontSize: "16px", fontWeight: 600, marginLeft: "4px" }}>주소 검색</span>
+                  <div className="postcode-modal-overlay" onClick={closePostcode}>
+                    <div className="postcode-modal" onClick={(e) => e.stopPropagation()}>
+                      <div style={{ display: "flex", alignItems: "center", height: "52px", padding: "0 12px", borderBottom: "1px solid #eee", flexShrink: 0 }}>
+                        <button onClick={closePostcode} aria-label="뒤로가기"
+                          style={{ border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", padding: "8px", marginLeft: "-8px" }}>
+                          <ChevronRight size={22} style={{ transform: "rotate(180deg)" }} />
+                        </button>
+                        <span style={{ fontSize: "16px", fontWeight: 600, marginLeft: "4px" }}>주소 검색</span>
+                      </div>
+                      <div ref={postcodeLayerRef} style={{ flex: 1, overflow: "hidden" }} />
                     </div>
-                    <div ref={postcodeLayerRef} style={{ flex: 1, overflow: "hidden" }} />
                   </div>
                 )}
                 {addressRoad && (
