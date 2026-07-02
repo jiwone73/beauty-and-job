@@ -30,13 +30,13 @@ export default function JobGroupField({
       <style>{`
         .jgf-trigger {
           width: 100%; display: flex; align-items: center; justify-content: space-between;
-          padding: 12px 14px; border: 1.5px solid #e0e0e0; border-radius: 10px;
+          padding: 12px 14px; border: 1.5px solid #e0d0f0; border-radius: 10px;
           background: #fff; cursor: pointer; font-size: 14px; text-align: left;
         }
         .jgf-trigger:hover:not(:disabled) { border-color: #c9a3d6; }
         .jgf-trigger:disabled { opacity: 0.6; cursor: not-allowed; }
-        .jgf-text { color: #333; font-weight: 500; }
-        .jgf-ph { color: #aaa; }
+        .jgf-text { color: #333; font-weight: 600; }
+        .jgf-ph { color: #333; font-weight: 600; }
         .jgf-arrow { color: #999; font-size: 14px; }
         .jgf-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .jgf-chip {
