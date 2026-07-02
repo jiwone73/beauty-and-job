@@ -816,19 +816,7 @@ export default function ProfilePage() {
                 </div>
               </section>
             )}
-            <section className="profile-section">
-              <div className="profile-section-head">
-                <h2 className="profile-section-title">이력서 공개 설정</h2>
-              </div>
-              <div className="profile-info-card" style={{ padding: "16px" }}>
-                <p style={{ fontSize: 13, color: "#888", margin: "0 0 12px", lineHeight: 1.6 }}>
-                  특정 기업이 인재검색에서 내 프로필·이력서를 볼 수 없도록 차단할 수 있어요.
-                </p>
-                <button className="profile-resume-btn" style={{ background: "#fff", color: "#333", border: "1px solid #e0d0f0", width: "auto", height: "auto", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", fontSize: "14px" }} onClick={() => setShowBlockModal(true)}>
-                  기업 차단 관리
-                </button>
-              </div>
-            </section>
+            
             <div className="profile-bottom-cta">
               <button className="resume-save-btn-full" onClick={() => router.push("/profile/resume")}>
                 현재 프로필로 이력서 만들기
@@ -838,7 +826,7 @@ export default function ProfilePage() {
         ) : null}
       </div>
 
-      <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} />
+      <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} onOpenBlockModal={() => setShowBlockModal(true)} />
       <CompanyBlockModal open={showBlockModal} onClose={() => setShowBlockModal(false)} />
     </main>
   );

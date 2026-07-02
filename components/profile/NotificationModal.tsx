@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onOpenBlockModal: () => void;
 }
 const NOTIFICATION_GROUPS = [
   {
@@ -27,7 +28,8 @@ const NOTIFICATION_GROUPS = [
     ],
   },
 ];
-export default function NotificationModal({ isOpen, onClose }: Props) {
+export default function NotificationModal({ isOpen, onClose, onOpenBlockModal }: Props) {
+  const [activeTab, setActiveTab] = useState<"notification" | "block">("notification");
   const [toggles, setToggles] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     NOTIFICATION_GROUPS.forEach((g) => g.items.forEach((item) => { init[item.id] = item.defaultOn; }));
@@ -105,8 +107,22 @@ export default function NotificationModal({ isOpen, onClose }: Props) {
       <div className="cv-modal noti-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
           <div style={{ width: 36 }} />
-          <h2 className="cv-title">알림 설정</h2>
+          <h2 className="cv-title">설정</h2>
           <button className="cv-close" onClick={onClose}><X size={20} /></button>
+        </div>
+        <div style={{ display: "flex", borderBottom: "1px solid #eee", padding: "0 20px" }}>
+          <button
+            onClick={() => setActiveTab("notification")}
+            style={{ flex: 1, padding: "12px 0", background: "none", border: "none", borderBottom: activeTab === "notification" ? "2px solid #5f0080" : "2px solid transparent", color: activeTab === "notification" ? "#5f0080" : "#888", fontSize: "14px", fontWeight: 600, cursor: "pointer" }}
+          >
+            알림
+          </button>
+          <button
+            onClick={() => { setActiveTab("block"); onClose(); onOpenBlockModal(); }}
+            style={{ flex: 1, padding: "12px 0", background: "none", border: "none", borderBottom: "2px solid transparent", color: "#888", fontSize: "14px", fontWeight: 600, cursor: "pointer" }}
+          >
+            기업 차단 관리
+          </button>
         </div>
         <div className="cv-body">
           <p className="cv-desc">나에게 필요한 알림을 맞춤으로 설정해보세요.</p>
