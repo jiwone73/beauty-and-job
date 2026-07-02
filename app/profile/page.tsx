@@ -818,7 +818,7 @@ export default function ProfilePage() {
   jobType="STORE"
   value={skillAreas}
   onChange={(v) => setStoreProfile({ skillAreas: v })}
-  placeholder="시술 분야를 선택해주세요"
+  placeholder="시술 분야 선택"
 />
                   </div>
                   <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "6px" }}>희망 근무 형태</label>
