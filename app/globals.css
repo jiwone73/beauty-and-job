@@ -989,6 +989,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   align-items: center;
 }
 .profile-logo img { height: 32px !important; width: auto !important; }
+.profile-logo { margin-left: -4px; }
 .profile-settings-btn {
   width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
