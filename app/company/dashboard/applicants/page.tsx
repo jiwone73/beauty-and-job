@@ -43,6 +43,7 @@ function ApplicantsContent() {
   const [resumeData, setResumeData] = useState<any>(null);
   const [coverLetter, setCoverLetter] = useState<string>("");
   const [resumeLoading, setResumeLoading] = useState(false);
+  const [resumeFileInfo, setResumeFileInfo] = useState<{ name: string | null; size: number | null; url: string | null }>({ name: null, size: null, url: null });
 // API 응답(snake_case) → ResumePreview props(camelCase) 변환
   const mapResume = (data: any) => {
     const p = data?.profile || {};
@@ -80,6 +81,7 @@ function ApplicantsContent() {
   useEffect(() => {
     if (!selected) {
       setResumeData(null);
+      setResumeFileInfo({ name: null, size: null, url: null });
       setCoverLetter("");
       return;
     }
@@ -93,6 +95,7 @@ function ApplicantsContent() {
       .then(res => {
         if (res.success) {
           if (res.data.resume) setResumeData(res.data.resume);
+          setResumeFileInfo({ name: res.data.resume_file_name || null, size: res.data.resume_file_size || null, url: res.data.resume_file_preview_url || null });
           setCoverLetter(res.data.cover_letter || "");
         }
       })
@@ -394,6 +397,36 @@ function ApplicantsContent() {
                   />
                 ) : (
                   <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
+                )}
+                {resumeFileInfo.url && (
+                  <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
+                    <FileText size={22} color="#5f0080" />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {resumeFileInfo.name || "첨부 이력서"}
+                      </p>
+                      <p style={{ fontSize: "12px", color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
+                    </div>
+                    <a href={resumeFileInfo.url} target="_blank" rel="noopener noreferrer"
+                      style={{ padding: "8px 14px", borderRadius: "8px", background: "#5f0080", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
+                      다운로드
+                    </a>
+                  </div>
+                )}
+                {resumeFileInfo.url && (
+                  <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
+                    <FileText size={22} color="#5f0080" />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {resumeFileInfo.name || "첨부 이력서"}
+                      </p>
+                      <p style={{ fontSize: "12px", color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
+                    </div>
+                    <a href={resumeFileInfo.url} target="_blank" rel="noopener noreferrer"
+                      style={{ padding: "8px 14px", borderRadius: "8px", background: "#5f0080", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
+                      다운로드
+                    </a>
+                  </div>
                 )}
               </div>
             </div>

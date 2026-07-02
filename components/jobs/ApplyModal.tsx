@@ -41,6 +41,9 @@ export default function ApplyModal({
   const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [resumeFileName, setResumeFileName] = useState<string | null>(null);
+  const [resumeFileSize, setResumeFileSize] = useState<number | null>(null);
+  const [isResumeFileUploading, setIsResumeFileUploading] = useState(false);
 
   const name = signupName || userName || "";
 
@@ -114,6 +117,52 @@ export default function ApplyModal({
     const res = await fetch("/api/users/me/portfolio", { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
     if (data.success) { setPortfolioUrl(null); setPortfolioFilename(null); }
+  };
+
+  // 첨부 이력서 파일 업로드
+  const processResumeFile = async (file: File) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) { alert("로그인이 필요합니다."); return; }
+    setIsResumeFileUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/users/me/resume-file", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const data = await res.json();
+      if (!data.success) { alert(data.error?.message || "업로드에 실패했습니다."); return; }
+      setResumeFileName(data.data.resume_file_name);
+      setResumeFileSize(data.data.resume_file_size);
+    } catch (e) {
+      console.error(e);
+      alert("업로드 중 오류가 발생했습니다.");
+    } finally {
+      setIsResumeFileUploading(false);
+    }
+  };
+
+  // 첨부 이력서 파일 삭제
+  const handleDeleteResumeFile = async () => {
+    if (!confirm("첨부한 이력서 파일을 삭제하시겠어요?")) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    const res = await fetch("/api/users/me/resume-file", { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+    const data = await res.json();
+    if (data.success) { setResumeFileName(null); setResumeFileSize(null); }
+  };
+
+  // 첨부 이력서 파일 열기
+  const handleOpenResumeFile = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    try {
+      const res = await fetch("/api/users/me/resume-file", { headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!data.success || !data.data.preview_url) { alert("파일을 불러올 수 없습니다."); return; }
+      window.open(data.data.preview_url, "_blank");
+    } catch (e) {
+      console.error(e);
+      alert("파일을 여는 중 오류가 발생했습니다.");
+    }
   };
 
   // 수정 화면 저장
@@ -344,6 +393,12 @@ export default function ApplyModal({
                   isUploading={isUploading}
                   onPortfolioFile={processFile}
                   onPortfolioDelete={handleDeletePortfolio}
+                  resumeFileName={resumeFileName}
+                  resumeFileSize={resumeFileSize}
+                  isResumeFileUploading={isResumeFileUploading}
+                  onResumeFile={processResumeFile}
+                  onResumeFileDelete={handleDeleteResumeFile}
+                  onResumeFileOpen={handleOpenResumeFile}
                 />
               </div>
 

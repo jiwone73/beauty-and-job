@@ -39,7 +39,8 @@ export async function POST(
     return err('APP_001', '이미 지원하신 공고입니다.', 409)
   }
   const profileCheck = await pool.query(
-    `SELECT name, phone, birth_date, gender, email, region_sido, preferred_regions, job_type
+    `SELECT name, phone, birth_date, gender, email, region_sido, preferred_regions, job_type,
+            resume_file_url, resume_file_name, resume_file_size
      FROM users WHERE id = $1`,
     [auth!.sub]
   )
@@ -83,10 +84,20 @@ export async function POST(
   }
 
   const result = await pool.query(
-    `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, resume_snapshot, status)
-     VALUES ($1, $2, $3, $4, $5, 'APPLIED')
+    `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, resume_snapshot, status,
+                                resume_file_url, resume_file_name, resume_file_size)
+     VALUES ($1, $2, $3, $4, $5, 'APPLIED', $6, $7, $8)
      RETURNING id, status, applied_at`,
-    [jobPostingId, auth!.sub, finalResumeId, cover_letter || null, snapshot ? JSON.stringify(snapshot) : null]
+    [
+      jobPostingId,
+      auth!.sub,
+      finalResumeId,
+      cover_letter || null,
+      snapshot ? JSON.stringify(snapshot) : null,
+      p.resume_file_url || null,
+      p.resume_file_name || null,
+      p.resume_file_size || null,
+    ]
   )
   await pool.query(
     `UPDATE job_postings SET application_count = application_count + 1 WHERE id = $1`,

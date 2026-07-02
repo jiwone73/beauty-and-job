@@ -3,6 +3,10 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { sendResumeViewedEmail } from "@/lib/email";
+import { supabaseAdmin } from "@/lib/supabase";
+
+
+const RESUME_BUCKET = "resumes";
 
 // 지원자 단건 조회 (상세)
 export async function GET(
@@ -16,7 +20,8 @@ export async function GET(
             a.user_id, u.name AS user_name, u.email AS user_email, u.phone AS user_phone,
             u.job_type AS user_job_type, u.portfolio_url, u.portfolio_filename,
             u.avatar_url AS user_avatar_url, u.notification_settings,
-            a.job_posting_id, jp.title AS job_title
+            a.job_posting_id, jp.title AS job_title,
+            a.resume_file_url, a.resume_file_name, a.resume_file_size
      FROM applications a
      JOIN users u ON u.id = a.user_id
      JOIN job_postings jp ON jp.id = a.job_posting_id
@@ -68,11 +73,25 @@ export async function GET(
   const row = result.rows[0];
   const snap = row.resume_snapshot;
 
+  // 첨부 이력서 파일 (지원 시점 박제본) → 비공개 버킷, 매번 signed URL 새로 발급
+  let resumeFilePreviewUrl: string | null = null;
+  if (row.resume_file_url) {
+    const { data: signedData, error: signedError } = await supabaseAdmin.storage
+      .from(RESUME_BUCKET)
+      .createSignedUrl(row.resume_file_url, 300);
+    if (signedError) {
+      console.error("[applicant resume-file signed url]", signedError);
+    } else {
+      resumeFilePreviewUrl = signedData.signedUrl;
+    }
+  }
+
   // 지원 시점 스냅샷이 있으면 박제본을 그대로 반환 (현재 이력서 조회 생략)
   if (snap && (snap.profile || snap.careers)) {
     return ok({
       ...row,
       is_snapshot: true,
+      resume_file_preview_url: resumeFilePreviewUrl,
       resume: {
         profile: snap.profile || {},
         careers: snap.careers || [],
@@ -100,6 +119,7 @@ export async function GET(
   return ok({
     ...row,
     is_snapshot: false,
+    resume_file_preview_url: resumeFilePreviewUrl,
     resume: {
       profile: profile.rows[0] || {},
       careers: careers.rows,

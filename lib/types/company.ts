@@ -32,6 +32,8 @@ export interface CompanyApplication {
   user_job_type?: "OFFICE" | "STORE";
   job_posting_id: string;
   job_title: string;
+  resume_file_name?: string | null;
+  resume_file_size?: number | null;
 }
 
 // 기업 정보

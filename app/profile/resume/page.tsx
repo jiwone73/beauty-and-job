@@ -45,6 +45,9 @@ function ResumePageContent() {
   const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [resumeFileName, setResumeFileName] = useState<string | null>(null);
+  const [resumeFileSize, setResumeFileSize] = useState<number | null>(null);
+  const [isResumeFileUploading, setIsResumeFileUploading] = useState(false);
   const [careerModalOpen, setCareerModalOpen] = useState(false);
   const [editCareer, setEditCareer] = useState<any>(null);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
@@ -76,9 +79,6 @@ function ResumePageContent() {
       router.replace("/login");
       return;
     }
-
-    // DB에서 프로필 동기화
-    useProfileStore.getState().loadFromServer();
     fetch("/api/users/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -91,6 +91,8 @@ function ResumePageContent() {
           if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
           if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
+          if (res.data.resume_file_name) setResumeFileName(res.data.resume_file_name);
+          if (res.data.resume_file_size) setResumeFileSize(res.data.resume_file_size);
         }
       })
       .catch(console.error);
@@ -238,6 +240,69 @@ function ResumePageContent() {
       alert("포트폴리오가 삭제되었습니다.");
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  // 첨부 이력서 파일 업로드
+  const processResumeFile = async (file: File) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) { alert("로그인이 필요합니다."); return; }
+    setIsResumeFileUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/users/me/resume-file", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (!data.success) { alert(data.error?.message || "업로드에 실패했습니다."); return; }
+      setResumeFileName(data.data.resume_file_name);
+      setResumeFileSize(data.data.resume_file_size);
+      alert("이력서 파일이 업로드되었습니다.");
+    } catch (e) {
+      console.error(e);
+      alert("업로드 중 오류가 발생했습니다.");
+    } finally {
+      setIsResumeFileUploading(false);
+    }
+  };
+
+  // 첨부 이력서 파일 삭제
+  const handleDeleteResumeFile = async () => {
+    if (!confirm("첨부한 이력서 파일을 삭제하시겠어요?")) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    try {
+      const res = await fetch("/api/users/me/resume-file", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!data.success) { alert("삭제에 실패했습니다."); return; }
+      setResumeFileName(null);
+      setResumeFileSize(null);
+      alert("첨부 이력서가 삭제되었습니다.");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // 첨부 이력서 파일 열기 (비공개 버킷 -> signed URL)
+  const handleOpenResumeFile = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    try {
+      const res = await fetch("/api/users/me/resume-file", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!data.success || !data.data.preview_url) { alert("파일을 불러올 수 없습니다."); return; }
+      window.open(data.data.preview_url, "_blank");
+    } catch (e) {
+      console.error(e);
+      alert("파일을 여는 중 오류가 발생했습니다.");
     }
   };
 
@@ -477,6 +542,12 @@ const handlePrint = async () => {
             isUploading={isUploading}
             onPortfolioFile={processFile}
             onPortfolioDelete={handleDeletePortfolio}
+            resumeFileName={resumeFileName}
+            resumeFileSize={resumeFileSize}
+            isResumeFileUploading={isResumeFileUploading}
+            onResumeFile={processResumeFile}
+            onResumeFileDelete={handleDeleteResumeFile}
+            onResumeFileOpen={handleOpenResumeFile}
           />
 
           <div className="resume-bottom-save">
