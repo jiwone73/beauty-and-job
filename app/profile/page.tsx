@@ -200,6 +200,14 @@ export default function ProfilePage() {
     document.body.appendChild(script);
   };
   const closePostcode = () => setPostcodeOpen(false);
+  const handleClearAddress = async () => {
+    if (!confirm("거주지 주소를 초기화할까요?")) return;
+    setAddressRoad("");
+    setAddressDetail("");
+    setRegionSido("");
+    setRegionSigungu("");
+    await patchUser({ address_road: null, address_detail: null, region_sido: null, region_sigungu: null });
+  };
   useEffect(() => {
     if (!postcodeOpen || !postcodeLayerRef.current) return;
     postcodeLayerRef.current.innerHTML = "";
@@ -696,7 +704,15 @@ export default function ProfilePage() {
                 <h2 className="profile-section-title">거주지 · 희망 근무지역</h2>
               </div>
               <div className="profile-info-card" style={{ padding: "16px" }}>
-                <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "8px" }}>거주지 주소</label>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <label style={{ fontSize: "13px", fontWeight: 600, color: "#333" }}>거주지 주소</label>
+                  {addressRoad && (
+                    <button type="button" onClick={handleClearAddress}
+                      style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", padding: "2px 4px", textDecoration: "underline" }}>
+                      초기화
+                    </button>
+                  )}
+                </div>
                 <div style={{ marginBottom: "8px" }}>
                   <input readOnly value={addressRoad} placeholder="터치하여 주소를 검색해주세요"
                     onClick={openPostcode}
