@@ -700,7 +700,7 @@ export default function ProfilePage() {
                 <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
                   <input readOnly value={addressRoad} placeholder="주소 검색을 눌러주세요"
                     onClick={openPostcode}
-                    style={{ flex: 1, padding: "10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
+                    style={{ flex: 1, minWidth: 0, padding: "10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
                   <button onClick={openPostcode}
                     style={{ padding: "10px 16px", borderRadius: "8px", border: "1px solid #5f0080", background: "#5f0080", color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
                     주소 검색
