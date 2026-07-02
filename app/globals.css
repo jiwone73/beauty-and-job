@@ -8300,6 +8300,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .header-inner { padding: 0 12px; gap: 8px; height: 56px; }
 
   .profile-header-inner { height: 56px; }
+  .profile-header-inner { padding-left: 12px; padding-right: 12px; }
   .profile-logo img { width: 100px !important; height: auto !important; }
   /* 로고 축소 */
   .logo img { width: 100px !important; height: auto !important; }
