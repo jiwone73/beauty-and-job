@@ -4111,7 +4111,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .resume-action-btn span { display: none; }
 
   /* 프로필 */
-  .profile-header-inner { padding: 0 20px; }
+  .profile-header-inner { padding: 0 16px; }
   .profile-card { padding: 20px 16px; }
   .profile-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
