@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -188,29 +188,38 @@ export default function ProfilePage() {
     } catch { alert("네트워크 오류가 발생했습니다."); return false; }
   };
 
-  // 카카오(다음) 우편번호 검색
+  // 카카오(다음) 우편번호 검색 — embed 방식 (웹뷰 호환, 닫기 버튼 직접 제공)
+  const postcodeLayerRef = useRef<HTMLDivElement>(null);
+  const [postcodeOpen, setPostcodeOpen] = useState(false);
   const openPostcode = () => {
-    const run = () => {
-      new (window as any).daum.Postcode({
-        oncomplete: async (data: any) => {
-          const road = data.roadAddress || data.jibunAddress || data.address || "";
-          setAddressRoad(road);
-          setRegionSido(data.sido || "");
-          setRegionSigungu(data.sigungu || "");
-          await patchUser({
-            address_road: road,
-            region_sido: data.sido || "",
-            region_sigungu: data.sigungu || "",
-          });
-        },
-      }).open();
-    };
+    const run = () => setPostcodeOpen(true);
     if ((window as any).daum?.Postcode) { run(); return; }
     const script = document.createElement("script");
     script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     script.onload = run;
     document.body.appendChild(script);
   };
+  const closePostcode = () => setPostcodeOpen(false);
+  useEffect(() => {
+    if (!postcodeOpen || !postcodeLayerRef.current) return;
+    postcodeLayerRef.current.innerHTML = "";
+    new (window as any).daum.Postcode({
+      oncomplete: async (data: any) => {
+        const road = data.roadAddress || data.jibunAddress || data.address || "";
+        setAddressRoad(road);
+        setRegionSido(data.sido || "");
+        setRegionSigungu(data.sigungu || "");
+        await patchUser({
+          address_road: road,
+          region_sido: data.sido || "",
+          region_sigungu: data.sigungu || "",
+        });
+        setPostcodeOpen(false);
+      },
+      width: "100%",
+      height: "100%",
+    }).embed(postcodeLayerRef.current);
+  }, [postcodeOpen]);
 
   // 프로필 → 모달 형식: [{sido,sigungu}] → ["서울특별시 강남구","경기도 전체"]
   const toModalRegions = (regions: { sido: string; sigungu: string }[]) =>
@@ -697,6 +706,18 @@ export default function ProfilePage() {
                     주소 검색
                   </button>
                 </div>
+                {postcodeOpen && (
+                  <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "#fff", display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "flex", alignItems: "center", height: "52px", padding: "0 12px", borderBottom: "1px solid #eee", flexShrink: 0 }}>
+                      <button onClick={closePostcode} aria-label="뒤로가기"
+                        style={{ border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", padding: "8px", marginLeft: "-8px" }}>
+                        <ChevronRight size={22} style={{ transform: "rotate(180deg)" }} />
+                      </button>
+                      <span style={{ fontSize: "16px", fontWeight: 600, marginLeft: "4px" }}>주소 검색</span>
+                    </div>
+                    <div ref={postcodeLayerRef} style={{ flex: 1, overflow: "hidden" }} />
+                  </div>
+                )}
                 {addressRoad && (
                   <input value={addressDetail} placeholder="상세주소 (동·호수 등)"
                     onChange={(e) => setAddressDetail(e.target.value)}
