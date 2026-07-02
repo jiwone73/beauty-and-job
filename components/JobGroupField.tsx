@@ -18,7 +18,7 @@ export default function JobGroupField({
   jobType,
   value,
   onChange,
-  placeholder = "직군을 선택해주세요",
+  placeholder = "직군 선택",
   maxSelect,
   title,
   disabled,
@@ -29,8 +29,8 @@ export default function JobGroupField({
     <>
       <style>{`
         .jgf-trigger {
-          width: 100%; display: flex; align-items: center; justify-content: space-between;
-          padding: 12px 14px; border: 1.5px solid #e0d0f0; border-radius: 10px;
+          width: fit-content; display: inline-flex; align-items: center; gap: 8px;
+          padding: 10px 14px; border: 1.5px solid #e0d0f0; border-radius: 8px;
           background: #fff; cursor: pointer; font-size: 14px; text-align: left;
         }
         .jgf-trigger:hover:not(:disabled) { border-color: #c9a3d6; }
