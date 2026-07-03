@@ -3866,17 +3866,19 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-weight: 700;
   color: #2b2b2b;
   margin: 0 0 20px;
+  text-align: center;
 }
 .info-hero {
   text-align: center;
   margin-bottom: 40px;
 }
 .info-hero-title {
-  font-size: 28px;
-  font-weight: 800;
-  color: #1a1a1a;
+  font-size: 22px;
+  font-weight: 700;
+  color: #2b2b2b;
   line-height: 1.4;
   margin: 0 0 14px;
+  text-align: center;
 }
 .info-hero-title span { color: #5f0080; }
 .info-hero-desc {
@@ -4165,7 +4167,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   /* 모바일: 본문 좌우 여백 16px 통일 + 상단 여백 압축 */
   .info-main { padding: 20px 16px 48px; }
   .info-hero { margin-bottom: 24px; }
-  .info-hero-title { font-size: 22px; }
+  .info-hero-title { font-size: 20px; text-align: center; }
   .info-hero-desc { font-size: 14px; }
   /* notice 제목 모바일 축소 */
   .info-page-title { font-size: 20px; margin-bottom: 16px; }
@@ -10522,7 +10524,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 법적 문서 (약관/개인정보) */
 .legal-layout { max-width: 860px; margin: 0 auto; padding: 0; }
-.legal-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 24px; }
+.legal-title { font-size: 22px; font-weight: 700; color: #2b2b2b; margin-bottom: 24px; text-align: center; }
 .legal-toc {
   display: flex; flex-direction: column; gap: 8px;
   padding: 24px; background: #faf7fc; border: 1px solid #f0e8f8;
