@@ -11,12 +11,12 @@ interface Props {
   resumeType?: "office" | "salon";
 }
 
-// "2024.05" → "2024-05" (month input용)
-function toInputMonth(d: string): string {
-  if (!d || d === "재직 중") return "";
+// "2024.05" → ["2024", "05"] / "재직 중"·빈값 → ["", ""]
+function splitYM(d: string): [string, string] {
+  if (!d || d === "재직 중") return ["", ""];
   const m = d.match(/(\d{4})[.\-/](\d{1,2})/);
-  if (!m) return "";
-  return `${m[1]}-${m[2].padStart(2, "0")}`;
+  if (!m) return ["", ""];
+  return [m[1], m[2].padStart(2, "0")];
 }
 
 export default function CareerEditModal({ isOpen, onClose, editTarget, resumeType = "office" }: Props) {
@@ -24,8 +24,10 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
   const [company, setCompany] = useState("");
   const [department, setDepartment] = useState("");
   const [position, setPosition] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startY, setStartY] = useState("");
+  const [startM, setStartM] = useState("");
+  const [endY, setEndY] = useState("");
+  const [endM, setEndM] = useState("");
   const [isCurrent, setIsCurrent] = useState(false);
   const [description, setDescription] = useState("");
 
@@ -42,35 +44,32 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
       setCompany(editTarget.company || "");
       setDepartment(editTarget.department || "");
       setPosition(editTarget.position || "");
-      setStartDate(toInputMonth(editTarget.startDate));
+      const [sy, sm] = splitYM(editTarget.startDate);
+      const [ey, em] = splitYM(editTarget.endDate);
+      setStartY(sy); setStartM(sm);
+      setEndY(ey); setEndM(em);
       setIsCurrent(editTarget.endDate === "재직 중");
-      setEndDate(editTarget.endDate === "재직 중" ? "" : toInputMonth(editTarget.endDate));
       setDescription(editTarget.description || "");
     } else {
       setCompany(""); setDepartment(""); setPosition("");
-      setStartDate(""); setEndDate(""); setIsCurrent(false); setDescription("");
+      setStartY(""); setStartM(""); setEndY(""); setEndM("");
+      setIsCurrent(false); setDescription("");
     }
   }, [isOpen, editTarget]);
 
   if (!isOpen) return null;
-
-  const formatDate = (d: string) => {
-    if (!d) return "";
-    const parts = d.split("-");
-    return parts.length >= 2 ? `${parts[0]}.${parts[1]}` : d;
-  };
 
   const handleSave = () => {
     if (!company.trim()) {
       alert(`${companyLabel}을 입력해주세요.`);
       return;
     }
-    if (!startDate) {
-      alert("근무 시작월을 입력해주세요.");
+    if (!startY || !startM) {
+      alert("근무 시작 연·월을 입력해주세요.");
       return;
     }
-    if (!isCurrent && !endDate) {
-      alert("근무 종료월을 입력하거나 '현재 재직 중'을 체크해주세요.");
+    if (!isCurrent && (!endY || !endM)) {
+      alert("근무 종료 연·월을 입력하거나 '현재 재직 중'을 체크해주세요.");
       return;
     }
 
@@ -79,8 +78,8 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
       company: company.trim(),
       department: department.trim(),
       position: position.trim(),
-      startDate: formatDate(startDate),
-      endDate: isCurrent ? "재직 중" : formatDate(endDate),
+      startDate: `${startY}.${startM.padStart(2, "0")}`,
+      endDate: isCurrent ? "재직 중" : `${endY}.${endM.padStart(2, "0")}`,
       isVerified: editTarget?.isVerified || false,
       description: description.trim(),
     };
@@ -143,7 +142,7 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
             />
           </div>
 
-          {/* 근무기간: 제목 + 현재재직중(우측정렬) 같은 행 */}
+          {/* 근무기간: 제목 + 현재재직중(우측정렬) 같은 행 / 학력 재학기간과 동일 레이아웃 */}
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
               <label className="cv-field-label" style={{ margin: 0 }}>
@@ -155,29 +154,46 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
                   checked={isCurrent}
                   onChange={(e) => {
                     setIsCurrent(e.target.checked);
-                    if (e.target.checked) setEndDate("");
+                    if (e.target.checked) { setEndY(""); setEndM(""); }
                   }}
                   style={{ accentColor: "#5f0080", width: "16px", height: "16px" }}
                 />
                 <span>현재 재직 중</span>
               </label>
             </div>
-            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <div className="cv-date-row" style={{ marginBottom: 0 }}>
               <input
-                className="cv-input"
-                type="month"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                style={{ flex: 1 }}
+                className="cv-input cv-date-input"
+                placeholder="YYYY"
+                maxLength={4}
+                value={startY}
+                onChange={(e) => setStartY(e.target.value.replace(/\D/g, ""))}
               />
-              <span style={{ color: "#999", flexShrink: 0 }}>~</span>
               <input
-                className="cv-input"
-                type="month"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                className="cv-input cv-date-input"
+                placeholder="MM"
+                maxLength={2}
+                value={startM}
+                onChange={(e) => setStartM(e.target.value.replace(/\D/g, ""))}
+              />
+              <span className="cv-date-sep">-</span>
+              <input
+                className="cv-input cv-date-input"
+                placeholder="YYYY"
+                maxLength={4}
+                value={endY}
+                onChange={(e) => setEndY(e.target.value.replace(/\D/g, ""))}
                 disabled={isCurrent}
-                style={{ flex: 1, background: isCurrent ? "#f5f5f5" : "#fff" }}
+                style={{ background: isCurrent ? "#f5f5f5" : "#fff" }}
+              />
+              <input
+                className="cv-input cv-date-input"
+                placeholder="MM"
+                maxLength={2}
+                value={endM}
+                onChange={(e) => setEndM(e.target.value.replace(/\D/g, ""))}
+                disabled={isCurrent}
+                style={{ background: isCurrent ? "#f5f5f5" : "#fff" }}
               />
             </div>
           </div>
