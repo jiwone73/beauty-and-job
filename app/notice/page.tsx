@@ -43,8 +43,8 @@ export default function NoticePage() {
     <div className="info-page">
       <InfoHeader active="/notice" />
       <main className="info-main">
-        <div className="info-main" style={{ maxWidth: 860, margin: "0 auto" }}>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: "#2b2b2b", margin: "0 0 24px" }}>공지사항</h1>
+        <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          <h1 className="info-page-title">공지사항</h1>
 
           <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
             {TYPE_TABS.map((t) => (
