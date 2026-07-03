@@ -204,11 +204,9 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
               style={{ resize: "vertical", lineHeight: 1.5, fontFamily: "inherit", flex: 1, minHeight: "160px" }}
             />
           </div>
-          <button
-            className="cv-btn-primary"
-            onClick={handleSave}
-            style={{ marginTop: "4px", flexShrink: 0 }}
-          >
+        </div>
+        <div className="cv-footer">
+          <button className="cv-btn-primary" onClick={handleSave}>
             저장
           </button>
         </div>
