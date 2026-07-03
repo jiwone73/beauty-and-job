@@ -3160,14 +3160,15 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
   color: #1a1a1a;
   line-height: 1.6;
-  padding: 0;
+  padding: 48px 44px;
 }
 
 /* 지원서 미리보기: 자기소개서 블록 (이력서와 한 문서로 통일) */
 .apply-cover-block { padding: 20px 0 0; }
 .apply-cover-title { font-size: 17px; font-weight: 700; color: #1a1a1a; margin-bottom: 14px; }
 .apply-cover-block + .rp-wrap { padding-top: 0; }
-@media (max-width: 640px) { .apply-cover-block + .rp-wrap { padding-top: 0; } }.apply-cover-text { font-size: 14px; color: #333; line-height: 1.75; margin: 0 0 28px; padding-bottom: 28px; border-bottom: 1px solid #eee; }
+@media (max-width: 640px) { .apply-cover-block + .rp-wrap { padding-top: 0; } }
+.apply-cover-text { font-size: 14px; color: #333; line-height: 1.75; margin: 0 0 28px; padding-bottom: 28px; border-bottom: 1px solid #eee; }
 @media (max-width: 640px) {
   .apply-cover-block { padding: 18px 0 0; }
   .apply-cover-title { font-size: 14px; margin-bottom: 10px; }
