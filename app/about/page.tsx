@@ -1,20 +1,12 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import AboutHeader from "@/components/AboutHeader";
 
 export default function AboutPage() {
   return (
     <div className="info-page">
-      <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority /></Link>
-      </header>
-      <div className="info-nav">
-        <Link href="/about" className="info-nav-item active">회사 소개</Link>
-        <Link href="/about/recruit" className="info-nav-item">채용</Link>
-        <Link href="/about/partnership" className="info-nav-item">제휴 문의</Link>
-        <Link href="/about/advertise" className="info-nav-item">광고 문의</Link>
-        <Link href="/about/contact" className="info-nav-item">기타 문의</Link>
-      </div>
+      <AboutHeader active="/about" />
       <main className="info-main">
         <div className="info-hero">
           <h1 className="info-hero-title">뷰티 업계 커리어의 모든 것,<br /><span>뷰티워크</span></h1>
