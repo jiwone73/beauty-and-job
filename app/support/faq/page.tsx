@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import InfoHeader from "@/components/InfoHeader";
 const FAQS = [
   { q: "회원가입은 어떻게 하나요?", a: "상단 '회원가입' 버튼을 클릭하고 휴대폰 인증 후 기본 정보를 입력하시면 됩니다." },
   { q: "이력서는 어떻게 작성하나요?", a: "로그인 후 '이력서' 메뉴에서 각 섹션별로 정보를 입력하실 수 있습니다." },
@@ -28,15 +29,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 export default function FaqPage() {
   return (
     <div className="info-page">
-      <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority /></Link>
-      </header>
-      <div className="info-nav">
-        <Link href="/support" className="info-nav-item">고객센터</Link>
-        <Link href="/support/faq" className="info-nav-item active">자주 묻는 질문</Link>
-        <Link href="/support/terms" className="info-nav-item">이용약관</Link>
-        <Link href="/support/privacy" className="info-nav-item">개인정보처리방침</Link>
-      </div>
+      <InfoHeader active="/support/faq" />
       <main className="info-main">
         <div className="info-hero">
           <h1 className="info-hero-title">자주 묻는 질문</h1>

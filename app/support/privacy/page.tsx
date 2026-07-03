@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import InfoHeader from "@/components/InfoHeader";
 
 const SECTIONS = [
   { id: "p1", title: "제1조 (수집하는 개인정보 항목)", body: "회사는 서비스 제공을 위해 다음의 개인정보를 수집합니다.\n① 개인회원: 이메일, 이름, 휴대전화번호, 비밀번호, 생년월일, 성별, 희망 직군, 프로필 사진\n② 이력서 정보: 경력, 학력, 자격증, 보유 스킬, 어학, 포트폴리오, 희망 근무조건 등 이용자가 입력한 정보\n③ 기업회원: 기업명, 사업자등록번호, 대표자명, 담당자 이메일·연락처, 기업 정보\n④ 자동 수집 항목: 서비스 이용기록, 접속 로그, 기기 정보, IP 주소" },
@@ -18,9 +19,7 @@ const SECTIONS = [
 export default function PrivacyPage() {
   return (
     <div className="info-page">
-      <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority /></Link>
-      </header>
+      <InfoHeader active="/support/privacy" />
       <main className="info-main">
         <div className="legal-layout">
           <div className="legal-content">

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import InfoHeader from "@/components/InfoHeader";
 
 const SECTIONS = [
   { id: "s1", title: "제1조 (목적)", body: "이 약관은 뷰티워크(이하 \"회사\")이 운영하는 뷰티워크 서비스(이하 \"서비스\")의 이용과 관련하여 회사와 이용자의 권리·의무 및 책임사항, 이용조건 및 절차 등 기본적인 사항을 규정함을 목적으로 합니다." },
@@ -22,9 +23,7 @@ const SECTIONS = [
 export default function TermsPage() {
   return (
     <div className="info-page">
-      <header className="info-header">
-        <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority /></Link>
-      </header>
+      <InfoHeader active="/support/terms" />
       <main className="info-main">
         <div className="legal-layout">
           <div className="legal-content">
