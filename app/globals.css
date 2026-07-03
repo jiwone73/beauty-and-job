@@ -3823,6 +3823,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   align-items: center;
 }
+.info-header-inner .logo { margin-left: -4px; }
 .info-nav {
   display: flex;
   align-items: center;
