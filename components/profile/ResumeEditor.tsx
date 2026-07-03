@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronDown, FileText, Pencil, Plus, Trash2, Upload } from "lucide-react";
 import { useProfileStore } from "@/lib/store/profileStore";
 import CareerEditModal from "@/components/profile/CareerEditModal";
@@ -69,6 +69,8 @@ export default function ResumeEditor({
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isResumeDragOver, setIsResumeDragOver] = useState(false);
+  const [showResumeFile, setShowResumeFile] = useState(false);
+  useEffect(() => { setShowResumeFile(!!resumeFileName); }, [resumeFileName]);
   const resumeFileInputRef = useRef<HTMLInputElement>(null);
 
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
@@ -445,9 +447,28 @@ export default function ResumeEditor({
 
       {/* 첨부 이력서 (본인이 작성한 이력서 파일) */}
       <section id="section-resume-file" className="resume-section">
-        <div className="resume-section-head">
-          <h2 className="resume-section-title">첨부 이력서</h2>
+        <div className="resume-section-head" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <h2 className="resume-section-title" style={{ color: "#999" }}>첨부 이력서</h2>
+          <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#999", cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={showResumeFile}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setShowResumeFile(true);
+                } else if (resumeFileName) {
+                  onResumeFileDelete();
+                } else {
+                  setShowResumeFile(false);
+                }
+              }}
+              style={{ accentColor: "#5f0080", width: "15px", height: "15px" }}
+            />
+            <span>사용</span>
+          </label>
         </div>
+        {showResumeFile && (
+          <>
         <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
           본인이 직접 작성한 이력서 파일을 첨부할 수 있어요 (선택, 최대 5MB). 지원 시 함께 전달돼요.
         </p>
@@ -481,6 +502,8 @@ export default function ResumeEditor({
           </div>
         )}
         <input ref={resumeFileInputRef} type="file" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleResumeFileChange} style={{ display: "none" }} />
+          </>
+        )}
       </section>
 
       {/* 링크 */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { X } from "lucide-react";
 import { useProfileStore, type CareerEntry } from "@/lib/store/profileStore";
 
@@ -10,7 +10,6 @@ interface Props {
   editTarget?: CareerEntry | null;
   resumeType?: "office" | "salon";
 }
-
 // "2024.05" → ["2024", "05"] / "재직 중"·빈값 → ["", ""]
 function splitYM(d: string): [string, string] {
   if (!d || d === "재직 중") return ["", ""];
@@ -30,7 +29,6 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
   const [endM, setEndM] = useState("");
   const [isCurrent, setIsCurrent] = useState(false);
   const [description, setDescription] = useState("");
-
   const isEdit = !!editTarget;
 
   // 매장직(salon)이면 "매장명", 사무직(office)이면 "회사명"
