@@ -31,6 +31,10 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
 
   const isEdit = !!editTarget;
 
+  // 매장직(salon)이면 "매장명", 사무직(office)이면 "회사명"
+  const isSalon = resumeType === "salon";
+  const companyLabel = isSalon ? "매장명" : "회사명";
+
   // 수정 모드: 모달 열릴 때 기존 값 채우기 / 추가 모드: 비우기
   useEffect(() => {
     if (!isOpen) return;
@@ -58,15 +62,15 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
 
   const handleSave = () => {
     if (!company.trim()) {
-      alert("회사명을 입력해주세요.");
+      alert(`${companyLabel}을 입력해주세요.`);
       return;
     }
     if (!startDate) {
-      alert("입사일을 입력해주세요.");
+      alert("근무 시작월을 입력해주세요.");
       return;
     }
     if (!isCurrent && !endDate) {
-      alert("퇴사일을 입력하거나 '현재 재직 중'을 체크해주세요.");
+      alert("근무 종료월을 입력하거나 '현재 재직 중'을 체크해주세요.");
       return;
     }
 
@@ -88,18 +92,32 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
 
   return (
     <div className="cv-overlay" onClick={onClose}>
-      <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="cv-header">
+      <div
+        className="cv-modal"
+        onClick={(e) => e.stopPropagation()}
+        style={{ display: "flex", flexDirection: "column", maxHeight: "90vh" }}
+      >
+        <div className="cv-header" style={{ flexShrink: 0 }}>
           <div style={{ width: 36 }} />
           <h2 className="cv-title">{isEdit ? "경력 수정" : "경력 추가"}</h2>
           <button className="cv-close" onClick={onClose}><X size={20} /></button>
         </div>
-        <div className="cv-body" style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+        <div
+          className="cv-body"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            overflowY: "auto",
+            flex: 1,
+            minHeight: 0,
+          }}
+        >
           <div>
-            <label className="cv-field-label">회사명 / 매장명 <span style={{ color: "#e74c3c" }}>*</span></label>
+            <label className="cv-field-label">{companyLabel} <span style={{ color: "#e74c3c" }}>*</span></label>
             <input
               className="cv-input"
-              placeholder="예: 올리브영, 준오헤어 강남점"
+              placeholder={isSalon ? "예: 준오헤어 강남점, 아우라네일" : "예: 올리브영, 아모레퍼시픽"}
               value={company}
               onChange={(e) => setCompany(e.target.value)}
             />
@@ -124,55 +142,60 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
               onChange={(e) => setPosition(e.target.value)}
             />
           </div>
-          <div style={{ display: "flex", gap: "10px" }}>
-            <div style={{ flex: 1 }}>
-              <label className="cv-field-label">입사일 <span style={{ color: "#e74c3c" }}>*</span></label>
+
+          {/* 근무기간: 제목 + 현재재직중(우측정렬) 같은 행 */}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+              <label className="cv-field-label" style={{ margin: 0 }}>
+                근무기간 <span style={{ color: "#e74c3c" }}>*</span>
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#333", cursor: "pointer", margin: 0 }}>
+                <input
+                  type="checkbox"
+                  checked={isCurrent}
+                  onChange={(e) => {
+                    setIsCurrent(e.target.checked);
+                    if (e.target.checked) setEndDate("");
+                  }}
+                  style={{ accentColor: "#5f0080", width: "16px", height: "16px" }}
+                />
+                <span>현재 재직 중</span>
+              </label>
+            </div>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               <input
                 className="cv-input"
                 type="month"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
+                style={{ flex: 1 }}
               />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label className="cv-field-label">퇴사일</label>
+              <span style={{ color: "#999", flexShrink: 0 }}>~</span>
               <input
                 className="cv-input"
                 type="month"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 disabled={isCurrent}
-                style={{ background: isCurrent ? "#f5f5f5" : "#fff" }}
+                style={{ flex: 1, background: isCurrent ? "#f5f5f5" : "#fff" }}
               />
             </div>
           </div>
-          <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#333", cursor: "pointer" }}>
-            <input
-              type="checkbox"
-              checked={isCurrent}
-              onChange={(e) => {
-                setIsCurrent(e.target.checked);
-                if (e.target.checked) setEndDate("");
-              }}
-              style={{ accentColor: "#5f0080", width: "16px", height: "16px" }}
-            />
-            <span>현재 재직 중</span>
-          </label>
-          <div>
+
+          <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
             <label className="cv-field-label">주요 업무 및 성과</label>
             <textarea
               className="cv-input"
               placeholder="담당했던 업무와 성과를 자유롭게 작성해주세요."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={6}
-              style={{ resize: "vertical", lineHeight: 1.5, fontFamily: "inherit" }}
+              style={{ resize: "vertical", lineHeight: 1.5, fontFamily: "inherit", flex: 1, minHeight: "160px" }}
             />
           </div>
           <button
             className="cv-btn-primary"
             onClick={handleSave}
-            style={{ marginTop: "8px" }}
+            style={{ marginTop: "4px", flexShrink: 0 }}
           >
             저장
           </button>
