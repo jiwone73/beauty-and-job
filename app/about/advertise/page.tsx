@@ -30,11 +30,7 @@ export default function AdvertisePage() {
           <h1 className="info-hero-title">광고 문의</h1>
           <p className="info-hero-desc">뷰티워크의 다양한 광고 상품을 통해 브랜드를 알려보세요.</p>
         </div>
-        <div className="info-values" style={{marginBottom:"40px"}}>
-          {[{icon:"🎯",title:"타겟 광고",desc:"뷰티 업계 종사자에게 직접 도달"},{icon:"📊",title:"높은 효율",desc:"업계 특화 플랫폼의 높은 전환율"},{icon:"💄",title:"브랜드 노출",desc:"메인/채용공고 등 다양한 지면"},{icon:"📈",title:"성과 분석",desc:"광고 효과 리포트 제공"}].map(v=>(
-            <div key={v.title} className="info-value-card"><span className="info-value-icon">{v.icon}</span><h3>{v.title}</h3><p>{v.desc}</p></div>
-          ))}
-        </div>
+        
         {done ? (
           <div className="info-section" style={{textAlign:"center",padding:"48px 0"}}>
             <div style={{fontSize:"48px",marginBottom:"16px"}}>✅</div>

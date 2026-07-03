@@ -3892,11 +3892,11 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin-bottom: 48px;
 }
 .info-section h2 {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   color: #1a1a1a;
-  margin: 0 0 20px;
-  padding-bottom: 12px;
+  margin: 0 0 16px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #f0f0f0;
 }
 .info-section p {
