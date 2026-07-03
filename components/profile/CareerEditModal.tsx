@@ -92,7 +92,6 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
       <div
         className="cv-modal"
         onClick={(e) => e.stopPropagation()}
-        style={{ display: "flex", flexDirection: "column", maxHeight: "90vh" }}
       >
         <div className="cv-header" style={{ flexShrink: 0 }}>
           <div style={{ width: 36 }} />
@@ -105,7 +104,6 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
             display: "flex",
             flexDirection: "column",
             gap: "10px",
-            overflowY: "auto",
             flex: 1,
             minHeight: 0,
           }}
