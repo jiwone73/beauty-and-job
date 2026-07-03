@@ -10956,3 +10956,4 @@ input[type="range"].career-slider::-moz-range-thumb {
   .co-hero-title br, .js-hero-title br,
   .co-hero-desc br, .js-hero-sub br { display: inline; }
 }
+.admin-modal-info-grid label::after { content: ":"; margin: 0 6px 0 3px; color: #999; font-weight: 400; }
