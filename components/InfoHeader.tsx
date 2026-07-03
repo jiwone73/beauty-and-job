@@ -10,25 +10,29 @@ const NAV_ITEMS = [
   { href: "/support/privacy", label: "개인정보처리방침" },
 ];
 
-// active: 현재 페이지에 해당하는 nav href를 넘기면 그 탭에 active 표시
+// active: 현재 페이지 nav href를 넘기면 해당 탭에 active 표시
 export default function InfoHeader({ active }: { active: string }) {
   return (
     <>
       <header className="info-header">
-        <Link href="/">
-          <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
-        </Link>
+        <div className="info-header-inner">
+          <Link href="/">
+            <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
+          </Link>
+        </div>
       </header>
       <div className="info-nav">
-        {NAV_ITEMS.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`info-nav-item${active === item.href ? " active" : ""}`}
-          >
-            {item.label}
-          </Link>
-        ))}
+        <div className="info-nav-inner">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`info-nav-item${active === item.href ? " active" : ""}`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
       </div>
     </>
   );

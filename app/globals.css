@@ -3816,15 +3816,29 @@ input[type="range"].career-slider::-moz-range-thumb {
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
 }
+.info-header-inner {
+  width: 100%;
+  max-width: 860px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+}
 .info-nav {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 0 24px;
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
   overflow-x: auto;
+}
+.info-nav-inner {
+  width: 100%;
+  max-width: 860px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .info-nav-item {
   padding: 16px 20px;
@@ -4136,6 +4150,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .info-values { grid-template-columns: repeat(2, 1fr); }
   .support-cards { grid-template-columns: 1fr; }
   .info-nav { justify-content: flex-start; overflow-x: auto; }
+  .info-header-inner, .info-nav-inner { padding: 0 16px; }
   .contact-form { padding: 20px 16px; }
 
   /* 기업 서비스 */
