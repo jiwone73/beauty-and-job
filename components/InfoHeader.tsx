@@ -16,7 +16,7 @@ export default function InfoHeader({ active }: { active: string }) {
     <>
       <header className="info-header">
         <div className="info-header-inner">
-          <Link href="/">
+          <Link href="/" className="logo">
             <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
           </Link>
         </div>

@@ -3812,7 +3812,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 64px;
+  height: 72px;
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
 }
