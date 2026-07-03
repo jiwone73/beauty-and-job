@@ -9,6 +9,20 @@ const BUCKET = "resumes";
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const SIGNED_URL_EXPIRY = 300; // 5분
 
+// 확장자 → contentType 매핑 (MIME 값이 아니라 파일명 확장자 기준으로 판단)
+const EXT_CONTENT_TYPE: Record<string, string> = {
+  pdf: "application/pdf",
+  doc: "application/msword",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+};
+
+// 파일명에서 소문자 확장자 추출
+function getExt(fileName: string): string {
+  const parts = (fileName || "").split(".");
+  if (parts.length < 2) return "";
+  return parts.pop()!.toLowerCase();
+}
+
 // 이력서 파일 업로드
 export async function POST(req: NextRequest) {
   const auth = req.headers.get("authorization") || "";
@@ -33,15 +47,16 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File | null;
 
     if (!file) return err("FILE_001", "파일이 없습니다.");
-    const ALLOWED_TYPES = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    if (!ALLOWED_TYPES.includes(file.type)) {
+
+    // ✅ MIME(file.type) 대신 확장자로 검증 — 브라우저/OS가 MIME을 비워 보내도 통과
+    const ext = getExt(file.name);
+    if (!EXT_CONTENT_TYPE[ext]) {
       return err("FILE_002", "PDF, DOC, DOCX 파일만 업로드 가능합니다.");
     }
     if (file.size > MAX_SIZE) return err("FILE_003", "파일 크기는 5MB 이하여야 합니다.");
+
+    // contentType도 확장자 기준으로 결정 (file.type이 비어도 안전)
+    const contentType = EXT_CONTENT_TYPE[ext];
 
     const client = await pool.connect();
     try {
@@ -55,20 +70,13 @@ export async function POST(req: NextRequest) {
         await supabaseAdmin.storage.from(BUCKET).remove([oldPath]);
       }
 
-      // 확장자 유지
-      const extMap: Record<string, string> = {
-        "application/pdf": "pdf",
-        "application/msword": "doc",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
-      };
-      const ext = extMap[file.type] || "pdf";
       const filePath = `${userId}/${Date.now()}.${ext}`;
       const arrayBuffer = await file.arrayBuffer();
 
       const { error: uploadError } = await supabaseAdmin.storage
         .from(BUCKET)
         .upload(filePath, arrayBuffer, {
-          contentType: file.type,
+          contentType,
           upsert: true,
         });
 
