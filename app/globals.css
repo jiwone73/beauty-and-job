@@ -4151,6 +4151,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   .support-cards { grid-template-columns: 1fr; }
   .info-nav { justify-content: flex-start; overflow-x: auto; }
   .info-header-inner, .info-nav-inner { padding: 0 16px; }
+  /* 모바일: 헤더 높이·로고 여백 정리 */
+  .info-header { height: 56px; }
+  /* 모바일: 네비 탭 폰트·패딩 축소 (5개 탭이 균형 있게, 넘치면 가로 스크롤) */
+  .info-nav-inner { gap: 0; }
+  .info-nav-item { padding: 14px 12px; font-size: 13px; }
+  /* 모바일: 본문 좌우 여백을 헤더와 동일한 16px로 통일 */
+  .info-main { padding: 32px 16px 64px; }
+  .info-hero { margin-bottom: 32px; }
   .contact-form { padding: 20px 16px; }
 
   /* 기업 서비스 */
