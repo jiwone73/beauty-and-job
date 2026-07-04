@@ -35,6 +35,8 @@ type Company = {
   company_type: string;
   cover_images: any;
   email: string;
+  region_sido: string | null;
+  region_sigungu: string | null;
   phone: string | null;
   logo_url: string | null;
   description: string | null;
@@ -438,9 +440,10 @@ function AdminCompaniesContent() {
                         </span>
                       </span>
                     </div>
+                    <div style={{ fontSize: 12, color: "#888", marginTop: 3, marginLeft: 36 }}>{c.email || "-"}</div>
                   </td>
                   {/* 지역 */}
-                  <td className="admin-td-date">{regionFromAddress(c.address)}</td>
+                  <td className="admin-td-date">{c.region_sido ? [c.region_sido, c.region_sigungu].filter(Boolean).join(" ") : (regionFromAddress(c.address) || "-")}</td>
                   {/* 직원수 */}
                   <td className="admin-td-date">{c.company_size || "-"}</td>
                   {/* 연락처 */}
