@@ -5,8 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Mail, Bell,
-  LogOut, Menu, X, ChevronDown, ChevronRight
-} from "lucide-react";
+  LogOut, Menu, X, ChevronDown, ChevronRight, MessageSquare } from "lucide-react";
 const NAV_ITEMS = [
   { id: "dashboard", label: "대시보드", icon: LayoutDashboard, href: "/admin" },
   
@@ -32,7 +31,8 @@ const NAV_ITEMS = [
   { id: "stories", label: "현장이야기", icon: BookOpen, href: "/admin/stories" },
   { id: "newsletters", label: "뉴스레터", icon: Mail, href: "/admin/newsletters" },
   { id: "notices", label: "공지사항", icon: Bell, href: "/admin/notices" },
-  { id: "ads", label: "문의 관리", icon: Megaphone, href: "/admin/ads" },
+  { id: "ads", label: "광고 문의", icon: Megaphone, href: "/admin/ads" },
+  { id: "inquiries", label: "1:1 문의", icon: MessageSquare, href: "/admin/inquiries" },
 ];
 
 const PAGE_TITLES: Record<string, string> = {

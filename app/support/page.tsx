@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import InfoHeader from "@/components/InfoHeader";
+import InquiryModal from "@/components/support/InquiryModal";
 
 const FAQS = [
   { q: "회원가입은 어떻게 하나요?", a: "상단 '회원가입' 버튼을 클릭하고 휴대폰 인증 후 기본 정보를 입력하시면 됩니다." },
@@ -28,6 +29,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 export default function SupportPage() {
+  const [inquiryOpen, setInquiryOpen] = useState(false);
   return (
     <div className="info-page">
       <InfoHeader active="/support" />
@@ -38,15 +40,15 @@ export default function SupportPage() {
         </div>
         <div className="support-cards">
           {[
-            { icon: "💬", title: "1:1 문의", desc: "평일 09:00 ~ 18:00", action: "문의하기" },
-            { icon: "📧", title: "이메일 문의", desc: "support@beautywork.co.kr", action: "메일 보내기" },
-            { icon: "📋", title: "자주 묻는 질문", desc: "빠른 해결책을 찾아보세요", action: "바로가기" },
+            { icon: "💬", title: "1:1 문의", desc: "접수 후 1~2일 내 답변", action: "문의하기", onClick: () => setInquiryOpen(true) },
+            { icon: "📧", title: "이메일 문의", desc: "support@beautywork.co.kr", action: "메일 보내기", onClick: () => { window.location.href = "mailto:support@beautywork.co.kr"; } },
+            { icon: "📋", title: "자주 묻는 질문", desc: "빠른 해결책을 찾아보세요", action: "바로가기", onClick: () => { const el = document.querySelector(".faq-list"); el?.scrollIntoView({ behavior: "smooth" }); } },
           ].map((c) => (
             <div key={c.title} className="support-card">
               <span className="support-card-icon">{c.icon}</span>
               <h3>{c.title}</h3>
               <p>{c.desc}</p>
-              <button className="support-card-btn">{c.action}</button>
+              <button className="support-card-btn" onClick={c.onClick}>{c.action}</button>
             </div>
           ))}
         </div>
@@ -57,6 +59,7 @@ export default function SupportPage() {
           </div>
         </div>
       </main>
+      <InquiryModal isOpen={inquiryOpen} onClose={() => setInquiryOpen(false)} />
     </div>
   );
 }
