@@ -81,7 +81,6 @@ export default function AdminInquiriesPage() {
     <AdminLayout activeMenu="inquiries">
       <div className="admin-page-header">
         <h1 className="admin-page-title">1:1 문의</h1>
-        <p className="admin-page-desc">사용자가 남긴 문의를 확인하고 이메일로 답변한 뒤 상태를 변경하세요.</p>
       </div>
 
       <div className="admin-filter-tabs" style={{ marginBottom: 20 }}>
