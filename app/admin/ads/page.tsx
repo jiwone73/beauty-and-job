@@ -86,7 +86,6 @@ export default function AdminAdsPage() {
       <div className="p-6 w-full max-w-6xl mx-auto">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-gray-900">문의 관리</h1>
             <div className="flex gap-2">
               {["", "new", "contacted", "done"].map((s) => (
                 <button

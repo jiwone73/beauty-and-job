@@ -165,7 +165,6 @@ export default function AdminNewslettersPage() {
     <AdminLayout activeMenu="newsletters">
       <div style={{ padding: "8px 0" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>뉴스레터</h2>
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
             <button onClick={toggleAutogen} disabled={autogenSaving}
               title="매주 월요일 뉴스레터 자동 생성+발송 on/off"

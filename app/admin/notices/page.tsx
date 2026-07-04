@@ -114,7 +114,6 @@ export default function AdminNoticesPage() {
   return (
     <AdminLayout activeMenu="notices">
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, margin: "0 0 20px" }}>공지사항 관리</h1>
 
         <div style={{ border: "1px solid #eee", borderRadius: 12, padding: 20, marginBottom: 28 }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 14px" }}>새 공지 작성</h2>

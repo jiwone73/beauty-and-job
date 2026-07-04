@@ -79,9 +79,7 @@ export default function AdminInquiriesPage() {
 
   return (
     <AdminLayout activeMenu="inquiries">
-      <div className="admin-page-header">
-        <h1 className="admin-page-title">1:1 문의</h1>
-      </div>
+
 
       <div className="admin-filter-tabs" style={{ marginBottom: 20 }}>
         {STATUS_TABS.map((t) => (
