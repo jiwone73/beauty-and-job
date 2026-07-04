@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
         (SELECT COUNT(*) FROM job_postings WHERE status = 'ACTIVE' AND (deadline IS NULL OR deadline >= CURRENT_DATE)) AS active_jobs,
         (SELECT COUNT(*) FROM job_postings WHERE status = 'ACTIVE' AND job_type = 'STORE' AND (deadline IS NULL OR deadline >= CURRENT_DATE)) AS active_jobs_store,
         (SELECT COUNT(*) FROM job_postings WHERE status = 'ACTIVE' AND job_type = 'OFFICE' AND (deadline IS NULL OR deadline >= CURRENT_DATE)) AS active_jobs_office,
-        (SELECT COUNT(*) FROM job_postings jp JOIN companies c2 ON c2.id = jp.company_id WHERE jp.status = 'ACTIVE' AND c2.company_type = 'BOTH' AND jp.(jp.deadline IS NULL OR jp.deadline >= CURRENT_DATE)) AS active_jobs_both,
+        (SELECT COUNT(*) FROM job_postings jp JOIN companies c2 ON c2.id = jp.company_id WHERE jp.status = 'ACTIVE' AND c2.company_type = 'BOTH' AND (jp.deadline IS NULL OR jp.deadline >= CURRENT_DATE)) AS active_jobs_both,
         (SELECT COUNT(*) FROM job_postings WHERE job_type = 'OFFICE' AND status = 'ACTIVE' AND (deadline IS NULL OR deadline >= CURRENT_DATE)) AS office_jobs,
         (SELECT COUNT(*) FROM job_postings WHERE job_type = 'STORE' AND status = 'ACTIVE' AND (deadline IS NULL OR deadline >= CURRENT_DATE)) AS store_jobs,
         (SELECT COUNT(*) FROM applications WHERE applied_at::date = now()::date) AS today_applications,
