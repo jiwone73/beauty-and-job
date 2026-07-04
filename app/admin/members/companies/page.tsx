@@ -406,6 +406,7 @@ function AdminCompaniesContent() {
                 <th>지역</th>
                 <th>직원수</th>
                 <th>연락처</th>
+                <th>이메일</th>
                 <th>사업자번호</th>
                 <th>공고</th>
                 <th>가입일</th>
@@ -440,7 +441,6 @@ function AdminCompaniesContent() {
                         </span>
                       </span>
                     </div>
-                    <div style={{ fontSize: 12, color: "#888", marginTop: 3, marginLeft: 36 }}>{c.email || "-"}</div>
                   </td>
                   {/* 지역 */}
                   <td className="admin-td-date">{c.region_sido ? [c.region_sido, c.region_sigungu].filter(Boolean).join(" ") : (regionFromAddress(c.address) || "-")}</td>
@@ -448,6 +448,8 @@ function AdminCompaniesContent() {
                   <td className="admin-td-date">{c.company_size || "-"}</td>
                   {/* 연락처 */}
                   <td className="admin-td-date">{c.phone || "-"}</td>
+                  {/* 이메일 */}
+                  <td className="admin-td-date" style={{ wordBreak: "break-all" }}>{c.email || "-"}</td>
                   {/* 사업자번호 / 등록증 아이콘 */}
                   <td className="admin-td-date">
                     <div>{c.business_number || "-"}</div>
