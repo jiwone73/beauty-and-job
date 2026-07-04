@@ -2127,7 +2127,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 메인 */
 .job-detail-main { display: flex; flex-direction: column; gap: 0; }
 
-.job-detail-hero { position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.job-detail-hero { position: relative; width: 100%; aspect-ratio: 3 / 1; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .job-detail-hero-logo { position: absolute; left: 16px; bottom: 16px; width: 56px; height: 56px; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 6px; }
 .job-detail-hero-logo img { width: 100%; height: 100%; object-fit: contain; }
 .job-detail-hero-logo { position: absolute; left: 16px; bottom: 16px; width: 56px; height: 56px; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 6px; }
