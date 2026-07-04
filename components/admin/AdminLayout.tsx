@@ -60,6 +60,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
   const [openMenus, setOpenMenus] = useState<string[]>(["jobs", "members", "resumes"]);
   const [authChecked, setAuthChecked] = useState(false);
   const [newInquiries, setNewInquiries] = useState(0);
+  const [newSupportInquiries, setNewSupportInquiries] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
@@ -92,6 +93,12 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
       })
         .then((r) => r.json())
         .then((d) => setNewInquiries(d?.data?.items?.length || 0))
+        .catch(() => {});
+      fetch("/api/admin/inquiries?status=new", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => r.json())
+        .then((d) => setNewSupportInquiries(d?.data?.items?.length || 0))
         .catch(() => {});
     };
     fetchNewInquiries();
@@ -135,7 +142,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
 
         <nav className="admin-nav">
           {NAV_ITEMS.map((item) => {
-            const badgeCount = item.id === "ads" ? newInquiries : 0;
+            const badgeCount = item.id === "ads" ? newInquiries : item.id === "inquiries" ? newSupportInquiries : 0;
             return (
             <div key={item.id}>
               {item.children ? (
