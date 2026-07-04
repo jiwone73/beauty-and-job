@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, X, FileText, Bookmark, Paperclip } from "lucide-react";
+import { Search, X, FileText, Bookmark, Paperclip, EyeOff } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -103,6 +103,24 @@ function ApplicantsContent() {
       .finally(() => setResumeLoading(false));
   }, [selected?.id]);
 
+  const [checked, setChecked] = useState<string[]>([]);
+
+  const toggleCheck = (id: string) =>
+    setChecked(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
+  const handleBulkHide = async () => {
+    if (!checked.length) return;
+    if (!confirm(`선택한 ${checked.length}명을 목록에서 숨기시겠습니까?\n(지원자 본인에게는 지원 기록이 그대로 남습니다.)`)) return;
+    try {
+      await Promise.all(checked.map(id => companyApplicationsApi.hide(id)));
+      setApplicants(prev => prev.filter(a => !checked.includes(a.id)));
+      setChecked([]);
+    } catch (e) {
+      alert("숨김 처리 중 오류가 발생했습니다.");
+      console.error("[handleBulkHide]", e);
+    }
+  };
+
   const loadApplicants = async () => {
     setLoading(true);
     try {
@@ -127,6 +145,9 @@ function ApplicantsContent() {
     const matchStatus = statusFilter === "전체" || STATUS_LABEL[a.status] === statusFilter;
     return matchSearch && matchStatus;
   });
+
+  const toggleAll = () =>
+    setChecked(checked.length === filtered.length ? [] : filtered.map(a => a.id));
 
   const handleStatusChange = async (id: string, status: ApplicationStatus) => {
     try {
@@ -216,6 +237,13 @@ function ApplicantsContent() {
             </div>
           </div>
         </div>
+        {checked.length > 0 && (
+          <div style={{ marginLeft: "auto" }}>
+            <button className="admin-danger-btn" onClick={handleBulkHide}>
+              <EyeOff size={15} /> 선택 숨김 ({checked.length})
+            </button>
+          </div>
+        )}
       </div>
 
       {loading && (
@@ -238,6 +266,11 @@ function ApplicantsContent() {
           <table className="company-table">
             <thead>
               <tr>
+                <th style={{ width: "36px" }}>
+                  <input type="checkbox"
+                    checked={checked.length === filtered.length && filtered.length > 0}
+                    onChange={toggleAll} />
+                </th>
                 <th>이름</th>
                 <th>지원 공고</th>
                 <th>지원일</th>
@@ -248,7 +281,12 @@ function ApplicantsContent() {
             </thead>
             <tbody>
               {filtered.map((a) => (
-                <tr key={a.id}>
+                <tr key={a.id} style={{ background: checked.includes(a.id) ? "#faf5ff" : "" }}>
+                  <td style={{ textAlign: "center" }}>
+                    <input type="checkbox"
+                      checked={checked.includes(a.id)}
+                      onChange={() => toggleCheck(a.id)} />
+                  </td>
                   <td>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, width: 160, flexShrink: 0 }}>

@@ -142,7 +142,7 @@ export async function PATCH(
 
   const body = await req.json().catch(() => ({}));
 
-  const allowedFields = ["status", "note"];
+  const allowedFields = ["status", "note", "hidden_by_company"];
   const updates: string[] = [];
   const values: any[] = [];
   let idx = 1;

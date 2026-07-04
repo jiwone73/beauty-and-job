@@ -55,6 +55,10 @@ export const companyApplicationsApi = {
   },
   updateStatus: (id: string, status: ApplicationStatus) =>
     api.patch<ApiResponse<CompanyApplication>>(`/api/company/applications/${id}`, { status }),
+  hide: (id: string) =>
+    api.patch<ApiResponse<{ id: string }>>(`/api/company/applications/${id}`, { hidden_by_company: true }),
+  unhide: (id: string) =>
+    api.patch<ApiResponse<{ id: string }>>(`/api/company/applications/${id}`, { hidden_by_company: false }),
 };
 
 // === 기업 정보 ===
