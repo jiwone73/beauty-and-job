@@ -313,9 +313,10 @@ function AdminMembersPageInner() {
               {paginated.map((m) => {
                 const age = calcAge(m.birth_date);
                 const gender = genderLabel(m.gender);
+                const _cy = calcCareerYears(m.recent_start_date);
                 const careerYears = m.career_type === "EXPERIENCED"
-                  ? `경력 ${calcCareerYears(m.recent_start_date)}`
-                  : m.career_type === "NEWCOMER" ? "신입" : null;
+                  ? (_cy ? `경력 ${_cy}` : "신입")
+                  : (m.career_type === "NEWCOMER" || m.career_type === "NEW") ? "신입" : null;
 
                 return (
                   <tr key={m.id} style={{ background: checked.includes(m.id) ? "#faf5ff" : "" }}>
