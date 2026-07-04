@@ -34,7 +34,7 @@ export default function AdminInquiriesPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [expanded, setExpanded] = useState<number | null>(null);
 
-  const token = () => (typeof window !== "undefined" ? localStorage.getItem("access_token") : null);
+  const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
 
   const load = async () => {
     setLoading(true);
@@ -46,7 +46,7 @@ export default function AdminInquiriesPage() {
         headers: { Authorization: `Bearer ${token()}` },
       });
       const data = await res.json();
-      if (data.success) setItems(data.data.items);
+      if (data.success) setItems(data.data?.items || []);
     } catch (e) {
       console.error("[load inquiries]", e);
     } finally {
