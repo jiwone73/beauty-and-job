@@ -110,7 +110,7 @@ function ApplicantsContent() {
 
   const handleBulkHide = async () => {
     if (!checked.length) return;
-    if (!confirm(`선택한 ${checked.length}명을 목록에서 숨기시겠습니까?\n(지원자 본인에게는 지원 기록이 그대로 남습니다.)`)) return;
+    if (!confirm(`선택한 ${checked.length}명을 목록에서 삭제하시겠습니까?`)) return;
     try {
       await Promise.all(checked.map(id => companyApplicationsApi.hide(id)));
       setApplicants(prev => prev.filter(a => !checked.includes(a.id)));
@@ -240,7 +240,7 @@ function ApplicantsContent() {
         {checked.length > 0 && (
           <div style={{ marginLeft: "auto" }}>
             <button className="admin-danger-btn" onClick={handleBulkHide}>
-              <EyeOff size={15} /> 선택 숨김 ({checked.length})
+              <EyeOff size={15} /> 선택 삭제 ({checked.length})
             </button>
           </div>
         )}
