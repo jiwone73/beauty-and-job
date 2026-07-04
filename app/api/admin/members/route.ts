@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
           WHERE r.user_id = u.id
           ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_is_current
       FROM users u
+      WHERE u.is_sample = false
       ORDER BY u.created_at DESC
     `)
     return ok({ items: result.rows })
