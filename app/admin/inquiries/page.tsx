@@ -113,8 +113,8 @@ export default function AdminInquiriesPage() {
               {items.map((it) => (
                 <>
                   <tr key={it.id} onClick={() => setExpanded(expanded === it.id ? null : it.id)} style={{ cursor: "pointer" }}>
-                    <td>
-                      <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f3eafa", color: "#5f0080" }}>
+                    <td className="admin-td-type">
+                      <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f3eafa", color: "#5f0080", whiteSpace: "nowrap" }}>
                         {it.type}
                       </span>
                     </td>

@@ -5135,6 +5135,12 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-table td:last-child { border-right: none; }
 .admin-table tr:last-child td { border-bottom: none; }
 .admin-table tr:hover td { background: #fafafa; }
+.admin-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+}
+.admin-td-type { white-space: nowrap; }
 .admin-td-brand { font-weight: 600; color: #1a1a1a !important; }
 .admin-td-title {
   max-width: 200px;
