@@ -189,7 +189,7 @@ export default function AdminInquiriesPage() {
 
       {selected && (
         <div className="cv-overlay" onClick={() => setSelected(null)}>
-          <div className="cv-modal" style={{ maxWidth: 560 }} onClick={(e) => e.stopPropagation()}>
+          <div className="cv-modal" style={{ maxWidth: 920, width: "92vw" }} onClick={(e) => e.stopPropagation()}>
             <div className="cv-body">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
                 <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>1:1 문의 상세</h2>
@@ -223,7 +223,7 @@ export default function AdminInquiriesPage() {
                   </p>
                 </div>
               ) : (
-                <div style={{ borderTop: "1px solid #eee", paddingTop: 18, fontSize: 13, color: "#999", textAlign: "center" }}>
+                <div style={{ fontSize: 13, color: "#999", textAlign: "center", paddingTop: 40 }}>
                   이메일 주소가 없어 답변 메일을 보낼 수 없습니다.
                   {selected.status !== "done" && (
                     <button onClick={() => markDone(selected.id)}
