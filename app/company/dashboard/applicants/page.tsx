@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, X, FileText, Bookmark, Paperclip, EyeOff } from "lucide-react";
+import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -44,6 +44,53 @@ function ApplicantsContent() {
   const [coverLetter, setCoverLetter] = useState<string>("");
   const [resumeLoading, setResumeLoading] = useState(false);
   const [resumeFileInfo, setResumeFileInfo] = useState<{ name: string | null; size: number | null; url: string | null }>({ name: null, size: null, url: null });
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (!previewRef.current) return;
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const jsPDF = (await import("jspdf")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = (canvas.height * pdfW) / canvas.width;
+      const pageH = pdf.internal.pageSize.getHeight();
+      let left = pdfH, pos = 0;
+      pdf.addImage(imgData, "PNG", 0, pos, pdfW, pdfH);
+      left -= pageH;
+      while (left > 0) {
+        pos = left - pdfH;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, pos, pdfW, pdfH);
+        left -= pageH;
+      }
+      pdf.save(selected?.user_name ? `${selected.user_name}_이력서.pdf` : "이력서.pdf");
+    } catch {
+      alert("다운로드 중 오류가 발생했습니다.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handlePrint = async () => {
+    if (!previewRef.current) return;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      await new Promise((r) => setTimeout(r, 300));
+      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.write(`<html><body style="margin:0"><img src="${canvas.toDataURL("image/png")}" style="width:100%" onload="window.print();window.close()"/></body></html>`);
+      w.document.close();
+    } catch {
+      alert("인쇄 준비 중 오류가 발생했습니다.");
+    }
+  };
 // API 응답(snake_case) → ResumePreview props(camelCase) 변환
   const mapResume = (data: any) => {
     const p = data?.profile || {};
@@ -416,11 +463,28 @@ function ApplicantsContent() {
               )}
               {/* 이력서 정보 */}
               <div style={{marginTop:"24px", paddingTop:"24px", borderTop:"1px solid #ececec"}}>
-                <h3 style={{fontSize:"15px", fontWeight:700, marginBottom:"4px"}}>이력서</h3>
-                <p style={{fontSize:"12px", color:"#888", marginBottom:"8px"}}>지원자가 작성한 이력서 정보입니다</p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                  <div>
+                    <h3 style={{fontSize:"15px", fontWeight:700, marginBottom:"4px"}}>이력서</h3>
+                    <p style={{fontSize:"12px", color:"#888", margin:0}}>지원자가 작성한 이력서 정보입니다</p>
+                  </div>
+                  {resumeData && (
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <button onClick={handleDownloadPdf} disabled={isDownloading}
+                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#5f0080", color: "#fff", fontSize: "13px", fontWeight: 600, cursor: isDownloading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}>
+                        <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 다운로드"}
+                      </button>
+                      <button onClick={handlePrint}
+                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                        <Printer size={15} /> 프린트
+                      </button>
+                    </div>
+                  )}
+                </div>
                 {resumeLoading ? (
                   <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
                 ) : resumeData ? (
+                  <div ref={previewRef}>
                   <ResumePreview
                     name={selected.user_name}
                     birthDisplay=""
@@ -433,6 +497,7 @@ function ApplicantsContent() {
                     resumeType={selected.user_job_type === "STORE" ? "salon" : "office"}
                     {...mapResume(resumeData)}
                   />
+                  </div>
                 ) : (
                   <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
                 )}
