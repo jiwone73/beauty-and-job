@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 
-const TYPES = ["계정/로그인", "채용공고", "기업회원", "기타"];
+const TYPES = ["계정/로그인", "이력서/프로필", "채용공고/지원", "기업회원", "신고/불편사항", "기타"];
 
 export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { userName } = useAuthStore();

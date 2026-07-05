@@ -4,7 +4,7 @@ import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
 import { verifyAccessToken } from '@/lib/jwt'
 
-const ALLOWED_TYPES = ['계정/로그인', '채용공고', '기업회원', '기타']
+const ALLOWED_TYPES = ['계정/로그인', '이력서/프로필', '채용공고/지원', '기업회원', '신고/불편사항', '기타']
 
 export async function POST(req: NextRequest) {
   try {
