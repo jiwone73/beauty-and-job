@@ -365,17 +365,15 @@ export default function ProfilePage() {
   if (!addressRoad) missingRequired.push("거주지");
   if (!preferredRegions || preferredRegions.length === 0) missingRequired.push("희망 근무지역");
 
-  // 이력서로 이동 (필수항목 미완성 시 확인)
+  // 이력서로 이동 (필수항목 미완성 시 안내 후 프로필에 머무름)
   const goToResume = () => {
     if (missingRequired.length > 0) {
-      const ok = confirm(
-        `지원하려면 아래 프로필 필수항목을 먼저 완성해야 해요.\n\n· ${missingRequired.join("\n· ")}\n\n지금 프로필에서 채우시겠어요?\n(확인: 프로필에 남기 / 취소: 이력서로 이동)`
+      alert(
+        `이력서를 작성하려면 프로필 필수항목을 먼저 완성해 주세요.\n\n[미입력 항목]\n· ${missingRequired.join("\n· ")}`
       );
-      if (ok) {
-        setActiveTab("profile");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        return;
-      }
+      setActiveTab("profile");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
     }
     router.push("/profile/resume");
   };
@@ -455,24 +453,6 @@ export default function ProfilePage() {
           <BookmarksTab />
         ) : activeTab === "profile" ? (
           <>
-            {missingRequired.length > 0 && (
-              <div style={{ margin: "16px 0", padding: "16px 18px", background: "#fdf4ff", border: "1px solid #e9d5ff", borderRadius: "12px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-                  <span style={{ fontSize: "18px" }}>⚠️</span>
-                  <span style={{ fontSize: "14px", fontWeight: 700, color: "#5f0080" }}>지원하려면 아래 필수항목을 완성해주세요</span>
-                </div>
-                <p style={{ fontSize: "13px", color: "#777", margin: "0 0 12px" }}>
-                  이 항목들을 채워야 채용공고에 지원할 수 있어요. 미리 완성해두면 지원할 때 다시 프로필로 돌아올 필요가 없어요.
-                </p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                  {missingRequired.map((f) => (
-                    <span key={f} style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "5px 12px", background: "#fff", border: "1px solid #e9d5ff", borderRadius: "999px", fontSize: "13px", fontWeight: 600, color: "#5f0080" }}>
-                      {f}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
             {dbJobType && (
               <div style={{ margin: "16px 0", padding: "14px 16px", background: "#fff", border: "1px solid #e0d0f0", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -740,14 +720,12 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* 거주지 · 희망 근무지역 (OFFICE/STORE 공통) */}
-            <section className="profile-section">
-              <div className="profile-section-head">
-                <h2 className="profile-section-title">거주지 · 희망 근무지역</h2>
-              </div>
+
+            {/* 거주지 (기본정보 하위) */}
+            <section className="profile-section" style={{ marginTop: 0 }}>
               <div className="profile-info-card" style={{ padding: "16px" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                  <label style={{ fontSize: "13px", fontWeight: 600, color: "#333" }}>거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label style={{ fontSize: "13px", color: "var(--color-text-mute)" }}>거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   {addressRoad && (
                     <button type="button" onClick={handleClearAddress}
                       style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", padding: "2px 4px", textDecoration: "underline" }}>
@@ -778,56 +756,10 @@ export default function ProfilePage() {
                   <input value={addressDetail} placeholder="상세주소 (동·호수 등)"
                     onChange={(e) => setAddressDetail(e.target.value)}
                     onBlur={() => patchUser({ address_detail: addressDetail })}
-                    style={{ width: "100%", padding: "10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", marginBottom: "20px", boxSizing: "border-box" }} />
-                )}
-
-                <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "4px" }}>
-                  희망 근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>
-                </label>
-                <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "10px" }}>일하고 싶은 지역을 선택해주세요</p>
-
-                {/* 지역 무관 체크 */}
-                <label style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px", cursor: "pointer", fontSize: "14px", color: "#333" }}>
-                  <input type="checkbox"
-                    checked={preferredRegions.some((r) => r.sido === "지역 무관")}
-                    onChange={toggleAnyRegion}
-                    style={{ width: "16px", height: "16px", accentColor: "#5f0080", cursor: "pointer" }} />
-                  지역 무관 (전국 어디든 좋아요)
-                </label>
-
-                {/* 지역 선택 버튼 (지역 무관이면 비활성) */}
-                {!preferredRegions.some((r) => r.sido === "지역 무관") && (
-                  <>
-                    <button onClick={() => setPrefModalOpen(true)}
-                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "14px", fontWeight: 400, cursor: "pointer", marginBottom: "10px" }}>
-                      <MapPin size={15} /> 지역 선택
-                    </button>
-                    {preferredRegions.length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                        {preferredRegions.map((r, i) => (
-                          <span key={`${r.sido}-${r.sigungu}-${i}`}
-                            style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 8px 6px 12px", borderRadius: "20px", background: "#f3e5f5", color: "#5f0080", fontSize: "13px", fontWeight: 600 }}>
-                            {r.sigungu ? `${r.sido} ${r.sigungu}` : `${r.sido} 전체`}
-                            <button onClick={() => removePreferredRegion(i)}
-                              style={{ display: "flex", border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0 }}
-                              aria-label="삭제">
-                              <X size={14} />
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </>
+                    style={{ width: "100%", padding: "10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", boxSizing: "border-box" }} />
                 )}
               </div>
             </section>
-
-            <RegionSelectModal
-              open={prefModalOpen}
-              initial={toModalRegions(preferredRegions)}
-              onClose={() => setPrefModalOpen(false)}
-              onApply={applyPrefModal}
-            />
 
             {dbJobType === "OFFICE" && (
               <section className="profile-section">
@@ -877,6 +809,57 @@ export default function ProfilePage() {
               </section>
             )}
             
+
+            {/* 희망 근무지역 (직무 하위) */}
+            <section className="profile-section">
+              <div className="profile-section-head">
+                <h2 className="profile-section-title">희망 근무지역<span style={{ color: "#e74c3c", marginLeft: "4px", fontSize: "14px" }}>*</span></h2>
+              </div>
+              <div className="profile-info-card" style={{ padding: "16px" }}>
+                <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "10px" }}>일하고 싶은 지역을 선택해주세요</p>
+
+                {/* 지역 무관 체크 */}
+                <label style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px", cursor: "pointer", fontSize: "14px", color: "#333" }}>
+                  <input type="checkbox"
+                    checked={preferredRegions.some((r) => r.sido === "지역 무관")}
+                    onChange={toggleAnyRegion}
+                    style={{ width: "16px", height: "16px", accentColor: "#5f0080", cursor: "pointer" }} />
+                  지역 무관 (전국 어디든 좋아요)
+                </label>
+
+                {/* 지역 선택 버튼 (지역 무관이면 비활성) */}
+                {!preferredRegions.some((r) => r.sido === "지역 무관") && (
+                  <>
+                    <button onClick={() => setPrefModalOpen(true)}
+                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "14px", fontWeight: 400, cursor: "pointer", marginBottom: "10px" }}>
+                      <MapPin size={15} /> 지역 선택
+                    </button>
+                    {preferredRegions.length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                        {preferredRegions.map((r, i) => (
+                          <span key={`${r.sido}-${r.sigungu}-${i}`}
+                            style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 8px 6px 12px", borderRadius: "20px", background: "#f3e5f5", color: "#5f0080", fontSize: "13px", fontWeight: 600 }}>
+                            {r.sigungu ? `${r.sido} ${r.sigungu}` : `${r.sido} 전체`}
+                            <button onClick={() => removePreferredRegion(i)}
+                              style={{ display: "flex", border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0 }}
+                              aria-label="삭제">
+                              <X size={14} />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </section>
+
+            <RegionSelectModal
+              open={prefModalOpen}
+              initial={toModalRegions(preferredRegions)}
+              onClose={() => setPrefModalOpen(false)}
+              onApply={applyPrefModal}
+            />
             <div className="profile-bottom-cta">
               <button className="resume-save-btn-full" onClick={goToResume}>
                 현재 프로필로 이력서 만들기

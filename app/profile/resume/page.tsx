@@ -41,6 +41,7 @@ function ResumePageContent() {
   const previewRef = useRef<HTMLDivElement>(null);
 
   const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
+  const [addressDisplay, setAddressDisplay] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -93,6 +94,9 @@ function ResumePageContent() {
           if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
           if (res.data.resume_file_name) setResumeFileName(res.data.resume_file_name);
           if (res.data.resume_file_size) setResumeFileSize(res.data.resume_file_size);
+          if (res.data.address_road) {
+            setAddressDisplay(res.data.address_road + (res.data.address_detail ? ` ${res.data.address_detail}` : ""));
+          }
         }
       })
       .catch(console.error);
@@ -514,19 +518,10 @@ const handlePrint = async () => {
             <h2 className="resume-section-title">기본 정보</h2>
             <div className="resume-basic-info">
               <div className="resume-name-block">
-                <h3 className="resume-name">{name || "이름"}</h3>
+                <h3 className="resume-name" style={{ fontSize: "15px", fontWeight: 400, marginTop: "16px" }}>{name || "이름"}</h3>
                 <p className="resume-job-line">{birthDisplay} {birthDisplay && "·"} {jobDisplay}</p>
                 <p className="resume-contact">{phone || ""} {phone && emailLocal ? "·" : ""} {emailLocal}</p>
-              </div>
-              <div className="resume-field-group">
-                <label className="resume-field-label">이메일</label>
-                <input
-                  className="resume-input"
-                  placeholder="이메일을 입력해 주세요."
-                  value={emailLocal}
-                  onChange={(e) => setEmailLocal(e.target.value)}
-                  onBlur={() => setEmail(emailLocal)}
-                />
+                {addressDisplay && <p className="resume-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>}
               </div>
             </div>
           </section>
