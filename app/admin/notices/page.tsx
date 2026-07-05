@@ -116,7 +116,7 @@ export default function AdminNoticesPage() {
       <div style={{ maxWidth: 1160, margin: "0 auto" }}>
         <div style={{ display: "flex", gap: 28, alignItems: "flex-start", flexWrap: "wrap" }}>
           {/* 왼쪽: 작성 폼 */}
-          <div style={{ flex: "0 0 400px", position: "sticky", top: 80, alignSelf: "flex-start" }}>
+          <div style={{ flexGrow: 0, flexShrink: 0, flexBasis: "400px", position: "sticky", top: 80, alignSelf: "flex-start" }}>
         <div style={{ border: "1px solid #eee", borderRadius: 12, padding: 20, marginBottom: 28 }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 14px" }}>새 공지 작성</h2>
           <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
