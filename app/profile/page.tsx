@@ -356,6 +356,30 @@ export default function ProfilePage() {
     }
   };
 
+  // 지원 필수항목 판정 (서버 apply/route.ts의 missing 기준과 동일)
+  const missingRequired: string[] = [];
+  if (!(phoneOverride || userPhone || phone)) missingRequired.push("휴대전화");
+  if (!birth) missingRequired.push("생년월일");
+  if (!gender) missingRequired.push("성별");
+  if (!emailInput) missingRequired.push("이메일");
+  if (!addressRoad) missingRequired.push("거주지");
+  if (!preferredRegions || preferredRegions.length === 0) missingRequired.push("희망 근무지역");
+
+  // 이력서로 이동 (필수항목 미완성 시 확인)
+  const goToResume = () => {
+    if (missingRequired.length > 0) {
+      const ok = confirm(
+        `지원하려면 아래 프로필 필수항목을 먼저 완성해야 해요.\n\n· ${missingRequired.join("\n· ")}\n\n지금 프로필에서 채우시겠어요?\n(확인: 프로필에 남기 / 취소: 이력서로 이동)`
+      );
+      if (ok) {
+        setActiveTab("profile");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+    }
+    router.push("/profile/resume");
+  };
+
   return (
     <main className="profile-page">
       <header className="profile-header">
@@ -419,7 +443,7 @@ export default function ProfilePage() {
 
       <div className="profile-tabs">
         <button className={`profile-tab ${activeTab === "profile" ? "active" : ""}`} onClick={() => setActiveTab("profile")}>프로필</button>
-        <button className="profile-tab" onClick={() => router.push("/profile/resume")}>이력서</button>
+        <button className="profile-tab" onClick={goToResume}>이력서</button>
         <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>지원현황</button>
         <button className={`profile-tab ${activeTab === "bookmarks" ? "active" : ""}`} onClick={() => setActiveTab("bookmarks")}>관심공고</button>
       </div>
@@ -431,6 +455,24 @@ export default function ProfilePage() {
           <BookmarksTab />
         ) : activeTab === "profile" ? (
           <>
+            {missingRequired.length > 0 && (
+              <div style={{ margin: "16px 0", padding: "16px 18px", background: "#fdf4ff", border: "1px solid #e9d5ff", borderRadius: "12px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
+                  <span style={{ fontSize: "18px" }}>⚠️</span>
+                  <span style={{ fontSize: "14px", fontWeight: 700, color: "#5f0080" }}>지원하려면 아래 필수항목을 완성해주세요</span>
+                </div>
+                <p style={{ fontSize: "13px", color: "#777", margin: "0 0 12px" }}>
+                  이 항목들을 채워야 채용공고에 지원할 수 있어요. 미리 완성해두면 지원할 때 다시 프로필로 돌아올 필요가 없어요.
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                  {missingRequired.map((f) => (
+                    <span key={f} style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "5px 12px", background: "#fff", border: "1px solid #e9d5ff", borderRadius: "999px", fontSize: "13px", fontWeight: 600, color: "#5f0080" }}>
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
             {dbJobType && (
               <div style={{ margin: "16px 0", padding: "14px 16px", background: "#fff", border: "1px solid #e0d0f0", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -836,7 +878,7 @@ export default function ProfilePage() {
             )}
             
             <div className="profile-bottom-cta">
-              <button className="resume-save-btn-full" onClick={() => router.push("/profile/resume")}>
+              <button className="resume-save-btn-full" onClick={goToResume}>
                 현재 프로필로 이력서 만들기
               </button>
             </div>
