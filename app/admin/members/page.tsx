@@ -180,9 +180,9 @@ function AdminMembersPageInner() {
     const dt = new Date(d);
     const now = new Date();
     if (period === "today") {
-      return dt.getFullYear() === now.getFullYear()
-        && dt.getMonth() === now.getMonth()
-        && dt.getDate() === now.getDate();
+      const kst = new Date(dt.getTime() + 9*60*60*1000);
+        const todayKST = new Date(Date.now() + 9*60*60*1000);
+        return kst.toISOString().slice(0,10) === todayKST.toISOString().slice(0,10);
     }
     const days = period === "7d" ? 7 : period === "1m" ? 30 : period === "3m" ? 90 : period === "1y" ? 365 : 0;
     if (!days) return true;

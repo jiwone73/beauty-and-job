@@ -113,9 +113,9 @@ function AdminApplicationsPageInner() {
   const isToday = (d: string | null) => {
     if (!d) return false;
     const dt = new Date(d); const now = new Date();
-    return dt.getFullYear() === now.getFullYear()
-      && dt.getMonth() === now.getMonth()
-      && dt.getDate() === now.getDate();
+    const kst = new Date(dt.getTime() + 9*60*60*1000);
+    const todayKST = new Date(Date.now() + 9*60*60*1000);
+    return kst.toISOString().slice(0,10) === todayKST.toISOString().slice(0,10);
   };
 
   const filtered = apps.filter((a) => {
