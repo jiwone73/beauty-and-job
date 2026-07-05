@@ -302,7 +302,7 @@ export default function ApplyModal({
               </div>
               <div style={{ padding: 0 }}>
                 <button className="cv-btn-primary" style={{ width: "100%" }} onClick={() => setStep("preview")}>
-                  미리보기
+                  미리보기 후 지원하기
                 </button>
               </div>
             </>
@@ -415,7 +415,7 @@ export default function ApplyModal({
                   style={{ flex: 1, marginTop: 0 }}
                   onClick={() => setStep("preview")}
                 >
-                  미리보기로
+                  미리보기 후 지원하기
                 </button>
               </div>
             </>
