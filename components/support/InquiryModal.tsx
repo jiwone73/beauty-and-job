@@ -10,6 +10,7 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
   const { userName } = useAuthStore();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [type, setType] = useState("계정/로그인");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -41,7 +42,7 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ name: name.trim(), email: email.trim() || null, type, subject: subject.trim() || null, message: message.trim() }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim() || null, phone: phone.trim() || null, type, subject: subject.trim() || null, message: message.trim() }),
       });
       const data = await res.json();
       if (data.success) {
@@ -97,6 +98,8 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
 
               <label className="cv-field-label">이메일 (답변 받으실 주소)</label>
               <input className="cv-input" type="email" placeholder="답변 받으실 이메일을 입력해주세요" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <label className="cv-field-label">전화번호</label>
+              <input className="cv-input" type="tel" placeholder="연락 가능한 전화번호 (선택)" value={phone} onChange={(e) => setPhone(e.target.value)} />
 
               <label className="cv-field-label">제목</label>
               <input className="cv-input" placeholder="문의 제목 (선택)" value={subject} onChange={(e) => setSubject(e.target.value)} />
