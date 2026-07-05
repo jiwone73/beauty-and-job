@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
+import SmsModal from "@/components/admin/SmsModal";
 import { Search, Trash2, X, Download, Printer, FileText } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
@@ -96,6 +97,7 @@ function AdminCompaniesContent() {
   const [typeFilter, setTypeFilter] = useState(initialType);
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [smsOpen, setSmsOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [companyDetail, setCompanyDetail] = useState<Company | null>(null);
   const [companyPdfLoading, setCompanyPdfLoading] = useState(false);
@@ -331,6 +333,19 @@ function AdminCompaniesContent() {
             >
               열람제한기업
             </button>
+            {!blockedMode && selectedIds.length > 0 && (
+              <button
+                onClick={() => setSmsOpen(true)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "6px 14px", borderRadius: 6, border: "none",
+                  background: "#5f0080", color: "#fff",
+                  fontSize: 13, fontWeight: 600, cursor: "pointer",
+                }}
+              >
+                📱 문자 발송 ({selectedIds.length})
+              </button>
+            )}
             {!blockedMode && (
               <button
                 onClick={handleBulkDelete}
@@ -642,6 +657,15 @@ function AdminCompaniesContent() {
             </div>
           </div>
         </div>
+      )}
+      {smsOpen && (
+        <SmsModal
+          targets={selectedIds.map((id) => {
+            const co = companies.find((c) => c.id === id);
+            return { id, name: co?.company_name || "", phone: co?.phone || "" };
+          })}
+          onClose={() => setSmsOpen(false)}
+        />
       )}
     </AdminLayout>
   );
