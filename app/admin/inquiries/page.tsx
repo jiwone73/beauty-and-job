@@ -212,11 +212,8 @@ export default function AdminInquiriesPage() {
               {selected.email ? (
                 <div style={{ borderTop: "1px solid #eee", paddingTop: 18 }}>
                   <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>답변 메일 작성</div>
-                  <label className="cv-field-label">제목</label>
-                  <input className="cv-input" value={replySubject} onChange={(e) => setReplySubject(e.target.value)} />
-                  <label className="cv-field-label" style={{ marginTop: 10 }}>내용</label>
                   <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
-                    style={{ minHeight: 160, resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
+                    style={{ minHeight: 280, resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
                   <button onClick={sendReply}
                     style={{ width: "100%", marginTop: 14, padding: "12px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
                     답변 메일 보내기
