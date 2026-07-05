@@ -223,7 +223,6 @@ function AdminMembersPageInner() {
     정상: members.filter((m) => m.status === "ACTIVE").length,
     휴면: members.filter((m) => m.status === "INACTIVE").length,
     정지: members.filter((m) => m.status === "SUSPENDED").length,
-    이력서: members.filter((m) => m.resume_id).length,
   };
 
   return (
@@ -232,7 +231,7 @@ function AdminMembersPageInner() {
         {Object.entries(counts).map(([label, count]) => (
           <div key={label} className="admin-mini-stat">
             <span className="admin-mini-stat-label">{label}</span>
-            <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">{label === "이력서" ? "건" : "명"}</span></span>
+            <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">명</span></span>
           </div>
         ))}
       </div>
