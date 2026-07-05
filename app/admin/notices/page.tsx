@@ -113,7 +113,7 @@ export default function AdminNoticesPage() {
 
   return (
     <AdminLayout activeMenu="notices">
-      <div style={{ maxWidth: 1160, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1160, margin: "0 auto", width: "100%" }}>
         <div style={{ display: "flex", gap: 28, alignItems: "flex-start", flexWrap: "wrap" }}>
           {/* 왼쪽: 작성 폼 */}
           <div style={{ flexGrow: 0, flexShrink: 0, flexBasis: "400px", position: "sticky", top: 80, alignSelf: "flex-start" }}>
