@@ -31,7 +31,7 @@ const NAV_ITEMS = [
   { id: "stories", label: "현장이야기", icon: BookOpen, href: "/admin/stories" },
   { id: "newsletters", label: "뉴스레터", icon: Mail, href: "/admin/newsletters" },
   { id: "notices", label: "공지사항", icon: Bell, href: "/admin/notices" },
-  { id: "ads", label: "광고 문의", icon: Megaphone, href: "/admin/ads" },
+  { id: "ads", label: "사업문의", icon: Megaphone, href: "/admin/ads" },
   { id: "inquiries", label: "1:1 문의", icon: MessageSquare, href: "/admin/inquiries" },
 ];
 
@@ -50,7 +50,8 @@ const PAGE_TITLES: Record<string, string> = {
   "stories": "현장이야기",
   "newsletters": "뉴스레터",
   "notices": "공지사항",
-  "ads": "문의 관리",
+  "ads": "사업문의",
+  "inquiries": "1:1 문의",
 };
 
 const PAGE_SUBTITLES: Record<string, string> = {

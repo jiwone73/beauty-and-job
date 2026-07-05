@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   try {
     const [listResult, countResult] = await Promise.all([
       client.query(
-        `SELECT id, name, email, type, subject, message, status, user_id, created_at
+        `SELECT id, name, email, phone, type, subject, message, status, user_id, created_at
          FROM inquiries ${whereClause}
          ORDER BY created_at DESC
          LIMIT $${idx} OFFSET $${idx + 1}`,
