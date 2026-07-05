@@ -248,7 +248,7 @@ export default function AdminDashboard() {
             label: "오늘 지원수",
             value: fmt(c?.today_applications),
             unit: "건",
-            sub: "오늘 접수",
+            sub: `매장 ${fmt(c?.today_applications_store)}건 · 기업 ${fmt(c?.today_applications_office)}건`,
             icon: CheckCircle, color: "#10b981",
             href: "/admin/resumes/applications?date=today",
           },
