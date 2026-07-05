@@ -189,7 +189,7 @@ export default function AdminInquiriesPage() {
 
       {selected && (
         <div className="cv-overlay" onClick={() => setSelected(null)}>
-          <div className="cv-modal" style={{ maxWidth: 1080, width: "94vw" }} onClick={(e) => e.stopPropagation()}>
+          <div className="cv-modal" style={{ maxWidth: 1080, width: "94vw", maxHeight: "95vh" }} onClick={(e) => e.stopPropagation()}>
             <div className="cv-body">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
                 <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>1:1 문의 상세</h2>
@@ -218,7 +218,7 @@ export default function AdminInquiriesPage() {
                 <div style={{ flex: "1 1 420px", minWidth: 0, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
                   <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>답변 메일 작성</div>
                   <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
-                    style={{ minHeight: 280, resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
+                    style={{ minHeight: "min(68vh, 720px)", resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
                   <button onClick={sendReply}
                     style={{ width: "100%", marginTop: 14, padding: "12px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
                     답변 메일 보내기
