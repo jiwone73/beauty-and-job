@@ -137,7 +137,7 @@ export default function AdminNoticesPage() {
           <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
             placeholder="제목" style={{ ...inputStyle, marginBottom: 10 }} />
           <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })}
-            placeholder="내용" rows={12} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: "min(68vh, 720px)", lineHeight: 1.6 }} />
+            placeholder="내용" rows={12} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 420, lineHeight: 1.6 }} />
           <button onClick={create} disabled={busy}
             style={{ padding: "10px 20px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
             {busy ? "처리 중..." : "작성"}
