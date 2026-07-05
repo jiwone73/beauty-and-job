@@ -32,6 +32,8 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
 
   const handleSubmit = async () => {
     if (!name.trim()) { alert("이름을 입력해주세요."); return; }
+    if (!email.trim()) { alert("이메일을 입력해주세요."); return; }
+    if (!subject.trim()) { alert("제목을 입력해주세요."); return; }
     if (!message.trim()) { alert("문의 내용을 입력해주세요."); return; }
     setSubmitting(true);
     try {
@@ -79,30 +81,22 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
           ) : (
             <>
               <label className="cv-field-label">문의 유형</label>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+              <select className="cv-input" value={type} onChange={(e) => setType(e.target.value)} style={{ marginBottom: 14 }}>
                 {TYPES.map((t) => (
-                  <button key={t} type="button" onClick={() => setType(t)}
-                    style={{
-                      padding: "8px 14px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer",
-                      border: type === t ? "1.5px solid #5f0080" : "1px solid #e0e0e0",
-                      background: type === t ? "#faf5ff" : "#fff",
-                      color: type === t ? "#5f0080" : "#666",
-                    }}>
-                    {t}
-                  </button>
+                  <option key={t} value={t}>{t}</option>
                 ))}
-              </div>
+              </select>
 
               <label className="cv-field-label cv-required">이름</label>
               <input className="cv-input" placeholder="이름을 입력해주세요" value={name} onChange={(e) => setName(e.target.value)} />
 
-              <label className="cv-field-label">이메일 (답변 받으실 주소)</label>
+              <label className="cv-field-label cv-required">이메일 (답변 받으실 주소)</label>
               <input className="cv-input" type="email" placeholder="답변 받으실 이메일을 입력해주세요" value={email} onChange={(e) => setEmail(e.target.value)} />
               <label className="cv-field-label">전화번호</label>
               <input className="cv-input" type="tel" placeholder="연락 가능한 전화번호 (선택)" value={phone} onChange={(e) => setPhone(e.target.value)} />
 
-              <label className="cv-field-label">제목</label>
-              <input className="cv-input" placeholder="문의 제목 (선택)" value={subject} onChange={(e) => setSubject(e.target.value)} />
+              <label className="cv-field-label cv-required">제목</label>
+              <input className="cv-input" placeholder="문의 제목을 입력해주세요" value={subject} onChange={(e) => setSubject(e.target.value)} />
 
               <label className="cv-field-label cv-required">문의 내용</label>
               <textarea className="cv-input" placeholder="문의하실 내용을 자유롭게 작성해주세요." value={message} onChange={(e) => setMessage(e.target.value)}
