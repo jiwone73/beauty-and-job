@@ -173,9 +173,6 @@ export default function AdminNoticesPage() {
                     background: n.type === "event" ? "#fdeef5" : "#f3eafa", color: n.type === "event" ? "#c2185b" : "#5f0080" }}>
                     {TYPE_LABELS[n.type]}
                   </span>
-                  <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, padding: "2px 7px", borderRadius: 6, ...targetStyle(n.target) }}>
-                    {TARGET_LABELS[n.target] || "전체"}
-                  </span>
                   {n.is_pinned && <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "#5f0080", border: "1px solid #5f0080", borderRadius: 4, padding: "1px 5px" }}>고정</span>}
                   {n.status === "draft" && <span style={{ flexShrink: 0, fontSize: 11, color: "#999", border: "1px solid #ddd", borderRadius: 4, padding: "1px 5px" }}>임시</span>}
                   <span onClick={() => openExpand(n)} style={{ flex: 1, minWidth: 0, fontSize: 15, fontWeight: 500, cursor: "pointer", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
