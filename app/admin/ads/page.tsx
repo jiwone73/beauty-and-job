@@ -1,27 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-const STATUS_LABELS: Record<string, string> = {
-  new: "신규",
-  contacted: "연락완료",
-  done: "처리완료",
-};
-const STATUS_COLORS: Record<string, string> = {
-  new: "bg-pink-100 text-pink-700",
-  contacted: "bg-yellow-100 text-yellow-700",
-  done: "bg-green-100 text-green-700",
-};
-const TYPE_COLORS: Record<string, string> = {
-  광고: "bg-purple-100 text-purple-700",
-  제휴: "bg-blue-100 text-blue-700",
-  기타: "bg-gray-100 text-gray-600",
-};
+
+const STATUS_LABEL: Record<string, string> = { new: "신규", contacted: "신규", done: "완료" };
+const STATUS_TABS = [
+  { key: "", label: "전체" },
+  { key: "new", label: "신규" },
+  { key: "done", label: "완료" },
+];
+const TYPE_TABS = ["", "광고", "제휴", "기타"];
 const PRODUCT_LABELS: Record<string, string> = {
   top_exposure: "공고 상단 노출",
   brand_page: "브랜드 페이지 제작",
   banner: "배너 광고",
   other: "기타 문의",
 };
+
 type Inquiry = {
   id: number;
   company_name: string | null;
@@ -34,22 +28,31 @@ type Inquiry = {
   type: string;
   created_at: string;
 };
+
+function fmtDate(s: string) {
+  const d = new Date(s);
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
 export default function AdminAdsPage() {
   const [items, setItems] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [selected, setSelected] = useState<Inquiry | null>(null);
-  const [updating, setUpdating] = useState(false);
+  const [replySubject, setReplySubject] = useState("");
+  const [replyBody, setReplyBody] = useState("");
+
+  const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
+
   const fetchData = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("admin_token");
       const qs = new URLSearchParams();
       if (statusFilter) qs.set("status", statusFilter);
       if (typeFilter) qs.set("type", typeFilter);
       const res = await fetch(`/api/admin/ads/inquiries?${qs.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token()}` },
       });
       const data = await res.json();
       setItems(data.data?.items || []);
@@ -57,194 +60,152 @@ export default function AdminAdsPage() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchData();
-  }, [statusFilter, typeFilter]);
-  const updateStatus = async (id: number, status: string) => {
-    setUpdating(true);
+
+  useEffect(() => { fetchData(); }, [statusFilter, typeFilter]);
+
+  // 모달 열 때 답변 제목 기본값 세팅
+  const openDetail = (item: Inquiry) => {
+    setSelected(item);
+    setReplySubject(`[뷰티워크] ${item.type || "광고"} 문의 답변`);
+    setReplyBody(`안녕하세요, ${item.contact_name || "고객"}님.\n뷰티워크입니다.\n\n문의 주신 내용에 대해 답변드립니다.\n\n\n\n──────────\n[문의 내용]\n${item.message}`);
+  };
+
+  const markDone = async (id: number) => {
     try {
-      const token = localStorage.getItem("admin_token");
       await fetch("/api/admin/ads/inquiries", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ id, status }),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ id, status: "done" }),
       });
-      setSelected((p) => (p ? { ...p, status } : p));
-      setItems((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, status } : item))
-      );
+      setSelected((p) => (p ? { ...p, status: "done" } : p));
+      setItems((prev) => prev.map((it) => (it.id === id ? { ...it, status: "done" } : it)));
       window.dispatchEvent(new Event("admin:inquiries-changed"));
-    } finally {
-      setUpdating(false);
+    } catch (e) {
+      console.error("[mark done]", e);
     }
   };
+
+  const sendReply = () => {
+    if (!selected?.email) { alert("이메일 주소가 없어 답변을 보낼 수 없습니다."); return; }
+    const url = `mailto:${selected.email}?subject=${encodeURIComponent(replySubject)}&body=${encodeURIComponent(replyBody)}`;
+    window.location.href = url;
+    markDone(selected.id); // 발송 시 자동 완료
+  };
+
+  const badge = (status: string) => (
+    <span style={{ fontSize: 12, fontWeight: 600, color: status === "done" ? "#888" : "#5f0080" }}>
+      {status === "done" ? "완료" : "신규"}
+    </span>
+  );
+
   return (
     <AdminLayout activeMenu="ads">
-      <div className="p-6 w-full max-w-6xl mx-auto">
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex gap-2">
-              {["", "new", "contacted", "done"].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setStatusFilter(s)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                    statusFilter === s
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {s === "" ? "전체 상태" : STATUS_LABELS[s]}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="flex gap-2">
-            {["", "광고", "제휴", "기타"].map((t) => (
-              <button
-                key={t}
-                onClick={() => setTypeFilter(t)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                  typeFilter === t
-                    ? "bg-gray-900 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                {t === "" ? "전체 유형" : `${t} 문의`}
-              </button>
-            ))}
-          </div>
-        </div>
-        {loading ? (
-          <div className="text-center py-20 text-gray-400">불러오는 중...</div>
-        ) : items.length === 0 ? (
-          <div className="text-center py-20 text-gray-400">문의가 없습니다.</div>
-        ) : (
-          <div className="bg-white rounded-xl shadow overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="text-left px-4 py-3 text-gray-500 font-medium">접수일</th>
-                  <th className="text-left px-4 py-3 text-gray-500 font-medium">유형</th>
-                  <th className="text-left px-4 py-3 text-gray-500 font-medium">회사명</th>
-                  <th className="text-left px-4 py-3 text-gray-500 font-medium">담당자</th>
-                  <th className="text-left px-4 py-3 text-gray-500 font-medium">연락처</th>
-                  <th className="text-left px-4 py-3 text-gray-500 font-medium">관심상품/유형</th>
-                  <th className="text-left px-4 py-3 text-gray-500 font-medium">상태</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {items.map((item) => (
-                  <tr
-                    key={item.id}
-                    onClick={() => setSelected(item)}
-                    className="hover:bg-gray-50 cursor-pointer"
-                  >
-                    <td className="px-4 py-3 text-gray-500">
-                      {new Date(item.created_at).toLocaleDateString("ko-KR")}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${TYPE_COLORS[item.type] ?? "bg-gray-100 text-gray-600"}`}>
-                        {item.type || "광고"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-medium text-gray-900">{item.company_name || "-"}</td>
-                    <td className="px-4 py-3 text-gray-700">{item.contact_name}</td>
-                    <td className="px-4 py-3 text-gray-700">{item.phone || "-"}</td>
-                    <td className="px-4 py-3 text-gray-500">
-                      {item.product ? PRODUCT_LABELS[item.product] ?? item.product : "-"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[item.status]}`}>
-                        {STATUS_LABELS[item.status]}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+      <div className="admin-filter-tabs" style={{ marginBottom: 10 }}>
+        {STATUS_TABS.map((t) => (
+          <button key={t.key} className={`admin-filter-tab ${statusFilter === t.key ? "active" : ""}`}
+            onClick={() => setStatusFilter(t.key)}>
+            {t.label}
+          </button>
+        ))}
       </div>
-      {/* 상세 모달 */}
+      <div className="admin-filter-tabs" style={{ marginBottom: 20 }}>
+        {TYPE_TABS.map((t) => (
+          <button key={t} className={`admin-filter-tab ${typeFilter === t ? "active" : ""}`}
+            onClick={() => setTypeFilter(t)}>
+            {t === "" ? "전체 유형" : t}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="admin-empty">불러오는 중...</div>
+      ) : items.length === 0 ? (
+        <div className="admin-empty">문의가 없습니다.</div>
+      ) : (
+        <div className="admin-table-wrap">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th style={{ width: 80 }}>유형</th>
+                <th>회사명</th>
+                <th style={{ width: 100 }}>담당자</th>
+                <th style={{ width: 130 }}>전화번호</th>
+                <th>이메일</th>
+                <th style={{ width: 150 }}>접수일시</th>
+                <th style={{ width: 70 }}>상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id} onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>
+                  <td className="admin-td-type">
+                    <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f3eafa", color: "#5f0080", whiteSpace: "nowrap" }}>
+                      {item.type || "광고"}
+                    </span>
+                  </td>
+                  <td style={{ fontWeight: 600 }}>{item.company_name || "-"}</td>
+                  <td>{item.contact_name}</td>
+                  <td style={{ fontSize: 13 }}>{item.phone || "-"}</td>
+                  <td style={{ fontSize: 13, color: "#555", wordBreak: "break-all" }}>{item.email || "-"}</td>
+                  <td style={{ fontSize: 13, color: "#888" }}>{fmtDate(item.created_at)}</td>
+                  <td>{badge(item.status)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       {selected && (
-        <div
-          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4"
-          onClick={() => setSelected(null)}
-        >
-          <div
-            className="bg-white rounded-2xl shadow-xl p-8 max-w-lg w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900">문의 상세</h2>
-              <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
-            </div>
-            <div className="space-y-3 text-sm mb-6">
-              <div className="flex justify-between">
-                <span className="text-gray-500">유형</span>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${TYPE_COLORS[selected.type] ?? "bg-gray-100 text-gray-600"}`}>
-                  {selected.type || "광고"}
-                </span>
+        <div className="cv-overlay" onClick={() => setSelected(null)}>
+          <div className="cv-modal" style={{ maxWidth: 560 }} onClick={(e) => e.stopPropagation()}>
+            <div className="cv-body">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>사업문의 상세</h2>
+                <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999" }}>✕</button>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">회사명</span>
-                <span className="font-medium">{selected.company_name || "-"}</span>
+              <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", rowGap: 12, columnGap: 12, fontSize: 14, marginBottom: 18 }}>
+                <span style={{ color: "#888" }}>유형</span><span style={{ fontWeight: 600, color: "#5f0080" }}>{selected.type || "광고"}</span>
+                <span style={{ color: "#888" }}>회사명</span><span>{selected.company_name || "-"}</span>
+                <span style={{ color: "#888" }}>담당자</span><span>{selected.contact_name}</span>
+                <span style={{ color: "#888" }}>전화번호</span><span>{selected.phone || "-"}</span>
+                <span style={{ color: "#888" }}>이메일</span><span style={{ wordBreak: "break-all" }}>{selected.email || "-"}</span>
+                {selected.product && (<><span style={{ color: "#888" }}>관심상품</span><span>{PRODUCT_LABELS[selected.product] ?? selected.product}</span></>)}
+                <span style={{ color: "#888" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>
+                <span style={{ color: "#888" }}>상태</span><span>{badge(selected.status)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">담당자</span>
-                <span>{selected.contact_name}</span>
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ color: "#888", fontSize: 13, marginBottom: 6 }}>문의 내용</div>
+                <div style={{ background: "#faf7fc", borderRadius: 10, padding: 14, fontSize: 14, lineHeight: 1.7, color: "#333", whiteSpace: "pre-wrap" }}>{selected.message}</div>
               </div>
-              {selected.phone && (
-                <div className="flex justify-between">
-                  <span className="text-gray-500">연락처</span>
-                  <span>{selected.phone}</span>
-                </div>
-              )}
-              {selected.email && (
-                <div className="flex justify-between">
-                  <span className="text-gray-500">이메일</span>
-                  <span>{selected.email}</span>
-                </div>
-              )}
-              {selected.product && (
-                <div className="flex justify-between">
-                  <span className="text-gray-500">관심상품/유형</span>
-                  <span>{PRODUCT_LABELS[selected.product] ?? selected.product}</span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span className="text-gray-500">접수일</span>
-                <span>{new Date(selected.created_at).toLocaleDateString("ko-KR")}</span>
-              </div>
-              <div>
-                <p className="text-gray-500 mb-1">문의 내용</p>
-                <p className="bg-gray-50 rounded-lg p-3 text-gray-700 whitespace-pre-wrap">
-                  {selected.message}
-                </p>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-2">상태 변경</p>
-              <div className="flex gap-2">
-                {["new", "contacted", "done"].map((s) => (
-                  <button
-                    key={s}
-                    disabled={updating || selected.status === s}
-                    onClick={() => updateStatus(selected.id, s)}
-                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
-                      selected.status === s
-                        ? "bg-purple-600 text-white"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50"
-                    }`}
-                  >
-                    {STATUS_LABELS[s]}
+
+              {selected.email ? (
+                <div style={{ borderTop: "1px solid #eee", paddingTop: 18 }}>
+                  <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>답변 메일 작성</div>
+                  <label className="cv-field-label">제목</label>
+                  <input className="cv-input" value={replySubject} onChange={(e) => setReplySubject(e.target.value)} />
+                  <label className="cv-field-label" style={{ marginTop: 10 }}>내용</label>
+                  <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
+                    style={{ minHeight: 160, resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
+                  <button onClick={sendReply}
+                    style={{ width: "100%", marginTop: 14, padding: "12px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                    답변 메일 보내기
                   </button>
-                ))}
-              </div>
+                  <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 8 }}>
+                    메일 앱이 열리며, 보내기와 동시에 상태가 완료로 변경됩니다.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ borderTop: "1px solid #eee", paddingTop: 18, fontSize: 13, color: "#999", textAlign: "center" }}>
+                  이메일 주소가 없어 답변 메일을 보낼 수 없습니다. 전화로 연락해주세요.
+                  {selected.status !== "done" && (
+                    <button onClick={() => markDone(selected.id)}
+                      style={{ display: "block", width: "100%", marginTop: 12, padding: "10px", background: "#fff", color: "#5f0080", border: "1.5px solid #5f0080", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                      완료로 표시
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
