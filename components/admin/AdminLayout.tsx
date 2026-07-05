@@ -41,16 +41,23 @@ const PAGE_TITLES: Record<string, string> = {
   "jobs-scrapped": "스크랩 채용공고",
   "jobs-viewed": "열람한 채용공고",
   "members": "회원관리",
-  "members-companies": "기업회원",
+  "members-companies": "회원관리",
   "members-blocked": "열람제한기업",
   "members-favorites": "관심기업",
   "resumes": "인재정보",
   
-  "resumes-applications": "입사지원 목록",
+  "resumes-applications": "입사지원",
   "stories": "현장이야기",
   "newsletters": "뉴스레터",
   "notices": "공지사항",
   "ads": "문의 관리",
+};
+
+const PAGE_SUBTITLES: Record<string, string> = {
+  "members": "개인회원",
+  "members-companies": "기업회원",
+  "jobs": "채용공고 목록",
+  "resumes-applications": "입사지원 목록",
 };
 
 export default function AdminLayout({ children, activeMenu }: { children: React.ReactNode; activeMenu: string }) {
@@ -229,6 +236,9 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
             <h1 className="admin-page-title">
               {PAGE_TITLES[activeMenu] || "관리자"}
             </h1>
+            {PAGE_SUBTITLES[activeMenu] && (
+              <div className="admin-page-subtitle">{PAGE_SUBTITLES[activeMenu]}</div>
+            )}
           </div>
           <div className="admin-header-right">
             
