@@ -451,21 +451,6 @@ function ApplicantsContent() {
                     </a>
                   </div>
                 )}
-                {resumeFileInfo.url && (
-                  <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
-                    <FileText size={22} color="#5f0080" />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {resumeFileInfo.name || "첨부 이력서"}
-                      </p>
-                      <p style={{ fontSize: "12px", color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
-                    </div>
-                    <a href={resumeFileInfo.url} target="_blank" rel="noopener noreferrer"
-                      style={{ padding: "8px 14px", borderRadius: "8px", background: "#5f0080", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
-                      다운로드
-                    </a>
-                  </div>
-                )}
               </div>
             </div>
           </div>

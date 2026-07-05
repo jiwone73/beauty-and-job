@@ -29,6 +29,7 @@ type Props = {
   onResumeFile: (file: File) => void;
   onResumeFileDelete: () => void;
   onResumeFileOpen: () => void;
+  resumeFileReadOnly?: boolean;
 };
 
 export default function ResumeEditor({
@@ -46,6 +47,7 @@ export default function ResumeEditor({
   onResumeFile,
   onResumeFileDelete,
   onResumeFileOpen,
+  resumeFileReadOnly = false,
 }: Props) {
   const {
     educations, careers, skills, languages, experiences, links,
@@ -449,6 +451,7 @@ export default function ResumeEditor({
       <section id="section-resume-file" className="resume-section">
         <div className="resume-section-head" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <h2 className="resume-section-title" style={{ color: "#999" }}>첨부 이력서</h2>
+          {!resumeFileReadOnly && (
           <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#999", cursor: "pointer" }}>
             <input
               type="checkbox"
@@ -466,8 +469,31 @@ export default function ResumeEditor({
             />
             <span>사용</span>
           </label>
+          )}
         </div>
-        {showResumeFile && (
+        {resumeFileReadOnly ? (
+          /* 지원 화면: 프로필에 저장된 파일 읽기 전용 표시 */
+          resumeFileName ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "12px" }}>
+              <FileText size={32} color="#5f0080" />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: "13px", fontWeight: 400, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {resumeFileName}
+                </p>
+                <button
+                  onClick={onResumeFileOpen}
+                  style={{ fontSize: "12px", color: "#5f0080", textDecoration: "underline", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                >
+                  파일 열기{resumeFileSize ? ` · ${formatFileSize(resumeFileSize)}` : ""}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p style={{ fontSize: "13px", color: "#aaa", padding: "12px 0" }}>
+              첨부한 이력서 파일이 없어요. 프로필 &gt; 이력서에서 등록하면 지원 시 함께 전달돼요.
+            </p>
+          )
+        ) : showResumeFile && (
           <>
         <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
           본인이 직접 작성한 이력서 파일을 첨부할 수 있어요 (선택, 최대 5MB). 지원 시 함께 전달돼요.

@@ -70,6 +70,8 @@ export default function ApplyModal({
           if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
           if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
+          if (res.data.resume_file_name) setResumeFileName(res.data.resume_file_name);
+          if (res.data.resume_file_size) setResumeFileSize(res.data.resume_file_size);
         }
       })
       .catch(console.error);
@@ -336,6 +338,7 @@ export default function ApplyModal({
                   links={links}
                   portfolioUrl={portfolioUrl}
                   portfolioFilename={portfolioFilename}
+                  resumeFileName={resumeFileName}
                   avatarUrl={avatarUrl}
                   resumeType={resumeType}
                   officeJobAreas={officeJobAreas}
@@ -399,6 +402,7 @@ export default function ApplyModal({
                   onResumeFile={processResumeFile}
                   onResumeFileDelete={handleDeleteResumeFile}
                   onResumeFileOpen={handleOpenResumeFile}
+                  resumeFileReadOnly
                 />
               </div>
 

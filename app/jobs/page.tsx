@@ -158,6 +158,9 @@ function JobsPageInner() {
     if (seededFilter.current) return;
     const urlJob = searchParams.get("job");
     const urlType = searchParams.get("type");
+    const urlQuery = searchParams.get("q");
+    // 검색어·브랜드 등 명시적 검색 시엔 프로필 직군 자동필터를 걸지 않음
+    if (urlQuery) { seededFilter.current = true; return; }
     if (!urlJob && !urlType && userJobType) {
       setJobTypeFilter(userJobType === "OFFICE" ? "기업" : "매장");
       if (userJobAreas && userJobAreas.length > 0) {
@@ -165,7 +168,7 @@ function JobsPageInner() {
       }
       seededFilter.current = true;
     }
-  }, [userJobType, userJobAreas]);
+  }, [userJobType, userJobAreas, searchParams]);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 

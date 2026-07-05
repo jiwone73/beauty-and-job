@@ -26,6 +26,7 @@ interface Props {
   links: LinkEntry[];
   portfolioUrl: string | null;
   portfolioFilename: string | null;
+  resumeFileName?: string | null;
   resumeType: "office" | "salon";
   officeJobAreas: string[];
   skillAreas: string[];
@@ -52,6 +53,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     links,
     portfolioUrl,
     portfolioFilename,
+    resumeFileName,
     resumeType,
     officeJobAreas,
     skillAreas,
@@ -236,6 +238,12 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         <div className="rp-section">
           <h2 className="rp-section-title">포트폴리오</h2>
           <p className="rp-text">{portfolioFilename || "포트폴리오.pdf"}</p>
+        </div>
+      )}
+      {resumeFileName && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">첨부 이력서</h2>
+          <p className="rp-text">{resumeFileName}</p>
         </div>
       )}
 
