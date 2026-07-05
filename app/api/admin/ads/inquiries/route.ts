@@ -66,3 +66,17 @@ export async function PATCH(req: NextRequest) {
     client.release()
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const { auth, res: authErr } = requireAuth(req, 'admin')
+  if (authErr) return authErr
+  const { ids } = await req.json()
+  if (!Array.isArray(ids) || ids.length === 0) return err('BAD_REQUEST', 'ids 배열 필요', 400)
+  const client = await pool.connect()
+  try {
+    await client.query(`DELETE FROM ad_inquiries WHERE id = ANY($1)`, [ids])
+    return ok({ deleted: ids.length })
+  } finally {
+    client.release()
+  }
+}

@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { Trash2 } from "lucide-react";
 
-const STATUS_LABEL: Record<string, string> = { new: "신규", contacted: "신규", done: "완료" };
 const STATUS_TABS = [
   { key: "", label: "전체" },
   { key: "new", label: "신규" },
@@ -40,6 +40,7 @@ export default function AdminAdsPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [selected, setSelected] = useState<Inquiry | null>(null);
+  const [checked, setChecked] = useState<number[]>([]);
   const [replySubject, setReplySubject] = useState("");
   const [replyBody, setReplyBody] = useState("");
 
@@ -61,9 +62,8 @@ export default function AdminAdsPage() {
     }
   };
 
-  useEffect(() => { fetchData(); }, [statusFilter, typeFilter]);
+  useEffect(() => { fetchData(); setChecked([]); }, [statusFilter, typeFilter]);
 
-  // 모달 열 때 답변 제목 기본값 세팅
   const openDetail = (item: Inquiry) => {
     setSelected(item);
     setReplySubject(`[뷰티워크] ${item.type || "광고"} 문의 답변`);
@@ -89,7 +89,35 @@ export default function AdminAdsPage() {
     if (!selected?.email) { alert("이메일 주소가 없어 답변을 보낼 수 없습니다."); return; }
     const url = `mailto:${selected.email}?subject=${encodeURIComponent(replySubject)}&body=${encodeURIComponent(replyBody)}`;
     window.location.href = url;
-    markDone(selected.id); // 발송 시 자동 완료
+    markDone(selected.id);
+  };
+
+  const toggleCheck = (id: number) =>
+    setChecked((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
+  const toggleAll = () =>
+    setChecked((c) => (c.length === items.length ? [] : items.map((it) => it.id)));
+
+  const handleDelete = async () => {
+    if (checked.length === 0) return;
+    if (!confirm(`선택한 ${checked.length}건의 문의를 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.`)) return;
+    try {
+      const res = await fetch("/api/admin/ads/inquiries", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ ids: checked }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setItems((prev) => prev.filter((it) => !checked.includes(it.id)));
+        setChecked([]);
+        window.dispatchEvent(new Event("admin:inquiries-changed"));
+      } else {
+        alert("삭제에 실패했습니다.");
+      }
+    } catch (e) {
+      console.error("[delete]", e);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
   };
 
   const badge = (status: string) => (
@@ -100,13 +128,21 @@ export default function AdminAdsPage() {
 
   return (
     <AdminLayout activeMenu="ads">
-      <div className="admin-filter-tabs" style={{ marginBottom: 10 }}>
-        {STATUS_TABS.map((t) => (
-          <button key={t.key} className={`admin-filter-tab ${statusFilter === t.key ? "active" : ""}`}
-            onClick={() => setStatusFilter(t.key)}>
-            {t.label}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+        <div className="admin-filter-tabs" style={{ margin: 0 }}>
+          {STATUS_TABS.map((t) => (
+            <button key={t.key} className={`admin-filter-tab ${statusFilter === t.key ? "active" : ""}`}
+              onClick={() => setStatusFilter(t.key)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        {checked.length > 0 && (
+          <button onClick={handleDelete}
+            style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            <Trash2 size={15} /> 선택 삭제 ({checked.length})
           </button>
-        ))}
+        )}
       </div>
       <div className="admin-filter-tabs" style={{ marginBottom: 20 }}>
         {TYPE_TABS.map((t) => (
@@ -126,6 +162,9 @@ export default function AdminAdsPage() {
           <table className="admin-table">
             <thead>
               <tr>
+                <th style={{ width: 40, textAlign: "center" }}>
+                  <input type="checkbox" checked={checked.length === items.length && items.length > 0} onChange={toggleAll} style={{ cursor: "pointer" }} />
+                </th>
                 <th style={{ width: 80 }}>유형</th>
                 <th>회사명</th>
                 <th style={{ width: 100 }}>담당자</th>
@@ -137,7 +176,10 @@ export default function AdminAdsPage() {
             </thead>
             <tbody>
               {items.map((item) => (
-                <tr key={item.id} onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>
+                <tr key={item.id} onClick={() => openDetail(item)} style={{ cursor: "pointer", background: checked.includes(item.id) ? "#faf5ff" : undefined }}>
+                  <td style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
+                    <input type="checkbox" checked={checked.includes(item.id)} onChange={() => toggleCheck(item.id)} style={{ cursor: "pointer" }} />
+                  </td>
                   <td className="admin-td-type">
                     <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f3eafa", color: "#5f0080", whiteSpace: "nowrap" }}>
                       {item.type || "광고"}

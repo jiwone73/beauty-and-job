@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { Trash2 } from "lucide-react";
 
 type Inquiry = {
   id: number;
@@ -31,6 +32,7 @@ export default function AdminInquiriesPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
   const [selected, setSelected] = useState<Inquiry | null>(null);
+  const [checked, setChecked] = useState<number[]>([]);
   const [replySubject, setReplySubject] = useState("");
   const [replyBody, setReplyBody] = useState("");
 
@@ -54,7 +56,7 @@ export default function AdminInquiriesPage() {
     }
   };
 
-  useEffect(() => { load(); }, [statusFilter]);
+  useEffect(() => { load(); setChecked([]); }, [statusFilter]);
 
   const openDetail = (it: Inquiry) => {
     setSelected(it);
@@ -87,6 +89,34 @@ export default function AdminInquiriesPage() {
     markDone(selected.id);
   };
 
+  const toggleCheck = (id: number) =>
+    setChecked((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
+  const toggleAll = () =>
+    setChecked((c) => (c.length === items.length ? [] : items.map((it) => it.id)));
+
+  const handleDelete = async () => {
+    if (checked.length === 0) return;
+    if (!confirm(`선택한 ${checked.length}건의 문의를 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.`)) return;
+    try {
+      const res = await fetch("/api/admin/inquiries", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ ids: checked }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setItems((prev) => prev.filter((it) => !checked.includes(it.id)));
+        setChecked([]);
+        window.dispatchEvent(new Event("admin:inquiries-changed"));
+      } else {
+        alert("삭제에 실패했습니다.");
+      }
+    } catch (e) {
+      console.error("[delete]", e);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   const badge = (status: string) => (
     <span style={{ fontSize: 12, fontWeight: 600, color: status === "done" ? "#888" : "#5f0080" }}>
       {status === "done" ? "완료" : "신규"}
@@ -95,13 +125,21 @@ export default function AdminInquiriesPage() {
 
   return (
     <AdminLayout activeMenu="inquiries">
-      <div className="admin-filter-tabs" style={{ marginBottom: 20 }}>
-        {STATUS_TABS.map((t) => (
-          <button key={t.key} className={`admin-filter-tab ${statusFilter === t.key ? "active" : ""}`}
-            onClick={() => setStatusFilter(t.key)}>
-            {t.label}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+        <div className="admin-filter-tabs" style={{ margin: 0 }}>
+          {STATUS_TABS.map((t) => (
+            <button key={t.key} className={`admin-filter-tab ${statusFilter === t.key ? "active" : ""}`}
+              onClick={() => setStatusFilter(t.key)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        {checked.length > 0 && (
+          <button onClick={handleDelete}
+            style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            <Trash2 size={15} /> 선택 삭제 ({checked.length})
           </button>
-        ))}
+        )}
       </div>
 
       {loading ? (
@@ -113,6 +151,9 @@ export default function AdminInquiriesPage() {
           <table className="admin-table">
             <thead>
               <tr>
+                <th style={{ width: 40, textAlign: "center" }}>
+                  <input type="checkbox" checked={checked.length === items.length && items.length > 0} onChange={toggleAll} style={{ cursor: "pointer" }} />
+                </th>
                 <th style={{ width: 90 }}>유형</th>
                 <th style={{ width: 100 }}>이름</th>
                 <th style={{ width: 130 }}>전화번호</th>
@@ -124,7 +165,10 @@ export default function AdminInquiriesPage() {
             </thead>
             <tbody>
               {items.map((it) => (
-                <tr key={it.id} onClick={() => openDetail(it)} style={{ cursor: "pointer" }}>
+                <tr key={it.id} onClick={() => openDetail(it)} style={{ cursor: "pointer", background: checked.includes(it.id) ? "#faf5ff" : undefined }}>
+                  <td style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
+                    <input type="checkbox" checked={checked.includes(it.id)} onChange={() => toggleCheck(it.id)} style={{ cursor: "pointer" }} />
+                  </td>
                   <td className="admin-td-type">
                     <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f3eafa", color: "#5f0080", whiteSpace: "nowrap" }}>
                       {it.type}
