@@ -189,7 +189,7 @@ export default function AdminInquiriesPage() {
 
       {selected && (
         <div className="cv-overlay" onClick={() => setSelected(null)}>
-          <div className="cv-modal" style={{ maxWidth: 920, width: "92vw" }} onClick={(e) => e.stopPropagation()}>
+          <div className="cv-modal" style={{ maxWidth: 1080, width: "94vw" }} onClick={(e) => e.stopPropagation()}>
             <div className="cv-body">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
                 <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>1:1 문의 상세</h2>
