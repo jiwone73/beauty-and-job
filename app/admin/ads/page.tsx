@@ -200,12 +200,15 @@ export default function AdminAdsPage() {
 
       {selected && (
         <div className="cv-overlay" onClick={() => setSelected(null)}>
-          <div className="cv-modal" style={{ maxWidth: 560 }} onClick={(e) => e.stopPropagation()}>
+          <div className="cv-modal" style={{ maxWidth: 1080, width: "94vw", maxHeight: "95vh" }} onClick={(e) => e.stopPropagation()}>
             <div className="cv-body">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
                 <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>사업문의 상세</h2>
                 <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999" }}>✕</button>
               </div>
+              <div style={{ display: "flex", gap: 22, alignItems: "flex-start", flexWrap: "wrap" }}>
+                {/* 왼쪽: 문의 정보 + 내용 */}
+                <div style={{ flex: "1 1 300px", minWidth: 0 }}>
               <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", rowGap: 12, columnGap: 12, fontSize: 14, marginBottom: 18 }}>
                 <span style={{ color: "#888" }}>유형</span><span style={{ fontWeight: 600, color: "#5f0080" }}>{selected.type || "광고"}</span>
                 <span style={{ color: "#888" }}>회사명</span><span>{selected.company_name || "-"}</span>
@@ -221,14 +224,13 @@ export default function AdminAdsPage() {
                 <div style={{ background: "#faf7fc", borderRadius: 10, padding: 14, fontSize: 14, lineHeight: 1.7, color: "#333", whiteSpace: "pre-wrap" }}>{selected.message}</div>
               </div>
 
+              </div>{/* 왼쪽 끝 */}
+              {/* 오른쪽: 답변 작성 */}
               {selected.email ? (
-                <div style={{ borderTop: "1px solid #eee", paddingTop: 18 }}>
+                <div style={{ flex: "1 1 420px", minWidth: 0, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
                   <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>답변 메일 작성</div>
-                  <label className="cv-field-label">제목</label>
-                  <input className="cv-input" value={replySubject} onChange={(e) => setReplySubject(e.target.value)} />
-                  <label className="cv-field-label" style={{ marginTop: 10 }}>내용</label>
                   <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
-                    style={{ minHeight: 160, resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
+                    style={{ minHeight: "min(68vh, 720px)", resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
                   <button onClick={sendReply}
                     style={{ width: "100%", marginTop: 14, padding: "12px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
                     답변 메일 보내기
@@ -238,7 +240,7 @@ export default function AdminAdsPage() {
                   </p>
                 </div>
               ) : (
-                <div style={{ borderTop: "1px solid #eee", paddingTop: 18, fontSize: 13, color: "#999", textAlign: "center" }}>
+                <div style={{ flex: "1 1 420px", minWidth: 0, fontSize: 13, color: "#999", textAlign: "center", paddingTop: 40, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
                   이메일 주소가 없어 답변 메일을 보낼 수 없습니다. 전화로 연락해주세요.
                   {selected.status !== "done" && (
                     <button onClick={() => markDone(selected.id)}
@@ -248,6 +250,7 @@ export default function AdminAdsPage() {
                   )}
                 </div>
               )}
+              </div>{/* flex 끝 */}
             </div>
           </div>
         </div>
