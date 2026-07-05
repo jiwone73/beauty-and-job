@@ -113,7 +113,7 @@ export default function AdminNoticesPage() {
 
   return (
     <AdminLayout activeMenu="notices">
-      <div style={{ maxWidth: 900, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1160, margin: "0 auto" }}>
 
         <div style={{ border: "1px solid #eee", borderRadius: 12, padding: 20, marginBottom: 28 }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 14px" }}>새 공지 작성</h2>
@@ -139,7 +139,7 @@ export default function AdminNoticesPage() {
           <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
             placeholder="제목" style={{ ...inputStyle, marginBottom: 10 }} />
           <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })}
-            placeholder="내용" rows={6} style={{ ...inputStyle, resize: "vertical", marginBottom: 12 }} />
+            placeholder="내용" rows={12} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 280, lineHeight: 1.6 }} />
           <button onClick={create} disabled={busy}
             style={{ padding: "10px 20px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
             {busy ? "처리 중..." : "작성"}
@@ -204,7 +204,7 @@ export default function AdminNoticesPage() {
                     <input value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })}
                       style={{ ...inputStyle, marginBottom: 10 }} />
                     <textarea value={edit.body} onChange={(e) => setEdit({ ...edit, body: e.target.value })}
-                      rows={6} style={{ ...inputStyle, resize: "vertical", marginBottom: 12 }} />
+                      rows={10} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 240, lineHeight: 1.6 }} />
                     <div style={{ display: "flex", gap: 8 }}>
                       <button onClick={() => saveEdit(n.id)} disabled={busy}
                         style={{ padding: "8px 18px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>저장</button>
