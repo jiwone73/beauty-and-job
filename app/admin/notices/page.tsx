@@ -124,11 +124,7 @@ export default function AdminNoticesPage() {
               <option value="notice">공지(필수)</option>
               <option value="event">이벤트·혜택(광고성)</option>
             </select>
-            <select value={form.target} onChange={(e) => setForm({ ...form, target: e.target.value })} style={selStyle}>
-              <option value="all">전체</option>
-              <option value="user">개인회원</option>
-              <option value="company">기업회원</option>
-            </select>
+
             <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} style={selStyle}>
               <option value="published">게시</option>
               <option value="draft">임시저장</option>
@@ -188,11 +184,6 @@ export default function AdminNoticesPage() {
                       <select value={edit.type} onChange={(e) => setEdit({ ...edit, type: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 13 }}>
                         <option value="notice">공지(필수)</option>
                         <option value="event">이벤트·혜택(광고성)</option>
-                      </select>
-                      <select value={edit.target} onChange={(e) => setEdit({ ...edit, target: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 13 }}>
-                        <option value="all">전체</option>
-                        <option value="user">개인회원</option>
-                        <option value="company">기업회원</option>
                       </select>
                       <select value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 13 }}>
                         <option value="published">게시</option>
