@@ -199,7 +199,7 @@ export default function MyApplicationModal({
       <div className="rp-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720, width: "94%", maxHeight: "92vh", display: "flex", flexDirection: "column" }}>
         <div className="rp-modal-header" style={{ flexShrink: 0 }}>
           <h2 className="rp-modal-title">
-            내 지원서{data?.is_snapshot ? " (지원 시점)" : ""}
+            제출한 입사지원서
           </h2>
           <div className="rp-modal-actions">
             <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || loading}>

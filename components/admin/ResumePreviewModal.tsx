@@ -130,7 +130,7 @@ export default function ResumePreviewModal({
     <div className="rp-modal-overlay" onClick={onClose}>
       <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
         <div className="rp-modal-header">
-          <h2 className="rp-modal-title">이력서 미리보기{snapshot ? " (지원 시점)" : ""}</h2>
+          <h2 className="rp-modal-title">제출된 입사지원서</h2>
           <div className="rp-modal-actions">
             <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || loading}>
               <Download size={16} />
