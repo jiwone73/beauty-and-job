@@ -33,6 +33,7 @@ export async function GET(
        AND jp.job_type = $2
        AND jp.status = 'ACTIVE'
        AND (jp.deadline IS NULL OR jp.deadline >= NOW())
+       AND jp.company_id <> (SELECT company_id FROM job_postings WHERE id = $1)
      ORDER BY region_match DESC, jp.created_at DESC
      LIMIT 4`,
     [id, job_type, sidoPrefix ? `${sidoPrefix}%` : "%"]

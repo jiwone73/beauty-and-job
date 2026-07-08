@@ -136,12 +136,17 @@ export default function JobDetailPage() {
   const id = params?.id as string;
   const [job, setJob] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
+  const [companyJobs, setCompanyJobs] = useState<any[]>([]);
 
   useEffect(() => {
     if (!id) return;
     fetch(`/api/jobs/${id}/related`)
       .then(r => r.json())
       .then(res => { if (res.success && res.data) setRelated(res.data.related || []); })
+      .catch(() => {});
+    fetch(`/api/jobs/${id}/company-jobs`)
+      .then(r => r.json())
+      .then(res => { if (res.success && res.data) setCompanyJobs(res.data.companyJobs || []); })
       .catch(() => {});
   }, [id]);
   useEffect(() => {
@@ -494,6 +499,31 @@ export default function JobDetailPage() {
                 </div>
               )}
             </section>
+          )}
+          {/* 이 회사의 다른 공고 */}
+          {companyJobs.length > 0 && (
+          <section className="job-detail-section">
+            <h2 className="job-detail-section-title">{job.brand ? `${job.brand}의 다른 채용공고` : "이 회사의 다른 채용공고"}</h2>
+            <div className="job-detail-related">
+              {companyJobs.map((r) => {
+                const brand = r.brand_name || r.company_name || "";
+                const exp = r.experience_level === 'NEW' ? '신입' : r.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관';
+                const regionShort = r.location ? String(r.location).split(" ").slice(0, 2).join(" ") : "";
+                return (
+                  <Link key={r.id} href={`/jobs/${r.id}`} className="job-detail-related-card">
+                    <div className="job-detail-related-thumb" style={{ background: "#f3e5f5", overflow: "hidden" }}>
+                      {r.logo_url ? <img src={r.logo_url} alt={brand} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span>{brand[0]}</span>}
+                    </div>
+                    <div className="job-detail-related-info">
+                      <span className="job-detail-related-brand">{brand}</span>
+                      <p className="job-detail-related-title">{r.title}</p>
+                      <span className="job-detail-related-meta">{exp}{regionShort ? ` · ${regionShort}` : ""}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
           )}
           {/* 관련 공고 */}
           {related.length > 0 && (
