@@ -105,7 +105,7 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
 
               <label className="cv-field-label cv-required">문의 내용</label>
               <textarea className="cv-input" placeholder="문의하실 내용을 자유롭게 작성해주세요." value={message} onChange={(e) => setMessage(e.target.value)}
-                style={{ minHeight: 140, resize: "vertical", lineHeight: 1.5, fontFamily: "inherit" }} />
+                style={{ minHeight: 280, resize: "vertical", lineHeight: 1.5, fontFamily: "inherit" }} />
 
               <PrivacyConsent agreed={agreed} onChange={setAgreed} items="이름, 이메일, 전화번호, 문의 유형, 문의 내용" />
 

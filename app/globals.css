@@ -4028,7 +4028,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .contact-form-row input:focus,
 .contact-form-row select:focus,
 .contact-form-row textarea:focus { border-color: #5f0080; background: #fff; }
-.contact-form-row textarea { min-height: 140px; resize: vertical; }
+.contact-form-row textarea { min-height: 280px; resize: vertical; }
 .contact-submit-btn {
   align-self: flex-end;
   padding: 12px 32px;
