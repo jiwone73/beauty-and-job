@@ -74,6 +74,32 @@ export async function GET(
     },
   });
 }
+// 구직자 본인이 종료된 지원 건을 목록에서 숨김 (soft-hide, 기업 데이터에는 영향 없음)
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { auth, res: authErr } = requireAuth(req, "user");
+  if (authErr) return authErr;
+
+  const body = await req.json().catch(() => ({}));
+  if (body?.hidden !== true) {
+    return err("VALIDATION_001", "hidden 값이 필요합니다.", 400);
+  }
+
+  const result = await pool.query(
+    `UPDATE applications
+     SET hidden_by_user = true, updated_at = now()
+     WHERE id = $1 AND user_id = $2
+       AND status IN ('PASSED','REJECTED','WITHDRAWN')`,
+    [params.id, auth!.sub]
+  );
+  if (result.rowCount === 0) {
+    return err("APP_005", "숨길 수 없는 지원 건입니다. (진행 중이거나 존재하지 않음)", 400);
+  }
+  return ok({ hidden: true });
+}
+
 // 구직자 본인 지원 취소 (지원완료 상태에서만 가능)
 export async function DELETE(
   req: NextRequest,

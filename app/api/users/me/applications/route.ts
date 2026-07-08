@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '20')
   const offset = (page - 1) * limit
 
-  const where: string[] = ['a.user_id = $1']
+  const where: string[] = ['a.user_id = $1', 'a.hidden_by_user IS NOT TRUE']
   const params: any[] = [auth!.sub]
   let idx = 2
 

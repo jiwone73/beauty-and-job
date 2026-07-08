@@ -944,6 +944,27 @@ function AppliedTab() {
     }
   };
 
+  // 종료된 지원 건을 목록에서만 숨김 (기업에는 영향 없음)
+  const handleHide = async (appId: string) => {
+    if (!confirm("이 지원 내역을 목록에서 삭제할까요?\n(기업에는 영향을 주지 않으며, 되돌릴 수 없어요.)")) return;
+    const token = localStorage.getItem("access_token");
+    try {
+      const res = await fetch(`/api/users/me/applications/${appId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ hidden: true }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setApps((prev) => prev.filter((a) => a.id !== appId));
+      } else {
+        alert(data.error?.message || "삭제에 실패했어요.");
+      }
+    } catch {
+      alert("삭제 중 오류가 발생했어요.");
+    }
+  };
+
   const statusLabel: Record<string, string> = {
     APPLIED: "서류검토중", REVIEWING: "서류검토중", VIEWED: "열람됨",
     INTERVIEW: "면접예정", PASSED: "합격", REJECTED: "불합격", WITHDRAWN: "지원취소",
@@ -996,6 +1017,14 @@ function AppliedTab() {
                       지원 취소
                     </button>
                   )}
+                  {(app.status === "PASSED" || app.status === "REJECTED" || app.status === "WITHDRAWN") && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleHide(app.id); }}
+                      style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
+                    >
+                      목록에서 삭제
+                    </button>
+                  )}
                 </div>
               </div>
               <span style={{ color: "#5f0080", fontWeight: 600, fontSize: 13 }}>
@@ -1035,6 +1064,25 @@ function BookmarksTab() {
     return `D-${dDay}`;
   };
 
+  const handleRemove = async (jobPostingId: string) => {
+    if (!confirm("이 공고를 관심목록에서 삭제할까요?")) return;
+    const token = localStorage.getItem("access_token");
+    try {
+      const res = await fetch(`/api/users/me/bookmarks?job_posting_id=${jobPostingId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBookmarkedJobs((prev) => prev.filter((j) => j.job_posting_id !== jobPostingId));
+      } else {
+        alert("삭제에 실패했어요.");
+      }
+    } catch {
+      alert("삭제 중 오류가 발생했어요.");
+    }
+  };
+
   if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;
   if (bookmarkedJobs.length === 0) return (
     <div className="profile-empty-tab">
@@ -1054,7 +1102,15 @@ function BookmarksTab() {
               <h3 className="bookmark-title">{job.title}</h3>
               <span className="bookmark-location">📍 {job.location || "협의"}</span>
             </div>
-            <span className="bookmark-deadline">{formatDeadline(job.deadline)}</span>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+              <span className="bookmark-deadline">{formatDeadline(job.deadline)}</span>
+              <button
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemove(job.job_posting_id); }}
+                style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+              >
+                삭제
+              </button>
+            </div>
           </a>
         ))}
       </div>
