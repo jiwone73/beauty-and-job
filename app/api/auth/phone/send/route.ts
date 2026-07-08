@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
-import { sendSMS, generateCode } from '@/lib/sms/send'
+import { sendSMS, generateCode, isSmsConfigured } from '@/lib/sms/send'
 
 export async function POST(req: NextRequest) {
   const { phone, purpose } = await req.json()
@@ -26,9 +26,13 @@ export async function POST(req: NextRequest) {
     [cleanPhone, code, purposeVal, expiresAt]
   )
 
-  await sendSMS(cleanPhone, `[뷰티워크] 인증번호는 ${code} 입니다.`)
+  const sent = await sendSMS(cleanPhone, `[뷰티워크] 인증번호는 ${code} 입니다.`)
 
-  // [개발용] SMS 미연동 상태에서 테스트 위해 응답에 코드 포함
-  // 상용화 시 dev_code 줄 제거
-  return ok({ expires_in: 180, dev_code: code })
+  // 알리고 연동 상태에서 발송 실패 시 에러 반환
+  if (isSmsConfigured() && !sent) {
+    return err('SMS_FAIL', '인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요.', 500)
+  }
+
+  // 미연동(개발) 상태에서만 테스트용 dev_code 노출, 연동 시에는 노출 안 함
+  return ok({ expires_in: 180, ...(isSmsConfigured() ? {} : { dev_code: code }) })
 }
