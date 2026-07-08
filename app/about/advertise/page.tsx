@@ -2,11 +2,14 @@
 import { useState } from "react";
 import Image from "next/image";
 import AboutHeader from "@/components/AboutHeader";
+import PrivacyConsent from "@/components/PrivacyConsent";
 export default function AdvertisePage() {
   const [form, setForm] = useState({ company: "", name: "", email: "", content: "" });
   const [done, setDone] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreed) { alert("개인정보 수집 및 이용에 동의해주세요."); return; }
     try {
       await fetch("/api/ads/inquiry", {
         method: "POST",
@@ -45,7 +48,8 @@ export default function AdvertisePage() {
               <div className="contact-form-row"><label>담당자명 *</label><input required placeholder="담당자 성함" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /></div>
               <div className="contact-form-row"><label>이메일 *</label><input type="email" required placeholder="답변 받으실 이메일" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} /></div>
               <div className="contact-form-row"><label>문의 내용 *</label><textarea required placeholder="광고 관련 문의 내용을 입력해주세요" value={form.content} onChange={e=>setForm({...form,content:e.target.value})} /></div>
-              <button type="submit" className="contact-submit-btn">문의 보내기</button>
+              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="회사명, 담당자명, 이메일, 문의 내용" />
+              <button type="submit" className="contact-submit-btn" disabled={!agreed} style={!agreed ? { opacity: 0.5, cursor: "not-allowed" } : undefined}>문의 보내기</button>
             </form>
           </div>
         )}

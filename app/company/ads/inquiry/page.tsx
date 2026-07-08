@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import PrivacyConsent from "@/components/PrivacyConsent";
 import { useRouter } from "next/navigation";
 const PRODUCTS = [
   { value: "top_exposure", label: "공고 상단 노출" },
@@ -21,6 +22,7 @@ export default function AdInquiryPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [agreed, setAgreed] = useState(false);
 
   const handle = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -32,6 +34,10 @@ export default function AdInquiryPage() {
     setError("");
     if (!form.company_name || !form.contact_name || !form.phone || !form.message) {
       setError("필수 항목을 모두 입력해주세요.");
+      return;
+    }
+    if (!agreed) {
+      setError("개인정보 수집 및 이용에 동의해주세요.");
       return;
     }
     setLoading(true);
@@ -103,8 +109,9 @@ export default function AdInquiryPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">문의 내용 <span className="text-pink-500">*</span></label>
             <textarea name="message" value={form.message} onChange={handle} placeholder="문의하실 내용을 자유롭게 작성해주세요" rows={5} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 resize-none" />
           </div>
+          <PrivacyConsent agreed={agreed} onChange={setAgreed} items="회사명, 담당자명, 전화번호, 이메일, 문의 유형, 문의 내용" />
           {error && <p className="text-red-500 text-sm">{error}</p>}
-          <button onClick={submit} disabled={loading} className="w-full py-3 bg-pink-500 text-white rounded-lg font-medium hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition">
+          <button onClick={submit} disabled={loading || !agreed} className="w-full py-3 bg-pink-500 text-white rounded-lg font-medium hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition">
             {loading ? "제출 중..." : "문의 접수하기"}
           </button>
         </div>
