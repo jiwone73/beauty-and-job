@@ -44,7 +44,6 @@ export default function ContactPage() {
           </div>
         ) : (
           <div className="info-section">
-            <h2>문의 양식</h2>
             <form className="contact-form" onSubmit={handleSubmit}>
               <div className="contact-form-grid">
                 <div className="contact-form-row"><label>이름 *</label><input required placeholder="성함을 입력해주세요" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /></div>

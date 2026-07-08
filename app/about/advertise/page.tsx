@@ -44,7 +44,6 @@ export default function AdvertisePage() {
           </div>
         ) : (
           <div className="info-section">
-            <h2>광고 문의 양식</h2>
             <form className="contact-form" onSubmit={handleSubmit}>
               <div className="contact-form-grid">
                 <div className="contact-form-row"><label>회사명 *</label><input required placeholder="회사명" value={form.company} onChange={e=>setForm({...form,company:e.target.value})} /></div>
