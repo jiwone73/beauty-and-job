@@ -149,6 +149,26 @@ export default function JobDetailPage() {
       .then(res => { if (res.success && res.data) setCompanyJobsCount(res.data.total || 0); })
       .catch(() => {});
   }, [id]);
+
+  // 공유: 모바일은 OS 공유 시트, 미지원 브라우저는 링크 복사로 폴백
+  const handleShare = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const title = job ? `${job.brand} · ${job.title}` : "뷰티워크 채용공고";
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({ title, text: title, url });
+      } catch {
+        // 사용자가 공유를 취소한 경우 등은 무시
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard?.writeText(url);
+      alert("링크가 복사되었습니다.");
+    } catch {
+      alert("공유를 지원하지 않는 브라우저예요. 주소창의 링크를 복사해 주세요.");
+    }
+  };
   useEffect(() => {
     if (!id) return;
     const token = localStorage.getItem("access_token");
@@ -586,10 +606,7 @@ export default function JobDetailPage() {
                 <button
                   className="job-detail-aside-bookmark"
                   style={{ marginTop: 8 }}
-                  onClick={() => {
-                    navigator.clipboard?.writeText(window.location.href);
-                    alert("링크가 복사되었습니다.");
-                  }}
+                  onClick={handleShare}
                 >
                   <Share2 size={16} />
                   공유
@@ -623,11 +640,8 @@ export default function JobDetailPage() {
             </button>
             <button
               className="job-detail-mobile-bookmark"
-              aria-label="링크 복사"
-              onClick={() => {
-                navigator.clipboard?.writeText(window.location.href);
-                alert("링크가 복사되었습니다.");
-              }}
+              aria-label="공유"
+              onClick={handleShare}
             >
               <Share2 size={20} />
             </button>
