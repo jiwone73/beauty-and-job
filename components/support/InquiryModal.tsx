@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
+import PrivacyConsent from "@/components/PrivacyConsent";
 
 const TYPES = ["계정/로그인", "이력서/프로필", "채용공고/지원", "기업회원", "신고/불편사항", "기타"];
 
@@ -16,15 +17,18 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setName(userName || "");
       setEmail("");
+      setPhone("");
       setType("계정/로그인");
       setSubject("");
       setMessage("");
       setDone(false);
+      setAgreed(false);
     }
   }, [isOpen, userName]);
 
@@ -35,6 +39,7 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
     if (!email.trim()) { alert("이메일을 입력해주세요."); return; }
     if (!subject.trim()) { alert("제목을 입력해주세요."); return; }
     if (!message.trim()) { alert("문의 내용을 입력해주세요."); return; }
+    if (!agreed) { alert("개인정보 수집 및 이용에 동의해주세요."); return; }
     setSubmitting(true);
     try {
       const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
@@ -44,7 +49,7 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ name: name.trim(), email: email.trim() || null, phone: phone.trim() || null, type, subject: subject.trim() || null, message: message.trim() }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim() || null, phone: phone.trim() || null, type, subject: subject.trim() || null, message: message.trim(), privacy_agreed: agreed }),
       });
       const data = await res.json();
       if (data.success) {
@@ -102,7 +107,9 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
               <textarea className="cv-input" placeholder="문의하실 내용을 자유롭게 작성해주세요." value={message} onChange={(e) => setMessage(e.target.value)}
                 style={{ minHeight: 140, resize: "vertical", lineHeight: 1.5, fontFamily: "inherit" }} />
 
-              <button className="cv-btn-primary" style={{ marginTop: 16, width: "100%" }} disabled={submitting} onClick={handleSubmit}>
+              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="이름, 이메일, 전화번호, 문의 유형, 문의 내용" />
+
+              <button className="cv-btn-primary" style={{ marginTop: 16, width: "100%", ...(!agreed || submitting ? { opacity: 0.5, cursor: "not-allowed" } : {}) }} disabled={submitting || !agreed} onClick={handleSubmit}>
                 {submitting ? "접수 중..." : "문의 보내기"}
               </button>
               <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 10 }}>

@@ -9,7 +9,7 @@ const ALLOWED_TYPES = ['계정/로그인', '이력서/프로필', '채용공고/
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { name, email, phone, type, subject, message } = body
+    const { name, email, phone, type, subject, message, privacy_agreed } = body
 
     if (!name || !message) {
       return err('BAD_REQUEST', '이름과 문의 내용을 입력해주세요.', 400)
@@ -30,10 +30,10 @@ export async function POST(req: NextRequest) {
     const client = await pool.connect()
     try {
       const result = await client.query(
-        `INSERT INTO inquiries (name, email, phone, type, subject, message, status, user_id)
-         VALUES ($1, $2, $3, $4, $5, $6, 'new', $7)
+        `INSERT INTO inquiries (name, email, phone, type, subject, message, status, user_id, privacy_agreed, agreed_at)
+         VALUES ($1, $2, $3, $4, $5, $6, 'new', $7, $8, $9)
          RETURNING id, created_at`,
-        [name, email || null, phone || null, inquiryType, subject || null, message, userId]
+        [name, email || null, phone || null, inquiryType, subject || null, message, userId, privacy_agreed === true, privacy_agreed === true ? new Date() : null]
       )
       return ok({ id: result.rows[0].id, created_at: result.rows[0].created_at })
     } finally {
