@@ -40,6 +40,7 @@ export default function ApplyModal({
   const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
   const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [phoneLocal, setPhoneLocal] = useState("");
   const [addressDisplay, setAddressDisplay] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [resumeFileName, setResumeFileName] = useState<string | null>(null);
@@ -71,7 +72,11 @@ export default function ApplyModal({
           if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
           if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
-          if (res.data.address_road) setAddressDisplay(res.data.address_road + (res.data.address_detail ? ` ${res.data.address_detail}` : ""));
+          if (res.data.phone) setPhoneLocal(res.data.phone);
+          setAddressDisplay(
+            [res.data.address_road, res.data.address_detail].filter(Boolean).join(" ") ||
+            [res.data.region_sido, res.data.region_sigungu].filter(Boolean).join(" ")
+          );
           if (res.data.resume_file_name) setResumeFileName(res.data.resume_file_name);
           if (res.data.resume_file_size) setResumeFileSize(res.data.resume_file_size);
         }
@@ -325,13 +330,13 @@ export default function ApplyModal({
                   )}
                 </div>
                 <div style={{ marginTop: 24, paddingTop: 24, borderTop: "1px solid #ececec" }}>
-                <h3 style={{ fontSize: 15, fontWeight: 700, margin: "0 0 8px" }}>이력서</h3>
+                <h3 className="apply-cover-title">이력서</h3>
                 <ResumePreview
                   name={name}
                   birthDisplay={birthDisplay}
                   addressDisplay={addressDisplay}
                   jobDisplay={jobDisplay}
-                  phone={phone}
+                  phone={phoneLocal || phone}
                   email={emailLocal || email}
                   intro=""
                   coreCompetencies=""
