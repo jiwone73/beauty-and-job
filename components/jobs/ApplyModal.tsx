@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -252,6 +252,28 @@ export default function ApplyModal({
         </div>
 
         <div className="cv-body" style={{ overflowY: "auto", flex: 1 }}>
+          {/* 진행 단계 안내 (작성 → 미리보기 → 지원) */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "2px 0 16px", flexWrap: "wrap" }}>
+            {["자기소개서 작성", "미리보기", "지원 완료"].map((label, i) => {
+              const current = step === "preview" ? 1 : 0;
+              const active = i <= current;
+              return (
+                <Fragment key={label}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{
+                      width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
+                      display: "inline-flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 12, fontWeight: 700,
+                      background: active ? "#5f0080" : "#eee",
+                      color: active ? "#fff" : "#aaa",
+                    }}>{i + 1}</span>
+                    <span style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "#5f0080" : "#aaa" }}>{label}</span>
+                  </div>
+                  {i < 2 && <span style={{ width: 20, height: 1, background: "#ddd", flexShrink: 0 }} />}
+                </Fragment>
+              );
+            })}
+          </div>
           <div className="apply-modal-job">
             <strong>{jobBrand}</strong>
             <p>{jobTitle}</p>
