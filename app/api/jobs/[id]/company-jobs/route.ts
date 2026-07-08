@@ -9,20 +9,16 @@ export async function GET(
 ) {
   const { id } = params;
 
-  // 현재 공고를 올린 회사의, 다른 진행중 공고 (자기 자신·비활성·마감 제외)
+  // 현재 공고를 올린 회사의, 다른 진행중 공고 개수 (자기 자신·비활성·마감 제외)
   const result = await pool.query(
-    `SELECT jp.id, jp.title, jp.location, jp.experience_level,
-            c.brand_name, c.company_name, c.logo_url
+    `SELECT COUNT(*)::int AS total
      FROM job_postings jp
-     JOIN companies c ON c.id = jp.company_id
      WHERE jp.company_id = (SELECT company_id FROM job_postings WHERE id = $1)
        AND jp.id <> $1
        AND jp.status = 'ACTIVE'
-       AND (jp.deadline IS NULL OR jp.deadline >= NOW())
-     ORDER BY jp.created_at DESC
-     LIMIT 6`,
+       AND (jp.deadline IS NULL OR jp.deadline >= NOW())`,
     [id]
   );
 
-  return ok({ companyJobs: result.rows });
+  return ok({ total: result.rows[0]?.total ?? 0 });
 }

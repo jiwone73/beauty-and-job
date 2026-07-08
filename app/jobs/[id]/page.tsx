@@ -136,7 +136,7 @@ export default function JobDetailPage() {
   const id = params?.id as string;
   const [job, setJob] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
-  const [companyJobs, setCompanyJobs] = useState<any[]>([]);
+  const [companyJobsCount, setCompanyJobsCount] = useState(0);
 
   useEffect(() => {
     if (!id) return;
@@ -146,7 +146,7 @@ export default function JobDetailPage() {
       .catch(() => {});
     fetch(`/api/jobs/${id}/company-jobs`)
       .then(r => r.json())
-      .then(res => { if (res.success && res.data) setCompanyJobs(res.data.companyJobs || []); })
+      .then(res => { if (res.success && res.data) setCompanyJobsCount(res.data.total || 0); })
       .catch(() => {});
   }, [id]);
   useEffect(() => {
@@ -500,54 +500,22 @@ export default function JobDetailPage() {
               )}
             </section>
           )}
-          {/* 이 회사의 다른 공고 */}
-          {companyJobs.length > 0 && (
+          {/* 이 회사의 다른 공고 (제목만, 클릭 시 목록으로) */}
+          {companyJobsCount > 0 && job.brand && (
           <section className="job-detail-section">
-            <h2 className="job-detail-section-title">{job.brand ? `${job.brand}의 다른 채용공고` : "이 회사의 다른 채용공고"}</h2>
-            <div className="job-detail-related">
-              {companyJobs.map((r) => {
-                const brand = r.brand_name || r.company_name || "";
-                const exp = r.experience_level === 'NEW' ? '신입' : r.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관';
-                const regionShort = r.location ? String(r.location).split(" ").slice(0, 2).join(" ") : "";
-                return (
-                  <Link key={r.id} href={`/jobs/${r.id}`} className="job-detail-related-card">
-                    <div className="job-detail-related-thumb" style={{ background: "#f3e5f5", overflow: "hidden" }}>
-                      {r.logo_url ? <img src={r.logo_url} alt={brand} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span>{brand[0]}</span>}
-                    </div>
-                    <div className="job-detail-related-info">
-                      <span className="job-detail-related-brand">{brand}</span>
-                      <p className="job-detail-related-title">{r.title}</p>
-                      <span className="job-detail-related-meta">{exp}{regionShort ? ` · ${regionShort}` : ""}</span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+            <Link href={`/jobs?q=${encodeURIComponent(job.brand)}`} className="job-detail-more-link">
+              <span>{job.brand}의 다른 채용공고<span className="job-detail-more-sub">{companyJobsCount}건</span></span>
+              <ChevronRight size={20} />
+            </Link>
           </section>
           )}
-          {/* 관련 공고 */}
+          {/* 관련 공고 (제목만, 클릭 시 목록으로) */}
           {related.length > 0 && (
           <section className="job-detail-section">
-            <h2 className="job-detail-section-title">관련 채용공고</h2>
-            <div className="job-detail-related">
-              {related.map((r) => {
-                const brand = r.brand_name || r.company_name || "";
-                const exp = r.experience_level === 'NEW' ? '신입' : r.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관';
-                const regionShort = r.location ? String(r.location).split(" ").slice(0, 2).join(" ") : "";
-                return (
-                  <Link key={r.id} href={`/jobs/${r.id}`} className="job-detail-related-card">
-                    <div className="job-detail-related-thumb" style={{ background: "#f3e5f5", overflow: "hidden" }}>
-                      {r.logo_url ? <img src={r.logo_url} alt={brand} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span>{brand[0]}</span>}
-                    </div>
-                    <div className="job-detail-related-info">
-                      <span className="job-detail-related-brand">{brand}</span>
-                      <p className="job-detail-related-title">{r.title}</p>
-                      <span className="job-detail-related-meta">{exp}{regionShort ? ` · ${regionShort}` : ""}</span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+            <Link href={`/jobs?type=${job.jobType === "사무직" ? "기업" : "매장"}`} className="job-detail-more-link">
+              <span>관련 채용공고<span className="job-detail-more-sub">비슷한 포지션 더보기</span></span>
+              <ChevronRight size={20} />
+            </Link>
           </section>
           )}
         </main>
