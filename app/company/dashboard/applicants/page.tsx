@@ -14,6 +14,7 @@ const STATUS_LABEL: Record<ApplicationStatus, string> = {
   VIEWED: "검토중",
   PASSED: "합격",
   REJECTED: "불합격",
+  WITHDRAWN: "지원취소",
 };
 
 const STATUS_BADGE_CLASS: Record<ApplicationStatus, string> = {
@@ -21,6 +22,7 @@ const STATUS_BADGE_CLASS: Record<ApplicationStatus, string> = {
   VIEWED: "company-badge-warning",
   PASSED: "company-badge-success",
   REJECTED: "company-badge-danger",
+  WITHDRAWN: "company-badge-default",
 };
 
 function formatDate(dateStr: string): string {
@@ -374,6 +376,9 @@ function ApplicantsContent() {
                     </div>
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>
+                    {a.status === "WITHDRAWN" ? (
+                      <span style={{ color: "#999", fontSize: 13, fontWeight: 500 }}>지원취소</span>
+                    ) : (
                     <select
                       value={a.status}
                       onChange={(e) => handleStatusChange(a.id, e.target.value as ApplicationStatus)}
@@ -393,6 +398,7 @@ function ApplicantsContent() {
                         <option key={st} value={st}>{STATUS_LABEL[st]}</option>
                       ))}
                     </select>
+                    )}
                   </td>
                   <td>
                     <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center" }}>
