@@ -46,18 +46,20 @@ export default function ContactPage() {
           <div className="info-section">
             <h2>문의 양식</h2>
             <form className="contact-form" onSubmit={handleSubmit}>
-              <div className="contact-form-row"><label>이름 *</label><input required placeholder="성함을 입력해주세요" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /></div>
-              <div className="contact-form-row"><label>이메일 *</label><input type="email" required placeholder="답변 받으실 이메일" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} /></div>
-              <div className="contact-form-row"><label>전화번호</label><input type="tel" placeholder="연락 가능한 전화번호 (선택)" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} /></div>
-              <div className="contact-form-row">
-                <label>문의 유형 *</label>
-                <select required value={form.category} onChange={e=>setForm({...form,category:e.target.value})}>
-                  <option value="">선택해주세요</option>
-                  <option>서비스 이용 문의</option>
-                  <option>계정 관련 문의</option>
-                  <option>채용공고 관련 문의</option>
-                  <option>기타</option>
-                </select>
+              <div className="contact-form-grid">
+                <div className="contact-form-row"><label>이름 *</label><input required placeholder="성함을 입력해주세요" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /></div>
+                <div className="contact-form-row"><label>이메일 *</label><input type="email" required placeholder="답변 받으실 이메일" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} /></div>
+                <div className="contact-form-row"><label>전화번호</label><input type="tel" placeholder="연락 가능한 전화번호 (선택)" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} /></div>
+                <div className="contact-form-row">
+                  <label>문의 유형 *</label>
+                  <select required value={form.category} onChange={e=>setForm({...form,category:e.target.value})}>
+                    <option value="">선택해주세요</option>
+                    <option>서비스 이용 문의</option>
+                    <option>계정 관련 문의</option>
+                    <option>채용공고 관련 문의</option>
+                    <option>기타</option>
+                  </select>
+                </div>
               </div>
               <div className="contact-form-row"><label>문의 내용 *</label><textarea required placeholder="문의 내용을 입력해주세요" value={form.content} onChange={e=>setForm({...form,content:e.target.value})} /></div>
               <PrivacyConsent agreed={agreed} onChange={setAgreed} items="이름, 이메일, 전화번호, 문의 유형, 문의 내용" />

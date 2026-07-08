@@ -4010,6 +4010,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   flex-direction: column;
   gap: 20px;
 }
+.contact-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+@media (max-width: 640px) {
+  .contact-form-grid { grid-template-columns: 1fr; }
+}
 .contact-form-row { display: flex; flex-direction: column; gap: 6px; }
 .contact-form-row label { font-size: 13px; font-weight: 600; color: #444; }
 .contact-form-row input,
