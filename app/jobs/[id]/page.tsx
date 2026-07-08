@@ -603,14 +603,6 @@ export default function JobDetailPage() {
                   <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />
                   {bookmarked ? "북마크 완료" : "북마크"}
                 </button>
-                <button
-                  className="job-detail-aside-bookmark"
-                  style={{ marginTop: 8 }}
-                  onClick={handleShare}
-                >
-                  <Share2 size={16} />
-                  공유
-                </button>
               </>
             )}
           </div>
