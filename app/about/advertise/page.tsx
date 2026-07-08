@@ -20,6 +20,7 @@ export default function AdvertisePage() {
           email: form.email,
           message: form.content,
           type: "광고",
+          privacy_agreed: agreed,
         }),
       });
     } catch {}

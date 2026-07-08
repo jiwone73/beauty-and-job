@@ -20,6 +20,7 @@ export default function ContactPage() {
           product: form.category,
           message: form.content,
           type: "기타",
+          privacy_agreed: agreed,
         }),
       });
     } catch {}

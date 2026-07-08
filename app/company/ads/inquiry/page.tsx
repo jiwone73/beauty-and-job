@@ -45,7 +45,7 @@ export default function AdInquiryPage() {
       const res = await fetch("/api/ads/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, privacy_agreed: agreed }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "오류가 발생했습니다.");

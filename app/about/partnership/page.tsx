@@ -19,6 +19,7 @@ export default function PartnershipPage() {
           email: form.email,
           message: form.content,
           type: "제휴",
+          privacy_agreed: agreed,
         }),
       });
     } catch {}
