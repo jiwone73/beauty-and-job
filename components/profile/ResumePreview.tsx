@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef } from "react";
+import { formatPhone } from "@/lib/memberFormat";
 import type {
   CareerEntry,
   EducationEntry,
@@ -13,6 +14,9 @@ import type {
 interface Props {
   name: string;
   birthDisplay: string;
+  genderDisplay?: string;
+  ageDisplay?: string;
+  addressDisplay?: string;
   jobDisplay: string;
   phone: string;
   email: string;
@@ -40,6 +44,9 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
   {
     name,
     birthDisplay,
+    genderDisplay,
+    ageDisplay,
+    addressDisplay,
     jobDisplay,
     phone,
     email,
@@ -70,15 +77,16 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         <div style={{flex:1, minWidth:0}}>
           <h1 className="rp-name">{name || "이름"}</h1>
           <p className="rp-meta">
-            {birthDisplay}
-            {birthDisplay && jobDisplay ? " · " : ""}
-            {jobDisplay}
+            {[birthDisplay, ageDisplay, genderDisplay, jobDisplay].filter(Boolean).join(" · ")}
           </p>
           <p className="rp-contact">
-            {phone || ""}
+            {formatPhone(phone)}
             {phone && email ? " · " : ""}
             {email || ""}
           </p>
+          {addressDisplay && (
+            <p className="rp-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>
+          )}
         </div>
         {avatarUrl && (
           <div style={{

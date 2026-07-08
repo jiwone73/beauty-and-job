@@ -3168,7 +3168,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
   color: #1a1a1a;
   line-height: 1.6;
-  padding: 48px 44px;
+  padding: 48px 44px 72px;
 }
 
 /* 지원서 미리보기: 자기소개서 블록 (이력서와 한 문서로 통일) */
@@ -3189,8 +3189,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-bottom: 2px solid #5f0080;
 }
 .rp-name {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 400;
   color: #1a1a1a;
   margin: 0 0 6px;
 }

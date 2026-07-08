@@ -44,6 +44,7 @@ function ApplicantsContent() {
   const [coverLetter, setCoverLetter] = useState<string>("");
   const [resumeLoading, setResumeLoading] = useState(false);
   const [resumeFileInfo, setResumeFileInfo] = useState<{ name: string | null; size: number | null; url: string | null }>({ name: null, size: null, url: null });
+  const [detailInfo, setDetailInfo] = useState<{ gender: string | null; birth: string | null; sido: string | null; sigungu: string | null; road: string | null; detail: string | null }>({ gender: null, birth: null, sido: null, sigungu: null, road: null, detail: null });
   const previewRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -129,6 +130,7 @@ function ApplicantsContent() {
     if (!selected) {
       setResumeData(null);
       setResumeFileInfo({ name: null, size: null, url: null });
+      setDetailInfo({ gender: null, birth: null, sido: null, sigungu: null, road: null, detail: null });
       setCoverLetter("");
       return;
     }
@@ -144,6 +146,7 @@ function ApplicantsContent() {
           if (res.data.resume) setResumeData(res.data.resume);
           setResumeFileInfo({ name: res.data.resume_file_name || null, size: res.data.resume_file_size || null, url: res.data.resume_file_preview_url || null });
           setCoverLetter(res.data.cover_letter || "");
+          setDetailInfo({ gender: res.data.user_gender || null, birth: res.data.user_birth_date || null, sido: res.data.user_region_sido || null, sigungu: res.data.user_region_sigungu || null, road: res.data.user_address_road || null, detail: res.data.user_address_detail || null });
         }
       })
       .catch(console.error)
@@ -419,76 +422,43 @@ function ApplicantsContent() {
               <div className="admin-modal-info-grid">
                 <div><label>지원 공고</label><span>{selected.job_title}</span></div>
                 <div><label>지원일</label><span>{formatDate(selected.applied_at)}</span></div>
-                <div><label>상태</label>
-                  <span className={`company-badge ${STATUS_BADGE_CLASS[selected.status]}`}>
-                    {STATUS_LABEL[selected.status]}
-                  </span>
-                </div>
-                {selected.user_email && (
-                  <div><label>이메일</label><span>{selected.user_email}</span></div>
-                )}
-                {selected.user_phone && (
-                  <div><label>연락처</label><span>{selected.user_phone}</span></div>
-                )}
               </div>
-              <div style={{marginTop:"20px"}}>
-                <p style={{fontSize:"13px", color:"#666", marginBottom:"8px"}}>상태 변경</p>
-                <div style={{display:"flex", gap:"6px", flexWrap:"wrap"}}>
-                  {(["APPLIED", "VIEWED", "INTERVIEW", "PASSED", "REJECTED"] as ApplicationStatus[]).map(s => (
-                    <button
-                      key={s}
-                      onClick={() => handleStatusChange(selected.id, s)}
-                      style={{
-                        padding: "6px 12px",
-                        borderRadius: "6px",
-                        border: selected.status === s ? "2px solid #5f0080" : "1px solid #e0e0e0",
-                        background: selected.status === s ? "#faf5ff" : "#fff",
-                        color: selected.status === s ? "#5f0080" : "#666",
-                        fontSize: "12px",
-                        fontWeight: selected.status === s ? 700 : 500,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {STATUS_LABEL[s]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* 자기소개서 */}
-              {coverLetter && coverLetter.trim() && (
-                <div style={{ marginTop: "24px", background: "#faf5ff", border: "1px solid #ecdcff", borderRadius: 10, padding: "16px 18px" }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 8 }}>제출한 자기소개서</div>
-                  <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
+              {resumeData && (
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "16px" }}>
+                  <button onClick={handleDownloadPdf} disabled={isDownloading}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: isDownloading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}>
+                    <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 다운로드"}
+                  </button>
+                  <button onClick={handlePrint}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                    <Printer size={15} /> 프린트
+                  </button>
                 </div>
               )}
-              {/* 이력서 정보 */}
-              <div style={{marginTop:"24px", paddingTop:"24px", borderTop:"1px solid #ececec"}}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
-                  <div>
-                    <h3 style={{fontSize:"15px", fontWeight:700, marginBottom:"4px"}}>이력서</h3>
-                    <p style={{fontSize:"12px", color:"#888", margin:0}}>지원자가 작성한 이력서 정보입니다</p>
-                  </div>
-                  {resumeData && (
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <button onClick={handleDownloadPdf} disabled={isDownloading}
-                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#5f0080", color: "#fff", fontSize: "13px", fontWeight: 600, cursor: isDownloading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}>
-                        <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 다운로드"}
-                      </button>
-                      <button onClick={handlePrint}
-                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                        <Printer size={15} /> 프린트
-                      </button>
+              {/* ===== PDF 캡처 영역 시작 (자기소개서 + 이력서) ===== */}
+              <div ref={previewRef} style={{ background: "#fff" }}>
+                {/* 자기소개서 */}
+                {coverLetter && coverLetter.trim() && (
+                  <div style={{ marginTop: "20px", padding: "0 44px" }}>
+                    <h3 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "8px" }}>자기소개서</h3>
+                    <div style={{ background: "#fff", border: "1px solid #ececec", borderRadius: 10, padding: "16px 18px" }}>
+                      <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+                {/* 이력서 정보 */}
+                <div style={{marginTop:"24px", paddingTop:"24px", borderTop:"1px solid #ececec"}}>
+                  <h3 style={{fontSize:"15px", fontWeight:700, margin:"0 0 8px", padding:"0 44px"}}>이력서</h3>
                 {resumeLoading ? (
                   <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
                 ) : resumeData ? (
-                  <div ref={previewRef}>
                   <ResumePreview
                     name={selected.user_name}
-                    birthDisplay=""
-                    jobDisplay={selected.user_job_type === "STORE" ? "매장직" : "사무직"}
+                    birthDisplay={detailInfo.birth ? `${new Date(detailInfo.birth).getFullYear()}년생` : ""}
+                    ageDisplay={calcAge(detailInfo.birth) != null ? `${calcAge(detailInfo.birth)}세` : ""}
+                    genderDisplay={genderLabel(detailInfo.gender) || ""}
+                    addressDisplay={[detailInfo.road, detailInfo.detail].filter(Boolean).join(" ") || [detailInfo.sido, detailInfo.sigungu].filter(Boolean).join(" ")}
+                    jobDisplay=""
                     phone={selected.user_phone || ""}
                     email={selected.user_email || ""}
                     portfolioUrl={(selected as any).portfolio_url || null}
@@ -497,7 +467,6 @@ function ApplicantsContent() {
                     resumeType={selected.user_job_type === "STORE" ? "salon" : "office"}
                     {...mapResume(resumeData)}
                   />
-                  </div>
                 ) : (
                   <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
                 )}
@@ -516,7 +485,8 @@ function ApplicantsContent() {
                     </a>
                   </div>
                 )}
-              </div>
+                </div>{/* 이력서 정보 끝 */}
+              </div>{/* PDF 캡처 영역 끝 */}
             </div>
           </div>
         </div>

@@ -20,6 +20,9 @@ export async function GET(
             a.user_id, u.name AS user_name, u.email AS user_email, u.phone AS user_phone,
             u.job_type AS user_job_type, u.portfolio_url, u.portfolio_filename,
             u.avatar_url AS user_avatar_url, u.notification_settings,
+            u.gender AS user_gender, u.birth_date AS user_birth_date,
+            u.region_sido AS user_region_sido, u.region_sigungu AS user_region_sigungu,
+            u.address_road AS user_address_road, u.address_detail AS user_address_detail,
             a.job_posting_id, jp.title AS job_title,
             a.resume_file_url, a.resume_file_name, a.resume_file_size
      FROM applications a
