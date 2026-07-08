@@ -12,7 +12,6 @@ import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company"
 const STATUS_LABEL: Record<ApplicationStatus, string> = {
   APPLIED: "신규",
   VIEWED: "검토중",
-  INTERVIEW: "면접예정",
   PASSED: "합격",
   REJECTED: "불합격",
 };
@@ -20,7 +19,6 @@ const STATUS_LABEL: Record<ApplicationStatus, string> = {
 const STATUS_BADGE_CLASS: Record<ApplicationStatus, string> = {
   APPLIED: "company-badge-info",
   VIEWED: "company-badge-warning",
-  INTERVIEW: "company-badge-info",
   PASSED: "company-badge-success",
   REJECTED: "company-badge-danger",
 };
@@ -214,7 +212,6 @@ function ApplicantsContent() {
     전체: applicants.length,
     신규: applicants.filter(a => a.status === "APPLIED").length,
     검토중: applicants.filter(a => a.status === "VIEWED").length,
-    면접예정: applicants.filter(a => a.status === "INTERVIEW").length,
     합격: applicants.filter(a => a.status === "PASSED").length,
     불합격: applicants.filter(a => a.status === "REJECTED").length,
   };
@@ -226,7 +223,6 @@ function ApplicantsContent() {
           { label: "전체 지원자", value: String(counts.전체), unit: "명", color: "#5f0080" },
           { label: "신규", value: String(counts.신규), unit: "명", color: "#0ea5e9" },
           { label: "검토중", value: String(counts.검토중), unit: "명", color: "#f59e0b" },
-          { label: "면접예정", value: String(counts.면접예정), unit: "명", color: "#3b82f6" },
           { label: "합격", value: String(counts.합격), unit: "명", color: "#10b981" },
           { label: "불합격", value: String(counts.불합격), unit: "명", color: "#888" },
         ].map((s) => (
@@ -280,7 +276,7 @@ function ApplicantsContent() {
           <div className="admin-filter-group">
             <span className="admin-filter-label">상태</span>
             <div className="admin-filter-tabs">
-              {["전체", "신규", "검토중", "면접예정", "합격", "불합격"].map(s => (
+              {["전체", "신규", "검토중", "합격", "불합격"].map(s => (
                 <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
                   onClick={() => setStatusFilter(s)}>{s}</button>
               ))}
@@ -377,8 +373,26 @@ function ApplicantsContent() {
                       {a.user_phone || "전화번호 없음"}
                     </div>
                   </td>
-                  <td style={{ color: "#5f0080", fontWeight: 500, fontSize: 13 }}>
-                    {STATUS_LABEL[a.status]}
+                  <td onClick={(e) => e.stopPropagation()}>
+                    <select
+                      value={a.status}
+                      onChange={(e) => handleStatusChange(a.id, e.target.value as ApplicationStatus)}
+                      style={{
+                        padding: "5px 8px",
+                        borderRadius: "6px",
+                        border: "1px solid #e0d0f0",
+                        background: "#fff",
+                        color: "#5f0080",
+                        fontSize: 13,
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                      }}
+                    >
+                      {(["APPLIED", "VIEWED", "PASSED", "REJECTED"] as ApplicationStatus[]).map((st) => (
+                        <option key={st} value={st}>{STATUS_LABEL[st]}</option>
+                      ))}
+                    </select>
                   </td>
                   <td>
                     <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center" }}>

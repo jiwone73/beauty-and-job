@@ -2,7 +2,7 @@
 
 export type CompanyType = "OFFICE" | "STORE" | "BOTH";
 export type JobStatus = "ACTIVE" | "CLOSED" | "DRAFT" | "PAUSED";
-export type ApplicationStatus = "APPLIED" | "VIEWED" | "INTERVIEW" | "PASSED" | "REJECTED";
+export type ApplicationStatus = "APPLIED" | "VIEWED" | "PASSED" | "REJECTED";
 
 // 공고 (목록 응답용)
 export interface CompanyJob {
