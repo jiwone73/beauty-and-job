@@ -40,6 +40,7 @@ export default function ApplyModal({
   const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
   const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [addressDisplay, setAddressDisplay] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [resumeFileName, setResumeFileName] = useState<string | null>(null);
   const [resumeFileSize, setResumeFileSize] = useState<number | null>(null);
@@ -70,6 +71,7 @@ export default function ApplyModal({
           if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
           if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
+          if (res.data.address_road) setAddressDisplay(res.data.address_road + (res.data.address_detail ? ` ${res.data.address_detail}` : ""));
           if (res.data.resume_file_name) setResumeFileName(res.data.resume_file_name);
           if (res.data.resume_file_size) setResumeFileSize(res.data.resume_file_size);
         }
@@ -322,9 +324,12 @@ export default function ApplyModal({
                     <p className="apply-cover-text" style={{ color: "#aaa" }}>자기소개서 없이 이력서만 제출됩니다.</p>
                   )}
                 </div>
+                <div style={{ marginTop: 24, paddingTop: 24, borderTop: "1px solid #ececec" }}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, margin: "0 0 8px" }}>이력서</h3>
                 <ResumePreview
                   name={name}
                   birthDisplay={birthDisplay}
+                  addressDisplay={addressDisplay}
                   jobDisplay={jobDisplay}
                   phone={phone}
                   email={emailLocal || email}
@@ -347,6 +352,7 @@ export default function ApplyModal({
                   workTypePrefer={workTypePrefer}
                   regionPrefer={regionPrefer}
                 />
+                </div>
               </div>
 
               <p style={{ fontSize: 12, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
