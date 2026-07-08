@@ -1022,7 +1022,7 @@ function AppliedTab() {
                       onClick={(e) => { e.stopPropagation(); handleHide(app.id); }}
                       style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
                     >
-                      목록에서 삭제
+                      삭제
                     </button>
                   )}
                 </div>
