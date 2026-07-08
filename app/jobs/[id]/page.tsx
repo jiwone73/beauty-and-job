@@ -583,7 +583,7 @@ export default function JobDetailPage() {
                     }
                   }}
                 >
-                  {alreadyApplied ? "✓ 지원완료" : "지원하기"}
+                  {alreadyApplied ? "✓ 지원완료" : "지원서 작성하기"}
                 </button>
                 <button
                   className={`job-detail-aside-bookmark ${bookmarked ? "active" : ""}`}
