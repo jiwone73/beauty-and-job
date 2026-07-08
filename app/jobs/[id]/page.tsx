@@ -269,14 +269,7 @@ export default function JobDetailPage() {
             <span>채용공고</span>
           </button>
           <Link href={logoHref} className="job-detail-logo"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority /></Link>
-          <div className="job-detail-header-actions">
-            <button className="job-detail-share" onClick={() => {
-              navigator.clipboard?.writeText(window.location.href);
-              alert("링크가 복사되었습니다.");
-            }}>
-              <Share2 size={20} />
-            </button>
-          </div>
+          <div style={{ width: 38 }} />
         </div>
       </header>
 
@@ -592,6 +585,17 @@ export default function JobDetailPage() {
                   <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />
                   {bookmarked ? "북마크 완료" : "북마크"}
                 </button>
+                <button
+                  className="job-detail-aside-bookmark"
+                  style={{ marginTop: 8 }}
+                  onClick={() => {
+                    navigator.clipboard?.writeText(window.location.href);
+                    alert("링크가 복사되었습니다.");
+                  }}
+                >
+                  <Share2 size={16} />
+                  공유
+                </button>
               </>
             )}
           </div>
@@ -618,6 +622,16 @@ export default function JobDetailPage() {
               onClick={() => setBookmarked(!bookmarked)}
             >
               <Bookmark size={20} fill={bookmarked ? "currentColor" : "none"} />
+            </button>
+            <button
+              className="job-detail-mobile-bookmark"
+              aria-label="링크 복사"
+              onClick={() => {
+                navigator.clipboard?.writeText(window.location.href);
+                alert("링크가 복사되었습니다.");
+              }}
+            >
+              <Share2 size={20} />
             </button>
             <button
               className={`job-detail-mobile-apply ${alreadyApplied ? "applied" : ""}`}
