@@ -3,7 +3,7 @@ import { useState } from "react";
 import AboutHeader from "@/components/AboutHeader";
 import PrivacyConsent from "@/components/PrivacyConsent";
 export default function PartnershipPage() {
-  const [form, setForm] = useState({ company: "", name: "", email: "", content: "" });
+  const [form, setForm] = useState({ company: "", name: "", email: "", phone: "", content: "" });
   const [done, setDone] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,6 +17,7 @@ export default function PartnershipPage() {
           company_name: form.company,
           contact_name: form.name,
           email: form.email,
+          phone: form.phone || null,
           message: form.content,
           type: "제휴",
           privacy_agreed: agreed,
@@ -46,8 +47,9 @@ export default function PartnershipPage() {
               <div className="contact-form-row"><label>회사명 *</label><input required placeholder="회사명을 입력해주세요" value={form.company} onChange={e=>setForm({...form,company:e.target.value})} /></div>
               <div className="contact-form-row"><label>담당자명 *</label><input required placeholder="담당자 성함을 입력해주세요" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /></div>
               <div className="contact-form-row"><label>이메일 *</label><input type="email" required placeholder="답변 받으실 이메일" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} /></div>
+              <div className="contact-form-row"><label>전화번호</label><input type="tel" placeholder="연락 가능한 전화번호 (선택)" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} /></div>
               <div className="contact-form-row"><label>문의 내용 *</label><textarea required placeholder="제휴 관련 문의 내용을 자유롭게 입력해주세요" value={form.content} onChange={e=>setForm({...form,content:e.target.value})} /></div>
-              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="회사명, 담당자명, 이메일, 문의 내용" />
+              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="회사명, 담당자명, 이메일, 전화번호, 문의 내용" />
               <button type="submit" className="contact-submit-btn" disabled={!agreed} style={!agreed ? { opacity: 0.5, cursor: "not-allowed" } : undefined}>문의 보내기</button>
             </form>
           </div>
