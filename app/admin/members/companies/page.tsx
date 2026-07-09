@@ -2,7 +2,8 @@
 import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
-import SmsModal from "@/components/admin/SmsModal";
+// [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
+// import SmsModal from "@/components/admin/SmsModal";
 import { Search, Trash2, X, Download, Printer, FileText } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
@@ -97,7 +98,8 @@ function AdminCompaniesContent() {
   const [typeFilter, setTypeFilter] = useState(initialType);
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [smsOpen, setSmsOpen] = useState(false);
+  // [SMS 발송 기능 보류] 2026-07
+  // const [smsOpen, setSmsOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [companyDetail, setCompanyDetail] = useState<Company | null>(null);
   const [companyPdfLoading, setCompanyPdfLoading] = useState(false);
@@ -333,6 +335,7 @@ function AdminCompaniesContent() {
             >
               열람제한기업
             </button>
+            {/* [SMS 발송 기능 보류] 2026-07
             {!blockedMode && selectedIds.length > 0 && (
               <button
                 onClick={() => setSmsOpen(true)}
@@ -346,6 +349,7 @@ function AdminCompaniesContent() {
                 📱 문자 발송 ({selectedIds.length})
               </button>
             )}
+            */}
             {!blockedMode && (
               <button
                 onClick={handleBulkDelete}
@@ -658,6 +662,7 @@ function AdminCompaniesContent() {
           </div>
         </div>
       )}
+      {/* [SMS 발송 기능 보류] 2026-07
       {smsOpen && (
         <SmsModal
           targets={selectedIds.map((id) => {
@@ -667,6 +672,7 @@ function AdminCompaniesContent() {
           onClose={() => setSmsOpen(false)}
         />
       )}
+      */}
     </AdminLayout>
   );
 }

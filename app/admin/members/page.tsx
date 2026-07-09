@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, Suspense } from "react";
-import SmsModal from "@/components/admin/SmsModal";
+// [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
+// import SmsModal from "@/components/admin/SmsModal";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Search, Trash2, FileText, Bookmark, Paperclip } from "lucide-react";
@@ -114,7 +115,8 @@ function AdminMembersPageInner() {
   const [jobTypeFilter, setJobTypeFilter] = useState(initialJobType);
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [checked, setChecked] = useState<string[]>([]);
-  const [smsOpen, setSmsOpen] = useState(false);
+  // [SMS 발송 기능 보류] 2026-07
+  // const [smsOpen, setSmsOpen] = useState(false);
   const [selected, setSelected] = useState<Member | null>(null);
   const [scrapTarget, setScrapTarget] = useState<Member | null>(null);
   const [scrapList, setScrapList] = useState<{ id: string; name: string; logo_url: string | null; scrapped_at: string }[]>([]);
@@ -273,6 +275,7 @@ function AdminMembersPageInner() {
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>총 <strong>{filtered.length.toLocaleString()}</strong>명</span>
           <div style={{ display: "flex", gap: 8 }}>
+          {/* [SMS 발송 기능 보류] 2026-07
           <button
             onClick={() => { if (checked.length) setSmsOpen(true); }}
             disabled={checked.length === 0}
@@ -287,6 +290,7 @@ function AdminMembersPageInner() {
           >
             문자 발송{checked.length ? ` (${checked.length})` : ""}
           </button>
+          */}
           <button
             onClick={handleBulkDelete}
             disabled={checked.length === 0}
@@ -547,12 +551,14 @@ function AdminMembersPageInner() {
       {selected && selected.resume_id && (
         <ResumePreviewModal resumeId={selected.resume_id} onClose={() => setSelected(null)} />
       )}
+      {/* [SMS 발송 기능 보류] 2026-07
       {smsOpen && (
         <SmsModal
           targets={members.filter((m) => checked.includes(m.id)).map((m) => ({ id: m.id, name: m.name, phone: m.phone }))}
           onClose={() => setSmsOpen(false)}
         />
       )}
+      */}
     </AdminLayout>
   );
 }
