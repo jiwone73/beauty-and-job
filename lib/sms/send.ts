@@ -1,19 +1,22 @@
-// SMS 발송 유틸 (알리고)
-// 환경변수: ALIGO_API_KEY, ALIGO_USER_ID, ALIGO_SENDER, SMS_ENABLED
+// SMS 발송 유틸 (네이버 클라우드 SENS)
+// 환경변수: NCP_ACCESS_KEY, NCP_SECRET_KEY, NCP_SERVICE_ID, NCP_SENDER, SMS_ENABLED
 //
-// 실발송 조건: 키 3개 + SMS_ENABLED=true
+// 실발송 조건: 키 4개 + SMS_ENABLED=true
 // → 로컬(.env.local)에 키가 있어도 SMS_ENABLED를 켜지 않으면 콘솔 스텁으로만 동작.
 //
-// ⚠️ 알리고를 호출하는 코드는 이 파일이 유일해야 한다.
+// ⚠️ SENS를 호출하는 코드는 이 파일이 유일해야 한다.
 
-const ALIGO_ENDPOINT = "https://apis.aligo.in/send/";
+import crypto from "crypto";
+
+const NCP_HOST = "https://sens.apigw.ntruss.com";
 
 export function isSmsConfigured(): boolean {
   if (process.env.SMS_ENABLED !== "true") return false;
   return Boolean(
-    process.env.ALIGO_API_KEY &&
-    process.env.ALIGO_USER_ID &&
-    process.env.ALIGO_SENDER
+    process.env.NCP_ACCESS_KEY &&
+    process.env.NCP_SECRET_KEY &&
+    process.env.NCP_SERVICE_ID &&
+    process.env.NCP_SENDER
   );
 }
 
@@ -33,6 +36,27 @@ export function normalizePhones(list: string[]): string[] {
     .filter((r) => r.length >= 10 && r.length <= 11);
 }
 
+// NCP API Gateway 서명 생성 (HMAC-SHA256 → Base64)
+function makeSignature(uri: string, timestamp: string): string {
+  const accessKey = process.env.NCP_ACCESS_KEY!;
+  const secretKey = process.env.NCP_SECRET_KEY!;
+
+  const message = [
+    "POST",
+    " ",
+    uri,
+    "\n",
+    timestamp,
+    "\n",
+    accessKey,
+  ].join("");
+
+  return crypto
+    .createHmac("sha256", secretKey)
+    .update(message)
+    .digest("base64");
+}
+
 type SendResult = {
   sent: boolean;
   count: number;
@@ -43,44 +67,58 @@ type SendResult = {
 
 // 내부 공통 발송기
 async function dispatch(receivers: string[], message: string): Promise<SendResult> {
-  const API_KEY = process.env.ALIGO_API_KEY;
-  const USER_ID = process.env.ALIGO_USER_ID;
-  const SENDER = process.env.ALIGO_SENDER;
+  const ACCESS_KEY = process.env.NCP_ACCESS_KEY;
+  const SECRET_KEY = process.env.NCP_SECRET_KEY;
+  const SERVICE_ID = process.env.NCP_SERVICE_ID;
+  const SENDER = process.env.NCP_SENDER;
   const msgType = getMsgType(message);
 
-  if (!isSmsConfigured() || !API_KEY || !USER_ID || !SENDER) {
+  if (!isSmsConfigured() || !ACCESS_KEY || !SECRET_KEY || !SERVICE_ID || !SENDER) {
     console.log(`[SMS-stub] to ${receivers.join(",")}: ${message}`);
     return { sent: true, count: receivers.length, type: msgType, stub: true };
   }
 
-  try {
-    const form = new URLSearchParams();
-    form.set("key", API_KEY);
-    form.set("user_id", USER_ID);
-    form.set("sender", SENDER);
-    form.set("receiver", receivers.join(","));
-    form.set("msg", message);
-    form.set("msg_type", msgType);
+  // Service ID를 URL에 넣을 때 콜론(:)은 인코딩하지 않는다.
+  const uri = `/sms/v2/services/${SERVICE_ID}/messages`;
+  const timestamp = Date.now().toString();
+  const signature = makeSignature(uri, timestamp);
 
-    const resp = await fetch(ALIGO_ENDPOINT, {
+  const body = {
+    type: msgType,
+    contentType: "COMM",
+    countryCode: "82",
+    from: SENDER,
+    content: message,
+    messages: receivers.map((to) => ({ to })),
+  };
+
+  try {
+    const resp = await fetch(`${NCP_HOST}${uri}`, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: form.toString(),
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "x-ncp-apigw-timestamp": timestamp,
+        "x-ncp-iam-access-key": ACCESS_KEY,
+        "x-ncp-apigw-signature-v2": signature,
+      },
+      body: JSON.stringify(body),
       signal: AbortSignal.timeout(10_000),
     });
-    const data = await resp.json();
 
-    if (String(data.result_code) === "1") {
+    const data = await resp.json().catch(() => ({}));
+
+    // SENS: 발송 요청 접수 성공 시 HTTP 202 + statusCode "202"
+    if (resp.status === 202 && String(data.statusCode) === "202") {
       return { sent: true, count: receivers.length, type: msgType, stub: false };
     }
 
-    console.error("[SMS] 알리고 발송 실패:", data.result_code, data.message);
+    console.error("[SMS] SENS 발송 실패:", resp.status, JSON.stringify(data));
     return {
       sent: false,
       count: 0,
       type: msgType,
       stub: false,
-      error: data.message || "발송 실패",
+      error: data.errorMessage || data.statusName || "발송 실패",
     };
   } catch (e) {
     console.error("[SMS] 발송 오류:", e);
