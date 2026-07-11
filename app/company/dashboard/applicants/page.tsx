@@ -422,7 +422,7 @@ function ApplicantsContent() {
                     </button>
                     <button onClick={handlePrint}
                       style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 12px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                      <Printer size={15} /> 프린트
+                      <Printer size={15} /> 인쇄
                     </button>
                   </>
                 )}
