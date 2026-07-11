@@ -4141,9 +4141,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobs-filter-left .jobs-dropdown-wrap { min-width: 0; }
   .jobs-filter-left .jobs-filter-btn { width: 100%; justify-content: center; padding: 6px 2px; font-size: 12.5px; gap: 1px; border: none; background: transparent; overflow: hidden; white-space: nowrap; }
   .jobs-filter-left .jobs-filter-btn svg { width: 13px; height: 13px; }
-  /* 정렬: 우측 정렬 + 슬림 */
-  .jobs-filter-right { width: 100%; justify-content: flex-end; }
-  .jobs-filter-right .jobs-sort-btn { padding: 5px 12px; font-size: 12.5px; }
+  /* 모바일: 내 주변 아이콘 숨김(텍스트만) */
+  .jobs-nearby-btn svg { display: none; }
   .jobs-card-grid { grid-template-columns: 1fr; }
 
   /* 채용공고 상세 */
