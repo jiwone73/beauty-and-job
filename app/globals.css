@@ -1678,8 +1678,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 .resume-career-item, .resume-edu-item, .resume-exp-item, .resume-lang-item, .resume-link-item { padding: 12px 0; border-bottom: 1px solid var(--color-border); }
 .resume-career-item:last-child, .resume-edu-item:last-child, .resume-exp-item:last-child, .resume-lang-item:last-child, .resume-link-item:last-child { border-bottom: none; }
-.resume-career-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 14px; font-weight: 400; }
-.resume-career-head strong { font-weight: 400; font-size: 14px; }
+.resume-career-head { display: flex; justify-content: space-between; align-items: center; gap: 4px; min-width: 0; margin-bottom: 4px; font-size: 14px; font-weight: 400; }
+.resume-career-head strong { font-weight: 400; font-size: 14px; min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 항목 헤더의 수정·삭제 아이콘 묶음은 항상 보이도록 축소 금지 */
+.resume-career-head > span:last-child { flex-shrink: 0; }
 .resume-career-period { font-size: 14px; color: #888; font-weight: 400; padding-left: 22px; }
 .resume-career-dept { font-size: 14px; color: #666; padding-left: 22px; }
 .resume-edu-item strong, .resume-lang-item strong { display: block; font-size: 14px; font-weight: 400; margin-bottom: 3px; }
@@ -6717,15 +6719,6 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .resume-icon-btn:hover { background: #f3e9fb; color: #5f0080; }
 .resume-icon-btn.danger:hover { background: #fdecea; color: #e74c3c; }
-/* 텍스트 라벨이 있는 수정·삭제 버튼: 눈에 띄는 테두리 pill 형태 */
-.resume-icon-label { font-size: 12px; font-weight: 500; }
-.resume-icon-btn:has(.resume-icon-label) {
-  border: 1px solid var(--color-border);
-  padding: 5px 10px;
-  color: #666;
-}
-.resume-icon-btn:has(.resume-icon-label):hover { border-color: var(--color-primary); }
-.resume-icon-btn.danger:has(.resume-icon-label):hover { border-color: #e74c3c; }
 
 .resume-type-tabs {
   display: flex;

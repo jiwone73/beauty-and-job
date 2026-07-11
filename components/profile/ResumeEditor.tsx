@@ -190,10 +190,10 @@ export default function ResumeEditor({
                   )}
                   <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
                     <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCareer(c); setCareerModalOpen(true); }}>
-                      <Pencil size={15} /><span className="resume-icon-label">수정</span>
+                      <Pencil size={15} />
                     </button>
                     <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}>
-                      <Trash2 size={15} /><span className="resume-icon-label">삭제</span>
+                      <Trash2 size={15} />
                     </button>
                   </span>
                 </div>
@@ -230,7 +230,7 @@ export default function ResumeEditor({
             const open = !collapsed.has(key);
             return (
               <div key={edu.id} className="resume-edu-item">
-                <div onClick={() => toggleExpand(key)} style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                <div className="resume-career-head" onClick={() => toggleExpand(key)} style={{ cursor: "pointer" }}>
                   <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
                   <strong>{edu.school}</strong>
                   {!open && (
@@ -240,10 +240,10 @@ export default function ResumeEditor({
                   )}
                   <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
                     <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditEdu(edu); setEduModalOpen(true); }}>
-                      <Pencil size={15} /><span className="resume-icon-label">수정</span>
+                      <Pencil size={15} />
                     </button>
                     <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(edu.id); }}>
-                      <Trash2 size={15} /><span className="resume-icon-label">삭제</span>
+                      <Trash2 size={15} />
                     </button>
                   </span>
                 </div>
@@ -299,10 +299,10 @@ export default function ResumeEditor({
                   <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
                   <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
                     <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLang(lang); setLangModalOpen(true); }}>
-                      <Pencil size={15} /><span className="resume-icon-label">수정</span>
+                      <Pencil size={15} />
                     </button>
                     <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 어학을 삭제할까요?")) removeLanguage(lang.id); }}>
-                      <Trash2 size={15} /><span className="resume-icon-label">삭제</span>
+                      <Trash2 size={15} />
                     </button>
                   </span>
                 </p>
@@ -342,10 +342,10 @@ export default function ResumeEditor({
                     )}
                     <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
                       <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditCert(cert); setCertModalOpen(true); }}>
-                        <Pencil size={15} /><span className="resume-icon-label">수정</span>
+                        <Pencil size={15} />
                       </button>
                       <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 자격증을 삭제할까요?")) removeCertificate(cert.id); }}>
-                        <Trash2 size={15} /><span className="resume-icon-label">삭제</span>
+                        <Trash2 size={15} />
                       </button>
                     </span>
                   </p>
@@ -386,10 +386,10 @@ export default function ResumeEditor({
                     {x.title}
                     <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
                       <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditExp(x); setExpModalOpen(true); }}>
-                        <Pencil size={15} /><span className="resume-icon-label">수정</span>
+                        <Pencil size={15} />
                       </button>
                       <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
-                        <Trash2 size={15} /><span className="resume-icon-label">삭제</span>
+                        <Trash2 size={15} />
                       </button>
                     </span>
                   </p>
@@ -547,10 +547,10 @@ export default function ResumeEditor({
               <a href={link.url} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
               <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
                 <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLink(link); setLinkModalOpen(true); }}>
-                  <Pencil size={15} /><span className="resume-icon-label">수정</span>
+                  <Pencil size={15} />
                 </button>
                 <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 링크를 삭제할까요?")) removeLink(link.id); }}>
-                  <Trash2 size={15} /><span className="resume-icon-label">삭제</span>
+                  <Trash2 size={15} />
                 </button>
               </span>
             </div>
