@@ -62,7 +62,7 @@ export default function MyApplicationModal({
       const pageHeight = pdf.internal.pageSize.getHeight();
       const marginTop = 6;     // 페이지 상단 여백(mm)
       const marginBottom = 6;  // 페이지 하단 여백(mm)
-      const marginX = 10;      // 페이지 좌우 여백(mm)
+      const marginX = 0;       // 좌우 여백은 캡처 내부(32px)로만 → 미리보기와 동일
       const contentWidth = pdfWidth - marginX * 2;
       const usableHeight = pageHeight - marginTop - marginBottom;
 
