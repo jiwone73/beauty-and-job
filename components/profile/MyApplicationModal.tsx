@@ -214,15 +214,15 @@ export default function MyApplicationModal({
             <div ref={captureRef} style={{ background: "#fff", padding: "0 32px" }}>
               {data.cover_letter && data.cover_letter.trim() && (
                 <div style={{ background: "#fff", padding: "26px 0 10px", marginBottom: 8 }}>
-                  <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: "0 0 4px" }}>자기소개서</h2>
+                  <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: "0 0 4px", lineHeight: 1.5 }}>자기소개서</h2>
                   <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 14px" }}>
                     {data.company_name} · {data.job_title}
                   </p>
                   <p style={{ fontSize: 14, color: "#333", lineHeight: 1.85, margin: 0, whiteSpace: "pre-wrap" }}>{data.cover_letter}</p>
                 </div>
               )}
-              <div style={{ background: "#fff", padding: "18px 0 0" }}>
-                <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>이력서</h2>
+              <div style={{ background: "#fff", padding: "18px 0 10px" }}>
+                <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.5 }}>이력서</h2>
               </div>
               <ResumePreview
                 name={data.user_name || ""}
