@@ -3295,20 +3295,18 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 스킬 칩 */
 .rp-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 6px;
+  display: block;
 }
+/* 칩(pill) 없이 텍스트만, 가운뎃점으로 구분 */
 .rp-chip {
-  display: inline-block;
-  padding: 7px 13px;
-  font-size: 13px;
-  line-height: 1.35;
+  display: inline;
+  font-size: 14px;
+  line-height: 1.8;
   color: #333;
-  background: #f5f5f5;
-  border-radius: 20px;
-  vertical-align: top;
+}
+.rp-chip:not(:last-child)::after {
+  content: " · ";
+  color: #bbb;
 }
 
 /* 링크 */
