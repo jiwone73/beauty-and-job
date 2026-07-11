@@ -382,8 +382,8 @@ const handlePrint = async () => {
 
   // 모바일 완성도 (사이드바와 동일 기준)
   const progressItems = resumeType === "office"
-    ? [!!(phone && emailLocal), careers.length > 0, educations.length > 0, skills.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0]
-    : [!!(phone && emailLocal), careers.length > 0, educations.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0];
+    ? [true, careers.length > 0, educations.length > 0, skills.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0]
+    : [true, careers.length > 0, educations.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0];
   const progressRate = Math.round((progressItems.filter(Boolean).length / progressItems.length) * 100);
 
   return (
@@ -433,7 +433,7 @@ const handlePrint = async () => {
           </button>
           {(() => {
             const sections = resumeType === "office" ? [
-              { id: "basic", label: "기본 정보", done: !!(phone && emailLocal) },
+              { id: "basic", label: "기본 정보", done: true },
               { id: "career", label: "경력", done: careers.length > 0 },
               { id: "education", label: "학력", done: educations.length > 0 },
               { id: "skill", label: "스킬", done: skills.length > 0 },
@@ -443,7 +443,7 @@ const handlePrint = async () => {
               { id: "portfolio", label: "포트폴리오", done: !!portfolioUrl },
               { id: "link", label: "링크", done: links.length > 0 },
             ] : [
-              { id: "basic", label: "기본 정보", done: !!(phone && emailLocal) },
+              { id: "basic", label: "기본 정보", done: true },
               { id: "career", label: "경력 (근무 매장)", done: careers.length > 0 },
               { id: "education", label: "학력", done: educations.length > 0 },
               { id: "language", label: "어학", done: languages.length > 0 },
@@ -524,7 +524,7 @@ const handlePrint = async () => {
                 {addressDisplay && <p className="resume-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>}
               </div>
               {avatarUrl && (
-                <div style={{ flexShrink: 0, width: "100px", height: "128px", borderRadius: "4px", overflow: "hidden", border: "1px solid #e0e0e0", background: "#f5f5f5", marginTop: "-30px" }}>
+                <div style={{ flexShrink: 0, width: "100px", height: "128px", borderRadius: "4px", overflow: "hidden", border: "1px solid #e0e0e0", background: "#f5f5f5", marginTop: "-22px" }}>
                   <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
               )}
