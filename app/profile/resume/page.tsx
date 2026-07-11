@@ -524,7 +524,7 @@ const handlePrint = async () => {
                 {addressDisplay && <p className="resume-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>}
               </div>
               {avatarUrl && (
-                <div style={{ flexShrink: 0, width: "96px", height: "120px", borderRadius: "4px", overflow: "hidden", border: "1px solid #e0e0e0", background: "#f5f5f5", marginTop: "16px" }}>
+                <div style={{ flexShrink: 0, width: "96px", height: "120px", borderRadius: "4px", overflow: "hidden", border: "1px solid #e0e0e0", background: "#f5f5f5", marginTop: "2px" }}>
                   <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
               )}
