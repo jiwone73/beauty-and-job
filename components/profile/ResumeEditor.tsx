@@ -556,7 +556,7 @@ export default function ResumeEditor({
             </div>
           ))
         ) : (
-          <p style={{ fontSize: "13px", color: "#aaa", margin: "8px 0 0" }}>아직 등록된 링크가 없어요. 오른쪽 + 로 추가하세요.</p>
+          <p style={{ fontSize: "13px", color: "#aaa", margin: "8px 0 0" }}>뷰티 콘텐츠나 운영 채널이 있다면 + 로 추가하세요.</p>
         )}
       </section>
 
