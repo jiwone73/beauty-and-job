@@ -434,7 +434,7 @@ function ApplicantsContent() {
               {resumeLoading ? (
                 <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
               ) : resumeData ? (
-                <div style={{ margin: "0 -24px" }}>{/* admin-modal-body(24px) 상쇄 → 문서 좌우 여백 40px로 통일 */}
+                <div style={{ margin: "-24px" }}>{/* admin-modal-body(24px) 4면 상쇄 → 문서 여백 40px로 통일 */}
                 <ApplicationDocument
                   ref={previewRef}
                   coverLetter={coverLetter}
