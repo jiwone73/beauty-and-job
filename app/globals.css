@@ -11003,3 +11003,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (min-width: 768px) {
   .nearby-map-wrap { height: 480px; }
 }
+
+/* 모바일: 채용 카드 스크랩(북마크) 버튼 축소 (썸네일 가림 최소화) */
+@media (max-width: 768px) {
+  .jobcard-bookmark { width: 26px; height: 26px; top: 6px; right: 6px; }
+  .jobcard-bookmark svg { width: 14px; height: 14px; }
+}
