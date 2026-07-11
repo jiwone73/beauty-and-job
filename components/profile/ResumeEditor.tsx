@@ -159,8 +159,8 @@ export default function ResumeEditor({
           <h2 className="resume-section-title">
             {resumeType === "office" ? "경력" : "경력 (근무 매장)"}
             {totalCareer && (
-              <span style={{ marginLeft: "8px", fontSize: "14px", fontWeight: 700, color: "#5f0080" }}>
-                · {totalCareer}
+              <span style={{ marginLeft: "6px", fontSize: "12px", fontWeight: 400, color: "#888" }}>
+                ({totalCareer})
               </span>
             )}
           </h2>

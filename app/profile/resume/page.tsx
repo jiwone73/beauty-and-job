@@ -516,13 +516,18 @@ const handlePrint = async () => {
 
           <section id="section-basic" className="resume-section">
             <h2 className="resume-section-title">기본 정보</h2>
-            <div className="resume-basic-info">
-              <div className="resume-name-block">
+            <div className="resume-basic-info" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
+              <div className="resume-name-block" style={{ flex: 1, minWidth: 0 }}>
                 <h3 className="resume-name" style={{ fontSize: "15px", fontWeight: 400, marginTop: "16px" }}>{name || "이름"}</h3>
                 <p className="resume-job-line">{birthDisplay} {birthDisplay && "·"} {jobDisplay}</p>
                 <p className="resume-contact">{phone || ""} {phone && emailLocal ? "·" : ""} {emailLocal}</p>
                 {addressDisplay && <p className="resume-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>}
               </div>
+              {avatarUrl && (
+                <div style={{ flexShrink: 0, width: "96px", height: "120px", borderRadius: "4px", overflow: "hidden", border: "1px solid #e0e0e0", background: "#f5f5f5", marginTop: "16px" }}>
+                  <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              )}
             </div>
           </section>
 
