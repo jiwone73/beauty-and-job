@@ -11012,3 +11012,5 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 제출한 입사지원서 모달: 자기소개서·이력서 본문 좌우 정렬 일치 (좌우 여백 flush) */
 .myapp-modal .rp-wrap { padding-left: 0; padding-right: 0; }
+/* 미리보기 배경 흰색 + 좌우 패딩은 캡처 안(padding)에서만 → 미리보기=PDF 동일 */
+.myapp-modal .rp-modal-body { background: #fff; padding: 24px 0; }

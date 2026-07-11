@@ -46,18 +46,16 @@ export default function MyApplicationModal({
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
-  const previewRef = useRef<HTMLDivElement>(null);
-  const coverRef = useRef<HTMLDivElement>(null);
-  const resumeTitleRef = useRef<HTMLDivElement>(null);
+  const captureRef = useRef<HTMLDivElement>(null);
   const handleDownloadPdf = async () => {
-    if (!previewRef.current) return;
+    if (!captureRef.current) return;
     setIsDownloading(true);
     try {
       const html2canvas = (await import("html2canvas")).default;
       const jsPDF = (await import("jspdf")).default;
       await new Promise((r) => setTimeout(r, 300));
 
-      const root = previewRef.current;
+      const root = captureRef.current;
       const scale = 2;
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -68,15 +66,8 @@ export default function MyApplicationModal({
       const contentWidth = pdfWidth - marginX * 2;
       const usableHeight = pageHeight - marginTop - marginBottom;
 
-      // 페이지에 쌓을 블록 단위: (자기소개서) + 헤더 + 각 섹션
-      const resumeBlocks = Array.from(
-        root.querySelectorAll(".rp-header, .rp-section")
-      ) as HTMLElement[];
-      const blocks = [
-        ...(coverRef.current ? [coverRef.current] : []),
-        ...(resumeTitleRef.current ? [resumeTitleRef.current] : []),
-        ...resumeBlocks,
-      ];
+      // 미리보기와 완전히 동일하게: 전체를 한 번에 캡처 후 페이지 높이로 분할
+      const blocks = [root];
 
       let cursorY = marginTop;
       let first = true;
@@ -139,11 +130,11 @@ export default function MyApplicationModal({
   };
 
   const handlePrint = async () => {
-    if (!previewRef.current) return;
+    if (!captureRef.current) return;
     try {
       const html2canvas = (await import("html2canvas")).default;
       await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      const canvas = await html2canvas(captureRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
       const imgData = canvas.toDataURL("image/png");
 
       // 팝업 차단을 피하기 위해 숨은 iframe으로 인쇄
@@ -220,9 +211,9 @@ export default function MyApplicationModal({
           {loading ? (
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
           ) : data ? (
-            <>
+            <div ref={captureRef} style={{ background: "#fff", padding: "0 32px" }}>
               {data.cover_letter && data.cover_letter.trim() && (
-                <div ref={coverRef} style={{ background: "#fff", padding: "26px 0 10px", marginBottom: 8 }}>
+                <div style={{ background: "#fff", padding: "26px 0 10px", marginBottom: 8 }}>
                   <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: "0 0 4px" }}>자기소개서</h2>
                   <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 14px" }}>
                     {data.company_name} · {data.job_title}
@@ -230,11 +221,10 @@ export default function MyApplicationModal({
                   <p style={{ fontSize: 14, color: "#333", lineHeight: 1.85, margin: 0, whiteSpace: "pre-wrap" }}>{data.cover_letter}</p>
                 </div>
               )}
-              <div ref={resumeTitleRef} style={{ background: "#fff", padding: "18px 0 0" }}>
+              <div style={{ background: "#fff", padding: "18px 0 0" }}>
                 <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>이력서</h2>
               </div>
               <ResumePreview
-                ref={previewRef}
                 name={data.user_name || ""}
                 birthDisplay={birthDisplay}
                 jobDisplay={data.user_job_type === "STORE" ? "매장직" : "사무직"}
@@ -246,7 +236,7 @@ export default function MyApplicationModal({
                 resumeType={data.user_job_type === "STORE" ? "salon" : "office"}
                 {...mapResume(data.resume)}
               />
-            </>
+            </div>
           ) : (
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>지원서를 불러올 수 없습니다.</div>
           )}
