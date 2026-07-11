@@ -11009,3 +11009,6 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobcard-bookmark { width: 26px; height: 26px; top: 6px; right: 6px; }
   .jobcard-bookmark svg { width: 14px; height: 14px; }
 }
+
+/* 제출한 입사지원서 모달: 자기소개서·이력서 본문 좌우 정렬 일치 (좌우 여백 flush) */
+.myapp-modal .rp-wrap { padding-left: 0; padding-right: 0; }

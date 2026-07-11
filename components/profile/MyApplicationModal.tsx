@@ -48,6 +48,7 @@ export default function MyApplicationModal({
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const coverRef = useRef<HTMLDivElement>(null);
+  const resumeTitleRef = useRef<HTMLDivElement>(null);
   const handleDownloadPdf = async () => {
     if (!previewRef.current) return;
     setIsDownloading(true);
@@ -71,9 +72,11 @@ export default function MyApplicationModal({
       const resumeBlocks = Array.from(
         root.querySelectorAll(".rp-header, .rp-section")
       ) as HTMLElement[];
-      const blocks = coverRef.current
-        ? [coverRef.current, ...resumeBlocks]
-        : resumeBlocks;
+      const blocks = [
+        ...(coverRef.current ? [coverRef.current] : []),
+        ...(resumeTitleRef.current ? [resumeTitleRef.current] : []),
+        ...resumeBlocks,
+      ];
 
       let cursorY = marginTop;
       let first = true;
@@ -196,7 +199,7 @@ export default function MyApplicationModal({
 
   return (
     <div className="rp-modal-overlay" onClick={onClose}>
-      <div className="rp-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720, width: "94%", maxHeight: "92vh", display: "flex", flexDirection: "column" }}>
+      <div className="rp-modal myapp-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720, width: "94%", maxHeight: "92vh", display: "flex", flexDirection: "column" }}>
         <div className="rp-modal-header" style={{ flexShrink: 0 }}>
           <h2 className="rp-modal-title">
             제출한 입사지원서
@@ -219,14 +222,17 @@ export default function MyApplicationModal({
           ) : data ? (
             <>
               {data.cover_letter && data.cover_letter.trim() && (
-                <div ref={coverRef} style={{ background: "#fff", padding: "32px 36px 28px", marginBottom: 16 }}>
-                  <h1 style={{ fontSize: 22, fontWeight: 800, color: "#1a1a1a", textAlign: "center", margin: "0 0 6px", letterSpacing: "0.05em" }}>자기소개서</h1>
-                  <p style={{ fontSize: 13, color: "#888", textAlign: "center", margin: "0 0 28px" }}>
+                <div ref={coverRef} style={{ background: "#fff", padding: "26px 0 10px", marginBottom: 8 }}>
+                  <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: "0 0 4px" }}>자기소개서</h2>
+                  <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 14px" }}>
                     {data.company_name} · {data.job_title}
                   </p>
-                  <p style={{ fontSize: 14.5, color: "#333", lineHeight: 1.9, margin: 0, whiteSpace: "pre-wrap" }}>{data.cover_letter}</p>
+                  <p style={{ fontSize: 14, color: "#333", lineHeight: 1.85, margin: 0, whiteSpace: "pre-wrap" }}>{data.cover_letter}</p>
                 </div>
               )}
+              <div ref={resumeTitleRef} style={{ background: "#fff", padding: "18px 0 0" }}>
+                <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>이력서</h2>
+              </div>
               <ResumePreview
                 ref={previewRef}
                 name={data.user_name || ""}
