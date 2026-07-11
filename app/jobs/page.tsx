@@ -241,14 +241,6 @@ function JobsPageInner() {
           ))}
         </div>
 
-        {/* ===== 내 주변 채용 진입 (아이콘+텍스트, 우측 정렬) ===== */}
-        <div style={{ maxWidth: 1280, margin: "0 auto", width: "100%", padding: "8px 16px 0", display: "flex", justifyContent: "flex-end" }}>
-          <a href="/jobs/nearby"
-            style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 13.5, fontWeight: 700, color: "#5f0080", textDecoration: "none", whiteSpace: "nowrap" }}>
-            <MapPin size={15} /> 내 주변 채용
-          </a>
-        </div>
-
         {/* ===== 필터 바 ===== */}
         <div className="jobs-filter-bar">
           <div className="jobs-filter-left">
@@ -294,6 +286,12 @@ function JobsPageInner() {
                 onApply={setSelectedRegions}
               />
             </div>
+
+            {/* 내 주변 (지역의 위치기반 대안) */}
+            <a href="/jobs/nearby" className="jobs-filter-btn"
+              style={{ display: "inline-flex", alignItems: "center", gap: 4, textDecoration: "none", color: "#5f0080", borderColor: "#e0d0f0", background: "#faf5ff", fontWeight: 700, whiteSpace: "nowrap" }}>
+              <MapPin size={15} /> 내 주변
+            </a>
 
             {/* 경력 (PC) */}
             <div className="jobs-dropdown-wrap jobs-pc-only">
