@@ -102,7 +102,7 @@ export default function HeroMobile() {
       </form>
 
       <a href="/jobs/nearby"
-        style={{ display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: 4, margin: "10px 0 0", fontSize: 13, fontWeight: 700, color: "#5f0080", textDecoration: "none" }}>
+        style={{ display: "inline-flex", alignItems: "center", gap: 4, margin: "12px 20px 0", fontSize: 13, fontWeight: 700, color: "#5f0080", textDecoration: "none" }}>
         <MapPin size={14} /> 내 주변 채용 보기 ›
       </a>
 

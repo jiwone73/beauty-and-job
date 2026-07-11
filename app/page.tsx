@@ -176,11 +176,11 @@ function Hero() {
                   <Search size={20} />
                 </button>
               </div>
+              <a href="/jobs/nearby"
+                style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 14, fontSize: 13.5, fontWeight: 700, color: "#5f0080", textDecoration: "none" }}>
+                <MapPin size={15} /> 내 주변 채용 보기 ›
+              </a>
             </form>
-            <a href="/jobs/nearby"
-              style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 12, fontSize: 13.5, fontWeight: 700, color: "#5f0080", textDecoration: "none" }}>
-              <MapPin size={15} /> 내 주변 채용 보기 ›
-            </a>
             <RegionSelectModal
               open={modalOpen}
               initial={selected}
