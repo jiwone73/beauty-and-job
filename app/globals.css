@@ -1625,7 +1625,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-action-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .resume-save-btn { background: var(--color-text); color: white; border: none; border-radius: 8px; padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; font-family: inherit; }
 .resume-save-btn:hover { background: #000; }
-.resume-layout { display: grid; grid-template-columns: 1fr; min-height: calc(100vh - 64px); max-width: 600px; margin: 0 auto; padding: 0 24px; }
+.resume-layout { display: grid; grid-template-columns: minmax(0, 1fr); min-height: calc(100vh - 64px); max-width: 600px; margin: 0 auto; padding: 0 24px; }
+.resume-editor, .resume-sidebar { min-width: 0; }
+.resume-editor p, .resume-editor a, .resume-item-text, .resume-career-dept, .resume-edu-info { overflow-wrap: anywhere; }
 .resume-sidebar { background: white; border-bottom: 1px solid var(--color-border); padding: 16px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .resume-sidebar-title { width: 100%; font-size: 12px; font-weight: 700; color: var(--color-text-mute); letter-spacing: 0.5px; margin: 0; padding: 0; }
 .resume-sidebar-item { background: #f7f7f8; border: 1px solid var(--color-border); border-radius: 100px; padding: 6px 14px; font-size: 13px; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
@@ -1707,7 +1709,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-save-btn-full:hover { background: #000; }
 
 @media (max-width: 768px) {
-  .resume-layout { grid-template-columns: 1fr; }
+  .resume-layout { grid-template-columns: minmax(0, 1fr); }
   .resume-sidebar { display: none; }
   .resume-editor { padding: 16px; }
   .resume-header { padding: 0 16px; }
@@ -4157,7 +4159,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   /* 이력서 */
   .resume-header-inner { padding: 0 12px; gap: 8px; }
   .resume-gnb { display: none; }
-  .resume-layout { grid-template-columns: 1fr; }
+  .resume-layout { grid-template-columns: minmax(0, 1fr); }
   .resume-sidebar { display: none; }
   .resume-editor { padding: 16px; }
   .resume-action-btn span { display: none; }
