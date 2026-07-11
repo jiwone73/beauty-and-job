@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Crosshair, MapPin } from "lucide-react";
+import { ChevronLeft, Crosshair } from "lucide-react";
 
 declare global {
   interface Window { kakao: any }
@@ -206,8 +206,8 @@ export default function NearbyJobsPage() {
       <div style={{ position: "relative", width: "100%", height: 320 }}>
         <div ref={mapEl} style={{ width: "100%", height: "100%", background: "#f2f2f2" }} />
         {/* 화면 중앙 고정 핀 (지도를 움직여도 항상 중앙 = 검색 기준점) */}
-        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -100%)", pointerEvents: "none", zIndex: 5 }}>
-          <MapPin size={40} color="#5f0080" fill="#5f0080" strokeWidth={1.5} style={{ filter: "drop-shadow(0 2px 3px rgba(0,0,0,.3))" }} />
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -100%)", pointerEvents: "none", zIndex: 5, fontSize: 34, lineHeight: 1, filter: "drop-shadow(0 2px 3px rgba(0,0,0,.35))" }}>
+          📍
         </div>
         {/* 현재위치 */}
         <button onClick={goCurrentLocation}
