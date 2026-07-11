@@ -74,6 +74,7 @@ export default function NearbyJobsPage() {
   const mapObj = useRef<any>(null);
   const geocoder = useRef<any>(null);
   const circleRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
   const lastSearch = useRef<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
   const debounce = useRef<any>(null);
 
@@ -104,8 +105,8 @@ export default function NearbyJobsPage() {
     if (!circleRef.current) {
       circleRef.current = new window.kakao.maps.Circle({
         center: pos, radius: radiusRef.current * 1000,
-        strokeWeight: 2, strokeColor: "#5f0080", strokeOpacity: 0.6, strokeStyle: "solid",
-        fillColor: "#5f0080", fillOpacity: 0.08,
+        strokeWeight: 1, strokeColor: "#a06cc9", strokeOpacity: 0.5, strokeStyle: "dashed",
+        fillColor: "#5f0080", fillOpacity: 0.015,
       });
       circleRef.current.setMap(mapObj.current);
     } else {
@@ -204,6 +205,30 @@ export default function NearbyJobsPage() {
     mapObj.current.setLevel(level);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radius]);
+
+  // 실제 회사·매장 위치에 마커 표시
+  useEffect(() => {
+    if (!mapObj.current) return;
+    markersRef.current.forEach((m) => m.setMap(null));
+    markersRef.current = [];
+    const map = mapObj.current;
+    jobs.forEach((j) => {
+      const lat = Number(j.latitude);
+      const lng = Number(j.longitude);
+      if (!lat || !lng) return;
+      const marker = new window.kakao.maps.Marker({
+        position: new window.kakao.maps.LatLng(lat, lng),
+        map,
+      });
+      const iw = new window.kakao.maps.InfoWindow({
+        content: `<div style="padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis">${j.brand_name || j.company_name || ""} · ${fmtDist(j.distance_km)}</div>`,
+      });
+      window.kakao.maps.event.addListener(marker, "click", () => router.push(`/jobs/${j.id}`));
+      window.kakao.maps.event.addListener(marker, "mouseover", () => iw.open(map, marker));
+      window.kakao.maps.event.addListener(marker, "mouseout", () => iw.close());
+      markersRef.current.push(marker);
+    });
+  }, [jobs, router]);
 
   const goCurrentLocation = useCallback(() => {
     if (!navigator.geolocation || !mapObj.current) return;
