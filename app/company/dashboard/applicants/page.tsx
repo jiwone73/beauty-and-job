@@ -5,7 +5,8 @@ import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer } f
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import ResumePreview from "@/components/profile/ResumePreview";
+import ApplicationDocument from "@/components/resume/ApplicationDocument";
+import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
 import { companyApplicationsApi } from "@/lib/api/company";
 import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company";
 
@@ -52,25 +53,7 @@ function ApplicantsContent() {
     if (!previewRef.current) return;
     setIsDownloading(true);
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const jsPDF = (await import("jspdf")).default;
-      await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfW = pdf.internal.pageSize.getWidth();
-      const pdfH = (canvas.height * pdfW) / canvas.width;
-      const pageH = pdf.internal.pageSize.getHeight();
-      let left = pdfH, pos = 0;
-      pdf.addImage(imgData, "PNG", 0, pos, pdfW, pdfH);
-      left -= pageH;
-      while (left > 0) {
-        pos = left - pdfH;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, pos, pdfW, pdfH);
-        left -= pageH;
-      }
-      pdf.save(selected?.user_name ? `${selected.user_name}_이력서.pdf` : "이력서.pdf");
+      await downloadApplicationPdf(previewRef.current, selected?.user_name ? `${selected.user_name}_이력서.pdf` : "이력서.pdf");
     } catch {
       alert("다운로드 중 오류가 발생했습니다.");
     } finally {
@@ -81,13 +64,7 @@ function ApplicantsContent() {
   const handlePrint = async () => {
     if (!previewRef.current) return;
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const w = window.open("", "_blank");
-      if (!w) return;
-      w.document.write(`<html><body style="margin:0"><img src="${canvas.toDataURL("image/png")}" style="width:100%" onload="window.print();window.close()"/></body></html>`);
-      w.document.close();
+      await printApplication(previewRef.current);
     } catch {
       alert("인쇄 준비 중 오류가 발생했습니다.");
     }
@@ -455,58 +432,49 @@ function ApplicantsContent() {
                   </button>
                 </div>
               )}
-              {/* ===== PDF 캡처 영역 시작 (자기소개서 + 이력서) ===== */}
-              <div ref={previewRef} style={{ background: "#fff" }}>
-                {/* 자기소개서 */}
-                {coverLetter && coverLetter.trim() && (
-                  <div style={{ marginTop: "20px", padding: "0 44px" }}>
-                    <h3 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "8px" }}>자기소개서</h3>
-                    <div style={{ background: "#fff", border: "1px solid #ececec", borderRadius: 10, padding: "16px 18px" }}>
-                      <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
+              {/* ===== PDF 캡처 영역 (공용 지원서 문서) ===== */}
+              {resumeLoading ? (
+                <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
+              ) : resumeData ? (
+                <ApplicationDocument
+                  ref={previewRef}
+                  coverLetter={coverLetter}
+                  subtitle={selected.job_title}
+                  resume={{
+                    name: selected.user_name,
+                    birthDisplay: detailInfo.birth ? `${new Date(detailInfo.birth).getFullYear()}년생` : "",
+                    ageDisplay: calcAge(detailInfo.birth) != null ? `${calcAge(detailInfo.birth)}세` : "",
+                    genderDisplay: genderLabel(detailInfo.gender) || "",
+                    addressDisplay: [detailInfo.road, detailInfo.detail].filter(Boolean).join(" ") || [detailInfo.sido, detailInfo.sigungu].filter(Boolean).join(" "),
+                    jobDisplay: "",
+                    phone: selected.user_phone || "",
+                    email: selected.user_email || "",
+                    portfolioUrl: (selected as any).portfolio_url || null,
+                    portfolioFilename: (selected as any).portfolio_filename || null,
+                    avatarUrl: (selected as any).user_avatar_url || null,
+                    resumeType: selected.user_job_type === "STORE" ? "salon" : "office",
+                    ...mapResume(resumeData),
+                  }}
+                >
+                  {resumeFileInfo.url && (
+                    <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
+                      <FileText size={22} color="#5f0080" />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {resumeFileInfo.name || "첨부 이력서"}
+                        </p>
+                        <p style={{ fontSize: "12px", color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
+                      </div>
+                      <a href={resumeFileInfo.url} target="_blank" rel="noopener noreferrer"
+                        style={{ padding: "8px 14px", borderRadius: "8px", background: "#5f0080", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
+                        다운로드
+                      </a>
                     </div>
-                  </div>
-                )}
-                {/* 이력서 정보 */}
-                <div style={{marginTop:"24px", paddingTop:"24px", borderTop:"1px solid #ececec"}}>
-                  <h3 style={{fontSize:"15px", fontWeight:700, margin:"0 0 8px", padding:"0 44px"}}>이력서</h3>
-                {resumeLoading ? (
-                  <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
-                ) : resumeData ? (
-                  <ResumePreview
-                    name={selected.user_name}
-                    birthDisplay={detailInfo.birth ? `${new Date(detailInfo.birth).getFullYear()}년생` : ""}
-                    ageDisplay={calcAge(detailInfo.birth) != null ? `${calcAge(detailInfo.birth)}세` : ""}
-                    genderDisplay={genderLabel(detailInfo.gender) || ""}
-                    addressDisplay={[detailInfo.road, detailInfo.detail].filter(Boolean).join(" ") || [detailInfo.sido, detailInfo.sigungu].filter(Boolean).join(" ")}
-                    jobDisplay=""
-                    phone={selected.user_phone || ""}
-                    email={selected.user_email || ""}
-                    portfolioUrl={(selected as any).portfolio_url || null}
-                    portfolioFilename={(selected as any).portfolio_filename || null}
-                    avatarUrl={(selected as any).user_avatar_url || null}
-                    resumeType={selected.user_job_type === "STORE" ? "salon" : "office"}
-                    {...mapResume(resumeData)}
-                  />
-                ) : (
-                  <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
-                )}
-                {resumeFileInfo.url && (
-                  <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
-                    <FileText size={22} color="#5f0080" />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {resumeFileInfo.name || "첨부 이력서"}
-                      </p>
-                      <p style={{ fontSize: "12px", color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
-                    </div>
-                    <a href={resumeFileInfo.url} target="_blank" rel="noopener noreferrer"
-                      style={{ padding: "8px 14px", borderRadius: "8px", background: "#5f0080", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
-                      다운로드
-                    </a>
-                  </div>
-                )}
-                </div>{/* 이력서 정보 끝 */}
-              </div>{/* PDF 캡처 영역 끝 */}
+                  )}
+                </ApplicationDocument>
+              ) : (
+                <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
+              )}
             </div>
           </div>
         </div>

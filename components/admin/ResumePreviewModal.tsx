@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import ResumePreview from "@/components/profile/ResumePreview";
 import { Download, X, Printer } from "lucide-react";
+import ApplicationDocument from "@/components/resume/ApplicationDocument";
+import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
 
 const mapResume = (data: any) => {
   const p = data?.profile || {};
@@ -77,27 +78,8 @@ export default function ResumePreviewModal({
     if (!previewRef.current) return;
     setIsDownloading(true);
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const jsPDF = (await import("jspdf")).default;
-      await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      let heightLeft = pdfHeight;
-      let position = 0;
-      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-      heightLeft -= pageHeight;
-      while (heightLeft > 0) {
-        position = heightLeft - pdfHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pageHeight;
-      }
       const nm = data?.resume?.name;
-      pdf.save(nm ? `${nm}_이력서.pdf` : "이력서.pdf");
+      await downloadApplicationPdf(previewRef.current, nm ? `${nm}_이력서.pdf` : "이력서.pdf");
     } catch (e) {
       alert("다운로드 중 오류가 발생했습니다.");
     } finally {
@@ -108,14 +90,7 @@ export default function ResumePreviewModal({
   const handlePrint = async () => {
     if (!previewRef.current) return;
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const imgData = canvas.toDataURL("image/png");
-      const w = window.open("", "_blank");
-      if (!w) return;
-      w.document.write(`<html><head><title>이력서 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" onload="window.print();window.close()" /></body></html>`);
-      w.document.close();
+      await printApplication(previewRef.current);
     } catch (e) {
       alert("인쇄 준비 중 오류가 발생했습니다.");
     }
@@ -128,7 +103,7 @@ export default function ResumePreviewModal({
 
   return (
     <div className="rp-modal-overlay" onClick={onClose}>
-      <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="rp-modal myapp-modal" onClick={(e) => e.stopPropagation()}>
         <div className="rp-modal-header">
           <h2 className="rp-modal-title">제출된 입사지원서</h2>
           <div className="rp-modal-actions">
@@ -146,27 +121,24 @@ export default function ResumePreviewModal({
           </div>
         </div>
         <div className="rp-modal-body">
-          {coverLetter && coverLetter.trim() && (
-            <div style={{ background: "#faf5ff", border: "1px solid #ecdcff", borderRadius: 10, padding: "16px 18px", margin: "0 0 18px" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 8 }}>지원 시 제출한 자기소개서</div>
-              <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
-            </div>
-          )}
           {loading ? (
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
           ) : data ? (
-            <ResumePreview
+            <ApplicationDocument
               ref={previewRef}
-              name={r?.name || ""}
-              birthDisplay={birthDisplay}
-              jobDisplay={jobCategory || ""}
-              phone={r?.phone || ""}
-              email={r?.email || ""}
-              portfolioUrl={r?.portfolio_url || null}
-              portfolioFilename={r?.portfolio_filename || null}
-              avatarUrl={r?.avatar_url || null}
-              resumeType={r?.job_type === "STORE" ? "salon" : "office"}
-              {...mapResume(data)}
+              coverLetter={coverLetter}
+              resume={{
+                name: r?.name || "",
+                birthDisplay,
+                jobDisplay: jobCategory || "",
+                phone: r?.phone || "",
+                email: r?.email || "",
+                portfolioUrl: r?.portfolio_url || null,
+                portfolioFilename: r?.portfolio_filename || null,
+                avatarUrl: r?.avatar_url || null,
+                resumeType: r?.job_type === "STORE" ? "salon" : "office",
+                ...mapResume(data),
+              }}
             />
           ) : (
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>

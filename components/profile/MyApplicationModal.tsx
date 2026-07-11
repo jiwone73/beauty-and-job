@@ -1,7 +1,9 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import ResumePreview from "@/components/profile/ResumePreview";
-import { genderLabel } from "@/lib/memberFormat";import { X, Download, Printer } from "lucide-react";
+import { X, Download, Printer } from "lucide-react";
+import { genderLabel } from "@/lib/memberFormat";
+import ApplicationDocument from "@/components/resume/ApplicationDocument";
+import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
 
 const mapResume = (data: any) => {
   const p = data?.profile || {};
@@ -47,82 +49,14 @@ export default function MyApplicationModal({
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const captureRef = useRef<HTMLDivElement>(null);
+
   const handleDownloadPdf = async () => {
     if (!captureRef.current) return;
     setIsDownloading(true);
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const jsPDF = (await import("jspdf")).default;
-      await new Promise((r) => setTimeout(r, 300));
-
-      const root = captureRef.current;
-      const scale = 2;
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const marginTop = 6;     // 페이지 상단 여백(mm)
-      const marginBottom = 6;  // 페이지 하단 여백(mm)
-      const marginX = 0;       // 좌우 여백은 캡처 내부(32px)로만 → 미리보기와 동일
-      const contentWidth = pdfWidth - marginX * 2;
-      const usableHeight = pageHeight - marginTop - marginBottom;
-
-      // 미리보기와 완전히 동일하게: 전체를 한 번에 캡처 후 페이지 높이로 분할
-      const blocks = [root];
-
-      let cursorY = marginTop;
-      let first = true;
-
-      for (const block of blocks) {
-        // 블록 하나를 개별 캡처
-        const canvas = await html2canvas(block, { scale, useCORS: true, backgroundColor: "#ffffff" });
-        const imgW = contentWidth;
-        const imgH = (canvas.height * imgW) / canvas.width;
-        const imgData = canvas.toDataURL("image/png");
-
-        // 블록이 한 페이지보다 큰 경우(아주 긴 섹션) → 페이지 높이로 잘라서 여러 장
-        if (imgH > usableHeight) {
-          // 현재 페이지에 남은 게 있으면 새 페이지에서 시작
-          if (!first && cursorY > marginTop) { pdf.addPage(); }
-          if (first) { first = false; }
-          const pxPerPage = Math.floor((canvas.width * usableHeight) / contentWidth);
-          let rendered = 0;
-          let pageStart = true;
-          while (rendered < canvas.height) {
-            const sliceH = Math.min(pxPerPage, canvas.height - rendered);
-            const pageCanvas = document.createElement("canvas");
-            pageCanvas.width = canvas.width;
-            pageCanvas.height = sliceH;
-            const ctx = pageCanvas.getContext("2d");
-            if (ctx) {
-              ctx.fillStyle = "#ffffff";
-              ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-              ctx.drawImage(canvas, 0, rendered, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-            }
-            const sliceImg = pageCanvas.toDataURL("image/png");
-            const sliceHmm = (sliceH * contentWidth) / canvas.width;
-            if (!pageStart) pdf.addPage();
-            pdf.addImage(sliceImg, "PNG", marginX, marginTop, contentWidth, sliceHmm);
-            rendered += sliceH;
-            pageStart = false;
-          }
-          cursorY = pageHeight; // 다음 블록은 새 페이지에서
-          continue;
-        }
-
-        // 현재 페이지에 이 블록이 안 들어가면 새 페이지로
-        if (!first && cursorY + imgH > pageHeight - marginBottom) {
-          pdf.addPage();
-          cursorY = marginTop;
-        }
-        if (first) first = false;
-
-        pdf.addImage(imgData, "PNG", marginX, cursorY, imgW, imgH);
-        cursorY += imgH;
-      }
-
       const nm = data?.user_name;
-      pdf.save(nm ? `${nm}_이력서.pdf` : "이력서.pdf");
-    } catch (e) {
+      await downloadApplicationPdf(captureRef.current, nm ? `${nm}_이력서.pdf` : "이력서.pdf");
+    } catch {
       alert("다운로드 중 오류가 발생했습니다.");
     } finally {
       setIsDownloading(false);
@@ -132,40 +66,8 @@ export default function MyApplicationModal({
   const handlePrint = async () => {
     if (!captureRef.current) return;
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(captureRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const imgData = canvas.toDataURL("image/png");
-
-      // 팝업 차단을 피하기 위해 숨은 iframe으로 인쇄
-      const iframe = document.createElement("iframe");
-      iframe.style.position = "fixed";
-      iframe.style.right = "0";
-      iframe.style.bottom = "0";
-      iframe.style.width = "0";
-      iframe.style.height = "0";
-      iframe.style.border = "0";
-      document.body.appendChild(iframe);
-
-      const doc = iframe.contentWindow?.document;
-      if (!doc) { document.body.removeChild(iframe); return; }
-      doc.open();
-      doc.write(`<html><head><title>이력서 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" /></body></html>`);
-      doc.close();
-
-      const img = doc.querySelector("img");
-      const triggerPrint = () => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-        // 인쇄 대화상자 닫힌 뒤 정리
-        setTimeout(() => { if (iframe.parentNode) document.body.removeChild(iframe); }, 1000);
-      };
-      if (img && !img.complete) {
-        img.onload = triggerPrint;
-      } else {
-        setTimeout(triggerPrint, 200);
-      }
-    } catch (e) {
+      await printApplication(captureRef.current);
+    } catch {
       alert("인쇄 준비 중 오류가 발생했습니다.");
     }
   };
@@ -192,9 +94,7 @@ export default function MyApplicationModal({
     <div className="rp-modal-overlay" onClick={onClose}>
       <div className="rp-modal myapp-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720, width: "94%", maxHeight: "92vh", display: "flex", flexDirection: "column" }}>
         <div className="rp-modal-header" style={{ flexShrink: 0 }}>
-          <h2 className="rp-modal-title">
-            제출한 입사지원서
-          </h2>
+          <h2 className="rp-modal-title">제출한 입사지원서</h2>
           <div className="rp-modal-actions">
             <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || loading}>
               <Download size={16} />
@@ -211,32 +111,23 @@ export default function MyApplicationModal({
           {loading ? (
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
           ) : data ? (
-            <div ref={captureRef} style={{ background: "#fff", padding: "0 32px" }}>
-              {data.cover_letter && data.cover_letter.trim() && (
-                <div style={{ background: "#fff", padding: "26px 0 22px", marginBottom: 0 }}>
-                  <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: "0 0 4px", lineHeight: 1.5 }}>자기소개서</h2>
-                  <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 14px" }}>
-                    {data.company_name} · {data.job_title}
-                  </p>
-                  <p style={{ fontSize: 14, color: "#333", lineHeight: 1.85, margin: 0, whiteSpace: "pre-wrap" }}>{data.cover_letter}</p>
-                </div>
-              )}
-              <div style={{ background: "#fff", padding: "22px 0 10px", borderTop: "1px solid #e0e0e0" }}>
-                <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.5 }}>이력서</h2>
-              </div>
-              <ResumePreview
-                name={data.user_name || ""}
-                birthDisplay={birthDisplay}
-                jobDisplay={data.user_job_type === "STORE" ? "매장직" : "사무직"}
-                phone={data.user_phone || ""}
-                email={data.user_email || ""}
-                portfolioUrl={data.portfolio_url || null}
-                portfolioFilename={data.portfolio_filename || null}
-                avatarUrl={data.user_avatar_url || null}
-                resumeType={data.user_job_type === "STORE" ? "salon" : "office"}
-                {...mapResume(data.resume)}
-              />
-            </div>
+            <ApplicationDocument
+              ref={captureRef}
+              coverLetter={data.cover_letter}
+              subtitle={`${data.company_name} · ${data.job_title}`}
+              resume={{
+                name: data.user_name || "",
+                birthDisplay,
+                jobDisplay: data.user_job_type === "STORE" ? "매장직" : "사무직",
+                phone: data.user_phone || "",
+                email: data.user_email || "",
+                portfolioUrl: data.portfolio_url || null,
+                portfolioFilename: data.portfolio_filename || null,
+                avatarUrl: data.user_avatar_url || null,
+                resumeType: data.user_job_type === "STORE" ? "salon" : "office",
+                ...mapResume(data.resume),
+              }}
+            />
           ) : (
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>지원서를 불러올 수 없습니다.</div>
           )}
