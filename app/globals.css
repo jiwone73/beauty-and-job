@@ -6711,11 +6711,21 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 3px;
   border-radius: 6px;
   transition: all 0.15s;
 }
 .resume-icon-btn:hover { background: #f3e9fb; color: #5f0080; }
 .resume-icon-btn.danger:hover { background: #fdecea; color: #e74c3c; }
+/* 텍스트 라벨이 있는 수정·삭제 버튼: 눈에 띄는 테두리 pill 형태 */
+.resume-icon-label { font-size: 12px; font-weight: 500; }
+.resume-icon-btn:has(.resume-icon-label) {
+  border: 1px solid var(--color-border);
+  padding: 5px 10px;
+  color: #666;
+}
+.resume-icon-btn:has(.resume-icon-label):hover { border-color: var(--color-primary); }
+.resume-icon-btn.danger:has(.resume-icon-label):hover { border-color: #e74c3c; }
 
 .resume-type-tabs {
   display: flex;
