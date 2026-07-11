@@ -7,31 +7,54 @@ export async function downloadApplicationPdf(el: HTMLElement, fileName: string) 
   await new Promise((r) => setTimeout(r, 300));
 
   const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+  const imgW = canvas.width;
+  const imgH = canvas.height;
+  const srcCtx = canvas.getContext("2d");
+  const pixels = srcCtx ? srcCtx.getImageData(0, 0, imgW, imgH).data : null;
+
   const pdf = new jsPDF("p", "mm", "a4");
   const pdfWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const marginTop = 0;    // 상하·좌우 여백 모두 캡처 내부 padding(40px)으로만 → 미리보기와 동일
-  const marginBottom = 0;
-  const marginX = 0;
+  const marginTop = 12;   // 각 페이지 상단 여백(mm, 자소서 상단 여백과 유사)
+  const marginBottom = 12;// 각 페이지 하단 여백(mm)
+  const marginX = 0;      // 좌우 여백은 캡처 내부 padding(40px)으로
   const contentWidth = pdfWidth - marginX * 2;
   const usableHeight = pageHeight - marginTop - marginBottom;
+  const pxPerPage = Math.floor((imgW * usableHeight) / contentWidth);
 
-  const pxPerPage = Math.floor((canvas.width * usableHeight) / contentWidth);
+  // 해당 y행이 거의 흰색인지(=여백/블록 사이) 판단
+  const isWhiteRow = (y: number) => {
+    if (!pixels) return false;
+    for (let x = 0; x < imgW; x += 6) {
+      const i = (y * imgW + x) * 4;
+      if (pixels[i] < 244 || pixels[i + 1] < 244 || pixels[i + 2] < 244) return false;
+    }
+    return true;
+  };
+
   let rendered = 0;
   let pageStart = true;
-  while (rendered < canvas.height) {
-    const sliceH = Math.min(pxPerPage, canvas.height - rendered);
+  while (rendered < imgH) {
+    let sliceH = Math.min(pxPerPage, imgH - rendered);
+    // 마지막 페이지가 아니면, 글자·배너를 자르지 않도록 흰 여백 줄에서 끊기
+    if (rendered + sliceH < imgH) {
+      const target = rendered + sliceH;
+      const minCut = rendered + Math.floor(pxPerPage * 0.5);
+      for (let y = target; y > minCut; y--) {
+        if (isWhiteRow(y)) { sliceH = y - rendered; break; }
+      }
+    }
     const pageCanvas = document.createElement("canvas");
-    pageCanvas.width = canvas.width;
+    pageCanvas.width = imgW;
     pageCanvas.height = sliceH;
     const ctx = pageCanvas.getContext("2d");
     if (ctx) {
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-      ctx.drawImage(canvas, 0, rendered, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+      ctx.fillRect(0, 0, imgW, sliceH);
+      ctx.drawImage(canvas, 0, rendered, imgW, sliceH, 0, 0, imgW, sliceH);
     }
     const sliceImg = pageCanvas.toDataURL("image/png");
-    const sliceHmm = (sliceH * contentWidth) / canvas.width;
+    const sliceHmm = (sliceH * contentWidth) / imgW;
     if (!pageStart) pdf.addPage();
     pdf.addImage(sliceImg, "PNG", marginX, marginTop, contentWidth, sliceHmm);
     rendered += sliceH;
