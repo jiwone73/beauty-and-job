@@ -241,6 +241,17 @@ function JobsPageInner() {
           ))}
         </div>
 
+        {/* ===== 내 주변 채용 진입 ===== */}
+        <a href="/jobs/nearby"
+          style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", margin: "0 0 12px", background: "linear-gradient(90deg,#faf5ff,#f3e5f5)", border: "1px solid #e8d8f5", borderRadius: 12, textDecoration: "none", color: "#5f0080" }}>
+          <span style={{ fontSize: 18 }}>📍</span>
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: "block", fontSize: 14, fontWeight: 700 }}>내 주변 채용 보기</span>
+            <span style={{ display: "block", fontSize: 12, color: "#8a5fb0" }}>거주지·현재위치 반경 안의 공고를 지도로 확인해요</span>
+          </span>
+          <span style={{ fontSize: 18, color: "#b088d0" }}>›</span>
+        </a>
+
         {/* ===== 필터 바 ===== */}
         <div className="jobs-filter-bar">
           <div className="jobs-filter-left">
