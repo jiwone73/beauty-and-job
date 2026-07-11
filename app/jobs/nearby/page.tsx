@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Crosshair, MapPin, Search } from "lucide-react";
+import { ChevronLeft, Crosshair, MapPin } from "lucide-react";
 
 declare global {
   interface Window { kakao: any }
@@ -46,6 +46,17 @@ function loadKakao(cb: () => void) {
   document.head.appendChild(s);
 }
 
+// 두 좌표 사이 거리(m)
+function distM(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const R = 6371000;
+  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((a.lat * Math.PI) / 180) * Math.cos((b.lat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
 function fmtDist(km: number) {
   if (km < 1) return `약 ${Math.round(km * 1000)}m`;
   return `약 ${km.toFixed(1)}km`;
@@ -61,8 +72,9 @@ export default function NearbyJobsPage() {
   const router = useRouter();
   const mapEl = useRef<HTMLDivElement>(null);
   const mapObj = useRef<any>(null);
-  const overlays = useRef<any[]>([]);
   const geocoder = useRef<any>(null);
+  const lastSearch = useRef<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
+  const debounce = useRef<any>(null);
 
   const [sdkReady, setSdkReady] = useState(false);
   const [radius, setRadius] = useState(2);
@@ -70,7 +82,6 @@ export default function NearbyJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(false);
   const [areaLabel, setAreaLabel] = useState("");
-  const [searched, setSearched] = useState<{ lat: number; lng: number } | null>(null);
   const [notice, setNotice] = useState("");
 
   const radiusRef = useRef(radius);
@@ -78,16 +89,15 @@ export default function NearbyJobsPage() {
   useEffect(() => { radiusRef.current = radius; }, [radius]);
   useEffect(() => { typeRef.current = type; }, [type]);
 
-  // 현재 지도 중앙 기준으로 검색
+  // 현재 지도 중앙 기준 검색
   const searchHere = useCallback(() => {
     if (!mapObj.current) return;
     const c = mapObj.current.getCenter();
     const lat = c.getLat();
     const lng = c.getLng();
-    setSearched({ lat, lng });
+    lastSearch.current = { lat, lng };
     setLoading(true);
 
-    // 지역명 역지오코딩 (표시용)
     if (geocoder.current) {
       geocoder.current.coord2RegionCode(lng, lat, (res: any[], status: string) => {
         if (status === window.kakao.maps.services.Status.OK) {
@@ -106,13 +116,25 @@ export default function NearbyJobsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // 1) SDK 로드
+  // 지도 멈추면(idle) 자동 검색 — 디바운스 + 30m 미만 이동은 스킵
+  const onIdle = useCallback(() => {
+    if (debounce.current) clearTimeout(debounce.current);
+    debounce.current = setTimeout(() => {
+      if (!mapObj.current) return;
+      const c = mapObj.current.getCenter();
+      const cur = { lat: c.getLat(), lng: c.getLng() };
+      if (distM(lastSearch.current, cur) < 30) return;
+      searchHere();
+    }, 400);
+  }, [searchHere]);
+
+  // SDK 로드
   useEffect(() => {
     if (!KEY) { setNotice("지도 키가 설정되지 않았습니다."); return; }
     loadKakao(() => setSdkReady(true));
   }, []);
 
-  // 2) 초기 중심 좌표 결정 (거주지 → 실패 시 현재위치 → 서울) 후 지도 생성 + 첫 검색
+  // 초기 중심(거주지→현재위치 실패 시 서울) 설정 + 지도 생성 + idle 리스너
   useEffect(() => {
     if (!sdkReady || !mapEl.current || mapObj.current) return;
     geocoder.current = new window.kakao.maps.services.Geocoder();
@@ -123,12 +145,13 @@ export default function NearbyJobsPage() {
         center: new window.kakao.maps.LatLng(lat, lng),
         level: 5,
       });
-      searchHere();
+      window.kakao.maps.event.addListener(mapObj.current, "idle", onIdle);
+      searchHere(); // 첫 검색
     };
 
     const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
     if (!token) {
-      setNotice("로그인하면 거주지 기준으로 시작해요. 지도를 움직여 원하는 위치에서 검색하세요.");
+      setNotice("로그인하면 거주지에서 시작해요. 지도를 움직이면 그 위치 주변이 자동 검색됩니다.");
       createMap(SEOUL.lat, SEOUL.lng);
       return;
     }
@@ -153,55 +176,20 @@ export default function NearbyJobsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sdkReady]);
 
-  // 3) 반경/유형 변경 시 현재 중심에서 재검색
+  // 반경/유형 변경 시 현재 중심에서 재검색
   useEffect(() => {
     if (mapObj.current) searchHere();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radius, type]);
 
-  // 4) 검색 결과 마커 + 반경원 렌더
-  useEffect(() => {
-    if (!mapObj.current || !searched) return;
-    overlays.current.forEach((o) => o.setMap(null));
-    overlays.current = [];
-    const map = mapObj.current;
-
-    const circle = new window.kakao.maps.Circle({
-      center: new window.kakao.maps.LatLng(searched.lat, searched.lng),
-      radius: radius * 1000,
-      strokeWeight: 1, strokeColor: "#5f0080", strokeOpacity: 0.4,
-      fillColor: "#5f0080", fillOpacity: 0.05,
-    });
-    circle.setMap(map);
-    overlays.current.push(circle);
-
-    jobs.forEach((j) => {
-      if (!j.latitude || !j.longitude) return;
-      const marker = new window.kakao.maps.Marker({
-        position: new window.kakao.maps.LatLng(j.latitude, j.longitude),
-        map,
-      });
-      const iw = new window.kakao.maps.InfoWindow({
-        content: `<div style="padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis">${j.brand_name || j.company_name || ""} · ${fmtDist(j.distance_km)}</div>`,
-      });
-      window.kakao.maps.event.addListener(marker, "click", () => router.push(`/jobs/${j.id}`));
-      window.kakao.maps.event.addListener(marker, "mouseover", () => iw.open(map, marker));
-      window.kakao.maps.event.addListener(marker, "mouseout", () => iw.close());
-      overlays.current.push(marker);
-    });
-  }, [jobs, searched, radius, router]);
-
   const goCurrentLocation = useCallback(() => {
     if (!navigator.geolocation || !mapObj.current) return;
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        mapObj.current.setCenter(new window.kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-        searchHere();
-      },
+      (pos) => mapObj.current.setCenter(new window.kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude)),
       () => setNotice("위치 권한이 없어 이동하지 못했어요."),
       { enableHighAccuracy: true, timeout: 8000 }
     );
-  }, [searchHere]);
+  }, []);
 
   return (
     <div style={{ maxWidth: 640, margin: "0 auto", paddingBottom: 40 }}>
@@ -214,24 +202,23 @@ export default function NearbyJobsPage() {
         {areaLabel && <span style={{ marginLeft: "auto", fontSize: 12.5, color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "45%" }}>📍 {areaLabel}</span>}
       </div>
 
-      {/* 지도 + 중앙 고정 핀 + 검색 버튼 */}
+      {/* 지도 + 중앙 고정 핀 */}
       <div style={{ position: "relative", width: "100%", height: 320 }}>
         <div ref={mapEl} style={{ width: "100%", height: "100%", background: "#f2f2f2" }} />
-        {/* 화면 중앙 고정 핀 (지도를 움직여도 항상 중앙) */}
+        {/* 화면 중앙 고정 핀 (지도를 움직여도 항상 중앙 = 검색 기준점) */}
         <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -100%)", pointerEvents: "none", zIndex: 5 }}>
           <MapPin size={40} color="#5f0080" fill="#5f0080" strokeWidth={1.5} style={{ filter: "drop-shadow(0 2px 3px rgba(0,0,0,.3))" }} />
         </div>
-        {/* 이 위치에서 검색 */}
-        <button onClick={searchHere}
-          style={{ position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)", zIndex: 6, display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 16px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 22, fontSize: 13.5, fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,.25)" }}>
-          <Search size={15} /> 이 위치에서 검색
-        </button>
         {/* 현재위치 */}
         <button onClick={goCurrentLocation}
           style={{ position: "absolute", bottom: 12, right: 12, zIndex: 6, width: 42, height: 42, borderRadius: "50%", background: "#fff", border: "1px solid #ddd", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,.2)" }}
           aria-label="현재위치로 이동">
           <Crosshair size={20} color="#5f0080" />
         </button>
+        {/* 안내 */}
+        <div style={{ position: "absolute", top: 10, left: "50%", transform: "translateX(-50%)", zIndex: 6, padding: "5px 12px", background: "rgba(0,0,0,0.55)", color: "#fff", borderRadius: 16, fontSize: 12, fontWeight: 500, whiteSpace: "nowrap", pointerEvents: "none" }}>
+          지도를 움직이면 그 위치로 검색돼요
+        </div>
       </div>
 
       {/* 반경 · 유형 컨트롤 */}
@@ -265,7 +252,7 @@ export default function NearbyJobsPage() {
           <p style={{ textAlign: "center", color: "#888", padding: "32px 0", fontSize: 14 }}>불러오는 중…</p>
         ) : jobs.length === 0 ? (
           <p style={{ textAlign: "center", color: "#888", padding: "40px 24px", fontSize: 14, lineHeight: 1.6 }}>
-            이 위치 반경 {radius}km 안에 조건에 맞는 공고가 없어요.<br />지도를 옮겨 [이 위치에서 검색]을 눌러보세요.
+            이 위치 반경 {radius}km 안에 조건에 맞는 공고가 없어요.<br />지도를 옮기거나 반경을 넓혀보세요.
           </p>
         ) : (
           jobs.map((j) => (
