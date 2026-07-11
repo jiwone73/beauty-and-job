@@ -556,11 +556,7 @@ export default function ResumeEditor({
             </div>
           ))
         ) : (
-          <div className="resume-empty-section">
-            <button className="resume-empty-btn" onClick={() => { setEditLink(null); setLinkModalOpen(true); }}>
-              <Plus size={16} /> 링크 추가하기
-            </button>
-          </div>
+          <p style={{ fontSize: "13px", color: "#aaa", margin: "8px 0 0" }}>아직 등록된 링크가 없어요. 오른쪽 + 로 추가하세요.</p>
         )}
       </section>
 
