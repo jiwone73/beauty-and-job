@@ -10,9 +10,9 @@ export async function downloadApplicationPdf(el: HTMLElement, fileName: string) 
   const pdf = new jsPDF("p", "mm", "a4");
   const pdfWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const marginTop = 6;
-  const marginBottom = 6;
-  const marginX = 0; // 좌우 여백은 캡처 내부 padding으로만 → 미리보기와 동일
+  const marginTop = 0;    // 상하·좌우 여백 모두 캡처 내부 padding(40px)으로만 → 미리보기와 동일
+  const marginBottom = 0;
+  const marginX = 0;
   const contentWidth = pdfWidth - marginX * 2;
   const usableHeight = pageHeight - marginTop - marginBottom;
 

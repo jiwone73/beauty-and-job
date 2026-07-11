@@ -17,9 +17,9 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
 ) {
   const hasCover = !!(coverLetter && coverLetter.trim());
   return (
-    <div ref={ref} className="app-doc" style={{ background: "#fff", padding: "0 32px" }}>
+    <div ref={ref} className="app-doc" style={{ background: "#fff", padding: "40px" }}>
       {hasCover && (
-        <div style={{ background: "#fff", padding: "26px 0 22px" }}>
+        <div style={{ background: "#fff", padding: "0 0 22px" }}>
           <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: "0 0 4px", lineHeight: 1.5 }}>자기소개서</h2>
           {subtitle && (
             <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 14px" }}>{subtitle}</p>
