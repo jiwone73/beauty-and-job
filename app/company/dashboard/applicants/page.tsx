@@ -413,29 +413,28 @@ function ApplicantsContent() {
           <div className="admin-modal" style={{maxWidth:"720px", maxHeight:"90vh", display:"flex", flexDirection:"column"}} onClick={e => e.stopPropagation()}>
             <div className="admin-modal-header">
               <h2 className="admin-modal-title">{selected.user_name}</h2>
-              <button className="admin-modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
+                {resumeData && (
+                  <>
+                    <button onClick={handleDownloadPdf} disabled={isDownloading}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 12px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: isDownloading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}>
+                      <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 다운로드"}
+                    </button>
+                    <button onClick={handlePrint}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 12px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                      <Printer size={15} /> 프린트
+                    </button>
+                  </>
+                )}
+                <button className="admin-modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
+              </div>
             </div>
             <div className="admin-modal-body">
-              <div className="admin-modal-info-grid">
-                <div><label>지원 공고</label><span>{selected.job_title}</span></div>
-                <div><label>지원일</label><span>{formatDate(selected.applied_at)}</span></div>
-              </div>
-              {resumeData && (
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "16px" }}>
-                  <button onClick={handleDownloadPdf} disabled={isDownloading}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: isDownloading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}>
-                    <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 다운로드"}
-                  </button>
-                  <button onClick={handlePrint}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                    <Printer size={15} /> 프린트
-                  </button>
-                </div>
-              )}
               {/* ===== PDF 캡처 영역 (공용 지원서 문서) ===== */}
               {resumeLoading ? (
                 <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
               ) : resumeData ? (
+                <div style={{ margin: "0 -24px" }}>{/* admin-modal-body(24px) 상쇄 → 문서 좌우 여백 40px로 통일 */}
                 <ApplicationDocument
                   ref={previewRef}
                   coverLetter={coverLetter}
@@ -472,6 +471,7 @@ function ApplicantsContent() {
                     </div>
                   )}
                 </ApplicationDocument>
+                </div>
               ) : (
                 <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
               )}
