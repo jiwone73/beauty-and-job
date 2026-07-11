@@ -101,6 +101,11 @@ export default function HeroMobile() {
         </div>
       </form>
 
+      <a href="/jobs/nearby"
+        style={{ display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: 4, margin: "10px 0 0", fontSize: 13, fontWeight: 700, color: "#5f0080", textDecoration: "none" }}>
+        <MapPin size={14} /> 내 주변 채용 보기 ›
+      </a>
+
       <div className="hero-m-ai-wrap">
         <div className="hero-m-ai-header">
           <span>🔥</span>

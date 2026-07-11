@@ -4135,11 +4135,15 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobs-header-inner { padding: 0 16px; }
   .jobs-gnb { display: none; }
   .jobs-container { padding: 0 16px; }
-  .jobs-filter-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
-  .jobs-filter-left { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; }
+  .jobs-filter-bar { flex-direction: column; gap: 8px; align-items: flex-start; }
+  /* 모바일 필터: 텍스트형 한 줄 (직군·지역·내 주변·필터) */
+  .jobs-filter-left { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; width: 100%; }
   .jobs-filter-left .jobs-dropdown-wrap { min-width: 0; }
-  .jobs-filter-left .jobs-filter-btn { width: 100%; justify-content: space-between; padding: 9px 10px; font-size: 13px; gap: 2px; overflow: hidden; white-space: nowrap; }
-  .jobs-filter-right { width: 100%; justify-content: space-between; }
+  .jobs-filter-left .jobs-filter-btn { width: 100%; justify-content: center; padding: 6px 2px; font-size: 12.5px; gap: 1px; border: none; background: transparent; overflow: hidden; white-space: nowrap; }
+  .jobs-filter-left .jobs-filter-btn svg { width: 13px; height: 13px; }
+  /* 정렬: 우측 정렬 + 슬림 */
+  .jobs-filter-right { width: 100%; justify-content: flex-end; }
+  .jobs-filter-right .jobs-sort-btn { padding: 5px 12px; font-size: 12.5px; }
   .jobs-card-grid { grid-template-columns: 1fr; }
 
   /* 채용공고 상세 */

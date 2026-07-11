@@ -6,7 +6,7 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER, SALARY_STORE, SALARY_OFFICE } from "@/components/FilterSheet";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Bookmark, ChevronDown, ChevronRight, MapPin } from "lucide-react";
+import { Search, Bookmark, ChevronDown, ChevronRight } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { getJobSubGroups } from "@/lib/data/jobGroups";
@@ -251,7 +251,7 @@ function JobsPageInner() {
                 onClick={() => { setShowJobDrop(true); }}
               >
                 {selectedJobs.length === 0
-                  ? "직군 전체"
+                  ? "직군"
                   : selectedJobs.length === 1
                   ? selectedJobs[0]
                   : `${selectedJobs[0]} 외 ${selectedJobs.length - 1}`}
@@ -273,7 +273,7 @@ function JobsPageInner() {
                 className={`jobs-filter-btn ${selectedRegions.length > 0 ? "active" : ""}`}
                 onClick={() => setShowRegionModal(true)}>
                 {selectedRegions.length === 0
-                  ? "지역 전체"
+                  ? "지역"
                   : selectedRegions.length === 1
                   ? selectedRegions[0]
                   : `${selectedRegions[0]} 외 ${selectedRegions.length - 1}`}
@@ -289,8 +289,8 @@ function JobsPageInner() {
 
             {/* 내 주변 (지역의 위치기반 대안) */}
             <a href="/jobs/nearby" className="jobs-filter-btn"
-              style={{ display: "inline-flex", alignItems: "center", gap: 4, textDecoration: "none", color: "#5f0080", borderColor: "#e0d0f0", background: "#faf5ff", fontWeight: 700, whiteSpace: "nowrap" }}>
-              <MapPin size={15} /> 내 주변
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none", color: "#5f0080", fontWeight: 700, whiteSpace: "nowrap" }}>
+              내 주변
             </a>
 
             {/* 경력 (PC) */}
@@ -392,7 +392,7 @@ function JobsPageInner() {
               >
                 {(() => {
                   const n = (selectedCareer !== "경력 전체" ? 1 : 0) + (selectedEmployment !== "고용형태 전체" ? 1 : 0) + selectedBenefits.length + (selectedSalary > 0 ? 1 : 0);
-                  return n > 0 ? `상세 필터 · ${n}` : "상세 필터";
+                  return n > 0 ? `필터 · ${n}` : "필터";
                 })()}
                 <ChevronDown size={16} />
               </button>
