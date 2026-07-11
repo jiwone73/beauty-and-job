@@ -11014,3 +11014,5 @@ input[type="range"].career-slider::-moz-range-thumb {
 .myapp-modal .rp-wrap { padding-left: 0; padding-right: 0; }
 /* 미리보기 배경 흰색 + 좌우 패딩은 캡처 안(padding)에서만 → 미리보기=PDF 동일 */
 .myapp-modal .rp-modal-body { background: #fff; padding: 24px 0; }
+/* 이력서 기본정보 아래 선을 흐리게(자소서↔이력서 구분이 더 도드라지게) */
+.myapp-modal .rp-header { border-bottom: 1px solid #ececec; }
