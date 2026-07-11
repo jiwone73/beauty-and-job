@@ -391,7 +391,7 @@ function JobsPageInner() {
               >
                 {(() => {
                   const n = (selectedCareer !== "경력 전체" ? 1 : 0) + (selectedEmployment !== "고용형태 전체" ? 1 : 0) + selectedBenefits.length + (selectedSalary > 0 ? 1 : 0);
-                  return n > 0 ? `필터 · ${n}` : "필터";
+                  return n > 0 ? `상세 필터 · ${n}` : "상세 필터";
                 })()}
                 <ChevronDown size={16} />
               </button>

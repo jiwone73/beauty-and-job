@@ -251,7 +251,7 @@ export default function NearbyJobsPage() {
       </div>
 
       {/* 지도 + 중앙 고정 핀 */}
-      <div style={{ position: "relative", width: "100%", height: 320 }}>
+      <div className="nearby-map-wrap" style={{ position: "relative", width: "100%" }}>
         <div ref={mapEl} style={{ width: "100%", height: "100%", background: "#f2f2f2" }} />
         {/* 화면 중앙 고정 핀 (지도를 움직여도 항상 중앙 = 검색 기준점) */}
         <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -100%)", pointerEvents: "none", zIndex: 5, fontSize: 34, lineHeight: 1, filter: "drop-shadow(0 2px 3px rgba(0,0,0,.35))" }}>

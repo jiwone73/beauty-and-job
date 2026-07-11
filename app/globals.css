@@ -10997,3 +10997,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin-top: 2px;
   font-weight: 500;
 }
+
+/* 내 주변 채용 지도 높이 (모바일 320 / PC 560 — 더 정사각형에 가깝게) */
+.nearby-map-wrap { height: 320px; }
+@media (min-width: 768px) {
+  .nearby-map-wrap { height: 560px; }
+}
