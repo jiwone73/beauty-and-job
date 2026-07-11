@@ -73,6 +73,7 @@ export default function NearbyJobsPage() {
   const mapEl = useRef<HTMLDivElement>(null);
   const mapObj = useRef<any>(null);
   const geocoder = useRef<any>(null);
+  const circleRef = useRef<any>(null);
   const lastSearch = useRef<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
   const debounce = useRef<any>(null);
 
@@ -97,6 +98,20 @@ export default function NearbyJobsPage() {
     const lng = c.getLng();
     lastSearch.current = { lat, lng };
     setLoading(true);
+
+    // 반경 원 그리기 (중앙 핀 기준)
+    const pos = new window.kakao.maps.LatLng(lat, lng);
+    if (!circleRef.current) {
+      circleRef.current = new window.kakao.maps.Circle({
+        center: pos, radius: radiusRef.current * 1000,
+        strokeWeight: 2, strokeColor: "#5f0080", strokeOpacity: 0.6, strokeStyle: "solid",
+        fillColor: "#5f0080", fillOpacity: 0.08,
+      });
+      circleRef.current.setMap(mapObj.current);
+    } else {
+      circleRef.current.setPosition(pos);
+      circleRef.current.setRadius(radiusRef.current * 1000);
+    }
 
     if (geocoder.current) {
       geocoder.current.coord2RegionCode(lng, lat, (res: any[], status: string) => {
@@ -181,6 +196,14 @@ export default function NearbyJobsPage() {
     if (mapObj.current) searchHere();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radius, type]);
+
+  // 반경 변경 시 원이 화면에 들어오도록 줌 조정
+  useEffect(() => {
+    if (!mapObj.current) return;
+    const level = radius <= 1 ? 6 : radius <= 2 ? 7 : 8;
+    mapObj.current.setLevel(level);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [radius]);
 
   const goCurrentLocation = useCallback(() => {
     if (!navigator.geolocation || !mapObj.current) return;
