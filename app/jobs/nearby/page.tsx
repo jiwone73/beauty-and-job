@@ -105,8 +105,8 @@ export default function NearbyJobsPage() {
     if (!circleRef.current) {
       circleRef.current = new window.kakao.maps.Circle({
         center: pos, radius: radiusRef.current * 1000,
-        strokeWeight: 1, strokeColor: "#a06cc9", strokeOpacity: 0.5, strokeStyle: "dashed",
-        fillColor: "#5f0080", fillOpacity: 0.015,
+        strokeWeight: 2, strokeColor: "#5f0080", strokeOpacity: 0.8, strokeStyle: "dashed",
+        fillColor: "#5f0080", fillOpacity: 0.05,
       });
       circleRef.current.setMap(mapObj.current);
     } else {
