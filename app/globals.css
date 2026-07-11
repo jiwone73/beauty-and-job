@@ -1701,8 +1701,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-link-url { font-size: 13px; color: var(--color-primary); text-decoration: none; }
 .resume-link-url:hover { text-decoration: underline; }
 
-.resume-skill-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.resume-skill-chip { background: var(--color-primary-soft); color: var(--color-primary); font-size: 12px; font-weight: 400; padding: 5px 10px; border-radius: 100px; }
+.resume-skill-chips { display: block; }
+/* 칩(pill) 없이 텍스트만, 가운뎃점 구분 */
+.resume-skill-chip { display: inline; font-size: 14px; line-height: 1.8; color: #333; }
+.resume-skill-chip:not(:last-child)::after { content: " · "; color: #bbb; }
 
 .resume-bottom-save { padding: 24px 0; }
 .resume-save-btn-full { width: 100%; height: 52px; background: var(--color-text); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.15s; font-family: inherit; }
