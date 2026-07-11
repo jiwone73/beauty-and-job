@@ -6,7 +6,7 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER, SALARY_STORE, SALARY_OFFICE } from "@/components/FilterSheet";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Bookmark, ChevronDown, ChevronRight } from "lucide-react";
+import { Search, Bookmark, ChevronDown, ChevronRight, MapPin } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { getJobSubGroups } from "@/lib/data/jobGroups";
@@ -241,16 +241,13 @@ function JobsPageInner() {
           ))}
         </div>
 
-        {/* ===== 내 주변 채용 진입 ===== */}
-        <a href="/jobs/nearby"
-          style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", margin: "0 0 12px", background: "linear-gradient(90deg,#faf5ff,#f3e5f5)", border: "1px solid #e8d8f5", borderRadius: 12, textDecoration: "none", color: "#5f0080" }}>
-          <span style={{ fontSize: 18 }}>📍</span>
-          <span style={{ flex: 1, minWidth: 0 }}>
-            <span style={{ display: "block", fontSize: 14, fontWeight: 700 }}>내 주변 채용 보기</span>
-            <span style={{ display: "block", fontSize: 12, color: "#8a5fb0" }}>거주지·현재위치 반경 안의 공고를 지도로 확인해요</span>
-          </span>
-          <span style={{ fontSize: 18, color: "#b088d0" }}>›</span>
-        </a>
+        {/* ===== 내 주변 채용 진입 (아이콘+텍스트, 우측 정렬) ===== */}
+        <div style={{ maxWidth: 1280, margin: "0 auto", width: "100%", padding: "8px 16px 0", display: "flex", justifyContent: "flex-end" }}>
+          <a href="/jobs/nearby"
+            style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 13.5, fontWeight: 700, color: "#5f0080", textDecoration: "none", whiteSpace: "nowrap" }}>
+            <MapPin size={15} /> 내 주변 채용
+          </a>
+        </div>
 
         {/* ===== 필터 바 ===== */}
         <div className="jobs-filter-bar">
