@@ -3298,12 +3298,13 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-top: 6px;
 }
 .rp-chip {
   display: inline-block;
-  padding: 6px 12px;
+  padding: 7px 13px;
   font-size: 13px;
-  line-height: 1;
+  line-height: 1.35;
   color: #333;
   background: #f5f5f5;
   border-radius: 20px;
