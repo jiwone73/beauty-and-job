@@ -434,6 +434,7 @@ function ApplicantsContent() {
               {resumeLoading ? (
                 <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
               ) : resumeData ? (
+                <>
                 <div style={{ margin: "-24px" }}>{/* admin-modal-body(24px) 4면 상쇄 → 문서 여백 40px로 통일 */}
                 <ApplicationDocument
                   ref={previewRef}
@@ -454,24 +455,25 @@ function ApplicantsContent() {
                     resumeType: selected.user_job_type === "STORE" ? "salon" : "office",
                     ...mapResume(resumeData),
                   }}
-                >
-                  {resumeFileInfo.url && (
-                    <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
-                      <FileText size={22} color="#5f0080" />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {resumeFileInfo.name || "첨부 이력서"}
-                        </p>
-                        <p style={{ fontSize: "12px", color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
-                      </div>
-                      <a href={resumeFileInfo.url} target="_blank" rel="noopener noreferrer"
-                        style={{ padding: "8px 14px", borderRadius: "8px", background: "#5f0080", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
-                        다운로드
-                      </a>
-                    </div>
-                  )}
-                </ApplicationDocument>
+                />
                 </div>
+                {/* 첨부 이력서 파일 배너: 화면에서만(클릭 다운로드), PDF/인쇄 캡처에는 제외 */}
+                {resumeFileInfo.url && (
+                  <div style={{ marginTop: "20px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
+                    <FileText size={22} color="#5f0080" />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {resumeFileInfo.name || "첨부 이력서"}
+                      </p>
+                      <p style={{ fontSize: "12px", color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
+                    </div>
+                    <a href={resumeFileInfo.url} target="_blank" rel="noopener noreferrer"
+                      style={{ padding: "8px 14px", borderRadius: "8px", background: "#5f0080", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
+                      다운로드
+                    </a>
+                  </div>
+                )}
+                </>
               ) : (
                 <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
               )}
