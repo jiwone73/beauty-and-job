@@ -3196,7 +3196,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .rp-header {
   padding-bottom: 24px;
   margin-bottom: 8px;
-  border-bottom: 2px solid #5f0080;
+  border-bottom: 1px solid #ececec;
 }
 .rp-name {
   font-size: 14px;
