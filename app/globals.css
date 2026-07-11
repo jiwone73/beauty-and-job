@@ -3300,14 +3300,15 @@ input[type="range"].career-slider::-moz-range-thumb {
   gap: 8px;
 }
 .rp-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
+  display: inline-block;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 12px;
   font-size: 13px;
-  line-height: 1;
   color: #333;
   background: #f5f5f5;
   border-radius: 20px;
+  vertical-align: top;
 }
 
 /* 링크 */
