@@ -3204,12 +3204,12 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .rp-meta {
   font-size: 14px;
-  color: #555;
+  color: #333;
   margin: 0 0 4px;
 }
 .rp-contact {
-  font-size: 13px;
-  color: #888;
+  font-size: 14px;
+  color: #333;
   margin: 0;
 }
 
