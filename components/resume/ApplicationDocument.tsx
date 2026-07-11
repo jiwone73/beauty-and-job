@@ -27,8 +27,8 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
           <p style={{ fontSize: 14, color: "#333", lineHeight: 1.85, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
         </div>
       )}
-      <div style={{ background: "#fff", padding: "22px 0 0", borderTop: hasCover ? "1px solid #e0e0e0" : "none" }}>
-        <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.5 }}>이력서</h2>
+      <div style={{ background: "#fff", padding: "22px 0 6px", borderTop: hasCover ? "1px solid #e0e0e0" : "none" }}>
+        <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.6 }}>이력서</h2>
       </div>
       <ResumePreview {...resume} />
       {children}

@@ -15,12 +15,9 @@ export async function downloadApplicationPdf(el: HTMLElement, fileName: string) 
   const pdf = new jsPDF("p", "mm", "a4");
   const pdfWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const marginTop = 12;   // 각 페이지 상단 여백(mm, 자소서 상단 여백과 유사)
-  const marginBottom = 12;// 각 페이지 하단 여백(mm)
+  const pageGap = 12;     // 페이지 사이 여백(mm) — 첫 페이지 상단/마지막 하단은 캡처의 40px가 담당
   const marginX = 0;      // 좌우 여백은 캡처 내부 padding(40px)으로
   const contentWidth = pdfWidth - marginX * 2;
-  const usableHeight = pageHeight - marginTop - marginBottom;
-  const pxPerPage = Math.floor((imgW * usableHeight) / contentWidth);
 
   // 해당 y행이 거의 흰색인지(=여백/블록 사이) 판단
   const isWhiteRow = (y: number) => {
@@ -33,13 +30,16 @@ export async function downloadApplicationPdf(el: HTMLElement, fileName: string) 
   };
 
   let rendered = 0;
-  let pageStart = true;
+  let first = true;
   while (rendered < imgH) {
-    let sliceH = Math.min(pxPerPage, imgH - rendered);
+    const topM = first ? 0 : pageGap;                 // 첫 페이지는 캡처 상단 40px가 여백, 이후는 pageGap
+    const usableHeight = pageHeight - topM - pageGap;  // 하단은 항상 pageGap 확보
+    const maxSlice = Math.floor((imgW * usableHeight) / contentWidth);
+    let sliceH = Math.min(maxSlice, imgH - rendered);
     // 마지막 페이지가 아니면, 글자·배너를 자르지 않도록 흰 여백 줄에서 끊기
     if (rendered + sliceH < imgH) {
       const target = rendered + sliceH;
-      const minCut = rendered + Math.floor(pxPerPage * 0.5);
+      const minCut = rendered + Math.floor(maxSlice * 0.5);
       for (let y = target; y > minCut; y--) {
         if (isWhiteRow(y)) { sliceH = y - rendered; break; }
       }
@@ -55,10 +55,10 @@ export async function downloadApplicationPdf(el: HTMLElement, fileName: string) 
     }
     const sliceImg = pageCanvas.toDataURL("image/png");
     const sliceHmm = (sliceH * contentWidth) / imgW;
-    if (!pageStart) pdf.addPage();
-    pdf.addImage(sliceImg, "PNG", marginX, marginTop, contentWidth, sliceHmm);
+    if (!first) pdf.addPage();
+    pdf.addImage(sliceImg, "PNG", marginX, topM, contentWidth, sliceHmm);
     rendered += sliceH;
-    pageStart = false;
+    first = false;
   }
   pdf.save(fileName);
 }
