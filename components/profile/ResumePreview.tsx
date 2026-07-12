@@ -91,12 +91,13 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         {avatarUrl && (
           <div style={{
             flexShrink: 0,
-            width: "96px",
-            height: "120px",
+            width: "100px",
+            height: "128px",
             borderRadius: "4px",
             overflow: "hidden",
             border: "1px solid #e0e0e0",
             background: "#f5f5f5",
+            marginTop: "-30px",
           }}>
             <img src={avatarUrl} alt="프로필" style={{width: "100%", height: "100%", objectFit: "cover"}} />
           </div>
