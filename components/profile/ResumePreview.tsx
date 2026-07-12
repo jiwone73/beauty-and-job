@@ -73,6 +73,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
 ) {
   return (
     <div ref={ref} className="rp-wrap">
+      <h2 className="rp-section-title" style={{ marginBottom: "12px" }}>기본 정보</h2>
       <div className="rp-header" style={{display:"flex", alignItems:"flex-start", gap:"20px"}}>
         <div style={{flex:1, minWidth:0}}>
           <h1 className="rp-name">{name || "이름"}</h1>
@@ -137,22 +138,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               <span key={area} className="rp-chip">{area}</span>
             ))}
           </div>
-        </div>
-      )}
-      {certificates.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">자격증</h2>
-          {certificates.map((cert) => (
-            <div key={cert.id} className="rp-item">
-              <div className="rp-item-head">
-                <strong>{cert.name}</strong>
-                {cert.issued_ym && (
-                  <span className="rp-period">{cert.issued_ym}</span>
-                )}
-              </div>
-              {cert.issuer && <p className="rp-item-sub">{cert.issuer}</p>}
-            </div>
-          ))}
         </div>
       )}
       {resumeType === "salon" && (workTypePrefer || regionPrefer) && (
@@ -221,6 +206,22 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               </span>
             ))}
           </div>
+        </div>
+      )}
+      {certificates.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">자격증</h2>
+          {certificates.map((cert) => (
+            <div key={cert.id} className="rp-item">
+              <div className="rp-item-head">
+                <strong>{cert.name}</strong>
+                {cert.issued_ym && (
+                  <span className="rp-period">{cert.issued_ym}</span>
+                )}
+              </div>
+              {cert.issuer && <p className="rp-item-sub">{cert.issuer}</p>}
+            </div>
+          ))}
         </div>
       )}
       {experiences.length > 0 && (
