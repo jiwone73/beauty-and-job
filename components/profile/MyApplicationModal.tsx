@@ -118,6 +118,9 @@ export default function MyApplicationModal({
               resume={{
                 name: data.user_name || "",
                 birthDisplay,
+                addressDisplay:
+                  [data.address_road, data.address_detail].filter(Boolean).join(" ") ||
+                  [data.region_sido, data.region_sigungu].filter(Boolean).join(" "),
                 jobDisplay: data.user_job_type === "STORE" ? "매장직" : "사무직",
                 phone: data.user_phone || "",
                 email: data.user_email || "",
