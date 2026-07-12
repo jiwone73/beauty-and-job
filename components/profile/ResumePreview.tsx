@@ -73,7 +73,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
 ) {
   return (
     <div ref={ref} className="rp-wrap">
-      <div className="rp-header" style={{display:"flex", alignItems:"center", gap:"20px"}}>
+      <div className="rp-header" style={{display:"flex", alignItems:"flex-start", gap:"20px"}}>
         <div style={{flex:1, minWidth:0}}>
           <h1 className="rp-name">{name || "이름"}</h1>
           <p className="rp-meta">
