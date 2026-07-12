@@ -7,7 +7,8 @@ import { ChevronDown, Download, Eye, FileText, Pencil, Plus, Printer, Trash2, Up
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
-import ResumePreview from "@/components/profile/ResumePreview";
+import ApplicationDocument from "@/components/resume/ApplicationDocument";
+import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
 import ResumeEditor from "@/components/profile/ResumeEditor";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
@@ -313,33 +314,10 @@ function ResumePageContent() {
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const jsPDF = (await import("jspdf")).default;
       setShowPreview(true);
       await new Promise((r) => setTimeout(r, 600));
       if (!previewRef.current) return;
-      const canvas = await html2canvas(previewRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-      });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      let heightLeft = pdfHeight;
-      let position = 0;
-      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-      heightLeft -= pageHeight;
-      while (heightLeft > 0) {
-        position = heightLeft - pdfHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pageHeight;
-      }
-      const fileName = name ? `${name}_이력서.pdf` : "이력서.pdf";
-      pdf.save(fileName);
+      await downloadApplicationPdf(previewRef.current, name ? `${name}_이력서.pdf` : "이력서.pdf");
       setShowPreview(false);
     } catch (e) {
       alert("다운로드 중 오류가 발생했습니다.");
@@ -348,19 +326,10 @@ function ResumePageContent() {
       setIsDownloading(false);
     }
   };
-const handlePrint = async () => {
+  const handlePrint = async () => {
     if (!previewRef.current) return;
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(previewRef.current, {
-        scale: 2, useCORS: true, backgroundColor: "#ffffff",
-      });
-      const imgData = canvas.toDataURL("image/png");
-      const w = window.open("", "_blank");
-      if (!w) return;
-      w.document.write(`<html><head><title>이력서 인쇄</title></head><body style="margin:0"><img src="${imgData}" style="width:100%" onload="window.print();window.close()" /></body></html>`);
-      w.document.close();
+      await printApplication(previewRef.current);
     } catch (e) {
       alert("인쇄 준비 중 오류가 발생했습니다.");
     }
@@ -558,7 +527,7 @@ const handlePrint = async () => {
 
       {showPreview && (
         <div className="rp-modal-overlay" onClick={() => setShowPreview(false)}>
-          <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="rp-modal myapp-modal" onClick={(e) => e.stopPropagation()}>
             <div className="rp-modal-header">
               <h2 className="rp-modal-title">이력서 미리보기</h2>
               <div className="rp-modal-actions">
@@ -581,31 +550,33 @@ const handlePrint = async () => {
               </div>
             </div>
             <div className="rp-modal-body">
-              <ResumePreview
+              <ApplicationDocument
                 ref={previewRef}
-                name={name}
-                birthDisplay={birthDisplay}
-                addressDisplay={addressDisplay}
-                jobDisplay={jobDisplay}
-                phone={phone}
-                email={emailLocal || email}
-                intro=""
-                coreCompetencies=""
-                careers={careers}
-                educations={educations}
-                skills={skills}
-                languages={languages}
-                experiences={experiences}
-                links={links}
-                portfolioUrl={portfolioUrl}
-                portfolioFilename={portfolioFilename}
-                avatarUrl={avatarUrl}
-                resumeType={resumeType}
-                officeJobAreas={officeJobAreas}
-                skillAreas={skillAreas}
-                certificates={certificates}
-                workTypePrefer={workTypePrefer}
-                regionPrefer={regionPrefer}
+                resume={{
+                  name,
+                  birthDisplay,
+                  addressDisplay,
+                  jobDisplay,
+                  phone,
+                  email: emailLocal || email,
+                  intro: "",
+                  coreCompetencies: "",
+                  careers,
+                  educations,
+                  skills,
+                  languages,
+                  experiences,
+                  links,
+                  portfolioUrl,
+                  portfolioFilename,
+                  avatarUrl,
+                  resumeType,
+                  officeJobAreas,
+                  skillAreas,
+                  certificates,
+                  workTypePrefer,
+                  regionPrefer,
+                }}
               />
             </div>
           </div>
