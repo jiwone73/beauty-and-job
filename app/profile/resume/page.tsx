@@ -585,6 +585,7 @@ const handlePrint = async () => {
                 ref={previewRef}
                 name={name}
                 birthDisplay={birthDisplay}
+                addressDisplay={addressDisplay}
                 jobDisplay={jobDisplay}
                 phone={phone}
                 email={emailLocal || email}
