@@ -91,14 +91,7 @@ export default function AdminLoginPage() {
           {loading ? "로그인 중..." : "로그인"}
         </button>
 
-        {/* 테스트 계정 안내 */}
-        <div className="admin-login-test">
-          <p className="admin-login-test-title">🧪 테스트 계정</p>
-          <div className="admin-login-test-item">
-            <span>아이디: <strong>admin</strong></span>
-            <span>비밀번호: <strong>admin1234</strong></span>
-          </div>
-        </div>
+        
 
         <div className="admin-login-footer">
           <a href="/" className="admin-login-back-link">← 사이트로 돌아가기</a>
