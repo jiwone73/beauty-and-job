@@ -560,7 +560,7 @@ function Footer() {
     <footer style={{ background: "#faf8fc", borderTop: "1px solid #eee", padding: "40px 0 48px", marginTop: 60 }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
-          <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
+          <Link href="/" className="logo"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           <nav style={{ display: "flex", flexWrap: "wrap", gap: 26 }}>
             {topNav.map((l) => (
               <Link key={l.href} href={l.href} style={{ fontSize: 14, fontWeight: 600, color: "#3a3a3a", textDecoration: "none" }}>{l.label}</Link>
