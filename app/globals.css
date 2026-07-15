@@ -11021,3 +11021,6 @@ input[type="range"].career-slider::-moz-range-thumb {
 .app-doc .rp-header { border-bottom: 1px solid #ececec; }         /* 기본정보 선 흐리게(자소서↔이력서 구분 강조) */
 /* 구직자 모달 배경 흰색 + 좌우 패딩은 캡처 안에서만 → 미리보기=PDF 동일 */
 .myapp-modal .rp-modal-body { background: #fff; padding: 0; }
+/* 헤더 좌우 여백을 문서(.app-doc)와 동일하게 (데스크톱 40px / 모바일 16px) */
+.myapp-modal .rp-modal-header { padding-left: 40px; padding-right: 40px; }
+@media (max-width: 768px) { .myapp-modal .rp-modal-header { padding-left: 16px; padding-right: 16px; } }
