@@ -11015,6 +11015,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 /* 제출한 지원서 공용 문서(.app-doc): 구직자·기업·관리자 동일 */
+.app-doc { padding: 40px; }
+@media (max-width: 768px) { .app-doc { padding: 24px 16px; } }  /* 모바일은 편집 페이지처럼 좌우 여백 축소 */
 .app-doc .rp-wrap { padding: 12px 0 0; } /* 이력서 제목 하단 padding(6px)+이 값 = 자소서 제목~내용 간격과 유사(18px) */
 .app-doc .rp-header { border-bottom: 1px solid #ececec; }         /* 기본정보 선 흐리게(자소서↔이력서 구분 강조) */
 /* 구직자 모달 배경 흰색 + 좌우 패딩은 캡처 안에서만 → 미리보기=PDF 동일 */
