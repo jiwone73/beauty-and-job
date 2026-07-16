@@ -29,10 +29,11 @@ export default function JobPostingCertificateModal({
   const [isDownloading, setIsDownloading] = useState(false);
   const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isSnapshot, setIsSnapshot] = useState(false);
 
   useEffect(() => {
     // 지원 시점 박제본이 있으면 그것을 사용 (공고가 수정·마감·삭제돼도 지원 당시 내용 보장)
-    if (app.job_snapshot) { setJob(app.job_snapshot); setLoading(false); return; }
+    if (app.job_snapshot) { setJob(app.job_snapshot); setIsSnapshot(true); setLoading(false); return; }
     // 박제본이 없는 과거 지원 건은 현재 공고를 폴백으로 조회
     if (!app.job_id) { setLoading(false); return; }
     const token = localStorage.getItem("access_token");
@@ -142,6 +143,9 @@ export default function JobPostingCertificateModal({
               )}
 
               <p style={{ fontSize: 12, color: "#888", lineHeight: 1.8, margin: "18px 0 0" }}>
+                {isSnapshot && (
+                  <>※ 위 채용공고 내용은 지원일({fmt(app.applied_at)}) 시점 기준으로 보관된 자료입니다.<br /></>
+                )}
                 ※ 본 증명서는 구직활동 증빙 자료로 활용하실 수 있으며, 최종 인정 여부는 관할 고용센터의 판단에 따릅니다.
               </p>
             </CertificateSheet>
