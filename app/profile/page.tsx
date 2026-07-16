@@ -213,7 +213,8 @@ export default function ProfilePage() {
     postcodeLayerRef.current.innerHTML = "";
     new (window as any).daum.Postcode({
       oncomplete: async (data: any) => {
-        const road = data.roadAddress || data.jibunAddress || data.address || "";
+        const base = data.roadAddress || data.jibunAddress || data.address || "";
+        const road = data.buildingName ? `${base} (${data.buildingName})` : base;
         setAddressRoad(road);
         setRegionSido(data.sido || "");
         setRegionSigungu(data.sigungu || "");
