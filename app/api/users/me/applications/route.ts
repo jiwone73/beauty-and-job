@@ -23,14 +23,20 @@ export async function GET(req: NextRequest) {
     params.push(status)
   }
 
+  // 공고가 삭제돼도 지원 내역/증빙이 남도록 LEFT JOIN + 스냅샷 폴백
   const listQuery = `
     SELECT
-      a.id, a.status, a.applied_at, a.viewed_at,
-      jp.id AS job_id, jp.title AS job_title, jp.location, jp.deadline,
-      c.company_name, c.brand_name, c.logo_url
+      a.id, a.status, a.applied_at, a.viewed_at, a.job_snapshot,
+      jp.id AS job_id,
+      COALESCE(jp.title, a.job_snapshot->>'title') AS job_title,
+      COALESCE(jp.location, a.job_snapshot->>'location') AS location,
+      COALESCE(jp.deadline, NULLIF(a.job_snapshot->>'deadline', '')::timestamptz) AS deadline,
+      COALESCE(c.company_name, a.job_snapshot->'company'->>'company_name') AS company_name,
+      COALESCE(c.brand_name, a.job_snapshot->'company'->>'brand_name') AS brand_name,
+      c.logo_url
     FROM applications a
-    JOIN job_postings jp ON jp.id = a.job_posting_id
-    JOIN companies c ON c.id = jp.company_id
+    LEFT JOIN job_postings jp ON jp.id = a.job_posting_id
+    LEFT JOIN companies c ON c.id = jp.company_id
     WHERE ${where.join(' AND ')}
     ORDER BY a.applied_at DESC
     LIMIT $${idx++} OFFSET $${idx++}

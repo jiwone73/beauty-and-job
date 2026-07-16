@@ -12,6 +12,7 @@ type AppRow = {
   company_name?: string;
   job_title?: string;
   applied_at?: string;
+  job_snapshot?: any;
 };
 
 // 취업활동 증명서(개별형): 특정 지원 건 + 해당 채용공고문을 함께 담아 증빙
@@ -30,6 +31,9 @@ export default function JobPostingCertificateModal({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 지원 시점 박제본이 있으면 그것을 사용 (공고가 수정·마감·삭제돼도 지원 당시 내용 보장)
+    if (app.job_snapshot) { setJob(app.job_snapshot); setLoading(false); return; }
+    // 박제본이 없는 과거 지원 건은 현재 공고를 폴백으로 조회
     if (!app.job_id) { setLoading(false); return; }
     const token = localStorage.getItem("access_token");
     fetch(`/api/jobs/${app.job_id}`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
@@ -37,7 +41,7 @@ export default function JobPostingCertificateModal({
       .then((res) => { if (res.success) setJob(res.data); })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [app.job_id]);
+  }, [app.job_id, app.job_snapshot]);
 
   const today = new Date();
   const todayStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;

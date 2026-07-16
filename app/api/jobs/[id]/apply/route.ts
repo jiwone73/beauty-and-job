@@ -15,7 +15,11 @@ export async function POST(
   const { resume_id, cover_letter } = body
   const jobRes = await pool.query(
     `SELECT jp.id, jp.status, jp.deadline, jp.company_id, jp.title,
-            c.company_name, c.email AS company_email
+            jp.description, jp.location, jp.address, jp.work_type, jp.experience_level,
+            jp.salary_min, jp.salary_max, jp.salary_type,
+            c.company_name, c.email AS company_email, c.brand_name,
+            c.region_sido AS company_region_sido, c.region_sigungu AS company_region_sigungu,
+            c.address AS company_address
      FROM job_postings jp
      JOIN companies c ON c.id = jp.company_id
      WHERE jp.id = $1`,
@@ -83,10 +87,32 @@ export async function POST(
     console.error('[apply] 이력서 스냅샷 생성 실패', e)
   }
 
+  // 지원 시점 채용공고 박제 (스냅샷) — 이후 공고가 수정·마감·삭제돼도 증빙 가능
+  const jobSnapshot = {
+    title: job.title,
+    description: job.description || '',
+    location: job.location || '',
+    address: job.address || '',
+    deadline: job.deadline || null,
+    work_type: job.work_type || '',
+    experience_level: job.experience_level || '',
+    salary_min: job.salary_min ?? null,
+    salary_max: job.salary_max ?? null,
+    salary_type: job.salary_type || '',
+    company: {
+      company_name: job.company_name || '',
+      brand_name: job.brand_name || '',
+      region_sido: job.company_region_sido || '',
+      region_sigungu: job.company_region_sigungu || '',
+      address: job.company_address || '',
+    },
+    captured_at: new Date().toISOString(),
+  }
+
   const result = await pool.query(
     `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, resume_snapshot, status,
-                                resume_file_url, resume_file_name, resume_file_size)
-     VALUES ($1, $2, $3, $4, $5, 'APPLIED', $6, $7, $8)
+                                resume_file_url, resume_file_name, resume_file_size, job_snapshot)
+     VALUES ($1, $2, $3, $4, $5, 'APPLIED', $6, $7, $8, $9)
      RETURNING id, status, applied_at`,
     [
       jobPostingId,
@@ -97,6 +123,7 @@ export async function POST(
       p.resume_file_url || null,
       p.resume_file_name || null,
       p.resume_file_size || null,
+      JSON.stringify(jobSnapshot),
     ]
   )
   await pool.query(
