@@ -57,8 +57,8 @@ export default function JobSearchCertificateModal({
     }
   };
 
-  const th: CSSProperties = { border: "1px solid #ccc", padding: "9px 8px", fontSize: 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a" };
-  const td: CSSProperties = { border: "1px solid #ddd", padding: "9px 8px", fontSize: 13, color: "#333" };
+  const th: CSSProperties = { border: "1px solid #ccc", padding: "7px 8px", fontSize: 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a", lineHeight: 1.15, verticalAlign: "middle" };
+  const td: CSSProperties = { border: "1px solid #ddd", padding: "7px 8px", fontSize: 13, color: "#333", lineHeight: 1.15, verticalAlign: "middle" };
 
   return (
     <div className="rp-modal-overlay" onClick={onClose}>
