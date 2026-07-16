@@ -477,18 +477,20 @@ export default function ProfilePage() {
               </div>
               <div className="profile-info-card">
                 <div style={{ padding: "16px 14px", borderBottom: "1px solid #e0d0f0", display: "flex", alignItems: "center", gap: "14px" }}>
-                  <div style={{ flexShrink: 0, width: "80px", height: "80px", borderRadius: "50%", background: "#f0e8f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: "2px solid #e0d0f0" }}>
-                    {avatarUrl ? (
-                      <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    ) : (
-                      <span style={{ fontSize: "30px", color: "#a888c0" }}>👤</span>
-                    )}
-                    {avatarUploading && (
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#5f0080", fontWeight: 600 }}>
-                        업로드중
-                      </div>
-                    )}
-                    <span style={{ position: "absolute", top: "-2px", right: "-2px", width: "20px", height: "20px", borderRadius: "50%", background: "#e74c3c", color: "#fff", fontSize: "13px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>*</span>
+                  <div style={{ flexShrink: 0, position: "relative" }}>
+                    <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#f0e8f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: "2px solid #e0d0f0" }}>
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <span style={{ fontSize: "30px", color: "#a888c0" }}>👤</span>
+                      )}
+                      {avatarUploading && (
+                        <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#5f0080", fontWeight: 600 }}>
+                          업로드중
+                        </div>
+                      )}
+                    </div>
+                    <span style={{ position: "absolute", top: "-3px", right: "-3px", width: "20px", height: "20px", borderRadius: "50%", background: "#e74c3c", color: "#fff", fontSize: "13px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1, zIndex: 2, border: "2px solid #fff" }}>*</span>
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: "16px", fontWeight: 600, margin: "0 0 6px" }}>{name || "회원"}</p>
