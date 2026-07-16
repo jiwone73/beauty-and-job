@@ -14,6 +14,7 @@ import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import NotificationModal from "@/components/profile/NotificationModal";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
 import MyApplicationModal from "@/components/profile/MyApplicationModal";
+import JobSearchCertificateModal from "@/components/profile/JobSearchCertificateModal";
 import { validateBirth } from "@/lib/validateBirth";
 
 
@@ -498,7 +499,7 @@ export default function ProfilePage() {
 
       <div className="profile-content">
         {activeTab === "applied" ? (
-          <AppliedTab />
+          <AppliedTab userName={name} />
         ) : activeTab === "bookmarks" ? (
           <BookmarksTab />
         ) : activeTab === "profile" ? (
@@ -939,12 +940,13 @@ function InfoRow({ label, value, isEmpty, isLast, onClick, required }: {
   );
 }
 
-function AppliedTab() {
+function AppliedTab({ userName }: { userName: string }) {
   const router = useRouter();
   const [apps, setApps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [viewAppId, setViewAppId] = useState<string | null>(null);
+  const [showCert, setShowCert] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) { setLoading(false); return; }
@@ -1045,6 +1047,14 @@ function AppliedTab() {
 
   return (
     <div className="profile-tab-content">
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+        <button
+          onClick={() => setShowCert(true)}
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+        >
+          📄 취업활동 증명서 발급
+        </button>
+      </div>
       <div className="applied-list">
         {apps.map((app) => {
           const date = new Date(app.applied_at);
@@ -1089,6 +1099,9 @@ function AppliedTab() {
       </div>
       {viewAppId && (
         <MyApplicationModal applicationId={viewAppId} onClose={() => setViewAppId(null)} />
+      )}
+      {showCert && (
+        <JobSearchCertificateModal name={userName} apps={apps} onClose={() => setShowCert(false)} />
       )}
     </div>
   );
