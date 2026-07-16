@@ -3,8 +3,8 @@ import { useState, useEffect, Fragment } from "react";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
-import ResumePreview from "@/components/profile/ResumePreview";
 import ResumeEditor from "@/components/profile/ResumeEditor";
+import ApplicationDocument from "@/components/resume/ApplicationDocument";
 
 type Step = "write" | "preview" | "edit";
 
@@ -342,44 +342,36 @@ export default function ApplyModal({
           {/* ===== 화면 2: 미리보기 (자소서 + 전체 이력서) ===== */}
           {step === "preview" && (
             <>
-              <div style={{ marginBottom: 16 }}>
-                <div className="apply-cover-block">
-                  <div className="apply-cover-title">자기소개서</div>
-                  {coverLetter.trim() ? (
-                    <p className="apply-cover-text" style={{ whiteSpace: "pre-wrap" }}>{coverLetter}</p>
-                  ) : (
-                    <p className="apply-cover-text" style={{ color: "#aaa" }}>자기소개서 없이 이력서만 제출됩니다.</p>
-                  )}
-                </div>
-                <div style={{ marginTop: 24, paddingTop: 24, borderTop: "1px solid #ececec" }}>
-                <h3 className="apply-cover-title">이력서</h3>
-                <ResumePreview
-                  name={name}
-                  birthDisplay={birthDisplay}
-                  addressDisplay={addressDisplay}
-                  jobDisplay={jobDisplay}
-                  phone={phoneLocal || phone}
-                  email={emailLocal || email}
-                  intro=""
-                  coreCompetencies=""
-                  careers={careers}
-                  educations={educations}
-                  skills={skills}
-                  languages={languages}
-                  experiences={experiences}
-                  links={links}
-                  portfolioUrl={portfolioUrl}
-                  portfolioFilename={portfolioFilename}
-                  resumeFileName={resumeFileName}
-                  avatarUrl={avatarUrl}
-                  resumeType={resumeType}
-                  officeJobAreas={officeJobAreas}
-                  skillAreas={skillAreas}
-                  certificates={certificates}
-                  workTypePrefer={workTypePrefer}
-                  regionPrefer={regionPrefer}
+              <div className="apply-preview-doc" style={{ marginBottom: 16 }}>
+                <ApplicationDocument
+                  coverLetter={coverLetter}
+                  resume={{
+                    name,
+                    birthDisplay,
+                    addressDisplay,
+                    jobDisplay,
+                    phone: phoneLocal || phone,
+                    email: emailLocal || email,
+                    intro: "",
+                    coreCompetencies: "",
+                    careers,
+                    educations,
+                    skills,
+                    languages,
+                    experiences,
+                    links,
+                    portfolioUrl,
+                    portfolioFilename,
+                    resumeFileName,
+                    avatarUrl,
+                    resumeType,
+                    officeJobAreas,
+                    skillAreas,
+                    certificates,
+                    workTypePrefer,
+                    regionPrefer,
+                  }}
                 />
-                </div>
               </div>
 
               <p style={{ fontSize: 12, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
