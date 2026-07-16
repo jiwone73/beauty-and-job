@@ -250,6 +250,20 @@ export default function ProfilePage() {
     }).embed(postcodeLayerRef.current);
   }, [postcodeOpen]);
 
+  // 거주지는 있는데 희망 근무지역이 비어 있으면 페이지 로드 시 자동 채움 (1회)
+  const autoFilledPrefRef = useRef(false);
+  useEffect(() => {
+    if (autoFilledPrefRef.current) return;
+    if (regionSido && preferredRegions.length === 0) {
+      const canonSido = toCanonicalSido(regionSido);
+      if (!canonSido) return;
+      autoFilledPrefRef.current = true;
+      const next = [{ sido: canonSido, sigungu: regionSigungu || "" }];
+      setPreferredRegions(next);
+      patchUser({ preferred_regions: next });
+    }
+  }, [regionSido, regionSigungu, preferredRegions]);
+
   // 프로필 → 모달 형식: [{sido,sigungu}] → ["서울특별시 강남구","경기도 전체"]
   const toModalRegions = (regions: { sido: string; sigungu: string }[]) =>
     regions
