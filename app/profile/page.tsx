@@ -488,9 +488,10 @@ export default function ProfilePage() {
                         업로드중
                       </div>
                     )}
+                    <span style={{ position: "absolute", top: "-2px", right: "-2px", width: "20px", height: "20px", borderRadius: "50%", background: "#e74c3c", color: "#fff", fontSize: "13px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>*</span>
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: "16px", fontWeight: 600, margin: "0 0 6px" }}>{name || "회원"}<span style={{ color: "#e74c3c", marginLeft: "4px", fontSize: "13px", fontWeight: 400 }}>프로필 사진 *</span></p>
+                    <p style={{ fontSize: "16px", fontWeight: 600, margin: "0 0 6px" }}>{name || "회원"}</p>
                     <div style={{ display: "flex", gap: "6px", marginBottom: "4px" }}>
                       <label style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
                         {avatarUrl ? "변경" : "사진 추가"}
