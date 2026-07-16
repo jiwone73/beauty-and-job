@@ -4,7 +4,6 @@ import Image from "next/image";
 
 const NAV_ITEMS = [
   { href: "/about", label: "회사 소개" },
-  { href: "/about/recruit", label: "채용" },
   { href: "/about/partnership", label: "제휴 문의" },
   { href: "/about/advertise", label: "광고 문의" },
   { href: "/about/contact", label: "기타 문의" },

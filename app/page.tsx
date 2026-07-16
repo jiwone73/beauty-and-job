@@ -550,7 +550,6 @@ function SectionNewsletter() {
 function Footer() {
   const topNav = [
     { label: "회사 소개", href: "/about" },
-    { label: "채용", href: "/about/recruit" },
     { label: "제휴 문의", href: "/about/partnership" },
     { label: "광고 문의", href: "/about/advertise" },
     { label: "기타 문의", href: "/about/contact" },
