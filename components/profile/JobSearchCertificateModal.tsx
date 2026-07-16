@@ -91,7 +91,7 @@ export default function JobSearchCertificateModal({
             </table>
 
             <p style={{ fontSize: 14, color: "#333", lineHeight: 1.9, margin: "0 0 16px" }}>
-              위 사람은 뷰티 채용 플랫폼 <strong>뷰티워크(beautynjob.co.kr)</strong>를 통해 아래와 같이 입사지원(구직활동)하였음을 증명합니다.
+              위 사람은 뷰티 채용 플랫폼 <strong>뷰티워크(beautywork.co.kr)</strong>를 통해 아래와 같이 입사지원(구직활동)하였음을 증명합니다.
             </p>
 
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20 }}>

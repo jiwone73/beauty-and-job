@@ -73,7 +73,7 @@ export default function JobPostingCertificateModal({
     <div className="rp-modal-overlay" onClick={onClose}>
       <div className="rp-modal myapp-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720, width: "94%", maxHeight: "92vh", display: "flex", flexDirection: "column" }}>
         <div className="rp-modal-header" style={{ flexShrink: 0 }}>
-          <h2 className="rp-modal-title">취업활동 증명서 (공고문 포함)</h2>
+          <h2 className="rp-modal-title">취업활동 증명서</h2>
           <div className="rp-modal-actions">
             <button className="resume-action-btn" onClick={handleDownload} disabled={isDownloading || loading}>
               <Download size={16} />
@@ -103,7 +103,7 @@ export default function JobPostingCertificateModal({
               </table>
 
               <p style={{ fontSize: 14, color: "#333", lineHeight: 1.9, margin: "0 0 18px" }}>
-                위 사람은 뷰티 채용 플랫폼 <strong>뷰티워크(beautynjob.co.kr)</strong>를 통해 아래 채용공고에 입사지원(구직활동)하였음을 증명합니다.
+                위 사람은 뷰티 채용 플랫폼 <strong>뷰티워크(beautywork.co.kr)</strong>를 통해 아래 채용공고에 입사지원(구직활동)하였음을 증명합니다.
               </p>
 
               <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a", margin: "0 0 10px", paddingBottom: 6, borderBottom: "2px solid #eee" }}>■ 채용공고</h3>
