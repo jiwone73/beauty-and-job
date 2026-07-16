@@ -44,6 +44,7 @@ function ResumePageContent() {
   const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
   const [addressDisplay, setAddressDisplay] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [officeAreas, setOfficeAreas] = useState<string[]>([]);
   const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -92,6 +93,7 @@ function ResumePageContent() {
           else setResumeType("office");
           if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
+          if (Array.isArray(res.data.office_job_areas)) setOfficeAreas(res.data.office_job_areas);
           if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
           if (res.data.resume_file_name) setResumeFileName(res.data.resume_file_name);
           if (res.data.resume_file_size) setResumeFileSize(res.data.resume_file_size);
@@ -103,9 +105,11 @@ function ResumePageContent() {
       .catch(console.error);
   }, []);
 
+  // 프로필에서 설정한 직군은 서버(officeAreas)에 저장됨 → 우선 사용
+  const effectiveOfficeAreas = officeAreas.length ? officeAreas : officeJobAreas;
   const jobDisplay =
     (job === "직접입력" ? jobCustom : job) ||
-    officeJobAreas[0] ||
+    effectiveOfficeAreas[0] ||
     skillAreas[0] ||
     "직군 미설정";
   const birthDisplay = birth
@@ -571,7 +575,7 @@ function ResumePageContent() {
                   portfolioFilename,
                   avatarUrl,
                   resumeType,
-                  officeJobAreas,
+                  officeJobAreas: effectiveOfficeAreas,
                   skillAreas,
                   certificates,
                   workTypePrefer,
