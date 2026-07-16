@@ -15,6 +15,7 @@ import NotificationModal from "@/components/profile/NotificationModal";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
 import MyApplicationModal from "@/components/profile/MyApplicationModal";
 import JobSearchCertificateModal from "@/components/profile/JobSearchCertificateModal";
+import JobPostingCertificateModal from "@/components/profile/JobPostingCertificateModal";
 import { validateBirth } from "@/lib/validateBirth";
 
 
@@ -947,6 +948,7 @@ function AppliedTab({ userName }: { userName: string }) {
   const [error, setError] = useState(false);
   const [viewAppId, setViewAppId] = useState<string | null>(null);
   const [showCert, setShowCert] = useState(false);
+  const [certApp, setCertApp] = useState<any | null>(null);
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) { setLoading(false); return; }
@@ -1072,6 +1074,12 @@ function AppliedTab({ userName }: { userName: string }) {
                   >
                     내 지원서 보기
                   </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setCertApp(app); }}
+                    style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
+                  >
+                    공고 증명서
+                  </button>
                   {(app.status === "APPLIED" || app.status === "VIEWED") && (
                     <button
                       onClick={(e) => { e.stopPropagation(); handleCancel(app.id); }}
@@ -1102,6 +1110,9 @@ function AppliedTab({ userName }: { userName: string }) {
       )}
       {showCert && (
         <JobSearchCertificateModal name={userName} apps={apps} onClose={() => setShowCert(false)} />
+      )}
+      {certApp && (
+        <JobPostingCertificateModal name={userName} app={certApp} onClose={() => setCertApp(null)} />
       )}
     </div>
   );
