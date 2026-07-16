@@ -14,7 +14,7 @@ export default function AboutPage() {
         </div>
         <div className="info-section">
           <h2>우리의 미션</h2>
-          <p>뷰티 업계의 모든 인재가 자신에게 맞는 커리어를 찾고, 매장과 브랜드가 꼭 맞는 사람을 만날 수 있도록 돕습니다.</p>
+          <p>뷰티 업계의 채용은 인스타그램 DM, 동네 커뮤니티, 지인 소개처럼 여기저기 흩어져 있습니다. 좋은 자리를 찾는 사람도, 좋은 사람을 구하는 매장도 서로를 만나기 어렵죠. 뷰티워크는 흩어진 뷰티 채용을 한 곳에 모아, 인재는 자신에게 맞는 커리어를 찾고 매장·브랜드는 꼭 맞는 사람을 만날 수 있도록 돕습니다.</p>
         </div>
 
         <div className="info-section">
@@ -46,11 +46,6 @@ export default function AboutPage() {
               <p>동네 매장·샵부터 뷰티 브랜드 채용까지 폭넓게 다뤄요.</p>
             </div>
           </div>
-        </div>
-
-        <div className="info-section">
-          <h2>왜 시작했을까요</h2>
-          <p>뷰티 업계의 채용은 인스타그램 DM, 동네 커뮤니티, 지인 소개처럼 여기저기 흩어져 있었습니다. 좋은 자리를 찾는 사람도, 좋은 사람을 구하는 매장도 서로를 만나기 어려웠죠. 뷰티워크는 이 흩어진 뷰티 채용을 한 곳에 모으는 일에서 시작했습니다.</p>
         </div>
 
         <div className="info-section" style={{ textAlign: "center" }}>
