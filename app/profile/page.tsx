@@ -490,7 +490,7 @@ export default function ProfilePage() {
                         </div>
                       )}
                     </div>
-                    <span style={{ position: "absolute", top: "-3px", right: "-3px", width: "20px", height: "20px", borderRadius: "50%", background: "#e74c3c", color: "#fff", fontSize: "13px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1, zIndex: 2, border: "2px solid #fff" }}>*</span>
+                    <span style={{ position: "absolute", top: "-4px", right: "-6px", color: "#e74c3c", fontSize: "20px", fontWeight: 700, lineHeight: 1, zIndex: 2 }}>*</span>
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: "16px", fontWeight: 600, margin: "0 0 6px" }}>{name || "회원"}</p>
