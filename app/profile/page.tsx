@@ -356,13 +356,17 @@ export default function ProfilePage() {
     }
   };
 
-  // 지원 필수항목 판정 (서버 apply/route.ts의 missing 기준과 동일)
+  // 이력서 작성 전 필수항목 판정 (프로필의 모든 항목이 필수)
   const missingRequired: string[] = [];
+  if (!avatarUrl) missingRequired.push("프로필 사진");
   if (!(phoneOverride || userPhone || phone)) missingRequired.push("휴대전화");
   if (!birth) missingRequired.push("생년월일");
   if (!gender) missingRequired.push("성별");
   if (!emailInput) missingRequired.push("이메일");
   if (!addressRoad) missingRequired.push("거주지");
+  if (dbJobType === "OFFICE" && officeJobAreas.length === 0) missingRequired.push("직군 영역");
+  if (dbJobType === "STORE" && skillAreas.length === 0) missingRequired.push("시술 분야");
+  if (dbJobType === "STORE" && !workTypePrefer) missingRequired.push("희망 근무 형태");
   if (!preferredRegions || preferredRegions.length === 0) missingRequired.push("희망 근무지역");
 
   // 이력서로 이동 (필수항목 미완성 시 안내 후 프로필에 머무름)
@@ -486,7 +490,7 @@ export default function ProfilePage() {
                     )}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: "16px", fontWeight: 600, margin: "0 0 6px" }}>{name || "회원"}</p>
+                    <p style={{ fontSize: "16px", fontWeight: 600, margin: "0 0 6px" }}>{name || "회원"}<span style={{ color: "#e74c3c", marginLeft: "4px", fontSize: "13px", fontWeight: 400 }}>프로필 사진 *</span></p>
                     <div style={{ display: "flex", gap: "6px", marginBottom: "4px" }}>
                       <label style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
                         {avatarUrl ? "변경" : "사진 추가"}
@@ -783,7 +787,7 @@ export default function ProfilePage() {
             {dbJobType === "STORE" && (
               <section className="profile-section">
                 <div className="profile-section-head">
-                  <h2 className="profile-section-title">시술 분야 · 전문 영역</h2>
+                  <h2 className="profile-section-title">시술 분야 · 전문 영역<span style={{ color: "#e74c3c", marginLeft: "4px", fontSize: "14px" }}>*</span></h2>
                 </div>
                 <div className="profile-info-card" style={{ padding: "16px" }}>
                   <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>해당하는 시술 분야를 선택해 주세요</p>
@@ -795,7 +799,7 @@ export default function ProfilePage() {
   placeholder="시술 분야 선택"
 />
                   </div>
-                  <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "6px" }}>희망 근무 형태</label>
+                  <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "6px" }}>희망 근무 형태<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                     {["풀타임", "파트타임", "주말근무 가능", "시급"].map((w) => (
                       <button key={w}
