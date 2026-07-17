@@ -126,7 +126,6 @@ function Hero() {
           <span className="hero-banner-badge"><Rocket size={18} /></span>
           <p className="hero-banner-title">뷰티워크 오픈 준비 중 · 지금은 완전 무료</p>
           <p className="hero-banner-sub">런칭 기간 동안 등록·상단노출·인재 연락처 열람까지 0원</p>
-          <Link href="/jobs" className="hero-banner-link">공고 보기 →</Link>
         </div>
         <div className="hero-inner">
           <div className="hero-text">
