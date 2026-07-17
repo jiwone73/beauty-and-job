@@ -91,7 +91,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
               className="gnb-with-tag"
               style={{ background: "none", border: "none", cursor: "pointer" }}
               onClick={() => {
-                if (!isLoggedIn) router.push("/jobseeker");
+                if (!isLoggedIn) router.push("/login");
                 else if (ownerType === "company") router.push("/company/dashboard");
                 else router.push("/profile/resume");
               }}>
@@ -107,7 +107,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
             </button>
             <AuthButtons onLoginClick={() => router.push("/login")} />
             <button className="icon-btn mob-hamburger" aria-label="이력서 등록" onClick={() => {
-              if (!isLoggedIn) router.push("/jobseeker");
+              if (!isLoggedIn) router.push("/login");
               else if (ownerType === "company") router.push("/company/dashboard");
               else router.push("/profile/resume");
             }}>

@@ -112,7 +112,7 @@ export default function HeroMobile() {
           <span className="hero-m-ai-title">뷰티워크 런칭 이벤트 · 지금은 완전 무료 (~12/31)</span>
         </div>
         <div className="hero-m-ai-cards">
-          <Link href="/jobseeker" className="hero-m-ai-card">
+          <Link href="/profile/resume" className="hero-m-ai-card">
             <div className="hero-m-ai-card-icon">📄</div>
             <strong>이력서를 등록하면<br />제안을 받을 수 있어요</strong>
             <p>등록한 이력서는 뷰티기업과 샵의 인재 검색에 노출돼요</p>
