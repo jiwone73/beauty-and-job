@@ -11160,3 +11160,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobcard-meta { font-size: 15px; }
   .jobcard-deadline { font-size: 15px; }
 }
+
+/* === PC(≥769px) 헤더 로고·네비 텍스트 2단계 확대 (모바일 유지) === */
+@media (min-width: 769px) {
+  .header .logo img { height: 40px !important; }
+  .gnb a, .gnb button { font-size: 18px; }
+}
