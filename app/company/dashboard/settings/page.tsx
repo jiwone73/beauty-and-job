@@ -507,17 +507,19 @@ export default function CompanySettingsPage() {
               <h2 className="company-card-title">계정 정보</h2>
             </div>
             <div className="admin-form-body">
-              <div className="admin-form-row">
-                <label className="admin-form-label">이메일</label>
-                <input className="admin-form-input" value={info?.email || ""} disabled
-                  style={{ background: "#f5f5f5", color: "#888" }} />
-                <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>이메일은 변경할 수 없어요</p>
-              </div>
-              <div className="admin-form-row">
-                <label className="admin-form-label">사업자등록번호</label>
-                <input className="admin-form-input" value={info?.business_number || ""} disabled
-                  style={{ background: "#f5f5f5", color: "#888" }} />
-                <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row">
+                  <label className="admin-form-label">이메일</label>
+                  <input className="admin-form-input" value={info?.email || ""} disabled
+                    style={{ background: "#f5f5f5", color: "#888" }} />
+                  <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>이메일은 변경할 수 없어요</p>
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">사업자등록번호</label>
+                  <input className="admin-form-input" value={info?.business_number || ""} disabled
+                    style={{ background: "#f5f5f5", color: "#888" }} />
+                  <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
+                </div>
               </div>
 
               <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px" }}>
