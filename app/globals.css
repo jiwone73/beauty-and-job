@@ -11163,11 +11163,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* === PC(≥769px) 헤더 로고·네비 텍스트 2단계 확대 (모바일 유지) === */
 @media (min-width: 769px) {
-  .header .logo img { height: 40px !important; }
+  .header .logo img { height: 36px !important; }
   .gnb a, .gnb button { font-size: 18px; }
   /* resume·프로필 페이지 헤더도 동일하게 (profile-* 클래스 사용) */
-  .profile-logo img { height: 40px !important; }
+  .profile-logo img { height: 36px !important; }
   .profile-header-nav { font-size: 18px; }
-  .resume-logo img { height: 40px !important; }
+  .resume-logo img { height: 36px !important; }
   .resume-header-nav { font-size: 18px; }
 }
