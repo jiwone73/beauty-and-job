@@ -197,6 +197,7 @@ function Hero() {
             </div>
             <div className="hero-right-cards">
               <div className="hero-right-card">
+                <div className="hero-right-card-head">
                 <div className="hero-right-card-visual card1">
                   <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
                     <rect x="15" y="10" width="42" height="52" rx="6" fill="#e8d5f5" />
@@ -210,12 +211,14 @@ function Hero() {
                   </svg>
                 </div>
                 <h3 className="hero-right-card-title">이력서를 등록하면<br />제안을 받을 수 있어요</h3>
+                </div>
                 <p className="hero-right-card-desc">뷰티기업·샵 인재 검색에 노출되고, 조건에 맞는 공고 매칭 메일도 보내드려요</p>
                 <ResumeCta className="hero-right-card-btn">
                   무료 이력서 등록하기 ›
                 </ResumeCta>
               </div>
               <div className="hero-right-card">
+                <div className="hero-right-card-head">
                 <div className="hero-right-card-visual card2">
                   <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
                     <rect x="20" y="15" width="35" height="45" rx="5" fill="#fce4f0" />
@@ -229,6 +232,7 @@ function Hero() {
                   </svg>
                 </div>
                 <h3 className="hero-right-card-title">공고를 등록하면<br />인재에게 노출돼요</h3>
+                </div>
                 <p className="hero-right-card-desc">채용공고 등록·상단 노출·인재 연락처 열람도 런칭 기간 무료예요</p>
                 <Link href="/company" className="hero-right-card-btn">
                   무료 채용공고 등록하기 ›

@@ -7545,11 +7545,17 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-color: #d4b0f0;
   transform: translateY(-2px);
 }
-.hero-right-card-visual {
+.hero-right-card-head {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 4px;
 }
+.hero-right-card-visual {
+  display: flex;
+  flex-shrink: 0;
+}
+.hero-right-card-visual svg { width: 48px; height: 48px; }
 .hero-right-card-title {
   font-size: 15px;
   font-weight: 800;
@@ -7558,9 +7564,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .hero-right-card-title.accent { color: #5f0080; }
 .hero-right-card-desc {
-  font-size: 12px;
-  color: #666;
-  line-height: 1.6;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.65;
   margin: 0;
   flex: 1;
 }
