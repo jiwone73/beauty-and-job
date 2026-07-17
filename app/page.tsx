@@ -54,7 +54,7 @@ export default function HomePage() {
       <SectionPick />
       {/* <SectionJobGroups /> 공고 충분히 쌓이면 노출 */}
       <SectionStories />
-      <SectionBeautyServices />
+      {/* <SectionBeautyServices /> 숨김 */}
       <SectionNewsletter />
       <Footer />
     </main>
@@ -466,6 +466,7 @@ function SectionStories() {
                 <span className="insight-category">{item.category}</span>
               </div>
               <h3 className="insight-card-new-title">{item.title || item.body}</h3>
+              {item.title && item.body && <p className="insight-card-new-snippet">{item.body}</p>}
               <p className="insight-card-new-desc">❤ {item.like_count} · 💬 {item.comment_count}</p>
               <time className="insight-card-new-date">{fmtStoryDate(item.published_at || item.created_at)}</time>
             </article>

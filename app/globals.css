@@ -8854,6 +8854,15 @@ input[type="range"].career-slider::-moz-range-thumb {
 .insight-cat-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
 .insight-cat-row .insight-card-emoji { font-size: 18px; line-height: 1; }
 .insight-cat-row .insight-category { margin: 0; }
+/* 현장이야기 카드: 본문 한 줄 미리보기 (말줄임 …) */
+.insight-card-new-snippet {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /* 섹션 내부 구분선 - 컨텐츠 너비만큼 */
 .section-inner-divider {
