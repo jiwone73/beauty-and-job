@@ -130,7 +130,8 @@ function Hero() {
         <div className="hero-inner">
           <div className="hero-text">
             <h1 className="hero-title">
-              뷰티 커리어의 시작, <span className="hero-title-point">뷰티워크</span>
+              뷰티 커리어의 시작,<br />
+              <span className="hero-title-point">뷰티워크</span>
             </h1>
             <p className="hero-sub">
               살롱·샵 현장직부터 브랜드 본사까지<br />뷰티업계 일자리를 한곳에서
