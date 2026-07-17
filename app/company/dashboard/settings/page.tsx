@@ -258,8 +258,7 @@ export default function CompanySettingsPage() {
               </span>
             </div>
             <div className="admin-form-body">
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", alignItems: "start", marginBottom: "16px" }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div className="admin-form-row-2col">
               <div className="admin-form-row">
                 <label className="admin-form-label">회사 로고</label>
                 <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
@@ -336,13 +335,55 @@ export default function CompanySettingsPage() {
                 </div>
               </div>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row">
+                  <label className="admin-form-label">기업명<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <input className="admin-form-input" placeholder="기업명"
+                    value={form.company_name}
+                    onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">브랜드명</label>
+                  <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
+                    value={form.brand_name}
+                    onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
+                </div>
+              </div>
+
+              <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">웹사이트</label>
                   <input className="admin-form-input" placeholder="https://"
                     value={form.website_url}
                     onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
                 </div>
+                <div className="admin-form-row">
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                    <label className="admin-form-label" style={{ margin: 0 }}>주소</label>
+                    {form.address && (
+                      <button type="button" onClick={handleClearAddress}
+                        style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: "2px 4px" }}>
+                        초기화
+                      </button>
+                    )}
+                  </div>
+                  <input className="admin-form-input" readOnly value={form.address}
+                    onClick={handleAddressSearch}
+                    placeholder="주소 검색을 눌러주세요"
+                    style={{ background: "#fafafa", cursor: "pointer" }} />
+                  {form.address && (
+                    <input className="admin-form-input" style={{ marginTop: "8px" }}
+                      placeholder="상세주소 (동·호수 등)"
+                      value={form.address_detail}
+                      onChange={(e) => setForm({ ...form, address_detail: e.target.value })} />
+                  )}
+                  <p style={{fontSize:"12px", color:"#888", margin:"6px 0 0"}}>
+                    주소 검색 시 도로명 주소가 자동 입력돼요. 층·호수는 직접 추가하세요.
+                  </p>
+                </div>
+              </div>
+              <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">사원수</label>
                   <select className="admin-form-select"
@@ -366,47 +407,6 @@ export default function CompanySettingsPage() {
                     value={form.founded_year}
                     onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
                 </div>
-              </div>
-              </div>
-
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">기업명<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <input className="admin-form-input" placeholder="기업명"
-                    value={form.company_name}
-                    onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
-                </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">브랜드명</label>
-                  <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
-                    value={form.brand_name}
-                    onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
-                </div>
-              </div>
-
-              <div className="admin-form-row">
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <label className="admin-form-label" style={{ margin: 0 }}>주소</label>
-                  {form.address && (
-                    <button type="button" onClick={handleClearAddress}
-                      style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: "2px 4px" }}>
-                      초기화
-                    </button>
-                  )}
-                </div>
-                <input className="admin-form-input" readOnly value={form.address}
-                  onClick={handleAddressSearch}
-                  placeholder="주소 검색을 눌러주세요"
-                  style={{ background: "#fafafa", cursor: "pointer" }} />
-                {form.address && (
-                  <input className="admin-form-input" style={{ marginTop: "8px" }}
-                    placeholder="상세주소 (동·호수 등)"
-                    value={form.address_detail}
-                    onChange={(e) => setForm({ ...form, address_detail: e.target.value })} />
-                )}
-                <p style={{fontSize:"12px", color:"#888", margin:"6px 0 0"}}>
-                  주소 검색 시 도로명 주소가 자동 입력돼요. 층·호수 등은 직접 추가하세요. 입력한 주소는 공고 상세에 지도로 표시돼요.
-                </p>
               </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">기업 소개</label>
