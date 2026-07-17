@@ -49,7 +49,7 @@ export const OFFICE_JOB_GROUPS: JobGroup[] = [
   },
   {
     group: "MD·상품기획",
-    items: ["상품기획(제품기획)", "MD(머천다이징)", "트렌드·시장조사"],
+    items: ["상품기획", "MD(머천다이징)", "트렌드·시장조사"],
   },
   {
     group: "영업·이커머스",
