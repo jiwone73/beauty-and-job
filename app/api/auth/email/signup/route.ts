@@ -2,7 +2,6 @@ export const dynamic = "force-dynamic";
 
 import { NextRequest } from 'next/server'
 import bcrypt from 'bcryptjs'
-import crypto from 'crypto'
 import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
@@ -67,10 +66,7 @@ export async function POST(req: NextRequest) {
 
     await client.query('COMMIT')
 
-    const confirmToken = crypto.createHmac('sha256', process.env.CRON_SECRET || '').update(user.id).digest('hex')
-    const confirmBase = process.env.NEXT_PUBLIC_SITE_URL || 'https://beauty-work.vercel.app'
-    const confirmUrl = `${confirmBase}/api/auth/email/confirm?u=${user.id}&t=${confirmToken}`
-    sendWelcomeEmail(user.email, user.name, confirmUrl).catch((e) => console.error('[welcome email]', e))
+    sendWelcomeEmail(user.email, user.name).catch((e) => console.error('[welcome email]', e))
 
     const accessToken = signAccessToken({
       sub: user.id,

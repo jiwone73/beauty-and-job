@@ -71,7 +71,7 @@ export async function sendEmailChangeCodeEmail(to: string, code: string) {
   });
 }
 
-export async function sendWelcomeEmail(to: string, name: string, confirmUrl?: string) {
+export async function sendWelcomeEmail(to: string, name: string) {
   return resend.emails.send({
     from: FROM,
     to,
@@ -93,14 +93,6 @@ export async function sendWelcomeEmail(to: string, name: string, confirmUrl?: st
                   <p style="font-size:15px;color:#444444;line-height:1.7;margin:0 0 24px;">
                     가입해 주셔서 감사해요. 뷰티워크는 메이크업·헤어·네일·피부부터 매장직·사무직까지, 뷰티 업계 채용만 모았어요. 지금 이력서를 완성하면 더 많은 기업·매장에 내 프로필이 노출돼요.
                   </p>
-                  ${confirmUrl ? `
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px;">
-                    <tr><td bgcolor="#f4eefc" style="padding:16px 18px;border-radius:10px;border:1px solid #e3d3f7;">
-                      <p style="font-size:14px;font-weight:700;color:#5f0080;margin:0 0 6px;">이메일 인증을 완료해 주세요</p>
-                      <p style="font-size:13px;color:#5f5e5a;margin:0 0 12px;line-height:1.6;">인증하면 관심 지역·직군에 맞는 <b>맞춤 공고 추천 메일</b>을 받아볼 수 있어요.</p>
-                      <a href="${confirmUrl}" style="display:inline-block;padding:10px 22px;background:#5f0080;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;border-radius:8px;">이메일 인증하기</a>
-                    </td></tr>
-                  </table>` : ""}
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
                     <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
                       <a href="${SITE_URL}/profile/resume" style="display:inline-block;padding:13px 32px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">이력서 완성하기</a>

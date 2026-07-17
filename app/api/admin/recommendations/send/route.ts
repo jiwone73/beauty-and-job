@@ -30,8 +30,6 @@ export async function GET(req: NextRequest) {
      FROM users u
      JOIN term_agreements ta ON ta.owner_type='user' AND ta.owner_id=u.id
      WHERE ta.term_id=$1 AND u.status='ACTIVE'
-       AND COALESCE(u.email_verified, false) = true
-       AND COALESCE(u.email_bounced, false) = false
        ${onlyEmail ? "AND u.email=$2" : ""}`,
     onlyEmail ? [RECOMMENDATION_TERM_ID, onlyEmail] : [RECOMMENDATION_TERM_ID]
   );

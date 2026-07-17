@@ -91,7 +91,6 @@ export async function GET(req: NextRequest) {
           `UPDATE users
              SET kakao_id = $1,
                  avatar_url = COALESCE(avatar_url, $2),
-                 email_verified = true,
                  last_login_at = NOW()
            WHERE id = $3
            RETURNING id, email, name, phone, status, job_type, office_job_areas`,
@@ -105,10 +104,10 @@ export async function GET(req: NextRequest) {
     if (!user) {
       isNew = true;
       const ins = await pool.query(
-        `INSERT INTO users (kakao_id, name, email, avatar_url, status, email_verified)
-         VALUES ($1, $2, $3, $4, 'ACTIVE', $5)
+        `INSERT INTO users (kakao_id, name, email, avatar_url, status)
+         VALUES ($1, $2, $3, $4, 'ACTIVE')
          RETURNING id, email, name, phone, status, job_type, office_job_areas`,
-        [kakaoId, nickname, email, profileImage, !!email]
+        [kakaoId, nickname, email, profileImage]
       );
       user = ins.rows[0];
     }
