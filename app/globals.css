@@ -11171,3 +11171,17 @@ input[type="range"].career-slider::-moz-range-thumb {
   .resume-logo img { height: 36px !important; }
   .resume-header-nav { font-size: 18px; }
 }
+
+/* === PC(≥769px) 프로필 탭(프로필·이력서·지원현황·관심공고) 본문 텍스트 한 단계 상향 (모바일 유지) === */
+@media (min-width: 769px) {
+  .profile-info-label { font-size: 14px; }
+  .profile-info-value { font-size: 15px; }
+  .profile-empty-tab { font-size: 15px; }
+  .applied-title { font-size: 16px; }
+  .applied-brand { font-size: 13px; }
+  .applied-date { font-size: 13px; }
+  .bookmark-brand { font-size: 13px; }
+  .bookmark-title { font-size: 16px; }
+  .bookmark-location { font-size: 13px; }
+  .bookmark-deadline { font-size: 14px; }
+}
