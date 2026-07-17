@@ -18,6 +18,7 @@ export default function SignupEmailPage() {
   const { login } = useAuthStore();
   const [jobType, setJobType] = useState<"OFFICE" | "STORE" | "">("");
   const [email, setEmail] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
@@ -80,6 +81,7 @@ export default function SignupEmailPage() {
   const isFormValid =
     jobType !== "" &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+    emailStatus !== "taken" &&
     name.trim().length > 0 &&
     phone.replace(/\D/g, "").length >= 10 &&
     phoneVerified &&
@@ -137,6 +139,18 @@ export default function SignupEmailPage() {
     }
   };
 
+  const checkEmailDup = async () => {
+    const v = email.trim();
+    if (!v) { setEmailStatus("idle"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { setEmailStatus("invalid"); return; }
+    setEmailStatus("checking");
+    try {
+      const r = await fetch(`/api/auth/check-email?email=${encodeURIComponent(v)}&scope=user`);
+      const res = await r.json();
+      setEmailStatus(res.success ? (res.data.available ? "ok" : "taken") : "invalid");
+    } catch { setEmailStatus("idle"); }
+  };
+
   const handleSubmit = async () => {
     if (!isFormValid) return;
     setError("");
@@ -160,6 +174,7 @@ export default function SignupEmailPage() {
       });
       const data = await res.json();
       if (!data.success) {
+        if (res.status === 409 && (data.error?.message || "").includes("이메일")) setEmailStatus("taken");
         setError(data.error?.message || "가입에 실패했습니다.");
         return;
       }
@@ -263,10 +278,15 @@ export default function SignupEmailPage() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); setEmailStatus("idle"); }}
+              onBlur={checkEmailDup}
               placeholder="이메일을 입력해주세요"
               className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
             />
+            {emailStatus === "checking" && <p className="mt-1.5 text-[12px] text-[#999]">중복 확인 중…</p>}
+            {emailStatus === "ok" && <p className="mt-1.5 text-[12px] text-[#1a8a4a]">사용 가능한 이메일입니다.</p>}
+            {emailStatus === "taken" && <p className="mt-1.5 text-[12px] text-red-500">이미 가입된 이메일입니다.</p>}
+            {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] text-red-500">올바른 이메일 형식이 아닙니다.</p>}
           </div>
           {/* 이름 */}
           <div className="mb-4">
