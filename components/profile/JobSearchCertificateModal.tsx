@@ -61,7 +61,7 @@ export default function JobSearchCertificateModal({
   const td: CSSProperties = { border: "1px solid #ddd", padding: "7px 8px", fontSize: 13, color: "#333", lineHeight: 1.15, verticalAlign: "middle" };
 
   return (
-    <div className="rp-modal-overlay" onClick={onClose}>
+    <div className="rp-modal-overlay">
       <div className="rp-modal myapp-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720, width: "94%", maxHeight: "92vh", display: "flex", flexDirection: "column" }}>
         <div className="rp-modal-header" style={{ flexShrink: 0 }}>
           <h2 className="rp-modal-title">취업활동 증명서</h2>

@@ -75,7 +75,7 @@ export default function JobPostingCertificateModal({
   const workplace = job?.location || job?.address || (job?.company ? [job.company.region_sido, job.company.region_sigungu].filter(Boolean).join(" ") : "") || "-";
 
   return (
-    <div className="rp-modal-overlay" onClick={onClose}>
+    <div className="rp-modal-overlay">
       <div className="rp-modal myapp-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720, width: "94%", maxHeight: "92vh", display: "flex", flexDirection: "column" }}>
         <div className="rp-modal-header" style={{ flexShrink: 0 }}>
           <h2 className="rp-modal-title">취업활동 증명서</h2>

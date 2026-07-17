@@ -546,7 +546,7 @@ function ResumePageContent() {
       </div>
 
       {showPreview && (
-        <div className="rp-modal-overlay" onClick={() => setShowPreview(false)}>
+        <div className="rp-modal-overlay">
           <div className="rp-modal myapp-modal" onClick={(e) => e.stopPropagation()}>
             <div className="rp-modal-header">
               <h2 className="rp-modal-title">이력서 미리보기</h2>

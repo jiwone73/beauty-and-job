@@ -76,7 +76,7 @@ export default function FilterSheet({ open, jobType, initial, onClose, onApply }
   const salaryOpts = jobType === "매장" ? SALARY_STORE : jobType === "기업" ? SALARY_OFFICE : null;
 
   return (
-    <div className="region-modal-overlay" onClick={onClose}>
+    <div className="region-modal-overlay">
       <div className="region-modal filter-sheet" onClick={(e) => e.stopPropagation()}>
         <div className="region-modal-head">
           <span className="region-modal-spacer" />

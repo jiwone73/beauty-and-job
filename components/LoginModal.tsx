@@ -47,7 +47,7 @@ export default function LoginModal({ onClose }: Props) {
 
   if (phoneMode) {
     return (
-      <div className="lm-overlay" onClick={onClose}>
+      <div className="lm-overlay">
         <div className="lm-card" onClick={(e) => e.stopPropagation()}>
           <div className="lm-phone-top">
             <button className="lm-back-btn" onClick={() => { setPhoneMode(false); setSent(false); setPhone(""); setCode(""); setError(""); setUserName(""); setUserName(""); }}>
@@ -103,7 +103,7 @@ export default function LoginModal({ onClose }: Props) {
   }
 
   return (
-    <div className="lm-overlay" onClick={onClose}>
+    <div className="lm-overlay">
       <div className="lm-card" onClick={(e) => e.stopPropagation()}>
         <button className="lm-close" onClick={onClose}><X size={22} /></button>
         <div className="lm-header">

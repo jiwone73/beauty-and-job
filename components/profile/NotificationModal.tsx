@@ -103,7 +103,7 @@ export default function NotificationModal({ isOpen, onClose, onOpenBlockModal }:
   };
 
   return (
-    <div className="cv-overlay" onClick={onClose}>
+    <div className="cv-overlay">
       <div className="cv-modal noti-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
           <div style={{ width: 36 }} />

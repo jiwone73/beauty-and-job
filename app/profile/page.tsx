@@ -794,7 +794,7 @@ export default function ProfilePage() {
                     style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
                 </div>
                 {postcodeOpen && (
-                  <div className="postcode-modal-overlay" onClick={closePostcode}>
+                  <div className="postcode-modal-overlay">
                     <div className="postcode-modal" onClick={(e) => e.stopPropagation()}>
                       <div style={{ display: "flex", alignItems: "center", height: "52px", padding: "0 12px", borderBottom: "1px solid #eee", flexShrink: 0 }}>
                         <button onClick={closePostcode} aria-label="뒤로가기"

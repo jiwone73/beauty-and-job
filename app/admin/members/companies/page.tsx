@@ -539,7 +539,7 @@ function AdminCompaniesContent() {
 
       {/* 기업 정보 미리보기 모달 */}
       {companyDetail && (
-        <div className="admin-modal-overlay" onClick={() => setCompanyDetail(null)}>
+        <div className="admin-modal-overlay">
           <div className="admin-modal" style={{ maxWidth: 600, width: "92%", overflow: "hidden", padding: 0 }} onClick={(e) => e.stopPropagation()}>
             {/* 헤더 액션바 (PDF·인쇄 캡처 제외) */}
             <div className="admin-modal-header" style={{ padding: "14px 18px" }}>

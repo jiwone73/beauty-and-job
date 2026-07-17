@@ -188,7 +188,7 @@ export default function AdminInquiriesPage() {
       )}
 
       {selected && (
-        <div className="cv-overlay" onClick={() => setSelected(null)}>
+        <div className="cv-overlay">
           <div className="cv-modal" style={{ maxWidth: 1080, width: "94vw", maxHeight: "95vh" }} onClick={(e) => e.stopPropagation()}>
             <div className="cv-body">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>

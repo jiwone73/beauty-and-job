@@ -88,7 +88,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
 
   return (
     <>
-      <div className="admin-modal-overlay" onClick={onClose}>
+      <div className="admin-modal-overlay">
         <div className="admin-modal" style={{ maxWidth: 600, width: "92%", overflow: "hidden", padding: 0 }} onClick={(e) => e.stopPropagation()}>
           <div className="admin-modal-header" style={{ padding: "14px 18px" }}>
             <h2 className="admin-modal-title">기업 정보</h2>

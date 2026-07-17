@@ -547,7 +547,7 @@ export default function TalentPage() {
 
       {/* 이력서 모달 */}
       {selected && (
-        <div className="rp-modal-overlay" onClick={() => setSelected(null)}>
+        <div className="rp-modal-overlay">
           <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
             <div className="rp-modal-header">
               <div className="rp-modal-actions">

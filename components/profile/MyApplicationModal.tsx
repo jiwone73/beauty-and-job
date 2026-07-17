@@ -91,7 +91,7 @@ export default function MyApplicationModal({
     : "";
 
   return (
-    <div className="rp-modal-overlay" onClick={onClose}>
+    <div className="rp-modal-overlay">
       <div className="rp-modal myapp-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720, width: "94%", maxHeight: "92vh", display: "flex", flexDirection: "column" }}>
         <div className="rp-modal-header" style={{ flexShrink: 0 }}>
           <h2 className="rp-modal-title">제출한 입사지원서</h2>

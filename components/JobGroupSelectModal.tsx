@@ -169,7 +169,7 @@ export default function JobGroupSelectModal({
         }
       `}</style>
 
-      <div className="jgm-backdrop" onClick={onClose}>
+      <div className="jgm-backdrop">
         <div className="jgm-sheet" onClick={(e) => e.stopPropagation()}>
           {/* 헤더 */}
           <div className="jgm-header">

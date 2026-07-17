@@ -102,7 +102,7 @@ export default function ResumePreviewModal({
     : "";
 
   return (
-    <div className="rp-modal-overlay" onClick={onClose}>
+    <div className="rp-modal-overlay">
       <div className="rp-modal myapp-modal" onClick={(e) => e.stopPropagation()}>
         <div className="rp-modal-header">
           <h2 className="rp-modal-title">제출된 입사지원서</h2>

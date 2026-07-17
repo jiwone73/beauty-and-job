@@ -261,7 +261,7 @@ export default function CompanyJobsPage() {
 
       {/* 상세 모달 */}
       {selected && (
-        <div className="admin-modal-overlay" onClick={() => setSelected(null)}>
+        <div className="admin-modal-overlay">
           <div className="admin-modal" style={{maxWidth:"520px"}} onClick={e => e.stopPropagation()}>
             <div className="admin-modal-header">
               <div>

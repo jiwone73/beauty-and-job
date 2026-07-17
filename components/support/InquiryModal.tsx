@@ -66,7 +66,7 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
   };
 
   return (
-    <div className="cv-overlay" onClick={onClose}>
+    <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
           <div style={{ width: 36 }} />

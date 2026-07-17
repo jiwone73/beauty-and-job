@@ -57,7 +57,7 @@ export default function CompanyBlockModal({ open, onClose }: { open: boolean; on
   if (!open) return null;
 
   return (
-    <div className="cv-overlay" onClick={onClose}>
+    <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
           <h2 className="cv-title">이력서 공개 설정</h2>

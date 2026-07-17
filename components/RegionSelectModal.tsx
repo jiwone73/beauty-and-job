@@ -49,7 +49,7 @@ export default function RegionSelectModal({ open, initial, onClose, onApply }: P
     draft.filter((x) => x.startsWith(`${sido} `)).length;
 
   return (
-    <div className="region-modal-overlay" onClick={onClose}>
+    <div className="region-modal-overlay">
       <div className="region-modal" onClick={(e) => e.stopPropagation()}>
         <div className="region-modal-head">
           <span className="region-modal-spacer" />

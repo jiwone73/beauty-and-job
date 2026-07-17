@@ -57,7 +57,7 @@ export default function SmsModal({
   };
 
   return (
-    <div className="cv-overlay" onClick={onClose}>
+    <div className="cv-overlay">
       <div className="cv-modal" style={{ maxWidth: 520 }} onClick={(e) => e.stopPropagation()}>
         <div className="cv-body">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
