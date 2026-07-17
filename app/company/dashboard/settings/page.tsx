@@ -38,6 +38,7 @@ export default function CompanySettingsPage() {
   });
   const [pwForm, setPwForm] = useState({ current_password: "", new_password: "", confirm_password: "" });
   const [pwSaving, setPwSaving] = useState(false);
+  const [showPwModal, setShowPwModal] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
   const [showPw, setShowPw] = useState(false);
@@ -203,6 +204,7 @@ export default function CompanySettingsPage() {
       });
       alert("비밀번호가 변경되었습니다.");
       setPwForm({ current_password: "", new_password: "", confirm_password: "" });
+      setShowPwModal(false);
     } catch (e: any) {
       alert(e?.message || "비밀번호 변경에 실패했어요. 현재 비밀번호를 확인해주세요.");
       console.error("[changePassword]", e);
@@ -503,44 +505,24 @@ export default function CompanySettingsPage() {
               <h2 className="company-card-title">계정 정보</h2>
             </div>
             <div className="admin-form-body">
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">이메일</label>
-                  <input className="admin-form-input" value={info?.email || ""} disabled
-                    style={{ background: "#f5f5f5", color: "#888" }} />
-                  <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>이메일은 변경할 수 없어요</p>
-                </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">사업자등록번호</label>
-                  <input className="admin-form-input" value={info?.business_number || ""} disabled
-                    style={{ background: "#f5f5f5", color: "#888" }} />
-                  <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
-                </div>
+              <div className="admin-form-row">
+                <label className="admin-form-label">이메일</label>
+                <input className="admin-form-input" value={info?.email || ""} disabled
+                  style={{ background: "#f5f5f5", color: "#888" }} />
+                <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>이메일은 변경할 수 없어요</p>
+              </div>
+              <div className="admin-form-row">
+                <label className="admin-form-label">사업자등록번호</label>
+                <input className="admin-form-input" value={info?.business_number || ""} disabled
+                  style={{ background: "#f5f5f5", color: "#888" }} />
+                <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
               </div>
 
               <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px" }}>
-                <label className="admin-form-label">비밀번호 변경</label>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginTop: "8px" }}>
-                  <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="현재 비밀번호"
-                    value={pwForm.current_password}
-                    onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })} />
-                  <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 (8자 이상)"
-                    value={pwForm.new_password}
-                    onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })} />
-                  <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 확인"
-                    value={pwForm.confirm_password}
-                    onChange={(e) => setPwForm({ ...pwForm, confirm_password: e.target.value })} />
-                </div>
-                <label style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#666", cursor: "pointer", alignSelf: "flex-start" }}>
-                  <input type="checkbox" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} />
-                  비밀번호 표시
-                </label>
-                <button
-                  type="button"
-                  onClick={handleChangePassword}
-                  disabled={pwSaving}
-                  style={{ alignSelf: "flex-start", marginTop: "12px", padding: "9px 18px", borderRadius: "8px", border: "1.5px solid #c4b5d4", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
-                  {pwSaving ? "변경 중..." : "비밀번호 변경"}
+                <label className="admin-form-label">비밀번호</label>
+                <button type="button" onClick={() => setShowPwModal(true)}
+                  style={{ alignSelf: "flex-start", marginTop: "4px", padding: "9px 18px", borderRadius: "8px", border: "1.5px solid #c4b5d4", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                  비밀번호 변경
                 </button>
               </div>
 
@@ -554,6 +536,39 @@ export default function CompanySettingsPage() {
                   회원 탈퇴
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPwModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
+          <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
+            <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 16px" }}>비밀번호 변경</h3>
+            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="현재 비밀번호"
+              value={pwForm.current_password}
+              onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })} />
+            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 (8자 이상)"
+              style={{ marginTop: "8px" }}
+              value={pwForm.new_password}
+              onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })} />
+            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 확인"
+              style={{ marginTop: "8px" }}
+              value={pwForm.confirm_password}
+              onChange={(e) => setPwForm({ ...pwForm, confirm_password: e.target.value })} />
+            <label style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#666", cursor: "pointer" }}>
+              <input type="checkbox" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} />
+              비밀번호 표시
+            </label>
+            <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
+              <button onClick={() => setShowPwModal(false)} disabled={pwSaving}
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                취소
+              </button>
+              <button onClick={handleChangePassword} disabled={pwSaving}
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
+                {pwSaving ? "변경 중..." : "변경하기"}
+              </button>
             </div>
           </div>
         </div>
