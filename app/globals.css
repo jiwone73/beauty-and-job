@@ -152,7 +152,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 48px;
-  align-items: center;
+  align-items: end;
   background: #ffffff;
   border: 1px solid #f0e8f8;
   border-radius: 24px;
@@ -7517,7 +7517,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin-bottom: 20px;
 }
 .hero-right-title {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   color: #1a1a1a;
 }
