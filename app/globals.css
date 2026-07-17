@@ -8310,7 +8310,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   text-decoration: none;
   color: inherit;
 }
-.hero-m-ai-card-icon { font-size: 24px; }
+.hero-m-ai-card-head { display: flex; align-items: center; gap: 8px; }
+.hero-m-ai-card-icon { font-size: 24px; flex-shrink: 0; }
 .hero-m-ai-card strong { font-size: 14px; font-weight: 700; color: #1a1a1a; }
 .hero-m-ai-card p { font-size: 12px; color: #888; line-height: 1.5; }
 .hero-m-ai-card-btn {

@@ -60,7 +60,6 @@ export default function HeroMobile() {
       <div className="hero-m-banner">
         <span className="hero-m-banner-ad"><Rocket size={16} /></span>
         <p className="hero-m-banner-text">뷰티워크 오픈 준비 중 · 지금은 완전 무료</p>
-        <Link href="/jobs" className="hero-m-banner-link">보기 →</Link>
       </div>
 
       <div className="hero-m-title-wrap">
@@ -114,14 +113,18 @@ export default function HeroMobile() {
         </div>
         <div className="hero-m-ai-cards">
           <ResumeCta className="hero-m-ai-card">
-            <div className="hero-m-ai-card-icon">📄</div>
-            <strong>이력서를 등록하면<br />제안을 받을 수 있어요</strong>
+            <div className="hero-m-ai-card-head">
+              <div className="hero-m-ai-card-icon">📄</div>
+              <strong>이력서를 등록하면<br />제안을 받을 수 있어요</strong>
+            </div>
             <p>뷰티기업·샵 인재 검색에 노출되고, 조건에 맞는 공고 매칭 메일도 보내드려요</p>
             <span className="hero-m-ai-card-btn">무료 이력서 등록하기 ›</span>
           </ResumeCta>
           <Link href="/company" className="hero-m-ai-card">
-            <div className="hero-m-ai-card-icon">📊</div>
-            <strong>공고를 등록하면<br />인재에게 노출돼요</strong>
+            <div className="hero-m-ai-card-head">
+              <div className="hero-m-ai-card-icon">📊</div>
+              <strong>공고를 등록하면<br />인재에게 노출돼요</strong>
+            </div>
             <p>채용공고 등록·상단 노출·인재 연락처 열람도 런칭 기간 무료예요</p>
             <span className="hero-m-ai-card-btn">무료 채용공고 등록하기 ›</span>
           </Link>
