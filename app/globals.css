@@ -11165,7 +11165,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (min-width: 769px) {
   .header .logo img { height: 40px !important; }
   .gnb a, .gnb button { font-size: 18px; }
-  /* resume 페이지 헤더도 동일하게 */
+  /* resume·프로필 페이지 헤더도 동일하게 (profile-* 클래스 사용) */
+  .profile-logo img { height: 40px !important; }
+  .profile-header-nav { font-size: 18px; }
   .resume-logo img { height: 40px !important; }
   .resume-header-nav { font-size: 18px; }
 }
