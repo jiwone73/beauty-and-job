@@ -152,7 +152,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 48px;
-  align-items: end;
+  align-items: stretch;
   background: #ffffff;
   border: 1px solid #f0e8f8;
   border-radius: 24px;
@@ -8836,6 +8836,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-weight: 700;
   color: #1a1a1a;
   line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .insight-card-new-desc {
   font-size: 11px;
