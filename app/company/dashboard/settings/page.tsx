@@ -250,6 +250,7 @@ export default function CompanySettingsPage() {
               </span>
             </div>
             <div className="admin-form-body">
+              <div className="admin-form-row-2col">
               <div className="admin-form-row">
                 <label className="admin-form-label">회사 로고</label>
                 <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
@@ -325,19 +326,21 @@ export default function CompanySettingsPage() {
                   </div>
                 </div>
               </div>
-
-              <div className="admin-form-row">
-                <label className="admin-form-label">기업명 *</label>
-                <input className="admin-form-input" placeholder="기업명"
-                  value={form.company_name}
-                  onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
               </div>
 
-              <div className="admin-form-row">
-                <label className="admin-form-label">브랜드명</label>
-                <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
-                  value={form.brand_name}
-                  onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row">
+                  <label className="admin-form-label">기업명<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <input className="admin-form-input" placeholder="기업명"
+                    value={form.company_name}
+                    onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">브랜드명</label>
+                  <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
+                    value={form.brand_name}
+                    onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
+                </div>
               </div>
 
               <div className="admin-form-row">
@@ -371,26 +374,28 @@ export default function CompanySettingsPage() {
                   주소 검색 시 도로명 주소가 자동 입력돼요. 층·호수 등은 직접 추가하세요. 입력한 주소는 공고 상세에 지도로 표시돼요.
                 </p>
               </div>
-              <div className="admin-form-row">
-                <label className="admin-form-label">사원수</label>
-                <select className="admin-form-select"
-                  value={form.company_size}
-                  onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
-                  <option value="">선택</option>
-                  <option value="1~10명">1~10명</option>
-                  <option value="10~50명">10~50명</option>
-                  <option value="50~100명">50~100명</option>
-                  <option value="100~300명">100~300명</option>
-                  <option value="300~1000명">300~1000명</option>
-                  <option value="1000명 이상">1000명 이상</option>
-                </select>
-              </div>
-              <div className="admin-form-row">
-                <label className="admin-form-label">설립연도</label>
-                <input type="number" className="admin-form-input" placeholder="예) 2020"
-                  min="1900" max={new Date().getFullYear()}
-                  value={form.founded_year}
-                  onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row">
+                  <label className="admin-form-label">사원수</label>
+                  <select className="admin-form-select"
+                    value={form.company_size}
+                    onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
+                    <option value="">선택</option>
+                    <option value="1~10명">1~10명</option>
+                    <option value="10~50명">10~50명</option>
+                    <option value="50~100명">50~100명</option>
+                    <option value="100~300명">100~300명</option>
+                    <option value="300~1000명">300~1000명</option>
+                    <option value="1000명 이상">1000명 이상</option>
+                  </select>
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">설립연도</label>
+                  <input type="number" className="admin-form-input" placeholder="예) 2020"
+                    min="1900" max={new Date().getFullYear()}
+                    value={form.founded_year}
+                    onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
+                </div>
               </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">기업 소개</label>
