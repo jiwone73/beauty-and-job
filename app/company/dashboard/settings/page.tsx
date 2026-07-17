@@ -429,47 +429,49 @@ export default function CompanySettingsPage() {
               <h2 className="company-card-title">계정 정보</h2>
             </div>
             <div className="admin-form-body">
-              <div className="admin-form-row">
-                <label className="admin-form-label">이메일</label>
-                <input className="admin-form-input" value={info?.email || ""} disabled
-                  style={{ background: "#f5f5f5", color: "#888" }} />
-                <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>이메일은 변경할 수 없어요</p>
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row">
+                  <label className="admin-form-label">이메일</label>
+                  <input className="admin-form-input" value={info?.email || ""} disabled
+                    style={{ background: "#f5f5f5", color: "#888" }} />
+                  <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>이메일은 변경할 수 없어요</p>
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">사업자등록번호</label>
+                  <input className="admin-form-input" value={info?.business_number || ""} disabled
+                    style={{ background: "#f5f5f5", color: "#888" }} />
+                  <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
+                </div>
               </div>
 
-              <div className="admin-form-row">
-                <label className="admin-form-label">사업자등록번호</label>
-                <input className="admin-form-input" value={info?.business_number || ""} disabled
-                  style={{ background: "#f5f5f5", color: "#888" }} />
-                <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
-              </div>
-
-              <div className="admin-form-row">
-                <label className="admin-form-label">대표자명</label>
-                <input className="admin-form-input" placeholder="대표자명을 입력해주세요"
-                  value={form.representative_name}
-                  onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
-              </div>
-
-              <div className="admin-form-row">
-                <label className="admin-form-label">담당자 연락처</label>
-                <input className="admin-form-input" placeholder="010-0000-0000"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row">
+                  <label className="admin-form-label">대표자명</label>
+                  <input className="admin-form-input" placeholder="대표자명을 입력해주세요"
+                    value={form.representative_name}
+                    onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">담당자 연락처</label>
+                  <input className="admin-form-input" placeholder="010-0000-0000"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                </div>
               </div>
 
               <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px" }}>
                 <label className="admin-form-label">비밀번호 변경</label>
-                <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="현재 비밀번호"
-                  value={pwForm.current_password}
-                  onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })} />
-                <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 (8자 이상)"
-                  style={{ marginTop: "8px" }}
-                  value={pwForm.new_password}
-                  onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })} />
-                <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 확인"
-                  style={{ marginTop: "8px" }}
-                  value={pwForm.confirm_password}
-                  onChange={(e) => setPwForm({ ...pwForm, confirm_password: e.target.value })} />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginTop: "8px" }}>
+                  <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="현재 비밀번호"
+                    value={pwForm.current_password}
+                    onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })} />
+                  <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 (8자 이상)"
+                    value={pwForm.new_password}
+                    onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })} />
+                  <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 확인"
+                    value={pwForm.confirm_password}
+                    onChange={(e) => setPwForm({ ...pwForm, confirm_password: e.target.value })} />
+                </div>
                 <label style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#666", cursor: "pointer", alignSelf: "flex-start" }}>
                   <input type="checkbox" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} />
                   비밀번호 표시
