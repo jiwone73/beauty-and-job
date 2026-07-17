@@ -249,6 +249,14 @@ export default function CompanySettingsPage() {
       alert("주소는 필수입니다. 주소 검색으로 입력해주세요.");
       return;
     }
+    if (!form.manager_name.trim()) {
+      alert("담당자명은 필수입니다.");
+      return;
+    }
+    if (!form.phone.trim()) {
+      alert("담당자 연락처는 필수입니다.");
+      return;
+    }
     setSaving(true);
     try {
       const res = await companyMeApi.update(form);
@@ -455,13 +463,13 @@ export default function CompanySettingsPage() {
                 </div>
                 <div className="admin-form-row-2col">
                   <div className="admin-form-row">
-                    <label className="admin-form-label">담당자</label>
+                    <label className="admin-form-label">담당자<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                     <input className="admin-form-input" placeholder="담당자명"
                       value={form.manager_name}
                       onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
                   </div>
                   <div className="admin-form-row">
-                    <label className="admin-form-label">담당자 연락처</label>
+                    <label className="admin-form-label">담당자 연락처<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                     <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
                       value={formatPhone(form.phone)}
                       onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
@@ -571,9 +579,10 @@ export default function CompanySettingsPage() {
           </span>
         )}
         <button
+          className="resume-save-btn-full"
           onClick={handleSave}
           disabled={saving}
-          style={{ width: "100%", height: 48, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}
+          style={{ opacity: saving ? 0.7 : 1, cursor: saving ? "not-allowed" : "pointer" }}
         >
           {saving ? "저장 중..." : "저장하기"}
         </button>
