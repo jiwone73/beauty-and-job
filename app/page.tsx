@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
 import HeroMobile from "@/components/HeroMobile";
+import ResumeCta from "@/components/ResumeCta";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { workTypeLabel } from "@/lib/constants";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
@@ -210,9 +211,9 @@ function Hero() {
                 </div>
                 <h3 className="hero-right-card-title">이력서를 등록하면<br />제안을 받을 수 있어요</h3>
                 <p className="hero-right-card-desc">등록한 이력서는 뷰티기업과 샵의 인재 검색에 노출돼요</p>
-                <Link href="/profile/resume" className="hero-right-card-btn">
+                <ResumeCta className="hero-right-card-btn">
                   무료 이력서 등록하기 ›
-                </Link>
+                </ResumeCta>
               </div>
               <div className="hero-right-card">
                 <div className="hero-right-card-visual card2">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, MapPin, ChevronDown, Rocket } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useAuthStore } from "@/lib/store/authStore";
+import ResumeCta from "@/components/ResumeCta";
 
 const shortSido = (s: string) =>
   s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "");
@@ -112,12 +113,12 @@ export default function HeroMobile() {
           <span className="hero-m-ai-title">뷰티워크 런칭 이벤트 · 지금은 완전 무료 (~12/31)</span>
         </div>
         <div className="hero-m-ai-cards">
-          <Link href="/profile/resume" className="hero-m-ai-card">
+          <ResumeCta className="hero-m-ai-card">
             <div className="hero-m-ai-card-icon">📄</div>
             <strong>이력서를 등록하면<br />제안을 받을 수 있어요</strong>
             <p>등록한 이력서는 뷰티기업과 샵의 인재 검색에 노출돼요</p>
             <span className="hero-m-ai-card-btn">무료 이력서 등록하기 ›</span>
-          </Link>
+          </ResumeCta>
           <Link href="/company" className="hero-m-ai-card">
             <div className="hero-m-ai-card-icon">📊</div>
             <strong>공고를 등록하면<br />인재에게 노출돼요</strong>

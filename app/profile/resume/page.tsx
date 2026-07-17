@@ -88,6 +88,22 @@ function ResumePageContent() {
       .then((r) => r.json())
       .then((res) => {
         if (res.success) {
+          // 프로필 필수항목 미완성 시 이력서 작성 불가 → 프로필로 안내 (모든 진입 경로 보호)
+          const d = res.data;
+          const missing: string[] = [];
+          if (!d.avatar_url) missing.push("프로필 사진");
+          if (!d.phone) missing.push("휴대전화");
+          if (!d.birth_date) missing.push("생년월일");
+          if (!d.gender) missing.push("성별");
+          if (!d.email) missing.push("이메일");
+          if (!d.address_road) missing.push("거주지");
+          if (!Array.isArray(d.preferred_regions) || d.preferred_regions.length === 0) missing.push("희망 근무지역");
+          if (d.job_type === "OFFICE" && (!Array.isArray(d.office_job_areas) || d.office_job_areas.length === 0)) missing.push("직군 영역");
+          if (missing.length > 0) {
+            alert(`이력서를 작성하려면 프로필 필수항목을 먼저 완성해 주세요.\n\n[미입력 항목]\n· ${missing.join("\n· ")}`);
+            router.replace("/profile");
+            return;
+          }
           if (res.data.email) setEmailLocal(res.data.email);
           if (res.data.job_type === "STORE") setResumeType("salon");
           else setResumeType("office");
