@@ -10954,6 +10954,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobcard-company { font-size: 14px; }
   .jobcard-meta { font-size: 14px; }
   .jobcard-deadline { font-size: 14px; }
+  /* PC뷰 필터 텍스트 한 단계 크게 */
+  .jobs-type-tab { font-size: 15px; }
+  .jobs-filter-btn { font-size: 15px; }
 }
 /* jobseeker 히어로 — 모바일 자동 조절 */
 .js-hero-title { font-size: clamp(22px, 6vw, 32px); }
