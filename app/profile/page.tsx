@@ -490,14 +490,12 @@ export default function ProfilePage() {
   };
 
   const startKakaoReauth = async () => {
-    if (!newEmailInput.trim()) { alert("새 이메일을 입력해주세요."); return; }
     const token = localStorage.getItem("access_token");
     setEmailBusy(true); setEmailMsg("");
     try {
       const r = await fetch("/api/users/me/email/kakao-start", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ new_email: newEmailInput.trim() }),
+        headers: { Authorization: `Bearer ${token}` },
       });
       const res = await r.json();
       if (res.success && res.data?.authorize_url) {
@@ -1026,18 +1024,18 @@ export default function ProfilePage() {
           <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 400, width: "100%" }}>
             <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 16px" }}>이메일 변경</h3>
             {emailStep === 1 ? (
-              <>
-                <input type="email" placeholder="새 이메일 주소" value={newEmailInput}
-                  onChange={(e) => setNewEmailInput(e.target.value)}
-                  style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
-                {isKakao ? (
-                  <p style={{ fontSize: 12, color: "#888", margin: "4px 0 0", lineHeight: 1.5 }}>카카오 계정은 카카오 재인증으로 본인 확인 후 변경돼요.</p>
-                ) : (
+              isKakao ? (
+                <p style={{ fontSize: 13, color: "#555", margin: 0, lineHeight: 1.6 }}>카카오 계정은 이메일이 카카오와 연동돼 있어요. 카카오에서 이메일을 변경하신 뒤, 아래 <b>카카오로 동기화</b>를 누르면 최신 이메일로 반영됩니다.</p>
+              ) : (
+                <>
+                  <input type="email" placeholder="새 이메일 주소" value={newEmailInput}
+                    onChange={(e) => setNewEmailInput(e.target.value)}
+                    style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
                   <input type="password" placeholder="현재 비밀번호" value={emailPw}
                     onChange={(e) => setEmailPw(e.target.value)}
                     style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 4, boxSizing: "border-box" }} />
-                )}
-              </>
+                </>
+              )
             ) : (
               <input inputMode="numeric" maxLength={6} placeholder="인증코드 6자리" value={emailCode}
                 onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
@@ -1050,7 +1048,7 @@ export default function ProfilePage() {
               {emailStep === 1 ? (
                 isKakao ? (
                   <button onClick={startKakaoReauth} disabled={emailBusy}
-                    style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#FEE500", color: "#191600", fontSize: 15, fontWeight: 700, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>{emailBusy ? "이동 중..." : "카카오로 인증하고 변경"}</button>
+                    style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#FEE500", color: "#191600", fontSize: 15, fontWeight: 700, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>{emailBusy ? "이동 중..." : "카카오로 동기화"}</button>
                 ) : (
                   <button onClick={sendEmailCode} disabled={emailBusy}
                     style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>{emailBusy ? "발송 중..." : "인증코드 받기"}</button>

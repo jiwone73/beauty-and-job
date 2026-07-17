@@ -6,7 +6,7 @@ import pool from "@/lib/db";
 const KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
 const KAKAO_USER_URL = "https://kapi.kakao.com/v2/user/me";
 
-// 카카오 계정 이메일 변경 2단계: 카카오 재인증 결과 확인 후 이메일 업데이트
+// 카카오 계정 이메일 동기화 2단계: 재인증 결과에서 카카오 검증 이메일을 가져와 반영
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
@@ -20,13 +20,12 @@ export async function GET(req: NextRequest) {
   try {
     const st = await pool.query(
       `SELECT owner_id, token_hash FROM refresh_tokens
-       WHERE token_hash LIKE $1 AND expires_at > NOW() AND revoked_at IS NULL LIMIT 1`,
-      [`kakao_reauth:${state}:%`]
+       WHERE token_hash = $1 AND expires_at > NOW() AND revoked_at IS NULL LIMIT 1`,
+      [`kakao_esync:${state}`]
     );
     if (st.rowCount === 0) return fail("expired");
     const userId = st.rows[0].owner_id;
     const tokenHash: string = st.rows[0].token_hash;
-    const newEmail = tokenHash.substring(`kakao_reauth:${state}:`.length);
 
     // 인가코드 → 카카오 토큰
     const tokenRes = await fetch(KAKAO_TOKEN_URL, {
@@ -42,7 +41,7 @@ export async function GET(req: NextRequest) {
     });
     const tokenData = await tokenRes.json();
     if (!tokenData.access_token) {
-      console.error("[kakao reauth token]", tokenData);
+      console.error("[kakao esync token]", tokenData);
       return fail("token");
     }
 
@@ -53,25 +52,39 @@ export async function GET(req: NextRequest) {
     const kakaoId = kakaoUser?.id;
     if (!kakaoId) return fail("user");
 
+    // 카카오의 검증된 이메일만 사용
+    const acc = kakaoUser.kakao_account || {};
+    const kakaoEmail =
+      acc.email && acc.is_email_valid && acc.is_email_verified
+        ? String(acc.email).toLowerCase()
+        : null;
+    if (!kakaoEmail) return fail("no_email");
+
     // 계정 소유 확인: 이 계정의 kakao_id와 일치해야 함
     const u = await pool.query(
-      `SELECT kakao_id FROM users WHERE id = $1 AND status = 'ACTIVE'`,
+      `SELECT email, kakao_id FROM users WHERE id = $1 AND status = 'ACTIVE'`,
       [userId]
     );
     if (u.rowCount === 0 || String(u.rows[0].kakao_id) !== String(kakaoId)) return fail("mismatch");
 
+    await pool.query(`UPDATE refresh_tokens SET revoked_at = NOW() WHERE token_hash = $1`, [tokenHash]);
+
+    // 이미 같은 이메일이면 변경 없이 통과
+    if ((u.rows[0].email || "").toLowerCase() === kakaoEmail) {
+      return NextResponse.redirect(`${base}/profile?email_changed=1`);
+    }
+
     const dup = await pool.query(
       `SELECT id FROM users WHERE lower(email) = $1 AND status = 'ACTIVE' AND id != $2`,
-      [newEmail, userId]
+      [kakaoEmail, userId]
     );
     if ((dup.rowCount ?? 0) > 0) return fail("duplicate");
 
-    await pool.query(`UPDATE users SET email = $1 WHERE id = $2`, [newEmail, userId]);
-    await pool.query(`UPDATE refresh_tokens SET revoked_at = NOW() WHERE token_hash = $1`, [tokenHash]);
+    await pool.query(`UPDATE users SET email = $1 WHERE id = $2`, [kakaoEmail, userId]);
 
     return NextResponse.redirect(`${base}/profile?email_changed=1`);
   } catch (e) {
-    console.error("[kakao reauth]", e);
+    console.error("[kakao esync]", e);
     return fail("error");
   }
 }
