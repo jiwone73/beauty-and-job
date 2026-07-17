@@ -69,6 +69,10 @@ export const companyMeApi = {
   changePassword: (body: { current_password: string; new_password: string }) =>
     api.patch<ApiResponse<{ success: boolean }>>("/api/company/me/password", body),
   withdraw: (password: string) => api.delete<ApiResponse<{ withdrawn: boolean }>>("/api/company/me", { password }),
+  requestEmailChange: (body: { password: string; new_email: string }) =>
+    api.post<ApiResponse<{ sent: boolean; dev_code?: string }>>("/api/company/me/email/send-code", body),
+  verifyEmailChange: (body: { new_email: string; code: string }) =>
+    api.post<ApiResponse<{ email: string }>>("/api/company/me/email/verify", body),
 };
 
 // === 대시보드 통계 ===

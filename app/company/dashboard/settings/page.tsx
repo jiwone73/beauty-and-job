@@ -39,6 +39,13 @@ export default function CompanySettingsPage() {
   const [pwForm, setPwForm] = useState({ current_password: "", new_password: "", confirm_password: "" });
   const [pwSaving, setPwSaving] = useState(false);
   const [showPwModal, setShowPwModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailStep, setEmailStep] = useState<1 | 2>(1);
+  const [newEmail, setNewEmail] = useState("");
+  const [emailPw, setEmailPw] = useState("");
+  const [emailCode, setEmailCode] = useState("");
+  const [emailBusy, setEmailBusy] = useState(false);
+  const [emailMsg, setEmailMsg] = useState("");
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
   const [withdrawPw, setWithdrawPw] = useState("");
@@ -224,6 +231,43 @@ export default function CompanySettingsPage() {
     if (d.length < 4) return d;
     if (d.length < 8) return d.replace(/(\d{3})(\d+)/, "$1-$2");
     return d.replace(/(\d{3})(\d{4})(\d+)/, "$1-$2-$3");
+  };
+
+  const handleSendEmailCode = async () => {
+    if (!newEmail.trim() || !emailPw) { alert("새 이메일과 현재 비밀번호를 입력해주세요."); return; }
+    setEmailBusy(true); setEmailMsg("");
+    try {
+      const res = await companyMeApi.requestEmailChange({ password: emailPw, new_email: newEmail.trim() });
+      if (res.success) {
+        setEmailStep(2);
+        if (res.data?.dev_code) {
+          setEmailMsg(`인증코드를 발송했어요. (테스트: ${res.data.dev_code})`);
+        } else if (res.data?.sent) {
+          setEmailMsg("새 이메일로 인증코드를 발송했어요. 메일함(스팸함 포함)을 확인해주세요.");
+        } else {
+          setEmailMsg(`메일 발송 실패: ${(res.data as any)?.error || "Resend 설정(도메인·API 키)을 확인해주세요."}`);
+        }
+      } else {
+        setEmailMsg((res as any).error?.message || "발송에 실패했습니다.");
+      }
+    } catch { setEmailMsg("오류가 발생했습니다."); }
+    finally { setEmailBusy(false); }
+  };
+
+  const handleVerifyEmailCode = async () => {
+    if (!emailCode.trim()) { alert("인증코드를 입력해주세요."); return; }
+    setEmailBusy(true); setEmailMsg("");
+    try {
+      const res = await companyMeApi.verifyEmailChange({ new_email: newEmail.trim(), code: emailCode.trim() });
+      if (res.success) {
+        setInfo((prev) => (prev ? { ...prev, email: (res.data as any).email } : prev));
+        setShowEmailModal(false);
+        alert("이메일이 변경되었습니다.");
+      } else {
+        setEmailMsg((res as any).error?.message || "인증에 실패했습니다.");
+      }
+    } catch { setEmailMsg("오류가 발생했습니다."); }
+    finally { setEmailBusy(false); }
   };
 
   const handleWithdraw = async () => {
@@ -510,9 +554,16 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">이메일</label>
-                  <input className="admin-form-input" value={info?.email || ""} disabled
-                    style={{ background: "#f5f5f5", color: "#888" }} />
-                  <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>이메일은 변경할 수 없어요</p>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input className="admin-form-input" value={info?.email || ""} disabled
+                      style={{ background: "#f5f5f5", color: "#888", flex: 1 }} />
+                    <button type="button"
+                      onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailPw(""); setEmailCode(""); setEmailMsg(""); }}
+                      style={{ flexShrink: 0, padding: "0 16px", borderRadius: 8, border: "1.5px solid #c4b5d4", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                      변경
+                    </button>
+                  </div>
+                  <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>변경 시 새 이메일로 인증코드가 발송돼요</p>
                 </div>
                 <div className="admin-form-row">
                   <label className="admin-form-label">사업자등록번호</label>
@@ -540,6 +591,43 @@ export default function CompanySettingsPage() {
                   회원 탈퇴
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEmailModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
+          <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
+            <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 16px" }}>이메일 변경</h3>
+            {emailStep === 1 ? (
+              <>
+                <input type="email" className="admin-form-input" placeholder="새 이메일 주소"
+                  value={newEmail} onChange={(e) => setNewEmail(e.target.value)} style={{ marginBottom: 8 }} />
+                <input type="password" className="admin-form-input" placeholder="현재 비밀번호"
+                  value={emailPw} onChange={(e) => setEmailPw(e.target.value)} style={{ marginBottom: 4 }} />
+              </>
+            ) : (
+              <input className="admin-form-input" placeholder="인증코드 6자리" inputMode="numeric" maxLength={6}
+                value={emailCode} onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))} style={{ marginBottom: 4 }} />
+            )}
+            {emailMsg && <p style={{ fontSize: 12, color: "#5f0080", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
+            <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
+              <button onClick={() => setShowEmailModal(false)} disabled={emailBusy}
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                취소
+              </button>
+              {emailStep === 1 ? (
+                <button onClick={handleSendEmailCode} disabled={emailBusy}
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
+                  {emailBusy ? "발송 중..." : "인증코드 받기"}
+                </button>
+              ) : (
+                <button onClick={handleVerifyEmailCode} disabled={emailBusy}
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
+                  {emailBusy ? "확인 중..." : "변경하기"}
+                </button>
+              )}
             </div>
           </div>
         </div>
