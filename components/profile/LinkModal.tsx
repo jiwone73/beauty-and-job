@@ -46,7 +46,7 @@ export default function LinkModal({ isOpen, onClose, editTarget }: Props) {
   };
 
   return (
-    <div className="cv-overlay" onClick={onClose}>
+    <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
           <button className="cv-back" onClick={onClose}><ChevronLeft size={20} /></button>

@@ -51,7 +51,7 @@ export default function CareerVerifyModal({
   const genderDisplay = userGender === "남성" ? "남성" : userGender === "여성" ? "여성" : "";
 
   return (
-    <div className="cv-overlay" onClick={onClose}>
+    <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         {/* 헤더 */}
         <div className="cv-header">
