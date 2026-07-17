@@ -11137,9 +11137,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* === PC(≥769px) 메인 페이지 텍스트 한 단계 상향 (큰 제목 제외, 모바일 유지) === */
 @media (min-width: 769px) {
   .hero-banner-title { font-size: 17px; }
-  .hero-banner-sub { font-size: 14px; }
+  .hero-banner-sub { font-size: 15px; }
   .hero-sub { font-size: 19px; }
-  .hero-search-guide { font-size: 14px; }
+  .hero-search-guide { font-size: 15px; }
   .hero-type-btn { font-size: 14px; }
   .hero-right-title { font-size: 18px; }
   .hero-right-card-desc { font-size: 15px; }
