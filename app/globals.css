@@ -148,7 +148,7 @@
 }
 
 .hero-inner {
-  padding: 52px 48px;
+  padding: 40px 48px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 48px;
@@ -7534,7 +7534,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 22px 18px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
   border: 1px solid #ede0f8;
 }
 .hero-right-card.card-link {
@@ -7551,7 +7551,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 .hero-right-card-visual {
   display: flex;
@@ -7569,7 +7569,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .hero-right-card-desc {
   font-size: 14px;
   color: #555;
-  line-height: 1.6;
+  line-height: 1.75;
   margin: 0;
   flex: 1;
 }
