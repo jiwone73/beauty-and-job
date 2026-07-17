@@ -364,7 +364,7 @@ export default function JobPostForm({
 
               {mode === "admin" && (
                 <div className="admin-form-row">
-                  <label className="admin-form-label">기업 선택 *</label>
+                  <label className="admin-form-label">기업 선택<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
 
                   {nonMember ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -430,7 +430,7 @@ export default function JobPostForm({
               )}
 
               <div className="admin-form-row">
-                <label className="admin-form-label">채용 유형{showTypeToggle ? " *" : ""}</label>
+                <label className="admin-form-label">채용 유형{showTypeToggle && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</label>
                 {showTypeToggle ? (
                   <div style={{ display: "flex", gap: "8px" }}>
                     {[{ value: "기업", label: "🏢 기업·브랜드 채용" }, { value: "매장", label: "🏪 매장·살롱 채용" }].map((t) => (
@@ -460,7 +460,7 @@ export default function JobPostForm({
               </div>
 
               <div className="admin-form-row">
-                <label className="admin-form-label">공고 제목 *</label>
+                <label className="admin-form-label">공고 제목<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 <input className="admin-form-input"
                   placeholder={jobGroupType === "매장" ? "예) 네일 아티스트 모집" : "예) 마케팅 매니저 (색조)"}
                   value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
@@ -468,7 +468,7 @@ export default function JobPostForm({
 
               <div className="admin-form-row">
                 <label className="admin-form-label">
-                  {jobGroupType === "매장" ? "시술 분야 * (복수 선택 가능)" : "직군 * (복수 선택 가능)"}
+                  {jobGroupType === "매장" ? "시술 분야" : "직군"}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span> <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(복수 선택 가능)</span>
                 </label>
                 <JobGroupField
                   jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
@@ -478,7 +478,7 @@ export default function JobPostForm({
 
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
-                  <label className="admin-form-label">경력 *</label>
+                  <label className="admin-form-label">경력<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <select className="admin-form-select" value={form.career}
                     onChange={(e) => setForm({ ...form, career: e.target.value })}>
                     <option value="">선택</option>
@@ -495,7 +495,7 @@ export default function JobPostForm({
               </div>
 
               <div className="admin-form-row">
-                <label className="admin-form-label">근무지역 *</label>
+                <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 <button type="button" onClick={() => setRegionModalOpen(true)}
                   style={{ width: "100%", textAlign: "left", padding: "10px 14px", border: "1px solid #ddd", borderRadius: "8px", background: "#fff", fontSize: "14px", color: regionList.length ? "#1a1a1a" : "#999", cursor: "pointer" }}>
                   {regionList.length ? `${regionList.length}개 지역 선택됨` : "지역을 선택해주세요"}
@@ -518,15 +518,15 @@ export default function JobPostForm({
                   <label className="admin-form-label">{jobGroupType === "매장" ? "급여" : "연봉"}</label>
                   <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                     <input className="admin-form-input" type="number" disabled={salaryNego}
-                      placeholder={jobGroupType === "매장" ? "예) 250" : "예) 4000"}
+                      placeholder={salaryNego ? "" : (jobGroupType === "매장" ? "예) 250" : "예) 4000")}
                       value={salaryNego ? "" : form.salary}
                       onChange={(e) => setForm({ ...form, salary: e.target.value })}
                       style={{ width: 130, flexShrink: 0 }} />
                     <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap" }}>만원</span>
-                    <label style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "13px", color: "#555", whiteSpace: "nowrap", cursor: "pointer" }}>
-                      <input type="checkbox" checked={salaryNego} onChange={(e) => setSalaryNego(e.target.checked)} /> 협의
-                    </label>
                   </div>
+                  <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "8px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                    <input type="checkbox" checked={salaryNego} onChange={(e) => setSalaryNego(e.target.checked)} /> 협의
+                  </label>
                 </div>
                 <div className="admin-form-row">
                   <label className="admin-form-label">마감일</label>
@@ -555,7 +555,7 @@ export default function JobPostForm({
             <div className="admin-form-body">
               <div className="admin-form-row">
                 <label className="admin-form-label">
-                  상세 이미지 첨부 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(선택, 최대 5장 · 각 5MB)</span>
+                  상세 이미지 첨부 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(최대 5장 · 각 5MB)</span>
                 </label>
                 <p style={{ fontSize: "13px", color: "#888", margin: "0 0 12px" }}>
                   직접 디자인한 채용 공고 이미지나 매장 사진을 첨부할 수 있어요. 단, 검색 노출을 위해 우측 텍스트 항목도 함께 작성해주세요.
@@ -629,7 +629,7 @@ export default function JobPostForm({
               <div className="admin-form-row">
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                   <label className="admin-form-label" style={{ margin: 0 }}>
-                    채용 절차 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(선택)</span>
+                    채용 절차
                   </label>
                   <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                     <button type="button" className="resume-icon-btn" aria-label={processFilled ? "수정" : "설정"} title={processFilled ? "수정" : "설정"} onClick={openProcessModal}>
@@ -665,7 +665,7 @@ export default function JobPostForm({
               <div className="admin-form-row" style={{ marginTop: "8px" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                   <label className="admin-form-label" style={{ margin: 0 }}>
-                    비고 · 유의사항 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(선택)</span>
+                    비고 · 유의사항
                   </label>
                   <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                     <button type="button" className="resume-icon-btn" aria-label={notesFilled ? "수정" : "작성"} title={notesFilled ? "수정" : "작성"} onClick={openNotesModal}>
