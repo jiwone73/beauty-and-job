@@ -7548,19 +7548,20 @@ input[type="range"].career-slider::-moz-range-thumb {
 .hero-right-card-head {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: 4px;
 }
 .hero-right-card-visual {
   display: flex;
   flex-shrink: 0;
 }
-.hero-right-card-visual svg { width: 48px; height: 48px; }
+.hero-right-card-visual svg { width: 40px; height: 40px; }
 .hero-right-card-title {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1a1a1a;
   margin: 0;
+  white-space: nowrap;
 }
 .hero-right-card-title.accent { color: #5f0080; }
 .hero-right-card-desc {
