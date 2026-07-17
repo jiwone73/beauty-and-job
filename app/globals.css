@@ -7573,7 +7573,6 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #555;
   line-height: 1.6;
   margin: 0;
-  flex: 1;
 }
 .hero-right-card-btn {
   display: inline-flex;
@@ -7586,7 +7585,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-weight: 700;
   border-radius: 10px;
   text-decoration: none;
-  margin-top: 8px;
+  margin-top: auto;
+  margin-bottom: auto;
   transition: background 0.15s;
 }
 .hero-right-card-btn:hover { background: #4a0066; }
