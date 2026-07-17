@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Save } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
@@ -211,6 +211,25 @@ export default function CompanySettingsPage() {
     if (!confirm("주소를 초기화할까요?")) return;
     setForm((prev) => ({ ...prev, address: "", address_detail: "", region_sido: "", region_sigungu: "" }));
   };
+
+  // 자동 저장 (프로필/계정 텍스트 필드 변경 시 디바운스로 저장 — 별도 저장 버튼 불필요)
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (loading) return;
+    if (!autoStarted.current) { autoStarted.current = true; return; }
+    if (!form.company_name.trim() || !form.address.trim()) return; // 필수 미완성이면 저장 보류
+    const t = setTimeout(async () => {
+      try {
+        const res = await companyMeApi.update(form);
+        setInfo(res.data);
+        setSavedMessage("저장됨 ✓");
+        setTimeout(() => setSavedMessage(""), 1500);
+      } catch (e) {
+        console.error("[autosave]", e);
+      }
+    }, 800);
+    return () => clearTimeout(t);
+  }, [form, loading]);
 
   const handleSave = async () => {
     if (!form.company_name.trim()) {
@@ -493,7 +512,7 @@ export default function CompanySettingsPage() {
                   type="button"
                   onClick={handleChangePassword}
                   disabled={pwSaving}
-                  style={{ width: "100%", height: 48, marginTop: "12px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
+                  style={{ alignSelf: "flex-start", marginTop: "12px", padding: "9px 18px", borderRadius: "8px", border: "1.5px solid #c4b5d4", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
                   {pwSaving ? "변경 중..." : "비밀번호 변경"}
                 </button>
               </div>
@@ -502,19 +521,12 @@ export default function CompanySettingsPage() {
         </div>
       )}
 
-      <div style={{ margin: "24px 0 40px", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+      <div style={{ margin: "16px 0 40px", maxWidth: "800px", display: "flex", justifyContent: "flex-end", height: "20px" }}>
         {savedMessage && (
-          <span style={{ color: "#10b981", fontSize: "14px", fontWeight: 600 }}>
+          <span style={{ color: "#10b981", fontSize: "13px", fontWeight: 600 }}>
             {savedMessage}
           </span>
         )}
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          style={{ width: "100%", height: 48, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}
-        >
-          {saving ? "저장 중..." : "저장하기"}
-        </button>
       </div>
     </CompanyLayout>
   );
