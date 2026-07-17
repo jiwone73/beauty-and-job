@@ -8850,6 +8850,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #bbb;
   margin-top: 4px;
 }
+/* 현장이야기 카드: 아이콘을 카테고리(질문) 옆으로 인라인 배치 */
+.insight-cat-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.insight-cat-row .insight-card-emoji { font-size: 18px; line-height: 1; }
+.insight-cat-row .insight-category { margin: 0; }
 
 /* 섹션 내부 구분선 - 컨텐츠 너비만큼 */
 .section-inner-divider {
@@ -11149,9 +11153,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   .service-name { font-size: 15px; }
   .service-desc { font-size: 13px; }
   .service-company { font-size: 12px; }
-  .service-tag { font-size: 12px; }
-  .insight-card-new-title { font-size: 14px; }
-  .insight-card-new-desc { font-size: 12px; }
+  .service-tag { font-size: 13px; }
+  .insight-card-new-title { font-size: 15px; }
+  .insight-card-new-desc { font-size: 13px; }
   .insight-category { font-size: 13px; }
   .insight-card-new-date { font-size: 12px; }
   .newsletter-sub { font-size: 15px; }

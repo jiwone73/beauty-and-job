@@ -461,8 +461,10 @@ function SectionStories() {
             <article key={item.id} className="insight-card-new"
               onClick={() => router.push(`/stories/${item.id}`)}
               style={{ cursor: "pointer" }}>
-              <div className="insight-card-new-img">{STORY_EMOJI[item.category] || "💬"}</div>
-              <span className="insight-category">{item.category}</span>
+              <div className="insight-cat-row">
+                <span className="insight-card-emoji">{STORY_EMOJI[item.category] || "💬"}</span>
+                <span className="insight-category">{item.category}</span>
+              </div>
               <h3 className="insight-card-new-title">{item.title || item.body}</h3>
               <p className="insight-card-new-desc">❤ {item.like_count} · 💬 {item.comment_count}</p>
               <time className="insight-card-new-date">{fmtStoryDate(item.published_at || item.created_at)}</time>
