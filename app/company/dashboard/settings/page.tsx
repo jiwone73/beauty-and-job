@@ -26,6 +26,7 @@ export default function CompanySettingsPage() {
     description: "",
     website_url: "",
     address: "",
+    address_detail: "",
     phone: "",
     representative_name: "",
     company_size: "",
@@ -51,6 +52,7 @@ export default function CompanySettingsPage() {
           description: res.data.description || "",
           website_url: res.data.website_url || "",
           address: (res.data as any).address || "",
+          address_detail: (res.data as any).address_detail || "",
           phone: (res.data as any).phone || "",
           representative_name: (res.data as any).representative_name || "",
           company_size: (res.data as any).company_size || "",
@@ -155,11 +157,12 @@ export default function CompanySettingsPage() {
     const open = () => {
       new window.daum.Postcode({
         oncomplete: (data: any) => {
+          const base = data.roadAddress || data.jibunAddress || "";
           setForm((prev) => ({
             ...prev,
             region_sido: data.sido || "",
             region_sigungu: data.sigungu || "",
-            address: data.roadAddress || data.jibunAddress || "",
+            address: data.buildingName ? `${base} (${data.buildingName})` : base,
           }));
         },
       }).open();
@@ -200,6 +203,11 @@ export default function CompanySettingsPage() {
     } finally {
       setPwSaving(false);
     }
+  };
+
+  const handleClearAddress = () => {
+    if (!confirm("주소를 초기화할까요?")) return;
+    setForm((prev) => ({ ...prev, address: "", address_detail: "", region_sido: "", region_sigungu: "" }));
   };
 
   const handleSave = async () => {
@@ -351,25 +359,25 @@ export default function CompanySettingsPage() {
               </div>
 
               <div className="admin-form-row">
-                <label className="admin-form-label">주소</label>
-                <div style={{display:"flex", gap:"8px"}}>
-                  <input className="admin-form-input" style={{flex:1, background:"#f9f9f9"}}
-                    placeholder="주소 검색을 눌러주세요" readOnly
-                    value={[form.region_sido, form.region_sigungu].filter(Boolean).join(" ")} />
-                  <button type="button" onClick={handleAddressSearch}
-                    style={{flexShrink:0, padding:"0 18px", borderRadius:"8px",
-                      border:"1px solid #5f0080", background:"#fff", color:"#5f0080",
-                      fontSize:"14px", fontWeight:600, cursor:"pointer"}}>
-                    주소 검색
-                  </button>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <label className="admin-form-label" style={{ margin: 0 }}>주소</label>
+                  {form.address && (
+                    <button type="button" onClick={handleClearAddress}
+                      style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: "2px 4px" }}>
+                      초기화
+                    </button>
+                  )}
                 </div>
-              </div>
-              <div className="admin-form-row">
-                <label className="admin-form-label">상세주소</label>
-                <input className="admin-form-input"
-                  placeholder="도로명 주소 (자동 입력) · 건물명·층·호수 직접 추가"
-                  value={form.address}
-                  onChange={(e) => setForm({ ...form, address: e.target.value })} />
+                <input className="admin-form-input" readOnly value={form.address}
+                  onClick={handleAddressSearch}
+                  placeholder="주소 검색을 눌러주세요"
+                  style={{ background: "#fafafa", cursor: "pointer" }} />
+                {form.address && (
+                  <input className="admin-form-input" style={{ marginTop: "8px" }}
+                    placeholder="상세주소 (동·호수 등)"
+                    value={form.address_detail}
+                    onChange={(e) => setForm({ ...form, address_detail: e.target.value })} />
+                )}
                 <p style={{fontSize:"12px", color:"#888", margin:"6px 0 0"}}>
                   주소 검색 시 도로명 주소가 자동 입력돼요. 층·호수 등은 직접 추가하세요. 입력한 주소는 공고 상세에 지도로 표시돼요.
                 </p>
@@ -378,6 +386,7 @@ export default function CompanySettingsPage() {
                 <div className="admin-form-row">
                   <label className="admin-form-label">사원수</label>
                   <select className="admin-form-select"
+                    style={{ height: 42, boxSizing: "border-box" }}
                     value={form.company_size}
                     onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
                     <option value="">선택</option>
@@ -392,6 +401,7 @@ export default function CompanySettingsPage() {
                 <div className="admin-form-row">
                   <label className="admin-form-label">설립연도</label>
                   <input type="number" className="admin-form-input" placeholder="예) 2020"
+                    style={{ height: 42, boxSizing: "border-box" }}
                     min="1900" max={new Date().getFullYear()}
                     value={form.founded_year}
                     onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
