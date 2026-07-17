@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   if (authErr) return authErr;
   const result = await pool.query(
     `SELECT id, company_name, brand_name, business_number, representative_name, manager_name, company_type,
-            email, phone, logo_url, cover_images, description, website_url, address, address_detail,
+            email, phone, company_phone, logo_url, cover_images, description, website_url, address, address_detail,
             company_size, founded_year, region_sido, region_sigungu,
             status, created_at
      FROM companies WHERE id = $1`,
@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest) {
 
   // 수정 가능한 필드 (whitelist - 보안)
   const allowedFields = [
-    "company_name", "brand_name", "representative_name", "manager_name", "phone",
+    "company_name", "brand_name", "representative_name", "manager_name", "phone", "company_phone",
     "logo_url", "description", "website_url", "address", "address_detail",
     "company_size", "founded_year", "region_sido", "region_sigungu",
   ];
@@ -58,7 +58,7 @@ export async function PATCH(req: NextRequest) {
     SET ${updates.join(", ")}
     WHERE id = $${idx++}
     RETURNING id, company_name, brand_name, business_number, representative_name, manager_name, company_type,
-              email, phone, logo_url, description, website_url, address, address_detail,
+              email, phone, company_phone, logo_url, description, website_url, address, address_detail,
               company_size, founded_year, region_sido, region_sigungu,
               status, created_at
   `;

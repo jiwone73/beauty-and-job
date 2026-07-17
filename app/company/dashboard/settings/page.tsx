@@ -28,6 +28,7 @@ export default function CompanySettingsPage() {
     address: "",
     address_detail: "",
     phone: "",
+    company_phone: "",
     representative_name: "",
     manager_name: "",
     company_size: "",
@@ -57,6 +58,7 @@ export default function CompanySettingsPage() {
           address: (res.data as any).address || "",
           address_detail: (res.data as any).address_detail || "",
           phone: (res.data as any).phone || "",
+          company_phone: (res.data as any).company_phone || "",
           representative_name: (res.data as any).representative_name || "",
           manager_name: (res.data as any).manager_name || "",
           company_size: (res.data as any).company_size || "",
@@ -454,26 +456,32 @@ export default function CompanySettingsPage() {
                   </div>
                 </div>
               </div>
-              <div className="admin-form-row-2col" style={{ alignItems: "start" }}>
+              <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">대표자</label>
                   <input className="admin-form-input" placeholder="대표자명"
                     value={form.representative_name}
                     onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
                 </div>
-                <div className="admin-form-row-2col">
-                  <div className="admin-form-row">
-                    <label className="admin-form-label">담당자<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                    <input className="admin-form-input" placeholder="담당자명"
-                      value={form.manager_name}
-                      onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
-                  </div>
-                  <div className="admin-form-row">
-                    <label className="admin-form-label">담당자 연락처<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                    <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
-                      value={formatPhone(form.phone)}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
-                  </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">회사 대표번호</label>
+                  <input className="admin-form-input" placeholder="02-000-0000" inputMode="numeric" maxLength={13}
+                    value={formatPhone(form.company_phone)}
+                    onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
+                </div>
+              </div>
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row">
+                  <label className="admin-form-label">담당자<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <input className="admin-form-input" placeholder="담당자명"
+                    value={form.manager_name}
+                    onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">담당자 연락처<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
+                    value={formatPhone(form.phone)}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
                 </div>
               </div>
               <div className="admin-form-row">
