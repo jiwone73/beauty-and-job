@@ -7509,6 +7509,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 28px;
   box-shadow: 0 8px 40px rgba(95,0,128,0.08);
   border: 1px solid #f0e0f8;
+  display: flex;
+  flex-direction: column;
 }
 .hero-right-header {
   display: flex;
@@ -7525,6 +7527,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+  flex: 1;
+  grid-auto-rows: 1fr;
 }
 .hero-right-card {
   background: #faf5ff;
@@ -11184,6 +11188,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* === PC(≥769px) 헤더 로고·네비 텍스트 2단계 확대 (모바일 유지) === */
 @media (min-width: 769px) {
   .header .logo img { height: 36px !important; }
+  footer .logo img { height: 36px !important; }
   .gnb a, .gnb button { font-size: 18px; }
   /* resume·프로필 페이지 헤더도 동일하게 (profile-* 클래스 사용) */
   .profile-logo img { height: 36px !important; }
