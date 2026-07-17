@@ -484,24 +484,6 @@ function ResumePageContent() {
               <div className="rmp-fill" style={{ width: `${progressRate}%` }} />
             </div>
           </div>
-          <div style={{
-            margin: "0 0 16px",
-            padding: "16px 18px",
-            background: "#fff",
-            border: "1px solid #e0d0f0",
-            borderRadius: "12px",
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}>
-            <span style={{ fontSize: "22px" }}>{resumeType === "salon" ? "🏪" : "🏢"}</span>
-            <div>
-              <p style={{ fontSize: "12px", color: "#888", marginBottom: "2px" }}>작성 중인 이력서 유형</p>
-              <p style={{ fontSize: "15px", fontWeight: 600, color: "#1a1a1a" }}>
-                {resumeType === "salon" ? "매장·기술직 이력서" : "기업·브랜드 이력서"}
-              </p>
-            </div>
-          </div>
 
           <section id="section-basic" className="resume-section">
             <h2 className="resume-section-title">기본 정보</h2>
