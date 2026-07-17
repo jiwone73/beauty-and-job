@@ -192,8 +192,8 @@ export default function StoriesPage() {
                     <span style={{ display: "inline-block", padding: "2px 9px", borderRadius: 100, fontSize: 11, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 7 }}>
                       {p.category}
                     </span>
-                    {p.title && <h2 style={{ fontSize: 15.5, fontWeight: 700, color: "#1a1a1a", marginBottom: 5, lineHeight: 1.4 }}>{p.title}</h2>}
-                    <p style={{ fontSize: 13.5, color: "#666", lineHeight: 1.55, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", marginBottom: 10 }}>
+                    {p.title && <h2 style={{ fontSize: 16.5, fontWeight: 700, color: "#1a1a1a", marginBottom: 5, lineHeight: 1.4 }}>{p.title}</h2>}
+                    <p style={{ fontSize: 14.5, color: "#666", lineHeight: 1.55, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", marginBottom: 10 }}>
                       {p.body}
                     </p>
                     <div style={{ display: "flex", gap: 12, fontSize: 12.5, color: "#aaa" }}>

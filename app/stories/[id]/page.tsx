@@ -159,7 +159,7 @@ export default function StoryDetailPage() {
       <article style={{ paddingBottom: 24, borderBottom: "8px solid #f7f3fb", marginBottom: 20 }}>
         <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 100, fontSize: 12, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 12 }}>{post.category}</span>
         {post.title && <h1 style={{ fontSize: 20, fontWeight: 700, color: "#1a1a1a", marginBottom: 10, lineHeight: 1.4 }}>{post.title}</h1>}
-        <p style={{ fontSize: 15, color: "#333", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{post.body}</p>
+        <p style={{ fontSize: 16, color: "#333", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{post.body}</p>
         <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 18 }}>
           <button onClick={handleLike}
             style={{
