@@ -580,7 +580,7 @@ export default function ProfilePage() {
                   <div>
                     <p style={{ fontSize: "11px", color: "#888", marginBottom: "2px" }}>지금 찾고 있는 채용</p>
                     <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a" }}>
-                      {dbJobType === "STORE" ? "매장·샵 채용" : "기업·브랜드 채용"}
+                      {dbJobType === "STORE" ? "매장직 채용" : "사무직 채용"}
                     </p>
                   </div>
                 </div>
