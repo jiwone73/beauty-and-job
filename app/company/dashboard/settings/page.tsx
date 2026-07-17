@@ -258,14 +258,15 @@ export default function CompanySettingsPage() {
               </span>
             </div>
             <div className="admin-form-body">
-              <div className="admin-form-row-2col">
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", alignItems: "start", marginBottom: "16px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               <div className="admin-form-row">
                 <label className="admin-form-label">회사 로고</label>
                 <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
                   공고 상단에 표시되는 대표 이미지예요. 한 번 등록하면 모든 공고에 자동 적용돼요. (JPG·PNG·WebP, 2MB 이하)
                 </p>
                 <div style={{display:"flex", alignItems:"center", gap:"16px"}}>
-                  <div style={{width:"96px", height:"96px", borderRadius:"12px", border:"1px solid #eee",
+                  <div style={{width:"110px", height:"110px", borderRadius:"12px", border:"1px solid #eee",
                     background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
                     overflow:"hidden", flexShrink:0}}>
                     {logoUrl ? (
@@ -304,7 +305,7 @@ export default function CompanySettingsPage() {
                   공고 카드와 상단에 크게 표시되는 대표 비주얼이에요. 매장 사진이나 분위기 이미지를 넣어보세요. 모든 공고에 자동 적용돼요. (가로형 권장, JPG·PNG·WebP, 2MB 이하)
                 </p>
                 <div style={{display:"flex", alignItems:"center", gap:"16px"}}>
-                  <div style={{width:"180px", height:"110px", borderRadius:"12px", border:"1px solid #eee",
+                  <div style={{width:"220px", height:"110px", borderRadius:"12px", border:"1px solid #eee",
                     background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
                     overflow:"hidden", flexShrink:0}}>
                     {coverUrl ? (
@@ -335,6 +336,38 @@ export default function CompanySettingsPage() {
                 </div>
               </div>
               </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">웹사이트</label>
+                  <input className="admin-form-input" placeholder="https://"
+                    value={form.website_url}
+                    onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">사원수</label>
+                  <select className="admin-form-select"
+                    style={{ height: 42, boxSizing: "border-box" }}
+                    value={form.company_size}
+                    onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
+                    <option value="">선택</option>
+                    <option value="1~10명">1~10명</option>
+                    <option value="10~50명">10~50명</option>
+                    <option value="50~100명">50~100명</option>
+                    <option value="100~300명">100~300명</option>
+                    <option value="300~1000명">300~1000명</option>
+                    <option value="1000명 이상">1000명 이상</option>
+                  </select>
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">설립연도</label>
+                  <input type="number" className="admin-form-input" placeholder="예) 2020"
+                    style={{ height: 42, boxSizing: "border-box" }}
+                    min="1900" max={new Date().getFullYear()}
+                    value={form.founded_year}
+                    onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
+                </div>
+              </div>
+              </div>
 
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
@@ -349,13 +382,6 @@ export default function CompanySettingsPage() {
                     value={form.brand_name}
                     onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
                 </div>
-              </div>
-
-              <div className="admin-form-row">
-                <label className="admin-form-label">웹사이트</label>
-                <input className="admin-form-input" placeholder="https://"
-                  value={form.website_url}
-                  onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
               </div>
 
               <div className="admin-form-row">
@@ -381,31 +407,6 @@ export default function CompanySettingsPage() {
                 <p style={{fontSize:"12px", color:"#888", margin:"6px 0 0"}}>
                   주소 검색 시 도로명 주소가 자동 입력돼요. 층·호수 등은 직접 추가하세요. 입력한 주소는 공고 상세에 지도로 표시돼요.
                 </p>
-              </div>
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">사원수</label>
-                  <select className="admin-form-select"
-                    style={{ height: 42, boxSizing: "border-box" }}
-                    value={form.company_size}
-                    onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
-                    <option value="">선택</option>
-                    <option value="1~10명">1~10명</option>
-                    <option value="10~50명">10~50명</option>
-                    <option value="50~100명">50~100명</option>
-                    <option value="100~300명">100~300명</option>
-                    <option value="300~1000명">300~1000명</option>
-                    <option value="1000명 이상">1000명 이상</option>
-                  </select>
-                </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">설립연도</label>
-                  <input type="number" className="admin-form-input" placeholder="예) 2020"
-                    style={{ height: 42, boxSizing: "border-box" }}
-                    min="1900" max={new Date().getFullYear()}
-                    value={form.founded_year}
-                    onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
-                </div>
               </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">기업 소개</label>
