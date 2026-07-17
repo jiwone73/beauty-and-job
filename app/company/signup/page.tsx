@@ -34,6 +34,7 @@ export default function CompanySignupPage() {
     business_license_path: "",
   });
   const [showPw, setShowPw] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
   const [terms, setTerms] = useState<Term[]>([]);
   const [agreed, setAgreed] = useState<Record<string, boolean>>({});
   const [error, setError] = useState("");
@@ -122,10 +123,23 @@ export default function CompanySignupPage() {
     form.company_type &&
     form.business_license_path &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
+    emailStatus !== "taken" &&
     form.phone.replace(/\D/g, "").length >= 9 &&
     isPasswordValid(form.password) &&
     form.password === form.passwordConfirm &&
     allRequiredAgreed;
+
+  const checkEmailDup = async () => {
+    const v = form.email.trim();
+    if (!v) { setEmailStatus("idle"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { setEmailStatus("invalid"); return; }
+    setEmailStatus("checking");
+    try {
+      const r = await fetch(`/api/auth/check-email?email=${encodeURIComponent(v)}&scope=company`);
+      const res = await r.json();
+      setEmailStatus(res.success ? (res.data.available ? "ok" : "taken") : "invalid");
+    } catch { setEmailStatus("idle"); }
+  };
 
   const handleSubmit = async () => {
     if (!isFormValid) return;
@@ -143,6 +157,7 @@ export default function CompanySignupPage() {
       });
       const data = await res.json();
       if (!data.success) {
+        if (res.status === 409 && (data.error?.message || "").includes("이메일")) setEmailStatus("taken");
         setError(data.error?.message || "가입에 실패했습니다.");
         return;
       }
@@ -296,9 +311,14 @@ export default function CompanySignupPage() {
             <div className="mb-3">
               <label className="block text-[13px] text-[#6b6b6b] mb-1.5">이메일 *</label>
               <input type="email" value={form.email}
-                onChange={(e) => update("email", e.target.value)}
+                onChange={(e) => { update("email", e.target.value); setEmailStatus("idle"); }}
+                onBlur={checkEmailDup}
                 placeholder="hr@company.com"
                 className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]" />
+              {emailStatus === "checking" && <p className="mt-1.5 text-[12px] text-[#999]">중복 확인 중…</p>}
+              {emailStatus === "ok" && <p className="mt-1.5 text-[12px] text-[#1a8a4a]">사용 가능한 이메일입니다.</p>}
+              {emailStatus === "taken" && <p className="mt-1.5 text-[12px] text-red-500">이미 가입된 이메일입니다.</p>}
+              {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] text-red-500">올바른 이메일 형식이 아닙니다.</p>}
             </div>
 
             <div className="mb-3">
