@@ -11132,3 +11132,30 @@ input[type="range"].career-slider::-moz-range-thumb {
   .profile-header-nav { font-size: 16px; }
   .resume-header-nav { font-size: 16px; }
 }
+
+/* === PC(≥769px) 메인 페이지 텍스트 한 단계 상향 (큰 제목 제외, 모바일 유지) === */
+@media (min-width: 769px) {
+  .hero-banner-title { font-size: 17px; }
+  .hero-banner-sub { font-size: 14px; }
+  .hero-sub { font-size: 19px; }
+  .hero-search-guide { font-size: 14px; }
+  .hero-type-btn { font-size: 14px; }
+  .hero-right-title { font-size: 18px; }
+  .hero-right-card-desc { font-size: 15px; }
+  .hero-right-card-btn { font-size: 14px; }
+  .section-sub { font-size: 15px; }
+  .see-all { font-size: 15px; }
+  .service-name { font-size: 15px; }
+  .service-desc { font-size: 13px; }
+  .service-company { font-size: 12px; }
+  .service-tag { font-size: 12px; }
+  .insight-card-new-title { font-size: 14px; }
+  .insight-card-new-desc { font-size: 12px; }
+  .insight-category { font-size: 13px; }
+  .insight-card-new-date { font-size: 12px; }
+  .newsletter-sub { font-size: 15px; }
+  .jobcard-title { font-size: 16px; }
+  .jobcard-company { font-size: 15px; }
+  .jobcard-meta { font-size: 15px; }
+  .jobcard-deadline { font-size: 15px; }
+}
