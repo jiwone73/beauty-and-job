@@ -8824,6 +8824,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   gap: 6px;
   cursor: pointer;
   transition: box-shadow 0.15s;
+  min-width: 0;
 }
 .insight-card-new:hover { box-shadow: 0 4px 16px rgba(95,0,128,0.08); }
 .insight-card-new-img {
@@ -11163,10 +11164,11 @@ input[type="range"].career-slider::-moz-range-thumb {
   .service-desc { font-size: 13px; }
   .service-company { font-size: 12px; }
   .service-tag { font-size: 13px; }
-  .insight-card-new-title { font-size: 15px; }
-  .insight-card-new-desc { font-size: 13px; }
-  .insight-category { font-size: 13px; }
-  .insight-card-new-date { font-size: 12px; }
+  .insight-card-new-title { font-size: 16.5px; }
+  .insight-card-new-desc { font-size: 12.5px; }
+  .insight-category { font-size: 11px; }
+  .insight-card-new-date { font-size: 12.5px; }
+  .insight-card-new-snippet { font-size: 14.5px; }
   .newsletter-sub { font-size: 15px; }
   .jobcard-title { font-size: 16px; }
   .jobcard-company { font-size: 15px; }
