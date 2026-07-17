@@ -352,37 +352,6 @@ export default function CompanySettingsPage() {
               </div>
 
               <div className="admin-form-row-2col" style={{ alignItems: "start" }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                  <div className="admin-form-row">
-                    <label className="admin-form-label">웹사이트</label>
-                    <input className="admin-form-input" placeholder="https://"
-                      value={form.website_url}
-                      onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
-                  </div>
-                  <div className="admin-form-row">
-                    <label className="admin-form-label">사원수</label>
-                    <select className="admin-form-select"
-                      style={{ height: 42, boxSizing: "border-box" }}
-                      value={form.company_size}
-                      onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
-                      <option value="">선택</option>
-                      <option value="1~10명">1~10명</option>
-                      <option value="10~50명">10~50명</option>
-                      <option value="50~100명">50~100명</option>
-                      <option value="100~300명">100~300명</option>
-                      <option value="300~1000명">300~1000명</option>
-                      <option value="1000명 이상">1000명 이상</option>
-                    </select>
-                  </div>
-                  <div className="admin-form-row">
-                    <label className="admin-form-label">설립연도</label>
-                    <input type="number" className="admin-form-input" placeholder="예) 2020"
-                      style={{ height: 42, boxSizing: "border-box" }}
-                      min="1900" max={new Date().getFullYear()}
-                      value={form.founded_year}
-                      onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
-                  </div>
-                </div>
                 <div className="admin-form-row">
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
                     <label className="admin-form-label" style={{ margin: 0 }}>주소</label>
@@ -406,6 +375,39 @@ export default function CompanySettingsPage() {
                   <p style={{fontSize:"12px", color:"#888", margin:"6px 0 0"}}>
                     주소 검색 시 도로명 주소가 자동 입력돼요. 층·호수는 직접 추가하세요.
                   </p>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <div className="admin-form-row">
+                    <label className="admin-form-label">웹사이트</label>
+                    <input className="admin-form-input" placeholder="https://"
+                      value={form.website_url}
+                      onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
+                  </div>
+                  <div className="admin-form-row-2col">
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">사원수</label>
+                      <select className="admin-form-select"
+                        style={{ height: 42, boxSizing: "border-box" }}
+                        value={form.company_size}
+                        onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
+                        <option value="">선택</option>
+                        <option value="1~10명">1~10명</option>
+                        <option value="10~50명">10~50명</option>
+                        <option value="50~100명">50~100명</option>
+                        <option value="100~300명">100~300명</option>
+                        <option value="300~1000명">300~1000명</option>
+                        <option value="1000명 이상">1000명 이상</option>
+                      </select>
+                    </div>
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">설립연도</label>
+                      <input type="number" className="admin-form-input" placeholder="예) 2020"
+                        style={{ height: 42, boxSizing: "border-box" }}
+                        min="1900" max={new Date().getFullYear()}
+                        value={form.founded_year}
+                        onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="admin-form-row">
