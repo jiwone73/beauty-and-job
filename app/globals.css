@@ -7509,6 +7509,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 28px;
   box-shadow: 0 8px 40px rgba(95,0,128,0.08);
   border: 1px solid #f0e0f8;
+  align-self: center;
 }
 .hero-right-header {
   display: flex;
