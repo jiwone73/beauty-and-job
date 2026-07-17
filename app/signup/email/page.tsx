@@ -374,29 +374,33 @@ export default function SignupEmailPage() {
             </label>
             <div className="space-y-2 ml-1">
               {terms.map((term) => (
-                <label
-                  key={term.id}
-                  className="flex items-center gap-2 cursor-pointer text-[13px] text-[#3a3a3a]"
-                >
-                  <input
-                    type="checkbox"
-                    checked={!!agreed[term.id]}
-                    onChange={(e) =>
-                      setAgreed({ ...agreed, [term.id]: e.target.checked })
-                    }
-                    className="w-4 h-4 accent-[#5f0080]"
-                  />
-                  <span>
-                    <span
-                      className={`font-semibold ${
-                        term.is_required ? "text-[#5f0080]" : "text-[#9a9a9a]"
-                      }`}
-                    >
-                      [{term.is_required ? "필수" : "선택"}]
-                    </span>{" "}
-                    {term.title}
-                  </span>
-                </label>
+                <div key={term.id}>
+                  <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#3a3a3a]">
+                    <input
+                      type="checkbox"
+                      checked={!!agreed[term.id]}
+                      onChange={(e) =>
+                        setAgreed({ ...agreed, [term.id]: e.target.checked })
+                      }
+                      className="w-4 h-4 accent-[#5f0080]"
+                    />
+                    <span>
+                      <span
+                        className={`font-semibold ${
+                          term.is_required ? "text-[#5f0080]" : "text-[#9a9a9a]"
+                        }`}
+                      >
+                        [{term.is_required ? "필수" : "선택"}]
+                      </span>{" "}
+                      {term.title}
+                    </span>
+                  </label>
+                  {term.id === "fb392275-4dc3-45cd-ad26-c59b3e571cee" && (
+                    <p className="text-[12px] text-[#9a9a9a] ml-6 mt-0.5 leading-snug">
+                      내 직무·지역에 맞는 공고를 이메일로 받아보려면 체크해 주세요.
+                    </p>
+                  )}
+                </div>
               ))}
             </div>
           </div>
