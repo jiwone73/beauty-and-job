@@ -116,7 +116,7 @@ export default function HeroMobile() {
           <ResumeCta className="hero-m-ai-card">
             <div className="hero-m-ai-card-icon">📄</div>
             <strong>이력서를 등록하면<br />제안을 받을 수 있어요</strong>
-            <p>등록한 이력서는 뷰티기업과 샵의 인재 검색에 노출돼요</p>
+            <p>뷰티기업·샵 인재 검색에 노출되고, 조건에 맞는 공고 매칭 메일도 보내드려요</p>
             <span className="hero-m-ai-card-btn">무료 이력서 등록하기 ›</span>
           </ResumeCta>
           <Link href="/company" className="hero-m-ai-card">
