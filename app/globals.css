@@ -152,7 +152,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 48px;
-  align-items: stretch;
+  align-items: start;
   background: #ffffff;
   border: 1px solid #f0e8f8;
   border-radius: 24px;
@@ -7509,14 +7509,12 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 28px;
   box-shadow: 0 8px 40px rgba(95,0,128,0.08);
   border: 1px solid #f0e0f8;
-  display: flex;
-  flex-direction: column;
 }
 .hero-right-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 18px;
 }
 .hero-right-title {
   font-size: 17px;
@@ -7527,8 +7525,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
-  flex: 1;
-  grid-auto-rows: 1fr;
+  align-items: stretch;
 }
 .hero-right-card {
   background: #faf5ff;
@@ -7573,6 +7570,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #555;
   line-height: 1.6;
   margin: 0;
+  flex: 1;
 }
 .hero-right-card-btn {
   display: inline-flex;
@@ -7585,8 +7583,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-weight: 700;
   border-radius: 10px;
   text-decoration: none;
-  margin-top: auto;
-  margin-bottom: auto;
+  margin-top: 10px;
   transition: background 0.15s;
 }
 .hero-right-card-btn:hover { background: #4a0066; }
