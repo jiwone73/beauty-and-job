@@ -235,16 +235,16 @@ export default function CompanySettingsPage() {
     <CompanyLayout activePage="settings">
       <div className="admin-tab-row1" style={{ marginBottom: "0" }}>
         <button className={`admin-tab1 ${activeTab === "brand" ? "active" : ""}`}
-          onClick={() => setActiveTab("brand")}>브랜드 정보</button>
+          onClick={() => setActiveTab("brand")}>프로필</button>
         <button className={`admin-tab1 ${activeTab === "account" ? "active" : ""}`}
-          onClick={() => setActiveTab("account")}>계정 정보</button>
+          onClick={() => setActiveTab("account")}>계정</button>
       </div>
 
       {activeTab === "brand" && (
         <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "800px" }}>
           <div className="company-card">
             <div className="company-card-head">
-              <h2 className="company-card-title">브랜드 정보</h2>
+              <h2 className="company-card-title">회사 프로필</h2>
               <span className={`jobs-type-badge ${info?.company_type === "STORE" ? "store" : "corp"}`}>
                 {info?.company_type === "STORE" ? "🏪 매장·살롱" : "🏢 기업·브랜드"}
               </span>
