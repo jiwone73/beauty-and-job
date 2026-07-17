@@ -215,6 +215,10 @@ export default function CompanySettingsPage() {
       alert("기업명은 필수입니다.");
       return;
     }
+    if (!form.address.trim()) {
+      alert("주소는 필수입니다. 주소 검색으로 입력해주세요.");
+      return;
+    }
     setSaving(true);
     try {
       const res = await companyMeApi.update(form);
@@ -311,7 +315,9 @@ export default function CompanySettingsPage() {
                       <img src={coverUrl} alt="공고 노출 이미지"
                         style={{width:"100%", height:"100%", objectFit:"cover"}} />
                     ) : (
-                      <span style={{fontSize:"13px", color:"#c4b5d4"}}>이미지 없음</span>
+                      <div style={{position:"relative", width:"100%", height:"100%", background:"linear-gradient(135deg,#f3eefb,#e7d8f5)"}}>
+                        <span style={{position:"absolute", left:"10px", bottom:"8px", fontSize:"13px", fontWeight:700, color:"#5f0080"}}>{form.company_name || "회사명"}</span>
+                      </div>
                     )}
                   </div>
                   <div style={{display:"flex", flexDirection:"column", gap:"8px"}}>
@@ -354,7 +360,7 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row-2col" style={{ alignItems: "start" }}>
                 <div className="admin-form-row">
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                    <label className="admin-form-label" style={{ margin: 0 }}>주소</label>
+                    <label className="admin-form-label" style={{ margin: 0 }}>주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                     {form.address && (
                       <button type="button" onClick={handleClearAddress}
                         style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: "2px 4px" }}>
@@ -480,7 +486,7 @@ export default function CompanySettingsPage() {
                   type="button"
                   onClick={handleChangePassword}
                   disabled={pwSaving}
-                  style={{ marginTop: "12px", padding: "10px 16px", borderRadius: "8px", border: "none", background: "#5f0080", color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer", alignSelf: "flex-start" }}>
+                  style={{ width: "100%", height: 48, marginTop: "12px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
                   {pwSaving ? "변경 중..." : "비밀번호 변경"}
                 </button>
               </div>
@@ -489,19 +495,18 @@ export default function CompanySettingsPage() {
         </div>
       )}
 
-      <div style={{ display: "flex", justifyContent: "center", gap: "12px", margin: "24px 0 40px", alignItems: "center", maxWidth: "800px" }}>
+      <div style={{ margin: "24px 0 40px", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
         {savedMessage && (
           <span style={{ color: "#10b981", fontSize: "14px", fontWeight: 600 }}>
             {savedMessage}
           </span>
         )}
         <button
-          className="company-primary-btn"
           onClick={handleSave}
           disabled={saving}
-          style={{ opacity: saving ? 0.7 : 1, minWidth: "200px", justifyContent: "center" }}
+          style={{ width: "100%", height: 48, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}
         >
-          <Save size={14} /> {saving ? "저장 중..." : "저장하기"}
+          {saving ? "저장 중..." : "저장하기"}
         </button>
       </div>
     </CompanyLayout>

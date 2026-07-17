@@ -59,7 +59,7 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
         {data.image ? (
           <img src={data.image} alt={data.company} className="jobcard-cover-img" />
         ) : (
-          <span className="jobcard-cover-initial">{data.company?.[0] || "·"}</span>
+          <span className="jobcard-cover-name">{data.company || "·"}</span>
         )}
         <button onClick={onMark} aria-label="북마크" className={`jobcard-bookmark ${marked ? "on" : ""}`}>
           <Bookmark size={16} fill={marked ? "currentColor" : "none"} />
