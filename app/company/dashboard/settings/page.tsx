@@ -29,6 +29,7 @@ export default function CompanySettingsPage() {
     address_detail: "",
     phone: "",
     representative_name: "",
+    manager_name: "",
     company_size: "",
     founded_year: "",
     region_sido: "",
@@ -55,6 +56,7 @@ export default function CompanySettingsPage() {
           address_detail: (res.data as any).address_detail || "",
           phone: (res.data as any).phone || "",
           representative_name: (res.data as any).representative_name || "",
+          manager_name: (res.data as any).manager_name || "",
           company_size: (res.data as any).company_size || "",
           founded_year: (res.data as any).founded_year || "",
           region_sido: (res.data as any).region_sido || "",
@@ -416,6 +418,26 @@ export default function CompanySettingsPage() {
                   </div>
                 </div>
               </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">대표자</label>
+                  <input className="admin-form-input" placeholder="대표자명"
+                    value={form.representative_name}
+                    onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">담당자</label>
+                  <input className="admin-form-input" placeholder="담당자명"
+                    value={form.manager_name}
+                    onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
+                </div>
+                <div className="admin-form-row">
+                  <label className="admin-form-label">담당자 연락처</label>
+                  <input className="admin-form-input" placeholder="010-0000-0000"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                </div>
+              </div>
               <div className="admin-form-row">
                 <label className="admin-form-label">기업 소개</label>
                 <textarea className="admin-form-textarea" rows={5}
@@ -447,21 +469,6 @@ export default function CompanySettingsPage() {
                   <input className="admin-form-input" value={info?.business_number || ""} disabled
                     style={{ background: "#f5f5f5", color: "#888" }} />
                   <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
-                </div>
-              </div>
-
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">대표자명</label>
-                  <input className="admin-form-input" placeholder="대표자명을 입력해주세요"
-                    value={form.representative_name}
-                    onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
-                </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">담당자 연락처</label>
-                  <input className="admin-form-input" placeholder="010-0000-0000"
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })} />
                 </div>
               </div>
 

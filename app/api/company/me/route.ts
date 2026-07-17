@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
   const result = await pool.query(
-    `SELECT id, company_name, brand_name, business_number, representative_name, company_type,
+    `SELECT id, company_name, brand_name, business_number, representative_name, manager_name, company_type,
             email, phone, logo_url, cover_images, description, website_url, address, address_detail,
             company_size, founded_year, region_sido, region_sigungu,
             status, created_at
@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest) {
 
   // 수정 가능한 필드 (whitelist - 보안)
   const allowedFields = [
-    "company_name", "brand_name", "representative_name", "phone",
+    "company_name", "brand_name", "representative_name", "manager_name", "phone",
     "logo_url", "description", "website_url", "address", "address_detail",
     "company_size", "founded_year", "region_sido", "region_sigungu",
   ];
@@ -57,7 +57,7 @@ export async function PATCH(req: NextRequest) {
     UPDATE companies
     SET ${updates.join(", ")}
     WHERE id = $${idx++}
-    RETURNING id, company_name, brand_name, business_number, company_type,
+    RETURNING id, company_name, brand_name, business_number, representative_name, manager_name, company_type,
               email, phone, logo_url, description, website_url, address, address_detail,
               company_size, founded_year, region_sido, region_sigungu,
               status, created_at
