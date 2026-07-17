@@ -41,6 +41,7 @@ export default function CompanySettingsPage() {
   const [showPwModal, setShowPwModal] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
+  const [withdrawPw, setWithdrawPw] = useState("");
   const [showPw, setShowPw] = useState(false);
 
   useEffect(() => {
@@ -226,9 +227,10 @@ export default function CompanySettingsPage() {
   };
 
   const handleWithdraw = async () => {
+    if (!withdrawPw) { alert("비밀번호를 입력해주세요."); return; }
     setWithdrawing(true);
     try {
-      const res = await companyMeApi.withdraw();
+      const res = await companyMeApi.withdraw(withdrawPw);
       if (res.success) {
         localStorage.removeItem("access_token");
         localStorage.removeItem("beautynjob-auth");
@@ -581,8 +583,11 @@ export default function CompanySettingsPage() {
             <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: "0 0 20px" }}>
               탈퇴하면 계정과 등록한 채용공고가 비활성화되고, 되돌릴 수 없어요.
             </p>
+            <input type="password" className="admin-form-input" placeholder="현재 비밀번호 입력"
+              value={withdrawPw} onChange={(e) => setWithdrawPw(e.target.value)}
+              style={{ marginBottom: 16 }} />
             <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => setShowWithdraw(false)} disabled={withdrawing}
+              <button onClick={() => { setShowWithdraw(false); setWithdrawPw(""); }} disabled={withdrawing}
                 style={{ flex: 1, height: 48, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                 취소
               </button>

@@ -17,6 +17,7 @@ export default function AccountSettingsPage() {
   const [pwSaving, setPwSaving] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
+  const [withdrawPw, setWithdrawPw] = useState("");
 
   const handleChangePw = async () => {
     if (!curPw || !newPw) { alert("현재 비밀번호와 새 비밀번호를 입력해주세요."); return; }
@@ -52,7 +53,8 @@ export default function AccountSettingsPage() {
     try {
       const res = await fetch("/api/users/me", {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ password: withdrawPw }),
       });
       const data = await res.json();
       if (data.success) {
@@ -122,8 +124,11 @@ export default function AccountSettingsPage() {
             <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: "0 0 20px" }}>
               탈퇴하면 계정에 로그인할 수 없게 됩니다. 이 작업은 되돌릴 수 없습니다.
             </p>
+            <input type="password" placeholder="비밀번호 (소셜 로그인은 비워두세요)"
+              value={withdrawPw} onChange={(e) => setWithdrawPw(e.target.value)}
+              style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 16, boxSizing: "border-box" }} />
             <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => setShowWithdraw(false)} disabled={withdrawing}
+              <button onClick={() => { setShowWithdraw(false); setWithdrawPw(""); }} disabled={withdrawing}
                 style={{ flex: 1, height: 48, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                 취소
               </button>

@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import pool from "@/lib/db";
 import { verifyAccessToken } from "@/lib/jwt";
 
@@ -158,8 +159,22 @@ export async function DELETE(req: NextRequest) {
   if (payload.owner_type !== "user") {
     return err("AUTH_002", "사용자 권한이 필요합니다.", 403);
   }
+  const body = await req.json().catch(() => ({}));
+  const password = body?.password || "";
   const client = await pool.connect();
   try {
+    const u = await client.query(
+      `SELECT password_hash FROM users WHERE id = $1 AND status = 'ACTIVE'`,
+      [payload.sub]
+    );
+    if (u.rowCount === 0) return err("USER_004", "처리할 수 없는 계정입니다.", 400);
+    const hash = u.rows[0].password_hash;
+    if (hash) {
+      // 비밀번호 로그인 계정: 비밀번호 확인 (소셜 로그인 계정은 비밀번호가 없어 생략)
+      if (!password) return err("VALIDATION_001", "비밀번호를 입력해주세요.", 400);
+      const valid = await bcrypt.compare(password, hash);
+      if (!valid) return err("AUTH_003", "비밀번호가 일치하지 않습니다.", 401);
+    }
     const upd = await client.query(
       `UPDATE users SET status = 'WITHDRAWN', withdrawn_at = NOW() WHERE id = $1 AND status = 'ACTIVE'`,
       [payload.sub]
