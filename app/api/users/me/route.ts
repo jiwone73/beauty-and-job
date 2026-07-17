@@ -30,7 +30,8 @@ export async function GET(req: NextRequest) {
     const res = await client.query(
       `SELECT id, email, name, phone, gender, job_type, office_job_areas, status, created_at, avatar_url,
               birth_date, address_road, address_detail, region_sido, region_sigungu, preferred_regions,
-              portfolio_url, portfolio_filename, resume_file_url, resume_file_name, resume_file_size
+              portfolio_url, portfolio_filename, resume_file_url, resume_file_name, resume_file_size,
+              (password_hash IS NOT NULL) AS has_password, (kakao_id IS NOT NULL) AS is_kakao
        FROM users WHERE id = $1`,
       [payload.sub]
     );
