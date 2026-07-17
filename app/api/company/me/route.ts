@@ -70,3 +70,18 @@ export async function PATCH(req: NextRequest) {
   }
   return ok(result.rows[0]);
 }
+
+// 회원 탈퇴 (소프트: status = WITHDRAWN)
+export async function DELETE(req: NextRequest) {
+  const { auth, res: authErr } = requireAuth(req, "company");
+  if (authErr) return authErr;
+
+  const result = await pool.query(
+    `UPDATE companies SET status = 'WITHDRAWN', updated_at = NOW() WHERE id = $1 AND status = 'ACTIVE'`,
+    [auth!.sub]
+  );
+  if (result.rowCount === 0) {
+    return err("COMPANY_001", "이미 탈퇴했거나 계정을 찾을 수 없습니다.", 404);
+  }
+  return ok({ withdrawn: true });
+}

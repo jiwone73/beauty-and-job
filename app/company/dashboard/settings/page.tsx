@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Save } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
@@ -37,6 +37,8 @@ export default function CompanySettingsPage() {
   });
   const [pwForm, setPwForm] = useState({ current_password: "", new_password: "", confirm_password: "" });
   const [pwSaving, setPwSaving] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
   const [showPw, setShowPw] = useState(false);
 
   useEffect(() => {
@@ -212,24 +214,31 @@ export default function CompanySettingsPage() {
     setForm((prev) => ({ ...prev, address: "", address_detail: "", region_sido: "", region_sigungu: "" }));
   };
 
-  // 자동 저장 (프로필/계정 텍스트 필드 변경 시 디바운스로 저장 — 별도 저장 버튼 불필요)
-  const autoStarted = useRef(false);
-  useEffect(() => {
-    if (loading) return;
-    if (!autoStarted.current) { autoStarted.current = true; return; }
-    if (!form.company_name.trim() || !form.address.trim()) return; // 필수 미완성이면 저장 보류
-    const t = setTimeout(async () => {
-      try {
-        const res = await companyMeApi.update(form);
-        setInfo(res.data);
-        setSavedMessage("저장됨 ✓");
-        setTimeout(() => setSavedMessage(""), 1500);
-      } catch (e) {
-        console.error("[autosave]", e);
+  const formatPhone = (v: string) => {
+    const d = (v || "").replace(/\D/g, "").slice(0, 11);
+    if (d.length < 4) return d;
+    if (d.length < 8) return d.replace(/(\d{3})(\d+)/, "$1-$2");
+    return d.replace(/(\d{3})(\d{4})(\d+)/, "$1-$2-$3");
+  };
+
+  const handleWithdraw = async () => {
+    setWithdrawing(true);
+    try {
+      const res = await companyMeApi.withdraw();
+      if (res.success) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("beautynjob-auth");
+        alert("탈퇴가 완료되었습니다. 그동안 이용해 주셔서 감사합니다.");
+        window.location.href = "/";
+      } else {
+        alert((res as any).error?.message || "탈퇴에 실패했습니다.");
+        setWithdrawing(false);
       }
-    }, 800);
-    return () => clearTimeout(t);
-  }, [form, loading]);
+    } catch {
+      alert("탈퇴 중 오류가 발생했습니다.");
+      setWithdrawing(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!form.company_name.trim()) {
@@ -437,13 +446,13 @@ export default function CompanySettingsPage() {
                   </div>
                 </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">대표자</label>
-                  <input className="admin-form-input" placeholder="대표자명"
-                    value={form.representative_name}
-                    onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
-                </div>
+              <div className="admin-form-row">
+                <label className="admin-form-label">대표자</label>
+                <input className="admin-form-input" placeholder="대표자명"
+                  value={form.representative_name}
+                  onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
+              </div>
+              <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">담당자</label>
                   <input className="admin-form-input" placeholder="담당자명"
@@ -452,9 +461,9 @@ export default function CompanySettingsPage() {
                 </div>
                 <div className="admin-form-row">
                   <label className="admin-form-label">담당자 연락처</label>
-                  <input className="admin-form-input" placeholder="010-0000-0000"
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                  <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
+                    value={formatPhone(form.phone)}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
                 </div>
               </div>
               <div className="admin-form-row">
@@ -516,17 +525,56 @@ export default function CompanySettingsPage() {
                   {pwSaving ? "변경 중..." : "비밀번호 변경"}
                 </button>
               </div>
+
+              <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px" }}>
+                <label className="admin-form-label">회원 탈퇴</label>
+                <p style={{ fontSize: "13px", color: "#888", margin: "4px 0 12px" }}>
+                  탈퇴 시 계정과 등록한 채용공고가 비활성화되며, 되돌릴 수 없어요.
+                </p>
+                <button type="button" onClick={() => setShowWithdraw(true)}
+                  style={{ alignSelf: "flex-start", padding: "9px 18px", borderRadius: "8px", border: "1.5px solid #e74c3c", background: "#fff", color: "#e74c3c", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                  회원 탈퇴
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      <div style={{ margin: "16px 0 40px", maxWidth: "800px", display: "flex", justifyContent: "flex-end", height: "20px" }}>
+      {showWithdraw && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
+          <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 400, width: "100%" }}>
+            <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 10px" }}>정말 탈퇴하시겠어요?</h3>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: "0 0 20px" }}>
+              탈퇴하면 계정과 등록한 채용공고가 비활성화되고, 되돌릴 수 없어요.
+            </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => setShowWithdraw(false)} disabled={withdrawing}
+                style={{ flex: 1, height: 48, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                취소
+              </button>
+              <button onClick={handleWithdraw} disabled={withdrawing}
+                style={{ flex: 1, height: 48, borderRadius: 8, border: "none", background: "#e74c3c", color: "#fff", fontSize: 15, fontWeight: 600, cursor: withdrawing ? "not-allowed" : "pointer", opacity: withdrawing ? 0.7 : 1 }}>
+                {withdrawing ? "처리 중..." : "탈퇴하기"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{ margin: "24px 0 40px", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
         {savedMessage && (
-          <span style={{ color: "#10b981", fontSize: "13px", fontWeight: 600 }}>
+          <span style={{ color: "#10b981", fontSize: "14px", fontWeight: 600 }}>
             {savedMessage}
           </span>
         )}
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          style={{ width: "100%", height: 48, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}
+        >
+          {saving ? "저장 중..." : "저장하기"}
+        </button>
       </div>
     </CompanyLayout>
   );
