@@ -298,7 +298,7 @@ export default function CompanySettingsPage() {
                 <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
                   공고 상단에 표시되는 대표 이미지예요. 한 번 등록하면 모든 공고에 자동 적용돼요. (JPG·PNG·WebP, 2MB 이하)
                 </p>
-                <div style={{display:"flex", alignItems:"center", gap:"16px"}}>
+                <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"auto"}}>
                   <div style={{width:"110px", height:"110px", borderRadius:"12px", border:"1px solid #eee",
                     background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
                     overflow:"hidden", flexShrink:0}}>
@@ -337,7 +337,7 @@ export default function CompanySettingsPage() {
                 <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
                   공고 카드와 상단에 크게 표시되는 대표 비주얼이에요. 매장 사진이나 분위기 이미지를 넣어보세요. 모든 공고에 자동 적용돼요. (가로형 권장, JPG·PNG·WebP, 2MB 이하)
                 </p>
-                <div style={{display:"flex", alignItems:"center", gap:"16px"}}>
+                <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"auto"}}>
                   <div style={{width:"220px", height:"110px", borderRadius:"12px", border:"1px solid #eee",
                     background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
                     overflow:"hidden", flexShrink:0}}>
@@ -446,24 +446,26 @@ export default function CompanySettingsPage() {
                   </div>
                 </div>
               </div>
-              <div className="admin-form-row">
-                <label className="admin-form-label">대표자</label>
-                <input className="admin-form-input" placeholder="대표자명"
-                  value={form.representative_name}
-                  onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
-              </div>
-              <div className="admin-form-row-2col">
+              <div className="admin-form-row-2col" style={{ alignItems: "start" }}>
                 <div className="admin-form-row">
-                  <label className="admin-form-label">담당자</label>
-                  <input className="admin-form-input" placeholder="담당자명"
-                    value={form.manager_name}
-                    onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
+                  <label className="admin-form-label">대표자</label>
+                  <input className="admin-form-input" placeholder="대표자명"
+                    value={form.representative_name}
+                    onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
                 </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">담당자 연락처</label>
-                  <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
-                    value={formatPhone(form.phone)}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
+                <div className="admin-form-row-2col">
+                  <div className="admin-form-row">
+                    <label className="admin-form-label">담당자</label>
+                    <input className="admin-form-input" placeholder="담당자명"
+                      value={form.manager_name}
+                      onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
+                  </div>
+                  <div className="admin-form-row">
+                    <label className="admin-form-label">담당자 연락처</label>
+                    <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
+                      value={formatPhone(form.phone)}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
+                  </div>
                 </div>
               </div>
               <div className="admin-form-row">
