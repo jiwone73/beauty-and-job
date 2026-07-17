@@ -80,7 +80,7 @@
   margin-left: 8px;
 }
 .gnb a, .gnb button {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 500;
   color: #2b2b2b;
   display: flex;
@@ -11043,3 +11043,92 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 헤더 좌우 여백을 문서(.app-doc)와 동일하게 (데스크톱 40px / 모바일 16px) */
 .myapp-modal .rp-modal-header { padding-left: 40px; padding-right: 40px; }
 @media (max-width: 768px) { .myapp-modal .rp-modal-header { padding-left: 16px; padding-right: 16px; } }
+
+/* === PC(≥769px)에서 본문 15px → 16px 일괄 상향 (모바일은 15px 유지) === */
+@media (min-width: 769px) {
+  .card-title { font-size: 16px; }
+  .intern-title { font-size: 16px; }
+  .global-title { font-size: 16px; }
+  .text-input { font-size: 16px; }
+  .profile-tab { font-size: 16px; }
+  .profile-resume-btn { font-size: 16px; }
+  .cv-field-value { font-size: 16px; }
+  .cv-btn-primary { font-size: 16px; }
+  .cv-recommend-title { font-size: 16px; }
+  .resume-section-title { font-size: 16px; }
+  .resume-save-btn-full { font-size: 16px; }
+  .jobs-gnb-item { font-size: 16px; }
+  .jobs-search-section-title { font-size: 16px; }
+  .jobs-card-title { font-size: 16px; }
+  .footer-new-social button { font-size: 16px; }
+  .job-detail-more-link { font-size: 16px; }
+  .job-detail-apply-btn { font-size: 16px; }
+  .job-detail-mobile-apply { font-size: 16px; }
+  .apply-modal-job p { font-size: 16px; }
+  .insight-body-p { font-size: 16px; }
+  .insight-aside-title { font-size: 16px; }
+  .company-btn-primary { font-size: 16px; }
+  .company-btn-outline { font-size: 16px; }
+  .company-btn-white { font-size: 16px; }
+  .company-btn-outline-white { font-size: 16px; }
+  .company-matching-desc { font-size: 16px; }
+  .company-matching-cta { font-size: 16px; }
+  .company-matching-steps-title { font-size: 16px; }
+  .company-faq-q { font-size: 16px; }
+  .company-sticky-btn-primary { font-size: 16px; }
+  .company-sticky-btn-secondary { font-size: 16px; }
+  .company-wizard-card-info strong { font-size: 16px; }
+  .company-wizard-done-desc { font-size: 16px; }
+  .company-wizard-done-btn { font-size: 16px; }
+  .brands-hero-desc { font-size: 16px; }
+  .brands-search-input { font-size: 16px; }
+  .salary-hero-desc { font-size: 16px; }
+  .salary-hero-cta { font-size: 16px; }
+  .salary-insight-card strong { font-size: 16px; }
+  .salary-cta-btn { font-size: 16px; }
+  .resume-gnb-item { font-size: 16px; }
+  .rp-section-title { font-size: 16px; }
+  .login-phone-btn { font-size: 16px; }
+  .newsletter-input-wrap input { font-size: 16px; }
+  .info-section p { font-size: 16px; }
+  .info-value-card h3 { font-size: 16px; }
+  .faq-question { font-size: 16px; }
+  .contact-submit-btn { font-size: 16px; }
+  .apply-modal-cancel { font-size: 16px; }
+  .apply-modal-submit { font-size: 16px; }
+  .applied-title { font-size: 16px; }
+  .bookmark-title { font-size: 16px; }
+  .brand-follow-info strong { font-size: 16px; }
+  .admin-card-title { font-size: 16px; }
+  .admin-tab1 { font-size: 16px; }
+  .admin-upload-drop-text { font-size: 16px; }
+  .admin-upload-done-title { font-size: 16px; }
+  .company-logo-name { font-size: 16px; }
+  .company-card-title { font-size: 16px; }
+  .talent-name { font-size: 16px; }
+  .admin-login-btn { font-size: 16px; }
+  .hero-search-input { font-size: 16px; }
+  .hero-strategy-title { font-size: 16px; }
+  .hero-right-card-title { font-size: 16px; }
+  .baj-login-input { font-size: 16px; }
+  .hero-region-trigger { font-size: 16px; }
+  .mob-menu-item { font-size: 16px; }
+  .baj-kakao-btn { font-size: 16px; }
+  .baj-phone-btn { font-size: 16px; }
+  .lm-kakao-btn { font-size: 16px; }
+  .lm-phone-btn { font-size: 16px; }
+  .lm-phone-input { font-size: 16px; }
+  .company-wizard-kakao-btn { font-size: 16px; }
+  .co-hero-desc { font-size: 16px; }
+  .co-btn-primary.large { font-size: 16px; }
+  .co-btn-white { font-size: 16px; }
+  .co-step-title { font-size: 16px; }
+  .mat-hero-desc { font-size: 16px; }
+  .mat-hero-btn { font-size: 16px; }
+  .co-type-name { font-size: 16px; }
+  .legal-intro { font-size: 16px; }
+  .rmp-head strong { font-size: 16px; }
+  .hero-search-input-v2 { font-size: 16px; }
+  .profile-header-nav { font-size: 16px; }
+  .resume-header-nav { font-size: 16px; }
+}
