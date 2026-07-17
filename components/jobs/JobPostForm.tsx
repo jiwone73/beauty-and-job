@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Check } from "lucide-react";
+import { ChevronLeft, Check, Pencil, Trash2 } from "lucide-react";
 import JobPreview from "@/components/jobs/JobPreview";
 import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
@@ -320,15 +320,17 @@ export default function JobPostForm({
             )}
           </span>
         </div>
-        <button type="button" onClick={() => openTextModal(k)}
-          style={{
-            flexShrink: 0, padding: "7px 16px", borderRadius: "8px",
-            border: filled ? "1px solid #ddd" : "1.5px solid #5f0080",
-            background: filled ? "#fff" : "#5f0080",
-            color: filled ? "#555" : "#fff", fontSize: "13px", fontWeight: 600, cursor: "pointer",
-          }}>
-          {filled ? "수정" : "작성"}
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}>
+          <button type="button" className="resume-icon-btn" aria-label={filled ? "수정" : "작성"} title={filled ? "수정" : "작성"} onClick={() => openTextModal(k)}>
+            <Pencil size={15} />
+          </button>
+          {filled && (
+            <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
+              onClick={() => { if (confirm("작성한 내용을 삭제할까요?")) setForm({ ...form, [k]: "" }); }}>
+              <Trash2 size={15} />
+            </button>
+          )}
+        </div>
       </div>
     );
   };
@@ -519,7 +521,7 @@ export default function JobPostForm({
                       placeholder={jobGroupType === "매장" ? "예) 250" : "예) 4000"}
                       value={salaryNego ? "" : form.salary}
                       onChange={(e) => setForm({ ...form, salary: e.target.value })}
-                      style={{ flex: 1 }} />
+                      style={{ width: 130, flexShrink: 0 }} />
                     <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap" }}>만원</span>
                     <label style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "13px", color: "#555", whiteSpace: "nowrap", cursor: "pointer" }}>
                       <input type="checkbox" checked={salaryNego} onChange={(e) => setSalaryNego(e.target.checked)} /> 협의
@@ -629,13 +631,17 @@ export default function JobPostForm({
                   <label className="admin-form-label" style={{ margin: 0 }}>
                     채용 절차 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(선택)</span>
                   </label>
-                  <button type="button" onClick={openProcessModal}
-                    style={{ padding: "7px 16px", borderRadius: "8px",
-                      border: processFilled ? "1px solid #ddd" : "1.5px solid #5f0080",
-                      background: processFilled ? "#fff" : "#5f0080",
-                      color: processFilled ? "#555" : "#fff", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
-                    {processFilled ? "수정" : "설정"}
-                  </button>
+                  <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                    <button type="button" className="resume-icon-btn" aria-label={processFilled ? "수정" : "설정"} title={processFilled ? "수정" : "설정"} onClick={openProcessModal}>
+                      <Pencil size={15} />
+                    </button>
+                    {processFilled && (
+                      <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
+                        onClick={() => { if (confirm("채용 절차를 삭제할까요?")) setHiringProcess([]); }}>
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div style={{ marginTop: "8px" }}>
                   {processFilled ? (
@@ -661,13 +667,17 @@ export default function JobPostForm({
                   <label className="admin-form-label" style={{ margin: 0 }}>
                     비고 · 유의사항 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(선택)</span>
                   </label>
-                  <button type="button" onClick={openNotesModal}
-                    style={{ padding: "7px 16px", borderRadius: "8px",
-                      border: notesFilled ? "1px solid #ddd" : "1.5px solid #5f0080",
-                      background: notesFilled ? "#fff" : "#5f0080",
-                      color: notesFilled ? "#555" : "#fff", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
-                    {notesFilled ? "수정" : "작성"}
-                  </button>
+                  <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                    <button type="button" className="resume-icon-btn" aria-label={notesFilled ? "수정" : "작성"} title={notesFilled ? "수정" : "작성"} onClick={openNotesModal}>
+                      <Pencil size={15} />
+                    </button>
+                    {notesFilled && (
+                      <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
+                        onClick={() => { if (confirm("비고를 삭제할까요?")) setNotes(""); }}>
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {notesFilled && (
                   <p style={{
