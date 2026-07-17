@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Check, Pencil, Trash2 } from "lucide-react";
+import { shortRegion } from "@/lib/regionShort";
 import JobPreview from "@/components/jobs/JobPreview";
 import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
@@ -504,7 +505,7 @@ export default function JobPostForm({
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "8px" }}>
                     {regionList.map((r) => (
                       <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "999px", fontSize: "13px", color: "#5f0080" }}>
-                        {r}
+                        {shortRegion(r)}
                         <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
                           style={{ background: "none", border: "none", color: "#5f0080", cursor: "pointer", fontSize: "14px", lineHeight: "1", padding: 0 }}>×</button>
                       </span>
@@ -521,7 +522,7 @@ export default function JobPostForm({
                       placeholder={salaryNego ? "" : (jobGroupType === "매장" ? "예) 250" : "예) 4000")}
                       value={salaryNego ? "" : form.salary}
                       onChange={(e) => setForm({ ...form, salary: e.target.value })}
-                      style={{ width: 130, flexShrink: 0 }} />
+                      style={{ width: 130, flexShrink: 0, height: 42, boxSizing: "border-box" }} />
                     <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap" }}>만원</span>
                   </div>
                   <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "8px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
@@ -535,7 +536,7 @@ export default function JobPostForm({
                     value={form.deadline}
                     disabled={alwaysOpen}
                     onChange={(e) => setForm({ ...form, deadline: e.target.value })}
-                    style={alwaysOpen ? { background: "#f5f5f5", color: "#aaa", cursor: "not-allowed" } : undefined} />
+                    style={{ height: 42, boxSizing: "border-box", ...(alwaysOpen ? { background: "#f5f5f5", color: "#aaa", cursor: "not-allowed" } : {}) }} />
                   <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "8px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
                     <input type="checkbox" checked={alwaysOpen}
                       onChange={(e) => {
