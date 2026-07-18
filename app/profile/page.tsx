@@ -1049,6 +1049,9 @@ function AppliedTab({ userName }: { userName: string }) {
   const [viewAppId, setViewAppId] = useState<string | null>(null);
   const [showCert, setShowCert] = useState(false);
   const [certApp, setCertApp] = useState<any | null>(null);
+  const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
+  const toggleSelect = (id: string) =>
+    setSelectedApps((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) { setLoading(false); return; }
@@ -1122,6 +1125,24 @@ function AppliedTab({ userName }: { userName: string }) {
     }
   };
 
+  const handleBulkHide = async () => {
+    if (selectedApps.size === 0) { alert("삭제할 지원 내역을 선택해주세요."); return; }
+    if (!confirm(`선택한 ${selectedApps.size}건을 목록에서 삭제할까요?\n(기업에는 영향을 주지 않으며, 되돌릴 수 없어요.)`)) return;
+    const token = localStorage.getItem("access_token");
+    const ids = Array.from(selectedApps);
+    for (const id of ids) {
+      try {
+        await fetch(`/api/users/me/applications/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ hidden: true }),
+        });
+      } catch {}
+    }
+    setApps((prev) => prev.filter((a) => !selectedApps.has(a.id)));
+    setSelectedApps(new Set());
+  };
+
   const statusLabel: Record<string, string> = {
     APPLIED: "서류검토중", REVIEWING: "서류검토중", VIEWED: "열람됨",
     INTERVIEW: "면접예정", PASSED: "합격", REJECTED: "불합격", WITHDRAWN: "지원취소",
@@ -1149,58 +1170,58 @@ function AppliedTab({ userName }: { userName: string }) {
 
   return (
     <div className="profile-tab-content">
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
-        <button
-          onClick={() => setShowCert(true)}
-          style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-        >
-          📄 취업활동 증명서 발급
-        </button>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555", cursor: "pointer" }}>
+          <input type="checkbox" className="applied-check"
+            checked={apps.length > 0 && selectedApps.size === apps.length}
+            onChange={(e) => setSelectedApps(e.target.checked ? new Set(apps.map((a) => a.id)) : new Set())}
+          />
+          전체 선택{selectedApps.size > 0 ? ` (${selectedApps.size})` : ""}
+        </label>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={() => { if (selectedApps.size === 0) { alert("증명서에 포함할 지원 내역을 선택해주세요."); return; } setShowCert(true); }}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+          >
+            📄 취업활동 증명서 발급
+          </button>
+          <button
+            onClick={handleBulkHide}
+            style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #f0d5d5", background: "#fff", color: "#d9534f", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+          >
+            삭제
+          </button>
+        </div>
       </div>
       <div className="applied-list">
         {apps.map((app) => {
           const date = new Date(app.applied_at);
           const dateStr = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
           return (
-            <div key={app.id} className="applied-item" onClick={() => app.job_id && router.push(`/jobs/${app.job_id}`)} style={{ cursor: "pointer" }}>
-              <div className="applied-item-left">
+            <div key={app.id} className="applied-item">
+              <input type="checkbox" className="applied-check"
+                checked={selectedApps.has(app.id)}
+                onChange={() => toggleSelect(app.id)}
+              />
+              <div className="applied-item-left" onClick={() => app.job_id && router.push(`/jobs/${app.job_id}`)} style={{ cursor: "pointer" }}>
                 <span className="applied-brand">{app.brand_name || app.company_name}</span>
                 <h3 className="applied-title">{app.job_title}</h3>
                 <span className="applied-date">지원일 {dateStr}</span>
-                <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setViewAppId(app.id); }}
-                    style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content", whiteSpace: "nowrap", flexShrink: 0 }}
-                  >
-                    내 지원서 보기
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setCertApp(app); }}
-                    style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content", whiteSpace: "nowrap", flexShrink: 0 }}
-                  >
-                    공고 증명서
-                  </button>
-                  {(app.status === "APPLIED" || app.status === "VIEWED") && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleCancel(app.id); }}
-                      style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content", whiteSpace: "nowrap", flexShrink: 0 }}
-                    >
-                      지원 취소
-                    </button>
-                  )}
-                  {(app.status === "PASSED" || app.status === "REJECTED" || app.status === "WITHDRAWN") && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleHide(app.id); }}
-                      style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content", whiteSpace: "nowrap", flexShrink: 0 }}
-                    >
-                      삭제
-                    </button>
+              </div>
+              <div className="applied-right">
+                <span className="applied-status" style={{ color: "#5f0080", fontWeight: 600, fontSize: 13, whiteSpace: "nowrap" }}>
+                  {statusLabel[app.status] || app.status}
+                </span>
+                <div className="applied-links">
+                  <button className="applied-link" onClick={() => setViewAppId(app.id)}>내 지원서 보기</button>
+                  <button className="applied-link" onClick={() => setCertApp(app)}>공고 증명서</button>
+                  {(app.status === "APPLIED" || app.status === "VIEWED") ? (
+                    <button className="applied-link cancel" onClick={() => handleCancel(app.id)}>지원 취소</button>
+                  ) : (
+                    <span className="applied-link disabled">지원 취소</span>
                   )}
                 </div>
               </div>
-              <span className="applied-status" style={{ color: "#5f0080", fontWeight: 600, fontSize: 13, whiteSpace: "nowrap" }}>
-                {statusLabel[app.status] || app.status}
-              </span>
             </div>
           );
         })}
@@ -1209,7 +1230,7 @@ function AppliedTab({ userName }: { userName: string }) {
         <MyApplicationModal applicationId={viewAppId} onClose={() => setViewAppId(null)} />
       )}
       {showCert && (
-        <JobSearchCertificateModal name={userName} apps={apps} onClose={() => setShowCert(false)} />
+        <JobSearchCertificateModal name={userName} apps={apps.filter((a) => selectedApps.has(a.id))} onClose={() => setShowCert(false)} />
       )}
       {certApp && (
         <JobPostingCertificateModal name={userName} app={certApp} onClose={() => setCertApp(null)} />
