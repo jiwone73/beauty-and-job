@@ -6568,6 +6568,13 @@ input[type="range"].career-slider::-moz-range-thumb {
   flex-direction: column;
   gap: 3px;
 }
+/* 아이콘이 있는 대시보드 카드는 아이콘 왼쪽 · 숫자/라벨 오른쪽 가로 정렬 */
+.company-stat-card:has(.company-stat-icon) {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+.company-stat-card:has(.company-stat-icon) .company-stat-icon { flex-shrink: 0; }
 .company-stat-icon {
   width: 44px; height: 44px;
   border-radius: 10px;

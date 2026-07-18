@@ -153,10 +153,12 @@ export default function CompanyDashboard() {
             <div className="company-stat-icon" style={{ background: stat.color + "18", color: stat.color }}>
               <stat.icon size={22} />
             </div>
-            <div className="company-stat-value">
-              {stat.value}<span className="company-stat-unit">{stat.unit}</span>
+            <div style={{ minWidth: 0 }}>
+              <div className="company-stat-value">
+                {stat.value}<span className="company-stat-unit">{stat.unit}</span>
+              </div>
+              <div className="company-stat-label">{stat.label}</div>
             </div>
-            <div className="company-stat-label">{stat.label}</div>
           </div>
         ))}
       </div>
