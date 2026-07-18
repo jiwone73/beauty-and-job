@@ -1177,7 +1177,21 @@ function AppliedTab({ userName }: { userName: string }) {
 
   return (
     <div className="profile-tab-content">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+          <button
+            onClick={() => { if (selectedApps.size === 0) { alert("증명서에 포함할 지원 내역을 선택해주세요."); return; } setShowCert(true); }}
+            style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 14px", borderRadius: 8, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
+          >
+            📄 취업활동 증명서
+          </button>
+          <button
+            onClick={handleBulkHide}
+            style={{ padding: "9px 20px", borderRadius: 8, border: "1px solid #e0e0e0", background: "#fff", color: "#888", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
+          >
+            삭제
+          </button>
+        </div>
         <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555", cursor: "pointer" }}>
           <input type="checkbox" className="applied-check"
             checked={apps.length > 0 && selectedApps.size === apps.length}
@@ -1185,20 +1199,6 @@ function AppliedTab({ userName }: { userName: string }) {
           />
           전체 선택{selectedApps.size > 0 ? ` (${selectedApps.size})` : ""}
         </label>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={() => { if (selectedApps.size === 0) { alert("증명서에 포함할 지원 내역을 선택해주세요."); return; } setShowCert(true); }}
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-          >
-            📄 취업활동 증명서 발급
-          </button>
-          <button
-            onClick={handleBulkHide}
-            style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #e0e0e0", background: "#fff", color: "#888", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-          >
-            삭제
-          </button>
-        </div>
       </div>
       <div className="applied-list">
         {apps.map((app) => {
