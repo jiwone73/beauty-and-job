@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import type { CSSProperties } from "react";
 import { X, Download, Printer } from "lucide-react";
 import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
@@ -26,6 +26,13 @@ export default function JobSearchCertificateModal({
 }) {
   const captureRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const rows = apps.filter((a) => a.status !== "WITHDRAWN");
   const today = new Date();
@@ -57,8 +64,8 @@ export default function JobSearchCertificateModal({
     }
   };
 
-  const th: CSSProperties = { border: "1px solid #ccc", padding: "7px 8px", fontSize: 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a", lineHeight: 1.15, verticalAlign: "middle" };
-  const td: CSSProperties = { border: "1px solid #ddd", padding: "7px 8px", fontSize: 13, color: "#333", lineHeight: 1.15, verticalAlign: "middle" };
+  const th: CSSProperties = { border: "1px solid #ccc", padding: isMobile ? "4px 4px" : "7px 8px", fontSize: isMobile ? 11 : 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a", lineHeight: 1.15, verticalAlign: "middle" };
+  const td: CSSProperties = { border: "1px solid #ddd", padding: isMobile ? "4px 4px" : "7px 8px", fontSize: isMobile ? 11 : 13, color: "#333", lineHeight: 1.15, verticalAlign: "middle" };
 
   return (
     <div className="rp-modal-overlay">
@@ -78,7 +85,7 @@ export default function JobSearchCertificateModal({
           </div>
         </div>
         <div className="rp-modal-body" style={{ overflowY: "auto", flex: 1 }}>
-          <CertificateSheet ref={captureRef} docNo={docNo} todayStr={todayStr}>
+          <CertificateSheet ref={captureRef} docNo={docNo} todayStr={todayStr} compact={isMobile}>
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 18 }}>
               <tbody>
                 <tr>
@@ -90,7 +97,7 @@ export default function JobSearchCertificateModal({
               </tbody>
             </table>
 
-            <p style={{ fontSize: 14, color: "#333", lineHeight: 1.9, margin: "0 0 16px" }}>
+            <p style={{ fontSize: isMobile ? 12 : 14, color: "#333", lineHeight: isMobile ? 1.65 : 1.9, margin: "0 0 16px" }}>
               위 사람은 뷰티 채용 플랫폼 <strong>뷰티워크(beautywork.co.kr)</strong>를 통해 아래와 같이 입사지원(구직활동)하였음을 증명합니다.
             </p>
 
@@ -119,7 +126,7 @@ export default function JobSearchCertificateModal({
               </tbody>
             </table>
 
-            <p style={{ fontSize: 12, color: "#888", lineHeight: 1.8, margin: 0 }}>
+            <p style={{ fontSize: isMobile ? 10 : 12, color: "#888", lineHeight: 1.7, margin: 0 }}>
               ※ 본 증명서는 구직활동 증빙 자료로 활용하실 수 있으며, 최종 인정 여부는 관할 고용센터의 판단에 따릅니다.<br />
               ※ 실업급여 구직활동 증빙 시, 해당 채용공고문을 함께 제출해야 인정되는 경우가 있습니다. (공고문 포함 개별 증명서는 각 지원 건에서 발급할 수 있습니다.)
             </p>
