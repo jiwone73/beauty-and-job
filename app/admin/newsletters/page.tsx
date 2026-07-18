@@ -198,7 +198,7 @@ export default function AdminNewslettersPage() {
         {loading ? (
           <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
         ) : (
-          <table style={{ width: "auto", maxWidth: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
                 <th style={{ ...th, width: 36, textAlign: "center" }}>

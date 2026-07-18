@@ -272,7 +272,7 @@ export default function AdminStoriesPage() {
         {loading ? (
           <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
         ) : tab === "comments" ? (
-          <table style={{ width: "auto", maxWidth: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
                 <th style={th}>작성자</th><th style={th}>내용</th><th style={th}>원글</th><th style={th}>신고</th><th style={th}>상태</th><th style={th}>관리</th>
@@ -345,7 +345,7 @@ export default function AdminStoriesPage() {
               선택 삭제{checked.length ? ` (${checked.length})` : ""}
             </button>
           </div>
-          <table style={{ width: "auto", maxWidth: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
                 <th style={{ ...th, width: 36, textAlign: "center" }}>
