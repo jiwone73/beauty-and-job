@@ -617,7 +617,7 @@ export default function ProfilePage() {
                     <div
                       onClick={(e) => { e.stopPropagation(); setAvatarMenu((v) => !v); }}
                       title="사진 변경/삭제"
-                      style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#f0e8f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: "1px solid #f2f2f2", cursor: "pointer" }}>
+                      style={{ width: "80px", height: "80px", borderRadius: "50%", background: avatarLoaded ? "#f0e8f8" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: avatarLoaded ? "1px solid #f2f2f2" : "1px solid transparent", cursor: "pointer" }}>
                       {avatarUrl ? (
                         <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : avatarLoaded ? (
