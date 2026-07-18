@@ -173,7 +173,7 @@ export default function CompanyDashboard() {
           <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={chartData}>
-                <XAxis dataKey="day" tick={{ fontSize: 13 }} />
+                <XAxis dataKey="day" tick={{ fontSize: 11 }} interval={0} />
                 <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
                 <Tooltip />
                 <Bar dataKey="지원수" fill="#5f0080" radius={[4, 4, 0, 0]} />
