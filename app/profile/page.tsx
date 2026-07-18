@@ -72,6 +72,7 @@ export default function ProfilePage() {
   const [isKakao, setIsKakao] = useState(false);
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarLoaded, setAvatarLoaded] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [avatarMenu, setAvatarMenu] = useState(false);
   const avatarFileRef = useRef<HTMLInputElement>(null);
@@ -174,7 +175,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    if (!token) return;
+    if (!token) { setAvatarLoaded(true); return; }
 
     useProfileStore.getState().loadFromServer();
 
@@ -203,7 +204,8 @@ export default function ProfilePage() {
           });
         }
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setAvatarLoaded(true));
 
     useBookmarkStore.getState().loadFromServer();
   }, []);
@@ -618,9 +620,9 @@ export default function ProfilePage() {
                       style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#f0e8f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: "1px solid #f2f2f2", cursor: "pointer" }}>
                       {avatarUrl ? (
                         <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      ) : (
+                      ) : avatarLoaded ? (
                         <span style={{ fontSize: "30px", color: "#a888c0" }}>👤</span>
-                      )}
+                      ) : null}
                       {avatarUploading && (
                         <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#5f0080", fontWeight: 600 }}>
                           업로드중
