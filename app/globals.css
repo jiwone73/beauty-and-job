@@ -1694,6 +1694,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .resume-career-head, .resume-career-head strong, .resume-career-dept, .resume-career-period { font-size: 13px; }
   .resume-edu-item strong, .resume-lang-item strong, .resume-edu-info, .resume-lang-level, .resume-edu-period { font-size: 13px; }
   .resume-item-text { font-size: 13px; }
+  .resume-job-line, .resume-contact { font-size: 13px; }
 }
 .resume-exp-category { font-size: 11px; font-weight: 700; color: var(--color-primary); display: block; margin-bottom: 3px; }
 .resume-exp-desc { font-size: 13px; color: var(--color-text-sub); margin-top: 4px; }
