@@ -272,18 +272,18 @@ export default function AdminStoriesPage() {
         {loading ? (
           <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
         ) : tab === "comments" ? (
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
+          <table className="admin-table">
             <thead>
-              <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
-                <th style={th}>작성자</th><th style={th}>내용</th><th style={th}>원글</th><th style={th}>신고</th><th style={th}>상태</th><th style={th}>관리</th>
+              <tr>
+                <th style={th}>작성자</th><th style={{ ...th, textAlign: "left" }}>내용</th><th style={{ ...th, textAlign: "left" }}>원글</th><th style={th}>신고</th><th style={th}>상태</th><th style={th}>관리</th>
               </tr>
             </thead>
             <tbody>
               {comments.map((c) => (
-                <tr key={c.id} style={{ borderBottom: "1px solid #f0f0f0", background: c.status === "hidden" ? "#fff5f5" : "#fff" }}>
+                <tr key={c.id} style={{ background: c.status === "hidden" ? "#fff5f5" : "#fff" }}>
                   <td style={td}>{c.anon_label || "익명"}</td>
-                  <td style={{ ...td, maxWidth: 300, color: "#444" }}>{c.body}</td>
-                  <td style={{ ...td, maxWidth: 160, color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.post_title || "-"}</td>
+                  <td style={{ ...td, maxWidth: 300, color: "#444", textAlign: "left" }}>{c.body}</td>
+                  <td style={{ ...td, maxWidth: 160, color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "left" }}>{c.post_title || "-"}</td>
                   <td style={{ ...td, color: c.report_count > 0 ? "#d32f2f" : "#bbb", fontWeight: 700 }}>{c.report_count}</td>
                   <td style={td}><span style={{ fontSize: 13, color: c.status === "hidden" ? "#d32f2f" : "#2e7d32", fontWeight: 600 }}>{c.status === "hidden" ? "숨김" : "노출"}</span></td>
                   <td style={td}>
@@ -345,13 +345,13 @@ export default function AdminStoriesPage() {
               선택 삭제{checked.length ? ` (${checked.length})` : ""}
             </button>
           </div>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
+          <table className="admin-table">
             <thead>
-              <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
-                <th style={{ ...th, width: 36, textAlign: "center" }}>
+              <tr>
+                <th style={{ ...th, width: 36 }}>
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
-                <th style={th}>카테고리</th><th style={th}>제목/내용</th>
+                <th style={th}>카테고리</th><th style={{ ...th, textAlign: "left" }}>제목/내용</th>
                 {tab === "pending" ? <th style={th}>출처</th> : <><th style={th}>출처</th><th style={th}>공감</th><th style={th}>댓글</th><th style={th}>조회</th><th style={th}>신고</th></>}
                 <th style={th}>상태</th><th style={th}>관리</th>
               </tr>
@@ -359,12 +359,12 @@ export default function AdminStoriesPage() {
             <tbody>
               {visiblePosts.map((p) => (
                 <Fragment key={p.id}>
-                <tr style={{ borderBottom: "1px solid #f0f0f0", background: checked.includes(p.id) ? "#faf5ff" : p.status === "hidden" ? "#fff5f5" : p.status === "pending" ? "#fffdf5" : "#fff" }}>
-                  <td style={{ ...td, textAlign: "center" }}>
+                <tr style={{ background: checked.includes(p.id) ? "#faf5ff" : p.status === "hidden" ? "#fff5f5" : p.status === "pending" ? "#fffdf5" : "#fff" }}>
+                  <td style={td}>
                     <input type="checkbox" checked={checked.includes(p.id)} onChange={() => toggleCheck(p.id)} />
                   </td>
                   <td style={td}>{p.category}</td>
-                  <td style={{ ...td, maxWidth: 340, cursor: "pointer" }} onClick={() => openExpand(p)}>
+                  <td style={{ ...td, maxWidth: 340, cursor: "pointer", textAlign: "left" }} onClick={() => openExpand(p)}>
                     <div style={{ fontWeight: 600, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
                       <span style={{ color: "#bbb", fontSize: 12 }}>{expandedId === p.id ? "▼" : "▶"}</span>
                       {p.title || "(제목 없음)"}
@@ -451,8 +451,8 @@ export default function AdminStoriesPage() {
   );
 }
 
-const th: React.CSSProperties = { padding: "10px 8px", fontWeight: 600, fontSize: 13.5 };
-const td: React.CSSProperties = { padding: "12px 8px", verticalAlign: "middle" };
+const th: React.CSSProperties = {};
+const td: React.CSSProperties = {};
 function tabStyle(active: boolean): React.CSSProperties {
   return {
     padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontWeight: 600,

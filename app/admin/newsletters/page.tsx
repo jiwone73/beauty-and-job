@@ -198,22 +198,22 @@ export default function AdminNewslettersPage() {
         {loading ? (
           <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
+          <table className="admin-table">
             <thead>
-              <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
-                <th style={{ ...th, width: 36, textAlign: "center" }}>
+              <tr>
+                <th style={{ ...th, width: 36 }}>
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
-                <th style={th}>제목</th><th style={th}>상태</th><th style={th}>생성일</th><th style={th}>발송수</th><th style={th}>관리</th>
+                <th style={{ ...th, textAlign: "left" }}>제목</th><th style={th}>상태</th><th style={th}>생성일</th><th style={th}>발송수</th><th style={th}>관리</th>
               </tr>
             </thead>
             <tbody>
               {list.map((n) => (
-                <tr key={n.id} style={{ borderBottom: "1px solid #f0f0f0", background: checked.includes(n.id) ? "#faf5ff" : n.status === "sent" ? "#f6fbf6" : "#fff" }}>
-                  <td style={{ ...td, textAlign: "center" }}>
+                <tr key={n.id} style={{ background: checked.includes(n.id) ? "#faf5ff" : n.status === "sent" ? "#f6fbf6" : "#fff" }}>
+                  <td style={td}>
                     <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   </td>
-                  <td style={{ ...td, maxWidth: 360, fontWeight: 600, color: "#1a1a1a" }}>{n.title}</td>
+                  <td style={{ ...td, maxWidth: 360, fontWeight: 600, color: "#1a1a1a", textAlign: "left" }}>{n.title}</td>
                   <td style={td}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: n.status === "sent" ? "#2e7d32" : "#e65100" }}>
                       {STATUS_LABELS[n.status] || n.status}
@@ -245,8 +245,8 @@ export default function AdminNewslettersPage() {
   );
 }
 
-const th: React.CSSProperties = { padding: "10px 8px", fontWeight: 600, fontSize: 13.5 };
-const td: React.CSSProperties = { padding: "12px 8px", verticalAlign: "middle" };
+const th: React.CSSProperties = {};
+const td: React.CSSProperties = {};
 const btnGray: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1px solid #ddd", background: "#fff", color: "#666", fontSize: 13.5, cursor: "pointer" };
 const btnPurpleOutline: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13.5, cursor: "pointer" };
 const btnPurple: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#5f0080", color: "#fff", fontSize: 13.5, cursor: "pointer" };
