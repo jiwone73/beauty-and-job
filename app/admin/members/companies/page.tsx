@@ -368,9 +368,7 @@ function AdminCompaniesContent() {
             )}
           </div>
         </div>
-        {loading ? (
-          <div className="admin-empty">불러오는 중...</div>
-        ) : blockedMode ? (
+        {blockedMode ? (
           <table className="admin-table">
             <thead>
               <tr>
@@ -380,7 +378,9 @@ function AdminCompaniesContent() {
               </tr>
             </thead>
             <tbody>
-              {blocks.length === 0 ? (
+              {loading ? (
+                <tr><td colSpan={3} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+              ) : blocks.length === 0 ? (
                 <tr><td colSpan={3} className="admin-empty" style={{ textAlign: "center" }}>열람제한(차단) 내역이 없습니다.</td></tr>
               ) : blocks.map((b) => (
                 <tr key={b.id}>
@@ -432,7 +432,11 @@ function AdminCompaniesContent() {
               </tr>
             </thead>
             <tbody>
-              {paginated.map((c) => (
+              {loading ? (
+                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+              ) : filtered.length === 0 ? (
+                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+              ) : paginated.map((c) => (
                 <tr key={c.id} style={{ background: selectedIds.includes(c.id) ? "#faf5ff" : undefined }}>
                   <td style={{ textAlign: "center" }}>
                     <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
@@ -524,7 +528,6 @@ function AdminCompaniesContent() {
             </tbody>
           </table>
         )}
-        {!loading && !blockedMode && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
 
         {totalPages > 1 && (
           <div className="admin-pagination">

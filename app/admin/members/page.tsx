@@ -308,12 +308,7 @@ function AdminMembersPageInner() {
           </div>
         </div>
 
-        {loading ? (
-          <div className="admin-empty">불러오는 중...</div>
-        ) : filtered.length === 0 ? (
-          <div className="admin-empty">검색 결과가 없습니다.</div>
-        ) : (
-          <div style={{ overflowX: "auto" }}>
+        <div style={{ overflowX: "auto" }}>
           <table className="admin-table" style={{ minWidth: 980, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
@@ -332,7 +327,11 @@ function AdminMembersPageInner() {
               </tr>
             </thead>
             <tbody>
-              {paginated.map((m) => {
+              {loading ? (
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+              ) : filtered.length === 0 ? (
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+              ) : paginated.map((m) => {
                 const age = calcAge(m.birth_date);
                 const gender = genderLabel(m.gender);
                 const _cy = calcCareerYears(m.recent_start_date);
@@ -493,7 +492,6 @@ function AdminMembersPageInner() {
             </tbody>
           </table>
           </div>
-        )}
 
         {totalPages > 1 && (
           <div className="admin-pagination">
