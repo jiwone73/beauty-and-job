@@ -8,14 +8,19 @@ interface Props {
   initial: string[];
   onClose: () => void;
   onApply: (regions: string[]) => void;
+  allowAny?: boolean;               // "지역 무관" 토글 노출
 }
+
+const ANY = "지역 무관 전체";
 
 const shortSido = (s: string) =>
   s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "");
 
-export default function RegionSelectModal({ open, initial, onClose, onApply }: Props) {
+export default function RegionSelectModal({ open, initial, onClose, onApply, allowAny }: Props) {
   const [activeSido, setActiveSido] = useState(SIDO_LIST[0]);
   const [draft, setDraft] = useState<string[]>(initial);
+  const isAny = draft.includes(ANY);
+  const toggleAny = () => setDraft(isAny ? [] : [ANY]);
 
   useEffect(() => {
     if (open) {
@@ -30,7 +35,8 @@ export default function RegionSelectModal({ open, initial, onClose, onApply }: P
 
   const toggleItem = (sido: string, gugun: string) => {
     const key = `${sido} ${gugun}`;
-    setDraft((prev) => {
+    setDraft((prevRaw) => {
+      const prev = prevRaw.filter((x) => x !== ANY); // 구체 지역 선택 시 '지역 무관' 해제
       if (gugun === "전체") {
         const withoutSido = prev.filter((x) => !x.startsWith(`${sido} `));
         return prev.includes(key) ? withoutSido : [...withoutSido, key];
@@ -58,6 +64,14 @@ export default function RegionSelectModal({ open, initial, onClose, onApply }: P
             <X size={20} />
           </button>
         </div>
+
+        {allowAny && (
+          <button type="button" onClick={toggleAny}
+            style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "13px 16px", borderTop: "1px solid #f0f0f0", borderBottom: "1px solid #f0f0f0", borderLeft: "none", borderRight: "none", background: isAny ? "#faf5ff" : "#fff", cursor: "pointer", fontSize: 14, color: "#333", fontFamily: "inherit" }}>
+            <span className={`region-check ${isAny ? "on" : ""}`}>{isAny && <Check size={13} />}</span>
+            지역 무관 (전국 어디든 좋아요)
+          </button>
+        )}
 
         <div className="region-modal-body">
           <div className="region-sido-col">

@@ -12,6 +12,7 @@ interface Props {
   maxSelect?: number;
   title?: string;
   disabled?: boolean;
+  block?: boolean;                  // 전체 너비 입력 박스 스타일
 }
 
 export default function JobGroupField({
@@ -22,6 +23,7 @@ export default function JobGroupField({
   maxSelect,
   title,
   disabled,
+  block,
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -35,6 +37,8 @@ export default function JobGroupField({
         }
         .jgf-trigger:hover:not(:disabled) { border-color: #c9a3d6; }
         .jgf-trigger:disabled { opacity: 0.6; cursor: not-allowed; }
+        .jgf-trigger--block { width: 100%; justify-content: space-between; border: 1px solid #e0d0f0; background: #fafafa; }
+        .jgf-trigger--block .jgf-ph { color: #888; }
         .jgf-text { color: #333; font-weight: 400; }
         .jgf-ph { color: #333; font-weight: 400; }
         .jgf-arrow { color: #999; font-size: 14px; }
@@ -53,7 +57,7 @@ export default function JobGroupField({
       <div>
         <button
           type="button"
-          className="jgf-trigger"
+          className={`jgf-trigger${block ? " jgf-trigger--block" : ""}`}
           onClick={() => !disabled && setOpen(true)}
           disabled={disabled}
         >

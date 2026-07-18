@@ -1251,8 +1251,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 .profile-info-label {
   font-size: 13px;
   color: var(--color-text-mute);
-  width: 80px;
+  width: 96px;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 .profile-info-value {
   flex: 1;

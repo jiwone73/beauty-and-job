@@ -10,7 +10,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { shortRegion } from "@/lib/regionShort";
 import { useProfileStore } from "@/lib/store/profileStore";
-import JobGroupField from "@/components/JobGroupField";
+import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import NotificationModal from "@/components/profile/NotificationModal";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
@@ -83,6 +83,7 @@ export default function ProfilePage() {
   const [prefSido, setPrefSido] = useState("");
   const [prefSigungu, setPrefSigungu] = useState("");
   const [prefModalOpen, setPrefModalOpen] = useState(false);
+  const [jobAreaModal, setJobAreaModal] = useState<null | "OFFICE" | "STORE">(null);
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unreadNotif, setUnreadNotif] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -304,9 +305,7 @@ export default function ProfilePage() {
 
   // 프로필 → 모달 형식: [{sido,sigungu}] → ["서울특별시 강남구","경기도 전체"]
   const toModalRegions = (regions: { sido: string; sigungu: string }[]) =>
-    regions
-      .filter((r) => r.sido !== "지역 무관")
-      .map((r) => (r.sigungu ? `${r.sido} ${r.sigungu}` : `${r.sido} 전체`));
+    regions.map((r) => (r.sigungu ? `${r.sido} ${r.sigungu}` : `${r.sido} 전체`));
 
   // 모달 → 프로필 형식: ["서울특별시 강남구","경기도 전체"] → [{sido,sigungu}]
   const fromModalRegions = (arr: string[]) =>
@@ -441,6 +440,16 @@ export default function ProfilePage() {
   if (dbJobType === "STORE" && skillAreas.length === 0) missingRequired.push("시술 분야");
   if (dbJobType === "STORE" && !workTypePrefer) missingRequired.push("희망 근무 형태");
   if (!preferredRegions || preferredRegions.length === 0) missingRequired.push("희망 근무지역");
+
+  // 직군/지역 한 줄 요약값
+  const jobAreaSummary = (arr: string[]) =>
+    arr.length ? (arr.length > 1 ? `${arr[0]} 외 ${arr.length - 1}` : arr[0]) : "선택해주세요";
+  const anyRegion = preferredRegions.some((r) => r.sido === "지역 무관");
+  const regionSummary = anyRegion
+    ? "지역 무관 (전국 어디든)"
+    : preferredRegions.length
+      ? `${shortSido(preferredRegions[0].sido)} ${preferredRegions[0].sigungu || "전체"}${preferredRegions.length > 1 ? ` 외 ${preferredRegions.length - 1}` : ""}`
+      : "선택해주세요";
 
   // 이력서로 이동 (필수항목 미완성 시 안내 후 프로필에 머무름)
   const changeEmail = async () => {
@@ -885,96 +894,49 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {dbJobType === "OFFICE" && (
-              <section className="profile-section">
-                <div className="profile-section-head">
-                  <h2 className="profile-section-title">직군 영역<span style={{ color: "#e74c3c", marginLeft: "4px", fontSize: "14px" }}>*</span></h2>
-                </div>
-                <div className="profile-info-card" style={{ padding: "16px" }}>
-                  <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>해당하는 직군 영역을 선택해 주세요 (1~3개 권장)</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-                    <JobGroupField
-             jobType="OFFICE"
-             value={officeJobAreas}
-             onChange={saveOfficeJobAreas}
-             placeholder="직군 선택"
-               />
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {dbJobType === "STORE" && (
-              <section className="profile-section">
-                <div className="profile-section-head">
-                  <h2 className="profile-section-title">시술 분야 · 전문 영역<span style={{ color: "#e74c3c", marginLeft: "4px", fontSize: "14px" }}>*</span></h2>
-                </div>
-                <div className="profile-info-card" style={{ padding: "16px" }}>
-                  <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>해당하는 시술 분야를 선택해 주세요</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-                    <JobGroupField
-  jobType="STORE"
-  value={skillAreas}
-  onChange={(v) => setStoreProfile({ skillAreas: v })}
-  placeholder="시술 분야 선택"
-/>
-                  </div>
-                  <label style={{ fontSize: "13px", fontWeight: 600, color: "#333", display: "block", marginBottom: "6px" }}>희망 근무 형태<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                    {["풀타임", "파트타임", "주말근무 가능", "시급"].map((w) => (
-                      <button key={w}
-                        onClick={() => setStoreProfile({ workTypePrefer: workTypePrefer === w ? "" : w })}
-                        style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${workTypePrefer === w ? "#5f0080" : "#e0d0f0"}`, background: workTypePrefer === w ? "#f3e5f5" : "#fff", color: workTypePrefer === w ? "#5f0080" : "#333", fontSize: "13px", fontWeight: workTypePrefer === w ? 600 : 400, cursor: "pointer" }}>
-                        {w}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            )}
-            
-
-            {/* 희망 근무지역 (직무 하위) */}
-            <section className="profile-section">
-              <div className="profile-section-head">
-                <h2 className="profile-section-title">희망 근무지역<span style={{ color: "#e74c3c", marginLeft: "4px", fontSize: "14px" }}>*</span></h2>
-              </div>
-              <div className="profile-info-card" style={{ padding: "16px" }}>
-                <p style={{ fontSize: "12px", color: "#aaa", marginBottom: "10px" }}>일하고 싶은 지역을 선택해주세요</p>
-
-                {/* 지역 무관 체크 */}
-                <label style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px", cursor: "pointer", fontSize: "14px", color: "#333" }}>
-                  <input type="checkbox"
-                    checked={preferredRegions.some((r) => r.sido === "지역 무관")}
-                    onChange={toggleAnyRegion}
-                    style={{ width: "16px", height: "16px", accentColor: "#5f0080", cursor: "pointer" }} />
-                  지역 무관 (전국 어디든 좋아요)
-                </label>
-
-                {/* 지역 선택 버튼 (지역 무관이면 비활성) */}
-                {!preferredRegions.some((r) => r.sido === "지역 무관") && (
+            {/* 직무·희망 조건 — 기본 정보에 이어 한 줄씩 */}
+            <section className="profile-section" style={{ marginTop: 0 }}>
+              <div className="profile-info-card">
+                {dbJobType === "OFFICE" && (
+                  <InfoRow
+                    label="직군 영역"
+                    value={jobAreaSummary(officeJobAreas)}
+                    isEmpty={officeJobAreas.length === 0}
+                    onClick={() => setJobAreaModal("OFFICE")}
+                    required
+                  />
+                )}
+                {dbJobType === "STORE" && (
                   <>
-                    <button onClick={() => setPrefModalOpen(true)}
-                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "14px", fontWeight: 400, cursor: "pointer", marginBottom: "10px" }}>
-                      <MapPin size={15} /> 지역 선택
-                    </button>
-                    {preferredRegions.length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                        {preferredRegions.map((r, i) => (
-                          <span key={`${r.sido}-${r.sigungu}-${i}`}
-                            style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 8px 6px 12px", borderRadius: "20px", background: "#f3e5f5", color: "#5f0080", fontSize: "13px", fontWeight: 600 }}>
-                            {r.sigungu ? `${shortSido(r.sido)} ${r.sigungu}` : `${shortSido(r.sido)} 전체`}
-                            <button onClick={() => removePreferredRegion(i)}
-                              style={{ display: "flex", border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0 }}
-                              aria-label="삭제">
-                              <X size={14} />
-                            </button>
-                          </span>
+                    <InfoRow
+                      label="시술 분야"
+                      value={jobAreaSummary(skillAreas)}
+                      isEmpty={skillAreas.length === 0}
+                      onClick={() => setJobAreaModal("STORE")}
+                      required
+                    />
+                    <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--color-border)" }}>
+                      <div style={{ fontSize: "13px", color: "var(--color-text-mute)", marginBottom: "8px" }}>희망 근무 형태<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></div>
+                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                        {["풀타임", "파트타임", "주말근무 가능", "시급"].map((w) => (
+                          <button key={w}
+                            onClick={() => setStoreProfile({ workTypePrefer: workTypePrefer === w ? "" : w })}
+                            style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${workTypePrefer === w ? "#5f0080" : "#e0d0f0"}`, background: workTypePrefer === w ? "#f3e5f5" : "#fff", color: workTypePrefer === w ? "#5f0080" : "#333", fontSize: "13px", fontWeight: workTypePrefer === w ? 600 : 400, cursor: "pointer" }}>
+                            {w}
+                          </button>
                         ))}
                       </div>
-                    )}
+                    </div>
                   </>
                 )}
+                <InfoRow
+                  label="희망 근무지역"
+                  value={regionSummary}
+                  isEmpty={preferredRegions.length === 0}
+                  onClick={() => setPrefModalOpen(true)}
+                  isLast
+                  required
+                />
               </div>
             </section>
 
@@ -983,6 +945,14 @@ export default function ProfilePage() {
               initial={toModalRegions(preferredRegions)}
               onClose={() => setPrefModalOpen(false)}
               onApply={applyPrefModal}
+              allowAny
+            />
+            <JobGroupSelectModal
+              open={jobAreaModal !== null}
+              jobType={jobAreaModal ?? "OFFICE"}
+              selected={jobAreaModal === "STORE" ? skillAreas : officeJobAreas}
+              onChange={jobAreaModal === "STORE" ? (v: string[]) => setStoreProfile({ skillAreas: v }) : saveOfficeJobAreas}
+              onClose={() => setJobAreaModal(null)}
             />
             <div className="profile-bottom-cta">
               <button className="resume-save-btn-full" onClick={goToResume}>
