@@ -113,10 +113,10 @@ export default function AdminNoticesPage() {
 
   return (
     <AdminLayout activeMenu="notices">
-      <div style={{ maxWidth: 1160, margin: "0 auto", width: "100%" }}>
+      <div style={{ maxWidth: 1160, width: "100%" }}>
         <div style={{ display: "flex", gap: 28, alignItems: "flex-start", flexWrap: "wrap" }}>
-          {/* 왼쪽: 작성 폼 */}
-          <div style={{ flexGrow: 0, flexShrink: 0, flexBasis: "520px", position: "sticky", top: 80, alignSelf: "flex-start" }}>
+          {/* 작성 폼 (오른쪽 배치) */}
+          <div style={{ flex: "1 1 0", minWidth: 0, order: 2, position: "sticky", top: 80, alignSelf: "flex-start" }}>
         <div style={{ border: "1px solid #eee", borderRadius: 12, padding: 20, marginBottom: 28 }}>
           <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 14px" }}>새 공지 작성</h2>
           <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
@@ -144,8 +144,8 @@ export default function AdminNoticesPage() {
           </button>
         </div>
           </div>{/* 왼쪽 끝 */}
-          {/* 오른쪽: 목록 */}
-          <div style={{ flex: "1 1 360px", minWidth: 0 }}>
+          {/* 목록 (왼쪽 배치) */}
+          <div style={{ flex: "1 1 0", minWidth: 0, order: 1 }}>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
           <span style={{ fontSize: 15, color: "#888" }}>전체 {list.length}건</span>
@@ -171,7 +171,7 @@ export default function AdminNoticesPage() {
                   </span>
                   {n.is_pinned && <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color: "#5f0080", border: "1px solid #5f0080", borderRadius: 4, padding: "1px 5px" }}>고정</span>}
                   {n.status === "draft" && <span style={{ flexShrink: 0, fontSize: 12, color: "#999", border: "1px solid #ddd", borderRadius: 4, padding: "1px 5px" }}>임시</span>}
-                  <span onClick={() => openExpand(n)} style={{ flex: 1, minWidth: 0, fontSize: 16, fontWeight: 500, cursor: "pointer", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span onClick={() => openExpand(n)} style={{ flex: 1, minWidth: 0, fontSize: 14, fontWeight: 500, cursor: "pointer", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {n.title}
                   </span>
                   <span style={{ flexShrink: 0, fontSize: 14, color: "#aaa" }}>{fmtDate(n.published_at || n.created_at)}</span>
