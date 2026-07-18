@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { Bookmark } from "lucide-react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
+import { shortRegion } from "@/lib/regionShort";
 
 const PURPLE = "#5f0080";
 
@@ -31,7 +32,7 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
   const deadlineLabel = data.deadline === "상시" ? "상시채용" : data.deadline;
   const go = () => router.push(`/jobs/${data.id}`);
   const onMark = (e: React.MouseEvent) => { e.stopPropagation(); toggle(data.id); };
-  const meta = [data.region, data.career, showEmp ? data.employment : null].filter(Boolean).join(" · ");
+  const meta = [data.region ? shortRegion(data.region) : data.region, data.career, showEmp ? data.employment : null].filter(Boolean).join(" · ");
 
   if (variant === "list") {
     return (

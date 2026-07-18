@@ -1,4 +1,5 @@
 "use client";
+import { shortRegion } from "@/lib/regionShort";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
@@ -155,7 +156,7 @@ export default function BrandDetailPage() {
                 <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-sm text-gray-500">
                   {job.location && (
                     <span className="flex items-center gap-1">
-                      <MapPin size={14} /> {job.location}
+                      <MapPin size={14} /> {shortRegion(job.location || "")}
                     </span>
                   )}
                   {job.work_type && (

@@ -8,6 +8,7 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
+import { shortRegion } from "@/lib/regionShort";
 import { useProfileStore } from "@/lib/store/profileStore";
 import JobGroupField from "@/components/JobGroupField";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
@@ -1318,7 +1319,7 @@ function BookmarksTab() {
             <div className="bookmark-item-left">
               <span className="bookmark-brand">{job.brand_name || job.company_name}</span>
               <h3 className="bookmark-title">{job.title}</h3>
-              <span className="bookmark-location">📍 {job.location || "협의"}</span>
+              <span className="bookmark-location">📍 {job.location ? shortRegion(job.location) : "협의"}</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
               <span className="bookmark-deadline">{formatDeadline(job.deadline)}</span>

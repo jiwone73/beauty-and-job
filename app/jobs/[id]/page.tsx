@@ -1,4 +1,5 @@
 "use client";
+import { shortRegion } from "@/lib/regionShort";
 import LoginModal from "@/components/LoginModal";
 import KakaoMap from "@/components/KakaoMap";
 
@@ -345,7 +346,7 @@ export default function JobDetailPage() {
             <div className="job-detail-meta-grid">
               <div className="job-detail-meta-item">
                 <MapPin size={15} className="job-detail-meta-icon" />
-                <span>{job.region}</span>
+                <span>{shortRegion(job.region || "")}</span>
               </div>
               <div className="job-detail-meta-item">
                 <Briefcase size={15} className="job-detail-meta-icon" />
@@ -385,7 +386,7 @@ export default function JobDetailPage() {
               </div>
               <div className="job-detail-company-row">
                 <span className="job-detail-company-label">위치</span>
-                <span>{job.companyInfo?.location}</span>
+                <span>{shortRegion(job.companyInfo?.location || "")}</span>
               </div>
               <div className="job-detail-company-row">
                 <span className="job-detail-company-label">설립</span>
@@ -548,7 +549,7 @@ export default function JobDetailPage() {
             <div className="job-detail-aside-meta">
               <span>{job.career}</span>
               <span className="dot">·</span>
-              <span>{job.region}</span>
+              <span>{shortRegion(job.region || "")}</span>
             </div>
             {job.salary && (
               <div className="job-detail-aside-salary">{job.salary}</div>
