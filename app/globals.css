@@ -4950,7 +4950,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-radius: 8px;
   color: #666;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   transition: all 0.15s;
   background: none;
@@ -6182,7 +6182,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-sub-nav-item {
   display: block;
   padding: 7px 12px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: #888;
   text-decoration: none;

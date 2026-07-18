@@ -321,9 +321,9 @@ function AdminMembersPageInner() {
                   <input type="checkbox" checked={allPageSelected} onChange={toggleAllPage} />
                 </th>
                 <th>이름</th>
-                <th>직군</th>
+                <th style={{ textAlign: "center" }}>직군</th>
                 <th>지역</th>
-                <th>연락처</th>
+                <th style={{ textAlign: "center" }}>연락처</th>
                 <th>최근경력</th>
                 <th>가입</th>
                 <th>최종로그인</th>
@@ -379,9 +379,9 @@ function AdminMembersPageInner() {
                     </td>
 
                     {/* 직군: 대분류 / 세부 */}
-                    <td className="admin-td-date">
+                    <td className="admin-td-date" style={{ textAlign: "center" }}>
                       <div>{m.job_type === "STORE" ? "매장직" : m.job_type === "OFFICE" ? "사무직" : "-"}</div>
-                      <div style={{ marginTop: 2, fontSize: 13, color: "#888", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis" }} title={m.office_job_areas?.[0] || ""}>
+                      <div style={{ marginTop: 2, fontSize: 13, color: "#888", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", margin: "2px auto 0" }} title={m.office_job_areas?.[0] || ""}>
                         {m.office_job_areas && m.office_job_areas.length > 0 ? m.office_job_areas[0] : "-"}
                       </div>
                     </td>
@@ -394,8 +394,8 @@ function AdminMembersPageInner() {
                     </td>
 
                     {/* 연락처: 이메일 / 전화 */}
-                    <td className="admin-td-date">
-                      <div style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis" }} title={m.email || ""}>{m.email || "-"}</div>
+                    <td className="admin-td-date" style={{ textAlign: "center" }}>
+                      <div style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto" }} title={m.email || ""}>{m.email || "-"}</div>
                       <div style={{ marginTop: 4, color: "#888" }}>{m.phone || "-"}</div>
                     </td>
 
