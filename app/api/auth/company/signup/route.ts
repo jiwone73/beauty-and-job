@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs'
 import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
+import { sendCompanyWelcomeEmail } from '@/lib/email'
 
 // ── 기업 가입 승인 게이트 (드롭인) ───────────────────────────
 // 4단계에서 이 함수 안에 본인인증 + 진위확인을 넣어 통과 시 'ACTIVE' 반환하면 자동승인 전환.
@@ -105,6 +106,9 @@ export async function POST(req: NextRequest) {
     }
 
     await client.query('COMMIT')
+
+    // 가입 신청 접수 안내 메일 (실패해도 가입은 성공 처리)
+    sendCompanyWelcomeEmail(company.email, company.company_name).catch((e) => console.error('[company welcome email]', e))
 
     if (companyStatus === 'ACTIVE') {
       const accessToken = signAccessToken({

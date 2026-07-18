@@ -164,6 +164,57 @@ export async function sendWelcomeEmail(to: string, name: string) {
   });
 }
 
+export async function sendCompanyWelcomeEmail(to: string, companyName: string) {
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject: "[뷰티워크] 기업 회원가입 신청이 접수됐어요",
+    html: `
+      <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
+          <tr><td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
+              <tr>
+                <td align="center" bgcolor="#f4eefc" style="padding:26px 32px;border-bottom:1px solid #e9ddf7;">
+                  <img src="${LOGO_URL}" alt="뷰티워크" height="32" style="display:block;border:0;height:32px;" />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:32px 32px 8px;">
+                  <p style="font-size:21px;font-weight:700;color:#7c3aed;margin:0 0 6px;">가입 신청이 접수됐어요, ${companyName} 님</p>
+                  <p style="font-size:15px;color:#5f5e5a;margin:0 0 18px;">뷰티 인재 채용을 함께할게요.</p>
+                  <p style="font-size:15px;color:#444444;line-height:1.7;margin:0 0 20px;">
+                    기업 회원가입 신청이 정상적으로 접수됐어요. 제출해 주신 사업자 정보를 담당자가 확인한 뒤 <strong>승인</strong>해 드려요. 승인이 완료되면 공고 등록·지원자 관리 등 모든 기능을 이용하실 수 있어요.
+                  </p>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8fe;border:1px solid #ece7f6;border-radius:10px;margin:0 0 22px;">
+                    <tr>
+                      <td style="padding:14px 20px;font-size:14px;color:#444;line-height:1.7;">
+                        승인 전에도 로그인해서 기업 정보·로고 등을 미리 준비해 두실 수 있어요.
+                      </td>
+                    </tr>
+                  </table>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 28px;">
+                    <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
+                      <a href="${SITE_URL}/company/login" style="display:inline-block;padding:13px 32px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">기업 로그인</a>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#f6f3fb" style="padding:22px 32px;">
+                  <p style="font-size:13px;color:#5f5e5a;margin:0 0 10px;line-height:1.6;">문의가 있으면 언제든 연락 주세요.</p>
+                  <p style="font-size:12px;color:#888780;margin:0 0 4px;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a></p>
+                  <p style="font-size:12px;color:#888780;margin:0;">이 메일은 기업 회원가입 안내를 위해 발송되었습니다. &nbsp;·&nbsp; © 2026 뷰티워크</p>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </div>
+    `,
+  });
+}
+
 export async function sendApplicationCompleteEmail(
   to: string, name: string, jobTitle: string, companyName: string, appliedDate: string
 ) {
