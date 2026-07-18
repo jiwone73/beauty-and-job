@@ -618,6 +618,7 @@ export default function ProfilePage() {
                     <span style={{ position: "absolute", top: "3px", right: "1px", color: "#e74c3c", fontSize: "14px", lineHeight: 1, zIndex: 2 }}>*</span>
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", fontSize: "13px", color: "var(--color-text-mute)", marginBottom: "2px" }}>이름<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                     <p style={{ fontSize: "14px", fontWeight: 500, color: "var(--color-text)", margin: "0 0 6px" }}>{name || "회원"}</p>
                     <div style={{ display: "flex", gap: "6px", marginBottom: "4px" }}>
                       <label style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "13px", fontWeight: 400, cursor: "pointer" }}>
