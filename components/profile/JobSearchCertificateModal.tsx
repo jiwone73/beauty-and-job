@@ -65,8 +65,8 @@ export default function JobSearchCertificateModal({
     }
   };
 
-  const th: CSSProperties = { border: "1px solid #ccc", padding: isMobile ? "3px 3px" : "7px 8px", fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a", lineHeight: 1.1, verticalAlign: "middle", wordBreak: "keep-all" };
-  const td: CSSProperties = { border: "1px solid #ddd", padding: isMobile ? "3px 3px" : "7px 8px", fontSize: isMobile ? 9.5 : 13, color: "#333", lineHeight: 1.1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const th: CSSProperties = { border: "1px solid #ccc", padding: isMobile ? "7px 4px 5px" : "11px 8px 9px", fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const td: CSSProperties = { border: "1px solid #ddd", padding: isMobile ? "7px 4px 5px" : "11px 8px 9px", fontSize: isMobile ? 9.5 : 13, color: "#333", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
 
   return (
     <div className="rp-modal-overlay">
