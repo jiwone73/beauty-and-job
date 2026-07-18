@@ -4755,31 +4755,37 @@ input[type="range"].career-slider::-moz-range-thumb {
 .applied-list { display: flex; flex-direction: column; gap: 12px; }
 .applied-item {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
   background: #fff;
   border: 1px solid #f0f0f0;
   border-radius: 12px;
   padding: 16px;
-  gap: 12px;
 }
-.applied-item-left { flex: 1; min-width: 0; }
-.applied-brand { font-size: 12px; color: #888; display: block; margin-bottom: 4px; }
+.applied-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.applied-top { display: flex; align-items: center; gap: 8px; }
+.applied-brand {
+  flex: 1; min-width: 0;
+  font-size: 12px; color: #888;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .applied-title {
   font-size: 15px;
   font-weight: 600;
   color: #1a1a1a;
-  margin: 0 0 6px;
+  margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: pointer;
 }
-.applied-date { font-size: 12px; color: #aaa; }
-.applied-status {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
+.applied-date { font-size: 12px; color: #aaa; white-space: nowrap; }
+.applied-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
 }
