@@ -26,6 +26,8 @@ export default function JobSearchCertificateModal({
 }) {
   const captureRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [capturing, setCapturing] = useState(false);
+  const waitFrame = () => new Promise<void>((res) => requestAnimationFrame(() => requestAnimationFrame(() => res())));
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -48,25 +50,32 @@ export default function JobSearchCertificateModal({
   const handleDownload = async () => {
     if (!captureRef.current) return;
     setIsDownloading(true);
+    setCapturing(true);
+    await waitFrame();
     try {
       await downloadApplicationPdf(captureRef.current, `취업활동증명서_${name || "구직자"}.pdf`);
     } catch {
       alert("다운로드 중 오류가 발생했습니다.");
     } finally {
+      setCapturing(false);
       setIsDownloading(false);
     }
   };
   const handlePrint = async () => {
     if (!captureRef.current) return;
+    setCapturing(true);
+    await waitFrame();
     try {
       await printApplication(captureRef.current);
     } catch {
       alert("인쇄 준비 중 오류가 발생했습니다.");
+    } finally {
+      setCapturing(false);
     }
   };
 
-  const th: CSSProperties = { border: "1px solid #ccc", padding: isMobile ? "3px 4px 8px" : "6px 8px 14px", fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
-  const td: CSSProperties = { border: "1px solid #ddd", padding: isMobile ? "3px 4px 8px" : "6px 8px 14px", fontSize: isMobile ? 9.5 : 13, color: "#333", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const th: CSSProperties = { border: "1px solid #ccc", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const td: CSSProperties = { border: "1px solid #ddd", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, color: "#333", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
 
   return (
     <div className="rp-modal-overlay">
