@@ -76,8 +76,8 @@ export default function JobPostingCertificateModal({
     try { await printApplication(captureRef.current); } catch { alert("인쇄 준비 중 오류가 발생했습니다."); }
   };
 
-  const th: CSSProperties = { border: "1px solid #ccc", padding: isMobile ? "7px 4px 5px" : "11px 8px 9px", fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a", textAlign: "center", width: "22%", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
-  const td: CSSProperties = { border: "1px solid #ddd", padding: isMobile ? "7px 4px 5px" : "11px 8px 9px", fontSize: isMobile ? 9.5 : 13, color: "#333", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const th: CSSProperties = { border: "1px solid #ccc", padding: isMobile ? "3px 4px 8px" : "6px 8px 14px", fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a", textAlign: "center", width: "22%", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const td: CSSProperties = { border: "1px solid #ddd", padding: isMobile ? "3px 4px 8px" : "6px 8px 14px", fontSize: isMobile ? 9.5 : 13, color: "#333", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
   const company = job?.company?.brand_name || job?.company?.company_name || app.brand_name || app.company_name || "-";
   const workplace = job?.location || job?.address || (job?.company ? [job.company.region_sido, job.company.region_sigungu].filter(Boolean).join(" ") : "") || "-";
 
