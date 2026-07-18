@@ -146,6 +146,7 @@ export default function CompanyDashboard() {
         </div>
       )}
 
+      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       {/* 통계 카드 */}
       <div className="company-stat-grid">
         {statCards.map((stat) => (
@@ -263,6 +264,7 @@ export default function CompanyDashboard() {
             </tbody>
           </table>
         )}
+      </div>
       </div>
     </CompanyLayout>
   );
