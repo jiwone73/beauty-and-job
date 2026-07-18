@@ -1260,6 +1260,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-size: 14px;
   color: var(--color-text);
   font-weight: 500;
+  text-align: right;
+  padding-right: 10px;
 }
 .profile-info-value.is-empty {
   color: var(--color-text-mute);
