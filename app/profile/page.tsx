@@ -609,13 +609,13 @@ export default function ProfilePage() {
                 <h2 className="profile-section-title">기본 정보 <CheckCircle2 size={16} className="profile-check" /></h2>
               </div>
               <div className="profile-info-card">
-                <div style={{ padding: "16px 14px", borderBottom: "1px solid #e0d0f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
+                <div style={{ padding: "11px 14px", borderBottom: "1px solid #e0d0f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
                   <span className="profile-info-label">이름<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", position: "relative" }}>
                     <div
                       onClick={(e) => { e.stopPropagation(); setAvatarMenu((v) => !v); }}
                       title="사진 변경/삭제"
-                      style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#f0e8f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: "2px solid #e0d0f0", cursor: "pointer" }}>
+                      style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#f0e8f8", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: "1px solid #f2f2f2", cursor: "pointer" }}>
                       {avatarUrl ? (
                         <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : (
