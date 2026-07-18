@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Settings, ChevronRight, Plus, CheckCircle2, X, MapPin, Bell } from "lucide-react";
+import { Settings, ChevronRight, Plus, CheckCircle2, X, MapPin, Bell, MoreVertical } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -1050,8 +1050,15 @@ function AppliedTab({ userName }: { userName: string }) {
   const [showCert, setShowCert] = useState(false);
   const [certApp, setCertApp] = useState<any | null>(null);
   const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
+  const [menuAppId, setMenuAppId] = useState<string | null>(null);
   const toggleSelect = (id: string) =>
     setSelectedApps((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  useEffect(() => {
+    if (!menuAppId) return;
+    const close = () => setMenuAppId(null);
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, [menuAppId]);
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) { setLoading(false); return; }
@@ -1212,13 +1219,24 @@ function AppliedTab({ userName }: { userName: string }) {
                 <span className="applied-status" style={{ color: "#5f0080", fontWeight: 600, fontSize: 13, whiteSpace: "nowrap" }}>
                   {statusLabel[app.status] || app.status}
                 </span>
-                <div className="applied-links">
-                  <button className="applied-link" onClick={() => setViewAppId(app.id)}>내 지원서 보기</button>
-                  <button className="applied-link" onClick={() => setCertApp(app)}>공고 증명서</button>
-                  {(app.status === "APPLIED" || app.status === "VIEWED") ? (
-                    <button className="applied-link cancel" onClick={() => handleCancel(app.id)}>지원 취소</button>
-                  ) : (
-                    <span className="applied-link disabled">지원 취소</span>
+                <div className="applied-menu-wrap">
+                  <button
+                    className="applied-menu-btn"
+                    aria-label="더보기"
+                    onClick={(e) => { e.stopPropagation(); setMenuAppId(menuAppId === app.id ? null : app.id); }}
+                  >
+                    <MoreVertical size={18} />
+                  </button>
+                  {menuAppId === app.id && (
+                    <div className="applied-menu" onClick={(e) => e.stopPropagation()}>
+                      <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setViewAppId(app.id); }}>내 지원서 보기</button>
+                      <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setCertApp(app); }}>공고 증명서</button>
+                      {(app.status === "APPLIED" || app.status === "VIEWED") ? (
+                        <button className="applied-menu-item danger" onClick={() => { setMenuAppId(null); handleCancel(app.id); }}>지원 취소</button>
+                      ) : (
+                        <button className="applied-menu-item disabled" disabled>지원 취소</button>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
