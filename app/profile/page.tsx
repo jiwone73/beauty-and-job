@@ -1167,23 +1167,23 @@ function AppliedTab({ userName }: { userName: string }) {
                 <span className="applied-brand">{app.brand_name || app.company_name}</span>
                 <h3 className="applied-title">{app.job_title}</h3>
                 <span className="applied-date">지원일 {dateStr}</span>
-                <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                   <button
                     onClick={(e) => { e.stopPropagation(); setViewAppId(app.id); }}
-                    style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
+                    style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content", whiteSpace: "nowrap", flexShrink: 0 }}
                   >
                     내 지원서 보기
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); setCertApp(app); }}
-                    style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
+                    style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content", whiteSpace: "nowrap", flexShrink: 0 }}
                   >
                     공고 증명서
                   </button>
                   {(app.status === "APPLIED" || app.status === "VIEWED") && (
                     <button
                       onClick={(e) => { e.stopPropagation(); handleCancel(app.id); }}
-                      style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
+                      style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content", whiteSpace: "nowrap", flexShrink: 0 }}
                     >
                       지원 취소
                     </button>
@@ -1191,14 +1191,14 @@ function AppliedTab({ userName }: { userName: string }) {
                   {(app.status === "PASSED" || app.status === "REJECTED" || app.status === "WITHDRAWN") && (
                     <button
                       onClick={(e) => { e.stopPropagation(); handleHide(app.id); }}
-                      style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content" }}
+                      style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer", width: "fit-content", whiteSpace: "nowrap", flexShrink: 0 }}
                     >
                       삭제
                     </button>
                   )}
                 </div>
               </div>
-              <span style={{ color: "#5f0080", fontWeight: 600, fontSize: 13 }}>
+              <span className="applied-status" style={{ color: "#5f0080", fontWeight: 600, fontSize: 13, whiteSpace: "nowrap" }}>
                 {statusLabel[app.status] || app.status}
               </span>
             </div>

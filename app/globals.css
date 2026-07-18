@@ -11208,3 +11208,20 @@ input[type="range"].career-slider::-moz-range-thumb {
   .bookmark-location { font-size: 13px; }
   .bookmark-deadline { font-size: 14px; }
 }
+
+/* === 모바일: 지원현황 카드 — 상태는 우측 상단, 버튼은 전체 폭 사용 === */
+@media (max-width: 768px) {
+  .applied-item {
+    position: relative;
+    align-items: flex-start;
+    padding-right: 16px;
+  }
+  .applied-item-left { width: 100%; }
+  .applied-status {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 12px;
+  }
+  .applied-item .applied-title { padding-right: 72px; }
+}
