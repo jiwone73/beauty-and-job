@@ -197,6 +197,7 @@ function ApplicantsContent() {
 
   return (
     <CompanyLayout activePage="applicants">
+      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       <div className="company-stat-grid">
         {[
           { label: "전체 지원자", value: String(counts.전체), unit: "명", color: "#5f0080" },
@@ -245,7 +246,6 @@ function ApplicantsContent() {
         </div>
       )}
 
-      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       <div className="company-toolbar">
         <div className="company-toolbar-left">
           <div className="admin-search-wrap">

@@ -113,6 +113,7 @@ export default function CompanyJobsPage() {
 
   return (
     <CompanyLayout activePage="jobs">
+      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       {/* 요약 카드 */}
       <div className="company-stat-grid">
         {[
@@ -132,7 +133,6 @@ export default function CompanyJobsPage() {
         ))}
       </div>
 
-      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       {/* 툴바 */}
       <div className="company-toolbar">
         <div className="company-toolbar-left">
