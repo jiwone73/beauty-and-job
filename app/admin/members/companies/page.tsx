@@ -415,7 +415,7 @@ function AdminCompaniesContent() {
             </tbody>
           </table>
         ) : (
-          <table className="admin-table">
+          <table className="admin-table" style={{ minWidth: 1160, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
                 <th style={{ width: 40, textAlign: "center" }}>

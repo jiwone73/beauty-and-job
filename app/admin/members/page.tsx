@@ -309,7 +309,7 @@ function AdminMembersPageInner() {
         </div>
 
         <div style={{ overflowX: "auto" }}>
-          <table className="admin-table" style={{ minWidth: 980, whiteSpace: "nowrap" }}>
+          <table className="admin-table" style={{ minWidth: 1240, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
                 <th style={{ width: 36, textAlign: "center" }}>

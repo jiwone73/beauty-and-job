@@ -240,11 +240,8 @@ function AdminJobsPageInner() {
             <Trash2 size={15} /> 선택 삭제{checkedIds.size > 0 ? ` (${checkedIds.size})` : ""}
           </button>
         </div>
-        {loading ? (
-          <div className="admin-empty">불러오는 중...</div>
-        ) : (
-          <div style={{ overflowX: "auto" }}>
-          <table className="admin-table" style={{ minWidth: 1100, whiteSpace: "nowrap" }}>
+        <div style={{ overflowX: "auto" }}>
+          <table className="admin-table" style={{ minWidth: 1360, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
                 <th style={{ width: 40 }}>
@@ -262,7 +259,11 @@ function AdminJobsPageInner() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((job) => (
+              {loading ? (
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+              ) : filtered.length === 0 ? (
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+              ) : filtered.map((job) => (
                 <tr key={job.id}>
                   <td>
                     <input type="checkbox" checked={checkedIds.has(job.id)}
@@ -363,8 +364,6 @@ function AdminJobsPageInner() {
             </tbody>
           </table>
           </div>
-        )}
-        {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
       </div>
       </div>
 

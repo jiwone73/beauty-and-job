@@ -149,10 +149,8 @@ function AdminApplicationsPageInner() {
       </div>
       <div className="admin-card">
         <div className="admin-table-meta">총 <strong>{filtered.length}</strong>건</div>
-        {loading ? (
-          <div className="admin-empty">불러오는 중...</div>
-        ) : (
-          <table className="admin-table">
+        <div style={{ overflowX: "auto" }}>
+          <table className="admin-table" style={{ minWidth: 1080, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
                 <th>지원자</th>
@@ -165,7 +163,11 @@ function AdminApplicationsPageInner() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((a) => {
+              {loading ? (
+                <tr><td colSpan={7} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+              ) : filtered.length === 0 ? (
+                <tr><td colSpan={7} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+              ) : filtered.map((a) => {
                 const age = calcAge(a.birth_date);
                 const gender = genderLabel(a.gender);
                 const career = a.career_count > 0
@@ -267,8 +269,7 @@ function AdminApplicationsPageInner() {
               })}
             </tbody>
           </table>
-        )}
-        {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
+          </div>
       </div>
       {selected && (selected.resume_id || selected.cover_letter || selected.resume_snapshot) && (
         <ResumePreviewModal
