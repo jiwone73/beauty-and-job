@@ -210,7 +210,7 @@ export default function AdminStoriesPage() {
 
   return (
     <AdminLayout activeMenu="stories">
-      <div style={{ padding: "8px 0" }}>
+      <div style={{ padding: "8px 0", width: "fit-content", maxWidth: "100%" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
           <button onClick={() => { setTab("posts"); setChecked([]); }} style={tabStyle(tab === "posts")}>글 관리</button>
           <button onClick={() => { setTab("pending"); setChecked([]); }} style={tabStyle(tab === "pending")}>

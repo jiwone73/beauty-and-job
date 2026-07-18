@@ -164,40 +164,39 @@ export default function AdminNewslettersPage() {
   return (
     <AdminLayout activeMenu="newsletters">
       <div style={{ padding: "8px 0" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
-            <button onClick={toggleAutogen} disabled={autogenSaving}
-              title="매주 월요일 뉴스레터 자동 생성+발송 on/off"
-              style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 14, fontWeight: 600, color: "#555", cursor: "pointer" }}>
-              자동 발송
-              <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#5f0080" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
-                <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
-              </span>
+        <div className="admin-card" style={{ width: "fit-content", maxWidth: "100%" }}>
+          <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <button onClick={handleBulkDelete} disabled={checked.length === 0 || deleting}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "7px 14px", borderRadius: 8, border: "none",
+                background: checked.length ? "#e74c3c" : "#ededed",
+                color: checked.length ? "#fff" : "#aaa",
+                fontSize: 14, fontWeight: 600,
+                cursor: checked.length ? "pointer" : "default",
+              }}>
+              선택 삭제{checked.length ? ` (${checked.length})` : ""}
             </button>
-            <button onClick={generate} disabled={generating}
-              style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-              {generating ? "생성 중..." : "✨ 뉴스레터 생성"}
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <button onClick={toggleAutogen} disabled={autogenSaving}
+                title="매주 월요일 뉴스레터 자동 생성+발송 on/off"
+                style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 14, fontWeight: 600, color: "#555", cursor: "pointer" }}>
+                자동 발송
+                <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#5f0080" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
+                  <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
+                </span>
+              </button>
+              <button onClick={generate} disabled={generating}
+                style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                {generating ? "생성 중..." : "✨ 뉴스레터 생성"}
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div style={{ display: "flex", marginBottom: 12 }}>
-          <button onClick={handleBulkDelete} disabled={checked.length === 0 || deleting}
-            style={{
-              display: "flex", alignItems: "center", gap: 6, marginLeft: "auto",
-              padding: "7px 14px", borderRadius: 8, border: "none",
-              background: checked.length ? "#e74c3c" : "#ededed",
-              color: checked.length ? "#fff" : "#aaa",
-              fontSize: 14, fontWeight: 600,
-              cursor: checked.length ? "pointer" : "default",
-            }}>
-            선택 삭제{checked.length ? ` (${checked.length})` : ""}
-          </button>
-        </div>
 
         {loading ? (
           <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
         ) : (
+          <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
               <tr>
@@ -239,7 +238,9 @@ export default function AdminNewslettersPage() {
               )}
             </tbody>
           </table>
+          </div>
         )}
+        </div>
       </div>
     </AdminLayout>
   );
