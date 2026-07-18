@@ -1250,7 +1250,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .profile-info-row.is-last { border-bottom: none; }
 .profile-info-label {
   font-size: 13px;
-  color: var(--color-text-mute);
+  color: #555;
   width: 96px;
   flex-shrink: 0;
   white-space: nowrap;

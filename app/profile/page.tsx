@@ -875,7 +875,7 @@ export default function ProfilePage() {
             <section className="profile-section" style={{ marginTop: 0 }}>
               <div className="profile-info-card" style={{ padding: "16px" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                  <label style={{ fontSize: "13px", color: "var(--color-text-mute)" }}>거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label style={{ fontSize: "14px", color: "#555" }}>거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   {addressRoad && (
                     <button type="button" onClick={handleClearAddress}
                       style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", padding: "2px 4px", textDecoration: "underline" }}>
@@ -886,7 +886,7 @@ export default function ProfilePage() {
                 <div style={{ marginBottom: "8px" }}>
                   <input readOnly value={addressRoad} placeholder="터치하여 주소를 검색해주세요"
                     onClick={openPostcode}
-                    style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", background: "#fafafa", cursor: "pointer" }} />
+                    style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", color: "#555", background: "#fafafa", cursor: "pointer" }} />
                 </div>
                 {postcodeOpen && (
                   <div className="postcode-modal-overlay">
@@ -906,7 +906,7 @@ export default function ProfilePage() {
                   <input value={addressDetail} placeholder="상세주소 (동·호수 등)"
                     onChange={(e) => setAddressDetail(e.target.value)}
                     onBlur={() => patchUser({ address_detail: addressDetail })}
-                    style={{ width: "100%", padding: "10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", boxSizing: "border-box" }} />
+                    style={{ width: "100%", padding: "12px 14px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", color: "#555", background: "#fafafa", boxSizing: "border-box" }} />
                 )}
               </div>
             </section>
