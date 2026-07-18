@@ -189,6 +189,7 @@ function AdminJobsPageInner() {
           </div>
         ))}
       </div>
+      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
@@ -364,6 +365,7 @@ function AdminJobsPageInner() {
           </div>
         )}
         {!loading && filtered.length === 0 && <div className="admin-empty">검색 결과가 없습니다.</div>}
+      </div>
       </div>
 
       {companyModal && (
