@@ -404,129 +404,108 @@ export default function TalentPage() {
       )}
 
       {/* 리스트 */}
+      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       {loading ? (
         <div className="admin-empty">불러오는 중...</div>
       ) : talents.length === 0 ? (
         <div className="admin-empty">검색 결과가 없습니다.</div>
       ) : (
-        <div style={{ border: "1px solid #eee", borderRadius: 8, overflow: "hidden", background: "#fff" }}>
-
-          {/* 헤더 */}
-          <div style={{ display: "flex", alignItems: "stretch", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 13, color: "#999", fontWeight: 500 }}>
-            <div style={headCell(FLEX.name)}>이름</div>
-            <div style={headCell(FLEX.job)}>직군</div>
-            <div style={headCell(FLEX.region)}>지역</div>
-            <div style={headCell(FLEX.career)}>최근경력</div>
-            <div style={headCell(FLEX.contact)}>연락처</div>
-            <div style={{ width: W_ACTION, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#999", fontWeight: 500 }}>
-              이력서/포트폴리오
-            </div>
-          </div>
-
-          {/* 바디 */}
-          {talents.map((t, idx) => {
-            const gl = genderLabel(t.gender);
-            const jtLabel = jobTypeLabel(activeTab);
-
-            return (
-              <div
-                key={t.id}
-                style={{ display: "flex", alignItems: "stretch", borderBottom: idx < talents.length - 1 ? "1px solid #f2f2f2" : "none", cursor: "pointer", transition: "background .1s" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
-              >
-                {/* 이름 */}
-                <div style={{ ...cell(FLEX.name), flexDirection: "row", alignItems: "center", gap: 10 }}>
-                  <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {t.avatarUrl
-                      ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      : <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{t.name?.slice(0, 1) || "?"}</span>}
-                  </div>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ ...clamp1, fontWeight: 600, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
-                      <span>{t.name}</span>
-                      {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
-                    </div>
-                    <div style={{ ...clamp1, fontSize: 13, color: "#888", marginTop: 2 }}>
-                      {[t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
-                    </div>
-                  </div>
-                </div>
-
-                {/* 직군: 1행 매장직/사무직 배지, 2행 세부직군 */}
-                <div style={cell(FLEX.job)}>
-                  <span style={{ ...clamp2, fontSize: 13, color: "#555" }}>{t.mainJobGroup || "—"}</span>
-                </div>
-
-                {/* 지역 */}
-                <div style={{ ...cell(FLEX.region), fontSize: 13, color: "#999" }}>
-                  <span style={clamp2}>{shortenRegion(t.regionPrefer)}</span>
-                </div>
-
-                {/* 최근경력 */}
-                <div style={{ ...cell(FLEX.career), fontSize: 13 }}>
-                  {t.careerDetail ? (
-                    <>
-                      <div style={{ ...clamp1, fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
-                      <div style={{ ...clamp1, color: "#999", marginTop: 2 }}>
-                        {[t.careerDetail.department, t.careerDetail.end_date ? "퇴직" : "재직중"].filter(Boolean).join(" · ")}
+        <div className="company-card">
+          <table className="company-table" style={{ whiteSpace: "nowrap" }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left" }}>이름</th>
+                <th>직군</th>
+                <th>지역</th>
+                <th style={{ textAlign: "left" }}>최근경력</th>
+                <th style={{ textAlign: "left" }}>연락처</th>
+                <th>이력서/포트폴리오</th>
+              </tr>
+            </thead>
+            <tbody>
+              {talents.map((t) => {
+                const gl = genderLabel(t.gender);
+                return (
+                  <tr key={t.id} style={{ cursor: "pointer" }} onClick={() => setSelected(t)}>
+                    <td style={{ textAlign: "left" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          {t.avatarUrl
+                            ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            : <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{t.name?.slice(0, 1) || "?"}</span>}
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontWeight: 600, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
+                            <span>{t.name}</span>
+                            {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
+                          </div>
+                          <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
+                            {[t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
+                          </div>
+                        </div>
                       </div>
-                    </>
-                  ) : (
-                    <span style={{ color: "#ccc" }}>—</span>
-                  )}
-                </div>
-
-                {/* 연락처 */}
-                <div style={{ ...cell(FLEX.contact), fontSize: 13 }}>
-                  <div style={{ ...clamp1, color: t.email ? "#333" : "#ccc", marginBottom: 2 }}>
-                    {t.email || "이메일 없음"}
-                  </div>
-                  <div style={{ ...clamp1, color: t.phone ? "#555" : "#ccc" }}>
-                    {t.phone || "전화번호 없음"}
-                  </div>
-                </div>
-
-                {/* 이력서/포트폴리오 */}
-                <div style={{ width: W_ACTION, flexShrink: 0, height: ROW_H, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <button
-                      style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
-                      onClick={(e) => { e.stopPropagation(); setSelected(t); }}
-                    >
-                      <FileText size={14} />
-                      <span>이력서</span>
-                    </button>
-                    <button
-                      className={`talent-scrap-btn ${t.scrapped ? "scrapped" : ""}`}
-                      style={{ padding: "6px 8px" }}
-                      onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}
-                    >
-                      {t.scrapped ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
-                    </button>
-                  </div>
-
-                  {t.portfolioUrl ? (
-                    <a
-                      href={t.portfolioUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}
-                    >
-                      <Paperclip size={13} /><span>포트폴리오</span>
-                    </a>
-                  ) : (
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
-                      <Paperclip size={13} /><span>포트폴리오</span>
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+                    </td>
+                    <td><span style={{ fontSize: 13, color: "#555" }}>{t.mainJobGroup || "—"}</span></td>
+                    <td style={{ fontSize: 13, color: "#999" }}>{shortenRegion(t.regionPrefer)}</td>
+                    <td style={{ textAlign: "left", fontSize: 13 }}>
+                      {t.careerDetail ? (
+                        <>
+                          <div style={{ fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
+                          <div style={{ color: "#999", marginTop: 2 }}>
+                            {[t.careerDetail.department, t.careerDetail.end_date ? "퇴직" : "재직중"].filter(Boolean).join(" · ")}
+                          </div>
+                        </>
+                      ) : (
+                        <span style={{ color: "#ccc" }}>—</span>
+                      )}
+                    </td>
+                    <td style={{ textAlign: "left", fontSize: 13 }}>
+                      <div style={{ color: t.email ? "#333" : "#ccc", marginBottom: 2 }}>{t.email || "이메일 없음"}</div>
+                      <div style={{ color: t.phone ? "#555" : "#ccc" }}>{t.phone || "전화번호 없음"}</div>
+                    </td>
+                    <td>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <button
+                            style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
+                            onClick={(e) => { e.stopPropagation(); setSelected(t); }}
+                          >
+                            <FileText size={14} />
+                            <span>이력서</span>
+                          </button>
+                          <button
+                            className={`talent-scrap-btn ${t.scrapped ? "scrapped" : ""}`}
+                            style={{ padding: "6px 8px" }}
+                            onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}
+                          >
+                            {t.scrapped ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
+                          </button>
+                        </div>
+                        {t.portfolioUrl ? (
+                          <a
+                            href={t.portfolioUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}
+                          >
+                            <Paperclip size={13} /><span>포트폴리오</span>
+                          </a>
+                        ) : (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
+                            <Paperclip size={13} /><span>포트폴리오</span>
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
+      </div>
 
       {/* 직군 모달 */}
       <JobGroupSelectModal
