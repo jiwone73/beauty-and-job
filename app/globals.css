@@ -1259,7 +1259,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   flex: 1;
   min-width: 0;
   font-size: 13px;
-  color: var(--color-text-mute);
+  color: #555;
   font-weight: 400;
   text-align: right;
   padding-right: 10px;
@@ -1687,16 +1687,16 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 .resume-career-item, .resume-edu-item, .resume-exp-item, .resume-lang-item, .resume-link-item { padding: 12px 0; border-bottom: 1px solid var(--color-border); }
 .resume-career-item:last-child, .resume-edu-item:last-child, .resume-exp-item:last-child, .resume-lang-item:last-child, .resume-link-item:last-child { border-bottom: none; }
-.resume-career-head { display: flex; justify-content: space-between; align-items: center; gap: 4px; min-width: 0; margin-bottom: 4px; font-size: 14px; font-weight: 400; }
+.resume-career-head { display: flex; justify-content: space-between; align-items: center; gap: 4px; min-width: 0; margin-bottom: 4px; font-size: 14px; font-weight: 400; color: #555; }
 .resume-career-head strong { font-weight: 400; font-size: 14px; min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 항목 헤더의 수정·삭제 아이콘 묶음은 항상 보이도록 축소 금지 */
 .resume-career-head > span:last-child { flex-shrink: 0; }
-.resume-career-period { font-size: 14px; color: #888; font-weight: 400; padding-left: 22px; }
-.resume-career-dept { font-size: 14px; color: #666; padding-left: 22px; }
-.resume-edu-item strong, .resume-lang-item strong { display: block; font-size: 14px; font-weight: 400; margin-bottom: 3px; }
-.resume-edu-info, .resume-lang-level { font-size: 14px; color: #666; display: block; padding-left: 22px; }
-.resume-edu-period { font-size: 14px; color: #888; padding-left: 22px; }
-.resume-item-text { font-size: 14px; }
+.resume-career-period { font-size: 14px; color: #555; font-weight: 400; padding-left: 22px; }
+.resume-career-dept { font-size: 14px; color: #555; padding-left: 22px; }
+.resume-edu-item strong, .resume-lang-item strong { display: block; font-size: 14px; font-weight: 400; margin-bottom: 3px; color: #555; }
+.resume-edu-info, .resume-lang-level { font-size: 14px; color: #555; display: block; padding-left: 22px; }
+.resume-edu-period { font-size: 14px; color: #555; padding-left: 22px; }
+.resume-item-text { font-size: 14px; color: #555; }
 @media (max-width: 640px) {
   .resume-career-head, .resume-career-head strong, .resume-career-dept, .resume-career-period { font-size: 13px; }
   .resume-edu-item strong, .resume-lang-item strong, .resume-edu-info, .resume-lang-level, .resume-edu-period { font-size: 13px; }
@@ -4775,13 +4775,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 .applied-position {
   font-size: 14px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #555;
   margin: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .applied-company {
   font-size: 13px;
-  color: #888;
+  color: #555;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .applied-date { font-size: 11px; color: #bbb; white-space: nowrap; }
@@ -4812,17 +4812,17 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .bookmark-item:hover { border-color: #5f0080; }
 .bookmark-item-left { flex: 1; min-width: 0; }
-.bookmark-brand { font-size: 12px; color: #888; display: block; margin-bottom: 4px; }
+.bookmark-brand { font-size: 13px; color: #555; display: block; margin-bottom: 4px; }
 .bookmark-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #555;
   margin: 0 0 6px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.bookmark-location { font-size: 12px; color: #aaa; }
+.bookmark-location { font-size: 13px; color: #555; }
 .bookmark-deadline {
   font-size: 13px;
   font-weight: 700;
@@ -11133,7 +11133,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .apply-modal-cancel { font-size: 16px; }
   .apply-modal-submit { font-size: 16px; }
   .applied-title { font-size: 16px; }
-  .bookmark-title { font-size: 16px; }
+  .bookmark-title { font-size: 14px; }
   .brand-follow-info strong { font-size: 16px; }
   .admin-card-title { font-size: 16px; }
   .admin-tab1 { font-size: 16px; }
@@ -11218,7 +11218,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .applied-brand { font-size: 13px; }
   .applied-date { font-size: 13px; }
   .bookmark-brand { font-size: 13px; }
-  .bookmark-title { font-size: 16px; }
+  .bookmark-title { font-size: 14px; }
   .bookmark-location { font-size: 13px; }
   .bookmark-deadline { font-size: 14px; }
 }
