@@ -1257,11 +1257,15 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .profile-info-value {
   flex: 1;
-  font-size: 14px;
+  min-width: 0;
+  font-size: 13px;
   color: var(--color-text);
-  font-weight: 500;
+  font-weight: 400;
   text-align: right;
   padding-right: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .profile-info-value.is-empty {
   color: var(--color-text-mute);
@@ -11208,7 +11212,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* === PC(≥769px) 프로필 탭(프로필·이력서·지원현황·관심공고) 본문 텍스트 한 단계 상향 (모바일 유지) === */
 @media (min-width: 769px) {
   .profile-info-label { font-size: 14px; }
-  .profile-info-value { font-size: 15px; }
+  .profile-info-value { font-size: 14px; }
   .profile-empty-tab { font-size: 15px; }
   .applied-title { font-size: 16px; }
   .applied-brand { font-size: 13px; }

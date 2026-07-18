@@ -442,13 +442,12 @@ export default function ProfilePage() {
   if (!preferredRegions || preferredRegions.length === 0) missingRequired.push("희망 근무지역");
 
   // 직군/지역 한 줄 요약값
-  const jobAreaSummary = (arr: string[]) =>
-    arr.length ? (arr.length > 1 ? `${arr[0]} 외 ${arr.length - 1}` : arr[0]) : "선택해주세요";
+  const jobAreaSummary = (arr: string[]) => (arr.length ? arr.join(", ") : "선택해주세요");
   const anyRegion = preferredRegions.some((r) => r.sido === "지역 무관");
   const regionSummary = anyRegion
     ? "지역 무관 (전국 어디든)"
     : preferredRegions.length
-      ? `${shortSido(preferredRegions[0].sido)} ${preferredRegions[0].sigungu || "전체"}${preferredRegions.length > 1 ? ` 외 ${preferredRegions.length - 1}` : ""}`
+      ? preferredRegions.map((r) => `${shortSido(r.sido)} ${r.sigungu || "전체"}`).join(", ")
       : "선택해주세요";
 
   // 이력서로 이동 (필수항목 미완성 시 안내 후 프로필에 머무름)
@@ -619,19 +618,19 @@ export default function ProfilePage() {
                     <span style={{ position: "absolute", top: "3px", right: "1px", color: "#e74c3c", fontSize: "14px", lineHeight: 1, zIndex: 2 }}>*</span>
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: "16px", fontWeight: 600, margin: "0 0 6px" }}>{name || "회원"}</p>
+                    <p style={{ fontSize: "14px", fontWeight: 500, color: "var(--color-text)", margin: "0 0 6px" }}>{name || "회원"}</p>
                     <div style={{ display: "flex", gap: "6px", marginBottom: "4px" }}>
-                      <label style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
+                      <label style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "13px", fontWeight: 400, cursor: "pointer" }}>
                         {avatarUrl ? "변경" : "사진 추가"}
                         <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleAvatarUpload} style={{ display: "none" }} />
                       </label>
                       {avatarUrl && (
-                        <button onClick={handleAvatarDelete} style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "11px", cursor: "pointer" }}>
+                        <button onClick={handleAvatarDelete} style={{ padding: "3px 10px", borderRadius: "6px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "13px", fontWeight: 400, cursor: "pointer" }}>
                           삭제
                         </button>
                       )}
                     </div>
-                    <p style={{ fontSize: "10px", color: "#aaa", margin: 0 }}>JPG/PNG/WebP, 1MB 이하</p>
+                    <p style={{ fontSize: "13px", color: "var(--color-text-mute)", margin: 0 }}>JPG/PNG/WebP, 1MB 이하</p>
                   </div>
                 </div>
 
