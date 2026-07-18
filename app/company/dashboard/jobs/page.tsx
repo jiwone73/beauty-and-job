@@ -132,6 +132,7 @@ export default function CompanyJobsPage() {
         ))}
       </div>
 
+      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       {/* 툴바 */}
       <div className="company-toolbar">
         <div className="company-toolbar-left">
@@ -258,6 +259,7 @@ export default function CompanyJobsPage() {
           </table>
         </div>
       )}
+      </div>
 
       {/* 상세 모달 */}
       {selected && (

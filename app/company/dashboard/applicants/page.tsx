@@ -245,6 +245,7 @@ function ApplicantsContent() {
         </div>
       )}
 
+      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       <div className="company-toolbar">
         <div className="company-toolbar-left">
           <div className="admin-search-wrap">
@@ -407,6 +408,7 @@ function ApplicantsContent() {
           </table>
         </div>
       )}
+      </div>
 
       {selected && (
         <div className="admin-modal-overlay">
