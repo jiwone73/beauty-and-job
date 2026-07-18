@@ -1150,6 +1150,10 @@ function AppliedTab({ userName }: { userName: string }) {
     setSelectedApps(new Set());
   };
 
+  const statusTextColor: Record<string, string> = {
+    APPLIED: "#5f0080", REVIEWING: "#5f0080", VIEWED: "#5f0080",
+    INTERVIEW: "#1e40af", PASSED: "#16a34a", REJECTED: "#d9534f", WITHDRAWN: "#999",
+  };
   const statusLabel: Record<string, string> = {
     APPLIED: "서류검토중", REVIEWING: "서류검토중", VIEWED: "열람됨",
     INTERVIEW: "면접예정", PASSED: "합격", REJECTED: "불합격", WITHDRAWN: "지원취소",
@@ -1177,28 +1181,26 @@ function AppliedTab({ userName }: { userName: string }) {
 
   return (
     <div className="profile-tab-content">
-      <div style={{ marginBottom: 12 }}>
-        <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-          <button
-            onClick={() => { if (selectedApps.size === 0) { alert("증명서에 포함할 지원 내역을 선택해주세요."); return; } setShowCert(true); }}
-            style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 14px", borderRadius: 8, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
-          >
-            📄 취업활동 증명서
-          </button>
-          <button
-            onClick={handleBulkHide}
-            style={{ padding: "9px 20px", borderRadius: 8, border: "1px solid #e0e0e0", background: "#fff", color: "#888", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
-          >
-            삭제
-          </button>
-        </div>
-        <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555", cursor: "pointer" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, color: "#555", cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }}>
           <input type="checkbox" className="applied-check"
             checked={apps.length > 0 && selectedApps.size === apps.length}
             onChange={(e) => setSelectedApps(e.target.checked ? new Set(apps.map((a) => a.id)) : new Set())}
           />
-          전체 선택{selectedApps.size > 0 ? ` (${selectedApps.size})` : ""}
+          전체{selectedApps.size > 0 ? ` (${selectedApps.size})` : ""}
         </label>
+        <button
+          onClick={() => { if (selectedApps.size === 0) { alert("증명서에 포함할 지원 내역을 선택해주세요."); return; } setShowCert(true); }}
+          style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 5, padding: "8px 12px", borderRadius: 8, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12.5, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
+        >
+          📄 취업활동 증명서
+        </button>
+        <button
+          onClick={handleBulkHide}
+          style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #e0e0e0", background: "#fff", color: "#888", fontSize: 12.5, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          삭제
+        </button>
       </div>
       <div className="applied-list">
         {apps.map((app) => {
@@ -1210,35 +1212,33 @@ function AppliedTab({ userName }: { userName: string }) {
                 checked={selectedApps.has(app.id)}
                 onChange={() => toggleSelect(app.id)}
               />
-              <div className="applied-body">
-                <div className="applied-top">
-                  <span className="applied-brand">{app.brand_name || app.company_name}</span>
-                  <span className={`applied-badge ${statusStyle[app.status] || "applied-status-review"}`}>
-                    {statusLabel[app.status] || app.status}
-                  </span>
-                  <div className="applied-menu-wrap">
-                    <button
-                      className="applied-menu-btn"
-                      aria-label="더보기"
-                      onClick={(e) => { e.stopPropagation(); setMenuAppId(menuAppId === app.id ? null : app.id); }}
-                    >
-                      <MoreHorizontal size={18} />
-                    </button>
-                    {menuAppId === app.id && (
-                      <div className="applied-menu" onClick={(e) => e.stopPropagation()}>
-                        <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setViewAppId(app.id); }}>내 지원서 보기</button>
-                        <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setCertApp(app); }}>공고 증명서</button>
-                        {(app.status === "APPLIED" || app.status === "VIEWED") ? (
-                          <button className="applied-menu-item danger" onClick={() => { setMenuAppId(null); handleCancel(app.id); }}>지원 취소</button>
-                        ) : (
-                          <button className="applied-menu-item disabled" disabled>지원 취소</button>
-                        )}
-                      </div>
+              <div className="applied-body" onClick={() => app.job_id && router.push(`/jobs/${app.job_id}`)}>
+                <h3 className="applied-position">{app.job_title}</h3>
+                <span className="applied-company">{app.brand_name || app.company_name}</span>
+                <span className="applied-date">지원일 {dateStr}</span>
+              </div>
+              <span className="applied-status-text" style={{ color: statusTextColor[app.status] || "#5f0080" }}>
+                {statusLabel[app.status] || app.status}
+              </span>
+              <div className="applied-menu-wrap">
+                <button
+                  className="applied-menu-btn"
+                  aria-label="더보기"
+                  onClick={(e) => { e.stopPropagation(); setMenuAppId(menuAppId === app.id ? null : app.id); }}
+                >
+                  <MoreHorizontal size={18} />
+                </button>
+                {menuAppId === app.id && (
+                  <div className="applied-menu" onClick={(e) => e.stopPropagation()}>
+                    <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setViewAppId(app.id); }}>내 지원서 보기</button>
+                    <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setCertApp(app); }}>공고 증명서</button>
+                    {(app.status === "APPLIED" || app.status === "VIEWED") ? (
+                      <button className="applied-menu-item danger" onClick={() => { setMenuAppId(null); handleCancel(app.id); }}>지원 취소</button>
+                    ) : (
+                      <button className="applied-menu-item disabled" disabled>지원 취소</button>
                     )}
                   </div>
-                </div>
-                <h3 className="applied-title" onClick={() => app.job_id && router.push(`/jobs/${app.job_id}`)}>{app.job_title}</h3>
-                <span className="applied-date">지원일 {dateStr}</span>
+                )}
               </div>
             </div>
           );
