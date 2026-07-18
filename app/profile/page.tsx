@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Settings, ChevronRight, Plus, CheckCircle2, X, MapPin, Bell, MoreVertical } from "lucide-react";
+import { Settings, ChevronRight, Plus, CheckCircle2, X, MapPin, Bell, MoreHorizontal } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -1222,7 +1222,7 @@ function AppliedTab({ userName }: { userName: string }) {
                     aria-label="더보기"
                     onClick={(e) => { e.stopPropagation(); setMenuAppId(menuAppId === app.id ? null : app.id); }}
                   >
-                    <MoreVertical size={18} />
+                    <MoreHorizontal size={18} />
                   </button>
                   {menuAppId === app.id && (
                     <div className="applied-menu" onClick={(e) => e.stopPropagation()}>
