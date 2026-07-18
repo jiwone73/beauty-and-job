@@ -1217,28 +1217,30 @@ function AppliedTab({ userName }: { userName: string }) {
                 <span className="applied-company">{app.brand_name || app.company_name}</span>
                 <span className="applied-date">지원일 {dateStr}</span>
               </div>
-              <span className="applied-status-text" style={{ color: statusTextColor[app.status] || "#5f0080" }}>
-                {statusLabel[app.status] || app.status}
-              </span>
-              <div className="applied-menu-wrap">
-                <button
-                  className="applied-menu-btn"
-                  aria-label="더보기"
-                  onClick={(e) => { e.stopPropagation(); setMenuAppId(menuAppId === app.id ? null : app.id); }}
-                >
-                  <MoreHorizontal size={18} />
-                </button>
-                {menuAppId === app.id && (
-                  <div className="applied-menu" onClick={(e) => e.stopPropagation()}>
-                    <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setViewAppId(app.id); }}>내 지원서 보기</button>
-                    <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setCertApp(app); }}>공고 증명서</button>
-                    {(app.status === "APPLIED" || app.status === "VIEWED") ? (
-                      <button className="applied-menu-item danger" onClick={() => { setMenuAppId(null); handleCancel(app.id); }}>지원 취소</button>
-                    ) : (
-                      <button className="applied-menu-item disabled" disabled>지원 취소</button>
-                    )}
-                  </div>
-                )}
+              <div className="applied-right">
+                <div className="applied-menu-wrap">
+                  <button
+                    className="applied-menu-btn"
+                    aria-label="더보기"
+                    onClick={(e) => { e.stopPropagation(); setMenuAppId(menuAppId === app.id ? null : app.id); }}
+                  >
+                    <MoreHorizontal size={18} />
+                  </button>
+                  {menuAppId === app.id && (
+                    <div className="applied-menu" onClick={(e) => e.stopPropagation()}>
+                      <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setViewAppId(app.id); }}>내 지원서 보기</button>
+                      <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setCertApp(app); }}>공고 증명서</button>
+                      {(app.status === "APPLIED" || app.status === "VIEWED") ? (
+                        <button className="applied-menu-item danger" onClick={() => { setMenuAppId(null); handleCancel(app.id); }}>지원 취소</button>
+                      ) : (
+                        <button className="applied-menu-item disabled" disabled>지원 취소</button>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <span className="applied-status-text" style={{ color: statusTextColor[app.status] || "#5f0080" }}>
+                  {statusLabel[app.status] || app.status}
+                </span>
               </div>
             </div>
           );

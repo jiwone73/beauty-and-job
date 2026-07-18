@@ -11218,9 +11218,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .applied-right {
   display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
   flex-shrink: 0;
 }
 .applied-menu-wrap { position: relative; }
