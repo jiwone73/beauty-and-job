@@ -10,8 +10,8 @@ const CertificateSheet = forwardRef<HTMLDivElement, {
 }>(function CertificateSheet({ docNo, todayStr, children, compact = false }, ref) {
   const c = compact;
   return (
-    <div ref={ref} style={{ background: "#fff", padding: c ? 0 : 40 }}>
-      <div style={{ border: c ? "none" : "2px solid #333", padding: c ? "4px 2px" : "34px 32px 30px" }}>
+    <div ref={ref} style={{ background: "#fff", padding: c ? 8 : 40 }}>
+      <div style={{ border: c ? "1.5px solid #333" : "2px solid #333", padding: c ? "12px 10px" : "34px 32px 30px" }}>
         <p style={{ textAlign: "right", fontSize: c ? 8 : 12, color: "#888", margin: "0 0 4px" }}>문서번호 : {docNo}</p>
         <h1 style={{ fontSize: c ? 17 : 26, fontWeight: 800, textAlign: "center", letterSpacing: c ? 0 : 8, margin: c ? "2px 0 8px" : "8px 0 18px", color: "#1a1a1a" }}>취업활동 증명서</h1>
         <div style={{ borderTop: "1px solid #d5d5d5", margin: c ? "0 0 16px" : "0 0 24px" }} />
