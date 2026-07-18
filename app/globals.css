@@ -11269,3 +11269,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 .applied-menu-item.danger { color: #d9534f; }
 .applied-menu-item.disabled { color: #ccc; cursor: default; }
 .applied-menu-item.disabled:hover { background: none; }
+
+/* 모바일 푸터 상단 메뉴: 한 줄에 4개 들어가게 간격·글자 축소 */
+@media (max-width: 480px) {
+  .footer-topnav { gap: 12px !important; }
+  .footer-topnav-link { font-size: 13px !important; }
+}
