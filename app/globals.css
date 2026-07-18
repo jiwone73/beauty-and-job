@@ -5132,7 +5132,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 테이블 */
 .admin-table {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   border-collapse: collapse;
 }
 .admin-table th {
