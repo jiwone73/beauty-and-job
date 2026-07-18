@@ -10898,7 +10898,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobcard-bookmark { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #bbb; box-shadow: 0 2px 6px rgba(0,0,0,.12); transition: color .15s; z-index: 1; }
 .jobcard-bookmark:hover, .jobcard-bookmark.on { color: var(--color-primary); }
 .jobcard-body { flex: 0 0 50%; display: flex; flex-direction: column; justify-content: flex-start; padding: 8px 14px 10px; overflow: hidden; }
-.jobcard-title { margin: 0 0 5px; font-size: 14px; font-weight: 600; color: #222; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.jobcard-title { margin: 0 0 5px; font-size: 13px; font-weight: 600; color: #222; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .jobcard-company { margin: 0 0 3px; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .jobcard-meta { margin: 0; font-size: 13px; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .jobcard-deadline { margin-top: 6px; font-size: 13px; font-weight: 600; }
@@ -10929,7 +10929,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobs-grid .jobcard { aspect-ratio: auto; }
   .jobs-grid .jobcard .jobcard-cover { height: auto; flex: none; aspect-ratio: 16 / 10; }
   .jobs-grid .jobcard .jobcard-body { height: auto; flex: none; padding: 5px 10px 6px; }
-  .jobs-grid .jobcard .jobcard-title { font-size: 12.5px; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .jobs-grid .jobcard .jobcard-title { font-size: 11px; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .jobs-grid .jobcard .jobcard-company { font-size: 11px; margin-bottom: 2px; }
   .jobs-grid .jobcard .jobcard-meta { font-size: 11px; margin-bottom: 4px; }
   .jobs-grid .jobcard .jobcard-deadline { font-size: 11px; margin-top: 0; }
@@ -10986,7 +10986,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (min-width: 769px) {
   .jobcard-body { justify-content: center; }
   /* PC뷰 채용공고 썸네일 텍스트 한 단계 크게 */
-  .jobcard-title { font-size: 15px; }
+  .jobcard-title { font-size: 14px; }
   .jobcard-company { font-size: 14px; }
   .jobcard-meta { font-size: 14px; }
   .jobcard-deadline { font-size: 14px; }
@@ -11191,7 +11191,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .insight-card-new-date { font-size: 12.5px; }
   .insight-card-new-snippet { font-size: 14.5px; }
   .newsletter-sub { font-size: 15px; }
-  .jobcard-title { font-size: 16px; }
+  .jobcard-title { font-size: 15px; }
   .jobcard-company { font-size: 15px; }
   .jobcard-meta { font-size: 15px; }
   .jobcard-deadline { font-size: 15px; }
