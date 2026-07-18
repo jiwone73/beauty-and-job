@@ -399,14 +399,11 @@ function ResumePageContent() {
           </div>
         </div>
       </header>
-      <div className="profile-tabs resume-nav">
+      <div className="profile-tabs">
         <button className="profile-tab" onClick={() => router.push("/profile")}>프로필</button>
         <button className="profile-tab active" onClick={() => router.push("/profile/resume")}>이력서</button>
         <button className="profile-tab" onClick={() => router.push("/profile?tab=applied")}>지원현황</button>
         <button className="profile-tab" onClick={() => router.push("/profile?tab=bookmarks")}>관심공고</button>
-      </div>
-      <div className="resume-subheader">
-        <h1 className="resume-subheader-title">이력서 편집</h1>
       </div>
 
       <div className="resume-layout">
