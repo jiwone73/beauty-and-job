@@ -1216,9 +1216,6 @@ function AppliedTab({ userName }: { userName: string }) {
                 <span className="applied-date">지원일 {dateStr}</span>
               </div>
               <div className="applied-right">
-                <span className="applied-status" style={{ color: "#5f0080", fontWeight: 600, fontSize: 13, whiteSpace: "nowrap" }}>
-                  {statusLabel[app.status] || app.status}
-                </span>
                 <div className="applied-menu-wrap">
                   <button
                     className="applied-menu-btn"
@@ -1239,6 +1236,9 @@ function AppliedTab({ userName }: { userName: string }) {
                     </div>
                   )}
                 </div>
+                <span className="applied-status" style={{ color: "#5f0080", fontWeight: 600, fontSize: 13, whiteSpace: "nowrap" }}>
+                  {statusLabel[app.status] || app.status}
+                </span>
               </div>
             </div>
           );
