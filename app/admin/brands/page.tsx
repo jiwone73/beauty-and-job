@@ -150,11 +150,11 @@ export default function AdminBrandsPage() {
                     {b.business_license_url ? (
                       <button
                         onClick={() => window.open(b.business_license_url!, "_blank")}
-                        style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                        style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                         등록증 보기
                       </button>
                     ) : (
-                      <span style={{ color: "#bbb", fontSize: 13 }}>없음</span>
+                      <span style={{ color: "#bbb", fontSize: 14 }}>없음</span>
                     )}
                   </td>
                   <td><span className={`admin-badge ${STATUS_BADGE[b.status] || "admin-badge-neutral"}`}>{STATUS_LABEL[b.status] || b.status}</span></td>
@@ -163,11 +163,11 @@ export default function AdminBrandsPage() {
                       {b.status === "PENDING" ? (
                         <>
                           <button onClick={() => approve(b)}
-                            style={{ padding: "5px 12px", borderRadius: 6, border: "none", background: "#16a34a", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                            style={{ padding: "5px 12px", borderRadius: 6, border: "none", background: "#16a34a", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                             승인
                           </button>
                           <button onClick={() => reject(b)}
-                            style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #d6d6d6", background: "#fff", color: "#666", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                            style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #d6d6d6", background: "#fff", color: "#666", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                             반려
                           </button>
                         </>

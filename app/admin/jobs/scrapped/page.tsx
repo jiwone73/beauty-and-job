@@ -53,7 +53,7 @@ export default function AdminJobsScrappedPage() {
                 <td className="admin-td-date">{item.date}</td>
                 <td className="admin-td-title">{item.jobTitle}</td>
                 <td className="admin-td-brand">{item.company}</td>
-                <td className="admin-td-date">{item.member}<br/><span style={{fontSize:"11px",color:"#aaa"}}>({item.memberId})</span></td>
+                <td className="admin-td-date">{item.member}<br/><span style={{fontSize:"12px",color:"#aaa"}}>({item.memberId})</span></td>
                 <td><span className={`admin-badge ${item.deleted === "Y" ? "admin-badge-danger" : "admin-badge-success"}`}>{item.deleted === "Y" ? "삭제" : "미삭제"}</span></td>
                 <td><button className="admin-action-icon danger" onClick={() => setItems(items.filter(i => i.id !== item.id))}><Trash2 size={15} /></button></td>
               </tr>

@@ -168,14 +168,14 @@ export default function AdminNewslettersPage() {
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
             <button onClick={toggleAutogen} disabled={autogenSaving}
               title="매주 월요일 뉴스레터 자동 생성+발송 on/off"
-              style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 13, fontWeight: 600, color: "#555", cursor: "pointer" }}>
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 14, fontWeight: 600, color: "#555", cursor: "pointer" }}>
               자동 발송
               <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#5f0080" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
                 <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
               </span>
             </button>
             <button onClick={generate} disabled={generating}
-              style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+              style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
               {generating ? "생성 중..." : "✨ 뉴스레터 생성"}
             </button>
           </div>
@@ -188,7 +188,7 @@ export default function AdminNewslettersPage() {
               padding: "7px 14px", borderRadius: 8, border: "none",
               background: checked.length ? "#e74c3c" : "#ededed",
               color: checked.length ? "#fff" : "#aaa",
-              fontSize: 13, fontWeight: 600,
+              fontSize: 14, fontWeight: 600,
               cursor: checked.length ? "pointer" : "default",
             }}>
             선택 삭제{checked.length ? ` (${checked.length})` : ""}
@@ -198,7 +198,7 @@ export default function AdminNewslettersPage() {
         {loading ? (
           <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
                 <th style={{ ...th, width: 36, textAlign: "center" }}>
@@ -215,7 +215,7 @@ export default function AdminNewslettersPage() {
                   </td>
                   <td style={{ ...td, maxWidth: 360, fontWeight: 600, color: "#1a1a1a" }}>{n.title}</td>
                   <td style={td}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: n.status === "sent" ? "#2e7d32" : "#e65100" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: n.status === "sent" ? "#2e7d32" : "#e65100" }}>
                       {STATUS_LABELS[n.status] || n.status}
                     </span>
                   </td>
@@ -245,8 +245,8 @@ export default function AdminNewslettersPage() {
   );
 }
 
-const th: React.CSSProperties = { padding: "10px 8px", fontWeight: 600, fontSize: 12.5 };
+const th: React.CSSProperties = { padding: "10px 8px", fontWeight: 600, fontSize: 13.5 };
 const td: React.CSSProperties = { padding: "12px 8px", verticalAlign: "middle" };
-const btnGray: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1px solid #ddd", background: "#fff", color: "#666", fontSize: 12.5, cursor: "pointer" };
-const btnPurpleOutline: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 12.5, cursor: "pointer" };
-const btnPurple: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#5f0080", color: "#fff", fontSize: 12.5, cursor: "pointer" };
+const btnGray: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1px solid #ddd", background: "#fff", color: "#666", fontSize: 13.5, cursor: "pointer" };
+const btnPurpleOutline: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13.5, cursor: "pointer" };
+const btnPurple: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#5f0080", color: "#fff", fontSize: 13.5, cursor: "pointer" };

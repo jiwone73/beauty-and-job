@@ -225,7 +225,7 @@ function ApplicantsContent() {
           justifyContent: "space-between",
           alignItems: "center",
         }}>
-          <span style={{ fontSize: "13px", color: "#5f0080", fontWeight: 600 }}>
+          <span style={{ fontSize: "14px", color: "#5f0080", fontWeight: 600 }}>
             특정 공고의 지원자만 표시 중
           </span>
           <button
@@ -236,7 +236,7 @@ function ApplicantsContent() {
               color: "#5f0080",
               padding: "4px 12px",
               borderRadius: "6px",
-              fontSize: "12px",
+              fontSize: "13px",
               cursor: "pointer",
             }}
           >
@@ -315,20 +315,20 @@ function ApplicantsContent() {
                   <td>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, width: 160, flexShrink: 0 }}>
-                      <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         {(a as any).user_avatar_url
                           ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           : (a.user_name || "?").slice(0, 1)}
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          <span style={{ cursor: "pointer", color: "#5f0080", fontWeight: 600, fontSize: 14 }}
+                          <span style={{ cursor: "pointer", color: "#5f0080", fontWeight: 600, fontSize: 15 }}
                             onClick={() => setSelected(a)}>{a.user_name}</span>
                           {genderLabel((a as any).user_gender) && (
-                            <span style={{ fontSize: 11, fontWeight: 400, color: "#999" }}>{genderLabel((a as any).user_gender)}</span>
+                            <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{genderLabel((a as any).user_gender)}</span>
                           )}
                         </div>
-                        <span style={{ fontSize: 12, color: "#888" }}>
+                        <span style={{ fontSize: 13, color: "#888" }}>
                           {(() => {
                             const age = calcAge((a as any).user_birth_date);
                             const ct = (a as any).career_type;
@@ -344,7 +344,7 @@ function ApplicantsContent() {
                   </td>
                   <td className="company-td-sub">{a.job_title}</td>
                   <td className="company-td-sub">{formatDate(a.applied_at)}</td>
-                  <td style={{ fontSize: 12 }}>
+                  <td style={{ fontSize: 13 }}>
                     <div style={{ color: a.user_email ? "#333" : "#ccc", marginBottom: 2 }}>
                       {a.user_email || "이메일 없음"}
                     </div>
@@ -354,7 +354,7 @@ function ApplicantsContent() {
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>
                     {a.status === "WITHDRAWN" ? (
-                      <span style={{ color: "#999", fontSize: 13, fontWeight: 500 }}>지원취소</span>
+                      <span style={{ color: "#999", fontSize: 14, fontWeight: 500 }}>지원취소</span>
                     ) : (
                     <select
                       value={a.status}
@@ -365,7 +365,7 @@ function ApplicantsContent() {
                         border: "1px solid #e0d0f0",
                         background: "#fff",
                         color: "#5f0080",
-                        fontSize: 13,
+                        fontSize: 14,
                         fontWeight: 500,
                         cursor: "pointer",
                         fontFamily: "inherit",
@@ -381,7 +381,7 @@ function ApplicantsContent() {
                     <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <button onClick={() => setSelected(a)} title="이력서 보기"
-                          style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 13, fontWeight: 500, padding: 0 }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: 0 }}>
                           <FileText size={16} /><span>이력서</span>
                         </button>
                         <span title={(a as any).scrapped ? "스크랩한 인재" : "미스크랩"} style={{ display: "inline-flex" }}>
@@ -391,11 +391,11 @@ function ApplicantsContent() {
                       </div>
                       {(a as any).portfolio_url ? (
                         <a href={(a as any).portfolio_url} target="_blank" rel="noopener noreferrer" title={(a as any).portfolio_filename || "포트폴리오"}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 12, textDecoration: "none", fontWeight: 500 }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
                           <Paperclip size={14} /><span>포트폴리오</span>
                         </a>
                       ) : (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 12 }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
                           <Paperclip size={14} /><span>포트폴리오</span>
                         </span>
                       )}
@@ -417,11 +417,11 @@ function ApplicantsContent() {
                 {resumeData && (
                   <>
                     <button onClick={handleDownloadPdf} disabled={isDownloading}
-                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 12px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: isDownloading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}>
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 12px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: isDownloading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}>
                       <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 다운로드"}
                     </button>
                     <button onClick={handlePrint}
-                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 12px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 12px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
                       <Printer size={15} /> 인쇄
                     </button>
                   </>
@@ -462,13 +462,13 @@ function ApplicantsContent() {
                   <div style={{ marginTop: "20px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
                     <FileText size={22} color="#5f0080" />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {resumeFileInfo.name || "첨부 이력서"}
                       </p>
-                      <p style={{ fontSize: "12px", color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
+                      <p style={{ fontSize: "13px", color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
                     </div>
                     <a href={resumeFileInfo.url} target="_blank" rel="noopener noreferrer"
-                      style={{ padding: "8px 14px", borderRadius: "8px", background: "#5f0080", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
+                      style={{ padding: "8px 14px", borderRadius: "8px", background: "#5f0080", color: "#fff", fontSize: "14px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
                       다운로드
                     </a>
                   </div>

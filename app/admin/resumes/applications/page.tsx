@@ -187,7 +187,7 @@ function AdminApplicationsPageInner() {
                           <div style={{
                             width: 32, height: 32, borderRadius: "50%", background: "#f3e8ff",
                             display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: 13, fontWeight: 700, color: "#7c3aed", flexShrink: 0
+                            fontSize: 14, fontWeight: 700, color: "#7c3aed", flexShrink: 0
                           }}>
                             {(a.applicant_name || "?").charAt(0)}
                           </div>
@@ -203,9 +203,9 @@ function AdminApplicationsPageInner() {
                             ) : (
                               <span style={{ fontWeight: 600 }}>{a.applicant_name}</span>
                             )}
-                            {gender && <span style={{ fontSize: 12, color: "#888" }}>{gender}</span>}
+                            {gender && <span style={{ fontSize: 13, color: "#888" }}>{gender}</span>}
                           </div>
-                          <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                          <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
                             {[age ? `${age}세` : null, career].filter(Boolean).join(" · ")}
                           </div>
                         </div>
@@ -215,7 +215,7 @@ function AdminApplicationsPageInner() {
                     <td className="admin-td-brand">
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
                         {a.company_name}
-                        <span style={{ fontSize: 11, fontWeight: 500, color: "#999" }}>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
                           {a.job_type === "STORE" ? "매장" : "기업"}
                         </span>
                       </span>
@@ -236,21 +236,21 @@ function AdminApplicationsPageInner() {
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                         {hasResume ? (
                           <button onClick={() => setSelected(a)} title="이력서 보기"
-                            style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 13, fontWeight: 500, padding: 0 }}>
+                            style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: 0 }}>
                             <FileText size={15} /><span>이력서</span>
                           </button>
                         ) : (
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#ccc", fontSize: 13 }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#ccc", fontSize: 14 }}>
                             <FileText size={15} /><span>이력서</span>
                           </span>
                         )}
                         {a.portfolio_url ? (
                           <a href={a.portfolio_url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기"
-                            style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 12, textDecoration: "none", fontWeight: 500 }}>
+                            style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
                             <Paperclip size={13} /><span>포트폴리오</span>
                           </a>
                         ) : (
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 12 }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
                             <Paperclip size={13} /><span>포트폴리오</span>
                           </span>
                         )}

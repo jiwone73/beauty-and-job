@@ -261,7 +261,7 @@ function AdminCompaniesContent() {
 
   const lbl: React.CSSProperties = { color: "#888" };
   const modalBtn: React.CSSProperties = {
-    display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600,
+    display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600,
     padding: "6px 10px", borderRadius: 6, border: "1px solid #e3dceb", background: "#fff",
     color: "#5f0080", cursor: "pointer",
   };
@@ -330,7 +330,7 @@ function AdminCompaniesContent() {
                 border: `1px solid ${blockedMode ? "#5f0080" : "#e3dceb"}`,
                 background: blockedMode ? "#5f0080" : "#fff",
                 color: blockedMode ? "#fff" : "#5f0080",
-                fontSize: 13, fontWeight: 600, cursor: "pointer",
+                fontSize: 14, fontWeight: 600, cursor: "pointer",
               }}
             >
               열람제한기업
@@ -343,7 +343,7 @@ function AdminCompaniesContent() {
                   display: "flex", alignItems: "center", gap: 6,
                   padding: "6px 14px", borderRadius: 6, border: "none",
                   background: "#5f0080", color: "#fff",
-                  fontSize: 13, fontWeight: 600, cursor: "pointer",
+                  fontSize: 14, fontWeight: 600, cursor: "pointer",
                 }}
               >
                 📱 문자 발송 ({selectedIds.length})
@@ -359,7 +359,7 @@ function AdminCompaniesContent() {
                   padding: "6px 14px", borderRadius: 6, border: "none",
                   background: selectedIds.length ? "#e74c3c" : "#ededed",
                   color: selectedIds.length ? "#fff" : "#aaa",
-                  fontSize: 13, fontWeight: 600,
+                  fontSize: 14, fontWeight: 600,
                   cursor: selectedIds.length ? "pointer" : "default",
                 }}
               >
@@ -391,7 +391,7 @@ function AdminCompaniesContent() {
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
                       {b.company_name}
                       {b.company_type && (
-                        <span style={{ fontSize: 11, fontWeight: 500, color: "#999" }}>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
                           {b.company_type === "STORE" ? "매장" : b.company_type === "OFFICE" ? "기업" : "기업+매장"}
                         </span>
                       )}
@@ -399,14 +399,14 @@ function AdminCompaniesContent() {
                   </td>
                   <td>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                         {b.user_avatar_url ? (
                           <img src={b.user_avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         ) : (b.user_name?.[0] || "·")}
                       </div>
                       <div style={{ textAlign: "left" }}>
                         <div style={{ fontWeight: 600 }}>{b.user_name}</div>
-                        <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>{b.user_email}</div>
+                        <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>{b.user_email}</div>
                       </div>
                     </div>
                   </td>
@@ -440,7 +440,7 @@ function AdminCompaniesContent() {
                   {/* 매장/기업명 → 클릭 시 기업정보 모달 */}
                   <td className="admin-td-brand">
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 6, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 6, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                         {(() => {
                           const cover = Array.isArray(c.cover_images) && c.cover_images[0]?.url ? c.cover_images[0].url : null;
                           const img = c.logo_url || (c.company_type === "STORE" ? cover : null);
@@ -454,7 +454,7 @@ function AdminCompaniesContent() {
                       <span onClick={() => setCompanyDetail(c)}
                         style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#5f0080", cursor: "pointer", fontWeight: 600 }}>
                         {c.company_name}
-                        <span style={{ fontSize: 11, fontWeight: 500, color: "#999" }}>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
                           {TYPE_LABEL[c.company_type] || c.company_type}
                         </span>
                       </span>
@@ -467,7 +467,7 @@ function AdminCompaniesContent() {
                   {/* 연락처 + 이메일 */}
                   <td className="admin-td-date">
                     <div>{c.phone || "-"}</div>
-                    <div style={{ fontSize: 12, color: "#888", marginTop: 2, wordBreak: "break-all" }}>{c.email || "-"}</div>
+                    <div style={{ fontSize: 13, color: "#888", marginTop: 2, wordBreak: "break-all" }}>{c.email || "-"}</div>
                   </td>
                   {/* 사업자번호 / 등록증 아이콘 */}
                   <td className="admin-td-date">
@@ -475,11 +475,11 @@ function AdminCompaniesContent() {
                     <div style={{ marginTop: 4 }}>
                       {c.business_license_url ? (
                         <button onClick={() => setPreviewUrl(c.business_license_url)} title="사업자등록증 보기"
-                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "#5f0080", display: "inline-flex", alignItems: "center", gap: 3, fontSize: 12, fontWeight: 500 }}>
+                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "#5f0080", display: "inline-flex", alignItems: "center", gap: 3, fontSize: 13, fontWeight: 500 }}>
                           <FileText size={14} /><span>사업자등록증</span>
                         </button>
                       ) : (
-                        <span style={{ color: "#ccc", display: "inline-flex", alignItems: "center", gap: 3, fontSize: 12 }} title="미제출">
+                        <span style={{ color: "#ccc", display: "inline-flex", alignItems: "center", gap: 3, fontSize: 13 }} title="미제출">
                           <FileText size={14} /><span>사업자등록증</span>
                         </span>
                       )}
@@ -568,7 +568,7 @@ function AdminCompaniesContent() {
                 return (
                   <div style={{ position: "relative", height: 128, background: cover ? "#eee" : "#7c3aed" }}>
                     {cover && <img src={cover} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />}
-                    <div style={{ position: "absolute", left: 20, bottom: -28, width: 64, height: 64, borderRadius: 12, background: "#5f0080", border: "3px solid #fff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 22, fontWeight: 700 }}>
+                    <div style={{ position: "absolute", left: 20, bottom: -28, width: 64, height: 64, borderRadius: 12, background: "#5f0080", border: "3px solid #fff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 23, fontWeight: 700 }}>
                       {companyDetail.logo_url
                         ? <img src={companyDetail.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         : (companyDetail.company_name?.[0] || "·")}
@@ -580,16 +580,16 @@ function AdminCompaniesContent() {
               {/* 이름 + 배지 */}
               <div style={{ padding: "38px 22px 0" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a" }}>{companyDetail.company_name}</span>
-                  <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: "#f3e8ff", color: "#5f0080" }}>{TYPE_LABEL[companyDetail.company_type] || companyDetail.company_type}</span>
-                  <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, ...(STATUS_CHIP[companyDetail.status] ? { background: STATUS_CHIP[companyDetail.status].bg, color: STATUS_CHIP[companyDetail.status].color } : { background: "#f0f0f0", color: "#777" }) }}>{STATUS_TO_LABEL[companyDetail.status] || companyDetail.status}</span>
+                  <span style={{ fontSize: 19, fontWeight: 700, color: "#1a1a1a" }}>{companyDetail.company_name}</span>
+                  <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, background: "#f3e8ff", color: "#5f0080" }}>{TYPE_LABEL[companyDetail.company_type] || companyDetail.company_type}</span>
+                  <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, ...(STATUS_CHIP[companyDetail.status] ? { background: STATUS_CHIP[companyDetail.status].bg, color: STATUS_CHIP[companyDetail.status].color } : { background: "#f0f0f0", color: "#777" }) }}>{STATUS_TO_LABEL[companyDetail.status] || companyDetail.status}</span>
                 </div>
-                {companyDetail.brand_name && <p style={{ fontSize: 13, color: "#888", margin: "4px 0 0" }}>{companyDetail.brand_name}</p>}
+                {companyDetail.brand_name && <p style={{ fontSize: 14, color: "#888", margin: "4px 0 0" }}>{companyDetail.brand_name}</p>}
               </div>
 
               {/* 기본 정보 그리드 */}
               <div style={{ padding: "18px 22px 0" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "84px 1fr 84px 1fr", rowGap: 12, columnGap: 12, fontSize: 13, alignItems: "center" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "84px 1fr 84px 1fr", rowGap: 12, columnGap: 12, fontSize: 14, alignItems: "center" }}>
                   <span style={lbl}>사업자번호</span><span>{companyDetail.business_number || "-"}</span>
                   <span style={lbl}>설립연도</span><span>{companyDetail.founded_year ? `${companyDetail.founded_year}년` : "-"}</span>
                   <span style={lbl}>사원수</span><span>{companyDetail.company_size || "-"}</span>
@@ -607,22 +607,22 @@ function AdminCompaniesContent() {
               {/* 소개 */}
               {companyDetail.description && (
                 <div style={{ padding: "20px 22px 0" }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "#5f0080", marginBottom: 7 }}>기업 소개</div>
-                  <p style={{ fontSize: 13, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{companyDetail.description}</p>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#5f0080", marginBottom: 7 }}>기업 소개</div>
+                  <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{companyDetail.description}</p>
                 </div>
               )}
 
               {/* 등록 공고 */}
               <div style={{ padding: "20px 22px 24px" }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: "#5f0080", marginBottom: 8 }}>등록 공고 ({companyDetail.job_count}건)</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#5f0080", marginBottom: 8 }}>등록 공고 ({companyDetail.job_count}건)</div>
                 {companyDetail.jobs && companyDetail.jobs.length > 0 ? (
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {companyDetail.jobs.map((j, i) => {
                       const closed = j.status === "CLOSED" || j.status === "EXPIRED" || j.status === "HIDDEN";
                       const row = (
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", background: closed ? "#f5f5f5" : "#f3e8ff", borderRadius: 6, cursor: j.id ? "pointer" : "default" }}>
-                          <span style={{ fontSize: 13, color: closed ? "#888" : "#1a1a1a" }}>{j.title}</span>
-                          <span style={{ fontSize: 11, color: closed ? "#aaa" : "#5f0080", flexShrink: 0, marginLeft: 8 }}>{JOB_STATUS_LABEL[j.status] || j.status} · {fmtDate(j.created_at)}</span>
+                          <span style={{ fontSize: 14, color: closed ? "#888" : "#1a1a1a" }}>{j.title}</span>
+                          <span style={{ fontSize: 12, color: closed ? "#aaa" : "#5f0080", flexShrink: 0, marginLeft: 8 }}>{JOB_STATUS_LABEL[j.status] || j.status} · {fmtDate(j.created_at)}</span>
                         </div>
                       );
                       return j.id
@@ -631,7 +631,7 @@ function AdminCompaniesContent() {
                     })}
                   </div>
                 ) : (
-                  <div style={{ fontSize: 13, color: "#aaa" }}>등록된 공고가 없습니다.</div>
+                  <div style={{ fontSize: 14, color: "#aaa" }}>등록된 공고가 없습니다.</div>
                 )}
               </div>
             </div>
@@ -655,7 +655,7 @@ function AdminCompaniesContent() {
               )}
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end", padding: "12px 16px", borderTop: "1px solid #ececec" }}>
-              <a href={previewUrl} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "#5f0080", fontWeight: 600 }}>
+              <a href={previewUrl} target="_blank" rel="noreferrer" style={{ fontSize: 14, color: "#5f0080", fontWeight: 600 }}>
                 새 탭에서 열기 ↗
               </a>
             </div>

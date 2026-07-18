@@ -32,8 +32,8 @@ export default function AdminNoticesPage() {
   const [form, setForm] = useState({ type: "notice", target: "all", title: "", body: "", is_pinned: false, status: "published" });
   const [edit, setEdit] = useState({ type: "notice", target: "all", title: "", body: "", is_pinned: false, status: "published" });
 
-  const inputStyle = { width: "100%", padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14, boxSizing: "border-box" as const };
-  const selStyle = { padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 14 };
+  const inputStyle = { width: "100%", padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 15, boxSizing: "border-box" as const };
+  const selStyle = { padding: "10px 12px", border: "1px solid #ddd", borderRadius: 8, fontSize: 15 };
 
   const fetchList = async () => {
     setLoading(true);
@@ -118,7 +118,7 @@ export default function AdminNoticesPage() {
           {/* 왼쪽: 작성 폼 */}
           <div style={{ flexGrow: 0, flexShrink: 0, flexBasis: "520px", position: "sticky", top: 80, alignSelf: "flex-start" }}>
         <div style={{ border: "1px solid #eee", borderRadius: 12, padding: 20, marginBottom: 28 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 14px" }}>새 공지 작성</h2>
+          <h2 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 14px" }}>새 공지 작성</h2>
           <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
             <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} style={selStyle}>
               <option value="notice">공지(필수)</option>
@@ -129,7 +129,7 @@ export default function AdminNoticesPage() {
               <option value="published">게시</option>
               <option value="draft">임시저장</option>
             </select>
-            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#555" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, color: "#555" }}>
               <input type="checkbox" checked={form.is_pinned} onChange={(e) => setForm({ ...form, is_pinned: e.target.checked })} />
               상단 고정
             </label>
@@ -139,7 +139,7 @@ export default function AdminNoticesPage() {
           <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })}
             placeholder="내용" rows={12} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 420, lineHeight: 1.6 }} />
           <button onClick={create} disabled={busy}
-            style={{ padding: "10px 20px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+            style={{ padding: "10px 20px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
             {busy ? "처리 중..." : "작성"}
           </button>
         </div>
@@ -148,9 +148,9 @@ export default function AdminNoticesPage() {
           <div style={{ flex: "1 1 360px", minWidth: 0 }}>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-          <span style={{ fontSize: 14, color: "#888" }}>전체 {list.length}건</span>
+          <span style={{ fontSize: 15, color: "#888" }}>전체 {list.length}건</span>
           <button onClick={removeChecked} disabled={checked.length === 0 || busy}
-            style={{ padding: "6px 14px", border: "1px solid #e0e0e0", background: "#fff", color: checked.length ? "#d33" : "#bbb", borderRadius: 8, fontSize: 13, cursor: checked.length ? "pointer" : "default" }}>
+            style={{ padding: "6px 14px", border: "1px solid #e0e0e0", background: "#fff", color: checked.length ? "#d33" : "#bbb", borderRadius: 8, fontSize: 14, cursor: checked.length ? "pointer" : "default" }}>
             선택 삭제 ({checked.length})
           </button>
         </div>
@@ -165,31 +165,31 @@ export default function AdminNoticesPage() {
               <li key={n.id} style={{ borderBottom: "1px solid #eee", padding: "12px 4px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
-                  <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
+                  <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
                     background: n.type === "event" ? "#fdeef5" : "#f3eafa", color: n.type === "event" ? "#c2185b" : "#5f0080" }}>
                     {TYPE_LABELS[n.type]}
                   </span>
-                  {n.is_pinned && <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "#5f0080", border: "1px solid #5f0080", borderRadius: 4, padding: "1px 5px" }}>고정</span>}
-                  {n.status === "draft" && <span style={{ flexShrink: 0, fontSize: 11, color: "#999", border: "1px solid #ddd", borderRadius: 4, padding: "1px 5px" }}>임시</span>}
-                  <span onClick={() => openExpand(n)} style={{ flex: 1, minWidth: 0, fontSize: 15, fontWeight: 500, cursor: "pointer", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {n.is_pinned && <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color: "#5f0080", border: "1px solid #5f0080", borderRadius: 4, padding: "1px 5px" }}>고정</span>}
+                  {n.status === "draft" && <span style={{ flexShrink: 0, fontSize: 12, color: "#999", border: "1px solid #ddd", borderRadius: 4, padding: "1px 5px" }}>임시</span>}
+                  <span onClick={() => openExpand(n)} style={{ flex: 1, minWidth: 0, fontSize: 16, fontWeight: 500, cursor: "pointer", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {n.title}
                   </span>
-                  <span style={{ flexShrink: 0, fontSize: 13, color: "#aaa" }}>{fmtDate(n.published_at || n.created_at)}</span>
-                  <button onClick={() => removeOne(n.id)} style={{ flexShrink: 0, padding: "4px 10px", border: "1px solid #eee", background: "#fff", color: "#d33", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>삭제</button>
+                  <span style={{ flexShrink: 0, fontSize: 14, color: "#aaa" }}>{fmtDate(n.published_at || n.created_at)}</span>
+                  <button onClick={() => removeOne(n.id)} style={{ flexShrink: 0, padding: "4px 10px", border: "1px solid #eee", background: "#fff", color: "#d33", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>삭제</button>
                 </div>
 
                 {expandedId === n.id && (
                   <div style={{ marginTop: 12, padding: 16, background: "#faf7fd", borderRadius: 10 }}>
                     <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
-                      <select value={edit.type} onChange={(e) => setEdit({ ...edit, type: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 13 }}>
+                      <select value={edit.type} onChange={(e) => setEdit({ ...edit, type: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 14 }}>
                         <option value="notice">공지(필수)</option>
                         <option value="event">이벤트·혜택(광고성)</option>
                       </select>
-                      <select value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 13 }}>
+                      <select value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 14 }}>
                         <option value="published">게시</option>
                         <option value="draft">임시저장</option>
                       </select>
-                      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#555" }}>
                         <input type="checkbox" checked={edit.is_pinned} onChange={(e) => setEdit({ ...edit, is_pinned: e.target.checked })} />
                         상단 고정
                       </label>
@@ -200,9 +200,9 @@ export default function AdminNoticesPage() {
                       rows={10} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 240, lineHeight: 1.6 }} />
                     <div style={{ display: "flex", gap: 8 }}>
                       <button onClick={() => saveEdit(n.id)} disabled={busy}
-                        style={{ padding: "8px 18px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>저장</button>
+                        style={{ padding: "8px 18px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>저장</button>
                       <button onClick={() => setExpandedId(null)}
-                        style={{ padding: "8px 14px", background: "#fff", color: "#999", border: "1px solid #ddd", borderRadius: 8, fontSize: 14, cursor: "pointer" }}>취소</button>
+                        style={{ padding: "8px 14px", background: "#fff", color: "#999", border: "1px solid #ddd", borderRadius: 8, fontSize: 15, cursor: "pointer" }}>취소</button>
                     </div>
                   </div>
                 )}

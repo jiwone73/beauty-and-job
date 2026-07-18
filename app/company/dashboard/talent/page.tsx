@@ -299,7 +299,7 @@ export default function TalentPage() {
               key={tab}
               onClick={() => handleTabSwitch(tab)}
               style={{
-                padding: "8px 20px", borderRadius: 6, fontSize: 14, fontWeight: 500, cursor: "pointer",
+                padding: "8px 20px", borderRadius: 6, fontSize: 15, fontWeight: 500, cursor: "pointer",
                 border: `1px solid ${activeTab === tab ? "#5f0080" : "#e0e0e0"}`,
                 background: activeTab === tab ? "#5f0080" : "#fff",
                 color: activeTab === tab ? "#fff" : "#555",
@@ -337,10 +337,10 @@ export default function TalentPage() {
           )}
 
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>경력</span>
+            <span style={{ fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>경력</span>
             <select
               className="admin-form-select"
-              style={{ fontSize: 13, padding: "8px 12px" }}
+              style={{ fontSize: 14, padding: "8px 12px" }}
               value={careerFilter}
               onChange={(e) => setCareerFilter(e.target.value)}
             >
@@ -351,7 +351,7 @@ export default function TalentPage() {
           {activeTab === "STORE" && (
             <>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>연령</span>
+                <span style={{ fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>연령</span>
                 <div className="admin-filter-tabs">
                   {AGE_FILTERS.map((f) => (
                     <button key={f} className={`admin-filter-tab ${ageFilter === f ? "active" : ""}`} onClick={() => setAgeFilter(f)}>{f}</button>
@@ -359,7 +359,7 @@ export default function TalentPage() {
                 </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 13, color: "#555", whiteSpace: "nowrap" }}>성별</span>
+                <span style={{ fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>성별</span>
                 <div className="admin-filter-tabs">
                   {GENDER_FILTERS.map((f) => (
                     <button key={f} className={`admin-filter-tab ${genderFilter === f ? "active" : ""}`} onClick={() => setGenderFilter(f)}>{f}</button>
@@ -370,8 +370,8 @@ export default function TalentPage() {
           )}
 
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginLeft: "auto" }}>
-            <button onClick={resetFilters} style={{ fontSize: 12, color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>초기화</button>
-            <span style={{ fontSize: 13, color: "#888" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</span>
+            <button onClick={resetFilters} style={{ fontSize: 13, color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>초기화</button>
+            <span style={{ fontSize: 14, color: "#888" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</span>
           </div>
         </div>
 
@@ -389,13 +389,13 @@ export default function TalentPage() {
       {(selectedJobGroups.length > 0 || selectedRegions.length > 0) && (
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
           {selectedJobGroups.map((g) => (
-            <span key={g} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#f3e8ff", color: "#5f0080", borderRadius: 20, fontSize: 12 }}>
+            <span key={g} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#f3e8ff", color: "#5f0080", borderRadius: 20, fontSize: 13 }}>
               {g}
               <button onClick={() => setSelectedJobGroups((p) => p.filter((x) => x !== g))} style={{ background: "none", border: "none", cursor: "pointer", color: "#5f0080", padding: 0, lineHeight: 1 }}>×</button>
             </span>
           ))}
           {selectedRegions.map((r) => (
-            <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#e8f4ff", color: "#1a6fb5", borderRadius: 20, fontSize: 12 }}>
+            <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#e8f4ff", color: "#1a6fb5", borderRadius: 20, fontSize: 13 }}>
               {r}
               <button onClick={() => setSelectedRegions((p) => p.filter((x) => x !== r))} style={{ background: "none", border: "none", cursor: "pointer", color: "#1a6fb5", padding: 0, lineHeight: 1 }}>×</button>
             </span>
@@ -412,13 +412,13 @@ export default function TalentPage() {
         <div style={{ border: "1px solid #eee", borderRadius: 8, overflow: "hidden", background: "#fff" }}>
 
           {/* 헤더 */}
-          <div style={{ display: "flex", alignItems: "stretch", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 12, color: "#999", fontWeight: 500 }}>
+          <div style={{ display: "flex", alignItems: "stretch", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 13, color: "#999", fontWeight: 500 }}>
             <div style={headCell(FLEX.name)}>이름</div>
             <div style={headCell(FLEX.job)}>직군</div>
             <div style={headCell(FLEX.region)}>지역</div>
             <div style={headCell(FLEX.career)}>최근경력</div>
             <div style={headCell(FLEX.contact)}>연락처</div>
-            <div style={{ width: W_ACTION, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#999", fontWeight: 500 }}>
+            <div style={{ width: W_ACTION, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#999", fontWeight: 500 }}>
               이력서/포트폴리오
             </div>
           </div>
@@ -437,17 +437,17 @@ export default function TalentPage() {
               >
                 {/* 이름 */}
                 <div style={{ ...cell(FLEX.name), flexDirection: "row", alignItems: "center", gap: 10 }}>
-                  <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {t.avatarUrl
                       ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      : <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{t.name?.slice(0, 1) || "?"}</span>}
+                      : <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{t.name?.slice(0, 1) || "?"}</span>}
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
+                    <div style={{ ...clamp1, fontWeight: 600, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
                       <span>{t.name}</span>
-                      {gl && <span style={{ fontSize: 11, fontWeight: 400, color: "#999" }}>{gl}</span>}
+                      {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
                     </div>
-                    <div style={{ ...clamp1, fontSize: 12, color: "#888", marginTop: 2 }}>
+                    <div style={{ ...clamp1, fontSize: 13, color: "#888", marginTop: 2 }}>
                       {[t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
                     </div>
                   </div>
@@ -455,16 +455,16 @@ export default function TalentPage() {
 
                 {/* 직군: 1행 매장직/사무직 배지, 2행 세부직군 */}
                 <div style={cell(FLEX.job)}>
-                  <span style={{ ...clamp2, fontSize: 12, color: "#555" }}>{t.mainJobGroup || "—"}</span>
+                  <span style={{ ...clamp2, fontSize: 13, color: "#555" }}>{t.mainJobGroup || "—"}</span>
                 </div>
 
                 {/* 지역 */}
-                <div style={{ ...cell(FLEX.region), fontSize: 12, color: "#999" }}>
+                <div style={{ ...cell(FLEX.region), fontSize: 13, color: "#999" }}>
                   <span style={clamp2}>{shortenRegion(t.regionPrefer)}</span>
                 </div>
 
                 {/* 최근경력 */}
-                <div style={{ ...cell(FLEX.career), fontSize: 12 }}>
+                <div style={{ ...cell(FLEX.career), fontSize: 13 }}>
                   {t.careerDetail ? (
                     <>
                       <div style={{ ...clamp1, fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
@@ -478,7 +478,7 @@ export default function TalentPage() {
                 </div>
 
                 {/* 연락처 */}
-                <div style={{ ...cell(FLEX.contact), fontSize: 12 }}>
+                <div style={{ ...cell(FLEX.contact), fontSize: 13 }}>
                   <div style={{ ...clamp1, color: t.email ? "#333" : "#ccc", marginBottom: 2 }}>
                     {t.email || "이메일 없음"}
                   </div>
@@ -491,7 +491,7 @@ export default function TalentPage() {
                 <div style={{ width: W_ACTION, flexShrink: 0, height: ROW_H, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <button
-                      style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 13, fontWeight: 500, padding: "2px 4px" }}
+                      style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
                       onClick={(e) => { e.stopPropagation(); setSelected(t); }}
                     >
                       <FileText size={14} />
@@ -512,12 +512,12 @@ export default function TalentPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 12, textDecoration: "none", fontWeight: 500 }}
+                      style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}
                     >
                       <Paperclip size={13} /><span>포트폴리오</span>
                     </a>
                   ) : (
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 12 }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
                       <Paperclip size={13} /><span>포트폴리오</span>
                     </span>
                   )}

@@ -228,25 +228,25 @@ export default function CompanyJobsPage() {
                   <td className="company-td-sub">{formatDeadline(job.deadline)}</td>
                   <td>
                     <Link href={`/company/dashboard/applicants?job_id=${job.id}`}
-                      style={{display:"inline-flex", alignItems:"center", gap:4, color:"#5f0080", fontSize:13, fontWeight:500, textDecoration:"none"}}>
+                      style={{display:"inline-flex", alignItems:"center", gap:4, color:"#5f0080", fontSize:14, fontWeight:500, textDecoration:"none"}}>
                       <Users size={13} /> {job.application_count}명
                     </Link>
                   </td>
                   <td className="company-td-sub">{job.view_count}</td>
-                  <td style={{ color: job.status === "ACTIVE" ? "#10b981" : job.status === "CLOSED" ? "#888" : "#f59e0b", fontWeight: 500, fontSize: 13 }}>
+                  <td style={{ color: job.status === "ACTIVE" ? "#10b981" : job.status === "CLOSED" ? "#888" : "#f59e0b", fontWeight: 500, fontSize: 14 }}>
                     {STATUS_LABEL[job.status]}
                   </td>
                   <td>
                     <div style={{display:"flex", gap:"6px", justifyContent:"center"}}>
                       {job.status === "ACTIVE" && (
-                        <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:13, fontWeight:500, padding:"2px 4px"}}
+                        <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:14, fontWeight:500, padding:"2px 4px"}}
                           onClick={() => handleClose(job.id)}><Ban size={13} />마감</button>
                       )}
-                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#5f0080", fontSize:13, fontWeight:500, padding:"2px 4px"}}
+                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#5f0080", fontSize:14, fontWeight:500, padding:"2px 4px"}}
                         onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
                         <Edit size={13} />수정
                       </button>
-                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#5f0080", fontSize:13, fontWeight:500, padding:"2px 4px"}}
+                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#5f0080", fontSize:14, fontWeight:500, padding:"2px 4px"}}
                         onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
                         <Copy size={13} />복사
                       </button>

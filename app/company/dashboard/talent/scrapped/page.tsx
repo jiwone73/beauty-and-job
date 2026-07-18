@@ -206,7 +206,7 @@ export default function ScrappedTalentPage() {
               value={search} onChange={e => setSearch(e.target.value)} />
           </div>
         </div>
-        <div style={{ fontSize: "13px", color: "#888" }}>
+        <div style={{ fontSize: "14px", color: "#888" }}>
           총 <strong style={{ color: "#1a1a1a" }}>{filtered.length}</strong>명
         </div>
       </div>
@@ -219,13 +219,13 @@ export default function ScrappedTalentPage() {
         <div style={{ border: "1px solid #eee", borderRadius: 8, overflow: "hidden", background: "#fff" }}>
 
           {/* 헤더 */}
-          <div style={{ display: "flex", alignItems: "stretch", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 12, color: "#999", fontWeight: 500 }}>
+          <div style={{ display: "flex", alignItems: "stretch", background: "#fafafa", borderBottom: "1px solid #eee", fontSize: 13, color: "#999", fontWeight: 500 }}>
             <div style={headCell(FLEX.name)}>이름</div>
             <div style={headCell(FLEX.job)}>직군</div>
             <div style={headCell(FLEX.region)}>지역</div>
             <div style={headCell(FLEX.career)}>최근경력</div>
             <div style={headCell(FLEX.contact)}>연락처</div>
-            <div style={{ width: W_ACTION, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#999", fontWeight: 500 }}>
+            <div style={{ width: W_ACTION, flexShrink: 0, height: 40, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#999", fontWeight: 500 }}>
               이력서/포트폴리오
             </div>
           </div>
@@ -247,17 +247,17 @@ export default function ScrappedTalentPage() {
               >
                 {/* 이름 */}
                 <div style={{ ...cell(FLEX.name), flexDirection: "row", alignItems: "center", gap: 10, justifyContent: "flex-start" }}>
-                  <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {t.avatar_url
                       ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       : (t.name || "?").slice(0, 1)}
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ ...clamp1, fontWeight: 600, fontSize: 14, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
+                    <div style={{ ...clamp1, fontWeight: 600, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
                       <span>{t.name}</span>
-                      {gl && <span style={{ fontSize: 11, fontWeight: 400, color: "#999" }}>{gl}</span>}
+                      {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
                     </div>
-                    <div style={{ ...clamp1, fontSize: 12, color: "#888", marginTop: 2 }}>
+                    <div style={{ ...clamp1, fontSize: 13, color: "#888", marginTop: 2 }}>
                       {[t.age ? `${t.age}세` : null, careerLabel(t.career_years, t.career_count)].filter(Boolean).join(" · ")}
                     </div>
                   </div>
@@ -265,16 +265,16 @@ export default function ScrappedTalentPage() {
 
                 {/* 직군: 1행 매장직/사무직 배지, 2행 세부직군 */}
                 <div style={cell(FLEX.job)}>
-                  <span style={{ ...clamp2, fontSize: 12, color: "#555" }}>{t.job_category || "—"}</span>
+                  <span style={{ ...clamp2, fontSize: 13, color: "#555" }}>{t.job_category || "—"}</span>
                 </div>
 
                 {/* 지역 */}
-                <div style={{ ...cell(FLEX.region), fontSize: 12, color: "#999" }}>
+                <div style={{ ...cell(FLEX.region), fontSize: 13, color: "#999" }}>
                   <span style={clamp2}>{region}</span>
                 </div>
 
                 {/* 최근경력 */}
-                <div style={{ ...cell(FLEX.career), fontSize: 12 }}>
+                <div style={{ ...cell(FLEX.career), fontSize: 13 }}>
                   {t.careerDetail ? (
                     <>
                       <div style={{ ...clamp1, fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
@@ -286,7 +286,7 @@ export default function ScrappedTalentPage() {
                 </div>
 
                 {/* 연락처 */}
-                <div style={{ ...cell(FLEX.contact), fontSize: 12 }}>
+                <div style={{ ...cell(FLEX.contact), fontSize: 13 }}>
                   <div style={{ ...clamp1, color: email ? "#333" : "#ccc", marginBottom: 2 }}>
                     {email || "이메일 없음"}
                   </div>
@@ -299,7 +299,7 @@ export default function ScrappedTalentPage() {
                 <div style={{ width: W_ACTION, flexShrink: 0, height: ROW_H, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <button
-                      style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 13, fontWeight: 500, padding: "2px 4px" }}
+                      style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
                       onClick={(e) => { e.stopPropagation(); setSelected(t); }}
                     >
                       <FileText size={14} />
@@ -320,12 +320,12 @@ export default function ScrappedTalentPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 12, textDecoration: "none", fontWeight: 500 }}
+                      style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}
                     >
                       <Paperclip size={13} /><span>포트폴리오</span>
                     </a>
                   ) : (
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 12 }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
                       <Paperclip size={13} /><span>포트폴리오</span>
                     </span>
                   )}

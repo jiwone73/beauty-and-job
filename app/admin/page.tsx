@@ -17,7 +17,7 @@ const PIE_COLORS = ["#5f0080", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5
 
 // 차트 좌상단 단위 라벨 (recharts Y축 라벨 대신 — 항상 안정적으로 보임)
 const unitLabelStyle: React.CSSProperties = {
-  position: "absolute", top: 6, left: 12, fontSize: 11, color: "#9ca3af", zIndex: 2,
+  position: "absolute", top: 6, left: 12, fontSize: 12, color: "#9ca3af", zIndex: 2,
 };
 const CHART_MARGIN = { top: 14, right: 8, left: 0, bottom: 0 };
 
@@ -46,7 +46,7 @@ function RangeToggle({ range, onChange }: { range: string; onChange: (r: "7d" | 
       {([["7d", "7일"], ["1m", "1개월"], ["3m", "3개월"], ["1y", "1년"]] as const).map(([val, label]) => (
         <button key={val} onClick={() => onChange(val)}
           style={{
-            padding: "3px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600,
+            padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600,
             cursor: "pointer", border: "1px solid #e5e0eb",
             background: range === val ? "#7c3aed" : "#fff",
             color: range === val ? "#fff" : "#7c3aed",
@@ -66,7 +66,7 @@ function PieCard({ title, data, unit, colors, caption }: {
     <div className="admin-card">
       <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2 className="admin-card-title">{title}</h2>
-        {caption && <span style={{ fontSize: 11, color: "#9ca3af" }}>{caption}</span>}
+        {caption && <span style={{ fontSize: 12, color: "#9ca3af" }}>{caption}</span>}
       </div>
       <div style={{ padding: "16px 8px", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ flex: "0 0 45%" }}>
@@ -81,7 +81,7 @@ function PieCard({ title, data, unit, colors, caption }: {
         </div>
         <div style={{
           flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: "6px 8px", fontSize: 11, alignContent: "center",
+          gap: "6px 8px", fontSize: 12, alignContent: "center",
         }}>
           {data.map((d, i) => (
             <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 5, minWidth: 0 }}>
@@ -124,7 +124,7 @@ function TrendCard({
       <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2 className="admin-card-title">{title}</h2>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {subFilter && <span style={{ fontSize: 11, color: "#888" }}>{subFilter}</span>}
+          {subFilter && <span style={{ fontSize: 12, color: "#888" }}>{subFilter}</span>}
           <RangeToggle range={range} onChange={setRange} />
         </div>
       </div>
@@ -216,7 +216,7 @@ export default function AdminDashboard() {
 
   // 토글 버튼 공통 스타일
   const tabBtn = (active: boolean) => ({
-    padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600,
+    padding: "4px 12px", borderRadius: 6, fontSize: 13, fontWeight: 600,
     cursor: "pointer", border: "none",
     background: active ? "#5f0080" : "#f0e9f5",
     color: active ? "#fff" : "#5f0080",
@@ -341,7 +341,7 @@ export default function AdminDashboard() {
               <span className="admin-mini-stat-label">{s.label}</span>
               <span className="admin-mini-stat-value">
                 {s.value}<span className="admin-mini-unit">{s.unit}</span>
-                {(s as any).sub && <span style={{ fontSize: 11, color: "#999", fontWeight: 400, marginLeft: 6 }}>({(s as any).sub})</span>}
+                {(s as any).sub && <span style={{ fontSize: 12, color: "#999", fontWeight: 400, marginLeft: 6 }}>({(s as any).sub})</span>}
               </span>
             </>
           );
@@ -367,8 +367,8 @@ export default function AdminDashboard() {
           return (
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={data} margin={CHART_MARGIN}>
-                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="day" tick={{ fontSize: 13 }} />
+                <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
                 <Tooltip formatter={(v) => [`${v}명`, "신규 가입"]} />
                 <Line type="monotone" dataKey="개인" stroke="#5f0080" strokeWidth={2.5}
                   dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
@@ -385,8 +385,8 @@ export default function AdminDashboard() {
           return (
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={data} margin={CHART_MARGIN}>
-                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="day" tick={{ fontSize: 13 }} />
+                <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
                 <Tooltip formatter={(v) => [`${v}건`, "입사지원"]} />
                 <Line type="monotone" dataKey="지원수" stroke="#10b981" strokeWidth={2.5}
                   dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
@@ -408,11 +408,11 @@ export default function AdminDashboard() {
             <span style={unitLabelStyle}>명</span>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={demographics} margin={CHART_MARGIN}>
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 13 }} />
+                <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
                 <Tooltip formatter={(v) => [`${v}명`, ""]} />
                 <Legend iconType="circle" iconSize={8}
-                  formatter={(v) => <span style={{ fontSize: 12 }}>{v}</span>} />
+                  formatter={(v) => <span style={{ fontSize: 13 }}>{v}</span>} />
                 <Bar dataKey="남성" stackId="a" fill="#0ea5e9" maxBarSize={48} />
                 <Bar dataKey="여성" stackId="a" fill="#ec4899" maxBarSize={48} />
                 <Bar dataKey="미입력" stackId="a" fill="#cbd5e1" radius={[6, 6, 0, 0]} maxBarSize={48} />
@@ -505,8 +505,8 @@ export default function AdminDashboard() {
           return (
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={data} margin={CHART_MARGIN}>
-                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="day" tick={{ fontSize: 13 }} />
+                <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
                 <Tooltip formatter={(v) => [`${v}개사`, "신규 가입"]} />
                 <Line type="monotone" dataKey="기업" stroke="#7c3aed" strokeWidth={2.5}
                   dot={{ fill: "#7c3aed", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
@@ -532,8 +532,8 @@ export default function AdminDashboard() {
             return (
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={data} margin={CHART_MARGIN}>
-                  <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                  <XAxis dataKey="day" tick={{ fontSize: 13 }} />
+                  <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
                   <Tooltip formatter={(v) => [`${v}건`, "공고 등록"]} />
                   <Line type="monotone" dataKey="등록수" stroke="#f59e0b" strokeWidth={2.5}
                     dot={{ fill: "#f59e0b", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
@@ -555,8 +555,8 @@ export default function AdminDashboard() {
             <span style={unitLabelStyle}>개사</span>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={companySizeData} margin={CHART_MARGIN}>
-                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={50} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} angle={-20} textAnchor="end" height={50} />
+                <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
                 <Tooltip formatter={(v) => [`${v}개사`, ""]} />
                 <Bar dataKey="value" fill="#0ea5e9" radius={[6, 6, 0, 0]} maxBarSize={40} />
               </BarChart>

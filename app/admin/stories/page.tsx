@@ -222,19 +222,19 @@ export default function AdminStoriesPage() {
             <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
               <button onClick={toggleAutogen} disabled={autogenSaving}
                 title="현장이야기 매일 자동 생성+게시 on/off"
-                style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 13, fontWeight: 600, color: "#555", cursor: "pointer" }}>
+                style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 14, fontWeight: 600, color: "#555", cursor: "pointer" }}>
                 자동 게시
                 <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#5f0080" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
                   <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
                 </span>
               </button>
               <button onClick={generateAI} disabled={generating}
-                style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                 {generating ? "생성 중..." : "✨ AI 글 생성"}
               </button>
               {tab === "posts" && (
                 <button onClick={() => setWriting((v) => !v)}
-                  style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                  style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                   {writing ? "닫기" : "+ 발제 글 작성"}
                 </button>
               )}
@@ -247,7 +247,7 @@ export default function AdminStoriesPage() {
             <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
               {CATEGORIES.map((c) => (
                 <button key={c} onClick={() => setForm((f) => ({ ...f, category: c }))}
-                  style={{ padding: "6px 14px", borderRadius: 100, fontSize: 13, cursor: "pointer",
+                  style={{ padding: "6px 14px", borderRadius: 100, fontSize: 14, cursor: "pointer",
                     border: form.category === c ? "1.5px solid #5f0080" : "1px solid #ddd",
                     background: form.category === c ? "#5f0080" : "#fff",
                     color: form.category === c ? "#fff" : "#666" }}>
@@ -257,13 +257,13 @@ export default function AdminStoriesPage() {
             </div>
             <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               placeholder="제목 (선택)"
-              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
+              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 8, boxSizing: "border-box" }} />
             <textarea value={form.body} onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
               placeholder="발제 내용을 입력하세요. 질문이나 화두를 던지면 댓글이 잘 붙어요."
               rows={4}
-              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
+              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
             <button onClick={submitPost} disabled={busy}
-              style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: busy ? "#ccc" : "#5f0080", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+              style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: busy ? "#ccc" : "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
               게시하기
             </button>
           </div>
@@ -272,7 +272,7 @@ export default function AdminStoriesPage() {
         {loading ? (
           <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
         ) : tab === "comments" ? (
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
                 <th style={th}>작성자</th><th style={th}>내용</th><th style={th}>원글</th><th style={th}>신고</th><th style={th}>상태</th><th style={th}>관리</th>
@@ -285,7 +285,7 @@ export default function AdminStoriesPage() {
                   <td style={{ ...td, maxWidth: 300, color: "#444" }}>{c.body}</td>
                   <td style={{ ...td, maxWidth: 160, color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.post_title || "-"}</td>
                   <td style={{ ...td, color: c.report_count > 0 ? "#d32f2f" : "#bbb", fontWeight: 700 }}>{c.report_count}</td>
-                  <td style={td}><span style={{ fontSize: 12, color: c.status === "hidden" ? "#d32f2f" : "#2e7d32", fontWeight: 600 }}>{c.status === "hidden" ? "숨김" : "노출"}</span></td>
+                  <td style={td}><span style={{ fontSize: 13, color: c.status === "hidden" ? "#d32f2f" : "#2e7d32", fontWeight: 600 }}>{c.status === "hidden" ? "숨김" : "노출"}</span></td>
                   <td style={td}>
                     {c.status === "hidden"
                       ? <button onClick={() => changeStatus("comment", c.id, "visible")} disabled={busy} style={btnGreen}>복구</button>
@@ -307,7 +307,7 @@ export default function AdminStoriesPage() {
                 placeholder="제목·내용 검색"
                 style={{
                   width: "100%", padding: "8px 34px 8px 12px", borderRadius: 8,
-                  border: "1px solid #ddd", fontSize: 13, boxSizing: "border-box", outline: "none",
+                  border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box", outline: "none",
                 }}
               />
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -320,7 +320,7 @@ export default function AdminStoriesPage() {
               {["전체", "공감", "꿀팁", "질문", "정보"].map((c) => (
                 <button key={c} onClick={() => setCatFilter(c)}
                   style={{
-                    padding: "7px 13px", borderRadius: 8, fontSize: 13, cursor: "pointer",
+                    padding: "7px 13px", borderRadius: 8, fontSize: 14, cursor: "pointer",
                     border: catFilter === c ? "1.5px solid #5f0080" : "1px solid #ddd",
                     background: catFilter === c ? "#5f0080" : "#fff",
                     color: catFilter === c ? "#fff" : "#666",
@@ -338,14 +338,14 @@ export default function AdminStoriesPage() {
                 padding: "7px 14px", borderRadius: 8, border: "none",
                 background: checked.length ? "#e74c3c" : "#ededed",
                 color: checked.length ? "#fff" : "#aaa",
-                fontSize: 13, fontWeight: 600,
+                fontSize: 14, fontWeight: 600,
                 cursor: checked.length ? "pointer" : "default",
               }}
             >
               선택 삭제{checked.length ? ` (${checked.length})` : ""}
             </button>
           </div>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14.5 }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #eee", textAlign: "left", color: "#888" }}>
                 <th style={{ ...th, width: 36, textAlign: "center" }}>
@@ -366,7 +366,7 @@ export default function AdminStoriesPage() {
                   <td style={td}>{p.category}</td>
                   <td style={{ ...td, maxWidth: 340, cursor: "pointer" }} onClick={() => openExpand(p)}>
                     <div style={{ fontWeight: 600, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
-                      <span style={{ color: "#bbb", fontSize: 11 }}>{expandedId === p.id ? "▼" : "▶"}</span>
+                      <span style={{ color: "#bbb", fontSize: 12 }}>{expandedId === p.id ? "▼" : "▶"}</span>
                       {p.title || "(제목 없음)"}
                     </div>
                     <div style={{ color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 320 }}>{p.body}</div>
@@ -382,7 +382,7 @@ export default function AdminStoriesPage() {
                       <td style={{ ...td, color: p.report_count > 0 ? "#d32f2f" : "#bbb", fontWeight: p.report_count > 0 ? 700 : 400 }}>{p.report_count}</td>
                     </>
                   )}
-                  <td style={td}><span style={{ fontSize: 12, color: p.status === "hidden" ? "#d32f2f" : p.status === "pending" ? "#e65100" : "#2e7d32", fontWeight: 600 }}>{STATUS_LABELS[p.status] || p.status}</span></td>
+                  <td style={td}><span style={{ fontSize: 13, color: p.status === "hidden" ? "#d32f2f" : p.status === "pending" ? "#e65100" : "#2e7d32", fontWeight: 600 }}>{STATUS_LABELS[p.status] || p.status}</span></td>
                   <td style={td}>
                     {tab === "pending" ? (
                       <div style={{ display: "flex", gap: 6 }}>
@@ -402,7 +402,7 @@ export default function AdminStoriesPage() {
                       <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                         {CATEGORIES.map((c) => (
                           <button key={c} onClick={() => setEdit((e) => ({ ...e, category: c }))}
-                            style={{ padding: "5px 13px", borderRadius: 100, fontSize: 12.5, cursor: "pointer",
+                            style={{ padding: "5px 13px", borderRadius: 100, fontSize: 13.5, cursor: "pointer",
                               border: edit.category === c ? "1.5px solid #5f0080" : "1px solid #ddd",
                               background: edit.category === c ? "#5f0080" : "#fff",
                               color: edit.category === c ? "#fff" : "#666" }}>
@@ -412,23 +412,23 @@ export default function AdminStoriesPage() {
                       </div>
                       <input value={edit.title} onChange={(e) => setEdit((s) => ({ ...s, title: e.target.value }))}
                         placeholder="제목 (선택)"
-                        style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
+                        style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 8, boxSizing: "border-box" }} />
                       <textarea value={edit.body} onChange={(e) => setEdit((s) => ({ ...s, body: e.target.value }))}
                         rows={5}
-                        style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, lineHeight: 1.7, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
+                        style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, lineHeight: 1.7, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
                       <div style={{ display: "flex", gap: 8 }}>
                         <button onClick={() => saveEdit(p.id)} disabled={busy}
-                          style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}>
+                          style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14.5, fontWeight: 600, cursor: "pointer" }}>
                           저장
                         </button>
                         {tab === "pending" && (
                           <button onClick={() => saveEdit(p.id, "published")} disabled={busy}
-                            style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#2e7d32", color: "#fff", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}>
+                            style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#2e7d32", color: "#fff", fontSize: 14.5, fontWeight: 600, cursor: "pointer" }}>
                             저장 후 승인
                           </button>
                         )}
                         <button onClick={() => setExpandedId(null)}
-                          style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#888", fontSize: 13.5, cursor: "pointer", marginLeft: "auto" }}>
+                          style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#888", fontSize: 14.5, cursor: "pointer", marginLeft: "auto" }}>
                           닫기
                         </button>
                       </div>
@@ -451,15 +451,15 @@ export default function AdminStoriesPage() {
   );
 }
 
-const th: React.CSSProperties = { padding: "10px 8px", fontWeight: 600, fontSize: 12.5 };
+const th: React.CSSProperties = { padding: "10px 8px", fontWeight: 600, fontSize: 13.5 };
 const td: React.CSSProperties = { padding: "12px 8px", verticalAlign: "middle" };
 function tabStyle(active: boolean): React.CSSProperties {
   return {
-    padding: "8px 18px", borderRadius: 8, fontSize: 14, cursor: "pointer", fontWeight: 600,
+    padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontWeight: 600,
     border: active ? "1.5px solid #5f0080" : "1px solid #ddd",
     background: active ? "#5f0080" : "#fff",
     color: active ? "#fff" : "#666",
   };
 }
-const btnGreen: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#2e7d32", color: "#fff", fontSize: 12.5, cursor: "pointer" };
-const btnRed: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#d32f2f", color: "#fff", fontSize: 12.5, cursor: "pointer" };
+const btnGreen: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#2e7d32", color: "#fff", fontSize: 13.5, cursor: "pointer" };
+const btnRed: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#d32f2f", color: "#fff", fontSize: 13.5, cursor: "pointer" };

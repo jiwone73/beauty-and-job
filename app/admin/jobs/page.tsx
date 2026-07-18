@@ -231,7 +231,7 @@ function AdminJobsPageInner() {
             disabled={checkedIds.size === 0}
             style={{
               display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8,
-              border: "none", fontSize: 13, fontWeight: 600,
+              border: "none", fontSize: 14, fontWeight: 600,
               cursor: checkedIds.size === 0 ? "not-allowed" : "pointer",
               background: checkedIds.size === 0 ? "#eee" : "#d32f2f",
               color: checkedIds.size === 0 ? "#aaa" : "#fff",
@@ -293,7 +293,7 @@ function AdminJobsPageInner() {
                         <div style={{
                           width: 26, height: 26, borderRadius: 6, background: "#f3e8ff",
                           display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 11, color: "#7c3aed", flexShrink: 0
+                          fontSize: 12, color: "#7c3aed", flexShrink: 0
                         }}>
                           {job.company_name.charAt(0)}
                         </div>
@@ -302,7 +302,7 @@ function AdminJobsPageInner() {
                         style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#5f0080", cursor: "pointer", fontWeight: 400 }}
                         onClick={() => job.company_id && openCompany(job.company_id)}>
                         {job.company_name}
-                        <span style={{ fontSize: 11, fontWeight: 500, color: "#999" }}>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
                           {job.job_type === "STORE" ? "매장" : "기업"}
                         </span>
                       </div>
@@ -312,7 +312,7 @@ function AdminJobsPageInner() {
                   <td>
                     {(() => {
                       const b = productBadge(job.product_type);
-                      return <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, background: b.bg, color: b.color, whiteSpace: "nowrap" }}>{b.label}</span>;
+                      return <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 9px", borderRadius: 6, background: b.bg, color: b.color, whiteSpace: "nowrap" }}>{b.label}</span>;
                     })()}
                   </td>
                   {/* 직군 */}

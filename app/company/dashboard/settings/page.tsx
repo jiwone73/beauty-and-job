@@ -353,7 +353,7 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row-2col">
               <div className="admin-form-row">
                 <label className="admin-form-label">회사 로고</label>
-                <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
+                <p style={{fontSize:"14px", color:"#888", margin:"0 0 12px"}}>
                   공고 상단에 표시되는 대표 이미지예요. 한 번 등록하면 모든 공고에 자동 적용돼요. (JPG·PNG·WebP, 2MB 이하)
                 </p>
                 <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"auto"}}>
@@ -364,7 +364,7 @@ export default function CompanySettingsPage() {
                       <img src={logoUrl} alt="회사 로고"
                         style={{width:"100%", height:"100%", objectFit:"cover"}} />
                     ) : (
-                      <span style={{fontSize:"28px", fontWeight:700, color:"#c4b5d4"}}>
+                      <span style={{fontSize:"29px", fontWeight:700, color:"#c4b5d4"}}>
                         {form.company_name?.[0] || "?"}
                       </span>
                     )}
@@ -372,7 +372,7 @@ export default function CompanySettingsPage() {
                   <div style={{display:"flex", flexDirection:"column", gap:"8px"}}>
                     <label style={{display:"inline-flex", alignItems:"center", gap:"6px",
                       padding:"8px 14px", border:"1.5px solid #c4b5d4", borderRadius:"8px",
-                      cursor: logoUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"13px",
+                      cursor: logoUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"14px",
                       fontWeight:500, background:"#fff", width:"fit-content"}}>
                       {logoUploading ? "업로드 중..." : logoUrl ? "로고 변경" : "로고 등록"}
                       <input type="file" accept="image/jpeg,image/png,image/webp"
@@ -381,7 +381,7 @@ export default function CompanySettingsPage() {
                     {logoUrl && (
                       <button type="button" onClick={handleLogoDelete}
                         style={{padding:"8px 14px", border:"1px solid #eee", borderRadius:"8px",
-                          cursor:"pointer", color:"#888", fontSize:"13px", background:"#fff",
+                          cursor:"pointer", color:"#888", fontSize:"14px", background:"#fff",
                           width:"fit-content"}}>
                         삭제
                       </button>
@@ -392,7 +392,7 @@ export default function CompanySettingsPage() {
 
               <div className="admin-form-row">
                 <label className="admin-form-label">공고 노출 이미지</label>
-                <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
+                <p style={{fontSize:"14px", color:"#888", margin:"0 0 12px"}}>
                   공고 카드와 상단에 크게 표시되는 대표 비주얼이에요. 매장 사진이나 분위기 이미지를 넣어보세요. 모든 공고에 자동 적용돼요. (가로형 권장, JPG·PNG·WebP, 2MB 이하)
                 </p>
                 <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"auto"}}>
@@ -404,14 +404,14 @@ export default function CompanySettingsPage() {
                         style={{width:"100%", height:"100%", objectFit:"cover"}} />
                     ) : (
                       <div style={{position:"relative", width:"100%", height:"100%", background:"linear-gradient(135deg,#f3eefb,#e7d8f5)"}}>
-                        <span style={{position:"absolute", left:"10px", bottom:"8px", fontSize:"13px", fontWeight:700, color:"#5f0080"}}>{form.company_name || "회사명"}</span>
+                        <span style={{position:"absolute", left:"10px", bottom:"8px", fontSize:"14px", fontWeight:700, color:"#5f0080"}}>{form.company_name || "회사명"}</span>
                       </div>
                     )}
                   </div>
                   <div style={{display:"flex", flexDirection:"column", gap:"8px"}}>
                     <label style={{display:"inline-flex", alignItems:"center", gap:"6px",
                       padding:"8px 14px", border:"1.5px solid #c4b5d4", borderRadius:"8px",
-                      cursor: coverUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"13px",
+                      cursor: coverUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"14px",
                       fontWeight:500, background:"#fff", width:"fit-content"}}>
                       {coverUploading ? "업로드 중..." : coverUrl ? "이미지 변경" : "이미지 등록"}
                       <input type="file" accept="image/jpeg,image/png,image/webp"
@@ -420,7 +420,7 @@ export default function CompanySettingsPage() {
                     {coverUrl && (
                       <button type="button" onClick={handleCoverDelete}
                         style={{padding:"8px 14px", border:"1px solid #eee", borderRadius:"8px",
-                          cursor:"pointer", color:"#888", fontSize:"13px", background:"#fff",
+                          cursor:"pointer", color:"#888", fontSize:"14px", background:"#fff",
                           width:"fit-content"}}>
                         삭제
                       </button>
@@ -451,7 +451,7 @@ export default function CompanySettingsPage() {
                     <label className="admin-form-label" style={{ margin: 0 }}>주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                     {form.address && (
                       <button type="button" onClick={handleClearAddress}
-                        style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: "2px 4px" }}>
+                        style={{ fontSize: "13px", color: "#999", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: "2px 4px" }}>
                         초기화
                       </button>
                     )}
@@ -466,7 +466,7 @@ export default function CompanySettingsPage() {
                       value={form.address_detail}
                       onChange={(e) => setForm({ ...form, address_detail: e.target.value })} />
                   )}
-                  <p style={{fontSize:"12px", color:"#888", margin:"6px 0 0"}}>
+                  <p style={{fontSize:"13px", color:"#888", margin:"6px 0 0"}}>
                     주소 검색 시 도로명 주소가 자동 입력돼요. 층·호수는 직접 추가하세요.
                   </p>
                 </div>
@@ -559,35 +559,35 @@ export default function CompanySettingsPage() {
                       style={{ background: "#f5f5f5", color: "#888", flex: 1 }} />
                     <button type="button"
                       onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailPw(""); setEmailCode(""); setEmailMsg(""); }}
-                      style={{ flexShrink: 0, padding: "0 16px", borderRadius: 8, border: "1.5px solid #c4b5d4", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                      style={{ flexShrink: 0, padding: "0 16px", borderRadius: 8, border: "1.5px solid #c4b5d4", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
                       변경
                     </button>
                   </div>
-                  <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>변경 시 새 이메일로 인증코드가 발송돼요</p>
+                  <p style={{ fontSize: "12px", color: "#aaa", marginTop: "4px" }}>변경 시 새 이메일로 인증코드가 발송돼요</p>
                 </div>
                 <div className="admin-form-row">
                   <label className="admin-form-label">사업자등록번호</label>
                   <input className="admin-form-input" value={info?.business_number || ""} disabled
                     style={{ background: "#f5f5f5", color: "#888" }} />
-                  <p style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
+                  <p style={{ fontSize: "12px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
                 </div>
               </div>
 
               <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px" }}>
                 <label className="admin-form-label">비밀번호</label>
                 <button type="button" onClick={() => setShowPwModal(true)}
-                  style={{ alignSelf: "flex-start", marginTop: "4px", padding: "9px 18px", borderRadius: "8px", border: "1.5px solid #c4b5d4", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                  style={{ alignSelf: "flex-start", marginTop: "4px", padding: "9px 18px", borderRadius: "8px", border: "1.5px solid #c4b5d4", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                   비밀번호 변경
                 </button>
               </div>
 
               <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px" }}>
                 <label className="admin-form-label">회원 탈퇴</label>
-                <p style={{ fontSize: "13px", color: "#888", margin: "4px 0 12px" }}>
+                <p style={{ fontSize: "14px", color: "#888", margin: "4px 0 12px" }}>
                   탈퇴 시 계정과 등록한 채용공고가 비활성화되며, 되돌릴 수 없어요.
                 </p>
                 <button type="button" onClick={() => setShowWithdraw(true)}
-                  style={{ alignSelf: "flex-start", padding: "9px 18px", borderRadius: "8px", border: "1.5px solid #e74c3c", background: "#fff", color: "#e74c3c", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                  style={{ alignSelf: "flex-start", padding: "9px 18px", borderRadius: "8px", border: "1.5px solid #e74c3c", background: "#fff", color: "#e74c3c", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                   회원 탈퇴
                 </button>
               </div>
@@ -599,7 +599,7 @@ export default function CompanySettingsPage() {
       {showEmailModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
           <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 16px" }}>이메일 변경</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 16px" }}>이메일 변경</h3>
             {emailStep === 1 ? (
               <>
                 <input type="email" className="admin-form-input" placeholder="새 이메일 주소"
@@ -611,20 +611,20 @@ export default function CompanySettingsPage() {
               <input className="admin-form-input" placeholder="인증코드 6자리" inputMode="numeric" maxLength={6}
                 value={emailCode} onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))} style={{ marginBottom: 4 }} />
             )}
-            {emailMsg && <p style={{ fontSize: 12, color: "#5f0080", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
+            {emailMsg && <p style={{ fontSize: 13, color: "#5f0080", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => setShowEmailModal(false)} disabled={emailBusy}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
                 취소
               </button>
               {emailStep === 1 ? (
                 <button onClick={handleSendEmailCode} disabled={emailBusy}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 16, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
                   {emailBusy ? "발송 중..." : "인증코드 받기"}
                 </button>
               ) : (
                 <button onClick={handleVerifyEmailCode} disabled={emailBusy}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 16, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
                   {emailBusy ? "확인 중..." : "변경하기"}
                 </button>
               )}
@@ -636,7 +636,7 @@ export default function CompanySettingsPage() {
       {showPwModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
           <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 16px" }}>비밀번호 변경</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 16px" }}>비밀번호 변경</h3>
             <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="현재 비밀번호"
               value={pwForm.current_password}
               onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })} />
@@ -648,17 +648,17 @@ export default function CompanySettingsPage() {
               style={{ marginTop: "8px" }}
               value={pwForm.confirm_password}
               onChange={(e) => setPwForm({ ...pwForm, confirm_password: e.target.value })} />
-            <label style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#666", cursor: "pointer" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "14px", color: "#666", cursor: "pointer" }}>
               <input type="checkbox" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} />
               비밀번호 표시
             </label>
             <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
               <button onClick={() => setShowPwModal(false)} disabled={pwSaving}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
                 취소
               </button>
               <button onClick={handleChangePassword} disabled={pwSaving}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 16, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
                 {pwSaving ? "변경 중..." : "변경하기"}
               </button>
             </div>
@@ -669,8 +669,8 @@ export default function CompanySettingsPage() {
       {showWithdraw && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
           <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 400, width: "100%" }}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 10px" }}>정말 탈퇴하시겠어요?</h3>
-            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: "0 0 20px" }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 10px" }}>정말 탈퇴하시겠어요?</h3>
+            <p style={{ fontSize: 15, color: "#666", lineHeight: 1.6, margin: "0 0 20px" }}>
               탈퇴하면 계정과 등록한 채용공고가 비활성화되고, 되돌릴 수 없어요.
             </p>
             <input type="password" className="admin-form-input" placeholder="현재 비밀번호 입력"
@@ -678,11 +678,11 @@ export default function CompanySettingsPage() {
               style={{ marginBottom: 16 }} />
             <div style={{ display: "flex", gap: 8 }}>
               <button onClick={() => { setShowWithdraw(false); setWithdrawPw(""); }} disabled={withdrawing}
-                style={{ flex: 1, height: 48, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                style={{ flex: 1, height: 48, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
                 취소
               </button>
               <button onClick={handleWithdraw} disabled={withdrawing}
-                style={{ flex: 1, height: 48, borderRadius: 8, border: "none", background: "#e74c3c", color: "#fff", fontSize: 15, fontWeight: 600, cursor: withdrawing ? "not-allowed" : "pointer", opacity: withdrawing ? 0.7 : 1 }}>
+                style={{ flex: 1, height: 48, borderRadius: 8, border: "none", background: "#e74c3c", color: "#fff", fontSize: 16, fontWeight: 600, cursor: withdrawing ? "not-allowed" : "pointer", opacity: withdrawing ? 0.7 : 1 }}>
                 {withdrawing ? "처리 중..." : "탈퇴하기"}
               </button>
             </div>
@@ -692,7 +692,7 @@ export default function CompanySettingsPage() {
 
       <div style={{ margin: "24px 0 40px", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
         {savedMessage && (
-          <span style={{ color: "#10b981", fontSize: "14px", fontWeight: 600 }}>
+          <span style={{ color: "#10b981", fontSize: "15px", fontWeight: 600 }}>
             {savedMessage}
           </span>
         )}

@@ -284,7 +284,7 @@ function AdminMembersPageInner() {
               padding: "6px 14px", borderRadius: 6, border: "none",
               background: checked.length ? "#5f0080" : "#ededed",
               color: checked.length ? "#fff" : "#aaa",
-              fontSize: 13, fontWeight: 600,
+              fontSize: 14, fontWeight: 600,
               cursor: checked.length ? "pointer" : "default",
             }}
           >
@@ -299,7 +299,7 @@ function AdminMembersPageInner() {
               padding: "6px 14px", borderRadius: 6, border: "none",
               background: checked.length ? "#e74c3c" : "#ededed",
               color: checked.length ? "#fff" : "#aaa",
-              fontSize: 13, fontWeight: 600,
+              fontSize: 14, fontWeight: 600,
               cursor: checked.length ? "pointer" : "default",
             }}
           >
@@ -349,7 +349,7 @@ function AdminMembersPageInner() {
                     {/* 이름: 아바타 + 이름·성별(1행) / 나이·경력(2행) */}
                     <td className="admin-td-brand">
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                           {m.avatar_url ? (
                             <img src={m.avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           ) : (
@@ -365,11 +365,11 @@ function AdminMembersPageInner() {
                               <span style={{ fontWeight: 600 }}>{m.name}</span>
                             )}
                             {gender && (
-                              <span style={{ fontSize: 12, color: "#888" }}>{gender}</span>
+                              <span style={{ fontSize: 13, color: "#888" }}>{gender}</span>
                             )}
                           </div>
                           {/* 2행: 나이 · 경력 */}
-                          <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                          <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
                             {age ? `${age}세` : ""}
                             {age && careerYears ? " · " : ""}
                             {careerYears || ""}
@@ -381,7 +381,7 @@ function AdminMembersPageInner() {
                     {/* 직군: 대분류 / 세부 */}
                     <td className="admin-td-date">
                       <div>{m.job_type === "STORE" ? "매장직" : m.job_type === "OFFICE" ? "사무직" : "-"}</div>
-                      <div style={{ marginTop: 2, fontSize: 12, color: "#888", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis" }} title={m.office_job_areas?.[0] || ""}>
+                      <div style={{ marginTop: 2, fontSize: 13, color: "#888", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis" }} title={m.office_job_areas?.[0] || ""}>
                         {m.office_job_areas && m.office_job_areas.length > 0 ? m.office_job_areas[0] : "-"}
                       </div>
                     </td>
@@ -404,7 +404,7 @@ function AdminMembersPageInner() {
                       {m.recent_company ? (
                         <>
                           <div style={{ fontWeight: 500, maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={m.recent_company}>{m.recent_company}</div>
-                          <div style={{ marginTop: 2, fontSize: 12, color: "#888" }}>
+                          <div style={{ marginTop: 2, fontSize: 13, color: "#888" }}>
                             {fmtYearMonth(m.recent_start_date)}
                             {m.recent_is_current
                               ? <span style={{ marginLeft: 4, color: "#5f0080", fontWeight: 600 }}>재직중</span>
@@ -413,7 +413,7 @@ function AdminMembersPageInner() {
                           </div>
                         </>
                       ) : (
-                        <span style={{ color: "#ccc", fontSize: 12 }}>
+                        <span style={{ color: "#ccc", fontSize: 13 }}>
                           {m.career_type === "NEWCOMER" ? "신입" : "-"}
                         </span>
                       )}
@@ -424,11 +424,11 @@ function AdminMembersPageInner() {
                       <div>{fmtDate(m.created_at)}</div>
                       <div style={{ marginTop: 4 }}>
                         {m.kakao_id ? (
-                          <span className="admin-badge" style={{ background: "#FEE500", color: "#3A1D1D", fontSize: 11 }}>카카오</span>
+                          <span className="admin-badge" style={{ background: "#FEE500", color: "#3A1D1D", fontSize: 12 }}>카카오</span>
                         ) : m.naver_id ? (
-                          <span className="admin-badge" style={{ background: "#03C75A", color: "#fff", fontSize: 11 }}>네이버</span>
+                          <span className="admin-badge" style={{ background: "#03C75A", color: "#fff", fontSize: 12 }}>네이버</span>
                         ) : (
-                          <span className="admin-badge admin-badge-neutral" style={{ fontSize: 11 }}>이메일</span>
+                          <span className="admin-badge admin-badge-neutral" style={{ fontSize: 12 }}>이메일</span>
                         )}
                       </div>
                     </td>
@@ -442,18 +442,18 @@ function AdminMembersPageInner() {
                         {/* 1행: 이력서 + 스크랩 */}
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           {m.resume_id ? (
-                            <button onClick={() => setSelected(m)} title="이력서 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 13, fontWeight: 500, padding: 0 }}>
+                            <button onClick={() => setSelected(m)} title="이력서 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: 0 }}>
                               <FileText size={15} /><span>이력서</span>
                             </button>
                           ) : (
-                            <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#ccc", fontSize: 13 }}>
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#ccc", fontSize: 14 }}>
                               <FileText size={15} /><span>이력서</span>
                             </span>
                           )}
                           <button
                             onClick={() => m.scrap_count > 0 && setScrapTarget(m)}
                             disabled={!m.scrap_count}
-                            style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "none", border: "none", padding: 0, font: "inherit", fontSize: 12, cursor: m.scrap_count ? "pointer" : "default", color: m.scrap_count ? "#5f0080" : "#ccc" }}
+                            style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "none", border: "none", padding: 0, font: "inherit", fontSize: 13, cursor: m.scrap_count ? "pointer" : "default", color: m.scrap_count ? "#5f0080" : "#ccc" }}
                             title="스크랩한 기업 보기"
                           >
                             <Bookmark size={13} /> {m.scrap_count || 0}
@@ -461,11 +461,11 @@ function AdminMembersPageInner() {
                         </div>
                         {/* 2행: 포트폴리오 */}
                         {m.portfolio_url ? (
-                          <a href={m.portfolio_url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 12, textDecoration: "none", fontWeight: 500 }}>
+                          <a href={m.portfolio_url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
                             <Paperclip size={13} /><span>포트폴리오</span>
                           </a>
                         ) : (
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 12 }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
                             <Paperclip size={13} /><span>포트폴리오</span>
                           </span>
                         )}
@@ -512,8 +512,8 @@ function AdminMembersPageInner() {
         <div onClick={() => setScrapTarget(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
           <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 12, padding: 24, width: 400, maxHeight: "70vh", overflow: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700 }}>{scrapTarget.name}님을 스크랩한 기업</h3>
-              <button onClick={() => setScrapTarget(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, lineHeight: 1, color: "#888" }}>×</button>
+              <h3 style={{ fontSize: 17, fontWeight: 700 }}>{scrapTarget.name}님을 스크랩한 기업</h3>
+              <button onClick={() => setScrapTarget(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 23, lineHeight: 1, color: "#888" }}>×</button>
             </div>
             {scrapLoading ? (
               <div style={{ color: "#888", textAlign: "center", padding: 20 }}>불러오는 중…</div>
@@ -536,7 +536,7 @@ function AdminMembersPageInner() {
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600 }}>{c.name}</div>
-                      <div style={{ fontSize: 12, color: "#aaa", marginTop: 2 }}>
+                      <div style={{ fontSize: 13, color: "#aaa", marginTop: 2 }}>
                         {new Date(c.scrapped_at).toLocaleString("ko-KR", { dateStyle: "medium", timeStyle: "short" })} 스크랩
                       </div>
                     </div>

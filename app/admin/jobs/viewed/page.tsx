@@ -37,7 +37,7 @@ export default function AdminJobsViewedPage() {
                 <td className="admin-td-date">{item.viewedAt}</td>
                 <td className="admin-td-title">{item.jobTitle}</td>
                 <td className="admin-td-brand">{item.company}</td>
-                <td className="admin-td-date">{item.member}<br/><span style={{fontSize:"11px",color:"#aaa"}}>({item.memberId})</span></td>
+                <td className="admin-td-date">{item.member}<br/><span style={{fontSize:"12px",color:"#aaa"}}>({item.memberId})</span></td>
               </tr>
             ))}
           </tbody>

@@ -121,7 +121,7 @@ export default function AdminAdsPage() {
   };
 
   const badge = (status: string) => (
-    <span style={{ fontSize: 12, fontWeight: 600, color: status === "done" ? "#888" : "#5f0080" }}>
+    <span style={{ fontSize: 13, fontWeight: 600, color: status === "done" ? "#888" : "#5f0080" }}>
       {status === "done" ? "완료" : "신규"}
     </span>
   );
@@ -139,7 +139,7 @@ export default function AdminAdsPage() {
         </div>
         {checked.length > 0 && (
           <button onClick={handleDelete}
-            style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
             <Trash2 size={15} /> 선택 삭제 ({checked.length})
           </button>
         )}
@@ -181,15 +181,15 @@ export default function AdminAdsPage() {
                     <input type="checkbox" checked={checked.includes(item.id)} onChange={() => toggleCheck(item.id)} style={{ cursor: "pointer" }} />
                   </td>
                   <td className="admin-td-type">
-                    <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f3eafa", color: "#5f0080", whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f3eafa", color: "#5f0080", whiteSpace: "nowrap" }}>
                       {item.type || "광고"}
                     </span>
                   </td>
                   <td style={{ fontWeight: 600 }}>{item.company_name || "-"}</td>
                   <td>{item.contact_name}</td>
-                  <td style={{ fontSize: 13 }}>{item.phone || "-"}</td>
-                  <td style={{ fontSize: 13, color: "#555", wordBreak: "break-all" }}>{item.email || "-"}</td>
-                  <td style={{ fontSize: 13, color: "#888" }}>{fmtDate(item.created_at)}</td>
+                  <td style={{ fontSize: 14 }}>{item.phone || "-"}</td>
+                  <td style={{ fontSize: 14, color: "#555", wordBreak: "break-all" }}>{item.email || "-"}</td>
+                  <td style={{ fontSize: 14, color: "#888" }}>{fmtDate(item.created_at)}</td>
                   <td>{badge(item.status)}</td>
                 </tr>
               ))}
@@ -203,13 +203,13 @@ export default function AdminAdsPage() {
           <div className="cv-modal" style={{ maxWidth: 1080, width: "94vw", maxHeight: "95vh" }} onClick={(e) => e.stopPropagation()}>
             <div className="cv-body">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-                <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>사업문의 상세</h2>
-                <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999" }}>✕</button>
+                <h2 style={{ fontSize: 19, fontWeight: 700, margin: 0 }}>사업문의 상세</h2>
+                <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", fontSize: 21, cursor: "pointer", color: "#999" }}>✕</button>
               </div>
               <div style={{ display: "flex", gap: 22, alignItems: "flex-start", flexWrap: "wrap" }}>
                 {/* 왼쪽: 문의 정보 + 내용 */}
                 <div style={{ flex: "1 1 300px", minWidth: 0 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", rowGap: 12, columnGap: 12, fontSize: 14, marginBottom: 18 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", rowGap: 12, columnGap: 12, fontSize: 15, marginBottom: 18 }}>
                 <span style={{ color: "#888" }}>유형</span><span style={{ fontWeight: 600, color: "#5f0080" }}>{selected.type || "광고"}</span>
                 <span style={{ color: "#888" }}>회사명</span><span>{selected.company_name || "-"}</span>
                 <span style={{ color: "#888" }}>담당자</span><span>{selected.contact_name}</span>
@@ -220,31 +220,31 @@ export default function AdminAdsPage() {
                 <span style={{ color: "#888" }}>상태</span><span>{badge(selected.status)}</span>
               </div>
               <div style={{ marginBottom: 18 }}>
-                <div style={{ color: "#888", fontSize: 13, marginBottom: 6 }}>문의 내용</div>
-                <div style={{ background: "#faf7fc", borderRadius: 10, padding: 14, fontSize: 14, lineHeight: 1.7, color: "#333", whiteSpace: "pre-wrap" }}>{selected.message}</div>
+                <div style={{ color: "#888", fontSize: 14, marginBottom: 6 }}>문의 내용</div>
+                <div style={{ background: "#faf7fc", borderRadius: 10, padding: 14, fontSize: 15, lineHeight: 1.7, color: "#333", whiteSpace: "pre-wrap" }}>{selected.message}</div>
               </div>
 
               </div>{/* 왼쪽 끝 */}
               {/* 오른쪽: 답변 작성 */}
               {selected.email ? (
                 <div style={{ flex: "1 1 420px", minWidth: 0, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
-                  <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>답변 메일 작성</div>
+                  <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>답변 메일 작성</div>
                   <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
                     style={{ minHeight: "min(68vh, 720px)", resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
                   <button onClick={sendReply}
-                    style={{ width: "100%", marginTop: 14, padding: "12px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                    style={{ width: "100%", marginTop: 14, padding: "12px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                     답변 메일 보내기
                   </button>
-                  <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 8 }}>
+                  <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
                     메일 앱이 열리며, 보내기와 동시에 상태가 완료로 변경됩니다.
                   </p>
                 </div>
               ) : (
-                <div style={{ flex: "1 1 420px", minWidth: 0, fontSize: 13, color: "#999", textAlign: "center", paddingTop: 40, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
+                <div style={{ flex: "1 1 420px", minWidth: 0, fontSize: 14, color: "#999", textAlign: "center", paddingTop: 40, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
                   이메일 주소가 없어 답변 메일을 보낼 수 없습니다. 전화로 연락해주세요.
                   {selected.status !== "done" && (
                     <button onClick={() => markDone(selected.id)}
-                      style={{ display: "block", width: "100%", marginTop: 12, padding: "10px", background: "#fff", color: "#5f0080", border: "1.5px solid #5f0080", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                      style={{ display: "block", width: "100%", marginTop: 12, padding: "10px", background: "#fff", color: "#5f0080", border: "1.5px solid #5f0080", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
                       완료로 표시
                     </button>
                   )}

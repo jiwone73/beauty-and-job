@@ -113,10 +113,10 @@ export default function CompanyDashboard() {
     <CompanyLayout activePage="dashboard">
       {/* 환영 메시지 */}
       <div style={{ marginBottom: "24px" }}>
-        <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#1a1a1a", marginBottom: "6px" }}>
+        <h1 style={{ fontSize: "23px", fontWeight: 700, color: "#1a1a1a", marginBottom: "6px" }}>
           대시보드
         </h1>
-        <p style={{ fontSize: "14px", color: "#888" }}>
+        <p style={{ fontSize: "15px", color: "#888" }}>
           오늘도 좋은 인재를 만나보세요 👋
         </p>
       </div>
@@ -133,7 +133,7 @@ export default function CompanyDashboard() {
               key={t.value}
               onClick={() => setJobTypeTab(t.value as "전체" | "OFFICE" | "STORE")}
               style={{
-                padding: "8px 18px", borderRadius: "20px", fontSize: "14px", fontWeight: 600,
+                padding: "8px 18px", borderRadius: "20px", fontSize: "15px", fontWeight: 600,
                 border: jobTypeTab === t.value ? "2px solid #5f0080" : "2px solid #e0e0e0",
                 background: jobTypeTab === t.value ? "#5f0080" : "#fff",
                 color: jobTypeTab === t.value ? "#fff" : "#888",
@@ -170,8 +170,8 @@ export default function CompanyDashboard() {
           <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={chartData}>
-                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="day" tick={{ fontSize: 13 }} />
+                <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
                 <Tooltip />
                 <Bar dataKey="지원수" fill="#5f0080" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -272,8 +272,8 @@ function EmptyState({ icon, message, hint, cta }: { icon: React.ReactNode; messa
       <div style={{ display: "inline-flex", padding: 14, borderRadius: "50%", background: "#f7f7f8", color: "#bfbfbf", marginBottom: 12 }}>
         {icon}
       </div>
-      <p style={{ fontSize: 14, color: "#3a3a3a", fontWeight: 500, margin: 0 }}>{message}</p>
-      {hint && <p style={{ fontSize: 12, marginTop: 6, marginBottom: 0 }}>{hint}</p>}
+      <p style={{ fontSize: 15, color: "#3a3a3a", fontWeight: 500, margin: 0 }}>{message}</p>
+      {hint && <p style={{ fontSize: 13, marginTop: 6, marginBottom: 0 }}>{hint}</p>}
       {cta}
     </div>
   );
