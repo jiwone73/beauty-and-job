@@ -128,6 +128,7 @@ export default function AdminAdsPage() {
 
   return (
     <AdminLayout activeMenu="ads">
+      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
         <div className="admin-filter-tabs" style={{ margin: 0 }}>
           {STATUS_TABS.map((t) => (
@@ -197,6 +198,7 @@ export default function AdminAdsPage() {
           </table>
         </div>
       )}
+      </div>
 
       {selected && (
         <div className="cv-overlay">

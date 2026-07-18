@@ -125,6 +125,7 @@ export default function AdminInquiriesPage() {
 
   return (
     <AdminLayout activeMenu="inquiries">
+      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
         <div className="admin-filter-tabs" style={{ margin: 0 }}>
           {STATUS_TABS.map((t) => (
@@ -186,6 +187,7 @@ export default function AdminInquiriesPage() {
           </table>
         </div>
       )}
+      </div>
 
       {selected && (
         <div className="cv-overlay">

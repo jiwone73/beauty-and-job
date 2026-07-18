@@ -241,13 +241,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
               <div className="admin-page-subtitle">{PAGE_SUBTITLES[activeMenu]}</div>
             )}
           </div>
-          <div className="admin-header-right">
-            
-            <div className="admin-profile">
-              <div className="admin-avatar">A</div>
-              <span className="admin-name">관리자</span>
-            </div>
-          </div>
+          <div className="admin-header-right"></div>
         </header>
         <main className="admin-content">{children}</main>
       </div>
