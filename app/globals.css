@@ -5054,7 +5054,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 통계 카드 */
 .admin-stat-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
 }
 .admin-stat-card {
@@ -5108,6 +5108,13 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+}
+/* 좁은 화면에서 차트/카드 그리드 접기 (인라인 3열·2열도 오버라이드) */
+@media (max-width: 1100px) {
+  .admin-dashboard-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 760px) {
+  .admin-dashboard-grid { grid-template-columns: 1fr !important; }
 }
 
 /* 카드 */
