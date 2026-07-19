@@ -3187,7 +3187,7 @@ input[type="range"].career-slider::-moz-range-thumb {
    ============================================ */
 .rp-wrap {
   background: #fff;
-  font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+  font-family: var(--font-sans);
   color: #1a1a1a;
   line-height: 1.6;
   padding: 48px 44px 72px;
@@ -4883,7 +4883,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   min-height: 100vh;
   background: #f5f6fa;
-  font-family: 'Pretendard', sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* 사이드바 */
@@ -6341,7 +6341,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   min-height: 100vh;
   background: #f5f6fa;
-  font-family: 'Pretendard', sans-serif;
+  font-family: var(--font-sans);
 }
 .company-sidebar {
   width: 220px;
