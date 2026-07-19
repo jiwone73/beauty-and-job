@@ -380,8 +380,8 @@ export default function JobPostForm({
                       </button>
                     </div>
                   ) : companyId ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "12px 16px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "8px" }}>
-                      <span style={{ fontSize: "14px", fontWeight: 400, color: "#5f0080" }}>{companyName}</span>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px" }}>
+                      <span style={{ fontSize: "14px", fontWeight: 400, color: "#555" }}>{companyName}</span>
                       <button type="button"
                         onClick={() => { setCompanyId(null); setCompanyName(""); }}
                         style={{ background: "none", border: "none", color: "#888", fontSize: "13px", cursor: "pointer" }}>
@@ -449,13 +449,12 @@ export default function JobPostForm({
                   </div>
                 ) : (
                   <div style={{
-                    padding: "12px 16px", background: "#faf5ff", border: "1px solid #ede0f8",
-                    borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "space-between",
+                    display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px",
                   }}>
-                    <span style={{ fontSize: "14px", fontWeight: 400, color: "#5f0080" }}>
+                    <span style={{ fontSize: "14px", fontWeight: 400, color: "#555" }}>
                       {jobGroupType === "기업" ? "🏢 기업·브랜드 채용" : "🏪 매장·살롱 채용"}
                     </span>
-                    <span style={{ fontSize: "11px", color: "#888" }}>회사 정보에 따라 자동 설정</span>
+                    <span style={{ fontSize: "11px", color: "#aaa" }}>회사 정보에 따라 자동 설정</span>
                   </div>
                 )}
               </div>
@@ -498,11 +497,11 @@ export default function JobPostForm({
               <div className="admin-form-row">
                 <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 <button type="button" onClick={() => setRegionModalOpen(true)}
-                  style={{ width: "100%", textAlign: "left", padding: "10px 14px", border: "1px solid #ddd", borderRadius: "8px", background: "#fff", fontSize: "14px", color: regionList.length ? "#1a1a1a" : "#999", cursor: "pointer" }}>
+                  style={{ width: "100%", textAlign: "right", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: regionList.length ? "#555" : "#bbb", cursor: "pointer" }}>
                   {regionList.length ? `${regionList.length}개 지역 선택됨` : "지역을 선택해주세요"}
                 </button>
                 {regionList.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "8px" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-end", gap: "6px", marginTop: "8px" }}>
                     {regionList.map((r) => (
                       <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "999px", fontSize: "13px", color: "#5f0080" }}>
                         {shortRegion(r)}
@@ -517,12 +516,12 @@ export default function JobPostForm({
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">{jobGroupType === "매장" ? "급여" : "연봉"}</label>
-                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center", justifyContent: "flex-end" }}>
                     <input className="admin-form-input" type="number" disabled={salaryNego}
                       placeholder={salaryNego ? "" : (jobGroupType === "매장" ? "예) 250" : "예) 4000")}
                       value={salaryNego ? "" : form.salary}
                       onChange={(e) => setForm({ ...form, salary: e.target.value })}
-                      style={{ width: 130, flexShrink: 0, height: 42, boxSizing: "border-box" }} />
+                      style={{ width: 130, flexShrink: 0, boxSizing: "border-box" }} />
                     <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap" }}>만원</span>
                   </div>
                   <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "8px", fontSize: "13px", color: "#555", cursor: "pointer" }}>

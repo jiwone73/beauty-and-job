@@ -5394,6 +5394,29 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 2단 배치 → 세로 스택(각 항목 1행) */
 .jobpost-form .admin-form-row-2col { grid-template-columns: 1fr; gap: 0; }
 
+/* 박스 제거 → 프로필처럼 값은 테두리 없이 우측 정렬 텍스트 */
+.jobpost-form .admin-form-input,
+.jobpost-form .admin-form-select {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  box-shadow: none !important;
+  text-align: right;
+  color: #555;
+  font-size: 14px;
+}
+.jobpost-form select.admin-form-select { text-align-last: right; }
+.jobpost-form .admin-form-input::placeholder { color: #bbb; }
+/* 직군/시술분야 선택 트리거도 박스 제거 */
+.jobpost-form .jgf-trigger { border: none !important; background: transparent !important; padding: 0 !important; }
+.jobpost-form .jgf-chips { justify-content: flex-end; }
+/* 내용 우측 정렬 컨테이너 */
+.jobpost-form .admin-form-row:has(> .admin-form-label) > *:not(.admin-form-label) {
+  text-align: right;
+}
+
 /* 헤더형 행(채용 절차·비고)은 구분선만 */
 .jobpost-form .admin-form-row:not(:has(> .admin-form-label)) {
   padding: 14px 0;
