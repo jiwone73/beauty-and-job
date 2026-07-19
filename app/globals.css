@@ -4773,7 +4773,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .applied-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
 .applied-position {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: #555;
   margin: 0;
@@ -4814,7 +4814,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .bookmark-item-left { flex: 1; min-width: 0; }
 .bookmark-brand { font-size: 13px; color: #555; display: block; margin-bottom: 4px; }
 .bookmark-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #555;
   margin: 0 0 6px;
@@ -11153,7 +11153,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .apply-modal-cancel { font-size: 16px; }
   .apply-modal-submit { font-size: 16px; }
   .applied-title { font-size: 16px; }
-  .bookmark-title { font-size: 14px; }
+  .bookmark-title { font-size: 13px; }
   .brand-follow-info strong { font-size: 16px; }
   .admin-card-title { font-size: 16px; }
   .admin-tab1 { font-size: 16px; }
@@ -11238,7 +11238,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .applied-brand { font-size: 13px; }
   .applied-date { font-size: 13px; }
   .bookmark-brand { font-size: 13px; }
-  .bookmark-title { font-size: 14px; }
+  .bookmark-title { font-size: 13px; }
   .bookmark-location { font-size: 13px; }
   .bookmark-deadline { font-size: 14px; }
 }
