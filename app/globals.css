@@ -1199,8 +1199,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .profile-section-title {
   font-size: 16px;
-  font-weight: 700;
-  color: var(--color-text);
+  font-weight: 400;
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1645,7 +1645,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) { .resume-layout { padding: 0; } }
 .resume-section { background: white; border-radius: 12px; padding: 18px; margin-bottom: 12px; }
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.resume-section-title { font-size: 15px; font-weight: 700; color: #5f0080; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
+.resume-section-title { font-size: 16px; font-weight: 400; color: #5f0080; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
 .apply-resume-wrap .resume-section { padding: 16px 0; background: transparent; margin-bottom: 0; }
 .apply-cover-block { padding: 20px 0 0; }
 @media (max-width: 640px) { .apply-cover-block { padding: 18px 0 0; } }
