@@ -629,7 +629,7 @@ export default function ProfilePage() {
                         </div>
                       )}
                     </div>
-                    <p style={{ fontSize: "14px", fontWeight: 500, color: "var(--color-text)", margin: 0 }}>{name || "회원"}</p>
+                    <p style={{ fontSize: "14px", fontWeight: 400, color: "#555", margin: 0 }}>{name || "회원"}</p>
                     {avatarMenu && (
                       <div onClick={(e) => e.stopPropagation()}
                         style={{ position: "absolute", top: "100%", right: 0, marginTop: "6px", zIndex: 30, background: "#fff", border: "1px solid #e0d0f0", borderRadius: "10px", boxShadow: "0 6px 20px rgba(0,0,0,0.12)", padding: "6px", minWidth: "132px" }}>
