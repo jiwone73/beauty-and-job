@@ -5365,6 +5365,40 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-form-row { display: flex; flex-direction: column; gap: 6px; }
 .admin-form-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .admin-form-label { font-size: 13px; font-weight: 400; color: #444; }
+
+/* ── 채용공고 등록/수정 폼: 프로필 기본정보와 동일한 1행(라벨 좌·내용 우) 레이아웃 ── */
+.jobpost-form .company-card-title { color: var(--color-primary); font-weight: 400; font-size: 16px; }
+.jobpost-form .admin-form-label { color: #555; }
+.jobpost-form .admin-form-body { padding: 2px 20px; gap: 0; }
+
+/* 라벨이 직접 자식인 행 → 라벨 좌 / 내용 우 + 하단 구분선 */
+.jobpost-form .admin-form-row:has(> .admin-form-label) {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  column-gap: 16px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.jobpost-form .admin-form-row:has(> .admin-form-label) > .admin-form-label {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  padding-top: 11px;
+  line-height: 1.45;
+}
+.jobpost-form .admin-form-row:has(> .admin-form-label) > *:not(.admin-form-label) {
+  grid-column: 2;
+  min-width: 0;
+}
+
+/* 2단 배치 → 세로 스택(각 항목 1행) */
+.jobpost-form .admin-form-row-2col { grid-template-columns: 1fr; gap: 0; }
+
+/* 헤더형 행(채용 절차·비고)은 구분선만 */
+.jobpost-form .admin-form-row:not(:has(> .admin-form-label)) {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border);
+}
 .admin-form-input,
 .admin-form-select {
   padding: 10px 14px;

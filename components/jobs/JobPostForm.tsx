@@ -354,7 +354,7 @@ export default function JobPostForm({
         </div>
       </div>
 
-      <div className="admin-form-grid">
+      <div className="admin-form-grid jobpost-form">
         {/* ═══ 왼쪽 컬럼: 기본정보 + 상세이미지 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
 
