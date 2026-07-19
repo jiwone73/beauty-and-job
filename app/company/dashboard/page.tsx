@@ -146,7 +146,7 @@ export default function CompanyDashboard() {
         </div>
       )}
 
-      <div style={{ width: "fit-content", maxWidth: "100%" }}>
+      <div style={{ maxWidth: "1280px" }}>
       {/* 통계 카드 */}
       <div className="company-stat-grid">
         {statCards.map((stat) => (
@@ -196,7 +196,7 @@ export default function CompanyDashboard() {
               hint={loading ? "" : "채용공고를 등록하면 지원자가 들어와요"}
             />
           ) : (
-            <table className="company-table">
+            <table className="company-table" style={{ width: "100%" }}>
               <thead>
                 <tr><th>이름</th><th>지원공고</th><th>경력</th><th>지원일</th><th>열람</th></tr>
               </thead>
@@ -242,7 +242,7 @@ export default function CompanyDashboard() {
             }
           />
         ) : (
-          <table className="company-table">
+          <table className="company-table" style={{ width: "100%" }}>
             <thead>
               <tr><th>공고명</th><th>유형</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
             </thead>

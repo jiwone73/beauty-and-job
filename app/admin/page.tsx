@@ -224,6 +224,7 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout activeMenu="dashboard">
+      <div style={{ maxWidth: "1280px" }}>
 
       {/* ── 1. 전체 요약 카드 ── */}
       <div className="admin-stat-grid">
@@ -567,6 +568,7 @@ export default function AdminDashboard() {
         {/* 직군별 채용공고 분포 */}
         <PieCard title="직군별 채용공고 분포" data={jobDist} unit="건" colors={PIE_COLORS} caption="공고 건수 (건)" />
 
+      </div>
       </div>
 
     </AdminLayout>

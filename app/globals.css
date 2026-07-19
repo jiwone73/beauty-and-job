@@ -6607,8 +6607,6 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 테이블 — 관리자와 동일하게 내용 기준 너비(반응형) */
 .company-table { width: auto; max-width: 100%; border-collapse: collapse; }
-/* 표를 담은 카드는 표 너비에 맞춰 축소(내용 기준) */
-.company-card:has(.company-table) { width: fit-content; max-width: 100%; }
 .company-table th {
   padding: 12px 16px;
   font-size: 14px; font-weight: 600; color: #888;
