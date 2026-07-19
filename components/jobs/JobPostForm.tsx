@@ -497,20 +497,12 @@ export default function JobPostForm({
               <div className="admin-form-row">
                 <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 <button type="button" onClick={() => setRegionModalOpen(true)}
-                  style={{ width: "100%", textAlign: "right", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: regionList.length ? "#555" : "#bbb", cursor: "pointer" }}>
-                  {regionList.length ? `${regionList.length}개 지역 선택됨` : "지역을 선택해주세요"}
+                  style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: regionList.length ? "#555" : "#bbb", cursor: "pointer" }}>
+                  <span style={{ textAlign: "right" }}>
+                    {regionList.length ? regionList.map(shortRegion).join(", ") : "지역을 선택해주세요"}
+                  </span>
+                  <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0 }}>›</span>
                 </button>
-                {regionList.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-end", gap: "6px", marginTop: "8px" }}>
-                    {regionList.map((r) => (
-                      <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 10px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "999px", fontSize: "13px", color: "#5f0080" }}>
-                        {shortRegion(r)}
-                        <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
-                          style={{ background: "none", border: "none", color: "#5f0080", cursor: "pointer", fontSize: "14px", lineHeight: "1", padding: 0 }}>×</button>
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
 
               <div className="admin-form-row-2col">
