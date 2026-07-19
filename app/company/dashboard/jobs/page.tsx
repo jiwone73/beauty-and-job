@@ -243,11 +243,11 @@ export default function CompanyJobsPage() {
                         <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:14, fontWeight:500, padding:"2px 4px"}}
                           onClick={() => handleClose(job.id)}><Ban size={13} />마감</button>
                       )}
-                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#5f0080", fontSize:14, fontWeight:500, padding:"2px 4px"}}
+                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#1a1a1a", fontSize:14, fontWeight:500, padding:"2px 4px"}}
                         onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
                         <Edit size={13} />수정
                       </button>
-                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#5f0080", fontSize:14, fontWeight:500, padding:"2px 4px"}}
+                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#1a1a1a", fontSize:14, fontWeight:500, padding:"2px 4px"}}
                         onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
                         <Copy size={13} />복사
                       </button>
