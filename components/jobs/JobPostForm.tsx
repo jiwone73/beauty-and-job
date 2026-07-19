@@ -63,6 +63,9 @@ export default function JobPostForm({
   const [notes, setNotes] = useState("");
   const [benefitTags, setBenefitTags] = useState<string[]>([]);
   const [salaryNego, setSalaryNego] = useState(false);
+  const [salaryModalOpen, setSalaryModalOpen] = useState(false);
+  const [salaryDraft, setSalaryDraft] = useState("");
+  const [salaryNegoDraft, setSalaryNegoDraft] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -508,17 +511,14 @@ export default function JobPostForm({
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">{jobGroupType === "매장" ? "급여" : "연봉"}</label>
-                  <div style={{ display: "flex", gap: "8px", alignItems: "center", justifyContent: "flex-end" }}>
-                    <input className="admin-form-input" type="number" disabled={salaryNego}
-                      placeholder={salaryNego ? "" : (jobGroupType === "매장" ? "예) 250" : "예) 4000")}
-                      value={salaryNego ? "" : form.salary}
-                      onChange={(e) => setForm({ ...form, salary: e.target.value })}
-                      style={{ width: 130, flexShrink: 0, boxSizing: "border-box" }} />
-                    <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap" }}>만원</span>
-                  </div>
-                  <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "8px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                    <input type="checkbox" checked={salaryNego} onChange={(e) => setSalaryNego(e.target.checked)} /> 협의
-                  </label>
+                  <button type="button"
+                    onClick={() => { setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryModalOpen(true); }}
+                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: (salaryNego || form.salary) ? "#555" : "#bbb", cursor: "pointer" }}>
+                    <span style={{ textAlign: "right" }}>
+                      {salaryNego ? "협의" : form.salary ? `${form.salary}만원` : "급여를 입력해주세요"}
+                    </span>
+                    <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0 }}>›</span>
+                  </button>
                 </div>
                 <div className="admin-form-row">
                   <label className="admin-form-label">마감일</label>
@@ -814,6 +814,42 @@ export default function JobPostForm({
             <div style={{ display: "flex", gap: "8px", padding: "16px 20px", borderTop: "1px solid #eee", justifyContent: "flex-end" }}>
               <button className="admin-secondary-btn" onClick={() => setNotesModalOpen(false)}>취소</button>
               <button className="company-primary-btn" onClick={saveNotesModal}>저장</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 급여 입력 모달 ── */}
+      {salaryModalOpen && (
+        <div onClick={() => setSalaryModalOpen(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 1100, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "420px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
+              <span style={{ fontSize: "16px", fontWeight: 400 }}>{jobGroupType === "매장" ? "급여" : "연봉"} 입력</span>
+              <button onClick={() => setSalaryModalOpen(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
+            </div>
+            <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <input className="admin-form-input" type="number" autoFocus disabled={salaryNegoDraft}
+                  placeholder={jobGroupType === "매장" ? "예) 250" : "예) 4000"}
+                  value={salaryNegoDraft ? "" : salaryDraft}
+                  onChange={(e) => setSalaryDraft(e.target.value)}
+                  style={{ flex: 1, height: 44, boxSizing: "border-box", background: salaryNegoDraft ? "#f5f5f5" : "#fff" }} />
+                <span style={{ fontSize: "14px", color: "#666", whiteSpace: "nowrap" }}>만원</span>
+              </div>
+              <label style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "14px", color: "#555", cursor: "pointer" }}>
+                <input type="checkbox" checked={salaryNegoDraft} onChange={(e) => setSalaryNegoDraft(e.target.checked)} />
+                협의 (금액 비공개)
+              </label>
+            </div>
+            <div style={{ display: "flex", gap: "8px", padding: "16px 20px", borderTop: "1px solid #eee", justifyContent: "flex-end" }}>
+              <button className="admin-secondary-btn" onClick={() => setSalaryModalOpen(false)}>취소</button>
+              <button className="company-primary-btn" onClick={() => {
+                setSalaryNego(salaryNegoDraft);
+                setForm({ ...form, salary: salaryNegoDraft ? "" : salaryDraft });
+                setSalaryModalOpen(false);
+              }}>저장</button>
             </div>
           </div>
         </div>
