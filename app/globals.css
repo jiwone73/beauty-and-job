@@ -5162,7 +5162,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-table th {
   padding: 12px 16px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 400;
   color: #888;
   text-align: center;
   background: #fafafa;
@@ -6612,7 +6612,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-table { width: auto; max-width: 100%; border-collapse: collapse; }
 .company-table th {
   padding: 12px 16px;
-  font-size: 16px; font-weight: 600; color: #888;
+  font-size: 16px; font-weight: 400; color: #888;
   text-align: center;
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
