@@ -207,9 +207,14 @@ export default function JobDetailPage() {
             detailImages: j.detail_images || [],
             companyInfo: {
               name: j.company?.company_name || '',
+              brandName: j.company?.brand_name || '',
+              representative: j.company?.representative_name || '',
+              companyType: j.company?.company_type === 'STORE' ? '매장·살롱' : j.company?.company_type === 'BOTH' ? '기업·매장' : j.company?.company_type === 'OFFICE' ? '기업·브랜드' : '',
               size: j.company?.company_size || '',
-              location: [j.company?.region_sido, j.company?.region_sigungu, j.company?.address].filter(Boolean).join(' ') || '',
               founded: j.company?.founded_year || '',
+              phone: j.company?.company_phone || '',
+              website: j.company?.website_url || '',
+              location: [j.company?.region_sido, j.company?.region_sigungu, j.company?.address].filter(Boolean).join(' ') || '',
               latitude: j.company?.latitude ?? null,
               longitude: j.company?.longitude ?? null,
             },
@@ -376,22 +381,63 @@ export default function JobDetailPage() {
               <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line" }}>{job.brandDesc}</p>
             )}
             <div className="job-detail-company-info">
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">회사명</span>
-                <span>{job.companyInfo?.name}</span>
-              </div>
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">규모</span>
-                <span>{job.companyInfo?.size}</span>
-              </div>
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">위치</span>
-                <span>{shortRegion(job.companyInfo?.location || "")}</span>
-              </div>
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">설립</span>
-                <span>{job.companyInfo?.founded}</span>
-              </div>
+              {job.companyInfo?.name && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">회사명</span>
+                  <span>{job.companyInfo.name}</span>
+                </div>
+              )}
+              {job.companyInfo?.brandName && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">브랜드명</span>
+                  <span>{job.companyInfo.brandName}</span>
+                </div>
+              )}
+              {job.companyInfo?.companyType && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">기업 유형</span>
+                  <span>{job.companyInfo.companyType}</span>
+                </div>
+              )}
+              {job.companyInfo?.representative && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">대표자</span>
+                  <span>{job.companyInfo.representative}</span>
+                </div>
+              )}
+              {job.companyInfo?.size && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">규모</span>
+                  <span>{job.companyInfo.size}</span>
+                </div>
+              )}
+              {job.companyInfo?.founded && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">설립</span>
+                  <span>{job.companyInfo.founded}</span>
+                </div>
+              )}
+              {job.companyInfo?.phone && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">대표번호</span>
+                  <span>{job.companyInfo.phone}</span>
+                </div>
+              )}
+              {job.companyInfo?.website && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">웹사이트</span>
+                  <a href={/^https?:\/\//.test(job.companyInfo.website) ? job.companyInfo.website : `https://${job.companyInfo.website}`}
+                    target="_blank" rel="noreferrer" style={{ color: "#5f0080", wordBreak: "break-all" }}>
+                    {job.companyInfo.website}
+                  </a>
+                </div>
+              )}
+              {job.companyInfo?.location && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">위치</span>
+                  <span>{shortRegion(job.companyInfo.location)}</span>
+                </div>
+              )}
             </div>
             {job.companyInfo?.latitude && job.companyInfo?.longitude ? (
               <div style={{ marginTop: "20px" }}>

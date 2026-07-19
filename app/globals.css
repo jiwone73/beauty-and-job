@@ -2158,6 +2158,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-hero-placeholder span { font-size: 80px; font-weight: 900; color: rgba(0,0,0,0.15); }
 
 .job-detail-info-box { background: white; padding: 24px; border-radius: 0 0 16px 16px; margin-bottom: 12px; }
+/* PC에서는 우측 카드와 중복이라 커버 밑 정보 박스 숨김(모바일은 우측 카드가 없어 유지) */
+@media (min-width: 1025px) { .job-detail-info-box { display: none; } }
 .job-detail-brand-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 .job-detail-brand { font-size: 14px; font-weight: 600; color: var(--color-text-sub); }
 .job-detail-tag { font-size: 13px; color: var(--color-text-mute); }
