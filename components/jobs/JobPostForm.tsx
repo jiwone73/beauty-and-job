@@ -9,9 +9,13 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트", "프리랜서"];
-const BENEFIT_OPTIONS: Record<string, string[]> = {
-  매장: ["기숙사 제공", "교육비 지원", "인센티브", "4대보험", "주말·공휴일 휴무", "정규직 전환", "식대 지원", "주차 가능"],
-  기업: ["4대보험", "인센티브", "정규직 전환", "재택근무", "유연근무", "자기계발비", "식대 지원", "주차 가능"],
+const WELFARE_OPTIONS: Record<string, string[]> = {
+  매장: ["기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능"],
+  기업: ["인센티브", "자기계발비", "식대 지원", "주차 가능"],
+};
+const WORKCOND_OPTIONS: Record<string, string[]> = {
+  매장: ["4대보험", "주말·공휴일 휴무", "정규직 전환"],
+  기업: ["4대보험", "정규직 전환", "재택근무", "유연근무"],
 };
 const PRESET_PROCESS: Record<string, string[]> = {
   기업: ["서류전형", "전화면접", "1차 면접", "2차 면접", "과제전형", "최종합격"],
@@ -108,6 +112,26 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [imgModalOpen]);
+  const [welfareOpen, setWelfareOpen] = useState(false);
+  const [workcondOpen, setWorkcondOpen] = useState(false);
+  const welfareRef = useRef<HTMLDivElement>(null);
+  const workcondRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!welfareOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (welfareRef.current && !welfareRef.current.contains(e.target as Node)) setWelfareOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [welfareOpen]);
+  useEffect(() => {
+    if (!workcondOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (workcondRef.current && !workcondRef.current.contains(e.target as Node)) setWorkcondOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [workcondOpen]);
   const [showPreview, setShowPreview] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -321,6 +345,14 @@ export default function JobPostForm({
     setSaved(true);
     setTimeout(() => router.push(listHref), 1000);
   };
+
+  // ── 복리후생 / 근무조건 (분리) ─────────────
+  const welfareOptions = jobGroupType === "매장" ? WELFARE_OPTIONS.매장 : WELFARE_OPTIONS.기업;
+  const workcondOptions = jobGroupType === "매장" ? WORKCOND_OPTIONS.매장 : WORKCOND_OPTIONS.기업;
+  const welfareSel = benefitTags.filter((t) => welfareOptions.includes(t));
+  const workcondSel = benefitTags.filter((t) => workcondOptions.includes(t));
+  const toggleBenefit = (b: string) =>
+    setBenefitTags(benefitTags.includes(b) ? benefitTags.filter((x) => x !== b) : [...benefitTags, b]);
 
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
@@ -684,17 +716,53 @@ export default function JobPostForm({
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="company-card-head"><h2 className="company-card-title">상세 내용</h2></div>
             <div className="admin-form-body">
-              {/* 복리후생 체크박스 (필터용) */}
+              {/* 복리후생 (필터용) */}
               <div className="admin-form-row">
-                <label className="admin-form-label">복리후생 · 근무조건 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(해당 항목 선택 · 필터에 사용)</span></label>
-                <div className="benefit-chip-grid">
-                  {(jobGroupType === "매장" ? BENEFIT_OPTIONS.매장 : BENEFIT_OPTIONS.기업).map((b) => (
-                    <button key={b} type="button"
-                      className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`}
-                      onClick={() => setBenefitTags(benefitTags.includes(b) ? benefitTags.filter((x) => x !== b) : [...benefitTags, b])}>
-                      {b}
-                    </button>
-                  ))}
+                <label className="admin-form-label">복리후생</label>
+                <div ref={welfareRef} style={{ position: "relative", width: "100%" }}>
+                  <button type="button" onClick={() => setWelfareOpen((v) => !v)}
+                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: welfareSel.length ? "#555" : "#bbb", cursor: "pointer" }}>
+                    <span style={{ textAlign: "right" }}>{welfareSel.length ? welfareSel.join(", ") : "선택해주세요"}</span>
+                    <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: welfareOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
+                  </button>
+                  {welfareOpen && (
+                    <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
+                      <div className="benefit-chip-grid">
+                        {welfareOptions.map((b) => (
+                          <button key={b} type="button"
+                            className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`}
+                            onClick={() => toggleBenefit(b)}>
+                            {b}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 근무조건 (필터용) */}
+              <div className="admin-form-row">
+                <label className="admin-form-label">근무조건</label>
+                <div ref={workcondRef} style={{ position: "relative", width: "100%" }}>
+                  <button type="button" onClick={() => setWorkcondOpen((v) => !v)}
+                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: workcondSel.length ? "#555" : "#bbb", cursor: "pointer" }}>
+                    <span style={{ textAlign: "right" }}>{workcondSel.length ? workcondSel.join(", ") : "선택해주세요"}</span>
+                    <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: workcondOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
+                  </button>
+                  {workcondOpen && (
+                    <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
+                      <div className="benefit-chip-grid">
+                        {workcondOptions.map((b) => (
+                          <button key={b} type="button"
+                            className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`}
+                            onClick={() => toggleBenefit(b)}>
+                            {b}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
