@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Pencil, Trash2, Upload } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
-import JobPreview from "@/components/jobs/JobPreview";
+import JobDetailView from "@/components/jobs/JobDetailView";
 import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
 
@@ -133,6 +133,16 @@ export default function JobPostForm({
     return () => document.removeEventListener("mousedown", onDown);
   }, [workcondOpen]);
   const [showPreview, setShowPreview] = useState(false);
+  const [companyProfile, setCompanyProfile] = useState<any>(null);
+  useEffect(() => {
+    if (!showPreview || mode !== "company" || companyProfile) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/company/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((d) => { if (d?.success && d.data) setCompanyProfile(d.data); })
+      .catch(() => {});
+  }, [showPreview, mode, companyProfile]);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -398,6 +408,48 @@ export default function JobPostForm({
   const processFilled = hiringProcess.length > 0;
   const notesFilled = !!notes.trim();
 
+  // 미리보기용 job 객체 (실제 상세 페이지와 동일한 뷰로 렌더)
+  const cp = companyProfile;
+  const previewCompanyName = cp?.company_name || (mode === "admin" ? (nonMember ? newCompanyName : companyName) : "");
+  const previewJob = {
+    id: editId || "preview",
+    companyId: "",
+    brand: cp?.brand_name || cp?.company_name || (mode === "admin" ? (nonMember ? newCompanyName : companyName) : "우리 회사"),
+    brandDesc: cp?.description || "",
+    tags: [] as string[],
+    title: form.title || "공고 제목",
+    jobType: jobGroupType === "기업" ? "사무직" : "매장직",
+    career: form.career || "-",
+    region: regionList.join(", "),
+    employType: form.type || "정규직",
+    deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
+    salary: salaryNego ? "협의" : (form.salary ? `${form.salary}만원 ~` : "협의"),
+    color: "#e8f0fe",
+    description: form.description || "",
+    requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
+    preferreds: form.preferred ? form.preferred.split("\n").filter(Boolean) : [],
+    benefits: benefitTags,
+    responsibilities: [] as string[],
+    process: hiringProcess.filter((s) => s.trim()),
+    notes: notes,
+    logo_url: cp?.logo_url,
+    cover_images: cp?.cover_images || [],
+    detailImages: detailImages,
+    companyInfo: {
+      name: previewCompanyName,
+      brandName: cp?.brand_name || "",
+      representative: cp?.representative_name || "",
+      companyType: jobGroupType === "매장" ? "매장·살롱" : "기업·브랜드",
+      size: cp?.company_size || "",
+      founded: cp?.founded_year || "",
+      phone: cp?.company_phone || "",
+      website: cp?.website_url || "",
+      location: cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : "",
+      latitude: null,
+      longitude: null,
+    },
+    companyAddress: cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : "",
+  };
 
   return (
     <>
@@ -934,32 +986,18 @@ export default function JobPostForm({
 
       {showPreview && (
         <div onClick={() => setShowPreview(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "40px 20px" }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "720px" }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "1120px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: "16px", fontWeight: 400 }}>공고 미리보기</span>
+              <span style={{ fontSize: "16px", fontWeight: 400 }}>공고 미리보기 (구직자에게 보이는 실제 화면)</span>
               <button onClick={() => setShowPreview(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
             </div>
-            <div style={{ padding: "24px", maxHeight: "60vh", overflowY: "auto" }}>
-              <JobPreview ref={previewRef}
-                title={form.title}
-                company={mode === "admin" ? (nonMember ? newCompanyName : companyName) : ""}
-                jobGroupType={jobGroupType}
-                categories={categories}
-                career={form.career}
-                employment={form.type}
-                regions={regionList}
-                salary={form.salary}
-                salaryNego={salaryNego}
-                deadline={form.deadline}
-                alwaysOpen={alwaysOpen}
-                benefitTags={benefitTags}
-                benefits={form.benefits}
-                description={form.description}
-                requirements={form.requirements}
-                preferred={form.preferred}
-                hiringProcess={hiringProcess}
-                notes={notes}
-                detailImages={detailImages}
+            <div style={{ padding: 0, maxHeight: "72vh", overflowY: "auto", background: "#faf7fc" }}>
+              <JobDetailView ref={previewRef} job={previewJob}
+                asideAction={
+                  <button className="job-detail-apply-btn" disabled style={{ opacity: 0.7, cursor: "default" }}>
+                    지원서 작성하기
+                  </button>
+                }
               />
             </div>
             <div style={{ display: "flex", gap: "8px", padding: "16px 20px", borderTop: "1px solid #eee", justifyContent: "flex-end" }}>
