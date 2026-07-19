@@ -153,6 +153,24 @@ export default function JobPostForm({
   const [processCustom, setProcessCustom] = useState("");
   const [notesModalOpen, setNotesModalOpen] = useState(false);
   const [notesModalValue, setNotesModalValue] = useState("");
+  const processPopRef = useRef<HTMLDivElement>(null);
+  const notesPopRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!processModalOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (processPopRef.current && !processPopRef.current.contains(e.target as Node)) setProcessModalOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [processModalOpen]);
+  useEffect(() => {
+    if (!notesModalOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (notesPopRef.current && !notesPopRef.current.contains(e.target as Node)) setNotesModalOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [notesModalOpen]);
 
   useEffect(() => {
     if (companyType === "BOTH") setJobGroupType("기업");
@@ -792,12 +810,14 @@ export default function JobPostForm({
 
               {/* 채용 절차 */}
               <div className="admin-form-row">
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-                  <label className="admin-form-label" style={{ margin: 0 }}>
-                    채용 절차
-                  </label>
-                  <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                    <button type="button" className="resume-icon-btn" aria-label={processFilled ? "수정" : "설정"} title={processFilled ? "수정" : "설정"} onClick={openProcessModal}>
+                <label className="admin-form-label">채용 절차</label>
+                <div ref={processModalOpen ? processPopRef : undefined} style={{ position: "relative", width: "100%" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
+                    <span style={{ flex: 1, minWidth: 0, textAlign: "right", fontSize: "14px", color: processFilled ? "#555" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {processFilled ? hiringProcess.join(" → ") : "채용절차를 선택해주세요"}
+                    </span>
+                    <button type="button" className="resume-icon-btn" aria-label={processFilled ? "수정" : "설정"} title={processFilled ? "수정" : "설정"}
+                      onClick={() => { if (processModalOpen) setProcessModalOpen(false); else openProcessModal(); }}>
                       <Pencil size={15} />
                     </button>
                     {processFilled && (
@@ -807,33 +827,69 @@ export default function JobPostForm({
                       </button>
                     )}
                   </div>
-                </div>
-                <div style={{ marginTop: "8px" }}>
-                  {processFilled ? (
-                    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px" }}>
-                      {hiringProcess.map((s, i) => (
-                        <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                          {i > 0 && <span style={{ color: "#bbb", fontSize: "13px" }}>→</span>}
-                          <span style={{ padding: "5px 11px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "999px", fontSize: "13px", color: "#5f0080", fontWeight: 400 }}>
-                            {i + 1}. {s}
-                          </span>
-                        </span>
-                      ))}
+                  {processModalOpen && (
+                    <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", display: "flex", flexDirection: "column", gap: "16px" }}>
+                      {/* 선택된 단계 */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>선택된 단계</span>
+                        {processDraft.length === 0 ? (
+                          <div style={{ padding: "12px", border: "1.5px dashed #e0d4ee", borderRadius: "8px", fontSize: "13px", color: "#aaa", textAlign: "center" }}>아직 추가된 단계가 없어요.</div>
+                        ) : (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                            {processDraft.map((s, i) => (
+                              <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 10px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "8px" }}>
+                                <span style={{ flexShrink: 0, width: "24px", height: "24px", borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: "12px", fontWeight: 400, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
+                                <span style={{ flex: 1, fontSize: "14px", fontWeight: 400, color: "#5f0080" }}>{s}</span>
+                                <button type="button" onClick={() => removeDraftStep(i)} style={{ flexShrink: 0, background: "none", border: "none", color: "#a78bba", cursor: "pointer", fontSize: "18px", lineHeight: 1, padding: "0 4px" }}>×</button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {/* 프리셋 칩 */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>자주 쓰는 단계</span>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                          {(jobGroupType === "매장" ? PRESET_PROCESS.매장 : PRESET_PROCESS.기업).map((p) => {
+                            const on = processDraft.includes(p);
+                            return (
+                              <button key={p} type="button" onClick={() => togglePreset(p)}
+                                style={{ padding: "8px 14px", borderRadius: "999px", fontSize: "13px", fontWeight: 400, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e0e0e0", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>
+                                {on ? "✓ " : "+ "}{p}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      {/* 직접 입력 */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>직접 입력</span>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <input style={{ flex: 1, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px" }}
+                            placeholder="예) 포트폴리오 제출" value={processCustom}
+                            onChange={(e) => setProcessCustom(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomStep(); } }} />
+                          <button type="button" onClick={addCustomStep}
+                            style={{ padding: "0 18px", borderRadius: "8px", border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontWeight: 400, fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap" }}>추가</button>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                        <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setProcessModalOpen(false)}>취소</button>
+                        <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={saveProcessModal}>저장</button>
+                      </div>
                     </div>
-                  ) : (
-                    <p style={{ fontSize: "13px", color: "#aaa", margin: 0 }}>아직 설정된 채용 절차가 없어요. (예: 서류전형 → 대면면접 → 최종합격)</p>
                   )}
                 </div>
               </div>
 
               {/* 비고 · 유의사항 */}
-              <div className="admin-form-row" style={{ marginTop: "8px" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-                  <label className="admin-form-label" style={{ margin: 0 }}>
-                    비고 · 유의사항
-                  </label>
-                  <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                    <button type="button" className="resume-icon-btn" aria-label={notesFilled ? "수정" : "작성"} title={notesFilled ? "수정" : "작성"} onClick={openNotesModal}>
+              <div className="admin-form-row">
+                <label className="admin-form-label">비고 · 유의사항</label>
+                <div ref={notesModalOpen ? notesPopRef : undefined} style={{ position: "relative", width: "100%" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
+                    {!notesFilled && <span style={{ fontSize: "14px", color: "#bbb" }}>작성해주세요</span>}
+                    <button type="button" className="resume-icon-btn" aria-label={notesFilled ? "수정" : "작성"} title={notesFilled ? "수정" : "작성"}
+                      onClick={() => { if (notesModalOpen) setNotesModalOpen(false); else openNotesModal(); }}>
                       <Pencil size={15} />
                     </button>
                     {notesFilled && (
@@ -843,12 +899,21 @@ export default function JobPostForm({
                       </button>
                     )}
                   </div>
+                  {notesModalOpen && (
+                    <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
+                      <textarea autoFocus
+                        placeholder={"지원 시 유의사항이나 안내문을 자유롭게 입력하세요.\n예) ※ 서류 합격자에 한하여 개별 연락드립니다."}
+                        value={notesModalValue} onChange={(e) => setNotesModalValue(e.target.value)}
+                        style={{ width: "100%", minHeight: "160px", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "10px 12px", fontSize: "14px", resize: "vertical", fontFamily: "inherit" }} />
+                      <div style={{ display: "flex", gap: "6px", marginTop: "10px", justifyContent: "flex-end" }}>
+                        <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setNotesModalOpen(false)}>취소</button>
+                        <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={saveNotesModal}>저장</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 {notesFilled && (
-                  <p style={{
-                    marginTop: "8px", fontSize: "13px", color: "#666", whiteSpace: "pre-wrap",
-                    display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden",
-                  }}>
+                  <p style={{ margin: "10px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
                     {notes}
                   </p>
                 )}
@@ -866,108 +931,6 @@ export default function JobPostForm({
       />
 
 
-      {/* ── 채용 절차 모달 ── */}
-      {processModalOpen && (
-        <div onClick={() => setProcessModalOpen(false)}
-          style={{ position: "fixed", inset: 0, zIndex: 1100, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-          <div onClick={(e) => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "560px", maxHeight: "85vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: "16px", fontWeight: 400 }}>채용 절차 설정</span>
-              <button onClick={() => setProcessModalOpen(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
-            </div>
-            <div style={{ padding: "20px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "20px" }}>
-              <p style={{ fontSize: "13px", color: "#888", margin: 0 }}>
-                지원자가 거치는 전형 단계를 순서대로 추가하세요. 아래 단계를 누르거나 직접 입력할 수 있어요.
-              </p>
-
-              {/* 선택된 단계 */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>선택된 단계</span>
-                {processDraft.length === 0 ? (
-                  <div style={{ padding: "14px", border: "1.5px dashed #e0d4ee", borderRadius: "8px", fontSize: "13px", color: "#aaa", textAlign: "center" }}>
-                    아직 추가된 단계가 없어요.
-                  </div>
-                ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    {processDraft.map((s, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 10px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "8px" }}>
-                        <span style={{ flexShrink: 0, width: "24px", height: "24px", borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: "12px", fontWeight: 400, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
-                        <span style={{ flex: 1, fontSize: "14px", fontWeight: 400, color: "#5f0080" }}>{s}</span>
-                        <button type="button" onClick={() => removeDraftStep(i)}
-                          style={{ flexShrink: 0, background: "none", border: "none", color: "#a78bba", cursor: "pointer", fontSize: "18px", lineHeight: 1, padding: "0 4px" }}>×</button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* 프리셋 칩 */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>자주 쓰는 단계</span>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                  {(jobGroupType === "매장" ? PRESET_PROCESS.매장 : PRESET_PROCESS.기업).map((p) => {
-                    const on = processDraft.includes(p);
-                    return (
-                      <button key={p} type="button" onClick={() => togglePreset(p)}
-                        style={{
-                          padding: "8px 14px", borderRadius: "999px", fontSize: "13px", fontWeight: 400, cursor: "pointer",
-                          border: on ? "1.5px solid #5f0080" : "1.5px solid #e0e0e0",
-                          background: on ? "#5f0080" : "#fff",
-                          color: on ? "#fff" : "#666",
-                        }}>
-                        {on ? "✓ " : "+ "}{p}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* 직접 입력 */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>직접 입력</span>
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <input className="admin-form-input" style={{ flex: 1 }}
-                    placeholder="예) 포트폴리오 제출"
-                    value={processCustom}
-                    onChange={(e) => setProcessCustom(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomStep(); } }} />
-                  <button type="button" onClick={addCustomStep}
-                    style={{ padding: "0 18px", borderRadius: "8px", border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontWeight: 400, fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap" }}>추가</button>
-                </div>
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: "8px", padding: "16px 20px", borderTop: "1px solid #eee", justifyContent: "flex-end" }}>
-              <button className="admin-secondary-btn" onClick={() => setProcessModalOpen(false)}>취소</button>
-              <button className="company-primary-btn" onClick={saveProcessModal}>저장</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── 비고 모달 ── */}
-      {notesModalOpen && (
-        <div onClick={() => setNotesModalOpen(false)}
-          style={{ position: "fixed", inset: 0, zIndex: 1100, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-          <div onClick={(e) => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "560px", maxHeight: "85vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: "16px", fontWeight: 400 }}>비고 · 유의사항</span>
-              <button onClick={() => setNotesModalOpen(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
-            </div>
-            <div style={{ padding: "20px", overflowY: "auto" }}>
-              <textarea className="admin-form-textarea" autoFocus
-                placeholder={"지원 시 유의사항이나 안내문을 자유롭게 입력하세요.\n예) ※ 서류 합격자에 한하여 개별 연락드립니다.\n※ 3개월 수습 후 정규직 전환 평가가 진행됩니다."}
-                value={notesModalValue} onChange={(e) => setNotesModalValue(e.target.value)}
-                style={{ width: "100%", minHeight: "200px", boxSizing: "border-box" }} />
-            </div>
-            <div style={{ display: "flex", gap: "8px", padding: "16px 20px", borderTop: "1px solid #eee", justifyContent: "flex-end" }}>
-              <button className="admin-secondary-btn" onClick={() => setNotesModalOpen(false)}>취소</button>
-              <button className="company-primary-btn" onClick={saveNotesModal}>저장</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showPreview && (
         <div onClick={() => setShowPreview(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "40px 20px" }}>
