@@ -5099,13 +5099,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-stat-trend.neutral { color: #aaa; }
 .admin-stat-value {
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 400;
   color: #1a1a1a;
   line-height: 1;
   margin-bottom: 6px;
 }
-.admin-stat-unit { font-size: 16px; font-weight: 500; margin-left: 2px; }
-.admin-stat-label { font-size: 13px; color: #888; }
+.admin-stat-unit { font-size: 16px; font-weight: 400; margin-left: 2px; }
+.admin-stat-label { font-size: 15px; color: #555; }
 
 /* 대시보드 그리드 */
 .admin-dashboard-grid {
@@ -6206,7 +6206,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-sub-nav-item {
   display: block;
   padding: 7px 12px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 400;
   color: #555;
   text-decoration: none;
@@ -6329,7 +6329,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 전체 요약 카드 서브텍스트 */
 .admin-stat-sub-text {
-  font-size: 11px;
+  font-size: 9px;
   color: #aaa;
   margin-top: 2px;
 }
