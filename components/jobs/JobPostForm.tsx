@@ -139,6 +139,15 @@ export default function JobPostForm({
   // ── 모달 상태 ──────────────────────────────
   const [textModalKey, setTextModalKey] = useState<TextKey | null>(null);
   const [textModalValue, setTextModalValue] = useState("");
+  const textPopRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!textModalKey) return;
+    const onDown = (e: MouseEvent) => {
+      if (textPopRef.current && !textPopRef.current.contains(e.target as Node)) setTextModalKey(null);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [textModalKey]);
   const [processModalOpen, setProcessModalOpen] = useState(false);
   const [processDraft, setProcessDraft] = useState<string[]>([]);
   const [processCustom, setProcessCustom] = useState("");
@@ -366,55 +375,11 @@ export default function JobPostForm({
     requirements: { label: "자격요건", placeholder: "필수 자격요건을 입력하세요" },
     preferred: { label: "우대사항", placeholder: "우대사항을 입력하세요" },
   };
-  const textFields: TextKey[] = ["benefits", "description", "requirements", "preferred"];
+  const textFields: TextKey[] = ["description", "requirements", "preferred"];
 
   const processFilled = hiringProcess.length > 0;
   const notesFilled = !!notes.trim();
 
-  // 한 줄 작성/수정 버튼 행 (텍스트4 공용)
-  const TextLine = ({ k }: { k: TextKey }) => {
-    const meta = textFieldMeta[k];
-    const filled = !!((form as any)[k] || "").trim();
-    return (
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
-        padding: "12px 14px", border: "1px solid #eee", borderRadius: "10px",
-        background: filled ? "#fafcff" : "#fff",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-          {filled ? (
-            <span style={{ flexShrink: 0, width: "20px", height: "20px", borderRadius: "50%", background: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Check size={13} color="#fff" strokeWidth={3} />
-            </span>
-          ) : (
-            <span style={{ flexShrink: 0, width: "20px", height: "20px", borderRadius: "50%", border: "1.5px solid #d4d4d4" }} />
-          )}
-          <span style={{ fontSize: "14px", fontWeight: 400, color: "#333", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {meta.label}
-            {meta.hint && (
-              <span style={{
-                marginLeft: "6px", fontSize: "12px", fontWeight: 400,
-                color: meta.hint.startsWith("필수") ? "#dc2626" : "#999",
-              }}>
-                {meta.hint.startsWith("필수") ? "★ " : ""}{meta.hint}
-              </span>
-            )}
-          </span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}>
-          <button type="button" className="resume-icon-btn" aria-label={filled ? "수정" : "작성"} title={filled ? "수정" : "작성"} onClick={() => openTextModal(k)}>
-            <Pencil size={15} />
-          </button>
-          {filled && (
-            <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
-              onClick={() => { if (confirm("작성한 내용을 삭제할까요?")) setForm({ ...form, [k]: "" }); }}>
-              <Trash2 size={15} />
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <>
@@ -766,13 +731,56 @@ export default function JobPostForm({
                 </div>
               </div>
 
-              {/* 텍스트 4항목 → 1줄 버튼 + 모달 */}
-              <div className="admin-form-row">
-                <label className="admin-form-label">상세 항목 작성 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(항목별 작성 시 ✓ 표시)</span></label>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  {textFields.map((k) => <TextLine key={k} k={k} />)}
-                </div>
-              </div>
+              {/* 상세 항목 (포지션 소개 / 자격요건 / 우대사항) → 팝오버 작성 */}
+              {textFields.map((k) => {
+                const meta = textFieldMeta[k];
+                const filled = !!((form as any)[k] || "").trim();
+                const isReq = k === "description" && detailImages.length === 0;
+                const open = textModalKey === k;
+                return (
+                  <div className="admin-form-row" key={k}>
+                    <label className="admin-form-label">
+                      {meta.label}
+                      {isReq && <span style={{ color: "#dc2626", marginLeft: "3px" }}>*</span>}
+                    </label>
+                    <div ref={open ? textPopRef : undefined} style={{ position: "relative", width: "100%" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
+                        {filled && (
+                          <span style={{ display: "inline-flex", width: "18px", height: "18px", borderRadius: "50%", background: "#16a34a", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <Check size={12} color="#fff" strokeWidth={3} />
+                          </span>
+                        )}
+                        <span style={{ fontSize: "14px", color: filled ? "#555" : "#bbb" }}>
+                          {filled ? "작성완료" : "작성해주세요"}
+                        </span>
+                        <button type="button" className="resume-icon-btn" aria-label={filled ? "수정" : "작성"} title={filled ? "수정" : "작성"}
+                          onClick={() => { if (open) setTextModalKey(null); else openTextModal(k); }}>
+                          <Pencil size={15} />
+                        </button>
+                        {filled && (
+                          <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
+                            onClick={() => { if (confirm("작성한 내용을 삭제할까요?")) setForm({ ...form, [k]: "" }); }}>
+                            <Trash2 size={15} />
+                          </button>
+                        )}
+                      </div>
+                      {open && (
+                        <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
+                          <textarea autoFocus
+                            placeholder={meta.placeholder}
+                            value={textModalValue}
+                            onChange={(e) => setTextModalValue(e.target.value)}
+                            style={{ width: "100%", minHeight: "160px", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "10px 12px", fontSize: "14px", resize: "vertical", fontFamily: "inherit" }} />
+                          <div style={{ display: "flex", gap: "6px", marginTop: "10px", justifyContent: "flex-end" }}>
+                            <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setTextModalKey(null)}>취소</button>
+                            <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={saveTextModal}>저장</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -856,29 +864,6 @@ export default function JobPostForm({
         onApply={(regions) => { setRegionList(regions); setRegionModalOpen(false); }}
       />
 
-      {/* ── 텍스트 작성 모달 ── */}
-      {textModalKey && (
-        <div onClick={() => setTextModalKey(null)}
-          style={{ position: "fixed", inset: 0, zIndex: 1100, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-          <div onClick={(e) => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "560px", maxHeight: "85vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: "16px", fontWeight: 400 }}>{textFieldMeta[textModalKey].label} 작성</span>
-              <button onClick={() => setTextModalKey(null)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
-            </div>
-            <div style={{ padding: "20px", overflowY: "auto" }}>
-              <textarea className="admin-form-textarea" autoFocus
-                placeholder={textFieldMeta[textModalKey].placeholder}
-                value={textModalValue} onChange={(e) => setTextModalValue(e.target.value)}
-                style={{ width: "100%", minHeight: "240px", boxSizing: "border-box" }} />
-            </div>
-            <div style={{ display: "flex", gap: "8px", padding: "16px 20px", borderTop: "1px solid #eee", justifyContent: "flex-end" }}>
-              <button className="admin-secondary-btn" onClick={() => setTextModalKey(null)}>취소</button>
-              <button className="company-primary-btn" onClick={saveTextModal}>저장</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── 채용 절차 모달 ── */}
       {processModalOpen && (
