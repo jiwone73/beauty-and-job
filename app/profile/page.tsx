@@ -1304,8 +1304,8 @@ function BookmarksTab() {
         {bookmarkedJobs.map((job) => (
           <a key={job.id} href={`/jobs/${job.job_posting_id}`} className="bookmark-item">
             <div className="bookmark-item-left">
-              <span className="bookmark-brand">{job.brand_name || job.company_name}</span>
               <h3 className="bookmark-title">{job.title}</h3>
+              <span className="bookmark-brand">{job.brand_name || job.company_name}</span>
               <span className="bookmark-location">📍 {job.location ? shortRegion(job.location) : "협의"}</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
