@@ -97,6 +97,17 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [deadlineModalOpen]);
+  const [imgModalOpen, setImgModalOpen] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const imgRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!imgModalOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (imgRef.current && !imgRef.current.contains(e.target as Node)) setImgModalOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [imgModalOpen]);
   const [showPreview, setShowPreview] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -184,15 +195,15 @@ export default function JobPostForm({
   const openNotesModal = () => { setNotesModalValue(notes); setNotesModalOpen(true); };
   const saveNotesModal = () => { setNotes(notesModalValue); setNotesModalOpen(false); };
 
-  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  const processFiles = async (fileList: FileList | File[]) => {
+    const files = Array.from(fileList);
+    if (files.length === 0) return;
     if (detailImages.length + files.length > 5) {
       alert("이미지는 최대 5장까지 첨부할 수 있습니다."); return;
     }
     setUploading(true);
     try {
-      for (const file of Array.from(files)) {
+      for (const file of files) {
         const r = await uploadImage(file);
         if (r.success && r.url) {
           setDetailImages((prev) => [...prev, { url: r.url!, name: r.name || file.name }]);
@@ -202,8 +213,11 @@ export default function JobPostForm({
       }
     } finally {
       setUploading(false);
-      e.target.value = "";
     }
+  };
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    await processFiles(e.target.files || []);
+    e.target.value = "";
   };
 
   const removeImage = (idx: number) =>
@@ -617,36 +631,47 @@ export default function JobPostForm({
             <div className="company-card-head"><h2 className="company-card-title">상세 이미지</h2></div>
             <div className="admin-form-body">
               <div className="admin-form-row">
-                <label className="admin-form-label">
-                  상세 이미지 첨부 <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(최대 5장 · 각 5MB)</span>
-                </label>
-                <p style={{ fontSize: "13px", color: "#888", margin: "0 0 12px" }}>
-                  직접 디자인한 채용 공고 이미지나 매장 사진을 첨부할 수 있어요. 단, 검색 노출을 위해 우측 텍스트 항목도 함께 작성해주세요.
-                </p>
-                {detailImages.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginBottom: "12px" }}>
-                    {detailImages.map((img, idx) => (
-                      <div key={idx} style={{ position: "relative", width: "120px" }}>
-                        <img src={img.url} alt={img.name}
-                          style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "8px", border: "1px solid #eee" }} />
-                        <button type="button" onClick={() => removeImage(idx)}
-                          style={{ position: "absolute", top: "4px", right: "4px", width: "24px", height: "24px",
-                            borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none",
-                            cursor: "pointer", fontSize: "14px", lineHeight: "1", display: "flex",
-                            alignItems: "center", justifyContent: "center" }}>×</button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {detailImages.length < 5 && (
-                  <label style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 16px",
-                    border: "1.5px dashed #c4b5d4", borderRadius: "8px", cursor: uploading ? "wait" : "pointer",
-                    color: "#5f0080", fontSize: "14px", fontWeight: 400, background: "#fdfbff" }}>
-                    {uploading ? "업로드 중..." : "+ 이미지 추가"}
-                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple
-                      disabled={uploading} onChange={handleImageUpload} style={{ display: "none" }} />
-                  </label>
-                )}
+                <label className="admin-form-label">이미지 첨부</label>
+                <div ref={imgRef} style={{ position: "relative", width: "100%" }}>
+                  <button type="button"
+                    onClick={() => setImgModalOpen((v) => !v)}
+                    style={{ width: "100%", display: "inline-flex", alignItems: "flex-start", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: detailImages.length ? "#555" : "#bbb", cursor: "pointer" }}>
+                    <span style={{ textAlign: "right" }}>
+                      {detailImages.length ? `이미지 ${detailImages.length}장 첨부됨` : "직접 디자인한 채용 공고 이미지나 매장 사진을 첨부할 수 있어요"}
+                    </span>
+                    <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: imgModalOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
+                  </button>
+                  {imgModalOpen && (
+                    <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "320px" }}>
+                      <label
+                        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                        onDragLeave={() => setDragOver(false)}
+                        onDrop={(e) => { e.preventDefault(); setDragOver(false); if (!uploading && detailImages.length < 5) processFiles(e.dataTransfer.files); }}
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px", padding: "26px 12px", border: `1.5px dashed ${dragOver ? "#5f0080" : "#c4b5d4"}`, borderRadius: "10px", background: dragOver ? "#f4ebfb" : "#fdfbff", cursor: uploading ? "wait" : "pointer", textAlign: "center" }}>
+                        <span style={{ fontSize: "24px" }}>🖼️</span>
+                        <span style={{ fontSize: "13px", color: "#5f0080", fontWeight: 400 }}>{uploading ? "업로드 중..." : "이미지를 여기로 드래그하거나 클릭"}</span>
+                        <span style={{ fontSize: "11px", color: "#aaa" }}>최대 5장 · 각 5MB</span>
+                        <input type="file" accept="image/jpeg,image/png,image/webp" multiple
+                          disabled={uploading || detailImages.length >= 5} onChange={handleImageUpload} style={{ display: "none" }} />
+                      </label>
+                      {detailImages.length > 0 && (
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "12px" }}>
+                          {detailImages.map((img, idx) => (
+                            <div key={idx} style={{ position: "relative", width: "84px" }}>
+                              <img src={img.url} alt={img.name}
+                                style={{ width: "84px", height: "84px", objectFit: "cover", borderRadius: "8px", border: "1px solid #eee" }} />
+                              <button type="button" onClick={() => removeImage(idx)}
+                                style={{ position: "absolute", top: "3px", right: "3px", width: "20px", height: "20px",
+                                  borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none",
+                                  cursor: "pointer", fontSize: "12px", lineHeight: "1", display: "flex",
+                                  alignItems: "center", justifyContent: "center" }}>×</button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
