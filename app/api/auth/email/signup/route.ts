@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     await client.query('COMMIT')
 
-    sendWelcomeEmail(user.email, user.name).catch((e) => console.error('[welcome email]', e))
+    await sendWelcomeEmail(user.email, user.name).catch((e) => console.error('[welcome email]', e))
 
     const accessToken = signAccessToken({
       sub: user.id,

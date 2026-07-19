@@ -107,8 +107,8 @@ export async function POST(req: NextRequest) {
 
     await client.query('COMMIT')
 
-    // 가입 신청 접수 안내 메일 (실패해도 가입은 성공 처리)
-    sendCompanyWelcomeEmail(company.email, company.company_name).catch((e) => console.error('[company welcome email]', e))
+    // 가입 신청 접수 안내 메일 (실패해도 가입은 성공 처리) — 서버리스에서 전송이 잘리지 않게 await
+    await sendCompanyWelcomeEmail(company.email, company.company_name).catch((e) => console.error('[company welcome email]', e))
 
     if (companyStatus === 'ACTIVE') {
       const accessToken = signAccessToken({
