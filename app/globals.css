@@ -6289,7 +6289,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 100px;
+  margin-top: 200px;
   padding: 8px 0 4px;
   border-bottom: 2px solid #f0f0f0;
   margin-top: 8px;
