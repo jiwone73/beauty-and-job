@@ -4823,7 +4823,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.bookmark-location { font-size: 13px; color: #555; }
+.bookmark-location { font-size: 11px; color: #bbb; }
 .bookmark-deadline {
   font-size: 13px;
   font-weight: 700;

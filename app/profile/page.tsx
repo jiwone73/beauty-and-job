@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Settings, ChevronRight, Plus, CheckCircle2, X, MapPin, Bell, MoreHorizontal } from "lucide-react";
+import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -608,7 +608,7 @@ export default function ProfilePage() {
 
             <section className="profile-section">
               <div className="profile-section-head">
-                <h2 className="profile-section-title">기본 정보 <CheckCircle2 size={16} className="profile-check" /></h2>
+                <h2 className="profile-section-title">기본 정보</h2>
               </div>
               <div className="profile-info-card">
                 <div style={{ padding: "11px 14px", borderBottom: "1px solid #e0d0f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
