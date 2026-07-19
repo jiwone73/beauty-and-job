@@ -80,6 +80,23 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [salaryModalOpen]);
+  const [deadlineModalOpen, setDeadlineModalOpen] = useState(false);
+  const [deadlineDraft, setDeadlineDraft] = useState("");
+  const [alwaysOpenDraft, setAlwaysOpenDraft] = useState(false);
+  const deadlineRef = useRef<HTMLDivElement>(null);
+  const applyDeadline = () => {
+    setAlwaysOpen(alwaysOpenDraft);
+    setForm({ ...form, deadline: alwaysOpenDraft ? "" : deadlineDraft });
+    setDeadlineModalOpen(false);
+  };
+  useEffect(() => {
+    if (!deadlineModalOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (deadlineRef.current && !deadlineRef.current.contains(e.target as Node)) setDeadlineModalOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [deadlineModalOpen]);
   const [showPreview, setShowPreview] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -561,20 +578,36 @@ export default function JobPostForm({
                 </div>
                 <div className="admin-form-row">
                   <label className="admin-form-label">마감일</label>
-                  <input type="date" className="admin-form-input"
-                    min={new Date().toISOString().slice(0, 10)}
-                    value={form.deadline}
-                    disabled={alwaysOpen}
-                    onChange={(e) => setForm({ ...form, deadline: e.target.value })}
-                    style={{ height: 42, boxSizing: "border-box", ...(alwaysOpen ? { background: "#f5f5f5", color: "#aaa", cursor: "not-allowed" } : {}) }} />
-                  <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "8px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                    <input type="checkbox" checked={alwaysOpen}
-                      onChange={(e) => {
-                        setAlwaysOpen(e.target.checked);
-                        if (e.target.checked) setForm({ ...form, deadline: "" });
-                      }} />
-                    상시채용 (마감일 없음)
-                  </label>
+                  <div ref={deadlineRef} style={{ position: "relative", width: "100%" }}>
+                    <button type="button"
+                      onClick={() => {
+                        if (deadlineModalOpen) { setDeadlineModalOpen(false); return; }
+                        setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true);
+                      }}
+                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: (alwaysOpen || form.deadline) ? "#555" : "#bbb", cursor: "pointer" }}>
+                      <span style={{ textAlign: "right" }}>
+                        {alwaysOpen ? "상시채용" : form.deadline ? form.deadline.replace(/-/g, ".") : "마감일 선택"}
+                      </span>
+                      <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: deadlineModalOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
+                    </button>
+                    {deadlineModalOpen && (
+                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "240px" }}>
+                        <input type="date"
+                          min={new Date().toISOString().slice(0, 10)}
+                          value={alwaysOpenDraft ? "" : deadlineDraft}
+                          disabled={alwaysOpenDraft}
+                          onChange={(e) => setDeadlineDraft(e.target.value)}
+                          style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
+                        <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                          <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
+                        </label>
+                        <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
+                          <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
+                          <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
