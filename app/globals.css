@@ -5368,7 +5368,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* ── 채용공고 등록/수정 폼: 프로필 기본정보와 동일한 1행(라벨 좌·내용 우) 레이아웃 ── */
 .jobpost-form .company-card-title { color: var(--color-primary); font-weight: 400; font-size: 16px; }
-.jobpost-form .admin-form-label { color: #555; }
+.jobpost-form .admin-form-label { color: #555; font-size: 14px; }
 .jobpost-form .admin-form-body { padding: 2px 20px; gap: 0; }
 
 /* 라벨이 직접 자식인 행 → 라벨 좌 / 내용 우 + 하단 구분선 */

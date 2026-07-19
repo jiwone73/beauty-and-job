@@ -488,7 +488,6 @@ export default function JobPostForm({
                     <span style={{ fontSize: "14px", fontWeight: 400, color: "#555" }}>
                       {jobGroupType === "기업" ? "🏢 기업·브랜드 채용" : "🏪 매장·살롱 채용"}
                     </span>
-                    <span style={{ fontSize: "11px", color: "#aaa" }}>회사 정보에 따라 자동 설정</span>
                   </div>
                 )}
               </div>
