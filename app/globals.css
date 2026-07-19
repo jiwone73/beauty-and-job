@@ -1663,7 +1663,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-name-block { margin-bottom: 16px; }
 .resume-name { font-size: 17px; font-weight: 700; color: var(--color-text); letter-spacing: -0.5px; margin-bottom: 4px; }
 .resume-job-line { font-size: 14px; color: var(--color-text-sub); margin-bottom: 4px; }
-.resume-contact { font-size: 14px; color: var(--color-text-mute); }
+.resume-contact { font-size: 14px; color: var(--color-text-sub); }
 
 .resume-field-label { display: block; font-size: 13px; font-weight: 600; color: var(--color-text); margin-bottom: 6px; margin-top: 12px; }
 .resume-required { color: var(--color-text-mute); font-weight: 400; }
