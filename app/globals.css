@@ -5371,6 +5371,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobpost-form { grid-template-columns: repeat(2, minmax(0, 600px)); justify-content: center; }
 .admin-form-header { width: 100%; max-width: 1216px; margin-left: auto; margin-right: auto; }
 .jobpost-form .company-card-title { color: var(--color-primary); font-weight: 400; font-size: 16px; }
+/* 섹션 타이틀을 카드 밖(위)으로 — 프로필 기본정보와 동일 */
+.jobpost-section-title { color: var(--color-primary); font-size: 16px; font-weight: 400; margin: 4px 0 0 4px; }
 .jobpost-form .admin-form-label { color: #555; font-size: 14px; }
 .jobpost-form .admin-form-body { padding: 2px 20px; gap: 0; }
 

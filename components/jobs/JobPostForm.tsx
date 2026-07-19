@@ -422,8 +422,8 @@ export default function JobPostForm({
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
 
           {/* 기본 정보 */}
+          <h2 className="jobpost-section-title">기본 정보</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
-            <div className="company-card-head"><h2 className="company-card-title">기본 정보</h2></div>
             <div className="admin-form-body">
 
               {mode === "admin" && (
@@ -642,8 +642,8 @@ export default function JobPostForm({
           </div>
 
           {/* 상세 이미지 (하단 높이 맞춤용 flex:1) */}
+          <h2 className="jobpost-section-title">상세 이미지</h2>
           <div className="company-card" style={{ overflow: "visible", flex: 1 }}>
-            <div className="company-card-head"><h2 className="company-card-title">상세 이미지</h2></div>
             <div className="admin-form-body">
               <div className="admin-form-row">
                 <label className="admin-form-label">이미지 첨부</label>
@@ -696,8 +696,8 @@ export default function JobPostForm({
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
 
           {/* 상세 내용 */}
+          <h2 className="jobpost-section-title">상세 내용</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
-            <div className="company-card-head"><h2 className="company-card-title">상세 내용</h2></div>
             <div className="admin-form-body">
               {/* 복리후생 (필터용) */}
               <div className="admin-form-row">
@@ -804,8 +804,8 @@ export default function JobPostForm({
           </div>
 
           {/* 채용 절차 · 비고 (하단 높이 맞춤용 flex:1) */}
+          <h2 className="jobpost-section-title">채용 절차</h2>
           <div className="company-card" style={{ overflow: "visible", flex: 1 }}>
-            <div className="company-card-head"><h2 className="company-card-title">채용 절차</h2></div>
             <div className="admin-form-body">
 
               {/* 채용 절차 */}
