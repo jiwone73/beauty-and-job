@@ -323,7 +323,7 @@ function ApplicantsContent() {
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          <span style={{ cursor: "pointer", color: "#5f0080", fontWeight: 400, fontSize: 15 }}
+                          <span style={{ cursor: "pointer", color: "#1a1a1a", fontWeight: 400, fontSize: 15 }}
                             onClick={() => setSelected(a)}>{a.user_name}</span>
                           {genderLabel((a as any).user_gender) && (
                             <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{genderLabel((a as any).user_gender)}</span>

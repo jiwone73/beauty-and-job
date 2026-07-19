@@ -456,7 +456,7 @@ function AdminCompaniesContent() {
                         })()}
                       </div>
                       <span onClick={() => setCompanyDetail(c)}
-                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#5f0080", cursor: "pointer", fontWeight: 600 }}>
+                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#1a1a1a", cursor: "pointer", fontWeight: 400 }}>
                         {c.company_name}
                         <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
                           {TYPE_LABEL[c.company_type] || c.company_type}

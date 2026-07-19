@@ -199,7 +199,7 @@ function AdminApplicationsPageInner() {
                             {hasResume ? (
                               <button
                                 onClick={() => setSelected(a)}
-                                style={{ color: "#5f0080", fontWeight: 600, background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}>
+                                style={{ color: "#1a1a1a", fontWeight: 400, background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}>
                                 {a.applicant_name}
                               </button>
                             ) : (

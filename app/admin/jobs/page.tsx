@@ -301,7 +301,7 @@ function AdminJobsPageInner() {
                         </div>
                       )}
                       <div className="admin-td-brand"
-                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#5f0080", cursor: "pointer", fontWeight: 400 }}
+                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#1a1a1a", cursor: "pointer", fontWeight: 400 }}
                         onClick={() => job.company_id && openCompany(job.company_id)}>
                         {job.company_name}
                         <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>

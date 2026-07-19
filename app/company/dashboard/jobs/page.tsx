@@ -218,7 +218,7 @@ export default function CompanyJobsPage() {
                       onChange={() => toggleCheck(job.id)} />
                   </td>
                   <td>
-                    <span style={{color:"#5f0080", fontWeight:400, cursor:"pointer"}}
+                    <span style={{color:"#1a1a1a", fontWeight:400, cursor:"pointer"}}
                       onClick={() => router.push(`/jobs/${job.id}`)}>
                       {job.title}
                     </span>
