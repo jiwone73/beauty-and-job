@@ -637,12 +637,12 @@ export default function JobPostForm({
                     onClick={() => setImgModalOpen((v) => !v)}
                     style={{ width: "100%", display: "inline-flex", alignItems: "flex-start", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: detailImages.length ? "#555" : "#bbb", cursor: "pointer" }}>
                     <span style={{ textAlign: "right" }}>
-                      {detailImages.length ? `이미지 ${detailImages.length}장 첨부됨` : "직접 디자인한 채용 공고 이미지나 매장 사진을 첨부할 수 있어요"}
+                      {detailImages.length ? `이미지 ${detailImages.length}장 첨부됨` : "직접 디자인한 채용공고 이미지를 첨부할 수 있어요"}
                     </span>
                     <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: imgModalOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                   </button>
                   {imgModalOpen && (
-                    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
+                    <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
                       <label
                         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                         onDragLeave={() => setDragOver(false)}
