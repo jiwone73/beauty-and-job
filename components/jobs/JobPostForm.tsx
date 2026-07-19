@@ -468,7 +468,7 @@ export default function JobPostForm({
 
               <div className="admin-form-row">
                 <label className="admin-form-label">
-                  {jobGroupType === "매장" ? "시술 분야" : "직군"}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span> <span style={{ color: "#888", fontWeight: 400, fontSize: "13px" }}>(복수 선택 가능)</span>
+                  {jobGroupType === "매장" ? "시술 분야" : "직군"}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>
                 </label>
                 <JobGroupField
                   jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}

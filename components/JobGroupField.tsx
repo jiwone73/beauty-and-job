@@ -12,7 +12,6 @@ interface Props {
   maxSelect?: number;
   title?: string;
   disabled?: boolean;
-  block?: boolean;                  // 전체 너비 입력 박스 스타일
 }
 
 export default function JobGroupField({
@@ -23,70 +22,35 @@ export default function JobGroupField({
   maxSelect,
   title,
   disabled,
-  block,
 }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <style>{`
-        .jgf-trigger {
-          width: fit-content; display: inline-flex; align-items: center; gap: 8px;
-          padding: 10px 14px; border: 1.5px solid #e0d0f0; border-radius: 8px;
-          background: #fff; cursor: pointer; font-size: 14px; text-align: left;
+        .jgf-value {
+          display: inline-flex; align-items: center; gap: 6px;
+          max-width: 100%; padding: 0; border: none; background: none;
+          cursor: pointer; font-size: 14px;
         }
-        .jgf-trigger:hover:not(:disabled) { border-color: #c9a3d6; }
-        .jgf-trigger:disabled { opacity: 0.6; cursor: not-allowed; }
-        .jgf-trigger--block { width: 100%; justify-content: space-between; border: 1px solid #e0d0f0; background: #fafafa; }
-        .jgf-trigger--block .jgf-ph { color: #888; }
-        .jgf-text { color: #333; font-weight: 400; }
-        .jgf-ph { color: #333; font-weight: 400; }
-        .jgf-arrow { color: #999; font-size: 14px; }
-        .jgf-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-        .jgf-chip {
-          display: inline-flex; align-items: center; gap: 4px;
-          background: #f3e5f5; color: #5f0080;
-          border-radius: 16px; padding: 5px 10px; font-size: 13px; font-weight: 600;
-        }
-        .jgf-chip button {
-          background: none; border: none; color: #5f0080;
-          cursor: pointer; font-size: 14px; line-height: 1; padding: 0;
-        }
+        .jgf-value:disabled { opacity: 0.6; cursor: not-allowed; }
+        .jgf-text { color: #555; font-weight: 400; text-align: right; }
+        .jgf-ph { color: #bbb; font-weight: 400; }
+        .jgf-chev { color: #ccc; font-size: 16px; flex-shrink: 0; }
       `}</style>
 
       <div>
         <button
           type="button"
-          className={`jgf-trigger${block ? " jgf-trigger--block" : ""}`}
+          className="jgf-value"
           onClick={() => !disabled && setOpen(true)}
           disabled={disabled}
         >
           <span className={value.length ? "jgf-text" : "jgf-ph"}>
-            {value.length === 0
-              ? placeholder
-              : value.length === 1
-              ? value[0]
-              : `${value[0]} 외 ${value.length - 1}`}
+            {value.length ? value.join(", ") : placeholder}
           </span>
-          <span className="jgf-arrow">⌄</span>
+          <span className="jgf-chev">›</span>
         </button>
-
-        {value.length > 0 && (
-          <div className="jgf-chips">
-            {value.map((item) => (
-              <span key={item} className="jgf-chip">
-                {item}
-                <button
-                  type="button"
-                  onClick={() => onChange(value.filter((v) => v !== item))}
-                  aria-label={`${item} 삭제`}
-                >
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
       <JobGroupSelectModal
