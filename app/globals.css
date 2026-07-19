@@ -5142,7 +5142,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .admin-card-title {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 400;
   color: #1a1a1a;
   margin: 0;
 }
@@ -6300,7 +6300,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .admin-section-heading {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 400;
   color: #1a1a1a;
   margin: 0;
 }
