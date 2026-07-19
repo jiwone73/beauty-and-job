@@ -5367,6 +5367,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-form-label { font-size: 13px; font-weight: 400; color: #444; }
 
 /* ── 채용공고 등록/수정 폼: 프로필 기본정보와 동일한 1행(라벨 좌·내용 우) 레이아웃 ── */
+/* 좌·우 각 600px 고정(가운데 gap 별도) + 중앙 정렬, 창을 넓혀도 그 이상 확장 안 됨 */
+.jobpost-form { grid-template-columns: repeat(2, minmax(0, 600px)); justify-content: center; }
+.admin-form-header { width: 100%; max-width: 1216px; margin-left: auto; margin-right: auto; }
 .jobpost-form .company-card-title { color: var(--color-primary); font-weight: 400; font-size: 16px; }
 .jobpost-form .admin-form-label { color: #555; font-size: 14px; }
 .jobpost-form .admin-form-body { padding: 2px 20px; gap: 0; }
