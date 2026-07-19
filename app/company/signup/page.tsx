@@ -191,18 +191,18 @@ export default function CompanySignupPage() {
                 <path d="M5 13l4 4L19 7" stroke="#5f0080" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h1 className="text-[22px] font-bold text-[#1a1a1a] mb-3">가입 신청이 완료되었습니다</h1>
-            <p className="text-[14px] text-[#6b6b6b] leading-relaxed mb-8">
+            <h1 className="text-[16px] font-normal text-[#1a1a1a] mb-3">가입 신청이 완료되었습니다</h1>
+            <p className="text-[15px] text-[#6b6b6b] leading-relaxed mb-8">
               입력하신 기업 정보를 확인한 뒤 승인해 드립니다.<br />
               승인이 완료되면 로그인하여 채용공고를 등록하실 수 있습니다.<br />
               <span className="text-[13px] text-[#9a9a9a]">보통 1영업일 이내에 처리됩니다.</span>
             </p>
             <Link href="/login"
-              className="block w-full h-[52px] leading-[52px] bg-[#5f0080] text-white rounded-lg font-semibold text-[15px] hover:opacity-90 transition">
+              className="block w-full h-[52px] leading-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] hover:opacity-90 transition">
               로그인 페이지로
             </Link>
             <Link href="/"
-              className="block w-full h-[48px] leading-[48px] mt-2.5 text-[#6b6b6b] text-[14px]">
+              className="block w-full h-[48px] leading-[48px] mt-2.5 text-[#6b6b6b] text-[15px]">
               홈으로 돌아가기
             </Link>
           </div>

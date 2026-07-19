@@ -5189,7 +5189,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-radius: 8px;
 }
 .admin-td-type { white-space: nowrap; }
-.admin-td-brand { font-weight: 600; color: #1a1a1a !important; }
+.admin-td-brand { font-weight: 400; color: #1a1a1a !important; }
 .admin-td-title {
   max-width: 200px;
   overflow: hidden;
@@ -6631,7 +6631,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-table td:last-child { border-right: none; }
 .company-table tr:last-child td { border-bottom: none; }
 .company-table tr:hover td { background: #fafafa; }
-.company-td-name { font-weight: 600; color: #1a1a1a !important; }
+.company-td-name { font-weight: 400; color: #1a1a1a !important; }
 .company-td-sub { color: #888 !important; white-space: nowrap; }
 
 /* 배지 */
