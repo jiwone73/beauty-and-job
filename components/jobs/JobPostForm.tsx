@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Check, Pencil, Trash2, Upload } from "lucide-react";
+import { ChevronLeft, Pencil, Trash2, Upload } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobPreview from "@/components/jobs/JobPreview";
 import JobGroupField from "@/components/JobGroupField";
@@ -731,41 +731,37 @@ export default function JobPostForm({
                 </div>
               </div>
 
-              {/* 상세 항목 (포지션 소개 / 자격요건 / 우대사항) → 팝오버 작성 */}
+              {/* 상세 항목 (포지션 소개 / 자격요건 / 우대사항) → 라벨 + 아래 전체 내용, 팝오버 작성 */}
               {textFields.map((k) => {
                 const meta = textFieldMeta[k];
-                const filled = !!((form as any)[k] || "").trim();
+                const content = ((form as any)[k] || "") as string;
+                const filled = !!content.trim();
                 const isReq = k === "description" && detailImages.length === 0;
                 const open = textModalKey === k;
                 return (
-                  <div className="admin-form-row" key={k}>
-                    <label className="admin-form-label">
-                      {meta.label}
-                      {isReq && <span style={{ color: "#dc2626", marginLeft: "3px" }}>*</span>}
-                    </label>
-                    <div ref={open ? textPopRef : undefined} style={{ position: "relative", width: "100%" }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
-                        {filled && (
-                          <span style={{ display: "inline-flex", width: "18px", height: "18px", borderRadius: "50%", background: "#16a34a", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            <Check size={12} color="#fff" strokeWidth={3} />
-                          </span>
-                        )}
-                        <span style={{ fontSize: "14px", color: filled ? "#555" : "#bbb" }}>
-                          {filled ? "작성완료" : "작성해주세요"}
-                        </span>
-                        <button type="button" className="resume-icon-btn" aria-label={filled ? "수정" : "작성"} title={filled ? "수정" : "작성"}
-                          onClick={() => { if (open) setTextModalKey(null); else openTextModal(k); }}>
-                          <Pencil size={15} />
-                        </button>
-                        {filled && (
-                          <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
-                            onClick={() => { if (confirm("작성한 내용을 삭제할까요?")) setForm({ ...form, [k]: "" }); }}>
-                            <Trash2 size={15} />
+                  <div key={k} style={{ padding: "18px 0", borderBottom: "1px solid var(--color-border)" }}>
+                    <div ref={open ? textPopRef : undefined} style={{ position: "relative" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                        <label className="admin-form-label" style={{ margin: 0 }}>
+                          {meta.label}
+                          {isReq && <span style={{ color: "#dc2626", marginLeft: "3px" }}>*</span>}
+                        </label>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+                          {!filled && <span style={{ fontSize: "14px", color: "#bbb" }}>작성해주세요</span>}
+                          <button type="button" className="resume-icon-btn" aria-label={filled ? "수정" : "작성"} title={filled ? "수정" : "작성"}
+                            onClick={() => { if (open) setTextModalKey(null); else openTextModal(k); }}>
+                            <Pencil size={15} />
                           </button>
-                        )}
+                          {filled && (
+                            <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
+                              onClick={() => { if (confirm("작성한 내용을 삭제할까요?")) setForm({ ...form, [k]: "" }); }}>
+                              <Trash2 size={15} />
+                            </button>
+                          )}
+                        </div>
                       </div>
                       {open && (
-                        <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
+                        <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
                           <textarea autoFocus
                             placeholder={meta.placeholder}
                             value={textModalValue}
@@ -778,6 +774,11 @@ export default function JobPostForm({
                         </div>
                       )}
                     </div>
+                    {filled && (
+                      <p style={{ margin: "10px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
+                        {content}
+                      </p>
+                    )}
                   </div>
                 );
               })}
