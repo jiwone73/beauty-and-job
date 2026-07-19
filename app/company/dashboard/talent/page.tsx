@@ -435,7 +435,7 @@ export default function TalentPage() {
                             : <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{t.name?.slice(0, 1) || "?"}</span>}
                         </div>
                         <div style={{ minWidth: 0 }}>
-                          <div style={{ fontWeight: 600, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
+                          <div style={{ fontWeight: 400, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
                             <span>{t.name}</span>
                             {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
                           </div>

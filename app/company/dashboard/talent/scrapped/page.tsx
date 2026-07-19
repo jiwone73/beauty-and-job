@@ -253,7 +253,7 @@ export default function ScrappedTalentPage() {
                       : (t.name || "?").slice(0, 1)}
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ ...clamp1, fontWeight: 600, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
+                    <div style={{ ...clamp1, fontWeight: 400, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
                       <span>{t.name}</span>
                       {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
                     </div>
