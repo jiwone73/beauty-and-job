@@ -309,11 +309,11 @@ export default function JobPostForm({
           ) : (
             <span style={{ flexShrink: 0, width: "20px", height: "20px", borderRadius: "50%", border: "1.5px solid #d4d4d4" }} />
           )}
-          <span style={{ fontSize: "14px", fontWeight: 600, color: "#333", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span style={{ fontSize: "14px", fontWeight: 400, color: "#333", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {meta.label}
             {meta.hint && (
               <span style={{
-                marginLeft: "6px", fontSize: "12px", fontWeight: 500,
+                marginLeft: "6px", fontSize: "12px", fontWeight: 400,
                 color: meta.hint.startsWith("필수") ? "#dc2626" : "#999",
               }}>
                 {meta.hint.startsWith("필수") ? "★ " : ""}{meta.hint}
@@ -342,7 +342,7 @@ export default function JobPostForm({
         <button className="admin-back-btn" onClick={() => router.push(listHref)}>
           <ChevronLeft size={18} /> 목록으로
         </button>
-        <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#1a1a1a", margin: 0 }}>
+        <h2 style={{ fontSize: "18px", fontWeight: 400, color: "#1a1a1a", margin: 0 }}>
           {editId ? "채용공고 수정" : "채용공고 등록"}
         </h2>
         <div className="admin-form-actions">
@@ -375,13 +375,13 @@ export default function JobPostForm({
                         value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} />
                       <button type="button"
                         onClick={() => { setNonMember(false); setNewCompanyName(""); setNewBrandName(""); }}
-                        style={{ alignSelf: "flex-start", background: "none", border: "none", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", padding: 0 }}>
+                        style={{ alignSelf: "flex-start", background: "none", border: "none", color: "#5f0080", fontSize: "13px", fontWeight: 400, cursor: "pointer", padding: 0 }}>
                         ← 회원 기업에서 선택
                       </button>
                     </div>
                   ) : companyId ? (
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "12px 16px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "8px" }}>
-                      <span style={{ fontSize: "14px", fontWeight: 600, color: "#5f0080" }}>{companyName}</span>
+                      <span style={{ fontSize: "14px", fontWeight: 400, color: "#5f0080" }}>{companyName}</span>
                       <button type="button"
                         onClick={() => { setCompanyId(null); setCompanyName(""); }}
                         style={{ background: "none", border: "none", color: "#888", fontSize: "13px", cursor: "pointer" }}>
@@ -422,7 +422,7 @@ export default function JobPostForm({
                       </div>
                       <button type="button"
                         onClick={() => { setNonMember(true); setCompanyId(null); setCompanyName(""); setCompanyQuery(""); setShowCompanyList(false); }}
-                        style={{ marginTop: "8px", background: "none", border: "none", color: "#5f0080", fontSize: "13px", fontWeight: 600, cursor: "pointer", padding: 0 }}>
+                        style={{ marginTop: "8px", background: "none", border: "none", color: "#5f0080", fontSize: "13px", fontWeight: 400, cursor: "pointer", padding: 0 }}>
                         + 비회원 기업으로 직접 입력
                       </button>
                     </div>
@@ -438,7 +438,7 @@ export default function JobPostForm({
                       <button key={t.value} type="button"
                         onClick={() => { setJobGroupType(t.value as "기업" | "매장"); setCategories([]); }}
                         style={{
-                          flex: 1, padding: "12px", borderRadius: "8px", fontSize: "13px", fontWeight: 600,
+                          flex: 1, padding: "12px", borderRadius: "8px", fontSize: "13px", fontWeight: 400,
                           border: jobGroupType === t.value ? "2px solid #5f0080" : "2px solid #e0e0e0",
                           background: jobGroupType === t.value ? "#faf5ff" : "#fff",
                           color: jobGroupType === t.value ? "#5f0080" : "#888", cursor: "pointer",
@@ -452,7 +452,7 @@ export default function JobPostForm({
                     padding: "12px 16px", background: "#faf5ff", border: "1px solid #ede0f8",
                     borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "space-between",
                   }}>
-                    <span style={{ fontSize: "14px", fontWeight: 600, color: "#5f0080" }}>
+                    <span style={{ fontSize: "14px", fontWeight: 400, color: "#5f0080" }}>
                       {jobGroupType === "기업" ? "🏢 기업·브랜드 채용" : "🏪 매장·살롱 채용"}
                     </span>
                     <span style={{ fontSize: "11px", color: "#888" }}>회사 정보에 따라 자동 설정</span>
@@ -579,7 +579,7 @@ export default function JobPostForm({
                 {detailImages.length < 5 && (
                   <label style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 16px",
                     border: "1.5px dashed #c4b5d4", borderRadius: "8px", cursor: uploading ? "wait" : "pointer",
-                    color: "#5f0080", fontSize: "14px", fontWeight: 500, background: "#fdfbff" }}>
+                    color: "#5f0080", fontSize: "14px", fontWeight: 400, background: "#fdfbff" }}>
                     {uploading ? "업로드 중..." : "+ 이미지 추가"}
                     <input type="file" accept="image/jpeg,image/png,image/webp" multiple
                       disabled={uploading} onChange={handleImageUpload} style={{ display: "none" }} />
@@ -650,7 +650,7 @@ export default function JobPostForm({
                       {hiringProcess.map((s, i) => (
                         <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                           {i > 0 && <span style={{ color: "#bbb", fontSize: "13px" }}>→</span>}
-                          <span style={{ padding: "5px 11px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "999px", fontSize: "13px", color: "#5f0080", fontWeight: 600 }}>
+                          <span style={{ padding: "5px 11px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "999px", fontSize: "13px", color: "#5f0080", fontWeight: 400 }}>
                             {i + 1}. {s}
                           </span>
                         </span>
@@ -708,7 +708,7 @@ export default function JobPostForm({
           <div onClick={(e) => e.stopPropagation()}
             style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "560px", maxHeight: "85vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: "16px", fontWeight: 700 }}>{textFieldMeta[textModalKey].label} 작성</span>
+              <span style={{ fontSize: "16px", fontWeight: 400 }}>{textFieldMeta[textModalKey].label} 작성</span>
               <button onClick={() => setTextModalKey(null)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
             </div>
             <div style={{ padding: "20px", overflowY: "auto" }}>
@@ -732,7 +732,7 @@ export default function JobPostForm({
           <div onClick={(e) => e.stopPropagation()}
             style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "560px", maxHeight: "85vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: "16px", fontWeight: 700 }}>채용 절차 설정</span>
+              <span style={{ fontSize: "16px", fontWeight: 400 }}>채용 절차 설정</span>
               <button onClick={() => setProcessModalOpen(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
             </div>
             <div style={{ padding: "20px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -742,7 +742,7 @@ export default function JobPostForm({
 
               {/* 선택된 단계 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 600, color: "#444" }}>선택된 단계</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>선택된 단계</span>
                 {processDraft.length === 0 ? (
                   <div style={{ padding: "14px", border: "1.5px dashed #e0d4ee", borderRadius: "8px", fontSize: "13px", color: "#aaa", textAlign: "center" }}>
                     아직 추가된 단계가 없어요.
@@ -751,8 +751,8 @@ export default function JobPostForm({
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     {processDraft.map((s, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 10px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "8px" }}>
-                        <span style={{ flexShrink: 0, width: "24px", height: "24px", borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: "12px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
-                        <span style={{ flex: 1, fontSize: "14px", fontWeight: 600, color: "#5f0080" }}>{s}</span>
+                        <span style={{ flexShrink: 0, width: "24px", height: "24px", borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: "12px", fontWeight: 400, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
+                        <span style={{ flex: 1, fontSize: "14px", fontWeight: 400, color: "#5f0080" }}>{s}</span>
                         <button type="button" onClick={() => removeDraftStep(i)}
                           style={{ flexShrink: 0, background: "none", border: "none", color: "#a78bba", cursor: "pointer", fontSize: "18px", lineHeight: 1, padding: "0 4px" }}>×</button>
                       </div>
@@ -763,14 +763,14 @@ export default function JobPostForm({
 
               {/* 프리셋 칩 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 600, color: "#444" }}>자주 쓰는 단계</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>자주 쓰는 단계</span>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {(jobGroupType === "매장" ? PRESET_PROCESS.매장 : PRESET_PROCESS.기업).map((p) => {
                     const on = processDraft.includes(p);
                     return (
                       <button key={p} type="button" onClick={() => togglePreset(p)}
                         style={{
-                          padding: "8px 14px", borderRadius: "999px", fontSize: "13px", fontWeight: 600, cursor: "pointer",
+                          padding: "8px 14px", borderRadius: "999px", fontSize: "13px", fontWeight: 400, cursor: "pointer",
                           border: on ? "1.5px solid #5f0080" : "1.5px solid #e0e0e0",
                           background: on ? "#5f0080" : "#fff",
                           color: on ? "#fff" : "#666",
@@ -784,7 +784,7 @@ export default function JobPostForm({
 
               {/* 직접 입력 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 600, color: "#444" }}>직접 입력</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>직접 입력</span>
                 <div style={{ display: "flex", gap: "8px" }}>
                   <input className="admin-form-input" style={{ flex: 1 }}
                     placeholder="예) 포트폴리오 제출"
@@ -792,7 +792,7 @@ export default function JobPostForm({
                     onChange={(e) => setProcessCustom(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomStep(); } }} />
                   <button type="button" onClick={addCustomStep}
-                    style={{ padding: "0 18px", borderRadius: "8px", border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontWeight: 600, fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap" }}>추가</button>
+                    style={{ padding: "0 18px", borderRadius: "8px", border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontWeight: 400, fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap" }}>추가</button>
                 </div>
               </div>
             </div>
@@ -811,7 +811,7 @@ export default function JobPostForm({
           <div onClick={(e) => e.stopPropagation()}
             style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "560px", maxHeight: "85vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: "16px", fontWeight: 700 }}>비고 · 유의사항</span>
+              <span style={{ fontSize: "16px", fontWeight: 400 }}>비고 · 유의사항</span>
               <button onClick={() => setNotesModalOpen(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
             </div>
             <div style={{ padding: "20px", overflowY: "auto" }}>
@@ -832,7 +832,7 @@ export default function JobPostForm({
         <div onClick={() => setShowPreview(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "40px 20px" }}>
           <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "720px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: "16px", fontWeight: 700 }}>공고 미리보기</span>
+              <span style={{ fontSize: "16px", fontWeight: 400 }}>공고 미리보기</span>
               <button onClick={() => setShowPreview(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
             </div>
             <div style={{ padding: "24px", maxHeight: "60vh", overflowY: "auto" }}>

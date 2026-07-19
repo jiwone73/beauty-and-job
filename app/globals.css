@@ -5364,7 +5364,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-form-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 .admin-form-row { display: flex; flex-direction: column; gap: 6px; }
 .admin-form-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.admin-form-label { font-size: 13px; font-weight: 600; color: #444; }
+.admin-form-label { font-size: 13px; font-weight: 400; color: #444; }
 .admin-form-input,
 .admin-form-select {
   padding: 10px 14px;
