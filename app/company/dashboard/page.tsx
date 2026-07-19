@@ -146,7 +146,7 @@ export default function CompanyDashboard() {
         </div>
       )}
 
-      <div style={{ maxWidth: "1280px" }}>
+      <div style={{ maxWidth: "1440px" }}>
       {/* 통계 카드 */}
       <div className="company-stat-grid">
         {statCards.map((stat) => (
