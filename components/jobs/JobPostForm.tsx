@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Check, Pencil, Trash2 } from "lucide-react";
+import { ChevronLeft, Check, Pencil, Trash2, Upload } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobPreview from "@/components/jobs/JobPreview";
 import JobGroupField from "@/components/JobGroupField";
@@ -647,10 +647,10 @@ export default function JobPostForm({
                         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                         onDragLeave={() => setDragOver(false)}
                         onDrop={(e) => { e.preventDefault(); setDragOver(false); if (!uploading && detailImages.length < 5) processFiles(e.dataTransfer.files); }}
-                        style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px", padding: "26px 12px", border: `1.5px dashed ${dragOver ? "#5f0080" : "#c4b5d4"}`, borderRadius: "10px", background: dragOver ? "#f4ebfb" : "#fdfbff", cursor: uploading ? "wait" : "pointer", textAlign: "center" }}>
-                        <span style={{ fontSize: "24px" }}>🖼️</span>
-                        <span style={{ fontSize: "13px", color: "#5f0080", fontWeight: 400 }}>{uploading ? "업로드 중..." : "이미지를 여기로 드래그하거나 클릭"}</span>
-                        <span style={{ fontSize: "11px", color: "#aaa" }}>최대 5장 · 각 5MB</span>
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px", padding: "30px 12px", border: `1.5px dashed ${dragOver ? "#5f0080" : "#c4b5d4"}`, borderRadius: "12px", background: dragOver ? "#f4ebfb" : "#fdfbff", cursor: uploading ? "wait" : "pointer", textAlign: "center" }}>
+                        <Upload size={26} color="#5f0080" strokeWidth={1.8} />
+                        <span style={{ fontSize: "14px", color: "#5f0080", fontWeight: 400 }}>{uploading ? "업로드 중..." : "이미지를 끌어다 놓거나 클릭하여 업로드"}</span>
+                        <span style={{ fontSize: "12px", color: "#aaa" }}>이미지 · 최대 5장 · 각 5MB</span>
                         <input type="file" accept="image/jpeg,image/png,image/webp" multiple
                           disabled={uploading || detailImages.length >= 5} onChange={handleImageUpload} style={{ display: "none" }} />
                       </label>
