@@ -27,6 +27,9 @@
   --color-kakao: #fee500;
   --color-kakao-text: #191919;
 
+  /* 전 페이지 공통 폰트(사이트·기업·어드민 동일) */
+  --font-sans: "Pretendard", "Noto Sans KR", -apple-system, BlinkMacSystemFont, system-ui, "Malgun Gothic", sans-serif;
+
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
