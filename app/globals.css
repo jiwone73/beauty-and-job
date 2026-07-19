@@ -5376,14 +5376,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: grid;
   grid-template-columns: 150px 1fr;
   column-gap: 16px;
-  align-items: start;
-  padding: 14px 0;
+  align-items: center;
+  padding: 18px 0;
   border-bottom: 1px solid var(--color-border);
 }
 .jobpost-form .admin-form-row:has(> .admin-form-label) > .admin-form-label {
   grid-column: 1;
   grid-row: 1 / -1;
-  padding-top: 11px;
+  align-self: center;
   line-height: 1.45;
 }
 .jobpost-form .admin-form-row:has(> .admin-form-label) > *:not(.admin-form-label) {
