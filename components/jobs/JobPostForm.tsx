@@ -642,7 +642,7 @@ export default function JobPostForm({
                     <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: imgModalOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                   </button>
                   {imgModalOpen && (
-                    <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "320px" }}>
+                    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
                       <label
                         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                         onDragLeave={() => setDragOver(false)}
