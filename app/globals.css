@@ -6289,7 +6289,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 28px;
+  margin-top: 60px;
   padding: 8px 0 4px;
   border-bottom: 2px solid #f0f0f0;
   margin-top: 8px;
@@ -6301,7 +6301,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .admin-section-heading {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 400;
   color: #1a1a1a;
   margin: 0;
 }
