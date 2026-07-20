@@ -349,10 +349,7 @@ export default function TalentPage() {
             </>
           )}
 
-          <div style={{ display: "flex", alignItems: "center", gap: 16, marginLeft: 4 }}>
-            <button onClick={resetFilters} style={{ fontSize: 13, color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>초기화</button>
-            <span style={{ fontSize: 14, color: "#888" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</span>
-          </div>
+          <button onClick={resetFilters} style={{ marginLeft: "auto", fontSize: 13, color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>초기화</button>
         </div>
 
         <div className="admin-search-wrap" style={{ maxWidth: 400 }}>
@@ -382,6 +379,9 @@ export default function TalentPage() {
           ))}
         </div>
       )}
+
+      {/* 결과 수 */}
+      <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</div>
 
       {/* 리스트 */}
       <div style={{ width: "fit-content", maxWidth: "100%" }}>
