@@ -5434,8 +5434,13 @@ input[type="range"].career-slider::-moz-range-thumb {
   text-align: right;
   color: #555;
   font-size: 14px;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
 }
 .jobpost-form select.admin-form-select { text-align-last: right; }
+/* 네이티브 셀렉트 화살표 자리 제거 */
+.jobpost-form .admin-form-select::-ms-expand { display: none; }
 .jobpost-form .admin-form-input::placeholder { color: #bbb; }
 /* 직군/시술분야 선택 트리거도 박스 제거 */
 .jobpost-form .jgf-trigger { border: none !important; background: transparent !important; padding: 0 !important; }
