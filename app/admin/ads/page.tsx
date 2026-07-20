@@ -181,7 +181,7 @@ export default function AdminAdsPage() {
                   </td>
                   <td style={{ fontWeight: 600 }}>{item.company_name || "-"}</td>
                   <td>{item.contact_name}</td>
-                  <td style={{ fontSize: 14 }}>{item.phone ? formatPhone(item.phone) : "-"}</td>
+                  <td style={{ fontSize: 14, whiteSpace: "nowrap" }}>{item.phone ? formatPhone(item.phone) : "-"}</td>
                   <td style={{ fontSize: 14, color: "#555", wordBreak: "break-all" }}>{item.email || "-"}</td>
                   <td style={{ fontSize: 14, color: "#888" }}>{fmtDate(item.created_at)}</td>
                   <td>{badge(item.status)}</td>

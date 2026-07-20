@@ -174,7 +174,7 @@ export default function AdminInquiriesPage() {
                     </span>
                   </td>
                   <td style={{ fontWeight: 600 }}>{it.name}</td>
-                  <td style={{ fontSize: 14 }}>{it.phone ? formatPhone(it.phone) : "-"}</td>
+                  <td style={{ fontSize: 14, whiteSpace: "nowrap" }}>{it.phone ? formatPhone(it.phone) : "-"}</td>
                   <td style={{ fontSize: 14, color: "#555", wordBreak: "break-all" }}>{it.email || "-"}</td>
                   <td style={{ fontWeight: 500 }}>{it.subject || "(제목 없음)"}</td>
                   <td style={{ fontSize: 14, color: "#888" }}>{fmtDate(it.created_at)}</td>
