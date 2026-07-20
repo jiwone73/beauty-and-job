@@ -212,7 +212,7 @@ export default function AdminNewslettersPage() {
                   <td style={td}>
                     <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   </td>
-                  <td style={{ ...td, maxWidth: 360, fontWeight: 600, color: "#1a1a1a", textAlign: "left" }}>{n.title}</td>
+                  <td style={{ ...td, maxWidth: 360, textAlign: "left" }}>{n.title}</td>
                   <td style={td}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: n.status === "sent" ? "#2e7d32" : "#e65100" }}>
                       {STATUS_LABELS[n.status] || n.status}

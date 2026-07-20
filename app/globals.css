@@ -5178,7 +5178,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-bottom: 1px solid #f9f9f9;
   border-right: 1px solid #f0f0f0;
   font-size: 14px;
-  color: #333;
+  color: #555;
   text-align: center;
   vertical-align: middle;
 }
@@ -6722,7 +6722,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 13px 16px;
   border-bottom: 1px solid #f9f9f9;
   border-right: 1px solid #f0f0f0;
-  font-size: 14px; color: #333;
+  font-size: 14px; color: #555;
   vertical-align: middle;
   text-align: center;
 }
