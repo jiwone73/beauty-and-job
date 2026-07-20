@@ -247,7 +247,6 @@ export default function JobDetailPage() {
       .catch(e => console.error('[load job]', e));
   }, [id]);
 
-  const [bookmarked, setBookmarked] = useState(false);
   const [isOwnerCompany, setIsOwnerCompany] = useState(false);
   const [isAdminPreview, setIsAdminPreview] = useState(false);
   const [logoHref, setLogoHref] = useState("/");
@@ -279,7 +278,8 @@ export default function JobDetailPage() {
       .catch(() => {})
       .finally(() => setCoverLoaded(true));
   }, [showApplyModal, coverLoaded]);
-  const { toggle: toggleBookmark, isBookmarked } = useBookmarkStore();
+  const { toggle: toggleBookmark, isBookmarked, loadFromServer: loadBookmarks } = useBookmarkStore();
+  useEffect(() => { loadBookmarks(); }, [loadBookmarks]);
   if (!job) {
     return (
       <div className="job-detail-page">
@@ -289,6 +289,11 @@ export default function JobDetailPage() {
       </div>
     );
   }
+  const bookmarked = isBookmarked(String(job.id));
+  const handleBookmark = () => {
+    if (!isLoggedIn) { setShowLoginModal(true); return; }
+    toggleBookmark(String(job.id));
+  };
   return (
     <div className="job-detail-page">
       {/* 헤더 */}
@@ -351,7 +356,7 @@ export default function JobDetailPage() {
               </button>
               <button
                 className={`job-detail-aside-bookmark ${bookmarked ? "active" : ""}`}
-                onClick={() => setBookmarked(!bookmarked)}
+                onClick={handleBookmark}
               >
                 <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />
                 {bookmarked ? "북마크 완료" : "북마크"}
@@ -378,7 +383,7 @@ export default function JobDetailPage() {
           <>
             <button
               className={`job-detail-mobile-bookmark ${bookmarked ? "active" : ""}`}
-              onClick={() => setBookmarked(!bookmarked)}
+              onClick={handleBookmark}
             >
               <Bookmark size={20} fill={bookmarked ? "currentColor" : "none"} />
             </button>
