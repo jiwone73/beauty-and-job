@@ -333,10 +333,15 @@ export default function JobPostForm({
     if (categories.length === 0) { alert(jobGroupType === "매장" ? "시술 분야를 선택해주세요." : "직군을 선택해주세요."); return; }
     if (!form.career.trim()) { alert("경력 조건을 입력해주세요."); return; }
     if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
-    // 상세 이미지가 없으면 포지션 소개는 필수, 있으면 선택
+    // 마감일: 날짜 선택 또는 상시채용 필수
+    if (status === "publish" && !alwaysOpen && !form.deadline) {
+      alert("마감일을 선택하거나 상시채용을 체크해주세요.");
+      return;
+    }
+    // 상세 이미지가 없으면 포지션 소개·자격요건 필수, 있으면 선택
     const hasDetailImages = detailImages.length > 0;
-    if (!hasDetailImages && !form.description.trim() && status === "publish") {
-      alert("포지션 소개를 입력하거나, 상세 이미지를 1장 이상 첨부해주세요.\n\n둘 중 하나는 반드시 필요해요.");
+    if (!hasDetailImages && status === "publish" && (!form.description.trim() || !form.requirements.trim())) {
+      alert("상세 이미지를 첨부하지 않으면 포지션 소개와 자격요건을 모두 입력해야 해요.\n\n(상세 이미지를 1장 이상 첨부하면 선택 항목으로 바뀌어요.)");
       return;
     }
 
@@ -657,7 +662,7 @@ export default function JobPostForm({
                   </div>
                 </div>
                 <div className="admin-form-row">
-                  <label className="admin-form-label">마감일</label>
+                  <label className="admin-form-label">마감일<span style={{ color: "#dc2626", marginLeft: "3px" }}>*</span></label>
                   <div ref={deadlineRef} style={{ position: "relative", width: "100%" }}>
                     <button type="button"
                       onClick={() => {
@@ -806,7 +811,7 @@ export default function JobPostForm({
                 const meta = textFieldMeta[k];
                 const content = ((form as any)[k] || "") as string;
                 const filled = !!content.trim();
-                const isReq = k === "description" && detailImages.length === 0;
+                const isReq = (k === "description" || k === "requirements") && detailImages.length === 0;
                 const open = textModalKey === k;
                 return (
                   <div key={k} style={{ padding: "18px 0", borderBottom: "1px solid var(--color-border)" }}>
