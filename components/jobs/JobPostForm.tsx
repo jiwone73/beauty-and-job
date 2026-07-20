@@ -937,7 +937,7 @@ export default function JobPostForm({
                 const isReq = (k === "description" || k === "requirements") && detailImages.length === 0;
                 const open = textModalKey === k;
                 return (
-                  <div key={k} style={{ padding: "18px 0", borderBottom: "1px solid var(--color-border)" }}>
+                  <div key={k} style={{ padding: "18px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
                     <div ref={open ? textPopRef : undefined} style={{ position: "relative" }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                         <label className="admin-form-label" style={{ margin: 0 }}>

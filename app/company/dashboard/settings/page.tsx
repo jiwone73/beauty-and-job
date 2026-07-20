@@ -354,38 +354,35 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row">
                 <label className="admin-form-label">회사 로고</label>
                 <p style={{fontSize:"14px", color:"#888", margin:"0 0 12px"}}>
-                  공고 상단에 표시되는 대표 이미지예요. 한 번 등록하면 모든 공고에 자동 적용돼요. (JPG·PNG·WebP, 2MB 이하)
+                  공고 상단에 표시되는 대표 이미지예요. 한 번 등록하면 모든 공고에 자동 적용돼요.
                 </p>
                 <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"auto"}}>
-                  <div style={{width:"110px", height:"110px", borderRadius:"12px", border:"1px solid #eee",
+                  <div style={{width:"77px", height:"77px", borderRadius:"10px", border:"1px solid #eee",
                     background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
                     overflow:"hidden", flexShrink:0}}>
                     {logoUrl ? (
                       <img src={logoUrl} alt="회사 로고"
                         style={{width:"100%", height:"100%", objectFit:"cover"}} />
                     ) : (
-                      <span style={{fontSize:"29px", fontWeight:700, color:"#c4b5d4"}}>
+                      <span style={{fontSize:"22px", fontWeight:700, color:"#c4b5d4"}}>
                         {form.company_name?.[0] || "?"}
                       </span>
                     )}
                   </div>
-                  <div style={{display:"flex", flexDirection:"column", gap:"8px"}}>
-                    <label style={{display:"inline-flex", alignItems:"center", gap:"6px",
-                      padding:"8px 14px", border:"1.5px solid #c4b5d4", borderRadius:"8px",
-                      cursor: logoUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"14px",
-                      fontWeight:500, background:"#fff", width:"fit-content"}}>
+                  <div style={{display:"flex", flexDirection:"column", gap:"6px", alignItems:"flex-start"}}>
+                    <label style={{display:"inline-flex", alignItems:"center", gap:"4px",
+                      cursor: logoUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"14px", fontWeight:500}}>
                       {logoUploading ? "업로드 중..." : logoUrl ? "로고 변경" : "로고 등록"}
                       <input type="file" accept="image/jpeg,image/png,image/webp"
                         disabled={logoUploading} onChange={handleLogoUpload} style={{display:"none"}} />
                     </label>
                     {logoUrl && (
                       <button type="button" onClick={handleLogoDelete}
-                        style={{padding:"8px 14px", border:"1px solid #eee", borderRadius:"8px",
-                          cursor:"pointer", color:"#888", fontSize:"14px", background:"#fff",
-                          width:"fit-content"}}>
+                        style={{background:"none", border:"none", padding:0, cursor:"pointer", color:"#888", fontSize:"14px"}}>
                         삭제
                       </button>
                     )}
+                    <span style={{fontSize:"12px", color:"#aaa"}}>JPG·PNG·WebP · 2MB 이하</span>
                   </div>
                 </div>
               </div>
@@ -393,10 +390,10 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row">
                 <label className="admin-form-label">공고 노출 이미지</label>
                 <p style={{fontSize:"14px", color:"#888", margin:"0 0 12px"}}>
-                  공고 카드와 상단에 크게 표시되는 대표 비주얼이에요. 매장 사진이나 분위기 이미지를 넣어보세요. 모든 공고에 자동 적용돼요. (가로형 권장, JPG·PNG·WebP, 2MB 이하)
+                  공고 카드와 상단에 크게 표시되는 대표 비주얼이에요. 매장 사진이나 분위기 이미지를 넣어보세요. 모든 공고에 자동 적용돼요.
                 </p>
                 <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"auto"}}>
-                  <div style={{width:"220px", height:"110px", borderRadius:"12px", border:"1px solid #eee",
+                  <div style={{width:"154px", height:"77px", borderRadius:"10px", border:"1px solid #eee",
                     background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
                     overflow:"hidden", flexShrink:0}}>
                     {coverUrl ? (
@@ -404,27 +401,24 @@ export default function CompanySettingsPage() {
                         style={{width:"100%", height:"100%", objectFit:"cover"}} />
                     ) : (
                       <div style={{position:"relative", width:"100%", height:"100%", background:"linear-gradient(135deg,#f3eefb,#e7d8f5)"}}>
-                        <span style={{position:"absolute", left:"10px", bottom:"8px", fontSize:"14px", fontWeight:700, color:"#5f0080"}}>{form.company_name || "회사명"}</span>
+                        <span style={{position:"absolute", left:"8px", bottom:"6px", fontSize:"12px", fontWeight:700, color:"#5f0080"}}>{form.company_name || "회사명"}</span>
                       </div>
                     )}
                   </div>
-                  <div style={{display:"flex", flexDirection:"column", gap:"8px"}}>
-                    <label style={{display:"inline-flex", alignItems:"center", gap:"6px",
-                      padding:"8px 14px", border:"1.5px solid #c4b5d4", borderRadius:"8px",
-                      cursor: coverUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"14px",
-                      fontWeight:500, background:"#fff", width:"fit-content"}}>
+                  <div style={{display:"flex", flexDirection:"column", gap:"6px", alignItems:"flex-start"}}>
+                    <label style={{display:"inline-flex", alignItems:"center", gap:"4px",
+                      cursor: coverUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"14px", fontWeight:500}}>
                       {coverUploading ? "업로드 중..." : coverUrl ? "이미지 변경" : "이미지 등록"}
                       <input type="file" accept="image/jpeg,image/png,image/webp"
                         disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
                     </label>
                     {coverUrl && (
                       <button type="button" onClick={handleCoverDelete}
-                        style={{padding:"8px 14px", border:"1px solid #eee", borderRadius:"8px",
-                          cursor:"pointer", color:"#888", fontSize:"14px", background:"#fff",
-                          width:"fit-content"}}>
+                        style={{background:"none", border:"none", padding:0, cursor:"pointer", color:"#888", fontSize:"14px"}}>
                         삭제
                       </button>
                     )}
+                    <span style={{fontSize:"12px", color:"#aaa"}}>가로형 권장 · JPG·PNG·WebP · 2MB 이하</span>
                   </div>
                 </div>
               </div>
