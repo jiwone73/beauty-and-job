@@ -5,6 +5,7 @@ import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer } f
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
+import FilterDropdown from "@/components/company/FilterDropdown";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
 import { companyApplicationsApi } from "@/lib/api/company";
@@ -253,15 +254,8 @@ function ApplicantsContent() {
             <input className="admin-search-input" placeholder="지원자 이름 검색"
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">상태</span>
-            <div className="admin-filter-tabs">
-              {["전체", "신규", "검토중", "합격", "불합격"].map(s => (
-                <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
-                  onClick={() => setStatusFilter(s)}>{s}</button>
-              ))}
-            </div>
-          </div>
+          <FilterDropdown label="상태" value={statusFilter}
+            options={["전체", "신규", "검토중", "합격", "불합격"]} onChange={setStatusFilter} />
         </div>
         {checked.length > 0 && (
           <div style={{ marginLeft: "auto" }}>
