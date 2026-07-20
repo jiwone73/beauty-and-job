@@ -411,8 +411,8 @@ export default function JobPostForm({
       employment_type: form.type,
       experience_level: expLevel,
       benefit_tags: benefitTags,
-      work_days: jobGroupType === "매장" ? (workDaysNego ? "협의" : (workDays.length ? workDays.join(",") : null)) : null,
-      work_time: jobGroupType === "매장" ? (workTimeNego ? "협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : null)) : null,
+      work_days: workDaysNego ? "협의" : (workDays.length ? workDays.join(",") : null),
+      work_time: workTimeNego ? "협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : null),
       work_time_slots: null,
       deadline: form.deadline || null,
       categories,
@@ -499,8 +499,8 @@ export default function JobPostForm({
       longitude: null,
     },
     companyAddress: cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : "",
-    workDaysText: jobGroupType === "매장" ? (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "")) : "",
-    workTimeText: jobGroupType === "매장" ? (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "")) : "",
+    workDaysText: workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : ""),
+    workTimeText: workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : ""),
   };
 
   return (
@@ -758,7 +758,7 @@ export default function JobPostForm({
                 </div>
               </div>
 
-              {jobGroupType === "매장" && (<>
+              <>
                 {/* 근무 요일 */}
                 <div className="admin-form-row">
                   <label className="admin-form-label">근무 요일</label>
@@ -816,7 +816,7 @@ export default function JobPostForm({
                   </div>
                 </div>
 
-              </>)}
+              </>
             </div>
           </div>
 
