@@ -142,7 +142,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               </div>
             )}
             {job.companyInfo?.website && (
-              <div className="job-detail-company-row">
+              <div className="job-detail-company-row" style={{ gridColumn: "1 / -1" }}>
                 <span className="job-detail-company-label">웹사이트</span>
                 <a href={/^https?:\/\//.test(job.companyInfo.website) ? job.companyInfo.website : `https://${job.companyInfo.website}`}
                   target="_blank" rel="noreferrer" style={{ color: "#5f0080", wordBreak: "break-all" }}>
@@ -151,7 +151,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               </div>
             )}
             {job.companyInfo?.location && (
-              <div className="job-detail-company-row">
+              <div className="job-detail-company-row" style={{ gridColumn: "1 / -1" }}>
                 <span className="job-detail-company-label">위치</span>
                 <span>{shortRegion(job.companyInfo.location)}</span>
               </div>
