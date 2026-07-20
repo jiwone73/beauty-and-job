@@ -220,7 +220,7 @@ export default function AdminStoriesPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
           <button onClick={() => { setTab("posts"); setChecked([]); }} style={tabStyle(tab === "posts")}>글 관리</button>
           <button onClick={() => { setTab("pending"); setChecked([]); }} style={tabStyle(tab === "pending")}>
-            승인 대기{pendingCount > 0 ? ` (${pendingCount})` : ""}
+            AI 글 승인{pendingCount > 0 ? ` (${pendingCount})` : ""}
           </button>
 
           {(
