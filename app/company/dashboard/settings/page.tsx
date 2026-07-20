@@ -418,7 +418,7 @@ export default function CompanySettingsPage() {
                         삭제
                       </button>
                     )}
-                    <span style={{fontSize:"12px", color:"#aaa"}}>가로형 권장 · JPG·PNG·WebP · 2MB 이하</span>
+                    <span style={{fontSize:"12px", color:"#aaa", whiteSpace:"nowrap"}}>가로형 권장 · JPG·PNG·WebP · 2MB 이하</span>
                   </div>
                 </div>
               </div>
