@@ -178,12 +178,12 @@ export default function ScrappedTalentPage() {
             <table className="company-table" style={{ whiteSpace: "nowrap" }}>
               <thead>
                 <tr>
-                  <th style={{ textAlign: "left" }}>이름</th>
+                  <th>이름</th>
                   <th>직군</th>
                   <th>지역</th>
-                  <th style={{ textAlign: "left" }}>최근경력</th>
+                  <th>최근경력</th>
                   <th>재직여부</th>
-                  <th style={{ textAlign: "left" }}>연락처</th>
+                  <th>연락처</th>
                   <th>이력서/포트폴리오</th>
                 </tr>
               </thead>
@@ -195,8 +195,8 @@ export default function ScrappedTalentPage() {
                   const phone = t.phone as string | null;
                   return (
                     <tr key={t.user_id} style={{ cursor: "pointer" }} onClick={() => setSelected(t)}>
-                      <td style={{ textAlign: "left" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <td>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
                           <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                             {t.avatar_url
                               ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -215,12 +215,12 @@ export default function ScrappedTalentPage() {
                       </td>
                       <td className="company-td-sub">{t.job_category || "—"}</td>
                       <td className="company-td-sub">{region}</td>
-                      <td className="company-td-sub" style={{ textAlign: "left" }}>
+                      <td className="company-td-sub">
                         {t.careerDetail ? (
                           <>
-                            <div style={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis" }} title={t.careerDetail.company}>{t.careerDetail.company}</div>
+                            <div style={{ maxWidth: 160, margin: "0 auto", overflow: "hidden", textOverflow: "ellipsis" }} title={t.careerDetail.company}>{t.careerDetail.company}</div>
                             {t.careerDetail.position && (
-                              <div style={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", color: "#aaa", marginTop: 2 }} title={t.careerDetail.position}>{t.careerDetail.position}</div>
+                              <div style={{ maxWidth: 160, margin: "2px auto 0", overflow: "hidden", textOverflow: "ellipsis", color: "#aaa" }} title={t.careerDetail.position}>{t.careerDetail.position}</div>
                             )}
                           </>
                         ) : <span style={{ color: "#ccc" }}>—</span>}
@@ -237,7 +237,7 @@ export default function ScrappedTalentPage() {
                           )
                         ) : <span style={{ color: "#ccc" }}>—</span>}
                       </td>
-                      <td className="company-td-sub" style={{ textAlign: "left" }}>
+                      <td className="company-td-sub">
                         <div style={{ marginBottom: 2, ...(email ? {} : { color: "#ccc" }) }}>{email || "이메일 없음"}</div>
                         <div style={phone ? undefined : { color: "#ccc" }}>{phone ? formatPhone(phone) : "전화번호 없음"}</div>
                       </td>

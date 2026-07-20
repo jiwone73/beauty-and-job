@@ -396,12 +396,12 @@ export default function TalentPage() {
           <table className="company-table" style={{ whiteSpace: "nowrap" }}>
             <thead>
               <tr>
-                <th style={{ textAlign: "left" }}>이름</th>
+                <th>이름</th>
                 <th>직군</th>
                 <th>지역</th>
-                <th style={{ textAlign: "left" }}>최근경력</th>
+                <th>최근경력</th>
                 <th>재직여부</th>
-                <th style={{ textAlign: "left" }}>연락처</th>
+                <th>연락처</th>
                 <th>이력서/포트폴리오</th>
               </tr>
             </thead>
@@ -410,8 +410,8 @@ export default function TalentPage() {
                 const gl = genderLabel(t.gender);
                 return (
                   <tr key={t.id} style={{ cursor: "pointer" }} onClick={() => setSelected(t)}>
-                    <td style={{ textAlign: "left" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
                         <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           {t.avatarUrl
                             ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -430,12 +430,12 @@ export default function TalentPage() {
                     </td>
                     <td className="company-td-sub">{t.mainJobGroup || "—"}</td>
                     <td className="company-td-sub">{shortenRegion(t.regionPrefer)}</td>
-                    <td className="company-td-sub" style={{ textAlign: "left" }}>
+                    <td className="company-td-sub">
                       {t.careerDetail ? (
                         <>
-                          <div style={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis" }} title={t.careerDetail.company}>{t.careerDetail.company}</div>
+                          <div style={{ maxWidth: 160, margin: "0 auto", overflow: "hidden", textOverflow: "ellipsis" }} title={t.careerDetail.company}>{t.careerDetail.company}</div>
                           {t.careerDetail.position && (
-                            <div style={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", color: "#aaa", marginTop: 2 }} title={t.careerDetail.position}>{t.careerDetail.position}</div>
+                            <div style={{ maxWidth: 160, margin: "2px auto 0", overflow: "hidden", textOverflow: "ellipsis", color: "#aaa" }} title={t.careerDetail.position}>{t.careerDetail.position}</div>
                           )}
                         </>
                       ) : (
@@ -456,7 +456,7 @@ export default function TalentPage() {
                         <span style={{ color: "#ccc" }}>—</span>
                       )}
                     </td>
-                    <td className="company-td-sub" style={{ textAlign: "left" }}>
+                    <td className="company-td-sub">
                       <div style={{ marginBottom: 2, ...(t.email ? {} : { color: "#ccc" }) }}>{t.email || "이메일 없음"}</div>
                       <div style={t.phone ? undefined : { color: "#ccc" }}>{t.phone ? formatPhone(t.phone) : "전화번호 없음"}</div>
                     </td>
