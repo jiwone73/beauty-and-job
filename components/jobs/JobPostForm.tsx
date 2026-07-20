@@ -673,8 +673,8 @@ export default function JobPostForm({
                             value={salaryNegoDraft ? "" : salaryDraft}
                             onChange={(e) => setSalaryDraft(e.target.value)}
                             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applySalary(); } }}
-                            style={{ flex: 1, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", textAlign: "left", background: salaryNegoDraft ? "#f5f5f5" : "#fff", color: "#333" }} />
-                          <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap" }}>{salaryTypeDraft === "HOURLY" ? "원" : "만원"}</span>
+                            style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", textAlign: "left", background: salaryNegoDraft ? "#f5f5f5" : "#fff", color: "#333" }} />
+                          <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap", flexShrink: 0 }}>{salaryTypeDraft === "HOURLY" ? "원" : "만원"}</span>
                         </div>
                         <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
                           <input type="checkbox" checked={salaryNegoDraft} onChange={(e) => setSalaryNegoDraft(e.target.checked)} /> 협의 (금액 비공개)
