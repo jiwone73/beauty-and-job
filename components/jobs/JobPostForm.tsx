@@ -9,7 +9,6 @@ import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
 
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
-const TIME_SLOT_OPTIONS = ["오전", "오후", "저녁", "마감"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트", "프리랜서"];
 const WELFARE_OPTIONS: Record<string, string[]> = {
@@ -153,9 +152,6 @@ export default function JobPostForm({
   const [workTimeNego, setWorkTimeNego] = useState(false);
   const [workTimeOpen, setWorkTimeOpen] = useState(false);
   const workTimeRef = useRef<HTMLDivElement>(null);
-  const [timeSlots, setTimeSlots] = useState<string[]>([]);
-  const [timeSlotOpen, setTimeSlotOpen] = useState(false);
-  const timeSlotRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!workDaysOpen) return;
     const onDown = (e: MouseEvent) => { if (workDaysRef.current && !workDaysRef.current.contains(e.target as Node)) setWorkDaysOpen(false); };
@@ -168,12 +164,6 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [workTimeOpen]);
-  useEffect(() => {
-    if (!timeSlotOpen) return;
-    const onDown = (e: MouseEvent) => { if (timeSlotRef.current && !timeSlotRef.current.contains(e.target as Node)) setTimeSlotOpen(false); };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [timeSlotOpen]);
   const [showPreview, setShowPreview] = useState(false);
   const [companyProfile, setCompanyProfile] = useState<any>(null);
   useEffect(() => {
@@ -263,7 +253,6 @@ export default function JobPostForm({
         const [st, en] = String(j.work_time).split("~");
         setWorkTimeNego(false); setWorkTimeStart(st || ""); setWorkTimeEnd(en || "");
       } else { setWorkTimeNego(false); setWorkTimeStart(""); setWorkTimeEnd(""); }
-      setTimeSlots(j.work_time_slots ? String(j.work_time_slots).split(",").filter(Boolean) : []);
       setSalaryNego(!j.salary_min);
       if (j.job_type) setJobGroupType(j.job_type === "STORE" ? "매장" : "기업");
       if (j.company_id) setCompanyId(j.company_id);
@@ -424,7 +413,7 @@ export default function JobPostForm({
       benefit_tags: benefitTags,
       work_days: jobGroupType === "매장" ? (workDaysNego ? "협의" : (workDays.length ? workDays.join(",") : null)) : null,
       work_time: jobGroupType === "매장" ? (workTimeNego ? "협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : null)) : null,
-      work_time_slots: jobGroupType === "매장" ? (timeSlots.length ? timeSlots.join(",") : null) : null,
+      work_time_slots: null,
       deadline: form.deadline || null,
       categories,
       detail_images: detailImages,
@@ -512,7 +501,6 @@ export default function JobPostForm({
     companyAddress: cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : "",
     workDaysText: jobGroupType === "매장" ? (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "")) : "",
     workTimeText: jobGroupType === "매장" ? (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "")) : "",
-    timeSlots: jobGroupType === "매장" ? timeSlots : [],
   };
 
   return (
@@ -534,7 +522,7 @@ export default function JobPostForm({
       </div>
 
       <div className="admin-form-grid jobpost-form">
-        {/* ═══ 왼쪽 컬럼: 기본정보 + 상세이미지 ═══ */}
+        {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
 
           {/* 기본 정보 */}
@@ -828,39 +816,18 @@ export default function JobPostForm({
                   </div>
                 </div>
 
-                {/* 시간대 */}
-                <div className="admin-form-row">
-                  <label className="admin-form-label">시간대</label>
-                  <div ref={timeSlotRef} style={{ position: "relative", width: "100%" }}>
-                    <button type="button" onClick={() => setTimeSlotOpen((v) => !v)}
-                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: timeSlots.length ? "#555" : "#bbb", cursor: "pointer" }}>
-                      <span style={{ textAlign: "right" }}>{timeSlots.length ? timeSlots.join(", ") : "선택"}</span>
-                      <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: timeSlotOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
-                    </button>
-                    {timeSlotOpen && (
-                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                          {TIME_SLOT_OPTIONS.map((s) => {
-                            const on = timeSlots.includes(s);
-                            return (
-                              <button key={s} type="button"
-                                onClick={() => setTimeSlots(on ? timeSlots.filter((x) => x !== s) : [...timeSlots, s])}
-                                style={{ padding: "6px 12px", borderRadius: "999px", fontSize: "13px", cursor: "pointer",
-                                  border: on ? "1.5px solid #5f0080" : "1px solid #ddd", background: on ? "#faf5ff" : "#fff", color: on ? "#5f0080" : "#666" }}>{s}</button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </>)}
             </div>
           </div>
 
-          {/* 상세 이미지 (하단 높이 맞춤용 flex:1) */}
+        </div>
+
+        {/* ═══ 오른쪽 컬럼: 상세이미지 + 상세내용 + 채용절차·비고 ═══ */}
+        <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
+
+          {/* 상세 이미지 */}
           <h2 className="jobpost-section-title">상세 이미지</h2>
-          <div className="company-card" style={{ overflow: "visible", flex: 1 }}>
+          <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
               <div className="admin-form-row">
                 <label className="admin-form-label">이미지 첨부</label>
@@ -907,10 +874,6 @@ export default function JobPostForm({
               </div>
             </div>
           </div>
-        </div>
-
-        {/* ═══ 오른쪽 컬럼: 상세내용 + 채용절차·비고 ═══ */}
-        <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
 
           {/* 상세 내용 */}
           <h2 className="jobpost-section-title">상세 내용</h2>

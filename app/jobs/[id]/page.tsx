@@ -204,7 +204,6 @@ export default function JobDetailPage() {
             detailImages: j.detail_images || [],
             workDaysText: j.work_days === "협의" ? "요일 협의" : (j.work_days ? String(j.work_days).split(",").join("·") : ""),
             workTimeText: j.work_time === "협의" ? "시간 협의" : (j.work_time || ""),
-            timeSlots: j.work_time_slots ? String(j.work_time_slots).split(",").filter(Boolean) : [],
             companyInfo: {
               name: j.company?.company_name || '',
               brandName: j.company?.brand_name || '',

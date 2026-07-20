@@ -181,7 +181,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         </section>
 
         {/* 근무 조건 (매장직) */}
-        {(job.workDaysText || job.workTimeText || (job.timeSlots && job.timeSlots.length > 0)) && (
+        {(job.workDaysText || job.workTimeText) && (
           <section className="job-detail-section">
             <h2 className="job-detail-section-title">근무 조건</h2>
             <div className="job-detail-company-info">
@@ -195,12 +195,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 <div className="job-detail-company-row">
                   <span className="job-detail-company-label">근무 시간</span>
                   <span>{job.workTimeText}</span>
-                </div>
-              )}
-              {job.timeSlots && job.timeSlots.length > 0 && (
-                <div className="job-detail-company-row">
-                  <span className="job-detail-company-label">시간대</span>
-                  <span>{job.timeSlots.join(", ")}</span>
                 </div>
               )}
             </div>
