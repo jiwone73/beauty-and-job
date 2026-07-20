@@ -118,6 +118,7 @@ function AdminMembersPageInner() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
+  const [signupFilter, setSignupFilter] = useState("전체");
   const [jobTypeFilter, setJobTypeFilter] = useState(initialJobType);
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [checked, setChecked] = useState<string[]>([]);
@@ -207,7 +208,9 @@ function AdminMembersPageInner() {
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[m.status] === statusFilter;
     const matchJobType = jobTypeFilter === "전체" || JOB_TYPE_LABEL[m.job_type || ""] === jobTypeFilter;
     const matchDate = matchPeriod(m.created_at, dateFilter);
-    return matchSearch && matchStatus && matchJobType && matchDate;
+    const signupOf = m.kakao_id ? "카카오" : m.naver_id ? "네이버" : "이메일";
+    const matchSignup = signupFilter === "전체" || signupOf === signupFilter;
+    return matchSearch && matchStatus && matchJobType && matchDate && matchSignup;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -261,6 +264,10 @@ function AdminMembersPageInner() {
             value={statusFilter}
             options={["전체", "정상", "휴면", "정지"]}
             onChange={(v) => { setStatusFilter(v); setPage(1); }} />
+          <FilterDropdown label="가입"
+            value={signupFilter}
+            options={["전체", "이메일", "카카오", "네이버"]}
+            onChange={(v) => { setSignupFilter(v); setPage(1); }} />
           <FilterDropdown label="가입일"
             value={DATE_LABELS[dateFilter] || "전체"}
             options={["전체", "오늘", "최근 7일", "최근 1개월", "최근 3개월", "최근 1년"]}
