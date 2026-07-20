@@ -59,7 +59,8 @@ export async function POST(req: NextRequest) {
     title, job_type, job_category_id, description, requirements,
     preferred_qualifications, salary_min, salary_max, salary_type,
     location, address, work_type, experience_level, deadline, categories,
-    detail_images, hiring_process, notes, benefits, employment_type, benefit_tags
+    detail_images, hiring_process, notes, benefits, employment_type, benefit_tags,
+    work_days, work_time, work_time_slots
   } = body
 
   if (!title || !job_type) {
@@ -72,9 +73,10 @@ export async function POST(req: NextRequest) {
        requirements, preferred_qualifications, salary_min, salary_max,
        salary_type, location, address, work_type, experience_level,
        deadline, categories, detail_images, hiring_process, notes,
-       benefits, employment_type, benefit_tags, status
+       benefits, employment_type, benefit_tags,
+       work_days, work_time, work_time_slots, status
      ) VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, 'ACTIVE'
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 'ACTIVE'
      ) RETURNING id, title, status, created_at`,
     [
       auth!.sub, title, job_type, job_category_id || null, description || null,
@@ -87,7 +89,8 @@ export async function POST(req: NextRequest) {
       notes || null,
       benefits || null,
       employment_type || null,
-      benefit_tags || []
+      benefit_tags || [],
+      work_days || null, work_time || null, work_time_slots || null
     ]
   )
   return ok(result.rows[0], 201)

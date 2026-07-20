@@ -180,6 +180,33 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           ) : null}
         </section>
 
+        {/* 근무 조건 (매장직) */}
+        {(job.workDaysText || job.workTimeText || (job.timeSlots && job.timeSlots.length > 0)) && (
+          <section className="job-detail-section">
+            <h2 className="job-detail-section-title">근무 조건</h2>
+            <div className="job-detail-company-info">
+              {job.workDaysText && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">근무 요일</span>
+                  <span>{job.workDaysText}</span>
+                </div>
+              )}
+              {job.workTimeText && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">근무 시간</span>
+                  <span>{job.workTimeText}</span>
+                </div>
+              )}
+              {job.timeSlots && job.timeSlots.length > 0 && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">시간대</span>
+                  <span>{job.timeSlots.join(", ")}</span>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* 포지션 소개 */}
         {job.description?.trim() && (
           <section className="job-detail-section">

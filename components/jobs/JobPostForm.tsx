@@ -8,6 +8,8 @@ import { formatSalaryWon } from "@/lib/salary";
 import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
 
+const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
+const TIME_SLOT_OPTIONS = ["오전", "오후", "저녁", "마감"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트", "프리랜서"];
 const WELFARE_OPTIONS: Record<string, string[]> = {
@@ -141,6 +143,37 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [workcondOpen]);
+  // 근무 조건(매장직): 요일 / 시간 / 시간대
+  const [workDays, setWorkDays] = useState<string[]>([]);
+  const [workDaysNego, setWorkDaysNego] = useState(false);
+  const [workDaysOpen, setWorkDaysOpen] = useState(false);
+  const workDaysRef = useRef<HTMLDivElement>(null);
+  const [workTimeStart, setWorkTimeStart] = useState("");
+  const [workTimeEnd, setWorkTimeEnd] = useState("");
+  const [workTimeNego, setWorkTimeNego] = useState(false);
+  const [workTimeOpen, setWorkTimeOpen] = useState(false);
+  const workTimeRef = useRef<HTMLDivElement>(null);
+  const [timeSlots, setTimeSlots] = useState<string[]>([]);
+  const [timeSlotOpen, setTimeSlotOpen] = useState(false);
+  const timeSlotRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!workDaysOpen) return;
+    const onDown = (e: MouseEvent) => { if (workDaysRef.current && !workDaysRef.current.contains(e.target as Node)) setWorkDaysOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [workDaysOpen]);
+  useEffect(() => {
+    if (!workTimeOpen) return;
+    const onDown = (e: MouseEvent) => { if (workTimeRef.current && !workTimeRef.current.contains(e.target as Node)) setWorkTimeOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [workTimeOpen]);
+  useEffect(() => {
+    if (!timeSlotOpen) return;
+    const onDown = (e: MouseEvent) => { if (timeSlotRef.current && !timeSlotRef.current.contains(e.target as Node)) setTimeSlotOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [timeSlotOpen]);
   const [showPreview, setShowPreview] = useState(false);
   const [companyProfile, setCompanyProfile] = useState<any>(null);
   useEffect(() => {
@@ -222,6 +255,15 @@ export default function JobPostForm({
       setHiringProcess(j.hiring_process || []);
       setNotes(j.notes || "");
       setBenefitTags(j.benefit_tags || []);
+      // 근무 조건 복원
+      if (j.work_days === "협의") { setWorkDaysNego(true); setWorkDays([]); }
+      else { setWorkDaysNego(false); setWorkDays(j.work_days ? String(j.work_days).split(",").filter(Boolean) : []); }
+      if (j.work_time === "협의") { setWorkTimeNego(true); setWorkTimeStart(""); setWorkTimeEnd(""); }
+      else if (j.work_time && String(j.work_time).includes("~")) {
+        const [st, en] = String(j.work_time).split("~");
+        setWorkTimeNego(false); setWorkTimeStart(st || ""); setWorkTimeEnd(en || "");
+      } else { setWorkTimeNego(false); setWorkTimeStart(""); setWorkTimeEnd(""); }
+      setTimeSlots(j.work_time_slots ? String(j.work_time_slots).split(",").filter(Boolean) : []);
       setSalaryNego(!j.salary_min);
       if (j.job_type) setJobGroupType(j.job_type === "STORE" ? "매장" : "기업");
       if (j.company_id) setCompanyId(j.company_id);
@@ -380,6 +422,9 @@ export default function JobPostForm({
       employment_type: form.type,
       experience_level: expLevel,
       benefit_tags: benefitTags,
+      work_days: jobGroupType === "매장" ? (workDaysNego ? "협의" : (workDays.length ? workDays.join(",") : null)) : null,
+      work_time: jobGroupType === "매장" ? (workTimeNego ? "협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : null)) : null,
+      work_time_slots: jobGroupType === "매장" ? (timeSlots.length ? timeSlots.join(",") : null) : null,
       deadline: form.deadline || null,
       categories,
       detail_images: detailImages,
@@ -465,6 +510,9 @@ export default function JobPostForm({
       longitude: null,
     },
     companyAddress: cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : "",
+    workDaysText: jobGroupType === "매장" ? (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "")) : "",
+    workTimeText: jobGroupType === "매장" ? (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "")) : "",
+    timeSlots: jobGroupType === "매장" ? timeSlots : [],
   };
 
   return (
@@ -721,6 +769,92 @@ export default function JobPostForm({
                   </div>
                 </div>
               </div>
+
+              {jobGroupType === "매장" && (<>
+                {/* 근무 요일 */}
+                <div className="admin-form-row">
+                  <label className="admin-form-label">근무 요일</label>
+                  <div ref={workDaysRef} style={{ position: "relative", width: "100%" }}>
+                    <button type="button" onClick={() => setWorkDaysOpen((v) => !v)}
+                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: (workDaysNego || workDays.length) ? "#555" : "#bbb", cursor: "pointer" }}>
+                      <span style={{ textAlign: "right" }}>{workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "선택")}</span>
+                      <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: workDaysOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
+                    </button>
+                    {workDaysOpen && (
+                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                          {WORK_DAY_OPTIONS.map((d) => {
+                            const on = workDays.includes(d);
+                            return (
+                              <button key={d} type="button" disabled={workDaysNego}
+                                onClick={() => setWorkDays(on ? workDays.filter((x) => x !== d) : [...workDays, d].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b)))}
+                                style={{ width: 32, height: 32, borderRadius: "50%", fontSize: "13px", cursor: workDaysNego ? "default" : "pointer",
+                                  border: on ? "1.5px solid #5f0080" : "1px solid #ddd", background: on ? "#5f0080" : "#fff",
+                                  color: workDaysNego ? "#ccc" : (on ? "#fff" : "#666") }}>{d}</button>
+                            );
+                          })}
+                        </div>
+                        <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                          <input type="checkbox" checked={workDaysNego} onChange={(e) => setWorkDaysNego(e.target.checked)} /> 요일 협의
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 근무 시간 */}
+                <div className="admin-form-row">
+                  <label className="admin-form-label">근무 시간</label>
+                  <div ref={workTimeRef} style={{ position: "relative", width: "100%" }}>
+                    <button type="button" onClick={() => setWorkTimeOpen((v) => !v)}
+                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#555" : "#bbb", cursor: "pointer" }}>
+                      <span style={{ textAlign: "right" }}>{workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "선택")}</span>
+                      <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: workTimeOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
+                    </button>
+                    {workTimeOpen && (
+                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <input type="time" disabled={workTimeNego} value={workTimeStart} onChange={(e) => setWorkTimeStart(e.target.value)}
+                            style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 10px", fontSize: "14px", background: workTimeNego ? "#f5f5f5" : "#fff", color: "#333" }} />
+                          <span style={{ color: "#888", flexShrink: 0 }}>~</span>
+                          <input type="time" disabled={workTimeNego} value={workTimeEnd} onChange={(e) => setWorkTimeEnd(e.target.value)}
+                            style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 10px", fontSize: "14px", background: workTimeNego ? "#f5f5f5" : "#fff", color: "#333" }} />
+                        </div>
+                        <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                          <input type="checkbox" checked={workTimeNego} onChange={(e) => setWorkTimeNego(e.target.checked)} /> 시간 협의
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 시간대 */}
+                <div className="admin-form-row">
+                  <label className="admin-form-label">시간대</label>
+                  <div ref={timeSlotRef} style={{ position: "relative", width: "100%" }}>
+                    <button type="button" onClick={() => setTimeSlotOpen((v) => !v)}
+                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: timeSlots.length ? "#555" : "#bbb", cursor: "pointer" }}>
+                      <span style={{ textAlign: "right" }}>{timeSlots.length ? timeSlots.join(", ") : "선택"}</span>
+                      <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: timeSlotOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
+                    </button>
+                    {timeSlotOpen && (
+                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                          {TIME_SLOT_OPTIONS.map((s) => {
+                            const on = timeSlots.includes(s);
+                            return (
+                              <button key={s} type="button"
+                                onClick={() => setTimeSlots(on ? timeSlots.filter((x) => x !== s) : [...timeSlots, s])}
+                                style={{ padding: "6px 12px", borderRadius: "999px", fontSize: "13px", cursor: "pointer",
+                                  border: on ? "1.5px solid #5f0080" : "1px solid #ddd", background: on ? "#faf5ff" : "#fff", color: on ? "#5f0080" : "#666" }}>{s}</button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>)}
             </div>
           </div>
 

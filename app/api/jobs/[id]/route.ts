@@ -13,7 +13,7 @@ export async function GET(
 
   // 공고 + 기업 정보 조회
   const jobRes = await pool.query(
-    `SELECT 
+    `SELECT
        jp.*,
        c.id AS company_id,
        c.company_name,
@@ -87,6 +87,9 @@ export async function GET(
     detail_images: job.detail_images || [],
     hiring_process: job.hiring_process || [],
     notes: job.notes || '',
+    work_days: job.work_days || '',
+    work_time: job.work_time || '',
+    work_time_slots: job.work_time_slots || '',
     view_count: job.view_count,
     application_count: job.application_count,
     created_at: job.created_at,
