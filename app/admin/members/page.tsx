@@ -237,7 +237,9 @@ function AdminMembersPageInner() {
     <AdminLayout activeMenu="members">
       <div className="admin-mini-stats">
         {Object.entries(counts).map(([label, count]) => (
-          <div key={label} className="admin-mini-stat">
+          <div key={label} className="admin-mini-stat"
+            onClick={() => { setStatusFilter(label); setPage(1); }}
+            style={{ cursor: "pointer", ...(statusFilter === label ? { outline: "2px solid #5f0080", outlineOffset: "-2px" } : {}) }}>
             <span className="admin-mini-stat-label">{label}</span>
             <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">명</span></span>
           </div>
