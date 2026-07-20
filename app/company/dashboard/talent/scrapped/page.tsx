@@ -182,6 +182,7 @@ export default function ScrappedTalentPage() {
                   <th>직군</th>
                   <th>지역</th>
                   <th style={{ textAlign: "left" }}>최근경력</th>
+                  <th>재직여부</th>
                   <th style={{ textAlign: "left" }}>연락처</th>
                   <th>이력서/포트폴리오</th>
                 </tr>
@@ -217,11 +218,23 @@ export default function ScrappedTalentPage() {
                       <td className="company-td-sub" style={{ textAlign: "left" }}>
                         {t.careerDetail ? (
                           <>
-                            <div>{t.careerDetail.company}</div>
-                            <div style={{ color: "#aaa", marginTop: 2 }}>
-                              {[t.careerDetail.department, t.careerDetail.end_date ? "퇴직" : "재직중"].filter(Boolean).join(" · ")}
-                            </div>
+                            <div style={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis" }} title={t.careerDetail.company}>{t.careerDetail.company}</div>
+                            {t.careerDetail.position && (
+                              <div style={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", color: "#aaa", marginTop: 2 }} title={t.careerDetail.position}>{t.careerDetail.position}</div>
+                            )}
                           </>
+                        ) : <span style={{ color: "#ccc" }}>—</span>}
+                      </td>
+                      <td className="company-td-sub">
+                        {t.careerDetail ? (
+                          t.careerDetail.end_date ? (
+                            <>
+                              <div style={{ color: "#888" }}>퇴직</div>
+                              <div style={{ color: "#aaa", marginTop: 2 }}>{String(t.careerDetail.end_date).slice(0, 7).replace(/-/g, ".")}</div>
+                            </>
+                          ) : (
+                            <span style={{ color: "#5f0080" }}>재직중</span>
+                          )
                         ) : <span style={{ color: "#ccc" }}>—</span>}
                       </td>
                       <td className="company-td-sub" style={{ textAlign: "left" }}>

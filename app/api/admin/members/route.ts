@@ -16,18 +16,14 @@ export async function GET(req: NextRequest) {
         (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS resume_id,
         (SELECT r.career_type FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS career_type,
         (SELECT COUNT(*)::int FROM company_talent_scraps s WHERE s.user_id = u.id) AS scrap_count,
-        (SELECT rc.company_name FROM resume_careers rc
-          JOIN resumes r ON r.id = rc.resume_id
-          WHERE r.user_id = u.id
-          ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_company,
-        (SELECT rc.start_date FROM resume_careers rc
-          JOIN resumes r ON r.id = rc.resume_id
-          WHERE r.user_id = u.id
-          ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_start_date,
-        (SELECT rc.is_current FROM resume_careers rc
-          JOIN resumes r ON r.id = rc.resume_id
-          WHERE r.user_id = u.id
-          ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_is_current
+        (SELECT uc.company FROM user_careers uc WHERE uc.user_id = u.id
+          ORDER BY uc.start_date DESC NULLS LAST LIMIT 1) AS recent_company,
+        (SELECT uc.position FROM user_careers uc WHERE uc.user_id = u.id
+          ORDER BY uc.start_date DESC NULLS LAST LIMIT 1) AS recent_position,
+        (SELECT uc.start_date FROM user_careers uc WHERE uc.user_id = u.id
+          ORDER BY uc.start_date DESC NULLS LAST LIMIT 1) AS recent_start_date,
+        (SELECT uc.end_date FROM user_careers uc WHERE uc.user_id = u.id
+          ORDER BY uc.start_date DESC NULLS LAST LIMIT 1) AS recent_end_date
       FROM users u
       ORDER BY u.created_at DESC
     `)

@@ -97,8 +97,9 @@ type Member = {
   resume_id: string | null;
   career_type: string | null;
   recent_company: string | null;
+  recent_position: string | null;
   recent_start_date: string | null;
-  recent_is_current: boolean | null;
+  recent_end_date: string | null;
 };
 
 function AdminMembersPageInner() {
@@ -321,6 +322,7 @@ function AdminMembersPageInner() {
                 <th>지역</th>
                 <th style={{ textAlign: "center" }}>연락처</th>
                 <th>최근경력</th>
+                <th>재직여부</th>
                 <th>가입</th>
                 <th>최종로그인</th>
                 <th>이력서/포트폴리오</th>
@@ -399,23 +401,35 @@ function AdminMembersPageInner() {
                       <div style={{ marginTop: 4, color: "#888" }}>{m.phone ? formatPhone(m.phone) : "-"}</div>
                     </td>
 
-                    {/* 최근경력: 회사명 / 입사일·재직여부 */}
+                    {/* 최근경력: 회사명 / 직무 */}
                     <td className="admin-td-date">
                       {m.recent_company ? (
                         <>
-                          <div style={{ fontWeight: 500, maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={m.recent_company}>{m.recent_company}</div>
-                          <div style={{ marginTop: 2, fontSize: 13, color: "#888" }}>
-                            {fmtYearMonth(m.recent_start_date)}
-                            {m.recent_is_current
-                              ? <span style={{ marginLeft: 4, color: "#5f0080", fontWeight: 600 }}>재직중</span>
-                              : <span style={{ marginLeft: 4, color: "#aaa" }}>퇴직</span>
-                            }
-                          </div>
+                          <div style={{ maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={m.recent_company}>{m.recent_company}</div>
+                          {m.recent_position && (
+                            <div style={{ marginTop: 2, fontSize: 13, color: "#aaa", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={m.recent_position}>{m.recent_position}</div>
+                          )}
                         </>
                       ) : (
                         <span style={{ color: "#ccc", fontSize: 13 }}>
                           {m.career_type === "NEWCOMER" ? "신입" : "-"}
                         </span>
+                      )}
+                    </td>
+
+                    {/* 재직여부 */}
+                    <td className="admin-td-date">
+                      {m.recent_company ? (
+                        m.recent_end_date ? (
+                          <>
+                            <div style={{ color: "#888" }}>퇴직</div>
+                            <div style={{ marginTop: 2, fontSize: 13, color: "#aaa" }}>{fmtYearMonth(m.recent_end_date)}</div>
+                          </>
+                        ) : (
+                          <span style={{ color: "#5f0080" }}>재직중</span>
+                        )
+                      ) : (
+                        <span style={{ color: "#ccc" }}>-</span>
                       )}
                     </td>
 
