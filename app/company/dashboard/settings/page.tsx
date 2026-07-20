@@ -567,22 +567,19 @@ export default function CompanySettingsPage() {
                 </div>
               </div>
 
-              <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px" }}>
-                <label className="admin-form-label">비밀번호</label>
+              <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <label className="admin-form-label" style={{ margin: 0 }}>비밀번호</label>
                 <button type="button" onClick={() => setShowPwModal(true)}
-                  style={{ alignSelf: "flex-start", marginTop: "4px", padding: "9px 18px", borderRadius: "8px", border: "1.5px solid #c4b5d4", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-                  비밀번호 변경
+                  style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", padding: 0, cursor: "pointer", color: "#5f0080", fontSize: "14px" }}>
+                  변경 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
                 </button>
               </div>
 
-              <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px" }}>
-                <label className="admin-form-label">회원 탈퇴</label>
-                <p style={{ fontSize: "14px", color: "#888", margin: "4px 0 12px" }}>
-                  탈퇴 시 계정과 등록한 채용공고가 비활성화되며, 되돌릴 수 없어요.
-                </p>
+              <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <label className="admin-form-label" style={{ margin: 0 }}>회원 탈퇴</label>
                 <button type="button" onClick={() => setShowWithdraw(true)}
-                  style={{ alignSelf: "flex-start", padding: "9px 18px", borderRadius: "8px", border: "1.5px solid #e74c3c", background: "#fff", color: "#e74c3c", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-                  회원 탈퇴
+                  style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", padding: 0, cursor: "pointer", color: "#e74c3c", fontSize: "14px" }}>
+                  탈퇴 <span style={{ color: "#e6a6a0", fontSize: "16px" }}>›</span>
                 </button>
               </div>
             </div>
