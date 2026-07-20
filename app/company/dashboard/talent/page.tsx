@@ -349,7 +349,7 @@ export default function TalentPage() {
             </>
           )}
 
-          <div style={{ display: "flex", alignItems: "center", gap: 16, marginLeft: "auto" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginLeft: 4 }}>
             <button onClick={resetFilters} style={{ fontSize: 13, color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>초기화</button>
             <span style={{ fontSize: 14, color: "#888" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</span>
           </div>
