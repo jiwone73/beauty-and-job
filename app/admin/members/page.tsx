@@ -5,6 +5,18 @@ import FilterDropdown from "@/components/company/FilterDropdown";
 
 const DATE_LABELS: Record<string, string> = { "전체": "전체", today: "오늘", "7d": "최근 7일", "1m": "최근 1개월", "3m": "최근 3개월", "1y": "최근 1년" };
 const DATE_VALUES: Record<string, string> = { "전체": "전체", "오늘": "today", "최근 7일": "7d", "최근 1개월": "1m", "최근 3개월": "3m", "최근 1년": "1y" };
+
+function ageGroupOf(birth: string | null | undefined): string | null {
+  if (!birth) return null;
+  const y = parseInt(String(birth).slice(0, 4));
+  if (!y) return null;
+  const age = new Date().getFullYear() - y;
+  if (age < 20) return "10대";
+  if (age < 30) return "20대";
+  if (age < 40) return "30대";
+  if (age < 50) return "40대";
+  return "50대 이상";
+}
 // [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
 // import SmsModal from "@/components/admin/SmsModal";
 import { useSearchParams } from "next/navigation";
@@ -119,6 +131,8 @@ function AdminMembersPageInner() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
   const [signupFilter, setSignupFilter] = useState("전체");
+  const [genderFilter, setGenderFilter] = useState("전체");
+  const [ageFilter, setAgeFilter] = useState("전체");
   const [jobTypeFilter, setJobTypeFilter] = useState(initialJobType);
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [checked, setChecked] = useState<string[]>([]);
@@ -210,7 +224,9 @@ function AdminMembersPageInner() {
     const matchDate = matchPeriod(m.created_at, dateFilter);
     const signupOf = m.kakao_id ? "카카오" : m.naver_id ? "네이버" : "이메일";
     const matchSignup = signupFilter === "전체" || signupOf === signupFilter;
-    return matchSearch && matchStatus && matchJobType && matchDate && matchSignup;
+    const matchGender = genderFilter === "전체" || (m.gender || "") === genderFilter;
+    const matchAge = ageFilter === "전체" || ageGroupOf(m.birth_date) === ageFilter;
+    return matchSearch && matchStatus && matchJobType && matchDate && matchSignup && matchGender && matchAge;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -264,6 +280,14 @@ function AdminMembersPageInner() {
             value={statusFilter}
             options={["전체", "정상", "휴면", "정지"]}
             onChange={(v) => { setStatusFilter(v); setPage(1); }} />
+          <FilterDropdown label="성별"
+            value={genderFilter}
+            options={["전체", "남성", "여성"]}
+            onChange={(v) => { setGenderFilter(v); setPage(1); }} />
+          <FilterDropdown label="나이"
+            value={ageFilter}
+            options={["전체", "10대", "20대", "30대", "40대", "50대 이상"]}
+            onChange={(v) => { setAgeFilter(v); setPage(1); }} />
           <FilterDropdown label="가입"
             value={signupFilter}
             options={["전체", "이메일", "카카오", "네이버"]}
