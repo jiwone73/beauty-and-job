@@ -1,6 +1,7 @@
 "use client";
 import LoginModal from "@/components/LoginModal";
 import JobDetailView from "@/components/jobs/JobDetailView";
+import { formatSalaryWon } from "@/lib/salary";
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -189,7 +190,7 @@ export default function JobDetailPage() {
             region: j.location || '',
             employType: j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직',
             deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, '.') : '상시채용',
-            salary: j.salary_min ? `${(j.salary_min/10000).toLocaleString()}만원 ~` : '협의',
+            salary: formatSalaryWon(j.salary_min, j.salary_type),
             color: '#e8f0fe',
             description: j.description || '',
             requirements: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],

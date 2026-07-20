@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Pencil, Trash2, Upload } from "lucide-react";
+import { ChevronLeft, Pencil, Trash2, Upload, Eye, Save } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
+import { formatSalaryWon } from "@/lib/salary";
 import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
 
@@ -70,12 +71,20 @@ export default function JobPostForm({
   const [salaryModalOpen, setSalaryModalOpen] = useState(false);
   const [salaryDraft, setSalaryDraft] = useState("");
   const [salaryNegoDraft, setSalaryNegoDraft] = useState(false);
+  const [salaryType, setSalaryType] = useState<string>("MONTHLY");     // ANNUAL/MONTHLY/WEEKLY/HOURLY
+  const [salaryTypeDraft, setSalaryTypeDraft] = useState<string>("MONTHLY");
   const salaryRef = useRef<HTMLDivElement>(null);
   const applySalary = () => {
     setSalaryNego(salaryNegoDraft);
+    setSalaryType(salaryTypeDraft);
     setForm({ ...form, salary: salaryNegoDraft ? "" : salaryDraft });
     setSalaryModalOpen(false);
   };
+  // 신규 등록 시 채용유형에 맞춰 기본 급여유형 설정(편집은 로드값 유지)
+  useEffect(() => {
+    if (editId) return;
+    setSalaryType(jobGroupType === "매장" ? "MONTHLY" : "ANNUAL");
+  }, [jobGroupType, editId]);
   useEffect(() => {
     if (!salaryModalOpen) return;
     const onDown = (e: MouseEvent) => {
@@ -197,7 +206,9 @@ export default function JobPostForm({
       const type = j.employment_type
         || (j.work_type === "PART_TIME" ? "파트타임"
           : j.work_type === "CONTRACT" ? "계약직" : "정규직");
-      const salary = j.salary_min ? String(j.salary_min / 10000) : "";
+      const loadedSalaryType = j.salary_type || (j.job_type === "STORE" ? "MONTHLY" : "ANNUAL");
+      const salary = j.salary_min ? String(loadedSalaryType === "HOURLY" ? j.salary_min : j.salary_min / 10000) : "";
+      setSalaryType(loadedSalaryType);
       setForm({
         title: j.title || "", career, type,
         deadline: j.deadline ? String(j.deadline).slice(0, 10) : "",
@@ -352,7 +363,7 @@ export default function JobPostForm({
     let salaryMin: number | null = null;
     if (!salaryNego && form.salary) {
       const n = parseInt(String(form.salary).replace(/[^0-9]/g, ""));
-      if (n > 0) salaryMin = n * 10000;
+      if (n > 0) salaryMin = salaryType === "HOURLY" ? n : n * 10000;
     }
 
     const payload: any = {
@@ -363,7 +374,7 @@ export default function JobPostForm({
       preferred_qualifications: form.preferred || null,
       benefits: form.benefits || null,
       salary_min: salaryMin, salary_max: null,
-      salary_type: salaryMin ? (jobGroupType === "매장" ? "MONTHLY" : "ANNUAL") : null,
+      salary_type: salaryMin ? salaryType : null,
       location: regionList.join(", ") || null,
       work_type: workType,
       employment_type: form.type,
@@ -428,7 +439,7 @@ export default function JobPostForm({
     region: regionList.join(", "),
     employType: form.type || "정규직",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
-    salary: salaryNego ? "협의" : (form.salary ? `${form.salary}만원 ~` : "협의"),
+    salary: salaryNego ? "급여 협의" : (form.salary ? formatSalaryWon((parseInt(String(form.salary).replace(/[^0-9]/g, "")) || 0) * (salaryType === "HOURLY" ? 1 : 10000), salaryType) : "급여 협의"),
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -466,8 +477,8 @@ export default function JobPostForm({
           {editId ? "채용공고 수정" : "채용공고 등록"}
         </h2>
         <div className="admin-form-actions">
-          <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}>임시저장</button>
-          <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}>미리보기</button>
+          <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}><Save size={15} /> 임시저장</button>
+          <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
           <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
             {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
           </button>
@@ -631,24 +642,42 @@ export default function JobPostForm({
                     <button type="button"
                       onClick={() => {
                         if (salaryModalOpen) { setSalaryModalOpen(false); return; }
-                        setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryModalOpen(true);
+                        setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
                       }}
                       style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: (salaryNego || form.salary) ? "#555" : "#bbb", cursor: "pointer" }}>
                       <span style={{ textAlign: "right" }}>
-                        {salaryNego ? "협의" : form.salary ? `${form.salary}만원` : "급여를 입력해주세요"}
+                        {salaryNego ? "급여 협의" : form.salary
+                          ? formatSalaryWon((parseInt(String(form.salary).replace(/[^0-9]/g, "")) || 0) * (salaryType === "HOURLY" ? 1 : 10000), salaryType)
+                          : "급여를 입력해주세요"}
                       </span>
                       <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: salaryModalOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                     </button>
                     {salaryModalOpen && (
-                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "240px" }}>
+                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
+                        {/* 급여 단위 */}
+                        <div style={{ display: "flex", gap: "6px", marginBottom: "10px" }}>
+                          {(jobGroupType === "매장"
+                            ? [["MONTHLY", "월급"], ["WEEKLY", "주급"], ["HOURLY", "시급"]]
+                            : [["ANNUAL", "연봉"], ["MONTHLY", "월급"]]
+                          ).map(([val, lbl]) => (
+                            <button key={val} type="button" disabled={salaryNegoDraft}
+                              onClick={() => setSalaryTypeDraft(val)}
+                              style={{ flex: 1, padding: "6px 0", borderRadius: "8px", fontSize: "13px", cursor: salaryNegoDraft ? "default" : "pointer",
+                                border: salaryTypeDraft === val ? "1.5px solid #5f0080" : "1px solid #ddd",
+                                background: salaryTypeDraft === val ? "#faf5ff" : "#fff",
+                                color: salaryNegoDraft ? "#bbb" : (salaryTypeDraft === val ? "#5f0080" : "#666") }}>
+                              {lbl}
+                            </button>
+                          ))}
+                        </div>
                         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                           <input type="number" autoFocus disabled={salaryNegoDraft}
-                            placeholder={jobGroupType === "매장" ? "예) 250" : "예) 4000"}
+                            placeholder={salaryTypeDraft === "HOURLY" ? "예) 12,000" : salaryTypeDraft === "ANNUAL" ? "예) 4000" : "예) 250"}
                             value={salaryNegoDraft ? "" : salaryDraft}
                             onChange={(e) => setSalaryDraft(e.target.value)}
                             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applySalary(); } }}
                             style={{ flex: 1, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", textAlign: "left", background: salaryNegoDraft ? "#f5f5f5" : "#fff", color: "#333" }} />
-                          <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap" }}>만원</span>
+                          <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap" }}>{salaryTypeDraft === "HOURLY" ? "원" : "만원"}</span>
                         </div>
                         <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
                           <input type="checkbox" checked={salaryNegoDraft} onChange={(e) => setSalaryNegoDraft(e.target.checked)} /> 협의 (금액 비공개)
