@@ -143,21 +143,21 @@ export default function CompanyJobsPage() {
           </div>
           <div className="admin-filter-group">
             <span className="admin-filter-label">유형</span>
-            <div className="admin-filter-tabs">
+            <select className="admin-filter-select" value={jobGroupFilter}
+              onChange={(e) => setJobGroupFilter(e.target.value)}>
               {["전체", "매장", "기업"].map(g => (
-                <button key={g} className={`admin-filter-tab ${jobGroupFilter === g ? "active" : ""}`}
-                  onClick={() => setJobGroupFilter(g)}>{g}</button>
+                <option key={g} value={g}>{g}</option>
               ))}
-            </div>
+            </select>
           </div>
           <div className="admin-filter-group">
             <span className="admin-filter-label">상태</span>
-            <div className="admin-filter-tabs">
+            <select className="admin-filter-select" value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}>
               {["전체", "진행중", "마감"].map(s => (
-                <button key={s} className={`admin-filter-tab ${statusFilter === s ? "active" : ""}`}
-                  onClick={() => setStatusFilter(s)}>{s}</button>
+                <option key={s} value={s}>{s}</option>
               ))}
-            </div>
+            </select>
           </div>
         </div>
         <div style={{display:"flex", gap:"8px"}}>

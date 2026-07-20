@@ -5275,6 +5275,20 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .admin-search-input:focus { border-color: #5f0080; }
 .admin-filter-tabs { display: flex; gap: 4px; }
+.admin-filter-select {
+  height: 36px;
+  padding: 0 30px 0 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 10px center;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-sans);
+}
+.admin-filter-select:focus { outline: none; border-color: #5f0080; }
 .admin-filter-tab {
   display: flex;
   align-items: center;
