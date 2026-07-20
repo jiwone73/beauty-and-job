@@ -320,8 +320,8 @@ export default function TalentPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
           <button
             onClick={() => setJobGroupOpen(true)}
-            className="admin-form-select"
-            style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", minWidth: 130, color: selectedJobGroups.length > 0 ? "#1a1a1a" : "#999" }}
+            className="filter-dd-btn"
+            style={{ gap: 6, minWidth: 130, color: selectedJobGroups.length > 0 ? "#333" : "#999" }}
           >
             <span style={{ flex: 1, textAlign: "left" }}>{jobGroupLabel}</span>
             <ChevronDown size={14} />
@@ -330,8 +330,8 @@ export default function TalentPage() {
           {activeTab === "STORE" && (
             <button
               onClick={() => setRegionOpen(true)}
-              className="admin-form-select"
-              style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", minWidth: 130, color: selectedRegions.length > 0 ? "#1a1a1a" : "#999" }}
+              className="filter-dd-btn"
+              style={{ gap: 6, minWidth: 130, color: selectedRegions.length > 0 ? "#333" : "#999" }}
             >
               <MapPin size={14} style={{ flexShrink: 0 }} />
               <span style={{ flex: 1, textAlign: "left" }}>{regionLabel}</span>

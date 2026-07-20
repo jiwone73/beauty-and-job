@@ -5461,15 +5461,15 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobpost-form .admin-form-body > .admin-form-row:last-child { border-bottom: none; }
 .admin-form-input,
 .admin-form-select {
-  padding: 10px 14px;
+  padding: 8px 12px;
   font-size: 14px;
-  color: #1a1a1a;
-  background: #fafafa;
-  border: 1.5px solid #e5e5e5;
+  color: #333;
+  background: #fff;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   outline: none;
   transition: border-color 0.15s;
-  font-family: inherit;
+  font-family: var(--font-sans);
 }
 .admin-form-input:focus,
 .admin-form-select:focus { border-color: #5f0080; background: #fff; }
