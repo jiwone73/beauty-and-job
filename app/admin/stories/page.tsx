@@ -128,6 +128,25 @@ export default function AdminStoriesPage() {
     }
   };
 
+  // 선택 항목 일괄 숨김/복구
+  const bulkChangeStatus = async (status: "hidden" | "published") => {
+    if (!checked.length || busy) return;
+    setBusy(true);
+    try {
+      for (const id of checked) {
+        await fetch("/api/admin/stories", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+          body: JSON.stringify({ target_type: "post", target_id: id, status }),
+        });
+      }
+      setChecked([]);
+      fetchPosts();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const submitPost = async () => {
     if (!form.body.trim()) { alert("본문을 입력해주세요."); return; }
     setBusy(true);
@@ -320,10 +339,38 @@ export default function AdminStoriesPage() {
             <FilterDropdown label="카테고리" value={catFilter}
               options={["전체", "공감", "꿀팁", "질문", "정보"]} onChange={setCatFilter} />
             <button
-              onClick={handleBulkDelete}
+              onClick={() => bulkChangeStatus("hidden")}
               disabled={checked.length === 0 || busy}
               style={{
                 display: "flex", alignItems: "center", gap: 6, marginLeft: "auto",
+                padding: "7px 14px", borderRadius: 8,
+                border: `1px solid ${checked.length ? "#e0d0f0" : "#eee"}`, background: "#fff",
+                color: checked.length ? "#5f0080" : "#bbb",
+                fontSize: 14, fontWeight: 600,
+                cursor: checked.length ? "pointer" : "default",
+              }}
+            >
+              숨김{checked.length ? ` (${checked.length})` : ""}
+            </button>
+            <button
+              onClick={() => bulkChangeStatus("published")}
+              disabled={checked.length === 0 || busy}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "7px 14px", borderRadius: 8,
+                border: `1px solid ${checked.length ? "#cfe8d4" : "#eee"}`, background: "#fff",
+                color: checked.length ? "#16a34a" : "#bbb",
+                fontSize: 14, fontWeight: 600,
+                cursor: checked.length ? "pointer" : "default",
+              }}
+            >
+              복구
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              disabled={checked.length === 0 || busy}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
                 padding: "7px 14px", borderRadius: 8, border: "none",
                 background: checked.length ? "#e74c3c" : "#ededed",
                 color: checked.length ? "#fff" : "#aaa",
@@ -342,7 +389,7 @@ export default function AdminStoriesPage() {
                 </th>
                 <th style={th}>카테고리</th><th style={th}>제목/내용</th>
                 {tab === "pending" ? <th style={th}>출처</th> : <><th style={th}>출처</th><th style={th}>공감</th><th style={th}>댓글</th><th style={th}>조회</th><th style={th}>신고</th></>}
-                <th style={th}>상태</th><th style={th}>관리</th>
+                <th style={th}>상태</th>{tab === "pending" && <th style={th}>관리</th>}
               </tr>
             </thead>
             <tbody>
@@ -372,22 +419,18 @@ export default function AdminStoriesPage() {
                     </>
                   )}
                   <td style={td}><span style={{ fontSize: 13, color: p.status === "hidden" ? "#d32f2f" : p.status === "pending" ? "#e65100" : "#2e7d32", fontWeight: 600 }}>{STATUS_LABELS[p.status] || p.status}</span></td>
-                  <td style={td}>
-                    {tab === "pending" ? (
-                      <div style={{ display: "flex", gap: 6 }}>
+                  {tab === "pending" && (
+                    <td style={td}>
+                      <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
                         <button onClick={() => changeStatus("post", p.id, "published")} disabled={busy} style={btnGreen}>승인</button>
                         <button onClick={() => changeStatus("post", p.id, "hidden")} disabled={busy} style={btnRed}>반려</button>
                       </div>
-                    ) : p.status === "hidden" ? (
-                      <button onClick={() => changeStatus("post", p.id, "published")} disabled={busy} style={btnGreen}>복구</button>
-                    ) : (
-                      <button onClick={() => changeStatus("post", p.id, "hidden")} disabled={busy} style={btnRed}>숨김</button>
-                    )}
-                  </td>
+                    </td>
+                  )}
                 </tr>
                 {expandedId === p.id && (
                   <tr style={{ background: "#faf8fc" }}>
-                    <td colSpan={tab === "pending" ? 6 : 10} style={{ padding: "16px 12px" }}>
+                    <td colSpan={tab === "pending" ? 6 : 9} style={{ padding: "16px 12px" }}>
                       <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                         {CATEGORIES.map((c) => (
                           <button key={c} onClick={() => setEdit((e) => ({ ...e, category: c }))}
@@ -427,7 +470,7 @@ export default function AdminStoriesPage() {
                 </Fragment>
               ))}
               {visiblePosts.length === 0 && (
-                <tr><td colSpan={tab === "pending" ? 6 : 10} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
+                <tr><td colSpan={tab === "pending" ? 6 : 9} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
                   {tab === "pending" ? "승인 대기 중인 글이 없습니다. 'AI 글 생성'을 눌러보세요." : "글이 없습니다."}
                 </td></tr>
               )}
