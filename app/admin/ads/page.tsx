@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import FilterDropdown from "@/components/company/FilterDropdown";
 import { formatPhone } from "@/lib/phone";
 import { Trash2 } from "lucide-react";
 
@@ -9,7 +10,6 @@ const STATUS_TABS = [
   { key: "new", label: "신규" },
   { key: "done", label: "완료" },
 ];
-const TYPE_TABS = ["", "광고", "제휴", "기타"];
 const PRODUCT_LABELS: Record<string, string> = {
   top_exposure: "공고 상단 노출",
   brand_page: "브랜드 페이지 제작",
@@ -131,28 +131,20 @@ export default function AdminAdsPage() {
     <AdminLayout activeMenu="ads">
       <div style={{ width: "fit-content", maxWidth: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-        <div className="admin-filter-tabs" style={{ margin: 0 }}>
-          {STATUS_TABS.map((t) => (
-            <button key={t.key} className={`admin-filter-tab ${statusFilter === t.key ? "active" : ""}`}
-              onClick={() => setStatusFilter(t.key)}>
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <FilterDropdown label="처리상태"
+          value={STATUS_TABS.find((t) => t.key === statusFilter)?.label || "전체"}
+          options={STATUS_TABS.map((t) => t.label)}
+          onChange={(lbl) => setStatusFilter(STATUS_TABS.find((t) => t.label === lbl)?.key ?? "")} />
+        <FilterDropdown label="유형"
+          value={typeFilter === "" ? "전체" : typeFilter}
+          options={["전체", "광고", "제휴", "기타"]}
+          onChange={(v) => setTypeFilter(v === "전체" ? "" : v)} />
         {checked.length > 0 && (
           <button onClick={handleDelete}
             style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
             <Trash2 size={15} /> 선택 삭제 ({checked.length})
           </button>
         )}
-      </div>
-      <div className="admin-filter-tabs" style={{ marginBottom: 20 }}>
-        {TYPE_TABS.map((t) => (
-          <button key={t} className={`admin-filter-tab ${typeFilter === t ? "active" : ""}`}
-            onClick={() => setTypeFilter(t)}>
-            {t === "" ? "전체 유형" : t}
-          </button>
-        ))}
       </div>
 
       {loading ? (

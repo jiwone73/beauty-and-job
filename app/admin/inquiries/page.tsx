@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import FilterDropdown from "@/components/company/FilterDropdown";
 import { formatPhone } from "@/lib/phone";
 import { Trash2 } from "lucide-react";
 
@@ -128,14 +129,10 @@ export default function AdminInquiriesPage() {
     <AdminLayout activeMenu="inquiries">
       <div style={{ width: "fit-content", maxWidth: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-        <div className="admin-filter-tabs" style={{ margin: 0 }}>
-          {STATUS_TABS.map((t) => (
-            <button key={t.key} className={`admin-filter-tab ${statusFilter === t.key ? "active" : ""}`}
-              onClick={() => setStatusFilter(t.key)}>
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <FilterDropdown label="처리상태"
+          value={STATUS_TABS.find((t) => t.key === statusFilter)?.label || "전체"}
+          options={STATUS_TABS.map((t) => t.label)}
+          onChange={(lbl) => setStatusFilter(STATUS_TABS.find((t) => t.label === lbl)?.key ?? "")} />
         {checked.length > 0 && (
           <button onClick={handleDelete}
             style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>

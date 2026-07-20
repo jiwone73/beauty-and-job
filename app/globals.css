@@ -5201,6 +5201,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-td-date { color: #888 !important; white-space: nowrap; }
 /* 관리자 테이블 내용 폰트 통일(평체) */
 .admin-table td, .admin-table td * { font-weight: 400 !important; }
+/* 공지사항 페이지 전체 평체 */
+.notices-plain, .notices-plain * { font-weight: 400 !important; }
 
 /* 배지 */
 .admin-badge {
