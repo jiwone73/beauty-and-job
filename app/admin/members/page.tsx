@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, Suspense } from "react";
+import { formatPhone } from "@/lib/phone";
 // [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
 // import SmsModal from "@/components/admin/SmsModal";
 import { useSearchParams } from "next/navigation";
@@ -395,7 +396,7 @@ function AdminMembersPageInner() {
                     {/* 연락처: 이메일 / 전화 */}
                     <td className="admin-td-date" style={{ textAlign: "center" }}>
                       <div style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto" }} title={m.email || ""}>{m.email || "-"}</div>
-                      <div style={{ marginTop: 4, color: "#888" }}>{m.phone || "-"}</div>
+                      <div style={{ marginTop: 4, color: "#888" }}>{m.phone ? formatPhone(m.phone) : "-"}</div>
                     </td>
 
                     {/* 최근경력: 회사명 / 입사일·재직여부 */}

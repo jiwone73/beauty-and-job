@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { formatPhone } from "@/lib/phone";
 import { Trash2 } from "lucide-react";
 
 type Inquiry = {
@@ -176,7 +177,7 @@ export default function AdminInquiriesPage() {
                     </span>
                   </td>
                   <td style={{ fontWeight: 600 }}>{it.name}</td>
-                  <td style={{ fontSize: 14 }}>{it.phone || "-"}</td>
+                  <td style={{ fontSize: 14 }}>{it.phone ? formatPhone(it.phone) : "-"}</td>
                   <td style={{ fontSize: 14, color: "#555", wordBreak: "break-all" }}>{it.email || "-"}</td>
                   <td style={{ fontWeight: 500 }}>{it.subject || "(제목 없음)"}</td>
                   <td style={{ fontSize: 14, color: "#888" }}>{fmtDate(it.created_at)}</td>
@@ -203,7 +204,7 @@ export default function AdminInquiriesPage() {
               <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", rowGap: 12, columnGap: 12, fontSize: 15, marginBottom: 18 }}>
                 <span style={{ color: "#888" }}>유형</span><span style={{ fontWeight: 600, color: "#5f0080" }}>{selected.type}</span>
                 <span style={{ color: "#888" }}>이름</span><span>{selected.name}</span>
-                <span style={{ color: "#888" }}>전화번호</span><span>{selected.phone || "-"}</span>
+                <span style={{ color: "#888" }}>전화번호</span><span>{selected.phone ? formatPhone(selected.phone) : "-"}</span>
                 <span style={{ color: "#888" }}>이메일</span><span style={{ wordBreak: "break-all" }}>{selected.email || "-"}</span>
                 <span style={{ color: "#888" }}>제목</span><span style={{ fontWeight: 500 }}>{selected.subject || "(제목 없음)"}</span>
                 <span style={{ color: "#888" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>

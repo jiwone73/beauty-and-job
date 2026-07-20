@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { formatPhone } from "@/lib/phone";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 // [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
@@ -470,7 +471,7 @@ function AdminCompaniesContent() {
                   <td className="admin-td-date">{c.company_size || "-"}</td>
                   {/* 연락처 + 이메일 */}
                   <td className="admin-td-date">
-                    <div>{c.phone || "-"}</div>
+                    <div>{c.phone ? formatPhone(c.phone) : "-"}</div>
                     <div style={{ fontSize: 13, color: "#888", marginTop: 2, wordBreak: "break-all" }}>{c.email || "-"}</div>
                   </td>
                   {/* 사업자번호 / 등록증 아이콘 */}
@@ -598,7 +599,7 @@ function AdminCompaniesContent() {
                   <span style={lbl}>사원수</span><span>{companyDetail.company_size || "-"}</span>
                   <span style={lbl}>가입일</span><span>{fmtDate(companyDetail.created_at)}</span>
                   <span style={lbl}>이메일</span><span style={{ color: "#5f0080", wordBreak: "break-all" }}>{companyDetail.email || "-"}</span>
-                  <span style={lbl}>연락처</span><span>{companyDetail.phone || "-"}</span>
+                  <span style={lbl}>연락처</span><span>{companyDetail.phone ? formatPhone(companyDetail.phone) : "-"}</span>
                   <span style={{ ...lbl, alignSelf: "start" }}>주소</span><span style={{ gridColumn: "span 3" }}>{companyDetail.address || "-"}</span>
                   <span style={lbl}>웹사이트</span>
                   <span style={{ gridColumn: "span 3", wordBreak: "break-all" }}>{companyDetail.website_url

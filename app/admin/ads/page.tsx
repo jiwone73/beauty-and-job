@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { formatPhone } from "@/lib/phone";
 import { Trash2 } from "lucide-react";
 
 const STATUS_TABS = [
@@ -188,7 +189,7 @@ export default function AdminAdsPage() {
                   </td>
                   <td style={{ fontWeight: 600 }}>{item.company_name || "-"}</td>
                   <td>{item.contact_name}</td>
-                  <td style={{ fontSize: 14 }}>{item.phone || "-"}</td>
+                  <td style={{ fontSize: 14 }}>{item.phone ? formatPhone(item.phone) : "-"}</td>
                   <td style={{ fontSize: 14, color: "#555", wordBreak: "break-all" }}>{item.email || "-"}</td>
                   <td style={{ fontSize: 14, color: "#888" }}>{fmtDate(item.created_at)}</td>
                   <td>{badge(item.status)}</td>
@@ -215,7 +216,7 @@ export default function AdminAdsPage() {
                 <span style={{ color: "#888" }}>유형</span><span style={{ fontWeight: 600, color: "#5f0080" }}>{selected.type || "광고"}</span>
                 <span style={{ color: "#888" }}>회사명</span><span>{selected.company_name || "-"}</span>
                 <span style={{ color: "#888" }}>담당자</span><span>{selected.contact_name}</span>
-                <span style={{ color: "#888" }}>전화번호</span><span>{selected.phone || "-"}</span>
+                <span style={{ color: "#888" }}>전화번호</span><span>{selected.phone ? formatPhone(selected.phone) : "-"}</span>
                 <span style={{ color: "#888" }}>이메일</span><span style={{ wordBreak: "break-all" }}>{selected.email || "-"}</span>
                 {selected.product && (<><span style={{ color: "#888" }}>관심상품</span><span>{PRODUCT_LABELS[selected.product] ?? selected.product}</span></>)}
                 <span style={{ color: "#888" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>
