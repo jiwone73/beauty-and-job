@@ -8,6 +8,7 @@ import {
 import { companyTalentApi, type TalentItem } from "@/lib/api/company";
 import ResumePreview from "@/components/profile/ResumePreview";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
+import FilterDropdown from "@/components/company/FilterDropdown";
 import RegionSelectModal from "@/components/RegionSelectModal";
 
 type JobTab = "OFFICE" | "STORE";
@@ -336,36 +337,15 @@ export default function TalentPage() {
             </button>
           )}
 
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>경력</span>
-            <select
-              className="admin-form-select"
-              style={{ fontSize: 14, padding: "8px 12px" }}
-              value={careerFilter}
-              onChange={(e) => setCareerFilter(e.target.value)}
-            >
-              {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-            </select>
-          </div>
+          <FilterDropdown label="경력" value={careerFilter}
+            options={CAREER_OPTIONS as unknown as string[]} onChange={setCareerFilter} />
 
           {activeTab === "STORE" && (
             <>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>연령</span>
-                <div className="admin-filter-tabs">
-                  {AGE_FILTERS.map((f) => (
-                    <button key={f} className={`admin-filter-tab ${ageFilter === f ? "active" : ""}`} onClick={() => setAgeFilter(f)}>{f}</button>
-                  ))}
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>성별</span>
-                <div className="admin-filter-tabs">
-                  {GENDER_FILTERS.map((f) => (
-                    <button key={f} className={`admin-filter-tab ${genderFilter === f ? "active" : ""}`} onClick={() => setGenderFilter(f)}>{f}</button>
-                  ))}
-                </div>
-              </div>
+              <FilterDropdown label="연령" value={ageFilter}
+                options={AGE_FILTERS as unknown as string[]} onChange={setAgeFilter} />
+              <FilterDropdown label="성별" value={genderFilter}
+                options={GENDER_FILTERS as unknown as string[]} onChange={setGenderFilter} />
             </>
           )}
 
