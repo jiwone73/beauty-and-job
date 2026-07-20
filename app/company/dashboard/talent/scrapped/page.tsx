@@ -214,11 +214,11 @@ export default function ScrappedTalentPage() {
                       </td>
                       <td className="company-td-sub">{t.job_category || "—"}</td>
                       <td className="company-td-sub">{region}</td>
-                      <td style={{ textAlign: "left", fontSize: 13 }}>
+                      <td className="company-td-sub" style={{ textAlign: "left" }}>
                         {t.careerDetail ? (
                           <>
-                            <div style={{ fontWeight: 500, color: "#333" }}>{t.careerDetail.company}</div>
-                            <div style={{ color: "#999", marginTop: 2 }}>
+                            <div>{t.careerDetail.company}</div>
+                            <div style={{ color: "#aaa", marginTop: 2 }}>
                               {[t.careerDetail.department, t.careerDetail.end_date ? "퇴직" : "재직중"].filter(Boolean).join(" · ")}
                             </div>
                           </>
