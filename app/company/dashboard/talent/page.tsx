@@ -313,6 +313,7 @@ export default function TalentPage() {
         </div>
       )}
 
+      <div style={{ width: "fit-content", maxWidth: "100%" }}>
       {/* 필터 */}
       <div style={{ marginBottom: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
@@ -349,7 +350,7 @@ export default function TalentPage() {
             </>
           )}
 
-          <button onClick={resetFilters} style={{ marginLeft: "auto", fontSize: 13, color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>초기화</button>
+          <button onClick={resetFilters} style={{ marginLeft: "auto", fontSize: 13, color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>필터 초기화</button>
         </div>
 
         <div className="admin-search-wrap" style={{ maxWidth: 400 }}>
@@ -485,6 +486,7 @@ export default function TalentPage() {
           </table>
         </div>
       )}
+      </div>
       </div>
 
       {/* 직군 모달 */}
