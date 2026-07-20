@@ -5289,6 +5289,13 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-family: var(--font-sans);
 }
 .admin-filter-select:focus { outline: none; border-color: #5f0080; }
+/* 라벨+값 필터 드롭다운 */
+.filter-dd-btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid #e0e0e0; border-radius: 8px; background: #fff; font-size: 14px; color: #333; cursor: pointer; white-space: nowrap; font-family: var(--font-sans); }
+.filter-dd-btn:hover { border-color: #c9b3d6; }
+.filter-dd-menu { position: absolute; top: calc(100% + 4px); left: 0; z-index: 60; min-width: 100%; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 4px; }
+.filter-dd-item { display: block; width: 100%; text-align: left; padding: 8px 14px; border: none; background: none; font-size: 14px; color: #444; cursor: pointer; border-radius: 6px; white-space: nowrap; font-family: var(--font-sans); }
+.filter-dd-item:hover { background: #f5f0fa; }
+.filter-dd-item.active { color: #5f0080; background: #f5f0fa; }
 .admin-filter-tab {
   display: flex;
   align-items: center;

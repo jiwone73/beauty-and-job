@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
+import FilterDropdown from "@/components/company/FilterDropdown";
 import {
   Users, Plus, Search, Edit, X, Trash2, Copy, Ban
 } from "lucide-react";
@@ -141,24 +142,10 @@ export default function CompanyJobsPage() {
             <input className="admin-search-input" placeholder="공고명 검색"
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">유형</span>
-            <select className="admin-filter-select" value={jobGroupFilter}
-              onChange={(e) => setJobGroupFilter(e.target.value)}>
-              {["전체", "매장", "기업"].map(g => (
-                <option key={g} value={g}>{g}</option>
-              ))}
-            </select>
-          </div>
-          <div className="admin-filter-group">
-            <span className="admin-filter-label">상태</span>
-            <select className="admin-filter-select" value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}>
-              {["전체", "진행중", "마감"].map(s => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
+          <FilterDropdown label="채용유형" value={jobGroupFilter}
+            options={["전체", "매장", "기업"]} onChange={setJobGroupFilter} />
+          <FilterDropdown label="진행상태" value={statusFilter}
+            options={["전체", "진행중", "마감"]} onChange={setStatusFilter} />
         </div>
         <div style={{display:"flex", gap:"8px"}}>
           {checked.length > 0 && (
