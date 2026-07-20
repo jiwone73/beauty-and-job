@@ -6407,6 +6407,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   background: #f5f6fa;
   font-family: var(--font-sans);
 }
+/* 기업 대시보드: 모든 텍스트 평체(굵기 400) */
+.company-layout, .company-layout * { font-weight: 400 !important; }
 .company-sidebar {
   width: 220px;
   min-height: 100vh;
