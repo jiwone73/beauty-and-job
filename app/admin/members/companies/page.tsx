@@ -1,6 +1,10 @@
 "use client";
 import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { formatPhone } from "@/lib/phone";
+import FilterDropdown from "@/components/company/FilterDropdown";
+
+const DATE_LABELS: Record<string, string> = { "전체": "전체", today: "오늘", "7d": "최근 7일", "1m": "최근 1개월", "3m": "최근 3개월", "1y": "최근 1년" };
+const DATE_VALUES: Record<string, string> = { "전체": "전체", "오늘": "today", "최근 7일": "7d", "최근 1개월": "1m", "최근 3개월": "3m", "최근 1년": "1y" };
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 // [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
@@ -289,32 +293,20 @@ function AdminCompaniesContent() {
           </div>
           
           {!blockedMode && (
-          <select className="admin-form-select" value={typeFilter}
-            onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}>
-            {["전체", "매장", "기업", "기업+매장"].map((t) => (
-              <option key={t} value={t}>{t === "전체" ? "유형 전체" : t}</option>
-            ))}
-          </select>
+          <FilterDropdown label="유형"
+            value={typeFilter}
+            options={["전체", "매장", "기업", "기업+매장"]}
+            onChange={(v) => { setTypeFilter(v); setPage(1); }} />
           )}
           {!blockedMode && (<>
-          <select className="admin-form-select" value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>
-                {s === "전체" ? "승인상태 전체" : s}
-                {s === "승인대기" && counts.승인대기 > 0 ? ` (${counts.승인대기})` : ""}
-              </option>
-            ))}
-          </select>
-          <select className="admin-form-select" value={dateFilter}
-            onChange={(e) => { setDateFilter(e.target.value); setPage(1); }}>
-            <option value="전체">가입일 전체</option>
-            <option value="today">오늘</option>
-            <option value="7d">최근 7일</option>
-            <option value="1m">최근 1개월</option>
-            <option value="3m">최근 3개월</option>
-            <option value="1y">최근 1년</option>
-          </select>
+          <FilterDropdown label="승인상태"
+            value={statusFilter}
+            options={STATUS_OPTIONS as unknown as string[]}
+            onChange={(v) => { setStatusFilter(v); setPage(1); }} />
+          <FilterDropdown label="가입일"
+            value={DATE_LABELS[dateFilter] || "전체"}
+            options={["전체", "오늘", "최근 7일", "최근 1개월", "최근 3개월", "최근 1년"]}
+            onChange={(v) => { setDateFilter(DATE_VALUES[v] ?? "전체"); setPage(1); }} />
           </>)}
         </div>
       </div>

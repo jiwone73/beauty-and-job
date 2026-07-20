@@ -1,6 +1,10 @@
 "use client";
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { formatPhone } from "@/lib/phone";
+import FilterDropdown from "@/components/company/FilterDropdown";
+
+const DATE_LABELS: Record<string, string> = { "전체": "전체", today: "오늘", "7d": "최근 7일", "1m": "최근 1개월", "3m": "최근 3개월", "1y": "최근 1년" };
+const DATE_VALUES: Record<string, string> = { "전체": "전체", "오늘": "today", "최근 7일": "7d", "최근 1개월": "1m", "최근 3개월": "3m", "최근 1년": "1y" };
 // [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
 // import SmsModal from "@/components/admin/SmsModal";
 import { useSearchParams } from "next/navigation";
@@ -247,29 +251,18 @@ function AdminMembersPageInner() {
             <input className="admin-search-input" placeholder="이름, 이메일, 연락처 검색"
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
           </div>
-          <select className="admin-form-select" value={jobTypeFilter}
-            onChange={(e) => { setJobTypeFilter(e.target.value); setPage(1); }}>
-            {["전체", "매장기술직", "기업사무직"].map((t) => (
-              <option key={t} value={t}>
-                {t === "전체" ? "직군 전체" : t === "매장기술직" ? "매장직" : "사무직"}
-              </option>
-            ))}
-          </select>
-          <select className="admin-form-select" value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
-            {["전체", "정상", "휴면", "정지"].map((s) => (
-              <option key={s} value={s}>{s === "전체" ? "계정상태 전체" : s}</option>
-            ))}
-          </select>
-          <select className="admin-form-select" value={dateFilter}
-            onChange={(e) => { setDateFilter(e.target.value); setPage(1); }}>
-            <option value="전체">가입일 전체</option>
-            <option value="today">오늘</option>
-            <option value="7d">최근 7일</option>
-            <option value="1m">최근 1개월</option>
-            <option value="3m">최근 3개월</option>
-            <option value="1y">최근 1년</option>
-          </select>
+          <FilterDropdown label="직군"
+            value={jobTypeFilter === "매장기술직" ? "매장직" : jobTypeFilter === "기업사무직" ? "사무직" : "전체"}
+            options={["전체", "매장직", "사무직"]}
+            onChange={(v) => { setJobTypeFilter(v === "매장직" ? "매장기술직" : v === "사무직" ? "기업사무직" : "전체"); setPage(1); }} />
+          <FilterDropdown label="상태"
+            value={statusFilter}
+            options={["전체", "정상", "휴면", "정지"]}
+            onChange={(v) => { setStatusFilter(v); setPage(1); }} />
+          <FilterDropdown label="가입일"
+            value={DATE_LABELS[dateFilter] || "전체"}
+            options={["전체", "오늘", "최근 7일", "최근 1개월", "최근 3개월", "최근 1년"]}
+            onChange={(v) => { setDateFilter(DATE_VALUES[v] ?? "전체"); setPage(1); }} />
         </div>
       </div>
 
