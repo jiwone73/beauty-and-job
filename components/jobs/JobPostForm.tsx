@@ -656,10 +656,7 @@ export default function JobPostForm({
                       <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
                         {/* 급여 단위 */}
                         <div style={{ display: "flex", gap: "6px", marginBottom: "10px" }}>
-                          {(jobGroupType === "매장"
-                            ? [["MONTHLY", "월급"], ["WEEKLY", "주급"], ["HOURLY", "시급"]]
-                            : [["ANNUAL", "연봉"], ["MONTHLY", "월급"]]
-                          ).map(([val, lbl]) => (
+                          {([["ANNUAL", "연봉"], ["MONTHLY", "월급"], ["WEEKLY", "주급"], ["HOURLY", "시급"]] as [string, string][]).map(([val, lbl]) => (
                             <button key={val} type="button" disabled={salaryNegoDraft}
                               onClick={() => setSalaryTypeDraft(val)}
                               style={{ flex: 1, padding: "6px 0", borderRadius: "8px", fontSize: "13px", cursor: salaryNegoDraft ? "default" : "pointer",
