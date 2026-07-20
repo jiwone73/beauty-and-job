@@ -681,21 +681,23 @@ export default function CompanySettingsPage() {
         </div>
       )}
 
-      <div style={{ margin: "24px 0 40px", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-        {savedMessage && (
-          <span style={{ color: "#10b981", fontSize: "15px", fontWeight: 600 }}>
-            {savedMessage}
-          </span>
-        )}
-        <button
-          className="resume-save-btn-full"
-          onClick={handleSave}
-          disabled={saving}
-          style={{ opacity: saving ? 0.7 : 1, cursor: saving ? "not-allowed" : "pointer" }}
-        >
-          {saving ? "저장 중..." : "저장하기"}
-        </button>
-      </div>
+      {activeTab === "brand" && (
+        <div style={{ margin: "24px 0 40px", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+          {savedMessage && (
+            <span style={{ color: "#10b981", fontSize: "15px", fontWeight: 600 }}>
+              {savedMessage}
+            </span>
+          )}
+          <button
+            className="resume-save-btn-full"
+            onClick={handleSave}
+            disabled={saving}
+            style={{ opacity: saving ? 0.7 : 1, cursor: saving ? "not-allowed" : "pointer" }}
+          >
+            {saving ? "저장 중..." : "저장하기"}
+          </button>
+        </div>
+      )}
     </CompanyLayout>
   );
 }
