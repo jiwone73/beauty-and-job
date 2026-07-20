@@ -203,7 +203,7 @@ export default function AdminNewslettersPage() {
                 <th style={{ ...th, width: 36 }}>
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
-                <th style={{ ...th, textAlign: "left" }}>제목</th><th style={th}>상태</th><th style={th}>생성일</th><th style={th}>발송수</th><th style={th}>관리</th>
+                <th style={th}>제목</th><th style={th}>상태</th><th style={th}>생성일</th><th style={th}>발송수</th><th style={th}>관리</th>
               </tr>
             </thead>
             <tbody>

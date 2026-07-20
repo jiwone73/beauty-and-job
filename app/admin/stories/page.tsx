@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, Fragment } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import FilterDropdown from "@/components/company/FilterDropdown";
 
 const CATEGORIES = ["공감", "꿀팁", "질문", "정보"];
 
@@ -316,20 +317,8 @@ export default function AdminStoriesPage() {
                 <path d="M21 21l-4.3-4.3" stroke="#bbb" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
-            <div style={{ display: "flex", gap: 6 }}>
-              {["전체", "공감", "꿀팁", "질문", "정보"].map((c) => (
-                <button key={c} onClick={() => setCatFilter(c)}
-                  style={{
-                    padding: "7px 13px", borderRadius: 8, fontSize: 14, cursor: "pointer",
-                    border: catFilter === c ? "1.5px solid #5f0080" : "1px solid #ddd",
-                    background: catFilter === c ? "#5f0080" : "#fff",
-                    color: catFilter === c ? "#fff" : "#666",
-                    fontWeight: catFilter === c ? 600 : 400,
-                  }}>
-                  {c}
-                </button>
-              ))}
-            </div>
+            <FilterDropdown label="카테고리" value={catFilter}
+              options={["전체", "공감", "꿀팁", "질문", "정보"]} onChange={setCatFilter} />
             <button
               onClick={handleBulkDelete}
               disabled={checked.length === 0 || busy}
@@ -351,7 +340,7 @@ export default function AdminStoriesPage() {
                 <th style={{ ...th, width: 36 }}>
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
-                <th style={th}>카테고리</th><th style={{ ...th, textAlign: "left" }}>제목/내용</th>
+                <th style={th}>카테고리</th><th style={th}>제목/내용</th>
                 {tab === "pending" ? <th style={th}>출처</th> : <><th style={th}>출처</th><th style={th}>공감</th><th style={th}>댓글</th><th style={th}>조회</th><th style={th}>신고</th></>}
                 <th style={th}>상태</th><th style={th}>관리</th>
               </tr>
