@@ -10,9 +10,8 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export default function AdminStoriesPage() {
-  const [tab, setTab] = useState<"posts" | "pending" | "comments">("posts");
+  const [tab, setTab] = useState<"posts" | "pending">("posts");
   const [posts, setPosts] = useState<any[]>([]);
-  const [comments, setComments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [writing, setWriting] = useState(false);
   const [form, setForm] = useState({ category: "공감", title: "", body: "" });
@@ -97,20 +96,8 @@ export default function AdminStoriesPage() {
     }
   };
 
-  const fetchComments = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/admin/stories?type=comments", { headers: { Authorization: `Bearer ${token()}` } });
-      const data = await res.json();
-      if (data.success) setComments(data.data || []);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (tab === "comments") fetchComments();
-    else fetchPosts();
+    fetchPosts();
   }, [tab]);
 
   const changeStatus = async (target_type: "post" | "comment", target_id: string, status: string) => {
@@ -121,8 +108,7 @@ export default function AdminStoriesPage() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
         body: JSON.stringify({ target_type, target_id, status }),
       });
-      if (target_type === "post") fetchPosts();
-      else fetchComments();
+      fetchPosts();
     } finally {
       setBusy(false);
     }
@@ -236,9 +222,8 @@ export default function AdminStoriesPage() {
           <button onClick={() => { setTab("pending"); setChecked([]); }} style={tabStyle(tab === "pending")}>
             승인 대기{pendingCount > 0 ? ` (${pendingCount})` : ""}
           </button>
-          <button onClick={() => { setTab("comments"); setChecked([]); }} style={tabStyle(tab === "comments")}>신고 댓글</button>
 
-          {tab !== "comments" && (
+          {(
             <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
               <button onClick={toggleAutogen} disabled={autogenSaving}
                 title="현장이야기 매일 자동 생성+게시 on/off"
@@ -291,31 +276,6 @@ export default function AdminStoriesPage() {
 
         {loading ? (
           <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
-        ) : tab === "comments" ? (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th style={th}>작성자</th><th style={{ ...th, textAlign: "left" }}>내용</th><th style={{ ...th, textAlign: "left" }}>원글</th><th style={th}>신고</th><th style={th}>상태</th><th style={th}>관리</th>
-              </tr>
-            </thead>
-            <tbody>
-              {comments.map((c) => (
-                <tr key={c.id} style={{ background: c.status === "hidden" ? "#fff5f5" : "#fff" }}>
-                  <td style={td}>{c.anon_label || "익명"}</td>
-                  <td style={{ ...td, maxWidth: 300, color: "#444", textAlign: "left" }}>{c.body}</td>
-                  <td style={{ ...td, maxWidth: 160, color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "left" }}>{c.post_title || "-"}</td>
-                  <td style={{ ...td, color: c.report_count > 0 ? "#d32f2f" : "#bbb", fontWeight: 700 }}>{c.report_count}</td>
-                  <td style={td}><span style={{ fontSize: 13, color: c.status === "hidden" ? "#d32f2f" : "#2e7d32", fontWeight: 600 }}>{c.status === "hidden" ? "숨김" : "노출"}</span></td>
-                  <td style={td}>
-                    {c.status === "hidden"
-                      ? <button onClick={() => changeStatus("comment", c.id, "visible")} disabled={busy} style={btnGreen}>복구</button>
-                      : <button onClick={() => changeStatus("comment", c.id, "hidden")} disabled={busy} style={btnRed}>숨김</button>}
-                  </td>
-                </tr>
-              ))}
-              {comments.length === 0 && <tr><td colSpan={6} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>신고된 댓글이 없습니다.</td></tr>}
-            </tbody>
-          </table>
         ) : (
           <>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>

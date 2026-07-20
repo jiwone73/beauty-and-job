@@ -103,31 +103,6 @@ export default function StoryDetailPage() {
     }
   };
 
-  const handleReport = async (target_type: "post" | "comment", target_id: string) => {
-    const token = getToken();
-    if (!token) {
-      alert("로그인이 필요해요.");
-      router.push("/login");
-      return;
-    }
-    if (!confirm("이 내용을 신고할까요? 신고가 누적되면 자동으로 숨겨져요.")) return;
-    const reason = prompt("신고 사유를 적어주세요. (선택)") || "";
-    try {
-      const r = await fetch(`/api/community/report`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ target_type, target_id, reason }),
-      });
-      const res = await r.json();
-      if (res.success) {
-        alert(res.data.hidden ? "신고가 접수되어 숨김 처리되었어요." : "신고가 접수되었어요. 감사합니다.");
-      } else {
-        alert(res.error?.message || "신고 처리에 실패했어요.");
-      }
-    } catch {
-      alert("신고 처리에 실패했어요.");
-    }
-  };
 
   if (loading) {
     return (
@@ -172,10 +147,6 @@ export default function StoryDetailPage() {
           </button>
           <span style={{ fontSize: 13, color: "#bbb" }}>조회 {post.view_count ?? 0}</span>
           <span style={{ fontSize: 13, color: "#bbb" }}>{fmtDate(post.published_at || post.created_at)}</span>
-          <button onClick={() => handleReport("post", post.id)}
-            style={{ background: "none", border: "none", fontSize: 12.5, color: "#bbb", cursor: "pointer", marginLeft: "auto" }}>
-            신고
-          </button>
         </div>
       </article>
 
@@ -204,10 +175,6 @@ export default function StoryDetailPage() {
               <div key={c.id} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: "#5f0080" }}>{c.anon_label || "익명"}</span>
-                  <button onClick={() => handleReport("comment", c.id)}
-                    style={{ background: "none", border: "none", fontSize: 11.5, color: "#ccc", cursor: "pointer", marginLeft: "auto" }}>
-                    신고
-                  </button>
                 </div>
                 <p style={{ fontSize: 14, color: "#333", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{c.body}</p>
                 <span style={{ fontSize: 12, color: "#bbb" }}>{fmtDate(c.created_at)}</span>
