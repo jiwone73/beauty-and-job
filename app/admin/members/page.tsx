@@ -33,6 +33,7 @@ const STATUS_TO_LABEL: Record<string, string> = {
   ACTIVE: "정상",
   INACTIVE: "휴면",
   SUSPENDED: "정지",
+  WITHDRAWN: "탈퇴",
 };
 
 function calcAge(birth: string | null) {
@@ -262,6 +263,7 @@ function AdminMembersPageInner() {
     정상: members.filter((m) => m.status === "ACTIVE").length,
     휴면: members.filter((m) => m.status === "INACTIVE").length,
     정지: members.filter((m) => m.status === "SUSPENDED").length,
+    탈퇴: members.filter((m) => m.status === "WITHDRAWN").length,
   };
 
   return (
@@ -290,7 +292,7 @@ function AdminMembersPageInner() {
             onChange={(v) => { setJobTypeFilter(v === "매장직" ? "매장기술직" : v === "사무직" ? "기업사무직" : "전체"); setPage(1); }} />
           <FilterDropdown label="상태"
             value={statusFilter}
-            options={["전체", "정상", "휴면", "정지"]}
+            options={["전체", "정상", "휴면", "정지", "탈퇴"]}
             onChange={(v) => { setStatusFilter(v); setPage(1); }} />
           <FilterDropdown label="성별"
             value={genderFilter}
@@ -534,18 +536,22 @@ function AdminMembersPageInner() {
 
                     {/* 상태 */}
                     <td>
-                      <select
-                        className={`admin-status-select admin-status-${
-                          m.status === "ACTIVE" ? "success" :
-                          m.status === "SUSPENDED" ? "danger" : "warning"
-                        }`}
-                        value={m.status}
-                        onChange={(e) => changeStatus(m.id, e.target.value)}
-                      >
-                        <option value="ACTIVE">정상</option>
-                        <option value="INACTIVE">휴면</option>
-                        <option value="SUSPENDED">정지</option>
-                      </select>
+                      {m.status === "WITHDRAWN" ? (
+                        <span className="admin-status-withdrawn">탈퇴</span>
+                      ) : (
+                        <select
+                          className={`admin-status-select admin-status-${
+                            m.status === "ACTIVE" ? "success" :
+                            m.status === "SUSPENDED" ? "danger" : "warning"
+                          }`}
+                          value={m.status}
+                          onChange={(e) => changeStatus(m.id, e.target.value)}
+                        >
+                          <option value="ACTIVE">정상</option>
+                          <option value="INACTIVE">휴면</option>
+                          <option value="SUSPENDED">정지</option>
+                        </select>
+                      )}
                     </td>
                   </tr>
                 );
