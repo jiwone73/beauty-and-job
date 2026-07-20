@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       SELECT
         u.id, u.name, u.email::text AS email, u.phone, u.job_type, u.status,
         u.kakao_id, u.naver_id, u.gender, u.birth_date, u.region_sido, u.region_sigungu,
-        u.office_job_areas, u.portfolio_url, u.last_login_at, u.created_at, u.avatar_url,
+        u.office_job_areas, u.preferred_regions, u.portfolio_url, u.resume_file_url, u.last_login_at, u.created_at, u.avatar_url,
         (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS resume_id,
         (SELECT r.career_type FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS career_type,
         (SELECT COUNT(*)::int FROM company_talent_scraps s WHERE s.user_id = u.id) AS scrap_count,

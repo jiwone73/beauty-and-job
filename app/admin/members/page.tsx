@@ -105,7 +105,9 @@ type Member = {
   region_sido: string | null;
   region_sigungu: string | null;
   office_job_areas: string[] | null;
+  preferred_regions: string[] | null;
   portfolio_url: string | null;
+  resume_file_url: string | null;
   scrap_count: number;
   last_login_at: string | null;
   created_at: string;
@@ -133,6 +135,8 @@ function AdminMembersPageInner() {
   const [signupFilter, setSignupFilter] = useState("전체");
   const [genderFilter, setGenderFilter] = useState("전체");
   const [ageFilter, setAgeFilter] = useState("전체");
+  const [resumeFilter, setResumeFilter] = useState("전체");   // 전체/작성/미작성
+  const [profileFilter, setProfileFilter] = useState("전체");
   const [jobTypeFilter, setJobTypeFilter] = useState(initialJobType);
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [checked, setChecked] = useState<string[]>([]);
@@ -226,7 +230,15 @@ function AdminMembersPageInner() {
     const matchSignup = signupFilter === "전체" || signupOf === signupFilter;
     const matchGender = genderFilter === "전체" || (m.gender || "") === genderFilter;
     const matchAge = ageFilter === "전체" || ageGroupOf(m.birth_date) === ageFilter;
-    return matchSearch && matchStatus && matchJobType && matchDate && matchSignup && matchGender && matchAge;
+    // 이력서 완성: 경력 / 첨부 이력서 / 포트폴리오 중 하나라도 있으면
+    const resumeWritten = !!m.recent_company || !!m.resume_file_url || !!m.portfolio_url;
+    // 프로필 완성: 필수 항목(사진·거주지·직군·희망 근무지역) 모두 입력
+    const profileWritten = !!m.avatar_url && !!m.region_sido
+      && Array.isArray(m.office_job_areas) && m.office_job_areas.length > 0
+      && Array.isArray(m.preferred_regions) && m.preferred_regions.length > 0;
+    const matchResume = resumeFilter === "전체" || (resumeFilter === "완성" ? resumeWritten : !resumeWritten);
+    const matchProfile = profileFilter === "전체" || (profileFilter === "완성" ? profileWritten : !profileWritten);
+    return matchSearch && matchStatus && matchJobType && matchDate && matchSignup && matchGender && matchAge && matchResume && matchProfile;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -288,6 +300,14 @@ function AdminMembersPageInner() {
             value={ageFilter}
             options={["전체", "10대", "20대", "30대", "40대", "50대 이상"]}
             onChange={(v) => { setAgeFilter(v); setPage(1); }} />
+          <FilterDropdown label="프로필"
+            value={profileFilter}
+            options={["전체", "완성", "미완성"]}
+            onChange={(v) => { setProfileFilter(v); setPage(1); }} />
+          <FilterDropdown label="이력서"
+            value={resumeFilter}
+            options={["전체", "완성", "미완성"]}
+            onChange={(v) => { setResumeFilter(v); setPage(1); }} />
           <FilterDropdown label="가입"
             value={signupFilter}
             options={["전체", "이메일", "카카오", "네이버"]}
