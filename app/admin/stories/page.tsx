@@ -348,7 +348,7 @@ export default function AdminStoriesPage() {
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
                 <th style={th}>카테고리</th><th style={th}>제목/내용</th>
-                {tab === "pending" ? <th style={th}>출처</th> : <><th style={th}>출처</th><th style={th}>공감</th><th style={th}>댓글</th><th style={th}>조회</th><th style={th}>신고</th></>}
+                {tab === "pending" ? <th style={th}>출처</th> : <><th style={th}>출처</th><th style={th}>공감</th><th style={th}>댓글</th><th style={th}>조회</th></>}
                 <th style={th}>상태</th>{tab === "pending" && <th style={th}>관리</th>}
               </tr>
             </thead>
@@ -375,7 +375,6 @@ export default function AdminStoriesPage() {
                       <td style={td}>{p.like_count}</td>
                       <td style={td}>{p.comment_count}</td>
                       <td style={td}>{p.view_count ?? 0}</td>
-                      <td style={{ ...td, color: p.report_count > 0 ? "#d32f2f" : "#bbb", fontWeight: p.report_count > 0 ? 700 : 400 }}>{p.report_count}</td>
                     </>
                   )}
                   <td style={td}><span style={{ fontSize: 13, color: p.status === "hidden" ? "#d32f2f" : p.status === "pending" ? "#e65100" : "#2e7d32", fontWeight: 600 }}>{STATUS_LABELS[p.status] || p.status}</span></td>
@@ -390,7 +389,7 @@ export default function AdminStoriesPage() {
                 </tr>
                 {expandedId === p.id && (
                   <tr style={{ background: "#faf8fc" }}>
-                    <td colSpan={tab === "pending" ? 6 : 9} style={{ padding: "16px 12px" }}>
+                    <td colSpan={tab === "pending" ? 6 : 8} style={{ padding: "16px 12px" }}>
                       <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                         {CATEGORIES.map((c) => (
                           <button key={c} onClick={() => setEdit((e) => ({ ...e, category: c }))}
@@ -430,7 +429,7 @@ export default function AdminStoriesPage() {
                 </Fragment>
               ))}
               {visiblePosts.length === 0 && (
-                <tr><td colSpan={tab === "pending" ? 6 : 9} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
+                <tr><td colSpan={tab === "pending" ? 6 : 8} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
                   {tab === "pending" ? "승인 대기 중인 글이 없습니다. 'AI 글 생성'을 눌러보세요." : "글이 없습니다."}
                 </td></tr>
               )}
