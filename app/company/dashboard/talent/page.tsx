@@ -426,8 +426,8 @@ export default function TalentPage() {
                         </div>
                       </div>
                     </td>
-                    <td><span style={{ fontSize: 13, color: "#555" }}>{t.mainJobGroup || "—"}</span></td>
-                    <td style={{ fontSize: 13, color: "#999" }}>{shortenRegion(t.regionPrefer)}</td>
+                    <td className="company-td-sub">{t.mainJobGroup || "—"}</td>
+                    <td className="company-td-sub">{shortenRegion(t.regionPrefer)}</td>
                     <td style={{ textAlign: "left", fontSize: 13 }}>
                       {t.careerDetail ? (
                         <>

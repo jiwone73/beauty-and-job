@@ -211,8 +211,8 @@ export default function ScrappedTalentPage() {
                           </div>
                         </div>
                       </td>
-                      <td style={{ fontSize: 13, color: "#555" }}>{t.job_category || "—"}</td>
-                      <td style={{ fontSize: 13, color: "#999" }}>{region}</td>
+                      <td className="company-td-sub">{t.job_category || "—"}</td>
+                      <td className="company-td-sub">{region}</td>
                       <td style={{ textAlign: "left", fontSize: 13 }}>
                         {t.careerDetail ? (
                           <>

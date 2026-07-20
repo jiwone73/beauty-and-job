@@ -216,8 +216,8 @@ export default function CompanyJobsPage() {
                   <td className="company-td-sub">{formatDeadline(job.deadline)}</td>
                   <td>
                     <Link href={`/company/dashboard/applicants?job_id=${job.id}`}
-                      style={{display:"inline-flex", alignItems:"center", gap:4, color:"#5f0080", fontSize:14, fontWeight:500, textDecoration:"none"}}>
-                      <Users size={13} /> {job.application_count}명
+                      style={{color:"#555", fontSize:14, textDecoration:"none"}}>
+                      {job.application_count}명
                     </Link>
                   </td>
                   <td className="company-td-sub">{job.view_count}</td>
