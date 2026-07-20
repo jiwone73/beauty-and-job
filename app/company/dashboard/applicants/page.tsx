@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
+import { formatPhone } from "@/lib/phone";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
@@ -339,12 +340,12 @@ function ApplicantsContent() {
                   </td>
                   <td className="company-td-sub">{a.job_title}</td>
                   <td className="company-td-sub">{formatDate(a.applied_at)}</td>
-                  <td style={{ fontSize: 13 }}>
-                    <div style={{ color: a.user_email ? "#333" : "#ccc", marginBottom: 2 }}>
+                  <td className="company-td-sub">
+                    <div style={{ marginBottom: 2, ...(a.user_email ? {} : { color: "#ccc" }) }}>
                       {a.user_email || "이메일 없음"}
                     </div>
-                    <div style={{ color: a.user_phone ? "#555" : "#ccc" }}>
-                      {a.user_phone || "전화번호 없음"}
+                    <div style={a.user_phone ? undefined : { color: "#ccc" }}>
+                      {a.user_phone ? formatPhone(a.user_phone) : "전화번호 없음"}
                     </div>
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>

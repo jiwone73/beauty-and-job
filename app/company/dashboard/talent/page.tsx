@@ -10,6 +10,7 @@ import ResumePreview from "@/components/profile/ResumePreview";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import RegionSelectModal from "@/components/RegionSelectModal";
+import { formatPhone } from "@/lib/phone";
 
 type JobTab = "OFFICE" | "STORE";
 
@@ -440,9 +441,9 @@ export default function TalentPage() {
                         <span style={{ color: "#ccc" }}>—</span>
                       )}
                     </td>
-                    <td style={{ textAlign: "left", fontSize: 13 }}>
-                      <div style={{ color: t.email ? "#333" : "#ccc", marginBottom: 2 }}>{t.email || "이메일 없음"}</div>
-                      <div style={{ color: t.phone ? "#555" : "#ccc" }}>{t.phone || "전화번호 없음"}</div>
+                    <td className="company-td-sub" style={{ textAlign: "left" }}>
+                      <div style={{ marginBottom: 2, ...(t.email ? {} : { color: "#ccc" }) }}>{t.email || "이메일 없음"}</div>
+                      <div style={t.phone ? undefined : { color: "#ccc" }}>{t.phone ? formatPhone(t.phone) : "전화번호 없음"}</div>
                     </td>
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>

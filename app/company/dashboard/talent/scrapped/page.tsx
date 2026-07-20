@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Search, BookmarkCheck, X, FileText, Paperclip, Download, Printer } from "lucide-react";
 import ResumePreview from "@/components/profile/ResumePreview";
+import { formatPhone } from "@/lib/phone";
 
 function calcAgeFromBirth(birth: string | null): number {
   if (!birth) return 0;
@@ -223,9 +224,9 @@ export default function ScrappedTalentPage() {
                           </>
                         ) : <span style={{ color: "#ccc" }}>—</span>}
                       </td>
-                      <td style={{ textAlign: "left", fontSize: 13 }}>
-                        <div style={{ color: email ? "#333" : "#ccc", marginBottom: 2 }}>{email || "이메일 없음"}</div>
-                        <div style={{ color: phone ? "#555" : "#ccc" }}>{phone || "전화번호 없음"}</div>
+                      <td className="company-td-sub" style={{ textAlign: "left" }}>
+                        <div style={{ marginBottom: 2, ...(email ? {} : { color: "#ccc" }) }}>{email || "이메일 없음"}</div>
+                        <div style={phone ? undefined : { color: "#ccc" }}>{phone ? formatPhone(phone) : "전화번호 없음"}</div>
                       </td>
                       <td>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
