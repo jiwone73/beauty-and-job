@@ -102,6 +102,8 @@ function AdminCompaniesContent() {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [typeFilter, setTypeFilter] = useState(initialType);
   const [dateFilter, setDateFilter] = useState(initialDate);
+  const [planFilter, setPlanFilter] = useState("전체");
+  const [jobFilter, setJobFilter] = useState("전체");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   // [SMS 발송 기능 보류] 2026-07
   // const [smsOpen, setSmsOpen] = useState(false);
@@ -240,7 +242,10 @@ function AdminCompaniesContent() {
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[c.status] === statusFilter;
     const matchType = typeFilter === "전체" || TYPE_LABEL[c.company_type] === typeFilter;
     const matchDate = matchPeriod(c.created_at, dateFilter);
-    return matchSearch && matchStatus && matchType && matchDate;
+    // 유료/무료: 유료 요금제 미도입 → 현재 전부 무료. 유료 도입 시 아래 조건에 실제 유료 판별을 추가.
+    const matchPlan = planFilter === "전체" || planFilter === "무료";
+    const matchJob = jobFilter === "전체" || (jobFilter === "등록" ? c.job_count > 0 : c.job_count === 0);
+    return matchSearch && matchStatus && matchType && matchDate && matchPlan && matchJob;
   });
 
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -299,6 +304,18 @@ function AdminCompaniesContent() {
             value={typeFilter}
             options={["전체", "매장", "기업", "기업+매장"]}
             onChange={(v) => { setTypeFilter(v); setPage(1); }} />
+          )}
+          {!blockedMode && (
+          <FilterDropdown label="요금제"
+            value={planFilter}
+            options={["전체", "유료", "무료"]}
+            onChange={(v) => { setPlanFilter(v); setPage(1); }} />
+          )}
+          {!blockedMode && (
+          <FilterDropdown label="공고"
+            value={jobFilter}
+            options={["전체", "등록", "미등록"]}
+            onChange={(v) => { setJobFilter(v); setPage(1); }} />
           )}
           {!blockedMode && (<>
           <FilterDropdown label="승인상태"
