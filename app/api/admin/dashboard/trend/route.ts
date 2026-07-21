@@ -67,14 +67,14 @@ export async function GET(req: NextRequest) {
       const q = await client.query(`
         SELECT d::date AS day,
           (SELECT COUNT(*) FROM users u
-             WHERE date_trunc('${cfg.trunc}', u.created_at) = d
+             WHERE date_trunc('${cfg.trunc}', u.created_at) <= d
                AND u.avatar_url IS NOT NULL AND u.avatar_url <> ''
                AND u.region_sido IS NOT NULL AND u.region_sido <> ''
                AND coalesce(array_length(u.office_job_areas, 1), 0) > 0
                AND jsonb_typeof(u.preferred_regions) = 'array' AND jsonb_array_length(u.preferred_regions) > 0
           ) AS profile_done,
           (SELECT COUNT(*) FROM users u
-             WHERE date_trunc('${cfg.trunc}', u.created_at) = d
+             WHERE date_trunc('${cfg.trunc}', u.created_at) <= d
                AND ( EXISTS (SELECT 1 FROM user_careers uc WHERE uc.user_id = u.id)
                   OR (u.resume_file_url IS NOT NULL AND u.resume_file_url <> '')
                   OR (u.portfolio_url IS NOT NULL AND u.portfolio_url <> '') )

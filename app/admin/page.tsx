@@ -400,7 +400,7 @@ export default function AdminDashboard() {
       {/* 완성 추이 · 일 방문자 (2열) */}
       <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
       {/* 프로필/이력서 완성 추이 (가입일 기준) */}
-      <TrendCard title="프로필 · 이력서 완성 추이" type="completion" unit="명" render={(rows, range) => {
+      <TrendCard title="프로필 · 이력서 완성 (누적)" type="completion" unit="명" render={(rows, range) => {
         const data = rows.map((r: any) => ({
           day: fmtTrendDay(r.day, range),
           프로필: Number(r.profile_done),
