@@ -195,7 +195,7 @@ export default function AdminNewslettersPage() {
                 <th style={{ ...th, width: 36 }}>
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
-                <th style={th}>제목</th><th style={th}>상태</th><th style={th}>생성일</th><th style={th}>발송수</th>
+                <th style={th}>제목</th><th style={th}>상태</th><th style={th}>생성일</th><th style={th}>발송수</th><th style={th}>발송일</th>
               </tr>
             </thead>
             <tbody>
@@ -212,6 +212,7 @@ export default function AdminNewslettersPage() {
                   </td>
                   <td style={{ ...td, color: "#888" }}>{(n.created_at || "").slice(0, 10)}</td>
                   <td style={td}>{n.sent_count ?? "-"}</td>
+                  <td style={{ ...td, color: "#888" }}>{n.sent_at ? (n.sent_at || "").slice(0, 10) : "-"}</td>
                 </tr>
               ))}
               {list.length === 0 && (
@@ -235,7 +236,7 @@ export default function AdminNewslettersPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
                 <button onClick={() => testSend(previewItem.id)} disabled={busyId === previewItem.id} style={btnPurpleOutline}>테스트 발송</button>
                 {previewItem.status !== "sent" && (
-                  <button onClick={() => sendAll(previewItem.id, previewItem.title)} disabled={busyId === previewItem.id} style={btnPurple}>발송</button>
+                  <button onClick={() => sendAll(previewItem.id, previewItem.title)} disabled={busyId === previewItem.id} style={btnPurple}>전체발송</button>
                 )}
                 <button onClick={() => setPreviewItem(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999", lineHeight: 1 }}>✕</button>
               </div>
