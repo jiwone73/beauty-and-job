@@ -11427,3 +11427,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   .footer-topnav { gap: 12px !important; }
   .footer-topnav-link { font-size: 13px !important; }
 }
+
+/* === 사이트 전체 버튼 텍스트 평체(400) 통일 === */
+button,
+[class*="btn"],
+[class*="Btn"] {
+  font-weight: 400 !important;
+}

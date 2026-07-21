@@ -49,7 +49,7 @@ export default function AboutPage() {
         </div>
 
         <div className="info-section" style={{ textAlign: "center" }}>
-          <Link href="/jobs" style={{ display: "inline-block", padding: "12px 28px", background: "#5f0080", color: "#fff", borderRadius: "10px", fontSize: "15px", fontWeight: 600, textDecoration: "none" }}>
+          <Link href="/jobs" style={{ display: "inline-block", padding: "12px 28px", background: "#5f0080", color: "#fff", borderRadius: "10px", fontSize: "15px", fontWeight: 400, textDecoration: "none" }}>
             채용공고 보러가기
           </Link>
         </div>
