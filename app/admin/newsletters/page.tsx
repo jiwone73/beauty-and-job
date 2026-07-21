@@ -16,7 +16,7 @@ export default function AdminNewslettersPage() {
   const [autogenSaving, setAutogenSaving] = useState(false);
   const [checked, setChecked] = useState<string[]>([]);
   const [deleting, setDeleting] = useState(false);
-  const [previewHtml, setPreviewHtml] = useState<string | null>(null);
+  const [previewItem, setPreviewItem] = useState<any | null>(null);
 
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
 
@@ -84,10 +84,6 @@ export default function AdminNewslettersPage() {
     }
   };
 
-  const preview = (html: string) => {
-    setPreviewHtml((html || "").replace(/\{\{UNSUBSCRIBE_URL\}\}/g, "#"));
-  };
-
   const testSend = async (id: string) => {
     const email = prompt("테스트로 받아볼 이메일 주소를 입력하세요");
     if (!email) return;
@@ -116,6 +112,7 @@ export default function AdminNewslettersPage() {
       const data = await res.json();
       if (data.success) {
         alert(`발송 완료! ${data.data.sent}명에게 보냈어요.`);
+        setPreviewItem(null);
         fetchList();
       } else {
         alert(data.error?.message || "발송에 실패했습니다.");
@@ -161,17 +158,6 @@ export default function AdminNewslettersPage() {
       <div style={{ padding: "8px 0" }}>
         <div className="admin-card" style={{ width: "fit-content", maxWidth: "100%" }}>
           <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <button onClick={handleBulkDelete} disabled={checked.length === 0 || deleting}
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "7px 14px", borderRadius: 8, border: "none",
-                background: checked.length ? "#e74c3c" : "#ededed",
-                color: checked.length ? "#fff" : "#aaa",
-                fontSize: 14, fontWeight: 600,
-                cursor: checked.length ? "pointer" : "default",
-              }}>
-              선택 삭제{checked.length ? ` (${checked.length})` : ""}
-            </button>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <button onClick={toggleAutogen} disabled={autogenSaving}
                 title="매주 월요일 뉴스레터 자동 생성+발송 on/off"
@@ -186,6 +172,17 @@ export default function AdminNewslettersPage() {
                 {generating ? "생성 중..." : "✨ 뉴스레터 생성"}
               </button>
             </div>
+            <button onClick={handleBulkDelete} disabled={checked.length === 0 || deleting}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "7px 14px", borderRadius: 8, border: "none",
+                background: checked.length ? "#e74c3c" : "#ededed",
+                color: checked.length ? "#fff" : "#aaa",
+                fontSize: 14, fontWeight: 600,
+                cursor: checked.length ? "pointer" : "default",
+              }}>
+              선택 삭제{checked.length ? ` (${checked.length})` : ""}
+            </button>
           </div>
 
         {loading ? (
@@ -198,7 +195,7 @@ export default function AdminNewslettersPage() {
                 <th style={{ ...th, width: 36 }}>
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
-                <th style={th}>제목</th><th style={th}>상태</th><th style={th}>생성일</th><th style={th}>발송수</th><th style={th}>관리</th>
+                <th style={th}>제목</th><th style={th}>상태</th><th style={th}>생성일</th><th style={th}>발송수</th>
               </tr>
             </thead>
             <tbody>
@@ -207,7 +204,7 @@ export default function AdminNewslettersPage() {
                   <td style={td}>
                     <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   </td>
-                  <td style={{ ...td, maxWidth: 360, textAlign: "left" }}>{n.title}</td>
+                  <td onClick={() => setPreviewItem(n)} style={{ ...td, maxWidth: 360, textAlign: "left", cursor: "pointer", color: "#5f0080", fontWeight: 600 }}>{n.title}</td>
                   <td style={td}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: n.status === "sent" ? "#2e7d32" : "#e65100" }}>
                       {STATUS_LABELS[n.status] || n.status}
@@ -215,15 +212,6 @@ export default function AdminNewslettersPage() {
                   </td>
                   <td style={{ ...td, color: "#888" }}>{(n.created_at || "").slice(0, 10)}</td>
                   <td style={td}>{n.sent_count ?? "-"}</td>
-                  <td style={td}>
-                    <div style={{ display: "flex", gap: 6 }}>
-                      <button onClick={() => preview(n.content_html)} style={btnGray}>미리보기</button>
-                      <button onClick={() => testSend(n.id)} disabled={busyId === n.id} style={btnPurpleOutline}>테스트</button>
-                      {n.status !== "sent" && (
-                        <button onClick={() => sendAll(n.id, n.title)} disabled={busyId === n.id} style={btnPurple}>발송</button>
-                      )}
-                    </div>
-                  </td>
                 </tr>
               ))}
               {list.length === 0 && (
@@ -237,16 +225,22 @@ export default function AdminNewslettersPage() {
         )}
         </div>
       </div>
-      {previewHtml !== null && (
-        <div onClick={() => setPreviewHtml(null)}
+      {previewItem && (
+        <div onClick={() => setPreviewItem(null)}
           style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
           <div onClick={(e) => e.stopPropagation()}
             style={{ background: "#fff", borderRadius: 12, width: "min(680px, 96vw)", height: "min(90vh, 900px)", display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 10px 40px rgba(0,0,0,0.2)" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: 16, fontWeight: 700 }}>뉴스레터 미리보기</span>
-              <button onClick={() => setPreviewHtml(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999" }}>✕</button>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 16px", borderBottom: "1px solid #eee" }}>
+              <span style={{ fontSize: 15, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{previewItem.title}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                <button onClick={() => testSend(previewItem.id)} disabled={busyId === previewItem.id} style={btnPurpleOutline}>테스트 발송</button>
+                {previewItem.status !== "sent" && (
+                  <button onClick={() => sendAll(previewItem.id, previewItem.title)} disabled={busyId === previewItem.id} style={btnPurple}>발송</button>
+                )}
+                <button onClick={() => setPreviewItem(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999", lineHeight: 1 }}>✕</button>
+              </div>
             </div>
-            <iframe title="뉴스레터 미리보기" srcDoc={previewHtml} style={{ flex: 1, width: "100%", border: "none" }} />
+            <iframe title="뉴스레터 미리보기" srcDoc={(previewItem.content_html || "").replace(/\{\{UNSUBSCRIBE_URL\}\}/g, "#")} style={{ flex: 1, width: "100%", border: "none" }} />
           </div>
         </div>
       )}
