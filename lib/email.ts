@@ -498,7 +498,8 @@ export async function sendInquiryReplyEmail(
     .filter((a) => a && a.filename && a.content)
     .map((a) => ({ filename: a.filename, content: Buffer.from(a.content, "base64") }));
   return resend.emails.send({
-    from: SUPPORT_FROM,
+    from: FROM,
+    replyTo: "support@beautywork.co.kr",
     to,
     subject,
     attachments: attach.length ? attach : undefined,
