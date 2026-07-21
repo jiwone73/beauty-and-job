@@ -178,7 +178,9 @@ export async function GET(req: NextRequest) {
     // 직군별 회원 분포 (매장/사무 분리)
     const userDistStore = await client.query(`
       SELECT area AS name, COUNT(*)::int AS value
-      FROM users u, unnest(u.office_job_areas) AS area
+      FROM users u
+      JOIN user_profiles p ON p.user_id = u.id
+      CROSS JOIN LATERAL unnest(p.skill_areas) AS area
       WHERE u.job_type = 'STORE'
       GROUP BY area ORDER BY value DESC
     `)
