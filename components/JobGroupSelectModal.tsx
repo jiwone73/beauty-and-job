@@ -87,7 +87,7 @@ export default function JobGroupSelectModal({
           display: flex; align-items: center; justify-content: space-between;
           padding: 18px 20px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0;
         }
-        .jgm-title { font-size: 17px; font-weight: 700; color: #222; }
+        .jgm-title { font-size: 17px; font-weight: 400; color: #222; }
         .jgm-close {
           background: none; border: none; font-size: 22px; line-height: 1;
           color: #999; cursor: pointer; padding: 0 4px;
@@ -100,7 +100,7 @@ export default function JobGroupSelectModal({
         .jgm-chip {
           display: inline-flex; align-items: center; gap: 4px;
           background: #f3e5f5; color: #5f0080;
-          border-radius: 16px; padding: 5px 10px; font-size: 13px; font-weight: 600;
+          border-radius: 16px; padding: 5px 10px; font-size: 13px; font-weight: 400;
         }
         .jgm-chip button {
           background: none; border: none; color: #5f0080;
@@ -119,12 +119,12 @@ export default function JobGroupSelectModal({
           font-size: 14px; color: #666; border-left: 3px solid transparent;
         }
         .jgm-group.active {
-          background: #fff; color: #5f0080; font-weight: 700;
+          background: #fff; color: #5f0080; font-weight: 400;
           border-left-color: #5f0080;
         }
         .jgm-badge {
           background: #5f0080; color: #fff; border-radius: 10px;
-          font-size: 11px; font-weight: 700; padding: 1px 7px; min-width: 18px; text-align: center;
+          font-size: 11px; font-weight: 400; padding: 1px 7px; min-width: 18px; text-align: center;
         }
         .jgm-right { flex: 1; overflow-y: auto; padding: 14px 16px; }
         .jgm-item {
@@ -134,7 +134,7 @@ export default function JobGroupSelectModal({
           font-size: 14px; color: #444; border-radius: 8px;
         }
         .jgm-item:hover { background: #faf5fc; }
-        .jgm-item.selected { color: #5f0080; font-weight: 600; }
+        .jgm-item.selected { color: #5f0080; font-weight: 400; }
         .jgm-check {
           width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0;
           border: 1.5px solid #ccc; display: flex; align-items: center;
