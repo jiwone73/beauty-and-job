@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
   try {
     const [listResult, countResult] = await Promise.all([
       client.query(
-        `SELECT id, company_name, contact_name, phone, email, product, message, status, type, created_at
+        `SELECT id, company_name, contact_name, phone, email, product, message, status, type, created_at, replied_at
          FROM ad_inquiries
          ${whereClause}
          ORDER BY created_at DESC
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
   }
   const client = await pool.connect()
   try {
-    await client.query(`UPDATE ad_inquiries SET status = 'done' WHERE id = $1`, [id])
+    await client.query(`UPDATE ad_inquiries SET status = 'done', replied_at = now() WHERE id = $1`, [id])
     return ok({ id, status: 'done' })
   } finally {
     client.release()

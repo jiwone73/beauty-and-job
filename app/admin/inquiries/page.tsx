@@ -16,12 +16,13 @@ type Inquiry = {
   status: string;
   user_id: string | null;
   created_at: string;
+  replied_at: string | null;
 };
 
 const STATUS_TABS = [
   { key: "", label: "전체" },
   { key: "new", label: "신규" },
-  { key: "done", label: "완료" },
+  { key: "done", label: "회신완료" },
 ];
 
 function fmtDate(s: string) {
@@ -158,7 +159,7 @@ export default function AdminInquiriesPage() {
 
   const badge = (status: string) => (
     <span style={{ fontSize: 13, fontWeight: 600, color: status === "done" ? "#888" : "#5f0080" }}>
-      {status === "done" ? "완료" : "신규"}
+      {status === "done" ? "회신완료" : "신규"}
     </span>
   );
 
@@ -243,6 +244,7 @@ export default function AdminInquiriesPage() {
                 <span style={{ color: "#888" }}>제목</span><span style={{ fontWeight: 500 }}>{selected.subject || "(제목 없음)"}</span>
                 <span style={{ color: "#888" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>
                 <span style={{ color: "#888" }}>상태</span><span>{badge(selected.status)}</span>
+                {selected.replied_at && (<><span style={{ color: "#888" }}>회신완료</span><span>{fmtDate(selected.replied_at)}</span></>)}
               </div>
               <div style={{ marginBottom: 18 }}>
                 <div style={{ color: "#888", fontSize: 14, marginBottom: 6 }}>문의 내용</div>
@@ -272,7 +274,7 @@ export default function AdminInquiriesPage() {
                     답변 메일 보내기
                   </button>
                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
-                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다. (첨부 총 3MB 이하)
+                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 회신완료로 바뀌고 회신 시각이 기록됩니다. (첨부 총 3MB 이하)
                   </p>
                 </div>
               ) : (

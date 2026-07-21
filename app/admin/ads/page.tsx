@@ -8,7 +8,7 @@ import { Trash2 } from "lucide-react";
 const STATUS_TABS = [
   { key: "", label: "전체" },
   { key: "new", label: "신규" },
-  { key: "done", label: "완료" },
+  { key: "done", label: "회신완료" },
 ];
 const PRODUCT_LABELS: Record<string, string> = {
   top_exposure: "공고 상단 노출",
@@ -28,6 +28,7 @@ type Inquiry = {
   status: string;
   type: string;
   created_at: string;
+  replied_at: string | null;
 };
 
 function fmtDate(s: string) {
@@ -160,7 +161,7 @@ export default function AdminAdsPage() {
 
   const badge = (status: string) => (
     <span style={{ fontSize: 13, fontWeight: 600, color: status === "done" ? "#888" : "#5f0080" }}>
-      {status === "done" ? "완료" : "신규"}
+      {status === "done" ? "회신완료" : "신규"}
     </span>
   );
 
@@ -250,6 +251,7 @@ export default function AdminAdsPage() {
                 {selected.product && (<><span style={{ color: "#888" }}>관심상품</span><span>{PRODUCT_LABELS[selected.product] ?? selected.product}</span></>)}
                 <span style={{ color: "#888" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>
                 <span style={{ color: "#888" }}>상태</span><span>{badge(selected.status)}</span>
+                {selected.replied_at && (<><span style={{ color: "#888" }}>회신완료</span><span>{fmtDate(selected.replied_at)}</span></>)}
               </div>
               <div style={{ marginBottom: 18 }}>
                 <div style={{ color: "#888", fontSize: 14, marginBottom: 6 }}>문의 내용</div>
@@ -279,7 +281,7 @@ export default function AdminAdsPage() {
                     답변 메일 보내기
                   </button>
                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
-                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다. (첨부 총 3MB 이하)
+                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 회신완료로 바뀌고 회신 시각이 기록됩니다. (첨부 총 3MB 이하)
                   </p>
                 </div>
               ) : (
