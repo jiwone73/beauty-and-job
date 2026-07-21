@@ -353,14 +353,14 @@ function AdminMembersPageInner() {
           <button
             onClick={() => { if (checked.length) { setBroadcastChannel("email"); setBroadcastOpen(true); } }}
             disabled={checked.length === 0}
-            style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: checked.length ? "#5f0080" : "#ededed", color: checked.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 600, cursor: checked.length ? "pointer" : "default" }}
+            style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: checked.length ? "#5f0080" : "#ededed", color: checked.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 400, cursor: checked.length ? "pointer" : "default" }}
           >
             이메일 발송{checked.length ? ` (${checked.length})` : ""}
           </button>
           <button
             onClick={() => { if (checked.length) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }}
             disabled={checked.length === 0}
-            style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: checked.length ? "#5f0080" : "#ededed", color: checked.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 600, cursor: checked.length ? "pointer" : "default" }}
+            style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: checked.length ? "#5f0080" : "#ededed", color: checked.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 400, cursor: checked.length ? "pointer" : "default" }}
           >
             SMS 발송{checked.length ? ` (${checked.length})` : ""}
           </button>

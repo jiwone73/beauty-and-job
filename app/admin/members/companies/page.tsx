@@ -362,14 +362,14 @@ function AdminCompaniesContent() {
             <button
               onClick={() => { if (selectedIds.length) { setBroadcastChannel("email"); setBroadcastOpen(true); } }}
               disabled={selectedIds.length === 0}
-              style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: selectedIds.length ? "#5f0080" : "#ededed", color: selectedIds.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 600, cursor: selectedIds.length ? "pointer" : "default" }}
+              style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: selectedIds.length ? "#5f0080" : "#ededed", color: selectedIds.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 400, cursor: selectedIds.length ? "pointer" : "default" }}
             >
               이메일 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
             <button
               onClick={() => { if (selectedIds.length) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }}
               disabled={selectedIds.length === 0}
-              style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: selectedIds.length ? "#5f0080" : "#ededed", color: selectedIds.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 600, cursor: selectedIds.length ? "pointer" : "default" }}
+              style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: selectedIds.length ? "#5f0080" : "#ededed", color: selectedIds.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 400, cursor: selectedIds.length ? "pointer" : "default" }}
             >
               SMS 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
