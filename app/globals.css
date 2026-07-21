@@ -11045,7 +11045,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobcard { aspect-ratio: 1 / 1; }
   .jobcard-cover { flex: 0 0 50%; aspect-ratio: auto; }
   .jobcard-body { flex: 0 0 50%; }
-  .jobcard-title { font-size: 13px; }
+  .jobcard-title { font-size: 14px; }
 }
 /* 화사한 배너 배경 대응 — 텍스트 가독성 */
 .hero-banner-top-inner .hero-banner-title,
