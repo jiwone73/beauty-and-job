@@ -100,7 +100,7 @@ function PieCard({ title, data, unit, colors, caption }: {
         </div>
         <div style={{
           flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: "6px 8px", fontSize: 12, alignContent: "center",
+          gap: "6px 8px", fontSize: 14, alignContent: "center",
         }}>
           {data.map((d, i) => (
             <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 5, minWidth: 0 }}>
