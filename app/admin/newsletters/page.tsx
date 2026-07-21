@@ -204,7 +204,7 @@ export default function AdminNewslettersPage() {
                   <td style={td}>
                     <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   </td>
-                  <td onClick={() => setPreviewItem(n)} style={{ ...td, maxWidth: 360, textAlign: "left", cursor: "pointer", color: "#5f0080", fontWeight: 600 }}>{n.title}</td>
+                  <td onClick={() => setPreviewItem(n)} style={{ ...td, maxWidth: 360, textAlign: "left", cursor: "pointer" }}>{n.title}</td>
                   <td style={td}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: n.status === "sent" ? "#2e7d32" : "#e65100" }}>
                       {STATUS_LABELS[n.status] || n.status}
