@@ -8465,15 +8465,15 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .hero-m-ai-card-head { display: flex; align-items: center; gap: 8px; }
 .hero-m-ai-card-icon { font-size: 24px; flex-shrink: 0; }
-.hero-m-ai-card strong { font-size: 14px; font-weight: 700; color: #1a1a1a; }
-.hero-m-ai-card p { font-size: 12px; color: #888; line-height: 1.5; }
+.hero-m-ai-card strong { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+.hero-m-ai-card p { font-size: 13px; color: #888; line-height: 1.5; }
 .hero-m-ai-card-btn {
   display: inline-block;
   margin-top: 8px;
   padding: 8px 12px;
   background: #5f0080;
   color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   border-radius: 8px;
   text-align: center;
@@ -11281,7 +11281,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .admin-login-btn { font-size: 16px; }
   .hero-search-input { font-size: 16px; }
   .hero-strategy-title { font-size: 16px; }
-  .hero-right-card-title { font-size: 16px; }
+  .hero-right-card-title { font-size: 17px; }
   .baj-login-input { font-size: 16px; }
   .hero-region-trigger { font-size: 16px; }
   .mob-menu-item { font-size: 16px; }
@@ -11313,8 +11313,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   .hero-search-guide { font-size: 15px; }
   .hero-type-btn { font-size: 14px; }
   .hero-right-title { font-size: 18px; }
-  .hero-right-card-desc { font-size: 15px; }
-  .hero-right-card-btn { font-size: 14px; }
+  .hero-right-card-desc { font-size: 16px; }
+  .hero-right-card-btn { font-size: 15px; }
   .section-sub { font-size: 15px; }
   .see-all { font-size: 15px; }
   .service-name { font-size: 15px; }
