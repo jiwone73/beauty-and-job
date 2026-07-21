@@ -482,4 +482,30 @@ export async function sendJobRecommendationEmail(
     html,
   });
 }
+
+const SUPPORT_FROM = "뷰티워크 고객지원 <support@beautywork.co.kr>";
+
+// 사업/1:1 문의 답변 메일 — 발신 주소를 support@beautywork.co.kr 로 고정
+export async function sendInquiryReplyEmail(to: string, subject: string, bodyText: string) {
+  const esc = bodyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const bodyHtml = esc.replace(/\n/g, "<br/>");
+  return resend.emails.send({
+    from: SUPPORT_FROM,
+    to,
+    subject,
+    html: `
+      <div style="max-width:560px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
+        <div style="padding:20px 0;border-bottom:2px solid #5f0080;">
+          <span style="font-size:20px;font-weight:700;color:#5f0080;">뷰티워크</span>
+        </div>
+        <div style="padding:28px 4px;font-size:14px;line-height:1.8;color:#333;">
+          ${bodyHtml}
+        </div>
+        <div style="padding:16px 0;border-top:1px solid #eee;font-size:11px;color:#aaa;">
+          © 뷰티워크 (BeautyWork) · support@beautywork.co.kr
+        </div>
+      </div>
+    `,
+  });
+}
   
