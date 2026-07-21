@@ -16,6 +16,7 @@ export default function AdminNewslettersPage() {
   const [autogenSaving, setAutogenSaving] = useState(false);
   const [checked, setChecked] = useState<string[]>([]);
   const [deleting, setDeleting] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState<string | null>(null);
 
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
 
@@ -84,13 +85,7 @@ export default function AdminNewslettersPage() {
   };
 
   const preview = (html: string) => {
-    const w = window.open("", "_blank");
-    if (w) {
-      w.document.write((html || "").replace(/\{\{UNSUBSCRIBE_URL\}\}/g, "#"));
-      w.document.close();
-    } else {
-      alert("팝업이 차단됐어요. 팝업 허용 후 다시 시도해주세요.");
-    }
+    setPreviewHtml((html || "").replace(/\{\{UNSUBSCRIBE_URL\}\}/g, "#"));
   };
 
   const testSend = async (id: string) => {
@@ -242,6 +237,19 @@ export default function AdminNewslettersPage() {
         )}
         </div>
       </div>
+      {previewHtml !== null && (
+        <div onClick={() => setPreviewHtml(null)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ background: "#fff", borderRadius: 12, width: "min(680px, 96vw)", height: "min(90vh, 900px)", display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 10px 40px rgba(0,0,0,0.2)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", borderBottom: "1px solid #eee" }}>
+              <span style={{ fontSize: 16, fontWeight: 700 }}>뉴스레터 미리보기</span>
+              <button onClick={() => setPreviewHtml(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999" }}>✕</button>
+            </div>
+            <iframe title="뉴스레터 미리보기" srcDoc={previewHtml} style={{ flex: 1, width: "100%", border: "none" }} />
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }
