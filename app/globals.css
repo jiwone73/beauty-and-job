@@ -1518,8 +1518,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   .cv-date-input { width: auto; flex: 1; min-width: 0; padding-left: 4px; padding-right: 4px; }
   .cv-date-sep { flex-shrink: 0; }
 }
-.cv-btn-primary { width: 100%; height: 52px; background: var(--color-text); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 24px; transition: background 0.15s; font-family: inherit; }
-.cv-btn-primary:hover { background: #000; }
+.cv-btn-primary { width: 100%; height: 52px; background: #ede9fe; color: #5f0080; border: none; border-radius: 8px; font-size: 15px; font-weight: 400; cursor: pointer; margin-top: 24px; transition: background 0.15s; font-family: inherit; }
+.cv-btn-primary:hover { background: #e3ddfb; }
 .cv-btn-primary.disabled { background: var(--color-border); color: var(--color-text-mute); cursor: not-allowed; }
 .cv-btn-primary.disabled:hover { background: var(--color-border); }
 .cv-btn-text-add { background: transparent; border: none; color: var(--color-text-mute); font-size: 14px; padding: 12px 0; cursor: pointer; display: block; width: 100%; text-align: center; font-family: inherit; transition: color 0.15s; }
@@ -8423,14 +8423,15 @@ input[type="range"].career-slider::-moz-range-thumb {
   width: 100%;
   height: 50px;
   border-radius: 12px;
-  background: #5f0080;
-  color: #fff;
+  background: #ede9fe;
+  color: #5f0080;
   border: none;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 400;
   font-family: inherit;
   cursor: pointer;
 }
+.region-apply-btn:hover { background: #e3ddfb; }
 
 /* AI 추천 카드 */
 .hero-m-ai-wrap { padding: 20px 20px 0; }

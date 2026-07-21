@@ -147,13 +147,14 @@ export default function JobGroupSelectModal({
         }
         .jgm-reset {
           flex: 1; padding: 13px; border-radius: 10px;
-          border: 1.5px solid #e0e0e0; background: #fff; color: #666;
-          font-size: 15px; font-weight: 600; cursor: pointer;
+          border: 1px solid #eee; background: #fff; color: #888;
+          font-size: 15px; font-weight: 400; cursor: pointer;
         }
         .jgm-apply {
           flex: 2; padding: 13px; border-radius: 10px; border: none;
-          background: #5f0080; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
+          background: #ede9fe; color: #5f0080; font-size: 15px; font-weight: 400; cursor: pointer;
         }
+        .jgm-apply:hover { background: #e3ddfb; }
         @keyframes jgmFade { from { opacity: 0; } to { opacity: 1; } }
         @keyframes jgmPop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
         @keyframes jgmUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
