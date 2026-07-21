@@ -11065,10 +11065,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobs-grid .jobcard { aspect-ratio: auto; }
   .jobs-grid .jobcard .jobcard-cover { height: auto; flex: none; aspect-ratio: 16 / 10; }
   .jobs-grid .jobcard .jobcard-body { height: auto; flex: none; padding: 5px 10px 6px; }
-  .jobs-grid .jobcard .jobcard-title { font-size: 11px; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .jobs-grid .jobcard .jobcard-company { font-size: 11px; margin-bottom: 2px; }
-  .jobs-grid .jobcard .jobcard-meta { font-size: 11px; margin-bottom: 4px; }
-  .jobs-grid .jobcard .jobcard-deadline { font-size: 11px; margin-top: 0; }
+  .jobs-grid .jobcard .jobcard-title { font-size: 12px; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .jobs-grid .jobcard .jobcard-company { font-size: 12px; margin-bottom: 2px; }
+  .jobs-grid .jobcard .jobcard-meta { font-size: 12px; margin-bottom: 4px; }
+  .jobs-grid .jobcard .jobcard-deadline { font-size: 12px; margin-top: 0; }
 }
 
 /* 프로필 헤더 채용공고 위치 — 이력서와 통일 (x=166) */
