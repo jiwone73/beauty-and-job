@@ -83,16 +83,6 @@ export default function AdminNoticesPage() {
     } finally { setBusy(false); }
   };
 
-  const removeOne = async (id: string) => {
-    if (!confirm("이 공지를 삭제할까요?")) return;
-    setBusy(true);
-    try {
-      await fetch(`/api/admin/notices?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token()}` } });
-      setChecked((c) => c.filter((x) => x !== id));
-      fetchList();
-    } finally { setBusy(false); }
-  };
-
   const removeChecked = async () => {
     if (checked.length === 0) return;
     if (!confirm(`${checked.length}개를 삭제할까요?`)) return;
@@ -176,7 +166,6 @@ export default function AdminNoticesPage() {
                     {n.title}
                   </span>
                   <span style={{ flexShrink: 0, fontSize: 14, color: "#aaa" }}>{fmtDate(n.published_at || n.created_at)}</span>
-                  <button onClick={() => removeOne(n.id)} style={{ flexShrink: 0, padding: "4px 10px", border: "1px solid #eee", background: "#fff", color: "#d33", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>삭제</button>
                 </div>
 
                 {expandedId === n.id && (
