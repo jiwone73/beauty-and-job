@@ -40,6 +40,23 @@ function fmtTrendDay(d: string | null, range: string) {
     : `${dt.getMonth() + 1}/${dt.getDate()}`;
 }
 
+function ModeToggle({ mode, onChange }: { mode: string; onChange: (m: "new" | "cumulative") => void }) {
+  return (
+    <div style={{ display: "flex", gap: 4 }}>
+      {([["new", "신규"], ["cumulative", "누적"]] as const).map(([val, label]) => (
+        <button key={val} onClick={() => onChange(val)}
+          style={{
+            padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600,
+            cursor: "pointer", border: "1px solid #e5e0eb",
+            background: mode === val ? "#7c3aed" : "#fff",
+            color: mode === val ? "#fff" : "#7c3aed",
+          }}>
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
 function RangeToggle({ range, onChange }: { range: string; onChange: (r: "7d" | "1m" | "3m" | "1y") => void }) {
   return (
     <div style={{ display: "flex", gap: 4 }}>
@@ -100,31 +117,34 @@ function PieCard({ title, data, unit, colors, caption }: {
 
 // ── 독립 추이 카드: 자체 기간 state + 자체 fetch (4개가 서로 독립)
 function TrendCard({
-  title, type, subFilter, unit, render,
+  title, type, subFilter, unit, render, defaultMode,
 }: {
   title: string;
   type: "signup" | "company" | "apply" | "job" | "completion" | "visit";
   subFilter?: string;
   unit?: string;
   render: (rows: any[], range: string) => React.ReactNode;
+  defaultMode?: "new" | "cumulative";
 }) {
   const [range, setRange] = useState<"7d" | "1m" | "3m" | "1y">("7d");
+  const [mode, setMode] = useState<"new" | "cumulative">(defaultMode || "new");
   const [rows, setRows] = useState<any[]>([]);
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
-    fetch(`/api/admin/dashboard/trend?type=${type}&range=${range}`, {
+    fetch(`/api/admin/dashboard/trend?type=${type}&range=${range}&mode=${mode}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
       .then((res) => { if (res.success) setRows(res.data.rows || []); })
       .catch(console.error);
-  }, [type, range]);
+  }, [type, range, mode]);
   return (
     <div className="admin-card">
       <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2 className="admin-card-title">{title}</h2>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {subFilter && <span style={{ fontSize: 12, color: "#888" }}>{subFilter}</span>}
+          <ModeToggle mode={mode} onChange={setMode} />
           <RangeToggle range={range} onChange={setRange} />
         </div>
       </div>
@@ -400,7 +420,7 @@ export default function AdminDashboard() {
       {/* 완성 추이 · 일 방문자 (2열) */}
       <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
       {/* 프로필/이력서 완성 추이 (가입일 기준) */}
-      <TrendCard title="프로필 · 이력서 완성 (누적)" type="completion" unit="명" render={(rows, range) => {
+      <TrendCard title="프로필 · 이력서 완성 추이" type="completion" unit="명" defaultMode="cumulative" render={(rows, range) => {
         const data = rows.map((r: any) => ({
           day: fmtTrendDay(r.day, range),
           프로필: Number(r.profile_done),

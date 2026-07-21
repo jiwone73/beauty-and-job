@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
   const type = sp.get('type') || 'signup'
   const rangeParam = sp.get('range')
   const range = rangeParam === '1m' ? '1m' : rangeParam === '3m' ? '3m' : rangeParam === '1y' ? '1y' : '7d'
+  const mode = sp.get('mode') === 'cumulative' ? 'cumulative' : 'new'
 
   const cfg =
     range === '1y'
@@ -22,6 +23,7 @@ export async function GET(req: NextRequest) {
       : { start: "now()::date - interval '6 day'", step: "interval '1 day'", trunc: 'day' }
 
   const series = `generate_series(${cfg.start}, date_trunc('${cfg.trunc}', now()), ${cfg.step}) d`
+  const cmp = mode === 'cumulative' ? '<=' : '='
 
   const client = await pool.connect()
   try {
@@ -30,36 +32,36 @@ export async function GET(req: NextRequest) {
     if (type === 'signup') {
       const q = await client.query(`
         SELECT d::date AS day,
-          (SELECT COUNT(*) FROM users WHERE date_trunc('${cfg.trunc}', created_at) = d) AS users,
-          (SELECT COUNT(*) FROM users WHERE date_trunc('${cfg.trunc}', created_at) = d AND job_type = 'STORE') AS users_store,
-          (SELECT COUNT(*) FROM users WHERE date_trunc('${cfg.trunc}', created_at) = d AND job_type = 'OFFICE') AS users_office
+          (SELECT COUNT(*) FROM users WHERE date_trunc('${cfg.trunc}', created_at) ${cmp} d) AS users,
+          (SELECT COUNT(*) FROM users WHERE date_trunc('${cfg.trunc}', created_at) ${cmp} d AND job_type = 'STORE') AS users_store,
+          (SELECT COUNT(*) FROM users WHERE date_trunc('${cfg.trunc}', created_at) ${cmp} d AND job_type = 'OFFICE') AS users_office
         FROM ${series} ORDER BY day
       `)
       rows = q.rows
     } else if (type === 'company') {
       const q = await client.query(`
         SELECT d::date AS day,
-          (SELECT COUNT(*) FROM companies WHERE date_trunc('${cfg.trunc}', created_at) = d) AS companies,
-          (SELECT COUNT(*) FROM companies WHERE date_trunc('${cfg.trunc}', created_at) = d AND company_type = 'STORE') AS companies_store,
-          (SELECT COUNT(*) FROM companies WHERE date_trunc('${cfg.trunc}', created_at) = d AND company_type = 'OFFICE') AS companies_office,
-          (SELECT COUNT(*) FROM companies WHERE date_trunc('${cfg.trunc}', created_at) = d AND company_type = 'BOTH') AS companies_both
+          (SELECT COUNT(*) FROM companies WHERE date_trunc('${cfg.trunc}', created_at) ${cmp} d) AS companies,
+          (SELECT COUNT(*) FROM companies WHERE date_trunc('${cfg.trunc}', created_at) ${cmp} d AND company_type = 'STORE') AS companies_store,
+          (SELECT COUNT(*) FROM companies WHERE date_trunc('${cfg.trunc}', created_at) ${cmp} d AND company_type = 'OFFICE') AS companies_office,
+          (SELECT COUNT(*) FROM companies WHERE date_trunc('${cfg.trunc}', created_at) ${cmp} d AND company_type = 'BOTH') AS companies_both
         FROM ${series} ORDER BY day
       `)
       rows = q.rows
     } else if (type === 'apply') {
       const q = await client.query(`
         SELECT d::date AS day,
-          (SELECT COUNT(*) FROM applications WHERE date_trunc('${cfg.trunc}', applied_at) = d) AS count
+          (SELECT COUNT(*) FROM applications WHERE date_trunc('${cfg.trunc}', applied_at) ${cmp} d) AS count
         FROM ${series} ORDER BY day
       `)
       rows = q.rows
     } else if (type === 'job') {
       const q = await client.query(`
         SELECT d::date AS day,
-          (SELECT COUNT(*) FROM job_postings WHERE date_trunc('${cfg.trunc}', created_at) = d) AS total,
-          (SELECT COUNT(*) FROM job_postings WHERE date_trunc('${cfg.trunc}', created_at) = d AND job_type = 'STORE') AS store,
-          (SELECT COUNT(*) FROM job_postings WHERE date_trunc('${cfg.trunc}', created_at) = d AND job_type = 'OFFICE') AS office,
-          (SELECT COUNT(*) FROM job_postings jp JOIN companies c2 ON c2.id = jp.company_id WHERE date_trunc('${cfg.trunc}', jp.created_at) = d AND c2.company_type = 'BOTH') AS both
+          (SELECT COUNT(*) FROM job_postings WHERE date_trunc('${cfg.trunc}', created_at) ${cmp} d) AS total,
+          (SELECT COUNT(*) FROM job_postings WHERE date_trunc('${cfg.trunc}', created_at) ${cmp} d AND job_type = 'STORE') AS store,
+          (SELECT COUNT(*) FROM job_postings WHERE date_trunc('${cfg.trunc}', created_at) ${cmp} d AND job_type = 'OFFICE') AS office,
+          (SELECT COUNT(*) FROM job_postings jp JOIN companies c2 ON c2.id = jp.company_id WHERE date_trunc('${cfg.trunc}', jp.created_at) ${cmp} d AND c2.company_type = 'BOTH') AS both
         FROM ${series} ORDER BY day
       `)
       rows = q.rows
@@ -67,7 +69,7 @@ export async function GET(req: NextRequest) {
       const q = await client.query(`
         SELECT d::date AS day,
           (SELECT COUNT(*) FROM users u
-             WHERE date_trunc('${cfg.trunc}', u.created_at) <= d
+             WHERE date_trunc('${cfg.trunc}', u.created_at) ${cmp} d
                AND u.avatar_url IS NOT NULL AND u.avatar_url <> ''
                AND u.region_sido IS NOT NULL AND u.region_sido <> ''
                AND jsonb_typeof(u.preferred_regions) = 'array' AND jsonb_array_length(u.preferred_regions) > 0
@@ -80,7 +82,7 @@ export async function GET(req: NextRequest) {
                )
           ) AS profile_done,
           (SELECT COUNT(*) FROM users u
-             WHERE date_trunc('${cfg.trunc}', u.created_at) <= d
+             WHERE date_trunc('${cfg.trunc}', u.created_at) ${cmp} d
                AND ( EXISTS (SELECT 1 FROM user_careers uc WHERE uc.user_id = u.id)
                   OR (u.resume_file_url IS NOT NULL AND u.resume_file_url <> '')
                   OR (u.portfolio_url IS NOT NULL AND u.portfolio_url <> '') )
@@ -91,14 +93,14 @@ export async function GET(req: NextRequest) {
     } else if (type === 'visit') {
       const q = await client.query(`
         SELECT d::date AS day,
-          (SELECT COUNT(*) FROM site_visits WHERE date_trunc('${cfg.trunc}', visit_date)::date = d::date) AS visitors,
-          (SELECT COUNT(*) FROM site_visits WHERE date_trunc('${cfg.trunc}', visit_date)::date = d::date AND user_id IS NOT NULL) AS members
+          (SELECT COUNT(*) FROM site_visits WHERE date_trunc('${cfg.trunc}', visit_date)::date ${cmp} d::date) AS visitors,
+          (SELECT COUNT(*) FROM site_visits WHERE date_trunc('${cfg.trunc}', visit_date)::date ${cmp} d::date AND user_id IS NOT NULL) AS members
         FROM ${series} ORDER BY day
       `)
       rows = q.rows
     }
 
-    return ok({ type, range, rows })
+    return ok({ type, range, mode, rows })
   } finally {
     client.release()
   }
