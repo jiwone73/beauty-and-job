@@ -86,11 +86,28 @@ export default function AdminAdsPage() {
     }
   };
 
-  const sendReply = () => {
+  const sendReply = async () => {
     if (!selected?.email) { alert("이메일 주소가 없어 답변을 보낼 수 없습니다."); return; }
-    const url = `mailto:${selected.email}?subject=${encodeURIComponent(replySubject)}&body=${encodeURIComponent(replyBody)}`;
-    window.location.href = url;
-    markDone(selected.id);
+    if (!replyBody.trim()) { alert("답변 내용을 입력해 주세요."); return; }
+    try {
+      const res = await fetch("/api/admin/ads/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ id: selected.id, to: selected.email, subject: replySubject, body: replyBody }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSelected((p) => (p ? { ...p, status: "done" } : p));
+        setItems((prev) => prev.map((it) => (it.id === selected.id ? { ...it, status: "done" } : it)));
+        window.dispatchEvent(new Event("admin:inquiries-changed"));
+        alert("support@beautywork.co.kr에서 답변 메일을 발송했습니다.");
+      } else {
+        alert(data.error?.message || "메일 발송에 실패했습니다.");
+      }
+    } catch (e) {
+      console.error("[send reply]", e);
+      alert("메일 발송 중 오류가 발생했습니다.");
+    }
   };
 
   const toggleCheck = (id: number) =>
@@ -231,7 +248,7 @@ export default function AdminAdsPage() {
                     답변 메일 보내기
                   </button>
                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
-                    메일 앱이 열리며, 보내기와 동시에 상태가 완료로 변경됩니다.
+                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다.
                   </p>
                 </div>
               ) : (
