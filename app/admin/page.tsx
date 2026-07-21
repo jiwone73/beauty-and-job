@@ -474,8 +474,8 @@ export default function AdminDashboard() {
       }} />
       </div>
 
-      {/* 분포 3개 */}
-      <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+      {/* 분포 2개 */}
+      <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
 
         {/* 나이대 × 성별 */}
         <div className="admin-card">
@@ -501,8 +501,6 @@ export default function AdminDashboard() {
 
         {/* 프로필 직군 분포 */}
         <PieCard title="프로필 직군 분포" data={userDist} unit="명" colors={PIE_COLORS} caption="회원 수 (명)" />
-        {/* 직군별 입사지원 분포 */}
-        <PieCard title="직군별 입사지원 분포" data={appDist} unit="건" colors={PIE_COLORS} caption="지원 건수 (건)" />
 
       </div>
 
