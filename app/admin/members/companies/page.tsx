@@ -81,6 +81,8 @@ function regionFromAddress(addr: string | null) {
 }
 
 const isPdf = (u: string) => u.split("?")[0].toLowerCase().endsWith(".pdf");
+// 유료 여부 — 유료 요금제 미도입이라 현재 전부 false(무료). 도입 시 이 함수만 실제 필드로 교체.
+const isPaid = (_c: Company) => false;
 
 function AdminCompaniesContent() {
   const searchParams = useSearchParams();
@@ -243,7 +245,7 @@ function AdminCompaniesContent() {
     const matchType = typeFilter === "전체" || TYPE_LABEL[c.company_type] === typeFilter;
     const matchDate = matchPeriod(c.created_at, dateFilter);
     // 유료/무료: 유료 요금제 미도입 → 현재 전부 무료. 유료 도입 시 아래 조건에 실제 유료 판별을 추가.
-    const matchPlan = planFilter === "전체" || planFilter === "무료";
+    const matchPlan = planFilter === "전체" || (planFilter === "유료" ? isPaid(c) : !isPaid(c));
     const matchJob = jobFilter === "전체" || (jobFilter === "등록" ? c.job_count > 0 : c.job_count === 0);
     return matchSearch && matchStatus && matchType && matchDate && matchPlan && matchJob;
   });
@@ -268,6 +270,10 @@ function AdminCompaniesContent() {
     정지: companies.filter((c) => c.status === "SUSPENDED").length,
     반려: companies.filter((c) => c.status === "REJECTED").length,
   };
+  const planCounts = {
+    유료: companies.filter(isPaid).length,
+    무료: companies.filter((c) => !isPaid(c)).length,
+  };
 
   const lbl: React.CSSProperties = { color: "#888" };
   const modalBtn: React.CSSProperties = {
@@ -284,6 +290,18 @@ function AdminCompaniesContent() {
             <div key={label} className="admin-mini-stat"
               onClick={() => { setStatusFilter(label); setPage(1); }}
               style={{ cursor: "pointer", ...(statusFilter === label ? { outline: "2px solid #5f0080", outlineOffset: "-2px" } : {}) }}>
+              <span className="admin-mini-stat-label">{label}</span>
+              <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">개사</span></span>
+            </div>
+          ))}
+        </div>
+      )}
+      {!blockedMode && (
+        <div className="admin-mini-stats" style={{ marginTop: 12 }}>
+          {Object.entries(planCounts).map(([label, count]) => (
+            <div key={label} className="admin-mini-stat"
+              onClick={() => { setPlanFilter(planFilter === label ? "전체" : label); setPage(1); }}
+              style={{ cursor: "pointer", ...(planFilter === label ? { outline: "2px solid #5f0080", outlineOffset: "-2px" } : {}) }}>
               <span className="admin-mini-stat-label">{label}</span>
               <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">개사</span></span>
             </div>
