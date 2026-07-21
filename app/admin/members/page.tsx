@@ -19,6 +19,7 @@ function ageGroupOf(birth: string | null | undefined): string | null {
 }
 // [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
 // import SmsModal from "@/components/admin/SmsModal";
+import BroadcastModal from "@/components/admin/BroadcastModal";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Search, Trash2, FileText, Bookmark, Paperclip } from "lucide-react";
@@ -143,6 +144,7 @@ function AdminMembersPageInner() {
   const [jobTypeFilter, setJobTypeFilter] = useState(initialJobType);
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [checked, setChecked] = useState<string[]>([]);
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
   // [SMS 발송 기능 보류] 2026-07
   // const [smsOpen, setSmsOpen] = useState(false);
   const [selected, setSelected] = useState<Member | null>(null);
@@ -347,6 +349,20 @@ function AdminMembersPageInner() {
             문자 발송{checked.length ? ` (${checked.length})` : ""}
           </button>
           */}
+          <button
+            onClick={() => { if (checked.length) setBroadcastOpen(true); }}
+            disabled={checked.length === 0}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "6px 14px", borderRadius: 6, border: "none",
+              background: checked.length ? "#5f0080" : "#ededed",
+              color: checked.length ? "#fff" : "#aaa",
+              fontSize: 14, fontWeight: 600,
+              cursor: checked.length ? "pointer" : "default",
+            }}
+          >
+            단체 발송{checked.length ? ` (${checked.length})` : ""}
+          </button>
           <button
             onClick={handleBulkDelete}
             disabled={checked.length === 0}
@@ -630,6 +646,12 @@ function AdminMembersPageInner() {
         />
       )}
       */}
+      {broadcastOpen && (
+        <BroadcastModal
+          targets={members.filter((m) => checked.includes(m.id)).map((m) => ({ id: m.id, name: m.name, email: m.email, phone: m.phone }))}
+          onClose={() => setBroadcastOpen(false)}
+        />
+      )}
     </AdminLayout>
   );
 }

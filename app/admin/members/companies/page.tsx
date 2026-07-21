@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 // [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
 // import SmsModal from "@/components/admin/SmsModal";
+import BroadcastModal from "@/components/admin/BroadcastModal";
 import { Search, Trash2, X, Download, Printer, FileText } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
@@ -106,6 +107,7 @@ function AdminCompaniesContent() {
   const [planFilter, setPlanFilter] = useState("전체");
   const [jobFilter, setJobFilter] = useState("전체");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
   // [SMS 발송 기능 보류] 2026-07
   // const [smsOpen, setSmsOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -356,6 +358,20 @@ function AdminCompaniesContent() {
               </button>
             )}
             */}
+            <button
+              onClick={() => { if (selectedIds.length) setBroadcastOpen(true); }}
+              disabled={selectedIds.length === 0}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "6px 14px", borderRadius: 6, border: "none",
+                background: selectedIds.length ? "#5f0080" : "#ededed",
+                color: selectedIds.length ? "#fff" : "#aaa",
+                fontSize: 14, fontWeight: 600,
+                cursor: selectedIds.length ? "pointer" : "default",
+              }}
+            >
+              단체 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
+            </button>
             {!blockedMode && (
               <button
                 onClick={handleBulkDelete}
@@ -636,6 +652,15 @@ function AdminCompaniesContent() {
         />
       )}
       */}
+      {broadcastOpen && (
+        <BroadcastModal
+          targets={selectedIds.map((id) => {
+            const co = companies.find((c) => c.id === id);
+            return { id, name: co?.company_name || "", email: co?.email || null, phone: co?.phone || null };
+          })}
+          onClose={() => setBroadcastOpen(false)}
+        />
+      )}
     </AdminLayout>
   );
 }
