@@ -97,8 +97,7 @@ function AdminCompaniesContent() {
   const detailId = searchParams.get("detail");
 
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [blockedMode, setBlockedMode] = useState(false);
-  const [blocks, setBlocks] = useState<any[]>([]);
+  const blockedMode = false;
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(initialStatus);
@@ -132,16 +131,6 @@ function AdminCompaniesContent() {
   }, [token]);
 
   useEffect(() => { fetchCompanies(); }, [fetchCompanies]);
-
-  // 열람제한(차단) 관계 — 토글 ON일 때만 조회
-  useEffect(() => {
-    if (!blockedMode) return;
-    const url = `/api/admin/blocks${search ? `?search=${encodeURIComponent(search)}` : ""}`;
-    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((d) => setBlocks(d.success ? d.data.items : []))
-      .catch((e) => console.error("[admin blocks]", e));
-  }, [blockedMode, search, token]);
 
   // ?detail=회사id 로 진입 시 해당 기업 정보 모달 자동 오픈
   useEffect(() => {
@@ -352,19 +341,6 @@ function AdminCompaniesContent() {
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>총 <strong>{filtered.length}</strong>개사</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button
-              onClick={() => { setBlockedMode((v) => !v); setSearch(""); setPage(1); }}
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "6px 14px", borderRadius: 6,
-                border: `1px solid ${blockedMode ? "#5f0080" : "#e3dceb"}`,
-                background: blockedMode ? "#5f0080" : "#fff",
-                color: blockedMode ? "#fff" : "#5f0080",
-                fontSize: 14, fontWeight: 600, cursor: "pointer",
-              }}
-            >
-              열람제한기업
-            </button>
             {/* [SMS 발송 기능 보류] 2026-07
             {!blockedMode && selectedIds.length > 0 && (
               <button
@@ -398,53 +374,7 @@ function AdminCompaniesContent() {
             )}
           </div>
         </div>
-        {blockedMode ? (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>차단일시</th>
-                <th>매장/기업명</th>
-                <th>차단한 회원</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={3} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
-              ) : blocks.length === 0 ? (
-                <tr><td colSpan={3} className="admin-empty" style={{ textAlign: "center" }}>열람제한(차단) 내역이 없습니다.</td></tr>
-              ) : blocks.map((b) => (
-                <tr key={b.id}>
-                  <td className="admin-td-date">
-                    {b.created_at ? new Date(b.created_at).toLocaleDateString("ko-KR") : "-"}
-                  </td>
-                  <td className="admin-td-brand">
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                      {b.company_name}
-                      {b.company_type && (
-                        <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
-                          {b.company_type === "STORE" ? "매장" : b.company_type === "OFFICE" ? "기업" : "기업+매장"}
-                        </span>
-                      )}
-                    </span>
-                  </td>
-                  <td>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
-                        {b.user_avatar_url ? (
-                          <img src={b.user_avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        ) : (b.user_name?.[0] || "·")}
-                      </div>
-                      <div style={{ textAlign: "left" }}>
-                        <div style={{ fontWeight: 600 }}>{b.user_name}</div>
-                        <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>{b.user_email}</div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
+        {(
           <table className="admin-table" style={{ minWidth: 1160, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
