@@ -4990,16 +4990,22 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 헤더 */
 .admin-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   height: 64px;
-  padding: 0 28px;
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
   position: sticky;
   top: 0;
   z-index: 10;
+}
+.admin-header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .admin-page-title {
   font-size: 18px;
@@ -5055,7 +5061,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
 
 /* 콘텐츠 */
-.admin-content { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+.admin-content { padding: 28px; display: flex; flex-direction: column; gap: 20px; max-width: 1280px; margin: 0 auto; width: 100%; }
 
 /* 통계 카드 */
 .admin-stat-grid {

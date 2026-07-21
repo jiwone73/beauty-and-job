@@ -233,6 +233,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
 
       <div className="admin-main">
         <header className="admin-header">
+          <div className="admin-header-inner">
           <div className="admin-header-left">
             <h1 className="admin-page-title">
               {PAGE_TITLES[activeMenu] || "관리자"}
@@ -242,6 +243,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
             )}
           </div>
           <div className="admin-header-right"></div>
+          </div>
         </header>
         <main className="admin-content">{children}</main>
       </div>
