@@ -70,8 +70,14 @@ export async function GET(req: NextRequest) {
              WHERE date_trunc('${cfg.trunc}', u.created_at) <= d
                AND u.avatar_url IS NOT NULL AND u.avatar_url <> ''
                AND u.region_sido IS NOT NULL AND u.region_sido <> ''
-               AND coalesce(array_length(u.office_job_areas, 1), 0) > 0
                AND jsonb_typeof(u.preferred_regions) = 'array' AND jsonb_array_length(u.preferred_regions) > 0
+               AND (
+                 (u.job_type = 'STORE'
+                    AND coalesce(array_length((SELECT p.skill_areas FROM user_profiles p WHERE p.user_id = u.id), 1), 0) > 0
+                    AND coalesce((SELECT p.work_type_prefer FROM user_profiles p WHERE p.user_id = u.id), '') <> '')
+                 OR (u.job_type IS DISTINCT FROM 'STORE'
+                    AND coalesce(array_length(u.office_job_areas, 1), 0) > 0)
+               )
           ) AS profile_done,
           (SELECT COUNT(*) FROM users u
              WHERE date_trunc('${cfg.trunc}', u.created_at) <= d

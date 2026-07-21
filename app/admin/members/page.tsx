@@ -107,6 +107,8 @@ type Member = {
   region_sigungu: string | null;
   office_job_areas: string[] | null;
   preferred_regions: string[] | null;
+  skill_areas: string[] | null;
+  work_type_prefer: string | null;
   portfolio_url: string | null;
   resume_file_url: string | null;
   scrap_count: number;
@@ -234,9 +236,13 @@ function AdminMembersPageInner() {
     // 이력서 완성: 경력 / 첨부 이력서 / 포트폴리오 중 하나라도 있으면
     const resumeWritten = !!m.recent_company || !!m.resume_file_url || !!m.portfolio_url;
     // 프로필 완성: 필수 항목(사진·거주지·직군·희망 근무지역) 모두 입력
+    // 직군별 필수 직무영역: 사무직=직군 영역, 매장직=시술 분야·희망 근무형태
+    const hasJobArea = m.job_type === "STORE"
+      ? (Array.isArray(m.skill_areas) && m.skill_areas.length > 0 && !!m.work_type_prefer)
+      : (Array.isArray(m.office_job_areas) && m.office_job_areas.length > 0);
     const profileWritten = !!m.avatar_url && !!m.region_sido
-      && Array.isArray(m.office_job_areas) && m.office_job_areas.length > 0
-      && Array.isArray(m.preferred_regions) && m.preferred_regions.length > 0;
+      && Array.isArray(m.preferred_regions) && m.preferred_regions.length > 0
+      && hasJobArea;
     const matchResume = resumeFilter === "전체" || (resumeFilter === "완성" ? resumeWritten : !resumeWritten);
     const matchProfile = profileFilter === "전체" || (profileFilter === "완성" ? profileWritten : !profileWritten);
     return matchSearch && matchStatus && matchJobType && matchDate && matchSignup && matchGender && matchAge && matchResume && matchProfile;
