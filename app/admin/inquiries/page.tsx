@@ -191,7 +191,7 @@ export default function AdminInquiriesPage() {
                 <th style={{ width: 40, textAlign: "center" }}>
                   <input type="checkbox" checked={checked.length === items.length && items.length > 0} onChange={toggleAll} style={{ cursor: "pointer" }} />
                 </th>
-                <th style={{ width: 90 }}>회원</th>
+                <th style={{ width: 90 }}>회원구분</th>
                 <th style={{ width: 100 }}>이름</th>
                 <th style={{ width: 130 }}>전화번호</th>
                 <th>이메일</th>
@@ -237,7 +237,7 @@ export default function AdminInquiriesPage() {
                 {/* 왼쪽: 문의 정보 + 내용 */}
                 <div style={{ flex: "1 1 300px", minWidth: 0 }}>
               <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", rowGap: 12, columnGap: 12, fontSize: 15, marginBottom: 18 }}>
-                <span style={{ color: "#888" }}>유형</span><span style={{ fontWeight: 600, color: "#5f0080" }}>{selected.type}</span>
+                <span style={{ color: "#888" }}>회원구분</span><span style={{ fontWeight: 600, color: "#5f0080" }}>{selected.type}</span>
                 <span style={{ color: "#888" }}>이름</span><span>{selected.name}</span>
                 <span style={{ color: "#888" }}>전화번호</span><span>{selected.phone ? formatPhone(selected.phone) : "-"}</span>
                 <span style={{ color: "#888" }}>이메일</span><span style={{ wordBreak: "break-all" }}>{selected.email || "-"}</span>
