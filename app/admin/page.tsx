@@ -108,7 +108,7 @@ function PieCard({ title, data, unit, colors, caption }: {
                 width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
                 background: colors[i % colors.length],
               }} />
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.name}</span>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#555" }}>{d.name}</span>
             </div>
           ))}
         </div>
