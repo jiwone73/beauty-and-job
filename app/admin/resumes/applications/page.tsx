@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
+import FilterDropdown from "@/components/company/FilterDropdown";
 import { Search, FileText, Paperclip } from "lucide-react";
 
 const STATUS_TO_LABEL: Record<string, string> = {
@@ -134,17 +135,14 @@ function AdminApplicationsPageInner() {
             <input className="admin-search-input" placeholder="지원자, 기업명, 포지션 검색"
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <select className="admin-form-select" value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}>
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>{s === "전체" ? "지원상태 전체" : s}</option>
-            ))}
-          </select>
-          <select className="admin-form-select" value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}>
-            <option value="전체">지원일 전체</option>
-            <option value="today">오늘</option>
-          </select>
+          <FilterDropdown label="지원상태"
+            value={statusFilter}
+            options={STATUS_OPTIONS}
+            onChange={(v) => setStatusFilter(v)} />
+          <FilterDropdown label="지원일"
+            value={dateFilter === "today" ? "오늘" : "전체"}
+            options={["전체", "오늘"]}
+            onChange={(v) => setDateFilter(v === "오늘" ? "today" : "전체")} />
         </div>
       </div>
       <div className="admin-card">

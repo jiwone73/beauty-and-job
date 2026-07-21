@@ -6,6 +6,7 @@ import CompanyDetailModal from "@/components/admin/CompanyDetailModal";
 import { Search, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatDeadline } from "@/lib/jobFormat";
+import FilterDropdown from "@/components/company/FilterDropdown";
 const STATUS_TO_LABEL: Record<string, string> = {
   ACTIVE: "승인완료",
   DRAFT: "승인대기",
@@ -197,26 +198,18 @@ function AdminJobsPageInner() {
             <input className="admin-search-input" placeholder="공고명, 기업명 검색"
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <select className="admin-form-select" value={jobGroupFilter}
-            onChange={(e) => setJobGroupFilter(e.target.value)}>
-            {["전체", "매장", "기업"].map(g => (
-              <option key={g} value={g}>{g === "전체" ? "유형 전체" : g}</option>
-            ))}
-          </select>
-          <select className="admin-form-select" value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}>
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>
-                {s === "전체" ? "승인상태 전체" : s}
-                {s === "승인대기" && counts.승인대기 > 0 ? ` (${counts.승인대기})` : ""}
-              </option>
-            ))}
-          </select>
-          <select className="admin-form-select" value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}>
-            <option value="전체">등록일 전체</option>
-            <option value="today">오늘</option>
-          </select>
+          <FilterDropdown label="유형"
+            value={jobGroupFilter}
+            options={["전체", "매장", "기업"]}
+            onChange={(v) => setJobGroupFilter(v)} />
+          <FilterDropdown label="승인상태"
+            value={statusFilter}
+            options={STATUS_OPTIONS}
+            onChange={(v) => setStatusFilter(v)} />
+          <FilterDropdown label="등록일"
+            value={dateFilter === "today" ? "오늘" : "전체"}
+            options={["전체", "오늘"]}
+            onChange={(v) => setDateFilter(v === "오늘" ? "today" : "전체")} />
         </div>
         <div style={{display:"flex", gap:"8px"}}>
           <Link href="/admin/jobs/new" className="admin-primary-btn">
