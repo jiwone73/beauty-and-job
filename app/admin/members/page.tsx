@@ -145,6 +145,7 @@ function AdminMembersPageInner() {
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [checked, setChecked] = useState<string[]>([]);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [broadcastChannel, setBroadcastChannel] = useState<"email" | "sms">("email");
   // [SMS 발송 기능 보류] 2026-07
   // const [smsOpen, setSmsOpen] = useState(false);
   const [selected, setSelected] = useState<Member | null>(null);
@@ -350,18 +351,18 @@ function AdminMembersPageInner() {
           </button>
           */}
           <button
-            onClick={() => { if (checked.length) setBroadcastOpen(true); }}
+            onClick={() => { if (checked.length) { setBroadcastChannel("email"); setBroadcastOpen(true); } }}
             disabled={checked.length === 0}
-            style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "6px 14px", borderRadius: 6, border: "none",
-              background: checked.length ? "#5f0080" : "#ededed",
-              color: checked.length ? "#fff" : "#aaa",
-              fontSize: 14, fontWeight: 600,
-              cursor: checked.length ? "pointer" : "default",
-            }}
+            style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: checked.length ? "#5f0080" : "#ededed", color: checked.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 600, cursor: checked.length ? "pointer" : "default" }}
           >
-            단체 발송{checked.length ? ` (${checked.length})` : ""}
+            이메일 발송{checked.length ? ` (${checked.length})` : ""}
+          </button>
+          <button
+            onClick={() => { if (checked.length) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }}
+            disabled={checked.length === 0}
+            style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: checked.length ? "#5f0080" : "#ededed", color: checked.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 600, cursor: checked.length ? "pointer" : "default" }}
+          >
+            SMS 발송{checked.length ? ` (${checked.length})` : ""}
           </button>
           <button
             onClick={handleBulkDelete}
@@ -648,6 +649,7 @@ function AdminMembersPageInner() {
       */}
       {broadcastOpen && (
         <BroadcastModal
+          initialChannel={broadcastChannel}
           targets={members.filter((m) => checked.includes(m.id)).map((m) => ({ id: m.id, name: m.name, email: m.email, phone: m.phone }))}
           onClose={() => setBroadcastOpen(false)}
         />

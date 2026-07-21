@@ -108,6 +108,7 @@ function AdminCompaniesContent() {
   const [jobFilter, setJobFilter] = useState("전체");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [broadcastChannel, setBroadcastChannel] = useState<"email" | "sms">("email");
   // [SMS 발송 기능 보류] 2026-07
   // const [smsOpen, setSmsOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -359,18 +360,18 @@ function AdminCompaniesContent() {
             )}
             */}
             <button
-              onClick={() => { if (selectedIds.length) setBroadcastOpen(true); }}
+              onClick={() => { if (selectedIds.length) { setBroadcastChannel("email"); setBroadcastOpen(true); } }}
               disabled={selectedIds.length === 0}
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "6px 14px", borderRadius: 6, border: "none",
-                background: selectedIds.length ? "#5f0080" : "#ededed",
-                color: selectedIds.length ? "#fff" : "#aaa",
-                fontSize: 14, fontWeight: 600,
-                cursor: selectedIds.length ? "pointer" : "default",
-              }}
+              style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: selectedIds.length ? "#5f0080" : "#ededed", color: selectedIds.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 600, cursor: selectedIds.length ? "pointer" : "default" }}
             >
-              단체 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
+              이메일 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
+            </button>
+            <button
+              onClick={() => { if (selectedIds.length) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }}
+              disabled={selectedIds.length === 0}
+              style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: selectedIds.length ? "#5f0080" : "#ededed", color: selectedIds.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 600, cursor: selectedIds.length ? "pointer" : "default" }}
+            >
+              SMS 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
             {!blockedMode && (
               <button
@@ -654,6 +655,7 @@ function AdminCompaniesContent() {
       */}
       {broadcastOpen && (
         <BroadcastModal
+          initialChannel={broadcastChannel}
           targets={selectedIds.map((id) => {
             const co = companies.find((c) => c.id === id);
             return { id, name: co?.company_name || "", email: co?.email || null, phone: co?.phone || null };

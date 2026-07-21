@@ -6,11 +6,13 @@ type Target = { id: string; name: string; email: string | null; phone: string | 
 export default function BroadcastModal({
   targets,
   onClose,
+  initialChannel = "email",
 }: {
   targets: Target[];
   onClose: () => void;
+  initialChannel?: "email" | "sms";
 }) {
-  const [channel, setChannel] = useState<"email" | "sms">("email");
+  const [channel, setChannel] = useState<"email" | "sms">(initialChannel);
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -60,9 +62,11 @@ export default function BroadcastModal({
   };
 
   const tabBtn = (on: boolean): React.CSSProperties => ({
-    flex: 1, padding: "8px 0", borderRadius: 8, border: "none", cursor: "pointer",
+    flex: 1, padding: "8px 0", borderRadius: 8, cursor: "pointer",
     fontSize: 14, fontWeight: 600,
-    background: on ? "#5f0080" : "#f0e9f5", color: on ? "#fff" : "#5f0080",
+    background: on ? "#ede9fe" : "#fff",
+    color: on ? "#5f0080" : "#aaa",
+    border: on ? "1px solid #cbb8ef" : "1px solid #eee",
   });
 
   return (
@@ -105,7 +109,7 @@ export default function BroadcastModal({
           )}
 
           <button onClick={send} disabled={sending}
-            style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#b98fd0" : "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: sending ? "default" : "pointer" }}>
+            style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#f3eefc" : "#ede9fe", color: "#5f0080", border: "1px solid #cbb8ef", borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: sending ? "default" : "pointer" }}>
             {sending ? "발송 중..." : `${valid.length}명에게 ${channel === "email" ? "이메일" : "문자"} 발송`}
           </button>
           <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 8 }}>
