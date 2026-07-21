@@ -158,7 +158,7 @@ export default function AdminInquiriesPage() {
   };
 
   const badge = (status: string) => (
-    <span style={{ fontSize: 13, fontWeight: 600, color: status === "done" ? "#888" : "#5f0080" }}>
+    <span style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", color: status === "done" ? "#888" : "#5f0080" }}>
       {status === "done" ? "회신완료" : "신규"}
     </span>
   );
@@ -191,13 +191,13 @@ export default function AdminInquiriesPage() {
                 <th style={{ width: 40, textAlign: "center" }}>
                   <input type="checkbox" checked={checked.length === items.length && items.length > 0} onChange={toggleAll} style={{ cursor: "pointer" }} />
                 </th>
-                <th style={{ width: 90 }}>유형</th>
+                <th style={{ width: 90 }}>회원</th>
                 <th style={{ width: 100 }}>이름</th>
                 <th style={{ width: 130 }}>전화번호</th>
                 <th>이메일</th>
                 <th>제목</th>
                 <th style={{ width: 150 }}>접수일시</th>
-                <th style={{ width: 70 }}>상태</th>
+                <th style={{ width: 84 }}>상태</th>
               </tr>
             </thead>
             <tbody>
