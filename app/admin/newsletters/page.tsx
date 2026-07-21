@@ -168,8 +168,8 @@ export default function AdminNewslettersPage() {
                 </span>
               </button>
               <button onClick={generate} disabled={generating}
-                style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-                {generating ? "생성 중..." : "✨ 뉴스레터 생성"}
+                style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 400, cursor: "pointer" }}>
+                {generating ? "생성 중..." : "뉴스레터 생성"}
               </button>
             </div>
             <button onClick={handleBulkDelete} disabled={checked.length === 0 || deleting}
