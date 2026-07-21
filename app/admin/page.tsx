@@ -42,14 +42,16 @@ function fmtTrendDay(d: string | null, range: string) {
 
 function ModeToggle({ mode, onChange }: { mode: string; onChange: (m: "new" | "cumulative") => void }) {
   return (
-    <div style={{ display: "flex", gap: 4 }}>
+    <div style={{ display: "inline-flex", background: "#eee9f3", borderRadius: 999, padding: 3, gap: 2 }}>
       {([["new", "신규"], ["cumulative", "누적"]] as const).map(([val, label]) => (
         <button key={val} onClick={() => onChange(val)}
           style={{
-            padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600,
-            cursor: "pointer", border: "1px solid #e5e0eb",
-            background: mode === val ? "#7c3aed" : "#fff",
-            color: mode === val ? "#fff" : "#7c3aed",
+            padding: "3px 12px", borderRadius: 999, fontSize: 12, fontWeight: 600,
+            cursor: "pointer", border: "none",
+            background: mode === val ? "#fff" : "transparent",
+            color: mode === val ? "#5f0080" : "#9a92a6",
+            boxShadow: mode === val ? "0 1px 2px rgba(0,0,0,0.12)" : "none",
+            transition: "all 0.15s",
           }}>
           {label}
         </button>
