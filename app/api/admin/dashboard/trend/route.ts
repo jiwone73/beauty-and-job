@@ -101,10 +101,10 @@ export async function GET(req: NextRequest) {
     } else if (type === 'company_completion') {
       const q = await client.query(`
         SELECT d::date AS day,
-          (SELECT COUNT(*) FROM companies c WHERE date_trunc('${cfg.trunc}', c.created_at) ${cmp} d AND c.logo_url IS NOT NULL AND c.logo_url <> '' AND c.description IS NOT NULL AND c.description <> '' AND c.business_license_url IS NOT NULL AND c.business_license_url <> '') AS done,
-          (SELECT COUNT(*) FROM companies c WHERE date_trunc('${cfg.trunc}', c.created_at) ${cmp} d AND c.company_type = 'STORE' AND c.logo_url IS NOT NULL AND c.logo_url <> '' AND c.description IS NOT NULL AND c.description <> '' AND c.business_license_url IS NOT NULL AND c.business_license_url <> '') AS done_store,
-          (SELECT COUNT(*) FROM companies c WHERE date_trunc('${cfg.trunc}', c.created_at) ${cmp} d AND c.company_type = 'OFFICE' AND c.logo_url IS NOT NULL AND c.logo_url <> '' AND c.description IS NOT NULL AND c.description <> '' AND c.business_license_url IS NOT NULL AND c.business_license_url <> '') AS done_office,
-          (SELECT COUNT(*) FROM companies c WHERE date_trunc('${cfg.trunc}', c.created_at) ${cmp} d AND c.company_type = 'BOTH' AND c.logo_url IS NOT NULL AND c.logo_url <> '' AND c.description IS NOT NULL AND c.description <> '' AND c.business_license_url IS NOT NULL AND c.business_license_url <> '') AS done_both
+          (SELECT COUNT(*) FROM companies c WHERE date_trunc('${cfg.trunc}', c.created_at) ${cmp} d AND c.logo_url IS NOT NULL AND c.logo_url <> '' AND c.description IS NOT NULL AND c.description <> '' AND c.business_license_path IS NOT NULL AND c.business_license_path <> '') AS done,
+          (SELECT COUNT(*) FROM companies c WHERE date_trunc('${cfg.trunc}', c.created_at) ${cmp} d AND c.company_type = 'STORE' AND c.logo_url IS NOT NULL AND c.logo_url <> '' AND c.description IS NOT NULL AND c.description <> '' AND c.business_license_path IS NOT NULL AND c.business_license_path <> '') AS done_store,
+          (SELECT COUNT(*) FROM companies c WHERE date_trunc('${cfg.trunc}', c.created_at) ${cmp} d AND c.company_type = 'OFFICE' AND c.logo_url IS NOT NULL AND c.logo_url <> '' AND c.description IS NOT NULL AND c.description <> '' AND c.business_license_path IS NOT NULL AND c.business_license_path <> '') AS done_office,
+          (SELECT COUNT(*) FROM companies c WHERE date_trunc('${cfg.trunc}', c.created_at) ${cmp} d AND c.company_type = 'BOTH' AND c.logo_url IS NOT NULL AND c.logo_url <> '' AND c.description IS NOT NULL AND c.description <> '' AND c.business_license_path IS NOT NULL AND c.business_license_path <> '') AS done_both
         FROM ${series} ORDER BY day
       `)
       rows = q.rows
