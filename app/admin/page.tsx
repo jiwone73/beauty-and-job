@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import Link from "next/link";
 import {
-  Users, Briefcase, CheckCircle, Clock,
+  Users, Briefcase, CheckCircle, Clock, Eye,
   TrendingUp, TrendingDown,
   UserCheck, Building2
 } from "lucide-react";
@@ -122,7 +122,7 @@ function TrendCard({
   title, type, subFilter, unit, render, defaultMode,
 }: {
   title: string;
-  type: "signup" | "company" | "apply" | "job" | "completion" | "visit";
+  type: "signup" | "company" | "apply" | "job" | "completion" | "visit" | "company_completion";
   subFilter?: string;
   unit?: string;
   render: (rows: any[], range: string) => React.ReactNode;
@@ -283,6 +283,13 @@ export default function AdminDashboard() {
             icon: Clock, color: "#f59e0b",
             href: "/admin/members/companies?status=pending",
           },
+          {
+            label: "오늘 방문자",
+            value: fmt(c?.today_visitors),
+            unit: "명",
+            sub: "로그인·비로그인 포함",
+            icon: Eye, color: "#7c3aed",
+          },
         ].map((stat) => {
           const inner = (
             <>
@@ -354,7 +361,6 @@ export default function AdminDashboard() {
             label: "전체 이력서",
             value: fmt(indivTab === "STORE" ? c?.total_resumes_store : indivTab === "OFFICE" ? c?.total_resumes_office : c?.total_resumes),
             unit: "건",
-            sub: `공개 ${fmt(indivTab === "STORE" ? c?.public_resumes_store : indivTab === "OFFICE" ? c?.public_resumes_office : c?.public_resumes)}`,
             href: `/admin/members`,
           },
           
@@ -614,6 +620,49 @@ export default function AdminDashboard() {
             );
           }}
         />
+      </div>
+
+      {/* 기업프로필 완성 추이 · 일 방문자 (2열) */}
+      <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <TrendCard title="기업프로필 완성 추이" type="company_completion" unit="개사" defaultMode="cumulative" render={(rows, range) => {
+          const data = rows.map((r: any) => ({
+            day: fmtTrendDay(r.day, range),
+            기업프로필: Number(corpTab === "STORE" ? r.done_store : corpTab === "OFFICE" ? r.done_office : corpTab === "BOTH" ? r.done_both : r.done) || 0,
+          }));
+          return (
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={data} margin={CHART_MARGIN}>
+                <XAxis dataKey="day" tick={{ fontSize: 13 }} />
+                <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
+                <Tooltip formatter={(v) => [`${v}개사`, "기업프로필 완성"]} />
+                <Line type="monotone" dataKey="기업프로필" stroke="#7c3aed" strokeWidth={2.5}
+                  dot={{ fill: "#7c3aed", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          );
+        }} />
+
+        <TrendCard title="일 방문자 수" type="visit" unit="명" render={(rows, range) => {
+          const data = rows.map((r: any) => ({
+            day: fmtTrendDay(r.day, range),
+            전체방문자: Number(r.visitors),
+            로그인회원: Number(r.members),
+          }));
+          return (
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={data} margin={CHART_MARGIN}>
+                <XAxis dataKey="day" tick={{ fontSize: 13 }} />
+                <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="전체방문자" stroke="#5f0080" strokeWidth={2.5}
+                  dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+                <Line type="monotone" dataKey="로그인회원" stroke="#10b981" strokeWidth={2.5}
+                  dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          );
+        }} />
       </div>
 
       {/* 분포 2개 */}
