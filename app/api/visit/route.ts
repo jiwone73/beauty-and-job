@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     if (token) {
       try {
         const p = verifyAccessToken(token)
-        if (p?.owner_type === 'user' && p.sub) userId = p.sub
+        if ((p?.owner_type === 'user' || p?.owner_type === 'company') && p.sub) userId = p.sub
       } catch {}
     }
 
