@@ -4887,6 +4887,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   background: #f5f6fa;
   font-family: var(--font-sans);
 }
+/* 관리자 전체 버튼 평체(weight 400) 통일 — 인라인 굵기까지 덮어씀 */
+.admin-layout button { font-weight: 400 !important; }
 
 /* 사이드바 */
 .admin-sidebar {
