@@ -264,6 +264,7 @@ export default function AdminStoriesPage() {
               placeholder="제목 (선택)"
               style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 8, boxSizing: "border-box" }} />
             <textarea value={form.body} onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
+              spellCheck lang="ko"
               placeholder="발제 내용을 입력하세요. 질문이나 화두를 던지면 댓글이 잘 붙어요."
               rows={4}
               style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
@@ -405,6 +406,7 @@ export default function AdminStoriesPage() {
                         placeholder="제목 (선택)"
                         style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 8, boxSizing: "border-box" }} />
                       <textarea value={edit.body} onChange={(e) => setEdit((s) => ({ ...s, body: e.target.value }))}
+                        spellCheck lang="ko"
                         rows={5}
                         style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, lineHeight: 1.7, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
                       <div style={{ display: "flex", gap: 8 }}>

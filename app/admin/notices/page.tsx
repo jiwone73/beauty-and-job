@@ -137,6 +137,7 @@ export default function AdminNoticesPage() {
           <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
             placeholder="제목" style={{ ...inputStyle, marginBottom: 10 }} />
           <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })}
+            spellCheck lang="ko"
             placeholder="내용" rows={12} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 420, lineHeight: 1.6 }} />
           <button onClick={create} disabled={busy}
             style={{ padding: "10px 20px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
@@ -197,6 +198,7 @@ export default function AdminNoticesPage() {
                     <input value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })}
                       style={{ ...inputStyle, marginBottom: 10 }} />
                     <textarea value={edit.body} onChange={(e) => setEdit({ ...edit, body: e.target.value })}
+                      spellCheck lang="ko"
                       rows={10} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 240, lineHeight: 1.6 }} />
                     <div style={{ display: "flex", gap: 8 }}>
                       <button onClick={() => saveEdit(n.id)} disabled={busy}
