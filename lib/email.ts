@@ -486,13 +486,22 @@ export async function sendJobRecommendationEmail(
 const SUPPORT_FROM = "뷰티워크 고객지원 <support@beautywork.co.kr>";
 
 // 사업/1:1 문의 답변 메일 — 발신 주소를 support@beautywork.co.kr 로 고정
-export async function sendInquiryReplyEmail(to: string, subject: string, bodyText: string) {
+export async function sendInquiryReplyEmail(
+  to: string,
+  subject: string,
+  bodyText: string,
+  attachments?: { filename: string; content: string }[]
+) {
   const esc = bodyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const bodyHtml = esc.replace(/\n/g, "<br/>");
+  const attach = (attachments || [])
+    .filter((a) => a && a.filename && a.content)
+    .map((a) => ({ filename: a.filename, content: Buffer.from(a.content, "base64") }));
   return resend.emails.send({
     from: SUPPORT_FROM,
     to,
     subject,
+    attachments: attach.length ? attach : undefined,
     html: `
       <div style="max-width:560px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
         <div style="padding:20px 0;border-bottom:2px solid #5f0080;">

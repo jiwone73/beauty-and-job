@@ -54,10 +54,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')
   if (authErr) return authErr
-  const { id, to, subject, body } = await req.json()
+  const { id, to, subject, body, attachments } = await req.json()
   if (!id || !to || !subject || !body) return err('BAD_REQUEST', 'id, to, subject, body 필요', 400)
   try {
-    await sendInquiryReplyEmail(to, subject, body)
+    await sendInquiryReplyEmail(to, subject, body, attachments)
   } catch (e: any) {
     return err('EMAIL_SEND_FAILED', e?.message || '메일 발송에 실패했습니다.', 500)
   }

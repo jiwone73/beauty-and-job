@@ -35,6 +35,20 @@ function fmtDate(s: string) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
+async function filesToAttachments(files: File[]) {
+  return Promise.all(
+    files.map(
+      (file) =>
+        new Promise<{ filename: string; content: string }>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve({ filename: file.name, content: String(reader.result).split(",")[1] || "" });
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        })
+    )
+  );
+}
+
 export default function AdminAdsPage() {
   const [items, setItems] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +58,7 @@ export default function AdminAdsPage() {
   const [checked, setChecked] = useState<number[]>([]);
   const [replySubject, setReplySubject] = useState("");
   const [replyBody, setReplyBody] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
 
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
 
@@ -69,6 +84,7 @@ export default function AdminAdsPage() {
     setSelected(item);
     setReplySubject(`[뷰티워크] ${item.type || "광고"} 문의 답변`);
     setReplyBody(`안녕하세요, ${item.contact_name || "고객"}님.\n뷰티워크입니다.\n\n문의 주신 내용에 대해 답변드립니다.\n\n\n\n──────────\n[문의 내용]\n${item.message}`);
+    setFiles([]);
   };
 
   const markDone = async (id: number) => {
@@ -89,17 +105,21 @@ export default function AdminAdsPage() {
   const sendReply = async () => {
     if (!selected?.email) { alert("이메일 주소가 없어 답변을 보낼 수 없습니다."); return; }
     if (!replyBody.trim()) { alert("답변 내용을 입력해 주세요."); return; }
+    const totalSize = files.reduce((sum, f) => sum + f.size, 0);
+    if (totalSize > 3 * 1024 * 1024) { alert("첨부파일 총 용량은 3MB 이하여야 합니다."); return; }
     try {
+      const attachments = await filesToAttachments(files);
       const res = await fetch("/api/admin/ads/inquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
-        body: JSON.stringify({ id: selected.id, to: selected.email, subject: replySubject, body: replyBody }),
+        body: JSON.stringify({ id: selected.id, to: selected.email, subject: replySubject, body: replyBody, attachments }),
       });
       const data = await res.json();
       if (data.success) {
         setSelected((p) => (p ? { ...p, status: "done" } : p));
         setItems((prev) => prev.map((it) => (it.id === selected.id ? { ...it, status: "done" } : it)));
         window.dispatchEvent(new Event("admin:inquiries-changed"));
+        setFiles([]);
         alert("support@beautywork.co.kr에서 답변 메일을 발송했습니다.");
       } else {
         alert(data.error?.message || "메일 발송에 실패했습니다.");
@@ -242,13 +262,24 @@ export default function AdminAdsPage() {
                 <div style={{ flex: "1 1 420px", minWidth: 0, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
                   <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>답변 메일 작성</div>
                   <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
+                    spellCheck lang="ko"
                     style={{ minHeight: "min(68vh, 720px)", resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
+                  <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
+                    <input type="file" multiple
+                      onChange={(e) => setFiles(Array.from(e.target.files || []))}
+                      style={{ fontSize: 13 }} />
+                    {files.length > 0 && (
+                      <span style={{ fontSize: 12, color: "#888" }}>
+                        첨부 {files.length}개 · {(files.reduce((sum, f) => sum + f.size, 0) / 1024 / 1024).toFixed(2)}MB / 3MB
+                      </span>
+                    )}
+                  </div>
                   <button onClick={sendReply}
                     style={{ width: "100%", marginTop: 14, padding: "12px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                     답변 메일 보내기
                   </button>
                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
-                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다.
+                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다. (첨부 총 3MB 이하)
                   </p>
                 </div>
               ) : (
