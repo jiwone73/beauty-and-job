@@ -82,6 +82,14 @@ export async function GET(req: NextRequest) {
         FROM ${series} ORDER BY day
       `)
       rows = q.rows
+    } else if (type === 'visit') {
+      const q = await client.query(`
+        SELECT d::date AS day,
+          (SELECT COUNT(*) FROM site_visits WHERE date_trunc('${cfg.trunc}', visit_date)::date = d::date) AS visitors,
+          (SELECT COUNT(*) FROM site_visits WHERE date_trunc('${cfg.trunc}', visit_date)::date = d::date AND user_id IS NOT NULL) AS members
+        FROM ${series} ORDER BY day
+      `)
+      rows = q.rows
     }
 
     return ok({ type, range, rows })
