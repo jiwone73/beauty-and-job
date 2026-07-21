@@ -103,7 +103,7 @@ function TrendCard({
   title, type, subFilter, unit, render,
 }: {
   title: string;
-  type: "signup" | "company" | "apply" | "job";
+  type: "signup" | "company" | "apply" | "job" | "completion";
   subFilter?: string;
   unit?: string;
   render: (rows: any[], range: string) => React.ReactNode;
@@ -396,6 +396,29 @@ export default function AdminDashboard() {
           );
         }} />
       </div>
+
+      {/* 프로필/이력서 완성 추이 (가입일 기준) */}
+      <TrendCard title="프로필 · 이력서 완성 추이" type="completion" unit="명" render={(rows, range) => {
+        const data = rows.map((r: any) => ({
+          day: fmtTrendDay(r.day, range),
+          프로필: Number(r.profile_done),
+          이력서: Number(r.resume_done),
+        }));
+        return (
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={data} margin={CHART_MARGIN}>
+              <XAxis dataKey="day" tick={{ fontSize: 13 }} />
+              <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="프로필" stroke="#5f0080" strokeWidth={2.5}
+                dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+              <Line type="monotone" dataKey="이력서" stroke="#f59e0b" strokeWidth={2.5}
+                dot={{ fill: "#f59e0b", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        );
+      }} />
 
       {/* 분포 3개 */}
       <div className="admin-dashboard-grid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
