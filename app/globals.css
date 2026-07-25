@@ -11434,3 +11434,11 @@ button,
 [class*="Btn"] {
   font-weight: 400 !important;
 }
+
+/* === 약관·개인정보처리방침: 소제목·표·메타 === */
+.legal-meta { text-align: center; font-size: 13px; color: #999; margin: -12px 0 24px; }
+.legal-subtitle { font-size: 15px; font-weight: 400; color: #1a1a1a; margin: 20px 0 8px; }
+.legal-table-wrap { overflow-x: auto; margin: 12px 0 18px; }
+.legal-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 520px; }
+.legal-table th, .legal-table td { border: 1px solid #ececec; padding: 8px 10px; text-align: left; vertical-align: top; line-height: 1.6; color: #555; }
+.legal-table th { background: #f7f4fb; font-weight: 400; color: #333; white-space: nowrap; }

@@ -574,7 +574,7 @@ function Footer() {
           </nav>
         </div>
         <div style={{ fontSize: 13, color: "#9a9aa3", lineHeight: 2 }}>
-          <div><span style={{ fontWeight: 600, color: "#6b6b73" }}>뷰티워크</span><Sep />대표 : 정용희</div>
+          <div><span style={{ fontWeight: 400, color: "#6b6b73" }}>하이러스</span><Sep />대표 : 김미희</div>
           <div>주소 : 서울특별시 금천구 벚꽃로 40<Sep />전화번호 : </div>
           <div>사업자등록번호 : 824-58-01008<Sep />통신판매업신고번호 : <Sep />유료직업소개사업 등록번호 : <Sep />직업정보제공사업 신고번호 : </div>
         </div>
