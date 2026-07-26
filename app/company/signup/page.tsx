@@ -69,7 +69,7 @@ export default function CompanySignupPage() {
       });
       const data = await res.json();
       if (data.success && data.data?.valid) {
-        if (data.data.skipped) { setBizStatus("skipped"); setBizMsg(""); }
+        if (data.data.skipped) { setBizStatus("skipped"); setBizMsg(data.data.reason || ""); }
         else { setBizStatus("valid"); setBizMsg("정상 영업 중인 사업자로 확인되었습니다."); }
       } else {
         setBizStatus("invalid");
@@ -77,7 +77,7 @@ export default function CompanySignupPage() {
       }
     } catch {
       // 네트워크/타임아웃 → 가입을 막지 않도록 통과(형식만 확인)
-      setBizStatus("skipped"); setBizMsg("");
+      setBizStatus("skipped"); setBizMsg("CLIENT_TIMEOUT");
     } finally {
       clearTimeout(timer);
     }
@@ -308,7 +308,7 @@ export default function CompanySignupPage() {
             </div>
             {bizStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">사업자 정보 확인 중…</p>}
             {bizStatus === "valid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">✓ {bizMsg}</p>}
-            {bizStatus === "skipped" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">형식이 올바른 번호입니다.</p>}
+            {bizStatus === "skipped" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">형식이 올바른 번호입니다.{bizMsg ? ` [${bizMsg}]` : ""}</p>}
             {bizStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">{bizMsg}</p>}
           </div>
 
