@@ -233,8 +233,8 @@ export default function SignupEmailPage() {
                 }`}
               >
                 <span className="text-2xl mb-1">💄</span>
-                <span className="text-sm font-normal">매장·기술직</span>
-                <span className="text-xs mt-0.5 text-center leading-tight">
+                <span className="text-sm md:text-[15px] font-normal">매장·기술직</span>
+                <span className="text-xs md:text-[13px] mt-0.5 text-center leading-tight">
                   뷰티샵 · 에스테틱 · 네일
                 </span>
                 {jobType === "STORE" && (
@@ -255,8 +255,8 @@ export default function SignupEmailPage() {
                 }`}
               >
                 <span className="text-2xl mb-1">🏢</span>
-                <span className="text-sm font-normal">기업·브랜드</span>
-                <span className="text-xs mt-0.5 text-center leading-tight">
+                <span className="text-sm md:text-[15px] font-normal">기업·브랜드</span>
+                <span className="text-xs md:text-[13px] mt-0.5 text-center leading-tight">
                   사무직 · 마케팅 · MD
                 </span>
                 {jobType === "OFFICE" && (
