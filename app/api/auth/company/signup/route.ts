@@ -6,6 +6,7 @@ import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
 import { sendCompanyWelcomeEmail } from '@/lib/email'
+import { verifyBusinessNumber } from '@/lib/business/verify'
 
 // ── 기업 가입 승인 게이트 (드롭인) ───────────────────────────
 // 4단계에서 이 함수 안에 본인인증 + 진위확인을 넣어 통과 시 'ACTIVE' 반환하면 자동승인 전환.
@@ -41,11 +42,13 @@ export async function POST(req: NextRequest) {
   if (cleanBizNum.length !== 10) {
     return err('USER_002', '사업자등록번호는 10자리 숫자입니다.')
   }
+  // 국세청 사업자등록 상태 검증 (키 없으면 형식만 통과)
+  const bizv = await verifyBusinessNumber(cleanBizNum)
+  if (!bizv.valid) {
+    return err('USER_002', bizv.message || '유효하지 않은 사업자등록번호입니다.')
+  }
   if (!['OFFICE', 'STORE', 'BOTH'].includes(company_type)) {
     return err('USER_002', '올바른 기업 유형을 선택해주세요.')
-  }
-  if (!business_license_path) {
-    return err('USER_002', '사업자등록증을 첨부해주세요.')
   }
   if (!agreed_term_ids || agreed_term_ids.length === 0) {
     return err('TERM_001', '필수 약관에 동의해주세요.')
@@ -91,7 +94,7 @@ export async function POST(req: NextRequest) {
         company_name, brand_name || null, business_number, company_type,
         email, phone, passwordHash,
         address || null, website_url || null, description || null,
-        business_license_path, companyStatus
+        business_license_path || null, companyStatus
       ]
     )
     const company = result.rows[0]

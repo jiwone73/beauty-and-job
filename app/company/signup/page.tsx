@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,7 +31,6 @@ export default function CompanySignupPage() {
     passwordConfirm: "",
     address: "",
     website_url: "",
-    business_license_path: "",
   });
   const [showPw, setShowPw] = useState(false);
   const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
@@ -40,8 +39,8 @@ export default function CompanySignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [licenseName, setLicenseName] = useState("");
-  const [licenseUploading, setLicenseUploading] = useState(false);
+  const [bizStatus, setBizStatus] = useState<"idle" | "checking" | "valid" | "invalid">("idle");
+  const [bizMsg, setBizMsg] = useState("");
 
   useEffect(() => {
     fetch("/api/terms")
@@ -53,28 +52,26 @@ export default function CompanySignupPage() {
 
   const update = (k: string, v: string) => setForm({ ...form, [k]: v });
 
-  // 사업자등록증 업로드
-  const handleLicenseUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setLicenseUploading(true);
-    setError("");
+  // 사업자등록번호 국세청 검증
+  const checkBizNumber = async () => {
+    const bno = form.business_number.replace(/\D/g, "");
+    if (bno.length !== 10) { setBizStatus("idle"); setBizMsg(""); return; }
+    setBizStatus("checking"); setBizMsg("");
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/company/signup-license", { method: "POST", body: fd });
+      const res = await fetch("/api/verify/business", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ business_number: bno }),
+      });
       const data = await res.json();
-      if (!data.success) {
-        setError(data.error?.message || "사업자등록증 업로드에 실패했습니다.");
-        return;
+      if (data.success && data.data?.valid) {
+        setBizStatus("valid");
+        setBizMsg(data.data.skipped ? "" : "정상 영업 중인 사업자로 확인되었습니다.");
+      } else {
+        setBizStatus("invalid");
+        setBizMsg(data.data?.message || data.error?.message || "확인할 수 없는 사업자등록번호입니다.");
       }
-      setForm((prev) => ({ ...prev, business_license_path: data.data.path }));
-      setLicenseName(file.name);
-    } catch {
-      setError("업로드 중 오류가 발생했습니다.");
-    } finally {
-      setLicenseUploading(false);
-    }
+    } catch { setBizStatus("idle"); setBizMsg(""); }
   };
 
   // 사업자번호 형식 (000-00-00000)
@@ -121,7 +118,7 @@ export default function CompanySignupPage() {
     form.company_name &&
     form.business_number.replace(/\D/g, "").length === 10 &&
     form.company_type &&
-    form.business_license_path &&
+    bizStatus !== "invalid" &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
     emailStatus !== "taken" &&
     form.phone.replace(/\D/g, "").length >= 9 &&
@@ -280,28 +277,16 @@ export default function CompanySignupPage() {
               className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]" />
           </div>
 
-          <div className="mb-3">
+          <div className="mb-4">
             <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">사업자등록번호 *</label>
             <input type="text" value={form.business_number}
-              onChange={(e) => update("business_number", formatBizNum(e.target.value))}
+              onChange={(e) => { update("business_number", formatBizNum(e.target.value)); setBizStatus("idle"); setBizMsg(""); }}
+              onBlur={checkBizNumber}
               placeholder="000-00-00000"
               className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]" />
-          </div>
-
-          {/* 사업자등록증 */}
-          <div className="mb-4">
-            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">사업자등록증 *</label>
-            <label className="flex items-center justify-between gap-2 w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] cursor-pointer hover:border-[#5f0080]">
-              <span className={`truncate ${form.business_license_path ? "text-[#1a1a1a]" : "text-[#9a9a9a]"}`}>
-                {licenseUploading ? "업로드 중..." : (licenseName || "이미지 또는 PDF 첨부")}
-              </span>
-              <span className="shrink-0 text-[13px] md:text-[14px] text-[#5f0080] font-normal">
-                {form.business_license_path ? "변경" : "파일 선택"}
-              </span>
-              <input type="file" accept="image/*,application/pdf" className="hidden"
-                onChange={handleLicenseUpload} disabled={licenseUploading} />
-            </label>
-            <p className="text-[12px] md:text-[13px] text-[#9a9a9a] mt-1.5">JPG·PNG·WebP·PDF · 최대 5MB · 관리자 승인 확인용</p>
+            {bizStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[13px] text-[#999]">사업자 정보 확인 중…</p>}
+            {bizStatus === "valid" && bizMsg && <p className="mt-1.5 text-[12px] md:text-[13px] text-[#1a8a4a]">{bizMsg}</p>}
+            {bizStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[13px] text-red-500">{bizMsg}</p>}
           </div>
 
           {/* 담당자 정보 */}
