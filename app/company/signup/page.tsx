@@ -114,6 +114,17 @@ export default function CompanySignupPage() {
     }
   };
 
+  // 사업자등록번호 체크섬 검증 (국세청 공식 알고리즘, API 없이 즉시 판별)
+  const isValidBizNo = (num: string) => {
+    const n = (num || "").replace(/\D/g, "");
+    if (n.length !== 10) return false;
+    const w = [1, 3, 7, 1, 3, 7, 1, 3, 5];
+    let sum = 0;
+    for (let i = 0; i < 9; i++) sum += parseInt(n[i], 10) * w[i];
+    sum += Math.floor((parseInt(n[8], 10) * 5) / 10);
+    return (10 - (sum % 10)) % 10 === parseInt(n[9], 10);
+  };
+
   // 사업자번호 형식 (000-00-00000)
   const formatBizNum = (v: string) => {
     const d = v.replace(/\D/g, "").slice(0, 10);
@@ -326,7 +337,10 @@ export default function CompanySignupPage() {
                   const f = formatBizNum(e.target.value);
                   update("business_number", f);
                   const d = f.replace(/\D/g, "");
-                  if (d.length === 10) { checkBizNumber(d); }
+                  if (d.length === 10) {
+                    if (isValidBizNo(d)) { checkBizNumber(d); }
+                    else { setBizStatus("invalid"); setBizMsg("유효하지 않은 사업자등록번호입니다."); }
+                  }
                   else if (d.length === 0) { setBizStatus("idle"); setBizMsg(""); }
                   else { setBizStatus("invalid"); setBizMsg("올바른 사업자등록번호를 입력해주세요."); }
                 }}

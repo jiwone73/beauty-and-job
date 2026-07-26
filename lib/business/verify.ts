@@ -14,9 +14,19 @@ export type BizVerify = {
   reason?: string;     // (임시 진단용) skip 사유
 };
 
+function isValidBizChecksum(n: string): boolean {
+  if (n.length !== 10) return false;
+  const w = [1, 3, 7, 1, 3, 7, 1, 3, 5];
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(n[i], 10) * w[i];
+  sum += Math.floor((parseInt(n[8], 10) * 5) / 10);
+  return (10 - (sum % 10)) % 10 === parseInt(n[9], 10);
+}
+
 export async function verifyBusinessNumber(input: string): Promise<BizVerify> {
   const bno = (input || "").replace(/\D/g, "");
   if (bno.length !== 10) return { valid: false, message: "사업자등록번호는 10자리 숫자입니다." };
+  if (!isValidBizChecksum(bno)) return { valid: false, message: "유효하지 않은 사업자등록번호입니다." };
   if (!KEY) return { valid: true, skipped: true, reason: "NO_KEY" };
 
   let lastReason = "UNKNOWN";
