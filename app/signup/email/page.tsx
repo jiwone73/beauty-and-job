@@ -210,10 +210,10 @@ export default function SignupEmailPage() {
         <div className="w-full max-w-[420px]">
           {/* 로고 */}
           <div className="flex justify-center mb-6">
-            <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
+            <Link href="/" className="logo auth-logo"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
 
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-8">
+          <h1 className="text-[20px] md:text-[24px] font-normal text-[#1a1a1a] text-center mb-8">
             회원가입
           </h1>
 

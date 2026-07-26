@@ -11442,3 +11442,6 @@ button,
 .legal-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 520px; }
 .legal-table th, .legal-table td { border: 1px solid #ececec; padding: 8px 10px; text-align: left; vertical-align: top; line-height: 1.6; color: #555; }
 .legal-table th { background: #f7f4fb; font-weight: 400; color: #333; white-space: nowrap; }
+
+/* 회원가입 페이지 로고 — 메인 헤더와 동일 크기(PC 36px, 기본 32px, ≤380 100px폭) */
+@media (min-width: 769px) { .auth-logo img { height: 36px !important; width: auto !important; } }
