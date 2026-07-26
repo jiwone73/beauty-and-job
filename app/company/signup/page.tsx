@@ -39,7 +39,7 @@ export default function CompanySignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [bizStatus, setBizStatus] = useState<"idle" | "checking" | "valid" | "invalid">("idle");
+  const [bizStatus, setBizStatus] = useState<"idle" | "checking" | "valid" | "invalid" | "skipped">("idle");
   const [bizMsg, setBizMsg] = useState("");
 
   useEffect(() => {
@@ -68,16 +68,15 @@ export default function CompanySignupPage() {
       });
       const data = await res.json();
       if (data.success && data.data?.valid) {
-        setBizStatus("valid");
-        setBizMsg(data.data.skipped ? "사용 가능한 사업자등록번호입니다." : "정상 영업 중인 사업자로 확인되었습니다.");
+        if (data.data.skipped) { setBizStatus("skipped"); setBizMsg(""); }
+        else { setBizStatus("valid"); setBizMsg("정상 영업 중인 사업자로 확인되었습니다."); }
       } else {
         setBizStatus("invalid");
         setBizMsg(data.data?.message || data.error?.message || "확인할 수 없는 사업자등록번호입니다.");
       }
     } catch {
-      // 네트워크/타임아웃 → 가입을 막지 않도록 통과 처리
-      setBizStatus("valid");
-      setBizMsg("사용 가능한 사업자등록번호입니다.");
+      // 네트워크/타임아웃 → 가입을 막지 않도록 통과(형식만 확인)
+      setBizStatus("skipped"); setBizMsg("");
     } finally {
       clearTimeout(timer);
     }
@@ -301,6 +300,7 @@ export default function CompanySignupPage() {
               className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
             {bizStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">사업자 정보 확인 중…</p>}
             {bizStatus === "valid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">✓ {bizMsg}</p>}
+            {bizStatus === "skipped" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">형식이 올바른 번호입니다.</p>}
             {bizStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-red-500">{bizMsg}</p>}
           </div>
 
