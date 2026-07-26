@@ -199,7 +199,7 @@ export default function SignupEmailPage() {
       <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-1 p-2 text-[14px] text-[#6b6b6b]"
+          className="flex items-center gap-1 p-2 text-[14px] md:text-[15px] text-[#6b6b6b]"
         >
           <ChevronLeft size={18} />
           <span>취소하고 돌아가기</span>
@@ -213,7 +213,7 @@ export default function SignupEmailPage() {
             <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
 
-          <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-8">
+          <h1 className="text-[22px] md:text-[26px] font-bold text-[#1a1a1a] text-center mb-8">
             회원가입
           </h1>
 
@@ -269,39 +269,39 @@ export default function SignupEmailPage() {
               </button>
             </div>
             {jobType === "" && (
-              <p className="text-[12px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
+              <p className="text-[12px] md:text-[13px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
             )}
           </div>
           {/* 이메일 */}
           <div className="mb-4">
-            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-red-500">*</span></label>
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-red-500">*</span></label>
             <input
               type="email"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setEmailStatus("idle"); }}
               onBlur={checkEmailDup}
               placeholder="이메일을 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
             />
-            {emailStatus === "checking" && <p className="mt-1.5 text-[12px] text-[#999]">중복 확인 중…</p>}
-            {emailStatus === "ok" && <p className="mt-1.5 text-[12px] text-[#1a8a4a]">사용 가능한 이메일입니다.</p>}
-            {emailStatus === "taken" && <p className="mt-1.5 text-[12px] text-red-500">이미 가입된 이메일입니다.</p>}
-            {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] text-red-500">올바른 이메일 형식이 아닙니다.</p>}
+            {emailStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[13px] text-[#999]">중복 확인 중…</p>}
+            {emailStatus === "ok" && <p className="mt-1.5 text-[12px] md:text-[13px] text-[#1a8a4a]">사용 가능한 이메일입니다.</p>}
+            {emailStatus === "taken" && <p className="mt-1.5 text-[12px] md:text-[13px] text-red-500">이미 가입된 이메일입니다.</p>}
+            {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[13px] text-red-500">올바른 이메일 형식이 아닙니다.</p>}
           </div>
           {/* 이름 */}
           <div className="mb-4">
-            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">이름 <span className="text-red-500">*</span></label>
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">이름 <span className="text-red-500">*</span></label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="이름을 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
             />
           </div>
           {/* 휴대폰 번호 + 인증 */}
           <div className="mb-4">
-            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">휴대폰 번호 <span className="text-red-500">*</span></label>
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">휴대폰 번호 <span className="text-red-500">*</span></label>
             <div className="flex gap-2">
               <input
                 type="tel"
@@ -309,13 +309,13 @@ export default function SignupEmailPage() {
                 onChange={(e) => { setPhone(formatPhone(e.target.value)); setPhoneVerified(false); setCodeSent(false); }}
                 placeholder="(예시) 010-1234-5678"
                 disabled={phoneVerified}
-                className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080] disabled:bg-[#f5f5f5]"
+                className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080] disabled:bg-[#f5f5f5]"
               />
               <button
                 type="button"
                 onClick={handleSendCode}
                 disabled={sending || phoneVerified || phone.replace(/\D/g, "").length < 10}
-                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] font-semibold border border-[#5f0080] text-[#5f0080] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition"
+                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[14px] font-semibold border border-[#5f0080] text-[#5f0080] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition"
               >
                 {phoneVerified ? "인증완료" : codeSent ? "재전송" : sending ? "전송중" : "인증번호 받기"}
               </button>
@@ -329,13 +329,13 @@ export default function SignupEmailPage() {
                   value={phoneCode}
                   onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   placeholder="인증번호 6자리"
-                  className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
+                  className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
                 />
                 <button
                   type="button"
                   onClick={handleVerifyCode}
                   disabled={verifying || phoneCode.length < 6}
-                  className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] font-semibold bg-[#5f0080] text-white disabled:opacity-40 hover:opacity-90 transition"
+                  className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[14px] font-semibold bg-[#5f0080] text-white disabled:opacity-40 hover:opacity-90 transition"
                 >
                   {verifying ? "확인중" : "확인"}
                 </button>
@@ -343,21 +343,21 @@ export default function SignupEmailPage() {
             )}
 
             {phoneMsg && (
-              <p className={`text-[12px] mt-1.5 ${phoneVerified ? "text-[#10b981]" : "text-[#9a9a9a]"}`}>
+              <p className={`text-[12px] md:text-[13px] mt-1.5 ${phoneVerified ? "text-[#10b981]" : "text-[#9a9a9a]"}`}>
                 {phoneMsg}
               </p>
             )}
           </div>
           {/* 비밀번호 */}
           <div className="mb-2">
-            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-red-500">*</span></label>
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-red-500">*</span></label>
             <div className="relative mb-2">
               <input
                 type={showPw ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호를 입력해주세요"
-                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
+                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
               />
               <button
                 type="button"
@@ -372,13 +372,13 @@ export default function SignupEmailPage() {
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
               placeholder="비밀번호를 다시 한번 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
             />
-            <p className="text-[12px] text-[#9a9a9a] mt-1.5 leading-relaxed">
+            <p className="text-[12px] md:text-[13px] text-[#9a9a9a] mt-1.5 leading-relaxed">
               영문 대소문자, 숫자, 특수문자를 3가지 이상으로 조합해 8자 이상 16자 이하로 입력해주세요.
             </p>
             {passwordConfirm && password !== passwordConfirm && (
-              <p className="text-[12px] text-[#e74c3c] mt-1">비밀번호가 일치하지 않습니다.</p>
+              <p className="text-[12px] md:text-[13px] text-[#e74c3c] mt-1">비밀번호가 일치하지 않습니다.</p>
             )}
           </div>
           {/* 약관 동의 */}
@@ -390,12 +390,12 @@ export default function SignupEmailPage() {
                 onChange={toggleAll}
                 className="w-4 h-4 accent-[#5f0080]"
               />
-              <span className="font-semibold text-[14px]">전체 동의</span>
+              <span className="font-semibold text-[14px] md:text-[15px]">전체 동의</span>
             </label>
             <div className="space-y-2 ml-1">
               {terms.map((term) => (
                 <div key={term.id}>
-                  <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#3a3a3a]">
+                  <label className="flex items-center gap-2 cursor-pointer text-[13px] md:text-[14px] text-[#3a3a3a]">
                     <input
                       type="checkbox"
                       checked={!!agreed[term.id]}
@@ -416,7 +416,7 @@ export default function SignupEmailPage() {
                     </span>
                   </label>
                   {term.id === "fb392275-4dc3-45cd-ad26-c59b3e571cee" && (
-                    <p className="text-[12px] text-[#9a9a9a] ml-6 mt-0.5 leading-snug">
+                    <p className="text-[12px] md:text-[13px] text-[#9a9a9a] ml-6 mt-0.5 leading-snug">
                       내 직무·지역에 맞는 공고를 이메일로 받아보려면 체크해 주세요.
                     </p>
                   )}
@@ -426,7 +426,7 @@ export default function SignupEmailPage() {
           </div>
 
           {error && (
-            <p className="text-[13px] text-[#e74c3c] mt-4 text-center">{error}</p>
+            <p className="text-[13px] md:text-[14px] text-[#e74c3c] mt-4 text-center">{error}</p>
           )}
 
           {/* 가입하기 버튼 */}
