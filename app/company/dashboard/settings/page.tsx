@@ -50,6 +50,13 @@ export default function CompanySettingsPage() {
   const [withdrawing, setWithdrawing] = useState(false);
   const [withdrawPw, setWithdrawPw] = useState("");
   const [showPw, setShowPw] = useState(false);
+  const [origPhone, setOrigPhone] = useState("");
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [phoneCodeSent, setPhoneCodeSent] = useState(false);
+  const [phoneCode, setPhoneCode] = useState("");
+  const [phoneSending, setPhoneSending] = useState(false);
+  const [phoneVerifying, setPhoneVerifying] = useState(false);
+  const [phoneMsg, setPhoneMsg] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -75,6 +82,7 @@ export default function CompanySettingsPage() {
           region_sido: (res.data as any).region_sido || "",
           region_sigungu: (res.data as any).region_sigungu || "",
         });
+        setOrigPhone((res.data as any).phone || "");
       } catch (e) {
         console.error("[load company]", e);
       } finally {
@@ -290,6 +298,30 @@ export default function CompanySettingsPage() {
     }
   };
 
+  const handleSendPhoneCode = async () => {
+    const clean = form.phone.replace(/\D/g, "");
+    if (clean.length < 10) { setPhoneMsg("올바른 휴대폰 번호를 입력해주세요."); return; }
+    setPhoneSending(true); setPhoneMsg("");
+    try {
+      const res = await fetch("/api/auth/phone/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: clean, purpose: "signup" }) });
+      const data = await res.json();
+      if (data.success) { setPhoneCodeSent(true); setPhoneMsg(data.data?.dev_code ? `[개발용] 인증번호: ${data.data.dev_code}` : "인증번호를 발송했어요. (3분 이내 입력)"); }
+      else setPhoneMsg(data.error?.message || "발송에 실패했습니다.");
+    } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); } finally { setPhoneSending(false); }
+  };
+
+  const handleVerifyPhoneCode = async () => {
+    const clean = form.phone.replace(/\D/g, "");
+    if (!phoneCode.trim()) { setPhoneMsg("인증번호를 입력해주세요."); return; }
+    setPhoneVerifying(true); setPhoneMsg("");
+    try {
+      const res = await fetch("/api/auth/phone/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: clean, code: phoneCode, purpose: "signup" }) });
+      const data = await res.json();
+      if (data.success) { setPhoneVerified(true); setPhoneMsg("휴대폰 인증이 완료됐어요."); }
+      else setPhoneMsg(data.error?.message || "인증번호가 올바르지 않습니다.");
+    } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); } finally { setPhoneVerifying(false); }
+  };
+
   const handleSave = async () => {
     if (!form.company_name.trim()) {
       alert("기업명은 필수입니다.");
@@ -307,10 +339,16 @@ export default function CompanySettingsPage() {
       alert("담당자 연락처는 필수입니다.");
       return;
     }
+    if (form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && !phoneVerified) {
+      alert("담당자 연락처를 변경하려면 휴대폰 인증을 완료해주세요.");
+      return;
+    }
     setSaving(true);
     try {
       const res = await companyMeApi.update(form);
       setInfo(res.data);
+      setOrigPhone(form.phone);
+      setPhoneVerified(false); setPhoneCodeSent(false); setPhoneCode(""); setPhoneMsg("");
       setSavedMessage("저장되었습니다 ✓");
       setTimeout(() => setSavedMessage(""), 2500);
     } catch (e: any) {
@@ -521,9 +559,34 @@ export default function CompanySettingsPage() {
                 </div>
                 <div className="admin-form-row">
                   <label className="admin-form-label">담당자 연락처<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
-                    value={formatPhone(form.phone)}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input className="admin-form-input" style={{ flex: 1, minWidth: 0 }} placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
+                      value={formatPhone(form.phone)}
+                      onChange={(e) => { setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) }); setPhoneVerified(false); setPhoneCodeSent(false); setPhoneMsg(""); }} />
+                    {form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && (
+                      phoneVerified ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", padding: "0 12px", color: "#10b981", fontSize: 13, whiteSpace: "nowrap" }}>인증완료</span>
+                      ) : (
+                        <button type="button" onClick={handleSendPhoneCode} disabled={phoneSending || form.phone.replace(/\D/g, "").length < 10}
+                          style={{ padding: "0 14px", whiteSpace: "nowrap", borderRadius: 8, border: "1px solid #5f0080", color: "#5f0080", background: "#fff", fontSize: 13, cursor: "pointer" }}>
+                          {phoneCodeSent ? "재전송" : phoneSending ? "전송중" : "인증번호 받기"}
+                        </button>
+                      )
+                    )}
+                  </div>
+                  {form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && phoneCodeSent && !phoneVerified && (
+                    <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                      <input className="admin-form-input" style={{ flex: 1, minWidth: 0 }} placeholder="인증번호 6자리" inputMode="numeric"
+                        value={phoneCode} onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))} />
+                      <button type="button" onClick={handleVerifyPhoneCode} disabled={phoneVerifying || phoneCode.length < 6}
+                        style={{ padding: "0 14px", whiteSpace: "nowrap", borderRadius: 8, border: "none", color: "#fff", background: "#5f0080", fontSize: 13, cursor: "pointer", opacity: phoneVerifying || phoneCode.length < 6 ? 0.4 : 1 }}>
+                        {phoneVerifying ? "확인중" : "확인"}
+                      </button>
+                    </div>
+                  )}
+                  {form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && phoneMsg && (
+                    <p style={{ fontSize: 12, marginTop: 6, color: phoneVerified ? "#10b981" : "#9a9a9a" }}>{phoneMsg}</p>
+                  )}
                 </div>
               </div>
               <div className="admin-form-row">

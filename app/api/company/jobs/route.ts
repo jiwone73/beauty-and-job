@@ -54,12 +54,6 @@ export async function POST(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'company')
   if (authErr) return authErr
 
-  // 기업인증 게이트: 사업자등록증 등록 전에는 공고 게시 불가
-  const licRes = await pool.query('SELECT business_license_path FROM companies WHERE id = $1', [auth!.sub])
-  if (!licRes.rows[0]?.business_license_path) {
-    return err('LICENSE_001', '채용공고를 등록하려면 먼저 사업자등록증을 등록해 기업인증을 완료해주세요.', 403)
-  }
-
   const body = await req.json()
   const {
     title, job_type, job_category_id, description, requirements,
