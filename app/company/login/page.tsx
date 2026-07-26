@@ -58,31 +58,31 @@ export default function CompanyLoginPage() {
           <div className="flex justify-center mb-8">
             <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
-          <h1 className="text-[22px] font-bold text-[#1a1a1a] text-center mb-8">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-8">
             기업회원 로그인
           </h1>
           {/* 이메일 입력 */}
           <div className="mb-3">
-            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">이메일</label>
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">이메일</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="이메일을 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             />
           </div>
           {/* 비밀번호 입력 */}
           <div className="mb-2">
-            <label className="block text-[13px] text-[#6b6b6b] mb-1.5">비밀번호</label>
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">비밀번호</label>
             <div className="relative">
               <input
                 type={showPw ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호를 입력해주세요"
-                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#5f0080]"
+                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
                 onKeyDown={(e) => e.key === "Enter" && handleLogin()}
               />
               <button
@@ -96,18 +96,18 @@ export default function CompanyLoginPage() {
           </div>
           {/* 에러 메시지 */}
           {error && (
-            <p className="text-[13px] text-[#e74c3c] mb-3">{error}</p>
+            <p className="text-[13px] md:text-[14px] text-[#e74c3c] mb-3">{error}</p>
           )}
           {/* 로그인 버튼 */}
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-semibold text-[15px] mt-4 disabled:opacity-50 hover:opacity-90 transition"
+            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-4 disabled:opacity-50 hover:opacity-90 transition"
           >
             {loading ? "로그인 중..." : "로그인"}
           </button>
           {/* 하단 링크 */}
-          <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] text-[#6b6b6b]">
+          <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
             <Link href="/company/signup" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
               기업회원 가입
             </Link>

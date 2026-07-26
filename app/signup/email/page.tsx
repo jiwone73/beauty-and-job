@@ -213,13 +213,13 @@ export default function SignupEmailPage() {
             <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
 
-          <h1 className="text-[22px] md:text-[26px] font-bold text-[#1a1a1a] text-center mb-8">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-8">
             회원가입
           </h1>
 
           {/* 직군 선택 */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-normal text-gray-700 mb-3">
               어떤 채용을 찾고 계신가요? <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -233,7 +233,7 @@ export default function SignupEmailPage() {
                 }`}
               >
                 <span className="text-2xl mb-1">💄</span>
-                <span className="text-sm font-semibold">매장·기술직</span>
+                <span className="text-sm font-normal">매장·기술직</span>
                 <span className="text-xs mt-0.5 text-center leading-tight">
                   뷰티샵 · 에스테틱 · 네일
                 </span>
@@ -255,7 +255,7 @@ export default function SignupEmailPage() {
                 }`}
               >
                 <span className="text-2xl mb-1">🏢</span>
-                <span className="text-sm font-semibold">기업·브랜드</span>
+                <span className="text-sm font-normal">기업·브랜드</span>
                 <span className="text-xs mt-0.5 text-center leading-tight">
                   사무직 · 마케팅 · MD
                 </span>
@@ -315,7 +315,7 @@ export default function SignupEmailPage() {
                 type="button"
                 onClick={handleSendCode}
                 disabled={sending || phoneVerified || phone.replace(/\D/g, "").length < 10}
-                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[14px] font-semibold border border-[#5f0080] text-[#5f0080] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition"
+                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[14px] font-normal border border-[#5f0080] text-[#5f0080] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition"
               >
                 {phoneVerified ? "인증완료" : codeSent ? "재전송" : sending ? "전송중" : "인증번호 받기"}
               </button>
@@ -335,7 +335,7 @@ export default function SignupEmailPage() {
                   type="button"
                   onClick={handleVerifyCode}
                   disabled={verifying || phoneCode.length < 6}
-                  className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[14px] font-semibold bg-[#5f0080] text-white disabled:opacity-40 hover:opacity-90 transition"
+                  className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[14px] font-normal bg-[#5f0080] text-white disabled:opacity-40 hover:opacity-90 transition"
                 >
                   {verifying ? "확인중" : "확인"}
                 </button>
@@ -390,7 +390,7 @@ export default function SignupEmailPage() {
                 onChange={toggleAll}
                 className="w-4 h-4 accent-[#5f0080]"
               />
-              <span className="font-semibold text-[14px] md:text-[15px]">전체 동의</span>
+              <span className="font-normal text-[14px] md:text-[15px]">전체 동의</span>
             </label>
             <div className="space-y-2 ml-1">
               {terms.map((term) => (
@@ -406,7 +406,7 @@ export default function SignupEmailPage() {
                     />
                     <span>
                       <span
-                        className={`font-semibold ${
+                        className={`font-normal ${
                           term.is_required ? "text-[#5f0080]" : "text-[#9a9a9a]"
                         }`}
                       >
@@ -433,7 +433,7 @@ export default function SignupEmailPage() {
           <button
             onClick={handleSubmit}
             disabled={!isFormValid || loading}
-            className="w-full h-[52px] mt-6 bg-[#5f0080] text-white rounded-lg font-semibold text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition"
+            className="w-full h-[52px] mt-6 bg-[#5f0080] text-white rounded-lg font-normal text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition"
           >
             {loading ? "가입 중..." : "가입하기"}
           </button>

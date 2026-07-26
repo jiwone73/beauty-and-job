@@ -226,7 +226,7 @@ export default function CompanySignupPage() {
             <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
 
-          <h1 className="text-[22px] md:text-[26px] font-bold text-[#1a1a1a] text-center mb-2">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-2">
             기업회원 가입
           </h1>
           <p className="text-[13px] md:text-[14px] text-[#6b6b6b] text-center mb-8">
@@ -249,7 +249,7 @@ export default function CompanySignupPage() {
                   }`}
                 >
                   <span className="text-xl mb-1">{t.icon}</span>
-                  <span className="text-[12px] md:text-[13px] font-semibold">{t.label}</span>
+                  <span className="text-[12px] md:text-[13px] font-normal">{t.label}</span>
                   <span className="text-[10px] mt-0.5 text-center leading-tight">{t.desc}</span>
                   {form.company_type === t.value && (
                     <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#5f0080] rounded-full flex items-center justify-center">
@@ -295,7 +295,7 @@ export default function CompanySignupPage() {
               <span className={`truncate ${form.business_license_path ? "text-[#1a1a1a]" : "text-[#9a9a9a]"}`}>
                 {licenseUploading ? "업로드 중..." : (licenseName || "이미지 또는 PDF 첨부")}
               </span>
-              <span className="shrink-0 text-[13px] md:text-[14px] text-[#5f0080] font-semibold">
+              <span className="shrink-0 text-[13px] md:text-[14px] text-[#5f0080] font-normal">
                 {form.business_license_path ? "변경" : "파일 선택"}
               </span>
               <input type="file" accept="image/*,application/pdf" className="hidden"
@@ -306,7 +306,7 @@ export default function CompanySignupPage() {
 
           {/* 담당자 정보 */}
           <div className="mt-6 pt-6 border-t border-[#ececec]">
-            <h2 className="text-[15px] font-semibold mb-3">담당자 정보</h2>
+            <h2 className="text-[15px] font-normal mb-3">담당자 정보</h2>
 
             <div className="mb-3">
               <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">이메일 *</label>
@@ -359,7 +359,7 @@ export default function CompanySignupPage() {
             <label className="flex items-center gap-2 mb-3 cursor-pointer">
               <input type="checkbox" checked={allAgreed} onChange={toggleAll}
                 className="w-4 h-4 accent-[#5f0080]" />
-              <span className="font-semibold text-[14px] md:text-[15px]">전체 동의</span>
+              <span className="font-normal text-[14px] md:text-[15px]">전체 동의</span>
             </label>
             <div className="space-y-2 ml-1">
               {terms.map((term) => (
@@ -368,7 +368,7 @@ export default function CompanySignupPage() {
                     onChange={(e) => setAgreed({ ...agreed, [term.id]: e.target.checked })}
                     className="w-4 h-4 accent-[#5f0080]" />
                   <span>
-                    <span className={`font-semibold ${term.is_required ? "text-[#5f0080]" : "text-[#9a9a9a]"}`}>
+                    <span className={`font-normal ${term.is_required ? "text-[#5f0080]" : "text-[#9a9a9a]"}`}>
                       [{term.is_required ? "필수" : "선택"}]
                     </span>{" "}
                     {term.title}
@@ -381,7 +381,7 @@ export default function CompanySignupPage() {
           {error && <p className="text-[13px] md:text-[14px] text-[#e74c3c] mt-4 text-center">{error}</p>}
 
           <button onClick={handleSubmit} disabled={!isFormValid || loading}
-            className="w-full h-[52px] mt-6 bg-[#5f0080] text-white rounded-lg font-semibold text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition">
+            className="w-full h-[52px] mt-6 bg-[#5f0080] text-white rounded-lg font-normal text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition">
             {loading ? "가입 중..." : "기업회원 가입"}
           </button>
 
