@@ -59,7 +59,7 @@ export default function CompanySignupPage() {
     if (bno.length !== 10) { setBizStatus("invalid"); setBizMsg("올바른 사업자등록번호를 입력해주세요."); return; }
     setBizStatus("checking"); setBizMsg("");
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 6000);
+    const timer = setTimeout(() => ctrl.abort(), 8000);
     try {
       const res = await fetch("/api/verify/business", {
         method: "POST",

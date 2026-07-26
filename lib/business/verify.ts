@@ -3,7 +3,7 @@
 const KEY = process.env.DATAGO_SERVICE_KEY;
 const ENDPOINT = "https://api.odcloud.kr/api/nts-businessman/v1/status";
 const TIMEOUT_MS = 3500;
-const RETRIES = 1; // 5xx(국세청 서버 오류) 시 추가 재시도 횟수
+const RETRIES = 1; // 5xx(국세청 서버 오류)일 때만 추가 재시도. 멈춤/네트워크 오류는 재시도 안 함(대기 최소화).
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export type BizVerify = {
@@ -21,7 +21,7 @@ export async function verifyBusinessNumber(input: string): Promise<BizVerify> {
 
   let lastReason = "UNKNOWN";
   for (let attempt = 0; attempt <= RETRIES; attempt++) {
-    if (attempt > 0) await sleep(500);
+    if (attempt > 0) await sleep(400);
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
     try {
@@ -35,7 +35,7 @@ export async function verifyBusinessNumber(input: string): Promise<BizVerify> {
       if (!res.ok) {
         const body = (await res.text().catch(() => "")).slice(0, 140).replace(/\s+/g, " ");
         lastReason = `HTTP_${res.status}:${body}`;
-        if (res.status >= 500 && attempt < RETRIES) continue; // 국세청 서버 오류 → 재시도
+        if (res.status >= 500 && attempt < RETRIES) continue; // 빠른 5xx만 1회 재시도
         return { valid: true, skipped: true, reason: lastReason };
       }
       const data = await res.json();
@@ -46,8 +46,8 @@ export async function verifyBusinessNumber(input: string): Promise<BizVerify> {
       if (stt.includes("폐업")) return { valid: false, status: stt, message: "폐업된 사업자등록번호입니다." };
       return { valid: true, status: stt };
     } catch (e) {
-      lastReason = `ERR_${(e as Error)?.name || "?"}`;
-      if (attempt < RETRIES) continue;
+      // 멈춤(AbortError)/네트워크 오류는 재시도 없이 즉시 통과 처리
+      return { valid: true, skipped: true, reason: `ERR_${(e as Error)?.name || "?"}` };
     } finally {
       clearTimeout(timer);
     }
