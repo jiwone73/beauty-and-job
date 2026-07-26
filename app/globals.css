@@ -11015,15 +11015,15 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-sidebar-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 0; margin: 0; cursor: pointer; font: inherit; }
 .resume-sidebar-toggle .resume-sidebar-title { width: auto; margin: 0; }
 @media (max-width: 768px) {
-  .resume-sidebar { display: flex; flex-direction: column; align-items: stretch; flex-wrap: nowrap; padding: 16px; }
+  .resume-sidebar { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 16px; }
   .resume-mobile-progress { display: none; }
   /* 완성도 바: 가로 한 줄 → 세로 스택 (가로 스크롤 방지) */
   .resume-completion { flex-direction: column; align-items: stretch; gap: 8px; }
   .resume-completion-head { justify-content: space-between; }
   .resume-completion-bar { max-width: none; width: 100%; }
   .resume-completion-text { white-space: normal; }
-  /* 경력·학력 등 섹션 칩: 한 줄 나열 → 세로 스택 */
-  .resume-sidebar-item { width: 100%; white-space: normal; }
+  /* 섹션 칩: 여러 개씩 줄바꿈(태그형)으로 공간 절약 */
+  .resume-sidebar-item { width: auto; white-space: nowrap; }
 }
 .resume-header-nav { margin-right: auto; font-size: 15px; font-weight: 600; color: #2b2b2b; text-decoration: none; white-space: nowrap; }
 .resume-header-nav:hover { color: #5f0080; }
