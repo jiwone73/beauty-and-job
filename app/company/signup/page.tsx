@@ -295,7 +295,8 @@ export default function CompanySignupPage() {
                   update("business_number", f);
                   const d = f.replace(/\D/g, "");
                   if (d.length === 10) { checkBizNumber(d); }
-                  else { setBizStatus("idle"); setBizMsg(""); }
+                  else if (d.length === 0) { setBizStatus("idle"); setBizMsg(""); }
+                  else { setBizStatus("invalid"); setBizMsg("올바른 사업자등록번호를 입력해주세요."); }
                 }}
                 onBlur={() => checkBizNumber()}
                 placeholder="000-00-00000"
