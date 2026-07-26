@@ -48,6 +48,12 @@ export default function AboutPage() {
           </div>
         </div>
 
+        <div className="info-section">
+          <h2>운영사</h2>
+          <p>뷰티워크는 <strong style={{ fontWeight: 600, color: "#4B4954" }}>하이어스</strong>가 운영하는 뷰티 산업 특화 채용 서비스입니다. 하이어스는 뷰티 업계의 채용대행과 인재 매칭을 전문으로 하는 회사입니다.</p>
+          <p style={{ marginTop: 10, fontSize: 14, color: "#6b6b73" }}>상호 : 하이어스　|　대표 : 김미희</p>
+        </div>
+
         <div className="info-section" style={{ textAlign: "center" }}>
           <Link href="/jobs" style={{ display: "inline-block", padding: "12px 28px", background: "#5f0080", color: "#fff", borderRadius: "10px", fontSize: "15px", fontWeight: 400, textDecoration: "none" }}>
             채용공고 보러가기
