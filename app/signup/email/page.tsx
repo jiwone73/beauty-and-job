@@ -219,7 +219,7 @@ export default function SignupEmailPage() {
 
           {/* 직군 선택 */}
           <div className="mb-6">
-            <label className="block text-[13px] md:text-[15px] font-normal text-gray-700 mb-3">
+            <label className="block text-[13px] md:text-[16px] font-normal text-gray-700 mb-3">
               어떤 채용을 찾고 계신가요? <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -274,7 +274,7 @@ export default function SignupEmailPage() {
           </div>
           {/* 이메일 */}
           <div className="mb-4">
-            <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-red-500">*</span></label>
+            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-red-500">*</span></label>
             <input
               type="email"
               value={email}
@@ -290,7 +290,7 @@ export default function SignupEmailPage() {
           </div>
           {/* 이름 */}
           <div className="mb-4">
-            <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">이름 <span className="text-red-500">*</span></label>
+            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이름 <span className="text-red-500">*</span></label>
             <input
               type="text"
               value={name}
@@ -301,7 +301,7 @@ export default function SignupEmailPage() {
           </div>
           {/* 휴대폰 번호 + 인증 */}
           <div className="mb-4">
-            <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">휴대폰 번호 <span className="text-red-500">*</span></label>
+            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">휴대폰 번호 <span className="text-red-500">*</span></label>
             <div className="flex gap-2">
               <input
                 type="tel"
@@ -350,7 +350,7 @@ export default function SignupEmailPage() {
           </div>
           {/* 비밀번호 */}
           <div className="mb-2">
-            <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-red-500">*</span></label>
+            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-red-500">*</span></label>
             <div className="relative mb-2">
               <input
                 type={showPw ? "text" : "password"}

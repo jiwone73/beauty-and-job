@@ -369,7 +369,7 @@ export default function CompanySignupPage() {
 
           {/* 기업 정보 */}
           <div className="mb-3">
-            <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">회사명 <span className="text-[#e74c3c]">*</span></label>
+            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">회사명 <span className="text-[#e74c3c]">*</span></label>
             <input type="text" value={form.company_name}
               onChange={(e) => update("company_name", e.target.value)}
               placeholder="예) 올리브영"
@@ -377,7 +377,7 @@ export default function CompanySignupPage() {
           </div>
 
           <div className="mb-3">
-            <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">브랜드명 (선택)</label>
+            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">브랜드명 (선택)</label>
             <input type="text" value={form.brand_name}
               onChange={(e) => update("brand_name", e.target.value)}
               placeholder="대표 브랜드명"
@@ -385,7 +385,7 @@ export default function CompanySignupPage() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">사업자등록번호 <span className="text-[#e74c3c]">*</span></label>
+            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록번호 <span className="text-[#e74c3c]">*</span></label>
             <div className="relative">
               <input type="text" value={form.business_number}
                 onChange={(e) => {
@@ -414,7 +414,7 @@ export default function CompanySignupPage() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">사업자등록증 <span className="text-[#e74c3c]">*</span></label>
+            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록증 <span className="text-[#e74c3c]">*</span></label>
             <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#c9b3e0] rounded-lg text-[13px] md:text-[15px] text-[#5f0080] bg-[#faf7fd] cursor-pointer hover:bg-[#f3ebfb] transition text-center">
               <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={handleLicenseUpload} className="hidden" />
               {licenseUploading ? "업로드 중…" : licenseName ? `첨부됨: ${licenseName}` : "사업자등록증 첨부 (JPG·PNG·WebP·PDF · 최대 5MB)"}
@@ -428,7 +428,7 @@ export default function CompanySignupPage() {
             <h2 className="text-[16px] md:text-[17px] font-normal mb-3">담당자 정보</h2>
 
             <div className="mb-3">
-              <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">휴대폰 <span className="text-[#e74c3c]">*</span></label>
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">휴대폰 <span className="text-[#e74c3c]">*</span></label>
               <div className="flex gap-2">
                 <input type="tel" value={form.phone}
                   onChange={(e) => { update("phone", formatPhone(e.target.value)); setPhoneVerified(false); setCodeSent(false); }}
@@ -460,7 +460,7 @@ export default function CompanySignupPage() {
             </div>
 
             <div className="mb-3">
-              <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-[#e74c3c]">*</span></label>
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-[#e74c3c]">*</span></label>
               <input type="email" value={form.email}
                 onChange={(e) => { update("email", e.target.value); setEmailStatus("idle"); }}
                 onBlur={checkEmailDup}
@@ -473,7 +473,7 @@ export default function CompanySignupPage() {
             </div>
 
             <div className="mb-2">
-              <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-[#e74c3c]">*</span></label>
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-[#e74c3c]">*</span></label>
               <div className="relative mb-2">
                 <input type={showPw ? "text" : "password"} value={form.password}
                   onChange={(e) => update("password", e.target.value)}
