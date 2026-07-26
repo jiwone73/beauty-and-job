@@ -51,6 +51,12 @@ export default function CompanySignupPage() {
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [phoneMsg, setPhoneMsg] = useState("");
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [emailCodeSent, setEmailCodeSent] = useState(false);
+  const [emailCode, setEmailCode] = useState("");
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailVerifying, setEmailVerifying] = useState(false);
+  const [emailVerifyMsg, setEmailVerifyMsg] = useState("");
 
   useEffect(() => {
     fetch("/api/terms")
@@ -227,11 +233,35 @@ export default function CompanySignupPage() {
     bizStatus !== "invalid" &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
     emailStatus !== "taken" &&
+    emailVerified &&
     form.phone.replace(/\D/g, "").length >= 10 &&
     phoneVerified &&
     isPasswordValid(form.password) &&
     form.password === form.passwordConfirm &&
     allRequiredAgreed;
+
+  const handleSendEmailCode = async () => {
+    const email = form.email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setEmailVerifyMsg("올바른 이메일을 입력해주세요."); return; }
+    setEmailSending(true); setEmailVerifyMsg("");
+    try {
+      const res = await fetch("/api/auth/email/send-code", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
+      const data = await res.json();
+      if (data.success) { setEmailCodeSent(true); setEmailVerifyMsg(data.data?.dev_code ? `[개발용] 인증코드: ${data.data.dev_code}` : "인증코드를 메일로 보냈어요. (스팸함도 확인해주세요)"); }
+      else { setEmailVerifyMsg(data.error?.message || "발송에 실패했습니다."); if ((data.error?.message || "").includes("이미 가입")) setEmailStatus("taken"); }
+    } catch { setEmailVerifyMsg("네트워크 오류가 발생했습니다."); } finally { setEmailSending(false); }
+  };
+
+  const handleVerifyEmailCode = async () => {
+    if (!emailCode.trim()) { setEmailVerifyMsg("인증코드를 입력해주세요."); return; }
+    setEmailVerifying(true); setEmailVerifyMsg("");
+    try {
+      const res = await fetch("/api/auth/email/verify-code", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: form.email.trim(), code: emailCode }) });
+      const data = await res.json();
+      if (data.success) { setEmailVerified(true); setEmailVerifyMsg("이메일 인증이 완료됐어요."); }
+      else setEmailVerifyMsg(data.error?.message || "인증코드가 올바르지 않습니다.");
+    } catch { setEmailVerifyMsg("네트워크 오류가 발생했습니다."); } finally { setEmailVerifying(false); }
+  };
 
   const checkEmailDup = async () => {
     const v = form.email.trim();
@@ -461,15 +491,36 @@ export default function CompanySignupPage() {
 
             <div className="mb-3">
               <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-[#e74c3c]">*</span></label>
-              <input type="email" value={form.email}
-                onChange={(e) => { update("email", e.target.value); setEmailStatus("idle"); }}
-                onBlur={checkEmailDup}
-                placeholder="hr@company.com"
-                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
+              <div className="flex gap-2">
+                <input type="email" value={form.email}
+                  onChange={(e) => { update("email", e.target.value); setEmailStatus("idle"); setEmailVerified(false); setEmailCodeSent(false); setEmailVerifyMsg(""); }}
+                  onBlur={checkEmailDup}
+                  placeholder="hr@company.com"
+                  disabled={emailVerified}
+                  className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080] disabled:bg-[#f5f5f5]" />
+                <button type="button" onClick={handleSendEmailCode}
+                  disabled={emailSending || emailVerified || emailStatus === "taken" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)}
+                  className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#5f0080] text-[#5f0080] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition">
+                  {emailVerified ? "인증완료" : emailCodeSent ? "재전송" : emailSending ? "전송중" : "인증코드 받기"}
+                </button>
+              </div>
               {emailStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">중복 확인 중…</p>}
-              {emailStatus === "ok" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">사용 가능한 이메일입니다.</p>}
               {emailStatus === "taken" && <p className="mt-1.5 text-[12px] md:text-[14px] text-red-500">이미 가입된 이메일입니다.</p>}
               {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-red-500">올바른 이메일 형식이 아닙니다.</p>}
+              {emailCodeSent && !emailVerified && (
+                <div className="flex gap-2 mt-2">
+                  <input type="text" inputMode="numeric" value={emailCode}
+                    onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    placeholder="인증코드 6자리"
+                    className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
+                  <button type="button" onClick={handleVerifyEmailCode}
+                    disabled={emailVerifying || emailCode.length < 6}
+                    className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal bg-[#5f0080] text-white disabled:opacity-40 hover:opacity-90 transition">
+                    {emailVerifying ? "확인중" : "확인"}
+                  </button>
+                </div>
+              )}
+              {emailVerifyMsg && <p className={`mt-1.5 text-[12px] md:text-[14px] ${emailVerified ? "text-[#10b981]" : "text-[#9a9a9a]"}`}>{emailVerifyMsg}</p>}
             </div>
 
             <div className="mb-2">
