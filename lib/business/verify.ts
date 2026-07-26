@@ -1,6 +1,6 @@
 // 국세청 사업자등록 상태조회(data.go.kr / odcloud.kr)로 사업자번호 검증
 // env DATAGO_SERVICE_KEY = data.go.kr '디코딩' 인증키. 없거나 API 오류면 형식검증만 하고 통과(fail-open).
-const KEY = process.env.DATAGO_SERVICE_KEY;
+const KEY = process.env.DATAGO_SERVICE_KEY?.trim();
 const ENDPOINT = "https://api.odcloud.kr/api/nts-businessman/v1/status";
 const TIMEOUT_MS = 3500;
 const RETRIES = 1; // 5xx(국세청 서버 오류)일 때만 추가 재시도. 멈춤/네트워크 오류는 재시도 안 함(대기 최소화).

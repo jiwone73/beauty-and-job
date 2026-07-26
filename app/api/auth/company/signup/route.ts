@@ -42,6 +42,9 @@ export async function POST(req: NextRequest) {
   if (cleanBizNum.length !== 10) {
     return err('USER_002', '사업자등록번호는 10자리 숫자입니다.')
   }
+  if (!business_license_path) {
+    return err('USER_002', '사업자등록증을 첨부해주세요.')
+  }
   // 국세청 사업자등록 상태 검증 (키 없으면 형식만 통과)
   const bizv = await verifyBusinessNumber(cleanBizNum)
   if (!bizv.valid) {

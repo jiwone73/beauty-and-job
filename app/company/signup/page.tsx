@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,6 +25,7 @@ export default function CompanySignupPage() {
     brand_name: "",
     business_number: "",
     company_type: "",
+    business_license_path: "",
     email: "",
     phone: "",
     password: "",
@@ -41,6 +42,9 @@ export default function CompanySignupPage() {
   const [submitted, setSubmitted] = useState(false);
   const [bizStatus, setBizStatus] = useState<"idle" | "checking" | "valid" | "invalid" | "skipped">("idle");
   const [bizMsg, setBizMsg] = useState("");
+  const [licenseName, setLicenseName] = useState("");
+  const [licenseUploading, setLicenseUploading] = useState(false);
+  const [licenseError, setLicenseError] = useState("");
 
   useEffect(() => {
     fetch("/api/terms")
@@ -80,6 +84,33 @@ export default function CompanySignupPage() {
       setBizStatus("skipped"); setBizMsg("CLIENT_TIMEOUT");
     } finally {
       clearTimeout(timer);
+    }
+  };
+
+  // 사업자등록증 업로드 (가입 시점, 비인증)
+  const handleLicenseUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLicenseError("");
+    const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp", "application/pdf"];
+    if (!allowed.includes(file.type)) { setLicenseError("JPG, PNG, WebP, PDF 파일만 가능합니다."); return; }
+    if (file.size > 5 * 1024 * 1024) { setLicenseError("파일 크기는 5MB 이하여야 합니다."); return; }
+    setLicenseUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/company/signup-license", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.success && data.data?.path) {
+        setForm((prev) => ({ ...prev, business_license_path: data.data.path }));
+        setLicenseName(file.name);
+      } else {
+        setLicenseError(data.error?.message || "업로드에 실패했습니다.");
+      }
+    } catch {
+      setLicenseError("업로드 중 오류가 발생했습니다.");
+    } finally {
+      setLicenseUploading(false);
     }
   };
 
@@ -127,6 +158,7 @@ export default function CompanySignupPage() {
     form.company_name &&
     form.business_number.replace(/\D/g, "").length === 10 &&
     form.company_type &&
+    form.business_license_path &&
     bizStatus !== "invalid" &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
     emailStatus !== "taken" &&
@@ -311,6 +343,16 @@ export default function CompanySignupPage() {
             {bizStatus === "valid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">✓ {bizMsg}</p>}
             {bizStatus === "skipped" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">형식이 올바른 번호입니다.{bizMsg ? ` [${bizMsg}]` : ""}</p>}
             {bizStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">{bizMsg}</p>}
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">사업자등록증 <span className="text-[#e74c3c]">*</span></label>
+            <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#c9b3e0] rounded-lg text-[13px] md:text-[15px] text-[#5f0080] bg-[#faf7fd] cursor-pointer hover:bg-[#f3ebfb] transition text-center">
+              <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={handleLicenseUpload} className="hidden" />
+              {licenseUploading ? "업로드 중…" : licenseName ? `첨부됨: ${licenseName}` : "사업자등록증 첨부 (JPG·PNG·WebP·PDF · 최대 5MB)"}
+            </label>
+            {licenseError && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">{licenseError}</p>}
+            {form.business_license_path && !licenseError && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">✓ 사업자등록증이 첨부되었습니다.</p>}
           </div>
 
           {/* 담당자 정보 */}
