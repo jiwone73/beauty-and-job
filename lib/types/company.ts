@@ -48,6 +48,7 @@ export interface CompanyInfo {
   website_url: string | null;
   representative_name: string | null;
   business_number: string | null;
+  business_license_path: string | null;
   created_at: string;
 }
 

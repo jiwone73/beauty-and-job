@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     `SELECT id, company_name, brand_name, business_number, representative_name, manager_name, company_type,
             email, phone, company_phone, logo_url, cover_images, description, website_url, address, address_detail,
             company_size, founded_year, region_sido, region_sigungu,
-            status, created_at
+            status, business_license_path, created_at
      FROM companies WHERE id = $1`,
     [auth!.sub]
   );
