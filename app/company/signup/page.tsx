@@ -377,7 +377,7 @@ export default function CompanySignupPage() {
           </div>
 
           <div className="mb-3">
-            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">브랜드명 (선택)</label>
+            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">브랜드명</label>
             <input type="text" value={form.brand_name}
               onChange={(e) => update("brand_name", e.target.value)}
               placeholder="대표 브랜드명"
