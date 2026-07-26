@@ -341,7 +341,6 @@ export default function CompanySignupPage() {
             </div>
             {bizStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">사업자 정보 확인 중…</p>}
             {bizStatus === "valid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">✓ {bizMsg}</p>}
-            {bizStatus === "skipped" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">형식이 올바른 번호입니다.{bizMsg ? ` [${bizMsg}]` : ""}</p>}
             {bizStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">{bizMsg}</p>}
           </div>
 
