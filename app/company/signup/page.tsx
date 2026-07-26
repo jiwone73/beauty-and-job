@@ -353,7 +353,7 @@ export default function CompanySignupPage() {
                   }`}
                 >
                   <span className="text-xl mb-1">{t.icon}</span>
-                  <span className="text-[12px] md:text-[15px] font-normal">{t.label}</span>
+                  <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">{t.label}</span>
                   <span className="text-[10px] md:text-[11px] mt-0.5 text-center leading-tight">{t.desc}</span>
                   {form.company_type === t.value && (
                     <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#5f0080] rounded-full flex items-center justify-center">
