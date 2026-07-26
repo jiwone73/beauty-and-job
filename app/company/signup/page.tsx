@@ -55,7 +55,8 @@ export default function CompanySignupPage() {
   // 사업자등록번호 국세청 검증 (10자리 채워지면 자동 호출)
   const checkBizNumber = async (raw?: string) => {
     const bno = (raw ?? form.business_number).replace(/\D/g, "");
-    if (bno.length !== 10) { setBizStatus("idle"); setBizMsg(""); return; }
+    if (bno.length === 0) { setBizStatus("idle"); setBizMsg(""); return; }
+    if (bno.length !== 10) { setBizStatus("invalid"); setBizMsg("올바른 사업자등록번호를 입력해주세요."); return; }
     setBizStatus("checking"); setBizMsg("");
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 6000);
@@ -287,21 +288,28 @@ export default function CompanySignupPage() {
 
           <div className="mb-4">
             <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">사업자등록번호 <span className="text-[#e74c3c]">*</span></label>
-            <input type="text" value={form.business_number}
-              onChange={(e) => {
-                const f = formatBizNum(e.target.value);
-                update("business_number", f);
-                const d = f.replace(/\D/g, "");
-                if (d.length === 10) { checkBizNumber(d); }
-                else { setBizStatus("idle"); setBizMsg(""); }
-              }}
-              onBlur={() => checkBizNumber()}
-              placeholder="000-00-00000"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
+            <div className="relative">
+              <input type="text" value={form.business_number}
+                onChange={(e) => {
+                  const f = formatBizNum(e.target.value);
+                  update("business_number", f);
+                  const d = f.replace(/\D/g, "");
+                  if (d.length === 10) { checkBizNumber(d); }
+                  else { setBizStatus("idle"); setBizMsg(""); }
+                }}
+                onBlur={() => checkBizNumber()}
+                placeholder="000-00-00000"
+                className={`w-full h-[48px] px-4 ${form.business_number ? "pr-10" : ""} border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${bizStatus === "invalid" ? "border-[#e74c3c] focus:border-[#e74c3c]" : "border-[#e0e0e0] focus:border-[#5f0080]"}`} />
+              {form.business_number && (
+                <button type="button" tabIndex={-1}
+                  onClick={() => { update("business_number", ""); setBizStatus("idle"); setBizMsg(""); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-[#d0d0d5] text-white text-[12px] leading-none hover:bg-[#b8b8c0]">×</button>
+              )}
+            </div>
             {bizStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">사업자 정보 확인 중…</p>}
             {bizStatus === "valid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">✓ {bizMsg}</p>}
             {bizStatus === "skipped" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">형식이 올바른 번호입니다.</p>}
-            {bizStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-red-500">{bizMsg}</p>}
+            {bizStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">{bizMsg}</p>}
           </div>
 
           {/* 담당자 정보 */}
