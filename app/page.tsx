@@ -566,7 +566,19 @@ function Footer() {
     <footer style={{ background: "#faf8fc", borderTop: "1px solid #eee", padding: "40px 0 48px", marginTop: 60 }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
-          <Link href="/" className="logo"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
+          <Link href="/" aria-label="하이어스" style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-start", lineHeight: 1, textDecoration: "none" }}>
+            <span style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-1px", color: "#4B4954", display: "inline-flex", alignItems: "flex-end" }}>
+              <span>하이</span>
+              <span style={{ position: "relative", color: "#FA6400" }}>
+                어
+                <svg width="17" height="9" viewBox="0 0 38 20" fill="none" style={{ position: "absolute", left: "50%", top: "-0.5em", transform: "translateX(-50%)", display: "block" }}>
+                  <path d="M4 17 L19 5 L34 17" stroke="#FA6400" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <span>스</span>
+            </span>
+            <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "3px", color: "#9a9aa7", marginTop: 4 }}>HIRE US</span>
+          </Link>
           <nav className="footer-topnav" style={{ display: "flex", flexWrap: "wrap", gap: 26 }}>
             {topNav.map((l) => (
               <Link key={l.href} href={l.href} className="footer-topnav-link" style={{ fontSize: 14, fontWeight: 600, color: "#3a3a3a", textDecoration: "none" }}>{l.label}</Link>
@@ -574,12 +586,12 @@ function Footer() {
           </nav>
         </div>
         <div style={{ fontSize: 13, color: "#9a9aa3", lineHeight: 2 }}>
-          <div><span style={{ fontWeight: 400, color: "#6b6b73" }}>하이러스</span><Sep />대표 : 김미희</div>
+          <div><span style={{ fontWeight: 400, color: "#6b6b73" }}>하이어스</span><Sep />대표 : 김미희</div>
           <div>주소 : <Sep />전화번호 : </div>
           <div>사업자등록번호 : <Sep />통신판매업신고번호 : <Sep />유료직업소개사업 등록번호 : <Sep />직업정보제공사업 신고번호 : </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
-          <span style={{ fontSize: 13, color: "#9a9aa3" }}>© {new Date().getFullYear()} BeautyWork. All rights reserved.</span>
+          <span style={{ fontSize: 13, color: "#9a9aa3" }}>© {new Date().getFullYear()} 하이어스. All rights reserved.</span>
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
             <Link href="/support" style={{ fontSize: 13, color: "#666", textDecoration: "none", whiteSpace: "nowrap" }}>고객센터</Link>
             <Link href="/notice" style={{ fontSize: 13, color: "#666", textDecoration: "none", whiteSpace: "nowrap" }}>공지사항</Link>
