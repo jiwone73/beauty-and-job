@@ -2,6 +2,7 @@
 // env DATAGO_SERVICE_KEY = data.go.kr '디코딩' 인증키. 없거나 API 오류면 형식검증만 하고 통과(fail-open).
 const KEY = process.env.DATAGO_SERVICE_KEY;
 const ENDPOINT = "https://api.odcloud.kr/api/nts-businessman/v1/status";
+const TIMEOUT_MS = 4000;
 
 export type BizVerify = {
   valid: boolean;
@@ -14,12 +15,15 @@ export async function verifyBusinessNumber(input: string): Promise<BizVerify> {
   const bno = (input || "").replace(/\D/g, "");
   if (bno.length !== 10) return { valid: false, message: "사업자등록번호는 10자리 숫자입니다." };
   if (!KEY) return { valid: true, skipped: true };
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
   try {
     const res = await fetch(`${ENDPOINT}?serviceKey=${encodeURIComponent(KEY)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({ b_no: [bno] }),
       cache: "no-store",
+      signal: ctrl.signal,
     });
     if (!res.ok) return { valid: true, skipped: true };
     const data = await res.json();
@@ -31,5 +35,7 @@ export async function verifyBusinessNumber(input: string): Promise<BizVerify> {
     return { valid: true, status: stt };
   } catch {
     return { valid: true, skipped: true };
+  } finally {
+    clearTimeout(timer);
   }
 }
