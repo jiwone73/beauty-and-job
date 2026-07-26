@@ -428,19 +428,6 @@ export default function CompanySignupPage() {
             <h2 className="text-[16px] md:text-[17px] font-normal mb-3">담당자 정보</h2>
 
             <div className="mb-3">
-              <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-[#e74c3c]">*</span></label>
-              <input type="email" value={form.email}
-                onChange={(e) => { update("email", e.target.value); setEmailStatus("idle"); }}
-                onBlur={checkEmailDup}
-                placeholder="hr@company.com"
-                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
-              {emailStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">중복 확인 중…</p>}
-              {emailStatus === "ok" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">사용 가능한 이메일입니다.</p>}
-              {emailStatus === "taken" && <p className="mt-1.5 text-[12px] md:text-[14px] text-red-500">이미 가입된 이메일입니다.</p>}
-              {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-red-500">올바른 이메일 형식이 아닙니다.</p>}
-            </div>
-
-            <div className="mb-3">
               <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">휴대폰 <span className="text-[#e74c3c]">*</span></label>
               <div className="flex gap-2">
                 <input type="tel" value={form.phone}
@@ -470,6 +457,19 @@ export default function CompanySignupPage() {
               {phoneMsg && (
                 <p className={`text-[12px] md:text-[14px] mt-1.5 ${phoneVerified ? "text-[#10b981]" : "text-[#9a9a9a]"}`}>{phoneMsg}</p>
               )}
+            </div>
+
+            <div className="mb-3">
+              <label className="block text-[13px] md:text-[15px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-[#e74c3c]">*</span></label>
+              <input type="email" value={form.email}
+                onChange={(e) => { update("email", e.target.value); setEmailStatus("idle"); }}
+                onBlur={checkEmailDup}
+                placeholder="hr@company.com"
+                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
+              {emailStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">중복 확인 중…</p>}
+              {emailStatus === "ok" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">사용 가능한 이메일입니다.</p>}
+              {emailStatus === "taken" && <p className="mt-1.5 text-[12px] md:text-[14px] text-red-500">이미 가입된 이메일입니다.</p>}
+              {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-red-500">올바른 이메일 형식이 아닙니다.</p>}
             </div>
 
             <div className="mb-2">
