@@ -39,12 +39,22 @@ export async function POST(req: NextRequest) {
     )
     if (dupRes.rowCount && dupRes.rowCount > 0) {
       const exists = dupRes.rows[0]
+      await client.query('ROLLBACK')
       if (exists.email === email) {
         return err('USER_001', '이미 가입된 이메일입니다.', 409)
       }
       if (exists.phone === phone) {
         return err('USER_001', '이미 가입된 전화번호입니다.', 409)
       }
+    }
+    // 이메일은 기업(companies) 계정과도 중복 불가
+    const compDupRes = await client.query(
+      `SELECT 1 FROM companies WHERE email = $1 LIMIT 1`,
+      [email]
+    )
+    if (compDupRes.rowCount && compDupRes.rowCount > 0) {
+      await client.query('ROLLBACK')
+      return err('USER_001', '이미 가입된 이메일입니다.', 409)
     }
     const passwordHash = await bcrypt.hash(password, 10)
 

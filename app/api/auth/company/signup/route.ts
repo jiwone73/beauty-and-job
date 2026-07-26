@@ -76,6 +76,15 @@ export async function POST(req: NextRequest) {
         return err('USER_001', '이미 가입된 사업자등록번호입니다.', 409)
       }
     }
+    // 이메일은 개인(users) 계정과도 중복 불가
+    const userDupRes = await client.query(
+      `SELECT 1 FROM users WHERE email = $1 LIMIT 1`,
+      [email]
+    )
+    if (userDupRes.rowCount && userDupRes.rowCount > 0) {
+      await client.query('ROLLBACK')
+      return err('USER_001', '이미 가입된 이메일입니다.', 409)
+    }
 
     // 비밀번호 해시
     const passwordHash = await bcrypt.hash(password, 10)

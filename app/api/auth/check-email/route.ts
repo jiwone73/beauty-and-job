@@ -11,12 +11,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const email = (url.searchParams.get("email") || "").trim();
-  const scope = url.searchParams.get("scope") === "company" ? "company" : "user";
-
   if (!EMAIL_RE.test(email)) return err("VALIDATION_001", "올바른 이메일 형식이 아닙니다.", 400);
 
-  const table = scope === "company" ? "companies" : "users";
-  const r = await pool.query(`SELECT 1 FROM ${table} WHERE email = $1 LIMIT 1`, [email]);
+  // 이메일은 개인(users)·기업(companies) 통틀어 유일해야 함
+  const [rUser, rComp] = await Promise.all([
+    pool.query(`SELECT 1 FROM users WHERE email = $1 LIMIT 1`, [email]),
+    pool.query(`SELECT 1 FROM companies WHERE email = $1 LIMIT 1`, [email]),
+  ]);
+  const taken = (rUser.rowCount ?? 0) > 0 || (rComp.rowCount ?? 0) > 0;
 
-  return ok({ available: (r.rowCount ?? 0) === 0 });
+  return ok({ available: !taken });
 }
