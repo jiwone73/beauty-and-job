@@ -55,6 +55,28 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" }).replace(/\. /g, ".").replace(".", ".");
 }
 
+function CompanyRangeToggle({ range, onChange }: { range: string; onChange: (r: "7d" | "1m" | "3m") => void }) {
+  return (
+    <div style={{ display: "flex", gap: 4 }}>
+      {([["7d", "7일"], ["1m", "1개월"], ["3m", "3개월"]] as const).map(([val, label]) => (
+        <button
+          key={val}
+          onClick={() => onChange(val)}
+          style={{
+            padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600,
+            cursor: "pointer", border: "1px solid #e5e0eb",
+            background: range === val ? "#5f0080" : "#fff",
+            color: range === val ? "#fff" : "#5f0080",
+            transition: "all 0.15s",
+          }}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function CompanyDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
@@ -63,6 +85,8 @@ export default function CompanyDashboard() {
   const [loading, setLoading] = useState(true);
   const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH" | null>(null);
   const [jobTypeTab, setJobTypeTab] = useState<"전체" | "OFFICE" | "STORE">("전체");
+  const [trendRange, setTrendRange] = useState<"7d" | "1m" | "3m">("7d");
+  const [trendRows, setTrendRows] = useState<{ day: string; value: number }[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -102,6 +126,18 @@ export default function CompanyDashboard() {
       .catch(console.error);
   }, [jobTypeTab]);
 
+  // 지원자 추이 (기간 토글) — 독립 fetch
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    const headers = { Authorization: `Bearer ${token}` };
+    const jt = jobTypeTab === "전체" ? "" : `&job_type=${jobTypeTab}`;
+    fetch(`/api/company/dashboard/trend?range=${trendRange}${jt}`, { headers })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setTrendRows(res.data.rows || []); })
+      .catch(console.error);
+  }, [trendRange, jobTypeTab]);
+
   // 통계 카드 데이터
   const statCards = [
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#5f0080", icon: Briefcase, href: "/company/dashboard/jobs" },
@@ -110,7 +146,12 @@ export default function CompanyDashboard() {
     { label: "스크랩한 인재", value: stats?.scrapped_talents ?? 0, unit: "명", color: "#f59e0b", icon: BookmarkCheck, href: "/company/dashboard/talent/scrapped" },
   ];
 
-  const chartData = (stats?.trends ?? []).map((t) => ({ day: t.label, 지원수: t.value }));
+  const fmtTrendDay = (day: string, range: string) => {
+    const dt = new Date(day);
+    const md = `${dt.getMonth() + 1}/${dt.getDate()}`;
+    return range === "7d" ? md : `${md}~`;
+  };
+  const chartData = trendRows.map((t) => ({ day: fmtTrendDay(t.day, trendRange), 지원수: t.value }));
 
   const sb = stats?.status_breakdown ?? { new: 0, reviewing: 0, passed: 0, rejected: 0 };
   const sbTotal = sb.new + sb.reviewing + sb.passed + sb.rejected;
@@ -182,7 +223,8 @@ export default function CompanyDashboard() {
       <div className="company-dashboard-grid">
         <div className="company-card">
           <div className="company-card-head">
-            <h2 className="company-card-title">일별 지원자 추이 (최근 7일)</h2>
+            <h2 className="company-card-title">지원자 추이</h2>
+            <CompanyRangeToggle range={trendRange} onChange={setTrendRange} />
           </div>
           <div style={{ padding: "16px 8px" }}>
             <ResponsiveContainer width="100%" height={200}>
