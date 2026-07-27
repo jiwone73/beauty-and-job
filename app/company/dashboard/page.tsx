@@ -12,6 +12,9 @@ interface Stats {
   today_applications: number;
   scrapped_talents: number;
   trends: { label: string; value: number }[];
+  status_breakdown: { new: number; reviewing: number; passed: number; rejected: number };
+  unviewed: number;
+  job_conversion: { id: string; title: string; view_count: number; application_count: number; rate: number | null }[];
 }
 
 interface JobItem {
@@ -108,6 +111,17 @@ export default function CompanyDashboard() {
   ];
 
   const chartData = (stats?.trends ?? []).map((t) => ({ day: t.label, 지원수: t.value }));
+
+  const sb = stats?.status_breakdown ?? { new: 0, reviewing: 0, passed: 0, rejected: 0 };
+  const sbTotal = sb.new + sb.reviewing + sb.passed + sb.rejected;
+  const statusSegs = [
+    { key: "new", label: "신규", value: sb.new, color: "#5f0080" },
+    { key: "reviewing", label: "검토중", value: sb.reviewing, color: "#f59e0b" },
+    { key: "passed", label: "합격", value: sb.passed, color: "#10b981" },
+    { key: "rejected", label: "불합격", value: sb.rejected, color: "#9ca3af" },
+  ];
+  const unviewed = stats?.unviewed ?? 0;
+  const conversion = stats?.job_conversion ?? [];
 
   return (
     <CompanyLayout activePage="dashboard">
@@ -214,6 +228,90 @@ export default function CompanyDashboard() {
                     </td>
                   </tr>
                 ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      {/* 지원자 처리 현황 + 공고별 전환율 */}
+      <div className="company-dashboard-grid" style={{ marginTop: 16 }}>
+        {/* 지원자 처리 현황 */}
+        <div className="company-card">
+          <div className="company-card-head">
+            <h2 className="company-card-title">지원자 처리 현황</h2>
+            {stats && stats.total_applications > 0 && (
+              <Link href="/company/dashboard/applicants" className="company-card-more">관리하기 →</Link>
+            )}
+          </div>
+          <div style={{ padding: 20 }}>
+            {sbTotal === 0 ? (
+              <div style={{ padding: "28px 0", textAlign: "center", color: "#9a9a9a", fontSize: 14 }}>
+                {loading ? "불러오는 중..." : "아직 지원자가 없습니다"}
+              </div>
+            ) : (
+              <>
+                {unviewed > 0 && (
+                  <Link
+                    href="/company/dashboard/applicants"
+                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", borderRadius: 8, background: "#fee2e2", color: "#991b1b", fontSize: 13.5, fontWeight: 500, textDecoration: "none", marginBottom: 16 }}
+                  >
+                    <span style={{ display: "inline-flex", width: 18, height: 18, borderRadius: "50%", background: "#991b1b", color: "#fff", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>!</span>
+                    <span>아직 열람하지 않은 지원자 <strong>{unviewed}명</strong>이 있어요 →</span>
+                  </Link>
+                )}
+                <div style={{ display: "flex", height: 12, borderRadius: 6, overflow: "hidden", background: "#f1f1f4" }}>
+                  {statusSegs.filter((x) => x.value > 0).map((x) => (
+                    <div key={x.key} title={`${x.label} ${x.value}명`} style={{ width: `${(x.value / sbTotal) * 100}%`, background: x.color }} />
+                  ))}
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px", marginTop: 16 }}>
+                  {statusSegs.map((x) => (
+                    <div key={x.key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ width: 10, height: 10, borderRadius: 3, background: x.color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 13, color: "#666" }}>{x.label}</span>
+                      <span style={{ marginLeft: "auto", fontSize: 15, fontWeight: 700, color: "#1a1a1a" }}>{x.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* 공고별 지원 전환율 */}
+        <div className="company-card">
+          <div className="company-card-head">
+            <h2 className="company-card-title">공고별 지원 전환율</h2>
+          </div>
+          {conversion.length === 0 ? (
+            <EmptyState
+              icon={<Briefcase size={32} />}
+              message={loading ? "불러오는 중..." : "진행중인 공고가 없습니다"}
+            />
+          ) : (
+            <table className="company-table" style={{ width: "100%" }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: "left" }}>공고명</th>
+                  <th>조회수</th>
+                  <th>지원</th>
+                  <th>전환율</th>
+                </tr>
+              </thead>
+              <tbody>
+                {conversion.map((c) => {
+                  const rate = c.rate;
+                  const rateColor = rate === null ? "#bbb" : rate >= 5 ? "#10b981" : rate >= 2 ? "#f59e0b" : "#e05252";
+                  return (
+                    <tr key={c.id}>
+                      <td className="company-td-name" style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "left" }} title={c.title}>{c.title}</td>
+                      <td className="company-td-sub">{c.view_count.toLocaleString()}</td>
+                      <td className="company-td-sub">{c.application_count}</td>
+                      <td style={{ fontWeight: 700, color: rateColor }}>{rate === null ? "—" : `${rate}%`}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}

@@ -55,11 +55,59 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
+  // 지원자 처리 현황 (상태별 분포 + 미열람)
+  const [statusRes, unviewedRes] = await Promise.all([
+    pool.query(
+      `SELECT a.status AS status, COUNT(*)::int AS cnt
+       FROM applications a
+       JOIN job_postings jp ON jp.id = a.job_posting_id
+       WHERE jp.company_id = $1${jobTypeFilter}
+       GROUP BY a.status`,
+      [companyId]
+    ),
+    pool.query(
+      `SELECT COUNT(*)::int AS cnt
+       FROM applications a
+       JOIN job_postings jp ON jp.id = a.job_posting_id
+       WHERE jp.company_id = $1 AND a.viewed_at IS NULL${jobTypeFilter}`,
+      [companyId]
+    ),
+  ])
+
+  const statusMap: Record<string, number> = {}
+  for (const r of statusRes.rows) statusMap[r.status] = r.cnt
+  const status_breakdown = {
+    new: statusMap['APPLIED'] ?? 0,
+    reviewing: statusMap['VIEWED'] ?? 0,
+    passed: statusMap['PASSED'] ?? 0,
+    rejected: statusMap['REJECTED'] ?? 0,
+  }
+
+  // 공고별 지원 전환율 (진행중 공고, 조회수 높은 순)
+  const conversionRes = await pool.query(
+    `SELECT id, title, view_count::int AS view_count, application_count::int AS application_count
+     FROM job_postings
+     WHERE company_id = $1 AND status = 'ACTIVE'${jobTypeFilterNoAlias}
+     ORDER BY view_count DESC, application_count DESC
+     LIMIT 6`,
+    [companyId]
+  )
+  const job_conversion = conversionRes.rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    view_count: r.view_count,
+    application_count: r.application_count,
+    rate: r.view_count > 0 ? Math.round((r.application_count / r.view_count) * 1000) / 10 : null,
+  }))
+
   return ok({
     active_jobs: activeJobs.rows[0].cnt,
     total_applications: totalApplications.rows[0].cnt,
     today_applications: todayApplications.rows[0].cnt,
     scrapped_talents: scrappedTalents.rows[0].cnt,
-    trends: trendsRes.rows
+    trends: trendsRes.rows,
+    status_breakdown,
+    unviewed: unviewedRes.rows[0].cnt,
+    job_conversion,
   })
 }
