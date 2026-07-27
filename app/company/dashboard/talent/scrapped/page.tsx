@@ -194,7 +194,7 @@ export default function ScrappedTalentPage() {
                   const email = t.email as string | null;
                   const phone = t.phone as string | null;
                   return (
-                    <tr key={t.user_id} style={{ cursor: "pointer" }} onClick={() => setSelected(t)}>
+                    <tr key={t.user_id}>
                       <td>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
                           <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
