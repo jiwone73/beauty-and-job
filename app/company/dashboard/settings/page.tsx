@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Save } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
+import { industryGroupsFor } from "@/lib/data/industries";
 import type { CompanyInfo } from "@/lib/types/company";
 
 declare global {
@@ -23,6 +24,7 @@ export default function CompanySettingsPage() {
   const [form, setForm] = useState({
     company_name: "",
     brand_name: "",
+    industry: "",
     description: "",
     website_url: "",
     address: "",
@@ -69,6 +71,7 @@ export default function CompanySettingsPage() {
         setForm({
           company_name: res.data.company_name || "",
           brand_name: res.data.brand_name || "",
+          industry: (res.data as any).industry || "",
           description: res.data.description || "",
           website_url: res.data.website_url || "",
           address: (res.data as any).address || "",
@@ -327,6 +330,10 @@ export default function CompanySettingsPage() {
       alert("기업명은 필수입니다.");
       return;
     }
+    if (!form.industry) {
+      alert("업종은 필수입니다.");
+      return;
+    }
     if (!form.address.trim()) {
       alert("주소는 필수입니다. 주소 검색으로 입력해주세요.");
       return;
@@ -470,11 +477,32 @@ export default function CompanySettingsPage() {
                     onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
                 </div>
                 <div className="admin-form-row">
+                  <label className="admin-form-label">업종<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <select className="admin-form-select" style={{ height: 42, boxSizing: "border-box" }}
+                    value={form.industry}
+                    onChange={(e) => setForm({ ...form, industry: e.target.value })}>
+                    <option value="">선택</option>
+                    {industryGroupsFor(info?.company_type as any).map((g, gi) =>
+                      g.label ? (
+                        <optgroup key={gi} label={g.label}>
+                          {g.items.map((it) => <option key={it} value={it}>{it}</option>)}
+                        </optgroup>
+                      ) : (
+                        g.items.map((it) => <option key={it} value={it}>{it}</option>)
+                      )
+                    )}
+                  </select>
+                </div>
+              </div>
+
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row">
                   <label className="admin-form-label">브랜드명</label>
                   <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
                     value={form.brand_name}
                     onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
                 </div>
+                <div className="admin-form-row" />
               </div>
 
               <div className="admin-form-row-2col" style={{ alignItems: "start" }}>

@@ -42,6 +42,7 @@ export interface CompanyInfo {
   email: string;
   company_name: string;
   brand_name: string | null;
+  industry: string | null;
   company_type: CompanyType;
   logo_url: string | null;
   description: string | null;
