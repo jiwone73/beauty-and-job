@@ -334,6 +334,10 @@ export default function CompanySettingsPage() {
       alert("업종은 필수입니다.");
       return;
     }
+    if (!form.company_size) {
+      alert("사원수는 필수입니다.");
+      return;
+    }
     if (!form.address.trim()) {
       alert("주소는 필수입니다. 주소 검색으로 입력해주세요.");
       return;
@@ -520,14 +524,14 @@ export default function CompanySettingsPage() {
                     </button>
                   )}
                 </div>
-                <div style={{ display: "flex", gap: "10px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                   <input className="admin-form-input" readOnly value={form.address}
                     onClick={handleAddressSearch}
                     placeholder="주소 검색을 눌러주세요"
-                    style={{ flex: "1.55 1 0", minWidth: 0, background: "#fafafa", cursor: "pointer" }} />
+                    style={{ minWidth: 0, cursor: "pointer" }} />
                   <input className="admin-form-input"
                     placeholder="상세주소 (동·호수 등)"
-                    style={{ flex: "1 1 0", minWidth: 0 }}
+                    style={{ minWidth: 0 }}
                     value={form.address_detail}
                     onChange={(e) => setForm({ ...form, address_detail: e.target.value })} />
                 </div>
@@ -538,7 +542,7 @@ export default function CompanySettingsPage() {
 
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
-                  <label className="admin-form-label">사원수</label>
+                  <label className="admin-form-label">사원수<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <select className="admin-form-select"
                     style={{ height: 42, boxSizing: "border-box" }}
                     value={form.company_size}
@@ -627,32 +631,29 @@ export default function CompanySettingsPage() {
       )}
 
       {activeTab === "account" && (
-        <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "800px" }}>
+        <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "400px" }}>
           <div className="company-card">
             <div className="company-card-head">
               <h2 className="company-card-title">계정 정보</h2>
             </div>
             <div className="admin-form-body">
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">이메일</label>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <input className="admin-form-input" value={info?.email || ""} disabled
-                      style={{ background: "#f5f5f5", color: "#888", flex: 1 }} />
-                    <button type="button"
-                      onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailPw(""); setEmailCode(""); setEmailMsg(""); }}
-                      style={{ flexShrink: 0, padding: "0 16px", borderRadius: 8, border: "1.5px solid #c4b5d4", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                      변경
-                    </button>
-                  </div>
-                  <p style={{ fontSize: "12px", color: "#aaa", marginTop: "4px" }}>변경 시 새 이메일로 인증코드가 발송돼요</p>
+              <div className="admin-form-row">
+                <label className="admin-form-label">사업자등록번호</label>
+                <input className="admin-form-input" value={info?.business_number || ""} disabled
+                  style={{ background: "#f5f5f5", color: "#888" }} />
+                <p style={{ fontSize: "12px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
+              </div>
+
+              <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ minWidth: 0 }}>
+                  <label className="admin-form-label" style={{ margin: 0 }}>이메일</label>
+                  <div style={{ fontSize: "14px", color: "#888", marginTop: "3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{info?.email || ""}</div>
                 </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">사업자등록번호</label>
-                  <input className="admin-form-input" value={info?.business_number || ""} disabled
-                    style={{ background: "#f5f5f5", color: "#888" }} />
-                  <p style={{ fontSize: "12px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
-                </div>
+                <button type="button"
+                  onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailPw(""); setEmailCode(""); setEmailMsg(""); }}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", padding: 0, cursor: "pointer", color: "#5f0080", fontSize: "14px", flexShrink: 0, marginLeft: "12px" }}>
+                  변경 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
+                </button>
               </div>
 
               <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
