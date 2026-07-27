@@ -107,7 +107,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
 
       {intro && (
         <div className="rp-section">
-          <h2 className="rp-section-title">소개</h2>
+          <h2 className="rp-section-title">한줄소개</h2>
           <p className="rp-text">{intro}</p>
         </div>
       )}

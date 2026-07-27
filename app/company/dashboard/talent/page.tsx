@@ -397,6 +397,7 @@ export default function TalentPage() {
             <thead>
               <tr>
                 <th>이름</th>
+                <th>한줄소개</th>
                 <th>직군</th>
                 <th>지역</th>
                 <th>최근경력</th>
@@ -411,10 +412,7 @@ export default function TalentPage() {
                 return (
                   <tr key={t.id}>
                     <td>
-                      <div
-                        title={t.intro || undefined}
-                        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, cursor: t.intro ? "help" : "default" }}
-                      >
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
                         <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           {t.avatarUrl
                             ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -430,6 +428,18 @@ export default function TalentPage() {
                           </div>
                         </div>
                       </div>
+                    </td>
+                    <td className="company-td-sub">
+                      {t.intro ? (
+                        <div
+                          title={t.intro}
+                          style={{ ...clamp2, whiteSpace: "normal", width: 220, margin: "0 auto", textAlign: "left", fontSize: 13, color: "#666" }}
+                        >
+                          {t.intro}
+                        </div>
+                      ) : (
+                        <span style={{ color: "#ccc" }}>—</span>
+                      )}
                     </td>
                     <td className="company-td-sub">{t.mainJobGroup || "—"}</td>
                     <td className="company-td-sub">{shortenRegion(t.regionPrefer)}</td>
