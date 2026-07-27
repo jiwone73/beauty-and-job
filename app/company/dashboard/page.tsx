@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Users, Briefcase, BookmarkCheck, TrendingUp, Plus, Inbox } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 interface Stats {
   active_jobs: number;
@@ -15,6 +15,8 @@ interface Stats {
   status_breakdown: { new: number; reviewing: number; passed: number; rejected: number };
   unviewed: number;
   job_conversion: { id: string; title: string; view_count: number; application_count: number; rate: number | null }[];
+  job_group_dist: { name: string; value: number }[];
+  deadline_alerts: { id: string; title: string; deadline: string; days_left: number }[];
 }
 
 interface JobItem {
@@ -163,17 +165,17 @@ export default function CompanyDashboard() {
   ];
   const unviewed = stats?.unviewed ?? 0;
   const conversion = stats?.job_conversion ?? [];
+  const groupDist = stats?.job_group_dist ?? [];
+  const deadlineAlerts = stats?.deadline_alerts ?? [];
+  const PIE_COLORS = ["#5f0080", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
   return (
     <CompanyLayout activePage="dashboard">
       {/* 환영 메시지 */}
       <div style={{ marginBottom: "24px" }}>
-        <h1 style={{ fontSize: "23px", fontWeight: 700, color: "#1a1a1a", marginBottom: "6px" }}>
+        <h1 style={{ fontSize: "23px", fontWeight: 700, color: "#1a1a1a", margin: 0 }}>
           대시보드
         </h1>
-        <p style={{ fontSize: "15px", color: "#888" }}>
-          오늘도 좋은 인재를 만나보세요 👋
-        </p>
       </div>
 
       {/* 기업/매장 토글 (BOTH 회원만) */}
@@ -356,6 +358,76 @@ export default function CompanyDashboard() {
                 })}
               </tbody>
             </table>
+          )}
+        </div>
+      </div>
+
+      {/* 직군별 지원 분포 + 마감 임박 공고 */}
+      <div className="company-dashboard-grid" style={{ marginTop: 16 }}>
+        {/* 직군별 지원 분포 */}
+        <div className="company-card">
+          <div className="company-card-head">
+            <h2 className="company-card-title">직군별 지원 분포</h2>
+          </div>
+          {groupDist.length === 0 ? (
+            <EmptyState icon={<Users size={32} />} message={loading ? "불러오는 중..." : "아직 지원자가 없습니다"} />
+          ) : (
+            <div style={{ padding: "16px 8px", display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ flex: "0 0 46%" }}>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie data={groupDist} cx="50%" cy="50%" innerRadius={45} outerRadius={72} dataKey="value" paddingAngle={3}>
+                      {groupDist.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip formatter={(v) => [`${v}명`, ""]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 10px", fontSize: 13, alignContent: "center" }}>
+                {groupDist.map((d, i) => (
+                  <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+                    <span style={{ width: 9, height: 9, borderRadius: "50%", flexShrink: 0, background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#555" }}>{d.name}</span>
+                    <span style={{ marginLeft: "auto", fontWeight: 700, color: "#1a1a1a" }}>{d.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 마감 임박 공고 */}
+        <div className="company-card">
+          <div className="company-card-head">
+            <h2 className="company-card-title">마감 임박 공고</h2>
+            <Link href="/company/dashboard/jobs" className="company-card-more">전체보기 →</Link>
+          </div>
+          {deadlineAlerts.length === 0 ? (
+            <EmptyState
+              icon={<Briefcase size={32} />}
+              message={loading ? "불러오는 중..." : "마감 임박 공고가 없어요"}
+              hint={loading ? "" : "3일 내 마감되는 공고가 여기 표시돼요"}
+            />
+          ) : (
+            <div style={{ padding: "8px 6px" }}>
+              {deadlineAlerts.map((j) => {
+                const d = j.days_left;
+                const label = d < 0 ? "마감 지남" : d === 0 ? "오늘 마감" : `D-${d}`;
+                const isUrgent = d <= 1;
+                const color = isUrgent ? "#e05252" : "#b8860b";
+                const bg = isUrgent ? "#fee2e2" : "#fef3c7";
+                return (
+                  <Link
+                    key={j.id}
+                    href="/company/dashboard/jobs"
+                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 10px", borderRadius: 8, textDecoration: "none", color: "inherit" }}
+                  >
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, color: "#1a1a1a" }}>{j.title}</span>
+                    <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color, background: bg, borderRadius: 20, padding: "3px 10px" }}>{label}</span>
+                  </Link>
+                );
+              })}
+            </div>
           )}
         </div>
       </div>
