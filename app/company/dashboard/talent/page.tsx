@@ -409,9 +409,12 @@ export default function TalentPage() {
               {talents.map((t) => {
                 const gl = genderLabel(t.gender);
                 return (
-                  <tr key={t.id} style={{ cursor: "pointer" }} onClick={() => setSelected(t)}>
+                  <tr key={t.id}>
                     <td>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                      <div
+                        title={t.intro || undefined}
+                        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, cursor: t.intro ? "help" : "default" }}
+                      >
                         <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           {t.avatarUrl
                             ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
