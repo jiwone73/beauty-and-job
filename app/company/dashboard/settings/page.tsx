@@ -401,7 +401,7 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row-2col">
               <div className="admin-form-row">
                 <label className="admin-form-label">회사 로고</label>
-                <p style={{fontSize:"14px", color:"#888", margin:"0 0 12px"}}>
+                <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
                   공고 상단에 표시되는 대표 이미지예요. 한 번 등록하면 모든 공고에 자동 적용돼요.
                 </p>
                 <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"auto"}}>
@@ -437,7 +437,7 @@ export default function CompanySettingsPage() {
 
               <div className="admin-form-row">
                 <label className="admin-form-label">공고 노출 이미지</label>
-                <p style={{fontSize:"14px", color:"#888", margin:"0 0 12px"}}>
+                <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
                   공고 카드와 상단에 크게 표시되는 대표 비주얼이에요. 매장 사진이나 분위기 이미지를 넣어보세요. 모든 공고에 자동 적용돼요.
                 </p>
                 <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"auto"}}>
