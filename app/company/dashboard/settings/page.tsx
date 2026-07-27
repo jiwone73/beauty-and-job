@@ -44,7 +44,6 @@ export default function CompanySettingsPage() {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [emailStep, setEmailStep] = useState<1 | 2>(1);
   const [newEmail, setNewEmail] = useState("");
-  const [emailPw, setEmailPw] = useState("");
   const [emailCode, setEmailCode] = useState("");
   const [emailBusy, setEmailBusy] = useState(false);
   const [emailMsg, setEmailMsg] = useState("");
@@ -245,10 +244,10 @@ export default function CompanySettingsPage() {
   };
 
   const handleSendEmailCode = async () => {
-    if (!newEmail.trim() || !emailPw) { alert("새 이메일과 현재 비밀번호를 입력해주세요."); return; }
+    if (!newEmail.trim()) { alert("새 이메일 주소를 입력해주세요."); return; }
     setEmailBusy(true); setEmailMsg("");
     try {
-      const res = await companyMeApi.requestEmailChange({ password: emailPw, new_email: newEmail.trim() });
+      const res = await companyMeApi.requestEmailChange({ new_email: newEmail.trim() });
       if (res.success) {
         setEmailStep(2);
         if (res.data?.dev_code) {
@@ -650,7 +649,7 @@ export default function CompanySettingsPage() {
                   <div style={{ fontSize: "14px", color: "#888", marginTop: "3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{info?.email || ""}</div>
                 </div>
                 <button type="button"
-                  onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailPw(""); setEmailCode(""); setEmailMsg(""); }}
+                  onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
                   style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", padding: 0, cursor: "pointer", color: "#5f0080", fontSize: "14px", flexShrink: 0, marginLeft: "12px" }}>
                   변경 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
                 </button>
@@ -679,14 +678,13 @@ export default function CompanySettingsPage() {
       {showEmailModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
           <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 16px" }}>이메일 변경</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 6px" }}>이메일 변경</h3>
+            <p style={{ fontSize: 13, color: "#888", margin: "0 0 16px", lineHeight: 1.5 }}>
+              {emailStep === 1 ? "① 새 이메일 주소를 입력하고 인증코드를 받으세요." : "② 새 이메일로 받은 인증코드를 입력하세요."}
+            </p>
             {emailStep === 1 ? (
-              <>
-                <input type="email" className="admin-form-input" placeholder="새 이메일 주소"
-                  value={newEmail} onChange={(e) => setNewEmail(e.target.value)} style={{ marginBottom: 8 }} />
-                <input type="password" className="admin-form-input" placeholder="현재 비밀번호"
-                  value={emailPw} onChange={(e) => setEmailPw(e.target.value)} style={{ marginBottom: 4 }} />
-              </>
+              <input type="email" className="admin-form-input" placeholder="새 이메일 주소"
+                value={newEmail} onChange={(e) => setNewEmail(e.target.value)} style={{ marginBottom: 4 }} />
             ) : (
               <input className="admin-form-input" placeholder="인증코드 6자리" inputMode="numeric" maxLength={6}
                 value={emailCode} onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))} style={{ marginBottom: 4 }} />
