@@ -374,6 +374,8 @@ export default function JobPostForm({
     } catch { alert("인쇄 준비 중 오류가 발생했습니다."); }
   };
 
+  const lbl: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "#444", marginBottom: 6 };
+  const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   const runParse = async () => {
     if (!parseUrl.trim()) { setParseMsg("URL을 입력해주세요."); return; }
     setNonMember(true); setCompanyId(null);
@@ -409,7 +411,9 @@ export default function JobPostForm({
         career: d.career || f.career,
         type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : f.type),
       }));
-      setParseMsg("✓ 불러왔어요. 드롭다운(직군 등)만 확인·선택하고 등록하세요.");
+      const extraLines = [d.salary ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
+      if (extraLines) setNotes(extraLines);
+      setParseMsg("✓ 불러왔어요. 드롭다운(직군·경력 등)만 확인·선택하고 등록하세요.");
     } catch { setParseMsg("오류가 발생했습니다."); }
     finally { setParsing(false); }
   };
@@ -589,6 +593,25 @@ export default function JobPostForm({
         </div>
       )}
 
+      {mode === "admin" && nonMember && (
+        <div style={{ maxWidth: 1180, margin: "0 auto 16px", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px" }}>
+          <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 14 }}>비회원 기업 정보 <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>· URL 불러오기로 자동 작성돼요</span></div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
+            <div><div style={lbl}>회사명 <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
+            <div><div style={lbl}>브랜드명</div><input style={inp} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="브랜드명 (선택)" /></div>
+            <div><div style={lbl}>업종</div><select style={inp} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
+            <div><div style={lbl}>홈페이지</div><input style={inp} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} placeholder="https:// (선택)" /></div>
+            <div><div style={lbl}>채용 이메일 <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(이메일 중계 시)</span></div><input style={inp} value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="hr@company.com" /></div>
+            <div><div style={lbl}>지원방식</div><select style={inp} value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}><option value="MANAGED">관리자 대행</option><option value="EMAIL">이메일 중계</option><option value="REDIRECT">외부 링크형</option></select></div>
+            {applyMethod === "REDIRECT" && (
+              <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" /></div>
+            )}
+            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>주소</div><input style={inp} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역 (선택)" /></div>
+            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>회사 소개</div><textarea style={{ ...inp, height: "auto", minHeight: 72, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="공고 상세의 '회사 소개'에 표시돼요" /></div>
+          </div>
+        </div>
+      )}
+
       <div className="admin-form-grid jobpost-form">
         {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -603,32 +626,11 @@ export default function JobPostForm({
                   <label className="admin-form-label">기업 선택<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
 
                   {nonMember ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                      <input className="admin-form-input" placeholder="회사명 (필수)"
-                        value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} />
-                      <input className="admin-form-input" placeholder="브랜드명 (선택)"
-                        value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} />
-                      <input className="admin-form-input" placeholder="채용 이메일 (이메일 중계 시 필요)" value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} />
-                      <input className="admin-form-input" placeholder="홈페이지 (선택)" value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} />
-                      <select className="admin-form-select" value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}>
-                        <option value="">업종 선택 (선택)</option>
-                        {industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (
-                          <option key={it} value={it}>{it}</option>
-                        ))}
-                      </select>
-                      <input className="admin-form-input" placeholder="회사 주소/지역 (선택)" value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} />
-                      <textarea className="admin-form-textarea" rows={2} placeholder="회사 소개 (선택) — 공고 상세 '회사 소개'에 표시" value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
-                      <select className="admin-form-select" value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}>
-                        <option value="MANAGED">지원방식: 관리자 대행</option>
-                        <option value="EMAIL">지원방식: 이메일 중계</option>
-                        <option value="REDIRECT">지원방식: 외부 링크형</option>
-                      </select>
-                      {applyMethod === "REDIRECT" && (
-                        <input className="admin-form-input" placeholder="외부 지원 URL (필수)" value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} />
-                      )}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: "#5f0080" }}>{newCompanyName || "비회원 기업"}<span style={{ fontSize: 12, fontWeight: 400, color: "#999", marginLeft: 6 }}>· 위 “비회원 기업 정보”에서 입력</span></span>
                       <button type="button"
                         onClick={() => { setNonMember(false); setNewCompanyName(""); setNewBrandName(""); }}
-                        style={{ alignSelf: "flex-start", background: "none", border: "none", color: "#5f0080", fontSize: "13px", fontWeight: 400, cursor: "pointer", padding: 0 }}>
+                        style={{ background: "none", border: "none", color: "#888", fontSize: "13px", cursor: "pointer" }}>
                         ← 회원 기업에서 선택
                       </button>
                     </div>

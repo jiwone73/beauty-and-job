@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     description: ogDesc,
     company_description: "", address: "", industry: "",
     requirements: "", preferred: "", benefits: "", hiring_process: [] as string[],
-    employment_type: "", career: "",
+    employment_type: "", career: "", salary: "", extra_notes: "",
   };
 
   if (process.env.ANTHROPIC_API_KEY) {
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
 반드시 아래 키를 가진 JSON "하나만" 출력해(설명·코드펜스 금지):
-{"company_name","homepage_url","contact_email","title","job_type","location","deadline","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","hiring_process","employment_type","career"}
+{"company_name","homepage_url","contact_email","title","job_type","location","deadline","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","hiring_process","employment_type","career","salary","extra_notes"}
 규칙:
 - job_type: 미용실·네일·피부·속눈썹 등 현장 미용직이면 "STORE", 화장품 브랜드·유통·본사 등 사무직이면 "OFFICE".
 - deadline: "YYYY-MM-DD" 형식 또는 상시/미상이면 "".
@@ -95,6 +95,9 @@ export async function POST(req: NextRequest) {
 - hiring_process: 채용 절차 단계를 문자열 배열로(예: ["서류전형","면접","최종합격"]). 없으면 [].
 - employment_type: "정규직" | "파트타임" | "계약직" 중 하나 또는 "".
 - career: 경력 조건을 짧은 텍스트로(예: "신입", "경력 2년 이상", "경력무관"). 없으면 "".
+- salary: 급여/처우 조건을 텍스트로(예: "월 250만원", "비율 5:5", "면접 후 협의"). 없으면 "".
+- homepage_url: 그 회사 자체의 홈페이지만. 지금 보고 있는 채용사이트(출처) 주소는 넣지 말 것. 회사 홈페이지가 없으면 "".
+- extra_notes: 위 항목에 안 담기는 나머지 정보(근무시간·휴무/근무요일·복리후생·담당자 연락처·기타 안내 등)를 한국어로 항목별 정리(줄바꿈 구분). 없으면 "".
 - 원문 복제는 피하되 내용은 빠짐없이 옮길 것. 우리 드롭다운에 억지로 맞추지 말고 있는 그대로.
 - 모르는 값은 빈 문자열 "".`;
       const user = `URL: ${url}\n호스트: ${hostname}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${text}`;
@@ -115,7 +118,6 @@ export async function POST(req: NextRequest) {
 
   out.source_site = hostname;
   out.source_url = url;
-  if (!out.homepage_url) { try { out.homepage_url = new URL(url).origin; } catch {} }
   if (out.apply_method === "REDIRECT" && !out.external_apply_url) out.external_apply_url = url;
   if (!["STORE", "OFFICE"].includes(out.job_type)) out.job_type = "STORE";
   if (!["REDIRECT", "EMAIL", "MANAGED"].includes(out.apply_method)) out.apply_method = "MANAGED";
