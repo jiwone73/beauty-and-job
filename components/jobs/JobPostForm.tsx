@@ -66,6 +66,8 @@ export default function JobPostForm({
   const [nmPhone, setNmPhone] = useState("");
   const [nmCover, setNmCover] = useState("");
   const [nmCoverUploading, setNmCoverUploading] = useState(false);
+  const [nmManagerName, setNmManagerName] = useState("");
+  const [nmManagerPhone, setNmManagerPhone] = useState("");
   const [parseUrl, setParseUrl] = useState("");
   const [parseText, setParseText] = useState("");
   const [parsing, setParsing] = useState(false);
@@ -567,6 +569,8 @@ export default function JobPostForm({
       apply_method: applyMethod,
       external_apply_url: externalApplyUrl.trim() || null,
       external_contact_email: nmContactEmail.trim() || null,
+      external_contact_name: nmManagerName.trim() || null,
+      external_contact_phone: nmManagerPhone.replace(/\D/g, "") || null,
     };
 
     const company: any = nonMember
@@ -693,6 +697,14 @@ export default function JobPostForm({
           <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>{mode === "admin"
             ? <>URL만, 본문만, 또는 <b>둘 다</b> 넣을 수 있어요. 붙여넣은 본문이 있으면 그 내용을 최우선으로 발췌하고 URL은 회사·링크 정보를 보완해요. 직군 등 드롭다운은 정확히 안 맞을 수 있으니 확인·수정 후 등록하세요.</>
             : <>타 사이트에 올린 공고의 URL이나 본문을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</>}</div>
+          {mode === "admin" && nonMember && (
+            <div style={{ display: "grid", gridTemplateColumns: applyMethod === "REDIRECT" ? "240px 1fr" : "240px", gap: 12, marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb", alignItems: "end" }}>
+              <div><div style={lbl}>지원방식</div><select style={sel} value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}><option value="MANAGED">관리자 대행</option><option value="EMAIL">이메일 중계</option><option value="REDIRECT">외부 링크형</option></select></div>
+              {applyMethod === "REDIRECT" && (
+                <div><div style={lbl}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" /></div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -1167,6 +1179,29 @@ export default function JobPostForm({
             </div>
           </div>
 
+          {/* 채용 담당자 — 외부공고에 채용 이메일이 있으면(또는 이메일 중계 선택 시) 노출 */}
+          {mode === "admin" && nonMember && (nmContactEmail.trim() || applyMethod === "EMAIL") && (
+            <>
+              <h2 className="jobpost-section-title">채용 담당자</h2>
+              <div className="company-card" style={{ overflow: "visible" }}>
+                <div className="admin-form-body">
+                  <div className="admin-form-row">
+                    <label className="admin-form-label">이름</label>
+                    <input className="admin-form-input" value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="담당자명" />
+                  </div>
+                  <div className="admin-form-row">
+                    <label className="admin-form-label">전화번호</label>
+                    <input className="admin-form-input" value={nmManagerPhone} onChange={(e) => setNmManagerPhone(e.target.value)} placeholder="010-0000-0000" inputMode="numeric" />
+                  </div>
+                  <div className="admin-form-row">
+                    <label className="admin-form-label">이메일</label>
+                    <input className="admin-form-input" value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="hr@company.com" />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
           {/* 채용 절차 · 비고 (하단 높이 맞춤용 flex:1) */}
           <h2 className="jobpost-section-title">채용 절차</h2>
           <div className="company-card" style={{ overflow: "visible", flex: 1 }}>
@@ -1303,16 +1338,6 @@ export default function JobPostForm({
             <div><div style={lbl}>설립연도</div><input type="number" min="1900" max={new Date().getFullYear()} style={inp} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} placeholder="예) 2020" /></div>
             <div><div style={lbl}>대표자</div><input style={inp} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="대표자명 (선택)" /></div>
             <div><div style={lbl}>회사 대표번호</div><input style={inp} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} placeholder="02-000-0000 (선택)" /></div>
-          </div>
-
-          <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", margin: "22px 0 4px" }}>지원 설정</div>
-          <div style={{ fontSize: 12, color: "#999", marginBottom: 16 }}>지원자가 어떻게 지원하는지 설정해요</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
-            <div><div style={lbl}>지원방식</div><select style={sel} value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}><option value="MANAGED">관리자 대행</option><option value="EMAIL">이메일 중계</option><option value="REDIRECT">외부 링크형</option></select></div>
-            <div><div style={lbl}>채용 이메일 <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(이메일 중계 시)</span></div><input style={inp} value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="hr@company.com" /></div>
-            {applyMethod === "REDIRECT" && (
-              <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" /></div>
-            )}
           </div>
         </div>
       )}

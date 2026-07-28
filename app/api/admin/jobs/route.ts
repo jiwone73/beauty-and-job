@@ -60,7 +60,8 @@ export async function POST(req: NextRequest) {
     preferred_qualifications, salary_min, salary_max, salary_type,
     location, address, work_type, experience_level, deadline, categories,
     detail_images, hiring_process, notes, benefits, responsibilities, created_by,
-    apply_method, external_apply_url, external_contact_email
+    apply_method, external_apply_url, external_contact_email,
+    external_contact_name, external_contact_phone
   } = body
 
   if (!title || !job_type) return err('JOB_002', '제목과 채용유형은 필수입니다.')
@@ -126,6 +127,8 @@ export async function POST(req: NextRequest) {
     const src = isNonMember ? 'EXTERNAL' : 'NATIVE'
     const extUrl = isNonMember ? ((external_apply_url || '').trim() || null) : null
     const extEmail = isNonMember ? ((external_contact_email || '').trim() || null) : null
+    const extName = isNonMember ? ((external_contact_name || '').trim() || null) : null
+    const extPhone = isNonMember ? ((external_contact_phone || '').replace(/\D/g, '') || null) : null
     if (isNonMember) {
       if (am === 'REDIRECT' && !extUrl) { await client.query('ROLLBACK'); return err('JOB_003', '외부 링크형은 외부 지원 URL이 필요합니다.') }
       if (am === 'EMAIL' && !extEmail) { await client.query('ROLLBACK'); return err('JOB_003', '이메일 중계형은 채용 이메일이 필요합니다.') }
@@ -137,9 +140,10 @@ export async function POST(req: NextRequest) {
          requirements, preferred_qualifications, salary_min, salary_max,
          salary_type, location, address, work_type, experience_level,
          deadline, categories, detail_images, hiring_process, notes, benefits,
-         status, created_by, source, apply_method, external_apply_url, external_contact_email, responsibilities
+         status, created_by, source, apply_method, external_apply_url, external_contact_email, responsibilities,
+         external_contact_name, external_contact_phone
        ) VALUES (
-         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 'ACTIVE', $21, $22, $23, $24, $25, $26
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 'ACTIVE', $21, $22, $23, $24, $25, $26, $27, $28
        ) RETURNING id, title, status, created_at`,
       [
         finalCompanyId, title, job_type, job_category_id || null, description || null,
@@ -151,7 +155,8 @@ export async function POST(req: NextRequest) {
         JSON.stringify(hiring_process || []),
         notes || null, benefits || null,
         created_by || 'admin',
-        src, am, extUrl, extEmail, responsibilities || null
+        src, am, extUrl, extEmail, responsibilities || null,
+        extName, extPhone
       ]
     )
 
