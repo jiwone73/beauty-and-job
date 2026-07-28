@@ -791,20 +791,11 @@ export default function JobPostForm({
               <div className="admin-form-row">
                 <label className="admin-form-label">채용 유형{showTypeToggle && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</label>
                 {showTypeToggle ? (
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    {[{ value: "기업", label: "🏢 기업·브랜드 채용" }, { value: "매장", label: "🏪 매장·살롱 채용" }].map((t) => (
-                      <button key={t.value} type="button"
-                        onClick={() => { setJobGroupType(t.value as "기업" | "매장"); setCategories([]); }}
-                        style={{
-                          flex: 1, padding: "12px", borderRadius: "8px", fontSize: "13px", fontWeight: 400,
-                          border: jobGroupType === t.value ? "2px solid #5f0080" : "2px solid #e0e0e0",
-                          background: jobGroupType === t.value ? "#faf5ff" : "#fff",
-                          color: jobGroupType === t.value ? "#5f0080" : "#888", cursor: "pointer",
-                        }}>
-                        {t.label}
-                      </button>
-                    ))}
-                  </div>
+                  <select className="admin-form-select" value={jobGroupType}
+                    onChange={(e) => { setJobGroupType(e.target.value as "기업" | "매장"); setCategories([]); }}>
+                    <option value="기업">기업·브랜드 채용</option>
+                    <option value="매장">매장·살롱 채용</option>
+                  </select>
                 ) : (
                   <div style={{
                     display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px",
@@ -1302,6 +1293,7 @@ export default function JobPostForm({
           <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 4 }}>기업 정보</div>
           <div style={{ fontSize: 12, color: "#999", marginBottom: 16 }}>공고 상세 맨 아래 “기업 정보”에 표시돼요 · URL 불러오기로 자동 작성됩니다</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
+            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>기업 소개</div><textarea ref={nmDescRef} style={{ ...inp, height: "auto", minHeight: 88, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden" }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="회사를 소개하는 글을 입력해주세요. 공고 상세의 '기업 정보'에 표시돼요." /></div>
             <div><div style={lbl}>회사명 <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
             <div><div style={lbl}>업종</div><select style={sel} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
             <div><div style={lbl}>브랜드명</div><input style={inp} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="브랜드명 (선택)" /></div>
@@ -1311,7 +1303,6 @@ export default function JobPostForm({
             <div><div style={lbl}>설립연도</div><input type="number" min="1900" max={new Date().getFullYear()} style={inp} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} placeholder="예) 2020" /></div>
             <div><div style={lbl}>대표자</div><input style={inp} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="대표자명 (선택)" /></div>
             <div><div style={lbl}>회사 대표번호</div><input style={inp} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} placeholder="02-000-0000 (선택)" /></div>
-            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>기업 소개</div><textarea ref={nmDescRef} style={{ ...inp, height: "auto", minHeight: 88, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden" }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="회사를 소개하는 글을 입력해주세요. 공고 상세의 '기업 정보'에 표시돼요." /></div>
           </div>
 
           <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", margin: "22px 0 4px" }}>지원 설정</div>
