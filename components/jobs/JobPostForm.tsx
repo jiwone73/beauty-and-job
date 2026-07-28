@@ -60,6 +60,10 @@ export default function JobPostForm({
   const [nmDescription, setNmDescription] = useState("");
   const [nmAddress, setNmAddress] = useState("");
   const [nmIndustry, setNmIndustry] = useState("");
+  const [nmSize, setNmSize] = useState("");
+  const [nmFounded, setNmFounded] = useState("");
+  const [nmRepresentative, setNmRepresentative] = useState("");
+  const [nmPhone, setNmPhone] = useState("");
   const [parseUrl, setParseUrl] = useState("");
   const [parseText, setParseText] = useState("");
   const [parsing, setParsing] = useState(false);
@@ -552,7 +556,7 @@ export default function JobPostForm({
     };
 
     const company: any = nonMember
-      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: nmIndustry } }
+      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, "") } }
       : { companyId, newCompany: null };
     const result = await onSubmit(payload, status, company);
     if (!result.success) {
@@ -621,11 +625,11 @@ export default function JobPostForm({
       name: previewCompanyName,
       brandName: isNm ? newBrandName : (cp?.brand_name || ""),
       industry: isNm ? nmIndustry : "",
-      representative: isNm ? "" : (cp?.representative_name || ""),
+      representative: isNm ? nmRepresentative : (cp?.representative_name || ""),
       companyType: jobGroupType === "매장" ? "매장·살롱" : "기업·브랜드",
-      size: isNm ? "" : (cp?.company_size || ""),
-      founded: isNm ? "" : (cp?.founded_year || ""),
-      phone: isNm ? "" : (cp?.company_phone || ""),
+      size: isNm ? nmSize : (cp?.company_size || ""),
+      founded: isNm ? (nmFounded ? `${nmFounded}년` : "") : (cp?.founded_year || ""),
+      phone: isNm ? nmPhone : (cp?.company_phone || ""),
       website: isNm ? nmHomepage : (cp?.website_url || ""),
       location: isNm ? nmAddress : (cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : ""),
       latitude: null,
@@ -678,24 +682,7 @@ export default function JobPostForm({
         </div>
       )}
 
-      {mode === "admin" && nonMember && (
-        <div style={{ maxWidth: 760, margin: "0 auto 16px", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px" }}>
-          <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 14 }}>비회원 기업 정보 <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>· URL 불러오기로 자동 작성돼요</span></div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
-            <div><div style={lbl}>회사명 <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
-            <div><div style={lbl}>브랜드명</div><input style={inp} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="브랜드명 (선택)" /></div>
-            <div><div style={lbl}>업종</div><select style={inp} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
-            <div><div style={lbl}>홈페이지</div><input style={inp} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} placeholder="https:// (선택)" /></div>
-            <div><div style={lbl}>채용 이메일 <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(이메일 중계 시)</span></div><input style={inp} value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="hr@company.com" /></div>
-            <div><div style={lbl}>지원방식</div><select style={inp} value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}><option value="MANAGED">관리자 대행</option><option value="EMAIL">이메일 중계</option><option value="REDIRECT">외부 링크형</option></select></div>
-            {applyMethod === "REDIRECT" && (
-              <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" /></div>
-            )}
-            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>주소</div><input style={inp} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역 (선택)" /></div>
-            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>회사 소개</div><textarea ref={nmDescRef} style={{ ...inp, height: "auto", minHeight: 72, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden" }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="공고 상세의 '회사 소개'에 표시돼요" /></div>
-          </div>
-        </div>
-      )}
+      {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
 
       <div className="admin-form-grid jobpost-form">
         {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
@@ -1277,6 +1264,36 @@ export default function JobPostForm({
           </div>
         </div>
       </div>
+
+      {/* ═══ 기업 정보 (맨 하단) · 기업회원 프로필 양식과 동일 구성 ═══ */}
+      {mode === "admin" && nonMember && (
+        <div style={{ maxWidth: 760, margin: "16px auto 0", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px" }}>
+          <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 4 }}>기업 정보</div>
+          <div style={{ fontSize: 12, color: "#999", marginBottom: 16 }}>공고 상세 맨 아래 “기업 정보”에 표시돼요 · URL 불러오기로 자동 작성됩니다</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
+            <div><div style={lbl}>회사명 <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
+            <div><div style={lbl}>업종</div><select style={inp} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
+            <div><div style={lbl}>브랜드명</div><input style={inp} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="브랜드명 (선택)" /></div>
+            <div><div style={lbl}>웹사이트</div><input style={inp} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} placeholder="https:// (선택)" /></div>
+            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>주소</div><input style={inp} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역 (선택)" /></div>
+            <div><div style={lbl}>사원수</div><select style={inp} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value="">선택</option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
+            <div><div style={lbl}>설립연도</div><input type="number" min="1900" max={new Date().getFullYear()} style={inp} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} placeholder="예) 2020" /></div>
+            <div><div style={lbl}>대표자</div><input style={inp} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="대표자명 (선택)" /></div>
+            <div><div style={lbl}>회사 대표번호</div><input style={inp} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} placeholder="02-000-0000 (선택)" /></div>
+            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>기업 소개</div><textarea ref={nmDescRef} style={{ ...inp, height: "auto", minHeight: 88, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden" }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="회사를 소개하는 글을 입력해주세요. 공고 상세의 '기업 정보'에 표시돼요." /></div>
+          </div>
+
+          <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", margin: "22px 0 4px" }}>지원 설정</div>
+          <div style={{ fontSize: 12, color: "#999", marginBottom: 16 }}>지원자가 어떻게 지원하는지 설정해요</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
+            <div><div style={lbl}>지원방식</div><select style={inp} value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}><option value="MANAGED">관리자 대행</option><option value="EMAIL">이메일 중계</option><option value="REDIRECT">외부 링크형</option></select></div>
+            <div><div style={lbl}>채용 이메일 <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(이메일 중계 시)</span></div><input style={inp} value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="hr@company.com" /></div>
+            {applyMethod === "REDIRECT" && (
+              <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" /></div>
+            )}
+          </div>
+        </div>
+      )}
 
       <RegionSelectModal
         open={regionModalOpen}
