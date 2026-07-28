@@ -14,6 +14,7 @@ type ExtJob = {
   created_at: string;
   company_name: string | null;
   homepage_url: string | null;
+  external_company_id: string | null;
   claimed_company_id: string | null;
   application_count: number;
   pending_count: number;
@@ -39,6 +40,36 @@ export default function AdminExternalJobsPage() {
   const [form, setForm] = useState({ ...EMPTY });
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
+  const [claimEc, setClaimEc] = useState<{ id: string; name: string } | null>(null);
+  const [mq, setMq] = useState("");
+  const [mres, setMres] = useState<any[]>([]);
+  const [claiming, setClaiming] = useState(false);
+  const openClaim = (id: string, name: string) => { setClaimEc({ id, name }); setMq(""); setMres([]); };
+  const searchMembers = async (q: string) => {
+    setMq(q);
+    if (q.trim().length < 1) { setMres([]); return; }
+    try {
+      const res = await fetch(`/api/admin/company-search?q=${encodeURIComponent(q)}`, { headers: { Authorization: `Bearer ${token()}` } });
+      const j = await res.json();
+      if (j.success) setMres(j.data);
+    } catch {}
+  };
+  const doClaim = async (companyId: string, companyName: string) => {
+    if (!claimEc) return;
+    if (!confirm(`「${claimEc.name}」의 외부 공고·지원을 회원기업 "${companyName}"으로 이관할까요?`)) return;
+    setClaiming(true);
+    try {
+      const res = await fetch(`/api/admin/external-companies/${claimEc.id}/claim`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ company_id: companyId }),
+      });
+      const j = await res.json();
+      if (j.success) { alert(`이관 완료: 공고 ${j.data.moved_jobs}건이 ${companyName}으로 넘어갔어요.`); setClaimEc(null); load(); }
+      else alert(j.error?.message || "이관 실패");
+    } catch { alert("오류가 발생했습니다."); }
+    finally { setClaiming(false); }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -207,6 +238,7 @@ export default function AdminExternalJobsPage() {
                   <th>지원(대기)</th>
                   <th>마감</th>
                   <th>등록일</th>
+                  <th>연결</th>
                 </tr>
               </thead>
               <tbody>
@@ -229,6 +261,14 @@ export default function AdminExternalJobsPage() {
                       </td>
                       <td style={{ textAlign: "center", color: "#888" }}>{fmt(j.deadline)}</td>
                       <td style={{ textAlign: "center", color: "#888" }}>{fmt(j.created_at)}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {j.claimed_company_id ? (
+                          <span style={{ fontSize: 12, color: "#10b981", fontWeight: 700 }}>연결됨</span>
+                        ) : j.external_company_id ? (
+                          <button onClick={() => openClaim(j.external_company_id as string, j.company_name || "")}
+                            style={{ fontSize: 12.5, fontWeight: 700, borderRadius: 7, padding: "5px 11px", cursor: "pointer", border: "1px solid #5f0080", background: "#fff", color: "#5f0080" }}>회원 연결</button>
+                        ) : "—"}
+                      </td>
                     </tr>
                   );
                 })}
@@ -237,6 +277,32 @@ export default function AdminExternalJobsPage() {
           )}
         </div>
       </div>
+      {claimEc && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }} onClick={() => setClaimEc(null)}>
+          <div style={{ background: "#fff", borderRadius: 12, padding: 22, width: "100%", maxWidth: 460 }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ fontSize: 17, fontWeight: 800, margin: "0 0 4px" }}>회원 기업 연결</h3>
+            <p style={{ fontSize: 13, color: "#888", margin: "0 0 14px" }}>「{claimEc.name}」의 외부 공고·지원을 아래에서 고른 회원 기업으로 이관합니다.</p>
+            <input autoFocus className="admin-form-input" placeholder="기업명·사업자번호 검색" value={mq} onChange={(e) => searchMembers(e.target.value)} style={{ width: "100%", marginBottom: 10 }} />
+            <div style={{ maxHeight: 300, overflowY: "auto", border: "1px solid #eee", borderRadius: 8 }}>
+              {mres.length === 0 ? (
+                <div style={{ padding: 16, textAlign: "center", color: "#aaa", fontSize: 13 }}>{mq.trim() ? "검색 결과가 없어요" : "기업명을 입력하세요"}</div>
+              ) : mres.map((c) => (
+                <div key={c.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #f4f4f4" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>{c.company_name} {c.status !== "ACTIVE" && <span style={{ fontSize: 11, color: "#c0392b" }}>({c.status})</span>}</div>
+                    <div style={{ fontSize: 12, color: "#999" }}>{[c.business_number, c.email].filter(Boolean).join(" · ")}</div>
+                  </div>
+                  <button onClick={() => doClaim(c.id, c.company_name)} disabled={claiming}
+                    style={{ flexShrink: 0, fontSize: 12.5, fontWeight: 700, borderRadius: 7, padding: "6px 12px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}>연결</button>
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign: "right", marginTop: 14 }}>
+              <button onClick={() => setClaimEc(null)} style={{ fontSize: 13, color: "#666", background: "none", border: "none", cursor: "pointer" }}>닫기</button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }
