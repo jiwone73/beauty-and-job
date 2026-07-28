@@ -430,13 +430,9 @@ export default function JobPostForm({
         if (d.company_description) setNmDescription(d.company_description);
         if (d.address) setNmAddress(d.address);
         if (d.industry) setNmIndustry(d.industry);
+        // 배너(대표 이미지)만 가져옴. og:image가 없으면 첫 preload 이미지 사용.
         if (d.cover_image) setNmCover(d.cover_image);
-        // 배너 외 이미지 → 상세 이미지(최대 5장, 배너와 중복 제외)
-        if (Array.isArray(d.images) && d.images.length) {
-          const banner = d.cover_image || "";
-          const rest = d.images.filter((u: string) => u && u !== banner).slice(0, 5).map((u: string, i: number) => ({ url: u, name: `이미지 ${i + 1}` }));
-          if (rest.length) setDetailImages(rest);
-        }
+        else if (Array.isArray(d.images) && d.images[0]) setNmCover(d.images[0]);
       }
       // 채용유형: 토글이 열려 있을 때만(관리자 또는 BOTH 기업) 불러온 값으로 변경. 타입 고정 기업회원은 유지.
       if (d.job_type && showTypeToggle) setJobGroupType(d.job_type === "STORE" ? "매장" : "기업");
@@ -467,7 +463,7 @@ export default function JobPostForm({
       const extraLines = [d.salary ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
       if (extraLines) setNotes(extraLines);
       if (d.ai_parsed) {
-        setParseMsg(`✓ 불러왔어요. 직군·경력·지역·복리후생까지 자동 반영했어요. [진단: HTML ${Math.round((d._html_len || 0) / 1000)}k · 이미지 ${d.images?.length || 0}장]`);
+        setParseMsg("✓ 불러왔어요. 직군·경력·지역·복리후생·이미지까지 자동 반영했어요. 값만 확인하고 등록하세요.");
       } else {
         setParseMsg("⚠ AI 자동 정리에 실패해 제목·회사 등 기본 정보만 채웠어요. 공고 본문 전체를 아래 칸에 붙여넣고 다시 '불러오기'를 눌러주세요.");
       }

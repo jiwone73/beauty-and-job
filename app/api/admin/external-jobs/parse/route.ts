@@ -128,13 +128,23 @@ export async function POST(req: NextRequest) {
           try { img = new URL(img, url).href; } catch { img = ""; }
         }
         ogImage = img;
-        // 배너 외 본문 이미지: og:image와 같은 폴더의 이미지들 = 그 공고의 사진 세트일 확률이 높음
-        if (ogImage) {
+        // ① 이 공고가 우선 로딩하는 이미지(preload as=image) = 실제 공고 이미지(캐러셀). 가장 정확.
+        //    원티드는 image.../optimize?src=<원본URL> 형태로 감싸므로 src를 디코드해 원본을 얻는다.
+        const preloadImgs = [...html.matchAll(/<link\b[^>]*>/gi)]
+          .map((m) => m[0])
+          .filter((t) => /rel=["']preload["']/i.test(t) && /as=["']image["']/i.test(t))
+          .map((t) => (t.match(/href=["']([^"']+)["']/i)?.[1] || "").replace(/&amp;/g, "&"))
+          .map((href) => { const s = href.match(/[?&]src=([^&]+)/i); if (s) { try { return decodeURIComponent(s[1]); } catch { return href; } } return href; })
+          .filter((u) => /^https?:\/\//i.test(u) && /\.(?:jpe?g|png|webp)(?:$|\?)/i.test(u) && !/(icon|logo|sprite|favicon|badge|spacer|blank)/i.test(u));
+        images = [...new Set(preloadImgs)];
+        // ② 폴백: preload 이미지가 없으면 og:image와 같은 폴더의 이미지들
+        if (images.length === 0 && ogImage) {
           const dir = ogImage.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
           const all = [...html.matchAll(/https?:\/\/[^\s"'<>()\\]+?\.(?:jpe?g|png|webp)(?:\?[^\s"'<>()\\]*)?/gi)]
             .map((m) => m[0].replace(/\\u002[Ff]/g, "/").replace(/\\\//g, "/"));
-          images = [...new Set(all)].filter((u) => dir && u.startsWith(dir) && !/(icon|logo|sprite|favicon|badge|button|blank|spacer|avatar|profile)/i.test(u)).slice(0, 6);
+          images = [...new Set(all)].filter((u) => dir && u.startsWith(dir) && !/(icon|logo|sprite|favicon|badge|button|blank|spacer|avatar|profile)/i.test(u));
         }
+        images = images.slice(0, 8);
       }
     }
   }
@@ -218,7 +228,6 @@ export async function POST(req: NextRequest) {
   out.source_url = url;
   out.cover_image = /^https?:\/\//i.test(ogImage) ? ogImage : "";
   out.images = images;
-  out._html_len = (html || "").length; // 진단용: 서버가 받은 HTML 크기
   if (out.apply_method === "REDIRECT" && !out.external_apply_url && url) out.external_apply_url = url;
   if (!["STORE", "OFFICE"].includes(out.job_type)) out.job_type = "STORE";
   if (!["REDIRECT", "EMAIL", "MANAGED"].includes(out.apply_method)) out.apply_method = "MANAGED";
