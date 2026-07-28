@@ -218,6 +218,7 @@ export async function POST(req: NextRequest) {
   out.source_url = url;
   out.cover_image = /^https?:\/\//i.test(ogImage) ? ogImage : "";
   out.images = images;
+  out._html_len = (html || "").length; // 진단용: 서버가 받은 HTML 크기
   if (out.apply_method === "REDIRECT" && !out.external_apply_url && url) out.external_apply_url = url;
   if (!["STORE", "OFFICE"].includes(out.job_type)) out.job_type = "STORE";
   if (!["REDIRECT", "EMAIL", "MANAGED"].includes(out.apply_method)) out.apply_method = "MANAGED";

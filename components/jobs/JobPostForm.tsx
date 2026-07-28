@@ -467,7 +467,7 @@ export default function JobPostForm({
       const extraLines = [d.salary ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
       if (extraLines) setNotes(extraLines);
       if (d.ai_parsed) {
-        setParseMsg("✓ 불러왔어요. 직군·경력·지역·복리후생까지 자동 반영했어요. 값만 확인하고 등록하세요.");
+        setParseMsg(`✓ 불러왔어요. 직군·경력·지역·복리후생까지 자동 반영했어요. [진단: HTML ${Math.round((d._html_len || 0) / 1000)}k · 이미지 ${d.images?.length || 0}장]`);
       } else {
         setParseMsg("⚠ AI 자동 정리에 실패해 제목·회사 등 기본 정보만 채웠어요. 공고 본문 전체를 아래 칸에 붙여넣고 다시 '불러오기'를 눌러주세요.");
       }
