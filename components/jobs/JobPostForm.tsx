@@ -655,7 +655,7 @@ export default function JobPostForm({
       </div>
 
       {(
-        <div style={{ maxWidth: 1180, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px" }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기 (자동 작성)" : "타 사이트 공고 불러오기 (자동 작성)"}</div>
           <div style={{ display: "flex", gap: 8 }}>
             <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
@@ -679,7 +679,7 @@ export default function JobPostForm({
       )}
 
       {mode === "admin" && nonMember && (
-        <div style={{ maxWidth: 1180, margin: "0 auto 16px", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto 16px", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px" }}>
           <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 14 }}>비회원 기업 정보 <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>· URL 불러오기로 자동 작성돼요</span></div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
             <div><div style={lbl}>회사명 <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
