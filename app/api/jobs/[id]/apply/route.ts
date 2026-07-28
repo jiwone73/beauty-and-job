@@ -12,16 +12,17 @@ export async function POST(
   if (authErr) return authErr
   const { id: jobPostingId } = params
   const body = await req.json().catch(() => ({}))
-  const { resume_id, cover_letter } = body
+  const { resume_id, cover_letter, third_party_consent } = body
   const jobRes = await pool.query(
     `SELECT jp.id, jp.status, jp.deadline, jp.company_id, jp.title,
             jp.description, jp.location, jp.address, jp.work_type, jp.experience_level,
             jp.salary_min, jp.salary_max, jp.salary_type,
             c.company_name, c.email AS company_email, c.brand_name,
             c.region_sido AS company_region_sido, c.region_sigungu AS company_region_sigungu,
-            c.address AS company_address
+            c.address AS company_address,
+            jp.source, jp.apply_method, c.is_member
      FROM job_postings jp
-     JOIN companies c ON c.id = jp.company_id
+     LEFT JOIN companies c ON c.id = jp.company_id
      WHERE jp.id = $1`,
     [jobPostingId]
   )
@@ -35,6 +36,15 @@ export async function POST(
   if (job.deadline && new Date(job.deadline) < new Date()) {
     return err('JOB_001', '지원 기간이 종료되었습니다.', 400)
   }
+  const isExternal = job.source === 'EXTERNAL' || job.is_member === false
+  if (isExternal && job.apply_method === 'REDIRECT') {
+    return err('JOB_004', '이 공고는 기업 채용페이지에서 지원해주세요.', 400)
+  }
+  if (isExternal && third_party_consent !== true) {
+    return err('APP_004', '외부 기업에 지원 정보를 제공하려면 개인정보 제3자 제공에 동의해주세요.', 422)
+  }
+  const companyNameDisplay = job.company_name || '외부 기업'
+
   const dupRes = await pool.query(
     `SELECT id FROM applications WHERE job_posting_id = $1 AND user_id = $2`,
     [jobPostingId, auth!.sub]
@@ -100,7 +110,7 @@ export async function POST(
     salary_max: job.salary_max ?? null,
     salary_type: job.salary_type || '',
     company: {
-      company_name: job.company_name || '',
+      company_name: companyNameDisplay || '',
       brand_name: job.brand_name || '',
       region_sido: job.company_region_sido || '',
       region_sigungu: job.company_region_sigungu || '',
@@ -111,8 +121,9 @@ export async function POST(
 
   const result = await pool.query(
     `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, resume_snapshot, status,
-                                resume_file_url, resume_file_name, resume_file_size, job_snapshot)
-     VALUES ($1, $2, $3, $4, $5, 'APPLIED', $6, $7, $8, $9)
+                                resume_file_url, resume_file_name, resume_file_size, job_snapshot,
+                                delivery_status, third_party_consent)
+     VALUES ($1, $2, $3, $4, $5, 'APPLIED', $6, $7, $8, $9, $10, $11)
      RETURNING id, status, applied_at`,
     [
       jobPostingId,
@@ -124,26 +135,30 @@ export async function POST(
       p.resume_file_name || null,
       p.resume_file_size || null,
       JSON.stringify(jobSnapshot),
+      isExternal ? 'PENDING' : null,
+      isExternal ? true : false,
     ]
   )
   await pool.query(
     `UPDATE job_postings SET application_count = application_count + 1 WHERE id = $1`,
     [jobPostingId]
   )
-  try {
-    await pool.query(
-      `INSERT INTO notifications (company_id, type, title, message, related_id, related_type)
-       VALUES ($1, 'NEW_APPLICANT', $2, $3, $4, 'application')`,
-      [job.company_id, '새 지원자가 있어요', `${p.name || '지원자'}님이 '${job.title}'에 지원했어요.`, result.rows[0].id]
-    )
-  } catch (e) {
-    console.error('[notification] NEW_APPLICANT 생성 실패', e)
+  if (!isExternal && job.company_id) {
+    try {
+      await pool.query(
+        `INSERT INTO notifications (company_id, type, title, message, related_id, related_type)
+         VALUES ($1, 'NEW_APPLICANT', $2, $3, $4, 'application')`,
+        [job.company_id, '새 지원자가 있어요', `${p.name || '지원자'}님이 '${job.title}'에 지원했어요.`, result.rows[0].id]
+      )
+    } catch (e) {
+      console.error('[notification] NEW_APPLICANT 생성 실패', e)
+    }
   }
   const appliedDate = new Date().toLocaleDateString('ko-KR')
   const jobTypeLabel = p.job_type === 'STORE' ? '매장직' : '사무직'
-  sendApplicationCompleteEmail(p.email, p.name || '회원', job.title, job.company_name, appliedDate)
+  sendApplicationCompleteEmail(p.email, p.name || '회원', job.title, companyNameDisplay, appliedDate)
     .catch((e) => console.error('[email] 지원완료 발송 실패', e))
-  if (job.company_email) {
+  if (!isExternal && job.company_email) {
     sendNewApplicantEmail(job.company_email, job.company_name, p.name || '지원자', jobTypeLabel, job.title, appliedDate)
       .catch((e) => console.error('[email] 새 지원자 발송 실패', e))
   }

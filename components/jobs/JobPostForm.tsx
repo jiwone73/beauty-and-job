@@ -52,6 +52,13 @@ export default function JobPostForm({
   const [nonMember, setNonMember] = useState(false);
   const [newCompanyName, setNewCompanyName] = useState("");
   const [newBrandName, setNewBrandName] = useState("");
+  const [nmContactEmail, setNmContactEmail] = useState("");
+  const [nmHomepage, setNmHomepage] = useState("");
+  const [applyMethod, setApplyMethod] = useState<"MANAGED" | "EMAIL" | "REDIRECT">("MANAGED");
+  const [externalApplyUrl, setExternalApplyUrl] = useState("");
+  const [parseUrl, setParseUrl] = useState("");
+  const [parsing, setParsing] = useState(false);
+  const [parseMsg, setParseMsg] = useState("");
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
   const [categories, setCategories] = useState<string[]>([]);
   const [regionList, setRegionList] = useState<string[]>([]);
@@ -363,10 +370,37 @@ export default function JobPostForm({
     } catch { alert("인쇄 준비 중 오류가 발생했습니다."); }
   };
 
+  const runParse = async () => {
+    if (!parseUrl.trim()) { setParseMsg("URL을 입력해주세요."); return; }
+    setParsing(true); setParseMsg("");
+    try {
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch("/api/admin/external-jobs/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ url: parseUrl.trim() }),
+      });
+      const j = await res.json();
+      if (!j.success) { setParseMsg(j.error?.message || "불러오기에 실패했어요."); return; }
+      const d = j.data;
+      if (d.company_name) setNewCompanyName(d.company_name);
+      if (d.homepage_url) setNmHomepage(d.homepage_url);
+      if (d.contact_email) setNmContactEmail(d.contact_email);
+      if (d.job_type) setJobGroupType(d.job_type === "STORE" ? "매장" : "기업");
+      if (["MANAGED", "EMAIL", "REDIRECT"].includes(d.apply_method)) setApplyMethod(d.apply_method);
+      if (d.external_apply_url) setExternalApplyUrl(d.external_apply_url);
+      setForm((f) => ({ ...f, title: d.title || f.title, description: d.description || f.description, deadline: d.deadline || f.deadline }));
+      setParseMsg("✓ 불러왔어요. 내용을 확인하고 등록하세요.");
+    } catch { setParseMsg("오류가 발생했습니다."); }
+    finally { setParsing(false); }
+  };
+
   const handleSubmit = async (status: "draft" | "publish") => {
     if (mode === "admin") {
       if (nonMember) {
         if (!newCompanyName.trim()) { alert("비회원 회사명을 입력해주세요."); return; }
+        if (applyMethod === "REDIRECT" && !externalApplyUrl.trim()) { alert("외부 링크형은 외부 지원 URL이 필요해요."); return; }
+        if (applyMethod === "EMAIL" && !nmContactEmail.trim()) { alert("이메일 중계형은 채용 이메일이 필요해요."); return; }
       } else if (!companyId) {
         alert("기업을 선택해주세요."); return;
       }
@@ -419,10 +453,13 @@ export default function JobPostForm({
       detail_images: detailImages,
       hiring_process: hiringProcess.filter((s) => s.trim()),
       notes: notes.trim() || null,
+      apply_method: applyMethod,
+      external_apply_url: externalApplyUrl.trim() || null,
+      external_contact_email: nmContactEmail.trim() || null,
     };
 
-    const company = nonMember
-      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim() } }
+    const company: any = nonMember
+      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim() } }
       : { companyId, newCompany: null };
     const result = await onSubmit(payload, status, company);
     if (!result.success) {
@@ -540,6 +577,21 @@ export default function JobPostForm({
                         value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} />
                       <input className="admin-form-input" placeholder="브랜드명 (선택)"
                         value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} />
+                      <div style={{ display: "flex", gap: 6 }}>
+                        <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 → 자동작성" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
+                        <button type="button" onClick={runParse} disabled={parsing} style={{ flexShrink: 0, padding: "0 14px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "..." : "불러오기"}</button>
+                      </div>
+                      {parseMsg && <div style={{ fontSize: 12, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
+                      <input className="admin-form-input" placeholder="채용 이메일 (이메일 중계 시 필요)" value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} />
+                      <input className="admin-form-input" placeholder="홈페이지 (선택)" value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} />
+                      <select className="admin-form-select" value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}>
+                        <option value="MANAGED">지원방식: 관리자 대행</option>
+                        <option value="EMAIL">지원방식: 이메일 중계</option>
+                        <option value="REDIRECT">지원방식: 외부 링크형</option>
+                      </select>
+                      {applyMethod === "REDIRECT" && (
+                        <input className="admin-form-input" placeholder="외부 지원 URL (필수)" value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} />
+                      )}
                       <button type="button"
                         onClick={() => { setNonMember(false); setNewCompanyName(""); setNewBrandName(""); }}
                         style={{ alignSelf: "flex-start", background: "none", border: "none", color: "#5f0080", fontSize: "13px", fontWeight: 400, cursor: "pointer", padding: 0 }}>

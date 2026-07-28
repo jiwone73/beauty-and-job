@@ -59,7 +59,8 @@ export async function POST(req: NextRequest) {
     title, job_type, job_category_id, description, requirements,
     preferred_qualifications, salary_min, salary_max, salary_type,
     location, address, work_type, experience_level, deadline, categories,
-    detail_images, hiring_process, notes, benefits, created_by
+    detail_images, hiring_process, notes, benefits, created_by,
+    apply_method, external_apply_url, external_contact_email
   } = body
 
   if (!title || !job_type) return err('JOB_002', '제목과 채용유형은 필수입니다.')
@@ -86,13 +87,23 @@ export async function POST(req: NextRequest) {
         finalCompanyId = existing.rows[0].id
       } else {
         const companyRes = await client.query(
-          `INSERT INTO companies (company_name, brand_name, company_type, is_member, status)
-           VALUES ($1, $2, $3, false, 'ACTIVE'::company_status)
+          `INSERT INTO companies (company_name, brand_name, company_type, website_url, is_member, status)
+           VALUES ($1, $2, $3, $4, false, 'ACTIVE'::company_status)
            RETURNING id`,
-          [nmName, (nm.brand_name || '').trim() || null, job_type]
+          [nmName, (nm.brand_name || '').trim() || null, job_type, (nm.homepage_url || '').trim() || null]
         )
         finalCompanyId = companyRes.rows[0].id
       }
+    }
+
+    const isNonMember = !company_id
+    const am = isNonMember ? (['REDIRECT', 'EMAIL', 'MANAGED'].includes(apply_method) ? apply_method : 'MANAGED') : 'NATIVE'
+    const src = isNonMember ? 'EXTERNAL' : 'NATIVE'
+    const extUrl = isNonMember ? ((external_apply_url || '').trim() || null) : null
+    const extEmail = isNonMember ? ((external_contact_email || '').trim() || null) : null
+    if (isNonMember) {
+      if (am === 'REDIRECT' && !extUrl) { await client.query('ROLLBACK'); return err('JOB_003', '외부 링크형은 외부 지원 URL이 필요합니다.') }
+      if (am === 'EMAIL' && !extEmail) { await client.query('ROLLBACK'); return err('JOB_003', '이메일 중계형은 채용 이메일이 필요합니다.') }
     }
 
     const result = await client.query(
@@ -101,9 +112,9 @@ export async function POST(req: NextRequest) {
          requirements, preferred_qualifications, salary_min, salary_max,
          salary_type, location, address, work_type, experience_level,
          deadline, categories, detail_images, hiring_process, notes, benefits,
-         status, created_by
+         status, created_by, source, apply_method, external_apply_url, external_contact_email
        ) VALUES (
-         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 'ACTIVE', $21
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 'ACTIVE', $21, $22, $23, $24, $25
        ) RETURNING id, title, status, created_at`,
       [
         finalCompanyId, title, job_type, job_category_id || null, description || null,
@@ -114,7 +125,8 @@ export async function POST(req: NextRequest) {
         JSON.stringify(detail_images || []),
         JSON.stringify(hiring_process || []),
         notes || null, benefits || null,
-        created_by || 'admin'
+        created_by || 'admin',
+        src, am, extUrl, extEmail
       ]
     )
 

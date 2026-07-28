@@ -30,9 +30,10 @@ export async function GET(
        c.company_size,
        c.founded_year,
        c.latitude AS company_latitude,
-       c.longitude AS company_longitude
+       c.longitude AS company_longitude,
+       c.is_member
      FROM job_postings jp
-     JOIN companies c ON c.id = jp.company_id
+     LEFT JOIN companies c ON c.id = jp.company_id
      WHERE jp.id = $1 AND jp.status = 'ACTIVE'`,
     [id]
   )
@@ -93,8 +94,12 @@ export async function GET(
     view_count: job.view_count,
     application_count: job.application_count,
     created_at: job.created_at,
+    source: job.source,
+    is_external: job.source === 'EXTERNAL' || job.is_member === false,
+    apply_method: job.apply_method,
+    external_apply_url: job.external_apply_url,
     company: {
-      id: job.company_id,
+      id: job.is_member === false ? null : job.company_id,
       company_name: job.company_name,
       brand_name: job.brand_name,
       representative_name: job.representative_name,

@@ -18,10 +18,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     `SELECT a.id, a.third_party_consent, a.cover_letter, a.delivery_status,
             u.name AS applicant_name, u.phone AS applicant_phone, u.email AS applicant_email,
             jp.title AS job_title, jp.external_contact_email,
-            ec.name AS company_name, ec.contact_email AS ec_contact_email
+            c.company_name AS company_name, c.email::text AS ec_contact_email
      FROM applications a
      JOIN job_postings jp ON jp.id = a.job_posting_id AND jp.source = 'EXTERNAL'
-     LEFT JOIN external_companies ec ON ec.id = jp.external_company_id
+     LEFT JOIN companies c ON c.id = jp.company_id
      JOIN users u ON u.id = a.user_id
      WHERE a.id = $1`,
     [id]
