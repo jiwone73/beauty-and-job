@@ -104,7 +104,11 @@ export async function POST(req: NextRequest) {
         const t = setTimeout(() => ctl.abort(), 12000);
         const r = await fetch(url, {
           signal: ctl.signal,
-          headers: { "User-Agent": "Mozilla/5.0 (compatible; BeautyworkBot/1.0)", "Accept-Language": "ko,en;q=0.8" },
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "ko,en;q=0.8",
+          },
         });
         clearTimeout(t);
         if (r.ok) html = await r.text();
