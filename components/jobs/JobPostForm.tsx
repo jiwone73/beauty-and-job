@@ -64,6 +64,10 @@ export default function JobPostForm({
   const [nmFounded, setNmFounded] = useState("");
   const [nmRepresentative, setNmRepresentative] = useState("");
   const [nmPhone, setNmPhone] = useState("");
+  const [nmLogo, setNmLogo] = useState("");
+  const [nmCover, setNmCover] = useState("");
+  const [nmLogoUploading, setNmLogoUploading] = useState(false);
+  const [nmCoverUploading, setNmCoverUploading] = useState(false);
   const [parseUrl, setParseUrl] = useState("");
   const [parseText, setParseText] = useState("");
   const [parsing, setParsing] = useState(false);
@@ -346,6 +350,15 @@ export default function JobPostForm({
     await processFiles(e.target.files || []);
     e.target.value = "";
   };
+  // 비회원 기업 로고/커버 단일 업로드
+  const uploadSingle = async (file: File, setUrl: (u: string) => void, setBusy: (b: boolean) => void) => {
+    setBusy(true);
+    try {
+      const r = await uploadImage(file);
+      if (r.success && r.url) setUrl(r.url);
+      else alert(r.error || "이미지 업로드에 실패했습니다.");
+    } finally { setBusy(false); }
+  };
 
   const removeImage = (idx: number) =>
     setDetailImages((prev) => prev.filter((_, i) => i !== idx));
@@ -389,6 +402,8 @@ export default function JobPostForm({
 
   const lbl: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "#444", marginBottom: 6 };
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
+  // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
+  const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
   const runParse = async () => {
     if (!parseUrl.trim() && !parseText.trim()) { setParseMsg("URL 또는 공고 본문을 입력해주세요."); return; }
     if (mode === "admin") { setNonMember(true); setCompanyId(null); }
@@ -556,7 +571,7 @@ export default function JobPostForm({
     };
 
     const company: any = nonMember
-      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, "") } }
+      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, ""), logo_url: nmLogo || null, cover_images: nmCover ? [{ url: nmCover }] : [] } }
       : { companyId, newCompany: null };
     const result = await onSubmit(payload, status, company);
     if (!result.success) {
@@ -618,8 +633,8 @@ export default function JobPostForm({
     responsibilities: form.responsibilities ? form.responsibilities.split("\n").filter(Boolean) : [],
     process: hiringProcess.filter((s) => s.trim()),
     notes: notes,
-    logo_url: cp?.logo_url,
-    cover_images: cp?.cover_images || [],
+    logo_url: isNm ? (nmLogo || null) : cp?.logo_url,
+    cover_images: isNm ? (nmCover ? [{ url: nmCover }] : []) : (cp?.cover_images || []),
     detailImages: detailImages,
     companyInfo: {
       name: previewCompanyName,
@@ -684,7 +699,38 @@ export default function JobPostForm({
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
 
-      <div className="admin-form-grid jobpost-form">
+      {/* 브랜드 이미지 (로고·커버) — 비회원 기업 · 프로필의 로고/커버와 동일 */}
+      {mode === "admin" && nonMember && (
+        <div style={{ maxWidth: 760, margin: "0 auto 16px", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px" }}>
+          <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 14 }}>브랜드 이미지</div>
+          <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 20, alignItems: "start" }}>
+            <div>
+              <div style={lbl}>회사 로고</div>
+              <label style={{ display: "block", width: 96, height: 96, borderRadius: 16, border: "1px dashed #c4b5d4", background: nmLogo ? "#fff" : "#fafafa", overflow: "hidden", cursor: nmLogoUploading ? "wait" : "pointer", position: "relative" }}>
+                {nmLogo
+                  ? <img src={nmLogo} alt="로고" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  : <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#5f0080", fontSize: 12, fontWeight: 500 }}>{nmLogoUploading ? "업로드중" : "로고 등록"}</span>}
+                <input type="file" accept="image/*" style={{ display: "none" }} disabled={nmLogoUploading}
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmLogo, setNmLogoUploading); e.target.value = ""; }} />
+              </label>
+              {nmLogo && <button type="button" onClick={() => setNmLogo("")} style={{ marginTop: 6, fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>삭제</button>}
+            </div>
+            <div>
+              <div style={lbl}>공고 노출 이미지 (커버)</div>
+              <label style={{ display: "block", width: "100%", height: 120, borderRadius: 12, border: "1px dashed #c4b5d4", background: nmCover ? "#fff" : "#fafafa", overflow: "hidden", cursor: nmCoverUploading ? "wait" : "pointer", position: "relative" }}>
+                {nmCover
+                  ? <img src={nmCover} alt="커버" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  : <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#5f0080", fontSize: 13, fontWeight: 500 }}>{nmCoverUploading ? "업로드중" : "커버 이미지 등록"}</span>}
+                <input type="file" accept="image/*" style={{ display: "none" }} disabled={nmCoverUploading}
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmCover, setNmCoverUploading); e.target.value = ""; }} />
+              </label>
+              {nmCover && <button type="button" onClick={() => setNmCover("")} style={{ marginTop: 6, fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>삭제</button>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="admin-form-grid jobpost-form" style={{ maxWidth: 760, margin: "0 auto", gridTemplateColumns: "minmax(0, 1fr)" }}>
         {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
 
@@ -699,7 +745,7 @@ export default function JobPostForm({
 
                   {nonMember ? (
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px", flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: "#5f0080" }}>{newCompanyName || "비회원 기업"}<span style={{ fontSize: 12, fontWeight: 400, color: "#999", marginLeft: 6 }}>· 위 “비회원 기업 정보”에서 입력</span></span>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: "#5f0080" }}>{newCompanyName || "비회원 기업"}<span style={{ fontSize: 12, fontWeight: 400, color: "#999", marginLeft: 6 }}>· 아래 “기업 정보”에서 입력</span></span>
                       <button type="button"
                         onClick={() => { setNonMember(false); setNewCompanyName(""); setNewBrandName(""); }}
                         style={{ background: "none", border: "none", color: "#888", fontSize: "13px", cursor: "pointer" }}>
@@ -1272,11 +1318,11 @@ export default function JobPostForm({
           <div style={{ fontSize: 12, color: "#999", marginBottom: 16 }}>공고 상세 맨 아래 “기업 정보”에 표시돼요 · URL 불러오기로 자동 작성됩니다</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
             <div><div style={lbl}>회사명 <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
-            <div><div style={lbl}>업종</div><select style={inp} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
+            <div><div style={lbl}>업종</div><select style={sel} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
             <div><div style={lbl}>브랜드명</div><input style={inp} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="브랜드명 (선택)" /></div>
             <div><div style={lbl}>웹사이트</div><input style={inp} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} placeholder="https:// (선택)" /></div>
             <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>주소</div><input style={inp} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역 (선택)" /></div>
-            <div><div style={lbl}>사원수</div><select style={inp} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value="">선택</option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
+            <div><div style={lbl}>사원수</div><select style={sel} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value="">선택</option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
             <div><div style={lbl}>설립연도</div><input type="number" min="1900" max={new Date().getFullYear()} style={inp} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} placeholder="예) 2020" /></div>
             <div><div style={lbl}>대표자</div><input style={inp} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="대표자명 (선택)" /></div>
             <div><div style={lbl}>회사 대표번호</div><input style={inp} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} placeholder="02-000-0000 (선택)" /></div>
@@ -1286,7 +1332,7 @@ export default function JobPostForm({
           <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", margin: "22px 0 4px" }}>지원 설정</div>
           <div style={{ fontSize: 12, color: "#999", marginBottom: 16 }}>지원자가 어떻게 지원하는지 설정해요</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
-            <div><div style={lbl}>지원방식</div><select style={inp} value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}><option value="MANAGED">관리자 대행</option><option value="EMAIL">이메일 중계</option><option value="REDIRECT">외부 링크형</option></select></div>
+            <div><div style={lbl}>지원방식</div><select style={sel} value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}><option value="MANAGED">관리자 대행</option><option value="EMAIL">이메일 중계</option><option value="REDIRECT">외부 링크형</option></select></div>
             <div><div style={lbl}>채용 이메일 <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(이메일 중계 시)</span></div><input style={inp} value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="hr@company.com" /></div>
             {applyMethod === "REDIRECT" && (
               <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" /></div>

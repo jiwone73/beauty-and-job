@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
       const nm = new_company || {}
       const nmName = (nm.company_name || '').trim()
       const nmFoundedYear = nm.founded_year ? (parseInt(String(nm.founded_year), 10) || null) : null
+      const nmCoverJson = Array.isArray(nm.cover_images) && nm.cover_images.length ? JSON.stringify(nm.cover_images) : null
       if (!nmName) {
         await client.query('ROLLBACK')
         return err('JOB_001', '기업을 선택하거나 비회원 회사명을 입력해주세요.')
@@ -97,20 +98,24 @@ export async function POST(req: NextRequest) {
              founded_year = COALESCE(founded_year, $8),
              representative_name = COALESCE(representative_name, $9),
              company_phone = COALESCE(company_phone, $10),
+             logo_url = COALESCE(logo_url, $11),
+             cover_images = CASE WHEN (cover_images IS NULL OR cover_images = '[]'::jsonb) AND $12 IS NOT NULL THEN $12::jsonb ELSE cover_images END,
              updated_at = now()
            WHERE id = $1`,
           [finalCompanyId, (nm.brand_name || '').trim() || null, (nm.homepage_url || '').trim() || null,
            (nm.description || '').trim() || null, (nm.address || '').trim() || null, (nm.industry || '').trim() || null,
-           (nm.company_size || '').trim() || null, nmFoundedYear, (nm.representative_name || '').trim() || null, (nm.company_phone || '').trim() || null]
+           (nm.company_size || '').trim() || null, nmFoundedYear, (nm.representative_name || '').trim() || null, (nm.company_phone || '').trim() || null,
+           (nm.logo_url || '').trim() || null, nmCoverJson]
         )
       } else {
         const companyRes = await client.query(
-          `INSERT INTO companies (company_name, brand_name, company_type, website_url, description, address, industry, company_size, founded_year, representative_name, company_phone, is_member, status)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, false, 'ACTIVE'::company_status)
+          `INSERT INTO companies (company_name, brand_name, company_type, website_url, description, address, industry, company_size, founded_year, representative_name, company_phone, logo_url, cover_images, is_member, status)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, COALESCE($13::jsonb, '[]'::jsonb), false, 'ACTIVE'::company_status)
            RETURNING id`,
           [nmName, (nm.brand_name || '').trim() || null, job_type, (nm.homepage_url || '').trim() || null,
            (nm.description || '').trim() || null, (nm.address || '').trim() || null, (nm.industry || '').trim() || null,
-           (nm.company_size || '').trim() || null, nmFoundedYear, (nm.representative_name || '').trim() || null, (nm.company_phone || '').trim() || null]
+           (nm.company_size || '').trim() || null, nmFoundedYear, (nm.representative_name || '').trim() || null, (nm.company_phone || '').trim() || null,
+           (nm.logo_url || '').trim() || null, nmCoverJson]
         )
         finalCompanyId = companyRes.rows[0].id
       }
