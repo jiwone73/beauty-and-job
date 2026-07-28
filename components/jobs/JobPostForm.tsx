@@ -64,9 +64,7 @@ export default function JobPostForm({
   const [nmFounded, setNmFounded] = useState("");
   const [nmRepresentative, setNmRepresentative] = useState("");
   const [nmPhone, setNmPhone] = useState("");
-  const [nmLogo, setNmLogo] = useState("");
   const [nmCover, setNmCover] = useState("");
-  const [nmLogoUploading, setNmLogoUploading] = useState(false);
   const [nmCoverUploading, setNmCoverUploading] = useState(false);
   const [parseUrl, setParseUrl] = useState("");
   const [parseText, setParseText] = useState("");
@@ -571,7 +569,7 @@ export default function JobPostForm({
     };
 
     const company: any = nonMember
-      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, ""), logo_url: nmLogo || null, cover_images: nmCover ? [{ url: nmCover }] : [] } }
+      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, ""), logo_url: null, cover_images: nmCover ? [{ url: nmCover }] : [] } }
       : { companyId, newCompany: null };
     const result = await onSubmit(payload, status, company);
     if (!result.success) {
@@ -633,7 +631,7 @@ export default function JobPostForm({
     responsibilities: form.responsibilities ? form.responsibilities.split("\n").filter(Boolean) : [],
     process: hiringProcess.filter((s) => s.trim()),
     notes: notes,
-    logo_url: isNm ? (nmLogo || null) : cp?.logo_url,
+    logo_url: isNm ? null : cp?.logo_url,
     cover_images: isNm ? (nmCover ? [{ url: nmCover }] : []) : (cp?.cover_images || []),
     detailImages: detailImages,
     companyInfo: {
@@ -699,38 +697,23 @@ export default function JobPostForm({
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
 
-      {/* 브랜드 이미지 (로고·커버) — 비회원 기업 · 프로필의 로고/커버와 동일 */}
+      {/* 공고 노출 이미지 (배너) — 비회원 기업 */}
       {mode === "admin" && nonMember && (
-        <div style={{ maxWidth: 760, margin: "0 auto 16px", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px" }}>
-          <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 14 }}>브랜드 이미지</div>
-          <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 20, alignItems: "start" }}>
-            <div>
-              <div style={lbl}>회사 로고</div>
-              <label style={{ display: "block", width: 96, height: 96, borderRadius: 16, border: "1px dashed #c4b5d4", background: nmLogo ? "#fff" : "#fafafa", overflow: "hidden", cursor: nmLogoUploading ? "wait" : "pointer", position: "relative" }}>
-                {nmLogo
-                  ? <img src={nmLogo} alt="로고" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  : <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#5f0080", fontSize: 12, fontWeight: 500 }}>{nmLogoUploading ? "업로드중" : "로고 등록"}</span>}
-                <input type="file" accept="image/*" style={{ display: "none" }} disabled={nmLogoUploading}
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmLogo, setNmLogoUploading); e.target.value = ""; }} />
-              </label>
-              {nmLogo && <button type="button" onClick={() => setNmLogo("")} style={{ marginTop: 6, fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>삭제</button>}
-            </div>
-            <div>
-              <div style={lbl}>공고 노출 이미지 (커버)</div>
-              <label style={{ display: "block", width: "100%", height: 120, borderRadius: 12, border: "1px dashed #c4b5d4", background: nmCover ? "#fff" : "#fafafa", overflow: "hidden", cursor: nmCoverUploading ? "wait" : "pointer", position: "relative" }}>
-                {nmCover
-                  ? <img src={nmCover} alt="커버" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  : <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#5f0080", fontSize: 13, fontWeight: 500 }}>{nmCoverUploading ? "업로드중" : "커버 이미지 등록"}</span>}
-                <input type="file" accept="image/*" style={{ display: "none" }} disabled={nmCoverUploading}
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmCover, setNmCoverUploading); e.target.value = ""; }} />
-              </label>
-              {nmCover && <button type="button" onClick={() => setNmCover("")} style={{ marginTop: 6, fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>삭제</button>}
-            </div>
-          </div>
+        <div style={{ maxWidth: 760, margin: "0 auto 16px", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px", boxSizing: "border-box" }}>
+          <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 4 }}>공고 노출 이미지 (배너)</div>
+          <div style={{ fontSize: 12, color: "#999", marginBottom: 14 }}>공고 목록·상세 상단에 배너로 노출돼요</div>
+          <label style={{ display: "block", width: "100%", aspectRatio: "16 / 5", minHeight: 120, borderRadius: 12, border: "1px dashed #c4b5d4", background: nmCover ? "#fff" : "#fafafa", overflow: "hidden", cursor: nmCoverUploading ? "wait" : "pointer", position: "relative", boxSizing: "border-box" }}>
+            {nmCover
+              ? <img src={nmCover} alt="배너" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              : <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#5f0080", fontSize: 14, fontWeight: 500 }}>{nmCoverUploading ? "업로드중..." : "커버(배너) 이미지 등록"}</span>}
+            <input type="file" accept="image/*" style={{ display: "none" }} disabled={nmCoverUploading}
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmCover, setNmCoverUploading); e.target.value = ""; }} />
+          </label>
+          {nmCover && <button type="button" onClick={() => setNmCover("")} style={{ marginTop: 8, fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>삭제</button>}
         </div>
       )}
 
-      <div className="admin-form-grid jobpost-form" style={{ maxWidth: 760, margin: "0 auto", gridTemplateColumns: "minmax(0, 1fr)" }}>
+      <div className="admin-form-grid jobpost-form" style={{ width: "100%", maxWidth: 760, margin: "0 auto", gridTemplateColumns: "1fr", justifyContent: "stretch", justifyItems: "stretch" }}>
         {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
 
