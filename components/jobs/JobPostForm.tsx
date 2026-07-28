@@ -1211,8 +1211,8 @@ export default function JobPostForm({
               <div className="admin-form-row">
                 <label className="admin-form-label">채용 절차</label>
                 <div ref={processModalOpen ? processPopRef : undefined} style={{ position: "relative", width: "100%" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
-                    <span style={{ flex: 1, minWidth: 0, textAlign: "right", fontSize: "14px", color: processFilled ? "#555" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "flex-end", gap: "8px" }}>
+                    <span style={{ flex: 1, minWidth: 0, textAlign: "left", fontSize: "14px", color: processFilled ? "#555" : "#bbb", whiteSpace: "normal", wordBreak: "break-word", lineHeight: 1.6 }}>
                       {processFilled ? hiringProcess.join(" → ") : "채용절차를 선택해주세요"}
                     </span>
                     <button type="button" className="resume-icon-btn" aria-label={processFilled ? "수정" : "설정"} title={processFilled ? "수정" : "설정"}
@@ -1312,7 +1312,7 @@ export default function JobPostForm({
                   )}
                 </div>
                 {notesFilled && (
-                  <p style={{ margin: "10px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
+                  <p style={{ margin: "10px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6, textAlign: "left" }}>
                     {notes}
                   </p>
                 )}
