@@ -21,6 +21,7 @@ const NAV_ITEMS = [
     children: [
       { id: "jobs", label: "채용공고 목록", href: "/admin/jobs" },
       { id: "jobs-external", label: "외부 공고", href: "/admin/jobs/external" },
+      { id: "jobs-external-inbox", label: "외부 지원 인박스", href: "/admin/jobs/external/inbox" },
     ]
   },
   {
@@ -42,6 +43,7 @@ const PAGE_TITLES: Record<string, string> = {
   "jobs-scrapped": "스크랩 채용공고",
   "jobs-viewed": "열람한 채용공고",
   "jobs-external": "외부 공고",
+  "jobs-external-inbox": "외부 지원 인박스",
   "members": "회원관리",
   "members-companies": "회원관리",
   "members-blocked": "열람제한기업",
