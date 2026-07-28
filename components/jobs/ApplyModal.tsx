@@ -12,12 +12,14 @@ export default function ApplyModal({
   jobId,
   jobBrand,
   jobTitle,
+  isExternal,
   onClose,
   onApplied,
 }: {
   jobId: string;
   jobBrand?: string;
   jobTitle?: string;
+  isExternal?: boolean;
   onClose: () => void;
   onApplied: () => void;
 }) {
@@ -32,6 +34,7 @@ export default function ApplyModal({
   const [lastCoverLetter, setLastCoverLetter] = useState("");
   const [coverLoaded, setCoverLoaded] = useState(false);
   const [applying, setApplying] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // 기본 정보 (이력서 페이지와 동일하게 /api/users/me 에서)
@@ -192,6 +195,7 @@ export default function ApplyModal({
   const handleApply = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) { alert("로그인이 필요합니다."); return; }
+    if (isExternal && !consent) { alert("외부 기업에 지원하려면 개인정보 제3자 제공에 동의해주세요."); return; }
     setApplying(true);
     try {
       // 최신 이력서를 먼저 DB에 반영 → 스냅샷이 화면과 일치
@@ -205,7 +209,7 @@ export default function ApplyModal({
       const res = await fetch(`/api/jobs/${jobId}/apply`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ cover_letter: coverLetter.trim() || null }),
+        body: JSON.stringify({ cover_letter: coverLetter.trim() || null, third_party_consent: isExternal ? consent : undefined }),
       });
       const data = await res.json();
       if (!data.success) {
@@ -377,6 +381,12 @@ export default function ApplyModal({
               <p style={{ fontSize: 12, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
                 지원하면 위 이력서와 자기소개서가 그대로 전송·저장됩니다. 제출 후에는 수정할 수 없어요.
               </p>
+              {isExternal && (
+                <label style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: 8, padding: "10px 12px", marginBottom: 10, fontSize: 13, color: "#7c2d12", cursor: "pointer", lineHeight: 1.5 }}>
+                  <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 2, flexShrink: 0 }} />
+                  <span>이 공고는 외부 기업 공고예요. 지원하면 내 이력서·지원 정보가 해당 기업에 <b>제3자 제공</b>됩니다. 이에 동의합니다. (필수)</span>
+                </label>
+              )}
               <div style={{ display: "flex", gap: 8 }}>
                 <button
                   onClick={() => setStep("edit")}
