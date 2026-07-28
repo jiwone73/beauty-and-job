@@ -176,6 +176,12 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [workTimeOpen]);
+  // 회사 소개 textarea 자동 높이(불러오기로 긴 내용이 채워져도 잘리지 않게)
+  const nmDescRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const el = nmDescRef.current;
+    if (el) { el.style.height = "auto"; el.style.height = `${el.scrollHeight}px`; }
+  }, [nmDescription, nonMember]);
   const [showPreview, setShowPreview] = useState(false);
   const [companyProfile, setCompanyProfile] = useState<any>(null);
   useEffect(() => {
@@ -540,12 +546,13 @@ export default function JobPostForm({
 
   // 미리보기용 job 객체 (실제 상세 페이지와 동일한 뷰로 렌더)
   const cp = companyProfile;
-  const previewCompanyName = cp?.company_name || (mode === "admin" ? (nonMember ? newCompanyName : companyName) : "");
+  const isNm = mode === "admin" && nonMember; // 비회원(외부) 공고면 nm* 값 사용
+  const previewCompanyName = isNm ? newCompanyName : (cp?.company_name || (mode === "admin" ? companyName : ""));
   const previewJob = {
     id: editId || "preview",
     companyId: "",
-    brand: cp?.brand_name || cp?.company_name || (mode === "admin" ? (nonMember ? newCompanyName : companyName) : "우리 회사"),
-    brandDesc: cp?.description || "",
+    brand: isNm ? (newBrandName || newCompanyName) : (cp?.brand_name || cp?.company_name || (mode === "admin" ? companyName : "우리 회사")),
+    brandDesc: isNm ? nmDescription : (cp?.description || ""),
     tags: [] as string[],
     title: form.title || "공고 제목",
     jobType: jobGroupType === "기업" ? "사무직" : "매장직",
@@ -558,7 +565,7 @@ export default function JobPostForm({
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
     preferreds: form.preferred ? form.preferred.split("\n").filter(Boolean) : [],
-    benefits: benefitTags,
+    benefits: form.benefits ? form.benefits.split("\n").filter(Boolean) : benefitTags,
     responsibilities: form.responsibilities ? form.responsibilities.split("\n").filter(Boolean) : [],
     process: hiringProcess.filter((s) => s.trim()),
     notes: notes,
@@ -567,18 +574,19 @@ export default function JobPostForm({
     detailImages: detailImages,
     companyInfo: {
       name: previewCompanyName,
-      brandName: cp?.brand_name || "",
-      representative: cp?.representative_name || "",
+      brandName: isNm ? newBrandName : (cp?.brand_name || ""),
+      industry: isNm ? nmIndustry : "",
+      representative: isNm ? "" : (cp?.representative_name || ""),
       companyType: jobGroupType === "매장" ? "매장·살롱" : "기업·브랜드",
-      size: cp?.company_size || "",
-      founded: cp?.founded_year || "",
-      phone: cp?.company_phone || "",
-      website: cp?.website_url || "",
-      location: cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : "",
+      size: isNm ? "" : (cp?.company_size || ""),
+      founded: isNm ? "" : (cp?.founded_year || ""),
+      phone: isNm ? "" : (cp?.company_phone || ""),
+      website: isNm ? nmHomepage : (cp?.website_url || ""),
+      location: isNm ? nmAddress : (cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : ""),
       latitude: null,
       longitude: null,
     },
-    companyAddress: cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : "",
+    companyAddress: isNm ? nmAddress : (cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : ""),
     workDaysText: workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : ""),
     workTimeText: workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : ""),
   };
@@ -633,7 +641,7 @@ export default function JobPostForm({
               <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" /></div>
             )}
             <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>주소</div><input style={inp} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역 (선택)" /></div>
-            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>회사 소개</div><textarea style={{ ...inp, height: "auto", minHeight: 72, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="공고 상세의 '회사 소개'에 표시돼요" /></div>
+            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>회사 소개</div><textarea ref={nmDescRef} style={{ ...inp, height: "auto", minHeight: 72, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden" }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="공고 상세의 '회사 소개'에 표시돼요" /></div>
           </div>
         </div>
       )}

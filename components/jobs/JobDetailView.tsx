@@ -117,6 +117,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 <span>{job.companyInfo.companyType}</span>
               </div>
             )}
+            {job.companyInfo?.industry && (
+              <div className="job-detail-company-row">
+                <span className="job-detail-company-label">업종</span>
+                <span>{job.companyInfo.industry}</span>
+              </div>
+            )}
             {job.companyInfo?.representative && (
               <div className="job-detail-company-row">
                 <span className="job-detail-company-label">대표자</span>
