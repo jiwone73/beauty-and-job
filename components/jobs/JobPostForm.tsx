@@ -411,21 +411,27 @@ export default function JobPostForm({
       // 마감일: 상시채용이면 토글 ON, 아니면 날짜 세팅
       const isAlways = d.always_open === true || (!d.deadline);
       setAlwaysOpen(isAlways);
+      // 텍스트 필드가 배열로 와도 안전하게 문자열로 변환
+      const asText = (v: any, fb: string) => Array.isArray(v) ? v.filter(Boolean).join("\n") : (typeof v === "string" && v ? v : fb);
       setForm((f) => ({
         ...f,
         title: d.title || f.title,
-        description: d.description || f.description,
+        description: asText(d.description, f.description),
         deadline: isAlways ? "" : (d.deadline || f.deadline),
-        requirements: d.requirements || f.requirements,
-        preferred: d.preferred || f.preferred,
-        benefits: d.benefits || f.benefits,
-        responsibilities: d.main_duties || f.responsibilities,
+        requirements: asText(d.requirements, f.requirements),
+        preferred: asText(d.preferred, f.preferred),
+        benefits: asText(d.benefits, f.benefits),
+        responsibilities: asText(d.main_duties, f.responsibilities),
         career: (CAREER_OPTIONS.includes(d.career) ? d.career : f.career),
         type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : f.type),
       }));
       const extraLines = [d.salary ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
       if (extraLines) setNotes(extraLines);
-      setParseMsg("✓ 불러왔어요. 직군·경력·지역·복리후생까지 자동 반영했어요. 값만 확인하고 등록하세요.");
+      if (d.ai_parsed) {
+        setParseMsg("✓ 불러왔어요. 직군·경력·지역·복리후생까지 자동 반영했어요. 값만 확인하고 등록하세요.");
+      } else {
+        setParseMsg("⚠ AI 자동 정리에 실패해 제목·회사 등 기본 정보만 채웠어요. 공고 본문 전체를 아래 칸에 붙여넣고 다시 '불러오기'를 눌러주세요.");
+      }
     } catch { setParseMsg("오류가 발생했습니다."); }
     finally { setParsing(false); }
   };

@@ -38,6 +38,36 @@ const OFFICE_CATEGORIES = ["브랜드 마케팅", "퍼포먼스·디지털 마�
 const STORE_TAGS = ["기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능", "4대보험", "주말·공휴일 휴무", "정규직 전환"];
 const OFFICE_TAGS = ["인센티브", "자기계발비", "식대 지원", "주차 가능", "4대보험", "정규직 전환", "재택근무", "유연근무"];
 
+// LLM JSON 파싱(잘린 응답도 최대한 복구). 실패 시 null.
+function safeJsonParse(raw: string): any | null {
+  let s = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+  const a = s.indexOf("{");
+  if (a > 0) s = s.slice(a);
+  try { return JSON.parse(s); } catch { /* 잘렸을 수 있음 → 복구 시도 */ }
+  // 완전한 값 뒤(콤마 앞) 또는 괄호 닫힘 위치를 안전 체크포인트로 기록 → 잘린 뒷부분은 버리고 닫는다.
+  const stack: string[] = [];
+  let inStr = false, esc = false;
+  let safeLen = -1;
+  let safeStack: string[] = [];
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (c === "\\") esc = true;
+      else if (c === '"') inStr = false;
+      continue;
+    }
+    if (c === '"') inStr = true;
+    else if (c === "{" || c === "[") stack.push(c === "{" ? "}" : "]");
+    else if (c === "}" || c === "]") { stack.pop(); safeLen = i + 1; safeStack = [...stack]; }
+    else if (c === ",") { safeLen = i; safeStack = [...stack]; } // 콤마 앞까지는 완결된 값들
+  }
+  if (safeLen < 0) return null;
+  let t = s.slice(0, safeLen).replace(/,\s*$/, "");
+  for (let k = safeStack.length - 1; k >= 0; k--) t += safeStack[k];
+  try { return JSON.parse(t); } catch { return null; }
+}
+
 export async function POST(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "admin");
   if (authErr) return authErr;
@@ -95,6 +125,7 @@ export async function POST(req: NextRequest) {
     .filter((e) => !/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(e)).slice(0, 5);
 
   let out: any = {
+    ai_parsed: false,
     company_name: "", homepage_url: "", contact_email: emails[0] || "",
     title: ogTitle, job_type: "STORE", location: "", region: "", deadline: "", always_open: false,
     apply_method: emails[0] ? "EMAIL" : "MANAGED", external_apply_url: "",
@@ -143,14 +174,18 @@ export async function POST(req: NextRequest) {
       const user = `URL: ${url || "(없음)"}\n호스트: ${hostname || "(없음)"}\n\n[붙여넣은 공고 본문 · 최우선 신뢰]\n${bodyText || "(없음)"}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${pageText || "(없음)"}`;
       const msg = await anthropic.messages.create({
         model: "claude-haiku-4-5",
-        max_tokens: 1600,
+        max_tokens: 3000,
         system: sys,
         messages: [{ role: "user", content: user }],
       });
       const raw = msg.content.map((c: any) => (c.type === "text" ? c.text : "")).join("").trim();
-      const jsonStr = raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
-      const parsed = JSON.parse(jsonStr);
-      out = { ...out, ...parsed };
+      const parsed = safeJsonParse(raw);
+      if (parsed && typeof parsed === "object") {
+        out = { ...out, ...parsed };
+        out.ai_parsed = true;
+      } else {
+        console.error("[external parse LLM] JSON 파싱 실패. 원문 앞부분:", raw.slice(0, 300));
+      }
     } catch (e) {
       console.error("[external parse LLM]", e);
     }
@@ -173,6 +208,11 @@ export async function POST(req: NextRequest) {
   out.always_open = out.always_open === true || (!out.deadline && out.always_open !== false && /상시|수시|충원|채용\s*시/.test(bodyText + " " + pageText));
   if (out.always_open) out.deadline = "";
   if (typeof out.region !== "string") out.region = "";
+  // 서술형 텍스트 필드가 배열로 오면 줄바꿈 문자열로 정규화
+  for (const k of ["requirements", "preferred", "benefits", "main_duties", "description", "company_description", "extra_notes", "salary", "address"]) {
+    if (Array.isArray(out[k])) out[k] = out[k].filter(Boolean).join("\n");
+    else if (out[k] == null) out[k] = "";
+  }
 
   return ok(out);
 }
