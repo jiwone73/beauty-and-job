@@ -180,6 +180,10 @@ export default function JobDetailPage() {
           if (j.has_applied) setDbApplied(true);
           setJob({
             id: j.id,
+            isExternal: j.is_external || false,
+            applyMethod: j.apply_method || 'NATIVE',
+            externalApplyUrl: j.external_apply_url || '',
+            sourceUrl: j.source_url || '',
             companyId: j.company?.id || '',
             brand: j.company?.brand_name || j.company?.company_name || '',
             brandDesc: j.company?.description || '',
@@ -196,7 +200,7 @@ export default function JobDetailPage() {
             requirements: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],
             preferreds: j.preferred_qualifications ? j.preferred_qualifications.split('\n').filter(Boolean) : [],
             benefits: j.benefits ? j.benefits.split('\n').filter(Boolean) : [],
-            responsibilities: [],
+            responsibilities: j.responsibilities ? String(j.responsibilities).split('\n').filter(Boolean) : [],
             process: j.hiring_process || [],
             notes: j.notes || '',
             logo_url: j.company?.logo_url,
@@ -290,6 +294,16 @@ export default function JobDetailPage() {
     );
   }
   const bookmarked = isBookmarked(String(job.id));
+  const isExternal = !!job.isExternal;
+  const isRedirect = isExternal && job.applyMethod === 'REDIRECT';
+  const handleApplyClick = () => {
+    if (alreadyApplied) return;
+    if (isRedirect) {
+      if (job.externalApplyUrl) window.open(job.externalApplyUrl, "_blank", "noopener");
+      return;
+    }
+    if (!isLoggedIn) { setShowLoginModal(true); } else { setShowApplyModal(true); }
+  };
   const handleBookmark = () => {
     if (!isLoggedIn) { setShowLoginModal(true); return; }
     toggleBookmark(String(job.id));
@@ -340,19 +354,17 @@ export default function JobDetailPage() {
             </>
           ) : (
             <>
+              {isExternal && (
+                <div style={{ background: "#fff7ed", color: "#c2410c", borderRadius: 8, padding: "9px 12px", fontSize: 12.5, fontWeight: 700, marginBottom: 10, textAlign: "center", lineHeight: 1.45 }}>
+                  외부 공고 · {isRedirect ? "기업 채용페이지에서 지원해요" : "지원하면 해당 기업에 전달돼요"}
+                </div>
+              )}
               <button
                 className={`job-detail-apply-btn ${alreadyApplied ? "applied" : ""}`}
                 disabled={alreadyApplied}
-                onClick={() => {
-                  if (alreadyApplied) return;
-                  if (!isLoggedIn) {
-                    setShowLoginModal(true);
-                  } else {
-                    setShowApplyModal(true);
-                  }
-                }}
+                onClick={handleApplyClick}
               >
-                {alreadyApplied ? "✓ 지원완료" : "지원서 작성하기"}
+                {alreadyApplied ? "✓ 지원완료" : isRedirect ? "기업 채용페이지에서 지원" : "지원서 작성하기"}
               </button>
               <button
                 className={`job-detail-aside-bookmark ${bookmarked ? "active" : ""}`}
@@ -397,16 +409,9 @@ export default function JobDetailPage() {
             <button
               className={`job-detail-mobile-apply ${alreadyApplied ? "applied" : ""}`}
               disabled={alreadyApplied}
-              onClick={() => {
-                if (alreadyApplied) return;
-                if (!isLoggedIn) {
-                  setShowLoginModal(true);
-                } else {
-                  setShowApplyModal(true);
-                }
-              }}
+              onClick={handleApplyClick}
             >
-              {alreadyApplied ? "✓ 지원완료" : "지원하기"}
+              {alreadyApplied ? "✓ 지원완료" : isRedirect ? "기업 채용페이지에서 지원" : "지원하기"}
             </button>
           </>
         )}
@@ -418,6 +423,7 @@ export default function JobDetailPage() {
       {showApplyModal && job && (
         <ApplyModal
           jobId={String(params.id)}
+          isExternal={isExternal}
           jobBrand={job.brand}
           jobTitle={job.title}
           onClose={() => setShowApplyModal(false)}

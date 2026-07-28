@@ -27,7 +27,7 @@ const PRESET_PROCESS: Record<string, string[]> = {
 
 type Company = { id: string; company_name: string; brand_name: string | null };
 
-type TextKey = "benefits" | "description" | "requirements" | "preferred";
+type TextKey = "benefits" | "description" | "responsibilities" | "requirements" | "preferred";
 
 export interface JobPostFormProps {
   mode: "company" | "admin";
@@ -70,7 +70,7 @@ export default function JobPostForm({
   const [form, setForm] = useState({
     title: "", career: "",
     type: "정규직", deadline: "", salary: "", description: "",
-    requirements: "", preferred: "", benefits: "",
+    requirements: "", preferred: "", benefits: "", responsibilities: "",
   });
   const [saved, setSaved] = useState(false);
   const [alwaysOpen, setAlwaysOpen] = useState(false);
@@ -248,6 +248,7 @@ export default function JobPostForm({
         deadline: j.deadline ? String(j.deadline).slice(0, 10) : "",
         salary, description: j.description || "", requirements: j.requirements || "",
         preferred: j.preferred_qualifications || "", benefits: j.benefits || "",
+        responsibilities: j.responsibilities || "",
       });
       setAlwaysOpen(!j.deadline);
       setCategories(j.categories || []);
@@ -408,6 +409,7 @@ export default function JobPostForm({
         requirements: d.requirements || f.requirements,
         preferred: d.preferred || f.preferred,
         benefits: d.benefits || f.benefits,
+        responsibilities: d.main_duties || f.responsibilities,
         career: d.career || f.career,
         type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : f.type),
       }));
@@ -461,6 +463,7 @@ export default function JobPostForm({
       requirements: form.requirements || null,
       preferred_qualifications: form.preferred || null,
       benefits: form.benefits || null,
+      responsibilities: form.responsibilities || null,
       salary_min: salaryMin, salary_max: null,
       salary_type: salaryMin ? salaryType : null,
       location: regionList.join(", ") || null,
@@ -504,7 +507,8 @@ export default function JobPostForm({
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   const textFieldMeta: Record<TextKey, { label: string; hint?: string; placeholder: string }> = {
-    benefits: { label: benefitsLabel, placeholder: "복리후생·근무조건을 입력하세요" },
+    benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
+    responsibilities: { label: "주요업무", placeholder: "주요 업무를 입력하세요" },
     description: {
       label: "포지션 소개",
       hint: detailImages.length > 0 ? "선택 (이미지로 대체됨)" : "필수 (이미지 없을 시)",
@@ -513,7 +517,7 @@ export default function JobPostForm({
     requirements: { label: "자격요건", placeholder: "필수 자격요건을 입력하세요" },
     preferred: { label: "우대사항", placeholder: "우대사항을 입력하세요" },
   };
-  const textFields: TextKey[] = ["description", "requirements", "preferred"];
+  const textFields: TextKey[] = ["description", "responsibilities", "requirements", "preferred", "benefits"];
 
   const processFilled = hiringProcess.length > 0;
   const notesFilled = !!notes.trim();
@@ -539,7 +543,7 @@ export default function JobPostForm({
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
     preferreds: form.preferred ? form.preferred.split("\n").filter(Boolean) : [],
     benefits: benefitTags,
-    responsibilities: [] as string[],
+    responsibilities: form.responsibilities ? form.responsibilities.split("\n").filter(Boolean) : [],
     process: hiringProcess.filter((s) => s.trim()),
     notes: notes,
     logo_url: cp?.logo_url,

@@ -88,6 +88,7 @@ export async function GET(
     detail_images: job.detail_images || [],
     hiring_process: job.hiring_process || [],
     notes: job.notes || '',
+    responsibilities: job.responsibilities || '',
     work_days: job.work_days || '',
     work_time: job.work_time || '',
     work_time_slots: job.work_time_slots || '',

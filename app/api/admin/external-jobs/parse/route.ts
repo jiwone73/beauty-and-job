@@ -36,33 +36,46 @@ export async function POST(req: NextRequest) {
   if (authErr) return authErr;
 
   const b = await req.json().catch(() => ({}));
-  let url = (b.url || "").trim();
-  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+  const pastedText = (b.text || "").trim();
+
+  let url = "";
   let hostname = "";
-  try { hostname = new URL(url).hostname.replace(/^www\./, ""); }
-  catch { return err("VALIDATION_001", "올바른 URL을 입력해주세요.", 400); }
-
   let html = "";
-  try {
-    const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), 12000);
-    const r = await fetch(url, {
-      signal: ctl.signal,
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; BeautyworkBot/1.0)", "Accept-Language": "ko,en;q=0.8" },
-    });
-    clearTimeout(t);
-    if (!r.ok) return err("FETCH_001", `페이지를 불러오지 못했어요 (HTTP ${r.status}).`, 502);
-    html = await r.text();
-  } catch (e: any) {
-    return err("FETCH_002", "페이지를 불러오지 못했어요. 접근이 막혀 있거나 시간이 초과됐어요.", 502);
-  }
+  let jsonld = "";
+  let nextData = "";
+  let text = "";
+  let ogTitle = "";
+  let ogDesc = "";
 
-  const jsonld = extractJsonLd(html);
-  const nextData = extractNextData(html);
-  const text = htmlToText(html).slice(0, 9000);
-  const ogTitle = metaContent(html, "og:title") || (html.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || "");
-  const ogDesc = metaContent(html, "og:description");
-  const emails = [...new Set((html.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || []))]
+  if (pastedText) {
+    // 텍스트 붙여넣기 모드 — 서버 fetch 없이 그대로 사용(가장 정확)
+    text = pastedText.slice(0, 12000);
+  } else {
+    url = (b.url || "").trim();
+    if (!url) return err("VALIDATION_001", "URL 또는 공고 텍스트를 입력해주세요.", 400);
+    if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+    try { hostname = new URL(url).hostname.replace(/^www\./, ""); }
+    catch { return err("VALIDATION_001", "올바른 URL을 입력해주세요.", 400); }
+    try {
+      const ctl = new AbortController();
+      const t = setTimeout(() => ctl.abort(), 12000);
+      const r = await fetch(url, {
+        signal: ctl.signal,
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; BeautyworkBot/1.0)", "Accept-Language": "ko,en;q=0.8" },
+      });
+      clearTimeout(t);
+      if (!r.ok) return err("FETCH_001", `페이지를 불러오지 못했어요 (HTTP ${r.status}).`, 502);
+      html = await r.text();
+    } catch (e: any) {
+      return err("FETCH_002", "페이지를 불러오지 못했어요. 접근이 막혀 있거나 시간이 초과됐어요. 대신 공고 본문을 복사해 ‘텍스트 붙여넣기’로 등록해보세요.", 502);
+    }
+    jsonld = extractJsonLd(html);
+    nextData = extractNextData(html);
+    text = htmlToText(html).slice(0, 9000);
+    ogTitle = metaContent(html, "og:title") || (html.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || "");
+    ogDesc = metaContent(html, "og:description");
+  }
+  const emails = [...new Set(((html || pastedText).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || []))]
     .filter((e) => !/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(e)).slice(0, 5);
 
   let out: any = {
@@ -72,7 +85,7 @@ export async function POST(req: NextRequest) {
     description: ogDesc,
     company_description: "", address: "", industry: "",
     requirements: "", preferred: "", benefits: "", hiring_process: [] as string[],
-    employment_type: "", career: "", salary: "", extra_notes: "",
+    employment_type: "", career: "", salary: "", extra_notes: "", main_duties: "",
   };
 
   if (process.env.ANTHROPIC_API_KEY) {
@@ -80,7 +93,7 @@ export async function POST(req: NextRequest) {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
 반드시 아래 키를 가진 JSON "하나만" 출력해(설명·코드펜스 금지):
-{"company_name","homepage_url","contact_email","title","job_type","location","deadline","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","hiring_process","employment_type","career","salary","extra_notes"}
+{"company_name","homepage_url","contact_email","title","job_type","location","deadline","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","hiring_process","employment_type","career","salary","extra_notes","main_duties"}
 규칙:
 - job_type: 미용실·네일·피부·속눈썹 등 현장 미용직이면 "STORE", 화장품 브랜드·유통·본사 등 사무직이면 "OFFICE".
 - deadline: "YYYY-MM-DD" 형식 또는 상시/미상이면 "".
@@ -91,13 +104,14 @@ export async function POST(req: NextRequest) {
 - industry: job_type이 STORE면 [헤어샵, 네일샵, 피부·에스테틱, 속눈썹·왁싱·반영구, 메이크업, 애견미용, 토탈뷰티샵] 중 하나, OFFICE면 [화장품·미용기기 제조·브랜드, 뷰티 유통·이커머스, 프랜차이즈 본사, 미용 교육·아카데미, 피부과·성형외과, 뷰티 마케팅·미디어, 뷰티 서비스·플랫폼] 중 하나를 정확히 그대로. 애매하면 "".
 - requirements: 자격요건/지원자격을 한국어 텍스트로. 항목이 여러 개면 줄바꿈(\n)으로 구분. 없으면 "".
 - preferred: 우대사항을 텍스트로(줄바꿈 구분). 없으면 "".
-- benefits: 복리후생·근무조건을 텍스트로(줄바꿈 구분). 없으면 "".
+- benefits: 복리후생/혜택 및 복지/복지/베네핏 등 이름이 무엇이든 그 혜택 내용을 텍스트로(줄바꿈 구분). 없으면 "".
 - hiring_process: 채용 절차 단계를 문자열 배열로(예: ["서류전형","면접","최종합격"]). 없으면 [].
 - employment_type: "정규직" | "파트타임" | "계약직" 중 하나 또는 "".
 - career: 경력 조건을 짧은 텍스트로(예: "신입", "경력 2년 이상", "경력무관"). 없으면 "".
+- main_duties: 주요업무/담당업무를 텍스트로(여러 개면 줄바꿈 구분). 없으면 "".
 - salary: 급여/처우 조건을 텍스트로(예: "월 250만원", "비율 5:5", "면접 후 협의"). 없으면 "".
 - homepage_url: 그 회사 자체의 홈페이지만. 지금 보고 있는 채용사이트(출처) 주소는 넣지 말 것. 회사 홈페이지가 없으면 "".
-- extra_notes: 위 항목에 안 담기는 나머지 정보(근무시간·휴무/근무요일·복리후생·담당자 연락처·기타 안내 등)를 한국어로 항목별 정리(줄바꿈 구분). 없으면 "".
+- extra_notes: 위 항목에 안 담기는 나머지 정보(근무시간·휴무/근무요일·근태제도·담당자 연락처·기타 안내 등)를 한국어로 항목별 정리(줄바꿈 구분). 복리후생/혜택은 benefits에 넣고 여기 중복하지 말 것. 없으면 "".
 - 원문 복제는 피하되 내용은 빠짐없이 옮길 것. 우리 드롭다운에 억지로 맞추지 말고 있는 그대로.
 - 모르는 값은 빈 문자열 "".`;
       const user = `URL: ${url}\n호스트: ${hostname}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${text}`;
