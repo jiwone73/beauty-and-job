@@ -386,10 +386,11 @@ export default function JobPostForm({
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   const runParse = async () => {
     if (!parseUrl.trim() && !parseText.trim()) { setParseMsg("URL 또는 공고 본문을 입력해주세요."); return; }
-    setNonMember(true); setCompanyId(null);
+    if (mode === "admin") { setNonMember(true); setCompanyId(null); }
     setParsing(true); setParseMsg("");
     try {
-      const token = localStorage.getItem("admin_token");
+      // 관리자는 admin_token, 기업회원은 access_token 사용
+      const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
       const res = await fetch("/api/admin/external-jobs/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -398,15 +399,20 @@ export default function JobPostForm({
       const j = await res.json();
       if (!j.success) { setParseMsg(j.error?.message || "불러오기에 실패했어요."); return; }
       const d = j.data;
-      if (d.company_name) setNewCompanyName(d.company_name);
-      if (d.homepage_url) setNmHomepage(d.homepage_url);
-      if (d.contact_email) setNmContactEmail(d.contact_email);
-      if (d.job_type) setJobGroupType(d.job_type === "STORE" ? "매장" : "기업");
-      if (["MANAGED", "EMAIL", "REDIRECT"].includes(d.apply_method)) setApplyMethod(d.apply_method);
-      if (d.external_apply_url) setExternalApplyUrl(d.external_apply_url);
-      if (d.company_description) setNmDescription(d.company_description);
-      if (d.address) setNmAddress(d.address);
-      if (d.industry) setNmIndustry(d.industry);
+      // 회사 정보(회사명·홈페이지·이메일·주소·소개·업종·지원방식)는 관리자 비회원 입력에만 채움.
+      // 기업회원은 자기 프로필을 쓰되, 불러온 값이 있으면 우선 반영(레이아웃 편집 단계에서 필드로 노출 예정).
+      if (mode === "admin") {
+        if (d.company_name) setNewCompanyName(d.company_name);
+        if (d.homepage_url) setNmHomepage(d.homepage_url);
+        if (d.contact_email) setNmContactEmail(d.contact_email);
+        if (["MANAGED", "EMAIL", "REDIRECT"].includes(d.apply_method)) setApplyMethod(d.apply_method);
+        if (d.external_apply_url) setExternalApplyUrl(d.external_apply_url);
+        if (d.company_description) setNmDescription(d.company_description);
+        if (d.address) setNmAddress(d.address);
+        if (d.industry) setNmIndustry(d.industry);
+      }
+      // 채용유형: 토글이 열려 있을 때만(관리자 또는 BOTH 기업) 불러온 값으로 변경. 타입 고정 기업회원은 유지.
+      if (d.job_type && showTypeToggle) setJobGroupType(d.job_type === "STORE" ? "매장" : "기업");
       if (Array.isArray(d.hiring_process) && d.hiring_process.length) setHiringProcess(d.hiring_process);
       // 직군(칩) — 서버가 공식 목록에 맞춰 골라줌
       if (Array.isArray(d.job_categories) && d.job_categories.length) setCategories(d.job_categories);
@@ -609,9 +615,9 @@ export default function JobPostForm({
         </div>
       </div>
 
-      {mode === "admin" && (
+      {(
         <div style={{ maxWidth: 1180, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px" }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>외부 공고 불러오기 (자동 작성)</div>
+          <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기 (자동 작성)" : "타 사이트 공고 불러오기 (자동 작성)"}</div>
           <div style={{ display: "flex", gap: 8 }}>
             <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
             <button type="button" onClick={runParse} disabled={parsing} style={{ flexShrink: 0, padding: "0 20px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "불러오는 중..." : "불러오기"}</button>
@@ -623,7 +629,9 @@ export default function JobPostForm({
             onChange={(e) => setParseText(e.target.value)}
           />
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
-          <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>URL만, 본문만, 또는 <b>둘 다</b> 넣을 수 있어요. 붙여넣은 본문이 있으면 그 내용을 최우선으로 발췌하고 URL은 회사·링크 정보를 보완해요. 직군 등 드롭다운은 정확히 안 맞을 수 있으니 확인·수정 후 등록하세요.</div>
+          <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>{mode === "admin"
+            ? <>URL만, 본문만, 또는 <b>둘 다</b> 넣을 수 있어요. 붙여넣은 본문이 있으면 그 내용을 최우선으로 발췌하고 URL은 회사·링크 정보를 보완해요. 직군 등 드롭다운은 정확히 안 맞을 수 있으니 확인·수정 후 등록하세요.</>
+            : <>타 사이트에 올린 공고의 URL이나 본문을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</>}</div>
         </div>
       )}
 

@@ -69,8 +69,10 @@ function safeJsonParse(raw: string): any | null {
 }
 
 export async function POST(req: NextRequest) {
-  const { auth, res: authErr } = requireAuth(req, "admin");
+  // 관리자(외부공고) + 기업회원(타 사이트 공고 불러오기) 모두 허용
+  const { auth, res: authErr } = requireAuth(req);
   if (authErr) return authErr;
+  if (!auth || !["admin", "company"].includes(auth.owner_type)) return err("AUTH_002", "권한이 없습니다.", 403);
 
   const b = await req.json().catch(() => ({}));
   const pastedText = (b.text || "").trim();
@@ -120,6 +122,8 @@ export async function POST(req: NextRequest) {
 
   // 붙여넣은 공고 본문(가장 정확한 원본). URL 본문과 합쳐 AI에 전달.
   const bodyText = pastedText.slice(0, 16000);
+  // 비용 절감: 본문을 충분히 붙여넣었으면 페이지 텍스트는 보조용으로 짧게만 전달(입력 토큰 대폭 감소)
+  if (bodyText.length > 1000 && pageText) pageText = pageText.slice(0, 4000);
 
   const emails = [...new Set(((html || "") + " " + pastedText).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [])]
     .filter((e) => !/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(e)).slice(0, 5);
