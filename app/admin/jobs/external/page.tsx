@@ -82,6 +82,40 @@ export default function AdminExternalJobsPage() {
   };
   useEffect(() => { load(); }, []);
 
+  const [parseUrl, setParseUrl] = useState("");
+  const [parsing, setParsing] = useState(false);
+  const [parseMsg, setParseMsg] = useState("");
+  const runParse = async () => {
+    if (!parseUrl.trim()) { setParseMsg("URL을 입력해주세요."); return; }
+    setParsing(true); setParseMsg("");
+    try {
+      const res = await fetch("/api/admin/external-jobs/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ url: parseUrl.trim() }),
+      });
+      const j = await res.json();
+      if (!j.success) { setParseMsg(j.error?.message || "불러오기에 실패했어요."); return; }
+      const d = j.data;
+      setForm((f) => ({
+        ...f,
+        company_name: d.company_name || f.company_name,
+        homepage_url: d.homepage_url || f.homepage_url,
+        contact_email: d.contact_email || f.contact_email,
+        source_site: d.source_site || f.source_site,
+        source_url: d.source_url || f.source_url,
+        title: d.title || f.title,
+        job_type: d.job_type || f.job_type,
+        location: d.location || f.location,
+        deadline: d.deadline || f.deadline,
+        apply_method: d.apply_method || f.apply_method,
+        external_apply_url: d.external_apply_url || f.external_apply_url,
+        description: d.description || f.description,
+      }));
+      setParseMsg("✓ 불러왔어요. 내용을 확인하고 등록하세요.");
+    } catch { setParseMsg("오류가 발생했습니다."); }
+    finally { setParsing(false); }
+  };
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const submit = async () => {
@@ -122,6 +156,15 @@ export default function AdminExternalJobsPage() {
         {/* 등록 폼 */}
         <div className="admin-card" style={{ marginBottom: 24 }}>
           <div className="admin-form-body">
+            <div style={{ background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 14px", marginBottom: 16 }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>URL로 불러오기 (자동 작성)</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") runParse(); }} />
+                <button onClick={runParse} disabled={parsing} style={{ flexShrink: 0, padding: "0 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "불러오는 중..." : "불러오기"}</button>
+              </div>
+              {parseMsg && <p style={{ fontSize: 12.5, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b", margin: "8px 0 0" }}>{parseMsg}</p>}
+              <p style={{ fontSize: 12, color: "#999", margin: "6px 0 0" }}>페이지에서 항목을 발췌해 아래 폼을 자동 작성하고, 설명은 요약(큐레이션)돼요. 결과를 검토·수정한 뒤 등록하세요.</p>
+            </div>
             <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 4 }}>기업 정보</div>
             <div className="admin-form-row-2col">
               <div className="admin-form-row">
