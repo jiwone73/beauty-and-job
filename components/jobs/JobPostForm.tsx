@@ -402,21 +402,30 @@ export default function JobPostForm({
       if (d.address) setNmAddress(d.address);
       if (d.industry) setNmIndustry(d.industry);
       if (Array.isArray(d.hiring_process) && d.hiring_process.length) setHiringProcess(d.hiring_process);
+      // 직군(칩) — 서버가 공식 목록에 맞춰 골라줌
+      if (Array.isArray(d.job_categories) && d.job_categories.length) setCategories(d.job_categories);
+      // 근무지역 — "시도 시군구" 형식 그대로 반영
+      if (d.region) setRegionList([d.region]);
+      // 복리후생·근무조건 태그(칩)
+      if (Array.isArray(d.benefit_tags) && d.benefit_tags.length) setBenefitTags(d.benefit_tags);
+      // 마감일: 상시채용이면 토글 ON, 아니면 날짜 세팅
+      const isAlways = d.always_open === true || (!d.deadline);
+      setAlwaysOpen(isAlways);
       setForm((f) => ({
         ...f,
         title: d.title || f.title,
         description: d.description || f.description,
-        deadline: d.deadline || f.deadline,
+        deadline: isAlways ? "" : (d.deadline || f.deadline),
         requirements: d.requirements || f.requirements,
         preferred: d.preferred || f.preferred,
         benefits: d.benefits || f.benefits,
         responsibilities: d.main_duties || f.responsibilities,
-        career: d.career || f.career,
+        career: (CAREER_OPTIONS.includes(d.career) ? d.career : f.career),
         type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : f.type),
       }));
       const extraLines = [d.salary ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
       if (extraLines) setNotes(extraLines);
-      setParseMsg("✓ 불러왔어요. 드롭다운(직군·경력 등)만 확인·선택하고 등록하세요.");
+      setParseMsg("✓ 불러왔어요. 직군·경력·지역·복리후생까지 자동 반영했어요. 값만 확인하고 등록하세요.");
     } catch { setParseMsg("오류가 발생했습니다."); }
     finally { setParsing(false); }
   };
@@ -857,8 +866,9 @@ export default function JobPostForm({
                 </div>
               </div>
 
+              {jobGroupType === "매장" && (
               <>
-                {/* 근무 요일 */}
+                {/* 근무 요일 (매장 전용) */}
                 <div className="admin-form-row">
                   <label className="admin-form-label">근무 요일</label>
                   <div ref={workDaysRef} style={{ position: "relative", width: "100%" }}>
@@ -916,6 +926,7 @@ export default function JobPostForm({
                 </div>
 
               </>
+              )}
             </div>
           </div>
 
