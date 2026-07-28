@@ -71,6 +71,8 @@ export async function POST(req: NextRequest) {
     apply_method: emails[0] ? "EMAIL" : "MANAGED", external_apply_url: "",
     description: ogDesc,
     company_description: "", address: "", industry: "",
+    requirements: "", preferred: "", benefits: "", hiring_process: [] as string[],
+    employment_type: "", career: "",
   };
 
   if (process.env.ANTHROPIC_API_KEY) {
@@ -78,7 +80,7 @@ export async function POST(req: NextRequest) {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
 반드시 아래 키를 가진 JSON "하나만" 출력해(설명·코드펜스 금지):
-{"company_name","homepage_url","contact_email","title","job_type","location","deadline","apply_method","external_apply_url","description","company_description","address","industry"}
+{"company_name","homepage_url","contact_email","title","job_type","location","deadline","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","hiring_process","employment_type","career"}
 규칙:
 - job_type: 미용실·네일·피부·속눈썹 등 현장 미용직이면 "STORE", 화장품 브랜드·유통·본사 등 사무직이면 "OFFICE".
 - deadline: "YYYY-MM-DD" 형식 또는 상시/미상이면 "".
@@ -87,6 +89,13 @@ export async function POST(req: NextRequest) {
 - company_description: 그 회사·브랜드 자체에 대한 소개 2~3문장(있으면). 채용 내용이 아니라 회사 소개. 없으면 "".
 - address: 회사/근무지의 주소나 지역(있으면), 없으면 "".
 - industry: job_type이 STORE면 [헤어샵, 네일샵, 피부·에스테틱, 속눈썹·왁싱·반영구, 메이크업, 애견미용, 토탈뷰티샵] 중 하나, OFFICE면 [화장품·미용기기 제조·브랜드, 뷰티 유통·이커머스, 프랜차이즈 본사, 미용 교육·아카데미, 피부과·성형외과, 뷰티 마케팅·미디어, 뷰티 서비스·플랫폼] 중 하나를 정확히 그대로. 애매하면 "".
+- requirements: 자격요건/지원자격을 한국어 텍스트로. 항목이 여러 개면 줄바꿈(\n)으로 구분. 없으면 "".
+- preferred: 우대사항을 텍스트로(줄바꿈 구분). 없으면 "".
+- benefits: 복리후생·근무조건을 텍스트로(줄바꿈 구분). 없으면 "".
+- hiring_process: 채용 절차 단계를 문자열 배열로(예: ["서류전형","면접","최종합격"]). 없으면 [].
+- employment_type: "정규직" | "파트타임" | "계약직" 중 하나 또는 "".
+- career: 경력 조건을 짧은 텍스트로(예: "신입", "경력 2년 이상", "경력무관"). 없으면 "".
+- 원문 복제는 피하되 내용은 빠짐없이 옮길 것. 우리 드롭다운에 억지로 맞추지 말고 있는 그대로.
 - 모르는 값은 빈 문자열 "".`;
       const user = `URL: ${url}\n호스트: ${hostname}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${text}`;
       const msg = await anthropic.messages.create({

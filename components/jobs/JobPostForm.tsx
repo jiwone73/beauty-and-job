@@ -376,6 +376,7 @@ export default function JobPostForm({
 
   const runParse = async () => {
     if (!parseUrl.trim()) { setParseMsg("URL을 입력해주세요."); return; }
+    setNonMember(true); setCompanyId(null);
     setParsing(true); setParseMsg("");
     try {
       const token = localStorage.getItem("admin_token");
@@ -396,8 +397,19 @@ export default function JobPostForm({
       if (d.company_description) setNmDescription(d.company_description);
       if (d.address) setNmAddress(d.address);
       if (d.industry) setNmIndustry(d.industry);
-      setForm((f) => ({ ...f, title: d.title || f.title, description: d.description || f.description, deadline: d.deadline || f.deadline }));
-      setParseMsg("✓ 불러왔어요. 내용을 확인하고 등록하세요.");
+      if (Array.isArray(d.hiring_process) && d.hiring_process.length) setHiringProcess(d.hiring_process);
+      setForm((f) => ({
+        ...f,
+        title: d.title || f.title,
+        description: d.description || f.description,
+        deadline: d.deadline || f.deadline,
+        requirements: d.requirements || f.requirements,
+        preferred: d.preferred || f.preferred,
+        benefits: d.benefits || f.benefits,
+        career: d.career || f.career,
+        type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : f.type),
+      }));
+      setParseMsg("✓ 불러왔어요. 드롭다운(직군 등)만 확인·선택하고 등록하세요.");
     } catch { setParseMsg("오류가 발생했습니다."); }
     finally { setParsing(false); }
   };
@@ -565,6 +577,18 @@ export default function JobPostForm({
         </div>
       </div>
 
+      {mode === "admin" && (
+        <div style={{ maxWidth: 1180, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px" }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>외부 공고 URL로 불러오기 (자동 작성)</div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
+            <button type="button" onClick={runParse} disabled={parsing} style={{ flexShrink: 0, padding: "0 20px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "불러오는 중..." : "불러오기"}</button>
+          </div>
+          {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
+          <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>비회원(외부) 공고를 URL에서 발췌해 자동 작성해요. 직군 등 드롭다운은 정확히 안 맞을 수 있어 내용은 텍스트로 채워지니, 확인·수정 후 등록하세요.</div>
+        </div>
+      )}
+
       <div className="admin-form-grid jobpost-form">
         {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -584,11 +608,6 @@ export default function JobPostForm({
                         value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} />
                       <input className="admin-form-input" placeholder="브랜드명 (선택)"
                         value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} />
-                      <div style={{ display: "flex", gap: 6 }}>
-                        <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 → 자동작성" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
-                        <button type="button" onClick={runParse} disabled={parsing} style={{ flexShrink: 0, padding: "0 14px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "..." : "불러오기"}</button>
-                      </div>
-                      {parseMsg && <div style={{ fontSize: 12, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
                       <input className="admin-form-input" placeholder="채용 이메일 (이메일 중계 시 필요)" value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} />
                       <input className="admin-form-input" placeholder="홈페이지 (선택)" value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} />
                       <select className="admin-form-select" value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}>
