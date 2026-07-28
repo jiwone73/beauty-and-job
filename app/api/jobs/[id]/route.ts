@@ -101,7 +101,7 @@ export async function GET(
     apply_method: job.apply_method,
     external_apply_url: job.external_apply_url,
     company: {
-      id: job.company_id,
+      id: job.is_member === false ? null : job.company_id,
       company_name: job.company_name,
       brand_name: job.brand_name,
       representative_name: job.representative_name,

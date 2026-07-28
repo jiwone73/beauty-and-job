@@ -16,13 +16,29 @@ interface JobDetailViewProps {
 /**
  * 채용공고 상세 본문(좌측 본문 + 우측 지원 카드).
  * 실제 상세 페이지와 등록/수정 미리보기에서 동일하게 사용한다.
- * 회사 상세정보는 상단 기업이름 클릭 → /brands/[id] 별도 페이지에서 표시.
+ * 회사 정보는 공고 내용 아래에 인라인으로 표시(등록 시 입력한 값 그대로).
  */
 const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function JobDetailView(
   { job, related = [], companyJobsCount = 0, onBrandClick, asideAction },
   ref
 ) {
-  const hasMap = (job.companyInfo?.latitude && job.companyInfo?.longitude) || job.companyAddress?.trim();
+  const ci = job.companyInfo || {};
+  const hasMap = (ci.latitude && ci.longitude) || job.companyAddress?.trim();
+  const companyRows: [string, ReactNode][] = [];
+  if (ci.name) companyRows.push(["회사명", ci.name]);
+  if (ci.brandName) companyRows.push(["브랜드명", ci.brandName]);
+  if (ci.companyType) companyRows.push(["기업 유형", ci.companyType]);
+  if (ci.industry) companyRows.push(["업종", ci.industry]);
+  if (ci.representative) companyRows.push(["대표자", ci.representative]);
+  if (ci.size) companyRows.push(["규모", ci.size]);
+  if (ci.founded) companyRows.push(["설립", ci.founded]);
+  if (ci.phone) companyRows.push(["대표번호", ci.phone]);
+  if (ci.website) companyRows.push(["웹사이트",
+    <a key="w" href={/^https?:\/\//.test(ci.website) ? ci.website : `https://${ci.website}`}
+      target="_blank" rel="noreferrer" style={{ color: "#5f0080", wordBreak: "break-all" }}>{ci.website}</a>]);
+  if (ci.location) companyRows.push(["위치", shortRegion(ci.location)]);
+  const hasCompanyInfo = job.brandDesc?.trim() || companyRows.length > 0;
+
   return (
     <div className="job-detail-layout" ref={ref}>
       {/* 왼쪽: 공고 본문 */}
@@ -55,19 +71,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
         <div className="job-detail-info-box">
           <div className="job-detail-brand-row">
-            {job.companyId ? (
-              <Link href={`/brands/${job.companyId}`} className="job-detail-brand" style={{ cursor: "pointer" }}>
-                {job.brand}
-              </Link>
-            ) : (
-              <span
-                className="job-detail-brand"
-                style={{ cursor: onBrandClick ? "pointer" : "default" }}
-                onClick={() => onBrandClick?.()}
-              >
-                {job.brand}
-              </span>
-            )}
+            <span
+              className="job-detail-brand"
+              style={{ cursor: onBrandClick ? "pointer" : "default" }}
+              onClick={() => onBrandClick?.()}
+            >
+              {job.brand}
+            </span>
             {job.tags?.map((tag: string) => (
               <span key={tag} className="job-detail-tag">· {tag}</span>
             ))}
@@ -235,12 +245,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             {job.companyAddress?.trim() && (
               <p className="job-detail-desc" style={{ marginBottom: "12px" }}>{job.companyAddress}</p>
             )}
-            {job.companyInfo?.latitude && job.companyInfo?.longitude ? (
-              <KakaoMap
-                latitude={Number(job.companyInfo.latitude)}
-                longitude={Number(job.companyInfo.longitude)}
-                name={job.companyInfo?.name}
-              />
+            {ci.latitude && ci.longitude ? (
+              <KakaoMap latitude={Number(ci.latitude)} longitude={Number(ci.longitude)} name={ci.name} />
             ) : (
               <iframe
                 title="회사 위치"
@@ -255,35 +261,23 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </section>
         )}
 
-        {/* 회사 카드 — 상세정보는 기업 페이지로 */}
-        {(job.brand || job.brandDesc?.trim()) && (
+        {/* 기업 정보 (공고 내용 아래) */}
+        {hasCompanyInfo && (
           <section className="job-detail-section">
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", border: "1px solid var(--color-border)", borderRadius: "12px" }}>
-              <div style={{ width: 44, height: 44, borderRadius: "10px", background: "#f4ebfb", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
-                {job.logo_url ? (
-                  <img src={job.logo_url} alt={job.brand} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                ) : (
-                  <span style={{ fontSize: 18, fontWeight: 800, color: "#5f0080" }}>{job.brand?.[0] || "·"}</span>
-                )}
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a1a" }}>{job.brand}</div>
-                {job.companyInfo?.industry && (
-                  <div style={{ fontSize: 13, color: "#888" }}>{job.companyInfo.industry}</div>
-                )}
-              </div>
-              {job.companyId ? (
-                <Link href={`/brands/${job.companyId}`} style={{ color: "#5f0080", fontSize: 14, fontWeight: 600, whiteSpace: "nowrap" }}>
-                  기업 정보 →
-                </Link>
-              ) : onBrandClick ? (
-                <button type="button" onClick={() => onBrandClick?.()} style={{ background: "none", border: "none", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                  기업 정보 →
-                </button>
-              ) : null}
-            </div>
+            <h2 className="job-detail-section-title">기업 정보</h2>
             {job.brandDesc?.trim() && (
-              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginTop: "12px" }}>{job.brandDesc}</p>
+              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginBottom: companyRows.length ? "16px" : 0 }}>{job.brandDesc}</p>
+            )}
+            {companyRows.length > 0 && (
+              <div className="job-detail-company-info">
+                {companyRows.map(([label, val], i) => (
+                  <div key={i} className="job-detail-company-row"
+                    style={label === "웹사이트" || label === "위치" ? { gridColumn: "1 / -1" } : undefined}>
+                    <span className="job-detail-company-label">{label}</span>
+                    <span>{val}</span>
+                  </div>
+                ))}
+              </div>
             )}
           </section>
         )}
