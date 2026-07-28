@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
   let ogTitle = "";
   let ogDesc = "";
   let ogImage = "";
+  let images: string[] = [];
 
   if (!pastedText && !url) return err("VALIDATION_001", "URL 또는 공고 텍스트를 입력해주세요.", 400);
 
@@ -123,6 +124,13 @@ export async function POST(req: NextRequest) {
           try { img = new URL(img, url).href; } catch { img = ""; }
         }
         ogImage = img;
+        // 배너 외 본문 이미지: og:image와 같은 폴더의 이미지들 = 그 공고의 사진 세트일 확률이 높음
+        if (ogImage) {
+          const dir = ogImage.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
+          const all = [...html.matchAll(/https?:\/\/[^\s"'<>()\\]+?\.(?:jpe?g|png|webp)(?:\?[^\s"'<>()\\]*)?/gi)]
+            .map((m) => m[0].replace(/\\u002[Ff]/g, "/").replace(/\\\//g, "/"));
+          images = [...new Set(all)].filter((u) => dir && u.startsWith(dir) && !/(icon|logo|sprite|favicon|badge|button|blank|spacer|avatar|profile)/i.test(u)).slice(0, 6);
+        }
       }
     }
   }
@@ -205,6 +213,7 @@ export async function POST(req: NextRequest) {
   out.source_site = hostname;
   out.source_url = url;
   out.cover_image = /^https?:\/\//i.test(ogImage) ? ogImage : "";
+  out.images = images;
   if (out.apply_method === "REDIRECT" && !out.external_apply_url && url) out.external_apply_url = url;
   if (!["STORE", "OFFICE"].includes(out.job_type)) out.job_type = "STORE";
   if (!["REDIRECT", "EMAIL", "MANAGED"].includes(out.apply_method)) out.apply_method = "MANAGED";

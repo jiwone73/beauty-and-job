@@ -431,6 +431,12 @@ export default function JobPostForm({
         if (d.address) setNmAddress(d.address);
         if (d.industry) setNmIndustry(d.industry);
         if (d.cover_image) setNmCover(d.cover_image);
+        // 배너 외 이미지 → 상세 이미지(최대 5장, 배너와 중복 제외)
+        if (Array.isArray(d.images) && d.images.length) {
+          const banner = d.cover_image || "";
+          const rest = d.images.filter((u: string) => u && u !== banner).slice(0, 5).map((u: string, i: number) => ({ url: u, name: `이미지 ${i + 1}` }));
+          if (rest.length) setDetailImages(rest);
+        }
       }
       // 채용유형: 토글이 열려 있을 때만(관리자 또는 BOTH 기업) 불러온 값으로 변경. 타입 고정 기업회원은 유지.
       if (d.job_type && showTypeToggle) setJobGroupType(d.job_type === "STORE" ? "매장" : "기업");
@@ -1209,22 +1215,24 @@ export default function JobPostForm({
 
               {/* 채용 절차 */}
               <div className="admin-form-row">
-                <label className="admin-form-label">채용 절차</label>
                 <div ref={processModalOpen ? processPopRef : undefined} style={{ position: "relative", width: "100%" }}>
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "flex-end", gap: "8px" }}>
-                    <span style={{ flex: 1, minWidth: 0, textAlign: "left", fontSize: "14px", color: processFilled ? "#555" : "#bbb", whiteSpace: "normal", wordBreak: "break-word", lineHeight: 1.6 }}>
-                      {processFilled ? hiringProcess.join(" → ") : "채용절차를 선택해주세요"}
-                    </span>
-                    <button type="button" className="resume-icon-btn" aria-label={processFilled ? "수정" : "설정"} title={processFilled ? "수정" : "설정"}
-                      onClick={() => { if (processModalOpen) setProcessModalOpen(false); else openProcessModal(); }}>
-                      <Pencil size={15} />
-                    </button>
-                    {processFilled && (
-                      <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
-                        onClick={() => { if (confirm("채용 절차를 삭제할까요?")) setHiringProcess([]); }}>
-                        <Trash2 size={15} />
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                    <span style={{ fontSize: "14px", color: "#555" }}>채용 절차</span>
+                    <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                      <button type="button" className="resume-icon-btn" aria-label={processFilled ? "수정" : "설정"} title={processFilled ? "수정" : "설정"}
+                        onClick={() => { if (processModalOpen) setProcessModalOpen(false); else openProcessModal(); }}>
+                        <Pencil size={15} />
                       </button>
-                    )}
+                      {processFilled && (
+                        <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
+                          onClick={() => { if (confirm("채용 절차를 삭제할까요?")) setHiringProcess([]); }}>
+                          <Trash2 size={15} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ marginTop: "8px", fontSize: "14px", color: processFilled ? "#555" : "#bbb", lineHeight: 1.6, whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
+                    {processFilled ? hiringProcess.join(" → ") : "채용절차를 선택해주세요"}
                   </div>
                   {processModalOpen && (
                     <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -1283,20 +1291,21 @@ export default function JobPostForm({
 
               {/* 비고 · 유의사항 */}
               <div className="admin-form-row">
-                <label className="admin-form-label">비고 · 유의사항</label>
                 <div ref={notesModalOpen ? notesPopRef : undefined} style={{ position: "relative", width: "100%" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
-                    {!notesFilled && <span style={{ fontSize: "14px", color: "#bbb" }}>작성해주세요</span>}
-                    <button type="button" className="resume-icon-btn" aria-label={notesFilled ? "수정" : "작성"} title={notesFilled ? "수정" : "작성"}
-                      onClick={() => { if (notesModalOpen) setNotesModalOpen(false); else openNotesModal(); }}>
-                      <Pencil size={15} />
-                    </button>
-                    {notesFilled && (
-                      <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
-                        onClick={() => { if (confirm("비고를 삭제할까요?")) setNotes(""); }}>
-                        <Trash2 size={15} />
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                    <span style={{ fontSize: "14px", color: "#555" }}>비고 · 유의사항</span>
+                    <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                      <button type="button" className="resume-icon-btn" aria-label={notesFilled ? "수정" : "작성"} title={notesFilled ? "수정" : "작성"}
+                        onClick={() => { if (notesModalOpen) setNotesModalOpen(false); else openNotesModal(); }}>
+                        <Pencil size={15} />
                       </button>
-                    )}
+                      {notesFilled && (
+                        <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
+                          onClick={() => { if (confirm("비고를 삭제할까요?")) setNotes(""); }}>
+                          <Trash2 size={15} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   {notesModalOpen && (
                     <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
@@ -1311,11 +1320,9 @@ export default function JobPostForm({
                     </div>
                   )}
                 </div>
-                {notesFilled && (
-                  <p style={{ margin: "10px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6, textAlign: "left" }}>
-                    {notes}
-                  </p>
-                )}
+                {notesFilled
+                  ? <p style={{ margin: "8px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6, textAlign: "left" }}>{notes}</p>
+                  : <div style={{ marginTop: "8px", fontSize: "14px", color: "#bbb", textAlign: "left" }}>작성해주세요</div>}
               </div>
             </div>
           </div>
