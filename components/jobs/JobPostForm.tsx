@@ -64,6 +64,7 @@ export default function JobPostForm({
   const [parseText, setParseText] = useState("");
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
+  const [curating, setCurating] = useState(false);
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
   const [categories, setCategories] = useState<string[]>([]);
   const [regionList, setRegionList] = useState<string[]>([]);
@@ -448,6 +449,44 @@ export default function JobPostForm({
     finally { setParsing(false); }
   };
 
+  // 큐레이션(관리자 전용): 현재 채워진 내용을 뷰티워크 톤·형식으로 AI가 다듬기
+  const runCurate = async () => {
+    const hasAny = [form.title, nmDescription, form.description, form.responsibilities, form.requirements, form.preferred, form.benefits, notes].some((v) => (v || "").trim());
+    if (!hasAny) { setParseMsg("먼저 공고 내용을 채워주세요."); return; }
+    setCurating(true); setParseMsg("");
+    try {
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch("/api/admin/external-jobs/curate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          title: form.title, company_description: nmDescription,
+          description: form.description, responsibilities: form.responsibilities,
+          requirements: form.requirements, preferred: form.preferred,
+          benefits: form.benefits, notes,
+          job_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
+        }),
+      });
+      const j = await res.json();
+      if (!j.success) { setParseMsg(j.error?.message || "큐레이션에 실패했어요."); return; }
+      const d = j.data;
+      if (!d.curated) { setParseMsg("⚠ 큐레이션에 실패했어요. 잠시 후 다시 시도해주세요."); return; }
+      setForm((f) => ({
+        ...f,
+        title: d.title || f.title,
+        description: d.description || f.description,
+        responsibilities: d.responsibilities || f.responsibilities,
+        requirements: d.requirements || f.requirements,
+        preferred: d.preferred || f.preferred,
+        benefits: d.benefits || f.benefits,
+      }));
+      if (typeof d.company_description === "string" && d.company_description.trim()) setNmDescription(d.company_description);
+      if (typeof d.notes === "string" && d.notes.trim()) setNotes(d.notes);
+      setParseMsg("✓ 큐레이션 완료 — 내용을 뷰티워크 톤으로 다듬었어요. 확인 후 등록하세요.");
+    } catch { setParseMsg("오류가 발생했습니다."); }
+    finally { setCurating(false); }
+  };
+
   const handleSubmit = async (status: "draft" | "publish") => {
     if (mode === "admin") {
       if (nonMember) {
@@ -620,7 +659,11 @@ export default function JobPostForm({
           <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기 (자동 작성)" : "타 사이트 공고 불러오기 (자동 작성)"}</div>
           <div style={{ display: "flex", gap: 8 }}>
             <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
-            <button type="button" onClick={runParse} disabled={parsing} style={{ flexShrink: 0, padding: "0 20px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "불러오는 중..." : "불러오기"}</button>
+            <button type="button" onClick={runParse} disabled={parsing || curating} style={{ flexShrink: 0, padding: "0 20px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "불러오는 중..." : "불러오기"}</button>
+            {mode === "admin" && (
+              <button type="button" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 내용을 뷰티워크 톤·형식으로 AI가 다듬어요"
+                style={{ flexShrink: 0, padding: "0 16px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: curating ? 0.6 : 1, whiteSpace: "nowrap" }}>{curating ? "다듬는 중..." : "✨ 큐레이션"}</button>
+            )}
           </div>
           <textarea
             style={{ width: "100%", marginTop: 8, minHeight: 92, padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e0eb", fontSize: 13, lineHeight: 1.5, resize: "vertical", boxSizing: "border-box" }}
