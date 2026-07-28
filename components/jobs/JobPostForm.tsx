@@ -715,10 +715,10 @@ export default function JobPostForm({
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
           <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 노출 이미지 (배너)</h2>
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box" }}>
-            <label style={{ display: "block", width: "100%", aspectRatio: "16 / 3", minHeight: 88, borderRadius: 10, border: "1px dashed #c4b5d4", background: nmCover ? "#fff" : "#fafafa", overflow: "hidden", cursor: nmCoverUploading ? "wait" : "pointer", position: "relative", boxSizing: "border-box" }}>
+            <label style={{ display: "block", width: "100%", borderRadius: 10, border: nmCover ? "1px solid #eee" : "1px dashed #c4b5d4", background: nmCover ? "#fff" : "#fafafa", overflow: "hidden", cursor: nmCoverUploading ? "wait" : "pointer", position: "relative", boxSizing: "border-box" }}>
               {nmCover
-                ? <img src={nmCover} alt="배너" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                : <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#5f0080", fontSize: 14, fontWeight: 500 }}>{nmCoverUploading ? "업로드중..." : "커버(배너) 이미지 등록"}</span>}
+                ? <img src={nmCover} alt="배너" style={{ width: "100%", height: "auto", display: "block" }} />
+                : <div style={{ width: "100%", aspectRatio: "16 / 3", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", color: "#5f0080", fontSize: 14, fontWeight: 500 }}>{nmCoverUploading ? "업로드중..." : "커버(배너) 이미지 등록"}</div>}
               <input type="file" accept="image/*" style={{ display: "none" }} disabled={nmCoverUploading}
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmCover, setNmCoverUploading); e.target.value = ""; }} />
             </label>
