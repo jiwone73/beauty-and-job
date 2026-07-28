@@ -16,7 +16,9 @@ export async function GET(
     // 회사 기본 정보 (공개 필드만)
     const companyRes = await pool.query(
       `SELECT id, company_name, brand_name, logo_url, description,
-              website_url, address, company_type, created_at
+              website_url, address, company_type, industry,
+              representative_name, founded_year, company_size, company_phone,
+              region_sido, region_sigungu, created_at
        FROM companies
        WHERE id = $1`,
       [id]

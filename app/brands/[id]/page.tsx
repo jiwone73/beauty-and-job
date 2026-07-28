@@ -15,6 +15,13 @@ type Company = {
   website_url: string | null;
   address: string | null;
   company_type: string | null;
+  industry: string | null;
+  representative_name: string | null;
+  founded_year: number | string | null;
+  company_size: string | null;
+  company_phone: string | null;
+  region_sido: string | null;
+  region_sigungu: string | null;
 };
 
 type Job = {
@@ -130,6 +137,36 @@ export default function BrandDetailPage() {
           )}
         </div>
       </div>
+
+      {/* 기업 정보 */}
+      {(() => {
+        const loc = [company.region_sido, company.region_sigungu].filter(Boolean).join(" ");
+        const rows: [string, any][] = [];
+        if (company.industry) rows.push(["업종", company.industry]);
+        rows.push(["기업 유형", typeLabel]);
+        if (company.representative_name) rows.push(["대표자", company.representative_name]);
+        if (company.founded_year) rows.push(["설립", `${company.founded_year}년`]);
+        if (company.company_size) rows.push(["규모", company.company_size]);
+        if (company.company_phone) rows.push(["대표번호", company.company_phone]);
+        if (loc || company.address) rows.push(["주소", [loc, company.address].filter(Boolean).join(" ")]);
+        if (company.website_url) rows.push(["홈페이지",
+          <a href={/^https?:\/\//.test(company.website_url) ? company.website_url : `https://${company.website_url}`}
+            target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline break-all">{company.website_url}</a>]);
+        if (rows.length === 0) return null;
+        return (
+          <div className="max-w-[860px] mx-auto px-5 pt-8">
+            <h2 className="text-lg font-bold text-gray-900 mb-4">기업 정보</h2>
+            <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
+              {rows.map(([label, val], i) => (
+                <div key={i} className="flex items-start justify-between gap-4 px-5 py-3.5 text-[15px]">
+                  <span className="text-gray-400 flex-shrink-0">{label}</span>
+                  <span className="text-gray-800 text-right">{val}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* 공고 목록 */}
       <div className="max-w-[860px] mx-auto px-5 py-8">

@@ -16,11 +16,13 @@ interface JobDetailViewProps {
 /**
  * 채용공고 상세 본문(좌측 본문 + 우측 지원 카드).
  * 실제 상세 페이지와 등록/수정 미리보기에서 동일하게 사용한다.
+ * 회사 상세정보는 상단 기업이름 클릭 → /brands/[id] 별도 페이지에서 표시.
  */
 const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function JobDetailView(
   { job, related = [], companyJobsCount = 0, onBrandClick, asideAction },
   ref
 ) {
+  const hasMap = (job.companyInfo?.latitude && job.companyInfo?.longitude) || job.companyAddress?.trim();
   return (
     <div className="job-detail-layout" ref={ref}>
       {/* 왼쪽: 공고 본문 */}
@@ -53,13 +55,19 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
         <div className="job-detail-info-box">
           <div className="job-detail-brand-row">
-            <span
-              className="job-detail-brand"
-              style={{ cursor: onBrandClick ? "pointer" : "default" }}
-              onClick={() => onBrandClick?.()}
-            >
-              {job.brand}
-            </span>
+            {job.companyId ? (
+              <Link href={`/brands/${job.companyId}`} className="job-detail-brand" style={{ cursor: "pointer" }}>
+                {job.brand}
+              </Link>
+            ) : (
+              <span
+                className="job-detail-brand"
+                style={{ cursor: onBrandClick ? "pointer" : "default" }}
+                onClick={() => onBrandClick?.()}
+              >
+                {job.brand}
+              </span>
+            )}
             {job.tags?.map((tag: string) => (
               <span key={tag} className="job-detail-tag">· {tag}</span>
             ))}
@@ -92,121 +100,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           )}
         </div>
 
-        {/* 회사 소개 */}
-        <section className="job-detail-section">
-          <h2 className="job-detail-section-title">회사 소개</h2>
-          {job.brandDesc?.trim() && (
-            <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line" }}>{job.brandDesc}</p>
-          )}
-          <div className="job-detail-company-info">
-            {job.companyInfo?.name && (
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">회사명</span>
-                <span>{job.companyInfo.name}</span>
-              </div>
-            )}
-            {job.companyInfo?.brandName && (
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">브랜드명</span>
-                <span>{job.companyInfo.brandName}</span>
-              </div>
-            )}
-            {job.companyInfo?.companyType && (
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">기업 유형</span>
-                <span>{job.companyInfo.companyType}</span>
-              </div>
-            )}
-            {job.companyInfo?.industry && (
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">업종</span>
-                <span>{job.companyInfo.industry}</span>
-              </div>
-            )}
-            {job.companyInfo?.representative && (
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">대표자</span>
-                <span>{job.companyInfo.representative}</span>
-              </div>
-            )}
-            {job.companyInfo?.size && (
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">규모</span>
-                <span>{job.companyInfo.size}</span>
-              </div>
-            )}
-            {job.companyInfo?.founded && (
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">설립</span>
-                <span>{job.companyInfo.founded}</span>
-              </div>
-            )}
-            {job.companyInfo?.phone && (
-              <div className="job-detail-company-row">
-                <span className="job-detail-company-label">대표번호</span>
-                <span>{job.companyInfo.phone}</span>
-              </div>
-            )}
-            {job.companyInfo?.website && (
-              <div className="job-detail-company-row" style={{ gridColumn: "1 / -1" }}>
-                <span className="job-detail-company-label">웹사이트</span>
-                <a href={/^https?:\/\//.test(job.companyInfo.website) ? job.companyInfo.website : `https://${job.companyInfo.website}`}
-                  target="_blank" rel="noreferrer" style={{ color: "#5f0080", wordBreak: "break-all" }}>
-                  {job.companyInfo.website}
-                </a>
-              </div>
-            )}
-            {job.companyInfo?.location && (
-              <div className="job-detail-company-row" style={{ gridColumn: "1 / -1" }}>
-                <span className="job-detail-company-label">위치</span>
-                <span>{shortRegion(job.companyInfo.location)}</span>
-              </div>
-            )}
-          </div>
-          {job.companyInfo?.latitude && job.companyInfo?.longitude ? (
-            <div style={{ marginTop: "20px" }}>
-              <KakaoMap
-                latitude={Number(job.companyInfo.latitude)}
-                longitude={Number(job.companyInfo.longitude)}
-                name={job.companyInfo?.name}
-              />
-            </div>
-          ) : job.companyAddress?.trim() ? (
-            <div style={{ marginTop: "20px" }}>
-              <iframe
-                title="회사 위치"
-                width="100%"
-                height="280"
-                style={{ border: 0, borderRadius: "12px" }}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(job.companyAddress)}&output=embed&hl=ko`}
-              />
-            </div>
-          ) : null}
-        </section>
-
-        {/* 근무 조건 (매장직) */}
-        {(job.workDaysText || job.workTimeText) && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">근무 조건</h2>
-            <div className="job-detail-company-info">
-              {job.workDaysText && (
-                <div className="job-detail-company-row">
-                  <span className="job-detail-company-label">근무 요일</span>
-                  <span>{job.workDaysText}</span>
-                </div>
-              )}
-              {job.workTimeText && (
-                <div className="job-detail-company-row">
-                  <span className="job-detail-company-label">근무 시간</span>
-                  <span>{job.workTimeText}</span>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
         {/* 포지션 소개 */}
         {job.description?.trim() && (
           <section className="job-detail-section">
@@ -214,6 +107,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             <p className="job-detail-desc">{job.description.trim()}</p>
           </section>
         )}
+
         {/* 상세 이미지 */}
         {job.detailImages?.length > 0 && (
           <section className="job-detail-section">
@@ -272,10 +166,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </section>
         )}
 
-        {/* 복리후생 */}
+        {/* 혜택 및 복지 */}
         {job.benefits?.length > 0 && (
           <section className="job-detail-section">
-            <h2 className="job-detail-section-title">복리후생</h2>
+            <h2 className="job-detail-section-title">혜택 및 복지</h2>
             <div className="job-detail-benefits">
               {job.benefits.map((item: string, i: number) => (
                 <span key={i} className="job-detail-benefit-chip">{item}</span>
@@ -312,6 +206,88 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             )}
           </section>
         )}
+
+        {/* 근무 조건 (매장직) */}
+        {(job.workDaysText || job.workTimeText) && (
+          <section className="job-detail-section">
+            <h2 className="job-detail-section-title">근무 조건</h2>
+            <div className="job-detail-company-info">
+              {job.workDaysText && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">근무 요일</span>
+                  <span>{job.workDaysText}</span>
+                </div>
+              )}
+              {job.workTimeText && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">근무 시간</span>
+                  <span>{job.workTimeText}</span>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* 근무지역 */}
+        {hasMap && (
+          <section className="job-detail-section">
+            <h2 className="job-detail-section-title">근무지역</h2>
+            {job.companyAddress?.trim() && (
+              <p className="job-detail-desc" style={{ marginBottom: "12px" }}>{job.companyAddress}</p>
+            )}
+            {job.companyInfo?.latitude && job.companyInfo?.longitude ? (
+              <KakaoMap
+                latitude={Number(job.companyInfo.latitude)}
+                longitude={Number(job.companyInfo.longitude)}
+                name={job.companyInfo?.name}
+              />
+            ) : (
+              <iframe
+                title="회사 위치"
+                width="100%"
+                height="280"
+                style={{ border: 0, borderRadius: "12px" }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(job.companyAddress)}&output=embed&hl=ko`}
+              />
+            )}
+          </section>
+        )}
+
+        {/* 회사 카드 — 상세정보는 기업 페이지로 */}
+        {(job.brand || job.brandDesc?.trim()) && (
+          <section className="job-detail-section">
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", border: "1px solid var(--color-border)", borderRadius: "12px" }}>
+              <div style={{ width: 44, height: 44, borderRadius: "10px", background: "#f4ebfb", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+                {job.logo_url ? (
+                  <img src={job.logo_url} alt={job.brand} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <span style={{ fontSize: 18, fontWeight: 800, color: "#5f0080" }}>{job.brand?.[0] || "·"}</span>
+                )}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a1a" }}>{job.brand}</div>
+                {job.companyInfo?.industry && (
+                  <div style={{ fontSize: 13, color: "#888" }}>{job.companyInfo.industry}</div>
+                )}
+              </div>
+              {job.companyId ? (
+                <Link href={`/brands/${job.companyId}`} style={{ color: "#5f0080", fontSize: 14, fontWeight: 600, whiteSpace: "nowrap" }}>
+                  기업 정보 →
+                </Link>
+              ) : onBrandClick ? (
+                <button type="button" onClick={() => onBrandClick?.()} style={{ background: "none", border: "none", color: "#5f0080", fontSize: 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                  기업 정보 →
+                </button>
+              ) : null}
+            </div>
+            {job.brandDesc?.trim() && (
+              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginTop: "12px" }}>{job.brandDesc}</p>
+            )}
+          </section>
+        )}
+
         {/* 이 회사의 다른 공고 */}
         {companyJobsCount > 0 && job.brand && (
           <section className="job-detail-section">
