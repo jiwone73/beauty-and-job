@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
   let pageText = "";
   let ogTitle = "";
   let ogDesc = "";
+  let ogImage = "";
 
   if (!pastedText && !url) return err("VALIDATION_001", "URL 또는 공고 텍스트를 입력해주세요.", 400);
 
@@ -116,6 +117,12 @@ export async function POST(req: NextRequest) {
         pageText = htmlToText(html).slice(0, 16000);
         ogTitle = metaContent(html, "og:title") || (html.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || "");
         ogDesc = metaContent(html, "og:description");
+        // 대표 이미지(배너 후보): og:image → twitter:image, 상대경로면 절대경로로 보정
+        let img = metaContent(html, "og:image") || metaContent(html, "og:image:url") || metaContent(html, "twitter:image") || "";
+        if (img && !/^https?:\/\//i.test(img)) {
+          try { img = new URL(img, url).href; } catch { img = ""; }
+        }
+        ogImage = img;
       }
     }
   }
@@ -197,6 +204,7 @@ export async function POST(req: NextRequest) {
 
   out.source_site = hostname;
   out.source_url = url;
+  out.cover_image = /^https?:\/\//i.test(ogImage) ? ogImage : "";
   if (out.apply_method === "REDIRECT" && !out.external_apply_url && url) out.external_apply_url = url;
   if (!["STORE", "OFFICE"].includes(out.job_type)) out.job_type = "STORE";
   if (!["REDIRECT", "EMAIL", "MANAGED"].includes(out.apply_method)) out.apply_method = "MANAGED";
