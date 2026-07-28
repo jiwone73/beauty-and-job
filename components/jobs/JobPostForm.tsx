@@ -430,9 +430,15 @@ export default function JobPostForm({
         if (d.company_description) setNmDescription(d.company_description);
         if (d.address) setNmAddress(d.address);
         if (d.industry) setNmIndustry(d.industry);
-        // 배너(대표 이미지)만 가져옴. og:image가 없으면 첫 preload 이미지 사용.
+        // 배너 = 대표 이미지(og:image, 없으면 첫 캐러셀 이미지)
         if (d.cover_image) setNmCover(d.cover_image);
         else if (Array.isArray(d.images) && d.images[0]) setNmCover(d.images[0]);
+        // 나머지 캐러셀 이미지 → 상세 이미지 (preload 기반 = 화면에 보이는 이미지만, 폴더 잡동사니 없음)
+        if (Array.isArray(d.images) && d.images.length) {
+          const banner = d.cover_image || d.images[0] || "";
+          const rest = d.images.filter((u: string) => u && u !== banner).slice(0, 5).map((u: string, i: number) => ({ url: u, name: `이미지 ${i + 1}` }));
+          if (rest.length) setDetailImages(rest);
+        }
       }
       // 채용유형: 토글이 열려 있을 때만(관리자 또는 BOTH 기업) 불러온 값으로 변경. 타입 고정 기업회원은 유지.
       if (d.job_type && showTypeToggle) setJobGroupType(d.job_type === "STORE" ? "매장" : "기업");
