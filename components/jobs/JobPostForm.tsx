@@ -672,7 +672,7 @@ export default function JobPostForm({
       </div>
 
       {(
-        <div style={{ maxWidth: 760, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px" }}>
+        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기 (자동 작성)" : "타 사이트 공고 불러오기 (자동 작성)"}</div>
           <div style={{ display: "flex", gap: 8 }}>
             <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
@@ -699,17 +699,18 @@ export default function JobPostForm({
 
       {/* 공고 노출 이미지 (배너) — 비회원 기업 */}
       {mode === "admin" && nonMember && (
-        <div style={{ maxWidth: 760, margin: "0 auto 16px", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px", boxSizing: "border-box" }}>
-          <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 4 }}>공고 노출 이미지 (배너)</div>
-          <div style={{ fontSize: 12, color: "#999", marginBottom: 14 }}>공고 목록·상세 상단에 배너로 노출돼요</div>
-          <label style={{ display: "block", width: "100%", aspectRatio: "16 / 5", minHeight: 120, borderRadius: 12, border: "1px dashed #c4b5d4", background: nmCover ? "#fff" : "#fafafa", overflow: "hidden", cursor: nmCoverUploading ? "wait" : "pointer", position: "relative", boxSizing: "border-box" }}>
-            {nmCover
-              ? <img src={nmCover} alt="배너" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#5f0080", fontSize: 14, fontWeight: 500 }}>{nmCoverUploading ? "업로드중..." : "커버(배너) 이미지 등록"}</span>}
-            <input type="file" accept="image/*" style={{ display: "none" }} disabled={nmCoverUploading}
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmCover, setNmCoverUploading); e.target.value = ""; }} />
-          </label>
-          {nmCover && <button type="button" onClick={() => setNmCover("")} style={{ marginTop: 8, fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>삭제</button>}
+        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
+          <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 노출 이미지 (배너)</h2>
+          <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box" }}>
+            <label style={{ display: "block", width: "100%", aspectRatio: "16 / 3", minHeight: 88, borderRadius: 10, border: "1px dashed #c4b5d4", background: nmCover ? "#fff" : "#fafafa", overflow: "hidden", cursor: nmCoverUploading ? "wait" : "pointer", position: "relative", boxSizing: "border-box" }}>
+              {nmCover
+                ? <img src={nmCover} alt="배너" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#5f0080", fontSize: 14, fontWeight: 500 }}>{nmCoverUploading ? "업로드중..." : "커버(배너) 이미지 등록"}</span>}
+              <input type="file" accept="image/*" style={{ display: "none" }} disabled={nmCoverUploading}
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmCover, setNmCoverUploading); e.target.value = ""; }} />
+            </label>
+            {nmCover && <button type="button" onClick={() => setNmCover("")} style={{ marginTop: 8, fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>삭제</button>}
+          </div>
         </div>
       )}
 
@@ -1296,7 +1297,7 @@ export default function JobPostForm({
 
       {/* ═══ 기업 정보 (맨 하단) · 기업회원 프로필 양식과 동일 구성 ═══ */}
       {mode === "admin" && nonMember && (
-        <div style={{ maxWidth: 760, margin: "16px auto 0", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px" }}>
+        <div style={{ width: "100%", maxWidth: 760, margin: "16px auto 0", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px", boxSizing: "border-box" }}>
           <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 4 }}>기업 정보</div>
           <div style={{ fontSize: 12, color: "#999", marginBottom: 16 }}>공고 상세 맨 아래 “기업 정보”에 표시돼요 · URL 불러오기로 자동 작성됩니다</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
