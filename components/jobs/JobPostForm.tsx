@@ -61,6 +61,7 @@ export default function JobPostForm({
   const [nmAddress, setNmAddress] = useState("");
   const [nmIndustry, setNmIndustry] = useState("");
   const [parseUrl, setParseUrl] = useState("");
+  const [parseText, setParseText] = useState("");
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
@@ -378,7 +379,7 @@ export default function JobPostForm({
   const lbl: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "#444", marginBottom: 6 };
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   const runParse = async () => {
-    if (!parseUrl.trim()) { setParseMsg("URL을 입력해주세요."); return; }
+    if (!parseUrl.trim() && !parseText.trim()) { setParseMsg("URL 또는 공고 본문을 입력해주세요."); return; }
     setNonMember(true); setCompanyId(null);
     setParsing(true); setParseMsg("");
     try {
@@ -386,7 +387,7 @@ export default function JobPostForm({
       const res = await fetch("/api/admin/external-jobs/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ url: parseUrl.trim() }),
+        body: JSON.stringify({ url: parseUrl.trim(), text: parseText.trim() }),
       });
       const j = await res.json();
       if (!j.success) { setParseMsg(j.error?.message || "불러오기에 실패했어요."); return; }
@@ -587,13 +588,19 @@ export default function JobPostForm({
 
       {mode === "admin" && (
         <div style={{ maxWidth: 1180, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px" }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>외부 공고 URL로 불러오기 (자동 작성)</div>
+          <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>외부 공고 불러오기 (자동 작성)</div>
           <div style={{ display: "flex", gap: 8 }}>
             <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
             <button type="button" onClick={runParse} disabled={parsing} style={{ flexShrink: 0, padding: "0 20px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "불러오는 중..." : "불러오기"}</button>
           </div>
+          <textarea
+            style={{ width: "100%", marginTop: 8, minHeight: 92, padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e0eb", fontSize: 13, lineHeight: 1.5, resize: "vertical", boxSizing: "border-box" }}
+            placeholder="공고 본문 전체를 복사해 붙여넣기 (선택). URL과 함께 넣으면 가장 정확해요."
+            value={parseText}
+            onChange={(e) => setParseText(e.target.value)}
+          />
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
-          <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>비회원(외부) 공고를 URL에서 발췌해 자동 작성해요. 직군 등 드롭다운은 정확히 안 맞을 수 있어 내용은 텍스트로 채워지니, 확인·수정 후 등록하세요.</div>
+          <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>URL만, 본문만, 또는 <b>둘 다</b> 넣을 수 있어요. 붙여넣은 본문이 있으면 그 내용을 최우선으로 발췌하고 URL은 회사·링크 정보를 보완해요. 직군 등 드롭다운은 정확히 안 맞을 수 있으니 확인·수정 후 등록하세요.</div>
         </div>
       )}
 

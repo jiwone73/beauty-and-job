@@ -38,44 +38,53 @@ export async function POST(req: NextRequest) {
   const b = await req.json().catch(() => ({}));
   const pastedText = (b.text || "").trim();
 
-  let url = "";
+  let url = (b.url || "").trim();
   let hostname = "";
   let html = "";
   let jsonld = "";
   let nextData = "";
-  let text = "";
+  let pageText = "";
   let ogTitle = "";
   let ogDesc = "";
 
-  if (pastedText) {
-    // 텍스트 붙여넣기 모드 — 서버 fetch 없이 그대로 사용(가장 정확)
-    text = pastedText.slice(0, 12000);
-  } else {
-    url = (b.url || "").trim();
-    if (!url) return err("VALIDATION_001", "URL 또는 공고 텍스트를 입력해주세요.", 400);
+  if (!pastedText && !url) return err("VALIDATION_001", "URL 또는 공고 텍스트를 입력해주세요.", 400);
+
+  // URL이 있으면 서버에서 fetch. 실패하더라도 붙여넣은 본문이 있으면 계속 진행.
+  if (url) {
     if (!/^https?:\/\//i.test(url)) url = "https://" + url;
     try { hostname = new URL(url).hostname.replace(/^www\./, ""); }
-    catch { return err("VALIDATION_001", "올바른 URL을 입력해주세요.", 400); }
-    try {
-      const ctl = new AbortController();
-      const t = setTimeout(() => ctl.abort(), 12000);
-      const r = await fetch(url, {
-        signal: ctl.signal,
-        headers: { "User-Agent": "Mozilla/5.0 (compatible; BeautyworkBot/1.0)", "Accept-Language": "ko,en;q=0.8" },
-      });
-      clearTimeout(t);
-      if (!r.ok) return err("FETCH_001", `페이지를 불러오지 못했어요 (HTTP ${r.status}).`, 502);
-      html = await r.text();
-    } catch (e: any) {
-      return err("FETCH_002", "페이지를 불러오지 못했어요. 접근이 막혀 있거나 시간이 초과됐어요. 대신 공고 본문을 복사해 ‘텍스트 붙여넣기’로 등록해보세요.", 502);
+    catch {
+      if (!pastedText) return err("VALIDATION_001", "올바른 URL을 입력해주세요.", 400);
+      url = "";
     }
-    jsonld = extractJsonLd(html);
-    nextData = extractNextData(html);
-    text = htmlToText(html).slice(0, 9000);
-    ogTitle = metaContent(html, "og:title") || (html.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || "");
-    ogDesc = metaContent(html, "og:description");
+    if (url) {
+      try {
+        const ctl = new AbortController();
+        const t = setTimeout(() => ctl.abort(), 12000);
+        const r = await fetch(url, {
+          signal: ctl.signal,
+          headers: { "User-Agent": "Mozilla/5.0 (compatible; BeautyworkBot/1.0)", "Accept-Language": "ko,en;q=0.8" },
+        });
+        clearTimeout(t);
+        if (r.ok) html = await r.text();
+        else if (!pastedText) return err("FETCH_001", `페이지를 불러오지 못했어요 (HTTP ${r.status}).`, 502);
+      } catch (e: any) {
+        if (!pastedText) return err("FETCH_002", "페이지를 불러오지 못했어요. 접근이 막혀 있거나 시간이 초과됐어요. 대신 공고 본문을 복사해 ‘텍스트 붙여넣기’로 등록해보세요.", 502);
+      }
+      if (html) {
+        jsonld = extractJsonLd(html);
+        nextData = extractNextData(html);
+        pageText = htmlToText(html).slice(0, 16000);
+        ogTitle = metaContent(html, "og:title") || (html.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || "");
+        ogDesc = metaContent(html, "og:description");
+      }
+    }
   }
-  const emails = [...new Set(((html || pastedText).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || []))]
+
+  // 붙여넣은 공고 본문(가장 정확한 원본). URL 본문과 합쳐 AI에 전달.
+  const bodyText = pastedText.slice(0, 16000);
+
+  const emails = [...new Set(((html || "") + " " + pastedText).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [])]
     .filter((e) => !/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(e)).slice(0, 5);
 
   let out: any = {
@@ -113,8 +122,9 @@ export async function POST(req: NextRequest) {
 - homepage_url: 그 회사 자체의 홈페이지만. 지금 보고 있는 채용사이트(출처) 주소는 넣지 말 것. 회사 홈페이지가 없으면 "".
 - extra_notes: 위 항목에 안 담기는 나머지 정보(근무시간·휴무/근무요일·근태제도·담당자 연락처·기타 안내 등)를 한국어로 항목별 정리(줄바꿈 구분). 복리후생/혜택은 benefits에 넣고 여기 중복하지 말 것. 없으면 "".
 - 원문 복제는 피하되 내용은 빠짐없이 옮길 것. 우리 드롭다운에 억지로 맞추지 말고 있는 그대로.
+- 입력 중 [붙여넣은 공고 본문]이 있으면 그 내용을 최우선으로 신뢰하고, [페이지 텍스트]·[JSON-LD]·[__NEXT_DATA__]는 빠진 값을 채우는 보완용으로만 사용할 것.
 - 모르는 값은 빈 문자열 "".`;
-      const user = `URL: ${url}\n호스트: ${hostname}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${text}`;
+      const user = `URL: ${url || "(없음)"}\n호스트: ${hostname || "(없음)"}\n\n[붙여넣은 공고 본문 · 최우선 신뢰]\n${bodyText || "(없음)"}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${pageText || "(없음)"}`;
       const msg = await anthropic.messages.create({
         model: "claude-haiku-4-5",
         max_tokens: 1200,
@@ -132,7 +142,7 @@ export async function POST(req: NextRequest) {
 
   out.source_site = hostname;
   out.source_url = url;
-  if (out.apply_method === "REDIRECT" && !out.external_apply_url) out.external_apply_url = url;
+  if (out.apply_method === "REDIRECT" && !out.external_apply_url && url) out.external_apply_url = url;
   if (!["STORE", "OFFICE"].includes(out.job_type)) out.job_type = "STORE";
   if (!["REDIRECT", "EMAIL", "MANAGED"].includes(out.apply_method)) out.apply_method = "MANAGED";
 
