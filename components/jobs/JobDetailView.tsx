@@ -1,9 +1,41 @@
 "use client";
-import { forwardRef, type ReactNode } from "react";
+import { forwardRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { shortRegion } from "@/lib/regionShort";
 import KakaoMap from "@/components/KakaoMap";
-import { MapPin, Clock, Briefcase, Building2, CheckCircle2, ChevronRight } from "lucide-react";
+import { MapPin, Clock, Briefcase, Building2, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
+
+// 공고 상단 이미지 슬라이드(캐러셀). 여러 장이면 좌우 화살표·점으로 넘긴다.
+function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
+  const [i, setI] = useState(0);
+  const n = images.length;
+  const cur = Math.min(i, n - 1);
+  const go = (d: number) => setI((p) => (((p + d) % n) + n) % n);
+  const arrow: CSSProperties = {
+    position: "absolute", top: "50%", transform: "translateY(-50%)",
+    width: 40, height: 40, borderRadius: "50%", border: "none",
+    background: "rgba(255,255,255,0.92)", color: "#333",
+    cursor: "pointer", zIndex: 3, boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
+    display: "flex", alignItems: "center", justifyContent: "center",
+  };
+  return (
+    <div style={{ position: "relative", width: "100%", background: "#f4f4f4" }}>
+      {/* 외부 공고 이미지를 원본 비율 그대로 노출 */}
+      <img src={images[cur]} alt={alt} style={{ display: "block", width: "100%", height: "auto" }} />
+      {n > 1 && (
+        <>
+          <button type="button" aria-label="이전 이미지" onClick={() => go(-1)} style={{ ...arrow, left: 12 }}><ChevronLeft size={22} /></button>
+          <button type="button" aria-label="다음 이미지" onClick={() => go(1)} style={{ ...arrow, right: 12 }}><ChevronRight size={22} /></button>
+          <div style={{ position: "absolute", bottom: 12, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 6, zIndex: 3 }}>
+            {images.map((_, k) => (
+              <span key={k} onClick={() => setI(k)} style={{ width: 8, height: 8, borderRadius: "50%", cursor: "pointer", background: k === cur ? "#fff" : "rgba(255,255,255,0.55)" }} />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 interface JobDetailViewProps {
   job: any;
@@ -43,31 +75,39 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     <div className="job-detail-layout" ref={ref}>
       {/* 왼쪽: 공고 본문 */}
       <main className="job-detail-main">
-        {/* 썸네일 + 기본 정보 */}
-        <div className="job-detail-hero" style={{ background: job.color }}>
-          {(() => {
-            const heroImg =
-              (Array.isArray(job.cover_images) && job.cover_images[0]?.url) ||
-              (Array.isArray(job.detailImages) && job.detailImages[0]?.url);
-            return heroImg ? (
-              <img src={heroImg} alt={job.brand}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            ) : (
+        {/* 썸네일(캐러셀) + 기본 정보 */}
+        {(() => {
+          const heroImgs = [
+            ...(Array.isArray(job.cover_images) ? job.cover_images.map((c: any) => c?.url) : []),
+            ...(Array.isArray(job.detailImages) ? job.detailImages.map((d: any) => d?.url) : []),
+          ].filter(Boolean) as string[];
+          const uniq = [...new Set(heroImgs)];
+          const logoBadge = (
+            <div className="job-detail-hero-logo" style={{ zIndex: 4 }}>
+              {job.logo_url ? (
+                <img src={job.logo_url} alt={`${job.brand} 로고`} />
+              ) : (
+                <span style={{ fontSize: 22, fontWeight: 800, color: "#5f0080" }}>
+                  {job.brand?.[0] || "·"}
+                </span>
+              )}
+            </div>
+          );
+          // 이미지가 있으면 원본 비율 그대로 캐러셀, 없으면 기존 플레이스홀더 히어로
+          return uniq.length ? (
+            <div style={{ position: "relative", width: "100%", borderRadius: "16px 16px 0 0", overflow: "hidden" }}>
+              <ImageCarousel images={uniq} alt={job.brand} />
+              {logoBadge}
+            </div>
+          ) : (
+            <div className="job-detail-hero" style={{ background: job.color }}>
               <div className="job-detail-hero-placeholder">
                 <span>{job.brand?.[0] || "·"}</span>
               </div>
-            );
-          })()}
-          <div className="job-detail-hero-logo">
-            {job.logo_url ? (
-              <img src={job.logo_url} alt={`${job.brand} 로고`} />
-            ) : (
-              <span style={{ fontSize: 22, fontWeight: 800, color: "#5f0080" }}>
-                {job.brand?.[0] || "·"}
-              </span>
-            )}
-          </div>
-        </div>
+              {logoBadge}
+            </div>
+          );
+        })()}
 
         <div className="job-detail-info-box">
           <div className="job-detail-brand-row">
@@ -115,19 +155,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <section className="job-detail-section">
             <h2 className="job-detail-section-title">포지션 소개</h2>
             <p className="job-detail-desc">{job.description.trim()}</p>
-          </section>
-        )}
-
-        {/* 상세 이미지 */}
-        {job.detailImages?.length > 0 && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">상세 이미지</h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {job.detailImages.map((img: { url: string; name: string }, i: number) => (
-                <img key={i} src={img.url} alt={img.name || `상세 이미지 ${i + 1}`}
-                  style={{ width: "100%", borderRadius: "12px", border: "1px solid #eee" }} />
-              ))}
-            </div>
           </section>
         )}
 
