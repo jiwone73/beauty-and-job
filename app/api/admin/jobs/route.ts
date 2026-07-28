@@ -85,12 +85,25 @@ export async function POST(req: NextRequest) {
       )
       if (existing.rowCount && existing.rows[0]) {
         finalCompanyId = existing.rows[0].id
+        await client.query(
+          `UPDATE companies SET
+             brand_name = COALESCE(brand_name, $2),
+             website_url = COALESCE(website_url, $3),
+             description = COALESCE(description, $4),
+             address = COALESCE(address, $5),
+             industry = COALESCE(industry, $6),
+             updated_at = now()
+           WHERE id = $1`,
+          [finalCompanyId, (nm.brand_name || '').trim() || null, (nm.homepage_url || '').trim() || null,
+           (nm.description || '').trim() || null, (nm.address || '').trim() || null, (nm.industry || '').trim() || null]
+        )
       } else {
         const companyRes = await client.query(
-          `INSERT INTO companies (company_name, brand_name, company_type, website_url, is_member, status)
-           VALUES ($1, $2, $3, $4, false, 'ACTIVE'::company_status)
+          `INSERT INTO companies (company_name, brand_name, company_type, website_url, description, address, industry, is_member, status)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, false, 'ACTIVE'::company_status)
            RETURNING id`,
-          [nmName, (nm.brand_name || '').trim() || null, job_type, (nm.homepage_url || '').trim() || null]
+          [nmName, (nm.brand_name || '').trim() || null, job_type, (nm.homepage_url || '').trim() || null,
+           (nm.description || '').trim() || null, (nm.address || '').trim() || null, (nm.industry || '').trim() || null]
         )
         finalCompanyId = companyRes.rows[0].id
       }

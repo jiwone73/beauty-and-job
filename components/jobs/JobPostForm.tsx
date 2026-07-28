@@ -1,4 +1,5 @@
 "use client";
+import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Pencil, Trash2, Upload, Eye, Save } from "lucide-react";
@@ -56,6 +57,9 @@ export default function JobPostForm({
   const [nmHomepage, setNmHomepage] = useState("");
   const [applyMethod, setApplyMethod] = useState<"MANAGED" | "EMAIL" | "REDIRECT">("MANAGED");
   const [externalApplyUrl, setExternalApplyUrl] = useState("");
+  const [nmDescription, setNmDescription] = useState("");
+  const [nmAddress, setNmAddress] = useState("");
+  const [nmIndustry, setNmIndustry] = useState("");
   const [parseUrl, setParseUrl] = useState("");
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
@@ -389,6 +393,9 @@ export default function JobPostForm({
       if (d.job_type) setJobGroupType(d.job_type === "STORE" ? "매장" : "기업");
       if (["MANAGED", "EMAIL", "REDIRECT"].includes(d.apply_method)) setApplyMethod(d.apply_method);
       if (d.external_apply_url) setExternalApplyUrl(d.external_apply_url);
+      if (d.company_description) setNmDescription(d.company_description);
+      if (d.address) setNmAddress(d.address);
+      if (d.industry) setNmIndustry(d.industry);
       setForm((f) => ({ ...f, title: d.title || f.title, description: d.description || f.description, deadline: d.deadline || f.deadline }));
       setParseMsg("✓ 불러왔어요. 내용을 확인하고 등록하세요.");
     } catch { setParseMsg("오류가 발생했습니다."); }
@@ -459,7 +466,7 @@ export default function JobPostForm({
     };
 
     const company: any = nonMember
-      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim() } }
+      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: nmIndustry } }
       : { companyId, newCompany: null };
     const result = await onSubmit(payload, status, company);
     if (!result.success) {
@@ -584,6 +591,14 @@ export default function JobPostForm({
                       {parseMsg && <div style={{ fontSize: 12, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
                       <input className="admin-form-input" placeholder="채용 이메일 (이메일 중계 시 필요)" value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} />
                       <input className="admin-form-input" placeholder="홈페이지 (선택)" value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} />
+                      <select className="admin-form-select" value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}>
+                        <option value="">업종 선택 (선택)</option>
+                        {industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (
+                          <option key={it} value={it}>{it}</option>
+                        ))}
+                      </select>
+                      <input className="admin-form-input" placeholder="회사 주소/지역 (선택)" value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} />
+                      <textarea className="admin-form-textarea" rows={2} placeholder="회사 소개 (선택) — 공고 상세 '회사 소개'에 표시" value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
                       <select className="admin-form-select" value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}>
                         <option value="MANAGED">지원방식: 관리자 대행</option>
                         <option value="EMAIL">지원방식: 이메일 중계</option>

@@ -18,6 +18,13 @@ function extractJsonLd(html: string): string {
     .map((m) => m[1].trim());
   return blocks.join("\n").slice(0, 4000);
 }
+function extractNextData(html: string): string {
+  const m = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/i);
+  if (m) return m[1].trim().slice(0, 7000);
+  // Nuxt/기타 인라인 상태
+  const m2 = html.match(/<script[^>]*>\s*window\.__(?:NUXT|INITIAL_STATE)__\s*=([\s\S]*?)<\/script>/i);
+  return m2 ? m2[1].trim().slice(0, 7000) : "";
+}
 function metaContent(html: string, prop: string): string {
   const re = new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]*content=["']([^"']*)["']`, "i");
   const m = html.match(re);
@@ -51,6 +58,7 @@ export async function POST(req: NextRequest) {
   }
 
   const jsonld = extractJsonLd(html);
+  const nextData = extractNextData(html);
   const text = htmlToText(html).slice(0, 9000);
   const ogTitle = metaContent(html, "og:title") || (html.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || "");
   const ogDesc = metaContent(html, "og:description");
@@ -62,6 +70,7 @@ export async function POST(req: NextRequest) {
     title: ogTitle, job_type: "STORE", location: "", deadline: "",
     apply_method: emails[0] ? "EMAIL" : "MANAGED", external_apply_url: "",
     description: ogDesc,
+    company_description: "", address: "", industry: "",
   };
 
   if (process.env.ANTHROPIC_API_KEY) {
@@ -69,14 +78,17 @@ export async function POST(req: NextRequest) {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
 반드시 아래 키를 가진 JSON "하나만" 출력해(설명·코드펜스 금지):
-{"company_name","homepage_url","contact_email","title","job_type","location","deadline","apply_method","external_apply_url","description"}
+{"company_name","homepage_url","contact_email","title","job_type","location","deadline","apply_method","external_apply_url","description","company_description","address","industry"}
 규칙:
 - job_type: 미용실·네일·피부·속눈썹 등 현장 미용직이면 "STORE", 화장품 브랜드·유통·본사 등 사무직이면 "OFFICE".
 - deadline: "YYYY-MM-DD" 형식 또는 상시/미상이면 "".
 - apply_method: 채용 이메일이 보이면 "EMAIL"(그 이메일을 contact_email에), 지원이 특정 지원페이지에서만 가능하면 "REDIRECT"(그 링크를 external_apply_url에), 애매하면 "MANAGED".
-- description: 원문을 그대로 복제하지 말고 한국어로 3~5문장 핵심 요약(직무·자격·근무조건 중심). 저작권 보호를 위해 문장을 재작성할 것.
+- description: 채용공고 본문 요약(직무·자격·근무조건). 원문 복제 금지, 한국어 3~5문장으로 재작성.
+- company_description: 그 회사·브랜드 자체에 대한 소개 2~3문장(있으면). 채용 내용이 아니라 회사 소개. 없으면 "".
+- address: 회사/근무지의 주소나 지역(있으면), 없으면 "".
+- industry: job_type이 STORE면 [헤어샵, 네일샵, 피부·에스테틱, 속눈썹·왁싱·반영구, 메이크업, 애견미용, 토탈뷰티샵] 중 하나, OFFICE면 [화장품·미용기기 제조·브랜드, 뷰티 유통·이커머스, 프랜차이즈 본사, 미용 교육·아카데미, 피부과·성형외과, 뷰티 마케팅·미디어, 뷰티 서비스·플랫폼] 중 하나를 정확히 그대로. 애매하면 "".
 - 모르는 값은 빈 문자열 "".`;
-      const user = `URL: ${url}\n호스트: ${hostname}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[페이지 텍스트]\n${text}`;
+      const user = `URL: ${url}\n호스트: ${hostname}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${text}`;
       const msg = await anthropic.messages.create({
         model: "claude-haiku-4-5",
         max_tokens: 1200,
