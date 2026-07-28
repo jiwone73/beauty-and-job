@@ -5,8 +5,8 @@ import { shortRegion } from "@/lib/regionShort";
 import KakaoMap from "@/components/KakaoMap";
 import { MapPin, Clock, Briefcase, Building2, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
 
-// 공고 상단 이미지 갤러리(원티드 스타일). 한 번에 3장 노출, 좌우 화살표로 스크롤.
-function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
+// 공고 상단 이미지 갤러리(원티드 스타일). 한 번에 3장 노출, 좌우 화살표로 순환.
+export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
   const [start, setStart] = useState(0);
   const n = images.length;
   const PER = 3;
@@ -28,27 +28,22 @@ function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
   }
 
   const cols = Math.min(n, PER);
-  const maxStart = Math.max(0, n - PER);
-  const s = Math.min(start, maxStart);
-  const visible = images.slice(s, s + PER);
-  const canPrev = s > 0;
-  const canNext = s < maxStart;
+  // 시작 위치를 순환(wrap)시켜 3장 이하라도 좌우 화살표로 로테이션되게 한다.
+  const s = ((start % n) + n) % n;
+  const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 8 }}>
         {visible.map((src, k) => (
-          <div key={s + k} style={{ aspectRatio: "4 / 3", borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
+          <div key={k} style={{ aspectRatio: "4 / 3", borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
             <img src={src} alt={alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         ))}
       </div>
-      {canPrev && (
-        <button type="button" aria-label="이전 이미지" onClick={() => setStart(Math.max(0, s - 1))} style={{ ...arrow, left: 8 }}><ChevronLeft size={22} /></button>
-      )}
-      {canNext && (
-        <button type="button" aria-label="다음 이미지" onClick={() => setStart(Math.min(maxStart, s + 1))} style={{ ...arrow, right: 8 }}><ChevronRight size={22} /></button>
-      )}
+      {/* 이미지가 2장 이상이면 항상 좌우 화살표 노출 (순환) */}
+      <button type="button" aria-label="이전 이미지" onClick={() => setStart(s - 1)} style={{ ...arrow, left: 8 }}><ChevronLeft size={22} /></button>
+      <button type="button" aria-label="다음 이미지" onClick={() => setStart(s + 1)} style={{ ...arrow, right: 8 }}><ChevronRight size={22} /></button>
     </div>
   );
 }

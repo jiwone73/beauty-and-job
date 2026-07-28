@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Pencil, Trash2, Upload, Eye, Save } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
-import JobDetailView from "@/components/jobs/JobDetailView";
+import JobDetailView, { ImageCarousel } from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
 import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
@@ -717,6 +717,22 @@ export default function JobPostForm({
       )}
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
+
+      {/* 불러온 이미지 갤러리 미리보기 (배너+상세 합침, 공개 상단과 동일하게 3장 화살표 순환) */}
+      {(() => {
+        const gimgs = [nmCover, ...detailImages.map((d) => d.url)].filter(Boolean);
+        const guniq = [...new Set(gimgs)];
+        if (guniq.length < 1) return null;
+        return (
+          <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
+            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 상단 이미지 (미리보기)</h2>
+            <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box" }}>
+              <ImageCarousel images={guniq} alt="공고 이미지" />
+              <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999" }}>공개 화면 상단에 이렇게 노출됩니다. 이미지 추가·교체·삭제는 아래 배너·상세 이미지에서 하세요.</p>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* 공고 노출 이미지 (배너) — 비회원 기업 */}
       {mode === "admin" && nonMember && (
