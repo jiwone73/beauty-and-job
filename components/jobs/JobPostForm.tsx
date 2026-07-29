@@ -2,7 +2,7 @@
 import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Pencil, Trash2, Upload, Eye, Save } from "lucide-react";
+import { ChevronLeft, ChevronDown, Pencil, Trash2, Upload, Eye, Save } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView, { ImageCarousel } from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -747,63 +747,61 @@ export default function JobPostForm({
                 <div className="admin-form-row">
                   <label className="admin-form-label">기업 선택<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
 
-                  {nonMember ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px", flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: "#5f0080" }}>{newCompanyName || "비회원 기업"}<span style={{ fontSize: 12, fontWeight: 400, color: "#999", marginLeft: 6 }}>· 아래 “기업 정보”에서 입력</span></span>
-                      <button type="button"
-                        onClick={() => { setNonMember(false); setNewCompanyName(""); setNewBrandName(""); }}
-                        style={{ background: "none", border: "none", color: "#888", fontSize: "13px", cursor: "pointer" }}>
-                        ← 회원 기업에서 선택
-                      </button>
-                    </div>
-                  ) : companyId ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px" }}>
-                      <span style={{ fontSize: "14px", fontWeight: 400, color: "#555" }}>{companyName}</span>
-                      <button type="button"
-                        onClick={() => { setCompanyId(null); setCompanyName(""); }}
-                        style={{ background: "none", border: "none", color: "#888", fontSize: "13px", cursor: "pointer" }}>
-                        변경
-                      </button>
-                    </div>
-                  ) : (
-                    <div>
-                      <div style={{ position: "relative" }}>
-                        <input className="admin-form-input" placeholder="기업명 검색"
-                          value={companyQuery}
-                          onChange={(e) => { setCompanyQuery(e.target.value); setShowCompanyList(true); }}
-                          onFocus={() => setShowCompanyList(true)} />
-                        {showCompanyList && companyQuery.trim() && (
-                          <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, marginTop: "4px", background: "#fff", border: "1px solid #e0e0e0", borderRadius: "8px", maxHeight: "240px", overflowY: "auto", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
+                  {/* 기업 선택 = 검색 가능 드롭다운 (기본값 비회원 + DB 회원사 목록) */}
+                  <div style={{ position: "relative", justifySelf: "end", width: "100%", maxWidth: 320 }}>
+                    <button type="button" onClick={() => setShowCompanyList((v) => !v)}
+                      style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
+                        padding: "11px 14px", fontSize: 14, color: companyId ? "#333" : "#5f0080", fontWeight: companyId ? 400 : 600,
+                        border: "1px solid #dcdce1", borderRadius: 10, background: "#fff", cursor: "pointer", textAlign: "left", boxSizing: "border-box" }}>
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {companyId ? companyName : (newCompanyName || "비회원 기업")}
+                      </span>
+                      <ChevronDown size={16} color="#888" style={{ flexShrink: 0 }} />
+                    </button>
+
+                    {showCompanyList && (
+                      <>
+                        <div onClick={() => setShowCompanyList(false)} style={{ position: "fixed", inset: 0, zIndex: 19 }} />
+                        <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, marginTop: 4,
+                          background: "#fff", border: "1px solid #e0e0e0", borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.08)", overflow: "hidden" }}>
+                          <div style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
+                            <input autoFocus className="admin-form-input" placeholder="기업명 검색"
+                              value={companyQuery} onChange={(e) => setCompanyQuery(e.target.value)} style={{ width: "100%", boxSizing: "border-box" }} />
+                          </div>
+                          <div style={{ maxHeight: 240, overflowY: "auto" }}>
+                            {/* 비회원 기업 (항상 맨 위, 기본값) */}
+                            <div onClick={() => { setNonMember(true); setCompanyId(null); setCompanyName(""); setShowCompanyList(false); setCompanyQuery(""); }}
+                              style={{ padding: "10px 14px", fontSize: 14, cursor: "pointer", borderBottom: "1px solid #f3f3f3",
+                                background: !companyId ? "#faf7fd" : "#fff", fontWeight: !companyId ? 600 : 400, color: !companyId ? "#5f0080" : "#333" }}>
+                              비회원 기업{newCompanyName ? <span style={{ color: "#888", fontWeight: 400 }}> · {newCompanyName}</span> : null}
+                            </div>
+                            {/* DB 회원사 목록 */}
                             {(() => {
                               const q = companyQuery.trim().toLowerCase();
                               const matched = companies.filter((c) =>
-                                c.company_name.toLowerCase().includes(q) || (c.brand_name || "").toLowerCase().includes(q)
-                              ).slice(0, 30);
+                                !q || c.company_name.toLowerCase().includes(q) || (c.brand_name || "").toLowerCase().includes(q)
+                              ).slice(0, 50);
                               if (matched.length === 0) {
-                                return <div style={{ padding: "10px 14px", fontSize: "13px", color: "#999" }}>검색 결과가 없어요</div>;
+                                return <div style={{ padding: "10px 14px", fontSize: 13, color: "#999" }}>회원 기업이 없어요</div>;
                               }
                               return matched.map((c) => (
                                 <div key={c.id}
                                   onClick={() => {
-                                    setCompanyId(c.id);
+                                    setNonMember(false); setCompanyId(c.id);
                                     setCompanyName(c.company_name + (c.brand_name ? ` (${c.brand_name})` : ""));
                                     setShowCompanyList(false); setCompanyQuery("");
                                   }}
-                                  style={{ padding: "10px 14px", fontSize: "14px", cursor: "pointer", borderBottom: "1px solid #f3f3f3" }}>
+                                  style={{ padding: "10px 14px", fontSize: 14, cursor: "pointer", borderBottom: "1px solid #f3f3f3",
+                                    background: companyId === c.id ? "#faf7fd" : "#fff", fontWeight: companyId === c.id ? 600 : 400 }}>
                                   {c.company_name}{c.brand_name ? <span style={{ color: "#888" }}> ({c.brand_name})</span> : null}
                                 </div>
                               ));
                             })()}
                           </div>
-                        )}
-                      </div>
-                      <button type="button"
-                        onClick={() => { setNonMember(true); setCompanyId(null); setCompanyName(""); setCompanyQuery(""); setShowCompanyList(false); }}
-                        style={{ marginTop: "8px", background: "none", border: "none", color: "#5f0080", fontSize: "13px", fontWeight: 400, cursor: "pointer", padding: 0 }}>
-                        + 비회원 기업으로 직접 입력
-                      </button>
-                    </div>
-                  )}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
 
