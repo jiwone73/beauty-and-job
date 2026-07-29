@@ -492,7 +492,8 @@ export default function JobPostForm({
       const extraLines = [(!salaryStructured && d.salary) ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
       if (extraLines) setNotes(extraLines);
       if (d.ai_parsed) {
-        setParseMsg("✓ 불러왔어요. 직군·경력·지역·복리후생·이미지까지 자동 반영했어요. 값만 확인하고 등록하세요.");
+        const diag = `[진단 · 이미지 ${Array.isArray(d.images) ? d.images.length : 0}장 · 급여 ${d.salary_type || "-"}/${d.salary_amount || 0}/협의${d.salary_negotiable ? "O" : "X"} · 요일 ${d.work_days || "-"} · 시간 ${d.work_time || "-"}]`;
+        setParseMsg("✓ 불러왔어요. 직군·경력·지역·복리후생·이미지까지 자동 반영했어요. 값만 확인하고 등록하세요. " + diag);
       } else {
         setParseMsg("⚠ AI 자동 정리에 실패해 제목·회사 등 기본 정보만 채웠어요. 공고 본문 전체를 아래 칸에 붙여넣고 다시 '불러오기'를 눌러주세요.");
       }
