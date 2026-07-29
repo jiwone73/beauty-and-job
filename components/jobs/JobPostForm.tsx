@@ -750,9 +750,9 @@ export default function JobPostForm({
                   {/* 기업 선택 = 검색 가능 드롭다운 (기본값 비회원 + DB 회원사 목록) */}
                   <div style={{ position: "relative", justifySelf: "end", width: "100%", maxWidth: 320 }}>
                     <button type="button" onClick={() => setShowCompanyList((v) => !v)}
-                      style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
-                        padding: "11px 14px", fontSize: 14, color: companyId ? "#333" : "#5f0080", fontWeight: companyId ? 400 : 600,
-                        border: "1px solid #dcdce1", borderRadius: 10, background: "#fff", cursor: "pointer", textAlign: "left", boxSizing: "border-box" }}>
+                      style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8,
+                        padding: "11px 14px", fontSize: 14, color: "#333", fontWeight: 400,
+                        border: "1px solid #dcdce1", borderRadius: 10, background: "#fff", cursor: "pointer", textAlign: "right", boxSizing: "border-box" }}>
                       <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {companyId ? companyName : (newCompanyName || "비회원 기업")}
                       </span>
@@ -771,9 +771,8 @@ export default function JobPostForm({
                           <div style={{ maxHeight: 240, overflowY: "auto" }}>
                             {/* 비회원 기업 (항상 맨 위, 기본값) */}
                             <div onClick={() => { setNonMember(true); setCompanyId(null); setCompanyName(""); setShowCompanyList(false); setCompanyQuery(""); }}
-                              style={{ padding: "10px 14px", fontSize: 14, cursor: "pointer", borderBottom: "1px solid #f3f3f3",
-                                background: !companyId ? "#faf7fd" : "#fff", fontWeight: !companyId ? 600 : 400, color: !companyId ? "#5f0080" : "#333" }}>
-                              비회원 기업{newCompanyName ? <span style={{ color: "#888", fontWeight: 400 }}> · {newCompanyName}</span> : null}
+                              style={{ padding: "10px 14px", fontSize: 14, cursor: "pointer", borderBottom: "1px solid #f3f3f3", background: "#fff", color: "#333" }}>
+                              비회원 기업{newCompanyName ? <span style={{ color: "#888" }}> · {newCompanyName}</span> : null}
                             </div>
                             {/* DB 회원사 목록 */}
                             {(() => {
