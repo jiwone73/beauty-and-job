@@ -303,6 +303,13 @@ export async function POST(req: NextRequest) {
   out.source_url = url;
   out.cover_image = /^https?:\/\//i.test(ogImage) ? ogImage : "";
   out.images = images;
+  // [임시 진단] __NEXT_DATA__/JSON 스크립트 속 전체 이미지 URL(필터 전) — SPA 이미지 누락 원인 파악용
+  try {
+    const _blobs = [...(html || "").matchAll(/<script[^>]*(?:__NEXT_DATA__|application\/json|__NUXT__|INITIAL_STATE)[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
+    const _nd = _blobs.join(" ");
+    const _raw = [...new Set([...(_nd.matchAll(/https?:(?:\\u002[Ff]|\\?\/){2}[^\s"'<>()\\]+?\.(?:jpe?g|png|webp)(?:\?[^\s"'<>()\\]*)?/gi))].map((m) => m[0].replace(/\\u002[Ff]/g, "/").replace(/\\\//g, "/")))];
+    out._dbg = { jsonScripts: _blobs.length, ndImgCount: _raw.length, htmlLen: (html || "").length, ogImage, sample: _raw.slice(0, 8) };
+  } catch { out._dbg = { err: true }; }
   if (out.apply_method === "REDIRECT" && !out.external_apply_url && url) out.external_apply_url = url;
   if (!["STORE", "OFFICE"].includes(out.job_type)) out.job_type = "STORE";
   if (!["REDIRECT", "EMAIL", "MANAGED"].includes(out.apply_method)) out.apply_method = "MANAGED";
