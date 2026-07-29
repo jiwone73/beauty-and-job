@@ -511,11 +511,7 @@ export default function JobPostForm({
       const extraLines = [(!salaryStructured && d.salary) ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
       if (extraLines) setNotes(extraLines);
       if (d.ai_parsed) {
-        const imgList = Array.isArray(d.images) ? d.images.map((u: string, i: number) => `${i + 1}) ${(u.split("/").pop() || u).slice(0, 46)}`).join("  ") : "";
-        const ndList = d._dbg && Array.isArray(d._dbg.sample) ? d._dbg.sample.map((u: string, i: number) => `${i + 1})${(u.split("/").pop() || u).slice(0, 44)}`).join(" ") : "";
-        const dbg = d._dbg ? ` | NEXT_DATA ${d._dbg.ndImgCount}개: ${ndList}` : "";
-        const diag = `[진단 · 이미지 ${Array.isArray(d.images) ? d.images.length : 0}장 · 급여 ${d.salary_type || "-"}/${d.salary_amount || 0}~${d.salary_amount_max || 0}]${dbg}  뽑힌이미지: ${imgList}`;
-        setParseMsg("✓ 불러왔어요. 값만 확인하고 등록하세요. " + diag);
+        setParseMsg("✓ 불러왔어요. 직군·경력·지역·급여·근무조건·이미지까지 자동 반영했어요. 값만 확인하고 등록하세요.");
       } else {
         setParseMsg("⚠ AI 자동 정리에 실패해 제목·회사 등 기본 정보만 채웠어요. 공고 본문 전체를 아래 칸에 붙여넣고 다시 '불러오기'를 눌러주세요.");
       }
