@@ -903,7 +903,7 @@ export default function JobPostForm({
               </div>
 
               <div className="admin-form-row">
-                <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span><span style={{ fontSize: 11, fontWeight: 400, color: "#aaa", marginLeft: 4 }}>(필터용 시·군·구)</span></label>
                 <button type="button" onClick={() => setRegionModalOpen(true)}
                   style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: regionList.length ? "#555" : "#bbb", cursor: "pointer" }}>
                   <span style={{ textAlign: "right" }}>
@@ -912,6 +912,19 @@ export default function JobPostForm({
                   <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0 }}>›</span>
                 </button>
               </div>
+
+              {/* 근무지 전체 주소 + 지도 (등록폼에서도 확인) — 비회원 직접 입력 */}
+              {nonMember && (
+                <div style={{ marginTop: 4 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "#444", marginBottom: 6 }}>근무지 상세 주소 <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(도로명·번지 전체 · 지도 표시)</span></div>
+                  <input style={inp} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="예) 경기 수원시 영통구 대학로 24 (이의동) 3층" />
+                  {nmAddress.trim() && (
+                    <iframe title="근무지역 지도" width="100%" height={220}
+                      style={{ border: 0, borderRadius: 12, marginTop: 10 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(nmAddress)}&output=embed&hl=ko`} />
+                  )}
+                </div>
+              )}
 
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
