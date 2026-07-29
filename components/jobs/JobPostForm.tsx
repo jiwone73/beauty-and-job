@@ -512,7 +512,8 @@ export default function JobPostForm({
       if (extraLines) setNotes(extraLines);
       if (d.ai_parsed) {
         const imgList = Array.isArray(d.images) ? d.images.map((u: string, i: number) => `${i + 1}) ${(u.split("/").pop() || u).slice(0, 46)}`).join("  ") : "";
-        const diag = `[진단 · 이미지 ${Array.isArray(d.images) ? d.images.length : 0}장 · 급여 ${d.salary_type || "-"}/${d.salary_amount || 0}~${d.salary_amount_max || 0}/협의${d.salary_negotiable ? "O" : "X"}]  이미지: ${imgList}`;
+        const dbg = d._dbg ? ` | NEXT_DATA: 스크립트 ${d._dbg.jsonScripts}개 · JSON내이미지 ${d._dbg.ndImgCount}개 · HTML ${d._dbg.htmlLen}자 · og=${(d._dbg.ogImage || "").split("/").pop() || "-"}` : "";
+        const diag = `[진단 · 이미지 ${Array.isArray(d.images) ? d.images.length : 0}장 · 급여 ${d.salary_type || "-"}/${d.salary_amount || 0}~${d.salary_amount_max || 0}]${dbg}  뽑힌이미지: ${imgList}`;
         setParseMsg("✓ 불러왔어요. 값만 확인하고 등록하세요. " + diag);
       } else {
         setParseMsg("⚠ AI 자동 정리에 실패해 제목·회사 등 기본 정보만 채웠어요. 공고 본문 전체를 아래 칸에 붙여넣고 다시 '불러오기'를 눌러주세요.");
@@ -937,18 +938,28 @@ export default function JobPostForm({
                 </button>
               </div>
 
-              {/* 근무지 전체 주소 + 지도 (등록폼에서도 확인) — 비회원 직접 입력 */}
-              {nonMember && (
-                <div style={{ marginTop: 4 }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: "#444", marginBottom: 6 }}>근무지 상세 주소 <span style={{ fontSize: 11, fontWeight: 400, color: "#aaa" }}>(도로명·번지 전체 · 지도 표시)</span></div>
-                  <input style={inp} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="예) 경기 수원시 영통구 대학로 24 (이의동) 3층" />
-                  {nmAddress.trim() && (
-                    <iframe title="근무지역 지도" width="100%" height={220}
-                      style={{ border: 0, borderRadius: 12, marginTop: 10 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"
-                      src={`https://maps.google.com/maps?q=${encodeURIComponent(nmAddress)}&output=embed&hl=ko`} />
-                  )}
-                </div>
-              )}
+              {/* 근무지 상세 주소: 위 근무지역(시·군·구)과 겹치는 앞부분은 빼고 그 뒤만 표시. 지도·저장엔 전체 주소 사용 */}
+              {nonMember && (() => {
+                const sigungu = (regionList[0] || "").trim().split(/\s+/).pop() || "";
+                const idx = sigungu && nmAddress.includes(sigungu) ? nmAddress.indexOf(sigungu) + sigungu.length : -1;
+                const addrPrefix = idx >= 0 ? nmAddress.slice(0, idx).trim() : "";
+                const addrDetail = idx >= 0 ? nmAddress.slice(idx).trim() : nmAddress;
+                return (
+                  <>
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">근무지 상세 주소</label>
+                      <input className="admin-form-input" value={addrDetail}
+                        onChange={(e) => setNmAddress((addrPrefix ? addrPrefix + " " : "") + e.target.value)}
+                        placeholder="도로명·번지 (동·층 등)" />
+                    </div>
+                    {nmAddress.trim() && (
+                      <iframe title="근무지역 지도" width="100%" height={220}
+                        style={{ border: 0, borderRadius: 12, marginTop: 4 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                        src={`https://maps.google.com/maps?q=${encodeURIComponent(nmAddress)}&output=embed&hl=ko`} />
+                    )}
+                  </>
+                );
+              })()}
 
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
