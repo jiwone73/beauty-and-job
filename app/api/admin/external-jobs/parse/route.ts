@@ -234,7 +234,7 @@ export async function POST(req: NextRequest) {
     company_description: "", address: "", industry: "",
     job_categories: [] as string[],
     requirements: "", preferred: "", benefits: "", benefit_tags: [] as string[], hiring_process: [] as string[],
-    employment_type: "", career: "", salary: "", salary_type: "", salary_amount: 0, salary_negotiable: false, work_days: "", work_time: "", extra_notes: "", main_duties: "",
+    employment_type: "", career: "", salary: "", salary_type: "", salary_amount: 0, salary_amount_max: 0, salary_negotiable: false, work_days: "", work_time: "", extra_notes: "", main_duties: "",
   };
 
   if (process.env.ANTHROPIC_API_KEY) {
@@ -242,7 +242,7 @@ export async function POST(req: NextRequest) {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
 반드시 아래 키를 가진 JSON "하나만" 출력해(설명·코드펜스 금지):
-{"company_name","homepage_url","contact_email","title","job_type","job_categories","region","location","deadline","always_open","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","benefit_tags","hiring_process","employment_type","career","salary","salary_type","salary_amount","salary_negotiable","work_days","work_time","extra_notes","main_duties"}
+{"company_name","homepage_url","contact_email","title","job_type","job_categories","region","location","deadline","always_open","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","benefit_tags","hiring_process","employment_type","career","salary","salary_type","salary_amount","salary_amount_max","salary_negotiable","work_days","work_time","extra_notes","main_duties"}
 규칙:
 - job_type: 미용실·네일·피부·속눈썹 등 현장 미용직이면 "STORE", 화장품 브랜드·유통·본사 등 사무직이면 "OFFICE".
 - job_categories: 위 job_type에 맞는 아래 "직군 목록"에서 이 공고에 해당하는 항목을 1~3개 골라 그 문자열을 "정확히 그대로" 배열로. 목록에 딱 맞는 게 없으면 가장 가까운 것 1개. 전혀 없으면 [].
@@ -269,7 +269,8 @@ export async function POST(req: NextRequest) {
 - salary: 급여/처우 조건을 텍스트로(예: "월 250만원", "비율 5:5", "면접 후 협의"). 없으면 "".
 - salary_type · salary_amount: 이 둘은 "반드시 같은 급여 하나"를 가리켜야 한다. 형태와 금액을 절대 섞지 말 것 → "연봉 3000만원"이면 type "ANNUAL" + amount 3000, "월 250만원"이면 type "MONTHLY" + amount 250. (예: 월인데 amount 3000 ✗ 절대 금지). 한 공고에 월급·연봉이 함께 적혀 있으면 "연봉(ANNUAL)"을 우선 선택(예: "월 250만원 / 연봉 3000~3300만원" → ANNUAL + 3000). 범위면 하한값.
    · salary_type: "ANNUAL"(연봉) | "MONTHLY"(월급) | "WEEKLY"(주급) | "HOURLY"(시급) 중 하나. 협의/비율제 등 고정 금액이 없으면 "".
-   · salary_amount: 숫자만. 연봉·월급·주급은 "만원" 단위, 시급은 "원" 단위(예: 시급 12000원→12000). 없거나 협의면 0.
+   · salary_amount: 숫자만(범위면 하한값). 연봉·월급·주급은 "만원" 단위, 시급은 "원" 단위(예: 시급 12000원→12000). 없거나 협의면 0.
+   · salary_amount_max: 급여가 "범위"로 적혀 있으면(예: "연봉 3000~3300만원") 상한값 숫자만(같은 단위, 예: 3300). 단일 금액이면 0.
 - salary_negotiable: 급여가 "협의/면접 후 결정/비공개/비율제(예: 5:5)" 등 고정 금액이 아니면 true, 고정 금액이 명시되면 false.
 - work_days: 실제 "근무"하는 요일만 "월,화,수,목,금,토,일" 중에서 콤마로(휴무 요일은 제외). 예: "(월,화 휴무) 수,목,금,토,일" → "수,목,금,토,일". "주5일"만 있고 요일 불명확이면 "월,화,수,목,금". 요일이 협의/유동이면 "협의". 없으면 "".
 - work_time: 근무시간을 "HH:MM~HH:MM" 24시간 형식으로(예: "오전9시~오후7시30분" → "09:00~19:30", "9~18시" → "09:00~18:00"). 시간이 협의/탄력근무면 "협의". 없으면 "".

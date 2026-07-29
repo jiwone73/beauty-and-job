@@ -95,16 +95,31 @@ export default function JobPostForm({
   const [salaryNegoDraft, setSalaryNegoDraft] = useState(false);
   const [salaryType, setSalaryType] = useState<string>("MONTHLY");     // ANNUAL/MONTHLY/WEEKLY/HOURLY
   const [salaryTypeDraft, setSalaryTypeDraft] = useState<string>("MONTHLY");
+  const [salaryMax, setSalaryMax] = useState<string>("");             // 급여 상한(범위 공고). 단일이면 ""
   const salaryRef = useRef<HTMLDivElement>(null);
+  // 급여 표시(범위면 "연봉 3,000만원 ~ 3,300만원")
+  const fmtSalary = (): string => {
+    if (salaryNego) return "급여 협의";
+    const min = parseInt(String(form.salary).replace(/[^0-9]/g, "")) || 0;
+    if (!min) return "급여 협의";
+    const unit = salaryType === "HOURLY" ? 1 : 10000;
+    const base = formatSalaryWon(min * unit, salaryType);
+    const max = parseInt(String(salaryMax).replace(/[^0-9]/g, "")) || 0;
+    if (max > min) return `${base} ~ ${formatSalaryWon(max * unit, salaryType).replace(/^[^0-9]*/, "")}`;
+    return base;
+  };
   const applySalary = () => {
     setSalaryNego(salaryNegoDraft);
     setSalaryType(salaryTypeDraft);
+    setSalaryMax(""); // 수동 입력 시 범위 초기화(단일 값)
     setForm({ ...form, salary: salaryNegoDraft ? "" : salaryDraft });
     setSalaryModalOpen(false);
   };
-  // 신규 등록 시 채용유형에 맞춰 기본 급여유형 설정(편집은 로드값 유지)
+  // 신규 등록 시 채용유형에 맞춰 기본 급여유형 설정(편집·불러오기로 지정된 급여유형은 덮어쓰지 않음)
+  const importSalaryRef = useRef(false);
   useEffect(() => {
     if (editId) return;
+    if (importSalaryRef.current) { importSalaryRef.current = false; return; }
     setSalaryType(jobGroupType === "매장" ? "MONTHLY" : "ANNUAL");
   }, [jobGroupType, editId]);
   useEffect(() => {
@@ -258,6 +273,7 @@ export default function JobPostForm({
           : j.work_type === "CONTRACT" ? "계약직" : "정규직");
       const loadedSalaryType = j.salary_type || (j.job_type === "STORE" ? "MONTHLY" : "ANNUAL");
       const salary = j.salary_min ? String(loadedSalaryType === "HOURLY" ? j.salary_min : j.salary_min / 10000) : "";
+      setSalaryMax(j.salary_max && j.salary_max > j.salary_min ? String(loadedSalaryType === "HOURLY" ? j.salary_max : j.salary_max / 10000) : "");
       setSalaryType(loadedSalaryType);
       setForm({
         title: j.title || "", career, type,
@@ -469,11 +485,14 @@ export default function JobPostForm({
       // 급여: 구조화된 값이 있으면 급여 필드에 반영, 협의/비율제면 '협의' 처리
       const salaryStructured = Number(d.salary_amount) > 0 && ["ANNUAL", "MONTHLY", "WEEKLY", "HOURLY"].includes(d.salary_type);
       if (salaryStructured) {
+        importSalaryRef.current = true; // 매장 기본값(월급) useEffect가 이 값을 덮어쓰지 않게
         setSalaryType(d.salary_type);
         setSalaryNego(false);
         setForm((f) => ({ ...f, salary: String(Number(d.salary_amount)) }));
+        setSalaryMax(Number(d.salary_amount_max) > Number(d.salary_amount) ? String(Number(d.salary_amount_max)) : "");
       } else if (d.salary_negotiable) {
         setSalaryNego(true);
+        setSalaryMax("");
         setForm((f) => ({ ...f, salary: "" }));
       }
       // 근무요일 (매장 공고에 주로 필요)
@@ -492,8 +511,9 @@ export default function JobPostForm({
       const extraLines = [(!salaryStructured && d.salary) ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
       if (extraLines) setNotes(extraLines);
       if (d.ai_parsed) {
-        const diag = `[진단 · 이미지 ${Array.isArray(d.images) ? d.images.length : 0}장 · 급여 ${d.salary_type || "-"}/${d.salary_amount || 0}/협의${d.salary_negotiable ? "O" : "X"} · 요일 ${d.work_days || "-"} · 시간 ${d.work_time || "-"}]`;
-        setParseMsg("✓ 불러왔어요. 직군·경력·지역·복리후생·이미지까지 자동 반영했어요. 값만 확인하고 등록하세요. " + diag);
+        const imgList = Array.isArray(d.images) ? d.images.map((u: string, i: number) => `${i + 1}) ${(u.split("/").pop() || u).slice(0, 46)}`).join("  ") : "";
+        const diag = `[진단 · 이미지 ${Array.isArray(d.images) ? d.images.length : 0}장 · 급여 ${d.salary_type || "-"}/${d.salary_amount || 0}~${d.salary_amount_max || 0}/협의${d.salary_negotiable ? "O" : "X"}]  이미지: ${imgList}`;
+        setParseMsg("✓ 불러왔어요. 값만 확인하고 등록하세요. " + diag);
       } else {
         setParseMsg("⚠ AI 자동 정리에 실패해 제목·회사 등 기본 정보만 채웠어요. 공고 본문 전체를 아래 칸에 붙여넣고 다시 '불러오기'를 눌러주세요.");
       }
@@ -570,9 +590,12 @@ export default function JobPostForm({
     const workType = form.type === "파트타임" ? "PART_TIME"
       : form.type === "계약직" ? "CONTRACT" : "FULL_TIME";
     let salaryMin: number | null = null;
+    let salaryMaxVal: number | null = null;
     if (!salaryNego && form.salary) {
       const n = parseInt(String(form.salary).replace(/[^0-9]/g, ""));
       if (n > 0) salaryMin = salaryType === "HOURLY" ? n : n * 10000;
+      const mx = parseInt(String(salaryMax).replace(/[^0-9]/g, "")) || 0;
+      if (mx > n) salaryMaxVal = salaryType === "HOURLY" ? mx : mx * 10000;
     }
 
     const payload: any = {
@@ -583,7 +606,7 @@ export default function JobPostForm({
       preferred_qualifications: form.preferred || null,
       benefits: form.benefits || null,
       responsibilities: form.responsibilities || null,
-      salary_min: salaryMin, salary_max: null,
+      salary_min: salaryMin, salary_max: salaryMaxVal,
       salary_type: salaryMin ? salaryType : null,
       location: regionList.join(", ") || null,
       work_type: workType,
@@ -659,7 +682,7 @@ export default function JobPostForm({
     region: regionList.join(", "),
     employType: form.type || "정규직",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
-    salary: salaryNego ? "급여 협의" : (form.salary ? formatSalaryWon((parseInt(String(form.salary).replace(/[^0-9]/g, "")) || 0) * (salaryType === "HOURLY" ? 1 : 10000), salaryType) : "급여 협의"),
+    salary: fmtSalary(),
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -938,9 +961,7 @@ export default function JobPostForm({
                       }}
                       style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: (salaryNego || form.salary) ? "#555" : "#bbb", cursor: "pointer" }}>
                       <span style={{ textAlign: "right" }}>
-                        {salaryNego ? "급여 협의" : form.salary
-                          ? formatSalaryWon((parseInt(String(form.salary).replace(/[^0-9]/g, "")) || 0) * (salaryType === "HOURLY" ? 1 : 10000), salaryType)
-                          : "급여를 입력해주세요"}
+                        {(salaryNego || form.salary) ? fmtSalary() : "급여를 입력해주세요"}
                       </span>
                       <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: salaryModalOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                     </button>

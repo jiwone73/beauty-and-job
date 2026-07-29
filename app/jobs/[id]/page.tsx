@@ -194,7 +194,9 @@ export default function JobDetailPage() {
             region: j.location || '',
             employType: j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직',
             deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, '.') : '상시채용',
-            salary: formatSalaryWon(j.salary_min, j.salary_type),
+            salary: (j.salary_max && j.salary_max > j.salary_min)
+              ? `${formatSalaryWon(j.salary_min, j.salary_type)} ~ ${formatSalaryWon(j.salary_max, j.salary_type).replace(/^[^0-9]*/, '')}`
+              : formatSalaryWon(j.salary_min, j.salary_type),
             color: '#e8f0fe',
             description: j.description || '',
             requirements: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],
