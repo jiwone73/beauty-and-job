@@ -73,6 +73,7 @@ export default function JobPostForm({
   const [showPaste, setShowPaste] = useState(false);
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
+  const [contactNotice, setContactNotice] = useState("");
   const [curating, setCurating] = useState(false);
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
   const [categories, setCategories] = useState<string[]>([]);
@@ -424,7 +425,7 @@ export default function JobPostForm({
   const runParse = async () => {
     if (!parseUrl.trim() && !parseText.trim()) { setParseMsg("URL 또는 공고 본문을 입력해주세요."); return; }
     if (mode === "admin") { setNonMember(true); setCompanyId(null); }
-    setParsing(true); setParseMsg("");
+    setParsing(true); setParseMsg(""); setContactNotice("");
     try {
       // 관리자는 admin_token, 기업회원은 access_token 사용
       const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
@@ -442,6 +443,8 @@ export default function JobPostForm({
         if (d.company_name) setNewCompanyName(d.company_name);
         if (d.homepage_url) setNmHomepage(d.homepage_url);
         if (d.contact_email) setNmContactEmail(d.contact_email);
+        if (d.contact_phone) setNmManagerPhone(d.contact_phone);
+        if (d.contact_name) setNmManagerName(d.contact_name);
         if (["MANAGED", "EMAIL", "REDIRECT"].includes(d.apply_method)) setApplyMethod(d.apply_method);
         if (d.external_apply_url) setExternalApplyUrl(d.external_apply_url);
         if (d.company_description) setNmDescription(d.company_description);
@@ -511,6 +514,14 @@ export default function JobPostForm({
       }
       const extraLines = [(!salaryStructured && d.salary) ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
       if (extraLines) setNotes(extraLines);
+      {
+        const c: string[] = [];
+        if (d.contact_phone) c.push(`전화 ${d.contact_phone}`);
+        if (d.contact_email) c.push(`이메일 ${d.contact_email}`);
+        setContactNotice(c.length
+          ? `📞 본문에서 연락처를 찾아 ‘채용 담당자’에 넣었어요 (${c.join(" · ")}). 지원방식(관리자 대행·이메일 중계·외부 링크)을 이 연락처 기준으로 확인해 정하세요.`
+          : "");
+      }
       if (d.ai_parsed) {
         setParseMsg("✓ 불러왔어요. 직군·경력·지역·급여·근무조건·이미지까지 자동 반영했어요. 값만 확인하고 등록하세요.");
       } else {
@@ -742,6 +753,7 @@ export default function JobPostForm({
             )}
           </div>
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
+          {contactNotice && <div style={{ fontSize: 12.5, marginTop: 6, padding: "8px 10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: 8, color: "#9a3412", lineHeight: 1.5 }}>{contactNotice}</div>}
           {/* URL로 안 되는 사이트(AJAX·차단 등) 폴백: 본문 붙여넣기 */}
           <button type="button" onClick={() => setShowPaste((v) => !v)}
             style={{ marginTop: 6, background: "none", border: "none", color: "#5f0080", fontSize: 12, cursor: "pointer", padding: 0 }}>
@@ -1235,7 +1247,7 @@ export default function JobPostForm({
           </div>
 
           {/* 채용 담당자 — 외부공고에 채용 이메일이 있으면(또는 이메일 중계 선택 시) 노출 */}
-          {mode === "admin" && nonMember && (nmContactEmail.trim() || applyMethod === "EMAIL") && (
+          {mode === "admin" && nonMember && (nmContactEmail.trim() || nmManagerPhone.trim() || applyMethod === "EMAIL") && (
             <>
               <h2 className="jobpost-section-title">채용 담당자</h2>
               <div className="company-card" style={{ overflow: "visible" }}>
