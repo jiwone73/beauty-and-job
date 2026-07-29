@@ -20,10 +20,23 @@ function extractJsonLd(html: string): string {
 }
 function extractNextData(html: string): string {
   const m = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/i);
-  if (m) return m[1].trim().slice(0, 7000);
+  if (m) {
+    const raw = m[1].trim();
+    // 실제 공고 데이터는 props.pageProps에 있음. 프레임워크 잡음 빼고 그 부분만 추려서 넉넉히 전달.
+    // (알바몬 등은 급여·근무요일이 __NEXT_DATA__ 뒤쪽 14KB 지점에 있어, 예전 7000자 컷에선 잘려나갔음)
+    try {
+      const j = JSON.parse(raw);
+      const pp = j?.props?.pageProps;
+      if (pp && typeof pp === "object") {
+        const s = JSON.stringify(pp);
+        if (s.length > 40) return s.slice(0, 24000);
+      }
+    } catch { /* 파싱 실패 시 원본 슬라이스로 폴백 */ }
+    return raw.slice(0, 24000);
+  }
   // Nuxt/기타 인라인 상태
   const m2 = html.match(/<script[^>]*>\s*window\.__(?:NUXT|INITIAL_STATE)__\s*=([\s\S]*?)<\/script>/i);
-  return m2 ? m2[1].trim().slice(0, 7000) : "";
+  return m2 ? m2[1].trim().slice(0, 24000) : "";
 }
 function metaContent(html: string, prop: string): string {
   const re = new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]*content=["']([^"']*)["']`, "i");
@@ -98,33 +111,57 @@ export async function POST(req: NextRequest) {
       if (!pastedText) return err("VALIDATION_001", "올바른 URL을 입력해주세요.", 400);
       url = "";
     }
+    // 알바몬: 검색결과에서 복사하면 ?searchRow=&searchKeyword=&logpath=&sc= 같은 추적 파라미터가 붙는데,
+    // 이게 붙으면 봇/스크래퍼로 오인해 차단 확률이 올라감 → 깨끗한 상세 URL로 정규화한다.
+    if (url && /(?:^|\.)albamon\.com$/i.test(hostname)) {
+      const m = url.match(/\/jobs\/detail\/(\d+)/i);
+      if (m) url = `https://www.albamon.com/jobs/detail/${m[1]}`;
+    }
     if (url) {
-      try {
+      // 알바몬 등은 봇 차단 시 정상 HTTP 200으로 "접속 차단" 안내 페이지를 돌려줌 → 본문으로 차단 판별.
+      const looksBlocked = (h: string) =>
+        /(?:접속이?\s*차단|페이지\s*접근\s*불가|접근이?\s*제한|비정상적인\s*접근)/.test(h) && h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().length < 3000;
+      const fetchOnce = async (): Promise<{ status: number; html: string }> => {
         const ctl = new AbortController();
         const t = setTimeout(() => ctl.abort(), 12000);
-        const r = await fetch(url, {
-          signal: ctl.signal,
-          headers: {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "ko,en;q=0.8",
-          },
-        });
-        clearTimeout(t);
-        if (r.ok) {
+        try {
+          const r = await fetch(url, {
+            signal: ctl.signal,
+            headers: {
+              "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+              "Accept-Language": "ko,en;q=0.8",
+            },
+          });
+          if (!r.ok) return { status: r.status, html: "" };
           // 인코딩 자동 감지: 구형 한국 사이트(EUC-KR) 대응. 일부는 meta에 UTF-8이라 거짓 선언하므로 깨짐(�)으로 판별.
           const buf = Buffer.from(await r.arrayBuffer());
           const ctCharset = (r.headers.get("content-type") || "").match(/charset=([\w-]+)/i)?.[1]?.toLowerCase() || "";
+          let h: string;
           if (/^(ks_c_5601|ksc5601|cp949|windows-949|euc-?kr)$/i.test(ctCharset)) {
-            html = new TextDecoder("euc-kr").decode(buf);
+            h = new TextDecoder("euc-kr").decode(buf);
           } else {
-            html = new TextDecoder("utf-8").decode(buf);
-            if ((html.match(/�/g)?.length || 0) > 5) {
-              try { html = new TextDecoder("euc-kr").decode(buf); } catch { /* euc-kr 미지원 시 utf-8 유지 */ }
+            h = new TextDecoder("utf-8").decode(buf);
+            if ((h.match(/�/g)?.length || 0) > 5) {
+              try { h = new TextDecoder("euc-kr").decode(buf); } catch { /* euc-kr 미지원 시 utf-8 유지 */ }
             }
           }
+          return { status: r.status, html: h };
+        } finally { clearTimeout(t); }
+      };
+      try {
+        let lastStatus = 0;
+        // 간헐적 차단 대응: 차단 페이지가 잡히면 잠깐 쉬었다 1회 재시도(대개 다음 요청은 통과).
+        for (let attempt = 0; attempt < 2; attempt++) {
+          const { status, html: h } = await fetchOnce();
+          lastStatus = status;
+          if (h && !looksBlocked(h)) { html = h; break; }
+          if (h && looksBlocked(h) && attempt === 0) { await new Promise((res) => setTimeout(res, 1500)); continue; }
+          break; // 차단 재시도 소진 또는 빈 응답
         }
-        else if (!pastedText) return err("FETCH_001", `페이지를 불러오지 못했어요 (HTTP ${r.status}).`, 502);
+        if (!html && !pastedText) {
+          return err("FETCH_001", `페이지를 불러오지 못했어요 (${lastStatus ? "HTTP " + lastStatus : "접근 차단"}). 잠시 후 다시 시도하거나, 공고 본문을 복사해 ‘텍스트 붙여넣기’로 등록해보세요.`, 502);
+        }
       } catch (e: any) {
         if (!pastedText) return err("FETCH_002", "페이지를 불러오지 못했어요. 접근이 막혀 있거나 시간이 초과됐어요. 대신 공고 본문을 복사해 ‘텍스트 붙여넣기’로 등록해보세요.", 502);
       }
