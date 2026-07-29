@@ -79,7 +79,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   if (ci.website) companyRows.push(["웹사이트",
     <a key="w" href={/^https?:\/\//.test(ci.website) ? ci.website : `https://${ci.website}`}
       target="_blank" rel="noreferrer" style={{ color: "#5f0080", wordBreak: "break-all" }}>{ci.website}</a>]);
-  if (ci.location) companyRows.push(["위치", shortRegion(ci.location)]);
+  if (ci.location) companyRows.push(["주소", ci.location]);
   const hasCompanyInfo = job.brandDesc?.trim() || companyRows.length > 0;
 
   return (
@@ -309,7 +309,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               <div className="job-detail-company-info">
                 {companyRows.map(([label, val], i) => (
                   <div key={i} className="job-detail-company-row"
-                    style={label === "웹사이트" || label === "위치" ? { gridColumn: "1 / -1" } : undefined}>
+                    style={label === "웹사이트" || label === "주소" ? { gridColumn: "1 / -1" } : undefined}>
                     <span className="job-detail-company-label">{label}</span>
                     <span>{val}</span>
                   </div>
