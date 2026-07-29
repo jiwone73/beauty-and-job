@@ -225,7 +225,7 @@ export async function POST(req: NextRequest) {
     company_description: "", address: "", industry: "",
     job_categories: [] as string[],
     requirements: "", preferred: "", benefits: "", benefit_tags: [] as string[], hiring_process: [] as string[],
-    employment_type: "", career: "", salary: "", extra_notes: "", main_duties: "",
+    employment_type: "", career: "", salary: "", salary_type: "", salary_amount: 0, salary_negotiable: false, work_days: "", work_time: "", extra_notes: "", main_duties: "",
   };
 
   if (process.env.ANTHROPIC_API_KEY) {
@@ -233,7 +233,7 @@ export async function POST(req: NextRequest) {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
 반드시 아래 키를 가진 JSON "하나만" 출력해(설명·코드펜스 금지):
-{"company_name","homepage_url","contact_email","title","job_type","job_categories","region","location","deadline","always_open","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","benefit_tags","hiring_process","employment_type","career","salary","extra_notes","main_duties"}
+{"company_name","homepage_url","contact_email","title","job_type","job_categories","region","location","deadline","always_open","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","benefit_tags","hiring_process","employment_type","career","salary","salary_type","salary_amount","salary_negotiable","work_days","work_time","extra_notes","main_duties"}
 규칙:
 - job_type: 미용실·네일·피부·속눈썹 등 현장 미용직이면 "STORE", 화장품 브랜드·유통·본사 등 사무직이면 "OFFICE".
 - job_categories: 위 job_type에 맞는 아래 "직군 목록"에서 이 공고에 해당하는 항목을 1~3개 골라 그 문자열을 "정확히 그대로" 배열로. 목록에 딱 맞는 게 없으면 가장 가까운 것 1개. 전혀 없으면 [].
@@ -258,8 +258,13 @@ export async function POST(req: NextRequest) {
 - employment_type: "정규직" | "파트타임" | "계약직" 중 하나 또는 "".
 - main_duties: 주요업무/담당업무를 텍스트로(여러 개면 줄바꿈 구분). 없으면 "".
 - salary: 급여/처우 조건을 텍스트로(예: "월 250만원", "비율 5:5", "면접 후 협의"). 없으면 "".
+- salary_type: 급여 형태 → "ANNUAL"(연봉) | "MONTHLY"(월급) | "WEEKLY"(주급) | "HOURLY"(시급) 중 하나. 협의/비율제 등 고정 금액이 없으면 "".
+- salary_amount: 금액을 숫자만. 연봉·월급·주급은 "만원" 단위(예: 월 250만원→250, 연봉 3000만원→3000), 시급은 "원" 단위(예: 시급 12000원→12000). 범위면 하한값. 없거나 협의면 0.
+- salary_negotiable: 급여가 "협의/면접 후 결정/비공개/비율제(예: 5:5)" 등 고정 금액이 아니면 true, 고정 금액이 명시되면 false.
+- work_days: 실제 "근무"하는 요일만 "월,화,수,목,금,토,일" 중에서 콤마로(휴무 요일은 제외). 예: "(월,화 휴무) 수,목,금,토,일" → "수,목,금,토,일". "주5일"만 있고 요일 불명확이면 "월,화,수,목,금". 요일이 협의/유동이면 "협의". 없으면 "".
+- work_time: 근무시간을 "HH:MM~HH:MM" 24시간 형식으로(예: "오전9시~오후7시30분" → "09:00~19:30", "9~18시" → "09:00~18:00"). 시간이 협의/탄력근무면 "협의". 없으면 "".
 - homepage_url: 그 회사 자체의 홈페이지만. 지금 보고 있는 채용사이트(출처) 주소는 넣지 말 것. 회사 홈페이지가 없으면 "".
-- extra_notes: 위 항목에 안 담기는 나머지 정보(근무시간·휴무/근무요일·근태제도·담당자 연락처·기타 안내 등)를 한국어로 항목별 정리(줄바꿈 구분). 복리후생/혜택은 benefits에 넣고 여기 중복하지 말 것. 없으면 "".
+- extra_notes: 위 항목에 안 담기는 나머지 정보(근태제도·담당자 연락처·기타 안내 등)를 한국어로 항목별 정리(줄바꿈 구분). 급여·근무요일·근무시간·복리후생은 각 전용 필드(salary/work_days/work_time/benefits)에 넣고 여기 중복하지 말 것. 없으면 "".
 - 원문 복제는 피하되 내용은 빠짐없이 옮길 것.
 - 입력 중 [붙여넣은 공고 본문]이 있으면 그 내용을 최우선으로 신뢰하고, [페이지 텍스트]·[JSON-LD]·[__NEXT_DATA__]는 빠진 값을 채우는 보완용으로만 사용할 것.
 - 모르는 값은 빈 문자열 "" 또는 빈 배열 [].`;

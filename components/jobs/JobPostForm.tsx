@@ -466,7 +466,30 @@ export default function JobPostForm({
         career: (CAREER_OPTIONS.includes(d.career) ? d.career : f.career),
         type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : f.type),
       }));
-      const extraLines = [d.salary ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
+      // 급여: 구조화된 값이 있으면 급여 필드에 반영, 협의/비율제면 '협의' 처리
+      const salaryStructured = Number(d.salary_amount) > 0 && ["ANNUAL", "MONTHLY", "WEEKLY", "HOURLY"].includes(d.salary_type);
+      if (salaryStructured) {
+        setSalaryType(d.salary_type);
+        setSalaryNego(false);
+        setForm((f) => ({ ...f, salary: String(Number(d.salary_amount)) }));
+      } else if (d.salary_negotiable) {
+        setSalaryNego(true);
+        setForm((f) => ({ ...f, salary: "" }));
+      }
+      // 근무요일 (매장 공고에 주로 필요)
+      if (d.work_days === "협의") { setWorkDaysNego(true); setWorkDays([]); }
+      else if (typeof d.work_days === "string" && d.work_days.trim()) {
+        const parsed: string[] = (d.work_days as string).split(/[,\s·]+/).map((s) => s.trim()).filter((x) => WORK_DAY_OPTIONS.includes(x));
+        const days: string[] = [...new Set(parsed)].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b));
+        if (days.length) { setWorkDaysNego(false); setWorkDays(days); }
+      }
+      // 근무시간
+      if (d.work_time === "협의") { setWorkTimeNego(true); setWorkTimeStart(""); setWorkTimeEnd(""); }
+      else if (typeof d.work_time === "string") {
+        const m = d.work_time.trim().match(/^(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})$/);
+        if (m) { setWorkTimeNego(false); setWorkTimeStart(`${m[1].padStart(2, "0")}:${m[2]}`); setWorkTimeEnd(`${m[3].padStart(2, "0")}:${m[4]}`); }
+      }
+      const extraLines = [(!salaryStructured && d.salary) ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
       if (extraLines) setNotes(extraLines);
       if (d.ai_parsed) {
         setParseMsg("✓ 불러왔어요. 직군·경력·지역·복리후생·이미지까지 자동 반영했어요. 값만 확인하고 등록하세요.");
