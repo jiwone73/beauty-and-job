@@ -750,11 +750,12 @@ export default function JobPostForm({
                   {/* 기업 선택 = 검색 가능 드롭다운 (기본값 비회원 + DB 회원사 목록) */}
                   <div style={{ position: "relative", justifySelf: "end", width: "100%", maxWidth: 320 }}>
                     <button type="button" onClick={() => setShowCompanyList((v) => !v)}
-                      style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8,
-                        padding: "11px 14px", fontSize: 14, color: "#333", fontWeight: 400,
-                        border: "1px solid #dcdce1", borderRadius: 10, background: "#fff", cursor: "pointer", textAlign: "right", boxSizing: "border-box" }}>
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {companyId ? companyName : (newCompanyName || "비회원 기업")}
+                      style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6,
+                        padding: "4px 0", fontSize: 14, fontWeight: 400,
+                        border: "none", background: "transparent", cursor: "pointer", textAlign: "right", boxSizing: "border-box" }}>
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                        color: (companyId || nonMember) ? "#333" : "#999" }}>
+                        {companyId ? companyName : (nonMember ? (newCompanyName || "비회원 기업") : "기업명 검색")}
                       </span>
                       <ChevronDown size={16} color="#888" style={{ flexShrink: 0 }} />
                     </button>
