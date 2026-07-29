@@ -7,6 +7,7 @@ const DATE_LABELS: Record<string, string> = { "전체": "전체", today: "오늘
 const DATE_VALUES: Record<string, string> = { "전체": "전체", "오늘": "today", "최근 7일": "7d", "최근 1개월": "1m", "최근 3개월": "3m", "최근 1년": "1y" };
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
+import ExternalCompaniesPanel from "@/components/admin/ExternalCompaniesPanel";
 // [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
 // import SmsModal from "@/components/admin/SmsModal";
 import BroadcastModal from "@/components/admin/BroadcastModal";
@@ -97,6 +98,7 @@ function AdminCompaniesContent() {
   const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
   const detailId = searchParams.get("detail");
 
+  const [tab, setTab] = useState<"member" | "external">("member");
   const [companies, setCompanies] = useState<Company[]>([]);
   const blockedMode = false;
   const [loading, setLoading] = useState(true);
@@ -276,6 +278,16 @@ function AdminCompaniesContent() {
 
   return (
     <AdminLayout activeMenu="members-companies">
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, borderBottom: "1px solid #eee" }}>
+        {([["member", "회원 기업"], ["external", "비회원 기업"]] as const).map(([key, label]) => (
+          <button key={key} onClick={() => setTab(key)}
+            style={{ padding: "10px 16px", border: "none", background: "none", cursor: "pointer", fontSize: 14, fontWeight: tab === key ? 700 : 500, color: tab === key ? "#5f0080" : "#888", borderBottom: tab === key ? "2px solid #5f0080" : "2px solid transparent", marginBottom: -1 }}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {tab === "external" && <ExternalCompaniesPanel />}
+      {tab === "member" && (<>
       {!blockedMode && (
         <div className="admin-mini-stats">
           {Object.entries(counts).map(([label, count]) => (
@@ -663,6 +675,7 @@ function AdminCompaniesContent() {
           onClose={() => setBroadcastOpen(false)}
         />
       )}
+      </>)}
     </AdminLayout>
   );
 }
