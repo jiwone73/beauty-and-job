@@ -70,6 +70,7 @@ export default function JobPostForm({
   const [nmManagerPhone, setNmManagerPhone] = useState("");
   const [parseUrl, setParseUrl] = useState("");
   const [parseText, setParseText] = useState("");
+  const [showPaste, setShowPaste] = useState(false);
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
   const [curating, setCurating] = useState(false);
@@ -741,6 +742,19 @@ export default function JobPostForm({
             )}
           </div>
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
+          {/* URL로 안 되는 사이트(AJAX·차단 등) 폴백: 본문 붙여넣기 */}
+          <button type="button" onClick={() => setShowPaste((v) => !v)}
+            style={{ marginTop: 6, background: "none", border: "none", color: "#5f0080", fontSize: 12, cursor: "pointer", padding: 0 }}>
+            {showPaste ? "▲ 본문 붙여넣기 접기" : "▾ URL로 안 되거나 내용이 부실하면 · 공고 본문 붙여넣기"}
+          </button>
+          {showPaste && (
+            <textarea
+              style={{ width: "100%", marginTop: 8, minHeight: 110, padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e0eb", fontSize: 13, lineHeight: 1.5, resize: "vertical", boxSizing: "border-box" }}
+              placeholder="공고 화면에 보이는 내용을 통째로 복사해 붙여넣고 '불러오기'를 누르세요. (급여·경력·근무조건 등 표 값까지 전체 복사). URL과 함께 넣으면 가장 정확해요."
+              value={parseText}
+              onChange={(e) => setParseText(e.target.value)}
+            />
+          )}
           {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
           {mode === "admin" && nonMember && (
             <div style={{ display: "grid", gridTemplateColumns: applyMethod === "REDIRECT" ? "240px 1fr" : "240px", gap: 12, marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb", alignItems: "end" }}>
