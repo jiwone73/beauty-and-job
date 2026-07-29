@@ -111,7 +111,19 @@ export async function POST(req: NextRequest) {
           },
         });
         clearTimeout(t);
-        if (r.ok) html = await r.text();
+        if (r.ok) {
+          // 인코딩 자동 감지: 구형 한국 사이트(EUC-KR) 대응. 일부는 meta에 UTF-8이라 거짓 선언하므로 깨짐(�)으로 판별.
+          const buf = Buffer.from(await r.arrayBuffer());
+          const ctCharset = (r.headers.get("content-type") || "").match(/charset=([\w-]+)/i)?.[1]?.toLowerCase() || "";
+          if (/^(ks_c_5601|ksc5601|cp949|windows-949|euc-?kr)$/i.test(ctCharset)) {
+            html = new TextDecoder("euc-kr").decode(buf);
+          } else {
+            html = new TextDecoder("utf-8").decode(buf);
+            if ((html.match(/�/g)?.length || 0) > 5) {
+              try { html = new TextDecoder("euc-kr").decode(buf); } catch { /* euc-kr 미지원 시 utf-8 유지 */ }
+            }
+          }
+        }
         else if (!pastedText) return err("FETCH_001", `페이지를 불러오지 못했어요 (HTTP ${r.status}).`, 502);
       } catch (e: any) {
         if (!pastedText) return err("FETCH_002", "페이지를 불러오지 못했어요. 접근이 막혀 있거나 시간이 초과됐어요. 대신 공고 본문을 복사해 ‘텍스트 붙여넣기’로 등록해보세요.", 502);
@@ -163,7 +175,7 @@ export async function POST(req: NextRequest) {
         images = ordered;
         // ④ (범용 폴백) 구조화 소스가 0일 때만: <img> 태그 콘텐츠 이미지. 상대경로→절대경로 보정, 사이트 크롬(로고·아이콘 등) 제외.
         if (images.length === 0) {
-          const chrome = /\/(images|img|imgs|assets|static|common|skin|css|js|template|layout)\//i;
+          const chrome = /\/(images|img|imgs|assets|static|common|skin|css|js|template|layout|banner|ad|ads|event|promo|premium)\//i;
           const toAbs = (u: string) => { try { return new URL(u, url).href; } catch { return ""; } };
           const tags = [...html.matchAll(/<img\b[^>]*>/gi)].map((m) => m[0]);
           for (const tag of tags) {
