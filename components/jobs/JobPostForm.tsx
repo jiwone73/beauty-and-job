@@ -512,7 +512,8 @@ export default function JobPostForm({
       if (extraLines) setNotes(extraLines);
       if (d.ai_parsed) {
         const imgList = Array.isArray(d.images) ? d.images.map((u: string, i: number) => `${i + 1}) ${(u.split("/").pop() || u).slice(0, 46)}`).join("  ") : "";
-        const dbg = d._dbg ? ` | NEXT_DATA: 스크립트 ${d._dbg.jsonScripts}개 · JSON내이미지 ${d._dbg.ndImgCount}개 · HTML ${d._dbg.htmlLen}자 · og=${(d._dbg.ogImage || "").split("/").pop() || "-"}` : "";
+        const ndList = d._dbg && Array.isArray(d._dbg.sample) ? d._dbg.sample.map((u: string, i: number) => `${i + 1})${(u.split("/").pop() || u).slice(0, 44)}`).join(" ") : "";
+        const dbg = d._dbg ? ` | NEXT_DATA ${d._dbg.ndImgCount}개: ${ndList}` : "";
         const diag = `[진단 · 이미지 ${Array.isArray(d.images) ? d.images.length : 0}장 · 급여 ${d.salary_type || "-"}/${d.salary_amount || 0}~${d.salary_amount_max || 0}]${dbg}  뽑힌이미지: ${imgList}`;
         setParseMsg("✓ 불러왔어요. 값만 확인하고 등록하세요. " + diag);
       } else {
