@@ -1,18 +1,21 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Search, X, Link2, Pencil, Trash2, ExternalLink } from "lucide-react";
+import { Search, X, Link2, Pencil, Trash2 } from "lucide-react";
 
 type Job = { id: string; title: string; status: string; created_at: string };
-type ExtCompany = {
+type NmCompany = {
   id: string;
-  name: string;
+  company_name: string;
+  brand_name: string | null;
+  email: string | null;
+  phone: string | null;
   logo_url: string | null;
-  homepage_url: string | null;
-  contact_email: string | null;
-  source_site: string | null;
-  source_url: string | null;
-  claimed_company_id: string | null;
-  claimed_company_name: string | null;
+  website_url: string | null;
+  region_sido: string | null;
+  region_sigungu: string | null;
+  address: string | null;
+  merged_into_company_id: string | null;
+  merged_into_name: string | null;
   created_at: string;
   job_count: number;
   application_count: number;
@@ -26,20 +29,41 @@ function fmtDate(d: string | null) {
   const dt = new Date(d);
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
+function fmtPhone(p: string | null) {
+  if (!p) return "";
+  const d = p.replace(/[^0-9]/g, "");
+  if (d.length === 11) return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
+  if (d.length === 10) return `${d.slice(0, 2)}-${d.slice(2, 6)}-${d.slice(6)}`;
+  return p;
+}
+const SIDO_SHORT: Record<string, string> = {
+  "서울특별시": "서울", "부산광역시": "부산", "대구광역시": "대구", "인천광역시": "인천",
+  "광주광역시": "광주", "대전광역시": "대전", "울산광역시": "울산", "세종특별자치시": "세종",
+  "경기도": "경기", "강원특별자치도": "강원", "강원도": "강원", "충청북도": "충북", "충청남도": "충남",
+  "전북특별자치도": "전북", "전라북도": "전북", "전라남도": "전남", "경상북도": "경북",
+  "경상남도": "경남", "제주특별자치도": "제주",
+};
+function fmtRegion(c: NmCompany) {
+  const sido = c.region_sido ? (SIDO_SHORT[c.region_sido] || c.region_sido) : "";
+  const s = [sido, c.region_sigungu].filter(Boolean).join(" ");
+  if (s) return s;
+  if (c.address) { const p = c.address.trim().split(/\s+/); return [SIDO_SHORT[p[0]] || p[0], p[1]].filter(Boolean).join(" ") || "-"; }
+  return "-";
+}
 
 export default function ExternalCompaniesPanel() {
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
   const authH = { Authorization: `Bearer ${token}` };
 
-  const [items, setItems] = useState<ExtCompany[]>([]);
+  const [items, setItems] = useState<NmCompany[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const [editTarget, setEditTarget] = useState<ExtCompany | null>(null);
-  const [editForm, setEditForm] = useState({ name: "", homepage_url: "", contact_email: "" });
-  const [claimTarget, setClaimTarget] = useState<ExtCompany | null>(null);
-  const [claimQuery, setClaimQuery] = useState("");
-  const [claimHits, setClaimHits] = useState<MemberHit[]>([]);
+  const [editTarget, setEditTarget] = useState<NmCompany | null>(null);
+  const [editForm, setEditForm] = useState({ company_name: "", website_url: "", phone: "" });
+  const [linkTarget, setLinkTarget] = useState<NmCompany | null>(null);
+  const [linkQuery, setLinkQuery] = useState("");
+  const [linkHits, setLinkHits] = useState<MemberHit[]>([]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -58,37 +82,37 @@ export default function ExternalCompaniesPanel() {
 
   useEffect(() => { load(); }, [load]);
 
-  // 회원 기업 검색(연결 대상)
+  // 연결 대상 회원기업 검색
   useEffect(() => {
-    if (!claimTarget) return;
-    const q = claimQuery.trim();
-    if (q.length < 1) { setClaimHits([]); return; }
+    if (!linkTarget) return;
+    const q = linkQuery.trim();
+    if (q.length < 1) { setLinkHits([]); return; }
     let alive = true;
     const t = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/admin/company-search?q=${encodeURIComponent(q)}`, { headers: authH });
+        const res = await fetch(`/api/admin/company-search?member=true&q=${encodeURIComponent(q)}`, { headers: authH });
         const j = await res.json();
-        if (alive && j.success) setClaimHits(j.data || []);
+        if (alive && j.success) setLinkHits((j.data || []).filter((m: MemberHit) => m.id !== linkTarget.id));
       } catch { /* noop */ }
     }, 250);
     return () => { alive = false; clearTimeout(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [claimQuery, claimTarget]);
+  }, [linkQuery, linkTarget]);
 
-  const openEdit = (ec: ExtCompany) => {
-    setEditForm({ name: ec.name || "", homepage_url: ec.homepage_url || "", contact_email: ec.contact_email || "" });
-    setEditTarget(ec);
+  const openEdit = (c: NmCompany) => {
+    setEditForm({ company_name: c.company_name || "", website_url: c.website_url || "", phone: c.phone || "" });
+    setEditTarget(c);
   };
 
   const saveEdit = async () => {
     if (!editTarget) return;
-    if (!editForm.name.trim()) { setMsg("기업명을 입력해주세요."); return; }
+    if (!editForm.company_name.trim()) { setMsg("기업명을 입력해주세요."); return; }
     setBusy(true); setMsg("");
     try {
       const res = await fetch("/api/admin/external-companies", {
         method: "PATCH",
         headers: { "Content-Type": "application/json", ...authH },
-        body: JSON.stringify({ id: editTarget.id, name: editForm.name.trim(), homepage_url: editForm.homepage_url.trim(), contact_email: editForm.contact_email.trim() }),
+        body: JSON.stringify({ id: editTarget.id, company_name: editForm.company_name.trim(), website_url: editForm.website_url.trim(), phone: editForm.phone }),
       });
       const j = await res.json();
       if (!j.success) { setMsg(j.error?.message || "저장에 실패했어요."); return; }
@@ -97,11 +121,11 @@ export default function ExternalCompaniesPanel() {
     } finally { setBusy(false); }
   };
 
-  const doClaim = async (memberId: string, memberName: string) => {
-    if (!claimTarget) return;
+  const doLink = async (memberId: string, memberName: string) => {
+    if (!linkTarget) return;
     setBusy(true); setMsg("");
     try {
-      const res = await fetch(`/api/admin/external-companies/${claimTarget.id}/claim`, {
+      const res = await fetch(`/api/admin/external-companies/${linkTarget.id}/link`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...authH },
         body: JSON.stringify({ company_id: memberId }),
@@ -109,18 +133,19 @@ export default function ExternalCompaniesPanel() {
       const j = await res.json();
       if (!j.success) { setMsg(j.error?.message || "연결에 실패했어요."); return; }
       const moved = j.data?.moved_jobs ?? 0;
-      setClaimTarget(null); setClaimQuery(""); setClaimHits([]);
-      setMsg(`✓ '${claimTarget.name}' → '${memberName}' 회원계정으로 연결했어요 (공고 ${moved}건 이관).`);
+      const nm = linkTarget.company_name;
+      setLinkTarget(null); setLinkQuery(""); setLinkHits([]);
+      setMsg(`✓ '${nm}' → '${memberName}' 회원 기업으로 연결했어요 (공고 ${moved}건 이관). 비회원 목록엔 '연결됨'으로 남겨뒀어요.`);
       await load();
     } finally { setBusy(false); }
   };
 
-  const doDelete = async (ec: ExtCompany) => {
-    if (ec.job_count > 0) { setMsg("연결된 공고가 있어 삭제할 수 없어요. 공고를 먼저 정리하세요."); return; }
-    if (typeof window !== "undefined" && !window.confirm(`'${ec.name}'을(를) 삭제할까요?`)) return;
+  const doDelete = async (c: NmCompany) => {
+    if (c.job_count > 0) { setMsg("연결된 공고가 있어 삭제할 수 없어요. 공고를 먼저 정리하세요."); return; }
+    if (typeof window !== "undefined" && !window.confirm(`'${c.company_name}'을(를) 삭제할까요?`)) return;
     setBusy(true); setMsg("");
     try {
-      const res = await fetch(`/api/admin/external-companies?id=${ec.id}`, { method: "DELETE", headers: authH });
+      const res = await fetch(`/api/admin/external-companies?id=${c.id}`, { method: "DELETE", headers: authH });
       const j = await res.json();
       if (!j.success) { setMsg(j.error?.message || "삭제에 실패했어요."); return; }
       await load();
@@ -129,17 +154,17 @@ export default function ExternalCompaniesPanel() {
 
   const q = search.trim().toLowerCase();
   const filtered = q
-    ? items.filter((c) => (c.name || "").toLowerCase().includes(q) || (c.source_site || "").toLowerCase().includes(q) || (c.contact_email || "").toLowerCase().includes(q))
+    ? items.filter((c) => (c.company_name || "").toLowerCase().includes(q) || (c.phone || "").includes(q) || (c.email || "").toLowerCase().includes(q))
     : items;
 
   const totalCos = items.length;
   const totalJobs = items.reduce((s, c) => s + (c.job_count || 0), 0);
-  const totalPending = items.reduce((s, c) => s + (c.pending_count || 0), 0);
+  const linkedCnt = items.filter((c) => c.merged_into_company_id).length;
 
   return (
     <>
       <div className="admin-mini-stats">
-        {[["비회원 기업", totalCos, "개사"], ["외부 공고", totalJobs, "건"], ["전달 대기 지원", totalPending, "건"]].map(([label, count, unit]) => (
+        {[["비회원 기업", totalCos, "개사"], ["외부 공고", totalJobs, "건"], ["회원 연결됨", linkedCnt, "개사"]].map(([label, count, unit]) => (
           <div key={label as string} className="admin-mini-stat">
             <span className="admin-mini-stat-label">{label}</span>
             <span className="admin-mini-stat-value">{count as number}<span className="admin-mini-unit">{unit}</span></span>
@@ -151,7 +176,7 @@ export default function ExternalCompaniesPanel() {
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
             <Search size={16} className="admin-search-icon" />
-            <input className="admin-search-input" placeholder="기업명·출처·연락처 검색" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <input className="admin-search-input" placeholder="기업명·연락처 검색" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
         </div>
       </div>
@@ -166,7 +191,7 @@ export default function ExternalCompaniesPanel() {
             <thead>
               <tr>
                 <th>기업명</th>
-                <th>출처</th>
+                <th>지역</th>
                 <th>연락처</th>
                 <th style={{ textAlign: "center" }}>공고</th>
                 <th style={{ textAlign: "center" }}>지원(대기)</th>
@@ -179,7 +204,7 @@ export default function ExternalCompaniesPanel() {
               {loading ? (
                 <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>{items.length === 0 ? "비회원 기업이 아직 없어요. 외부 공고를 불러오면 여기에 쌓여요." : "검색 결과가 없습니다."}</td></tr>
+                <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>{items.length === 0 ? "비회원 기업이 아직 없어요. 외부 공고를 등록하면 여기에 쌓여요." : "검색 결과가 없습니다."}</td></tr>
               ) : (
                 filtered.map((c) => (
                   <tr key={c.id}>
@@ -188,31 +213,27 @@ export default function ExternalCompaniesPanel() {
                         {c.logo_url
                           ? <img src={c.logo_url} alt="" style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", background: "#f2f2f2" }} />
                           : <div style={{ width: 28, height: 28, borderRadius: 6, background: "#f2f2f2" }} />}
-                        <span style={{ fontWeight: 600 }}>{c.name}</span>
+                        <span style={{ fontWeight: 600 }}>{c.company_name}</span>
                       </div>
                     </td>
-                    <td className="admin-td-date">
-                      {c.source_url
-                        ? <a href={c.source_url} target="_blank" rel="noreferrer" style={{ color: "#5f0080", display: "inline-flex", alignItems: "center", gap: 3 }}>{c.source_site || "원문"}<ExternalLink size={12} /></a>
-                        : (c.source_site || "-")}
-                    </td>
-                    <td className="admin-td-date">{c.contact_email || "-"}</td>
+                    <td className="admin-td-date">{fmtRegion(c)}</td>
+                    <td className="admin-td-date">{fmtPhone(c.phone) || c.email || "-"}</td>
                     <td className="admin-td-date" style={{ textAlign: "center" }}>{c.job_count}</td>
                     <td className="admin-td-date" style={{ textAlign: "center" }}>
                       {c.application_count}
                       {c.pending_count > 0 && <span style={{ marginLeft: 4, color: "#a05a00", fontWeight: 700 }}>({c.pending_count})</span>}
                     </td>
                     <td className="admin-td-date">
-                      {c.claimed_company_id
-                        ? <span style={{ background: "#e8f5e9", color: "#1b7a3d", borderRadius: 6, padding: "2px 8px", fontSize: 12 }}>연결됨{c.claimed_company_name ? ` · ${c.claimed_company_name}` : ""}</span>
+                      {c.merged_into_company_id
+                        ? <span style={{ background: "#e8f5e9", color: "#1b7a3d", borderRadius: 6, padding: "2px 8px", fontSize: 12 }}>연결됨{c.merged_into_name ? ` · ${c.merged_into_name}` : ""}</span>
                         : <span style={{ background: "#f0f0f0", color: "#777", borderRadius: 6, padding: "2px 8px", fontSize: 12 }}>미연결</span>}
                     </td>
                     <td className="admin-td-date">{fmtDate(c.created_at)}</td>
                     <td className="admin-td-date">
                       <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
                         <button className="resume-icon-btn" title="수정" onClick={() => openEdit(c)}><Pencil size={15} /></button>
-                        {!c.claimed_company_id && (
-                          <button className="resume-icon-btn" title="회원계정 연결" onClick={() => { setClaimQuery(""); setClaimHits([]); setClaimTarget(c); }}><Link2 size={15} /></button>
+                        {!c.merged_into_company_id && (
+                          <button className="resume-icon-btn" title="회원 기업으로 연결" onClick={() => { setLinkQuery(""); setLinkHits([]); setLinkTarget(c); }}><Link2 size={15} /></button>
                         )}
                         <button className="resume-icon-btn danger" title="삭제" onClick={() => doDelete(c)}><Trash2 size={15} /></button>
                       </div>
@@ -235,13 +256,13 @@ export default function ExternalCompaniesPanel() {
             </div>
             <div style={{ padding: 18, display: "flex", flexDirection: "column", gap: 12 }}>
               <label style={{ fontSize: 13, color: "#555" }}>기업명
-                <input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} style={inp} />
+                <input value={editForm.company_name} onChange={(e) => setEditForm((f) => ({ ...f, company_name: e.target.value }))} style={inp} />
               </label>
               <label style={{ fontSize: 13, color: "#555" }}>홈페이지
-                <input value={editForm.homepage_url} onChange={(e) => setEditForm((f) => ({ ...f, homepage_url: e.target.value }))} placeholder="https://" style={inp} />
+                <input value={editForm.website_url} onChange={(e) => setEditForm((f) => ({ ...f, website_url: e.target.value }))} placeholder="https://" style={inp} />
               </label>
-              <label style={{ fontSize: 13, color: "#555" }}>채용 담당 이메일
-                <input value={editForm.contact_email} onChange={(e) => setEditForm((f) => ({ ...f, contact_email: e.target.value }))} placeholder="hr@company.com" style={inp} />
+              <label style={{ fontSize: 13, color: "#555" }}>연락처(전화)
+                <input value={editForm.phone} onChange={(e) => setEditForm((f) => ({ ...f, phone: e.target.value }))} placeholder="010-0000-0000" style={inp} />
               </label>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 4 }}>
                 <button className="admin-page-btn" onClick={() => setEditTarget(null)} disabled={busy}>취소</button>
@@ -252,35 +273,35 @@ export default function ExternalCompaniesPanel() {
         </div>
       )}
 
-      {/* 회원계정 연결(claim) 모달 */}
-      {claimTarget && (
-        <div className="admin-modal-overlay" onClick={() => !busy && setClaimTarget(null)}>
+      {/* 회원 기업 연결(병합) 모달 */}
+      {linkTarget && (
+        <div className="admin-modal-overlay" onClick={() => !busy && setLinkTarget(null)}>
           <div className="admin-modal" style={{ maxWidth: 520, width: "92%", padding: 0 }} onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header" style={{ padding: "14px 18px" }}>
-              <h2 className="admin-modal-title">‘{claimTarget.name}’ 회원계정 연결</h2>
-              <button className="admin-modal-close" onClick={() => setClaimTarget(null)}><X size={20} /></button>
+              <h2 className="admin-modal-title">‘{linkTarget.company_name}’ 회원 기업으로 연결</h2>
+              <button className="admin-modal-close" onClick={() => setLinkTarget(null)}><X size={20} /></button>
             </div>
             <div style={{ padding: 18 }}>
               <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 10px", lineHeight: 1.5 }}>
-                연결하면 이 비회원 기업의 외부 공고 {claimTarget.job_count}건이 선택한 회원 기업의 공고로 이관되고, 지원 관리도 회원 쪽으로 편입돼요.
+                연결하면 이 비회원의 공고 {linkTarget.job_count}건이 선택한 회원 기업의 공고로 이관돼요. 비회원 행은 삭제되지 않고 ‘연결됨’으로 남아요.
               </p>
               <div className="admin-search-wrap" style={{ marginBottom: 10 }}>
                 <Search size={16} className="admin-search-icon" />
-                <input className="admin-search-input" autoFocus placeholder="회원 기업명·사업자번호 검색" value={claimQuery} onChange={(e) => setClaimQuery(e.target.value)} />
+                <input className="admin-search-input" autoFocus placeholder="회원 기업명·사업자번호 검색" value={linkQuery} onChange={(e) => setLinkQuery(e.target.value)} />
               </div>
               <div style={{ maxHeight: 300, overflow: "auto", border: "1px solid #eee", borderRadius: 8 }}>
-                {claimQuery.trim().length < 1 ? (
+                {linkQuery.trim().length < 1 ? (
                   <div style={{ padding: 16, color: "#aaa", fontSize: 13, textAlign: "center" }}>연결할 회원 기업을 검색하세요.</div>
-                ) : claimHits.length === 0 ? (
+                ) : linkHits.length === 0 ? (
                   <div style={{ padding: 16, color: "#aaa", fontSize: 13, textAlign: "center" }}>일치하는 회원 기업이 없어요.</div>
                 ) : (
-                  claimHits.map((m) => (
+                  linkHits.map((m) => (
                     <div key={m.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #f3f3f3" }}>
                       <div>
                         <div style={{ fontWeight: 600, fontSize: 13.5 }}>{m.company_name}{m.brand_name ? <span style={{ color: "#999", fontWeight: 400 }}> · {m.brand_name}</span> : null}</div>
                         <div style={{ fontSize: 11.5, color: "#999" }}>{m.business_number || "사업자번호 없음"} · {m.status === "ACTIVE" ? "승인완료" : m.status}</div>
                       </div>
-                      <button className="admin-page-btn" style={{ background: "#5f0080", color: "#fff", borderColor: "#5f0080" }} disabled={busy} onClick={() => doClaim(m.id, m.company_name)}>연결</button>
+                      <button className="admin-page-btn" style={{ background: "#5f0080", color: "#fff", borderColor: "#5f0080" }} disabled={busy} onClick={() => doLink(m.id, m.company_name)}>연결</button>
                     </div>
                   ))
                 )}

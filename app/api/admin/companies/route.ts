@@ -8,6 +8,10 @@ const LICENSE_BUCKET = "business-licenses";
 export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')
   if (authErr) return authErr
+  // member=true → 회원기업만, member=false → 비회원(외부)기업만, 없으면 전체
+  const memberParam = new URL(req.url).searchParams.get('member')
+  const memberFilter = memberParam === 'true' ? 'WHERE c.is_member = true'
+    : memberParam === 'false' ? 'WHERE c.is_member = false' : ''
   const client = await pool.connect()
   try {
     const result = await client.query(`
@@ -16,7 +20,7 @@ export async function GET(req: NextRequest) {
         c.company_type, c.email::text AS email, c.phone,
         c.logo_url, c.cover_images, c.description, c.website_url, c.address,
         c.company_size, c.founded_year, c.region_sido, c.region_sigungu,
-        c.status, c.business_license_path, c.created_at,
+        c.status, c.is_member, c.business_license_path, c.created_at,
         COALESCE(j.cnt, 0) AS job_count,
         COALESCE(j.jobs, '[]'::json) AS jobs
       FROM companies c
@@ -27,6 +31,7 @@ export async function GET(req: NextRequest) {
           ) ORDER BY jp.created_at DESC) AS jobs
         FROM job_postings jp WHERE jp.company_id = c.id
       ) j ON true
+      ${memberFilter}
       ORDER BY c.created_at DESC
     `)
     // 사업자등록증은 비공개 버킷 → 30분짜리 서명 URL 생성

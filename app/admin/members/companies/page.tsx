@@ -125,7 +125,7 @@ function AdminCompaniesContent() {
   const fetchCompanies = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/companies", {
+      const res = await fetch("/api/admin/companies?member=true", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();

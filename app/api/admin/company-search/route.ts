@@ -9,10 +9,13 @@ export async function GET(req: NextRequest) {
   if (authErr) return authErr;
   const q = (new URL(req.url).searchParams.get("q") || "").trim();
   if (q.length < 1) return ok([]);
+  // member=true → 회원기업만(비회원 연결 대상 선택용)
+  const memberOnly = new URL(req.url).searchParams.get("member") === "true";
   const rows = await pool.query(
     `SELECT id, company_name, brand_name, business_number, email::text AS email, status
      FROM companies
-     WHERE company_name ILIKE $1 OR brand_name ILIKE $1 OR business_number ILIKE $1
+     WHERE (company_name ILIKE $1 OR brand_name ILIKE $1 OR business_number ILIKE $1)
+       ${memberOnly ? "AND is_member = true" : ""}
      ORDER BY (status = 'ACTIVE') DESC, created_at DESC
      LIMIT 20`,
     [`%${q}%`]
