@@ -400,7 +400,7 @@ export default function JobPostForm({
     } catch { alert("인쇄 준비 중 오류가 발생했습니다."); }
   };
 
-  const lbl: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: "#444", marginBottom: 6 };
+  const lbl: React.CSSProperties = { fontSize: 14, fontWeight: 500, color: "#444", marginBottom: 6 };
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
@@ -695,16 +695,8 @@ export default function JobPostForm({
                 style={{ flexShrink: 0, padding: "0 16px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: curating ? 0.6 : 1, whiteSpace: "nowrap" }}>{curating ? "다듬는 중..." : "✨ 큐레이션"}</button>
             )}
           </div>
-          <textarea
-            style={{ width: "100%", marginTop: 8, minHeight: 92, padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e0eb", fontSize: 13, lineHeight: 1.5, resize: "vertical", boxSizing: "border-box" }}
-            placeholder="공고 본문 전체를 복사해 붙여넣기 (선택). URL과 함께 넣으면 가장 정확해요."
-            value={parseText}
-            onChange={(e) => setParseText(e.target.value)}
-          />
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
-          <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>{mode === "admin"
-            ? <>URL만, 본문만, 또는 <b>둘 다</b> 넣을 수 있어요. 붙여넣은 본문이 있으면 그 내용을 최우선으로 발췌하고 URL은 회사·링크 정보를 보완해요. 직군 등 드롭다운은 정확히 안 맞을 수 있으니 확인·수정 후 등록하세요.</>
-            : <>타 사이트에 올린 공고의 URL이나 본문을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</>}</div>
+          {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
           {mode === "admin" && nonMember && (
             <div style={{ display: "grid", gridTemplateColumns: applyMethod === "REDIRECT" ? "240px 1fr" : "240px", gap: 12, marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb", alignItems: "end" }}>
               <div><div style={lbl}>지원방식</div><select style={sel} value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}><option value="MANAGED">관리자 대행</option><option value="EMAIL">이메일 중계</option><option value="REDIRECT">외부 링크형</option></select></div>
@@ -1330,10 +1322,11 @@ export default function JobPostForm({
 
       {/* ═══ 기업 정보 (맨 하단) · 기업회원 프로필 양식과 동일 구성 ═══ */}
       {mode === "admin" && nonMember && (
-        <div style={{ width: "100%", maxWidth: 760, margin: "16px auto 0", background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px", boxSizing: "border-box" }}>
-          <div style={{ fontWeight: 800, fontSize: 15, color: "#1a1a1a", marginBottom: 4 }}>기업 정보</div>
-          <div style={{ fontSize: 12, color: "#999", marginBottom: 16 }}>공고 상세 맨 아래 “기업 정보”에 표시돼요 · URL 불러오기로 자동 작성됩니다</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
+        <div style={{ width: "100%", maxWidth: 760, margin: "16px auto 0", boxSizing: "border-box" }}>
+          <h2 className="jobpost-section-title">기업 정보</h2>
+          <div style={{ fontSize: 12, color: "#999", margin: "0 0 8px 2px" }}>공고 상세 맨 아래 “기업 정보”에 표시돼요 · URL 불러오기로 자동 작성됩니다</div>
+          <div style={{ background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px", boxSizing: "border-box" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
             <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>기업 소개</div><textarea ref={nmDescRef} style={{ ...inp, height: "auto", minHeight: 88, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden" }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="회사를 소개하는 글을 입력해주세요. 공고 상세의 '기업 정보'에 표시돼요." /></div>
             <div><div style={lbl}>회사명 <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
             <div><div style={lbl}>업종</div><select style={sel} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
@@ -1344,6 +1337,7 @@ export default function JobPostForm({
             <div><div style={lbl}>설립연도</div><input type="number" min="1900" max={new Date().getFullYear()} style={inp} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} placeholder="예) 2020" /></div>
             <div><div style={lbl}>대표자</div><input style={inp} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="대표자명 (선택)" /></div>
             <div><div style={lbl}>회사 대표번호</div><input style={inp} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} placeholder="02-000-0000 (선택)" /></div>
+            </div>
           </div>
         </div>
       )}
