@@ -182,6 +182,11 @@ export default function ExternalCompaniesPanel() {
   const totalJobs = items.reduce((s, c) => s + (Number(c.job_count) || 0), 0);
   const linkedCnt = items.filter((c) => c.merged_into_company_id).length;
 
+  // 선택된 기업 중 연락처 보유 여부 → 발송 버튼 활성화 판정
+  const selectedItems = items.filter((c) => selectedIds.includes(c.id));
+  const canEmail = selectedItems.some((c) => !!c.email && c.email.includes("@"));
+  const canSms = selectedItems.some((c) => !!c.phone && c.phone.replace(/[^0-9]/g, "").length >= 10);
+
   const btn = (active: boolean, color: string): React.CSSProperties => ({
     padding: "6px 14px", borderRadius: 6, border: "none",
     background: active ? color : "#ededed", color: active ? "#fff" : "#aaa",
@@ -217,10 +222,10 @@ export default function ExternalCompaniesPanel() {
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>총 <strong>{filtered.length}</strong>개사</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button onClick={() => { if (selectedIds.length) { setBroadcastChannel("email"); setBroadcastOpen(true); } }} disabled={selectedIds.length === 0} style={btn(selectedIds.length > 0, "#5f0080")}>
+            <button onClick={() => { if (canEmail) { setBroadcastChannel("email"); setBroadcastOpen(true); } }} disabled={!canEmail} title={!canEmail && selectedIds.length ? "선택한 기업 중 이메일이 있는 곳이 없어요" : undefined} style={btn(canEmail, "#5f0080")}>
               이메일 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
-            <button onClick={() => { if (selectedIds.length) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }} disabled={selectedIds.length === 0} style={btn(selectedIds.length > 0, "#5f0080")}>
+            <button onClick={() => { if (canSms) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }} disabled={!canSms} title={!canSms && selectedIds.length ? "선택한 기업 중 전화번호가 있는 곳이 없어요" : undefined} style={btn(canSms, "#5f0080")}>
               SMS 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
             <button onClick={openLink} disabled={selectedIds.length !== 1} style={btn(selectedIds.length === 1, "#0a7d4b")}>
