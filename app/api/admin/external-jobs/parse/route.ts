@@ -128,23 +128,55 @@ export async function POST(req: NextRequest) {
           try { img = new URL(img, url).href; } catch { img = ""; }
         }
         ogImage = img;
-        // ① 이 공고가 우선 로딩하는 이미지(preload as=image) = 실제 공고 이미지(캐러셀). 가장 정확.
-        //    원티드는 image.../optimize?src=<원본URL> 형태로 감싸므로 src를 디코드해 원본을 얻는다.
+        // 공고 갤러리 이미지: 페이지가 실제 노출하는 이미지를 "순서 그대로 전부" 가져온다.
+        //  - URL/회사가 바뀌어도 패턴은 동일: 회사 폴더 ID를 페이지에서 동적으로 뽑아 스코프.
+        const isImg = (u: string) => /^https?:\/\//i.test(u) && /\.(?:jpe?g|png|webp)(?:$|\?|#)/i.test(u);
+        const isJunk = (u: string) => /(icon|logo|sprite|favicon|badge|spacer|blank|avatar|profile|default|brand_new|\/wdes\/|\/proposal\/|apple-touch|social|thumb|sns)/i.test(u);
+        const decodeSrc = (href: string) => {
+          const h = (href || "").replace(/&amp;/g, "&");
+          const s = h.match(/[?&]src=([^&]+)/i);
+          if (s) { try { return decodeURIComponent(s[1]); } catch { return h; } }
+          return h;
+        };
+        // ① preload as=image = 상단 우선노출(앞순서 정확). 원티드는 optimize?src=<원본>으로 감싼다.
         const preloadImgs = [...html.matchAll(/<link\b[^>]*>/gi)]
           .map((m) => m[0])
           .filter((t) => /rel=["']preload["']/i.test(t) && /as=["']image["']/i.test(t))
-          .map((t) => (t.match(/href=["']([^"']+)["']/i)?.[1] || "").replace(/&amp;/g, "&"))
-          .map((href) => { const s = href.match(/[?&]src=([^&]+)/i); if (s) { try { return decodeURIComponent(s[1]); } catch { return href; } } return href; })
-          .filter((u) => /^https?:\/\//i.test(u) && /\.(?:jpe?g|png|webp)(?:$|\?)/i.test(u) && !/(icon|logo|sprite|favicon|badge|spacer|blank)/i.test(u));
-        images = [...new Set(preloadImgs)];
-        // ② 폴백: preload 이미지가 없으면 og:image와 같은 폴더의 이미지들
+          .map((t) => decodeSrc(t.match(/href=["']([^"']+)["']/i)?.[1] || ""))
+          .filter((u) => isImg(u) && !isJunk(u));
+        // ② 회사 이미지 폴더 ID를 페이지에서 동적 추출 → 이 공고 갤러리 이미지만 순서대로 전부(원티드)
+        const folderId = (preloadImgs[0] || ogImage || "").match(/\/company\/(\d+)\//)?.[1] || "";
+        let galleryImgs: string[] = [];
+        if (folderId) {
+          const re = new RegExp(`https?:\\\\?/\\\\?/[^\\s"'<>()\\\\]*?/company/${folderId}/[^\\s"'<>()\\\\?]+?\\.(?:jpe?g|png|webp)`, "gi");
+          galleryImgs = [...html.matchAll(re)].map((m) => m[0].replace(/\\u002[fF]/g, "/").replace(/\\\//g, "/"));
+        }
+        // ③ optimize?src= 래핑 이미지(일반 대응)
+        const wrapped = [...html.matchAll(/optimize\?src=([^"'&\\ ]+)/gi)]
+          .map((m) => { try { return decodeURIComponent(m[1].replace(/&amp;/g, "&")); } catch { return ""; } });
+        // preload(정확한 앞순서) 우선 + 갤러리/래핑 순서대로 이어붙임, 중복 제거·잡동사니 제외
+        const ordered: string[] = [];
+        for (const u of [...preloadImgs, ...galleryImgs, ...wrapped]) {
+          const c = (u || "").replace(/&amp;/g, "&");
+          if (isImg(c) && !isJunk(c) && !ordered.includes(c)) ordered.push(c);
+        }
+        images = ordered;
+        // ④ (범용) 위에서 못 찾으면 JSON-LD 구조화 데이터의 image 필드 — 사이트 종류 안 가림
+        if (images.length === 0 && jsonld) {
+          const ldImgs = [...jsonld.matchAll(/https?:\/\/[^\s"'\\<>()]+?\.(?:jpe?g|png|webp)(?:\?[^\s"'\\<>()]*)?/gi)]
+            .map((m) => m[0].replace(/\\u002[Ff]/g, "/").replace(/\\\//g, "/"));
+          for (const u of ldImgs) if (isImg(u) && !isJunk(u) && !images.includes(u)) images.push(u);
+        }
+        // ⑤ (범용) 그래도 없으면 og:image와 같은 폴더 이미지
         if (images.length === 0 && ogImage) {
           const dir = ogImage.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
           const all = [...html.matchAll(/https?:\/\/[^\s"'<>()\\]+?\.(?:jpe?g|png|webp)(?:\?[^\s"'<>()\\]*)?/gi)]
             .map((m) => m[0].replace(/\\u002[Ff]/g, "/").replace(/\\\//g, "/"));
-          images = [...new Set(all)].filter((u) => dir && u.startsWith(dir) && !/(icon|logo|sprite|favicon|badge|button|blank|spacer|avatar|profile)/i.test(u));
+          images = [...new Set(all)].filter((u) => dir && u.startsWith(dir) && !isJunk(u));
         }
-        images = images.slice(0, 8);
+        // ⑥ (범용) 최후 폴백: og:image 단 한 장이라도
+        if (images.length === 0 && ogImage && isImg(ogImage) && !isJunk(ogImage)) images = [ogImage];
+        images = images.slice(0, 12);
       }
     }
   }

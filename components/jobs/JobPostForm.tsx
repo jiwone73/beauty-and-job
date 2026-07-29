@@ -430,14 +430,14 @@ export default function JobPostForm({
         if (d.company_description) setNmDescription(d.company_description);
         if (d.address) setNmAddress(d.address);
         if (d.industry) setNmIndustry(d.industry);
-        // 배너 = 대표 이미지(og:image, 없으면 첫 캐러셀 이미지)
-        if (d.cover_image) setNmCover(d.cover_image);
-        else if (Array.isArray(d.images) && d.images[0]) setNmCover(d.images[0]);
-        // 나머지 캐러셀 이미지 → 상세 이미지 (preload 기반 = 화면에 보이는 이미지만, 폴더 잡동사니 없음)
-        if (Array.isArray(d.images) && d.images.length) {
-          const banner = d.cover_image || d.images[0] || "";
-          const rest = d.images.filter((u: string) => u && u !== banner).slice(0, 5).map((u: string, i: number) => ({ url: u, name: `이미지 ${i + 1}` }));
-          if (rest.length) setDetailImages(rest);
+        // 이미지는 "외부공고에 보이는 순서 그대로" 반영.
+        //  - 갤러리(d.images)가 있으면 그걸 그대로 사용(첫 장=커버, 나머지=상세).
+        //  - 없으면 대표 이미지(og:image)라도 커버로.
+        const imgs: string[] = Array.isArray(d.images) ? d.images.filter(Boolean) : [];
+        const cover = imgs[0] || d.cover_image || "";
+        if (cover) setNmCover(cover);
+        if (imgs.length > 1) {
+          setDetailImages(imgs.slice(1, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
         }
       }
       // 채용유형: 토글이 열려 있을 때만(관리자 또는 BOTH 기업) 불러온 값으로 변경. 타입 고정 기업회원은 유지.
@@ -733,23 +733,6 @@ export default function JobPostForm({
           </div>
         );
       })()}
-
-      {/* 공고 노출 이미지 (배너) — 비회원 기업 */}
-      {mode === "admin" && nonMember && (
-        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
-          <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 노출 이미지 (배너)</h2>
-          <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box" }}>
-            <label style={{ display: "block", width: "100%", borderRadius: 10, border: nmCover ? "1px solid #eee" : "1px dashed #c4b5d4", background: nmCover ? "#fff" : "#fafafa", overflow: "hidden", cursor: nmCoverUploading ? "wait" : "pointer", position: "relative", boxSizing: "border-box" }}>
-              {nmCover
-                ? <img src={nmCover} alt="배너" style={{ width: "100%", height: "auto", display: "block" }} />
-                : <div style={{ width: "100%", aspectRatio: "16 / 3", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", color: "#5f0080", fontSize: 14, fontWeight: 500 }}>{nmCoverUploading ? "업로드중..." : "커버(배너) 이미지 등록"}</div>}
-              <input type="file" accept="image/*" style={{ display: "none" }} disabled={nmCoverUploading}
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmCover, setNmCoverUploading); e.target.value = ""; }} />
-            </label>
-            {nmCover && <button type="button" onClick={() => setNmCover("")} style={{ marginTop: 8, fontSize: 12, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 0 }}>삭제</button>}
-          </div>
-        </div>
-      )}
 
       <div className="admin-form-grid jobpost-form" style={{ width: "100%", maxWidth: 760, margin: "0 auto", gridTemplateColumns: "1fr", justifyContent: "stretch", justifyItems: "stretch" }}>
         {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
