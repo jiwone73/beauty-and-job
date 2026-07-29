@@ -3,6 +3,25 @@ import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
 
+// 비회원 기업 중복판정용 근무지역 키: 주소에서 "시도 시군구"만 정규화 추출.
+// (동명 업체라도 지역이 다르면 다른 업체로 본다. 지역이 비면 "" → 자동합침 안 함.)
+const NM_SIDO: Record<string, string> = {
+  서울특별시: "서울", 서울: "서울", 부산광역시: "부산", 부산: "부산", 대구광역시: "대구", 대구: "대구",
+  인천광역시: "인천", 인천: "인천", 광주광역시: "광주", 광주: "광주", 대전광역시: "대전", 대전: "대전",
+  울산광역시: "울산", 울산: "울산", 세종특별자치시: "세종", 세종: "세종", 경기도: "경기", 경기: "경기",
+  강원특별자치도: "강원", 강원도: "강원", 강원: "강원", 충청북도: "충북", 충북: "충북", 충청남도: "충남", 충남: "충남",
+  전북특별자치도: "전북", 전라북도: "전북", 전북: "전북", 전라남도: "전남", 전남: "전남",
+  경상북도: "경북", 경북: "경북", 경상남도: "경남", 경남: "경남", 제주특별자치도: "제주", 제주도: "제주", 제주: "제주",
+};
+function nmRegionKey(addr?: string | null): string {
+  if (!addr) return "";
+  const parts = String(addr).trim().split(/\s+/);
+  if (!parts[0]) return "";
+  const sido = NM_SIDO[parts[0]] || parts[0];
+  const sigungu = parts[1] || "";
+  return `${sido} ${sigungu}`.trim();
+}
+
 // 공고 목록 조회
 export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')
@@ -82,12 +101,18 @@ export async function POST(req: NextRequest) {
         await client.query('ROLLBACK')
         return err('JOB_001', '기업을 선택하거나 비회원 회사명을 입력해주세요.')
       }
-      const existing = await client.query(
-        `SELECT id FROM companies WHERE company_name = $1 AND is_member = false LIMIT 1`,
+      // 중복판정: "기업/매장명 + 근무지역(시·군·구)"이 모두 같을 때만 재사용.
+      // (동명이라도 지역 다르면 별도 업체. 지역을 못 잡으면 안전하게 새로 생성 → 비회원 탭에서 수동 병합.)
+      const nmRegion = nmRegionKey(nm.address)
+      const cand = await client.query(
+        `SELECT id, address FROM companies WHERE lower(company_name) = lower($1) AND is_member = false`,
         [nmName]
       )
-      if (existing.rowCount && existing.rows[0]) {
-        finalCompanyId = existing.rows[0].id
+      const matched = nmRegion
+        ? cand.rows.find((r: any) => nmRegionKey(r.address) === nmRegion)
+        : undefined
+      if (matched) {
+        finalCompanyId = matched.id
         await client.query(
           `UPDATE companies SET
              brand_name = COALESCE(brand_name, $2),

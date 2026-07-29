@@ -1,0 +1,48 @@
+From da63df7ec8b9dab0df8b9ee575d1c6d9a6178e09 Mon Sep 17 00:00:00 2001
+From: jiwone73 <jungswhat@gmail.com>
+Date: Tue, 21 Jul 2026 03:43:53 +0000
+Subject: [PATCH] =?UTF-8?q?=EA=B3=B5=EC=A7=80=EC=82=AC=ED=95=AD=20?=
+ =?UTF-8?q?=EB=AA=A9=EB=A1=9D=20=ED=96=89=EB=B3=84=20=EC=82=AD=EC=A0=9C=20?=
+ =?UTF-8?q?=EB=B2=84=ED=8A=BC=20=EC=A0=9C=EA=B1=B0(=EC=83=81=EB=8B=A8=20?=
+ =?UTF-8?q?=EC=84=A0=ED=83=9D=20=EC=82=AD=EC=A0=9C=EB=A7=8C=20=EC=9C=A0?=
+ =?UTF-8?q?=EC=A7=80)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ app/admin/notices/page.tsx | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/app/admin/notices/page.tsx b/app/admin/notices/page.tsx
+index 1c924b1..304b991 100644
+--- a/app/admin/notices/page.tsx
++++ b/app/admin/notices/page.tsx
+@@ -83,16 +83,6 @@ export default function AdminNoticesPage() {
+     } finally { setBusy(false); }
+   };
+ 
+-  const removeOne = async (id: string) => {
+-    if (!confirm("이 공지를 삭제할까요?")) return;
+-    setBusy(true);
+-    try {
+-      await fetch(`/api/admin/notices?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token()}` } });
+-      setChecked((c) => c.filter((x) => x !== id));
+-      fetchList();
+-    } finally { setBusy(false); }
+-  };
+-
+   const removeChecked = async () => {
+     if (checked.length === 0) return;
+     if (!confirm(`${checked.length}개를 삭제할까요?`)) return;
+@@ -176,7 +166,6 @@ export default function AdminNoticesPage() {
+                     {n.title}
+                   </span>
+                   <span style={{ flexShrink: 0, fontSize: 14, color: "#aaa" }}>{fmtDate(n.published_at || n.created_at)}</span>
+-                  <button onClick={() => removeOne(n.id)} style={{ flexShrink: 0, padding: "4px 10px", border: "1px solid #eee", background: "#fff", color: "#d33", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>삭제</button>
+                 </div>
+ 
+                 {expandedId === n.id && (
+-- 
+2.34.1
+

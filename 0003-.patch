@@ -1,0 +1,71 @@
+From 0913af22e7113f59ddb3f1eaca11c9d7c3396777 Mon Sep 17 00:00:00 2001
+From: jiwone73 <jungswhat@gmail.com>
+Date: Tue, 21 Jul 2026 01:46:58 +0000
+Subject: [PATCH] =?UTF-8?q?=EA=B8=B0=EC=97=85=ED=9A=8C=EC=9B=90=20?=
+ =?UTF-8?q?=EA=B4=80=EB=A6=AC:=20=EC=9C=A0=EB=A3=8C/=EB=AC=B4=EB=A3=8C=20?=
+ =?UTF-8?q?=EC=B9=B4=EC=9A=B4=ED=8A=B8=20=EC=B9=B4=EB=93=9C=20=EC=B6=94?=
+ =?UTF-8?q?=EA=B0=80(=ED=81=B4=EB=A6=AD=20=EC=8B=9C=20=EC=9A=94=EA=B8=88?=
+ =?UTF-8?q?=EC=A0=9C=20=ED=95=84=ED=84=B0=20=ED=86=A0=EA=B8=80)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ app/admin/members/companies/page.tsx | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/app/admin/members/companies/page.tsx b/app/admin/members/companies/page.tsx
+index 3a69138..3db1aa9 100644
+--- a/app/admin/members/companies/page.tsx
++++ b/app/admin/members/companies/page.tsx
+@@ -81,6 +81,8 @@ function regionFromAddress(addr: string | null) {
+ }
+ 
+ const isPdf = (u: string) => u.split("?")[0].toLowerCase().endsWith(".pdf");
++// 유료 여부 — 유료 요금제 미도입이라 현재 전부 false(무료). 도입 시 이 함수만 실제 필드로 교체.
++const isPaid = (_c: Company) => false;
+ 
+ function AdminCompaniesContent() {
+   const searchParams = useSearchParams();
+@@ -243,7 +245,7 @@ function AdminCompaniesContent() {
+     const matchType = typeFilter === "전체" || TYPE_LABEL[c.company_type] === typeFilter;
+     const matchDate = matchPeriod(c.created_at, dateFilter);
+     // 유료/무료: 유료 요금제 미도입 → 현재 전부 무료. 유료 도입 시 아래 조건에 실제 유료 판별을 추가.
+-    const matchPlan = planFilter === "전체" || planFilter === "무료";
++    const matchPlan = planFilter === "전체" || (planFilter === "유료" ? isPaid(c) : !isPaid(c));
+     const matchJob = jobFilter === "전체" || (jobFilter === "등록" ? c.job_count > 0 : c.job_count === 0);
+     return matchSearch && matchStatus && matchType && matchDate && matchPlan && matchJob;
+   });
+@@ -268,6 +270,10 @@ function AdminCompaniesContent() {
+     정지: companies.filter((c) => c.status === "SUSPENDED").length,
+     반려: companies.filter((c) => c.status === "REJECTED").length,
+   };
++  const planCounts = {
++    유료: companies.filter(isPaid).length,
++    무료: companies.filter((c) => !isPaid(c)).length,
++  };
+ 
+   const lbl: React.CSSProperties = { color: "#888" };
+   const modalBtn: React.CSSProperties = {
+@@ -290,6 +296,18 @@ function AdminCompaniesContent() {
+           ))}
+         </div>
+       )}
++      {!blockedMode && (
++        <div className="admin-mini-stats" style={{ marginTop: 12 }}>
++          {Object.entries(planCounts).map(([label, count]) => (
++            <div key={label} className="admin-mini-stat"
++              onClick={() => { setPlanFilter(planFilter === label ? "전체" : label); setPage(1); }}
++              style={{ cursor: "pointer", ...(planFilter === label ? { outline: "2px solid #5f0080", outlineOffset: "-2px" } : {}) }}>
++              <span className="admin-mini-stat-label">{label}</span>
++              <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">개사</span></span>
++            </div>
++          ))}
++        </div>
++      )}
+       <div className="admin-toolbar">
+         <div className="admin-toolbar-left">
+           <div className="admin-search-wrap">
+-- 
+2.34.1
+

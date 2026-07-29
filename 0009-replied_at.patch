@@ -1,0 +1,158 @@
+From 2f88a4eba9e7b18540330bc7e9d28c437478e747 Mon Sep 17 00:00:00 2001
+From: jiwone73 <jungswhat@gmail.com>
+Date: Tue, 21 Jul 2026 03:37:55 +0000
+Subject: [PATCH] =?UTF-8?q?=EB=AC=B8=EC=9D=98=20=EB=8B=B5=EB=B3=80=20?=
+ =?UTF-8?q?=EB=B0=9C=EC=86=A1=20=EC=8B=9C=20=ED=9A=8C=EC=8B=A0=EC=99=84?=
+ =?UTF-8?q?=EB=A3=8C=20=ED=91=9C=EC=8B=9C=C2=B7=ED=9A=8C=EC=8B=A0=20?=
+ =?UTF-8?q?=EC=8B=9C=EA=B0=81(replied=5Fat)=20=EA=B8=B0=EB=A1=9D/=ED=91=9C?=
+ =?UTF-8?q?=EC=8B=9C?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ app/admin/ads/page.tsx               | 8 +++++---
+ app/admin/inquiries/page.tsx         | 8 +++++---
+ app/api/admin/ads/inquiries/route.ts | 4 ++--
+ app/api/admin/inquiries/route.ts     | 4 ++--
+ 4 files changed, 14 insertions(+), 10 deletions(-)
+
+diff --git a/app/admin/ads/page.tsx b/app/admin/ads/page.tsx
+index eec66bd..869f08d 100644
+--- a/app/admin/ads/page.tsx
++++ b/app/admin/ads/page.tsx
+@@ -8,7 +8,7 @@ import { Trash2 } from "lucide-react";
+ const STATUS_TABS = [
+   { key: "", label: "전체" },
+   { key: "new", label: "신규" },
+-  { key: "done", label: "완료" },
++  { key: "done", label: "회신완료" },
+ ];
+ const PRODUCT_LABELS: Record<string, string> = {
+   top_exposure: "공고 상단 노출",
+@@ -28,6 +28,7 @@ type Inquiry = {
+   status: string;
+   type: string;
+   created_at: string;
++  replied_at: string | null;
+ };
+ 
+ function fmtDate(s: string) {
+@@ -160,7 +161,7 @@ export default function AdminAdsPage() {
+ 
+   const badge = (status: string) => (
+     <span style={{ fontSize: 13, fontWeight: 600, color: status === "done" ? "#888" : "#5f0080" }}>
+-      {status === "done" ? "완료" : "신규"}
++      {status === "done" ? "회신완료" : "신규"}
+     </span>
+   );
+ 
+@@ -250,6 +251,7 @@ export default function AdminAdsPage() {
+                 {selected.product && (<><span style={{ color: "#888" }}>관심상품</span><span>{PRODUCT_LABELS[selected.product] ?? selected.product}</span></>)}
+                 <span style={{ color: "#888" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>
+                 <span style={{ color: "#888" }}>상태</span><span>{badge(selected.status)}</span>
++                {selected.replied_at && (<><span style={{ color: "#888" }}>회신완료</span><span>{fmtDate(selected.replied_at)}</span></>)}
+               </div>
+               <div style={{ marginBottom: 18 }}>
+                 <div style={{ color: "#888", fontSize: 14, marginBottom: 6 }}>문의 내용</div>
+@@ -279,7 +281,7 @@ export default function AdminAdsPage() {
+                     답변 메일 보내기
+                   </button>
+                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
+-                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다. (첨부 총 3MB 이하)
++                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 회신완료로 바뀌고 회신 시각이 기록됩니다. (첨부 총 3MB 이하)
+                   </p>
+                 </div>
+               ) : (
+diff --git a/app/admin/inquiries/page.tsx b/app/admin/inquiries/page.tsx
+index dcd4d0a..a603aeb 100644
+--- a/app/admin/inquiries/page.tsx
++++ b/app/admin/inquiries/page.tsx
+@@ -16,12 +16,13 @@ type Inquiry = {
+   status: string;
+   user_id: string | null;
+   created_at: string;
++  replied_at: string | null;
+ };
+ 
+ const STATUS_TABS = [
+   { key: "", label: "전체" },
+   { key: "new", label: "신규" },
+-  { key: "done", label: "완료" },
++  { key: "done", label: "회신완료" },
+ ];
+ 
+ function fmtDate(s: string) {
+@@ -158,7 +159,7 @@ export default function AdminInquiriesPage() {
+ 
+   const badge = (status: string) => (
+     <span style={{ fontSize: 13, fontWeight: 600, color: status === "done" ? "#888" : "#5f0080" }}>
+-      {status === "done" ? "완료" : "신규"}
++      {status === "done" ? "회신완료" : "신규"}
+     </span>
+   );
+ 
+@@ -243,6 +244,7 @@ export default function AdminInquiriesPage() {
+                 <span style={{ color: "#888" }}>제목</span><span style={{ fontWeight: 500 }}>{selected.subject || "(제목 없음)"}</span>
+                 <span style={{ color: "#888" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>
+                 <span style={{ color: "#888" }}>상태</span><span>{badge(selected.status)}</span>
++                {selected.replied_at && (<><span style={{ color: "#888" }}>회신완료</span><span>{fmtDate(selected.replied_at)}</span></>)}
+               </div>
+               <div style={{ marginBottom: 18 }}>
+                 <div style={{ color: "#888", fontSize: 14, marginBottom: 6 }}>문의 내용</div>
+@@ -272,7 +274,7 @@ export default function AdminInquiriesPage() {
+                     답변 메일 보내기
+                   </button>
+                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
+-                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다. (첨부 총 3MB 이하)
++                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 회신완료로 바뀌고 회신 시각이 기록됩니다. (첨부 총 3MB 이하)
+                   </p>
+                 </div>
+               ) : (
+diff --git a/app/api/admin/ads/inquiries/route.ts b/app/api/admin/ads/inquiries/route.ts
+index 1600c9f..6cfd7df 100644
+--- a/app/api/admin/ads/inquiries/route.ts
++++ b/app/api/admin/ads/inquiries/route.ts
+@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
+   try {
+     const [listResult, countResult] = await Promise.all([
+       client.query(
+-        `SELECT id, company_name, contact_name, phone, email, product, message, status, type, created_at
++        `SELECT id, company_name, contact_name, phone, email, product, message, status, type, created_at, replied_at
+          FROM ad_inquiries
+          ${whereClause}
+          ORDER BY created_at DESC
+@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
+   }
+   const client = await pool.connect()
+   try {
+-    await client.query(`UPDATE ad_inquiries SET status = 'done' WHERE id = $1`, [id])
++    await client.query(`UPDATE ad_inquiries SET status = 'done', replied_at = now() WHERE id = $1`, [id])
+     return ok({ id, status: 'done' })
+   } finally {
+     client.release()
+diff --git a/app/api/admin/inquiries/route.ts b/app/api/admin/inquiries/route.ts
+index ecedf43..9af03ce 100644
+--- a/app/api/admin/inquiries/route.ts
++++ b/app/api/admin/inquiries/route.ts
+@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
+   try {
+     const [listResult, countResult] = await Promise.all([
+       client.query(
+-        `SELECT id, name, email, phone, type, subject, message, status, user_id, created_at
++        `SELECT id, name, email, phone, type, subject, message, status, user_id, created_at, replied_at
+          FROM inquiries ${whereClause}
+          ORDER BY created_at DESC
+          LIMIT $${idx} OFFSET $${idx + 1}`,
+@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
+   }
+   const client = await pool.connect()
+   try {
+-    await client.query(`UPDATE inquiries SET status = 'done' WHERE id = $1`, [id])
++    await client.query(`UPDATE inquiries SET status = 'done', replied_at = now() WHERE id = $1`, [id])
+     return ok({ id, status: 'done' })
+   } finally {
+     client.release()
+-- 
+2.34.1
+

@@ -1,0 +1,104 @@
+From 00d5031b2cc885a3289c597bd97e645eda7f38b1 Mon Sep 17 00:00:00 2001
+From: jiwone73 <jungswhat@gmail.com>
+Date: Tue, 21 Jul 2026 02:18:01 +0000
+Subject: [PATCH] =?UTF-8?q?=EA=B4=91=EA=B3=A0(=EC=82=AC=EC=97=85)=EB=AC=B8?=
+ =?UTF-8?q?=EC=9D=98=20=EB=8B=B5=EB=B3=80=20=EB=A9=94=EC=9D=BC=EB=8F=84=20?=
+ =?UTF-8?q?support@beautywork.co.kr=20=EC=84=9C=EB=B2=84=20=EB=B0=9C?=
+ =?UTF-8?q?=EC=86=A1=EC=9C=BC=EB=A1=9C=20=EC=A0=84=ED=99=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ app/admin/ads/page.tsx               | 27 ++++++++++++++++++++++-----
+ app/api/admin/ads/inquiries/route.ts | 21 +++++++++++++++++++++
+ 2 files changed, 43 insertions(+), 5 deletions(-)
+
+diff --git a/app/admin/ads/page.tsx b/app/admin/ads/page.tsx
+index c7c327a..d7e23ad 100644
+--- a/app/admin/ads/page.tsx
++++ b/app/admin/ads/page.tsx
+@@ -86,11 +86,28 @@ export default function AdminAdsPage() {
+     }
+   };
+ 
+-  const sendReply = () => {
++  const sendReply = async () => {
+     if (!selected?.email) { alert("이메일 주소가 없어 답변을 보낼 수 없습니다."); return; }
+-    const url = `mailto:${selected.email}?subject=${encodeURIComponent(replySubject)}&body=${encodeURIComponent(replyBody)}`;
+-    window.location.href = url;
+-    markDone(selected.id);
++    if (!replyBody.trim()) { alert("답변 내용을 입력해 주세요."); return; }
++    try {
++      const res = await fetch("/api/admin/ads/inquiries", {
++        method: "POST",
++        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
++        body: JSON.stringify({ id: selected.id, to: selected.email, subject: replySubject, body: replyBody }),
++      });
++      const data = await res.json();
++      if (data.success) {
++        setSelected((p) => (p ? { ...p, status: "done" } : p));
++        setItems((prev) => prev.map((it) => (it.id === selected.id ? { ...it, status: "done" } : it)));
++        window.dispatchEvent(new Event("admin:inquiries-changed"));
++        alert("support@beautywork.co.kr에서 답변 메일을 발송했습니다.");
++      } else {
++        alert(data.error?.message || "메일 발송에 실패했습니다.");
++      }
++    } catch (e) {
++      console.error("[send reply]", e);
++      alert("메일 발송 중 오류가 발생했습니다.");
++    }
+   };
+ 
+   const toggleCheck = (id: number) =>
+@@ -231,7 +248,7 @@ export default function AdminAdsPage() {
+                     답변 메일 보내기
+                   </button>
+                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
+-                    메일 앱이 열리며, 보내기와 동시에 상태가 완료로 변경됩니다.
++                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다.
+                   </p>
+                 </div>
+               ) : (
+diff --git a/app/api/admin/ads/inquiries/route.ts b/app/api/admin/ads/inquiries/route.ts
+index e0254e0..f430165 100644
+--- a/app/api/admin/ads/inquiries/route.ts
++++ b/app/api/admin/ads/inquiries/route.ts
+@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
+ import { NextRequest } from 'next/server'
+ import pool from '@/lib/db'
+ import { ok, err, requireAuth } from '@/lib/api'
++import { sendInquiryReplyEmail } from '@/lib/email'
+ export async function GET(req: NextRequest) {
+   const { auth, res: authErr } = requireAuth(req, 'admin')
+   if (authErr) return authErr
+@@ -49,6 +50,26 @@ export async function GET(req: NextRequest) {
+     client.release()
+   }
+ }
++// 광고(사업) 문의 답변 메일 발송(support@beautywork.co.kr) + 상태 완료 처리
++export async function POST(req: NextRequest) {
++  const { auth, res: authErr } = requireAuth(req, 'admin')
++  if (authErr) return authErr
++  const { id, to, subject, body } = await req.json()
++  if (!id || !to || !subject || !body) return err('BAD_REQUEST', 'id, to, subject, body 필요', 400)
++  try {
++    await sendInquiryReplyEmail(to, subject, body)
++  } catch (e: any) {
++    return err('EMAIL_SEND_FAILED', e?.message || '메일 발송에 실패했습니다.', 500)
++  }
++  const client = await pool.connect()
++  try {
++    await client.query(`UPDATE ad_inquiries SET status = 'done' WHERE id = $1`, [id])
++    return ok({ id, status: 'done' })
++  } finally {
++    client.release()
++  }
++}
++
+ export async function PATCH(req: NextRequest) {
+   const { auth, res: authErr } = requireAuth(req, 'admin')
+   if (authErr) return authErr
+-- 
+2.34.1
+

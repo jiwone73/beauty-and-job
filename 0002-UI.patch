@@ -1,0 +1,63 @@
+From 51d8da7b3bdcdfe9f356ec34d778419667c5c8d0 Mon Sep 17 00:00:00 2001
+From: jiwone73 <jungswhat@gmail.com>
+Date: Tue, 21 Jul 2026 01:42:46 +0000
+Subject: [PATCH] =?UTF-8?q?=EA=B8=B0=EC=97=85=ED=9A=8C=EC=9B=90=20?=
+ =?UTF-8?q?=EA=B4=80=EB=A6=AC:=20=EC=9A=94=EA=B8=88=EC=A0=9C(=EC=9C=A0?=
+ =?UTF-8?q?=EB=A3=8C/=EB=AC=B4=EB=A3=8C=C2=B7UI=EC=9A=B0=EC=84=A0)=C2=B7?=
+ =?UTF-8?q?=EA=B3=B5=EA=B3=A0(=EB=93=B1=EB=A1=9D/=EB=AF=B8=EB=93=B1?=
+ =?UTF-8?q?=EB=A1=9D)=20=ED=95=84=ED=84=B0=20=EC=B6=94=EA=B0=80?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ app/admin/members/companies/page.tsx | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/app/admin/members/companies/page.tsx b/app/admin/members/companies/page.tsx
+index 5f80c90..3a69138 100644
+--- a/app/admin/members/companies/page.tsx
++++ b/app/admin/members/companies/page.tsx
+@@ -102,6 +102,8 @@ function AdminCompaniesContent() {
+   const [statusFilter, setStatusFilter] = useState(initialStatus);
+   const [typeFilter, setTypeFilter] = useState(initialType);
+   const [dateFilter, setDateFilter] = useState(initialDate);
++  const [planFilter, setPlanFilter] = useState("전체");
++  const [jobFilter, setJobFilter] = useState("전체");
+   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+   // [SMS 발송 기능 보류] 2026-07
+   // const [smsOpen, setSmsOpen] = useState(false);
+@@ -240,7 +242,10 @@ function AdminCompaniesContent() {
+     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[c.status] === statusFilter;
+     const matchType = typeFilter === "전체" || TYPE_LABEL[c.company_type] === typeFilter;
+     const matchDate = matchPeriod(c.created_at, dateFilter);
+-    return matchSearch && matchStatus && matchType && matchDate;
++    // 유료/무료: 유료 요금제 미도입 → 현재 전부 무료. 유료 도입 시 아래 조건에 실제 유료 판별을 추가.
++    const matchPlan = planFilter === "전체" || planFilter === "무료";
++    const matchJob = jobFilter === "전체" || (jobFilter === "등록" ? c.job_count > 0 : c.job_count === 0);
++    return matchSearch && matchStatus && matchType && matchDate && matchPlan && matchJob;
+   });
+ 
+   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+@@ -300,6 +305,18 @@ function AdminCompaniesContent() {
+             options={["전체", "매장", "기업", "기업+매장"]}
+             onChange={(v) => { setTypeFilter(v); setPage(1); }} />
+           )}
++          {!blockedMode && (
++          <FilterDropdown label="요금제"
++            value={planFilter}
++            options={["전체", "유료", "무료"]}
++            onChange={(v) => { setPlanFilter(v); setPage(1); }} />
++          )}
++          {!blockedMode && (
++          <FilterDropdown label="공고"
++            value={jobFilter}
++            options={["전체", "등록", "미등록"]}
++            onChange={(v) => { setJobFilter(v); setPage(1); }} />
++          )}
+           {!blockedMode && (<>
+           <FilterDropdown label="승인상태"
+             value={statusFilter}
+-- 
+2.34.1
+

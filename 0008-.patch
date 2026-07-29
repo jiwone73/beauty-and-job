@@ -1,0 +1,61 @@
+From 14870c7382759ca0f5968ff1914df33636cd20c4 Mon Sep 17 00:00:00 2001
+From: jiwone73 <jungswhat@gmail.com>
+Date: Tue, 21 Jul 2026 03:30:53 +0000
+Subject: [PATCH] =?UTF-8?q?=EA=B3=B5=EC=A7=80=EC=82=AC=ED=95=AD=C2=B7?=
+ =?UTF-8?q?=ED=98=84=EC=9E=A5=EC=9D=B4=EC=95=BC=EA=B8=B0=20=EC=9E=91?=
+ =?UTF-8?q?=EC=84=B1/=EC=88=98=EC=A0=95=EC=B0=BD=20=EC=8A=A4=ED=8E=A0?=
+ =?UTF-8?q?=EC=B2=B4=ED=81=AC=20=EC=B6=94=EA=B0=80(=EA=B4=80=EB=A6=AC?=
+ =?UTF-8?q?=EC=9E=90=20=EC=A0=84=20=EC=9E=91=EC=84=B1=EC=B0=BD=20=EC=A0=81?=
+ =?UTF-8?q?=EC=9A=A9)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ app/admin/notices/page.tsx | 2 ++
+ app/admin/stories/page.tsx | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/app/admin/notices/page.tsx b/app/admin/notices/page.tsx
+index 7cfb18a..1c924b1 100644
+--- a/app/admin/notices/page.tsx
++++ b/app/admin/notices/page.tsx
+@@ -137,6 +137,7 @@ export default function AdminNoticesPage() {
+           <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
+             placeholder="제목" style={{ ...inputStyle, marginBottom: 10 }} />
+           <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })}
++            spellCheck lang="ko"
+             placeholder="내용" rows={12} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 420, lineHeight: 1.6 }} />
+           <button onClick={create} disabled={busy}
+             style={{ padding: "10px 20px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+@@ -197,6 +198,7 @@ export default function AdminNoticesPage() {
+                     <input value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })}
+                       style={{ ...inputStyle, marginBottom: 10 }} />
+                     <textarea value={edit.body} onChange={(e) => setEdit({ ...edit, body: e.target.value })}
++                      spellCheck lang="ko"
+                       rows={10} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 240, lineHeight: 1.6 }} />
+                     <div style={{ display: "flex", gap: 8 }}>
+                       <button onClick={() => saveEdit(n.id)} disabled={busy}
+diff --git a/app/admin/stories/page.tsx b/app/admin/stories/page.tsx
+index 3d8224e..07bf401 100644
+--- a/app/admin/stories/page.tsx
++++ b/app/admin/stories/page.tsx
+@@ -264,6 +264,7 @@ export default function AdminStoriesPage() {
+               placeholder="제목 (선택)"
+               style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 8, boxSizing: "border-box" }} />
+             <textarea value={form.body} onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
++              spellCheck lang="ko"
+               placeholder="발제 내용을 입력하세요. 질문이나 화두를 던지면 댓글이 잘 붙어요."
+               rows={4}
+               style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
+@@ -405,6 +406,7 @@ export default function AdminStoriesPage() {
+                         placeholder="제목 (선택)"
+                         style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 8, boxSizing: "border-box" }} />
+                       <textarea value={edit.body} onChange={(e) => setEdit((s) => ({ ...s, body: e.target.value }))}
++                        spellCheck lang="ko"
+                         rows={5}
+                         style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, lineHeight: 1.7, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
+                       <div style={{ display: "flex", gap: 8 }}>
+-- 
+2.34.1
+

@@ -1,0 +1,264 @@
+From f7e1d64e7419332adca2367b302ed36a588e6041 Mon Sep 17 00:00:00 2001
+From: jiwone73 <jungswhat@gmail.com>
+Date: Tue, 21 Jul 2026 02:33:52 +0000
+Subject: [PATCH] =?UTF-8?q?=EB=AC=B8=EC=9D=98=20=EB=8B=B5=EB=B3=80:=20?=
+ =?UTF-8?q?=EC=B2=A8=EB=B6=80=ED=8C=8C=EC=9D=BC=20=EB=B0=9C=EC=86=A1(Resen?=
+ =?UTF-8?q?d,=20=EC=B4=9D=203MB)=C2=B7=ED=85=8D=EC=8A=A4=ED=8A=B8=EC=B0=BD?=
+ =?UTF-8?q?=20=EC=8A=A4=ED=8E=A0=EC=B2=B4=ED=81=AC=20=EC=B6=94=EA=B0=80?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ app/admin/ads/page.tsx               | 35 ++++++++++++++++++++++++++--
+ app/admin/inquiries/page.tsx         | 35 ++++++++++++++++++++++++++--
+ app/api/admin/ads/inquiries/route.ts |  4 ++--
+ app/api/admin/inquiries/route.ts     |  4 ++--
+ lib/email.ts                         | 11 ++++++++-
+ 5 files changed, 80 insertions(+), 9 deletions(-)
+
+diff --git a/app/admin/ads/page.tsx b/app/admin/ads/page.tsx
+index d7e23ad..eec66bd 100644
+--- a/app/admin/ads/page.tsx
++++ b/app/admin/ads/page.tsx
+@@ -35,6 +35,20 @@ function fmtDate(s: string) {
+   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+ }
+ 
++async function filesToAttachments(files: File[]) {
++  return Promise.all(
++    files.map(
++      (file) =>
++        new Promise<{ filename: string; content: string }>((resolve, reject) => {
++          const reader = new FileReader();
++          reader.onload = () => resolve({ filename: file.name, content: String(reader.result).split(",")[1] || "" });
++          reader.onerror = reject;
++          reader.readAsDataURL(file);
++        })
++    )
++  );
++}
++
+ export default function AdminAdsPage() {
+   const [items, setItems] = useState<Inquiry[]>([]);
+   const [loading, setLoading] = useState(true);
+@@ -44,6 +58,7 @@ export default function AdminAdsPage() {
+   const [checked, setChecked] = useState<number[]>([]);
+   const [replySubject, setReplySubject] = useState("");
+   const [replyBody, setReplyBody] = useState("");
++  const [files, setFiles] = useState<File[]>([]);
+ 
+   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
+ 
+@@ -69,6 +84,7 @@ export default function AdminAdsPage() {
+     setSelected(item);
+     setReplySubject(`[뷰티워크] ${item.type || "광고"} 문의 답변`);
+     setReplyBody(`안녕하세요, ${item.contact_name || "고객"}님.\n뷰티워크입니다.\n\n문의 주신 내용에 대해 답변드립니다.\n\n\n\n──────────\n[문의 내용]\n${item.message}`);
++    setFiles([]);
+   };
+ 
+   const markDone = async (id: number) => {
+@@ -89,17 +105,21 @@ export default function AdminAdsPage() {
+   const sendReply = async () => {
+     if (!selected?.email) { alert("이메일 주소가 없어 답변을 보낼 수 없습니다."); return; }
+     if (!replyBody.trim()) { alert("답변 내용을 입력해 주세요."); return; }
++    const totalSize = files.reduce((sum, f) => sum + f.size, 0);
++    if (totalSize > 3 * 1024 * 1024) { alert("첨부파일 총 용량은 3MB 이하여야 합니다."); return; }
+     try {
++      const attachments = await filesToAttachments(files);
+       const res = await fetch("/api/admin/ads/inquiries", {
+         method: "POST",
+         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+-        body: JSON.stringify({ id: selected.id, to: selected.email, subject: replySubject, body: replyBody }),
++        body: JSON.stringify({ id: selected.id, to: selected.email, subject: replySubject, body: replyBody, attachments }),
+       });
+       const data = await res.json();
+       if (data.success) {
+         setSelected((p) => (p ? { ...p, status: "done" } : p));
+         setItems((prev) => prev.map((it) => (it.id === selected.id ? { ...it, status: "done" } : it)));
+         window.dispatchEvent(new Event("admin:inquiries-changed"));
++        setFiles([]);
+         alert("support@beautywork.co.kr에서 답변 메일을 발송했습니다.");
+       } else {
+         alert(data.error?.message || "메일 발송에 실패했습니다.");
+@@ -242,13 +262,24 @@ export default function AdminAdsPage() {
+                 <div style={{ flex: "1 1 420px", minWidth: 0, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
+                   <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>답변 메일 작성</div>
+                   <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
++                    spellCheck lang="ko"
+                     style={{ minHeight: "min(68vh, 720px)", resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
++                  <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
++                    <input type="file" multiple
++                      onChange={(e) => setFiles(Array.from(e.target.files || []))}
++                      style={{ fontSize: 13 }} />
++                    {files.length > 0 && (
++                      <span style={{ fontSize: 12, color: "#888" }}>
++                        첨부 {files.length}개 · {(files.reduce((sum, f) => sum + f.size, 0) / 1024 / 1024).toFixed(2)}MB / 3MB
++                      </span>
++                    )}
++                  </div>
+                   <button onClick={sendReply}
+                     style={{ width: "100%", marginTop: 14, padding: "12px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                     답변 메일 보내기
+                   </button>
+                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
+-                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다.
++                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다. (첨부 총 3MB 이하)
+                   </p>
+                 </div>
+               ) : (
+diff --git a/app/admin/inquiries/page.tsx b/app/admin/inquiries/page.tsx
+index e9ca21c..dcd4d0a 100644
+--- a/app/admin/inquiries/page.tsx
++++ b/app/admin/inquiries/page.tsx
+@@ -29,6 +29,20 @@ function fmtDate(s: string) {
+   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+ }
+ 
++async function filesToAttachments(files: File[]) {
++  return Promise.all(
++    files.map(
++      (file) =>
++        new Promise<{ filename: string; content: string }>((resolve, reject) => {
++          const reader = new FileReader();
++          reader.onload = () => resolve({ filename: file.name, content: String(reader.result).split(",")[1] || "" });
++          reader.onerror = reject;
++          reader.readAsDataURL(file);
++        })
++    )
++  );
++}
++
+ export default function AdminInquiriesPage() {
+   const [items, setItems] = useState<Inquiry[]>([]);
+   const [loading, setLoading] = useState(true);
+@@ -37,6 +51,7 @@ export default function AdminInquiriesPage() {
+   const [checked, setChecked] = useState<number[]>([]);
+   const [replySubject, setReplySubject] = useState("");
+   const [replyBody, setReplyBody] = useState("");
++  const [files, setFiles] = useState<File[]>([]);
+ 
+   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
+ 
+@@ -64,6 +79,7 @@ export default function AdminInquiriesPage() {
+     setSelected(it);
+     setReplySubject(`Re: ${it.subject || "뷰티워크 1:1 문의 답변"}`);
+     setReplyBody(`안녕하세요, ${it.name || "고객"}님.\n뷰티워크입니다.\n\n문의 주신 내용에 대해 답변드립니다.\n\n\n\n──────────\n[문의 내용]\n${it.message}`);
++    setFiles([]);
+   };
+ 
+   const markDone = async (id: number) => {
+@@ -87,17 +103,21 @@ export default function AdminInquiriesPage() {
+   const sendReply = async () => {
+     if (!selected?.email) { alert("이메일 주소가 없어 답변을 보낼 수 없습니다."); return; }
+     if (!replyBody.trim()) { alert("답변 내용을 입력해 주세요."); return; }
++    const totalSize = files.reduce((sum, f) => sum + f.size, 0);
++    if (totalSize > 3 * 1024 * 1024) { alert("첨부파일 총 용량은 3MB 이하여야 합니다."); return; }
+     try {
++      const attachments = await filesToAttachments(files);
+       const res = await fetch("/api/admin/inquiries", {
+         method: "POST",
+         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+-        body: JSON.stringify({ id: selected.id, to: selected.email, subject: replySubject, body: replyBody }),
++        body: JSON.stringify({ id: selected.id, to: selected.email, subject: replySubject, body: replyBody, attachments }),
+       });
+       const data = await res.json();
+       if (data.success) {
+         setSelected((p) => (p ? { ...p, status: "done" } : p));
+         setItems((prev) => prev.map((it) => (it.id === selected.id ? { ...it, status: "done" } : it)));
+         window.dispatchEvent(new Event("admin:inquiries-changed"));
++        setFiles([]);
+         alert("support@beautywork.co.kr에서 답변 메일을 발송했습니다.");
+       } else {
+         alert(data.error?.message || "메일 발송에 실패했습니다.");
+@@ -235,13 +255,24 @@ export default function AdminInquiriesPage() {
+                 <div style={{ flex: "1 1 420px", minWidth: 0, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
+                   <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>답변 메일 작성</div>
+                   <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
++                    spellCheck lang="ko"
+                     style={{ minHeight: "min(68vh, 720px)", resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
++                  <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
++                    <input type="file" multiple
++                      onChange={(e) => setFiles(Array.from(e.target.files || []))}
++                      style={{ fontSize: 13 }} />
++                    {files.length > 0 && (
++                      <span style={{ fontSize: 12, color: "#888" }}>
++                        첨부 {files.length}개 · {(files.reduce((sum, f) => sum + f.size, 0) / 1024 / 1024).toFixed(2)}MB / 3MB
++                      </span>
++                    )}
++                  </div>
+                   <button onClick={sendReply}
+                     style={{ width: "100%", marginTop: 14, padding: "12px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                     답변 메일 보내기
+                   </button>
+                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
+-                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다.
++                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다. (첨부 총 3MB 이하)
+                   </p>
+                 </div>
+               ) : (
+diff --git a/app/api/admin/ads/inquiries/route.ts b/app/api/admin/ads/inquiries/route.ts
+index f430165..1600c9f 100644
+--- a/app/api/admin/ads/inquiries/route.ts
++++ b/app/api/admin/ads/inquiries/route.ts
+@@ -54,10 +54,10 @@ export async function GET(req: NextRequest) {
+ export async function POST(req: NextRequest) {
+   const { auth, res: authErr } = requireAuth(req, 'admin')
+   if (authErr) return authErr
+-  const { id, to, subject, body } = await req.json()
++  const { id, to, subject, body, attachments } = await req.json()
+   if (!id || !to || !subject || !body) return err('BAD_REQUEST', 'id, to, subject, body 필요', 400)
+   try {
+-    await sendInquiryReplyEmail(to, subject, body)
++    await sendInquiryReplyEmail(to, subject, body, attachments)
+   } catch (e: any) {
+     return err('EMAIL_SEND_FAILED', e?.message || '메일 발송에 실패했습니다.', 500)
+   }
+diff --git a/app/api/admin/inquiries/route.ts b/app/api/admin/inquiries/route.ts
+index 0614a05..ecedf43 100644
+--- a/app/api/admin/inquiries/route.ts
++++ b/app/api/admin/inquiries/route.ts
+@@ -45,10 +45,10 @@ export async function GET(req: NextRequest) {
+ export async function POST(req: NextRequest) {
+   const { auth, res: authErr } = requireAuth(req, 'admin')
+   if (authErr) return authErr
+-  const { id, to, subject, body } = await req.json()
++  const { id, to, subject, body, attachments } = await req.json()
+   if (!id || !to || !subject || !body) return err('BAD_REQUEST', 'id, to, subject, body 필요', 400)
+   try {
+-    await sendInquiryReplyEmail(to, subject, body)
++    await sendInquiryReplyEmail(to, subject, body, attachments)
+   } catch (e: any) {
+     return err('EMAIL_SEND_FAILED', e?.message || '메일 발송에 실패했습니다.', 500)
+   }
+diff --git a/lib/email.ts b/lib/email.ts
+index d79c10d..d56a02f 100644
+--- a/lib/email.ts
++++ b/lib/email.ts
+@@ -486,13 +486,22 @@ export async function sendJobRecommendationEmail(
+ const SUPPORT_FROM = "뷰티워크 고객지원 <support@beautywork.co.kr>";
+ 
+ // 사업/1:1 문의 답변 메일 — 발신 주소를 support@beautywork.co.kr 로 고정
+-export async function sendInquiryReplyEmail(to: string, subject: string, bodyText: string) {
++export async function sendInquiryReplyEmail(
++  to: string,
++  subject: string,
++  bodyText: string,
++  attachments?: { filename: string; content: string }[]
++) {
+   const esc = bodyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+   const bodyHtml = esc.replace(/\n/g, "<br/>");
++  const attach = (attachments || [])
++    .filter((a) => a && a.filename && a.content)
++    .map((a) => ({ filename: a.filename, content: Buffer.from(a.content, "base64") }));
+   return resend.emails.send({
+     from: SUPPORT_FROM,
+     to,
+     subject,
++    attachments: attach.length ? attach : undefined,
+     html: `
+       <div style="max-width:560px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
+         <div style="padding:20px 0;border-bottom:2px solid #5f0080;">
+-- 
+2.34.1
+

@@ -1,0 +1,31 @@
+From 67ef3aa6d513490e405811cddd0a8029f973cc88 Mon Sep 17 00:00:00 2001
+From: jiwone73 <jungswhat@gmail.com>
+Date: Tue, 21 Jul 2026 01:48:50 +0000
+Subject: [PATCH] =?UTF-8?q?=ED=98=84=EC=9E=A5=EC=9D=B4=EC=95=BC=EA=B8=B0?=
+ =?UTF-8?q?=20=ED=83=AD=20=EB=9D=BC=EB=B2=A8=20'AI=20=EA=B8=80=20=EC=8A=B9?=
+ =?UTF-8?q?=EC=9D=B8'=E2=86=92'AI=20=EA=B8=80=20=EC=8A=B9=EC=9D=B8?=
+ =?UTF-8?q?=EB=8C=80=EA=B8=B0'?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ app/admin/stories/page.tsx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/admin/stories/page.tsx b/app/admin/stories/page.tsx
+index 6ead371..3d8224e 100644
+--- a/app/admin/stories/page.tsx
++++ b/app/admin/stories/page.tsx
+@@ -220,7 +220,7 @@ export default function AdminStoriesPage() {
+         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+           <button onClick={() => { setTab("posts"); setChecked([]); }} style={tabStyle(tab === "posts")}>글 관리</button>
+           <button onClick={() => { setTab("pending"); setChecked([]); }} style={tabStyle(tab === "pending")}>
+-            AI 글 승인{pendingCount > 0 ? ` (${pendingCount})` : ""}
++            AI 글 승인대기{pendingCount > 0 ? ` (${pendingCount})` : ""}
+           </button>
+ 
+           {(
+-- 
+2.34.1
+

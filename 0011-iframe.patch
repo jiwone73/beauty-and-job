@@ -1,0 +1,65 @@
+From 03b0e7e7676231e6168e068f1583168673540eae Mon Sep 17 00:00:00 2001
+From: jiwone73 <jungswhat@gmail.com>
+Date: Tue, 21 Jul 2026 03:55:57 +0000
+Subject: [PATCH] =?UTF-8?q?=EB=89=B4=EC=8A=A4=EB=A0=88=ED=84=B0=20?=
+ =?UTF-8?q?=EB=AF=B8=EB=A6=AC=EB=B3=B4=EA=B8=B0=20=EC=83=88=20=EC=B0=BD=20?=
+ =?UTF-8?q?=E2=86=92=20=EB=AA=A8=EB=8B=AC(iframe)=EB=A1=9C=20=EB=B3=80?=
+ =?UTF-8?q?=EA=B2=BD?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ app/admin/newsletters/page.tsx | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/app/admin/newsletters/page.tsx b/app/admin/newsletters/page.tsx
+index 1598c5d..088fa67 100644
+--- a/app/admin/newsletters/page.tsx
++++ b/app/admin/newsletters/page.tsx
+@@ -16,6 +16,7 @@ export default function AdminNewslettersPage() {
+   const [autogenSaving, setAutogenSaving] = useState(false);
+   const [checked, setChecked] = useState<string[]>([]);
+   const [deleting, setDeleting] = useState(false);
++  const [previewHtml, setPreviewHtml] = useState<string | null>(null);
+ 
+   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
+ 
+@@ -84,13 +85,7 @@ export default function AdminNewslettersPage() {
+   };
+ 
+   const preview = (html: string) => {
+-    const w = window.open("", "_blank");
+-    if (w) {
+-      w.document.write((html || "").replace(/\{\{UNSUBSCRIBE_URL\}\}/g, "#"));
+-      w.document.close();
+-    } else {
+-      alert("팝업이 차단됐어요. 팝업 허용 후 다시 시도해주세요.");
+-    }
++    setPreviewHtml((html || "").replace(/\{\{UNSUBSCRIBE_URL\}\}/g, "#"));
+   };
+ 
+   const testSend = async (id: string) => {
+@@ -242,6 +237,19 @@ export default function AdminNewslettersPage() {
+         )}
+         </div>
+       </div>
++      {previewHtml !== null && (
++        <div onClick={() => setPreviewHtml(null)}
++          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
++          <div onClick={(e) => e.stopPropagation()}
++            style={{ background: "#fff", borderRadius: 12, width: "min(680px, 96vw)", height: "min(90vh, 900px)", display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 10px 40px rgba(0,0,0,0.2)" }}>
++            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", borderBottom: "1px solid #eee" }}>
++              <span style={{ fontSize: 16, fontWeight: 700 }}>뉴스레터 미리보기</span>
++              <button onClick={() => setPreviewHtml(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999" }}>✕</button>
++            </div>
++            <iframe title="뉴스레터 미리보기" srcDoc={previewHtml} style={{ flex: 1, width: "100%", border: "none" }} />
++          </div>
++        </div>
++      )}
+     </AdminLayout>
+   );
+ }
+-- 
+2.34.1
+

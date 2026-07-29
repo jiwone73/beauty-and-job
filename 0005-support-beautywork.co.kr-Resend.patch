@@ -1,0 +1,141 @@
+From 2bddd48c33775f26a88cb2a702f09484607df27b Mon Sep 17 00:00:00 2001
+From: jiwone73 <jungswhat@gmail.com>
+Date: Tue, 21 Jul 2026 01:57:49 +0000
+Subject: [PATCH] =?UTF-8?q?=EC=82=AC=EC=97=85=EB=AC=B8=EC=9D=98=20?=
+ =?UTF-8?q?=EB=8B=B5=EB=B3=80=20=EB=A9=94=EC=9D=BC=20support@beautywork.co?=
+ =?UTF-8?q?.kr=20=EC=84=9C=EB=B2=84=20=EB=B0=9C=EC=86=A1(Resend)=EC=9C=BC?=
+ =?UTF-8?q?=EB=A1=9C=20=EC=A0=84=ED=99=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ app/admin/inquiries/page.tsx     | 27 ++++++++++++++++++++++-----
+ app/api/admin/inquiries/route.ts | 21 +++++++++++++++++++++
+ lib/email.ts                     | 26 ++++++++++++++++++++++++++
+ 3 files changed, 69 insertions(+), 5 deletions(-)
+
+diff --git a/app/admin/inquiries/page.tsx b/app/admin/inquiries/page.tsx
+index aa5ca83..e9ca21c 100644
+--- a/app/admin/inquiries/page.tsx
++++ b/app/admin/inquiries/page.tsx
+@@ -84,11 +84,28 @@ export default function AdminInquiriesPage() {
+     }
+   };
+ 
+-  const sendReply = () => {
++  const sendReply = async () => {
+     if (!selected?.email) { alert("이메일 주소가 없어 답변을 보낼 수 없습니다."); return; }
+-    const url = `mailto:${selected.email}?subject=${encodeURIComponent(replySubject)}&body=${encodeURIComponent(replyBody)}`;
+-    window.location.href = url;
+-    markDone(selected.id);
++    if (!replyBody.trim()) { alert("답변 내용을 입력해 주세요."); return; }
++    try {
++      const res = await fetch("/api/admin/inquiries", {
++        method: "POST",
++        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
++        body: JSON.stringify({ id: selected.id, to: selected.email, subject: replySubject, body: replyBody }),
++      });
++      const data = await res.json();
++      if (data.success) {
++        setSelected((p) => (p ? { ...p, status: "done" } : p));
++        setItems((prev) => prev.map((it) => (it.id === selected.id ? { ...it, status: "done" } : it)));
++        window.dispatchEvent(new Event("admin:inquiries-changed"));
++        alert("support@beautywork.co.kr에서 답변 메일을 발송했습니다.");
++      } else {
++        alert(data.error?.message || "메일 발송에 실패했습니다.");
++      }
++    } catch (e) {
++      console.error("[send reply]", e);
++      alert("메일 발송 중 오류가 발생했습니다.");
++    }
+   };
+ 
+   const toggleCheck = (id: number) =>
+@@ -224,7 +241,7 @@ export default function AdminInquiriesPage() {
+                     답변 메일 보내기
+                   </button>
+                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
+-                    메일 앱이 열리며, 보내기와 동시에 상태가 완료로 변경됩니다.
++                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 완료로 변경됩니다.
+                   </p>
+                 </div>
+               ) : (
+diff --git a/app/api/admin/inquiries/route.ts b/app/api/admin/inquiries/route.ts
+index 346ac26..0614a05 100644
+--- a/app/api/admin/inquiries/route.ts
++++ b/app/api/admin/inquiries/route.ts
+@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
+ import { NextRequest } from 'next/server'
+ import pool from '@/lib/db'
+ import { ok, err, requireAuth } from '@/lib/api'
++import { sendInquiryReplyEmail } from '@/lib/email'
+ 
+ export async function GET(req: NextRequest) {
+   const { auth, res: authErr } = requireAuth(req, 'admin')
+@@ -40,6 +41,26 @@ export async function GET(req: NextRequest) {
+   }
+ }
+ 
++// 사업/1:1 문의 답변 메일 발송(support@beautywork.co.kr) + 상태 완료 처리
++export async function POST(req: NextRequest) {
++  const { auth, res: authErr } = requireAuth(req, 'admin')
++  if (authErr) return authErr
++  const { id, to, subject, body } = await req.json()
++  if (!id || !to || !subject || !body) return err('BAD_REQUEST', 'id, to, subject, body 필요', 400)
++  try {
++    await sendInquiryReplyEmail(to, subject, body)
++  } catch (e: any) {
++    return err('EMAIL_SEND_FAILED', e?.message || '메일 발송에 실패했습니다.', 500)
++  }
++  const client = await pool.connect()
++  try {
++    await client.query(`UPDATE inquiries SET status = 'done' WHERE id = $1`, [id])
++    return ok({ id, status: 'done' })
++  } finally {
++    client.release()
++  }
++}
++
+ export async function PATCH(req: NextRequest) {
+   const { auth, res: authErr } = requireAuth(req, 'admin')
+   if (authErr) return authErr
+diff --git a/lib/email.ts b/lib/email.ts
+index b7b38b4..d79c10d 100644
+--- a/lib/email.ts
++++ b/lib/email.ts
+@@ -482,4 +482,30 @@ export async function sendJobRecommendationEmail(
+     html,
+   });
+ }
++
++const SUPPORT_FROM = "뷰티워크 고객지원 <support@beautywork.co.kr>";
++
++// 사업/1:1 문의 답변 메일 — 발신 주소를 support@beautywork.co.kr 로 고정
++export async function sendInquiryReplyEmail(to: string, subject: string, bodyText: string) {
++  const esc = bodyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
++  const bodyHtml = esc.replace(/\n/g, "<br/>");
++  return resend.emails.send({
++    from: SUPPORT_FROM,
++    to,
++    subject,
++    html: `
++      <div style="max-width:560px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
++        <div style="padding:20px 0;border-bottom:2px solid #5f0080;">
++          <span style="font-size:20px;font-weight:700;color:#5f0080;">뷰티워크</span>
++        </div>
++        <div style="padding:28px 4px;font-size:14px;line-height:1.8;color:#333;">
++          ${bodyHtml}
++        </div>
++        <div style="padding:16px 0;border-top:1px solid #eee;font-size:11px;color:#aaa;">
++          © 뷰티워크 (BeautyWork) · support@beautywork.co.kr
++        </div>
++      </div>
++    `,
++  });
++}
+   
+\ No newline at end of file
+-- 
+2.34.1
+

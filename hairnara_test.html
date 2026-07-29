@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>헤어나라</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="robots" content="all">
+    <meta name="subject" content="헤어나라">
+    <meta name="title" content="헤어나라">
+    <meta name="keywords" content="미용, 구인, 구직, 미용 구인구직, 포털, 인재, 인재채용, 채용정보, 지역, 맞춤, 아카데미, 취업">
+    <meta name="description" content="미용 전문 구인구직포털 - 헤어나라">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hairnara.net">
+    <meta property="og:title" content="미용 전문 구인구직포털 - 헤어나라">
+    <meta property="og:image" content="https://hairnara.net/assets/site/img/common/og_logo.png">
+    <meta property="og:description" content="헤어나라는 다양한 미용 분야의 구인, 구직 및 아카데미 정보 등을 다루는 미용 전문 구인구직포털입니다.">
+    <meta property="og:site_name" content="헤어나라">
+    
+    <link rel="canonical" href="https://hairnara.net">
+    <link rel="shortcut icon" href="https://hairnara.net/assets/site/img/common/favicon_hairnara.ico">
+    <!-- <link rel="stylesheet" href="/assets/site/css/adminlte.min_gng_custom_for_user.css"> -->
+    <link rel="stylesheet" href="/assets/plugins/sweetalert2/sweetalert2.css" >
+    <link rel="stylesheet" href="/assets/plugins/toastr/toastr.min.css">
+    <link rel="stylesheet" href="/assets/site/css/library/slick.css">
+    <link rel="stylesheet" href="/assets/site/css/color.css?250529">
+    <link rel="stylesheet" href="/assets/site/css/common.css?260317">
+    <link rel="stylesheet" href="/assets/site/css/component.css?260617">
+    <link rel="stylesheet" href="/assets/site/css/layout.css?26031711111">
+    <link rel="stylesheet" href="/assets/site/css/board.css?250529">
+    <link rel="stylesheet" href="/assets/site/css/form.css?250529">
+    <link rel="stylesheet" href="/assets/site/css/member.css?250723">
+        <link rel="stylesheet" href="/assets/site/css/contents.css?260317">
+
+    <!-- <meta name="appleid-signin-client-id" content="net.hairnara.login">
+    <meta name="appleid-signin-scope" content="name email">
+    <meta name="appleid-signin-redirect-uri" content="https://hairnara.net/api/simple/login/apple">
+    <meta name="appleid-signin-state" content="signin">
+    <meta name="appleid-signin-use-popup" content="false"> -->
+
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="/assets/site/js/html5shiv.js"></script>
+    <script type="text/javascript" src="/assets/site/js/respond.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+    <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <script src="/assets/site/js/library/jquery-3.4.1.min.js"></script>
+    <script src="/assets/site/js/library/jquery-ui.min.js"></script>
+    <script src="/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/assets/plugins/toastr/toastr.min.js"></script>
+    <script src="/assets/site/js/library/slick.js"></script>
+    <script src="/assets/site/js/library/jquery.animateNumber.js"></script>
+    <script src="/assets/site/js/lang/common_ko.js?250529"></script>
+    <script src="/assets/site/js/common.js?260330"></script>
+    <!--script src="/assets/site/js/validate.js"></script-->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.6/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11.2.6/swiper-bundle.min.js"></script>
+
+    <!-- csrf 토큰 -->
+    <script>
+        var is_level = 0;
+        var is_member = 0;
+        var csrf_name = 'csrf_nz';
+        var csrf_hash = '822f08d1a01aa08688a7c36cb236bfe5';
+        var is_device = '0';
+    </script>
+    <script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+<script type="text/javascript">
+if(!wcs_add) var wcs_add = {};
+wcs_add["wa"] = "803d2ffad3eff8";
+if(window.wcs) {
+  wcs_do();
+}
+</script>    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16533518291"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'AW-16533518291');
+    </script>
+
+    <!-- Event snippet for 페이지 조회 conversion page -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function(event) {
+            if (window.location.href.endsWith('/member/join_type')) {
+                gtag('event', 'conversion', {'send_to': 'AW-16533518291/Q3UaCPD01doZENPv5cs9'});
+            }
+            if (window.location.href.endsWith('/member/join_complete')) {
+                gtag('event', 'conversion', {'send_to': 'AW-16533518291/iHEMCPGC2doZENPv5cs9'});
+            }
+            gtag('event', 'conversion', {'send_to': 'AW-16533518291/b_p1COXn56cZENPv5cs9'});
+        });
+    </script>
+
+    <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
+</head>
+
+<body>
+<!-- Google tag (gtag.js) -->
+<amp-analytics type="gtag" data-credentials="include">
+    <script type="application/json">
+      { "vars": { "gtag_id": "AW-16533518291", "config": { "AW-16533518291": { "groups": "default" } } }, "triggers": { "C_vzwv7D7kR_4": { "on": "visible", "vars": { "event_name": "conversion", "send_to": ["AW-16533518291/b_p1COXn56cZENPv5cs9"] } } } }
+    </script>
+</amp-analytics>
+<div id="skip_navigation"><a href="#content">본문 바로가기</a></div>
+
+
+<script>
+    // 쿠키 가져오기
+    var getCookie = function (cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) != -1) return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+
+    // 24시간 기준 쿠키 설정하기
+    var setCookie = function (cname, cvalue, exdays) {
+        var todayDate = new Date();
+        todayDate.setTime(todayDate.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires=" + todayDate.toUTCString();
+        document.cookie = cname + "=" + cvalue + "; " + expires;
+    }
+
+    var topPopupClose = function(){
+        if($(".tpu_btn.today").hasClass("on") == true){
+            setCookie("close","Y",1);   // 기간( ex. 1은 하루, 7은 일주일)
+        }
+        $("#tpu").stop().slideUp(200);
+    }
+
+    $(function(){
+        let $tpu_close = $(".tpu_btn.close");
+        let $tpu_close_today = $(".tpu_btn.today");
+
+        // 하루 닫기 체크
+        $tpu_close_today.on("click", function(){
+            if( $(this).hasClass("on") == false ){
+                $(this).addClass("on");
+            }else{
+                $(this).removeClass("on");
+            }
+        });
+
+        var cookiedata = document.cookie;
+        //console.log(cookiedata);
+        if(cookiedata.indexOf("close=Y")<0){
+            $("#tpu").removeClass("closed");
+            $("#tpu").show();
+        }else{
+            $("#tpu").addClass("closed");
+            $("#tpu").hide();
+        }
+        $(".tpu_btn.close").click(function(){
+            topPopupClose();
+        });
+    });
+
+    
+</script>
+
+<div id="scrap_alert">스크랩되었습니다.</div>
+
+<header id="header" class="head_desktop">
+	<div class="h_top">
+		<div class="wrap">
+			<h1 class="logo">
+				<a href="/">
+					<img class="pc" src="/assets/site/img/common/logo.svg" alt="나라파트너" title="나라파트너">
+					<img class="mobile" src="/assets/site/img/common/logo_m.svg" alt="나라파트너" title="나라파트너">
+				</a>
+			</h1>
+			<!-- // logo -->
+
+			<div class="sch_wrap">
+                <form action="/search" id="all_search" method="post" accept-charset="utf-8">
+                                                       <input type="hidden" name="csrf_nz" value="822f08d1a01aa08688a7c36cb236bfe5" />
+                    <fieldset>
+                        <legend>통합검색</legend>
+                        <input type="text" name="all_keyword" id="all_keyword" title="검색어 입력" placeholder="어떤 분야를 찾으세요?">
+                        <button type="submit" title="검색">검색</button>
+                    </fieldset>
+                </form>
+			</div>
+			<!-- // sch_wrap -->
+
+			<ul class="login">
+                                    <li><a class="join" href="/member/join_type" title="회원가입">회원가입</a></li>
+                    <li><a class="login" href="/member/login_type" title="로그인">로그인</a></li>
+                            </ul>
+			<!-- // login -->
+		</div>
+	</div>
+	<!-- // h_top -->
+
+	<div class="h_mid">
+		<div class="wrap">
+			<ul class="q_menu">
+				<li>
+					<a href="#menu_all_wrap" class="menu_all_btn" role="button">
+						<span class="lines">
+							<em></em>
+							<em></em>
+							<em></em>
+						</span>
+						전체메뉴
+					</a>
+				</li>
+				<!-- 
+    아래 위치에서 사용됩니다.
+    1. head.php : h_mid > wrap > q_menu 중간 부분
+    2. head.php : h_quick > tab_rowscr 
+    3. head_mobile.php : h_mid > wrap > q_menu 중간 부분
+    3. head_mobile.php : h_quick > tab_rowscr 
+-->
+
+
+
+
+    <!-- PC -->
+    <li><a href="/job/lists" class="hot">채용정보</a></li>
+    <li><a href="/human/lists">인재정보</a></li>
+    <li><a href="/job/lists">맞춤검색</a></li>
+    <li><a href="/job/lists/urgently">스페어/급구</a></li>
+    <li><a href="/job/lists/open">오픈매장</a></li>
+    <li><a href="/academy/lists">아카데미</a></li>
+                			</ul>
+			<!-- // q_menu -->
+
+			<ul class="q_write">
+				<li><a href="/human/resume_write" class="btn theme">이력서 등록</a></li>                <li><a href="/job/recruit_write" class="btn">공고 등록</a></li>			</ul>
+			<!-- // q_write -->
+		</div>
+        <!-- // wrap -->
+
+        <nav id="menu_all_wrap" class="menu_all_wrap">
+            <div class="wrap">
+                <ul class="d1"><li><a href="/job/lists"><span>채용정보</span></a><ul class="d2"><li><a href="/job/lists"><span>채용정보 맞춤검색</span></a></li><li><a href="/job/lists/today"><span>오늘 등록된 채용정보</span></a></li><li><a href="/job/lists/premium"><span>프리미엄 채용정보</span></a></li><li><a href="/job/lists/always"><span>상시 채용정보</span></a></li><li><a href="/job/lists/urgently"><span>급구 채용정보</span></a></li><li><a href="/job/lists/region/I000"><span>지역별 채용정보</span></a><ul class="d3"><li><a href="/job/lists/region/I000"><span>서울</span></a></li><li><a href="/job/lists/region/B000"><span>경기</span></a></li><li><a href="/job/lists/region/L000"><span>인천</span></a></li><li><a href="/job/lists/region/G000"><span>대전</span></a></li><li><a href="/job/lists/region/J000"><span>세종</span></a></li><li><a href="/job/lists/region/P000"><span>충남</span></a></li><li><a href="/job/lists/region/Q000"><span>충북</span></a></li><li><a href="/job/lists/region/E000"><span>광주</span></a></li><li><a href="/job/lists/region/M000"><span>전남</span></a></li><li><a href="/job/lists/region/N000"><span>전북</span></a></li><li><a href="/job/lists/region/F000"><span>대구</span></a></li><li><a href="/job/lists/region/D000"><span>경북</span></a></li><li><a href="/job/lists/region/C000"><span>경남</span></a></li><li><a href="/job/lists/region/H000"><span>부산</span></a></li><li><a href="/job/lists/region/K000"><span>울산</span></a></li><li><a href="/job/lists/region/A000"><span>강원</span></a></li><li><a href="/job/lists/region/O000"><span>제주</span></a></li><li><a href="/job/lists/region/R000"><span>전국</span></a></li><li><a href="/job/lists/region/S000"><span>해외</span></a></li></ul></li><li><a href="/job/lists/occupation/1"><span>직종별 채용정보</span></a><ul class="d3"><li><a href="/job/lists/occupation/1"><span>헤어디자이너</span></a></li><li><a href="/job/lists/occupation/2"><span>헤어인턴/스페아</span></a></li><li><a href="/job/lists/occupation/3"><span>바버샵</span></a></li><li><a href="/job/lists/occupation/4"><span>네일아트</span></a></li><li><a href="/job/lists/occupation/5"><span>메이크업</span></a></li><li><a href="/job/lists/occupation/6"><span>속눈썹</span></a></li><li><a href="/job/lists/occupation/7"><span>피부관리사</span></a></li><li><a href="/job/lists/occupation/8"><span>체형관리사</span></a></li><li><a href="/job/lists/occupation/9"><span>두피관리사</span></a></li><li><a href="/job/lists/occupation/12"><span>왁싱</span></a></li><li><a href="/job/lists/occupation/13"><span>기타</span></a></li></ul></li><li><a href="/job/lists/period/1"><span>기간별 채용정보</span></a><ul class="d3"><li><a href="/job/lists/period/1"><span>주5일</span></a></li><li><a href="/job/lists/period/2"><span>주6일</span></a></li><li><a href="/job/lists/period/3"><span>평일</span></a></li><li><a href="/job/lists/period/4"><span>주말</span></a></li><li><a href="/job/lists/period/5"><span>협의</span></a></li></ul></li><li><a href="/job/lists/open"><span>오픈매장 채용정보</span></a></li><li><a href="/job/brands"><span>브랜드 채용정보</span></a></li><li><a href="/job/ad/vvip"><span>VVIP 채용공고</span></a></li><li><a href="/job/ad/vip"><span>VIP 채용공고</span></a></li><li><a href="/job/ad/grand"><span>GRAND 채용공고</span></a></li><li><a href="/job/ad/focus"><span>FOCUS 채용공고</span></a></li></ul></li><li><a href="/human/lists"><span>인재정보</span></a><ul class="d2"><li><a href="/human/lists"><span>인재정보 맞춤검색</span></a></li><li><a href="/human/lists/today"><span>오늘 등록된 인재정보</span></a></li><li><a href="/human/lists/urgently"><span>급구 인재정보</span></a></li><li><a href="/human/lists/career"><span>경력 인재정보</span></a></li><li><a href="/human/lists/region/I000"><span>지역별 인재정보</span></a><ul class="d3"><li><a href="/human/lists/region/I000"><span>서울</span></a></li><li><a href="/human/lists/region/B000"><span>경기</span></a></li><li><a href="/human/lists/region/L000"><span>인천</span></a></li><li><a href="/human/lists/region/G000"><span>대전</span></a></li><li><a href="/human/lists/region/J000"><span>세종</span></a></li><li><a href="/human/lists/region/P000"><span>충남</span></a></li><li><a href="/human/lists/region/Q000"><span>충북</span></a></li><li><a href="/human/lists/region/E000"><span>광주</span></a></li><li><a href="/human/lists/region/M000"><span>전남</span></a></li><li><a href="/human/lists/region/N000"><span>전북</span></a></li><li><a href="/human/lists/region/F000"><span>대구</span></a></li><li><a href="/human/lists/region/D000"><span>경북</span></a></li><li><a href="/human/lists/region/C000"><span>경남</span></a></li><li><a href="/human/lists/region/H000"><span>부산</span></a></li><li><a href="/human/lists/region/K000"><span>울산</span></a></li><li><a href="/human/lists/region/A000"><span>강원</span></a></li><li><a href="/human/lists/region/O000"><span>제주</span></a></li><li><a href="/human/lists/region/R000"><span>전국</span></a></li><li><a href="/human/lists/region/S000"><span>해외</span></a></li></ul></li><li><a href="/human/lists/occupation/1"><span>직종별 인재정보</span></a><ul class="d3"><li><a href="/human/lists/occupation/1"><span>헤어디자이너</span></a></li><li><a href="/human/lists/occupation/2"><span>헤어인턴/인턴</span></a></li><li><a href="/human/lists/occupation/3"><span>바버샵</span></a></li><li><a href="/human/lists/occupation/4"><span>네일아트</span></a></li><li><a href="/human/lists/occupation/5"><span>메이크업</span></a></li><li><a href="/human/lists/occupation/6"><span>속눈썹</span></a></li><li><a href="/human/lists/occupation/7"><span>피부관리사</span></a></li><li><a href="/human/lists/occupation/8"><span>체형관리사</span></a></li><li><a href="/human/lists/occupation/9"><span>두피관리사</span></a></li><li><a href="/human/lists/occupation/12"><span>왁싱</span></a></li><li><a href="/human/lists/occupation/13"><span>기타</span></a></li></ul></li><li><a href="/human/lists/period/1"><span>기간별 인재정보</span></a><ul class="d3"><li><a href="/human/lists/period/1"><span>주5일</span></a></li><li><a href="/human/lists/period/2"><span>주6일</span></a></li><li><a href="/human/lists/period/3"><span>평일</span></a></li><li><a href="/human/lists/period/4"><span>주말</span></a></li><li><a href="/human/lists/period/5"><span>협의</span></a></li></ul></li><li><a href="/human/lists/pay/1"><span>급여별 인재정보</span></a><ul class="d3"><li><a href="/human/lists/pay/1"><span>월급</span></a></li><li><a href="/human/lists/pay/2"><span>연봉</span></a></li></ul></li></ul></li><li><a href="/academy/lists"><span>아카데미</span></a><ul class="d2"><li><a href="/academy/lists"><span>아카데미 정보</span></a></li></ul></li><li><a href="/board/lists/1"><span>고객지원</span></a><ul class="d2"><li><a href="/board/lists/1"><span>공지사항</span></a></li><li><a href="/board/lists/4?cate=3"><span>자주 묻는 질문</span></a></li><li><a href="/contactus/inquiry"><span>문의하기</span></a></li><li><a href="/support/company"><span>회사소개</span></a></li></ul></li><li><a href="/human/resume_list"><span>개인서비스</span></a><ul class="d2"><li><a href="/human/resume_list"><span>이력서 관리</span></a><ul class="d3"><li><a href="/human/resume_list"><span>이력서 관리</span></a></li><li><a href="/human/resume_write"><span>이력서 등록/수정</span></a></li><li><a href="/human/resume_open"><span>채용 제안</span></a></li></ul></li><li><a href="/human/apply_list"><span>지원현황</span></a></li><li><a href="/human/scrap_job"><span>구직/스크랩 관리</span></a><ul class="d3"><li><a href="/human/scrap_job"><span>관심 공고</span></a></li><li><a href="/human/scrap_brand"><span>관심 브랜드</span></a></li><li><a href="/human/scrap_academy"><span>관심 아카데미</span></a></li></ul></li><li><a href="/human/mypage"><span>마이페이지</span></a><ul class="d3"><li><a href="/human/mypage"><span>회원정보 수정</span></a></li><li><a href="/human/mypage_passwd"><span>비밀번호 변경</span></a></li><li><a href="/human/mypage_leave"><span>회원탈퇴</span></a></li></ul></li></ul></li><li><a href="/job/recruit_list"><span>업체서비스</span></a><ul class="d2"><li><a href="/job/recruit_list"><span>공고관리</span></a><ul class="d3"><li><a href="/job/recruit_list"><span>공고 관리</span></a></li><li><a href="/job/recruit_write"><span>공고 등록</span></a></li><li><a href="/job/recruit_human"><span>지원자 관리</span></a></li></ul></li><li><a href="/job/scrap_human"><span>인재관리</span></a><ul class="d3"><li><a href="/job/scrap_human"><span>스크랩한 인재</span></a></li><li><a href="/job/suggest_human"><span>제안한 인재</span></a></li></ul></li><li><a href="/job/academy_manage"><span>아카데미 관리</span></a><ul class="d3"><li><a href="/job/academy_manage"><span>아카데미 관리</span></a></li><li><a href="/job/academy_write"><span>아카데미 등록/수정</span></a></li></ul></li><li><a href="/job/product_list"><span>상품관리</span></a><ul class="d3"><li><a href="/job/product_list"><span>상품관리</span></a></li><li><a href="/job/banner_ad"><span>배너광고</span></a></li></ul></li><li><a href="/job/mypage"><span>마이페이지</span></a><ul class="d3"><li><a href="/job/mypage"><span>회원정보 수정</span></a></li><li><a href="/job/mypage_passwd"><span>비밀번호 변경</span></a></li><li><a href="/job/mypage_leave"><span>회원탈퇴</span></a></li></ul></li></ul></li></ul>            </div>
+        </nav>
+        <!-- // menu_all_wrap -->
+	</div>
+	<!-- // h_mid -->
+
+    <div class="h_quick">
+        <ul class="tab_rowscr">
+			<!-- 
+    아래 위치에서 사용됩니다.
+    1. head.php : h_mid > wrap > q_menu 중간 부분
+    2. head.php : h_quick > tab_rowscr 
+    3. head_mobile.php : h_mid > wrap > q_menu 중간 부분
+    3. head_mobile.php : h_quick > tab_rowscr 
+-->
+
+
+
+
+    <!-- PC -->
+    <li><a href="/job/lists" class="hot">채용정보</a></li>
+    <li><a href="/human/lists">인재정보</a></li>
+    <li><a href="/job/lists">맞춤검색</a></li>
+    <li><a href="/job/lists/urgently">스페어/급구</a></li>
+    <li><a href="/job/lists/open">오픈매장</a></li>
+    <li><a href="/academy/lists">아카데미</a></li>
+                    </ul>
+    </div>
+    <!-- // h_quick -->
+
+    <button type="button" class="m_menu_btn">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <em>모바일 전체메뉴 열기</em>
+    </button>
+    <!-- // m_menu_btn -->
+
+    <div class="m_menu h100vh">
+        <div class="m_head">
+            <div class="top">
+                <h2 class="m_logo"><a href="/"><img src="/assets/site/img/common/logo_m.svg" alt="나라파트너" title="나라파트너"></a></h2>
+
+                <ul class="btns_top">
+                    <!--                                          -->
+                    <li><a class="mypage" href="/job/mypage" title="마이페이지">마이페이지</a></li>
+                </ul>
+            </div>
+
+                                                <!-- 미로그인 -->
+                    <div class="log logout">
+                        <p class="txt">헤어나라의 다양한 서비스를 경험해보세요!</p>
+                        <ul class="btns_logout">
+                            <li><a href="/member/join_type" class="theme">회원가입</a></li>
+                            <li><a href="/member/login">로그인</a></li>
+                        </ul>
+                    </div>
+                    <!-- // 미로그인 -->
+                                    </div>
+        <!-- // m_head -->
+
+        <nav class="m_body">
+            <ul class="d1"><li><a href="/job/lists"><span>채용정보</span></a><ul class="d2"><li><a href="/job/lists"><span>채용정보 맞춤검색</span></a></li><li><a href="/job/lists/today"><span>오늘 등록된 채용정보</span></a></li><li><a href="/job/lists/premium"><span>프리미엄 채용정보</span></a></li><li><a href="/job/lists/always"><span>상시 채용정보</span></a></li><li><a href="/job/lists/urgently"><span>급구 채용정보</span></a></li><li><a href="/job/lists/region/I000"><span>지역별 채용정보</span></a><ul class="d3"><li><a href="/job/lists/region/I000"><span>서울</span></a></li><li><a href="/job/lists/region/B000"><span>경기</span></a></li><li><a href="/job/lists/region/L000"><span>인천</span></a></li><li><a href="/job/lists/region/G000"><span>대전</span></a></li><li><a href="/job/lists/region/J000"><span>세종</span></a></li><li><a href="/job/lists/region/P000"><span>충남</span></a></li><li><a href="/job/lists/region/Q000"><span>충북</span></a></li><li><a href="/job/lists/region/E000"><span>광주</span></a></li><li><a href="/job/lists/region/M000"><span>전남</span></a></li><li><a href="/job/lists/region/N000"><span>전북</span></a></li><li><a href="/job/lists/region/F000"><span>대구</span></a></li><li><a href="/job/lists/region/D000"><span>경북</span></a></li><li><a href="/job/lists/region/C000"><span>경남</span></a></li><li><a href="/job/lists/region/H000"><span>부산</span></a></li><li><a href="/job/lists/region/K000"><span>울산</span></a></li><li><a href="/job/lists/region/A000"><span>강원</span></a></li><li><a href="/job/lists/region/O000"><span>제주</span></a></li><li><a href="/job/lists/region/R000"><span>전국</span></a></li><li><a href="/job/lists/region/S000"><span>해외</span></a></li></ul></li><li><a href="/job/lists/occupation/1"><span>직종별 채용정보</span></a><ul class="d3"><li><a href="/job/lists/occupation/1"><span>헤어디자이너</span></a></li><li><a href="/job/lists/occupation/2"><span>헤어인턴/스페아</span></a></li><li><a href="/job/lists/occupation/3"><span>바버샵</span></a></li><li><a href="/job/lists/occupation/4"><span>네일아트</span></a></li><li><a href="/job/lists/occupation/5"><span>메이크업</span></a></li><li><a href="/job/lists/occupation/6"><span>속눈썹</span></a></li><li><a href="/job/lists/occupation/7"><span>피부관리사</span></a></li><li><a href="/job/lists/occupation/8"><span>체형관리사</span></a></li><li><a href="/job/lists/occupation/9"><span>두피관리사</span></a></li><li><a href="/job/lists/occupation/12"><span>왁싱</span></a></li><li><a href="/job/lists/occupation/13"><span>기타</span></a></li></ul></li><li><a href="/job/lists/period/1"><span>기간별 채용정보</span></a><ul class="d3"><li><a href="/job/lists/period/1"><span>주5일</span></a></li><li><a href="/job/lists/period/2"><span>주6일</span></a></li><li><a href="/job/lists/period/3"><span>평일</span></a></li><li><a href="/job/lists/period/4"><span>주말</span></a></li><li><a href="/job/lists/period/5"><span>협의</span></a></li></ul></li><li><a href="/job/lists/open"><span>오픈매장 채용정보</span></a></li><li><a href="/job/brands"><span>브랜드 채용정보</span></a></li><li><a href="/job/ad/vvip"><span>VVIP 채용공고</span></a></li><li><a href="/job/ad/vip"><span>VIP 채용공고</span></a></li><li><a href="/job/ad/grand"><span>GRAND 채용공고</span></a></li><li><a href="/job/ad/focus"><span>FOCUS 채용공고</span></a></li></ul></li><li><a href="/human/lists"><span>인재정보</span></a><ul class="d2"><li><a href="/human/lists"><span>인재정보 맞춤검색</span></a></li><li><a href="/human/lists/today"><span>오늘 등록된 인재정보</span></a></li><li><a href="/human/lists/urgently"><span>급구 인재정보</span></a></li><li><a href="/human/lists/career"><span>경력 인재정보</span></a></li><li><a href="/human/lists/region/I000"><span>지역별 인재정보</span></a><ul class="d3"><li><a href="/human/lists/region/I000"><span>서울</span></a></li><li><a href="/human/lists/region/B000"><span>경기</span></a></li><li><a href="/human/lists/region/L000"><span>인천</span></a></li><li><a href="/human/lists/region/G000"><span>대전</span></a></li><li><a href="/human/lists/region/J000"><span>세종</span></a></li><li><a href="/human/lists/region/P000"><span>충남</span></a></li><li><a href="/human/lists/region/Q000"><span>충북</span></a></li><li><a href="/human/lists/region/E000"><span>광주</span></a></li><li><a href="/human/lists/region/M000"><span>전남</span></a></li><li><a href="/human/lists/region/N000"><span>전북</span></a></li><li><a href="/human/lists/region/F000"><span>대구</span></a></li><li><a href="/human/lists/region/D000"><span>경북</span></a></li><li><a href="/human/lists/region/C000"><span>경남</span></a></li><li><a href="/human/lists/region/H000"><span>부산</span></a></li><li><a href="/human/lists/region/K000"><span>울산</span></a></li><li><a href="/human/lists/region/A000"><span>강원</span></a></li><li><a href="/human/lists/region/O000"><span>제주</span></a></li><li><a href="/human/lists/region/R000"><span>전국</span></a></li><li><a href="/human/lists/region/S000"><span>해외</span></a></li></ul></li><li><a href="/human/lists/occupation/1"><span>직종별 인재정보</span></a><ul class="d3"><li><a href="/human/lists/occupation/1"><span>헤어디자이너</span></a></li><li><a href="/human/lists/occupation/2"><span>헤어인턴/인턴</span></a></li><li><a href="/human/lists/occupation/3"><span>바버샵</span></a></li><li><a href="/human/lists/occupation/4"><span>네일아트</span></a></li><li><a href="/human/lists/occupation/5"><span>메이크업</span></a></li><li><a href="/human/lists/occupation/6"><span>속눈썹</span></a></li><li><a href="/human/lists/occupation/7"><span>피부관리사</span></a></li><li><a href="/human/lists/occupation/8"><span>체형관리사</span></a></li><li><a href="/human/lists/occupation/9"><span>두피관리사</span></a></li><li><a href="/human/lists/occupation/12"><span>왁싱</span></a></li><li><a href="/human/lists/occupation/13"><span>기타</span></a></li></ul></li><li><a href="/human/lists/period/1"><span>기간별 인재정보</span></a><ul class="d3"><li><a href="/human/lists/period/1"><span>주5일</span></a></li><li><a href="/human/lists/period/2"><span>주6일</span></a></li><li><a href="/human/lists/period/3"><span>평일</span></a></li><li><a href="/human/lists/period/4"><span>주말</span></a></li><li><a href="/human/lists/period/5"><span>협의</span></a></li></ul></li><li><a href="/human/lists/pay/1"><span>급여별 인재정보</span></a><ul class="d3"><li><a href="/human/lists/pay/1"><span>월급</span></a></li><li><a href="/human/lists/pay/2"><span>연봉</span></a></li></ul></li></ul></li><li><a href="/academy/lists"><span>아카데미</span></a><ul class="d2"><li><a href="/academy/lists"><span>아카데미 정보</span></a></li></ul></li><li><a href="/board/lists/1"><span>고객지원</span></a><ul class="d2"><li><a href="/board/lists/1"><span>공지사항</span></a></li><li><a href="/board/lists/4?cate=3"><span>자주 묻는 질문</span></a></li><li><a href="/contactus/inquiry"><span>문의하기</span></a></li><li><a href="/support/company"><span>회사소개</span></a></li></ul></li><li><a href="/human/resume_list"><span>개인서비스</span></a><ul class="d2"><li><a href="/human/resume_list"><span>이력서 관리</span></a><ul class="d3"><li><a href="/human/resume_list"><span>이력서 관리</span></a></li><li><a href="/human/resume_write"><span>이력서 등록/수정</span></a></li><li><a href="/human/resume_open"><span>채용 제안</span></a></li></ul></li><li><a href="/human/apply_list"><span>지원현황</span></a></li><li><a href="/human/scrap_job"><span>구직/스크랩 관리</span></a><ul class="d3"><li><a href="/human/scrap_job"><span>관심 공고</span></a></li><li><a href="/human/scrap_brand"><span>관심 브랜드</span></a></li><li><a href="/human/scrap_academy"><span>관심 아카데미</span></a></li></ul></li><li><a href="/human/mypage"><span>마이페이지</span></a><ul class="d3"><li><a href="/human/mypage"><span>회원정보 수정</span></a></li><li><a href="/human/mypage_passwd"><span>비밀번호 변경</span></a></li><li><a href="/human/mypage_leave"><span>회원탈퇴</span></a></li></ul></li></ul></li><li><a href="/job/recruit_list"><span>업체서비스</span></a><ul class="d2"><li><a href="/job/recruit_list"><span>공고관리</span></a><ul class="d3"><li><a href="/job/recruit_list"><span>공고 관리</span></a></li><li><a href="/job/recruit_write"><span>공고 등록</span></a></li><li><a href="/job/recruit_human"><span>지원자 관리</span></a></li></ul></li><li><a href="/job/scrap_human"><span>인재관리</span></a><ul class="d3"><li><a href="/job/scrap_human"><span>스크랩한 인재</span></a></li><li><a href="/job/suggest_human"><span>제안한 인재</span></a></li></ul></li><li><a href="/job/academy_manage"><span>아카데미 관리</span></a><ul class="d3"><li><a href="/job/academy_manage"><span>아카데미 관리</span></a></li><li><a href="/job/academy_write"><span>아카데미 등록/수정</span></a></li></ul></li><li><a href="/job/product_list"><span>상품관리</span></a><ul class="d3"><li><a href="/job/product_list"><span>상품관리</span></a></li><li><a href="/job/banner_ad"><span>배너광고</span></a></li></ul></li><li><a href="/job/mypage"><span>마이페이지</span></a><ul class="d3"><li><a href="/job/mypage"><span>회원정보 수정</span></a></li><li><a href="/job/mypage_passwd"><span>비밀번호 변경</span></a></li><li><a href="/job/mypage_leave"><span>회원탈퇴</span></a></li></ul></li></ul></li></ul>        </nav>
+        <!-- // m_body -->
+    </div>
+    <!-- // m_menu -->
+</header>
+<!-- // header -->
+
+<div class="sub_container">
+	<div class="wrap">
+		<main id="content" class="sub_contents sub_detail">
+    <div class="sub_tit">
+	<h3>채용정보 상세보기</h3>
+	<ul class="location">
+		<li><a href="/" title="HOME">HOME</a></li>
+		<li>채용정보</li>
+		<li>채용정보 상세보기</li>
+	</ul>
+
+	<!-- ▼ 최종 상세페이지에서만 위의 location 대신 노출 (location은 가림) -->
+	<!-- <ul class="tit_btns">
+        <li><a href="#none" class="tit_btn tit_btn_share" role="button">공유하기</a></li>
+        <li><a href="#none" class="tit_btn tit_btn_print" role="button">인쇄하기</a></li>
+    </ul> -->
+</div>
+    <!-- // sub_tit -->
+    <div class="sec detail_top job_opening" data-no="571">
+        <div class="box">
+            <div class="top">
+                <div class="title">인센티브 최대 55%! 신규 오픈 디자이너 특별 채용</div>
+                                <div class="sub">디투에이 아카데미</div>
+            </div>
+            <div class="mid">
+                <button class="btn_arrow btn_arrow_prev" title="이전">이전</button>
+                <button class="btn_arrow btn_arrow_next" title="다음">다음</button>
+
+                <div class="carousel">
+                                        <div class="item">
+                        <img alt="" src="/data/job/20260123/9275a6e1b9dcd2b3843744765478399b.jpeg">
+                    </div>
+                                        <div class="item">
+                        <img alt="" src="/data/job/20260123/20a62f825b34e653919f91fd0e9d620b.jpeg">
+                    </div>
+                                        <div class="item">
+                        <img alt="" src="/data/job/20260123/c2b7f68fa3f6b18c4d1cb3bdd4f190fc.jpeg">
+                    </div>
+                                        <div class="item">
+                        <img alt="" src="/data/job/20260123/30d9e991ca163845ac26e0eead831335.jpg">
+                    </div>
+                                    </div>
+            </div>
+        </div>
+        <!-- // box -->
+
+                <div class="btn_wrap">
+            <a class="open_apply btn large btn_write layer_opener" href="/member/login/1" role="button"><span>온라인 지원하기</span></a>
+            <a class="btn large btn_scrap2 scrapBtn theme do_scrap" href="/member/login/1" role="button" title="스크랩하기"><span>스크랩<em class="m_dn">하기</em></span></a>
+        </div>
+            </div>
+    <!-- // 상세페이지 상단 -->
+    <section class="sec pdt_banner">
+        <div class="wrap">
+            <div class="tit skip">
+                <h3>
+                    광고 슬라이드 배너
+                </h3>
+            </div>
+            <div class="con">
+                <div class="swiper ad_banner_wrap">
+                    <div class="swiper-wrapper">
+                                                <a class="item swiper-slide" href="https://okjob.co.kr">
+                            <div class="img">
+                                <img class="pc" src="/data/slide/1bdf283f03225355980b2ca2803f05d1.png" alt="">
+                                <img class="mobile" src="/data/slide/9aea2fb883af77a1ccf00584845c6258.png" alt="">
+                            </div>
+                        </a>
+                                                <a class="item swiper-slide" href="https://hairnara.net/job/banner_ad?type=1">
+                            <div class="img">
+                                <img class="pc" src="/data/slide/9ea23fbe0f9a8175836478a19db8c77e.jpg" alt="">
+                                <img class="mobile" src="/data/slide/c95b788d570a6f3f5673d2aa5024f4a6.jpg" alt="">
+                            </div>
+                        </a>
+                                            </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="sec">
+        <div class="tit">
+            <h4>
+                모집조건
+            </h4>
+        </div>
+        <div class="con">
+            <div class="desc">
+                <div class="mid">
+                    <dl class="d_list">
+                        <div>
+                            <dt>모집마감</dt>
+                            <dd>
+                                                                    상시채용
+                                                            </dd>
+                        </div>
+                        <div>
+                            <dt>학력</dt>
+                            <dd>학력무관</dd>
+                        </div>
+                        <div>
+                            <dt>모집인원</dt>
+                            <dd>0명 (인원미정)</dd>
+                        </div>
+                        <div>
+                            <dt>연령</dt>
+                            <dd>연령무관</dd>
+                        </div>
+                        <div>
+                            <dt>모집분야</dt>
+                            <dd>헤어디자이너</dd>
+                        </div>
+                        <div>
+                            <dt>직무</dt>
+                            <dd>무관</dd>
+                        </div>
+                        <div>
+                            <dt>경력</dt>
+                            <dd>신입</dd>
+                        </div>
+                        <div>
+                            <dt>성별</dt>
+                            <dd>성별무관</dd>
+                        </div>
+                        <div>
+                            <dt>우대사항</dt>
+                            <dd>해당직무 근무경험</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- // sec: 모집조건 -->
+
+    <section class="sec">
+        <div class="tit">
+            <h4>
+                근무조건
+            </h4>
+        </div>
+        <div class="con">
+            <div class="desc">
+                <div class="top">
+                    <ul class="ico_list">
+                        <!-- li 클래스에 따라 아이콘 달라짐 -->
+                        <li class="area">
+                            <i class="ico"><img src="/assets/site/img/contents/work_condition_area.svg" alt=""></i>
+                            <div class="txt">
+                                <div class="sup">지역</div>
+                                                                <div class="sub">전국 </div>
+                                                            </div>
+                        </li>
+                        <li class="job">
+                            <i class="ico"><img src="/assets/site/img/contents/work_condition_job.svg" alt=""></i>
+                            <div class="txt">
+                                <div class="sup">직종</div>
+                                <div class="sub">
+                                    헤어디자이너                                </div>
+                            </div>
+                        </li>
+                        <li class="period">
+                            <i class="ico"><img src="/assets/site/img/contents/work_condition_period.svg" alt=""></i>
+                            <div class="txt">
+                                <div class="sup">근무기간</div>
+                                                                <div class="sub">협의</div>
+                                                            </div>
+                        </li>
+                        <li class="type">
+                            <i class="ico"><img src="/assets/site/img/contents/work_condition_type.svg" alt=""></i>
+                            <div class="txt">
+                                <div class="sup">고용형태</div>
+                                                                    <div class="sub">프리랜서</div>
+                                                            </div>
+                        </li>
+                        <li class="career">
+                            <i class="ico"><img src="/assets/site/img/contents/work_condition_career.svg" alt=""></i>
+                            <div class="txt">
+                                <div class="sup">직무</div>
+                                <div class="sub">무관</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="mid">
+                    <dl class="d_list">
+                        <div>
+                            <dt>업직종</dt>
+                            <dd>헤어디자이너</dd>
+                        </div>
+                        <div>
+                            <dt>업체명</dt>
+                            <dd>디투에이 아카데미</dd>
+                        </div>
+                        <div>
+                            <dt>근무기간</dt>
+                            <dd>협의 </dd>
+                        </div>
+                        <div>
+                            <dt>휴무일</dt>
+                            <dd>협의 </dd>
+                        </div>
+                        <div>
+                            <dt>고용형태</dt>
+                            <dd>프리랜서 </dd>
+                        </div>
+                        <div>
+                            <dt>경력</dt>
+                            <dd>신입</dd>
+                        </div>
+                        <div>
+                            <dt>급여</dt>
+                            <dd>
+                                <ul class="list_dot">
+                                    <li>  추후협의</li>
+                                </ul>
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>복지정책</dt>
+                            <dd>자율휴무, 내부교육, 점판수익, 자유출퇴근</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- // sec: 근무조건 -->
+
+    <section class="sec">
+        <div class="tit">
+            <h4>
+                근무지역 <span class="info txt">인천 부평구 부평문화로80번길 10 (부평동) 2층 카이엘 헤어</span>
+            </h4>
+        </div>
+        <div class="con">
+            <div class="mapbox">
+                <div class="mid">
+                    <div class="map">
+                        <div id="map_address" class="root_daum_roughmap root_daum_roughmap_landing"></div>
+                    </div>
+                </div>
+                <div class="bot">
+                    <div class="map_profile">
+                        <div class="thumb"><img src="/data/job/20260123/9275a6e1b9dcd2b3843744765478399b_thumb.jpeg" alt="디투에이 아카데미"></div>
+                        <div class="txt">
+                            <div class="name">디투에이 아카데미</div>
+                            <div class="address">인천 부평구 부평문화로80번길 10 (부평동) 2층 카이엘 헤어</div>
+                            <!-- <ul class="hash">
+                                                                                            </ul> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- // sec: 근무지역 -->
+
+    <section class="sec">
+        <div class="tit">
+            <h4>
+                상세요강
+            </h4>
+        </div>
+        <div class="con">
+            <div class="desc">
+                <div class="mid">
+                                        <div class="user_contents logout">
+                        "디투에이아카데미"
+
+★★★★ 문의 및 신청 : 010-9701-2523 ★★★★
+
+- 성함 :
+- 미용경력(인턴경력포함):
+- 연락처 :
+- 방문상담 가능일정 :
+
+위 양식으로 보내주시면...                        <p class="fixed_txt">
+                            채용정보에 관심 가져주셔서 감사합니다. <br>
+                            상세 확인 후 입사지원 부탁드립니다. <br>
+                            자세한 사항은 전화로 연락주시면 감사하겠습니다^^ 전화연결이 안될시 업무 중이오니 문자 주시면 됩니다~ <br>
+                            전화 문의 시 "헤어나라"에서 채용정보 보고 연락하였습니다. 라고 하시면 빠른 문의가 가능합니다. <br>
+                            좋은 하루 되세요!
+                        </p>
+                    </div>
+                    <div class="btn_wrap">
+                        <button type="button" class="btn large white bold go_login">상세요강 더보기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- // sec: 상세요강 -->
+
+    <section class="sec pdt_banner2">
+        <div class="wrap">
+            <div class="tit skip">
+                <h3>
+                    광고 슬라이드 배너2
+                </h3>
+            </div>
+            <div class="con">
+                <div class="swiper ad_banner_wrap">
+                    <div class="swiper-wrapper">
+                                                <a class="item swiper-slide" href="https://okjob.co.kr">
+                            <div class="img">
+                                <img class="pc" src="/data/slide/cb74a8af8ada6d672f23418ce13ea5b4.png" alt="">
+                                <img class="mobile" src="/data/slide/735d5fab6a1ee2afb26c343b42b54090.png" alt="">
+                            </div>
+                        </a>
+                                                <a class="item swiper-slide" href="https://hairnara.net/job/banner_ad?type=2">
+                            <div class="img">
+                                <img class="pc" src="/data/slide/26d527d7e08a591bd45129641bc90700.jpg" alt="">
+                                <img class="mobile" src="/data/slide/c7847ce769c2428f6584722657681fac.jpg" alt="">
+                            </div>
+                        </a>
+                                            </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="sec">
+        <div class="tit">
+            <h4>
+                업체정보
+            </h4>
+        </div>
+        <div class="con">
+            <div class="desc">
+                <div class="top">
+                    <div class="company_info">
+                        <div class="logo"><img src="/data/member/20260123/69eea0dfcee4d1d5b1a4a440a33d439c.png" alt="디투에이 아카데미"></div>
+                        <strong>디투에이 아카데미</strong>
+                    </div>
+                </div>
+                <div class="mid">
+                    <dl class="d_list">
+                        <div>
+                            <dt>대표</dt>
+                            <dd>비공개</dd>
+                        </div>
+                        <div>
+                            <dt>주소</dt>
+                            <dd>인천 부평구 부평문화로80번길 10 (부평동) 2층 카이엘 헤어</dd>
+                        </div>
+                        <div>
+                            <dt>채용담당자</dt>
+                            <dd>비공개</dd>
+                        </div>
+                        <div>
+                            <dt>연락처</dt>
+                            <dd>010-2590-8161</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- // sec: 업체정보 -->
+
+    <div class="info_note">
+        본 정보는 <span>디투에이 아카데미</span>에서 제공한 자료를 바탕으로 헤어나라에서 편집 및 그 표현방법을 수정하여 완성한 것입니다. 본 정보는 헤어나라의 동의없이 무단전재 또는 재배포, 재가공할 수 없으며, 게재된 채용기업과 채용담당자의 정보는 구직활동 이외의 용도로 사용할 수  없습니다. 헤어나라의 동의없이 무단전재, 재배포, 재가공, 구직활동 이외의 용도로 사용 시 형사 및 민사 법적 책임이 있을 수 있습니다. 헤어나라는 <span>디투에이 아카데미</span>에서 게재한 자료에 대한 오류와 사용자가 이를 신뢰하여 취한 조치에 대한 책임을 지지 않습니다.
+    </div>
+    <!-- // 상세페이지 하단 (책임소재안내) -->
+
+    <div class="btn_wrap mat30">
+        <a href="/" class="btn large">메인 페이지</a>
+            </div>
+</main>
+<!-- // sub_contents -->
+
+<!-- ▼ 레이어팝업 ▼ -->
+<div class="mask"></div>
+<!-- ▲ // 레이어팝업 ▲ -->
+
+
+<!-- ▼ 뷰카운트 ▼ -->
+<div class="view_count">
+    <!-- 슬라이더 -->
+    <div class="swiper view_count_wrap">
+        <div class="swiper-wrapper">
+            <div class="item swiper-slide">
+                <div class="text">총&nbsp;<span>53명</span>&nbsp;/&nbsp;오늘&nbsp;<span>2명</span>이 확인 중! 지금 지원해보세요.</div>
+            </div>
+            <div class="item swiper-slide">
+                <div class="text"><a href="/member/login/1"><span>이력서</span>를 등록하고 빠른 취업 기회를 만나보세요!</a></div>
+            </div>
+        </div>
+    </div>
+    <!-- 슬라이더 -->
+    <div class="close">
+        <span></span>
+        <span></span>
+    </div>
+</div>
+<!-- ▲ // 뷰카운트 ▲ -->
+
+
+
+
+<script src="/assets/site/js/sub/job.js?260330-1"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a87fab52b29a7288565884d7b86054af&libraries=services"></script>
+<script>
+    var mapContainer = document.getElementById('map_address'), // 지도를 표시할 div
+        mapOption = {
+            center: new kakao.maps.LatLng(35.83678856193883, 128.69586518770447), // 지도의 중심좌표
+            level: 3 // 지도의 확대 레벨
+        };
+
+    // 지도를 생성합니다
+    var map = new kakao.maps.Map(mapContainer, mapOption);
+
+    // 주소-좌표 변환 객체를 생성합니다
+    var geocoder = new kakao.maps.services.Geocoder();
+
+    // 주소로 좌표를 검색합니다
+    geocoder.addressSearch('인천 부평구 부평문화로80번길 10 (부평동)', function(result, status) {
+        // 정상적으로 검색이 완료됐으면
+        if (status === kakao.maps.services.Status.OK) {
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+            // 결과값으로 받은 위치를 마커로 표시합니다
+            var marker = new kakao.maps.Marker({
+                map: map,
+                position: coords,
+            });
+
+            // 인포윈도우로 장소에 대한 설명을 표시합니다
+            var infowindow = new kakao.maps.InfoWindow({
+                content: '<div id="mapDesc" style="">디투에이 아카데미</div>'
+            });
+            infowindow.open(map, marker);
+
+            // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+            map.setCenter(coords);
+
+            // 스타일 커스텀 (#mapDesc는 css에서 수정, 부모와, 조부모는 여기서 수정)
+            $("#mapDesc").parent().parent().css({
+                "background-color" : "transparent",
+                "border" : "none",
+                "height" : "40px",
+            });
+            $("#mapDesc").parent().css({
+                "width" : "100%",
+            });
+            $("#mapDesc").parent().siblings().css({
+                "display" : "none",
+            })
+        }
+    });
+</script>
+
+<!--script charset="UTF-8" class="daum_roughmap_loader_script" src="//ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"></script>
+<script charset="UTF-8">
+    new daum.roughmap.Lander({
+        "timestamp" : "1701742145948",
+        "key" : "2h3xm",
+        //"mapWidth" : "640",
+        "mapHeight" : "394"
+    }).render();
+</script-->
+    </div>
+    <!-- // wrap -->
+</div>
+<!-- // sub_container --><footer id="footer">
+    <div class="link">
+        <ul class="list wrap">
+            <li><a href="/support/company">회사소개</a></li>
+            <li><a href="/contactus/inquiry">이용문의</a></li>
+            <li><a href="/etc/agree">회원약관</a></li>
+            <li><a href="/etc/privacy">개인정보처리방침</a></li>
+            <li><a href="/etc/email">이메일무단수집거부</a></li>
+            <li><a href="/contactus/inquiry">제휴문의</a></li>
+            <li><a href="/contactus/inquiry">고객센터</a></li>
+        </ul>
+    </div>
+    <!-- // link -->
+
+    <div class="f_body wrap">
+        <div class="logo">
+            <img src="/assets/site/img/common/f_logo.svg" alt="HAIRNARA 미용 구인구직 플랫폼 헤어나라">
+        </div>
+        <!-- // logo -->
+
+        <div class="info">
+            <address class="address">
+                <span><strong>나라파트너</strong></span>
+                <span>대구 수성구 고산로101 시지코오롱하늘채스카이뷰 104동3203호</span>
+                <span>대표 : 김강민</span>
+                <span>전화 : <a href="tel:1588-5841">1588-5841</a></span>
+                <!-- <span>팩스 : 053-795-5841</span> -->
+                <br>
+                <span>사업자등록번호 : 702-20-02081</span>
+                <span>통신판매업신고 : 제 2024-대구수성구-0081호</span>
+                <span>직업정보제공사업 신고번호 : j1401020240001</span>
+            </address>
+            <!-- // address -->
+
+            <div class="copyright">Copyright © <strong>HAIRNARA.</strong> All Rights Reserved.</div>
+            <!-- // copyright -->
+        </div>
+        <!-- // info -->
+    </div>
+    <!-- // f_body -->
+</footer>
+
+<div class="mo_float_bar">
+    <ul>
+        <li>
+            <a class="back" href="javascript:void(0);" id="btn-app-back">
+                뒤로가기
+            </a>
+        </li>
+        <li>
+            <a class="search" href="/job/lists?search_mode=app">
+                검색하기
+            </a>
+        </li>
+        <li>
+            <a class="home" href="/">
+                메인화면
+            </a>
+        </li>
+        <li>
+                            <a class="my" href="/member/login">
+                    로그인
+                </a>
+                    </li>
+    </ul>
+</div>
+
+<!-- // footer -->
+<div class="dim h100vh"></div>
+<!-- // dim -->
+
+</body>
+</html>
