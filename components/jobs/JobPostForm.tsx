@@ -728,28 +728,27 @@ export default function JobPostForm({
             <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 상단 이미지</h2>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box" }}>
               {guniq.length > 0 && <ImageCarousel images={guniq} alt="공고 이미지" />}
-              {guniq.length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
-                  {guniq.map((u, idx) => (
-                    <div key={idx} style={{ position: "relative", width: 84 }}>
-                      <img src={u} alt={`이미지 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
-                      <button type="button" onClick={() => removeGImg(u)} title="삭제"
-                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <label
-                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                onDragLeave={() => setDragOver(false)}
-                onDrop={(e) => { e.preventDefault(); setDragOver(false); if (!uploading && detailImages.length < 5) processFiles(e.dataTransfer.files); }}
-                style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, padding: "20px 12px", marginTop: 12, border: `1.5px dashed ${dragOver ? "#5f0080" : "#c4b5d4"}`, borderRadius: 12, background: dragOver ? "#f4ebfb" : "#fdfbff", cursor: uploading ? "wait" : "pointer", textAlign: "center" }}>
-                <Upload size={22} color="#5f0080" strokeWidth={1.8} />
-                <span style={{ fontSize: 13, color: "#5f0080" }}>{uploading ? "업로드 중..." : "이미지 끌어다 놓기 또는 클릭 업로드"}</span>
-                <span style={{ fontSize: 12, color: "#aaa" }}>직접 촬영·디자인한 이미지 추가 · 각 5MB</span>
-                <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || detailImages.length >= 5} onChange={handleImageUpload} style={{ display: "none" }} />
-              </label>
-              <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999" }}>맨 위 큰 이미지가 공개 화면 상단에 그대로 노출됩니다. 필요 없는 이미지는 썸네일의 ×로 삭제하세요.</p>
+              {/* 썸네일 + 작은 추가(+) 타일 — 직접 업로드는 드물어 최소 공간만 차지 */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: guniq.length > 0 ? 12 : 0, alignItems: "center" }}>
+                {guniq.map((u, idx) => (
+                  <div key={idx} style={{ position: "relative", width: 84 }}>
+                    <img src={u} alt={`이미지 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
+                    <button type="button" onClick={() => removeGImg(u)} title="삭제"
+                      style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+                  </div>
+                ))}
+                <label title="이미지 추가"
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={(e) => { e.preventDefault(); setDragOver(false); if (!uploading && detailImages.length < 5) processFiles(e.dataTransfer.files); }}
+                  style={{ width: 84, height: 84, flexShrink: 0, border: `1.5px dashed ${dragOver ? "#5f0080" : "#c4b5d4"}`, borderRadius: 8, background: dragOver ? "#f4ebfb" : "#fdfbff", color: "#5f0080", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: uploading ? "wait" : "pointer" }}>
+                  <span style={{ fontSize: 22, lineHeight: 1 }}>{uploading ? "…" : "+"}</span>
+                  <span style={{ fontSize: 10 }}>추가</span>
+                  <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || detailImages.length >= 5} onChange={handleImageUpload} style={{ display: "none" }} />
+                </label>
+                {guniq.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>불러온 이미지가 없어요. 필요하면 직접 추가하세요.</span>}
+              </div>
+              <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999" }}>맨 앞 이미지가 공개 화면 상단에 노출됩니다. 필요 없는 이미지는 ×로 삭제하세요.</p>
             </div>
           </div>
         );
