@@ -710,17 +710,46 @@ export default function JobPostForm({
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
 
-      {/* 불러온 이미지 갤러리 미리보기 (배너+상세 합침, 공개 상단과 동일하게 3장 화살표 순환) */}
+      {/* 공고 상단 이미지 — 미리보기(캐러셀) + 첨부·삭제 관리 한 곳에서 */}
       {(() => {
         const gimgs = [nmCover, ...detailImages.map((d) => d.url)].filter(Boolean);
         const guniq = [...new Set(gimgs)];
-        if (guniq.length < 1) return null;
+        // 썸네일 ×삭제: 커버면 다음 이미지를 커버로 승격, 아니면 상세이미지에서 제거
+        const removeGImg = (u: string) => {
+          if (u === nmCover) {
+            if (detailImages.length) { setNmCover(detailImages[0].url); setDetailImages(detailImages.slice(1)); }
+            else setNmCover("");
+          } else {
+            setDetailImages(detailImages.filter((d) => d.url !== u));
+          }
+        };
         return (
           <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
-            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 상단 이미지 (미리보기)</h2>
+            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 상단 이미지</h2>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box" }}>
-              <ImageCarousel images={guniq} alt="공고 이미지" />
-              <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999" }}>공개 화면 상단에 이렇게 노출됩니다. 이미지 추가·교체·삭제는 아래 배너·상세 이미지에서 하세요.</p>
+              {guniq.length > 0 && <ImageCarousel images={guniq} alt="공고 이미지" />}
+              {guniq.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+                  {guniq.map((u, idx) => (
+                    <div key={idx} style={{ position: "relative", width: 84 }}>
+                      <img src={u} alt={`이미지 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
+                      <button type="button" onClick={() => removeGImg(u)} title="삭제"
+                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <label
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={(e) => { e.preventDefault(); setDragOver(false); if (!uploading && detailImages.length < 5) processFiles(e.dataTransfer.files); }}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, padding: "20px 12px", marginTop: 12, border: `1.5px dashed ${dragOver ? "#5f0080" : "#c4b5d4"}`, borderRadius: 12, background: dragOver ? "#f4ebfb" : "#fdfbff", cursor: uploading ? "wait" : "pointer", textAlign: "center" }}>
+                <Upload size={22} color="#5f0080" strokeWidth={1.8} />
+                <span style={{ fontSize: 13, color: "#5f0080" }}>{uploading ? "업로드 중..." : "이미지 끌어다 놓기 또는 클릭 업로드"}</span>
+                <span style={{ fontSize: 12, color: "#aaa" }}>직접 촬영·디자인한 이미지 추가 · 각 5MB</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || detailImages.length >= 5} onChange={handleImageUpload} style={{ display: "none" }} />
+              </label>
+              <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999" }}>맨 위 큰 이미지가 공개 화면 상단에 그대로 노출됩니다. 필요 없는 이미지는 썸네일의 ×로 삭제하세요.</p>
             </div>
           </div>
         );
@@ -1018,56 +1047,6 @@ export default function JobPostForm({
         {/* ═══ 오른쪽 컬럼: 상세이미지 + 상세내용 + 채용절차·비고 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
 
-          {/* 상세 이미지 */}
-          <h2 className="jobpost-section-title">상세 이미지</h2>
-          <div className="company-card" style={{ overflow: "visible" }}>
-            <div className="admin-form-body">
-              <div className="admin-form-row">
-                <label className="admin-form-label">이미지 첨부</label>
-                <div ref={imgRef} style={{ position: "relative", width: "100%" }}>
-                  <button type="button"
-                    onClick={() => setImgModalOpen((v) => !v)}
-                    style={{ width: "100%", display: "inline-flex", alignItems: "flex-start", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: detailImages.length ? "#555" : "#bbb", cursor: "pointer" }}>
-                    <span style={{ textAlign: "right" }}>
-                      {detailImages.length ? `이미지 ${detailImages.length}장 첨부됨` : "직접 디자인한 채용공고 이미지를 첨부할 수 있어요"}
-                    </span>
-                    <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: imgModalOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
-                  </button>
-                  {imgModalOpen && (
-                    <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
-                      <label
-                        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                        onDragLeave={() => setDragOver(false)}
-                        onDrop={(e) => { e.preventDefault(); setDragOver(false); if (!uploading && detailImages.length < 5) processFiles(e.dataTransfer.files); }}
-                        style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px", padding: "30px 12px", border: `1.5px dashed ${dragOver ? "#5f0080" : "#c4b5d4"}`, borderRadius: "12px", background: dragOver ? "#f4ebfb" : "#fdfbff", cursor: uploading ? "wait" : "pointer", textAlign: "center" }}>
-                        <Upload size={26} color="#5f0080" strokeWidth={1.8} />
-                        <span style={{ fontSize: "14px", color: "#5f0080", fontWeight: 400 }}>{uploading ? "업로드 중..." : "이미지를 끌어다 놓거나 클릭하여 업로드"}</span>
-                        <span style={{ fontSize: "12px", color: "#aaa" }}>이미지 · 최대 5장 · 각 5MB</span>
-                        <input type="file" accept="image/jpeg,image/png,image/webp" multiple
-                          disabled={uploading || detailImages.length >= 5} onChange={handleImageUpload} style={{ display: "none" }} />
-                      </label>
-                      {detailImages.length > 0 && (
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "12px" }}>
-                          {detailImages.map((img, idx) => (
-                            <div key={idx} style={{ position: "relative", width: "84px" }}>
-                              <img src={img.url} alt={img.name}
-                                style={{ width: "84px", height: "84px", objectFit: "cover", borderRadius: "8px", border: "1px solid #eee" }} />
-                              <button type="button" onClick={() => removeImage(idx)}
-                                style={{ position: "absolute", top: "3px", right: "3px", width: "20px", height: "20px",
-                                  borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none",
-                                  cursor: "pointer", fontSize: "12px", lineHeight: "1", display: "flex",
-                                  alignItems: "center", justifyContent: "center" }}>×</button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* 상세 내용 */}
           <h2 className="jobpost-section-title">상세 내용</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
@@ -1325,15 +1304,15 @@ export default function JobPostForm({
         <div style={{ width: "100%", maxWidth: 760, margin: "16px auto 0", boxSizing: "border-box" }}>
           <h2 className="jobpost-section-title">기업 정보</h2>
           <div style={{ fontSize: 12, color: "#999", margin: "0 0 8px 2px" }}>공고 상세 맨 아래 “기업 정보”에 표시돼요 · URL 불러오기로 자동 작성됩니다</div>
-          <div style={{ background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px", boxSizing: "border-box" }}>
+          <div className="jp-company-box" style={{ background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "20px 24px", boxSizing: "border-box" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
             <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>기업 소개</div><textarea ref={nmDescRef} style={{ ...inp, height: "auto", minHeight: 88, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden" }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="회사를 소개하는 글을 입력해주세요. 공고 상세의 '기업 정보'에 표시돼요." /></div>
             <div><div style={lbl}>회사명 <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
-            <div><div style={lbl}>업종</div><select style={sel} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
+            <div><div style={lbl}>업종</div><select style={{ ...sel, color: nmIndustry ? "#333" : "#cfcfcf" }} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
             <div><div style={lbl}>브랜드명</div><input style={inp} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="브랜드명 (선택)" /></div>
             <div><div style={lbl}>웹사이트</div><input style={inp} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} placeholder="https:// (선택)" /></div>
             <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>주소</div><input style={inp} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역 (선택)" /></div>
-            <div><div style={lbl}>사원수</div><select style={sel} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value="">선택</option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
+            <div><div style={lbl}>사원수</div><select style={{ ...sel, color: nmSize ? "#333" : "#cfcfcf" }} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value="">선택</option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
             <div><div style={lbl}>설립연도</div><input type="number" min="1900" max={new Date().getFullYear()} style={inp} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} placeholder="예) 2020" /></div>
             <div><div style={lbl}>대표자</div><input style={inp} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="대표자명 (선택)" /></div>
             <div><div style={lbl}>회사 대표번호</div><input style={inp} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} placeholder="02-000-0000 (선택)" /></div>
