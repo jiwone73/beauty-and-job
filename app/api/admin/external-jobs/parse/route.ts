@@ -203,14 +203,20 @@ export async function POST(req: NextRequest) {
         }
         // ⑥ (범용) 최후 폴백: og:image 단 한 장이라도
         if (images.length === 0 && ogImage && isImg(ogImage) && !isJunk(ogImage)) images = [ogImage];
-        // ⑦ (SPA 폴백) 이미지가 1장 이하면, __NEXT_DATA__/인라인 JSON 스크립트에서 이미지 URL을 추가로 긁는다(beautyin 등 React SPA 대응).
-        if (images.length <= 1) {
+        // ⑦ (SPA 보강) __NEXT_DATA__/JSON 스크립트의 이미지로 갤러리 보강(beautyin 등 React SPA).
+        //    이미 몇 장 잡혔어도 부족하면 합치되, "같은 도메인" 이미지만 추가해 외부 광고·추천 이미지는 배제.
+        if (images.length < 8) {
+          let host = "";
+          try { host = new URL(ogImage || images[0] || url).host; } catch { /* noop */ }
           const blobs = [...html.matchAll(/<script[^>]*(?:__NEXT_DATA__|application\/json|__NUXT__|INITIAL_STATE)[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
           const nd = blobs.join(" ");
-          const found = [...nd.matchAll(/https?:\\?\/\\?\/[^\s"'<>()\\]+?\.(?:jpe?g|png|webp)(?:\?[^\s"'<>()\\]*)?/gi)]
-            .map((m) => m[0].replace(/\\u002[Ff]/g, "/").replace(/\\\//g, "/").replace(/&amp;/g, "&"))
-            .filter((u) => isImg(u) && !isJunk(u) && !/\/(banner|ad|ads|event|promo|premium)\//i.test(u));
-          for (const u of found) if (!images.includes(u)) images.push(u);
+          const found = [...new Set([...nd.matchAll(/https?:(?:\\u002[Ff]|\\?\/){2}[^\s"'<>()\\]+?\.(?:jpe?g|png|webp)(?:\?[^\s"'<>()\\]*)?/gi)]
+            .map((m) => m[0].replace(/\\u002[Ff]/g, "/").replace(/\\\//g, "/").replace(/&amp;/g, "&")))];
+          for (const u of found) {
+            if (!isImg(u) || isJunk(u) || /\/(banner|ad|ads|event|promo|premium)\//i.test(u)) continue;
+            if (host && !u.includes(host)) continue;
+            if (!images.includes(u)) images.push(u);
+          }
         }
         images = images.slice(0, 12);
       }
