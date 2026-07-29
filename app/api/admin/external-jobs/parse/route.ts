@@ -203,6 +203,15 @@ export async function POST(req: NextRequest) {
         }
         // ⑥ (범용) 최후 폴백: og:image 단 한 장이라도
         if (images.length === 0 && ogImage && isImg(ogImage) && !isJunk(ogImage)) images = [ogImage];
+        // ⑦ (SPA 폴백) 이미지가 1장 이하면, __NEXT_DATA__/인라인 JSON 스크립트에서 이미지 URL을 추가로 긁는다(beautyin 등 React SPA 대응).
+        if (images.length <= 1) {
+          const blobs = [...html.matchAll(/<script[^>]*(?:__NEXT_DATA__|application\/json|__NUXT__|INITIAL_STATE)[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
+          const nd = blobs.join(" ");
+          const found = [...nd.matchAll(/https?:\\?\/\\?\/[^\s"'<>()\\]+?\.(?:jpe?g|png|webp)(?:\?[^\s"'<>()\\]*)?/gi)]
+            .map((m) => m[0].replace(/\\u002[Ff]/g, "/").replace(/\\\//g, "/").replace(/&amp;/g, "&"))
+            .filter((u) => isImg(u) && !isJunk(u) && !/\/(banner|ad|ads|event|promo|premium)\//i.test(u));
+          for (const u of found) if (!images.includes(u)) images.push(u);
+        }
         images = images.slice(0, 12);
       }
     }
@@ -258,8 +267,9 @@ export async function POST(req: NextRequest) {
 - employment_type: "정규직" | "파트타임" | "계약직" 중 하나 또는 "".
 - main_duties: 주요업무/담당업무를 텍스트로(여러 개면 줄바꿈 구분). 없으면 "".
 - salary: 급여/처우 조건을 텍스트로(예: "월 250만원", "비율 5:5", "면접 후 협의"). 없으면 "".
-- salary_type: 급여 형태 → "ANNUAL"(연봉) | "MONTHLY"(월급) | "WEEKLY"(주급) | "HOURLY"(시급) 중 하나. 협의/비율제 등 고정 금액이 없으면 "".
-- salary_amount: 금액을 숫자만. 연봉·월급·주급은 "만원" 단위(예: 월 250만원→250, 연봉 3000만원→3000), 시급은 "원" 단위(예: 시급 12000원→12000). 범위면 하한값. 없거나 협의면 0.
+- salary_type · salary_amount: 이 둘은 "반드시 같은 급여 하나"를 가리켜야 한다. 형태와 금액을 절대 섞지 말 것 → "연봉 3000만원"이면 type "ANNUAL" + amount 3000, "월 250만원"이면 type "MONTHLY" + amount 250. (예: 월인데 amount 3000 ✗ 절대 금지). 한 공고에 월급·연봉이 함께 적혀 있으면 "연봉(ANNUAL)"을 우선 선택(예: "월 250만원 / 연봉 3000~3300만원" → ANNUAL + 3000). 범위면 하한값.
+   · salary_type: "ANNUAL"(연봉) | "MONTHLY"(월급) | "WEEKLY"(주급) | "HOURLY"(시급) 중 하나. 협의/비율제 등 고정 금액이 없으면 "".
+   · salary_amount: 숫자만. 연봉·월급·주급은 "만원" 단위, 시급은 "원" 단위(예: 시급 12000원→12000). 없거나 협의면 0.
 - salary_negotiable: 급여가 "협의/면접 후 결정/비공개/비율제(예: 5:5)" 등 고정 금액이 아니면 true, 고정 금액이 명시되면 false.
 - work_days: 실제 "근무"하는 요일만 "월,화,수,목,금,토,일" 중에서 콤마로(휴무 요일은 제외). 예: "(월,화 휴무) 수,목,금,토,일" → "수,목,금,토,일". "주5일"만 있고 요일 불명확이면 "월,화,수,목,금". 요일이 협의/유동이면 "협의". 없으면 "".
 - work_time: 근무시간을 "HH:MM~HH:MM" 24시간 형식으로(예: "오전9시~오후7시30분" → "09:00~19:30", "9~18시" → "09:00~18:00"). 시간이 협의/탄력근무면 "협의". 없으면 "".
