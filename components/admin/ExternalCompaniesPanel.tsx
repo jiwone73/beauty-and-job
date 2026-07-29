@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Search, X, Link2, Pencil, Trash2 } from "lucide-react";
+import { Search, X, Trash2 } from "lucide-react";
+import BroadcastModal from "@/components/admin/BroadcastModal";
 
 type Job = { id: string; title: string; status: string; created_at: string };
 type NmCompany = {
@@ -58,12 +59,15 @@ export default function ExternalCompaniesPanel() {
   const [items, setItems] = useState<NmCompany[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [editTarget, setEditTarget] = useState<NmCompany | null>(null);
   const [editForm, setEditForm] = useState({ company_name: "", website_url: "", phone: "" });
   const [linkTarget, setLinkTarget] = useState<NmCompany | null>(null);
   const [linkQuery, setLinkQuery] = useState("");
   const [linkHits, setLinkHits] = useState<MemberHit[]>([]);
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [broadcastChannel, setBroadcastChannel] = useState<"email" | "sms">("email");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -99,6 +103,15 @@ export default function ExternalCompaniesPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linkQuery, linkTarget]);
 
+  const q = search.trim().toLowerCase();
+  const filtered = q
+    ? items.filter((c) => (c.company_name || "").toLowerCase().includes(q) || (c.phone || "").includes(q) || (c.email || "").toLowerCase().includes(q))
+    : items;
+
+  const allSelected = filtered.length > 0 && filtered.every((c) => selectedIds.includes(c.id));
+  const toggleAll = () => setSelectedIds(allSelected ? [] : filtered.map((c) => c.id));
+  const toggleOne = (id: string) => setSelectedIds((s) => s.includes(id) ? s.filter((x) => x !== id) : [...s, id]);
+
   const openEdit = (c: NmCompany) => {
     setEditForm({ company_name: c.company_name || "", website_url: c.website_url || "", phone: c.phone || "" });
     setEditTarget(c);
@@ -121,6 +134,14 @@ export default function ExternalCompaniesPanel() {
     } finally { setBusy(false); }
   };
 
+  const openLink = () => {
+    if (selectedIds.length !== 1) return;
+    const c = items.find((x) => x.id === selectedIds[0]);
+    if (!c) return;
+    if (c.merged_into_company_id) { setMsg("이미 회원 기업으로 연결된 곳이에요."); return; }
+    setLinkQuery(""); setLinkHits([]); setLinkTarget(c);
+  };
+
   const doLink = async (memberId: string, memberName: string) => {
     if (!linkTarget) return;
     setBusy(true); setMsg("");
@@ -134,32 +155,39 @@ export default function ExternalCompaniesPanel() {
       if (!j.success) { setMsg(j.error?.message || "연결에 실패했어요."); return; }
       const moved = j.data?.moved_jobs ?? 0;
       const nm = linkTarget.company_name;
-      setLinkTarget(null); setLinkQuery(""); setLinkHits([]);
+      setLinkTarget(null); setLinkQuery(""); setLinkHits([]); setSelectedIds([]);
       setMsg(`✓ '${nm}' → '${memberName}' 회원 기업으로 연결했어요 (공고 ${moved}건 이관). 비회원 목록엔 '연결됨'으로 남겨뒀어요.`);
       await load();
     } finally { setBusy(false); }
   };
 
-  const doDelete = async (c: NmCompany) => {
-    if (c.job_count > 0) { setMsg("연결된 공고가 있어 삭제할 수 없어요. 공고를 먼저 정리하세요."); return; }
-    if (typeof window !== "undefined" && !window.confirm(`'${c.company_name}'을(를) 삭제할까요?`)) return;
+  const bulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (typeof window !== "undefined" && !window.confirm(`선택한 ${selectedIds.length}개 비회원 기업을 삭제할까요? (공고가 있는 기업은 건너뜁니다)`)) return;
     setBusy(true); setMsg("");
+    let done = 0, skipped = 0;
     try {
-      const res = await fetch(`/api/admin/external-companies?id=${c.id}`, { method: "DELETE", headers: authH });
-      const j = await res.json();
-      if (!j.success) { setMsg(j.error?.message || "삭제에 실패했어요."); return; }
+      for (const id of selectedIds) {
+        const res = await fetch(`/api/admin/external-companies?id=${id}`, { method: "DELETE", headers: authH });
+        const j = await res.json().catch(() => ({}));
+        if (j.success) done++; else skipped++;
+      }
+      setSelectedIds([]);
+      setMsg(`삭제 ${done}개 완료${skipped ? ` · ${skipped}개는 공고가 있어 건너뜀(먼저 공고 정리 필요)` : ""}.`);
       await load();
     } finally { setBusy(false); }
   };
 
-  const q = search.trim().toLowerCase();
-  const filtered = q
-    ? items.filter((c) => (c.company_name || "").toLowerCase().includes(q) || (c.phone || "").includes(q) || (c.email || "").toLowerCase().includes(q))
-    : items;
-
   const totalCos = items.length;
-  const totalJobs = items.reduce((s, c) => s + (c.job_count || 0), 0);
+  const totalJobs = items.reduce((s, c) => s + (Number(c.job_count) || 0), 0);
   const linkedCnt = items.filter((c) => c.merged_into_company_id).length;
+
+  const btn = (active: boolean, color: string): React.CSSProperties => ({
+    padding: "6px 14px", borderRadius: 6, border: "none",
+    background: active ? color : "#ededed", color: active ? "#fff" : "#aaa",
+    fontSize: 14, fontWeight: 400, cursor: active ? "pointer" : "default",
+    display: "inline-flex", alignItems: "center", gap: 6,
+  });
 
   return (
     <>
@@ -186,10 +214,30 @@ export default function ExternalCompaniesPanel() {
       )}
 
       <div className="admin-card">
+        <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>총 <strong>{filtered.length}</strong>개사</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button onClick={() => { if (selectedIds.length) { setBroadcastChannel("email"); setBroadcastOpen(true); } }} disabled={selectedIds.length === 0} style={btn(selectedIds.length > 0, "#5f0080")}>
+              이메일 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
+            </button>
+            <button onClick={() => { if (selectedIds.length) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }} disabled={selectedIds.length === 0} style={btn(selectedIds.length > 0, "#5f0080")}>
+              SMS 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
+            </button>
+            <button onClick={openLink} disabled={selectedIds.length !== 1} style={btn(selectedIds.length === 1, "#0a7d4b")}>
+              회원 연결
+            </button>
+            <button onClick={bulkDelete} disabled={selectedIds.length === 0 || busy} style={{ ...btn(selectedIds.length > 0, "#e74c3c"), fontWeight: 600 }}>
+              <Trash2 size={15} /> 선택 삭제{selectedIds.length ? ` (${selectedIds.length})` : ""}
+            </button>
+          </div>
+        </div>
         <div style={{ overflowX: "auto" }}>
-          <table className="admin-table" style={{ minWidth: 980, whiteSpace: "nowrap" }}>
+          <table className="admin-table" style={{ minWidth: 940, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
+                <th style={{ width: 40, textAlign: "center" }}>
+                  <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor: "pointer" }} />
+                </th>
                 <th>기업명</th>
                 <th>지역</th>
                 <th>연락처</th>
@@ -197,7 +245,6 @@ export default function ExternalCompaniesPanel() {
                 <th style={{ textAlign: "center" }}>지원(대기)</th>
                 <th>상태</th>
                 <th>등록일</th>
-                <th style={{ textAlign: "right" }}>관리</th>
               </tr>
             </thead>
             <tbody>
@@ -207,13 +254,16 @@ export default function ExternalCompaniesPanel() {
                 <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>{items.length === 0 ? "비회원 기업이 아직 없어요. 외부 공고를 등록하면 여기에 쌓여요." : "검색 결과가 없습니다."}</td></tr>
               ) : (
                 filtered.map((c) => (
-                  <tr key={c.id}>
+                  <tr key={c.id} style={{ background: selectedIds.includes(c.id) ? "#faf5ff" : undefined }}>
+                    <td style={{ textAlign: "center" }}>
+                      <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
+                    </td>
                     <td className="admin-td-brand">
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         {c.logo_url
                           ? <img src={c.logo_url} alt="" style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", background: "#f2f2f2" }} />
                           : <div style={{ width: 28, height: 28, borderRadius: 6, background: "#f2f2f2" }} />}
-                        <span style={{ fontWeight: 600 }}>{c.company_name}</span>
+                        <span onClick={() => openEdit(c)} title="정보 수정" style={{ fontWeight: 600, color: "#1a1a1a", cursor: "pointer" }}>{c.company_name}</span>
                       </div>
                     </td>
                     <td className="admin-td-date">{fmtRegion(c)}</td>
@@ -229,15 +279,6 @@ export default function ExternalCompaniesPanel() {
                         : <span style={{ background: "#f0f0f0", color: "#777", borderRadius: 6, padding: "2px 8px", fontSize: 12 }}>미연결</span>}
                     </td>
                     <td className="admin-td-date">{fmtDate(c.created_at)}</td>
-                    <td className="admin-td-date">
-                      <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
-                        <button className="resume-icon-btn" title="수정" onClick={() => openEdit(c)}><Pencil size={15} /></button>
-                        {!c.merged_into_company_id && (
-                          <button className="resume-icon-btn" title="회원 기업으로 연결" onClick={() => { setLinkQuery(""); setLinkHits([]); setLinkTarget(c); }}><Link2 size={15} /></button>
-                        )}
-                        <button className="resume-icon-btn danger" title="삭제" onClick={() => doDelete(c)}><Trash2 size={15} /></button>
-                      </div>
-                    </td>
                   </tr>
                 ))
               )}
@@ -246,7 +287,7 @@ export default function ExternalCompaniesPanel() {
         </div>
       </div>
 
-      {/* 수정 모달 */}
+      {/* 수정 모달 (기업명 클릭 시) */}
       {editTarget && (
         <div className="admin-modal-overlay" onClick={() => !busy && setEditTarget(null)}>
           <div className="admin-modal" style={{ maxWidth: 460, width: "92%", padding: 0 }} onClick={(e) => e.stopPropagation()}>
@@ -309,6 +350,17 @@ export default function ExternalCompaniesPanel() {
             </div>
           </div>
         </div>
+      )}
+
+      {broadcastOpen && (
+        <BroadcastModal
+          initialChannel={broadcastChannel}
+          targets={selectedIds.map((id) => {
+            const c = items.find((x) => x.id === id);
+            return { id, name: c?.company_name || "", email: c?.email || null, phone: c?.phone || null };
+          })}
+          onClose={() => setBroadcastOpen(false)}
+        />
       )}
     </>
   );
