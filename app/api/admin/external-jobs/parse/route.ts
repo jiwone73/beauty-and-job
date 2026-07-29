@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
         // 공고 갤러리 이미지: 페이지가 실제 노출하는 이미지를 "순서 그대로 전부" 가져온다.
         //  - URL/회사가 바뀌어도 패턴은 동일: 회사 폴더 ID를 페이지에서 동적으로 뽑아 스코프.
         const isImg = (u: string) => /^https?:\/\//i.test(u) && /\.(?:jpe?g|png|webp)(?:$|\?|#)/i.test(u);
-        const isJunk = (u: string) => /(icon|logo|sprite|favicon|badge|spacer|blank|avatar|profile|default|brand_new|\/wdes\/|\/proposal\/|apple-touch|social|thumb|sns)/i.test(u);
+        const isJunk = (u: string) => /(icon|logo|sprite|favicon|badge|spacer|blank|avatar|profile|default|brand_new|\/wdes\/|\/proposal\/|apple-touch|social|sns)/i.test(u);
         const decodeSrc = (href: string) => {
           const h = (href || "").replace(/&amp;/g, "&");
           const s = h.match(/[?&]src=([^&]+)/i);
@@ -161,7 +161,22 @@ export async function POST(req: NextRequest) {
           if (isImg(c) && !isJunk(c) && !ordered.includes(c)) ordered.push(c);
         }
         images = ordered;
-        // ④ (범용) 위에서 못 찾으면 JSON-LD 구조화 데이터의 image 필드 — 사이트 종류 안 가림
+        // ④ (범용 폴백) 구조화 소스가 0일 때만: <img> 태그 콘텐츠 이미지. 상대경로→절대경로 보정, 사이트 크롬(로고·아이콘 등) 제외.
+        if (images.length === 0) {
+          const chrome = /\/(images|img|imgs|assets|static|common|skin|css|js|template|layout)\//i;
+          const toAbs = (u: string) => { try { return new URL(u, url).href; } catch { return ""; } };
+          const tags = [...html.matchAll(/<img\b[^>]*>/gi)].map((m) => m[0]);
+          for (const tag of tags) {
+            const raw = (tag.match(/\b(?:data-src|data-original|data-lazy)=["']([^"']+)["']/i)?.[1]
+              || tag.match(/\bsrc=["']([^"']+)["']/i)?.[1] || "").trim();
+            if (!raw || /^data:/i.test(raw)) continue;
+            const abs = /^https?:\/\//i.test(raw) ? raw : toAbs(raw);
+            if (!abs || !/\.(?:jpe?g|png|webp)(?:$|\?|#)/i.test(abs)) continue;
+            if (chrome.test(abs) || isJunk(abs)) continue;
+            if (!images.includes(abs)) images.push(abs);
+          }
+        }
+        // ⑤ (범용) 위에서 못 찾으면 JSON-LD 구조화 데이터의 image 필드 — 사이트 종류 안 가림
         if (images.length === 0 && jsonld) {
           const ldImgs = [...jsonld.matchAll(/https?:\/\/[^\s"'\\<>()]+?\.(?:jpe?g|png|webp)(?:\?[^\s"'\\<>()]*)?/gi)]
             .map((m) => m[0].replace(/\\u002[Ff]/g, "/").replace(/\\\//g, "/"));
