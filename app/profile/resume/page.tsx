@@ -10,6 +10,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
 import ResumeEditor from "@/components/profile/ResumeEditor";
+import { formatPhone } from "@/lib/phone";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -490,7 +491,7 @@ function ResumePageContent() {
               <div className="resume-name-block" style={{ flex: 1, minWidth: 0 }}>
                 <h3 className="resume-name" style={{ fontSize: "15px", fontWeight: 400, marginTop: "16px" }}>{name || "이름"}</h3>
                 <p className="resume-job-line">{birthDisplay} {birthDisplay && "·"} {jobDisplay}</p>
-                <p className="resume-contact">{(phone || phoneLocal) || ""} {(phone || phoneLocal) && emailLocal ? "·" : ""} {emailLocal}</p>
+                <p className="resume-contact">{formatPhone(phone || phoneLocal)} {(phone || phoneLocal) && emailLocal ? "·" : ""} {emailLocal}</p>
                 {addressDisplay && <p className="resume-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>}
               </div>
               {avatarUrl && (
@@ -558,7 +559,7 @@ function ResumePageContent() {
                   birthDisplay,
                   addressDisplay,
                   jobDisplay,
-                  phone: phone || phoneLocal,
+                  phone: formatPhone(phone || phoneLocal),
                   email: emailLocal || email,
                   intro: "",
                   coreCompetencies: "",
