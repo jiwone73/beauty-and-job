@@ -357,11 +357,6 @@ export default function JobDetailPage() {
             </>
           ) : (
             <>
-              {isExternal && (
-                <div style={{ background: "#fff7ed", color: "#c2410c", borderRadius: 8, padding: "9px 12px", fontSize: 12.5, fontWeight: 700, marginBottom: 10, textAlign: "center", lineHeight: 1.45 }}>
-                  외부 공고 · {isRedirect ? "기업 채용페이지에서 지원해요" : "지원하면 해당 기업에 전달돼요"}
-                </div>
-              )}
               <button
                 className={`job-detail-apply-btn ${alreadyApplied ? "applied" : ""}`}
                 disabled={alreadyApplied}
