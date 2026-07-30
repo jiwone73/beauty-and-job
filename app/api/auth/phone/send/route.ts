@@ -72,29 +72,30 @@ export async function POST(req: NextRequest) {
       [cleanPhone, code, purposeVal, expiresAt]
     )
     const insertedId = insRows[0]?.id
-
-    // [테스트/발신번호 미등록] SMS 미연동 동안 서버 콘솔로 인증번호 확인 (Vercel 로그에서 읽기)
-    if (!isSmsConfigured()) {
-      console.log(`[PHONE OTP] ${cleanPhone} → ${code} (SMS 미연동 · 테스트용 콘솔 출력)`)
-    }
+    void insertedId
 
     // ── 4) 실제 발송
     const sent = await sendSMS(cleanPhone, `[뷰티워크] 인증번호는 ${code} 입니다.`)
 
-    if (isSmsConfigured() && !sent) {
-      // 발송 실패한 건은 한도 카운트에서 제외
-      if (insertedId) {
-        await pool.query(`DELETE FROM phone_verifications WHERE id = $1`, [insertedId])
-      }
-      return err('SMS_FAIL', '인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요.', 500)
+    // ⚠⚠ 임시 테스트 폴백 (발신번호 등록·승인 전 한정) ⚠⚠
+    // 발신번호 미등록으로 실제 발송이 실패해도 하드 에러 대신 콘솔·dev_code로 인증번호를 확인할 수 있게 함.
+    // ▶ 발신번호 등록이 끝나면 이 블록을 지우고 아래 [원복용] 주석의 코드로 되돌릴 것.
+    const testFallback = !sent // 미연동이든, 발송 실패든 코드가 안 나갔으면 폴백
+    if (testFallback) {
+      console.log(`[PHONE OTP] ${cleanPhone} → ${code} ${isSmsConfigured() ? "(발송 실패 → 테스트 폴백)" : "(SMS 미연동)"}`)
     }
-
-    // 미연동(개발) 상태에서만 테스트용 dev_code 노출
     return ok({
       expires_in: CODE_TTL_SEC,
       remaining: DAILY_LIMIT - dailyCount - 1,
-      ...(isSmsConfigured() ? {} : { dev_code: code }),
+      ...(testFallback ? { dev_code: code } : {}),
     })
+
+    // [원복용] 발신번호 등록 후 위 폴백 블록을 지우고 아래로 교체:
+    // if (isSmsConfigured() && !sent) {
+    //   if (insertedId) await pool.query(`DELETE FROM phone_verifications WHERE id = $1`, [insertedId])
+    //   return err('SMS_FAIL', '인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요.', 500)
+    // }
+    // return ok({ expires_in: CODE_TTL_SEC, remaining: DAILY_LIMIT - dailyCount - 1, ...(isSmsConfigured() ? {} : { dev_code: code }) })
   } catch (e) {
     console.error('[phone/send] 오류:', e)
     return err('SERVER_ERROR', '인증번호 발송 중 오류가 발생했습니다.', 500)
