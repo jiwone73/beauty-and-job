@@ -22,6 +22,7 @@ function ResumePageContent() {
   const {
     intro, coreCompetencies, educations, careers,
     skills, languages, experiences, links, email,
+    isEntryLevel,
     setIntro, setCoreCompetencies, setEmail,
     addLink, updateLink, removeLink,
     addSkill, removeSkill,
@@ -37,6 +38,8 @@ function ResumePageContent() {
   const [resumeType, setResumeType] = useState<"office" | "salon">("office");
   const [introLocal, setIntroLocal] = useState(intro);
   const [coreLocal, setCoreLocal] = useState(coreCompetencies);
+  // 서버/스토어에서 한줄소개가 뒤늦게 로드되면 입력값이 비어있을 때만 채움(작성 중이면 덮지 않음)
+  useEffect(() => { setIntroLocal((prev) => prev || intro); }, [intro]);
   const [emailLocal, setEmailLocal] = useState(email);
   const [phoneLocal, setPhoneLocal] = useState("");
   const [showPreview, setShowPreview] = useState(false);
@@ -174,6 +177,11 @@ function ResumePageContent() {
   const totalCareer = calcTotalCareer();
 
   const handleSave = async () => {
+    // 경력/신입은 필수 구분: 경력 1건 이상이거나 '신입' 체크 중 하나는 반드시.
+    if (careers.length === 0 && !isEntryLevel) {
+      alert("경력자/신입 여부를 선택해주세요.\n경력이 있으면 '경력'을 추가하고, 없으면 '신입입니다 (경력 없음)'를 체크해 주세요.");
+      return;
+    }
     setIntro(introLocal);
     setCoreCompetencies(coreLocal);
     setEmail(emailLocal);
@@ -493,6 +501,13 @@ function ResumePageContent() {
                 <p className="resume-job-line">{birthDisplay} {birthDisplay && "·"} {jobDisplay}</p>
                 <p className="resume-contact">{formatPhone(phone || phoneLocal)} {(phone || phoneLocal) && emailLocal ? "·" : ""} {emailLocal}</p>
                 {addressDisplay && <p className="resume-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>}
+                <input
+                  value={introLocal}
+                  onChange={(e) => setIntroLocal(e.target.value)}
+                  placeholder="한줄소개 (예: 5년차 네일 아티스트 · 젤·아트 전문)"
+                  maxLength={60}
+                  style={{ marginTop: "10px", width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "9px 11px", fontSize: "13px", color: "#333" }}
+                />
               </div>
               {avatarUrl && (
                 <div style={{ flexShrink: 0, width: "100px", height: "128px", borderRadius: "4px", overflow: "hidden", border: "1px solid #e0e0e0", background: "#f5f5f5", marginTop: "-22px" }}>
@@ -561,7 +576,7 @@ function ResumePageContent() {
                   jobDisplay,
                   phone: formatPhone(phone || phoneLocal),
                   email: emailLocal || email,
-                  intro: "",
+                  intro: introLocal,
                   coreCompetencies: "",
                   careers,
                   educations,
