@@ -73,6 +73,11 @@ export async function POST(req: NextRequest) {
     )
     const insertedId = insRows[0]?.id
 
+    // [테스트/발신번호 미등록] SMS 미연동 동안 서버 콘솔로 인증번호 확인 (Vercel 로그에서 읽기)
+    if (!isSmsConfigured()) {
+      console.log(`[PHONE OTP] ${cleanPhone} → ${code} (SMS 미연동 · 테스트용 콘솔 출력)`)
+    }
+
     // ── 4) 실제 발송
     const sent = await sendSMS(cleanPhone, `[뷰티워크] 인증번호는 ${code} 입니다.`)
 

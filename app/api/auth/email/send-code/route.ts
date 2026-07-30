@@ -23,6 +23,9 @@ export async function POST(req: NextRequest) {
   const code = String(Math.floor(100000 + Math.random() * 900000));
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
+  // [테스트] 이메일 발송이 실패해도 서버 콘솔로 인증코드 확인 (Vercel 로그). +별칭도 그대로 동작.
+  console.log(`[EMAIL VERIFY] ${email} → ${code} (테스트용 콘솔 출력)`);
+
   await pool.query(
     `UPDATE refresh_tokens SET revoked_at = NOW()
      WHERE revoked_at IS NULL AND token_hash LIKE $1`,
