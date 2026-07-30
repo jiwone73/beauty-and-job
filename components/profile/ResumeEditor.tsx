@@ -57,10 +57,8 @@ export default function ResumeEditor({
     entryExperience, setEntryExperience,
   } = useProfileStore();
 
-  // 경력을 추가하면 경력자이므로 '신입' 표시는 자동 해제
-  useEffect(() => {
-    if (careers.length > 0 && isEntryLevel) setIsEntryLevel(false);
-  }, [careers.length, isEntryLevel, setIsEntryLevel]);
+  // 신입 전환 확인 모달(경력이 있는 상태에서 신입으로 바꿀 때)
+  const [entryConfirmOpen, setEntryConfirmOpen] = useState(false);
 
   const [careerModalOpen, setCareerModalOpen] = useState(false);
   const [editCareer, setEditCareer] = useState<any>(null);
@@ -173,8 +171,18 @@ export default function ResumeEditor({
             )}
           </h2>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: careers.length > 0 ? "#bbb" : (isEntryLevel ? "#5f0080" : "#555"), fontWeight: isEntryLevel ? 600 : 400, cursor: careers.length > 0 ? "default" : "pointer", whiteSpace: "nowrap", border: "none", background: "transparent" }}>
-              <input type="checkbox" checked={isEntryLevel} disabled={careers.length > 0} onChange={(e) => setIsEntryLevel(e.target.checked)} style={{ accentColor: "#5f0080", width: 15, height: 15 }} />
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: isEntryLevel ? "#5f0080" : "#555", fontWeight: isEntryLevel ? 600 : 400, cursor: "pointer", whiteSpace: "nowrap", border: "none", background: "transparent" }}>
+              <input type="checkbox" checked={isEntryLevel}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    // 경력이 있는데 신입으로 바꾸면 확인 모달, 없으면 바로 적용
+                    if (careers.length > 0) setEntryConfirmOpen(true);
+                    else setIsEntryLevel(true);
+                  } else {
+                    setIsEntryLevel(false);
+                  }
+                }}
+                style={{ accentColor: "#5f0080", width: 15, height: 15 }} />
               신입
             </label>
             <button className="resume-icon-btn" aria-label="경력 추가" disabled={isEntryLevel}
@@ -571,6 +579,40 @@ export default function ResumeEditor({
       <ExperienceModal isOpen={expModalOpen} onClose={() => { setExpModalOpen(false); setEditExp(null); }} editTarget={editExp} />
       <SkillModal isOpen={skillModalOpen} onClose={() => setSkillModalOpen(false)} />
       <CertificateModal isOpen={certModalOpen} onClose={() => { setCertModalOpen(false); setEditCert(null); }} editTarget={editCert} />
+
+      {/* 신입 전환 확인 모달 */}
+      {entryConfirmOpen && (
+        <div
+          onClick={() => setEntryConfirmOpen(false)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 20 }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: "100%", maxWidth: 380, background: "#fff", borderRadius: 20, padding: "28px 24px 20px", boxShadow: "0 12px 40px rgba(0,0,0,0.18)", textAlign: "center" }}
+          >
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a", margin: "0 0 12px" }}>
+              신입으로 전환할까요?
+            </h3>
+            <p style={{ fontSize: 14, lineHeight: 1.65, color: "#555", margin: "0 0 22px" }}>
+              전환하면 등록한 경력은 기업 담당자에게 보이지 않고, 신입용 <b>직무 관련 경험</b>만 이력서에 노출돼요. 경력 정보는 삭제되지 않으니 언제든 다시 경력으로 되돌릴 수 있어요.
+            </p>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setEntryConfirmOpen(false)}
+                style={{ flex: 1, padding: "13px 0", borderRadius: 12, border: "1px solid #ddd", background: "#fff", color: "#555", fontSize: 15, fontWeight: 600, cursor: "pointer" }}
+              >
+                취소
+              </button>
+              <button
+                onClick={() => { setIsEntryLevel(true); setEntryConfirmOpen(false); }}
+                style={{ flex: 1, padding: "13px 0", borderRadius: 12, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
