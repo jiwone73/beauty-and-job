@@ -61,14 +61,6 @@ export default function ResumeEditor({
     if (careers.length > 0 && isEntryLevel) setIsEntryLevel(false);
   }, [careers.length, isEntryLevel, setIsEntryLevel]);
 
-  // 경력유무 선택 상태: "" (미선택, 화살표만) | "경력" | "신입"
-  const [careerChoice, setCareerChoice] = useState<"" | "경력" | "신입">("");
-  // 기존 데이터가 있으면 선택값 동기화(미선택 상태는 사용자가 고르기 전까지 유지)
-  useEffect(() => {
-    if (careers.length > 0) setCareerChoice("경력");
-    else if (isEntryLevel) setCareerChoice("신입");
-  }, [careers.length, isEntryLevel]);
-
   const [careerModalOpen, setCareerModalOpen] = useState(false);
   const [editCareer, setEditCareer] = useState<any>(null);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
@@ -171,7 +163,7 @@ export default function ResumeEditor({
       <section id="section-career" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">
-            경력 구분
+            경력
             <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
             {totalCareer && (
               <span style={{ marginLeft: "6px", fontSize: "13px", fontWeight: 400, color: "#888" }}>
@@ -179,34 +171,16 @@ export default function ResumeEditor({
               </span>
             )}
           </h2>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <select
-              aria-label="경력 구분 선택"
-              value={careerChoice}
-              disabled={careers.length > 0}
-              onChange={(e) => {
-                const v = e.target.value as "" | "경력" | "신입";
-                setCareerChoice(v);
-                setIsEntryLevel(v === "신입");
-              }}
-              style={{
-                fontSize: 13, color: careers.length > 0 ? "#bbb" : "#333",
-                padding: "6px 24px 6px 4px", border: "none",
-                background: "transparent", cursor: careers.length > 0 ? "default" : "pointer",
-                appearance: "none", backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>\")",
-                backgroundRepeat: "no-repeat", backgroundPosition: "right center", whiteSpace: "nowrap",
-              }}
-            >
-              <option value="" disabled hidden></option>
-              <option value="경력">경력</option>
-              <option value="신입">신입</option>
-            </select>
-            {careerChoice === "경력" && (
-              <button className="resume-icon-btn" aria-label="경력 추가"
-                onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
-                <Plus size={18} />
-              </button>
-            )}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: careers.length > 0 ? "#bbb" : (isEntryLevel ? "#5f0080" : "#555"), fontWeight: isEntryLevel ? 600 : 400, cursor: careers.length > 0 ? "default" : "pointer", whiteSpace: "nowrap", border: "none", background: "transparent" }}>
+              <input type="checkbox" checked={isEntryLevel} disabled={careers.length > 0} onChange={(e) => setIsEntryLevel(e.target.checked)} style={{ accentColor: "#5f0080", width: 15, height: 15 }} />
+              신입
+            </label>
+            <button className="resume-icon-btn" aria-label="경력 추가" disabled={isEntryLevel}
+              onClick={() => { if (isEntryLevel) return; setEditCareer(null); setCareerModalOpen(true); }}
+              style={{ opacity: isEntryLevel ? 0.4 : 1, cursor: isEntryLevel ? "not-allowed" : "pointer" }}>
+              <Plus size={18} />
+            </button>
           </div>
         </div>
         {isEntryLevel ? null : careers.length === 0 ? null : (
