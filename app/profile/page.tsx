@@ -666,20 +666,6 @@ export default function ProfilePage() {
           <BookmarksTab />
         ) : activeTab === "profile" ? (
           <>
-            {dbJobType && (
-              <div style={{ margin: "16px 0", padding: "14px 16px", background: "#fff", border: "1px solid #e0d0f0", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "20px" }}>{dbJobType === "STORE" ? "🏪" : "🏢"}</span>
-                  <div>
-                    <p style={{ fontSize: "11px", color: "#888", marginBottom: "2px" }}>지금 찾고 있는 채용</p>
-                    <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a" }}>
-                      {dbJobType === "STORE" ? "매장직" : "사무직"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
             <section className="profile-section">
               <div className="profile-section-head">
                 <h2 className="profile-section-title">기본 정보</h2>
