@@ -180,7 +180,7 @@ function ResumePageContent() {
     // 경력/신입은 필수 구분: 경력 1건 이상이거나 '신입' 체크 중 하나는 반드시.
     if (!introLocal.trim()) { alert("한줄소개를 입력해주세요."); return; }
     if (careers.length === 0 && !isEntryLevel) {
-      alert("경력자/신입 여부를 선택해주세요.\n경력이 있으면 '경력'을 추가하고, 없으면 '신입'을 체크해 주세요.");
+      alert("경력/신입을 선택해주세요.\n'경력'을 선택하면 경력을 1건 이상 추가하고, 신입이면 '신입'을 선택해 주세요.");
       return;
     }
     setIntro(introLocal);

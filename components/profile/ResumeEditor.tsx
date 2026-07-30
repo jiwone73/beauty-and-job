@@ -172,15 +172,29 @@ export default function ResumeEditor({
             )}
           </h2>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: careers.length > 0 ? "#bbb" : "#555", cursor: careers.length > 0 ? "default" : "pointer", whiteSpace: "nowrap" }}>
-              <input type="checkbox" checked={isEntryLevel} disabled={careers.length > 0} onChange={(e) => setIsEntryLevel(e.target.checked)} style={{ accentColor: "#5f0080", width: 15, height: 15 }} />
-              신입
-            </label>
-            <button className="resume-icon-btn" aria-label="경력 추가" disabled={isEntryLevel}
-              onClick={() => { if (isEntryLevel) return; setEditCareer(null); setCareerModalOpen(true); }}
-              style={{ opacity: isEntryLevel ? 0.4 : 1, cursor: isEntryLevel ? "not-allowed" : "pointer" }}>
-              <Plus size={18} />
-            </button>
+            <select
+              aria-label="신입/경력 선택"
+              value={isEntryLevel ? "신입" : "경력"}
+              disabled={careers.length > 0}
+              onChange={(e) => setIsEntryLevel(e.target.value === "신입")}
+              style={{
+                fontSize: 13, color: careers.length > 0 ? "#bbb" : "#333",
+                padding: "6px 28px 6px 10px", borderRadius: 8, border: "1px solid #ddd",
+                background: careers.length > 0 ? "#f5f5f5" : "#fff",
+                cursor: careers.length > 0 ? "default" : "pointer",
+                appearance: "none", backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>\")",
+                backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center", whiteSpace: "nowrap",
+              }}
+            >
+              <option value="경력">경력</option>
+              <option value="신입">신입</option>
+            </select>
+            {!isEntryLevel && (
+              <button className="resume-icon-btn" aria-label="경력 추가"
+                onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
+                <Plus size={18} />
+              </button>
+            )}
           </div>
         </div>
         {isEntryLevel ? null : careers.length === 0 ? null : (
@@ -436,8 +450,8 @@ export default function ResumeEditor({
         <input ref={fileInputRef} type="file" accept="application/pdf" onChange={handleFileChange} style={{ display: "none" }} />
       </section>
 
-      {/* 첨부 이력서 (본인이 작성한 이력서 파일) */}
-      <section id="section-resume-file" className="resume-section">
+      {/* 첨부 이력서 (본인이 작성한 이력서 파일) — 현재 숨김 처리(에디터·지원 모달 공통) */}
+      <section id="section-resume-file" className="resume-section" style={{ display: "none" }}>
         <div className="resume-section-head" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <h2 className="resume-section-title" style={{ color: "#999" }}>첨부 이력서</h2>
           {!resumeFileReadOnly && (
