@@ -72,8 +72,6 @@ export default function ProfilePage() {
   const [emailCode, setEmailCode] = useState("");
   const [emailCodeSent, setEmailCodeSent] = useState(false);
   const [emailSending, setEmailSending] = useState(false);
-  const [trackModalOpen, setTrackModalOpen] = useState(false);
-  const [trackBusy, setTrackBusy] = useState(false);
   const [isKakao, setIsKakao] = useState(false);
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -560,29 +558,6 @@ export default function ProfilePage() {
     finally { setEmailBusy(false); }
   };
 
-  // 구직 트랙(매장직/사무직) 전환
-  const switchTrack = async () => {
-    const next = dbJobType === "STORE" ? "OFFICE" : "STORE";
-    const token = localStorage.getItem("access_token");
-    setTrackBusy(true);
-    try {
-      const r = await fetch("/api/users/me/job-type", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ job_type: next }),
-      });
-      const res = await r.json();
-      if (res.success) {
-        setDbJobType(res.data.job_type);
-        setTrackModalOpen(false);
-        alert(`${res.data.job_type === "STORE" ? "매장직" : "사무직"}으로 전환됐어요. 이력서 항목이 해당 트랙에 맞게 바뀝니다.`);
-      } else {
-        alert(res.error?.message || "전환에 실패했습니다.");
-      }
-    } catch { alert("오류가 발생했습니다."); }
-    finally { setTrackBusy(false); }
-  };
-
   const startKakaoReauth = async () => {
     const token = localStorage.getItem("access_token");
     setEmailBusy(true); setEmailMsg("");
@@ -1027,26 +1002,6 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* 구직 트랙 전환 (매장직/사무직) */}
-            {dbJobType && (
-              <section className="profile-section" style={{ marginTop: 8 }}>
-                <div className="profile-info-card" style={{ padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                  <div>
-                    <p style={{ fontSize: 13, color: "#333", margin: 0 }}>구직 트랙</p>
-                    <p style={{ fontSize: 12, color: "#999", margin: "3px 0 0", lineHeight: 1.5 }}>
-                      현재 <span style={{ color: "#5f0080" }}>{dbJobType === "STORE" ? "매장직" : "사무직"}</span>으로 지원해요. 이력서 항목이 트랙에 맞춰 달라집니다.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setTrackModalOpen(true)}
-                    style={{ flexShrink: 0, padding: "8px 14px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13, whiteSpace: "nowrap", cursor: "pointer" }}
-                  >
-                    {dbJobType === "STORE" ? "사무직으로 전환" : "매장직으로 전환"}
-                  </button>
-                </div>
-              </section>
-            )}
-
             <RegionSelectModal
               open={prefModalOpen}
               initial={toModalRegions(preferredRegions)}
@@ -1113,24 +1068,6 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {trackModalOpen && (
-        <div onClick={() => !trackBusy && setTrackModalOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: 16 }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 380, width: "100%" }}>
-            <h3 style={{ fontSize: 17, fontWeight: 400, margin: "0 0 12px" }}>
-              {dbJobType === "STORE" ? "사무직으로 전환할까요?" : "매장직으로 전환할까요?"}
-            </h3>
-            <p style={{ fontSize: 14, color: "#555", margin: "0 0 22px", lineHeight: 1.65 }}>
-              전환하면 이력서의 직무 항목이 {dbJobType === "STORE" ? "사무직" : "매장직"} 트랙에 맞게 바뀌고, 기업에 노출되는 이력서 분류도 함께 변경돼요. 입력해 둔 경력·학력 등 다른 내용은 그대로 유지됩니다.
-            </p>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setTrackModalOpen(false)} disabled={trackBusy}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, cursor: "pointer" }}>취소</button>
-              <button onClick={switchTrack} disabled={trackBusy}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, cursor: trackBusy ? "not-allowed" : "pointer", opacity: trackBusy ? 0.7 : 1 }}>{trackBusy ? "전환 중..." : "전환하기"}</button>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
