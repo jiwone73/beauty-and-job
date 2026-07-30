@@ -26,7 +26,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const {
     name: signupName, birth, gender, phone,
-    skillAreas, workTypePrefer, setStoreProfile,
+    skillAreas, setStoreProfile,
   } = useSignupStore();
 
   const [officeJobAreas, setOfficeJobAreas] = useState<string[]>([]);
@@ -495,7 +495,6 @@ export default function ProfilePage() {
   if (!addressRoad) missingRequired.push("거주지");
   if (dbJobType === "OFFICE" && officeJobAreas.length === 0) missingRequired.push("직군 영역");
   if (dbJobType === "STORE" && skillAreas.length === 0) missingRequired.push("시술 분야");
-  if (dbJobType === "STORE" && !workTypePrefer) missingRequired.push("희망 근무 형태");
   if (!preferredRegions || preferredRegions.length === 0) missingRequired.push("희망 근무지역");
 
   // 직군/지역 한 줄 요약값
@@ -979,18 +978,6 @@ export default function ProfilePage() {
                       onClick={() => setJobAreaModal("STORE")}
                       required
                     />
-                    <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--color-border)" }}>
-                      <div style={{ fontSize: "13px", color: "var(--color-text-mute)", marginBottom: "8px" }}>희망 근무 형태<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></div>
-                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                        {["풀타임", "파트타임", "주말근무 가능", "시급"].map((w) => (
-                          <button key={w}
-                            onClick={() => { const nv = workTypePrefer === w ? "" : w; setStoreProfile({ workTypePrefer: nv }); persistStoreProfile({ work_type_prefer: nv }); }}
-                            style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${workTypePrefer === w ? "#5f0080" : "#e0d0f0"}`, background: workTypePrefer === w ? "#f3e5f5" : "#fff", color: workTypePrefer === w ? "#5f0080" : "#333", fontSize: "13px", fontWeight: workTypePrefer === w ? 600 : 400, cursor: "pointer" }}>
-                            {w}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
                   </>
                 )}
                 <InfoRow
