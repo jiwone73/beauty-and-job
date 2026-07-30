@@ -441,7 +441,7 @@ function ResumePageContent() {
               { id: "link", label: "링크", done: links.length > 0 },
             ] : [
               { id: "basic", label: "기본 정보", done: true },
-              { id: "career", label: "경력 (근무 매장)", done: careers.length > 0 },
+              { id: "career", label: "경력", done: careers.length > 0 },
               { id: "education", label: "학력", done: educations.length > 0 },
               { id: "language", label: "어학", done: languages.length > 0 },
               { id: "certificate", label: "자격증", done: certificates.length > 0 },

@@ -53,7 +53,13 @@ export default function ResumeEditor({
     educations, careers, skills, languages, experiences, links,
     setEmail, removeLink, removeLanguage, removeExperience,
     removeEducation, removeCareer, certificates, removeCertificate,
+    isEntryLevel, setIsEntryLevel,
   } = useProfileStore();
+
+  // 경력을 추가하면 경력자이므로 '신입' 표시는 자동 해제
+  useEffect(() => {
+    if (careers.length > 0 && isEntryLevel) setIsEntryLevel(false);
+  }, [careers.length, isEntryLevel, setIsEntryLevel]);
 
   const [careerModalOpen, setCareerModalOpen] = useState(false);
   const [editCareer, setEditCareer] = useState<any>(null);
@@ -157,7 +163,7 @@ export default function ResumeEditor({
       <section id="section-career" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">
-            {resumeType === "office" ? "경력" : "경력 (근무 매장)"}
+            경력
             <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
             {totalCareer && (
               <span style={{ marginLeft: "6px", fontSize: "13px", fontWeight: 400, color: "#888" }}>
@@ -170,7 +176,11 @@ export default function ResumeEditor({
           </button>
         </div>
         {careers.length === 0 ? (
-          null
+          <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", padding: "8px 2px", fontSize: 14, color: "#333" }}>
+            <input type="checkbox" checked={isEntryLevel} onChange={(e) => setIsEntryLevel(e.target.checked)} style={{ accentColor: "#5f0080", width: 16, height: 16 }} />
+            신입입니다 (경력 없음)
+            <span style={{ fontSize: 12, color: "#999", marginLeft: 2 }}>· 경력자는 오른쪽 + 로 추가</span>
+          </label>
         ) : (
           careers.map((c) => {
             const key = `career-${c.id}`;
