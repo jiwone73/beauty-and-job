@@ -6,7 +6,7 @@ import { verifyAccessToken } from "@/lib/jwt";
 import { supabaseAdmin } from "@/lib/supabase";
 
 const BUCKET = "avatars";
-const MAX_SIZE = 1 * 1024 * 1024; // 1MB
+const MAX_SIZE = 3 * 1024 * 1024; // 3MB
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 // 프로필 사진 업로드
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       return err("FILE_002", "JPG, PNG, WebP 이미지만 업로드 가능합니다.");
     }
     if (file.size > MAX_SIZE) {
-      return err("FILE_003", "파일 크기는 1MB 이하여야 합니다.");
+      return err("FILE_003", "파일 크기는 3MB 이하여야 합니다.");
     }
 
     const client = await pool.connect();

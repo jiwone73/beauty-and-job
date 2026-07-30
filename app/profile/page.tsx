@@ -390,19 +390,47 @@ export default function ProfilePage() {
     });
   };
 
+  // 업로드 전 자동 리사이즈·압축 (긴 변 1000px, JPEG 0.82). 실패 시 원본 반환.
+  const compressImage = (f: File): Promise<Blob> => new Promise((resolve) => {
+    const url = URL.createObjectURL(f);
+    const img = document.createElement("img");
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 1000;
+      let width = img.naturalWidth || img.width;
+      let height = img.naturalHeight || img.height;
+      if (width > MAX || height > MAX) {
+        if (width >= height) { height = Math.round((height * MAX) / width); width = MAX; }
+        else { width = Math.round((width * MAX) / height); height = MAX; }
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { resolve(f); return; }
+      ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, width, height); // 투명 PNG 배경 흰색 처리
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => resolve(blob || f), "image/jpeg", 0.82);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(f); };
+    img.src = url;
+  });
+
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 1024 * 1024) { alert("파일 크기는 1MB 이하여야 합니다."); return; }
     if (!["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)) {
-      alert("JPG, PNG, WebP 이미지만 업로드 가능합니다."); return;
+      alert("JPG, PNG, WebP 이미지만 업로드 가능합니다."); e.target.value = ""; return;
     }
+    if (file.size > 10 * 1024 * 1024) { alert("이미지가 너무 커요. 10MB 이하로 올려주세요."); e.target.value = ""; return; }
     const token = localStorage.getItem("access_token");
     if (!token) return;
     setAvatarUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
     try {
+      const blob = await compressImage(file);
+      if (blob.size > 3 * 1024 * 1024) { alert("사진 용량이 커요. 3MB 이하 이미지로 올려주세요."); return; }
+      const uploadName = (file.name.replace(/\.[^.]+$/, "") || "avatar") + ".jpg";
+      const formData = new FormData();
+      formData.append("file", new File([blob], uploadName, { type: "image/jpeg" }));
       const res = await fetch("/api/users/me/avatar", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -645,7 +673,7 @@ export default function ProfilePage() {
                             사진 삭제
                           </button>
                         )}
-                        <div style={{ fontSize: "11px", color: "#aaa", padding: "4px 10px 2px" }}>JPG/PNG/WebP · 1MB 이하</div>
+                        <div style={{ fontSize: "11px", color: "#aaa", padding: "4px 10px 2px" }}>JPG/PNG/WebP · 자동 최적화 (최대 3MB)</div>
                       </div>
                     )}
                     <input ref={avatarFileRef} type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleAvatarUpload} style={{ display: "none" }} />
