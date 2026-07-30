@@ -372,6 +372,25 @@ export default function ProfilePage() {
     await patchUser({ preferred_regions: next });
   };
 
+  // 시술분야·희망근무형태 등 STORE 필수항목을 서버에 저장(하위 항목 미영향 PATCH).
+  const persistStoreProfile = async (patch: { skill_areas?: string[]; work_type_prefer?: string; region_prefer?: string; office_job_areas?: string[] }) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    const s = useSignupStore.getState();
+    try {
+      await fetch("/api/users/me/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          skill_areas: patch.skill_areas ?? s.skillAreas ?? [],
+          work_type_prefer: patch.work_type_prefer ?? s.workTypePrefer ?? "",
+          region_prefer: patch.region_prefer ?? s.regionPrefer ?? "",
+          office_job_areas: patch.office_job_areas ?? s.officeJobAreas ?? [],
+        }),
+      });
+    } catch (e) { console.error("[persistStoreProfile]", e); }
+  };
+
   const saveOfficeJobAreas = async (newAreas: string[]) => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -965,7 +984,7 @@ export default function ProfilePage() {
                       <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                         {["풀타임", "파트타임", "주말근무 가능", "시급"].map((w) => (
                           <button key={w}
-                            onClick={() => setStoreProfile({ workTypePrefer: workTypePrefer === w ? "" : w })}
+                            onClick={() => { const nv = workTypePrefer === w ? "" : w; setStoreProfile({ workTypePrefer: nv }); persistStoreProfile({ work_type_prefer: nv }); }}
                             style={{ padding: "6px 14px", borderRadius: "20px", border: `1.5px solid ${workTypePrefer === w ? "#5f0080" : "#e0d0f0"}`, background: workTypePrefer === w ? "#f3e5f5" : "#fff", color: workTypePrefer === w ? "#5f0080" : "#333", fontSize: "13px", fontWeight: workTypePrefer === w ? 600 : 400, cursor: "pointer" }}>
                             {w}
                           </button>
@@ -996,7 +1015,7 @@ export default function ProfilePage() {
               open={jobAreaModal !== null}
               jobType={jobAreaModal ?? "OFFICE"}
               selected={jobAreaModal === "STORE" ? skillAreas : officeJobAreas}
-              onChange={jobAreaModal === "STORE" ? (v: string[]) => setStoreProfile({ skillAreas: v }) : saveOfficeJobAreas}
+              onChange={jobAreaModal === "STORE" ? (v: string[]) => { setStoreProfile({ skillAreas: v }); persistStoreProfile({ skill_areas: v }); } : saveOfficeJobAreas}
               onClose={() => setJobAreaModal(null)}
             />
             <div className="profile-bottom-cta">

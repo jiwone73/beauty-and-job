@@ -206,3 +206,38 @@ await client.query("BEGIN");
     client.release();
   }
 }
+
+// ============================================
+// PATCH: 프로필 필수항목(시술분야·희망근무형태 등)만 부분 저장.
+// 하위 항목(경력·학력 등)은 절대 건드리지 않음 → 프로필 화면에서 안전하게 호출.
+// ============================================
+export async function PATCH(req: NextRequest) {
+  const { auth, res: authErr } = requireAuth(req, "user");
+  if (authErr) return authErr;
+  const userId = auth!.sub;
+  const b = await req.json().catch(() => ({}));
+
+  const skill_areas = Array.isArray(b.skill_areas) ? b.skill_areas : [];
+  const work_type_prefer = typeof b.work_type_prefer === "string" ? b.work_type_prefer : "";
+  const region_prefer = typeof b.region_prefer === "string" ? b.region_prefer : "";
+  const office_job_areas = Array.isArray(b.office_job_areas) ? b.office_job_areas : [];
+
+  try {
+    // user_profiles의 해당 컬럼만 upsert. intro/careers 등 다른 데이터엔 영향 없음.
+    await pool.query(
+      `INSERT INTO user_profiles (user_id, skill_areas, work_type_prefer, region_prefer, office_job_areas, updated_at)
+       VALUES ($1, $2, $3, $4, $5, NOW())
+       ON CONFLICT (user_id) DO UPDATE SET
+         skill_areas = EXCLUDED.skill_areas,
+         work_type_prefer = EXCLUDED.work_type_prefer,
+         region_prefer = EXCLUDED.region_prefer,
+         office_job_areas = EXCLUDED.office_job_areas,
+         updated_at = NOW()`,
+      [userId, skill_areas, work_type_prefer, region_prefer, office_job_areas]
+    );
+    return ok({ saved: true });
+  } catch (e: any) {
+    console.error("[profile patch]", e);
+    return err("PROFILE_001", e.message || "저장 중 오류가 발생했습니다.", 500);
+  }
+}

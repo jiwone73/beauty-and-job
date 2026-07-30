@@ -37,6 +37,7 @@ function ResumePageContent() {
   const [introLocal, setIntroLocal] = useState(intro);
   const [coreLocal, setCoreLocal] = useState(coreCompetencies);
   const [emailLocal, setEmailLocal] = useState(email);
+  const [phoneLocal, setPhoneLocal] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -105,6 +106,7 @@ function ResumePageContent() {
             return;
           }
           if (res.data.email) setEmailLocal(res.data.email);
+          if (res.data.phone) setPhoneLocal(res.data.phone);
           if (res.data.job_type === "STORE") setResumeType("salon");
           else setResumeType("office");
           if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
@@ -488,7 +490,7 @@ function ResumePageContent() {
               <div className="resume-name-block" style={{ flex: 1, minWidth: 0 }}>
                 <h3 className="resume-name" style={{ fontSize: "15px", fontWeight: 400, marginTop: "16px" }}>{name || "이름"}</h3>
                 <p className="resume-job-line">{birthDisplay} {birthDisplay && "·"} {jobDisplay}</p>
-                <p className="resume-contact">{phone || ""} {phone && emailLocal ? "·" : ""} {emailLocal}</p>
+                <p className="resume-contact">{(phone || phoneLocal) || ""} {(phone || phoneLocal) && emailLocal ? "·" : ""} {emailLocal}</p>
                 {addressDisplay && <p className="resume-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>}
               </div>
               {avatarUrl && (
@@ -556,7 +558,7 @@ function ResumePageContent() {
                   birthDisplay,
                   addressDisplay,
                   jobDisplay,
-                  phone,
+                  phone: phone || phoneLocal,
                   email: emailLocal || email,
                   intro: "",
                   coreCompetencies: "",
