@@ -198,6 +198,26 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           </div>
         </div>
       )}
+      {languages.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">어학</h2>
+          {languages.map((lang) => (
+            <div key={lang.id} className="rp-item">
+              <p className="rp-text" style={{ fontWeight: 400, fontSize: "13px", color: "#666" }}>
+                {lang.language}
+                <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>
+                  {lang.level}
+                </span>
+              </p>
+              {lang.test && (
+                <p className="rp-text" style={{ color: "#888", fontSize: "13px" }}>
+                  {lang.test}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
       {certificates.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">자격증</h2>
