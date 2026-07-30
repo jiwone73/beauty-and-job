@@ -61,6 +61,14 @@ export default function ResumeEditor({
     if (careers.length > 0 && isEntryLevel) setIsEntryLevel(false);
   }, [careers.length, isEntryLevel, setIsEntryLevel]);
 
+  // 경력유무 선택 상태: "" (미선택, 화살표만) | "경력" | "신입"
+  const [careerChoice, setCareerChoice] = useState<"" | "경력" | "신입">("");
+  // 기존 데이터가 있으면 선택값 동기화(미선택 상태는 사용자가 고르기 전까지 유지)
+  useEffect(() => {
+    if (careers.length > 0) setCareerChoice("경력");
+    else if (isEntryLevel) setCareerChoice("신입");
+  }, [careers.length, isEntryLevel]);
+
   const [careerModalOpen, setCareerModalOpen] = useState(false);
   const [editCareer, setEditCareer] = useState<any>(null);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
@@ -163,7 +171,7 @@ export default function ResumeEditor({
       <section id="section-career" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">
-            경력
+            경력유무
             <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
             {totalCareer && (
               <span style={{ marginLeft: "6px", fontSize: "13px", fontWeight: 400, color: "#888" }}>
@@ -173,10 +181,14 @@ export default function ResumeEditor({
           </h2>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <select
-              aria-label="신입/경력 선택"
-              value={isEntryLevel ? "신입" : "경력"}
+              aria-label="경력유무 선택"
+              value={careerChoice}
               disabled={careers.length > 0}
-              onChange={(e) => setIsEntryLevel(e.target.value === "신입")}
+              onChange={(e) => {
+                const v = e.target.value as "" | "경력" | "신입";
+                setCareerChoice(v);
+                setIsEntryLevel(v === "신입");
+              }}
               style={{
                 fontSize: 13, color: careers.length > 0 ? "#bbb" : "#333",
                 padding: "6px 28px 6px 10px", borderRadius: 8, border: "1px solid #ddd",
@@ -186,17 +198,22 @@ export default function ResumeEditor({
                 backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center", whiteSpace: "nowrap",
               }}
             >
+              <option value="" disabled hidden></option>
               <option value="경력">경력</option>
               <option value="신입">신입</option>
             </select>
-            {!isEntryLevel && (
-              <button className="resume-icon-btn" aria-label="경력 추가"
-                onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
-                <Plus size={18} />
-              </button>
-            )}
           </div>
         </div>
+        {/* 경력 선택 시: '경력사항' 라벨 행 + 오른쪽 추가 버튼 */}
+        {careerChoice === "경력" && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#333" }}>경력사항</span>
+            <button className="resume-icon-btn" aria-label="경력 추가"
+              onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
+              <Plus size={18} />
+            </button>
+          </div>
+        )}
         {isEntryLevel ? null : careers.length === 0 ? null : (
           careers.map((c) => {
             const key = `career-${c.id}`;
