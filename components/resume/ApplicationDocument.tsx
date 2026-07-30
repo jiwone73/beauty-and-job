@@ -2,7 +2,7 @@
 import { forwardRef } from "react";
 import ResumePreview from "@/components/profile/ResumePreview";
 
-// 제출한 지원서 공용 문서: 자기소개서 + 이력서 제목 + 이력서 본문
+// 제출한 지원서 공용 문서: 자기소개서 + 이력서 본문
 // 구직자/기업/관리자 화면에서 동일하게 사용 (PDF/인쇄는 lib/applicationPdf 유틸)
 type Props = {
   coverLetter?: string | null;
@@ -27,9 +27,9 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
           <p style={{ fontSize: 14, color: "#333", lineHeight: 1.85, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
         </div>
       )}
-      <div style={{ background: "#fff", padding: hasCover ? "22px 0 6px" : "0 0 6px", borderTop: hasCover ? "1px solid #e0e0e0" : "none" }}>
-        <h2 style={{ fontSize: 17, fontWeight: 400, color: "#1a1a1a", margin: 0, lineHeight: 1.6 }}>이력서</h2>
-      </div>
+      {hasCover && (
+        <div style={{ borderTop: "1px solid #e0e0e0", paddingTop: 22 }} />
+      )}
       <ResumePreview {...resume} />
       {children}
     </div>

@@ -75,10 +75,10 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     <div ref={ref} className="rp-wrap">
       {intro && (
         <div className="rp-section">
-          <h2 className="rp-section-title">한줄소개</h2>
-          <p className="rp-text">{intro}</p>
+          <p className="rp-text" style={{ fontWeight: 700, fontSize: "15px", textAlign: "center", margin: 0 }}>{intro}</p>
         </div>
       )}
+      <div className="rp-section">
       <h2 className="rp-section-title" style={{ marginBottom: "12px" }}>기본 정보</h2>
       <div className="rp-header" style={{display:"flex", alignItems:"flex-start", gap:"20px"}}>
         <div style={{flex:1, minWidth:0}}>
@@ -109,6 +109,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
             <img src={avatarUrl} alt="프로필" style={{width: "100%", height: "100%", objectFit: "cover"}} />
           </div>
         )}
+      </div>
       </div>
 
       {coreCompetencies && (
