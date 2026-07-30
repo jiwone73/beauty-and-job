@@ -69,6 +69,9 @@ export default function ProfilePage() {
   const [emailPw, setEmailPw] = useState("");
   const [emailBusy, setEmailBusy] = useState(false);
   const [emailMsg, setEmailMsg] = useState("");
+  const [emailCode, setEmailCode] = useState("");
+  const [emailCodeSent, setEmailCodeSent] = useState(false);
+  const [emailSending, setEmailSending] = useState(false);
   const [isKakao, setIsKakao] = useState(false);
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -507,21 +510,46 @@ export default function ProfilePage() {
       : "선택해주세요";
 
   // 이력서로 이동 (필수항목 미완성 시 안내 후 프로필에 머무름)
+  // 1) 새 이메일로 인증코드 발송
+  const sendEmailCode = async () => {
+    if (!newEmailInput.trim()) { alert("새 이메일을 입력해주세요."); return; }
+    const token = localStorage.getItem("access_token");
+    setEmailSending(true); setEmailMsg("");
+    try {
+      const r = await fetch("/api/users/me/email/send-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ new_email: newEmailInput.trim() }),
+      });
+      const res = await r.json();
+      if (res.success) {
+        setEmailCodeSent(true);
+        setEmailMsg(res.data?.dev_code ? `인증번호를 전송했어요. (테스트: ${res.data.dev_code})` : "인증번호를 전송했어요. 새 이메일을 확인해주세요.");
+      } else {
+        setEmailMsg(res.error?.message || "인증번호 전송에 실패했습니다.");
+      }
+    } catch { setEmailMsg("오류가 발생했습니다."); }
+    finally { setEmailSending(false); }
+  };
+
+  // 2) 인증코드 확인 후 이메일 변경
   const changeEmail = async () => {
     if (!newEmailInput.trim()) { alert("새 이메일을 입력해주세요."); return; }
-    if (!emailPw.trim()) { alert("현재 비밀번호를 입력해주세요."); return; }
+    if (!emailCodeSent) { alert("먼저 인증번호를 받아주세요."); return; }
+    if (!emailCode.trim()) { alert("인증번호를 입력해주세요."); return; }
     const token = localStorage.getItem("access_token");
     setEmailBusy(true); setEmailMsg("");
     try {
-      const r = await fetch("/api/users/me/email/change", {
+      const r = await fetch("/api/users/me/email/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ new_email: newEmailInput.trim(), password: emailPw }),
+        body: JSON.stringify({ new_email: newEmailInput.trim(), code: emailCode.trim() }),
       });
       const res = await r.json();
       if (res.success) {
         setEmailInput(res.data.email);
         setShowEmailModal(false);
+        setEmailCode(""); setEmailCodeSent(false); setNewEmailInput("");
         alert("이메일이 변경되었습니다.");
       } else {
         setEmailMsg(res.error?.message || "변경에 실패했습니다.");
@@ -1025,24 +1053,32 @@ export default function ProfilePage() {
               <p style={{ fontSize: 13, color: "#555", margin: 0, lineHeight: 1.6 }}>카카오 계정은 이메일이 카카오와 연동돼 있어요. 카카오에서 이메일을 변경하신 뒤, 아래 <b>카카오로 동기화</b>를 누르면 최신 이메일로 반영됩니다.</p>
             ) : (
               <>
-                <input type="email" placeholder="새 이메일 주소" value={newEmailInput}
-                  onChange={(e) => setNewEmailInput(e.target.value)}
-                  style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
-                <input type="password" placeholder="현재 비밀번호" value={emailPw}
-                  onChange={(e) => setEmailPw(e.target.value)}
-                  style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 4, boxSizing: "border-box" }} />
+                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                  <input type="email" placeholder="새 이메일 주소" value={newEmailInput}
+                    onChange={(e) => { setNewEmailInput(e.target.value); setEmailCodeSent(false); setEmailCode(""); }}
+                    style={{ flex: 1, height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box" }} />
+                  <button onClick={sendEmailCode} disabled={emailSending || !newEmailInput.trim()}
+                    style={{ flexShrink: 0, height: 44, padding: "0 14px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", cursor: emailSending ? "not-allowed" : "pointer", opacity: emailSending ? 0.6 : 1 }}>
+                    {emailSending ? "전송중" : emailCodeSent ? "재전송" : "인증번호 받기"}
+                  </button>
+                </div>
+                {emailCodeSent && (
+                  <input type="text" inputMode="numeric" placeholder="인증번호 6자리" maxLength={6} value={emailCode}
+                    onChange={(e) => setEmailCode(e.target.value.replace(/[^0-9]/g, ""))}
+                    style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 4, boxSizing: "border-box", letterSpacing: "2px" }} />
+                )}
               </>
             )}
             {emailMsg && <p style={{ fontSize: 12, color: "#5f0080", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
-              <button onClick={() => setShowEmailModal(false)} disabled={emailBusy}
+              <button onClick={() => { setShowEmailModal(false); setEmailCode(""); setEmailCodeSent(false); setEmailMsg(""); }} disabled={emailBusy}
                 style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>취소</button>
               {isKakao ? (
                 <button onClick={startKakaoReauth} disabled={emailBusy}
                   style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#FEE500", color: "#191600", fontSize: 15, fontWeight: 700, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>{emailBusy ? "이동 중..." : "카카오로 동기화"}</button>
               ) : (
-                <button onClick={changeEmail} disabled={emailBusy}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>{emailBusy ? "변경 중..." : "변경하기"}</button>
+                <button onClick={changeEmail} disabled={emailBusy || !emailCodeSent || !emailCode.trim()}
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: (emailBusy || !emailCodeSent || !emailCode.trim()) ? "not-allowed" : "pointer", opacity: (emailBusy || !emailCodeSent || !emailCode.trim()) ? 0.5 : 1 }}>{emailBusy ? "변경 중..." : "변경하기"}</button>
               )}
             </div>
           </div>
