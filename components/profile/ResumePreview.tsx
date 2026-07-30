@@ -130,16 +130,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           </div>
         </div>
       )}
-      {resumeType === "salon" && skillAreas.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">희망 직군 · 전문 영역</h2>
-          <div className="rp-chips">
-            {skillAreas.map((area) => (
-              <span key={area} className="rp-chip">{area}</span>
-            ))}
-          </div>
-        </div>
-      )}
       {resumeType === "salon" && (workTypePrefer || regionPrefer) && (
         <div className="rp-section">
           <h2 className="rp-section-title">희망 근무 조건</h2>
@@ -250,7 +240,8 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           <p className="rp-text">{portfolioFilename || "포트폴리오.pdf"}</p>
         </div>
       )}
-      {resumeFileName && (
+      {/* 첨부 이력서 — 현재 숨김 처리 */}
+      {false && resumeFileName && (
         <div className="rp-section">
           <h2 className="rp-section-title">첨부 이력서</h2>
           <p className="rp-text">{resumeFileName}</p>

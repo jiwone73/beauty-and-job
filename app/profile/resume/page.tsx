@@ -581,7 +581,7 @@ function ResumePageContent() {
                   jobDisplay,
                   phone: formatPhone(phone || phoneLocal),
                   email: emailLocal || email,
-                  intro: introLocal,
+                  intro: introLocal || intro,
                   coreCompetencies: "",
                   careers,
                   educations,
