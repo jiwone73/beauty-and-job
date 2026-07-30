@@ -178,8 +178,9 @@ function ResumePageContent() {
 
   const handleSave = async () => {
     // 경력/신입은 필수 구분: 경력 1건 이상이거나 '신입' 체크 중 하나는 반드시.
+    if (!introLocal.trim()) { alert("한줄소개를 입력해주세요."); return; }
     if (careers.length === 0 && !isEntryLevel) {
-      alert("경력자/신입 여부를 선택해주세요.\n경력이 있으면 '경력'을 추가하고, 없으면 '신입입니다 (경력 없음)'를 체크해 주세요.");
+      alert("경력자/신입 여부를 선택해주세요.\n경력이 있으면 '경력'을 추가하고, 없으면 '신입'을 체크해 주세요.");
       return;
     }
     setIntro(introLocal);
@@ -493,6 +494,17 @@ function ResumePageContent() {
             </div>
           </div>
 
+          <section id="section-headline" className="resume-section">
+            <h2 className="resume-section-title">한줄소개<span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span></h2>
+            <input
+              value={introLocal}
+              onChange={(e) => setIntroLocal(e.target.value)}
+              placeholder="예: 5년차 네일 아티스트 · 젤·아트 전문"
+              maxLength={60}
+              style={{ width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "10px 12px", fontSize: "14px", color: "#333", marginTop: "6px" }}
+            />
+          </section>
+
           <section id="section-basic" className="resume-section">
             <h2 className="resume-section-title">기본 정보</h2>
             <div className="resume-basic-info" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
@@ -501,13 +513,6 @@ function ResumePageContent() {
                 <p className="resume-job-line">{birthDisplay} {birthDisplay && "·"} {jobDisplay}</p>
                 <p className="resume-contact">{formatPhone(phone || phoneLocal)} {(phone || phoneLocal) && emailLocal ? "·" : ""} {emailLocal}</p>
                 {addressDisplay && <p className="resume-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>}
-                <input
-                  value={introLocal}
-                  onChange={(e) => setIntroLocal(e.target.value)}
-                  placeholder="한줄소개 (예: 5년차 네일 아티스트 · 젤·아트 전문)"
-                  maxLength={60}
-                  style={{ marginTop: "10px", width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "9px 11px", fontSize: "13px", color: "#333" }}
-                />
               </div>
               {avatarUrl && (
                 <div style={{ flexShrink: 0, width: "100px", height: "128px", borderRadius: "4px", overflow: "hidden", border: "1px solid #e0e0e0", background: "#f5f5f5", marginTop: "-22px" }}>

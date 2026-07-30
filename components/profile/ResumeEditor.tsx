@@ -171,16 +171,22 @@ export default function ResumeEditor({
               </span>
             )}
           </h2>
-          <button className="resume-icon-btn" aria-label="경력 추가" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
-            <Plus size={18} />
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: careers.length > 0 ? "#bbb" : "#555", cursor: careers.length > 0 ? "default" : "pointer", whiteSpace: "nowrap" }}>
+              <input type="checkbox" checked={isEntryLevel} disabled={careers.length > 0} onChange={(e) => setIsEntryLevel(e.target.checked)} style={{ accentColor: "#5f0080", width: 15, height: 15 }} />
+              신입 (경력 없음)
+            </label>
+            <button className="resume-icon-btn" aria-label="경력 추가" disabled={isEntryLevel}
+              onClick={() => { if (isEntryLevel) return; setEditCareer(null); setCareerModalOpen(true); }}
+              style={{ opacity: isEntryLevel ? 0.4 : 1, cursor: isEntryLevel ? "not-allowed" : "pointer" }}>
+              <Plus size={18} />
+            </button>
+          </div>
         </div>
-        {careers.length === 0 ? (
-          <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", padding: "8px 2px", fontSize: 14, color: "#333" }}>
-            <input type="checkbox" checked={isEntryLevel} onChange={(e) => setIsEntryLevel(e.target.checked)} style={{ accentColor: "#5f0080", width: 16, height: 16 }} />
-            신입입니다 (경력 없음)
-            <span style={{ fontSize: 12, color: "#999", marginLeft: 2 }}>· 경력자는 오른쪽 + 로 추가</span>
-          </label>
+        {isEntryLevel ? (
+          <div style={{ padding: "8px 2px", fontSize: 13, color: "#888" }}>신입으로 등록돼요. 경력 입력은 비활성화됩니다.</div>
+        ) : careers.length === 0 ? (
+          <div style={{ padding: "8px 2px", fontSize: 13, color: "#aaa" }}>경력자는 오른쪽 <b>+</b>로 추가하세요.</div>
         ) : (
           careers.map((c) => {
             const key = `career-${c.id}`;
