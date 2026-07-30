@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get('status')
   const jobType = searchParams.get('job_type')
   const search = searchParams.get('search')
+  const member = searchParams.get('member') // 'true'(회원공고) | 'false'(비회원공고) | null(전체)
 
   const where: string[] = []
   const params: any[] = []
@@ -38,6 +39,8 @@ export async function GET(req: NextRequest) {
 
   if (status) { where.push(`jp.status = $${idx++}`); params.push(status) }
   if (jobType) { where.push(`jp.job_type = $${idx++}`); params.push(jobType) }
+  if (member === 'true') { where.push(`c.is_member = true`) }
+  else if (member === 'false') { where.push(`c.is_member = false`) }
   if (search) {
     where.push(`(jp.title ILIKE $${idx} OR c.company_name ILIKE $${idx})`)
     params.push(`%${search}%`); idx++
@@ -51,8 +54,8 @@ export async function GET(req: NextRequest) {
       SELECT
         jp.id, jp.title, jp.job_type, jp.status, jp.location,
         jp.experience_level, jp.view_count, jp.application_count, jp.created_at,
-        jp.deadline, jp.product_type,
-        c.id AS company_id, c.company_name, c.logo_url,
+        jp.deadline, jp.product_type, jp.source,
+        c.id AS company_id, c.company_name, c.logo_url, c.is_member,
         jc.name AS category_name,
         jp.categories
       FROM job_postings jp

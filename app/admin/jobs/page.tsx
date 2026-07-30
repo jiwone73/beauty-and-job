@@ -37,6 +37,8 @@ type Job = {
   created_at: string;
   deadline: string | null;
   product_type: string;
+  source?: string | null;
+  is_member?: boolean | null;
 };
 const EXP_LABEL: Record<string, string> = {
   NEW: "신입",
@@ -83,6 +85,7 @@ function AdminJobsPageInner() {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");
+  const [memberFilter, setMemberFilter] = useState("전체");
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const [companyModal, setCompanyModal] = useState<any | null>(null);
   const [companiesCache, setCompaniesCache] = useState<any[] | null>(null);
@@ -138,7 +141,9 @@ function AdminJobsPageInner() {
     const matchSearch = !search || j.title.includes(search) || j.company_name.includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[j.status] === statusFilter;
     const matchDate = dateFilter === "전체" || isToday(j.created_at);
-    return matchGroup && matchSearch && matchStatus && matchDate;
+    const isMember = j.is_member !== false && j.source !== "EXTERNAL";
+    const matchMember = memberFilter === "전체" || (memberFilter === "회원" ? isMember : !isMember);
+    return matchGroup && matchSearch && matchStatus && matchDate && matchMember;
   });
   const allChecked = filtered.length > 0 && filtered.every((j) => checkedIds.has(j.id));
   const toggleCheck = (id: string) => {
@@ -202,6 +207,10 @@ function AdminJobsPageInner() {
             value={jobGroupFilter}
             options={["전체", "매장", "기업"]}
             onChange={(v) => setJobGroupFilter(v)} />
+          <FilterDropdown label="회원구분"
+            value={memberFilter}
+            options={["전체", "회원", "비회원"]}
+            onChange={(v) => setMemberFilter(v)} />
           <FilterDropdown label="승인상태"
             value={statusFilter}
             options={STATUS_OPTIONS}
@@ -301,6 +310,15 @@ function AdminJobsPageInner() {
                           {job.job_type === "STORE" ? "매장" : "기업"}
                         </span>
                       </div>
+                      {(() => {
+                        const isMember = job.is_member !== false && job.source !== "EXTERNAL";
+                        return (
+                          <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 7px", borderRadius: 5, whiteSpace: "nowrap",
+                            background: isMember ? "#f3e8ff" : "#f0f0f0", color: isMember ? "#7c3aed" : "#888" }}>
+                            {isMember ? "회원" : "비회원"}
+                          </span>
+                        );
+                      })()}
                     </div>
                   </td>
                   {/* 등록상품 */}
