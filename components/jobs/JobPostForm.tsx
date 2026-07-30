@@ -580,7 +580,7 @@ export default function JobPostForm({
       }
     }
     if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
-    if (categories.length === 0) { alert(jobGroupType === "매장" ? "시술 분야를 선택해주세요." : "직군을 선택해주세요."); return; }
+    if (categories.length === 0) { alert("직군을 선택해주세요."); return; }
     if (!form.career.trim()) { alert("경력 조건을 입력해주세요."); return; }
     if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
     // 마감일: 날짜 선택 또는 상시채용 필수
@@ -924,12 +924,12 @@ export default function JobPostForm({
 
               <div className="admin-form-row">
                 <label className="admin-form-label">
-                  {jobGroupType === "매장" ? "시술 분야" : "직군"}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>
+                  직군<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>
                 </label>
                 <JobGroupField
                   jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
                   value={categories} onChange={setCategories} maxSelect={5}
-                  placeholder={jobGroupType === "매장" ? "시술 분야를 선택해주세요" : "직군을 선택해주세요"} />
+                  placeholder="직군을 선택해주세요" />
               </div>
 
               <div className="admin-form-row-2col">

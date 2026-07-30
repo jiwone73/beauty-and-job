@@ -170,11 +170,7 @@ export default function ResumeEditor({
           </button>
         </div>
         {careers.length === 0 ? (
-          <div className="resume-empty-section">
-            <button className="resume-empty-btn" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
-              <Plus size={16} /> 경력 추가하기
-            </button>
-          </div>
+          null
         ) : (
           careers.map((c) => {
             const key = `career-${c.id}`;
@@ -220,11 +216,7 @@ export default function ResumeEditor({
           </button>
         </div>
         {educations.length === 0 ? (
-          <div className="resume-empty-section">
-            <button className="resume-empty-btn" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
-              <Plus size={16} /> 학력 추가하기
-            </button>
-          </div>
+          null
         ) : (
           educations.map((edu) => {
             const key = `edu-${edu.id}`;
@@ -274,11 +266,7 @@ export default function ResumeEditor({
               {skills.map((sk) => <span key={sk} className="resume-skill-chip">{sk}</span>)}
             </div>
           ) : (
-            <div className="resume-empty-section">
-              <button className="resume-empty-btn" onClick={() => setSkillModalOpen(true)}>
-                <Plus size={16} /> 스킬 추가하기
-              </button>
-            </div>
+            null
           )}
         </section>
       )}
@@ -312,11 +300,7 @@ export default function ResumeEditor({
             ))}
           </div>
         ) : (
-          <div className="resume-empty-section">
-            <button className="resume-empty-btn" onClick={() => { setEditLang(null); setLangModalOpen(true); }}>
-              <Plus size={16} /> 어학 추가하기
-            </button>
-          </div>
+          null
         )}
       </section>
 
@@ -358,11 +342,7 @@ export default function ResumeEditor({
             })}
           </div>
         ) : (
-          <div className="resume-empty-section">
-            <button className="resume-empty-btn" onClick={() => { setEditCert(null); setCertModalOpen(true); }}>
-              <Plus size={16} /> 자격증 추가하기
-            </button>
-          </div>
+          null
         )}
       </section>
 
@@ -402,11 +382,7 @@ export default function ResumeEditor({
             })}
           </div>
         ) : (
-          <div className="resume-empty-section">
-            <button className="resume-empty-btn" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
-              <Plus size={16} /> 활동 추가하기
-            </button>
-          </div>
+          null
         )}
       </section>
 
