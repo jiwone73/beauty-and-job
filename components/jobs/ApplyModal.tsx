@@ -356,7 +356,7 @@ export default function ApplyModal({
                     jobDisplay,
                     phone: phoneLocal || phone,
                     email: emailLocal || email,
-                    intro: "",
+                    intro,
                     coreCompetencies: "",
                     careers,
                     educations,
