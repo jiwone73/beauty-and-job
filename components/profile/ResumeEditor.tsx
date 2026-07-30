@@ -196,7 +196,7 @@ export default function ResumeEditor({
           <textarea
             value={entryExperience}
             onChange={(e) => setEntryExperience(e.target.value)}
-            placeholder="직무와 연관된 경험을 자세히 작성해 보세요"
+            placeholder="아카데미·실습, 자격증, 대회·아르바이트 등 뷰티 직무와 이어지는 경험을 구체적으로 적어 보세요"
             rows={5}
             style={{
               width: "100%", marginTop: 8, padding: "12px 14px", borderRadius: 10,
