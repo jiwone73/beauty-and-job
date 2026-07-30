@@ -174,7 +174,7 @@ export default function ResumeEditor({
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: careers.length > 0 ? "#bbb" : "#555", cursor: careers.length > 0 ? "default" : "pointer", whiteSpace: "nowrap" }}>
               <input type="checkbox" checked={isEntryLevel} disabled={careers.length > 0} onChange={(e) => setIsEntryLevel(e.target.checked)} style={{ accentColor: "#5f0080", width: 15, height: 15 }} />
-              신입 (경력 없음)
+              신입
             </label>
             <button className="resume-icon-btn" aria-label="경력 추가" disabled={isEntryLevel}
               onClick={() => { if (isEntryLevel) return; setEditCareer(null); setCareerModalOpen(true); }}
@@ -183,11 +183,7 @@ export default function ResumeEditor({
             </button>
           </div>
         </div>
-        {isEntryLevel ? (
-          <div style={{ padding: "8px 2px", fontSize: 13, color: "#888" }}>신입으로 등록돼요. 경력 입력은 비활성화됩니다.</div>
-        ) : careers.length === 0 ? (
-          <div style={{ padding: "8px 2px", fontSize: 13, color: "#aaa" }}>경력자는 오른쪽 <b>+</b>로 추가하세요.</div>
-        ) : (
+        {isEntryLevel ? null : careers.length === 0 ? null : (
           careers.map((c) => {
             const key = `career-${c.id}`;
             const open = !collapsed.has(key);
