@@ -20,7 +20,6 @@ const NAV_ITEMS = [
     id: "jobs", label: "채용공고", icon: Briefcase, href: "/admin/jobs",
     children: [
       { id: "jobs", label: "채용공고 목록", href: "/admin/jobs" },
-      { id: "jobs-external-inbox", label: "외부 지원 인박스", href: "/admin/jobs/external/inbox" },
     ]
   },
   {

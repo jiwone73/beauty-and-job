@@ -24,15 +24,15 @@ export async function GET(req: NextRequest) {
       FROM companies c
       LEFT JOIN companies mc ON mc.id = c.merged_into_company_id
       LEFT JOIN LATERAL (
-        SELECT COUNT(*) AS cnt,
+        SELECT COUNT(*)::int AS cnt,
           json_agg(json_build_object(
             'id', jp.id, 'title', jp.title, 'status', jp.status, 'created_at', jp.created_at
           ) ORDER BY jp.created_at DESC) AS jobs
         FROM job_postings jp WHERE jp.company_id = c.id
       ) j ON true
       LEFT JOIN LATERAL (
-        SELECT COUNT(a.id) AS app_cnt,
-          COUNT(a.id) FILTER (WHERE a.delivery_status = 'PENDING') AS pending_cnt
+        SELECT COUNT(a.id)::int AS app_cnt,
+          COUNT(a.id) FILTER (WHERE a.delivery_status = 'PENDING')::int AS pending_cnt
         FROM applications a
         JOIN job_postings jp2 ON jp2.id = a.job_posting_id
         WHERE jp2.company_id = c.id
