@@ -195,7 +195,7 @@ export default function ApplyModal({
   const handleApply = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) { alert("로그인이 필요합니다."); return; }
-    if (isExternal && !consent) { alert("외부 기업에 지원하려면 개인정보 제3자 제공에 동의해주세요."); return; }
+    if (isExternal && !consent) { alert("지원서를 기업에 전달하려면 전달 동의가 필요해요."); return; }
     setApplying(true);
     try {
       // 최신 이력서를 먼저 DB에 반영 → 스냅샷이 화면과 일치
@@ -267,11 +267,11 @@ export default function ApplyModal({
                     <span style={{
                       width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
                       display: "inline-flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 12, fontWeight: 700,
+                      fontSize: 12, fontWeight: 400,
                       background: active ? "#5f0080" : "#eee",
                       color: active ? "#fff" : "#aaa",
                     }}>{i + 1}</span>
-                    <span style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "#5f0080" : "#aaa" }}>{label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: active ? "#5f0080" : "#aaa" }}>{label}</span>
                   </div>
                   {i < 2 && <span style={{ width: 20, height: 1, background: "#ddd", flexShrink: 0 }} />}
                 </Fragment>
@@ -296,28 +296,28 @@ export default function ApplyModal({
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     <button type="button" className="cv-chip"
                       onClick={() => setCoverLetter((prev) => prev + `${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 포지션"} 채용 공고를 보고 지원하게 된 ${userName || ""}입니다.\n`)}
-                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
                       <span className="cv-chip-full">{`${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 포지션"} 채용 공고를 보고 지원하게 된 ${userName || ""}입니다.`}</span>
                       <span className="cv-chip-short">✏️ 첫인사</span>
                     </button>
                     {coreCompetencies && coreCompetencies.trim() && (
                       <button type="button" className="cv-chip"
                         onClick={() => setCoverLetter((prev) => prev + `저의 핵심 역량인 ${coreCompetencies.trim()}을(를) 바탕으로 ${jobTitle || "해당"} 직무에서 기여하고 싶습니다.\n`)}
-                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
                         <span className="cv-chip-full">{`저의 핵심 역량인 ${coreCompetencies.trim()}을(를) 바탕으로 ${jobTitle || "해당"} 직무에서 기여하고 싶습니다.`}</span>
                         <span className="cv-chip-short">⭐ 핵심역량</span>
                       </button>
                     )}
                     <button type="button" className="cv-chip"
                       onClick={() => setCoverLetter((prev) => prev + `면접에서 제 경험과 역량을 더 구체적으로 말씀드릴 기회를 주시면 감사하겠습니다.\n`)}
-                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
                       <span className="cv-chip-full">면접에서 제 경험과 역량을 더 구체적으로 말씀드릴 기회를 주시면 감사하겠습니다.</span>
                       <span className="cv-chip-short">🙌 맺음말</span>
                     </button>
                     {lastCoverLetter && (
                       <button type="button"
                         onClick={() => setCoverLetter(lastCoverLetter)}
-                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "1px solid #e0d0f0", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
                         📋 이전 자소서 불러오기
                       </button>
                     )}
@@ -366,7 +366,7 @@ export default function ApplyModal({
                     links,
                     portfolioUrl,
                     portfolioFilename,
-                    resumeFileName,
+                    resumeFileName: null, // 첨부 이력서 숨김 처리(미리보기/전송 문서에서 제외)
                     avatarUrl,
                     resumeType,
                     officeJobAreas,
@@ -382,15 +382,15 @@ export default function ApplyModal({
                 지원하면 위 이력서와 자기소개서가 그대로 전송·저장됩니다. 제출 후에는 수정할 수 없어요.
               </p>
               {isExternal && (
-                <label style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: 8, padding: "10px 12px", marginBottom: 10, fontSize: 13, color: "#7c2d12", cursor: "pointer", lineHeight: 1.5 }}>
-                  <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 2, flexShrink: 0 }} />
-                  <span>이 공고는 외부 기업 공고예요. 지원하면 내 이력서·지원 정보가 해당 기업에 <b>제3자 제공</b>됩니다. 이에 동의합니다. (필수)</span>
+                <label style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "#faf7fe", border: "1px solid #ece3f7", borderRadius: 8, padding: "12px 14px", marginBottom: 10, fontSize: 13, color: "#5a5560", cursor: "pointer", lineHeight: 1.6 }}>
+                  <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 2, flexShrink: 0, accentColor: "#5f0080" }} />
+                  <span>이 공고 기업은 아직 뷰티워크 회원이 아니에요. 그래서 지원서를 직접 보내는 대신, 뷰티워크가 회원님을 대신해 이 기업에 지원서를 전달해 드려요. 전달에 동의합니다. (필수)</span>
                 </label>
               )}
               <div style={{ display: "flex", gap: 8 }}>
                 <button
                   onClick={() => setStep("edit")}
-                  style={{ flex: "0 0 auto", padding: "13px 18px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 600, cursor: "pointer" }}
+                  style={{ flex: "0 0 auto", padding: "13px 18px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
                 >
                   수정하기
                 </button>
@@ -410,7 +410,7 @@ export default function ApplyModal({
           {step === "edit" && (
             <>
               <div style={{ marginTop: 8 }}>
-                <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>
+                <label style={{ display: "block", fontSize: 15, fontWeight: 400, color: "#1a1a1a", marginBottom: 12 }}>
                   자기소개서
                 </label>
                 <textarea className="apply-textarea"
@@ -445,7 +445,7 @@ export default function ApplyModal({
                 <button
                   onClick={handleSaveResume}
                   disabled={saving}
-                  style={{ flex: 1, padding: "13px 0", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 600, cursor: "pointer" }}
+                  style={{ flex: 1, padding: "13px 0", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
                 >
                   {saving ? "저장 중..." : "저장하기"}
                 </button>
