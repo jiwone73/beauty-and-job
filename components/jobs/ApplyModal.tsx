@@ -346,7 +346,7 @@ export default function ApplyModal({
           {/* ===== 화면 2: 미리보기 (자소서 + 전체 이력서) ===== */}
           {step === "preview" && (
             <>
-              <div className="apply-preview-doc" style={{ marginBottom: 16 }}>
+              <div className="apply-preview-doc" style={{ marginBottom: 4 }}>
                 <ApplicationDocument
                   coverLetter={coverLetter}
                   resume={{
@@ -384,9 +384,9 @@ export default function ApplyModal({
                 </p>
               )}
               {isExternal && (
-                <label style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "#faf7fe", border: "1px solid #ece3f7", borderRadius: 8, padding: "12px 14px", marginBottom: 10, fontSize: 13, color: "#5a5560", cursor: "pointer", lineHeight: 1.6 }}>
+                <label style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "transparent", border: "none", padding: 0, marginBottom: 10, fontSize: 13, color: "#5a5560", cursor: "pointer", lineHeight: 1.6 }}>
                   <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 2, flexShrink: 0, accentColor: "#5f0080" }} />
-                  <span>지원하면 위 이력서와 자기소개서가 그대로 전송·저장돼요. 제출 후에는 수정할 수 없어요. 이 공고는 뷰티워크가 지원서를 먼저 검토한 뒤 기업에 전달해 드려요. 전달에 동의합니다. (필수)</span>
+                  <span>이 공고는 뷰티워크가 지원서를 먼저 검토한 뒤 기업에 전달해 드려요. 전달에 동의합니다. (필수)</span>
                 </label>
               )}
               <div style={{ display: "flex", gap: 8 }}>
