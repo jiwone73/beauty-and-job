@@ -74,11 +74,11 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
   return (
     <div ref={ref} className="rp-wrap">
       {intro && (
-        <div className="rp-section">
-          <p className="rp-text" style={{ fontWeight: 700, fontSize: "15px", textAlign: "center", margin: 0 }}>{intro}</p>
+        <div className="rp-section" style={{ paddingTop: 0 }}>
+          <p className="rp-text" style={{ fontWeight: 400, fontSize: "15px", textAlign: "center", margin: 0 }}>{intro}</p>
         </div>
       )}
-      <div className="rp-section">
+      <div style={{ paddingTop: "20px" }}>
       <h2 className="rp-section-title" style={{ marginBottom: "12px" }}>기본 정보</h2>
       <div className="rp-header" style={{display:"flex", alignItems:"flex-start", gap:"20px"}}>
         <div style={{flex:1, minWidth:0}}>
