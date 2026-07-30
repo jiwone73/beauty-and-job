@@ -54,6 +54,7 @@ export default function ResumeEditor({
     setEmail, removeLink, removeLanguage, removeExperience,
     removeEducation, removeCareer, certificates, removeCertificate,
     isEntryLevel, setIsEntryLevel,
+    entryExperience, setEntryExperience,
   } = useProfileStore();
 
   // 경력을 추가하면 경력자이므로 '신입' 표시는 자동 해제
@@ -183,6 +184,19 @@ export default function ResumeEditor({
             </button>
           </div>
         </div>
+        {isEntryLevel && (
+          <textarea
+            value={entryExperience}
+            onChange={(e) => setEntryExperience(e.target.value)}
+            placeholder="직무와 연관된 경험을 자세히 작성해 보세요"
+            rows={5}
+            style={{
+              width: "100%", marginTop: 8, padding: "12px 14px", borderRadius: 10,
+              border: "1px solid #e5e5e5", fontSize: 14, lineHeight: 1.6, color: "#1a1a1a",
+              resize: "vertical", boxSizing: "border-box", fontFamily: "inherit",
+            }}
+          />
+        )}
         {isEntryLevel ? null : careers.length === 0 ? null : (
           careers.map((c) => {
             const key = `career-${c.id}`;

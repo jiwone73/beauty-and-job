@@ -61,6 +61,7 @@ export interface ProfileState {
   coreCompetencies: string;
   email: string;
   isEntryLevel: boolean; // 신입(경력 없음) 여부
+  entryExperience: string; // 신입: 직무와 연관된 경험
   loaded: boolean;
 
   // 액션
@@ -89,6 +90,7 @@ export interface ProfileState {
   setCoreCompetencies: (comp: string) => void;
   setEmail: (email: string) => void;
   setIsEntryLevel: (v: boolean) => void;
+  setEntryExperience: (v: string) => void;
   reset: () => void;
 
   // 새 액션: DB 동기화
@@ -125,6 +127,7 @@ export const useProfileStore = create<ProfileState>()(
         coreCompetencies: "",
         email: "",
         isEntryLevel: false,
+        entryExperience: "",
         loaded: false,
 
         reset: () => set({
@@ -141,6 +144,7 @@ export const useProfileStore = create<ProfileState>()(
           coreCompetencies: "",
           email: "",
           isEntryLevel: false,
+          entryExperience: "",
           loaded: false,
         }),
 
@@ -240,6 +244,7 @@ export const useProfileStore = create<ProfileState>()(
         },
         setEmail: (email) => set({ email }),
         setIsEntryLevel: (v) => { set({ isEntryLevel: v }); autoSync(); },
+        setEntryExperience: (v) => { set({ entryExperience: v }); },
 
         // === DB 동기화 ===
         loadFromServer: async () => {
@@ -259,6 +264,7 @@ export const useProfileStore = create<ProfileState>()(
                 intro: profile?.intro || "",
                 coreCompetencies: profile?.core_competencies || "",
                 isEntryLevel: profile?.is_entry_level || false,
+                entryExperience: profile?.entry_experience || "",
                 isCareerVerified: profile?.is_career_verified || false,
                 verifiedDate: profile?.verified_date || "",
                 skills: profile?.skills || [],
@@ -339,6 +345,7 @@ export const useProfileStore = create<ProfileState>()(
                 profile: {
                   intro: s.intro,
                   core_competencies: s.coreCompetencies,
+                  entry_experience: s.entryExperience,
                   is_career_verified: s.isCareerVerified,
                   verified_date: s.verifiedDate,
                   is_entry_level: s.isEntryLevel,

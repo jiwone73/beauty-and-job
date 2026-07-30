@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
     is_career_verified: false,
     verified_date: "",
     is_entry_level: false,
+    entry_experience: "",
     skills: [],
     skill_areas: [],
     certificates: [],
@@ -82,8 +83,8 @@ await client.query("BEGIN");
       `INSERT INTO user_profiles (
         user_id, intro, core_competencies, main_job_group, sub_job,
         is_career_verified, verified_date, skills,
-        skill_areas, work_type_prefer, region_prefer, office_job_areas, is_entry_level, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
+        skill_areas, work_type_prefer, region_prefer, office_job_areas, is_entry_level, entry_experience, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
       ON CONFLICT (user_id) DO UPDATE SET
         intro = EXCLUDED.intro,
         core_competencies = EXCLUDED.core_competencies,
@@ -97,6 +98,7 @@ await client.query("BEGIN");
         region_prefer = EXCLUDED.region_prefer,
         office_job_areas = EXCLUDED.office_job_areas,
         is_entry_level = EXCLUDED.is_entry_level,
+        entry_experience = EXCLUDED.entry_experience,
         updated_at = NOW()`,
       [
         userId,
@@ -112,6 +114,7 @@ await client.query("BEGIN");
         profile.region_prefer || "",
         profile.office_job_areas || [],
         profile.is_entry_level || false,
+        profile.entry_experience || "",
       ]
     );
     // 1-2. resumes upsert (관리자 이력서 관리 노출용) - ON CONFLICT 한 방 처리
