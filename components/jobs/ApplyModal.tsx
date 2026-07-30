@@ -378,14 +378,21 @@ export default function ApplyModal({
                 />
               </div>
 
-              <p style={{ fontSize: 12, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
-                지원하면 위 이력서와 자기소개서가 그대로 전송·저장됩니다. 제출 후에는 수정할 수 없어요.
-              </p>
+              {!isExternal && (
+                <p style={{ fontSize: 12, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
+                  지원하면 위 이력서와 자기소개서가 그대로 전송·저장됩니다. 제출 후에는 수정할 수 없어요.
+                </p>
+              )}
               {isExternal && (
-                <label style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "#faf7fe", border: "1px solid #ece3f7", borderRadius: 8, padding: "12px 14px", marginBottom: 10, fontSize: 13, color: "#5a5560", cursor: "pointer", lineHeight: 1.6 }}>
-                  <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 2, flexShrink: 0, accentColor: "#5f0080" }} />
-                  <span>이 공고는 뷰티워크가 지원서를 먼저 검토한 뒤 기업에 전달해 드려요. 전달에 동의합니다. (필수)</span>
-                </label>
+                <div style={{ background: "#faf7fe", border: "1px solid #ece3f7", borderRadius: 8, padding: "12px 14px", marginBottom: 10 }}>
+                  <p style={{ fontSize: 12, color: "#888", margin: "0 0 8px", lineHeight: 1.6 }}>
+                    지원하면 위 이력서와 자기소개서가 그대로 전송·저장돼요. 제출 후에는 수정할 수 없어요.
+                  </p>
+                  <label style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13, color: "#5a5560", cursor: "pointer", lineHeight: 1.6 }}>
+                    <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 2, flexShrink: 0, accentColor: "#5f0080" }} />
+                    <span>이 공고는 뷰티워크가 지원서를 먼저 검토한 뒤 기업에 전달해 드려요. 전달에 동의합니다. (필수)</span>
+                  </label>
+                </div>
               )}
               <div style={{ display: "flex", gap: 8 }}>
                 <button
