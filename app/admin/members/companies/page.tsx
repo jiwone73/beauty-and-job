@@ -8,7 +8,6 @@ const DATE_VALUES: Record<string, string> = { "전체": "전체", "오늘": "tod
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ExternalCompaniesPanel from "@/components/admin/ExternalCompaniesPanel";
-import ExternalApplicationsPanel from "@/components/admin/ExternalApplicationsPanel";
 // [SMS 발송 기능 보류] 2026-07 — SMS는 휴대폰 인증 전용. 안내는 이메일로 대체 예정.
 // import SmsModal from "@/components/admin/SmsModal";
 import BroadcastModal from "@/components/admin/BroadcastModal";
@@ -100,7 +99,6 @@ function AdminCompaniesContent() {
   const detailId = searchParams.get("detail");
 
   const [tab, setTab] = useState<"member" | "external">(searchParams.get("tab") === "external" ? "external" : "member");
-  const [extView, setExtView] = useState<"companies" | "apps">(searchParams.get("view") === "apps" ? "apps" : "companies");
   const [companies, setCompanies] = useState<Company[]>([]);
   const blockedMode = false;
   const [loading, setLoading] = useState(true);
@@ -288,20 +286,7 @@ function AdminCompaniesContent() {
           </button>
         ))}
       </div>
-      {tab === "external" && (
-        <>
-          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-            {([["companies", "비회원 기업"], ["apps", "외부 지원"]] as const).map(([key, label]) => (
-              <button key={key} onClick={() => setExtView(key)}
-                style={{ fontSize: 13, fontWeight: extView === key ? 700 : 500, padding: "6px 14px", borderRadius: 20, cursor: "pointer",
-                  border: `1px solid ${extView === key ? "#5f0080" : "#e0dce9"}`, background: extView === key ? "#5f0080" : "#fff", color: extView === key ? "#fff" : "#777" }}>
-                {label}
-              </button>
-            ))}
-          </div>
-          {extView === "companies" ? <ExternalCompaniesPanel /> : <ExternalApplicationsPanel />}
-        </>
-      )}
+      {tab === "external" && <ExternalCompaniesPanel />}
       {tab === "member" && (<>
       {!blockedMode && (
         <div className="admin-mini-stats">

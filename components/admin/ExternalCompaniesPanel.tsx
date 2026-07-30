@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
-import { Search, X, Trash2 } from "lucide-react";
+import { useState, useEffect, useCallback, Fragment } from "react";
+import { Search, X, Trash2, ChevronRight, ChevronDown } from "lucide-react";
 import BroadcastModal from "@/components/admin/BroadcastModal";
 
 type Job = { id: string; title: string; status: string; created_at: string };
@@ -23,6 +23,24 @@ type NmCompany = {
   pending_count: number;
   jobs: Job[];
 };
+type App = {
+  id: string;
+  applied_at: string;
+  delivery_status: string | null;
+  forwarded_at: string | null;
+  forwarded_channel: string | null;
+  third_party_consent: boolean;
+  applicant_name: string;
+  applicant_phone: string | null;
+  applicant_email: string | null;
+  job_id: string;
+  job_title: string;
+  apply_method: string;
+  external_contact_email: string | null;
+  ec_contact_email: string | null;
+  company_id: string | null;
+  company_name: string | null;
+};
 type MemberHit = { id: string; company_name: string; brand_name: string | null; business_number: string | null; email: string | null; status: string };
 
 function fmtDate(d: string | null) {
@@ -30,6 +48,7 @@ function fmtDate(d: string | null) {
   const dt = new Date(d);
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
+function fmtMd(d: string | null) { return d ? new Date(d).toLocaleDateString("ko-KR", { month: "2-digit", day: "2-digit" }) : "-"; }
 function fmtPhone(p: string | null) {
   if (!p) return "";
   const d = p.replace(/[^0-9]/g, "");
@@ -51,15 +70,18 @@ function fmtRegion(c: NmCompany) {
   if (c.address) { const p = c.address.trim().split(/\s+/); return [SIDO_SHORT[p[0]] || p[0], p[1]].filter(Boolean).join(" ") || "-"; }
   return "-";
 }
+const METHOD: Record<string, string> = { EMAIL: "이메일 중계", MANAGED: "관리자 대행", REDIRECT: "외부 링크" };
 
 export default function ExternalCompaniesPanel() {
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
   const authH = { Authorization: `Bearer ${token}` };
 
   const [items, setItems] = useState<NmCompany[]>([]);
+  const [apps, setApps] = useState<App[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [editTarget, setEditTarget] = useState<NmCompany | null>(null);
   const [editForm, setEditForm] = useState({ company_name: "", website_url: "", phone: "" });
@@ -69,15 +91,19 @@ export default function ExternalCompaniesPanel() {
   const [broadcastOpen, setBroadcastOpen] = useState(false);
   const [broadcastChannel, setBroadcastChannel] = useState<"email" | "sms">("email");
   const [busy, setBusy] = useState(false);
+  const [busyApp, setBusyApp] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
 
   const load = useCallback(async () => {
     if (!token) return;
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/external-companies", { headers: authH });
-      const j = await res.json();
-      if (j.success) setItems(j.data.items || []);
+      const [rc, ra] = await Promise.all([
+        fetch("/api/admin/external-companies", { headers: authH }).then((r) => r.json()).catch(() => ({})),
+        fetch("/api/admin/external-applications", { headers: authH }).then((r) => r.json()).catch(() => ({})),
+      ]);
+      if (rc.success) setItems(rc.data.items || []);
+      if (ra.success) setApps(ra.data || []);
     } finally {
       setLoading(false);
     }
@@ -86,7 +112,6 @@ export default function ExternalCompaniesPanel() {
 
   useEffect(() => { load(); }, [load]);
 
-  // 연결 대상 회원기업 검색
   useEffect(() => {
     if (!linkTarget) return;
     const q = linkQuery.trim();
@@ -103,6 +128,11 @@ export default function ExternalCompaniesPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linkQuery, linkTarget]);
 
+  // 회사별 지원 그룹핑
+  const appsByCompany: Record<string, App[]> = {};
+  for (const a of apps) { const k = a.company_id || ""; (appsByCompany[k] = appsByCompany[k] || []).push(a); }
+  const pendingOf = (id: string) => (appsByCompany[id] || []).filter((a) => a.delivery_status === "PENDING").length;
+
   const q = search.trim().toLowerCase();
   const filtered = q
     ? items.filter((c) => (c.company_name || "").toLowerCase().includes(q) || (c.phone || "").includes(q) || (c.email || "").toLowerCase().includes(q))
@@ -116,7 +146,6 @@ export default function ExternalCompaniesPanel() {
     setEditForm({ company_name: c.company_name || "", website_url: c.website_url || "", phone: c.phone || "" });
     setEditTarget(c);
   };
-
   const saveEdit = async () => {
     if (!editTarget) return;
     if (!editForm.company_name.trim()) { setMsg("기업명을 입력해주세요."); return; }
@@ -141,7 +170,6 @@ export default function ExternalCompaniesPanel() {
     if (c.merged_into_company_id) { setMsg("이미 회원 기업으로 연결된 곳이에요."); return; }
     setLinkQuery(""); setLinkHits([]); setLinkTarget(c);
   };
-
   const doLink = async (memberId: string, memberName: string) => {
     if (!linkTarget) return;
     setBusy(true); setMsg("");
@@ -178,11 +206,31 @@ export default function ExternalCompaniesPanel() {
     } finally { setBusy(false); }
   };
 
+  // 지원자 → 기업 전달
+  const forward = async (r: App) => {
+    const target = (r.external_contact_email || r.ec_contact_email || "").trim();
+    const m = target
+      ? `${r.company_name}(${target})에 「${r.job_title}」 지원자 ${r.applicant_name}님을 이메일로 전달할까요?`
+      : `${r.company_name}에 전달할 채용 이메일이 없어요. ‘수동 전달함’으로만 표시할까요? (실제 전달은 관리자가 직접)`;
+    if (typeof window !== "undefined" && !window.confirm(m)) return;
+    setBusyApp(r.id); setMsg("");
+    try {
+      const res = await fetch(`/api/admin/external-applications/${r.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...authH },
+        body: JSON.stringify({ action: "forward" }),
+      });
+      const j = await res.json();
+      if (!j.success) { setMsg(j.error?.message || "전달 실패"); }
+      await load();
+    } finally { setBusyApp(null); }
+  };
+
   const totalCos = items.length;
   const totalJobs = items.reduce((s, c) => s + (Number(c.job_count) || 0), 0);
+  const totalPending = apps.filter((a) => a.delivery_status === "PENDING").length;
   const linkedCnt = items.filter((c) => c.merged_into_company_id).length;
 
-  // 선택된 기업 중 연락처 보유 여부 → 발송 버튼 활성화 판정
   const selectedItems = items.filter((c) => selectedIds.includes(c.id));
   const canEmail = selectedItems.some((c) => !!c.email && c.email.includes("@"));
   const canSms = selectedItems.some((c) => !!c.phone && c.phone.replace(/[^0-9]/g, "").length >= 10);
@@ -197,7 +245,7 @@ export default function ExternalCompaniesPanel() {
   return (
     <>
       <div className="admin-mini-stats">
-        {[["비회원 기업", totalCos, "개사"], ["외부 공고", totalJobs, "건"], ["회원 연결됨", linkedCnt, "개사"]].map(([label, count, unit]) => (
+        {[["비회원 기업", totalCos, "개사"], ["외부 공고", totalJobs, "건"], ["전달 대기 지원", totalPending, "건"], ["회원 연결됨", linkedCnt, "개사"]].map(([label, count, unit]) => (
           <div key={label as string} className="admin-mini-stat">
             <span className="admin-mini-stat-label">{label}</span>
             <span className="admin-mini-stat-value">{count as number}<span className="admin-mini-unit">{unit}</span></span>
@@ -220,7 +268,7 @@ export default function ExternalCompaniesPanel() {
 
       <div className="admin-card">
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>총 <strong>{filtered.length}</strong>개사</span>
+          <span>총 <strong>{filtered.length}</strong>개사 · 지원 행을 펼쳐 전달하세요</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <button onClick={() => { if (canEmail) { setBroadcastChannel("email"); setBroadcastOpen(true); } }} disabled={!canEmail} title={!canEmail && selectedIds.length ? "선택한 기업 중 이메일이 있는 곳이 없어요" : undefined} style={btn(canEmail, "#5f0080")}>
               이메일 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
@@ -237,7 +285,7 @@ export default function ExternalCompaniesPanel() {
           </div>
         </div>
         <div style={{ overflowX: "auto" }}>
-          <table className="admin-table" style={{ minWidth: 940, whiteSpace: "nowrap" }}>
+          <table className="admin-table" style={{ minWidth: 960, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
                 <th style={{ width: 40, textAlign: "center" }}>
@@ -258,34 +306,101 @@ export default function ExternalCompaniesPanel() {
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>{items.length === 0 ? "비회원 기업이 아직 없어요. 외부 공고를 등록하면 여기에 쌓여요." : "검색 결과가 없습니다."}</td></tr>
               ) : (
-                filtered.map((c) => (
-                  <tr key={c.id} style={{ background: selectedIds.includes(c.id) ? "#faf5ff" : undefined }}>
-                    <td style={{ textAlign: "center" }}>
-                      <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
-                    </td>
-                    <td className="admin-td-brand">
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        {c.logo_url
-                          ? <img src={c.logo_url} alt="" style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", background: "#f2f2f2" }} />
-                          : <div style={{ width: 28, height: 28, borderRadius: 6, background: "#f2f2f2" }} />}
-                        <span onClick={() => openEdit(c)} title="정보 수정" style={{ fontWeight: 600, color: "#1a1a1a", cursor: "pointer" }}>{c.company_name}</span>
-                      </div>
-                    </td>
-                    <td className="admin-td-date">{fmtRegion(c)}</td>
-                    <td className="admin-td-date">{fmtPhone(c.phone) || c.email || "-"}</td>
-                    <td className="admin-td-date" style={{ textAlign: "center" }}>{c.job_count}</td>
-                    <td className="admin-td-date" style={{ textAlign: "center" }}>
-                      {c.application_count}
-                      {c.pending_count > 0 && <span style={{ marginLeft: 4, color: "#a05a00", fontWeight: 700 }}>({c.pending_count})</span>}
-                    </td>
-                    <td className="admin-td-date">
-                      {c.merged_into_company_id
-                        ? <span style={{ background: "#e8f5e9", color: "#1b7a3d", borderRadius: 6, padding: "2px 8px", fontSize: 12 }}>연결됨{c.merged_into_name ? ` · ${c.merged_into_name}` : ""}</span>
-                        : <span style={{ background: "#f0f0f0", color: "#777", borderRadius: 6, padding: "2px 8px", fontSize: 12 }}>미연결</span>}
-                    </td>
-                    <td className="admin-td-date">{fmtDate(c.created_at)}</td>
-                  </tr>
-                ))
+                filtered.map((c) => {
+                  const cApps = appsByCompany[c.id] || [];
+                  const pend = pendingOf(c.id);
+                  const open = expandedId === c.id;
+                  return (
+                    <Fragment key={c.id}>
+                      <tr style={{ background: selectedIds.includes(c.id) ? "#faf5ff" : undefined }}>
+                        <td style={{ textAlign: "center" }}>
+                          <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
+                        </td>
+                        <td className="admin-td-brand">
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            {c.logo_url
+                              ? <img src={c.logo_url} alt="" style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", background: "#f2f2f2" }} />
+                              : <div style={{ width: 28, height: 28, borderRadius: 6, background: "#f2f2f2" }} />}
+                            <span onClick={() => openEdit(c)} title="정보 수정" style={{ fontWeight: 600, color: "#1a1a1a", cursor: "pointer" }}>{c.company_name}</span>
+                          </div>
+                        </td>
+                        <td className="admin-td-date">{fmtRegion(c)}</td>
+                        <td className="admin-td-date">{fmtPhone(c.phone) || c.email || "-"}</td>
+                        <td className="admin-td-date" style={{ textAlign: "center" }}>{c.job_count}</td>
+                        <td className="admin-td-date" style={{ textAlign: "center" }}>
+                          <button onClick={() => setExpandedId(open ? null : c.id)} disabled={cApps.length === 0}
+                            style={{ display: "inline-flex", alignItems: "center", gap: 3, border: "none", background: "none", cursor: cApps.length ? "pointer" : "default", color: cApps.length ? "#5f0080" : "#bbb", fontWeight: 600, fontSize: 13 }}>
+                            {cApps.length ? (open ? <ChevronDown size={14} /> : <ChevronRight size={14} />) : null}
+                            {cApps.length}
+                            {pend > 0 && <span style={{ color: "#a05a00", fontWeight: 700 }}>({pend})</span>}
+                          </button>
+                        </td>
+                        <td className="admin-td-date">
+                          {c.merged_into_company_id
+                            ? <span style={{ background: "#e8f5e9", color: "#1b7a3d", borderRadius: 6, padding: "2px 8px", fontSize: 12 }}>연결됨{c.merged_into_name ? ` · ${c.merged_into_name}` : ""}</span>
+                            : <span style={{ background: "#f0f0f0", color: "#777", borderRadius: 6, padding: "2px 8px", fontSize: 12 }}>미연결</span>}
+                        </td>
+                        <td className="admin-td-date">{fmtDate(c.created_at)}</td>
+                      </tr>
+                      {open && (
+                        <tr>
+                          <td colSpan={8} style={{ background: "#faf9fc", padding: "10px 16px" }}>
+                            <div style={{ fontSize: 12.5, fontWeight: 700, color: "#5f0080", margin: "2px 0 8px" }}>외부 지원 {cApps.length}건</div>
+                            {cApps.length === 0 ? (
+                              <div style={{ color: "#999", fontSize: 13, padding: "6px 0" }}>이 기업에 들어온 지원이 없어요.</div>
+                            ) : (
+                              <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
+                                <thead>
+                                  <tr style={{ color: "#888", textAlign: "left" }}>
+                                    <th style={{ padding: "4px 8px", fontWeight: 600 }}>지원자</th>
+                                    <th style={{ padding: "4px 8px", fontWeight: 600 }}>지원 공고</th>
+                                    <th style={{ padding: "4px 8px", fontWeight: 600 }}>지원방식</th>
+                                    <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "center" }}>제3자동의</th>
+                                    <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "center" }}>지원일</th>
+                                    <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "center" }}>상태</th>
+                                    <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "right" }}>처리</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {cApps.map((r) => {
+                                    const st = r.delivery_status;
+                                    return (
+                                      <tr key={r.id} style={{ borderTop: "1px solid #eee" }}>
+                                        <td style={{ padding: "6px 8px" }}>
+                                          <div style={{ fontWeight: 700 }}>{r.applicant_name}</div>
+                                          <div style={{ fontSize: 11.5, color: "#999" }}>{[r.applicant_phone, r.applicant_email].filter(Boolean).join(" · ") || "-"}</div>
+                                        </td>
+                                        <td style={{ padding: "6px 8px", color: "#555" }}>{r.job_title}</td>
+                                        <td style={{ padding: "6px 8px", color: "#555" }}>{METHOD[r.apply_method] || r.apply_method}</td>
+                                        <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700, color: r.third_party_consent ? "#0a9d6e" : "#c0392b" }}>{r.third_party_consent ? "✔" : "✘"}</td>
+                                        <td style={{ padding: "6px 8px", textAlign: "center", color: "#888" }}>{fmtMd(r.applied_at)}</td>
+                                        <td style={{ padding: "6px 8px", textAlign: "center" }}>
+                                          {st === "FORWARDED"
+                                            ? <span style={{ fontSize: 11.5, fontWeight: 700, padding: "2px 8px", borderRadius: 20, color: "#0a7d55", background: "#e9f9f1" }}>전달됨{r.forwarded_channel === "MANUAL" ? "(수동)" : ""}</span>
+                                            : st === "FAILED"
+                                              ? <span style={{ fontSize: 11.5, fontWeight: 700, padding: "2px 8px", borderRadius: 20, color: "#b91c1c", background: "#fee2e2" }}>실패</span>
+                                              : <span style={{ fontSize: 11.5, fontWeight: 700, padding: "2px 8px", borderRadius: 20, color: "#b23b00", background: "#fff3ea" }}>대기</span>}
+                                        </td>
+                                        <td style={{ padding: "6px 8px", textAlign: "right" }}>
+                                          {st === "FORWARDED"
+                                            ? <button onClick={() => forward(r)} disabled={busyApp === r.id} style={{ fontSize: 12, fontWeight: 700, borderRadius: 6, padding: "5px 10px", cursor: "pointer", border: "1px solid #ddd", background: "#fff", color: "#666" }}>재전송</button>
+                                            : <button onClick={() => forward(r)} disabled={busyApp === r.id || !r.third_party_consent}
+                                                style={{ fontSize: 12, fontWeight: 700, borderRadius: 6, padding: "5px 11px", cursor: r.third_party_consent ? "pointer" : "default", border: "none", background: r.third_party_consent ? "#5f0080" : "#ccc", color: "#fff" }}>
+                                                {busyApp === r.id ? "처리 중..." : (r.external_contact_email || r.ec_contact_email) ? "기업에 전달" : "수동 전달함"}
+                                              </button>}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })
               )}
             </tbody>
           </table>

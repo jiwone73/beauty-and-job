@@ -13,8 +13,8 @@ export async function GET(req: NextRequest) {
             a.third_party_consent, a.admin_note, a.cover_letter,
             u.name AS applicant_name, u.phone AS applicant_phone, u.email AS applicant_email, u.job_type AS applicant_job_type,
             jp.id AS job_id, jp.title AS job_title, jp.job_type, jp.apply_method,
-            jp.external_contact_email,
-            c.company_name AS company_name, c.email::text AS ec_contact_email, null::uuid AS claimed_company_id
+            jp.external_contact_email, jp.company_id AS company_id,
+            c.company_name AS company_name, c.email::text AS ec_contact_email, c.merged_into_company_id AS claimed_company_id
      FROM applications a
      JOIN job_postings jp ON jp.id = a.job_posting_id AND jp.source = 'EXTERNAL'
      LEFT JOIN companies c ON c.id = jp.company_id
