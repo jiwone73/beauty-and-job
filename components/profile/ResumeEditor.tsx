@@ -171,7 +171,7 @@ export default function ResumeEditor({
       <section id="section-career" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">
-            경력
+            경력 구분
             <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
             {totalCareer && (
               <span style={{ marginLeft: "6px", fontSize: "13px", fontWeight: 400, color: "#888" }}>
@@ -179,34 +179,33 @@ export default function ResumeEditor({
               </span>
             )}
           </h2>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            {careerChoice === "경력" ? (
-              /* 경력 선택 시: 추가(+) 버튼만 표기 */
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <select
+              aria-label="경력 구분 선택"
+              value={careerChoice}
+              disabled={careers.length > 0}
+              onChange={(e) => {
+                const v = e.target.value as "" | "경력" | "신입";
+                setCareerChoice(v);
+                setIsEntryLevel(v === "신입");
+              }}
+              style={{
+                fontSize: 13, color: careers.length > 0 ? "#bbb" : "#333",
+                padding: "6px 24px 6px 4px", border: "none",
+                background: "transparent", cursor: careers.length > 0 ? "default" : "pointer",
+                appearance: "none", backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>\")",
+                backgroundRepeat: "no-repeat", backgroundPosition: "right center", whiteSpace: "nowrap",
+              }}
+            >
+              <option value="" disabled hidden></option>
+              <option value="경력">경력</option>
+              <option value="신입">신입</option>
+            </select>
+            {careerChoice === "경력" && (
               <button className="resume-icon-btn" aria-label="경력 추가"
                 onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
                 <Plus size={18} />
               </button>
-            ) : (
-              <select
-                aria-label="경력 선택"
-                value={careerChoice}
-                onChange={(e) => {
-                  const v = e.target.value as "" | "경력" | "신입";
-                  setCareerChoice(v);
-                  setIsEntryLevel(v === "신입");
-                }}
-                style={{
-                  fontSize: 13, color: "#333",
-                  padding: "6px 28px 6px 10px", borderRadius: 8, border: "1px solid #ddd",
-                  background: "#fff", cursor: "pointer",
-                  appearance: "none", backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>\")",
-                  backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center", whiteSpace: "nowrap",
-                }}
-              >
-                <option value="" disabled hidden></option>
-                <option value="경력">경력</option>
-                <option value="신입">신입</option>
-              </select>
             )}
           </div>
         </div>
