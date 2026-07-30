@@ -1048,7 +1048,7 @@ export default function ProfilePage() {
       {showEmailModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: 16 }}>
           <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 400, width: "100%" }}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 16px" }}>이메일 변경</h3>
+            <h3 style={{ fontSize: 17, fontWeight: 400, margin: "0 0 16px" }}>이메일 변경</h3>
             {isKakao ? (
               <p style={{ fontSize: 13, color: "#555", margin: 0, lineHeight: 1.6 }}>카카오 계정은 이메일이 카카오와 연동돼 있어요. 카카오에서 이메일을 변경하신 뒤, 아래 <b>카카오로 동기화</b>를 누르면 최신 이메일로 반영됩니다.</p>
             ) : (
@@ -1056,7 +1056,7 @@ export default function ProfilePage() {
                 <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
                   <input type="email" placeholder="새 이메일 주소" value={newEmailInput}
                     onChange={(e) => { setNewEmailInput(e.target.value); setEmailCodeSent(false); setEmailCode(""); }}
-                    style={{ flex: 1, height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box" }} />
+                    style={{ flex: 1, minWidth: 0, height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box" }} />
                   <button onClick={sendEmailCode} disabled={emailSending || !newEmailInput.trim()}
                     style={{ flexShrink: 0, height: 44, padding: "0 14px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", cursor: emailSending ? "not-allowed" : "pointer", opacity: emailSending ? 0.6 : 1 }}>
                     {emailSending ? "전송중" : emailCodeSent ? "재전송" : "인증번호 받기"}
