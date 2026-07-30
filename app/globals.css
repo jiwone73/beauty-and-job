@@ -3239,7 +3239,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .rp-section-title {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 400;
   color: #5f0080;
   text-transform: none;
   letter-spacing: normal;

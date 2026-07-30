@@ -20,7 +20,7 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
     <div ref={ref} className="app-doc" style={{ background: "#fff" }}>
       {hasCover && (
         <div style={{ background: "#fff", padding: "0 0 22px" }}>
-          <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: "0 0 4px", lineHeight: 1.5 }}>자기소개서</h2>
+          <h2 style={{ fontSize: 17, fontWeight: 400, color: "#1a1a1a", margin: "0 0 4px", lineHeight: 1.5 }}>자기소개서</h2>
           {subtitle && (
             <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 14px" }}>{subtitle}</p>
           )}
@@ -28,7 +28,7 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
         </div>
       )}
       <div style={{ background: "#fff", padding: hasCover ? "22px 0 6px" : "0 0 6px", borderTop: hasCover ? "1px solid #e0e0e0" : "none" }}>
-        <h2 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: 0, lineHeight: 1.6 }}>이력서</h2>
+        <h2 style={{ fontSize: 17, fontWeight: 400, color: "#1a1a1a", margin: 0, lineHeight: 1.6 }}>이력서</h2>
       </div>
       <ResumePreview {...resume} />
       {children}
