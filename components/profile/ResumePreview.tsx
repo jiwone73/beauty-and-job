@@ -132,7 +132,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       )}
       {resumeType === "salon" && skillAreas.length > 0 && (
         <div className="rp-section">
-          <h2 className="rp-section-title">시술 분야 · 전문 영역</h2>
+          <h2 className="rp-section-title">희망 직군 · 전문 영역</h2>
           <div className="rp-chips">
             {skillAreas.map((area) => (
               <span key={area} className="rp-chip">{area}</span>

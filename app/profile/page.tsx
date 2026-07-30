@@ -494,7 +494,7 @@ export default function ProfilePage() {
   if (!emailInput) missingRequired.push("이메일");
   if (!addressRoad) missingRequired.push("거주지");
   if (dbJobType === "OFFICE" && officeJobAreas.length === 0) missingRequired.push("직군 영역");
-  if (dbJobType === "STORE" && skillAreas.length === 0) missingRequired.push("시술 분야");
+  if (dbJobType === "STORE" && skillAreas.length === 0) missingRequired.push("희망 직군");
   if (!preferredRegions || preferredRegions.length === 0) missingRequired.push("희망 근무지역");
 
   // 직군/지역 한 줄 요약값
@@ -972,7 +972,7 @@ export default function ProfilePage() {
                 {dbJobType === "STORE" && (
                   <>
                     <InfoRow
-                      label="시술 분야"
+                      label="희망 직군"
                       value={jobAreaSummary(skillAreas)}
                       isEmpty={skillAreas.length === 0}
                       onClick={() => setJobAreaModal("STORE")}
