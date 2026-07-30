@@ -164,7 +164,7 @@ export default function ResumeEditor({
           <h2 className="resume-section-title">
             경력
             <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
-            {totalCareer && (
+            {!isEntryLevel && totalCareer && (
               <span style={{ marginLeft: "6px", fontSize: "13px", fontWeight: 400, color: "#888" }}>
                 ({totalCareer})
               </span>
