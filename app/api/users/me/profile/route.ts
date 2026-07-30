@@ -223,23 +223,29 @@ export async function PATCH(req: NextRequest) {
   const userId = auth!.sub;
   const b = await req.json().catch(() => ({}));
 
-  const skill_areas = Array.isArray(b.skill_areas) ? b.skill_areas : [];
-  const work_type_prefer = typeof b.work_type_prefer === "string" ? b.work_type_prefer : "";
-  const region_prefer = typeof b.region_prefer === "string" ? b.region_prefer : "";
-  const office_job_areas = Array.isArray(b.office_job_areas) ? b.office_job_areas : [];
+  // 요청 body에 포함된 컬럼만 부분 업데이트(빠진 컬럼은 건드리지 않음).
+  // intro/careers 등 다른 데이터엔 영향 없음.
+  const fields: [string, any][] = [];
+  if (Array.isArray(b.skill_areas)) fields.push(["skill_areas", b.skill_areas]);
+  if (typeof b.work_type_prefer === "string") fields.push(["work_type_prefer", b.work_type_prefer]);
+  if (typeof b.region_prefer === "string") fields.push(["region_prefer", b.region_prefer]);
+  if (Array.isArray(b.office_job_areas)) fields.push(["office_job_areas", b.office_job_areas]);
+  if (typeof b.entry_experience === "string") fields.push(["entry_experience", b.entry_experience]);
+
+  if (fields.length === 0) return ok({ saved: true });
+
+  const cols = fields.map((f) => f[0]);
+  const insertCols = ["user_id", ...cols, "updated_at"];
+  const placeholders = ["$1", ...cols.map((_, i) => `$${i + 2}`), "NOW()"];
+  const updateSet = [...cols.map((c) => `${c} = EXCLUDED.${c}`), "updated_at = NOW()"];
+  const params = [userId, ...fields.map((f) => f[1])];
 
   try {
-    // user_profiles의 해당 컬럼만 upsert. intro/careers 등 다른 데이터엔 영향 없음.
     await pool.query(
-      `INSERT INTO user_profiles (user_id, skill_areas, work_type_prefer, region_prefer, office_job_areas, updated_at)
-       VALUES ($1, $2, $3, $4, $5, NOW())
-       ON CONFLICT (user_id) DO UPDATE SET
-         skill_areas = EXCLUDED.skill_areas,
-         work_type_prefer = EXCLUDED.work_type_prefer,
-         region_prefer = EXCLUDED.region_prefer,
-         office_job_areas = EXCLUDED.office_job_areas,
-         updated_at = NOW()`,
-      [userId, skill_areas, work_type_prefer, region_prefer, office_job_areas]
+      `INSERT INTO user_profiles (${insertCols.join(", ")})
+       VALUES (${placeholders.join(", ")})
+       ON CONFLICT (user_id) DO UPDATE SET ${updateSet.join(", ")}`,
+      params
     );
     return ok({ saved: true });
   } catch (e: any) {

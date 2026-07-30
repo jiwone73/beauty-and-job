@@ -60,6 +60,30 @@ export default function ResumeEditor({
   // 신입 전환 확인 모달(경력이 있는 상태에서 신입으로 바꿀 때)
   const [entryConfirmOpen, setEntryConfirmOpen] = useState(false);
 
+  // 신입 경험 저장(부분 저장 PATCH). 저장 시 앞뒤 공백 제거.
+  const [savingEntry, setSavingEntry] = useState(false);
+  const [entrySaved, setEntrySaved] = useState(false);
+  const saveEntryExperience = async () => {
+    const trimmed = entryExperience.replace(/[ \t]+$/gm, "").trim();
+    setEntryExperience(trimmed);
+    try {
+      setSavingEntry(true);
+      const token = localStorage.getItem("access_token");
+      const res = await fetch("/api/users/me/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ entry_experience: trimmed }),
+      });
+      if (!res.ok) throw new Error();
+      setEntrySaved(true);
+      setTimeout(() => setEntrySaved(false), 1500);
+    } catch {
+      alert("저장에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setSavingEntry(false);
+    }
+  };
+
   const [careerModalOpen, setCareerModalOpen] = useState(false);
   const [editCareer, setEditCareer] = useState<any>(null);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
@@ -193,17 +217,36 @@ export default function ResumeEditor({
           </div>
         </div>
         {isEntryLevel && (
-          <textarea
-            value={entryExperience}
-            onChange={(e) => setEntryExperience(e.target.value)}
-            placeholder="아카데미·실습, 자격증, 대회·아르바이트 등 뷰티 직무와 이어지는 경험을 구체적으로 적어 보세요"
-            rows={5}
-            style={{
-              width: "100%", marginTop: 8, padding: "12px 14px", borderRadius: 10,
-              border: "1px solid #e5e5e5", fontSize: 14, lineHeight: 1.6, color: "#1a1a1a",
-              resize: "vertical", boxSizing: "border-box", fontFamily: "inherit",
-            }}
-          />
+          <div style={{ marginTop: 8 }}>
+            <textarea
+              value={entryExperience}
+              onChange={(e) => setEntryExperience(e.target.value)}
+              placeholder="아카데미·실습, 자격증, 대회·아르바이트 등 뷰티 직무와 이어지는 경험을 구체적으로 적어 보세요"
+              rows={5}
+              style={{
+                width: "100%", display: "block", padding: "12px 14px", borderRadius: 10,
+                border: "1px solid #e5e5e5", fontSize: 14, lineHeight: 1.6, color: "#1a1a1a",
+                resize: "vertical", boxSizing: "border-box", fontFamily: "inherit",
+              }}
+            />
+            {!resumeFileReadOnly && (
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+                <button
+                  type="button"
+                  onClick={saveEntryExperience}
+                  disabled={savingEntry}
+                  style={{
+                    padding: "8px 18px", borderRadius: 8, border: "none",
+                    background: entrySaved ? "#2e7d32" : "#5f0080", color: "#fff",
+                    fontSize: 13, fontWeight: 600, cursor: savingEntry ? "default" : "pointer",
+                    opacity: savingEntry ? 0.6 : 1,
+                  }}
+                >
+                  {savingEntry ? "저장 중…" : entrySaved ? "저장됨" : "저장"}
+                </button>
+              </div>
+            )}
+          </div>
         )}
         {isEntryLevel ? null : careers.length === 0 ? null : (
           careers.map((c) => {
@@ -244,7 +287,10 @@ export default function ResumeEditor({
       {/* 학력 */}
       <section id="section-education" className="resume-section">
         <div className="resume-section-head">
-          <h2 className="resume-section-title">학력</h2>
+          <h2 className="resume-section-title">
+            학력
+            <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
+          </h2>
           <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
             <Plus size={18} />
           </button>
