@@ -384,7 +384,7 @@ export default function ApplyModal({
               {isExternal && (
                 <label style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "#faf7fe", border: "1px solid #ece3f7", borderRadius: 8, padding: "12px 14px", marginBottom: 10, fontSize: 13, color: "#5a5560", cursor: "pointer", lineHeight: 1.6 }}>
                   <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 2, flexShrink: 0, accentColor: "#5f0080" }} />
-                  <span>이 공고는 뷰티워크가 채용을 대행하고 있어요. 지원서를 뷰티워크가 먼저 검토한 뒤 기업에 전달해 드립니다. 전달에 동의합니다. (필수)</span>
+                  <span>이 공고는 뷰티워크가 지원서를 먼저 검토한 뒤 기업에 전달해 드려요. 전달에 동의합니다. (필수)</span>
                 </label>
               )}
               <div style={{ display: "flex", gap: 8 }}>
