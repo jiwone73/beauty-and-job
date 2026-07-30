@@ -60,6 +60,7 @@ export interface ProfileState {
   intro: string;
   coreCompetencies: string;
   email: string;
+  isEntryLevel: boolean; // 신입(경력 없음) 여부
   loaded: boolean;
 
   // 액션
@@ -87,6 +88,7 @@ export interface ProfileState {
   setIntro: (intro: string) => void;
   setCoreCompetencies: (comp: string) => void;
   setEmail: (email: string) => void;
+  setIsEntryLevel: (v: boolean) => void;
   reset: () => void;
 
   // 새 액션: DB 동기화
@@ -122,6 +124,7 @@ export const useProfileStore = create<ProfileState>()(
         intro: "",
         coreCompetencies: "",
         email: "",
+        isEntryLevel: false,
         loaded: false,
 
         reset: () => set({
@@ -137,6 +140,7 @@ export const useProfileStore = create<ProfileState>()(
           intro: "",
           coreCompetencies: "",
           email: "",
+          isEntryLevel: false,
           loaded: false,
         }),
 
@@ -235,6 +239,7 @@ export const useProfileStore = create<ProfileState>()(
           autoSync();
         },
         setEmail: (email) => set({ email }),
+        setIsEntryLevel: (v) => { set({ isEntryLevel: v }); autoSync(); },
 
         // === DB 동기화 ===
         loadFromServer: async () => {
@@ -253,6 +258,7 @@ export const useProfileStore = create<ProfileState>()(
               set({
                 intro: profile?.intro || "",
                 coreCompetencies: profile?.core_competencies || "",
+                isEntryLevel: profile?.is_entry_level || false,
                 isCareerVerified: profile?.is_career_verified || false,
                 verifiedDate: profile?.verified_date || "",
                 skills: profile?.skills || [],
@@ -335,6 +341,7 @@ export const useProfileStore = create<ProfileState>()(
                   core_competencies: s.coreCompetencies,
                   is_career_verified: s.isCareerVerified,
                   verified_date: s.verifiedDate,
+                  is_entry_level: s.isEntryLevel,
                   skills: s.skills,
                   // signupStore 데이터 통합
                   skill_areas: signupData.skillAreas || [],
