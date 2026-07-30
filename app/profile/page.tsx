@@ -667,9 +667,6 @@ export default function ProfilePage() {
         ) : activeTab === "profile" ? (
           <>
             <section className="profile-section">
-              <div className="profile-section-head">
-                <h2 className="profile-section-title">기본 정보</h2>
-              </div>
               <div className="profile-info-card">
                 <div style={{ padding: "11px 14px", borderBottom: "1px solid #e0d0f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
                   <span className="profile-info-label">이름/사진<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
