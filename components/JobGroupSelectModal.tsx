@@ -9,12 +9,18 @@ import {
 
 interface Props {
   open: boolean;
-  jobType: JobType;              // "OFFICE" | "STORE"
-  selected: string[];           // 현재 선택된 소분류 값
+  jobType: JobType;              // "OFFICE" | "STORE" — 초기/기본 활성 트랙
+  selected: string[];           // 단일 트랙 모드용 (enableToggle 미사용 시)
   onChange: (next: string[]) => void;
   onClose: () => void;
   title?: string;
   maxSelect?: number;           // 미지정 시 무제한
+  // ── 이중 트랙(토글) 모드 ──
+  enableToggle?: boolean;                       // true면 매장/사무 토글 노출
+  storeSelected?: string[];                     // 매장 트랙 선택값 (skillAreas)
+  officeSelected?: string[];                    // 사무 트랙 선택값 (officeJobAreas)
+  onChangeStore?: (next: string[]) => void;
+  onChangeOffice?: (next: string[]) => void;
 }
 
 export default function JobGroupSelectModal({
@@ -25,14 +31,26 @@ export default function JobGroupSelectModal({
   onClose,
   title = "직군 선택",
   maxSelect,
+  enableToggle,
+  storeSelected,
+  officeSelected,
+  onChangeStore,
+  onChangeOffice,
 }: Props) {
-  const groups = getJobGroups(jobType);
+  const [activeType, setActiveType] = useState<JobType>(jobType);
+  const groups = getJobGroups(activeType);
   const [activeGroup, setActiveGroup] = useState<string>(groups[0]?.group ?? "");
 
-  // jobType이 바뀌면 활성 대분류 초기화 (사무직 ↔ 매장직 전환)
+  // 열릴 때 활성 트랙을 기본값(잡타입)으로 초기화
   useEffect(() => {
-    setActiveGroup(getJobGroups(jobType)[0]?.group ?? "");
-  }, [jobType]);
+    if (!open) return;
+    setActiveType(jobType);
+  }, [open, jobType]);
+
+  // 활성 트랙이 바뀌면 대분류 초기화
+  useEffect(() => {
+    setActiveGroup(getJobGroups(activeType)[0]?.group ?? "");
+  }, [activeType]);
 
   // 열려 있을 때 body 스크롤 잠금 (모바일 시트에서 특히 중요)
   useEffect(() => {
@@ -46,26 +64,55 @@ export default function JobGroupSelectModal({
 
   if (!open) return null;
 
-  const subItems = getJobSubGroups(jobType, activeGroup);
+  // 현재 활성 트랙 기준 선택값·변경함수
+  const curSelected = enableToggle
+    ? activeType === "STORE"
+      ? storeSelected ?? []
+      : officeSelected ?? []
+    : selected;
+  const curOnChange = enableToggle
+    ? (activeType === "STORE" ? onChangeStore : onChangeOffice) ?? (() => {})
+    : onChange;
+
+  const subItems = getJobSubGroups(activeType, activeGroup);
 
   const toggleItem = (item: string) => {
-    if (selected.includes(item)) {
-      onChange(selected.filter((s) => s !== item));
+    if (curSelected.includes(item)) {
+      curOnChange(curSelected.filter((s) => s !== item));
     } else {
-      if (maxSelect && selected.length >= maxSelect) {
+      if (maxSelect && curSelected.length >= maxSelect) {
         alert(`최대 ${maxSelect}개까지 선택할 수 있어요.`);
         return;
       }
-      onChange([...selected, item]);
+      curOnChange([...curSelected, item]);
     }
   };
 
-  const removeChip = (item: string) => onChange(selected.filter((s) => s !== item));
-  const clearAll = () => onChange([]);
+  // 칩: 이중 트랙이면 두 트랙 모두 표시
+  const chips: { item: string; track: JobType }[] = enableToggle
+    ? [
+        ...(storeSelected ?? []).map((i) => ({ item: i, track: "STORE" as JobType })),
+        ...(officeSelected ?? []).map((i) => ({ item: i, track: "OFFICE" as JobType })),
+      ]
+    : selected.map((i) => ({ item: i, track: jobType }));
+
+  const removeChip = (item: string, track: JobType) => {
+    if (!enableToggle) {
+      onChange(selected.filter((s) => s !== item));
+      return;
+    }
+    if (track === "STORE") onChangeStore?.((storeSelected ?? []).filter((s) => s !== item));
+    else onChangeOffice?.((officeSelected ?? []).filter((s) => s !== item));
+  };
+
+  const clearAll = () => curOnChange([]);
+  const totalCount = enableToggle
+    ? (storeSelected?.length ?? 0) + (officeSelected?.length ?? 0)
+    : selected.length;
 
   // 대분류별 선택 개수 (왼쪽 배지)
   const countInGroup = (g: string) =>
-    getJobSubGroups(jobType, g).filter((i) => selected.includes(i)).length;
+    getJobSubGroups(activeType, g).filter((i) => curSelected.includes(i)).length;
 
   return (
     <>
@@ -92,6 +139,12 @@ export default function JobGroupSelectModal({
           background: none; border: none; font-size: 22px; line-height: 1;
           color: #999; cursor: pointer; padding: 0 4px;
         }
+        .jgm-toggle { display: flex; gap: 8px; padding: 12px 20px 2px; flex-shrink: 0; }
+        .jgm-toggle button {
+          flex: 1; padding: 9px; border-radius: 9px; border: 1px solid #e2e0e6;
+          background: #fff; color: #888; font-size: 14px; font-weight: 400; cursor: pointer;
+        }
+        .jgm-toggle button.on { background: #5f0080; color: #fff; border-color: #5f0080; }
         .jgm-chips {
           display: flex; flex-wrap: wrap; gap: 6px;
           padding: 12px 20px; border-bottom: 1px solid #f5f5f5;
@@ -102,6 +155,8 @@ export default function JobGroupSelectModal({
           background: #f3e5f5; color: #5f0080;
           border-radius: 16px; padding: 5px 10px; font-size: 13px; font-weight: 400;
         }
+        .jgm-chip.office { background: #e7f0ff; color: #1f5fbf; }
+        .jgm-chip.office button { color: #1f5fbf; }
         .jgm-chip button {
           background: none; border: none; color: #5f0080;
           cursor: pointer; font-size: 14px; line-height: 1; padding: 0;
@@ -180,15 +235,33 @@ export default function JobGroupSelectModal({
             </button>
           </div>
 
+          {/* 트랙 토글 (매장직/사무직) */}
+          {enableToggle && (
+            <div className="jgm-toggle">
+              <button
+                className={activeType === "STORE" ? "on" : ""}
+                onClick={() => setActiveType("STORE")}
+              >
+                매장직
+              </button>
+              <button
+                className={activeType === "OFFICE" ? "on" : ""}
+                onClick={() => setActiveType("OFFICE")}
+              >
+                사무직
+              </button>
+            </div>
+          )}
+
           {/* 선택된 칩 */}
           <div className="jgm-chips">
-            {selected.length === 0 ? (
+            {chips.length === 0 ? (
               <span className="jgm-chips-empty">선택한 직군이 여기 표시돼요</span>
             ) : (
-              selected.map((item) => (
-                <span key={item} className="jgm-chip">
+              chips.map(({ item, track }) => (
+                <span key={`${track}-${item}`} className={`jgm-chip ${track === "OFFICE" ? "office" : ""}`}>
                   {item}
-                  <button onClick={() => removeChip(item)} aria-label={`${item} 삭제`}>
+                  <button onClick={() => removeChip(item, track)} aria-label={`${item} 삭제`}>
                     ×
                   </button>
                 </span>
@@ -216,7 +289,7 @@ export default function JobGroupSelectModal({
 
             <div className="jgm-right">
               {subItems.map((item) => {
-                const isSel = selected.includes(item);
+                const isSel = curSelected.includes(item);
                 return (
                   <button
                     key={item}
@@ -237,7 +310,7 @@ export default function JobGroupSelectModal({
               초기화
             </button>
             <button className="jgm-apply" onClick={onClose}>
-              {selected.length > 0 ? `${selected.length}개 적용` : "적용"}
+              {totalCount > 0 ? `${totalCount}개 적용` : "적용"}
             </button>
           </div>
         </div>

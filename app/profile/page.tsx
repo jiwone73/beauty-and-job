@@ -496,8 +496,8 @@ export default function ProfilePage() {
   if (!gender) missingRequired.push("성별");
   if (!emailInput) missingRequired.push("이메일");
   if (!addressRoad) missingRequired.push("거주지");
-  if (dbJobType === "OFFICE" && officeJobAreas.length === 0) missingRequired.push("직군 영역");
-  if (dbJobType === "STORE" && skillAreas.length === 0) missingRequired.push("희망 직군");
+  if (dbJobType === "OFFICE" && officeJobAreas.length === 0) missingRequired.push("직군");
+  if (dbJobType === "STORE" && skillAreas.length === 0) missingRequired.push("직군");
   if (!preferredRegions || preferredRegions.length === 0) missingRequired.push("희망 근무지역");
 
   // 직군/지역 한 줄 요약값
@@ -971,26 +971,13 @@ export default function ProfilePage() {
             {/* 직무·희망 조건 — 기본 정보에 이어 한 줄씩 */}
             <section className="profile-section" style={{ marginTop: 0 }}>
               <div className="profile-info-card">
-                {dbJobType === "OFFICE" && (
-                  <InfoRow
-                    label="직군 영역"
-                    value={jobAreaSummary(officeJobAreas)}
-                    isEmpty={officeJobAreas.length === 0}
-                    onClick={() => setJobAreaModal("OFFICE")}
-                    required
-                  />
-                )}
-                {dbJobType === "STORE" && (
-                  <>
-                    <InfoRow
-                      label="희망 직군"
-                      value={jobAreaSummary(skillAreas)}
-                      isEmpty={skillAreas.length === 0}
-                      onClick={() => setJobAreaModal("STORE")}
-                      required
-                    />
-                  </>
-                )}
+                <InfoRow
+                  label="직군"
+                  value={jobAreaSummary([...skillAreas, ...officeJobAreas])}
+                  isEmpty={dbJobType === "STORE" ? skillAreas.length === 0 : officeJobAreas.length === 0}
+                  onClick={() => setJobAreaModal(dbJobType === "STORE" ? "STORE" : "OFFICE")}
+                  required
+                />
                 <InfoRow
                   label="희망 근무지역"
                   value={regionSummary}
@@ -1012,8 +999,13 @@ export default function ProfilePage() {
             <JobGroupSelectModal
               open={jobAreaModal !== null}
               jobType={jobAreaModal ?? "OFFICE"}
-              selected={jobAreaModal === "STORE" ? skillAreas : officeJobAreas}
-              onChange={jobAreaModal === "STORE" ? (v: string[]) => { setStoreProfile({ skillAreas: v }); persistStoreProfile({ skill_areas: v }); } : saveOfficeJobAreas}
+              selected={[]}
+              onChange={() => {}}
+              enableToggle
+              storeSelected={skillAreas}
+              officeSelected={officeJobAreas}
+              onChangeStore={(v: string[]) => { setStoreProfile({ skillAreas: v }); persistStoreProfile({ skill_areas: v }); }}
+              onChangeOffice={saveOfficeJobAreas}
               onClose={() => setJobAreaModal(null)}
             />
             <div className="profile-bottom-cta">
