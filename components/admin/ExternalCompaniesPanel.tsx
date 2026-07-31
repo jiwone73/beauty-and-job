@@ -2,6 +2,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Search, X, Trash2 } from "lucide-react";
 import BroadcastModal from "@/components/admin/BroadcastModal";
+import FilterDropdown from "@/components/company/FilterDropdown";
+
+const SORT_LABELS: Record<string, string> = { recent: "등록일순", name: "기업명순", stage: "진행 단계순" };
+const SORT_VALUES: Record<string, "recent" | "name" | "stage"> = { "등록일순": "recent", "기업명순": "name", "진행 단계순": "stage" };
 
 type Job = { id: string; title: string; status: string; created_at: string };
 type NmCompany = {
@@ -119,6 +123,7 @@ export default function ExternalCompaniesPanel() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [sortBy, setSortBy] = useState<"recent" | "name" | "stage">("recent");
+  const [stageFilter, setStageFilter] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -159,14 +164,18 @@ export default function ExternalCompaniesPanel() {
   for (const a of apps) { const k = a.company_id || ""; (appsByCompany[k] = appsByCompany[k] || []).push(a); }
   const pendingOf = (id: string) => (appsByCompany[id] || []).filter((a) => a.delivery_status === "PENDING").length;
 
+  const stageOfCompany = (c: NmCompany) => companyStage(c, appsByCompany[c.id] || []);
+  const stageCounts = STAGES.map((_, i) => items.filter((c) => stageOfCompany(c) === i + 1).length);
+
   const q = search.trim().toLowerCase();
   const searched = q
     ? items.filter((c) => (c.company_name || "").toLowerCase().includes(q) || (c.phone || "").includes(q) || (c.email || "").toLowerCase().includes(q))
     : items;
-  const filtered = [...searched].sort((a, b) => {
+  const staged = stageFilter ? searched.filter((c) => stageOfCompany(c) === stageFilter) : searched;
+  const filtered = [...staged].sort((a, b) => {
     if (sortBy === "name") return (a.company_name || "").localeCompare(b.company_name || "", "ko");
     if (sortBy === "stage") {
-      const d = companyStage(b, appsByCompany[b.id] || []) - companyStage(a, appsByCompany[a.id] || []);
+      const d = stageOfCompany(b) - stageOfCompany(a);
       if (d !== 0) return d;
     }
     return (b.created_at || "").localeCompare(a.created_at || "");
@@ -240,11 +249,6 @@ export default function ExternalCompaniesPanel() {
     } finally { setBusy(false); }
   };
 
-  const totalCos = items.length;
-  const totalJobs = items.reduce((s, c) => s + (Number(c.job_count) || 0), 0);
-  const totalPending = apps.filter((a) => a.delivery_status === "PENDING").length;
-  const linkedCnt = items.filter((c) => c.merged_into_company_id).length;
-
   const selectedItems = items.filter((c) => selectedIds.includes(c.id));
   const canEmail = selectedItems.some((c) => !!c.email && c.email.includes("@"));
   const canSms = selectedItems.some((c) => !!c.phone && c.phone.replace(/[^0-9]/g, "").length >= 10);
@@ -259,17 +263,23 @@ export default function ExternalCompaniesPanel() {
   return (
     <>
       <div className="admin-mini-stats">
-        {[["비회원 기업", totalCos, "개사"], ["외부 공고", totalJobs, "건"], ["전달 대기", totalPending, "건"], ["회원 연결됨", linkedCnt, "개사"]].map(([label, count, unit]) => (
-          <div key={label as string} className="admin-mini-stat">
-            <span className="admin-mini-stat-label">{label}</span>
-            <span className="admin-mini-stat-value">{count as number}<span className="admin-mini-unit">{unit}</span></span>
-          </div>
-        ))}
+        {STAGES.map((label, i) => {
+          const n = i + 1;
+          const active = stageFilter === n;
+          return (
+            <div key={label} className="admin-mini-stat"
+              onClick={() => setStageFilter(active ? null : n)}
+              style={{ cursor: "pointer", ...(active ? { outline: "2px solid #5f0080", outlineOffset: "-2px" } : {}) }}>
+              <span className="admin-mini-stat-label">{n}. {label}</span>
+              <span className="admin-mini-stat-value">{stageCounts[i]}<span className="admin-mini-unit">개사</span></span>
+            </div>
+          );
+        })}
       </div>
 
       {/* 선택 기업 진행 단계 게이지 (1~6) */}
       {selectedItems.length > 0 && (
-        <div style={{ border: "1px solid #eee", borderRadius: 10, padding: "14px 16px", margin: "0 0 14px", background: "#fff" }}>
+        <div className="admin-card" style={{ padding: "14px 16px", marginBottom: 14 }}>
           <div style={{ fontSize: 13, color: "#333", marginBottom: 12 }}>선택 기업 진행 단계 <span style={{ color: "#999" }}>({selectedItems.length})</span></div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {selectedItems.map((c) => {
@@ -306,12 +316,16 @@ export default function ExternalCompaniesPanel() {
             <Search size={16} className="admin-search-icon" />
             <input className="admin-search-input" placeholder="기업명·연락처 검색" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as "recent" | "name" | "stage")}
-            style={{ marginLeft: 8, fontSize: 13, padding: "8px 12px", borderRadius: 8, border: "1px solid #e0e0e0", background: "#fff", cursor: "pointer" }}>
-            <option value="recent">등록일순</option>
-            <option value="name">기업명순</option>
-            <option value="stage">진행 단계순</option>
-          </select>
+          <FilterDropdown label="정렬"
+            value={SORT_LABELS[sortBy]}
+            options={["등록일순", "기업명순", "진행 단계순"]}
+            onChange={(v) => setSortBy(SORT_VALUES[v] ?? "recent")} />
+          {stageFilter && (
+            <FilterDropdown label="단계"
+              value={`${stageFilter}. ${STAGES[stageFilter - 1]}`}
+              options={["전체", ...STAGES.map((s, i) => `${i + 1}. ${s}`)]}
+              onChange={(v) => setStageFilter(v === "전체" ? null : STAGES.findIndex((s, i) => `${i + 1}. ${s}` === v) + 1)} />
+          )}
         </div>
       </div>
 
@@ -348,17 +362,16 @@ export default function ExternalCompaniesPanel() {
                 <th>기업명</th>
                 <th>지역</th>
                 <th>연락처</th>
-                <th style={{ textAlign: "center" }}>공고</th>
-                <th style={{ textAlign: "center" }}>지원(대기)</th>
+                <th style={{ textAlign: "center" }}>입사지원</th>
                 <th>상태</th>
                 <th>등록일</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>{items.length === 0 ? "비회원 기업이 아직 없어요. 외부 공고를 등록하면 여기에 쌓여요." : "검색 결과가 없습니다."}</td></tr>
+                <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>{items.length === 0 ? "비회원 기업이 아직 없어요. 외부 공고를 등록하면 여기에 쌓여요." : "검색 결과가 없습니다."}</td></tr>
               ) : (
                 filtered.map((c) => {
                   const cApps = appsByCompany[c.id] || [];
@@ -385,7 +398,6 @@ export default function ExternalCompaniesPanel() {
                       </td>
                       <td className="admin-td-date">{fmtRegion(c)}</td>
                       <td className="admin-td-date">{fmtPhone(c.phone) || c.email || "-"}</td>
-                      <td className="admin-td-date" style={{ textAlign: "center" }}>{c.job_count}</td>
                       <td className="admin-td-date" style={{ textAlign: "center", color: "#333" }}>
                         {cApps.length}{pend > 0 ? <span style={{ color: "#a05a00", fontWeight: 700 }}> ({pend})</span> : null}
                       </td>
