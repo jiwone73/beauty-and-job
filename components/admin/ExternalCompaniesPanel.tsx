@@ -277,7 +277,7 @@ export default function ExternalCompaniesPanel() {
   return (
     <>
       <div className="admin-mini-stats">
-        {[["비회원 기업", totalCos, "개사"], ["외부 공고", totalJobs, "건"], ["전달 대기 지원", totalPending, "건"], ["회원 연결됨", linkedCnt, "개사"]].map(([label, count, unit]) => (
+        {[["비회원 기업", totalCos, "개사"], ["외부 공고", totalJobs, "건"], ["전달 대기", totalPending, "건"], ["회원 연결됨", linkedCnt, "개사"]].map(([label, count, unit]) => (
           <div key={label as string} className="admin-mini-stat">
             <span className="admin-mini-stat-label">{label}</span>
             <span className="admin-mini-stat-value">{count as number}<span className="admin-mini-unit">{unit}</span></span>
