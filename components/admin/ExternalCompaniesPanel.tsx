@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, Fragment } from "react";
-import { Search, X, Trash2, ChevronRight, ChevronDown } from "lucide-react";
+import { Search, X, Trash2 } from "lucide-react";
 import BroadcastModal from "@/components/admin/BroadcastModal";
 
 type Job = { id: string; title: string; status: string; created_at: string };
@@ -53,14 +53,22 @@ type App = {
   job_source: string | null;
 };
 
-// 지원서 퍼널 6단계 (지원서별). 회원가입만 회사 단위.
-const FUNNEL = ["외부공고 등록", "지원서 접수", "지원서 통보", "회원가입", "지원서 전달", "지원서 확인"];
-function stageOf(a: App): number {
-  if (a.viewed_at) return 5;               // 확인
-  if (a.linked_at) return 4;               // 연결
-  if (a.company_is_member) return 3;       // 회원가입(회사 가입됨)
-  if (a.notified_at) return 2;             // 통보
-  return 1;                                // 접수 (외부공고 등록=0은 전제라 항상 통과)
+// 지원 진행 6단계 (1~6). 상태 열 · 선택 시 프로그레스 공용.
+const STAGES = ["공고등록", "지원서 접수", "지원서 통보", "회원가입", "지원서 전달", "지원서 확인"];
+// 지원서 1건의 단계(2~6). 지원서가 있으면 최소 '지원서 접수'(2).
+function appStage(a: App): number {
+  if (a.viewed_at) return 6;          // 지원서 확인
+  if (a.linked_at) return 5;          // 지원서 전달
+  if (a.company_is_member) return 4;  // 회원가입
+  if (a.notified_at) return 3;        // 지원서 통보
+  return 2;                           // 지원서 접수
+}
+// 기업 행의 대표 단계(1~6): 지원서 중 가장 앞선 단계, 없으면 1(공고등록).
+function companyStage(c: NmCompany, cApps: App[]): number {
+  let s = 1; // 공고등록
+  if (c.merged_into_company_id) s = Math.max(s, 4); // 회원 연결됨
+  for (const a of cApps) s = Math.max(s, appStage(a));
+  return s;
 }
 type MemberHit = { id: string; company_name: string; brand_name: string | null; business_number: string | null; email: string | null; status: string };
 
@@ -69,7 +77,6 @@ function fmtDate(d: string | null) {
   const dt = new Date(d);
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
-function fmtMd(d: string | null) { return d ? new Date(d).toLocaleDateString("ko-KR", { month: "2-digit", day: "2-digit" }) : "-"; }
 function fmtPhone(p: string | null) {
   if (!p) return "";
   const d = p.replace(/[^0-9]/g, "");
@@ -84,16 +91,6 @@ const SIDO_SHORT: Record<string, string> = {
   "전북특별자치도": "전북", "전라북도": "전북", "전라남도": "전남", "경상북도": "경북",
   "경상남도": "경남", "제주특별자치도": "제주",
 };
-// 비회원 기업 온보딩 단계 배지
-const STAGE: Record<string, { label: string; bg: string; color: string }> = {
-  RECEIVED:      { label: "공고등록", bg: "#eef1f5", color: "#556" },
-  INVITED:       { label: "안내발송", bg: "#fff4e5", color: "#a05a00" },
-  JOINED:        { label: "가입완료", bg: "#e7f0ff", color: "#1f5fbf" },
-  LINKED:        { label: "연결완료", bg: "#e8f5e9", color: "#1b7a3d" },
-  INVITE_FAILED: { label: "발송실패", bg: "#fdecec", color: "#c0392b" },
-  DECLINED:      { label: "거절",     bg: "#fdecec", color: "#c0392b" },
-  EXPIRED:       { label: "파기",     bg: "#f0f0f0", color: "#999" },
-};
 function fmtRegion(c: NmCompany) {
   const sido = c.region_sido ? (SIDO_SHORT[c.region_sido] || c.region_sido) : "";
   const s = [sido, c.region_sigungu].filter(Boolean).join(" ");
@@ -101,7 +98,6 @@ function fmtRegion(c: NmCompany) {
   if (c.address) { const p = c.address.trim().split(/\s+/); return [SIDO_SHORT[p[0]] || p[0], p[1]].filter(Boolean).join(" ") || "-"; }
   return "-";
 }
-const METHOD: Record<string, string> = { EMAIL: "이메일 중계", MANAGED: "관리자 대행", REDIRECT: "외부 링크" };
 
 export default function ExternalCompaniesPanel() {
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
@@ -112,7 +108,6 @@ export default function ExternalCompaniesPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [editTarget, setEditTarget] = useState<NmCompany | null>(null);
   const [editForm, setEditForm] = useState({ company_name: "", website_url: "", phone: "" });
@@ -122,9 +117,7 @@ export default function ExternalCompaniesPanel() {
   const [broadcastOpen, setBroadcastOpen] = useState(false);
   const [broadcastChannel, setBroadcastChannel] = useState<"email" | "sms">("email");
   const [busy, setBusy] = useState(false);
-  const [busyApp, setBusyApp] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
-  const [appSort, setAppSort] = useState<"stage" | "recent">("stage");
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -238,26 +231,6 @@ export default function ExternalCompaniesPanel() {
     } finally { setBusy(false); }
   };
 
-  // 지원자 → 기업 전달
-  const forward = async (r: App) => {
-    const target = (r.external_contact_email || r.ec_contact_email || "").trim();
-    const m = target
-      ? `${r.company_name}(${target})에 「${r.job_title}」 지원자 ${r.applicant_name}님을 이메일로 전달할까요?`
-      : `${r.company_name}에 전달할 채용 이메일이 없어요. ‘수동 전달함’으로만 표시할까요? (실제 전달은 관리자가 직접)`;
-    if (typeof window !== "undefined" && !window.confirm(m)) return;
-    setBusyApp(r.id); setMsg("");
-    try {
-      const res = await fetch(`/api/admin/external-applications/${r.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", ...authH },
-        body: JSON.stringify({ action: "forward" }),
-      });
-      const j = await res.json();
-      if (!j.success) { setMsg(j.error?.message || "전달 실패"); }
-      await load();
-    } finally { setBusyApp(null); }
-  };
-
   const totalCos = items.length;
   const totalJobs = items.reduce((s, c) => s + (Number(c.job_count) || 0), 0);
   const totalPending = apps.filter((a) => a.delivery_status === "PENDING").length;
@@ -285,52 +258,6 @@ export default function ExternalCompaniesPanel() {
         ))}
       </div>
 
-      {/* 지원서 퍼널 — 지원서별 진행 단계 (정렬 + 프로그레스바) */}
-      {apps.length > 0 && (
-        <div style={{ border: "1px solid #eee", borderRadius: 10, padding: "12px 14px", marginBottom: 14, background: "#fff" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <div style={{ fontSize: 13.5, color: "#333" }}>지원서 퍼널 <span style={{ color: "#999" }}>({apps.length}건)</span></div>
-            <select value={appSort} onChange={(e) => setAppSort(e.target.value as "stage" | "recent")}
-              style={{ fontSize: 12.5, padding: "5px 10px", borderRadius: 7, border: "1px solid #ddd", background: "#fff", cursor: "pointer" }}>
-              <option value="stage">단계순</option>
-              <option value="recent">최신순</option>
-            </select>
-          </div>
-          {/* 단계 안내 */}
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", fontSize: 11, color: "#aaa", marginBottom: 10 }}>
-            {FUNNEL.map((f, i) => <span key={f}>{i + 1}. {f}</span>)}
-          </div>
-          <div style={{ maxHeight: 340, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
-            {[...apps].sort((a, b) => {
-              if (appSort === "stage") {
-                const d = stageOf(a) - stageOf(b);
-                if (d !== 0) return d;
-              }
-              return (b.applied_at || "").localeCompare(a.applied_at || "");
-            }).map((a) => {
-              const st = stageOf(a);
-              return (
-                <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 4px", borderBottom: "1px solid #f4f4f4" }}>
-                  <div style={{ width: 220, minWidth: 220, fontSize: 12.5, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {a.applicant_name}
-                    <span style={{ color: "#aaa" }}> · {a.company_name || "-"} · {a.job_title}</span>
-                  </div>
-                  <div style={{ flex: 1, display: "flex", gap: 3 }}>
-                    {FUNNEL.map((_, i) => (
-                      <span key={i} style={{
-                        flex: 1, height: 6, borderRadius: 3,
-                        background: i < st ? "#c9b3e6" : i === st ? "#5f0080" : "#eee",
-                      }} />
-                    ))}
-                  </div>
-                  <div style={{ width: 84, minWidth: 84, fontSize: 12, color: "#5f0080", textAlign: "right" }}>{FUNNEL[st]}</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
@@ -346,7 +273,7 @@ export default function ExternalCompaniesPanel() {
 
       <div className="admin-card">
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>총 <strong>{filtered.length}</strong>개사 · 지원 행을 펼쳐 전달하세요</span>
+          <span>총 <strong>{filtered.length}</strong>개사 · 체크박스를 선택하면 진행 단계가 표시돼요</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <button onClick={() => { if (canEmail) { setBroadcastChannel("email"); setBroadcastOpen(true); } }} disabled={!canEmail} title={!canEmail && selectedIds.length ? "선택한 기업 중 이메일이 있는 곳이 없어요" : undefined} style={btn(canEmail, "#5f0080")}>
               이메일 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
@@ -387,12 +314,13 @@ export default function ExternalCompaniesPanel() {
                 filtered.map((c) => {
                   const cApps = appsByCompany[c.id] || [];
                   const pend = pendingOf(c.id);
-                  const open = expandedId === c.id;
+                  const stage = companyStage(c, cApps);
+                  const selected = selectedIds.includes(c.id);
                   return (
                     <Fragment key={c.id}>
-                      <tr style={{ background: selectedIds.includes(c.id) ? "#faf5ff" : undefined }}>
+                      <tr style={{ background: selected ? "#faf5ff" : undefined }}>
                         <td style={{ textAlign: "center" }}>
-                          <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
+                          <input type="checkbox" checked={selected} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
                         </td>
                         <td className="admin-td-brand">
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -405,80 +333,39 @@ export default function ExternalCompaniesPanel() {
                         <td className="admin-td-date">{fmtRegion(c)}</td>
                         <td className="admin-td-date">{fmtPhone(c.phone) || c.email || "-"}</td>
                         <td className="admin-td-date" style={{ textAlign: "center" }}>{c.job_count}</td>
-                        <td className="admin-td-date" style={{ textAlign: "center" }}>
-                          <button onClick={() => setExpandedId(open ? null : c.id)} disabled={cApps.length === 0}
-                            style={{ display: "inline-flex", alignItems: "center", gap: 3, border: "none", background: "none", cursor: cApps.length ? "pointer" : "default", color: cApps.length ? "#5f0080" : "#bbb", fontWeight: 600, fontSize: 13 }}>
-                            {cApps.length ? (open ? <ChevronDown size={14} /> : <ChevronRight size={14} />) : null}
-                            {cApps.length}
-                            {pend > 0 && <span style={{ color: "#a05a00", fontWeight: 700 }}>({pend})</span>}
-                          </button>
+                        <td className="admin-td-date" style={{ textAlign: "center", color: "#333" }}>
+                          {cApps.length}{pend > 0 ? <span style={{ color: "#a05a00", fontWeight: 700 }}> ({pend})</span> : null}
                         </td>
                         <td className="admin-td-date">
-                          {(() => {
-                            const s = c.merged_into_company_id ? "LINKED" : (c.onboarding_status || "RECEIVED");
-                            const st = STAGE[s] || STAGE.RECEIVED;
-                            return (
-                              <span style={{ background: st.bg, color: st.color, borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>
-                                {st.label}{s === "LINKED" && c.merged_into_name ? ` · ${c.merged_into_name}` : ""}
-                              </span>
-                            );
-                          })()}
+                          <span style={{ background: "#f3edfa", color: "#5f0080", borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>
+                            {stage}. {STAGES[stage - 1]}
+                          </span>
                         </td>
                         <td className="admin-td-date">{fmtDate(c.created_at)}</td>
                       </tr>
-                      {open && (
+                      {selected && (
                         <tr>
-                          <td colSpan={8} style={{ background: "#faf9fc", padding: "10px 16px" }}>
-                            <div style={{ fontSize: 12.5, fontWeight: 700, color: "#5f0080", margin: "2px 0 8px" }}>외부 지원 {cApps.length}건</div>
-                            {cApps.length === 0 ? (
-                              <div style={{ color: "#999", fontSize: 13, padding: "6px 0" }}>이 기업에 들어온 지원이 없어요.</div>
-                            ) : (
-                              <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
-                                <thead>
-                                  <tr style={{ color: "#888", textAlign: "left" }}>
-                                    <th style={{ padding: "4px 8px", fontWeight: 600 }}>지원자</th>
-                                    <th style={{ padding: "4px 8px", fontWeight: 600 }}>지원 공고</th>
-                                    <th style={{ padding: "4px 8px", fontWeight: 600 }}>지원방식</th>
-                                    <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "center" }}>제3자동의</th>
-                                    <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "center" }}>지원일</th>
-                                    <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "center" }}>상태</th>
-                                    <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "right" }}>처리</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {cApps.map((r) => {
-                                    const st = r.delivery_status;
-                                    return (
-                                      <tr key={r.id} style={{ borderTop: "1px solid #eee" }}>
-                                        <td style={{ padding: "6px 8px" }}>
-                                          <div style={{ fontWeight: 700 }}>{r.applicant_name}</div>
-                                          <div style={{ fontSize: 11.5, color: "#999" }}>{[r.applicant_phone, r.applicant_email].filter(Boolean).join(" · ") || "-"}</div>
-                                        </td>
-                                        <td style={{ padding: "6px 8px", color: "#555" }}>{r.job_title}</td>
-                                        <td style={{ padding: "6px 8px", color: "#555" }}>{METHOD[r.apply_method] || r.apply_method}</td>
-                                        <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700, color: r.third_party_consent ? "#0a9d6e" : "#c0392b" }}>{r.third_party_consent ? "✔" : "✘"}</td>
-                                        <td style={{ padding: "6px 8px", textAlign: "center", color: "#888" }}>{fmtMd(r.applied_at)}</td>
-                                        <td style={{ padding: "6px 8px", textAlign: "center" }}>
-                                          {st === "FORWARDED"
-                                            ? <span style={{ fontSize: 11.5, fontWeight: 700, padding: "2px 8px", borderRadius: 20, color: "#0a7d55", background: "#e9f9f1" }}>전달됨{r.forwarded_channel === "MANUAL" ? "(수동)" : ""}</span>
-                                            : st === "FAILED"
-                                              ? <span style={{ fontSize: 11.5, fontWeight: 700, padding: "2px 8px", borderRadius: 20, color: "#b91c1c", background: "#fee2e2" }}>실패</span>
-                                              : <span style={{ fontSize: 11.5, fontWeight: 700, padding: "2px 8px", borderRadius: 20, color: "#b23b00", background: "#fff3ea" }}>대기</span>}
-                                        </td>
-                                        <td style={{ padding: "6px 8px", textAlign: "right" }}>
-                                          {st === "FORWARDED"
-                                            ? <button onClick={() => forward(r)} disabled={busyApp === r.id} style={{ fontSize: 12, fontWeight: 700, borderRadius: 6, padding: "5px 10px", cursor: "pointer", border: "1px solid #ddd", background: "#fff", color: "#666" }}>재전송</button>
-                                            : <button onClick={() => forward(r)} disabled={busyApp === r.id || !r.third_party_consent}
-                                                style={{ fontSize: 12, fontWeight: 700, borderRadius: 6, padding: "5px 11px", cursor: r.third_party_consent ? "pointer" : "default", border: "none", background: r.third_party_consent ? "#5f0080" : "#ccc", color: "#fff" }}>
-                                                {busyApp === r.id ? "처리 중..." : (r.external_contact_email || r.ec_contact_email) ? "기업에 전달" : "수동 전달함"}
-                                              </button>}
-                                        </td>
-                                      </tr>
-                                    );
-                                  })}
-                                </tbody>
-                              </table>
-                            )}
+                          <td colSpan={8} style={{ background: "#faf9fc", padding: "18px 22px" }}>
+                            <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
+                              {STAGES.map((label, i) => {
+                                const n = i + 1;
+                                const done = n < stage, cur = n === stage;
+                                return (
+                                  <Fragment key={label}>
+                                    {i > 0 && <div style={{ flex: "0 0 auto", width: 18, height: 2, marginTop: 12, background: n <= stage ? "#c9b3e6" : "#e6e6e6" }} />}
+                                    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                                      <div style={{
+                                        width: 26, height: 26, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                                        fontSize: 12.5, fontWeight: 700,
+                                        background: cur ? "#5f0080" : done ? "#c9b3e6" : "#ececec",
+                                        color: cur || done ? "#fff" : "#aaa",
+                                      }}>{n}</div>
+                                      <div style={{ fontSize: 11.5, textAlign: "center", lineHeight: 1.3, color: cur ? "#5f0080" : "#999", fontWeight: cur ? 700 : 400 }}>{label}</div>
+                                    </div>
+                                  </Fragment>
+                                );
+                              })}
+                            </div>
                           </td>
                         </tr>
                       )}
