@@ -106,6 +106,15 @@ export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
           <label className="cv-field-label cv-required">학교명</label>
           <input className="cv-input" placeholder="학교명을 입력해 주세요." value={school} onChange={(e) => setSchool(e.target.value)} />
 
+          <label className="cv-field-label cv-required">재학 기간</label>
+          <div className="cv-date-row">
+            <input className="cv-input cv-date-input" placeholder="YYYY" maxLength={4} value={startY} onChange={(e) => setStartY(e.target.value.replace(/\D/g, ""))} />
+            <input className="cv-input cv-date-input" placeholder="MM" maxLength={2} value={startM} onChange={(e) => setStartM(e.target.value.replace(/\D/g, ""))} />
+            <span className="cv-date-sep">-</span>
+            <input className="cv-input cv-date-input" placeholder="YYYY" maxLength={4} value={endY} onChange={(e) => setEndY(e.target.value.replace(/\D/g, ""))} />
+            <input className="cv-input cv-date-input" placeholder="MM" maxLength={2} value={endM} onChange={(e) => setEndM(e.target.value.replace(/\D/g, ""))} />
+          </div>
+
           <label className="cv-field-label cv-required">졸업 상태</label>
           <button className="cv-select-btn" onClick={() => { setShowStatus(!showStatus); setShowLevel(false); }}>
             <span className={status ? "" : "cv-placeholder"}>{status || "졸업 상태를 선택해 주세요."}</span>
@@ -118,15 +127,6 @@ export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
               ))}
             </div>
           )}
-
-          <label className="cv-field-label cv-required">재학 기간</label>
-          <div className="cv-date-row">
-            <input className="cv-input cv-date-input" placeholder="YYYY" maxLength={4} value={startY} onChange={(e) => setStartY(e.target.value.replace(/\D/g, ""))} />
-            <input className="cv-input cv-date-input" placeholder="MM" maxLength={2} value={startM} onChange={(e) => setStartM(e.target.value.replace(/\D/g, ""))} />
-            <span className="cv-date-sep">-</span>
-            <input className="cv-input cv-date-input" placeholder="YYYY" maxLength={4} value={endY} onChange={(e) => setEndY(e.target.value.replace(/\D/g, ""))} />
-            <input className="cv-input cv-date-input" placeholder="MM" maxLength={2} value={endM} onChange={(e) => setEndM(e.target.value.replace(/\D/g, ""))} />
-          </div>
 
           {needsMajor && (<>
             <label className="cv-field-label cv-required">전공</label>
