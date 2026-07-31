@@ -11,6 +11,9 @@ interface Props {
 }
 
 const STATUS_OPTIONS = ["졸업", "재학", "휴학", "중퇴", "수료"];
+const LEVEL_OPTIONS = ["중학교", "고등학교", "대학(2,3년제)", "대학(4년제)", "대학원"];
+// 전공 입력이 필요한(=대학 이상) 구분
+const MAJOR_LEVELS = ["대학(2,3년제)", "대학(4년제)", "대학원"];
 
 // "2020.04" → ["2020", "04"]
 function splitYM(d: string): [string, string] {
@@ -22,6 +25,7 @@ function splitYM(d: string): [string, string] {
 
 export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
   const { addEducation, updateEducation } = useProfileStore();
+  const [level, setLevel] = useState("");
   const [school, setSchool] = useState("");
   const [status, setStatus] = useState("");
   const [startY, setStartY] = useState("");
@@ -31,12 +35,16 @@ export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
   const [major, setMajor] = useState("");
   const [desc, setDesc] = useState("");
   const [showStatus, setShowStatus] = useState(false);
+  const [showLevel, setShowLevel] = useState(false);
+
+  const needsMajor = MAJOR_LEVELS.includes(level);
 
   const isEdit = !!editTarget;
 
   useEffect(() => {
     if (!isOpen) return;
     if (editTarget) {
+      setLevel(editTarget.level || (editTarget.major ? "대학(4년제)" : ""));
       setSchool(editTarget.school || "");
       setStatus(editTarget.status || "");
       const [sy, sm] = splitYM(editTarget.startDate);
@@ -45,25 +53,27 @@ export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
       setMajor(editTarget.major || "");
       setDesc(editTarget.description || "");
     } else {
-      setSchool(""); setStatus(""); setStartY(""); setStartM("");
+      setLevel(""); setSchool(""); setStatus(""); setStartY(""); setStartM("");
       setEndY(""); setEndM(""); setMajor(""); setDesc("");
     }
     setShowStatus(false);
+    setShowLevel(false);
   }, [isOpen, editTarget]);
 
   if (!isOpen) return null;
 
-  const isValid = school.trim() && startY && startM && major.trim();
+  const isValid = !!level && school.trim() && startY && startM && (needsMajor ? major.trim() : true);
 
   const handleSubmit = () => {
     if (!isValid) return;
     const entry: EducationEntry = {
       id: editTarget?.id || genId(),
+      level,
       school: school.trim(),
       status,
       startDate: `${startY}.${startM}`,
       endDate: endY && endM ? `${endY}.${endM}` : "",
-      major: major.trim(),
+      major: needsMajor ? major.trim() : "",
       description: desc.trim(),
     };
     if (isEdit) updateEducation(entry.id, entry);
@@ -80,11 +90,24 @@ export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
           <div style={{ width: 36 }} />
         </div>
         <div className="cv-body">
+          <label className="cv-field-label cv-required">학력 구분</label>
+          <button className="cv-select-btn" onClick={() => { setShowLevel(!showLevel); setShowStatus(false); }}>
+            <span className={level ? "" : "cv-placeholder"}>{level || "학력 구분을 선택해 주세요."}</span>
+            <ChevronLeft size={16} style={{ transform: "rotate(-90deg)" }} />
+          </button>
+          {showLevel && (
+            <div className="cv-dropdown">
+              {LEVEL_OPTIONS.map((opt) => (
+                <button key={opt} className="cv-dropdown-item" onClick={() => { setLevel(opt); setShowLevel(false); }}>{opt}</button>
+              ))}
+            </div>
+          )}
+
           <label className="cv-field-label cv-required">학교명</label>
           <input className="cv-input" placeholder="학교명을 입력해 주세요." value={school} onChange={(e) => setSchool(e.target.value)} />
 
           <label className="cv-field-label">졸업 상태</label>
-          <button className="cv-select-btn" onClick={() => setShowStatus(!showStatus)}>
+          <button className="cv-select-btn" onClick={() => { setShowStatus(!showStatus); setShowLevel(false); }}>
             <span className={status ? "" : "cv-placeholder"}>{status || "졸업 상태를 선택해 주세요."}</span>
             <ChevronLeft size={16} style={{ transform: "rotate(-90deg)" }} />
           </button>
@@ -105,8 +128,10 @@ export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
             <input className="cv-input cv-date-input" placeholder="MM" maxLength={2} value={endM} onChange={(e) => setEndM(e.target.value.replace(/\D/g, ""))} />
           </div>
 
-          <label className="cv-field-label cv-required">전공 및 학위</label>
-          <input className="cv-input" placeholder="전공과 학위를 입력해 주세요." value={major} onChange={(e) => setMajor(e.target.value)} />
+          {needsMajor && (<>
+            <label className="cv-field-label cv-required">전공</label>
+            <input className="cv-input" placeholder="전공을 입력해 주세요." value={major} onChange={(e) => setMajor(e.target.value)} />
+          </>)}
 
           <label className="cv-field-label">설명</label>
           <textarea className="cv-textarea" placeholder="이수 과목, 논문, 프로젝트 등의 경험을 작성해 보세요." maxLength={1000} value={desc} onChange={(e) => setDesc(e.target.value)} />

@@ -178,9 +178,11 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
                   {edu.startDate} - {edu.endDate}
                 </span>
               </div>
-              <p className="rp-item-sub">
-                {edu.major} · {edu.status}
-              </p>
+              {(edu.major || edu.status) && (
+                <p className="rp-item-sub">
+                  {[edu.major, edu.status].filter(Boolean).join(" · ")}
+                </p>
+              )}
             </div>
           ))}
         </div>

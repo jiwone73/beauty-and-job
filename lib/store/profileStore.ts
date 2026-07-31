@@ -15,6 +15,7 @@ export interface CareerEntry {
 }
 export interface EducationEntry {
   id: string;
+  level?: string;      // 학력 구분: 중학교 / 고등학교 / 대학(2,3년제) / 대학(4년제) / 대학원
   school: string;
   status: string;
   startDate: string;
@@ -279,6 +280,7 @@ export const useProfileStore = create<ProfileState>()(
                 })),
                 educations: (educations || []).map((e: any) => ({
                   id: e.id,
+                  level: e.level || "",
                   school: e.school || "",
                   status: e.status || "",
                   startDate: e.start_date || "",

@@ -173,9 +173,9 @@ await client.query("BEGIN");
     );
     await bulkInsert(
       "user_educations",
-      ["school", "major", "status", "start_date", "end_date", "description"],
+      ["school", "major", "status", "start_date", "end_date", "description", "level"],
       educations,
-      (e) => [e.school || "", e.major || "", e.status || "", e.start_date || e.startDate || "", e.end_date || e.endDate || "", e.description || ""]
+      (e) => [e.school || "", e.major || "", e.status || "", e.start_date || e.startDate || "", e.end_date || e.endDate || "", e.description || "", e.level || ""]
     );
     await bulkInsert(
       "user_experiences",
