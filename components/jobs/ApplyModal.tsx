@@ -195,7 +195,7 @@ export default function ApplyModal({
   const handleApply = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) { alert("로그인이 필요합니다."); return; }
-    if (isExternal && !consent) { alert("지원서를 기업에 전달하려면 전달 동의가 필요해요."); return; }
+    if (isExternal && !consent) { alert("지원서 접수·보관에 동의해주세요."); return; }
     setApplying(true);
     try {
       // 최신 이력서를 먼저 DB에 반영 → 스냅샷이 화면과 일치
@@ -386,7 +386,7 @@ export default function ApplyModal({
               {isExternal && (
                 <label style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "transparent", border: "none", padding: 0, marginBottom: 10, fontSize: 13, color: "#5a5560", cursor: "pointer", lineHeight: 1.6 }}>
                   <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 2, flexShrink: 0, accentColor: "#5f0080" }} />
-                  <span>이 공고는 뷰티워크가 지원서를 먼저 검토한 뒤 기업에 전달해 드려요. 전달에 동의합니다. (필수)</span>
+                  <span>이 공고 기업은 아직 뷰티워크에 가입하지 않았어요. 지원하면 지원서가 접수·보관되고, 기업이 가입하면 기업이 직접 확인해요. 이에 동의합니다. (필수)</span>
                 </label>
               )}
               <div style={{ display: "flex", gap: 8 }}>
