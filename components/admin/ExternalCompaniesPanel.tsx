@@ -46,7 +46,22 @@ type App = {
   ec_contact_email: string | null;
   company_id: string | null;
   company_name: string | null;
+  notified_at: string | null;
+  linked_at: string | null;
+  viewed_at: string | null;
+  company_is_member: boolean | null;
+  job_source: string | null;
 };
+
+// 지원서 퍼널 6단계 (지원서별). 회원가입만 회사 단위.
+const FUNNEL = ["외부공고 등록", "지원서 접수", "지원서 통보", "회원가입", "지원서 연결", "지원서 확인"];
+function stageOf(a: App): number {
+  if (a.viewed_at) return 5;               // 확인
+  if (a.linked_at) return 4;               // 연결
+  if (a.company_is_member) return 3;       // 회원가입(회사 가입됨)
+  if (a.notified_at) return 2;             // 통보
+  return 1;                                // 접수 (외부공고 등록=0은 전제라 항상 통과)
+}
 type MemberHit = { id: string; company_name: string; brand_name: string | null; business_number: string | null; email: string | null; status: string };
 
 function fmtDate(d: string | null) {
@@ -109,6 +124,7 @@ export default function ExternalCompaniesPanel() {
   const [busy, setBusy] = useState(false);
   const [busyApp, setBusyApp] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
+  const [appSort, setAppSort] = useState<"stage" | "recent">("stage");
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -268,6 +284,52 @@ export default function ExternalCompaniesPanel() {
           </div>
         ))}
       </div>
+
+      {/* 지원서 퍼널 — 지원서별 진행 단계 (정렬 + 프로그레스바) */}
+      {apps.length > 0 && (
+        <div style={{ border: "1px solid #eee", borderRadius: 10, padding: "12px 14px", marginBottom: 14, background: "#fff" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <div style={{ fontSize: 13.5, color: "#333" }}>지원서 퍼널 <span style={{ color: "#999" }}>({apps.length}건)</span></div>
+            <select value={appSort} onChange={(e) => setAppSort(e.target.value as "stage" | "recent")}
+              style={{ fontSize: 12.5, padding: "5px 10px", borderRadius: 7, border: "1px solid #ddd", background: "#fff", cursor: "pointer" }}>
+              <option value="stage">단계순</option>
+              <option value="recent">최신순</option>
+            </select>
+          </div>
+          {/* 단계 안내 */}
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", fontSize: 11, color: "#aaa", marginBottom: 10 }}>
+            {FUNNEL.map((f, i) => <span key={f}>{i + 1}. {f}</span>)}
+          </div>
+          <div style={{ maxHeight: 340, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
+            {[...apps].sort((a, b) => {
+              if (appSort === "stage") {
+                const d = stageOf(a) - stageOf(b);
+                if (d !== 0) return d;
+              }
+              return (b.applied_at || "").localeCompare(a.applied_at || "");
+            }).map((a) => {
+              const st = stageOf(a);
+              return (
+                <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 4px", borderBottom: "1px solid #f4f4f4" }}>
+                  <div style={{ width: 220, minWidth: 220, fontSize: 12.5, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {a.applicant_name}
+                    <span style={{ color: "#aaa" }}> · {a.company_name || "-"} · {a.job_title}</span>
+                  </div>
+                  <div style={{ flex: 1, display: "flex", gap: 3 }}>
+                    {FUNNEL.map((_, i) => (
+                      <span key={i} style={{
+                        flex: 1, height: 6, borderRadius: 3,
+                        background: i < st ? "#c9b3e6" : i === st ? "#5f0080" : "#eee",
+                      }} />
+                    ))}
+                  </div>
+                  <div style={{ width: 84, minWidth: 84, fontSize: 12, color: "#5f0080", textAlign: "right" }}>{FUNNEL[st]}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
