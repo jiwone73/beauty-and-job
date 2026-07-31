@@ -39,6 +39,8 @@ type App = {
   position: string;
   job_type: string | null;
   company_name: string;
+  company_is_member: boolean | null;
+  linked_at: string | null;
   job_categories: string[] | null;
   cover_letter: string | null;
   resume_snapshot: any | null;
@@ -78,7 +80,7 @@ function AdminApplicationsPageInner() {
 
   const [apps, setApps] = useState<App[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [statusFilter, setStatusFilter] = useState("전체");
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [selected, setSelected] = useState<App | null>(null);
@@ -172,8 +174,11 @@ function AdminApplicationsPageInner() {
                   ? `경력 ${calcCareerYears(a.recent_career?.start_date || null) || ""}`
                   : "신입";
                 const hasResume = a.resume_id || a.cover_letter || a.resume_snapshot;
+                // 외부(비회원) 기업 지원 중 아직 '지원서 연결' 전 → 연한 그레이로 구분
+                const notConnected = !a.company_is_member && !a.linked_at;
                 return (
-                  <tr key={a.id}>
+                  <tr key={a.id} style={notConnected ? { background: "#f7f7f8" } : undefined}
+                    title={notConnected ? "아직 지원서 연결(회원 기업 연결) 전 지원이에요" : undefined}>
                     {/* 지원자: 아바타 + 이름·성별 / 나이·경력 */}
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

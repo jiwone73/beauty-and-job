@@ -400,8 +400,16 @@ export default function ExternalCompaniesPanel() {
                       </td>
                       <td className="admin-td-date">{fmtRegion(c)}</td>
                       <td className="admin-td-date">{fmtPhone(c.phone) || c.email || "-"}</td>
-                      <td className="admin-td-date" style={{ textAlign: "center", color: "#333" }}>
-                        {cApps.length}
+                      <td className="admin-td-date" style={{ textAlign: "center" }}>
+                        {cApps.length > 0 ? (
+                          <a href={`/admin/resumes/applications?search=${encodeURIComponent(c.company_name)}`}
+                            title={`${c.company_name} 입사지원 보기`}
+                            style={{ color: "#5f0080", fontWeight: 600, textDecoration: "none" }}>
+                            {cApps.length}
+                          </a>
+                        ) : (
+                          <span style={{ color: "#bbb" }}>0</span>
+                        )}
                       </td>
                       <td className="admin-td-date">
                         <span style={{ background: "#f3edfa", color: "#5f0080", borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>

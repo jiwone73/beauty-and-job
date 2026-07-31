@@ -31,6 +31,8 @@ export async function GET(req: NextRequest) {
         jp.title AS position,
         jp.job_type,
         c.company_name,
+        c.is_member AS company_is_member,
+        a.linked_at,
         jp.categories AS job_categories
       FROM applications a
       JOIN users u ON u.id = a.user_id
