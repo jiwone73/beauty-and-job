@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
         c.id, c.company_name, c.brand_name, c.email::text AS email, c.phone,
         c.logo_url, c.website_url, c.region_sido, c.region_sigungu, c.address,
         c.merged_into_company_id, c.created_at,
+        c.onboarding_status, c.invited_at, c.invite_channel, c.invite_count, c.joined_at, c.linked_at,
         mc.company_name AS merged_into_name,
         COALESCE(j.cnt, 0) AS job_count,
         COALESCE(j.jobs, '[]'::json) AS jobs,

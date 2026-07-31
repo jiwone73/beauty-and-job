@@ -17,6 +17,12 @@ type NmCompany = {
   address: string | null;
   merged_into_company_id: string | null;
   merged_into_name: string | null;
+  onboarding_status: string | null;
+  invited_at: string | null;
+  invite_channel: string | null;
+  invite_count: number | null;
+  joined_at: string | null;
+  linked_at: string | null;
   created_at: string;
   job_count: number;
   application_count: number;
@@ -62,6 +68,16 @@ const SIDO_SHORT: Record<string, string> = {
   "경기도": "경기", "강원특별자치도": "강원", "강원도": "강원", "충청북도": "충북", "충청남도": "충남",
   "전북특별자치도": "전북", "전라북도": "전북", "전라남도": "전남", "경상북도": "경북",
   "경상남도": "경남", "제주특별자치도": "제주",
+};
+// 비회원 기업 온보딩 단계 배지
+const STAGE: Record<string, { label: string; bg: string; color: string }> = {
+  RECEIVED:      { label: "지원접수", bg: "#eef1f5", color: "#556" },
+  INVITED:       { label: "안내발송", bg: "#fff4e5", color: "#a05a00" },
+  JOINED:        { label: "가입완료", bg: "#e7f0ff", color: "#1f5fbf" },
+  LINKED:        { label: "연결완료", bg: "#e8f5e9", color: "#1b7a3d" },
+  INVITE_FAILED: { label: "발송실패", bg: "#fdecec", color: "#c0392b" },
+  DECLINED:      { label: "거절",     bg: "#fdecec", color: "#c0392b" },
+  EXPIRED:       { label: "파기",     bg: "#f0f0f0", color: "#999" },
 };
 function fmtRegion(c: NmCompany) {
   const sido = c.region_sido ? (SIDO_SHORT[c.region_sido] || c.region_sido) : "";
@@ -336,9 +352,15 @@ export default function ExternalCompaniesPanel() {
                           </button>
                         </td>
                         <td className="admin-td-date">
-                          {c.merged_into_company_id
-                            ? <span style={{ background: "#e8f5e9", color: "#1b7a3d", borderRadius: 6, padding: "2px 8px", fontSize: 12 }}>연결됨{c.merged_into_name ? ` · ${c.merged_into_name}` : ""}</span>
-                            : <span style={{ background: "#f0f0f0", color: "#777", borderRadius: 6, padding: "2px 8px", fontSize: 12 }}>미연결</span>}
+                          {(() => {
+                            const s = c.merged_into_company_id ? "LINKED" : (c.onboarding_status || "RECEIVED");
+                            const st = STAGE[s] || STAGE.RECEIVED;
+                            return (
+                              <span style={{ background: st.bg, color: st.color, borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>
+                                {st.label}{s === "LINKED" && c.merged_into_name ? ` · ${c.merged_into_name}` : ""}
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td className="admin-td-date">{fmtDate(c.created_at)}</td>
                       </tr>

@@ -45,9 +45,15 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       );
     }
 
-    // 3) 비회원 행은 보존하되 연결 표시
+    // 3) 비회원 행은 보존하되 연결 표시 + 온보딩 상태 전환(가입완료·연결완료)
     await client.query(
-      `UPDATE companies SET merged_into_company_id = $2, updated_at = now() WHERE id = $1`,
+      `UPDATE companies
+       SET merged_into_company_id = $2,
+           onboarding_status = 'LINKED',
+           joined_at = COALESCE(joined_at, now()),
+           linked_at = now(),
+           updated_at = now()
+       WHERE id = $1`,
       [nmId, memberId]
     );
 
