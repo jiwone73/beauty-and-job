@@ -10,11 +10,11 @@ interface Props {
 }
 
 const LANGUAGES = ["영어", "일본어", "중국어", "한국어", "스페인어", "프랑스어", "독일어", "기타"];
+// 3단계 인포그래픽 (상/중/하) — 문구는 자체 큐레이션
 const LEVELS = [
-  { value: "글로벌 커뮤니케이션 레벨", desc: "현지인과의 비즈니스 언어가 아주 능숙한 네이티브 급이에요." },
-  { value: "고급 비즈니스 레벨", desc: "회의, 이메일, 프레젠테이션 등 실무 전반을 무리없이 수행해요." },
-  { value: "비즈니스 레벨", desc: "제품 설명, 기본 서류 작성, 간단한 미팅 등 기본적인 대응이 가능해요." },
-  { value: "기본 레벨", desc: "메일/DM/오프라인 행사에서의 기본 소통이 가능해요." },
+  { tier: "상", value: "능숙하게 소통", desc: "자유로운 대화" },
+  { tier: "중", value: "일상 회화 가능", desc: "기본 의사소통" },
+  { tier: "하", value: "간단한 표현", desc: "짧은 인사·단어" },
 ];
 
 export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
@@ -22,7 +22,6 @@ export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
   const [lang, setLang] = useState("");
   const [level, setLevel] = useState("");
   const [showLang, setShowLang] = useState(false);
-  const [showLevel, setShowLevel] = useState(false);
 
   const isEdit = !!editTarget;
 
@@ -36,7 +35,6 @@ export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
       setLevel("");
     }
     setShowLang(false);
-    setShowLevel(false);
   }, [isOpen, editTarget]);
 
   if (!isOpen) return null;
@@ -63,7 +61,7 @@ export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
         </div>
         <div className="cv-body">
           <label className="cv-field-label cv-required">언어</label>
-          <button className="cv-select-btn" onClick={() => { setShowLang(!showLang); setShowLevel(false); }}>
+          <button className="cv-select-btn" onClick={() => setShowLang(!showLang)}>
             <span className={lang ? "" : "cv-placeholder"}>{lang || "언어를 선택해 주세요."}</span>
             <ChevronLeft size={16} style={{ transform: "rotate(-90deg)" }} />
           </button>
@@ -75,20 +73,29 @@ export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
             </div>
           )}
           <label className="cv-field-label cv-required">수준</label>
-          <button className="cv-select-btn" onClick={() => { setShowLevel(!showLevel); setShowLang(false); }}>
-            <span className={level ? "" : "cv-placeholder"}>{level || "수준을 선택해 주세요"}</span>
-            <ChevronLeft size={16} style={{ transform: "rotate(-90deg)" }} />
-          </button>
-          {showLevel && (
-            <div className="cv-dropdown cv-dropdown-level">
-              {LEVELS.map((lv) => (
-                <button key={lv.value} className={`cv-dropdown-item cv-level-item ${level === lv.value ? "active" : ""}`} onClick={() => { setLevel(lv.value); setShowLevel(false); }}>
-                  <strong>{lv.value}</strong>
-                  <span>{lv.desc}</span>
+          <div style={{ display: "flex", gap: 10, marginBottom: 4 }}>
+            {LEVELS.map((lv) => {
+              const on = level === lv.value;
+              return (
+                <button key={lv.tier} type="button" onClick={() => setLevel(lv.value)}
+                  style={{
+                    flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                    padding: "16px 8px", borderRadius: 12, cursor: "pointer", background: "#fff",
+                    border: on ? "1.5px solid #5f0080" : "1px solid #e6e6e6",
+                    boxShadow: on ? "0 0 0 3px rgba(95,0,128,0.08)" : "none",
+                  }}>
+                  <span style={{
+                    width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 17, fontWeight: 700,
+                    border: on ? "2px solid #5f0080" : "2px solid #dcdcdc",
+                    color: on ? "#5f0080" : "#bbb",
+                  }}>{lv.tier}</span>
+                  <span style={{ fontSize: 13, fontWeight: on ? 700 : 400, color: on ? "#5f0080" : "#666" }}>{lv.value}</span>
+                  <span style={{ fontSize: 11.5, color: on ? "#9b6bb3" : "#aaa" }}>{lv.desc}</span>
                 </button>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
           <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
         </div>
       </div>
