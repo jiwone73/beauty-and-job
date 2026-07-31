@@ -58,7 +58,7 @@ type App = {
 };
 
 // 지원 진행 6단계 (1~6). 상태 열 · 선택 시 프로그레스 공용.
-const STAGES = ["공고등록", "지원서 접수", "지원서 통보", "회원가입", "지원서 전달", "지원서 확인"];
+const STAGES = ["공고등록", "지원서 접수", "지원서 통보", "회원가입", "지원서 연결", "지원서 확인"];
 // 지원서 1건의 단계(2~6). 지원서가 있으면 최소 '지원서 접수'(2).
 function appStage(a: App): number {
   if (a.viewed_at) return 6;          // 지원서 확인
@@ -251,6 +251,9 @@ export default function ExternalCompaniesPanel() {
   const selectedItems = items.filter((c) => selectedIds.includes(c.id));
   const canEmail = selectedItems.some((c) => !!c.email && c.email.includes("@"));
   const canSms = selectedItems.some((c) => !!c.phone && c.phone.replace(/[^0-9]/g, "").length >= 10);
+  // 지원서 연결: 4.회원가입 완료 상태의 1개사만 활성화
+  const linkOne = selectedItems.length === 1 ? selectedItems[0] : null;
+  const canLink = !!linkOne && stageOfCompany(linkOne) === 4;
 
   const btn = (active: boolean, color: string): React.CSSProperties => ({
     padding: "6px 14px", borderRadius: 6, border: "none",
@@ -276,29 +279,28 @@ export default function ExternalCompaniesPanel() {
         })}
       </div>
 
-      {/* 선택 기업 진행 단계 게이지 (1~6) — 표 카드와 동일 폭(fit-content + minWidth) */}
+      {/* 선택 기업 진행 단계 게이지 (1~6) — 표 카드와 동일 폭(둘 다 full-width) */}
       {selectedItems.length > 0 && (
-        <div className="admin-card" style={{ marginBottom: 14, width: "fit-content", maxWidth: "100%" }}>
-          <div style={{ minWidth: 960, padding: "14px 16px", boxSizing: "border-box" }}>
-          <div style={{ fontSize: 13, color: "#333", marginBottom: 12 }}>선택 기업 진행 단계 <span style={{ color: "#999" }}>({selectedItems.length})</span></div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div className="admin-card" style={{ marginBottom: 14, padding: "22px 24px", width: "100%" }}>
+          <div style={{ fontSize: 14, color: "#333", marginBottom: 16 }}>선택 기업 진행 단계 <span style={{ color: "#999" }}>({selectedItems.length})</span></div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {selectedItems.map((c) => {
               const cApps = appsByCompany[c.id] || [];
               const stage = companyStage(c, cApps);
               const jobTitle = (c.jobs && c.jobs[0]?.title) || "-";
               return (
                 <div key={c.id}>
-                  <div style={{ fontSize: 12.5, color: "#333", marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div style={{ fontSize: 14, color: "#333", marginBottom: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {c.company_name}<span style={{ color: "#aaa" }}> · {jobTitle}</span>
                   </div>
-                  <div style={{ display: "flex", gap: 5 }}>
+                  <div style={{ display: "flex", gap: 6 }}>
                     {STAGES.map((label, i) => {
                       const n = i + 1;
                       const filled = n <= stage, cur = n === stage;
                       return (
                         <div key={label} style={{ flex: 1 }}>
-                          <div style={{ height: 10, borderRadius: 5, background: cur ? "#5f0080" : filled ? "#c9b3e6" : "#eee" }} />
-                          <div style={{ marginTop: 6, fontSize: 11, textAlign: "center", lineHeight: 1.3, color: cur ? "#5f0080" : "#aaa", fontWeight: cur ? 700 : 400 }}>{n}. {label}</div>
+                          <div style={{ height: 12, borderRadius: 6, background: cur ? "#5f0080" : filled ? "#c9b3e6" : "#eee" }} />
+                          <div style={{ marginTop: 8, fontSize: 14, textAlign: "center", lineHeight: 1.3, color: cur ? "#5f0080" : "#999", fontWeight: cur ? 700 : 400 }}>{n}. {label}</div>
                         </div>
                       );
                     })}
@@ -306,7 +308,6 @@ export default function ExternalCompaniesPanel() {
                 </div>
               );
             })}
-          </div>
           </div>
         </div>
       )}
@@ -334,7 +335,7 @@ export default function ExternalCompaniesPanel() {
         <div style={{ margin: "8px 0", fontSize: 13, padding: "8px 12px", borderRadius: 8, background: msg.startsWith("✓") ? "#e8f5e9" : "#fdeaea", color: msg.startsWith("✓") ? "#1b7a3d" : "#c0392b" }}>{msg}</div>
       )}
 
-      <div className="admin-card">
+      <div className="admin-card" style={{ width: "100%", maxWidth: "100%" }}>
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>총 <strong>{filtered.length}</strong>개사 · 체크박스를 선택하면 진행 단계가 표시돼요</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -344,8 +345,10 @@ export default function ExternalCompaniesPanel() {
             <button onClick={() => { if (canSms) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }} disabled={!canSms} title={!canSms && selectedIds.length ? "선택한 기업 중 전화번호가 있는 곳이 없어요" : undefined} style={btn(canSms, "#5f0080")}>
               SMS 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
-            <button onClick={openLink} disabled={selectedIds.length !== 1} style={btn(selectedIds.length === 1, "#0a7d4b")}>
-              회원 연결
+            <button onClick={openLink} disabled={!canLink}
+              title={!canLink && selectedIds.length === 1 ? "4. 회원가입 완료 상태에서만 연결할 수 있어요" : undefined}
+              style={btn(canLink, "#0a7d4b")}>
+              지원서 연결
             </button>
             <button onClick={bulkDelete} disabled={selectedIds.length === 0 || busy} style={{ ...btn(selectedIds.length > 0, "#e74c3c"), fontWeight: 600 }}>
               <Trash2 size={15} /> 선택 삭제{selectedIds.length ? ` (${selectedIds.length})` : ""}
