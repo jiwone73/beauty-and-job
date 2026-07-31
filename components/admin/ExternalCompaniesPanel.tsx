@@ -162,7 +162,6 @@ export default function ExternalCompaniesPanel() {
   // 회사별 지원 그룹핑
   const appsByCompany: Record<string, App[]> = {};
   for (const a of apps) { const k = a.company_id || ""; (appsByCompany[k] = appsByCompany[k] || []).push(a); }
-  const pendingOf = (id: string) => (appsByCompany[id] || []).filter((a) => a.delivery_status === "PENDING").length;
 
   const stageOfCompany = (c: NmCompany) => companyStage(c, appsByCompany[c.id] || []);
   const stageCounts = STAGES.map((_, i) => items.filter((c) => stageOfCompany(c) === i + 1).length);
@@ -277,9 +276,10 @@ export default function ExternalCompaniesPanel() {
         })}
       </div>
 
-      {/* 선택 기업 진행 단계 게이지 (1~6) */}
+      {/* 선택 기업 진행 단계 게이지 (1~6) — 표 카드와 동일 폭(fit-content + minWidth) */}
       {selectedItems.length > 0 && (
-        <div className="admin-card" style={{ padding: "14px 16px", marginBottom: 14 }}>
+        <div className="admin-card" style={{ marginBottom: 14, width: "fit-content", maxWidth: "100%" }}>
+          <div style={{ minWidth: 960, padding: "14px 16px", boxSizing: "border-box" }}>
           <div style={{ fontSize: 13, color: "#333", marginBottom: 12 }}>선택 기업 진행 단계 <span style={{ color: "#999" }}>({selectedItems.length})</span></div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {selectedItems.map((c) => {
@@ -306,6 +306,7 @@ export default function ExternalCompaniesPanel() {
                 </div>
               );
             })}
+          </div>
           </div>
         </div>
       )}
@@ -375,7 +376,6 @@ export default function ExternalCompaniesPanel() {
               ) : (
                 filtered.map((c) => {
                   const cApps = appsByCompany[c.id] || [];
-                  const pend = pendingOf(c.id);
                   const stage = companyStage(c, cApps);
                   const selected = selectedIds.includes(c.id);
                   const jobTitle = (c.jobs && c.jobs[0]?.title) || "-";
@@ -399,7 +399,7 @@ export default function ExternalCompaniesPanel() {
                       <td className="admin-td-date">{fmtRegion(c)}</td>
                       <td className="admin-td-date">{fmtPhone(c.phone) || c.email || "-"}</td>
                       <td className="admin-td-date" style={{ textAlign: "center", color: "#333" }}>
-                        {cApps.length}{pend > 0 ? <span style={{ color: "#a05a00", fontWeight: 700 }}> ({pend})</span> : null}
+                        {cApps.length}
                       </td>
                       <td className="admin-td-date">
                         <span style={{ background: "#f3edfa", color: "#5f0080", borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>
