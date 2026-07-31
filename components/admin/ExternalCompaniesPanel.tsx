@@ -279,39 +279,6 @@ export default function ExternalCompaniesPanel() {
         })}
       </div>
 
-      {/* 선택 기업 진행 단계 게이지 (1~6) — 표 카드와 동일 폭(둘 다 full-width) */}
-      {selectedItems.length > 0 && (
-        <div className="admin-card" style={{ marginBottom: 14, padding: "22px 24px", width: "100%" }}>
-          <div style={{ fontSize: 14, color: "#333", marginBottom: 16 }}>선택 기업 진행 단계 <span style={{ color: "#999" }}>({selectedItems.length})</span></div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {selectedItems.map((c) => {
-              const cApps = appsByCompany[c.id] || [];
-              const stage = companyStage(c, cApps);
-              const jobTitle = (c.jobs && c.jobs[0]?.title) || "-";
-              return (
-                <div key={c.id}>
-                  <div style={{ fontSize: 14, color: "#333", marginBottom: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {c.company_name}<span style={{ color: "#aaa" }}> · {jobTitle}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    {STAGES.map((label, i) => {
-                      const n = i + 1;
-                      const filled = n <= stage, cur = n === stage;
-                      return (
-                        <div key={label} style={{ flex: 1 }}>
-                          <div style={{ height: 12, borderRadius: 6, background: cur ? "#5f0080" : filled ? "#c9b3e6" : "#eee" }} />
-                          <div style={{ marginTop: 8, fontSize: 14, textAlign: "center", lineHeight: 1.3, color: cur ? "#5f0080" : "#999", fontWeight: cur ? 700 : 400 }}>{n}. {label}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
@@ -335,7 +302,39 @@ export default function ExternalCompaniesPanel() {
         <div style={{ margin: "8px 0", fontSize: 13, padding: "8px 12px", borderRadius: 8, background: msg.startsWith("✓") ? "#e8f5e9" : "#fdeaea", color: msg.startsWith("✓") ? "#1b7a3d" : "#c0392b" }}>{msg}</div>
       )}
 
-      <div className="admin-card" style={{ width: "100%", maxWidth: "100%" }}>
+      <div className="admin-card">
+        {/* 선택 기업 진행 단계 게이지 (1~6) — 표 카드 안이라 표 콘텐츠 폭에 정확히 맞음 */}
+        {selectedItems.length > 0 && (
+          <div style={{ padding: "22px 24px", borderBottom: "1px solid #f0f0f0" }}>
+            <div style={{ fontSize: 14, color: "#333", marginBottom: 16 }}>선택 기업 진행 단계 <span style={{ color: "#999" }}>({selectedItems.length})</span></div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              {selectedItems.map((c) => {
+                const cApps = appsByCompany[c.id] || [];
+                const stage = companyStage(c, cApps);
+                const jobTitle = (c.jobs && c.jobs[0]?.title) || "-";
+                return (
+                  <div key={c.id}>
+                    <div style={{ fontSize: 14, color: "#333", marginBottom: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {c.company_name}<span style={{ color: "#aaa" }}> · {jobTitle}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      {STAGES.map((label, i) => {
+                        const n = i + 1;
+                        const filled = n <= stage, cur = n === stage;
+                        return (
+                          <div key={label} style={{ flex: 1 }}>
+                            <div style={{ height: 12, borderRadius: 6, background: cur ? "#5f0080" : filled ? "#c9b3e6" : "#eee" }} />
+                            <div style={{ marginTop: 8, fontSize: 14, textAlign: "center", lineHeight: 1.3, color: cur ? "#5f0080" : "#999", fontWeight: cur ? 700 : 400 }}>{n}. {label}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>총 <strong>{filtered.length}</strong>개사 · 체크박스를 선택하면 진행 단계가 표시돼요</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
