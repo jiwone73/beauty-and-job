@@ -83,6 +83,7 @@ function AdminApplicationsPageInner() {
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [statusFilter, setStatusFilter] = useState("전체");
   const [dateFilter, setDateFilter] = useState(initialDate);
+  const [memberFilter, setMemberFilter] = useState("전체");
   const [selected, setSelected] = useState<App | null>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
@@ -125,7 +126,8 @@ function AdminApplicationsPageInner() {
     const matchSearch = !search || (a.applicant_name || "").includes(search) || (a.company_name || "").includes(search) || (a.position || "").includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[a.status] === statusFilter;
     const matchDate = dateFilter === "전체" || isToday(a.applied_at);
-    return matchSearch && matchStatus && matchDate;
+    const matchMember = memberFilter === "전체" || (memberFilter === "비회원 공고" ? !a.company_is_member : !!a.company_is_member);
+    return matchSearch && matchStatus && matchDate && matchMember;
   });
 
   return (
@@ -145,6 +147,10 @@ function AdminApplicationsPageInner() {
             value={dateFilter === "today" ? "오늘" : "전체"}
             options={["전체", "오늘"]}
             onChange={(v) => setDateFilter(v === "오늘" ? "today" : "전체")} />
+          <FilterDropdown label="공고구분"
+            value={memberFilter}
+            options={["전체", "비회원 공고", "회원 공고"]}
+            onChange={(v) => setMemberFilter(v)} />
         </div>
       </div>
       <div className="admin-card">
