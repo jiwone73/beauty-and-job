@@ -54,7 +54,7 @@ type App = {
 };
 
 // 지원서 퍼널 6단계 (지원서별). 회원가입만 회사 단위.
-const FUNNEL = ["외부공고 등록", "지원서 접수", "지원서 통보", "회원가입", "지원서 연결", "지원서 확인"];
+const FUNNEL = ["외부공고 등록", "지원서 접수", "지원서 통보", "회원가입", "지원서 전달", "지원서 확인"];
 function stageOf(a: App): number {
   if (a.viewed_at) return 5;               // 확인
   if (a.linked_at) return 4;               // 연결
