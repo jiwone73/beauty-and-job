@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, Fragment } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Search, X, Trash2 } from "lucide-react";
 import BroadcastModal from "@/components/admin/BroadcastModal";
 
@@ -118,6 +118,7 @@ export default function ExternalCompaniesPanel() {
   const [broadcastChannel, setBroadcastChannel] = useState<"email" | "sms">("email");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [sortBy, setSortBy] = useState<"recent" | "name" | "stage">("recent");
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -159,9 +160,17 @@ export default function ExternalCompaniesPanel() {
   const pendingOf = (id: string) => (appsByCompany[id] || []).filter((a) => a.delivery_status === "PENDING").length;
 
   const q = search.trim().toLowerCase();
-  const filtered = q
+  const searched = q
     ? items.filter((c) => (c.company_name || "").toLowerCase().includes(q) || (c.phone || "").includes(q) || (c.email || "").toLowerCase().includes(q))
     : items;
+  const filtered = [...searched].sort((a, b) => {
+    if (sortBy === "name") return (a.company_name || "").localeCompare(b.company_name || "", "ko");
+    if (sortBy === "stage") {
+      const d = companyStage(b, appsByCompany[b.id] || []) - companyStage(a, appsByCompany[a.id] || []);
+      if (d !== 0) return d;
+    }
+    return (b.created_at || "").localeCompare(a.created_at || "");
+  });
 
   const allSelected = filtered.length > 0 && filtered.every((c) => selectedIds.includes(c.id));
   const toggleAll = () => setSelectedIds(allSelected ? [] : filtered.map((c) => c.id));
@@ -258,12 +267,51 @@ export default function ExternalCompaniesPanel() {
         ))}
       </div>
 
+      {/* 선택 기업 진행 단계 게이지 (1~6) */}
+      {selectedItems.length > 0 && (
+        <div style={{ border: "1px solid #eee", borderRadius: 10, padding: "14px 16px", margin: "0 0 14px", background: "#fff" }}>
+          <div style={{ fontSize: 13, color: "#333", marginBottom: 12 }}>선택 기업 진행 단계 <span style={{ color: "#999" }}>({selectedItems.length})</span></div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {selectedItems.map((c) => {
+              const cApps = appsByCompany[c.id] || [];
+              const stage = companyStage(c, cApps);
+              const jobTitle = (c.jobs && c.jobs[0]?.title) || "-";
+              return (
+                <div key={c.id}>
+                  <div style={{ fontSize: 12.5, color: "#333", marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {c.company_name}<span style={{ color: "#aaa" }}> · {jobTitle}</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 5 }}>
+                    {STAGES.map((label, i) => {
+                      const n = i + 1;
+                      const filled = n <= stage, cur = n === stage;
+                      return (
+                        <div key={label} style={{ flex: 1 }}>
+                          <div style={{ height: 10, borderRadius: 5, background: cur ? "#5f0080" : filled ? "#c9b3e6" : "#eee" }} />
+                          <div style={{ marginTop: 6, fontSize: 11, textAlign: "center", lineHeight: 1.3, color: cur ? "#5f0080" : "#aaa", fontWeight: cur ? 700 : 400 }}>{n}. {label}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
             <Search size={16} className="admin-search-icon" />
             <input className="admin-search-input" placeholder="기업명·연락처 검색" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as "recent" | "name" | "stage")}
+            style={{ marginLeft: 8, fontSize: 13, padding: "8px 12px", borderRadius: 8, border: "1px solid #e0e0e0", background: "#fff", cursor: "pointer" }}>
+            <option value="recent">등록일순</option>
+            <option value="name">기업명순</option>
+            <option value="stage">진행 단계순</option>
+          </select>
         </div>
       </div>
 
@@ -296,6 +344,7 @@ export default function ExternalCompaniesPanel() {
                 <th style={{ width: 40, textAlign: "center" }}>
                   <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor: "pointer" }} />
                 </th>
+                <th>외부공고명</th>
                 <th>기업명</th>
                 <th>지역</th>
                 <th>연락처</th>
@@ -307,69 +356,46 @@ export default function ExternalCompaniesPanel() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>{items.length === 0 ? "비회원 기업이 아직 없어요. 외부 공고를 등록하면 여기에 쌓여요." : "검색 결과가 없습니다."}</td></tr>
+                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>{items.length === 0 ? "비회원 기업이 아직 없어요. 외부 공고를 등록하면 여기에 쌓여요." : "검색 결과가 없습니다."}</td></tr>
               ) : (
                 filtered.map((c) => {
                   const cApps = appsByCompany[c.id] || [];
                   const pend = pendingOf(c.id);
                   const stage = companyStage(c, cApps);
                   const selected = selectedIds.includes(c.id);
+                  const jobTitle = (c.jobs && c.jobs[0]?.title) || "-";
+                  const jobExtra = c.job_count > 1 ? ` 외 ${c.job_count - 1}` : "";
                   return (
-                    <Fragment key={c.id}>
-                      <tr style={{ background: selected ? "#faf5ff" : undefined }}>
-                        <td style={{ textAlign: "center" }}>
-                          <input type="checkbox" checked={selected} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
-                        </td>
-                        <td className="admin-td-brand">
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            {c.logo_url
-                              ? <img src={c.logo_url} alt="" style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", background: "#f2f2f2" }} />
-                              : <div style={{ width: 28, height: 28, borderRadius: 6, background: "#f2f2f2" }} />}
-                            <span onClick={() => openEdit(c)} title="정보 수정" style={{ fontWeight: 600, color: "#1a1a1a", cursor: "pointer" }}>{c.company_name}</span>
-                          </div>
-                        </td>
-                        <td className="admin-td-date">{fmtRegion(c)}</td>
-                        <td className="admin-td-date">{fmtPhone(c.phone) || c.email || "-"}</td>
-                        <td className="admin-td-date" style={{ textAlign: "center" }}>{c.job_count}</td>
-                        <td className="admin-td-date" style={{ textAlign: "center", color: "#333" }}>
-                          {cApps.length}{pend > 0 ? <span style={{ color: "#a05a00", fontWeight: 700 }}> ({pend})</span> : null}
-                        </td>
-                        <td className="admin-td-date">
-                          <span style={{ background: "#f3edfa", color: "#5f0080", borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>
-                            {stage}. {STAGES[stage - 1]}
-                          </span>
-                        </td>
-                        <td className="admin-td-date">{fmtDate(c.created_at)}</td>
-                      </tr>
-                      {selected && (
-                        <tr>
-                          <td colSpan={8} style={{ background: "#faf9fc", padding: "18px 22px" }}>
-                            <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
-                              {STAGES.map((label, i) => {
-                                const n = i + 1;
-                                const done = n < stage, cur = n === stage;
-                                return (
-                                  <Fragment key={label}>
-                                    {i > 0 && <div style={{ flex: "0 0 auto", width: 18, height: 2, marginTop: 12, background: n <= stage ? "#c9b3e6" : "#e6e6e6" }} />}
-                                    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                                      <div style={{
-                                        width: 26, height: 26, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                                        fontSize: 12.5, fontWeight: 700,
-                                        background: cur ? "#5f0080" : done ? "#c9b3e6" : "#ececec",
-                                        color: cur || done ? "#fff" : "#aaa",
-                                      }}>{n}</div>
-                                      <div style={{ fontSize: 11.5, textAlign: "center", lineHeight: 1.3, color: cur ? "#5f0080" : "#999", fontWeight: cur ? 700 : 400 }}>{label}</div>
-                                    </div>
-                                  </Fragment>
-                                );
-                              })}
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </Fragment>
+                    <tr key={c.id} style={{ background: selected ? "#faf5ff" : undefined }}>
+                      <td style={{ textAlign: "center" }}>
+                        <input type="checkbox" checked={selected} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
+                      </td>
+                      <td style={{ maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#333" }} title={jobTitle}>
+                        {jobTitle}{jobExtra && <span style={{ color: "#aaa" }}>{jobExtra}</span>}
+                      </td>
+                      <td className="admin-td-brand">
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          {c.logo_url
+                            ? <img src={c.logo_url} alt="" style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", background: "#f2f2f2" }} />
+                            : <div style={{ width: 28, height: 28, borderRadius: 6, background: "#f2f2f2" }} />}
+                          <span onClick={() => openEdit(c)} title="정보 수정" style={{ fontWeight: 600, color: "#1a1a1a", cursor: "pointer" }}>{c.company_name}</span>
+                        </div>
+                      </td>
+                      <td className="admin-td-date">{fmtRegion(c)}</td>
+                      <td className="admin-td-date">{fmtPhone(c.phone) || c.email || "-"}</td>
+                      <td className="admin-td-date" style={{ textAlign: "center" }}>{c.job_count}</td>
+                      <td className="admin-td-date" style={{ textAlign: "center", color: "#333" }}>
+                        {cApps.length}{pend > 0 ? <span style={{ color: "#a05a00", fontWeight: 700 }}> ({pend})</span> : null}
+                      </td>
+                      <td className="admin-td-date">
+                        <span style={{ background: "#f3edfa", color: "#5f0080", borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>
+                          {STAGES[stage - 1]}
+                        </span>
+                      </td>
+                      <td className="admin-td-date">{fmtDate(c.created_at)}</td>
+                    </tr>
                   );
                 })
               )}
