@@ -502,6 +502,16 @@ export default function ExternalCompaniesPanel() {
             return { id, name: c?.company_name || "", email: c?.email || null, phone: c?.phone || null };
           })}
           onClose={() => setBroadcastOpen(false)}
+          onSent={async (channel, ids) => {
+            try {
+              await fetch("/api/admin/external-companies/invite", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", ...authH },
+                body: JSON.stringify({ ids, channel }),
+              });
+              load();
+            } catch { /* 발송은 됐으니 상태 갱신 실패는 조용히 무시 */ }
+          }}
         />
       )}
     </>

@@ -7,10 +7,12 @@ export default function BroadcastModal({
   targets,
   onClose,
   initialChannel = "email",
+  onSent,
 }: {
   targets: Target[];
   onClose: () => void;
   initialChannel?: "email" | "sms";
+  onSent?: (channel: "email" | "sms", ids: string[]) => void;
 }) {
   const [channel, setChannel] = useState<"email" | "sms">(initialChannel);
   const [subject, setSubject] = useState("");
@@ -51,6 +53,8 @@ export default function BroadcastModal({
       if (data.success) {
         if (data.data?.pending) setResult(`⚙️ ${data.data.message}`);
         else setResult(`✅ ${data.data.sent ?? data.data.count}명에게 발송 완료`);
+        // 발송 성공 → 대상 기업을 '안내발송' 상태로 기록
+        onSent?.(channel, valid.map((t) => t.id));
       } else {
         setResult(`❌ ${data.error?.message || "발송 실패"}`);
       }
