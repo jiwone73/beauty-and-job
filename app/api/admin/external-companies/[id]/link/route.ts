@@ -36,11 +36,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     );
     const jobIds = jobs.rows.map((r) => r.id);
 
-    // 2) 이 공고들의 외부 전달 상태 해제(회원 지원자 관리로 편입)
+    // 2) 이 공고들의 외부 전달 상태 해제(회원 지원자 관리로 편입) + 지원서 단위 '연결' 기록
     if (jobIds.length > 0) {
       await client.query(
-        `UPDATE applications SET delivery_status = NULL
-         WHERE job_posting_id = ANY($1::uuid[]) AND delivery_status IS NOT NULL`,
+        `UPDATE applications
+         SET delivery_status = NULL, linked_at = COALESCE(linked_at, now())
+         WHERE job_posting_id = ANY($1::uuid[])`,
         [jobIds]
       );
     }

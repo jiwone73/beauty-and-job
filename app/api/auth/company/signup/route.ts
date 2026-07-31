@@ -61,9 +61,9 @@ export async function POST(req: NextRequest) {
   try {
     await client.query('BEGIN')
 
-    // 중복 체크
+    // 중복 체크 (회원 기업만 대상 — 비회원 placeholder는 아래에서 승격 처리)
     const dupRes = await client.query(
-      `SELECT id, email, business_number FROM companies WHERE email = $1 OR business_number = $2`,
+      `SELECT id, email, business_number FROM companies WHERE (email = $1 OR business_number = $2) AND is_member = true`,
       [email, business_number]
     )
     if (dupRes.rowCount && dupRes.rowCount > 0) {
@@ -92,24 +92,68 @@ export async function POST(req: NextRequest) {
     // 승인 게이트 → 가입 상태 결정 (지금은 PENDING)
     const companyStatus = await decideCompanyStatus({ business_number, company_name, phone })
 
-    // 기업 INSERT
-    const result = await client.query(
-      `INSERT INTO companies (
-        company_name, brand_name, business_number, company_type,
-        email, phone, password_hash, address, website_url, description,
-        business_license_path, status
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::company_status
-      ) RETURNING id, company_name, brand_name, business_number, company_type,
-                 email, phone, address, website_url, description, status, created_at`,
-      [
-        company_name, brand_name || null, business_number, company_type,
-        email, phone, passwordHash,
-        address || null, website_url || null, description || null,
-        business_license_path || null, companyStatus
-      ]
+    // 안내를 보낸 비회원(외부) 기업이 같은 이메일로 가입 → 기존 비회원 행을 회원으로 승격(claim)
+    const claim = await client.query(
+      `SELECT id FROM companies
+       WHERE is_member = false AND merged_into_company_id IS NULL AND lower(email) = lower($1)
+       ORDER BY created_at LIMIT 1`,
+      [email]
     )
-    const company = result.rows[0]
+    const claimId: string | null = claim.rows[0]?.id || null
+
+    let company: any
+    if (claimId) {
+      // 기존 비회원 행을 회원 정보로 채우고 온보딩 상태를 '연결완료(LINKED)'로
+      const upd = await client.query(
+        `UPDATE companies SET
+           company_name = $2, brand_name = $3, business_number = $4, company_type = $5,
+           phone = $6, password_hash = $7, address = $8, website_url = $9, description = $10,
+           business_license_path = $11, status = $12::company_status,
+           is_member = true, onboarding_status = 'LINKED',
+           joined_at = COALESCE(joined_at, now()), linked_at = now(), updated_at = now()
+         WHERE id = $1
+         RETURNING id, company_name, brand_name, business_number, company_type,
+                   email, phone, address, website_url, description, status, created_at`,
+        [
+          claimId, company_name, brand_name || null, business_number, company_type,
+          phone, passwordHash, address || null, website_url || null, description || null,
+          business_license_path || null, companyStatus
+        ]
+      )
+      company = upd.rows[0]
+      // 이 기업(=기존 비회원) 공고를 회원 공고로 전환하고, 외부 지원을 회원 지원자 관리로 편입
+      await client.query(
+        `UPDATE job_postings SET source = 'NATIVE', apply_method = 'NATIVE', updated_at = now()
+         WHERE company_id = $1 AND source = 'EXTERNAL'`,
+        [claimId]
+      )
+      await client.query(
+        `UPDATE applications
+         SET delivery_status = NULL, linked_at = COALESCE(applications.linked_at, now())
+         FROM job_postings jp
+         WHERE applications.job_posting_id = jp.id AND jp.company_id = $1`,
+        [claimId]
+      )
+    } else {
+      // 신규 기업 INSERT
+      const result = await client.query(
+        `INSERT INTO companies (
+          company_name, brand_name, business_number, company_type,
+          email, phone, password_hash, address, website_url, description,
+          business_license_path, status
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::company_status
+        ) RETURNING id, company_name, brand_name, business_number, company_type,
+                   email, phone, address, website_url, description, status, created_at`,
+        [
+          company_name, brand_name || null, business_number, company_type,
+          email, phone, passwordHash,
+          address || null, website_url || null, description || null,
+          business_license_path || null, companyStatus
+        ]
+      )
+      company = result.rows[0]
+    }
 
     // 약관 동의 기록
     for (const termId of agreed_term_ids) {

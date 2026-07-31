@@ -32,5 +32,17 @@ export async function POST(req: NextRequest) {
     [ids, ch]
   );
 
+  // 지원서 단위 '통보' 기록: 그 회사의 아직 미연결 지원서에 notified_at
+  await pool.query(
+    `UPDATE applications a
+     SET notified_at = COALESCE(a.notified_at, now())
+     FROM job_postings jp
+     WHERE a.job_posting_id = jp.id
+       AND jp.company_id = ANY($1::uuid[])
+       AND a.notified_at IS NULL
+       AND a.linked_at IS NULL`,
+    [ids]
+  );
+
   return ok({ invited: ids.length, channel: ch });
 }
