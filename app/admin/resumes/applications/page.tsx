@@ -177,7 +177,7 @@ function AdminApplicationsPageInner() {
                 // 외부(비회원) 기업 지원 중 아직 '지원서 연결' 전 → 연한 그레이로 구분
                 const notConnected = !a.company_is_member && !a.linked_at;
                 return (
-                  <tr key={a.id} style={notConnected ? { background: "#f7f7f8" } : undefined}
+                  <tr key={a.id} style={notConnected ? { background: "#e6e8eb" } : undefined}
                     title={notConnected ? "아직 지원서 연결(회원 기업 연결) 전 지원이에요" : undefined}>
                     {/* 지원자: 아바타 + 이름·성별 / 나이·경력 */}
                     <td>
