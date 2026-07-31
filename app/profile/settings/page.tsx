@@ -18,44 +18,6 @@ export default function AccountSettingsPage() {
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
   const [withdrawPw, setWithdrawPw] = useState("");
-  const [jobType, setJobType] = useState<"STORE" | "OFFICE" | "">("");
-  const [trackSaving, setTrackSaving] = useState(false);
-
-  // 현재 구직 트랙 로드
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((res) => { if (res.success && res.data?.job_type) setJobType(res.data.job_type); })
-      .catch(() => {});
-  }, []);
-
-  const toggleTrack = async () => {
-    if (!jobType || trackSaving) return;
-    const next = jobType === "STORE" ? "OFFICE" : "STORE";
-    const token = localStorage.getItem("access_token");
-    if (!token) { alert("로그인이 필요합니다."); return; }
-    setTrackSaving(true);
-    try {
-      const res = await fetch("/api/users/me/job-type", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ job_type: next }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setJobType(data.data.job_type);
-      } else {
-        alert(data.error?.message || "전환에 실패했습니다.");
-      }
-    } catch {
-      alert("전환 중 오류가 발생했습니다.");
-    } finally {
-      setTrackSaving(false);
-    }
-  };
-
   const handleChangePw = async () => {
     if (!curPw || !newPw) { alert("현재 비밀번호와 새 비밀번호를 입력해주세요."); return; }
     if (newPw.length < 8) { alert("새 비밀번호는 8자 이상이어야 합니다."); return; }
@@ -138,36 +100,6 @@ export default function AccountSettingsPage() {
           </button>
           <p style={{ fontSize: 12, color: "#999", margin: "10px 0 0" }}>카카오 등 소셜 로그인 계정은 비밀번호 변경이 불가능합니다.</p>
         </section>
-
-        {/* 구직 트랙 (매장직/사무직) */}
-        {jobType && (
-          <section style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 16 }}>
-            <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 4px" }}>구직 트랙</h2>
-            <p style={{ fontSize: 13, color: "#888", lineHeight: 1.6, margin: "0 0 16px" }}>
-              지원하는 채용 유형이에요. 전환하면 이력서 직무 항목과 기업에 노출되는 분류가 트랙에 맞게 바뀝니다. 경력·학력 등 다른 내용은 유지돼요.
-            </p>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-              <span style={{ fontSize: 14, fontWeight: jobType === "STORE" ? 600 : 400, color: jobType === "STORE" ? "#5f0080" : "#aaa" }}>매장직</span>
-              <button
-                onClick={toggleTrack}
-                disabled={trackSaving}
-                aria-label="매장직/사무직 전환"
-                style={{
-                  position: "relative", width: 56, height: 30, borderRadius: 15, border: "none",
-                  background: "#efe6f5", cursor: trackSaving ? "not-allowed" : "pointer", flexShrink: 0,
-                  padding: 0, opacity: trackSaving ? 0.6 : 1, transition: "background .2s",
-                }}
-              >
-                <span style={{
-                  position: "absolute", top: 3, left: 3, width: 24, height: 24, borderRadius: "50%",
-                  background: "#5f0080", transition: "transform .2s",
-                  transform: jobType === "OFFICE" ? "translateX(26px)" : "translateX(0)",
-                }} />
-              </button>
-              <span style={{ fontSize: 14, fontWeight: jobType === "OFFICE" ? 600 : 400, color: jobType === "OFFICE" ? "#5f0080" : "#aaa" }}>사무직</span>
-            </div>
-          </section>
-        )}
 
         {/* 회원 탈퇴 */}
         <section style={{ background: "#fff", borderRadius: 12, padding: 20 }}>

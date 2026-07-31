@@ -129,10 +129,11 @@ function ResumePageContent() {
 
   // 프로필에서 설정한 직군은 서버(officeAreas)에 저장됨 → 우선 사용
   const effectiveOfficeAreas = officeAreas.length ? officeAreas : officeJobAreas;
+  // 이력서엔 주 트랙(잡타입) 직군만 노출 — 겸업으로 담은 다른 트랙 직군은 표시 안 함
+  const primaryArea = resumeType === "salon" ? skillAreas[0] : effectiveOfficeAreas[0];
   const jobDisplay =
     (job === "직접입력" ? jobCustom : job) ||
-    effectiveOfficeAreas[0] ||
-    skillAreas[0] ||
+    primaryArea ||
     "직군 미설정";
   const birthDisplay = birth
     ? `${birth.slice(0, 4)}년 (${new Date().getFullYear() - Number(birth.slice(0, 4))}세, ${gender === "남성" ? "남" : "여"})`
