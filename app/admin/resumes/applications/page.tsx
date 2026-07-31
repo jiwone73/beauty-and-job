@@ -147,7 +147,7 @@ function AdminApplicationsPageInner() {
             value={dateFilter === "today" ? "오늘" : "전체"}
             options={["전체", "오늘"]}
             onChange={(v) => setDateFilter(v === "오늘" ? "today" : "전체")} />
-          <FilterDropdown label="공고지원구분"
+          <FilterDropdown label="지원구분"
             value={memberFilter}
             options={["전체", "비회원 공고지원", "회원 공고지원"]}
             onChange={(v) => setMemberFilter(v)} />
