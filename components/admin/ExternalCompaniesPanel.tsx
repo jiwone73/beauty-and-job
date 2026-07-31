@@ -86,7 +86,7 @@ const SIDO_SHORT: Record<string, string> = {
 };
 // 비회원 기업 온보딩 단계 배지
 const STAGE: Record<string, { label: string; bg: string; color: string }> = {
-  RECEIVED:      { label: "지원접수", bg: "#eef1f5", color: "#556" },
+  RECEIVED:      { label: "공고등록", bg: "#eef1f5", color: "#556" },
   INVITED:       { label: "안내발송", bg: "#fff4e5", color: "#a05a00" },
   JOINED:        { label: "가입완료", bg: "#e7f0ff", color: "#1f5fbf" },
   LINKED:        { label: "연결완료", bg: "#e8f5e9", color: "#1b7a3d" },
