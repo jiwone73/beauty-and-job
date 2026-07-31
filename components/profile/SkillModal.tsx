@@ -204,10 +204,6 @@ const KEYWORD_GROUPS: Record<string, string[]> = {
   "영상": ["영상 편집", "모션그래픽", "Premiere", "After Effects"],
 };
 
-// 트랙별 스킬 집합 (검색 필터용)
-const STORE_SET = new Set<string>(Object.values(STORE_RECOMMENDATIONS).flat());
-const OFFICE_SET = new Set<string>([...Object.values(SKILL_RECOMMENDATIONS).flat(), ...OFFICE_EXTRA_SKILLS]);
-
 export default function SkillModal({ isOpen, onClose }: Props) {
   const { skills, addSkill, removeSkill } = useProfileStore();
   const { officeJobAreas, skillAreas } = useSignupStore();
@@ -215,11 +211,8 @@ export default function SkillModal({ isOpen, onClose }: Props) {
   const [input, setInput] = useState("");
   if (!isOpen) return null;
 
-  // 구직 트랙: authStore 값 우선, 없으면 선택 분야로 추정
+  // 구직 트랙(빈 입력창 추천용): authStore 값 우선, 없으면 선택 분야로 추정
   const isStoreTrack = userJobType === "STORE" || (!userJobType && Array.isArray(skillAreas) && skillAreas.length > 0);
-  const isOfficeTrack = userJobType === "OFFICE" || (!userJobType && Array.isArray(officeJobAreas) && officeJobAreas.length > 0);
-  // 검색 결과를 트랙에 맞게 필터 (트랙 미확정이면 전체)
-  const trackSet: Set<string> | null = isStoreTrack ? STORE_SET : isOfficeTrack ? OFFICE_SET : null;
 
   const recommended = (() => {
     const merged = new Set<string>();
@@ -250,10 +243,7 @@ export default function SkillModal({ isOpen, onClose }: Props) {
     Object.entries(KEYWORD_GROUPS).forEach(([kw, list]) => {
       if (kw.includes(query) || query.includes(kw)) list.forEach((s) => hit.add(s));
     });
-    return Array.from(hit)
-      .filter((s) => !skills.includes(s))
-      .filter((s) => !trackSet || trackSet.has(s)) // 트랙(매장/사무)에 맞는 것만
-      .slice(0, 20);
+    return Array.from(hit).filter((s) => !skills.includes(s)).slice(0, 30);
   })();
 
   return (
