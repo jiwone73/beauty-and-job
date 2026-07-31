@@ -70,6 +70,7 @@ function appStage(a: App): number {
 // 기업 행의 대표 단계(1~6): 지원서 중 가장 앞선 단계, 없으면 1(공고등록).
 function companyStage(c: NmCompany, cApps: App[]): number {
   let s = 1; // 공고등록
+  if (c.onboarding_status === "JOINED") s = Math.max(s, 4); // 회원가입 완료(미연결)
   if (c.merged_into_company_id) s = Math.max(s, 4); // 회원 연결됨
   for (const a of cApps) s = Math.max(s, appStage(a));
   return s;

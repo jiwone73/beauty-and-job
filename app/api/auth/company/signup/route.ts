@@ -155,6 +155,26 @@ export async function POST(req: NextRequest) {
       company = result.rows[0]
     }
 
+    // 회원가입 자동 감지(4단계): 회사명 + 근무지역(시/군/구)이 일치하는 비회원(외부) 행을 'JOINED'로 표시.
+    // 연결(5단계)은 운영자가 수동으로. 이메일로 승격된 행(is_member=true)은 자동 제외됨.
+    const normName = (company_name || '').toLowerCase()
+      .replace(/\s/g, '').replace(/㈜/g, '').replace(/\(주\)/g, '').replace(/주식회사/g, '')
+    if (normName) {
+      await client.query(
+        `UPDATE companies SET
+           onboarding_status = 'JOINED', joined_at = COALESCE(joined_at, now()), updated_at = now()
+         WHERE is_member = false
+           AND merged_into_company_id IS NULL
+           AND onboarding_status NOT IN ('JOINED', 'LINKED')
+           AND replace(replace(replace(regexp_replace(lower(company_name), '[[:space:]]', '', 'g'), '㈜', ''), '(주)', ''), '주식회사', '') = $1
+           AND (
+             (region_sigungu IS NOT NULL AND region_sigungu <> '' AND $2 ILIKE '%' || region_sigungu || '%')
+             OR (region_sigungu IS NULL AND region_sido IS NOT NULL AND region_sido <> '' AND $2 ILIKE '%' || region_sido || '%')
+           )`,
+        [normName, address || '']
+      )
+    }
+
     // 약관 동의 기록
     for (const termId of agreed_term_ids) {
       await client.query(
