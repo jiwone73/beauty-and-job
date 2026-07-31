@@ -62,7 +62,7 @@ export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
 
   if (!isOpen) return null;
 
-  const isValid = !!level && school.trim() && startY && startM && (needsMajor ? major.trim() : true);
+  const isValid = !!level && school.trim() && !!status && startY && startM && (needsMajor ? major.trim() : true);
 
   const handleSubmit = () => {
     if (!isValid) return;
@@ -106,7 +106,7 @@ export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
           <label className="cv-field-label cv-required">학교명</label>
           <input className="cv-input" placeholder="학교명을 입력해 주세요." value={school} onChange={(e) => setSchool(e.target.value)} />
 
-          <label className="cv-field-label">졸업 상태</label>
+          <label className="cv-field-label cv-required">졸업 상태</label>
           <button className="cv-select-btn" onClick={() => { setShowStatus(!showStatus); setShowLevel(false); }}>
             <span className={status ? "" : "cv-placeholder"}>{status || "졸업 상태를 선택해 주세요."}</span>
             <ChevronLeft size={16} style={{ transform: "rotate(-90deg)" }} />
