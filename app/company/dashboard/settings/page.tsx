@@ -413,7 +413,17 @@ export default function CompanySettingsPage() {
               {/* 회사 로고 (라벨을 감싸 compact 그리드 제외) */}
               <div className="admin-form-row">
                 <div>
-                <label className="admin-form-label">회사 로고</label>
+                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
+                  <label className="admin-form-label" style={{margin:0}}>회사 로고</label>
+                  <label title={logoUrl ? "로고 변경" : "로고 등록"}
+                    style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:38, height:38, flexShrink:0,
+                      borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080",
+                      cursor: logoUploading ? "wait" : "pointer"}}>
+                    {logoUploading ? "…" : <Camera size={18} />}
+                    <input type="file" accept="image/jpeg,image/png,image/webp"
+                      disabled={logoUploading} onChange={handleLogoUpload} style={{display:"none"}} />
+                  </label>
+                </div>
                 <div style={{display:"flex", alignItems:"center", gap:"12px"}}>
                   <div style={{position:"relative", width:"calc(100% / 3)", aspectRatio:"4 / 3", borderRadius:"10px", border:"1px solid #eee",
                     background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
@@ -433,14 +443,6 @@ export default function CompanySettingsPage() {
                     )}
                   </div>
                   <p style={{flex:1, minWidth:0, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.5}}>공고에 자동으로 노출되는 대표 로고예요.</p>
-                  <label title={logoUrl ? "로고 변경" : "로고 등록"}
-                    style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:42, height:42, flexShrink:0,
-                      borderRadius:11, border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080",
-                      cursor: logoUploading ? "wait" : "pointer"}}>
-                    {logoUploading ? "…" : <Camera size={19} />}
-                    <input type="file" accept="image/jpeg,image/png,image/webp"
-                      disabled={logoUploading} onChange={handleLogoUpload} style={{display:"none"}} />
-                  </label>
                 </div>
                 </div>
               </div>
@@ -567,7 +569,6 @@ export default function CompanySettingsPage() {
                     value={form.address_detail}
                     onChange={(e) => setForm({ ...form, address_detail: e.target.value })} />
                 </div>
-                <p style={{fontSize:"12.5px", color:"#999", margin:"6px 0 0"}}>주소 검색 후 층·호수만 직접 입력</p>
               </div>
 
               <div className="admin-form-row-2col">
@@ -618,36 +619,41 @@ export default function CompanySettingsPage() {
                 </div>
                 <div className="admin-form-row">
                   <label className="admin-form-label">담당자 연락처<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <input className="admin-form-input" style={{ flex: 1, minWidth: 0 }} placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
-                      value={formatPhone(form.phone)}
-                      onChange={(e) => { setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) }); setPhoneVerified(false); setPhoneCodeSent(false); setPhoneMsg(""); }} />
-                    {form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && (
-                      phoneVerified ? (
-                        <span style={{ display: "inline-flex", alignItems: "center", padding: "0 12px", color: "#10b981", fontSize: 13, whiteSpace: "nowrap" }}>인증완료</span>
-                      ) : (
-                        <button type="button" onClick={handleSendPhoneCode} disabled={phoneSending || form.phone.replace(/\D/g, "").length < 10}
-                          style={{ padding: "0 14px", whiteSpace: "nowrap", borderRadius: 8, border: "1px solid #5f0080", color: "#5f0080", background: "#fff", fontSize: 13, cursor: "pointer" }}>
-                          {phoneCodeSent ? "재전송" : phoneSending ? "전송중" : "인증번호 받기"}
-                        </button>
-                      )
-                    )}
-                  </div>
-                  {form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && phoneCodeSent && !phoneVerified && (
-                    <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                      <input className="admin-form-input" style={{ flex: 1, minWidth: 0 }} placeholder="인증번호 6자리" inputMode="numeric"
-                        value={phoneCode} onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))} />
-                      <button type="button" onClick={handleVerifyPhoneCode} disabled={phoneVerifying || phoneCode.length < 6}
-                        style={{ padding: "0 14px", whiteSpace: "nowrap", borderRadius: 8, border: "none", color: "#fff", background: "#5f0080", fontSize: 13, cursor: "pointer", opacity: phoneVerifying || phoneCode.length < 6 ? 0.4 : 1 }}>
-                        {phoneVerifying ? "확인중" : "확인"}
-                      </button>
-                    </div>
-                  )}
-                  {form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && phoneMsg && (
-                    <p style={{ fontSize: 12, marginTop: 6, color: phoneVerified ? "#10b981" : "#9a9a9a" }}>{phoneMsg}</p>
-                  )}
+                  <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
+                    value={formatPhone(form.phone)}
+                    onChange={(e) => { setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) }); setPhoneVerified(false); setPhoneCodeSent(false); setPhoneMsg(""); }} />
                 </div>
               </div>
+
+              {/* 담당자 연락처 변경 시 휴대폰 인증 */}
+              {form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && (
+                <div className="admin-form-row">
+                  <div>
+                    {phoneVerified ? (
+                      <div style={{ color: "#10b981", fontSize: 13.5, fontWeight: 500 }}>✓ 휴대폰 인증 완료</div>
+                    ) : !phoneCodeSent ? (
+                      <button type="button" onClick={handleSendPhoneCode} disabled={phoneSending || form.phone.replace(/\D/g, "").length < 10}
+                        style={{ width: "100%", height: 44, borderRadius: 10, border: "1px solid #5f0080", color: "#5f0080", background: "#fff", fontSize: 14, fontWeight: 500, cursor: "pointer", opacity: (phoneSending || form.phone.replace(/\D/g, "").length < 10) ? 0.5 : 1 }}>
+                        {phoneSending ? "전송 중…" : "변경된 번호로 인증번호 받기"}
+                      </button>
+                    ) : (
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <input className="admin-form-input" style={{ flex: 1, minWidth: 0, height: 44, boxSizing: "border-box" }} placeholder="인증번호 6자리" inputMode="numeric"
+                          value={phoneCode} onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))} />
+                        <button type="button" onClick={handleVerifyPhoneCode} disabled={phoneVerifying || phoneCode.length < 6}
+                          style={{ padding: "0 16px", whiteSpace: "nowrap", height: 44, borderRadius: 10, border: "none", color: "#fff", background: "#5f0080", fontSize: 14, cursor: "pointer", opacity: (phoneVerifying || phoneCode.length < 6) ? 0.4 : 1 }}>
+                          {phoneVerifying ? "확인 중" : "확인"}
+                        </button>
+                        <button type="button" onClick={handleSendPhoneCode} disabled={phoneSending}
+                          style={{ padding: "0 12px", whiteSpace: "nowrap", height: 44, borderRadius: 10, border: "1px solid #ddd", color: "#666", background: "#fff", fontSize: 13, cursor: "pointer" }}>
+                          재전송
+                        </button>
+                      </div>
+                    )}
+                    {phoneMsg && <p style={{ fontSize: 12, marginTop: 6, color: phoneVerified ? "#10b981" : "#9a9a9a" }}>{phoneMsg}</p>}
+                  </div>
+                </div>
+              )}
               <div className="admin-form-row">
                 <div>
                 <label className="admin-form-label">기업 소개</label>

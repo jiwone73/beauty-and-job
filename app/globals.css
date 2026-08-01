@@ -5465,7 +5465,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-bottom: 1px solid #f2f2f2;
 }
 .settings-compact .admin-form-row:has(> .admin-form-label) > .admin-form-label {
-  grid-column: 1; margin: 0;
+  grid-column: 1; margin: 0; white-space: nowrap;
 }
 .settings-compact .admin-form-row:has(> .admin-form-label) > *:not(.admin-form-label) {
   grid-column: 2; min-width: 0;
@@ -5475,8 +5475,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   border: none !important;
   background: transparent !important;
   padding: 0 !important;
-  height: auto !important;
-  min-height: 0 !important;
+  height: 24px !important;
+  line-height: 24px !important;
   text-align: right;
   text-align-last: right;
   font-size: 14px;
@@ -5489,7 +5489,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 @media (max-width: 767px) {
   .settings-compact .admin-form-row:has(> .admin-form-label) {
-    grid-template-columns: 80px 1fr;
+    grid-template-columns: 96px 1fr;
     column-gap: 10px;
     padding: 12px 0;
   }
