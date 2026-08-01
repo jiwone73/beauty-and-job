@@ -184,6 +184,7 @@ export default function CompanyLayout({ children, activePage }: {
             <Link href={base} className="co-m-name" style={{ textDecoration: "none", color: "inherit" }}>{companyInfo.name || "기업"}</Link>
           </div>
           <div className="co-m-actions">
+            <div id="co-m-header-slot" style={{ display: "flex", alignItems: "center" }} />
             <button className="co-m-ibtn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">
               <Bell size={20} />
               {unread > 0 && <span className="co-m-badge">{unread > 9 ? "9+" : unread}</span>}

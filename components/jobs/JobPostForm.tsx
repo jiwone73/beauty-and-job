@@ -1,8 +1,9 @@
 "use client";
 import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronDown, Pencil, Trash2, Upload, Eye, Save } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2, Upload, Eye, Save } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView, { ImageCarousel } from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -40,6 +41,37 @@ export interface JobPostFormProps {
   loadEditData?: (editId: string) => Promise<any | null>;
 }
 
+// 공고 상단 이미지(기업 커버) 표시 전용 배너 — 한 배너에 최대 3개 균등, 3개 초과 시 ▶로 회전
+function CoverBanner({ images }: { images: string[] }) {
+  const [start, setStart] = useState(0);
+  if (!images.length) {
+    return (
+      <div style={{ height: 120, display: "flex", alignItems: "center", justifyContent: "center", background: "#faf7fc", border: "1px dashed #e0d4ec", borderRadius: 10, color: "#b0a0c0", fontSize: 13 }}>
+        기업설정에서 등록한 커버 이미지가 없어요.
+      </div>
+    );
+  }
+  const n = images.length;
+  const visible = n <= 3 ? images : [0, 1, 2].map((i) => images[(start + i) % n]);
+  return (
+    <div style={{ position: "relative" }}>
+      <div style={{ display: "flex", gap: 8 }}>
+        {visible.map((u, i) => (
+          <div key={`${start}-${i}`} style={{ flex: 1, minWidth: 0, aspectRatio: "4 / 3", borderRadius: 10, overflow: "hidden", border: "1px solid #eee", background: "#f3f3f3" }}>
+            <img src={u} alt={`커버 이미지 ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          </div>
+        ))}
+      </div>
+      {n > 3 && (
+        <button type="button" onClick={() => setStart((s) => (s + 1) % n)} aria-label="다음 이미지"
+          style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 34, height: 34, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.55)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+          <ChevronRight size={20} />
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function JobPostForm({
   mode, editId = null, listHref, companyType = null, companies = [],
   uploadImage, onSubmit, loadEditData,
@@ -53,6 +85,28 @@ export default function JobPostForm({
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  // 최상단 헤더(알림종 옆)로 임시저장·미리보기 아이콘을 포탈
+  const [headerSlot, setHeaderSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setHeaderSlot(document.getElementById("co-m-header-slot"));
+  }, [isMobile]);
+
+  // 기업설정에 등록한 커버 이미지(공고 상단 이미지) — 표시 전용
+  const [coverImages, setCoverImages] = useState<string[]>([]);
+  useEffect(() => {
+    if (mode !== "company") return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/company/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success && Array.isArray(res.data?.cover_images)) {
+          setCoverImages(res.data.cover_images.map((c: any) => c?.url).filter(Boolean));
+        }
+      })
+      .catch(() => {});
+  }, [mode]);
 
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [companyQuery, setCompanyQuery] = useState("");
@@ -742,18 +796,30 @@ export default function JobPostForm({
             {editId ? "채용공고 수정" : "채용공고 등록"}
           </h2>
         )}
-        <div className="admin-form-actions">
-          <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}><Save size={15} /> 임시저장</button>
-          <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
-          {!isMobile && (
+        {!isMobile && (
+          <div className="admin-form-actions">
+            <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}><Save size={15} /> 임시저장</button>
+            <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
             <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
               {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {(
+      {isMobile && headerSlot && createPortal(
+        <>
+          <button className="co-m-ibtn" onClick={() => handleSubmit("draft")} aria-label="임시저장" title="임시저장">
+            <Save size={20} />
+          </button>
+          <button className="co-m-ibtn" onClick={() => setShowPreview(true)} aria-label="미리보기" title="미리보기">
+            <Eye size={20} />
+          </button>
+        </>,
+        headerSlot
+      )}
+
+      {mode === "admin" && (
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기 (자동 작성)" : "타 사이트 공고 불러오기 (자동 작성)"}</div>
           <div style={{ display: "flex", gap: 8 }}>
@@ -793,8 +859,16 @@ export default function JobPostForm({
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
 
-      {/* 공고 상단 이미지 — 미리보기(캐러셀) + 첨부·삭제 관리 한 곳에서 */}
-      {(() => {
+      {/* 공고 상단 이미지 */}
+      {mode === "company" ? (
+        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
+          <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 상단 이미지</h2>
+          <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
+            <CoverBanner images={coverImages} />
+            <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999" }}>기업설정에 등록한 커버 이미지가 공고 상단에 표시돼요. 이미지 변경은 기업설정에서 할 수 있어요.</p>
+          </div>
+        </div>
+      ) : (() => {
         const gimgs = [nmCover, ...detailImages.map((d) => d.url)].filter(Boolean);
         const guniq = [...new Set(gimgs)];
         // 썸네일 ×삭제: 커버면 다음 이미지를 커버로 승격, 아니면 상세이미지에서 제거
