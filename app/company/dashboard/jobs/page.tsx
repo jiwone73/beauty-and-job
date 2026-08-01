@@ -317,7 +317,7 @@ export default function CompanyJobsPage() {
             .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
             .co-li.on { border-color: #5f0080; background: #faf5fc; }
             .co-li-r1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
-            .co-li-title { font-size: 15.5px; color: #1a1a1a; line-height: 1.35; word-break: break-all; min-width: 0; }
+            .co-li-title { font-size: 15.5px; color: #5f0080; line-height: 1.35; word-break: break-all; min-width: 0; }
             .co-li-status { font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; flex-shrink: 0; }
             .co-li-r2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #777; }
             .co-li-r2 b { color: #444; font-weight: 500; }
@@ -344,7 +344,14 @@ export default function CompanyJobsPage() {
                   <div className="co-li-r2">
                     <span>등록 <b>{new Date(job.created_at).toLocaleDateString("ko-KR")}</b></span>
                     <span>마감 <b>{formatDeadline(job.deadline)}</b></span>
-                    <span>지원자 <b>{job.application_count}</b></span>
+                    <span>지원자 {job.application_count > 0 ? (
+                      <b style={{ color: "#5f0080" }}
+                        onClick={(e) => { if (!selectMode) { e.stopPropagation(); router.push(`/company/dashboard/applicants?job_id=${job.id}`); } }}>
+                        {job.application_count}
+                      </b>
+                    ) : (
+                      <b>{job.application_count}</b>
+                    )}</span>
                     <span>조회 <b>{job.view_count}</b></span>
                   </div>
                 </div>
