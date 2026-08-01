@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Save, Camera, Trash2, Plus, X, ChevronRight } from "lucide-react";
+import { Save, Camera, Trash2, ImagePlus, X, ChevronRight } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { industryGroupsFor } from "@/lib/data/industries";
 import type { CompanyInfo } from "@/lib/types/company";
@@ -412,9 +412,10 @@ export default function CompanySettingsPage() {
                 {info?.company_type === "STORE" ? "🏪 매장" : "🏢 본사"}
               </span>
             </div>
-            <div className="admin-form-body">
-              {/* 회사 로고 */}
+            <div className="admin-form-body settings-compact">
+              {/* 회사 로고 (라벨을 감싸 compact 그리드 제외) */}
               <div className="admin-form-row">
+                <div>
                 <label className="admin-form-label">회사 로고</label>
                 <p style={{fontSize:"12.5px", color:"#999", margin:"2px 0 10px"}}>대표 이미지 · 모든 공고에 자동 적용</p>
                 <div style={{display:"flex", alignItems:"center", gap:"14px"}}>
@@ -445,22 +446,46 @@ export default function CompanySettingsPage() {
                     )}
                   </div>
                 </div>
+                </div>
               </div>
 
-              {/* 공고 노출 이미지 (여러 장) */}
+              {/* 공고 상단 배너 (여러 장) */}
               <div className="admin-form-row">
-                <label className="admin-form-label">공고 노출 이미지</label>
-                <p style={{fontSize:"12.5px", color:"#999", margin:"2px 0 10px"}}>공고 상단 배너 · 여러 장 등록 가능</p>
-                {coverImages.length > 0 ? (
+                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
+                  <label className="admin-form-label" style={{margin:0}}>공고 상단 배너</label>
+                  <label title="여러 장 추가할 수 있어요"
+                    style={{display:"inline-flex", alignItems:"center", gap:5, padding:"6px 11px", borderRadius:9,
+                      border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080", fontSize:13, fontWeight:500,
+                      cursor: coverUploading ? "wait" : "pointer"}}>
+                    <ImagePlus size={17} />{coverUploading ? "업로드 중…" : "추가"}
+                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple
+                      disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
+                  </label>
+                </div>
+                {coverImages.length === 0 ? (
+                  <div style={{height:110, display:"flex", alignItems:"center", justifyContent:"center",
+                    background:"#f7f4fb", border:"1px dashed #d9c9ec", borderRadius:10, color:"#b0a0c0", fontSize:13}}>
+                    아직 등록한 이미지가 없어요.
+                  </div>
+                ) : coverImages.length === 1 ? (
+                  <div style={{position:"relative", width:"100%", borderRadius:10, overflow:"hidden", border:"1px solid #eee", background:"#f4f4f4"}}>
+                    <img src={coverImages[0].url} alt="" style={{display:"block", width:"100%", height:"auto"}} />
+                    <button type="button" onClick={() => handleCoverDeleteOne(coverImages[0].url)} title="삭제"
+                      style={{position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%",
+                        background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
+                        display:"flex", alignItems:"center", justifyContent:"center"}}>
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
                   <div style={{position:"relative"}}>
-                    <div style={{display:"flex", gap:"6px"}}>
+                    <div style={{display:"grid", gridTemplateColumns:`repeat(${Math.min(coverImages.length, 3)}, 1fr)`, gap:"8px"}}>
                       {(coverImages.length <= 3
                         ? coverImages
                         : [0,1,2].map((i) => coverImages[(coverStart + i) % coverImages.length])
                       ).map((c, i) => (
                         <div key={`${coverStart}-${i}-${c.url}`}
-                          style={{position:"relative", flex:1, minWidth:0, aspectRatio:"4 / 3",
-                            borderRadius:10, overflow:"hidden", border:"1px solid #eee", background:"#f3f3f3"}}>
+                          style={{position:"relative", aspectRatio:"4 / 3", borderRadius:10, overflow:"hidden", border:"1px solid #eee", background:"#f3f3f3"}}>
                           <img src={c.url} alt="" style={{width:"100%", height:"100%", objectFit:"cover"}} />
                           <button type="button" onClick={() => handleCoverDeleteOne(c.url)} title="삭제"
                             style={{position:"absolute", top:5, right:5, width:22, height:22, borderRadius:"50%",
@@ -480,20 +505,8 @@ export default function CompanySettingsPage() {
                       </button>
                     )}
                   </div>
-                ) : (
-                  <div style={{height:120, display:"flex", alignItems:"center", justifyContent:"center",
-                    background:"#f7f4fb", border:"1px dashed #d9c9ec", borderRadius:10, color:"#b0a0c0", fontSize:13}}>
-                    아직 등록한 이미지가 없어요.
-                  </div>
                 )}
-                <label style={{display:"inline-flex", alignItems:"center", gap:6, marginTop:10, padding:"9px 14px",
-                  borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080", fontSize:14,
-                  cursor: coverUploading ? "wait" : "pointer"}}>
-                  {coverUploading ? "업로드 중…" : (<><Plus size={16} /> 이미지 추가</>)}
-                  <input type="file" accept="image/jpeg,image/png,image/webp" multiple
-                    disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
-                </label>
-                <p style={{fontSize:"12.5px", color:"#aaa", margin:"6px 0 0"}}>가로형 권장 · 2MB 이하 · 3장까지 한 화면, 이상은 ▶로 넘겨 봐요.</p>
+                <p style={{fontSize:"12.5px", color:"#aaa", margin:"6px 0 0"}}>2MB 이하</p>
               </div>
 
               <div className="admin-form-row-2col">
@@ -608,6 +621,7 @@ export default function CompanySettingsPage() {
                     onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
                 </div>
                 <div className="admin-form-row">
+                  <div>
                   <label className="admin-form-label">담당자 연락처<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <div style={{ display: "flex", gap: 8 }}>
                     <input className="admin-form-input" style={{ flex: 1, minWidth: 0 }} placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
@@ -637,14 +651,17 @@ export default function CompanySettingsPage() {
                   {form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && phoneMsg && (
                     <p style={{ fontSize: 12, marginTop: 6, color: phoneVerified ? "#10b981" : "#9a9a9a" }}>{phoneMsg}</p>
                   )}
+                  </div>
                 </div>
               </div>
               <div className="admin-form-row">
+                <div>
                 <label className="admin-form-label">기업 소개</label>
                 <textarea className="admin-form-textarea" rows={5}
                   placeholder="회사를 소개하는 글을 입력해주세요. 여기에 작성한 내용은 채용공고 상세 페이지의 '회사 소개' 영역에 표시돼요."
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                </div>
               </div>
             </div>
           </div>
