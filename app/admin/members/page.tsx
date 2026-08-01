@@ -295,7 +295,7 @@ function AdminMembersPageInner() {
             <input className="admin-search-input" placeholder="이름, 이메일, 연락처 검색"
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
           </div>
-          <FilterDropdown label="직군"
+          <FilterDropdown label="구분"
             value={jobTypeFilter === "매장기술직" ? "매장" : jobTypeFilter === "기업사무직" ? "본사" : "전체"}
             options={["전체", "매장", "본사"]}
             onChange={(v) => { setJobTypeFilter(v === "매장" ? "매장기술직" : v === "본사" ? "기업사무직" : "전체"); setPage(1); }} />

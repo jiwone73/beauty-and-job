@@ -322,7 +322,7 @@ function AdminCompaniesContent() {
           </div>
           
           {!blockedMode && (
-          <FilterDropdown label="유형"
+          <FilterDropdown label="구분"
             value={typeFilter}
             options={["전체", "매장", "본사", "매장·본사"]}
             onChange={(v) => { setTypeFilter(v); setPage(1); }} />
