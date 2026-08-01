@@ -156,7 +156,7 @@ export default function CompanyLayout({ children, activePage }: {
           .co-m-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
           .co-m-ibtn { position: relative; background: none; border: none; padding: 8px; color: #555; cursor: pointer; }
           .co-m-badge { position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff; font-size: 9px; line-height: 1.4; border-radius: 8px; padding: 0 4px; }
-          .co-m-title { padding: 14px 16px 4px; font-size: 20px; font-weight: 700; color: #1a1a1a; }
+          .co-m-title { padding: 14px 16px 4px; font-size: 18px; font-weight: 400; color: #1a1a1a; }
           .co-m-content { padding: 6px 14px 20px; }
           .co-m-content .company-content { padding: 0 !important; }
           .co-m-tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; background: #fff; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }

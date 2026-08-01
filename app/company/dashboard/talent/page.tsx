@@ -361,16 +361,16 @@ export default function TalentPage() {
             @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
             .co-sheet-grip { width: 38px; height: 4px; border-radius: 2px; background: #d8d8dc; margin: 9px auto 4px; }
             .co-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 14px; }
-            .co-sheet-title { font-size: 17px; font-weight: 700; color: #1a1a1a; }
-            .co-sheet-reset { background: none; border: none; color: #888; font-size: 13.5px; cursor: pointer; }
+            .co-sheet-title { font-size: 17px; font-weight: 400; color: #1a1a1a; }
+            .co-sheet-reset { background: none; border: none; color: #888; font-size: 13.5px; font-weight: 400; cursor: pointer; }
             .co-sheet-body { display: flex; flex-direction: column; gap: 18px; }
-            .co-fseg-label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 9px; }
+            .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
-            .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 14px; cursor: pointer; }
-            .co-fseg-btn.on { border-color: #5f0080; background: #5f0080; color: #fff; font-weight: 600; }
-            .co-fsel-btn { display: flex; align-items: center; gap: 6px; width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e2e6; background: #fff; color: #333; font-size: 14px; cursor: pointer; text-align: left; }
+            .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 14px; font-weight: 400; cursor: pointer; }
+            .co-fseg-btn.on { border-color: #d9b8ec; background: #f5eaff; color: #5f0080; font-weight: 400; }
+            .co-fsel-btn { display: flex; align-items: center; gap: 6px; width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e2e6; background: #fff; color: #333; font-size: 14px; font-weight: 400; cursor: pointer; text-align: left; }
             .co-fsel-btn .ph { color: #aaa; }
-            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #5f0080; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f5eaff; color: #5f0080; font-size: 16px; font-weight: 400; cursor: pointer; }
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
             .co-selbar-act { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; color: #5f0080; font-size: 14px; font-weight: 600; padding: 6px; }
