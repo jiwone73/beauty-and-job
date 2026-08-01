@@ -207,7 +207,7 @@ export default function CompanySignupPage() {
     const hasUpper = /[A-Z]/.test(pw);
     const hasLower = /[a-z]/.test(pw);
     const hasNumber = /[0-9]/.test(pw);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pw);
+    const hasSpecial = /[^A-Za-z0-9]/.test(pw);
     return [hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length >= 3;
   };
 
@@ -539,8 +539,8 @@ export default function CompanySignupPage() {
                 onChange={(e) => update("passwordConfirm", e.target.value)}
                 placeholder="비밀번호 다시 입력"
                 className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
-              <p className="text-[12px] md:text-[14px] text-[#9a9a9a] mt-1.5">
-                영문 대소문자, 숫자, 특수문자를 3가지 이상으로 조합해 8~16자
+              <p className={`text-[12px] md:text-[14px] mt-1.5 ${form.password && !isPasswordValid(form.password) ? "text-[#e74c3c]" : "text-[#9a9a9a]"}`}>
+                영문·숫자·특수문자 중 3가지 이상으로 조합해 8~16자
               </p>
               {form.passwordConfirm && form.password !== form.passwordConfirm && (
                 <p className="text-[12px] md:text-[14px] text-[#e74c3c] mt-1">비밀번호가 일치하지 않습니다.</p>

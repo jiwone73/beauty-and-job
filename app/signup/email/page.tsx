@@ -62,7 +62,7 @@ export default function SignupEmailPage() {
     const hasUpper = /[A-Z]/.test(pw);
     const hasLower = /[a-z]/.test(pw);
     const hasNumber = /[0-9]/.test(pw);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pw);
+    const hasSpecial = /[^A-Za-z0-9]/.test(pw);
     const count = [hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length;
     return count >= 3;
   };
@@ -425,8 +425,8 @@ export default function SignupEmailPage() {
               placeholder="비밀번호를 다시 한번 입력해주세요"
               className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]"
             />
-            <p className="text-[12px] md:text-[14px] text-[#9a9a9a] mt-1.5 leading-relaxed">
-              영문 대소문자, 숫자, 특수문자를 3가지 이상으로 조합해 8자 이상 16자 이하로 입력해주세요.
+            <p className={`text-[12px] md:text-[14px] mt-1.5 leading-relaxed ${password && !isPasswordValid(password) ? "text-[#e74c3c]" : "text-[#9a9a9a]"}`}>
+              영문·숫자·특수문자 중 3가지 이상으로 조합해 8자 이상 16자 이하로 입력해주세요.
             </p>
             {passwordConfirm && password !== passwordConfirm && (
               <p className="text-[12px] md:text-[14px] text-[#e74c3c] mt-1">비밀번호가 일치하지 않습니다.</p>
