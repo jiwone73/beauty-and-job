@@ -409,17 +409,13 @@ export default function CompanySettingsPage() {
       {activeTab === "brand" && (
         <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "800px" }}>
           <div className="company-card">
-            <div className="company-card-head">
-              <h2 className="company-card-title">회사 프로필</h2>
-            </div>
             <div className="admin-form-body settings-compact">
               {/* 회사 로고 (라벨을 감싸 compact 그리드 제외) */}
               <div className="admin-form-row">
                 <div>
                 <label className="admin-form-label">회사 로고</label>
-                <p style={{fontSize:"12.5px", color:"#999", margin:"2px 0 10px"}}>대표 이미지 · 모든 공고에 자동 적용</p>
-                <div style={{display:"flex", alignItems:"center", gap:"14px"}}>
-                  <div style={{position:"relative", width:"120px", aspectRatio:"4 / 3", borderRadius:"10px", border:"1px solid #eee",
+                <div style={{display:"flex", alignItems:"center", gap:"12px"}}>
+                  <div style={{position:"relative", width:"calc(100% / 3)", aspectRatio:"4 / 3", borderRadius:"10px", border:"1px solid #eee",
                     background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
                     overflow:"hidden", flexShrink:0}}>
                     {logoUrl ? (
@@ -433,11 +429,12 @@ export default function CompanySettingsPage() {
                         </button>
                       </>
                     ) : (
-                      <span style={{fontSize:"22px", fontWeight:700, color:"#c4b5d4"}}>{form.company_name?.[0] || "?"}</span>
+                      <span style={{fontSize:"20px", fontWeight:700, color:"#c4b5d4"}}>{form.company_name?.[0] || "?"}</span>
                     )}
                   </div>
+                  <p style={{flex:1, minWidth:0, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.5}}>공고에 자동으로 노출되는 대표 로고예요.</p>
                   <label title={logoUrl ? "로고 변경" : "로고 등록"}
-                    style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:42, height:42,
+                    style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:42, height:42, flexShrink:0,
                       borderRadius:11, border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080",
                       cursor: logoUploading ? "wait" : "pointer"}}>
                     {logoUploading ? "…" : <Camera size={19} />}
@@ -620,7 +617,6 @@ export default function CompanySettingsPage() {
                     onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
                 </div>
                 <div className="admin-form-row">
-                  <div>
                   <label className="admin-form-label">담당자 연락처<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <div style={{ display: "flex", gap: 8 }}>
                     <input className="admin-form-input" style={{ flex: 1, minWidth: 0 }} placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
@@ -650,7 +646,6 @@ export default function CompanySettingsPage() {
                   {form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && phoneMsg && (
                     <p style={{ fontSize: 12, marginTop: 6, color: phoneVerified ? "#10b981" : "#9a9a9a" }}>{phoneMsg}</p>
                   )}
-                  </div>
                 </div>
               </div>
               <div className="admin-form-row">

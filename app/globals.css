@@ -5478,7 +5478,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   height: auto !important;
   min-height: 0 !important;
   text-align: right;
+  text-align-last: right;
   font-size: 14px;
+}
+/* select 우측 정렬(네이티브 화살표 제거하고 값만 우측에) */
+.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 @media (max-width: 767px) {
   .settings-compact .admin-form-row:has(> .admin-form-label) {
