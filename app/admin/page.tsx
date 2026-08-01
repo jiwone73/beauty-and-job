@@ -327,7 +327,7 @@ export default function AdminDashboard() {
           <UserCheck size={20} className="admin-section-icon individual" />
           <h2 className="admin-section-heading">개인회원 현황</h2>
           <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
-            {([["ALL","전체"],["STORE","🏪 매장직"],["OFFICE","🏢 사무직"]] as const).map(([val, label]) => (
+            {([["ALL","전체"],["STORE","🏪 매장"],["OFFICE","🏢 본사"]] as const).map(([val, label]) => (
               <button key={val} onClick={() => setIndivTab(val)} style={tabBtn(indivTab === val)}>
                 {label}
               </button>

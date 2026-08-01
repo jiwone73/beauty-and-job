@@ -7,8 +7,8 @@ import { CheckCircle2, ChevronDown, ChevronUp, Building2, Store, Star, Zap, Mega
 
 const FAQS = [
   { q: "채용공고 등록은 무료인가요?", a: "네, 기본 채용공고 등록은 완전 무료입니다. 상단 노출·프리미엄 배너 등 유료 상품은 선택 사항입니다." },
-  { q: "매장도 기업회원으로 가입해야 하나요?", a: "아니요. 헤어샵, 네일샵, 피부관리실 등 매장은 매장회원으로 가입하시면 됩니다. 가입 시 유형을 선택할 수 있습니다." },
-  { q: "기업회원과 매장회원은 무엇이 다른가요?", a: "매장회원은 현장직 채용에 최적화되어 있고, 기업회원은 본사 사무직·전문직 채용과 프리미엄 서비스를 이용할 수 있습니다." },
+  { q: "매장도 본사회원으로 가입해야 하나요?", a: "아니요. 헤어샵, 네일샵, 피부관리실 등 매장은 매장회원으로 가입하시면 됩니다. 가입 시 유형을 선택할 수 있습니다." },
+  { q: "본사회원과 매장회원은 무엇이 다른가요?", a: "매장회원은 현장 채용에 최적화되어 있고, 본사회원은 본사 직군 채용과 프리미엄 서비스를 이용할 수 있습니다." },
   { q: "광고도 신청할 수 있나요?", a: "네. 메인 AD 배너, 프리미엄 상단공고, 뷰티워크 Pick 등 다양한 광고 상품을 운영 중입니다." },
 ];
 
@@ -75,7 +75,7 @@ export default function CompanyPage() {
                       <li><CheckCircle2 size={13} /> 채용공고 무료 등록</li>
                       <li><CheckCircle2 size={13} /> 상단 노출로 더 많은 지원자</li>
                       <li><CheckCircle2 size={13} /> 지원자 연락처 무료 확인</li>
-                      <li><CheckCircle2 size={13} /> 간편한 현장직 공고 관리</li>
+                      <li><CheckCircle2 size={13} /> 간편한 매장 공고 관리</li>
                     </ul>
                   </div>
                 </div>
@@ -101,7 +101,7 @@ export default function CompanyPage() {
                     <h3 className="co-type-name">매장 + 본사 회원</h3>
                     <p className="co-type-desc">본사와 직영·가맹 매장을 함께 운영하는 브랜드</p>
                     <ul className="co-type-list">
-                      <li><CheckCircle2 size={13} /> 사무직·현장직 무료 등록</li>
+                      <li><CheckCircle2 size={13} /> 매장·본사 채용공고 무료 등록</li>
                       <li><CheckCircle2 size={13} /> 통합 대시보드로 한번에 관리</li>
                       <li><CheckCircle2 size={13} /> 매장·본사 지원자 통합 관리</li>
                       <li><CheckCircle2 size={13} /> 인재 검색·추천 서비스</li>

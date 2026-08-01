@@ -27,8 +27,8 @@ function shortenRegion(region: string | null | undefined): string {
 }
 
 function jobTypeLabel(jobType: string | null | undefined): string | null {
-  if (jobType === "STORE") return "매장직";
-  if (jobType === "OFFICE") return "사무직";
+  if (jobType === "STORE") return "매장";
+  if (jobType === "OFFICE") return "본사";
   return null;
 }
 
@@ -342,7 +342,7 @@ export default function TalentPage() {
                 transition: "all .15s",
               }}
             >
-              {tab === "STORE" ? "🏪 매장직" : "🏢 사무직"}
+              {tab === "STORE" ? "🏪 매장" : "🏢 본사"}
             </button>
           ))}
         </div>
@@ -790,7 +790,7 @@ export default function TalentPage() {
                   birthDisplay={resumeData.user?.birth_date
                     ? `${String(resumeData.user.birth_date).slice(0, 4)}년 (${calcAge(resumeData.user.birth_date)}세, ${resumeData.user.gender === "FEMALE" ? "여" : resumeData.user.gender === "MALE" ? "남" : ""})`
                     : ""}
-                  jobDisplay={resumeData.user?.job_type === "STORE" ? "매장직" : "사무직"}
+                  jobDisplay={resumeData.user?.job_type === "STORE" ? "매장" : "본사"}
                   phone={resumeData.user?.phone || ""}
                   email={resumeData.user?.email || ""}
                   portfolioUrl={resumeData.user?.portfolio_url || null}

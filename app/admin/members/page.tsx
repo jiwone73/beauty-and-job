@@ -296,9 +296,9 @@ function AdminMembersPageInner() {
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
           </div>
           <FilterDropdown label="직군"
-            value={jobTypeFilter === "매장기술직" ? "매장직" : jobTypeFilter === "기업사무직" ? "사무직" : "전체"}
-            options={["전체", "매장직", "사무직"]}
-            onChange={(v) => { setJobTypeFilter(v === "매장직" ? "매장기술직" : v === "사무직" ? "기업사무직" : "전체"); setPage(1); }} />
+            value={jobTypeFilter === "매장기술직" ? "매장" : jobTypeFilter === "기업사무직" ? "본사" : "전체"}
+            options={["전체", "매장", "본사"]}
+            onChange={(v) => { setJobTypeFilter(v === "매장" ? "매장기술직" : v === "본사" ? "기업사무직" : "전체"); setPage(1); }} />
           <FilterDropdown label="상태"
             value={statusFilter}
             options={["전체", "정상", "휴면", "정지", "탈퇴"]}
@@ -453,7 +453,7 @@ function AdminMembersPageInner() {
 
                     {/* 직군: 대분류 / 세부 */}
                     <td className="admin-td-date" style={{ textAlign: "center" }}>
-                      <div>{m.job_type === "STORE" ? "매장직" : m.job_type === "OFFICE" ? "사무직" : "-"}</div>
+                      <div>{m.job_type === "STORE" ? "매장" : m.job_type === "OFFICE" ? "본사" : "-"}</div>
                       <div style={{ marginTop: 2, fontSize: 13, color: "#888", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", margin: "2px auto 0" }} title={m.office_job_areas?.[0] || ""}>
                         {m.office_job_areas && m.office_job_areas.length > 0 ? m.office_job_areas[0] : "-"}
                       </div>
