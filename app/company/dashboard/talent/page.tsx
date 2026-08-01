@@ -550,11 +550,9 @@ export default function TalentPage() {
             .co-row-check { width: 20px; height: 20px; accent-color: #5f0080; flex-shrink: 0; margin: 0; }
             .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
             .co-li.on { border-color: #5f0080; background: #faf5fc; }
-            .co-li-r1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-            .co-li-r1-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-            .co-li-status { font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
-            .co-li-scrap { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; }
-            .co-li-person { display: flex; align-items: center; gap: 10px; min-width: 0; }
+            .co-li-r1 { display: flex; align-items: center; gap: 10px; }
+            .co-li-namerow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+            .co-li-scrap { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; flex-shrink: 0; }
             .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #5f0080; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-name { font-size: 15.5px; color: #1a1a1a; }
@@ -575,24 +573,22 @@ export default function TalentPage() {
                 <div className={`co-li ${on ? "on" : ""}`}
                   onClick={() => selectMode ? toggleCheck(t.id) : setSelected(t)}>
                   <div className="co-li-r1">
-                    <div className="co-li-person">
-                      <div className="co-li-avatar">
-                        {t.avatarUrl
-                          ? <img src={t.avatarUrl} alt={t.name} loading="lazy" />
-                          : <span>{t.name?.slice(0, 1) || "?"}</span>}
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                        <div className="co-li-name">{t.name}</div>
-                        <div className="co-li-meta2">{meta2}</div>
-                      </div>
+                    <div className="co-li-avatar">
+                      {t.avatarUrl
+                        ? <img src={t.avatarUrl} alt={t.name} loading="lazy" />
+                        : <span>{t.name?.slice(0, 1) || "?"}</span>}
                     </div>
-                    <div className="co-li-r1-right">
-                      <button className="co-li-scrap" title={t.scrapped ? "스크랩됨" : "스크랩"}
-                        onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
-                        {t.scrapped
-                          ? <BookmarkCheck size={19} style={{ color: "#5f0080" }} />
-                          : <Bookmark size={19} style={{ color: "#c8c8c8" }} />}
-                      </button>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="co-li-namerow">
+                        <span className="co-li-name">{t.name}</span>
+                        <button className="co-li-scrap" title={t.scrapped ? "스크랩됨" : "스크랩"}
+                          onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
+                          {t.scrapped
+                            ? <BookmarkCheck size={19} style={{ color: "#5f0080" }} />
+                            : <Bookmark size={19} style={{ color: "#c8c8c8" }} />}
+                        </button>
+                      </div>
+                      <div className="co-li-meta2">{meta2}</div>
                     </div>
                   </div>
                   <div className="co-li-sub">
