@@ -411,7 +411,7 @@ export default function CompanySettingsPage() {
 
   return (
     <CompanyLayout activePage="settings">
-      <div className="admin-tab-row1" style={{ marginBottom: "0" }}>
+      <div className="admin-tab-row1" style={{ marginBottom: "16px" }}>
         <button className={`admin-tab1 ${activeTab === "brand" ? "active" : ""}`}
           onClick={() => setActiveTab("brand")}>프로필</button>
         <button className={`admin-tab1 ${activeTab === "account" ? "active" : ""}`}

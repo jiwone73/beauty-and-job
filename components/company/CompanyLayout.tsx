@@ -153,7 +153,9 @@ export default function CompanyLayout({ children, activePage }: {
           .co-m-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a1a; min-width: 0; }
           .co-m-logo { width: 32px; height: 32px; border-radius: 8px; background: #f2f2f2; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #5f0080; flex-shrink: 0; }
           .co-m-logo img { width: 100%; height: 100%; object-fit: cover; }
+          .co-m-nametype { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
           .co-m-name { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .co-m-type { font-size: 11px; color: #999; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .co-m-logobtn { background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; }
           .co-m-logomenu { position: absolute; top: 54px; left: 14px; z-index: 61; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 8px 22px rgba(0,0,0,0.14); overflow: hidden; min-width: 132px; }
           .co-m-logomenu button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; background: none; border: none; font-size: 14px; color: #333; cursor: pointer; }
@@ -181,7 +183,10 @@ export default function CompanyLayout({ children, activePage }: {
                 {logoImg ? <img src={logoImg} alt={companyInfo.name} /> : <span>{companyInfo.name?.[0] || "·"}</span>}
               </div>
             </button>
-            <Link href={base} className="co-m-name" style={{ textDecoration: "none", color: "inherit" }}>{companyInfo.name || "기업"}</Link>
+            <Link href={base} className="co-m-nametype" style={{ textDecoration: "none", color: "inherit" }}>
+              <span className="co-m-name">{companyInfo.name || "기업"}</span>
+              {companyInfo.category && <span className="co-m-type">{companyInfo.category}</span>}
+            </Link>
           </div>
           <div className="co-m-actions">
             <div id="co-m-header-slot" style={{ display: "flex", alignItems: "center" }} />
