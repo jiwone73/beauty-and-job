@@ -260,7 +260,7 @@ export default function CompanyDashboard() {
               </thead>
               <tbody>
                 {applicants.map((a) => (
-                  <tr key={a.id}>
+                  <tr key={a.id} onClick={() => router.push("/company/dashboard/applicants")} style={{ cursor: "pointer" }}>
                     <td className="company-td-name">{a.user_name}</td>
                     <td className="company-td-sub">{a.job_title}</td>
                     <td className="company-td-sub">{a.experience_level ? EXP_LABEL[a.experience_level] || "-" : "-"}</td>
@@ -460,7 +460,7 @@ export default function CompanyDashboard() {
             </thead>
             <tbody>
               {jobs.map((job) => (
-                <tr key={job.id}>
+                <tr key={job.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
                   <td className="company-td-name">{job.title}</td>
                   <td className="company-td-sub">{job.job_type === "STORE" ? "매장" : "기업"}</td>
                   <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
