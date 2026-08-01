@@ -5455,14 +5455,18 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 /* 기업정보 컴팩트 폼: 개인 프로필처럼 라벨 좌·값 우 1행 */
+.admin-form-body.settings-compact { gap: 0; }
 .settings-compact .admin-form-row-2col { grid-template-columns: 1fr; gap: 0; }
+.settings-compact .admin-form-row {
+  padding: 13px 0;
+  border-bottom: 1px solid #f2f2f2;
+}
+.settings-compact .admin-form-row:last-child { border-bottom: none; }
 .settings-compact .admin-form-row:has(> .admin-form-label) {
   display: grid;
   grid-template-columns: 96px 1fr;
   column-gap: 12px;
   align-items: center;
-  padding: 13px 0;
-  border-bottom: 1px solid #f2f2f2;
 }
 .settings-compact .admin-form-row:has(> .admin-form-label) > .admin-form-label {
   grid-column: 1; margin: 0; white-space: nowrap;
@@ -5488,10 +5492,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   appearance: none;
 }
 @media (max-width: 767px) {
+  .settings-compact .admin-form-row { padding: 12px 0; }
   .settings-compact .admin-form-row:has(> .admin-form-label) {
     grid-template-columns: 96px 1fr;
     column-gap: 10px;
-    padding: 12px 0;
   }
 }
 
