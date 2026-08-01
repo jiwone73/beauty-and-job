@@ -30,6 +30,7 @@ export default function CompanyLayout({ children, activePage }: {
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unread, setUnread] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [logoMenuOpen, setLogoMenuOpen] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -153,6 +154,10 @@ export default function CompanyLayout({ children, activePage }: {
           .co-m-logo { width: 32px; height: 32px; border-radius: 8px; background: #f2f2f2; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #5f0080; flex-shrink: 0; }
           .co-m-logo img { width: 100%; height: 100%; object-fit: cover; }
           .co-m-name { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .co-m-logobtn { background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; }
+          .co-m-logomenu { position: absolute; top: 54px; left: 14px; z-index: 61; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 8px 22px rgba(0,0,0,0.14); overflow: hidden; min-width: 132px; }
+          .co-m-logomenu button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; background: none; border: none; font-size: 14px; color: #333; cursor: pointer; }
+          .co-m-logomenu button:active { background: #faf5fc; }
           .co-m-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
           .co-m-ibtn { position: relative; background: none; border: none; padding: 8px; color: #555; cursor: pointer; }
           .co-m-badge { position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff; font-size: 9px; line-height: 1.4; border-radius: 8px; padding: 0 4px; }
@@ -170,21 +175,30 @@ export default function CompanyLayout({ children, activePage }: {
         `}</style>
 
         <header className="co-m-header">
-          <Link href={base} className="co-m-brand">
-            <div className="co-m-logo">
-              {logoImg ? <img src={logoImg} alt={companyInfo.name} /> : <span>{companyInfo.name?.[0] || "·"}</span>}
-            </div>
-            <span className="co-m-name">{companyInfo.name || "기업"}</span>
-          </Link>
+          <div className="co-m-brand">
+            <button className="co-m-logobtn" onClick={() => setLogoMenuOpen((v) => !v)} aria-label="메뉴">
+              <div className="co-m-logo">
+                {logoImg ? <img src={logoImg} alt={companyInfo.name} /> : <span>{companyInfo.name?.[0] || "·"}</span>}
+              </div>
+            </button>
+            <Link href={base} className="co-m-name" style={{ textDecoration: "none", color: "inherit" }}>{companyInfo.name || "기업"}</Link>
+          </div>
           <div className="co-m-actions">
             <button className="co-m-ibtn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">
               <Bell size={20} />
               {unread > 0 && <span className="co-m-badge">{unread > 9 ? "9+" : unread}</span>}
             </button>
-            <button className="co-m-ibtn" onClick={() => { localStorage.removeItem("access_token"); useAuthStore.getState().logout(); router.push("/company/login"); }} aria-label="로그아웃">
-              <LogOut size={20} />
-            </button>
           </div>
+          {logoMenuOpen && (
+            <>
+              <div style={{ position: "fixed", inset: 0, zIndex: 60 }} onClick={() => setLogoMenuOpen(false)} />
+              <div className="co-m-logomenu">
+                <button onClick={() => { setLogoMenuOpen(false); localStorage.removeItem("access_token"); useAuthStore.getState().logout(); router.push("/company/login"); }}>
+                  <LogOut size={16} /> 로그아웃
+                </button>
+              </div>
+            </>
+          )}
         </header>
 
         {notifOpen && (

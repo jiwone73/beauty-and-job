@@ -46,6 +46,14 @@ export default function JobPostForm({
 }: JobPostFormProps) {
   const router = useRouter();
 
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [companyQuery, setCompanyQuery] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -729,15 +737,19 @@ export default function JobPostForm({
         <button className="admin-back-btn" onClick={() => router.push(listHref)}>
           <ChevronLeft size={18} /> 목록으로
         </button>
-        <h2 style={{ fontSize: "18px", fontWeight: 400, color: "#1a1a1a", margin: 0 }}>
-          {editId ? "채용공고 수정" : "채용공고 등록"}
-        </h2>
+        {!isMobile && (
+          <h2 style={{ fontSize: "18px", fontWeight: 400, color: "#1a1a1a", margin: 0 }}>
+            {editId ? "채용공고 수정" : "채용공고 등록"}
+          </h2>
+        )}
         <div className="admin-form-actions">
           <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}><Save size={15} /> 임시저장</button>
           <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
-          <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
-            {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
-          </button>
+          {!isMobile && (
+            <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
+              {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
+            </button>
+          )}
         </div>
       </div>
 
@@ -1410,6 +1422,12 @@ export default function JobPostForm({
             </div>
           </div>
         </div>
+      )}
+
+      {isMobile && (
+        <button type="button" className="jobpost-mobile-submit" onClick={() => handleSubmit("publish")}>
+          {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정 완료" : "공고 등록")}
+        </button>
       )}
 
       <RegionSelectModal
