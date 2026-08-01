@@ -62,6 +62,8 @@ export default function CompanySettingsPage() {
   const [withdrawPw, setWithdrawPw] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [origPhone, setOrigPhone] = useState("");
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [newPhone, setNewPhone] = useState("");
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [phoneCodeSent, setPhoneCodeSent] = useState(false);
   const [phoneCode, setPhoneCode] = useState("");
@@ -318,8 +320,14 @@ export default function CompanySettingsPage() {
     }
   };
 
+  const openPhoneModal = () => {
+    setNewPhone(form.phone || "");
+    setPhoneCode(""); setPhoneCodeSent(false); setPhoneMsg("");
+    setShowPhoneModal(true);
+  };
+
   const handleSendPhoneCode = async () => {
-    const clean = form.phone.replace(/\D/g, "");
+    const clean = newPhone.replace(/\D/g, "");
     if (clean.length < 10) { setPhoneMsg("올바른 휴대폰 번호를 입력해주세요."); return; }
     setPhoneSending(true); setPhoneMsg("");
     try {
@@ -331,13 +339,17 @@ export default function CompanySettingsPage() {
   };
 
   const handleVerifyPhoneCode = async () => {
-    const clean = form.phone.replace(/\D/g, "");
+    const clean = newPhone.replace(/\D/g, "");
     if (!phoneCode.trim()) { setPhoneMsg("인증번호를 입력해주세요."); return; }
     setPhoneVerifying(true); setPhoneMsg("");
     try {
       const res = await fetch("/api/auth/phone/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: clean, code: phoneCode, purpose: "signup" }) });
       const data = await res.json();
-      if (data.success) { setPhoneVerified(true); setPhoneMsg("휴대폰 인증이 완료됐어요."); }
+      if (data.success) {
+        setPhoneVerified(true);
+        setForm((f) => ({ ...f, phone: clean }));
+        setShowPhoneModal(false);
+      }
       else setPhoneMsg(data.error?.message || "인증번호가 올바르지 않습니다.");
     } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); } finally { setPhoneVerifying(false); }
   };
@@ -619,41 +631,13 @@ export default function CompanySettingsPage() {
                 </div>
                 <div className="admin-form-row">
                   <label className="admin-form-label">담당자 연락처<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
-                    value={formatPhone(form.phone)}
-                    onChange={(e) => { setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 11) }); setPhoneVerified(false); setPhoneCodeSent(false); setPhoneMsg(""); }} />
+                  <button type="button" onClick={openPhoneModal}
+                    style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6, width: "100%", background: "none", border: "none", padding: 0, cursor: "pointer", color: form.phone ? "#333" : "#bbb", fontSize: 14, fontFamily: "inherit" }}>
+                    <span>{form.phone ? formatPhone(form.phone) : "번호 등록"}</span>
+                    <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
+                  </button>
                 </div>
               </div>
-
-              {/* 담당자 연락처 변경 시 휴대폰 인증 */}
-              {form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && (
-                <div className="admin-form-row">
-                  <div>
-                    {phoneVerified ? (
-                      <div style={{ color: "#10b981", fontSize: 13.5, fontWeight: 500 }}>✓ 휴대폰 인증 완료</div>
-                    ) : !phoneCodeSent ? (
-                      <button type="button" onClick={handleSendPhoneCode} disabled={phoneSending || form.phone.replace(/\D/g, "").length < 10}
-                        style={{ width: "100%", height: 44, borderRadius: 10, border: "1px solid #5f0080", color: "#5f0080", background: "#fff", fontSize: 14, fontWeight: 500, cursor: "pointer", opacity: (phoneSending || form.phone.replace(/\D/g, "").length < 10) ? 0.5 : 1 }}>
-                        {phoneSending ? "전송 중…" : "변경된 번호로 인증번호 받기"}
-                      </button>
-                    ) : (
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <input className="admin-form-input" style={{ flex: 1, minWidth: 0, height: 44, boxSizing: "border-box" }} placeholder="인증번호 6자리" inputMode="numeric"
-                          value={phoneCode} onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))} />
-                        <button type="button" onClick={handleVerifyPhoneCode} disabled={phoneVerifying || phoneCode.length < 6}
-                          style={{ padding: "0 16px", whiteSpace: "nowrap", height: 44, borderRadius: 10, border: "none", color: "#fff", background: "#5f0080", fontSize: 14, cursor: "pointer", opacity: (phoneVerifying || phoneCode.length < 6) ? 0.4 : 1 }}>
-                          {phoneVerifying ? "확인 중" : "확인"}
-                        </button>
-                        <button type="button" onClick={handleSendPhoneCode} disabled={phoneSending}
-                          style={{ padding: "0 12px", whiteSpace: "nowrap", height: 44, borderRadius: 10, border: "1px solid #ddd", color: "#666", background: "#fff", fontSize: 13, cursor: "pointer" }}>
-                          재전송
-                        </button>
-                      </div>
-                    )}
-                    {phoneMsg && <p style={{ fontSize: 12, marginTop: 6, color: phoneVerified ? "#10b981" : "#9a9a9a" }}>{phoneMsg}</p>}
-                  </div>
-                </div>
-              )}
               <div className="admin-form-row">
                 <div>
                 <label className="admin-form-label">기업 소개</label>
@@ -746,6 +730,49 @@ export default function CompanySettingsPage() {
                 </button>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {showPhoneModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
+          <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 6px" }}>담당자 연락처 변경</h3>
+            <p style={{ fontSize: 13, color: "#888", margin: "0 0 16px", lineHeight: 1.5 }}>
+              {!phoneCodeSent ? "① 새 휴대폰 번호를 입력하고 인증번호를 받으세요." : "② 문자로 받은 인증번호를 입력하세요."}
+            </p>
+            {!phoneCodeSent ? (
+              <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
+                value={formatPhone(newPhone)}
+                onChange={(e) => { setNewPhone(e.target.value.replace(/\D/g, "").slice(0, 11)); setPhoneVerified(false); setPhoneMsg(""); }} style={{ marginBottom: 4 }} />
+            ) : (
+              <input className="admin-form-input" placeholder="인증번호 6자리" inputMode="numeric" maxLength={6}
+                value={phoneCode} onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))} style={{ marginBottom: 4 }} />
+            )}
+            {phoneMsg && <p style={{ fontSize: 13, color: "#5f0080", margin: "6px 0 0", lineHeight: 1.5 }}>{phoneMsg}</p>}
+            <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
+              <button onClick={() => setShowPhoneModal(false)} disabled={phoneSending || phoneVerifying}
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
+                취소
+              </button>
+              {!phoneCodeSent ? (
+                <button onClick={handleSendPhoneCode} disabled={phoneSending || newPhone.replace(/\D/g, "").length < 10}
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 16, fontWeight: 600, cursor: "pointer", opacity: (phoneSending || newPhone.replace(/\D/g, "").length < 10) ? 0.6 : 1 }}>
+                  {phoneSending ? "발송 중..." : "인증번호 받기"}
+                </button>
+              ) : (
+                <button onClick={handleVerifyPhoneCode} disabled={phoneVerifying || phoneCode.length < 6}
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 16, fontWeight: 600, cursor: "pointer", opacity: (phoneVerifying || phoneCode.length < 6) ? 0.6 : 1 }}>
+                  {phoneVerifying ? "확인 중..." : "변경하기"}
+                </button>
+              )}
+            </div>
+            {phoneCodeSent && (
+              <button onClick={handleSendPhoneCode} disabled={phoneSending}
+                style={{ marginTop: 10, width: "100%", background: "none", border: "none", color: "#888", fontSize: 13, cursor: "pointer", textDecoration: "underline" }}>
+                인증번호 재전송
+              </button>
+            )}
           </div>
         </div>
       )}
