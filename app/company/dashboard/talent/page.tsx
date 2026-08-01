@@ -563,13 +563,9 @@ export default function TalentPage() {
           `}</style>
           {talents.map((t) => {
             const on = checked.includes(t.id);
-            const status = t.careerDetail
-              ? (t.careerDetail.end_date ? "퇴직" : "재직중")
-              : "신입";
-            const stColor = status === "재직중" ? "#5f0080" : status === "퇴직" ? "#888" : "#0ea5e9";
-            const stBg = status === "재직중" ? "#f3e8ff" : status === "퇴직" ? "#f0f0f0" : "#e6f5fd";
             const gl = genderLabel(t.gender);
-            const meta2 = [t.age ? `${t.age}세` : null, gl, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ");
+            const region = t.regionPrefer ? shortenRegion(t.regionPrefer) : null;
+            const meta2 = [t.age ? `${t.age}세` : null, gl, careerLabel(t.careerYears, t.careerCount), region].filter(Boolean).join(" · ");
             return (
               <div key={t.id} className="co-row">
                 {selectMode && (
@@ -597,11 +593,10 @@ export default function TalentPage() {
                           ? <BookmarkCheck size={19} style={{ color: "#5f0080" }} />
                           : <Bookmark size={19} style={{ color: "#c8c8c8" }} />}
                       </button>
-                      <span className="co-li-status" style={{ color: stColor, background: stBg }}>{status}</span>
                     </div>
                   </div>
                   <div className="co-li-sub">
-                    <span>{t.mainJobGroup || "직군 미정"} · {shortenRegion(t.regionPrefer)}</span>
+                    <span>{t.mainJobGroup || "직군 미정"}</span>
                     {t.intro && <span style={{ ...clamp1, color: "#888" }}>{t.intro}</span>}
                   </div>
                 </div>
