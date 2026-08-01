@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Plus, Search, Edit, X, Trash2, Copy, Ban, SlidersHorizontal
+  Users, Plus, Search, Edit, X, Trash2, Copy, Ban, SlidersHorizontal, ChevronDown
 } from "lucide-react";
 import { companyJobsApi } from "@/lib/api/company";
 import type { CompanyJob, JobStatus } from "@/lib/types/company";
@@ -40,6 +40,7 @@ export default function CompanyJobsPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -130,27 +131,50 @@ export default function CompanyJobsPage() {
   };
   const totalApplicants = jobs.reduce((s, j) => s + (j.application_count || 0), 0);
 
+  const statCardsData = [
+    { label: "전체 공고", value: String(counts.전체), unit: "건", color: "#5f0080" },
+    { label: "진행중", value: String(counts.진행중), unit: "건", color: "#10b981" },
+    { label: "마감", value: String(counts.마감), unit: "건", color: "#888" },
+    { label: "총 지원자", value: String(totalApplicants), unit: "명", color: "#0ea5e9" },
+    { label: "기업 공고", value: String(counts.기업), unit: "건", color: "#5f0080" },
+    { label: "매장 공고", value: String(counts.매장), unit: "건", color: "#e91e8c" },
+  ];
+
   return (
     <CompanyLayout activePage="jobs">
       <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
       {/* 요약 카드 */}
-      <div className="company-stat-grid">
-        {[
-          { label: "전체 공고", value: String(counts.전체), unit: "건", color: "#5f0080" },
-          { label: "진행중", value: String(counts.진행중), unit: "건", color: "#10b981" },
-          { label: "마감", value: String(counts.마감), unit: "건", color: "#888" },
-          { label: "총 지원자", value: String(totalApplicants), unit: "명", color: "#0ea5e9" },
-          { label: "기업 공고", value: String(counts.기업), unit: "건", color: "#5f0080" },
-          { label: "매장 공고", value: String(counts.매장), unit: "건", color: "#e91e8c" },
-        ].map((s) => (
-          <div key={s.label} className="company-stat-card">
-            <div className="company-stat-value" style={{color: s.color}}>
-              {s.value}<span className="company-stat-unit">{s.unit}</span>
+      {isMobile ? (
+        <>
+          <button className="co-sumtog" onClick={() => setSummaryOpen((v) => !v)}>
+            <span>요약 통계</span>
+            <ChevronDown size={17} className={`chev ${summaryOpen ? "open" : ""}`} />
+          </button>
+          {summaryOpen && (
+            <div className="company-stat-grid co-4">
+              {statCardsData.map((s) => (
+                <div key={s.label} className="company-stat-card">
+                  <div className="company-stat-value" style={{color: s.color}}>
+                    {s.value}<span className="company-stat-unit">{s.unit}</span>
+                  </div>
+                  <div className="company-stat-label">{s.label}</div>
+                </div>
+              ))}
             </div>
-            <div className="company-stat-label">{s.label}</div>
-          </div>
-        ))}
-      </div>
+          )}
+        </>
+      ) : (
+        <div className="company-stat-grid">
+          {statCardsData.map((s) => (
+            <div key={s.label} className="company-stat-card">
+              <div className="company-stat-value" style={{color: s.color}}>
+                {s.value}<span className="company-stat-unit">{s.unit}</span>
+              </div>
+              <div className="company-stat-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* 툴바 (데스크톱) */}
       {!isMobile && (
@@ -183,6 +207,13 @@ export default function CompanyJobsPage() {
       {isMobile && (
         <>
           <style>{`
+            .co-sumtog { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 13px; margin-bottom: 10px; background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 13.5px; font-weight: 600; color: #333; cursor: pointer; }
+            .co-sumtog .chev { transition: transform .2s; color: #999; }
+            .co-sumtog .chev.open { transform: rotate(180deg); }
+            .company-stat-grid.co-4 { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-bottom: 12px; }
+            .company-stat-grid.co-4 .company-stat-card { padding: 9px 5px; align-items: center; text-align: center; gap: 2px; }
+            .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
+            .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
             .co-mbar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
             .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }

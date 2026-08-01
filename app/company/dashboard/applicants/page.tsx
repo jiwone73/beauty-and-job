@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, SlidersHorizontal, Trash2 } from "lucide-react";
+import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, SlidersHorizontal, Trash2, ChevronDown } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { formatPhone } from "@/lib/phone";
 import Link from "next/link";
@@ -53,6 +53,7 @@ function ApplicantsContent() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -215,25 +216,48 @@ function ApplicantsContent() {
     불합격: applicants.filter(a => a.status === "REJECTED").length,
   };
 
+  const statCardsData = [
+    { label: "전체 지원자", value: String(counts.전체), unit: "명", color: "#5f0080" },
+    { label: "신규", value: String(counts.신규), unit: "명", color: "#0ea5e9" },
+    { label: "검토중", value: String(counts.검토중), unit: "명", color: "#f59e0b" },
+    { label: "합격", value: String(counts.합격), unit: "명", color: "#10b981" },
+    { label: "불합격", value: String(counts.불합격), unit: "명", color: "#888" },
+  ];
+
   return (
     <CompanyLayout activePage="applicants">
       <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
-      <div className="company-stat-grid">
-        {[
-          { label: "전체 지원자", value: String(counts.전체), unit: "명", color: "#5f0080" },
-          { label: "신규", value: String(counts.신규), unit: "명", color: "#0ea5e9" },
-          { label: "검토중", value: String(counts.검토중), unit: "명", color: "#f59e0b" },
-          { label: "합격", value: String(counts.합격), unit: "명", color: "#10b981" },
-          { label: "불합격", value: String(counts.불합격), unit: "명", color: "#888" },
-        ].map((s) => (
-          <div key={s.label} className="company-stat-card">
-            <div className="company-stat-value" style={{color: s.color}}>
-              {s.value}<span className="company-stat-unit">{s.unit}</span>
+      {isMobile ? (
+        <>
+          <button className="co-sumtog" onClick={() => setSummaryOpen((v) => !v)}>
+            <span>요약 통계</span>
+            <ChevronDown size={17} className={`chev ${summaryOpen ? "open" : ""}`} />
+          </button>
+          {summaryOpen && (
+            <div className="company-stat-grid co-4">
+              {statCardsData.map((s) => (
+                <div key={s.label} className="company-stat-card">
+                  <div className="company-stat-value" style={{color: s.color}}>
+                    {s.value}<span className="company-stat-unit">{s.unit}</span>
+                  </div>
+                  <div className="company-stat-label">{s.label}</div>
+                </div>
+              ))}
             </div>
-            <div className="company-stat-label">{s.label}</div>
-          </div>
-        ))}
-      </div>
+          )}
+        </>
+      ) : (
+        <div className="company-stat-grid">
+          {statCardsData.map((s) => (
+            <div key={s.label} className="company-stat-card">
+              <div className="company-stat-value" style={{color: s.color}}>
+                {s.value}<span className="company-stat-unit">{s.unit}</span>
+              </div>
+              <div className="company-stat-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {jobIdFilter && (
         <div style={{
@@ -291,6 +315,13 @@ function ApplicantsContent() {
       {isMobile && (
         <>
           <style>{`
+            .co-sumtog { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 13px; margin-bottom: 10px; background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 13.5px; font-weight: 600; color: #333; cursor: pointer; }
+            .co-sumtog .chev { transition: transform .2s; color: #999; }
+            .co-sumtog .chev.open { transform: rotate(180deg); }
+            .company-stat-grid.co-4 { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-bottom: 12px; }
+            .company-stat-grid.co-4 .company-stat-card { padding: 9px 5px; align-items: center; text-align: center; gap: 2px; }
+            .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
+            .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
             .co-mbar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; }
             .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
