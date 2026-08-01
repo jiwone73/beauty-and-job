@@ -136,7 +136,93 @@ export default function CompanyLayout({ children, activePage }: {
   }, []);
 
   if (isMobile) {
-    return <PCOnlyNotice />;
+    const logoImg = companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
+    const MTABS = [
+      { id: "dashboard", label: "대시보드", icon: Briefcase, href: base },
+      { id: "jobs", label: "공고", icon: FileText, href: `${base}/jobs` },
+      { id: "applicants", label: "지원자", icon: Users, href: `${base}/applicants` },
+      { id: "talent", label: "인재검색", icon: Search, href: `${base}/talent` },
+      { id: "settings", label: "기업정보", icon: Settings, href: `${base}/settings` },
+    ];
+    return (
+      <div className="co-m">
+        <style>{`
+          .co-m { min-height: 100vh; background: #f6f5f8; padding-bottom: 68px; }
+          .co-m-header { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 14px; background: #fff; border-bottom: 1px solid #eee; }
+          .co-m-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a1a; min-width: 0; }
+          .co-m-logo { width: 32px; height: 32px; border-radius: 8px; background: #f2f2f2; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #5f0080; flex-shrink: 0; }
+          .co-m-logo img { width: 100%; height: 100%; object-fit: cover; }
+          .co-m-name { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .co-m-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+          .co-m-ibtn { position: relative; background: none; border: none; padding: 8px; color: #555; cursor: pointer; }
+          .co-m-badge { position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff; font-size: 9px; line-height: 1.4; border-radius: 8px; padding: 0 4px; }
+          .co-m-title { padding: 14px 16px 4px; font-size: 20px; font-weight: 700; color: #1a1a1a; }
+          .co-m-content { padding: 6px 14px 20px; }
+          .co-m-content .company-content { padding: 0 !important; }
+          .co-m-tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; background: #fff; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }
+          .co-m-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 2px; text-decoration: none; color: #9a9a9a; font-size: 11px; }
+          .co-m-tab.on { color: #5f0080; }
+          .co-m-notif { position: fixed; left: 0; right: 0; top: 55px; z-index: 61; background: #fff; border-bottom: 1px solid #eee; max-height: 62vh; overflow-y: auto; box-shadow: 0 10px 24px rgba(0,0,0,0.1); }
+          .co-m-notif-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f2f2f2; font-size: 14px; font-weight: 600; }
+          .co-m-notif-item { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; padding: 12px 16px; border: none; border-bottom: 1px solid #f5f5f5; background: none; cursor: pointer; }
+          .co-m-notif-item.unread { background: #faf5fc; }
+          .co-m-notif-empty { padding: 28px; text-align: center; color: #aaa; font-size: 13px; }
+        `}</style>
+
+        <header className="co-m-header">
+          <Link href={base} className="co-m-brand">
+            <div className="co-m-logo">
+              {logoImg ? <img src={logoImg} alt={companyInfo.name} /> : <span>{companyInfo.name?.[0] || "·"}</span>}
+            </div>
+            <span className="co-m-name">{companyInfo.name || "기업"}</span>
+          </Link>
+          <div className="co-m-actions">
+            <button className="co-m-ibtn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">
+              <Bell size={20} />
+              {unread > 0 && <span className="co-m-badge">{unread > 9 ? "9+" : unread}</span>}
+            </button>
+            <button className="co-m-ibtn" onClick={() => { localStorage.removeItem("access_token"); useAuthStore.getState().logout(); router.push("/company/login"); }} aria-label="로그아웃">
+              <LogOut size={20} />
+            </button>
+          </div>
+        </header>
+
+        {notifOpen && (
+          <>
+            <div style={{ position: "fixed", inset: 0, zIndex: 60 }} onClick={() => setNotifOpen(false)} />
+            <div className="co-m-notif">
+              <div className="co-m-notif-head">
+                <span>알림</span>
+                {unread > 0 && <button onClick={markAllRead} style={{ background: "none", border: "none", color: "#5f0080", fontSize: 13, cursor: "pointer" }}>모두 읽음</button>}
+              </div>
+              {notifs.length === 0 ? (
+                <p className="co-m-notif-empty">새 알림이 없어요</p>
+              ) : (
+                notifs.map((n) => (
+                  <button key={n.id} className={`co-m-notif-item ${n.is_read ? "" : "unread"}`} onClick={() => handleNotifClick(n)}>
+                    <span style={{ fontSize: 13.5, fontWeight: 600, color: "#1a1a1a" }}>{n.title}</span>
+                    <span style={{ fontSize: 12.5, color: "#777" }}>{n.message}</span>
+                    <span style={{ fontSize: 11, color: "#aaa" }}>{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
+                  </button>
+                ))
+              )}
+            </div>
+          </>
+        )}
+
+        <div className="co-m-title">{PAGE_TITLES[activePage] || "대시보드"}</div>
+        <div className="co-m-content">{children}</div>
+
+        <nav className="co-m-tabs">
+          {MTABS.map((t) => (
+            <Link key={t.id} href={t.href} className={`co-m-tab ${activePage === t.id ? "on" : ""}`}>
+              <t.icon size={21} strokeWidth={activePage === t.id ? 2.4 : 1.8} />
+              <span>{t.label}</span>
+            </Link>
+          ))}
+        </nav>
+      </div>
+    );
   }
 
   return (
@@ -224,78 +310,6 @@ export default function CompanyLayout({ children, activePage }: {
         </header>
         <main className="company-content">{children}</main>
       </div>
-    </div>
-  );
-}
-function PCOnlyNotice() {
-  return (
-    <div style={{
-      minHeight: "100vh",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "32px 24px",
-      background: "linear-gradient(135deg, #f3e5f5 0%, #fff 100%)",
-    }}>
-      <div style={{ fontSize: "64px", marginBottom: "16px" }}>💻</div>
-      <h1 style={{
-        fontSize: "22px",
-        fontWeight: 700,
-        color: "#1a1a1a",
-        marginBottom: "12px",
-        textAlign: "center",
-      }}>
-        PC에서 이용해주세요
-      </h1>
-      <p style={{
-        fontSize: "14px",
-        color: "#666",
-        textAlign: "center",
-        marginBottom: "32px",
-        lineHeight: 1.7,
-        maxWidth: "320px",
-      }}>
-        기업 대시보드는 더 편한 사용 경험을 위해<br />
-        <strong style={{ color: "#5f0080" }}>PC 환경에 최적화</strong>되어 있어요.<br /><br />
-        PC에서 접속하시면 모든 기능을<br />
-        편리하게 사용하실 수 있습니다.
-      </p>
-      <div style={{
-        padding: "14px 20px",
-        background: "#fff",
-        border: "1px solid #ede0f8",
-        borderRadius: "12px",
-        marginBottom: "24px",
-        maxWidth: "320px",
-        width: "100%",
-      }}>
-        <p style={{ fontSize: "12px", color: "#888", marginBottom: "6px" }}>
-          접속 주소
-        </p>
-        <p style={{
-          fontSize: "13px",
-          color: "#5f0080",
-          fontWeight: 600,
-          wordBreak: "break-all",
-        }}>
-          beauty-work.vercel.app
-        </p>
-      </div>
-      <Link href="/" style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "6px",
-        padding: "12px 24px",
-        background: "#5f0080",
-        color: "#fff",
-        borderRadius: "10px",
-        fontSize: "14px",
-        fontWeight: 600,
-        textDecoration: "none",
-      }}>
-        메인으로 가기
-      </Link>
     </div>
   );
 }
