@@ -1,5 +1,5 @@
 // 업종 목록 (뷰티 특화) — 회원 유형별
-// 매장·살롱 회원(STORE)과 기업·브랜드 회원(OFFICE)에 각각 노출.
+// 매장 회원(STORE)과 본사 회원(OFFICE)에 각각 노출.
 // BOTH 회원은 두 목록을 그룹으로 함께 노출.
 
 export const STORE_INDUSTRIES = [
@@ -30,7 +30,7 @@ export function industryGroupsFor(companyType: CompanyTypeLike): { label: string
   if (companyType === "OFFICE") return [{ label: null, items: OFFICE_INDUSTRIES }];
   // BOTH 또는 미지정: 둘 다 그룹으로
   return [
-    { label: "매장·살롱", items: STORE_INDUSTRIES },
-    { label: "기업·브랜드", items: OFFICE_INDUSTRIES },
+    { label: "매장", items: STORE_INDUSTRIES },
+    { label: "본사", items: OFFICE_INDUSTRIES },
   ];
 }

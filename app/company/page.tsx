@@ -42,7 +42,7 @@ export default function CompanyPage() {
       {/* ── 1. 히어로 ── */}
       <section className="co-hero">
         <div className="co-hero-inner">
-          <span className="co-hero-badge">기업·매장 서비스</span>
+          <span className="co-hero-badge">매장·본사 서비스</span>
           <h1 className="co-hero-title">
             뷰티 인재 채용,<br />
             <span className="co-hero-point">뷰티워크</span>에서 시작하세요
@@ -61,8 +61,8 @@ export default function CompanyPage() {
 
             {/* 왼쪽: 회원 유형 카드 */}
             <div className="co-combined-left">
-              <h2 className="co-combined-title">하나의 플랫폼에서<br />매장과 기업 채용을 한번에</h2>
-              <p className="co-combined-sub">매장, 기업, 기업+매장 — 운영 형태에 맞춰 자유롭게 채용하세요</p>
+              <h2 className="co-combined-title">하나의 플랫폼에서<br />매장과 본사 채용을 한번에</h2>
+              <p className="co-combined-sub">매장, 본사, 매장·본사 — 운영 형태에 맞춰 자유롭게 채용하세요</p>
 
               <div className="co-type-stack">
                 {/* 매장회원 */}
@@ -84,7 +84,7 @@ export default function CompanyPage() {
                 <div className="co-type-card">
 <div className="co-type-icon"><Building2 size={28} /></div>
                   <div className="co-type-body">
-                    <h3 className="co-type-name">기업회원</h3>
+                    <h3 className="co-type-name">본사회원</h3>
                     <p className="co-type-desc">화장품 브랜드·프랜차이즈·교육기관·유통사</p>
                     <ul className="co-type-list">
                       <li><CheckCircle2 size={13} /> 채용공고 무료 등록</li>
@@ -94,16 +94,16 @@ export default function CompanyPage() {
                     </ul>
                   </div>
                 </div>
-                {/* 기업+매장 회원 */}
+                {/* 매장·본사 회원 */}
                 <div className="co-type-card">
                   <div className="co-type-icon"><Layers size={28} /></div>
                   <div className="co-type-body">
-                    <h3 className="co-type-name">기업 + 매장 회원</h3>
+                    <h3 className="co-type-name">매장 + 본사 회원</h3>
                     <p className="co-type-desc">본사와 직영·가맹 매장을 함께 운영하는 브랜드</p>
                     <ul className="co-type-list">
                       <li><CheckCircle2 size={13} /> 사무직·현장직 무료 등록</li>
                       <li><CheckCircle2 size={13} /> 통합 대시보드로 한번에 관리</li>
-                      <li><CheckCircle2 size={13} /> 매장·기업 지원자 통합 관리</li>
+                      <li><CheckCircle2 size={13} /> 매장·본사 지원자 통합 관리</li>
                       <li><CheckCircle2 size={13} /> 인재 검색·추천 서비스</li>
                     </ul>
                   </div>
@@ -139,7 +139,7 @@ export default function CompanyPage() {
       <section className="co-section">
         <div className="co-section-inner" style={{ textAlign: "center" }}>
           <h2 className="co-section-title">지금 바로 시작하세요</h2>
-          <p className="co-section-sub">매장, 기업, 기업+매장 — 가입 시 유형을 선택할 수 있어요</p>
+          <p className="co-section-sub">매장, 본사, 매장·본사 — 가입 시 유형을 선택할 수 있어요</p>
           <Link href="/company/signup" className="co-btn-primary purple" style={{ marginTop: 24, display: "inline-flex" }}>
             기업회원 가입하기 <ArrowRight size={15} style={{ marginLeft: 6 }} />
           </Link>

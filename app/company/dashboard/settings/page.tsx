@@ -394,7 +394,7 @@ export default function CompanySettingsPage() {
             <div className="company-card-head">
               <h2 className="company-card-title">회사 프로필</h2>
               <span className={`jobs-type-badge ${info?.company_type === "STORE" ? "store" : "corp"}`}>
-                {info?.company_type === "STORE" ? "🏪 매장·살롱" : "🏢 기업·브랜드"}
+                {info?.company_type === "STORE" ? "🏪 매장" : "🏢 본사"}
               </span>
             </div>
             <div className="admin-form-body">

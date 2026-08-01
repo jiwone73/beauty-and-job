@@ -771,7 +771,7 @@ export default function JobPostForm({
       brandName: isNm ? newBrandName : (cp?.brand_name || ""),
       industry: isNm ? nmIndustry : "",
       representative: isNm ? nmRepresentative : (cp?.representative_name || ""),
-      companyType: jobGroupType === "매장" ? "매장·살롱" : "기업·브랜드",
+      companyType: jobGroupType === "매장" ? "매장" : "본사",
       size: isNm ? nmSize : (cp?.company_size || ""),
       founded: isNm ? (nmFounded ? `${nmFounded}년` : "") : (cp?.founded_year || ""),
       phone: isNm ? nmPhone : (cp?.company_phone || ""),
@@ -987,15 +987,15 @@ export default function JobPostForm({
                 {showTypeToggle ? (
                   <select className="admin-form-select" value={jobGroupType}
                     onChange={(e) => { setJobGroupType(e.target.value as "기업" | "매장"); setCategories([]); }}>
-                    <option value="기업">기업·브랜드 채용</option>
-                    <option value="매장">매장·살롱 채용</option>
+                    <option value="기업">본사 채용</option>
+                    <option value="매장">매장 채용</option>
                   </select>
                 ) : (
                   <div style={{
                     display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px",
                   }}>
                     <span style={{ fontSize: "14px", fontWeight: 400, color: "#555" }}>
-                      {jobGroupType === "기업" ? "🏢 기업·브랜드 채용" : "🏪 매장·살롱 채용"}
+                      {jobGroupType === "기업" ? "🏢 본사 채용" : "🏪 매장 채용"}
                     </span>
                   </div>
                 )}

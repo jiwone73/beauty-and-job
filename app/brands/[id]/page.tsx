@@ -86,7 +86,7 @@ export default function BrandDetailPage() {
   }
 
   const displayName = company.brand_name || company.company_name;
-  const typeLabel = company.company_type === "STORE" ? "매장·기술직" : "기업·브랜드";
+  const typeLabel = company.company_type === "STORE" ? "매장" : "본사";
 
   return (
     <div className="min-h-screen bg-gray-50">

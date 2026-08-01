@@ -512,7 +512,7 @@ export default function AdminDashboard() {
           <Building2 size={20} className="admin-section-icon company" />
           <h2 className="admin-section-heading">기업회원 현황</h2>
           <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
-            {([["ALL","전체"],["STORE","🏪 매장"],["OFFICE","🏢 기업"],["BOTH","🏪🏢 매장+기업"]] as const).map(([val, label]) => (
+            {([["ALL","전체"],["STORE","🏪 매장"],["OFFICE","🏢 본사"],["BOTH","🏪🏢 매장·본사"]] as const).map(([val, label]) => (
               <button key={val} onClick={() => setCorpTab(val)} style={tabBtn(corpTab === val)}>
                 {label}
               </button>

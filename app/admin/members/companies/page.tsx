@@ -20,9 +20,9 @@ const STATUS_TO_LABEL: Record<string, string> = {
   REJECTED: "반려",
 };
 const TYPE_LABEL: Record<string, string> = {
-  OFFICE: "기업",
+  OFFICE: "본사",
   STORE: "매장",
-  BOTH: "기업+매장",
+  BOTH: "매장·본사",
 };
 const STATUS_OPTIONS = ["전체", "승인대기", "승인완료", "정지", "반려"];
 const JOB_STATUS_LABEL: Record<string, string> = {
@@ -93,8 +93,8 @@ function AdminCompaniesContent() {
   const typeParam = searchParams.get("type");
   const initialType =
     typeParam === "STORE" ? "매장" :
-    typeParam === "OFFICE" ? "기업" :
-    typeParam === "BOTH" ? "기업+매장" : "전체";
+    typeParam === "OFFICE" ? "본사" :
+    typeParam === "BOTH" ? "매장·본사" : "전체";
   const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
   const detailId = searchParams.get("detail");
 
@@ -324,7 +324,7 @@ function AdminCompaniesContent() {
           {!blockedMode && (
           <FilterDropdown label="유형"
             value={typeFilter}
-            options={["전체", "매장", "기업", "기업+매장"]}
+            options={["전체", "매장", "본사", "매장·본사"]}
             onChange={(v) => { setTypeFilter(v); setPage(1); }} />
           )}
           {!blockedMode && (
