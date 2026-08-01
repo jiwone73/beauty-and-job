@@ -229,7 +229,10 @@ export default function CompanyJobsPage() {
             .company-stat-grid.co-4 .company-stat-card { padding: 9px 5px; align-items: center; text-align: center; gap: 2px; }
             .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
             .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-            .co-mbar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
+            .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+            .co-mbar-count { font-size: 13.5px; color: #888; padding-bottom: 6px; }
+            .co-mbar-count strong { color: #5f0080; }
+            .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
             .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
             .co-mbar-btn.primary { border: none; background: #5f0080; color: #fff; }
@@ -251,15 +254,18 @@ export default function CompanyJobsPage() {
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
           `}</style>
           <div className="co-mbar">
-            <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
-              <SlidersHorizontal size={15} /> 필터
-            </button>
-            <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
-              {selectMode ? "취소" : "선택"}
-            </button>
-            <Link href="/company/dashboard/jobs/new" className="co-mbar-btn primary">
-              <Plus size={15} /> 등록
-            </Link>
+            <span className="co-mbar-count">총 <strong>{filtered.length}</strong>건</span>
+            <div className="co-mbar-actions">
+              <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
+                <SlidersHorizontal size={15} /> 필터
+              </button>
+              <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
+                {selectMode ? "취소" : "선택"}
+              </button>
+              <Link href="/company/dashboard/jobs/new" className="co-mbar-btn primary">
+                <Plus size={15} /> 등록
+              </Link>
+            </div>
           </div>
           {filterOpen && (
             <div className="co-sheet-ov" onClick={() => setFilterOpen(false)}>
@@ -339,7 +345,6 @@ export default function CompanyJobsPage() {
             .co-li-r2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #777; }
             .co-li-r2 b { color: #444; font-weight: 500; }
           `}</style>
-          <div className="co-list-meta">총 <strong>{filtered.length}</strong>건</div>
           {filtered.map((job) => {
             const on = checked.includes(job.id);
             const statusColor = job.status === "ACTIVE" ? "#10b981" : job.status === "CLOSED" ? "#888" : "#f59e0b";
