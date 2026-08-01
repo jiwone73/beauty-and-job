@@ -658,17 +658,15 @@ export default function CompanySettingsPage() {
             <div className="company-card-head">
               <h2 className="company-card-title">계정 정보</h2>
             </div>
-            <div className="admin-form-body">
-              <div className="admin-form-row">
-                <label className="admin-form-label">사업자등록번호</label>
-                <input className="admin-form-input" value={info?.business_number || ""} disabled
-                  style={{ background: "#f5f5f5", color: "#888" }} />
-                <p style={{ fontSize: "12px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
+            <div className="admin-form-body" style={{ gap: 0 }}>
+              <div className="admin-form-row" style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", borderBottom: "1px solid #f0f0f0" }}>
+                <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>사업자등록번호</label>
+                <span style={{ fontSize: "14px", color: info?.business_number ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{info?.business_number || "미등록"}</span>
               </div>
 
               <div className="admin-form-row"
                 onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
-                style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px", flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", cursor: "pointer" }}>
+                style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}>
                 <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>이메일</label>
                 <span style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
                   <span style={{ fontSize: "14px", color: info?.email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{info?.email || "미등록"}</span>
@@ -676,20 +674,22 @@ export default function CompanySettingsPage() {
                 </span>
               </div>
 
-              <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                <label className="admin-form-label" style={{ margin: 0 }}>비밀번호</label>
-                <button type="button" onClick={() => setShowPwModal(true)}
-                  style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", padding: 0, cursor: "pointer", color: "#5f0080", fontSize: "14px" }}>
+              <div className="admin-form-row"
+                onClick={() => setShowPwModal(true)}
+                style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}>
+                <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>비밀번호</label>
+                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#5f0080", fontSize: "14px" }}>
                   변경 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
-                </button>
+                </span>
               </div>
 
-              <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                <label className="admin-form-label" style={{ margin: 0 }}>회원 탈퇴</label>
-                <button type="button" onClick={() => setShowWithdraw(true)}
-                  style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", padding: 0, cursor: "pointer", color: "#e74c3c", fontSize: "14px" }}>
+              <div className="admin-form-row"
+                onClick={() => setShowWithdraw(true)}
+                style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", cursor: "pointer" }}>
+                <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>회원 탈퇴</label>
+                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#e74c3c", fontSize: "14px" }}>
                   탈퇴 <span style={{ color: "#e6a6a0", fontSize: "16px" }}>›</span>
-                </button>
+                </span>
               </div>
             </div>
           </div>
