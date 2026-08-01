@@ -266,7 +266,8 @@ export default function JobDetailPage() {
   const [coverLoaded, setCoverLoaded] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [applying, setApplying] = useState(false);
-  const { isLoggedIn, userName } = useAuthStore();
+  const { isLoggedIn, userName, ownerType } = useAuthStore();
+  const isCompany = ownerType === "company"; // 기업회원이면 지원·북마크 불가
   const { apply, isApplied } = useApplicationStore();
   const alreadyApplied = job ? isApplied(String(job.id)) : false;
 
@@ -300,6 +301,7 @@ export default function JobDetailPage() {
   const isExternal = !!job.isExternal;
   const isRedirect = isExternal && job.applyMethod === 'REDIRECT';
   const handleApplyClick = () => {
+    if (isCompany) return;
     if (alreadyApplied) return;
     if (isRedirect) {
       if (job.externalApplyUrl) window.open(job.externalApplyUrl, "_blank", "noopener");
@@ -308,6 +310,7 @@ export default function JobDetailPage() {
     if (!isLoggedIn) { setShowLoginModal(true); } else { setShowApplyModal(true); }
   };
   const handleBookmark = () => {
+    if (isCompany) return;
     if (!isLoggedIn) { setShowLoginModal(true); return; }
     toggleBookmark(String(job.id));
   };
@@ -355,6 +358,13 @@ export default function JobDetailPage() {
                 공고 수정하기
               </button>
             </>
+          ) : isCompany ? (
+            <div style={{
+              background: "#f6f6f8", color: "#888", borderRadius: "10px",
+              padding: "12px 14px", fontSize: "13px", lineHeight: 1.5, textAlign: "center"
+            }}>
+              기업회원 계정에서는 지원·북마크를 이용할 수 없어요.
+            </div>
           ) : (
             <>
               <button
@@ -388,6 +398,10 @@ export default function JobDetailPage() {
             onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}
           >
             공고 수정하기
+          </button>
+        ) : isCompany ? (
+          <button className="job-detail-mobile-apply" disabled style={{ opacity: 0.7 }}>
+            기업회원은 지원 불가
           </button>
         ) : (
           <>
