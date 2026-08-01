@@ -666,16 +666,14 @@ export default function CompanySettingsPage() {
                 <p style={{ fontSize: "12px", color: "#aaa", marginTop: "4px" }}>사업자등록번호는 변경할 수 없어요</p>
               </div>
 
-              <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ minWidth: 0 }}>
-                  <label className="admin-form-label" style={{ margin: 0 }}>이메일</label>
-                  <div style={{ fontSize: "14px", color: "#888", marginTop: "3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{info?.email || ""}</div>
-                </div>
-                <button type="button"
-                  onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
-                  style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", padding: 0, cursor: "pointer", color: "#5f0080", fontSize: "14px", flexShrink: 0, marginLeft: "12px" }}>
-                  변경 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
-                </button>
+              <div className="admin-form-row"
+                onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
+                style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px", flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", cursor: "pointer" }}>
+                <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>이메일</label>
+                <span style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
+                  <span style={{ fontSize: "14px", color: info?.email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{info?.email || "미등록"}</span>
+                  <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0 }}>›</span>
+                </span>
               </div>
 
               <div className="admin-form-row" style={{ borderTop: "1px solid #f0f0f0", paddingTop: "16px", marginTop: "8px", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
