@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BottomTabBar from "@/components/BottomTabBar";
 import AuthInterceptor from "@/components/AuthInterceptor";
+import RoleGuard from "@/components/RoleGuard";
 import VisitBeacon from "@/components/VisitBeacon";
 
 export const metadata: Metadata = {
@@ -29,6 +30,7 @@ export default function RootLayout({
     <html lang="ko">
       <body className="font-sans">
         <AuthInterceptor />
+        <RoleGuard />
         <VisitBeacon />
         {children}
         <BottomTabBar />
