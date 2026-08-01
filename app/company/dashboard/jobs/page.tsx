@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Plus, Search, Edit, X, Trash2, Copy, Ban
+  Users, Plus, Search, Edit, X, Trash2, Copy, Ban, SlidersHorizontal
 } from "lucide-react";
 import { companyJobsApi } from "@/lib/api/company";
 import type { CompanyJob, JobStatus } from "@/lib/types/company";
@@ -38,6 +38,8 @@ export default function CompanyJobsPage() {
   const [selected, setSelected] = useState<CompanyJob | null>(null);
   const [checked, setChecked] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
+  const [selectMode, setSelectMode] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -45,6 +47,13 @@ export default function CompanyJobsPage() {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  const toggleSelectMode = () => {
+    setSelectMode((v) => {
+      if (v) setChecked([]);
+      return !v;
+    });
+  };
 
   const loadJobs = async () => {
     setLoading(true);
@@ -80,6 +89,7 @@ export default function CompanyJobsPage() {
     try {
       await Promise.all(checked.map(id => companyJobsApi.delete(id)));
       setChecked([]);
+      setSelectMode(false);
       await loadJobs();
     } catch (e) {
       alert("삭제 중 오류가 발생했습니다.");
@@ -142,7 +152,8 @@ export default function CompanyJobsPage() {
         ))}
       </div>
 
-      {/* 툴바 */}
+      {/* 툴바 (데스크톱) */}
+      {!isMobile && (
       <div className="company-toolbar">
         <div className="company-toolbar-left">
           <div className="admin-search-wrap">
@@ -166,6 +177,86 @@ export default function CompanyJobsPage() {
           </Link>
         </div>
       </div>
+      )}
+
+      {/* 컨트롤 바 (모바일) */}
+      {isMobile && (
+        <>
+          <style>{`
+            .co-mbar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
+            .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
+            .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
+            .co-mbar-btn.primary { border: none; background: #5f0080; color: #fff; }
+            .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
+            .co-sheet { width: 100%; background: #fff; border-radius: 18px 18px 0 0; padding: 0 18px calc(20px + env(safe-area-inset-bottom)); max-height: 82vh; overflow-y: auto; animation: co-sheet-up .22s ease; }
+            @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+            .co-sheet-grip { width: 38px; height: 4px; border-radius: 2px; background: #d8d8dc; margin: 9px auto 4px; }
+            .co-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 14px; }
+            .co-sheet-title { font-size: 17px; font-weight: 700; color: #1a1a1a; }
+            .co-sheet-reset { background: none; border: none; color: #888; font-size: 13.5px; cursor: pointer; }
+            .co-sheet-body { display: flex; flex-direction: column; gap: 18px; }
+            .co-fseg-label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 9px; }
+            .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+            .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 14px; cursor: pointer; }
+            .co-fseg-btn.on { border-color: #5f0080; background: #5f0080; color: #fff; font-weight: 600; }
+            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #5f0080; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+            .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
+            .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+            .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
+          `}</style>
+          <div className="co-mbar">
+            <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
+              <SlidersHorizontal size={15} /> 필터
+            </button>
+            <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
+              {selectMode ? "취소" : "선택"}
+            </button>
+            <Link href="/company/dashboard/jobs/new" className="co-mbar-btn primary">
+              <Plus size={15} /> 등록
+            </Link>
+          </div>
+          {filterOpen && (
+            <div className="co-sheet-ov" onClick={() => setFilterOpen(false)}>
+              <div className="co-sheet" onClick={(e) => e.stopPropagation()}>
+                <div className="co-sheet-grip" />
+                <div className="co-sheet-head">
+                  <span className="co-sheet-title">필터</span>
+                  <button className="co-sheet-reset"
+                    onClick={() => { setSearch(""); setJobGroupFilter("전체"); setStatusFilter("전체"); }}>
+                    초기화
+                  </button>
+                </div>
+                <div className="co-sheet-body">
+                  <div className="admin-search-wrap">
+                    <Search size={16} className="admin-search-icon" />
+                    <input className="admin-search-input" placeholder="공고명 검색"
+                      value={search} onChange={(e) => setSearch(e.target.value)} />
+                  </div>
+                  <div>
+                    <div className="co-fseg-label">채용유형</div>
+                    <div className="co-fseg-opts">
+                      {["전체", "매장", "기업"].map((o) => (
+                        <button key={o} className={`co-fseg-btn ${jobGroupFilter === o ? "on" : ""}`}
+                          onClick={() => setJobGroupFilter(o)}>{o}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="co-fseg-label">진행상태</div>
+                    <div className="co-fseg-opts">
+                      {["전체", "진행중", "마감"].map((o) => (
+                        <button key={o} className={`co-fseg-btn ${statusFilter === o ? "on" : ""}`}
+                          onClick={() => setStatusFilter(o)}>{o}</button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <button className="co-sheet-apply" onClick={() => setFilterOpen(false)}>적용</button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* 로딩 */}
       {loading && (
@@ -207,10 +298,12 @@ export default function CompanyJobsPage() {
             const statusBg = job.status === "ACTIVE" ? "#e7f8f0" : job.status === "CLOSED" ? "#f0f0f0" : "#fef3e2";
             return (
               <div key={job.id} className="co-row">
-                <input type="checkbox" className="co-row-check" checked={on}
-                  onChange={() => toggleCheck(job.id)} />
+                {selectMode && (
+                  <input type="checkbox" className="co-row-check" checked={on}
+                    onChange={() => toggleCheck(job.id)} />
+                )}
                 <div className={`co-li ${on ? "on" : ""}`}
-                  onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
+                  onClick={() => selectMode ? toggleCheck(job.id) : router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
                   <div className="co-li-r1">
                     <span className="co-li-title">{job.title}</span>
                     <span className="co-li-status" style={{ color: statusColor, background: statusBg }}>
@@ -302,6 +395,16 @@ export default function CompanyJobsPage() {
         </div>
       )}
       </div>
+
+      {/* 선택 액션바 (모바일) */}
+      {isMobile && selectMode && checked.length > 0 && (
+        <div className="co-selbar">
+          <span className="co-selbar-count">{checked.length}개 선택됨</span>
+          <button className="co-selbar-del" onClick={handleBulkDelete} aria-label="삭제">
+            <Trash2 size={20} />
+          </button>
+        </div>
+      )}
 
       {/* 상세 모달 */}
       {selected && (

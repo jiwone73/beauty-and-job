@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer } from "lucide-react";
+import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, SlidersHorizontal, Trash2 } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { formatPhone } from "@/lib/phone";
 import Link from "next/link";
@@ -51,6 +51,8 @@ function ApplicantsContent() {
   const previewRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [selectMode, setSelectMode] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -58,6 +60,13 @@ function ApplicantsContent() {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  const toggleSelectMode = () => {
+    setSelectMode((v) => {
+      if (v) setChecked([]);
+      return !v;
+    });
+  };
 
   const handleDownloadPdf = async () => {
     if (!previewRef.current) return;
@@ -152,6 +161,7 @@ function ApplicantsContent() {
       await Promise.all(checked.map(id => companyApplicationsApi.hide(id)));
       setApplicants(prev => prev.filter(a => !checked.includes(a.id)));
       setChecked([]);
+      setSelectMode(false);
     } catch (e) {
       alert("숨김 처리 중 오류가 발생했습니다.");
       console.error("[handleBulkHide]", e);
@@ -256,6 +266,7 @@ function ApplicantsContent() {
         </div>
       )}
 
+      {!isMobile && (
       <div className="company-toolbar">
         <div className="company-toolbar-left">
           <div className="admin-search-wrap">
@@ -274,6 +285,73 @@ function ApplicantsContent() {
           </div>
         )}
       </div>
+      )}
+
+      {/* 컨트롤 바 (모바일) */}
+      {isMobile && (
+        <>
+          <style>{`
+            .co-mbar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
+            .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; }
+            .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
+            .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
+            .co-sheet { width: 100%; background: #fff; border-radius: 18px 18px 0 0; padding: 0 18px calc(20px + env(safe-area-inset-bottom)); max-height: 82vh; overflow-y: auto; animation: co-sheet-up .22s ease; }
+            @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+            .co-sheet-grip { width: 38px; height: 4px; border-radius: 2px; background: #d8d8dc; margin: 9px auto 4px; }
+            .co-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 14px; }
+            .co-sheet-title { font-size: 17px; font-weight: 700; color: #1a1a1a; }
+            .co-sheet-reset { background: none; border: none; color: #888; font-size: 13.5px; cursor: pointer; }
+            .co-sheet-body { display: flex; flex-direction: column; gap: 18px; }
+            .co-fseg-label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 9px; }
+            .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+            .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 14px; cursor: pointer; }
+            .co-fseg-btn.on { border-color: #5f0080; background: #5f0080; color: #fff; font-weight: 600; }
+            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #5f0080; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+            .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
+            .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+            .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
+          `}</style>
+          <div className="co-mbar">
+            <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
+              <SlidersHorizontal size={15} /> 필터
+            </button>
+            <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
+              {selectMode ? "취소" : "선택"}
+            </button>
+          </div>
+          {filterOpen && (
+            <div className="co-sheet-ov" onClick={() => setFilterOpen(false)}>
+              <div className="co-sheet" onClick={(e) => e.stopPropagation()}>
+                <div className="co-sheet-grip" />
+                <div className="co-sheet-head">
+                  <span className="co-sheet-title">필터</span>
+                  <button className="co-sheet-reset"
+                    onClick={() => { setSearch(""); setStatusFilter("전체"); }}>
+                    초기화
+                  </button>
+                </div>
+                <div className="co-sheet-body">
+                  <div className="admin-search-wrap">
+                    <Search size={16} className="admin-search-icon" />
+                    <input className="admin-search-input" placeholder="지원자 이름 검색"
+                      value={search} onChange={(e) => setSearch(e.target.value)} />
+                  </div>
+                  <div>
+                    <div className="co-fseg-label">상태</div>
+                    <div className="co-fseg-opts">
+                      {["전체", "신규", "검토중", "합격", "불합격"].map((o) => (
+                        <button key={o} className={`co-fseg-btn ${statusFilter === o ? "on" : ""}`}
+                          onClick={() => setStatusFilter(o)}>{o}</button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <button className="co-sheet-apply" onClick={() => setFilterOpen(false)}>적용</button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {loading && (
         <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#888" }}>
@@ -323,9 +401,12 @@ function ApplicantsContent() {
             const meta2 = [age != null ? `${age}세` : null, gender || null, career].filter(Boolean).join(" · ");
             return (
               <div key={a.id} className="co-row">
-                <input type="checkbox" className="co-row-check" checked={on}
-                  onChange={() => toggleCheck(a.id)} />
-                <div className={`co-li ${on ? "on" : ""}`} onClick={() => setSelected(a)}>
+                {selectMode && (
+                  <input type="checkbox" className="co-row-check" checked={on}
+                    onChange={() => toggleCheck(a.id)} />
+                )}
+                <div className={`co-li ${on ? "on" : ""}`}
+                  onClick={() => selectMode ? toggleCheck(a.id) : setSelected(a)}>
                   <div className="co-li-r1">
                     <div className="co-li-person">
                       <div className="co-li-avatar">
@@ -473,6 +554,16 @@ function ApplicantsContent() {
         </div>
       )}
       </div>
+
+      {/* 선택 액션바 (모바일) */}
+      {isMobile && selectMode && checked.length > 0 && (
+        <div className="co-selbar">
+          <span className="co-selbar-count">{checked.length}개 선택됨</span>
+          <button className="co-selbar-del" onClick={handleBulkHide} aria-label="삭제">
+            <Trash2 size={20} />
+          </button>
+        </div>
+      )}
 
       {selected && (
         <div className="admin-modal-overlay">

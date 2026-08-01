@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import {
   Search, BookmarkCheck, Bookmark, X, FileText, Paperclip,
-  Download, Printer, MapPin, ChevronDown,
+  Download, Printer, MapPin, ChevronDown, SlidersHorizontal,
 } from "lucide-react";
 import { companyTalentApi, type TalentItem } from "@/lib/api/company";
 import ResumePreview from "@/components/profile/ResumePreview";
@@ -79,6 +79,8 @@ export default function TalentPage() {
   const previewRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [checked, setChecked] = useState<string[]>([]);
+  const [selectMode, setSelectMode] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -90,11 +92,19 @@ export default function TalentPage() {
   const toggleCheck = (id: string) =>
     setChecked((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
+  const toggleSelectMode = () => {
+    setSelectMode((v) => {
+      if (v) setChecked([]);
+      return !v;
+    });
+  };
+
   const handleBulkScrap = async () => {
     if (!checked.length) return;
     const targets = talents.filter((t) => checked.includes(t.id) && !t.scrapped);
     setTalents((prev) => prev.map((t) => checked.includes(t.id) ? { ...t, scrapped: true } : t));
     setChecked([]);
+    setSelectMode(false);
     try {
       await Promise.all(targets.map((t) => companyTalentApi.scrap(t.id)));
     } catch (e) {
@@ -338,8 +348,45 @@ export default function TalentPage() {
         </div>
       )}
 
-      <div style={{ width: "fit-content", maxWidth: "100%" }}>
-      {/* 필터 */}
+      <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
+      {/* 컨트롤 바 (모바일) */}
+      {isMobile && (
+        <>
+          <style>{`
+            .co-mbar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
+            .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; }
+            .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
+            .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
+            .co-sheet { width: 100%; background: #fff; border-radius: 18px 18px 0 0; padding: 0 18px calc(20px + env(safe-area-inset-bottom)); max-height: 84vh; overflow-y: auto; animation: co-sheet-up .22s ease; }
+            @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+            .co-sheet-grip { width: 38px; height: 4px; border-radius: 2px; background: #d8d8dc; margin: 9px auto 4px; }
+            .co-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 14px; }
+            .co-sheet-title { font-size: 17px; font-weight: 700; color: #1a1a1a; }
+            .co-sheet-reset { background: none; border: none; color: #888; font-size: 13.5px; cursor: pointer; }
+            .co-sheet-body { display: flex; flex-direction: column; gap: 18px; }
+            .co-fseg-label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 9px; }
+            .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+            .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 14px; cursor: pointer; }
+            .co-fseg-btn.on { border-color: #5f0080; background: #5f0080; color: #fff; font-weight: 600; }
+            .co-fsel-btn { display: flex; align-items: center; gap: 6px; width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e2e6; background: #fff; color: #333; font-size: 14px; cursor: pointer; text-align: left; }
+            .co-fsel-btn .ph { color: #aaa; }
+            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #5f0080; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+            .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
+            .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+            .co-selbar-act { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; color: #5f0080; font-size: 14px; font-weight: 600; padding: 6px; }
+          `}</style>
+          <div className="co-mbar">
+            <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
+              <SlidersHorizontal size={15} /> 필터
+            </button>
+            <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
+              {selectMode ? "취소" : "선택"}
+            </button>
+          </div>
+        </>
+      )}
+      {/* 필터 (데스크톱) */}
+      {!isMobile && (
       <div style={{ marginBottom: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
           <button
@@ -388,6 +435,78 @@ export default function TalentPage() {
           />
         </div>
       </div>
+      )}
+
+      {/* 필터 시트 (모바일) */}
+      {isMobile && filterOpen && (
+        <div className="co-sheet-ov" onClick={() => setFilterOpen(false)}>
+          <div className="co-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="co-sheet-grip" />
+            <div className="co-sheet-head">
+              <span className="co-sheet-title">필터</span>
+              <button className="co-sheet-reset" onClick={resetFilters}>초기화</button>
+            </div>
+            <div className="co-sheet-body">
+              <div className="admin-search-wrap">
+                <Search size={16} className="admin-search-icon" />
+                <input className="admin-search-input" placeholder="이름, 포지션, 스킬 검색"
+                  value={search} onChange={(e) => setSearch(e.target.value)} />
+              </div>
+              <div>
+                <div className="co-fseg-label">직군</div>
+                <button className="co-fsel-btn"
+                  onClick={() => { setFilterOpen(false); setJobGroupOpen(true); }}>
+                  <span className={selectedJobGroups.length > 0 ? "" : "ph"} style={{ flex: 1 }}>{jobGroupLabel}</span>
+                  <ChevronDown size={15} />
+                </button>
+              </div>
+              {activeTab === "STORE" && (
+                <div>
+                  <div className="co-fseg-label">지역</div>
+                  <button className="co-fsel-btn"
+                    onClick={() => { setFilterOpen(false); setRegionOpen(true); }}>
+                    <MapPin size={15} />
+                    <span className={selectedRegions.length > 0 ? "" : "ph"} style={{ flex: 1 }}>{regionLabel}</span>
+                    <ChevronDown size={15} />
+                  </button>
+                </div>
+              )}
+              <div>
+                <div className="co-fseg-label">경력</div>
+                <div className="co-fseg-opts">
+                  {CAREER_OPTIONS.map((o) => (
+                    <button key={o} className={`co-fseg-btn ${careerFilter === o ? "on" : ""}`}
+                      onClick={() => setCareerFilter(o)}>{o}</button>
+                  ))}
+                </div>
+              </div>
+              {activeTab === "STORE" && (
+                <>
+                  <div>
+                    <div className="co-fseg-label">연령</div>
+                    <div className="co-fseg-opts">
+                      {AGE_FILTERS.map((o) => (
+                        <button key={o} className={`co-fseg-btn ${ageFilter === o ? "on" : ""}`}
+                          onClick={() => setAgeFilter(o)}>{o}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="co-fseg-label">성별</div>
+                    <div className="co-fseg-opts">
+                      {GENDER_FILTERS.map((o) => (
+                        <button key={o} className={`co-fseg-btn ${genderFilter === o ? "on" : ""}`}
+                          onClick={() => setGenderFilter(o)}>{o}</button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <button className="co-sheet-apply" onClick={() => setFilterOpen(false)}>적용</button>
+          </div>
+        </div>
+      )}
 
       {(selectedJobGroups.length > 0 || selectedRegions.length > 0) && (
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
@@ -407,15 +526,7 @@ export default function TalentPage() {
       )}
 
       {/* 결과 수 */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "0 0 8px" }}>
-        <span style={{ fontSize: 14, color: "#888" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</span>
-        {isMobile && checked.length > 0 && (
-          <button onClick={handleBulkScrap}
-            style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-            <BookmarkCheck size={15} /> 선택 스크랩 ({checked.length})
-          </button>
-        )}
-      </div>
+      <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</div>
 
       {/* 리스트 */}
       <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
@@ -453,9 +564,12 @@ export default function TalentPage() {
             const meta2 = [t.age ? `${t.age}세` : null, gl, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ");
             return (
               <div key={t.id} className="co-row">
-                <input type="checkbox" className="co-row-check" checked={on}
-                  onChange={() => toggleCheck(t.id)} />
-                <div className={`co-li ${on ? "on" : ""}`} onClick={() => setSelected(t)}>
+                {selectMode && (
+                  <input type="checkbox" className="co-row-check" checked={on}
+                    onChange={() => toggleCheck(t.id)} />
+                )}
+                <div className={`co-li ${on ? "on" : ""}`}
+                  onClick={() => selectMode ? toggleCheck(t.id) : setSelected(t)}>
                   <div className="co-li-r1">
                     <div className="co-li-person">
                       <div className="co-li-avatar">
@@ -613,6 +727,16 @@ export default function TalentPage() {
       )}
       </div>
       </div>
+
+      {/* 선택 액션바 (모바일) — 스크랩 */}
+      {isMobile && selectMode && checked.length > 0 && (
+        <div className="co-selbar">
+          <span className="co-selbar-count">{checked.length}명 선택됨</span>
+          <button className="co-selbar-act" onClick={handleBulkScrap} aria-label="스크랩">
+            <BookmarkCheck size={19} /> 스크랩
+          </button>
+        </div>
+      )}
 
       {/* 직군 모달 */}
       <JobGroupSelectModal
