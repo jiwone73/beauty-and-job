@@ -323,7 +323,7 @@ function ApplicantsContent() {
             .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
             .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
             .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-            .co-mbar-count { font-size: 13.5px; color: #888; padding-bottom: 6px; }
+            .co-mbar-count { font-size: 13.5px; color: #888; padding-bottom: 2px; }
             .co-mbar-count strong { color: #1a1a1a; }
             .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; }
