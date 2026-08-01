@@ -55,9 +55,9 @@ function CoverBanner({ images }: { images: string[] }) {
   const visible = n <= 3 ? images : [0, 1, 2].map((i) => images[(start + i) % n]);
   return (
     <div style={{ position: "relative" }}>
-      <div style={{ display: "flex", gap: 8 }}>
+      <div style={{ display: "flex", gap: 0, borderRadius: 10, overflow: "hidden", border: "1px solid #eee" }}>
         {visible.map((u, i) => (
-          <div key={`${start}-${i}`} style={{ flex: 1, minWidth: 0, aspectRatio: "4 / 3", borderRadius: 10, overflow: "hidden", border: "1px solid #eee", background: "#f3f3f3" }}>
+          <div key={`${start}-${i}`} style={{ flex: 1, minWidth: 0, aspectRatio: "4 / 3", background: "#f3f3f3" }}>
             <img src={u} alt={`커버 이미지 ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         ))}

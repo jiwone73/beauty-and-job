@@ -482,13 +482,13 @@ export default function CompanySettingsPage() {
                   </div>
                 ) : (
                   <div style={{position:"relative"}}>
-                    <div style={{display:"grid", gridTemplateColumns:`repeat(${Math.min(coverImages.length, 3)}, 1fr)`, gap:"8px"}}>
+                    <div style={{display:"grid", gridTemplateColumns:`repeat(${Math.min(coverImages.length, 3)}, 1fr)`, gap:0, borderRadius:10, overflow:"hidden", border:"1px solid #eee"}}>
                       {(coverImages.length <= 3
                         ? coverImages
                         : [0,1,2].map((i) => coverImages[(coverStart + i) % coverImages.length])
                       ).map((c, i) => (
                         <div key={`${coverStart}-${i}-${c.url}`}
-                          style={{position:"relative", aspectRatio:"4 / 3", borderRadius:10, overflow:"hidden", border:"1px solid #eee", background:"#f3f3f3"}}>
+                          style={{position:"relative", aspectRatio:"4 / 3", background:"#f3f3f3"}}>
                           <img src={c.url} alt="" style={{width:"100%", height:"100%", objectFit:"cover"}} />
                           <button type="button" onClick={() => handleCoverDeleteOne(c.url)} title="삭제"
                             style={{position:"absolute", top:5, right:5, width:22, height:22, borderRadius:"50%",

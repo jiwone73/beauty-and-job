@@ -34,9 +34,9 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 8 }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 0, borderRadius: 12, overflow: "hidden" }}>
         {visible.map((src, k) => (
-          <div key={k} style={{ aspectRatio: "4 / 3", borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
+          <div key={k} style={{ aspectRatio: "4 / 3", background: "#f4f4f4" }}>
             <img src={src} alt={alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         ))}
