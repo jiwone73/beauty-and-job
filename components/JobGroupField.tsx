@@ -29,13 +29,14 @@ export default function JobGroupField({
     <>
       <style>{`
         .jgf-value {
-          display: inline-flex; align-items: center; gap: 6px;
-          max-width: 100%; padding: 0; border: none; background: none;
+          display: flex; align-items: center; gap: 6px;
+          width: 100%; min-width: 0; justify-content: flex-end;
+          padding: 0; border: none; background: none;
           cursor: pointer; font-size: 14px;
         }
         .jgf-value:disabled { opacity: 0.6; cursor: not-allowed; }
-        .jgf-text { color: #555; font-weight: 400; text-align: right; }
-        .jgf-ph { color: #bbb; font-weight: 400; }
+        .jgf-text { color: #555; font-weight: 400; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+        .jgf-ph { color: #bbb; font-weight: 400; white-space: nowrap; }
         .jgf-chev { color: #ccc; font-size: 16px; flex-shrink: 0; }
       `}</style>
 

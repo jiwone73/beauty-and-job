@@ -41,6 +41,17 @@ export default function CompanyJobsPage() {
   const [selectMode, setSelectMode] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
+  const [companyType, setCompanyType] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/company/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res.success && res.data) setCompanyType(res.data.company_type || null); })
+      .catch(() => {});
+  }, []);
+  const isBoth = companyType === "BOTH";
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -136,8 +147,10 @@ export default function CompanyJobsPage() {
     { label: "진행중", value: String(counts.진행중), unit: "건", color: "#10b981" },
     { label: "마감", value: String(counts.마감), unit: "건", color: "#888" },
     { label: "총 지원자", value: String(totalApplicants), unit: "명", color: "#0ea5e9" },
-    { label: "기업 공고", value: String(counts.기업), unit: "건", color: "#5f0080" },
-    { label: "매장 공고", value: String(counts.매장), unit: "건", color: "#e91e8c" },
+    ...(isBoth ? [
+      { label: "기업 공고", value: String(counts.기업), unit: "건", color: "#5f0080" },
+      { label: "매장 공고", value: String(counts.매장), unit: "건", color: "#e91e8c" },
+    ] : []),
   ];
 
   return (
@@ -185,8 +198,10 @@ export default function CompanyJobsPage() {
             <input className="admin-search-input" placeholder="공고명 검색"
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <FilterDropdown label="채용유형" value={jobGroupFilter}
-            options={["전체", "매장", "기업"]} onChange={setJobGroupFilter} />
+          {isBoth && (
+            <FilterDropdown label="채용유형" value={jobGroupFilter}
+              options={["전체", "매장", "기업"]} onChange={setJobGroupFilter} />
+          )}
           <FilterDropdown label="진행상태" value={statusFilter}
             options={["전체", "진행중", "마감"]} onChange={setStatusFilter} />
         </div>
@@ -263,15 +278,17 @@ export default function CompanyJobsPage() {
                     <input className="admin-search-input" placeholder="공고명 검색"
                       value={search} onChange={(e) => setSearch(e.target.value)} />
                   </div>
-                  <div>
-                    <div className="co-fseg-label">채용유형</div>
-                    <div className="co-fseg-opts">
-                      {["전체", "매장", "기업"].map((o) => (
-                        <button key={o} className={`co-fseg-btn ${jobGroupFilter === o ? "on" : ""}`}
-                          onClick={() => setJobGroupFilter(o)}>{o}</button>
-                      ))}
+                  {isBoth && (
+                    <div>
+                      <div className="co-fseg-label">채용유형</div>
+                      <div className="co-fseg-opts">
+                        {["전체", "매장", "기업"].map((o) => (
+                          <button key={o} className={`co-fseg-btn ${jobGroupFilter === o ? "on" : ""}`}
+                            onClick={() => setJobGroupFilter(o)}>{o}</button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <div>
                     <div className="co-fseg-label">진행상태</div>
                     <div className="co-fseg-opts">
