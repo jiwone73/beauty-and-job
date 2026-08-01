@@ -296,17 +296,18 @@ function ApplicantsContent() {
             .co-list { display: flex; flex-direction: column; gap: 10px; }
             .co-list-meta { font-size: 12.5px; color: #888; padding: 2px 2px 4px; }
             .co-list-meta strong { color: #5f0080; }
-            .co-li { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
+            .co-row { display: flex; align-items: center; gap: 10px; }
+            .co-row-check { width: 20px; height: 20px; accent-color: #5f0080; flex-shrink: 0; margin: 0; }
+            .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
             .co-li.on { border-color: #5f0080; background: #faf5fc; }
-            .co-li-r1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-            .co-li-status { font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
-            .co-li-check { width: 20px; height: 20px; accent-color: #5f0080; flex-shrink: 0; }
-            .co-li-person { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+            .co-li-r1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+            .co-li-status { font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; flex-shrink: 0; }
+            .co-li-person { display: flex; align-items: center; gap: 10px; min-width: 0; }
             .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #5f0080; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-name { font-size: 15.5px; color: #1a1a1a; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
-            .co-li-job { font-size: 13px; color: #555; padding-top: 9px; border-top: 1px solid #f2f2f2; }
+            .co-li-job { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; }
           `}</style>
           <div className="co-list-meta">총 <strong>{filtered.length}</strong>명</div>
           {filtered.map((a) => {
@@ -321,27 +322,28 @@ function ApplicantsContent() {
             const gender = genderLabel((a as any).user_gender);
             const meta2 = [age != null ? `${age}세` : null, gender || null, career].filter(Boolean).join(" · ");
             return (
-              <div key={a.id} className={`co-li ${on ? "on" : ""}`} onClick={() => setSelected(a)}>
-                <div className="co-li-r1">
-                  <input type="checkbox" className="co-li-check" checked={on}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={() => toggleCheck(a.id)} />
-                  <span className="co-li-status" style={{ color: stColor, background: stBg }}>
-                    {STATUS_LABEL[st]}
-                  </span>
-                </div>
-                <div className="co-li-person">
-                  <div className="co-li-avatar">
-                    {(a as any).user_avatar_url
-                      ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
-                      : (a.user_name || "?").slice(0, 1)}
+              <div key={a.id} className="co-row">
+                <input type="checkbox" className="co-row-check" checked={on}
+                  onChange={() => toggleCheck(a.id)} />
+                <div className={`co-li ${on ? "on" : ""}`} onClick={() => setSelected(a)}>
+                  <div className="co-li-r1">
+                    <div className="co-li-person">
+                      <div className="co-li-avatar">
+                        {(a as any).user_avatar_url
+                          ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
+                          : (a.user_name || "?").slice(0, 1)}
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div className="co-li-name">{a.user_name}</div>
+                        <div className="co-li-meta2">{meta2}</div>
+                      </div>
+                    </div>
+                    <span className="co-li-status" style={{ color: stColor, background: stBg }}>
+                      {STATUS_LABEL[st]}
+                    </span>
                   </div>
-                  <div style={{ minWidth: 0 }}>
-                    <div className="co-li-name">{a.user_name}</div>
-                    <div className="co-li-meta2">{meta2}</div>
-                  </div>
+                  <div className="co-li-job">{a.job_title}</div>
                 </div>
-                <div className="co-li-job">{a.job_title}</div>
               </div>
             );
           })}
