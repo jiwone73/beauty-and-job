@@ -4,6 +4,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import { Save, Camera, Trash2, ImagePlus, X, ChevronRight } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { industryGroupsFor } from "@/lib/data/industries";
+import { downscaleImage } from "@/lib/imageResize";
 import type { CompanyInfo } from "@/lib/types/company";
 
 declare global {
@@ -109,8 +110,9 @@ export default function CompanySettingsPage() {
     if (!token) { alert("로그인이 필요합니다."); return; }
     setLogoUploading(true);
     try {
+      const resized = await downscaleImage(file, { maxDim: 512, mime: "image/webp" });
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", resized);
       const res = await fetch("/api/company/me/logo", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -152,8 +154,9 @@ export default function CompanySettingsPage() {
     setCoverUploading(true);
     try {
       for (const file of files) {
+        const resized = await downscaleImage(file, { maxDim: 1600, mime: "image/jpeg" });
         const fd = new FormData();
-        fd.append("file", file);
+        fd.append("file", resized);
         const res = await fetch("/api/company/me/cover", {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
