@@ -555,7 +555,9 @@ export default function TalentPage() {
             .co-li-scrap { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; flex-shrink: 0; }
             .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #5f0080; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
-            .co-li-name { font-size: 15.5px; color: #1a1a1a; }
+            .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+            .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
+            .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
             .co-li-sub { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; display: flex; flex-direction: column; gap: 3px; }
           `}</style>
@@ -563,7 +565,8 @@ export default function TalentPage() {
             const on = checked.includes(t.id);
             const gl = genderLabel(t.gender);
             const region = t.regionPrefer ? shortenRegion(t.regionPrefer) : null;
-            const meta2 = [t.age ? `${t.age}세` : null, gl, careerLabel(t.careerYears, t.careerCount), region].filter(Boolean).join(" · ");
+            const ageGender = [t.age ? `${t.age}세` : null, gl].filter(Boolean).join(" · ");
+            const meta2 = [careerLabel(t.careerYears, t.careerCount), region].filter(Boolean).join(" · ");
             return (
               <div key={t.id} className="co-row">
                 {selectMode && (
@@ -580,7 +583,10 @@ export default function TalentPage() {
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="co-li-namerow">
-                        <span className="co-li-name">{t.name}</span>
+                        <div className="co-li-nameinfo">
+                          <span className="co-li-name">{t.name}</span>
+                          {ageGender && <span className="co-li-ageg">{ageGender}</span>}
+                        </div>
                         <button className="co-li-scrap" title={t.scrapped ? "스크랩됨" : "스크랩"}
                           onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
                           {t.scrapped
