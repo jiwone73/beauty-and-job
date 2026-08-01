@@ -344,14 +344,14 @@ export default function CompanyJobsPage() {
                   <div className="co-li-r2">
                     <span>등록 <b>{new Date(job.created_at).toLocaleDateString("ko-KR")}</b></span>
                     <span>마감 <b>{formatDeadline(job.deadline)}</b></span>
-                    <span>지원자 {job.application_count > 0 ? (
-                      <b style={{ color: "#5f0080" }}
+                    {job.application_count > 0 ? (
+                      <span style={{ color: "#5f0080" }}
                         onClick={(e) => { if (!selectMode) { e.stopPropagation(); router.push(`/company/dashboard/applicants?job_id=${job.id}`); } }}>
-                        {job.application_count}
-                      </b>
+                        지원자 <b style={{ color: "#5f0080" }}>{job.application_count}</b>
+                      </span>
                     ) : (
-                      <b>{job.application_count}</b>
-                    )}</span>
+                      <span>지원자 <b>{job.application_count}</b></span>
+                    )}
                     <span>조회 <b>{job.view_count}</b></span>
                   </div>
                 </div>
