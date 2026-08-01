@@ -37,6 +37,14 @@ export default function CompanyJobsPage() {
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");
   const [selected, setSelected] = useState<CompanyJob | null>(null);
   const [checked, setChecked] = useState<string[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const loadJobs = async () => {
     setLoading(true);
@@ -114,7 +122,7 @@ export default function CompanyJobsPage() {
 
   return (
     <CompanyLayout activePage="jobs">
-      <div style={{ width: "fit-content", maxWidth: "100%" }}>
+      <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
       {/* 요약 카드 */}
       <div className="company-stat-grid">
         {[
@@ -175,8 +183,53 @@ export default function CompanyJobsPage() {
         </div>
       )}
 
-      {/* 테이블 */}
-      {!loading && filtered.length > 0 && (
+      {/* 모바일 리스트 */}
+      {!loading && filtered.length > 0 && isMobile && (
+        <div className="co-list">
+          <style>{`
+            .co-list { display: flex; flex-direction: column; gap: 10px; }
+            .co-list-meta { font-size: 12.5px; color: #888; padding: 2px 2px 4px; }
+            .co-list-meta strong { color: #5f0080; }
+            .co-li { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
+            .co-li.on { border-color: #5f0080; background: #faf5fc; }
+            .co-li-r1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+            .co-li-status { font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+            .co-li-check { width: 20px; height: 20px; accent-color: #5f0080; flex-shrink: 0; }
+            .co-li-title { font-size: 15.5px; color: #1a1a1a; line-height: 1.35; margin-bottom: 9px; word-break: keep-all; }
+            .co-li-r3 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #777; }
+            .co-li-r3 b { color: #444; font-weight: 500; }
+          `}</style>
+          <div className="co-list-meta">총 <strong>{filtered.length}</strong>건</div>
+          {filtered.map((job) => {
+            const on = checked.includes(job.id);
+            const statusColor = job.status === "ACTIVE" ? "#10b981" : job.status === "CLOSED" ? "#888" : "#f59e0b";
+            const statusBg = job.status === "ACTIVE" ? "#e7f8f0" : job.status === "CLOSED" ? "#f0f0f0" : "#fef3e2";
+            return (
+              <div key={job.id} className={`co-li ${on ? "on" : ""}`}
+                onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
+                <div className="co-li-r1">
+                  <input type="checkbox" className="co-li-check" checked={on}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => toggleCheck(job.id)} />
+                  <span className="co-li-status" style={{ color: statusColor, background: statusBg }}>
+                    {STATUS_LABEL[job.status]}
+                  </span>
+                </div>
+                <div className="co-li-title">{job.title}</div>
+                <div className="co-li-r3">
+                  <span>등록 <b>{new Date(job.created_at).toLocaleDateString("ko-KR")}</b></span>
+                  <span>마감 <b>{formatDeadline(job.deadline)}</b></span>
+                  <span>지원자 <b>{job.application_count}</b></span>
+                  <span>조회 <b>{job.view_count}</b></span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 테이블 (데스크톱) */}
+      {!loading && filtered.length > 0 && !isMobile && (
         <div className="company-card">
           <div className="admin-table-meta">총 <strong>{filtered.length}</strong>건</div>
           <table className="company-table">

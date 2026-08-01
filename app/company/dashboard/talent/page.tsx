@@ -77,6 +77,30 @@ export default function TalentPage() {
   const [resumeLoading, setResumeLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [checked, setChecked] = useState<string[]>([]);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const toggleCheck = (id: string) =>
+    setChecked((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+
+  const handleBulkScrap = async () => {
+    if (!checked.length) return;
+    const targets = talents.filter((t) => checked.includes(t.id) && !t.scrapped);
+    setTalents((prev) => prev.map((t) => checked.includes(t.id) ? { ...t, scrapped: true } : t));
+    setChecked([]);
+    try {
+      await Promise.all(targets.map((t) => companyTalentApi.scrap(t.id)));
+    } catch (e) {
+      console.error("[handleBulkScrap]", e);
+    }
+  };
 
   const handleTabSwitch = (tab: JobTab) => {
     setActiveTab(tab);
@@ -383,14 +407,84 @@ export default function TalentPage() {
       )}
 
       {/* 결과 수 */}
-      <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "0 0 8px" }}>
+        <span style={{ fontSize: 14, color: "#888" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</span>
+        {isMobile && checked.length > 0 && (
+          <button onClick={handleBulkScrap}
+            style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            <BookmarkCheck size={15} /> 선택 스크랩 ({checked.length})
+          </button>
+        )}
+      </div>
 
       {/* 리스트 */}
-      <div style={{ width: "fit-content", maxWidth: "100%" }}>
+      <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
       {loading ? (
         <div className="admin-empty">불러오는 중...</div>
       ) : talents.length === 0 ? (
         <div className="admin-empty">검색 결과가 없습니다.</div>
+      ) : isMobile ? (
+        <div className="co-list">
+          <style>{`
+            .co-list { display: flex; flex-direction: column; gap: 10px; }
+            .co-li { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
+            .co-li.on { border-color: #5f0080; background: #faf5fc; }
+            .co-li-r1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+            .co-li-r1-right { display: flex; align-items: center; gap: 10px; }
+            .co-li-status { font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+            .co-li-check { width: 20px; height: 20px; accent-color: #5f0080; flex-shrink: 0; }
+            .co-li-scrap { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; }
+            .co-li-person { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+            .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #5f0080; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+            .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
+            .co-li-name { font-size: 15.5px; color: #1a1a1a; }
+            .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
+            .co-li-sub { font-size: 13px; color: #555; padding-top: 9px; border-top: 1px solid #f2f2f2; display: flex; flex-direction: column; gap: 3px; }
+          `}</style>
+          {talents.map((t) => {
+            const on = checked.includes(t.id);
+            const status = t.careerDetail
+              ? (t.careerDetail.end_date ? "퇴직" : "재직중")
+              : "신입";
+            const stColor = status === "재직중" ? "#5f0080" : status === "퇴직" ? "#888" : "#0ea5e9";
+            const stBg = status === "재직중" ? "#f3e8ff" : status === "퇴직" ? "#f0f0f0" : "#e6f5fd";
+            const gl = genderLabel(t.gender);
+            const meta2 = [t.age ? `${t.age}세` : null, gl, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ");
+            return (
+              <div key={t.id} className={`co-li ${on ? "on" : ""}`} onClick={() => setSelected(t)}>
+                <div className="co-li-r1">
+                  <input type="checkbox" className="co-li-check" checked={on}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => toggleCheck(t.id)} />
+                  <div className="co-li-r1-right">
+                    <button className="co-li-scrap" title={t.scrapped ? "스크랩됨" : "스크랩"}
+                      onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
+                      {t.scrapped
+                        ? <BookmarkCheck size={19} style={{ color: "#5f0080" }} />
+                        : <Bookmark size={19} style={{ color: "#c8c8c8" }} />}
+                    </button>
+                    <span className="co-li-status" style={{ color: stColor, background: stBg }}>{status}</span>
+                  </div>
+                </div>
+                <div className="co-li-person">
+                  <div className="co-li-avatar">
+                    {t.avatarUrl
+                      ? <img src={t.avatarUrl} alt={t.name} loading="lazy" />
+                      : <span>{t.name?.slice(0, 1) || "?"}</span>}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div className="co-li-name">{t.name}</div>
+                    <div className="co-li-meta2">{meta2}</div>
+                  </div>
+                </div>
+                <div className="co-li-sub">
+                  <span>{t.mainJobGroup || "직군 미정"} · {shortenRegion(t.regionPrefer)}</span>
+                  {t.intro && <span style={{ ...clamp1, color: "#888" }}>{t.intro}</span>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       ) : (
         <div className="company-card">
           <table className="company-table" style={{ whiteSpace: "nowrap" }}>

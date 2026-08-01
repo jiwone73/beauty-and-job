@@ -50,6 +50,14 @@ function ApplicantsContent() {
   const [detailInfo, setDetailInfo] = useState<{ gender: string | null; birth: string | null; sido: string | null; sigungu: string | null; road: string | null; detail: string | null }>({ gender: null, birth: null, sido: null, sigungu: null, road: null, detail: null });
   const previewRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const handleDownloadPdf = async () => {
     if (!previewRef.current) return;
@@ -199,7 +207,7 @@ function ApplicantsContent() {
 
   return (
     <CompanyLayout activePage="applicants">
-      <div style={{ width: "fit-content", maxWidth: "100%" }}>
+      <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
       <div className="company-stat-grid">
         {[
           { label: "전체 지원자", value: String(counts.전체), unit: "명", color: "#5f0080" },
@@ -281,7 +289,67 @@ function ApplicantsContent() {
         </div>
       )}
 
-      {!loading && filtered.length > 0 && (
+      {/* 모바일 리스트 */}
+      {!loading && filtered.length > 0 && isMobile && (
+        <div className="co-list">
+          <style>{`
+            .co-list { display: flex; flex-direction: column; gap: 10px; }
+            .co-list-meta { font-size: 12.5px; color: #888; padding: 2px 2px 4px; }
+            .co-list-meta strong { color: #5f0080; }
+            .co-li { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
+            .co-li.on { border-color: #5f0080; background: #faf5fc; }
+            .co-li-r1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+            .co-li-status { font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+            .co-li-check { width: 20px; height: 20px; accent-color: #5f0080; flex-shrink: 0; }
+            .co-li-person { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+            .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #5f0080; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+            .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
+            .co-li-name { font-size: 15.5px; color: #1a1a1a; }
+            .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
+            .co-li-job { font-size: 13px; color: #555; padding-top: 9px; border-top: 1px solid #f2f2f2; }
+          `}</style>
+          <div className="co-list-meta">총 <strong>{filtered.length}</strong>명</div>
+          {filtered.map((a) => {
+            const on = checked.includes(a.id);
+            const st = a.status;
+            const stColor = st === "APPLIED" ? "#0ea5e9" : st === "VIEWED" ? "#f59e0b" : st === "PASSED" ? "#10b981" : "#999";
+            const stBg = st === "APPLIED" ? "#e6f5fd" : st === "VIEWED" ? "#fef3e2" : st === "PASSED" ? "#e7f8f0" : "#f0f0f0";
+            const age = calcAge((a as any).user_birth_date);
+            const ct = (a as any).career_type;
+            const career = ct === "NEWCOMER" ? "신입"
+              : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : "경력"; })();
+            const gender = genderLabel((a as any).user_gender);
+            const meta2 = [age != null ? `${age}세` : null, gender || null, career].filter(Boolean).join(" · ");
+            return (
+              <div key={a.id} className={`co-li ${on ? "on" : ""}`} onClick={() => setSelected(a)}>
+                <div className="co-li-r1">
+                  <input type="checkbox" className="co-li-check" checked={on}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => toggleCheck(a.id)} />
+                  <span className="co-li-status" style={{ color: stColor, background: stBg }}>
+                    {STATUS_LABEL[st]}
+                  </span>
+                </div>
+                <div className="co-li-person">
+                  <div className="co-li-avatar">
+                    {(a as any).user_avatar_url
+                      ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
+                      : (a.user_name || "?").slice(0, 1)}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div className="co-li-name">{a.user_name}</div>
+                    <div className="co-li-meta2">{meta2}</div>
+                  </div>
+                </div>
+                <div className="co-li-job">{a.job_title}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 테이블 (데스크톱) */}
+      {!loading && filtered.length > 0 && !isMobile && (
         <div className="company-card">
           <div className="admin-table-meta">총 <strong>{filtered.length}</strong>명</div>
           <table className="company-table">
