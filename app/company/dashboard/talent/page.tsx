@@ -353,7 +353,10 @@ export default function TalentPage() {
       {isMobile && (
         <>
           <style>{`
-            .co-mbar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
+            .co-mbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+            .co-mbar-count { font-size: 13.5px; color: #888; }
+            .co-mbar-count strong { color: #1a1a1a; }
+            .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; }
             .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
             .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
@@ -376,12 +379,15 @@ export default function TalentPage() {
             .co-selbar-act { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; color: #5f0080; font-size: 14px; font-weight: 600; padding: 6px; }
           `}</style>
           <div className="co-mbar">
-            <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
-              <SlidersHorizontal size={15} /> 필터
-            </button>
-            <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
-              {selectMode ? "취소" : "선택"}
-            </button>
+            <span className="co-mbar-count">총 <strong>{total}</strong>명</span>
+            <div className="co-mbar-actions">
+              <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
+                <SlidersHorizontal size={15} /> 필터
+              </button>
+              <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
+                {selectMode ? "취소" : "선택"}
+              </button>
+            </div>
           </div>
         </>
       )}
@@ -525,8 +531,10 @@ export default function TalentPage() {
         </div>
       )}
 
-      {/* 결과 수 */}
-      <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</div>
+      {/* 결과 수 (데스크톱 — 모바일은 컨트롤 바에 표시) */}
+      {!isMobile && (
+        <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</div>
+      )}
 
       {/* 리스트 */}
       <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>

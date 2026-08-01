@@ -322,7 +322,10 @@ function ApplicantsContent() {
             .company-stat-grid.co-4 .company-stat-card { padding: 9px 5px; align-items: center; text-align: center; gap: 2px; }
             .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
             .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-            .co-mbar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
+            .co-mbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+            .co-mbar-count { font-size: 13.5px; color: #888; }
+            .co-mbar-count strong { color: #1a1a1a; }
+            .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; }
             .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
             .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
@@ -343,12 +346,15 @@ function ApplicantsContent() {
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
           `}</style>
           <div className="co-mbar">
-            <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
-              <SlidersHorizontal size={15} /> 필터
-            </button>
-            <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
-              {selectMode ? "취소" : "선택"}
-            </button>
+            <span className="co-mbar-count">총 <strong>{filtered.length}</strong>명</span>
+            <div className="co-mbar-actions">
+              <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
+                <SlidersHorizontal size={15} /> 필터
+              </button>
+              <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
+                {selectMode ? "취소" : "선택"}
+              </button>
+            </div>
           </div>
           {filterOpen && (
             <div className="co-sheet-ov" onClick={() => setFilterOpen(false)}>
@@ -418,7 +424,6 @@ function ApplicantsContent() {
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
             .co-li-job { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; }
           `}</style>
-          <div className="co-list-meta">총 <strong>{filtered.length}</strong>명</div>
           {filtered.map((a) => {
             const on = checked.includes(a.id);
             const st = a.status;
