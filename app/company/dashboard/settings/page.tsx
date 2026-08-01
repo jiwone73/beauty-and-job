@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Save } from "lucide-react";
+import { Save, Camera, Trash2, Plus, X, ChevronRight } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { industryGroupsFor } from "@/lib/data/industries";
 import type { CompanyInfo } from "@/lib/types/company";
@@ -18,8 +18,17 @@ export default function CompanySettingsPage() {
   const [savedMessage, setSavedMessage] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
-  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const [coverImages, setCoverImages] = useState<{ url: string; name?: string }[]>([]);
   const [coverUploading, setCoverUploading] = useState(false);
+  const [coverStart, setCoverStart] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const [form, setForm] = useState({
     company_name: "",
@@ -66,7 +75,7 @@ export default function CompanySettingsPage() {
         setInfo(res.data);
         setLogoUrl((res.data as any).logo_url || null);
         const cov = (res.data as any).cover_images;
-        setCoverUrl(Array.isArray(cov) && cov[0]?.url ? cov[0].url : null);
+        setCoverImages(Array.isArray(cov) ? cov.filter((c: any) => c?.url) : []);
         setForm({
           company_name: res.data.company_name || "",
           brand_name: res.data.brand_name || "",
@@ -136,25 +145,28 @@ export default function CompanySettingsPage() {
   };
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
     const token = localStorage.getItem("access_token");
     if (!token) { alert("로그인이 필요합니다."); return; }
     setCoverUploading(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/company/me/cover", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
-      });
-      const data = await res.json();
-      if (data.success) {
-        const cov = data.data.cover_images;
-        setCoverUrl(Array.isArray(cov) && cov[0]?.url ? cov[0].url : null);
-      } else {
-        alert(data.error?.message || "이미지 업로드에 실패했습니다.");
+      for (const file of files) {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/company/me/cover", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: fd,
+        });
+        const data = await res.json();
+        if (data.success) {
+          const cov = data.data.cover_images;
+          if (Array.isArray(cov)) setCoverImages(cov.filter((c: any) => c?.url));
+        } else {
+          alert(data.error?.message || "이미지 업로드에 실패했습니다.");
+          break;
+        }
       }
     } finally {
       setCoverUploading(false);
@@ -162,17 +174,20 @@ export default function CompanySettingsPage() {
     }
   };
 
-  const handleCoverDelete = async () => {
-    if (!confirm("공고 노출 이미지를 삭제하시겠습니까?")) return;
+  const handleCoverDeleteOne = async (url: string) => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
     try {
       const res = await fetch("/api/company/me/cover", {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
       });
       const data = await res.json();
-      if (data.success) setCoverUrl(null);
+      if (data.success && Array.isArray(data.data?.cover_images)) {
+        setCoverImages(data.data.cover_images.filter((c: any) => c?.url));
+        setCoverStart(0);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -398,78 +413,87 @@ export default function CompanySettingsPage() {
               </span>
             </div>
             <div className="admin-form-body">
-              <div className="admin-form-row-2col">
+              {/* 회사 로고 */}
               <div className="admin-form-row">
                 <label className="admin-form-label">회사 로고</label>
-                <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
-                  공고 상단에 표시되는 대표 이미지예요. 한 번 등록하면 모든 공고에 자동 적용돼요.
-                </p>
-                <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"auto"}}>
-                  <div style={{width:"77px", height:"77px", borderRadius:"10px", border:"1px solid #eee",
+                <p style={{fontSize:"12.5px", color:"#999", margin:"2px 0 10px"}}>대표 이미지 · 모든 공고에 자동 적용</p>
+                <div style={{display:"flex", alignItems:"center", gap:"14px"}}>
+                  <div style={{width:"72px", height:"72px", borderRadius:"12px", border:"1px solid #eee",
                     background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
                     overflow:"hidden", flexShrink:0}}>
                     {logoUrl ? (
-                      <img src={logoUrl} alt="회사 로고"
-                        style={{width:"100%", height:"100%", objectFit:"cover"}} />
+                      <img src={logoUrl} alt="회사 로고" style={{width:"100%", height:"100%", objectFit:"cover"}} />
                     ) : (
-                      <span style={{fontSize:"22px", fontWeight:700, color:"#c4b5d4"}}>
-                        {form.company_name?.[0] || "?"}
-                      </span>
+                      <span style={{fontSize:"22px", fontWeight:700, color:"#c4b5d4"}}>{form.company_name?.[0] || "?"}</span>
                     )}
                   </div>
-                  <div style={{display:"flex", flexDirection:"column", gap:"6px", alignItems:"flex-start"}}>
-                    <label style={{display:"inline-flex", alignItems:"center", gap:"4px",
-                      cursor: logoUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"14px", fontWeight:500}}>
-                      {logoUploading ? "업로드 중..." : logoUrl ? "로고 변경" : "로고 등록"}
+                  <div style={{display:"flex", alignItems:"center", gap:"8px"}}>
+                    <label title={logoUrl ? "로고 변경" : "로고 등록"}
+                      style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:42, height:42,
+                        borderRadius:11, border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080",
+                        cursor: logoUploading ? "wait" : "pointer"}}>
+                      {logoUploading ? "…" : <Camera size={19} />}
                       <input type="file" accept="image/jpeg,image/png,image/webp"
                         disabled={logoUploading} onChange={handleLogoUpload} style={{display:"none"}} />
                     </label>
                     {logoUrl && (
-                      <button type="button" onClick={handleLogoDelete}
-                        style={{background:"none", border:"none", padding:0, cursor:"pointer", color:"#888", fontSize:"14px"}}>
-                        삭제
+                      <button type="button" onClick={handleLogoDelete} title="로고 삭제"
+                        style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:42, height:42,
+                          borderRadius:11, border:"1px solid #eee", background:"#fff", color:"#c0392b", cursor:"pointer"}}>
+                        <Trash2 size={18} />
                       </button>
                     )}
-                    <span style={{fontSize:"12px", color:"#aaa"}}>JPG·PNG·WebP · 2MB 이하</span>
                   </div>
                 </div>
               </div>
 
+              {/* 공고 노출 이미지 (여러 장) */}
               <div className="admin-form-row">
                 <label className="admin-form-label">공고 노출 이미지</label>
-                <p style={{fontSize:"13px", color:"#888", margin:"0 0 12px"}}>
-                  공고 카드와 상단에 크게 표시되는 대표 비주얼이에요. 매장 사진이나 분위기 이미지를 넣어보세요. 모든 공고에 자동 적용돼요.
-                </p>
-                <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"auto"}}>
-                  <div style={{width:"154px", height:"77px", borderRadius:"10px", border:"1px solid #eee",
-                    background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
-                    overflow:"hidden", flexShrink:0}}>
-                    {coverUrl ? (
-                      <img src={coverUrl} alt="공고 노출 이미지"
-                        style={{width:"100%", height:"100%", objectFit:"cover"}} />
-                    ) : (
-                      <div style={{position:"relative", width:"100%", height:"100%", background:"linear-gradient(135deg,#f3eefb,#e7d8f5)"}}>
-                        <span style={{position:"absolute", left:"8px", bottom:"6px", fontSize:"12px", fontWeight:700, color:"#5f0080"}}>{form.company_name || "회사명"}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div style={{display:"flex", flexDirection:"column", gap:"6px", alignItems:"flex-start"}}>
-                    <label style={{display:"inline-flex", alignItems:"center", gap:"4px",
-                      cursor: coverUploading ? "wait" : "pointer", color:"#5f0080", fontSize:"14px", fontWeight:500}}>
-                      {coverUploading ? "업로드 중..." : coverUrl ? "이미지 변경" : "이미지 등록"}
-                      <input type="file" accept="image/jpeg,image/png,image/webp"
-                        disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
-                    </label>
-                    {coverUrl && (
-                      <button type="button" onClick={handleCoverDelete}
-                        style={{background:"none", border:"none", padding:0, cursor:"pointer", color:"#888", fontSize:"14px"}}>
-                        삭제
+                <p style={{fontSize:"12.5px", color:"#999", margin:"2px 0 10px"}}>공고 상단 배너 · 여러 장 등록 가능</p>
+                {coverImages.length > 0 ? (
+                  <div style={{position:"relative"}}>
+                    <div style={{display:"flex", gap:"6px"}}>
+                      {(coverImages.length <= 3
+                        ? coverImages
+                        : [0,1,2].map((i) => coverImages[(coverStart + i) % coverImages.length])
+                      ).map((c, i) => (
+                        <div key={`${coverStart}-${i}-${c.url}`}
+                          style={{position:"relative", flex:1, minWidth:0, aspectRatio:"4 / 3",
+                            borderRadius:10, overflow:"hidden", border:"1px solid #eee", background:"#f3f3f3"}}>
+                          <img src={c.url} alt="" style={{width:"100%", height:"100%", objectFit:"cover"}} />
+                          <button type="button" onClick={() => handleCoverDeleteOne(c.url)} title="삭제"
+                            style={{position:"absolute", top:5, right:5, width:22, height:22, borderRadius:"50%",
+                              background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
+                              display:"flex", alignItems:"center", justifyContent:"center"}}>
+                            <X size={13} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {coverImages.length > 3 && (
+                      <button type="button" onClick={() => setCoverStart((s) => (s + 1) % coverImages.length)} aria-label="다음 이미지"
+                        style={{position:"absolute", right:8, top:"50%", transform:"translateY(-50%)", width:34, height:34,
+                          borderRadius:"50%", border:"none", background:"rgba(0,0,0,0.55)", color:"#fff",
+                          display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer"}}>
+                        <ChevronRight size={20} />
                       </button>
                     )}
-                    <span style={{fontSize:"12px", color:"#aaa", whiteSpace:"nowrap"}}>가로형 권장 · JPG·PNG·WebP · 2MB 이하</span>
                   </div>
-                </div>
-              </div>
+                ) : (
+                  <div style={{height:120, display:"flex", alignItems:"center", justifyContent:"center",
+                    background:"#f7f4fb", border:"1px dashed #d9c9ec", borderRadius:10, color:"#b0a0c0", fontSize:13}}>
+                    아직 등록한 이미지가 없어요.
+                  </div>
+                )}
+                <label style={{display:"inline-flex", alignItems:"center", gap:6, marginTop:10, padding:"9px 14px",
+                  borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080", fontSize:14,
+                  cursor: coverUploading ? "wait" : "pointer"}}>
+                  {coverUploading ? "업로드 중…" : (<><Plus size={16} /> 이미지 추가</>)}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" multiple
+                    disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
+                </label>
+                <p style={{fontSize:"12.5px", color:"#aaa", margin:"6px 0 0"}}>가로형 권장 · 2MB 이하 · 3장까지 한 화면, 이상은 ▶로 넘겨 봐요.</p>
               </div>
 
               <div className="admin-form-row-2col">
@@ -523,7 +547,7 @@ export default function CompanySettingsPage() {
                     </button>
                   )}
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "8px" : "12px" }}>
                   <input className="admin-form-input" readOnly value={form.address}
                     onClick={handleAddressSearch}
                     placeholder="주소 검색을 눌러주세요"
@@ -534,9 +558,7 @@ export default function CompanySettingsPage() {
                     value={form.address_detail}
                     onChange={(e) => setForm({ ...form, address_detail: e.target.value })} />
                 </div>
-                <p style={{fontSize:"13px", color:"#888", margin:"6px 0 0"}}>
-                  주소 검색 시 도로명 주소가 자동 입력돼요. 층·호수는 직접 추가하세요.
-                </p>
+                <p style={{fontSize:"12.5px", color:"#999", margin:"6px 0 0"}}>주소 검색 후 층·호수만 직접 입력</p>
               </div>
 
               <div className="admin-form-row-2col">

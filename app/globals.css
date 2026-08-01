@@ -5448,6 +5448,10 @@ input[type="range"].career-slider::-moz-range-thumb {
     column-gap: 10px;
     padding: 14px 0;
   }
+  /* 2단 배치는 모바일에서 모두 1열로 스택 */
+  .admin-form-row-2col { grid-template-columns: 1fr; gap: 0; }
+  /* 좌우 여백(패딩) 축소 */
+  .admin-form-body { padding: 14px; }
 }
 
 /* 박스 제거 → 프로필처럼 값은 테두리 없이 우측 정렬 텍스트 */

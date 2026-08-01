@@ -39,18 +39,13 @@ export async function POST(req: NextRequest) {
 
     const client = await pool.connect();
     try {
-      // 기존 cover 삭제 (스토리지에서)
+      // 기존 cover 목록 조회 — 새 이미지는 뒤에 추가(append)
       const existing = await client.query(
         `SELECT cover_images FROM companies WHERE id = $1`,
         [companyId]
       );
-      const oldCovers = existing.rows[0]?.cover_images;
-      if (Array.isArray(oldCovers) && oldCovers[0]?.url) {
-        const oldPath = oldCovers[0].url.split(`/${BUCKET}/`)[1];
-        if (oldPath) {
-          await supabaseAdmin.storage.from(BUCKET).remove([oldPath]);
-        }
-      }
+      const prevCovers = existing.rows[0]?.cover_images;
+      const prevArr: any[] = Array.isArray(prevCovers) ? prevCovers : [];
 
       const ext = file.type.split("/")[1] === "jpeg" ? "jpg" : file.type.split("/")[1];
       const fileName = `cover/${companyId}/${Date.now()}.${ext}`;
@@ -70,7 +65,7 @@ export async function POST(req: NextRequest) {
 
       const { data: urlData } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(fileName);
       const publicUrl = urlData.publicUrl;
-      const coverImages = [{ url: publicUrl, name: file.name }];
+      const coverImages = [...prevArr, { url: publicUrl, name: file.name }];
 
       await client.query(
         `UPDATE companies SET cover_images = $1 WHERE id = $2`,
@@ -104,6 +99,9 @@ export async function DELETE(req: NextRequest) {
   }
   const companyId = payload.sub;
 
+  const body = await req.json().catch(() => ({} as any));
+  const targetUrl: string | undefined = body?.url;
+
   const client = await pool.connect();
   try {
     const res = await client.query(
@@ -111,17 +109,31 @@ export async function DELETE(req: NextRequest) {
       [companyId]
     );
     const oldCovers = res.rows[0]?.cover_images;
-    if (Array.isArray(oldCovers) && oldCovers[0]?.url) {
-      const oldPath = oldCovers[0].url.split(`/${BUCKET}/`)[1];
-      if (oldPath) {
-        await supabaseAdmin.storage.from(BUCKET).remove([oldPath]);
-      }
+    const arr: any[] = Array.isArray(oldCovers) ? oldCovers : [];
+
+    if (targetUrl) {
+      // 특정 이미지 1장만 삭제
+      const target = arr.find((c) => c?.url === targetUrl);
+      const p = target?.url?.split(`/${BUCKET}/`)[1];
+      if (p) await supabaseAdmin.storage.from(BUCKET).remove([p]);
+      const remaining = arr.filter((c) => c?.url !== targetUrl);
+      await client.query(
+        `UPDATE companies SET cover_images = $1 WHERE id = $2`,
+        [JSON.stringify(remaining), companyId]
+      );
+      return ok({ cover_images: remaining });
+    }
+
+    // 전체 삭제 (fallback)
+    for (const c of arr) {
+      const p = c?.url?.split(`/${BUCKET}/`)[1];
+      if (p) await supabaseAdmin.storage.from(BUCKET).remove([p]);
     }
     await client.query(
       `UPDATE companies SET cover_images = '[]'::jsonb WHERE id = $1`,
       [companyId]
     );
-    return ok({ deleted: true });
+    return ok({ cover_images: [], deleted: true });
   } catch (e) {
     console.error("[company cover delete]", e);
     return err("FILE_006", "삭제 중 오류가 발생했습니다.", 500);
