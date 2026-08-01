@@ -68,36 +68,6 @@ export default function CompanySignupPage() {
 
   const update = (k: string, v: string) => setForm({ ...form, [k]: v });
 
-  // 사업자등록번호 국세청 검증 (10자리 채워지면 자동 호출)
-  const checkBizNumber = async (raw?: string) => {
-    const bno = (raw ?? form.business_number).replace(/\D/g, "");
-    if (bno.length === 0) { setBizStatus("idle"); setBizMsg(""); return; }
-    if (bno.length !== 10) { setBizStatus("invalid"); setBizMsg("올바른 사업자등록번호를 입력해주세요."); return; }
-    setBizStatus("checking"); setBizMsg("");
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000);
-    try {
-      const res = await fetch("/api/verify/business", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ business_number: bno }),
-        signal: ctrl.signal,
-      });
-      const data = await res.json();
-      if (data.success && data.data?.valid) {
-        if (data.data.skipped) { setBizStatus("skipped"); setBizMsg(data.data.reason || ""); }
-        else { setBizStatus("valid"); setBizMsg("정상 영업 중인 사업자로 확인되었습니다."); }
-      } else {
-        setBizStatus("invalid");
-        setBizMsg(data.data?.message || data.error?.message || "확인할 수 없는 사업자등록번호입니다.");
-      }
-    } catch {
-      // 네트워크/타임아웃 → 가입을 막지 않도록 통과(형식만 확인)
-      setBizStatus("skipped"); setBizMsg("CLIENT_TIMEOUT");
-    } finally {
-      clearTimeout(timer);
-    }
-  };
 
   // 사업자등록증 업로드 (가입 시점, 비인증)
   const handleLicenseUpload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -423,13 +393,12 @@ export default function CompanySignupPage() {
                   update("business_number", f);
                   const d = f.replace(/\D/g, "");
                   if (d.length === 10) {
-                    if (isValidBizNo(d)) { checkBizNumber(d); }
+                    if (isValidBizNo(d)) { setBizStatus("valid"); setBizMsg("사업자등록번호 형식이 확인되었습니다."); }
                     else { setBizStatus("invalid"); setBizMsg("유효하지 않은 사업자등록번호입니다."); }
                   }
                   else if (d.length === 0) { setBizStatus("idle"); setBizMsg(""); }
                   else { setBizStatus("invalid"); setBizMsg("올바른 사업자등록번호를 입력해주세요."); }
                 }}
-                onBlur={() => checkBizNumber()}
                 placeholder="000-00-00000"
                 className={`w-full h-[48px] px-4 ${form.business_number ? "pr-10" : ""} border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${bizStatus === "invalid" ? "border-[#e74c3c] focus:border-[#e74c3c]" : "border-[#e0e0e0] focus:border-[#5f0080]"}`} />
               {form.business_number && (
