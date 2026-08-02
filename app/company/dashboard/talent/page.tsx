@@ -81,6 +81,7 @@ export default function TalentPage() {
   const [checked, setChecked] = useState<string[]>([]);
   const [selectMode, setSelectMode] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [view, setView] = useState<"search" | "scrap">("search");
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -262,10 +263,67 @@ export default function TalentPage() {
       .catch((e) => console.error("[company me]", e));
   }, []);
 
+  const fetchScrapped = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      const res = await fetch("/api/company/talent/scrapped", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const rows = data?.data?.talents || data?.talents || [];
+      const mapped: TalentItem[] = rows.map((r: any) => ({
+        id: r.user_id,
+        name: r.name,
+        email: null,
+        phone: r.phone ?? null,
+        avatarUrl: r.avatar_url ?? null,
+        portfolioUrl: null,
+        gender: r.gender ?? null,
+        age: r.age ?? null,
+        intro: r.headline ?? null,
+        mainJobGroup: r.job_category ?? null,
+        subJob: null,
+        skills: r.skills || [],
+        skillAreas: [],
+        officeJobAreas: [],
+        regionPrefer: r.location ?? null,
+        workTypePrefer: null,
+        careerYears: r.career_years ?? null,
+        careerCount: r.career_count ?? 0,
+        educationDetail: r.educationDetail ?? null,
+        careerDetail: r.careerDetail ?? null,
+        scrapped: true,
+      }));
+      setTalents(mapped);
+      setTotal(mapped.length);
+    } catch (e) {
+      console.error("[talent scrapped fetch]", e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
+    if (view !== "search") return;
     const t = setTimeout(fetchTalents, 300);
     return () => clearTimeout(t);
-  }, [fetchTalents]);
+  }, [view, fetchTalents]);
+
+  useEffect(() => {
+    if (view !== "scrap") return;
+    fetchScrapped();
+  }, [view, fetchScrapped]);
+
+  const switchView = (next: "search" | "scrap") => {
+    if (next === view) return;
+    setView(next);
+    setSelectMode(false);
+    setChecked([]);
+    setFilterOpen(false);
+    setTalents([]);
+    setTotal(0);
+  };
 
   const toggleScrap = async (item: TalentItem) => {
     const next = !item.scrapped;
@@ -327,8 +385,30 @@ export default function TalentPage() {
   return (
     <CompanyLayout activePage="talent">
 
-      {/* 탭 — BOTH만 둘 다 노출 */}
-      {companyType === "BOTH" && (
+      {/* 검색 / 스크랩 세그먼트 (모바일) */}
+      {isMobile && (
+        <div style={{ display: "flex", background: "#f0eef3", borderRadius: 10, padding: 3, marginBottom: 14 }}>
+          {([["search", "검색"], ["scrap", "스크랩"]] as const).map(([v, label]) => (
+            <button
+              key={v}
+              onClick={() => switchView(v)}
+              style={{
+                flex: 1, padding: "8px 0", borderRadius: 8, fontSize: 14, fontWeight: 500, cursor: "pointer",
+                border: "none",
+                background: view === v ? "#fff" : "transparent",
+                color: view === v ? "#5f0080" : "#888",
+                boxShadow: view === v ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                transition: "all .15s",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* 탭 — BOTH만 둘 다 노출 (검색 뷰에서만) */}
+      {companyType === "BOTH" && (view === "search" || !isMobile) && (
         <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
           {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
             <button
@@ -379,15 +459,19 @@ export default function TalentPage() {
             .co-selbar-act { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; color: #5f0080; font-size: 14px; font-weight: 600; padding: 6px; }
           `}</style>
           <div className="co-mbar">
-            <span className="co-mbar-count">총 <strong>{total}</strong>명</span>
-            <div className="co-mbar-actions">
-              <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
-                <SlidersHorizontal size={15} /> 필터
-              </button>
-              <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
-                {selectMode ? "취소" : "선택"}
-              </button>
-            </div>
+            <span className="co-mbar-count">
+              {view === "scrap" ? "스크랩" : "총"} <strong>{total}</strong>명
+            </span>
+            {view === "search" && (
+              <div className="co-mbar-actions">
+                <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
+                  <SlidersHorizontal size={15} /> 필터
+                </button>
+                <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
+                  {selectMode ? "취소" : "선택"}
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}
@@ -541,7 +625,7 @@ export default function TalentPage() {
       {loading ? (
         <div className="admin-empty">불러오는 중...</div>
       ) : talents.length === 0 ? (
-        <div className="admin-empty">검색 결과가 없습니다.</div>
+        <div className="admin-empty">{view === "scrap" ? "스크랩한 인재가 없습니다." : "검색 결과가 없습니다."}</div>
       ) : isMobile ? (
         <div className="co-list">
           <style>{`
