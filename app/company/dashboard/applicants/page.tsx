@@ -61,7 +61,6 @@ function ApplicantsContent() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
   const [jobSheetOpen, setJobSheetOpen] = useState(false);
-  const [summaryOpen, setSummaryOpen] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -253,38 +252,33 @@ function ApplicantsContent() {
   };
 
   const statCardsData = [
-    { label: "전체 지원자", value: String(counts.전체), unit: "명", color: "#5f0080", status: "전체" },
+    { label: "전체", value: String(counts.전체), unit: "명", color: "#5f0080", status: "전체" },
     { label: "신규", value: String(counts.신규), unit: "명", color: "#0ea5e9", status: "신규" },
     { label: "검토중", value: String(counts.검토중), unit: "명", color: "#f59e0b", status: "검토중" },
     { label: "합격", value: String(counts.합격), unit: "명", color: "#10b981", status: "합격" },
-    { label: "불합격", value: String(counts.불합격), unit: "명", color: "#888", status: "불합격" },
   ];
 
   return (
     <CompanyLayout activePage="applicants">
       <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
       {isMobile ? (
-        <>
-          <button className="co-sumtog" onClick={() => setSummaryOpen((v) => !v)}>
-            <span>요약 통계</span>
-            <ChevronDown size={17} className={`chev ${summaryOpen ? "open" : ""}`} />
+        <div className="co-topbar">
+          <button className="co-jobdd" onClick={() => setJobSheetOpen(true)}>
+            <span className="val">{jobFilterTitle || "전체 공고"}</span>
+            <ChevronDown size={15} className="chev" />
           </button>
-          {summaryOpen && (
-            <div className="company-stat-grid co-4">
-              {statCardsData.map((s) => (
-                <button key={s.label} type="button"
-                  className={`company-stat-card co-statcard ${statusFilter === s.status ? "on" : ""}`}
-                  onClick={() => setStatusFilter(s.status)}
-                  style={statusFilter === s.status ? { borderColor: s.color, background: "#faf7fd" } : undefined}>
-                  <div className="company-stat-value" style={{color: s.color}}>
-                    {s.value}<span className="company-stat-unit">{s.unit}</span>
-                  </div>
-                  <div className="company-stat-label">{s.label}</div>
-                </button>
-              ))}
-            </div>
-          )}
-        </>
+          <div className="co-statrow">
+            {statCardsData.map((s) => (
+              <button key={s.label} type="button"
+                className={`co-stat ${statusFilter === s.status ? "on" : ""}`}
+                onClick={() => setStatusFilter(s.status)}
+                style={statusFilter === s.status ? { borderColor: s.color, background: "#faf7fd" } : undefined}>
+                <span className="n" style={{ color: s.color }}>{s.value}</span>
+                <span className="l">{s.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       ) : (
         <div className="company-stat-grid">
           {statCardsData.map((s) => (
@@ -363,11 +357,14 @@ function ApplicantsContent() {
             .company-stat-grid.co-4 .company-stat-card { padding: 9px 5px; align-items: center; text-align: center; gap: 2px; }
             .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
             .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-            .co-statcard { display: flex; flex-direction: column; cursor: pointer; font: inherit; -webkit-appearance: none; appearance: none; transition: border-color .15s, background .15s; }
-            .co-jobdd { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; max-width: 190px; }
-            .co-jobdd .lbl { color: #999; flex-shrink: 0; }
+            .co-topbar { display: flex; align-items: stretch; gap: 7px; margin-bottom: 10px; }
+            .co-jobdd { display: inline-flex; align-items: center; justify-content: space-between; gap: 5px; height: 46px; padding: 0 11px; border-radius: 9px; border: 1px solid #e2e2e6; background: #fff; color: #333; font-size: 13px; font-weight: 500; cursor: pointer; width: 108px; flex-shrink: 0; }
             .co-jobdd .val { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             .co-jobdd .chev { flex-shrink: 0; color: #999; }
+            .co-statrow { display: flex; gap: 6px; flex: 1; min-width: 0; }
+            .co-stat { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 46px; padding: 0 3px; border: 1px solid #eee; border-radius: 9px; background: #fff; cursor: pointer; font: inherit; transition: border-color .15s, background .15s; }
+            .co-stat .n { font-size: 16px; font-weight: 700; line-height: 1; }
+            .co-stat .l { font-size: 10.5px; color: #888; white-space: nowrap; }
             .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
             .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }
             .co-mbar-count strong { color: #1a1a1a; }
@@ -400,11 +397,6 @@ function ApplicantsContent() {
           <div className="co-mbar">
             <span className="co-mbar-count">총 <strong>{filtered.length}</strong>명</span>
             <div className="co-mbar-actions">
-              <button className="co-jobdd" onClick={() => setJobSheetOpen(true)}>
-                <span className="lbl">공고</span>
-                <span className="val">{jobFilterTitle || "전체"}</span>
-                <ChevronDown size={15} className="chev" />
-              </button>
               <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
                 {selectMode ? "취소" : "선택"}
               </button>
@@ -480,10 +472,10 @@ function ApplicantsContent() {
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
-            .co-li-top { font-size: 13px; color: #555; margin-bottom: 11px; padding-bottom: 10px; border-bottom: 1px solid #f2f2f2; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+            .co-li-top { color: #555; margin-bottom: 11px; padding-bottom: 10px; border-bottom: 1px solid #f2f2f2; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
             .co-li-top .title { min-width: 0; }
-            .co-li-top .title .tt { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .co-li-top .date { color: #999; flex-shrink: 0; margin-left: auto; }
+            .co-li-top .title .tt { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15.5px; color: #333; }
+            .co-li-top .date { color: #999; flex-shrink: 0; margin-left: auto; font-size: 12px; }
           `}</style>
           {filtered.map((a) => {
             const on = checked.includes(a.id);
