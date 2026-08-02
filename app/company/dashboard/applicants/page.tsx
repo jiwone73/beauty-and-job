@@ -483,11 +483,12 @@ function ApplicantsContent() {
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
-            .co-li-top { color: #555; margin-bottom: 9px; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-            .co-li-top .title { min-width: 0; }
-            .co-li-top .title .tt { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15.5px; color: #a06fca; }
-            .co-li-top .date { color: #999; flex-shrink: 0; margin-left: auto; font-size: 12px; }
+            .co-li-meta2 { font-size: 12.5px; color: #888; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
+            .co-li-job { font-size: 15.5px; color: #a06fca; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+            .co-li-metarow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 2px; }
+            .co-li-applylabel { font-size: 12px; color: #999; flex-shrink: 0; }
+            .co-li-date { font-size: 12px; color: #999; flex-shrink: 0; }
           `}</style>
           {filtered.map((a) => {
             const on = checked.includes(a.id);
@@ -509,10 +510,6 @@ function ApplicantsContent() {
                 )}
                 <div className={`co-li ${on ? "on" : ""}`}
                   onClick={() => selectMode ? toggleCheck(a.id) : setSelected(a)}>
-                  <div className="co-li-top">
-                    {!jobFilter && <span className="title"><span className="tt">{a.job_title}</span></span>}
-                    <span className="date">지원일 {formatDate(a.applied_at)}</span>
-                  </div>
                   <div className="co-li-r1">
                     <div className="co-li-avatar">
                       {(a as any).user_avatar_url
@@ -520,16 +517,23 @@ function ApplicantsContent() {
                         : (a.user_name || "?").slice(0, 1)}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="co-li-jobrow">
+                        <span className="co-li-job">{!jobFilter ? a.job_title : ""}</span>
+                        <span className="co-li-status" style={{ color: stColor }}>
+                          {STATUS_LABEL[st]}
+                        </span>
+                      </div>
                       <div className="co-li-namerow">
                         <div className="co-li-nameinfo">
                           <span className="co-li-name">{a.user_name}</span>
                           {ageGender && <span className="co-li-ageg">{ageGender}</span>}
                         </div>
-                        <span className="co-li-status" style={{ color: stColor }}>
-                          {STATUS_LABEL[st]}
-                        </span>
+                        <span className="co-li-applylabel">지원일</span>
                       </div>
-                      <div className="co-li-meta2">{meta2}</div>
+                      <div className="co-li-metarow">
+                        <span className="co-li-meta2">{meta2}</span>
+                        <span className="co-li-date">{formatDate(a.applied_at)}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
