@@ -169,6 +169,21 @@ function ApplicantsContent() {
     }
   };
 
+  const handleBulkStatus = async (status: ApplicationStatus) => {
+    if (!checked.length) return;
+    const ids = [...checked];
+    setApplicants(prev => prev.map(a => ids.includes(a.id) ? { ...a, status } : a));
+    setChecked([]);
+    setSelectMode(false);
+    try {
+      await Promise.all(ids.map(id => companyApplicationsApi.updateStatus(id, status)));
+    } catch (e) {
+      alert("상태 변경 중 오류가 발생했습니다.");
+      console.error("[handleBulkStatus]", e);
+      loadApplicants();
+    }
+  };
+
   const loadApplicants = async () => {
     setLoading(true);
     try {
@@ -344,6 +359,9 @@ function ApplicantsContent() {
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
+            .co-statbar { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+            .co-statbar-label { font-size: 12.5px; color: #888; flex-shrink: 0; }
+            .co-statbtn { flex-shrink: 0; padding: 7px 14px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
           `}</style>
           <div className="co-mbar">
             <span className="co-mbar-count">총 <strong>{filtered.length}</strong>명</span>
@@ -356,6 +374,15 @@ function ApplicantsContent() {
               </button>
             </div>
           </div>
+          {selectMode && checked.length > 0 && (
+            <div className="co-statbar">
+              <span className="co-statbar-label">{checked.length}명 상태변경</span>
+              {([["APPLIED", "신규", "#0ea5e9", "#e6f5fd"], ["VIEWED", "검토중", "#f59e0b", "#fef3e2"], ["PASSED", "합격", "#10b981", "#e7f8f0"], ["REJECTED", "불합격", "#e74c3c", "#fdecec"]] as [ApplicationStatus, string, string, string][]).map(([sv, sl, c, bg]) => (
+                <button key={sv} className="co-statbtn" style={{ color: c, borderColor: bg, background: bg }}
+                  onClick={() => handleBulkStatus(sv)}>{sl}</button>
+              ))}
+            </div>
+          )}
           {filterOpen && (
             <div className="co-sheet-ov" onClick={() => setFilterOpen(false)}>
               <div className="co-sheet" onClick={(e) => e.stopPropagation()}>
@@ -415,12 +442,14 @@ function ApplicantsContent() {
             .co-row-check { width: 20px; height: 20px; accent-color: #5f0080; flex-shrink: 0; margin: 0; }
             .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
             .co-li.on { border-color: #5f0080; background: #faf5fc; }
-            .co-li-r1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-            .co-li-status { font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; flex-shrink: 0; }
-            .co-li-person { display: flex; align-items: center; gap: 10px; min-width: 0; }
+            .co-li-r1 { display: flex; align-items: center; gap: 10px; }
+            .co-li-namerow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+            .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+            .co-li-status { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; flex-shrink: 0; }
             .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #5f0080; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
-            .co-li-name { font-size: 15.5px; color: #1a1a1a; }
+            .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
+            .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
             .co-li-job { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; }
           `}</style>
@@ -434,7 +463,7 @@ function ApplicantsContent() {
             const career = ct === "NEWCOMER" ? "신입"
               : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : "경력"; })();
             const gender = genderLabel((a as any).user_gender);
-            const meta2 = [age != null ? `${age}세` : null, gender || null, career].filter(Boolean).join(" · ");
+            const ageGender = [age != null ? `${age}세` : null, gender || null].filter(Boolean).join(" · ");
             return (
               <div key={a.id} className="co-row">
                 {selectMode && (
@@ -444,20 +473,23 @@ function ApplicantsContent() {
                 <div className={`co-li ${on ? "on" : ""}`}
                   onClick={() => selectMode ? toggleCheck(a.id) : setSelected(a)}>
                   <div className="co-li-r1">
-                    <div className="co-li-person">
-                      <div className="co-li-avatar">
-                        {(a as any).user_avatar_url
-                          ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
-                          : (a.user_name || "?").slice(0, 1)}
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                        <div className="co-li-name">{a.user_name}</div>
-                        <div className="co-li-meta2">{meta2}</div>
-                      </div>
+                    <div className="co-li-avatar">
+                      {(a as any).user_avatar_url
+                        ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
+                        : (a.user_name || "?").slice(0, 1)}
                     </div>
-                    <span className="co-li-status" style={{ color: stColor, background: stBg }}>
-                      {STATUS_LABEL[st]}
-                    </span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="co-li-namerow">
+                        <div className="co-li-nameinfo">
+                          <span className="co-li-name">{a.user_name}</span>
+                          {ageGender && <span className="co-li-ageg">{ageGender}</span>}
+                        </div>
+                        <span className="co-li-status" style={{ color: stColor, background: stBg }}>
+                          {STATUS_LABEL[st]}
+                        </span>
+                      </div>
+                      <div className="co-li-meta2">{career}</div>
+                    </div>
                   </div>
                   <div className="co-li-job">{a.job_title}</div>
                 </div>
