@@ -34,6 +34,13 @@ function daysLeft(deadline: string | null): number | null {
   return Math.ceil((new Date(deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 }
 
+// 실질 마감 여부: 상태가 CLOSED이거나 마감일이 지난 경우
+function isJobClosed(job: { status: string; deadline: string | null }): boolean {
+  if (job.status === "CLOSED") return true;
+  const dl = daysLeft(job.deadline);
+  return dl !== null && dl < 0;
+}
+
 export default function CompanyJobsPage() {
   const router = useRouter();
   const [jobs, setJobs] = useState<CompanyJob[]>([]);
@@ -95,10 +102,10 @@ export default function CompanyJobsPage() {
     const dl = daysLeft(j.deadline);
     const matchStatus =
       statusFilter === "전체" ? true :
-      statusFilter === "진행중" ? j.status === "ACTIVE" :
-      statusFilter === "마감" ? j.status === "CLOSED" :
-      statusFilter === "<D-7" ? (j.status === "ACTIVE" && dl !== null && dl <= 7) :
-      statusFilter === ">D-7" ? (j.status === "ACTIVE" && (dl === null || dl > 7)) :
+      statusFilter === "진행중" ? !isJobClosed(j) :
+      statusFilter === "마감" ? isJobClosed(j) :
+      statusFilter === "<D-7" ? (!isJobClosed(j) && dl !== null && dl <= 7) :
+      statusFilter === ">D-7" ? (!isJobClosed(j) && (dl === null || dl > 7)) :
       STATUS_LABEL[j.status] === statusFilter;
     return matchGroup && matchSearch && matchStatus;
   });
@@ -146,8 +153,8 @@ export default function CompanyJobsPage() {
 
   const counts = {
     전체: jobs.length,
-    진행중: jobs.filter(j => j.status === "ACTIVE").length,
-    마감: jobs.filter(j => j.status === "CLOSED").length,
+    진행중: jobs.filter(j => !isJobClosed(j)).length,
+    마감: jobs.filter(j => isJobClosed(j)).length,
     본사: jobs.filter(j => j.job_type === "OFFICE").length,
     매장: jobs.filter(j => j.job_type === "STORE").length,
   };
@@ -165,8 +172,8 @@ export default function CompanyJobsPage() {
   ];
 
   // 모바일 상단 상태 통계 카드 (마감 임박 기준 필터)
-  const cntImminent = jobs.filter(j => j.status === "ACTIVE" && (() => { const d = daysLeft(j.deadline); return d !== null && d <= 7; })()).length;
-  const cntRelaxed = jobs.filter(j => j.status === "ACTIVE" && (() => { const d = daysLeft(j.deadline); return d === null || d > 7; })()).length;
+  const cntImminent = jobs.filter(j => !isJobClosed(j) && (() => { const d = daysLeft(j.deadline); return d !== null && d <= 7; })()).length;
+  const cntRelaxed = jobs.filter(j => !isJobClosed(j) && (() => { const d = daysLeft(j.deadline); return d === null || d > 7; })()).length;
   const statusCards = [
     { label: "전체", value: String(counts.전체), color: "#5f0080", status: "전체" },
     { label: "<D-7", value: String(cntImminent), color: "#e74c3c", status: "<D-7" },
@@ -324,7 +331,8 @@ export default function CompanyJobsPage() {
           `}</style>
           {filtered.map((job) => {
             const on = checked.includes(job.id);
-            const statusColor = job.status === "ACTIVE" ? "#10b981" : job.status === "CLOSED" ? "#888" : "#f59e0b";
+            const closed = isJobClosed(job);
+            const statusColor = closed ? "#888" : job.status === "ACTIVE" ? "#10b981" : "#f59e0b";
             return (
               <div key={job.id} className="co-row">
                 {selectMode && (
@@ -337,9 +345,9 @@ export default function CompanyJobsPage() {
                     <span className="co-li-title">{job.title}</span>
                     <div className="co-li-r1r">
                       <span className="co-li-status" style={{ color: statusColor }}>
-                        {STATUS_LABEL[job.status]}
+                        {closed ? "마감" : STATUS_LABEL[job.status]}
                       </span>
-                      {job.status === "CLOSED" && (
+                      {closed && (
                         <button className="co-rebtn"
                           onClick={(e) => { e.stopPropagation(); router.push(`/company/dashboard/jobs/new?copy=${job.id}`); }}>
                           <Copy size={12} /> 재등록
@@ -413,8 +421,8 @@ export default function CompanyJobsPage() {
                     </Link>
                   </td>
                   <td className="company-td-sub">{job.view_count}</td>
-                  <td style={{ color: job.status === "ACTIVE" ? "#10b981" : job.status === "CLOSED" ? "#888" : "#f59e0b", fontWeight: 500, fontSize: 14 }}>
-                    {STATUS_LABEL[job.status]}
+                  <td style={{ color: isJobClosed(job) ? "#888" : job.status === "ACTIVE" ? "#10b981" : "#f59e0b", fontWeight: 500, fontSize: 14 }}>
+                    {isJobClosed(job) ? "마감" : STATUS_LABEL[job.status]}
                   </td>
                   <td>
                     <div style={{display:"flex", gap:"6px", justifyContent:"center"}}>
