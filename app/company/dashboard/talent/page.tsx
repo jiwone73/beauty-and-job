@@ -74,8 +74,6 @@ export default function TalentPage() {
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [checked, setChecked] = useState<string[]>([]);
-  const [selectMode, setSelectMode] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [view, setView] = useState<"search" | "scrap">("search");
 
@@ -85,29 +83,6 @@ export default function TalentPage() {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
-
-  const toggleCheck = (id: string) =>
-    setChecked((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
-
-  const toggleSelectMode = () => {
-    setSelectMode((v) => {
-      if (v) setChecked([]);
-      return !v;
-    });
-  };
-
-  const handleBulkScrap = async () => {
-    if (!checked.length) return;
-    const targets = talents.filter((t) => checked.includes(t.id) && !t.scrapped);
-    setTalents((prev) => prev.map((t) => checked.includes(t.id) ? { ...t, scrapped: true } : t));
-    setChecked([]);
-    setSelectMode(false);
-    try {
-      await Promise.all(targets.map((t) => companyTalentApi.scrap(t.id)));
-    } catch (e) {
-      console.error("[handleBulkScrap]", e);
-    }
-  };
 
   const handleTabSwitch = (tab: JobTab) => {
     setActiveTab(tab);
@@ -314,8 +289,6 @@ export default function TalentPage() {
   const switchView = (next: "search" | "scrap") => {
     if (next === view) return;
     setView(next);
-    setSelectMode(false);
-    setChecked([]);
     setFilterOpen(false);
     setTalents([]);
     setTotal(0);
@@ -464,11 +437,6 @@ export default function TalentPage() {
               >
                 {view === "scrap" ? <BookmarkCheck size={15} /> : <Bookmark size={15} />} 스크랩
               </button>
-              {view === "search" && (
-                <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
-                  {selectMode ? "취소" : "선택"}
-                </button>
-              )}
             </div>
           </div>
         </>
@@ -639,19 +607,14 @@ export default function TalentPage() {
             .co-li-job { font-size: 15.5px; color: #a06fca; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
           `}</style>
           {talents.map((t) => {
-            const on = checked.includes(t.id);
             const gl = genderLabel(t.gender);
             const region = t.regionPrefer ? shortenRegion(t.regionPrefer) : null;
             const ageGender = [t.age ? `${t.age}세` : null, gl].filter(Boolean).join(" · ");
             const meta2 = [careerLabel(t.careerYears, t.careerCount), region].filter(Boolean).join(" · ");
             return (
               <div key={t.id} className="co-row">
-                {selectMode && (
-                  <input type="checkbox" className="co-row-check" checked={on}
-                    onChange={() => toggleCheck(t.id)} />
-                )}
-                <div className={`co-li ${on ? "on" : ""}`}
-                  onClick={() => selectMode ? toggleCheck(t.id) : setSelected(t)}>
+                <div className="co-li"
+                  onClick={() => setSelected(t)}>
                   <div className="co-li-r1">
                     <div className="co-li-avatar">
                       {t.avatarUrl
@@ -806,16 +769,6 @@ export default function TalentPage() {
       )}
       </div>
       </div>
-
-      {/* 선택 액션바 (모바일) — 스크랩 */}
-      {isMobile && selectMode && checked.length > 0 && (
-        <div className="co-selbar">
-          <span className="co-selbar-count">{checked.length}명 선택됨</span>
-          <button className="co-selbar-act" onClick={handleBulkScrap} aria-label="스크랩">
-            <BookmarkCheck size={19} /> 스크랩
-          </button>
-        </div>
-      )}
 
       {/* 직군 모달 */}
       <JobGroupSelectModal
