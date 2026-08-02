@@ -198,7 +198,7 @@ export default function CompanyJobsPage() {
   const cntRelaxed = jobs.filter(j => !isJobClosed(j) && (() => { const d = daysLeft(j.deadline); return d === null || d > 7; })()).length;
   const statusCards = [
     { label: "전체", value: String(counts.전체), color: "#5f0080", status: "전체" },
-    { label: "<D-7", value: String(cntImminent), color: "#e74c3c", status: "<D-7" },
+    { label: "≤D-7", value: String(cntImminent), color: "#e74c3c", status: "<D-7" },
     { label: ">D-7", value: String(cntRelaxed), color: "#10b981", status: ">D-7" },
     { label: "마감", value: String(counts.마감), color: "#888", status: "마감" },
   ];
