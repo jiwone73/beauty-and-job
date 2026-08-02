@@ -27,7 +27,9 @@ export async function GET(req: NextRequest) {
   const whereClause = where.join(' AND ')
 
   const listQuery = `
-    SELECT id, title, job_type, status, view_count, application_count,
+    SELECT id, title, job_type, status, view_count,
+           (SELECT COUNT(*)::int FROM applications a
+              WHERE a.job_posting_id = job_postings.id AND a.hidden_by_company = false) AS application_count,
            deadline, is_featured, created_at, closed_at
     FROM job_postings
     WHERE ${whereClause}
