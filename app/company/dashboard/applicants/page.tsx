@@ -133,6 +133,10 @@ function ApplicantsContent() {
     }
     const token = localStorage.getItem("access_token");
     if (!token) return;
+    // 이력서 열람 시 신규 → 검토중 자동 전환
+    if (selected.status === "APPLIED") {
+      handleStatusChange(selected.id, "VIEWED");
+    }
     setResumeLoading(true);
     fetch(`/api/company/applications/${selected.id}`, {
       headers: { Authorization: `Bearer ${token}` },
