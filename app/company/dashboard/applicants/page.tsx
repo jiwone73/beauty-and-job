@@ -685,13 +685,13 @@ function ApplicantsContent() {
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
                 {resumeData && (
                   <>
-                    <button onClick={handleDownloadPdf} disabled={isDownloading}
-                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 12px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: isDownloading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}>
-                      <Download size={15} /> {isDownloading ? "저장 중..." : "PDF 다운로드"}
+                    <button onClick={handleDownloadPdf} disabled={isDownloading} title="PDF 다운로드"
+                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#5f0080", cursor: isDownloading ? "not-allowed" : "pointer", opacity: isDownloading ? 0.5 : 1 }}>
+                      <Download size={20} />
                     </button>
-                    <button onClick={handlePrint}
-                      style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 12px", borderRadius: "8px", border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: "14px", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                      <Printer size={15} /> 인쇄
+                    <button onClick={handlePrint} title="인쇄"
+                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#5f0080", cursor: "pointer" }}>
+                      <Printer size={20} />
                     </button>
                   </>
                 )}
