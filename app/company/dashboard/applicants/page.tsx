@@ -12,6 +12,9 @@ import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
 import { companyApplicationsApi, companyJobsApi } from "@/lib/api/company";
 import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company";
 
+// 지원자 첨부 이력서 파일 배너 노출 여부 (개인회원 첨부 기능 숨김에 따라 비활성화, 추후 재사용 대비 코드 유지)
+const SHOW_RESUME_FILE_BANNER = false;
+
 const STATUS_LABEL: Record<ApplicationStatus, string> = {
   APPLIED: "신규",
   VIEWED: "검토중",
@@ -726,8 +729,8 @@ function ApplicantsContent() {
                   }}
                 />
                 </div>
-                {/* 첨부 이력서 파일 배너: 화면에서만(클릭 다운로드), PDF/인쇄 캡처에는 제외 */}
-                {resumeFileInfo.url && (
+                {/* 첨부 이력서 파일 배너: 화면에서만(클릭 다운로드), PDF/인쇄 캡처에는 제외. SHOW_RESUME_FILE_BANNER로 노출 제어 */}
+                {SHOW_RESUME_FILE_BANNER && resumeFileInfo.url && (
                   <div style={{ marginTop: "20px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
                     <FileText size={22} color="#5f0080" />
                     <div style={{ flex: 1, minWidth: 0 }}>
