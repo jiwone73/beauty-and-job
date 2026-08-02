@@ -44,7 +44,7 @@ function formatDate(dateStr: string): string {
 function ApplicantsContent() {
   const searchParams = useSearchParams();
   const [jobFilter, setJobFilter] = useState<string>(searchParams.get("job_id") || "");
-  const [jobs, setJobs] = useState<{ id: string; title: string }[]>([]);
+  const [jobs, setJobs] = useState<{ id: string; title: string; applicationCount: number; createdAt: string; closed: boolean }[]>([]);
 
   const [applicants, setApplicants] = useState<CompanyApplication[]>([]);
   const [loading, setLoading] = useState(true);
@@ -217,7 +217,13 @@ function ApplicantsContent() {
   // 공고 목록 (필터용)
   useEffect(() => {
     companyJobsApi.list({ limit: 100 })
-      .then((res) => setJobs((res.data || []).map((j: any) => ({ id: j.id, title: j.title }))))
+      .then((res) => setJobs((res.data || []).map((j: any) => ({
+        id: j.id,
+        title: j.title,
+        applicationCount: j.application_count ?? 0,
+        createdAt: j.created_at,
+        closed: j.status === "CLOSED" || (j.deadline && new Date(j.deadline) < new Date()),
+      }))))
       .catch((e) => console.error("[applicants jobs]", e));
   }, []);
 
@@ -391,8 +397,11 @@ function ApplicantsContent() {
             .co-statbar-label { font-size: 12.5px; color: #888; flex-shrink: 0; margin-right: 2px; }
             .co-statbtn { flex-shrink: 0; padding: 4px 2px; border: none; background: none; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
             .co-joblist { display: flex; flex-direction: column; gap: 2px; }
-            .co-jobopt { text-align: left; width: 100%; padding: 14px; border: none; background: none; border-radius: 10px; font-size: 15px; color: #333; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .co-jobopt.on { background: #f5eaff; color: #5f0080; font-weight: 600; }
+            .co-jobopt { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; width: 100%; padding: 13px 14px; border: none; background: none; border-radius: 10px; color: #333; cursor: pointer; }
+            .co-jobopt .jt { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+            .co-jobopt .jmeta { font-size: 12px; color: #999; }
+            .co-jobopt.on { background: #f5eaff; }
+            .co-jobopt.on .jt { color: #5f0080; font-weight: 600; }
           `}</style>
           <div className="co-mbar">
             <span className="co-mbar-count">총 <strong>{filtered.length}</strong>명</span>
@@ -422,12 +431,15 @@ function ApplicantsContent() {
                   <div className="co-joblist">
                     <button className={`co-jobopt ${jobFilter === "" ? "on" : ""}`}
                       onClick={() => { setJobFilter(""); setJobSheetOpen(false); }}>
-                      전체 공고
+                      <span className="jt">전체 공고</span>
                     </button>
                     {jobs.map((j) => (
                       <button key={j.id} className={`co-jobopt ${jobFilter === j.id ? "on" : ""}`}
                         onClick={() => { setJobFilter(j.id); setJobSheetOpen(false); }}>
-                        {j.title}
+                        <span className="jt">{j.title}</span>
+                        <span className="jmeta">
+                          {j.closed ? "마감 · " : ""}등록 {j.createdAt ? new Date(j.createdAt).toLocaleDateString("ko-KR") : "-"} · 지원자 {j.applicationCount}
+                        </span>
                       </button>
                     ))}
                   </div>
