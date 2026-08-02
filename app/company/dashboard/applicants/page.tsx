@@ -451,7 +451,9 @@ function ApplicantsContent() {
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
-            .co-li-job { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; }
+            .co-li-sub { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; display: flex; flex-direction: column; gap: 3px; }
+            .co-li-sub .title { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-all; }
+            .co-li-sub .date { color: #888; }
           `}</style>
           {filtered.map((a) => {
             const on = checked.includes(a.id);
@@ -491,7 +493,10 @@ function ApplicantsContent() {
                       <div className="co-li-meta2">{career}</div>
                     </div>
                   </div>
-                  <div className="co-li-job">{a.job_title}</div>
+                  <div className="co-li-sub">
+                    <span className="title">{a.job_title}</span>
+                    <span className="date">지원일 {formatDate(a.applied_at)}</span>
+                  </div>
                 </div>
               </div>
             );
