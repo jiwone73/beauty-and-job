@@ -279,7 +279,7 @@ export default function TalentPage() {
         age: r.age ?? null,
         intro: r.headline ?? null,
         mainJobGroup: r.job_category ?? null,
-        subJob: null,
+        subJob: r.sub_job ?? null,
         skills: r.skills || [],
         skillAreas: [],
         officeJobAreas: [],

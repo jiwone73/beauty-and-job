@@ -66,6 +66,7 @@ export async function GET(req: NextRequest) {
       age: r.age,
       headline: r.intro,
       job_category: r.main_job_group,
+      sub_job: r.sub_job,
       skills: r.skills || [],
       location: [r.region_sido, r.region_sigungu].filter(Boolean).join(" ") || r.location || null,
       educationDetail: r.education_detail,
