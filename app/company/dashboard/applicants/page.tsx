@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, SlidersHorizontal, Trash2, ChevronDown } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { formatPhone } from "@/lib/phone";
@@ -9,7 +9,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
-import { companyApplicationsApi } from "@/lib/api/company";
+import { companyApplicationsApi, companyJobsApi } from "@/lib/api/company";
 import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company";
 
 const STATUS_LABEL: Record<ApplicationStatus, string> = {
@@ -42,9 +42,9 @@ function formatDate(dateStr: string): string {
 }
 
 function ApplicantsContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const jobIdFilter = searchParams.get("job_id") || "";
+  const [jobFilter, setJobFilter] = useState<string>(searchParams.get("job_id") || "");
+  const [jobs, setJobs] = useState<{ id: string; title: string }[]>([]);
 
   const [applicants, setApplicants] = useState<CompanyApplication[]>([]);
   const [loading, setLoading] = useState(true);
@@ -200,7 +200,7 @@ function ApplicantsContent() {
     setLoading(true);
     try {
       const res = await companyApplicationsApi.list({
-        ...(jobIdFilter ? { job_id: jobIdFilter } : {}),
+        ...(jobFilter ? { job_id: jobFilter } : {}),
         limit: 100,
       });
       setApplicants(res.data);
@@ -213,7 +213,16 @@ function ApplicantsContent() {
 
   useEffect(() => {
     loadApplicants();
-  }, [jobIdFilter]);
+  }, [jobFilter]);
+
+  // 공고 목록 (필터용)
+  useEffect(() => {
+    companyJobsApi.list({ limit: 100 })
+      .then((res) => setJobs((res.data || []).map((j: any) => ({ id: j.id, title: j.title }))))
+      .catch((e) => console.error("[applicants jobs]", e));
+  }, []);
+
+  const jobFilterTitle = jobFilter ? (jobs.find((j) => j.id === jobFilter)?.title || "") : "";
 
   const filtered = applicants.filter(a => {
     const matchSearch = !search || a.user_name.includes(search);
@@ -286,7 +295,7 @@ function ApplicantsContent() {
         </div>
       )}
 
-      {jobIdFilter && (
+      {jobFilter && (
         <div style={{
           background: "#faf5ff",
           border: "1px solid #ede0f8",
@@ -296,12 +305,13 @@ function ApplicantsContent() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: 10,
         }}>
-          <span style={{ fontSize: "14px", color: "#5f0080", fontWeight: 600 }}>
-            특정 공고의 지원자만 표시 중
+          <span style={{ fontSize: "14px", color: "#5f0080", fontWeight: 600, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {jobFilterTitle ? `'${jobFilterTitle}' 지원자` : "특정 공고의 지원자만 표시 중"}
           </span>
           <button
-            onClick={() => router.push("/company/dashboard/applicants")}
+            onClick={() => setJobFilter("")}
             style={{
               border: "1px solid #5f0080",
               background: "#fff",
@@ -310,6 +320,7 @@ function ApplicantsContent() {
               borderRadius: "6px",
               fontSize: "13px",
               cursor: "pointer",
+              flexShrink: 0,
             }}
           >
             전체 보기
@@ -402,7 +413,7 @@ function ApplicantsContent() {
                 <div className="co-sheet-head">
                   <span className="co-sheet-title">필터</span>
                   <button className="co-sheet-reset"
-                    onClick={() => { setSearch(""); setStatusFilter("전체"); }}>
+                    onClick={() => { setSearch(""); setStatusFilter("전체"); setJobFilter(""); }}>
                     초기화
                   </button>
                 </div>
@@ -411,6 +422,17 @@ function ApplicantsContent() {
                     <Search size={16} className="admin-search-icon" />
                     <input className="admin-search-input" placeholder="지원자 이름 검색"
                       value={search} onChange={(e) => setSearch(e.target.value)} />
+                  </div>
+                  <div>
+                    <div className="co-fseg-label">공고</div>
+                    <div className="co-fseg-opts">
+                      <button className={`co-fseg-btn ${jobFilter === "" ? "on" : ""}`}
+                        onClick={() => setJobFilter("")}>전체</button>
+                      {jobs.map((j) => (
+                        <button key={j.id} className={`co-fseg-btn ${jobFilter === j.id ? "on" : ""}`}
+                          onClick={() => setJobFilter(j.id)}>{j.title}</button>
+                      ))}
+                    </div>
                   </div>
                   <div>
                     <div className="co-fseg-label">상태</div>
@@ -463,11 +485,10 @@ function ApplicantsContent() {
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
-            .co-li-sub { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-            .co-li-sub .title { display: flex; align-items: center; gap: 5px; min-width: 0; }
-            .co-li-sub .title .ico { flex-shrink: 0; color: #b3b3b3; }
-            .co-li-sub .title .tt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .co-li-sub .date { color: #999; flex-shrink: 0; }
+            .co-li-top { font-size: 13px; color: #555; margin-bottom: 11px; padding-bottom: 10px; border-bottom: 1px solid #f2f2f2; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+            .co-li-top .title { min-width: 0; }
+            .co-li-top .title .tt { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .co-li-top .date { color: #999; flex-shrink: 0; margin-left: auto; }
           `}</style>
           {filtered.map((a) => {
             const on = checked.includes(a.id);
@@ -489,6 +510,10 @@ function ApplicantsContent() {
                 )}
                 <div className={`co-li ${on ? "on" : ""}`}
                   onClick={() => selectMode ? toggleCheck(a.id) : setSelected(a)}>
+                  <div className="co-li-top">
+                    {!jobFilter && <span className="title"><span className="tt">{a.job_title}</span></span>}
+                    <span className="date">지원일 {formatDate(a.applied_at)}</span>
+                  </div>
                   <div className="co-li-r1">
                     <div className="co-li-avatar">
                       {(a as any).user_avatar_url
@@ -507,10 +532,6 @@ function ApplicantsContent() {
                       </div>
                       <div className="co-li-meta2">{meta2}</div>
                     </div>
-                  </div>
-                  <div className="co-li-sub">
-                    <span className="title"><FileText size={13} className="ico" /><span className="tt">{a.job_title}</span></span>
-                    <span className="date">지원일 {formatDate(a.applied_at)}</span>
                   </div>
                 </div>
               </div>
