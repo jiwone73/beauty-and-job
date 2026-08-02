@@ -28,6 +28,12 @@ function formatDeadline(deadline: string | null): string {
   return `D-${dDay}`;
 }
 
+// 마감까지 남은 일수 (상시=마감일 없음 → null)
+function daysLeft(deadline: string | null): number | null {
+  if (!deadline) return null;
+  return Math.ceil((new Date(deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+}
+
 export default function CompanyJobsPage() {
   const router = useRouter();
   const [jobs, setJobs] = useState<CompanyJob[]>([]);
@@ -86,7 +92,14 @@ export default function CompanyJobsPage() {
       (jobGroupFilter === "본사" && j.job_type === "OFFICE") ||
       (jobGroupFilter === "매장" && j.job_type === "STORE");
     const matchSearch = !search || j.title.includes(search);
-    const matchStatus = statusFilter === "전체" || STATUS_LABEL[j.status] === statusFilter;
+    const dl = daysLeft(j.deadline);
+    const matchStatus =
+      statusFilter === "전체" ? true :
+      statusFilter === "진행중" ? j.status === "ACTIVE" :
+      statusFilter === "마감" ? j.status === "CLOSED" :
+      statusFilter === "<D-7" ? (j.status === "ACTIVE" && dl !== null && dl <= 7) :
+      statusFilter === ">D-7" ? (j.status === "ACTIVE" && (dl === null || dl > 7)) :
+      STATUS_LABEL[j.status] === statusFilter;
     return matchGroup && matchSearch && matchStatus;
   });
 
@@ -151,10 +164,13 @@ export default function CompanyJobsPage() {
     ] : []),
   ];
 
-  // 모바일 상단 상태 통계 카드 (진행상태 필터)
+  // 모바일 상단 상태 통계 카드 (마감 임박 기준 필터)
+  const cntImminent = jobs.filter(j => j.status === "ACTIVE" && (() => { const d = daysLeft(j.deadline); return d !== null && d <= 7; })()).length;
+  const cntRelaxed = jobs.filter(j => j.status === "ACTIVE" && (() => { const d = daysLeft(j.deadline); return d === null || d > 7; })()).length;
   const statusCards = [
     { label: "전체", value: String(counts.전체), color: "#5f0080", status: "전체" },
-    { label: "진행중", value: String(counts.진행중), color: "#10b981", status: "진행중" },
+    { label: "<D-7", value: String(cntImminent), color: "#e74c3c", status: "<D-7" },
+    { label: ">D-7", value: String(cntRelaxed), color: "#10b981", status: ">D-7" },
     { label: "마감", value: String(counts.마감), color: "#888", status: "마감" },
   ];
 
@@ -300,7 +316,9 @@ export default function CompanyJobsPage() {
             .co-li.on { border-color: #5f0080; background: #faf5fc; }
             .co-li-r1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
             .co-li-title { font-size: 15.5px; color: #5f0080; line-height: 1.35; word-break: break-all; min-width: 0; }
+            .co-li-r1r { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
             .co-li-status { font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
+            .co-rebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #5f0080; background: #fff; color: #5f0080; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
             .co-li-r2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #777; }
             .co-li-r2 b { color: #444; font-weight: 500; }
           `}</style>
@@ -317,9 +335,17 @@ export default function CompanyJobsPage() {
                   onClick={() => selectMode ? toggleCheck(job.id) : router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
                   <div className="co-li-r1">
                     <span className="co-li-title">{job.title}</span>
-                    <span className="co-li-status" style={{ color: statusColor }}>
-                      {STATUS_LABEL[job.status]}
-                    </span>
+                    <div className="co-li-r1r">
+                      <span className="co-li-status" style={{ color: statusColor }}>
+                        {STATUS_LABEL[job.status]}
+                      </span>
+                      {job.status === "CLOSED" && (
+                        <button className="co-rebtn"
+                          onClick={(e) => { e.stopPropagation(); router.push(`/company/dashboard/jobs/new?copy=${job.id}`); }}>
+                          <Copy size={12} /> 재등록
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="co-li-r2">
                     <span>등록 <b>{new Date(job.created_at).toLocaleDateString("ko-KR")}</b></span>
