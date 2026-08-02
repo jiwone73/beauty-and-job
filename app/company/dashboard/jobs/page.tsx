@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Plus, Search, Edit, X, Trash2, Copy, Ban, SlidersHorizontal, ChevronDown
+  Users, Plus, Search, Edit, X, Trash2, Copy, Ban
 } from "lucide-react";
 import { companyJobsApi } from "@/lib/api/company";
 import type { CompanyJob, JobStatus } from "@/lib/types/company";
@@ -39,8 +39,6 @@ export default function CompanyJobsPage() {
   const [checked, setChecked] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [summaryOpen, setSummaryOpen] = useState(false);
   const [companyType, setCompanyType] = useState<string | null>(null);
 
   useEffect(() => {
@@ -156,27 +154,8 @@ export default function CompanyJobsPage() {
   return (
     <CompanyLayout activePage="jobs">
       <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
-      {/* 요약 카드 */}
-      {isMobile ? (
-        <>
-          <button className="co-sumtog" onClick={() => setSummaryOpen((v) => !v)}>
-            <span>요약 통계</span>
-            <ChevronDown size={17} className={`chev ${summaryOpen ? "open" : ""}`} />
-          </button>
-          {summaryOpen && (
-            <div className="company-stat-grid co-4">
-              {statCardsData.map((s) => (
-                <div key={s.label} className="company-stat-card">
-                  <div className="company-stat-value" style={{color: s.color}}>
-                    {s.value}<span className="company-stat-unit">{s.unit}</span>
-                  </div>
-                  <div className="company-stat-label">{s.label}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </>
-      ) : (
+      {/* 요약 카드 (데스크톱만) */}
+      {!isMobile && (
         <div className="company-stat-grid">
           {statCardsData.map((s) => (
             <div key={s.label} className="company-stat-card">
@@ -229,8 +208,12 @@ export default function CompanyJobsPage() {
             .company-stat-grid.co-4 .company-stat-card { padding: 9px 5px; align-items: center; text-align: center; gap: 2px; }
             .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
             .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-            .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-            .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }
+            .co-chiprow { display: flex; gap: 7px; margin-bottom: 10px; }
+            .co-chip { padding: 7px 15px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 13.5px; font-weight: 500; cursor: pointer; }
+            .co-chip.on { border-color: #5f0080; background: #f5eaff; color: #5f0080; }
+            .co-mbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+            .co-mbar-left { display: flex; align-items: center; gap: 11px; }
+            .co-mbar-count { font-size: 13.5px; color: #888; }
             .co-mbar-count strong { color: #5f0080; }
             .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
@@ -253,62 +236,23 @@ export default function CompanyJobsPage() {
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
           `}</style>
+          <div className="co-chiprow">
+            {["전체", "진행중", "마감"].map((o) => (
+              <button key={o} className={`co-chip ${statusFilter === o ? "on" : ""}`}
+                onClick={() => setStatusFilter(o)}>{o}</button>
+            ))}
+          </div>
           <div className="co-mbar">
-            <span className="co-mbar-count">총 <strong>{filtered.length}</strong>건</span>
-            <div className="co-mbar-actions">
-              <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
-                <SlidersHorizontal size={15} /> 필터
-              </button>
-              <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
-                {selectMode ? "취소" : "선택"}
-              </button>
+            <div className="co-mbar-left">
               <Link href="/company/dashboard/jobs/new" className="co-mbar-btn primary">
                 <Plus size={15} /> 등록
               </Link>
+              <span className="co-mbar-count">총 <strong>{filtered.length}</strong>건</span>
             </div>
+            <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
+              {selectMode ? "취소" : "선택"}
+            </button>
           </div>
-          {filterOpen && (
-            <div className="co-sheet-ov" onClick={() => setFilterOpen(false)}>
-              <div className="co-sheet" onClick={(e) => e.stopPropagation()}>
-                <div className="co-sheet-grip" />
-                <div className="co-sheet-head">
-                  <span className="co-sheet-title">필터</span>
-                  <button className="co-sheet-reset"
-                    onClick={() => { setSearch(""); setJobGroupFilter("전체"); setStatusFilter("전체"); }}>
-                    초기화
-                  </button>
-                </div>
-                <div className="co-sheet-body">
-                  <div className="admin-search-wrap">
-                    <Search size={16} className="admin-search-icon" />
-                    <input className="admin-search-input" placeholder="공고명 검색"
-                      value={search} onChange={(e) => setSearch(e.target.value)} />
-                  </div>
-                  {isBoth && (
-                    <div>
-                      <div className="co-fseg-label">채용유형</div>
-                      <div className="co-fseg-opts">
-                        {["전체", "매장", "본사"].map((o) => (
-                          <button key={o} className={`co-fseg-btn ${jobGroupFilter === o ? "on" : ""}`}
-                            onClick={() => setJobGroupFilter(o)}>{o}</button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  <div>
-                    <div className="co-fseg-label">진행상태</div>
-                    <div className="co-fseg-opts">
-                      {["전체", "진행중", "마감"].map((o) => (
-                        <button key={o} className={`co-fseg-btn ${statusFilter === o ? "on" : ""}`}
-                          onClick={() => setStatusFilter(o)}>{o}</button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <button className="co-sheet-apply" onClick={() => setFilterOpen(false)}>적용</button>
-              </div>
-            </div>
-          )}
         </>
       )}
 
