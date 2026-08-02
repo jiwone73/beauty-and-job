@@ -51,10 +51,6 @@ const clamp2: React.CSSProperties = {
   display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
   overflow: "hidden", textOverflow: "ellipsis", wordBreak: "break-word", lineHeight: 1.35,
 };
-const clamp1: React.CSSProperties = {
-  display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical",
-  overflow: "hidden", textOverflow: "ellipsis", wordBreak: "break-word",
-};
 
 export default function TalentPage() {
   const [activeTab, setActiveTab]     = useState<JobTab>("STORE");
@@ -682,8 +678,7 @@ export default function TalentPage() {
                     </div>
                   </div>
                   <div className="co-li-sub">
-                    <span>{t.mainJobGroup || "직군 미정"}</span>
-                    {t.intro && <span style={{ ...clamp1, color: "#888" }}>{t.intro}</span>}
+                    <span>{t.subJob || t.mainJobGroup || "직군 미정"}</span>
                   </div>
                 </div>
               </div>
