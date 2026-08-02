@@ -381,41 +381,19 @@ export default function TalentPage() {
   return (
     <CompanyLayout activePage="talent">
 
-      {/* 검색 / 스크랩 세그먼트 + 검색창 (모바일) */}
-      {isMobile && (
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-          <div style={{ display: "flex", background: "#f0eef3", borderRadius: 10, padding: 3, flexShrink: 0 }}>
-            {([["search", "검색"], ["scrap", "스크랩"]] as const).map(([v, label]) => (
-              <button
-                key={v}
-                onClick={() => switchView(v)}
-                style={{
-                  padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 500, cursor: "pointer",
-                  border: "none", whiteSpace: "nowrap",
-                  background: view === v ? "#fff" : "transparent",
-                  color: view === v ? "#5f0080" : "#888",
-                  boxShadow: view === v ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
-                  transition: "all .15s",
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          {view === "search" && (
-            <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-              <input
-                placeholder="이름, 포지션, 스킬 검색"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                style={{
-                  width: "100%", height: 40, padding: "0 40px 0 14px", boxSizing: "border-box",
-                  border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 14, outline: "none",
-                }}
-              />
-              <Search size={17} style={{ position: "absolute", right: 13, top: "50%", transform: "translateY(-50%)", color: "#aaa", pointerEvents: "none" }} />
-            </div>
-          )}
+      {/* 검색창 (모바일) — 전체 행 */}
+      {isMobile && view === "search" && (
+        <div style={{ position: "relative", marginBottom: 14 }}>
+          <input
+            placeholder="이름, 포지션, 스킬 검색"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              width: "100%", height: 42, padding: "0 42px 0 14px", boxSizing: "border-box",
+              border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 14, outline: "none",
+            }}
+          />
+          <Search size={18} style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", color: "#aaa", pointerEvents: "none" }} />
         </div>
       )}
 
@@ -474,16 +452,24 @@ export default function TalentPage() {
             <span className="co-mbar-count">
               {view === "scrap" ? "스크랩" : "총"} <strong>{total}</strong>명
             </span>
-            {view === "search" && (
-              <div className="co-mbar-actions">
+            <div className="co-mbar-actions">
+              {view === "search" && (
                 <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
                   <SlidersHorizontal size={15} /> 필터
                 </button>
+              )}
+              <button
+                className={`co-mbar-btn ${view === "scrap" ? "on" : ""}`}
+                onClick={() => switchView(view === "scrap" ? "search" : "scrap")}
+              >
+                {view === "scrap" ? <BookmarkCheck size={15} /> : <Bookmark size={15} />} 스크랩
+              </button>
+              {view === "search" && (
                 <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
                   {selectMode ? "취소" : "선택"}
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </>
       )}
