@@ -40,6 +40,7 @@ export async function PATCH(
     "deadline", "status", "categories", "detail_images",
     "hiring_process", "notes",
     "work_days", "work_time", "work_time_slots",
+    "headcount",
   ];
 
   const updates: string[] = [];

@@ -3,7 +3,7 @@ import { forwardRef, useState, type CSSProperties, type ReactNode } from "react"
 import Link from "next/link";
 import { shortRegion } from "@/lib/regionShort";
 import KakaoMap from "@/components/KakaoMap";
-import { MapPin, Clock, Briefcase, Building2, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
+import { MapPin, Clock, Briefcase, Building2, CheckCircle2, ChevronRight, ChevronLeft, Users } from "lucide-react";
 
 // 공고 상단 이미지 갤러리(원티드 스타일). 한 번에 3장 노출, 좌우 화살표로 순환.
 export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
@@ -147,6 +147,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               <Building2 size={15} className="job-detail-meta-icon" />
               <span>{job.employType}</span>
             </div>
+            {job.headcount && (
+              <div className="job-detail-meta-item">
+                <Users size={15} className="job-detail-meta-icon" />
+                <span>모집 {job.headcount}</span>
+              </div>
+            )}
             <div className="job-detail-meta-item">
               <Clock size={15} className="job-detail-meta-icon" />
               <span>{job.deadline === "상시채용" ? "상시채용" : `~${job.deadline}`}</span>

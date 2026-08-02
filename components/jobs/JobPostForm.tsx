@@ -145,6 +145,7 @@ export default function JobPostForm({
     title: "", career: "",
     type: "정규직", deadline: "", salary: "", description: "",
     requirements: "", preferred: "", benefits: "", responsibilities: "",
+    headcount: "",
   });
   const [saved, setSaved] = useState(false);
   const [alwaysOpen, setAlwaysOpen] = useState(false);
@@ -345,6 +346,7 @@ export default function JobPostForm({
         salary, description: j.description || "", requirements: j.requirements || "",
         preferred: j.preferred_qualifications || "", benefits: j.benefits || "",
         responsibilities: j.responsibilities || "",
+        headcount: j.headcount != null ? String(j.headcount) : "",
       });
       setAlwaysOpen(!j.deadline);
       setCategories(j.categories || []);
@@ -689,6 +691,7 @@ export default function JobPostForm({
       work_time: workTimeNego ? "협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : null),
       work_time_slots: null,
       deadline: form.deadline || null,
+      headcount: form.headcount ? parseInt(form.headcount, 10) : null,
       categories,
       detail_images: detailImages,
       hiring_process: hiringProcess.filter((s) => s.trim()),
@@ -753,6 +756,7 @@ export default function JobPostForm({
     career: form.career || "-",
     region: regionList.join(", "),
     employType: form.type || "정규직",
+    headcount: form.headcount ? `${form.headcount}명` : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary(),
     color: "#e8f0fe",
@@ -1034,6 +1038,14 @@ export default function JobPostForm({
                     {EMPLOYMENT_TYPES.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
+              </div>
+
+              <div className="admin-form-row">
+                <label className="admin-form-label">모집인원</label>
+                <input type="number" min={1} inputMode="numeric" className="admin-form-input"
+                  placeholder="예: 3 (미입력 시 표시 안 함)"
+                  value={form.headcount}
+                  onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })} />
               </div>
 
               <div className="admin-form-row">
