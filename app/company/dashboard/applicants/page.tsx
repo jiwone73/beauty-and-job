@@ -486,7 +486,7 @@ function ApplicantsContent() {
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
             .co-li-top { color: #555; margin-bottom: 11px; padding-bottom: 10px; border-bottom: 1px solid #f2f2f2; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
             .co-li-top .title { min-width: 0; }
-            .co-li-top .title .tt { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15.5px; color: #333; }
+            .co-li-top .title .tt { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15.5px; color: #a06fca; }
             .co-li-top .date { color: #999; flex-shrink: 0; margin-left: auto; font-size: 12px; }
           `}</style>
           {filtered.map((a) => {

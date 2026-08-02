@@ -636,7 +636,7 @@ export default function TalentPage() {
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
-            .co-li-sub { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; display: flex; flex-direction: column; gap: 3px; }
+            .co-li-job { font-size: 12.5px; color: #a06fca; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
           `}</style>
           {talents.map((t) => {
             const on = checked.includes(t.id);
@@ -659,6 +659,7 @@ export default function TalentPage() {
                         : <span>{t.name?.slice(0, 1) || "?"}</span>}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="co-li-job">{t.subJob || t.mainJobGroup || "직군 미정"}</div>
                       <div className="co-li-namerow">
                         <div className="co-li-nameinfo">
                           <span className="co-li-name">{t.name}</span>
@@ -673,9 +674,6 @@ export default function TalentPage() {
                       </div>
                       <div className="co-li-meta2">{meta2}</div>
                     </div>
-                  </div>
-                  <div className="co-li-sub">
-                    <span>{t.subJob || t.mainJobGroup || "직군 미정"}</span>
                   </div>
                 </div>
               </div>
