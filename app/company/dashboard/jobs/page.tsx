@@ -151,6 +151,13 @@ export default function CompanyJobsPage() {
     ] : []),
   ];
 
+  // 모바일 상단 상태 통계 카드 (진행상태 필터)
+  const statusCards = [
+    { label: "전체", value: String(counts.전체), color: "#5f0080", status: "전체" },
+    { label: "진행중", value: String(counts.진행중), color: "#10b981", status: "진행중" },
+    { label: "마감", value: String(counts.마감), color: "#888", status: "마감" },
+  ];
+
   return (
     <CompanyLayout activePage="jobs">
       <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
@@ -208,9 +215,12 @@ export default function CompanyJobsPage() {
             .company-stat-grid.co-4 .company-stat-card { padding: 9px 5px; align-items: center; text-align: center; gap: 2px; }
             .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
             .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-            .co-chiprow { display: flex; gap: 7px; margin-bottom: 10px; }
-            .co-chip { padding: 7px 15px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 13.5px; font-weight: 500; cursor: pointer; }
-            .co-chip.on { border-color: #5f0080; background: #f5eaff; color: #5f0080; }
+            .co-topbar { display: flex; align-items: stretch; gap: 7px; margin-bottom: 10px; }
+            .co-addbtn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; height: 46px; width: 88px; flex-shrink: 0; border-radius: 9px; border: none; background: #5f0080; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; }
+            .co-statrow { display: flex; gap: 6px; flex: 1; min-width: 0; }
+            .co-stat { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 46px; padding: 0 3px; border: 1px solid #eee; border-radius: 9px; background: #fff; cursor: pointer; font: inherit; transition: border-color .15s, background .15s; }
+            .co-stat .n { font-size: 16px; font-weight: 700; line-height: 1; }
+            .co-stat .l { font-size: 10.5px; color: #888; white-space: nowrap; }
             .co-mbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
             .co-mbar-left { display: flex; align-items: center; gap: 11px; }
             .co-mbar-count { font-size: 13.5px; color: #888; }
@@ -236,19 +246,24 @@ export default function CompanyJobsPage() {
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
           `}</style>
-          <div className="co-chiprow">
-            {["전체", "진행중", "마감"].map((o) => (
-              <button key={o} className={`co-chip ${statusFilter === o ? "on" : ""}`}
-                onClick={() => setStatusFilter(o)}>{o}</button>
-            ))}
+          <div className="co-topbar">
+            <Link href="/company/dashboard/jobs/new" className="co-addbtn">
+              <Plus size={17} /> 등록
+            </Link>
+            <div className="co-statrow">
+              {statusCards.map((s) => (
+                <button key={s.label} type="button"
+                  className={`co-stat ${statusFilter === s.status ? "on" : ""}`}
+                  onClick={() => setStatusFilter(s.status)}
+                  style={statusFilter === s.status ? { borderColor: s.color, background: "#faf7fd" } : undefined}>
+                  <span className="n" style={{ color: s.color }}>{s.value}</span>
+                  <span className="l">{s.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
           <div className="co-mbar">
-            <div className="co-mbar-left">
-              <Link href="/company/dashboard/jobs/new" className="co-mbar-btn primary">
-                <Plus size={15} /> 등록
-              </Link>
-              <span className="co-mbar-count">총 <strong>{filtered.length}</strong>건</span>
-            </div>
+            <span className="co-mbar-count">총 <strong>{filtered.length}</strong>건</span>
             <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
               {selectMode ? "취소" : "선택"}
             </button>
