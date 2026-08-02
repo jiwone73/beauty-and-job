@@ -6544,6 +6544,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 /* 기업 대시보드: 모든 텍스트 평체(굵기 400) */
 .company-layout, .company-layout * { font-weight: 400 !important; }
+/* 모바일 기업 셸(co-m)도 동일하게 전부 평체 */
+.co-m, .co-m * { font-weight: 400 !important; }
 .company-sidebar {
   width: 220px;
   min-height: 100vh;
@@ -6834,6 +6836,43 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-table tr:hover td { background: #fafafa; }
 .company-td-name { font-weight: 400; color: #1a1a1a !important; }
 .company-td-sub { color: #888 !important; white-space: nowrap; }
+
+/* 기업 대시보드 모바일 반응형 — 여백 최소화 / 공간활용 (co-m 셸 안에서만 적용) */
+@media (max-width: 768px) {
+  /* 통계 카드 4개를 1행에 */
+  .co-m-content .company-stat-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+  .co-m-content .company-stat-card,
+  .co-m-content .company-stat-card:has(.company-stat-icon) {
+    flex-direction: column; align-items: center; text-align: center; gap: 3px; padding: 9px 4px;
+  }
+  .co-m-content .company-stat-icon { width: 26px; height: 26px; border-radius: 7px; }
+  .co-m-content .company-stat-icon svg { width: 15px; height: 15px; }
+  .co-m-content .company-stat-value { font-size: 15px; }
+  .co-m-content .company-stat-value .company-stat-unit { font-size: 10px; }
+  .co-m-content .company-stat-label { font-size: 10px; white-space: nowrap; }
+
+  /* 2열 그리드 → 1열 스택 */
+  .co-m-content .company-dashboard-grid { grid-template-columns: 1fr; gap: 10px; }
+  .co-m-content .company-dashboard-grid[style*="margin-top"] { margin-top: 10px !important; }
+
+  /* 카드 여백 축소 */
+  .co-m-content .company-card-head { padding: 11px 13px; }
+  .co-m-content .company-card-title { font-size: 14px; }
+
+  /* 넓은 표는 카드 안에서 좌우 스크롤 */
+  .co-m-content .company-card .company-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+  .co-m-content .company-table th { padding: 8px 10px; font-size: 12.5px; }
+  .co-m-content .company-table td { padding: 9px 10px; font-size: 12.5px; }
+
+  /* 1열(첫 칸) 고정, 나머지만 좌우로 밀어 보기 */
+  .co-m-content .company-card .company-table th:first-child,
+  .co-m-content .company-card .company-table td:first-child {
+    position: sticky; left: 0; z-index: 2;
+    background: #fff;
+    box-shadow: 1px 0 0 #eee;
+  }
+  .co-m-content .company-card .company-table th:first-child { background: #fafafa; }
+}
 
 /* 배지 */
 .company-badge {
