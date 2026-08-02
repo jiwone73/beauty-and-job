@@ -485,11 +485,10 @@ function ApplicantsContent() {
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
-            .co-li-job { font-size: 15.5px; color: #a06fca; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+            .co-li-job { flex: 1; font-size: 15.5px; color: #a06fca; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
             .co-li-metarow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 2px; }
             .co-li-date { font-size: 12px; color: #999; flex-shrink: 0; white-space: nowrap; }
-            .co-li-date .lbl { color: #bbb; margin-right: 3px; }
-            .co-li-career { font-size: 12.5px; color: #888; flex-shrink: 0; white-space: nowrap; }
+            .co-li-date .lbl { color: #999; margin-right: 3px; }
           `}</style>
           {filtered.map((a) => {
             const on = checked.includes(a.id);
@@ -500,7 +499,7 @@ function ApplicantsContent() {
             const career = ct === "NEWCOMER" ? "신입"
               : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : "경력"; })();
             const gender = genderLabel((a as any).user_gender);
-            const ageGender = [age != null ? `${age}세` : null, gender || null].filter(Boolean).join(" · ");
+            const ageGender = [age != null ? `${age}세` : null, gender || null, career || null].filter(Boolean).join(" · ");
             const region = shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" "));
             return (
               <div key={a.id} className="co-row">
@@ -517,18 +516,19 @@ function ApplicantsContent() {
                         : (a.user_name || "?").slice(0, 1)}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div className="co-li-jobrow">
-                        <span className="co-li-job">{!jobFilter ? a.job_title : ""}</span>
-                        <span className="co-li-status" style={{ color: stColor }}>
-                          {STATUS_LABEL[st]}
-                        </span>
-                      </div>
+                      {!jobFilter && (
+                        <div className="co-li-jobrow">
+                          <span className="co-li-job">{a.job_title}</span>
+                        </div>
+                      )}
                       <div className="co-li-namerow">
                         <div className="co-li-nameinfo">
                           <span className="co-li-name">{a.user_name}</span>
                           {ageGender && <span className="co-li-ageg">{ageGender}</span>}
                         </div>
-                        {career && <span className="co-li-career">{career}</span>}
+                        <span className="co-li-status" style={{ color: stColor }}>
+                          {STATUS_LABEL[st]}
+                        </span>
                       </div>
                       <div className="co-li-metarow">
                         <span className="co-li-meta2">{region}</span>
