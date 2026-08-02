@@ -6775,13 +6775,17 @@ input[type="range"].career-slider::-moz-range-thumb {
   flex-direction: column;
   gap: 3px;
 }
-/* 아이콘이 있는 대시보드 카드는 아이콘 왼쪽 · 숫자/라벨 오른쪽 가로 정렬 */
+/* 아이콘이 있는 대시보드 카드: 아이콘 왼쪽 · 숫자/라벨 오른쪽 (데스크톱) */
 .company-stat-card:has(.company-stat-icon) {
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "icon value" "icon label";
   align-items: center;
-  gap: 12px;
+  column-gap: 12px; row-gap: 0;
 }
-.company-stat-card:has(.company-stat-icon) .company-stat-icon { flex-shrink: 0; }
+.company-stat-card:has(.company-stat-icon) .company-stat-icon { flex-shrink: 0; grid-area: icon; }
+.company-stat-card:has(.company-stat-icon) .company-stat-value { grid-area: value; }
+.company-stat-card:has(.company-stat-icon) .company-stat-label { grid-area: label; }
 .company-stat-icon {
   width: 44px; height: 44px;
   border-radius: 10px;
@@ -6839,17 +6843,19 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 기업 대시보드 모바일 반응형 — 여백 최소화 / 공간활용 (co-m 셸 안에서만 적용) */
 @media (max-width: 768px) {
-  /* 통계 카드 4개를 1행에 */
+  /* 통계 카드 4개를 1행에 · 각 카드는 2행(아이콘+숫자 / 라벨) */
   .co-m-content .company-stat-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
-  .co-m-content .company-stat-card,
   .co-m-content .company-stat-card:has(.company-stat-icon) {
-    flex-direction: column; align-items: center; text-align: center; gap: 2px; padding: 8px 4px;
+    grid-template-columns: auto auto;
+    grid-template-areas: "icon value" "label label";
+    justify-content: center; align-items: center;
+    column-gap: 5px; row-gap: 1px; padding: 8px 4px; text-align: center;
   }
   .co-m-content .company-stat-icon { width: 24px; height: 24px; border-radius: 6px; }
   .co-m-content .company-stat-icon svg { width: 14px; height: 14px; }
   .co-m-content .company-stat-value { font-size: 15px; }
   .co-m-content .company-stat-value .company-stat-unit { font-size: 10px; }
-  .co-m-content .company-stat-label { font-size: 10px; white-space: nowrap; }
+  .co-m-content .company-stat-label { grid-area: label; font-size: 10px; white-space: nowrap; }
 
   /* 2열 그리드 → 1열 스택 */
   .co-m-content .company-dashboard-grid { grid-template-columns: 1fr; gap: 10px; }
@@ -6870,9 +6876,13 @@ input[type="range"].career-slider::-moz-range-thumb {
     position: sticky; left: 0; z-index: 2;
     background: #fff;
     box-shadow: 1px 0 0 #eee;
-    min-width: 118px; max-width: 150px;
+    min-width: 92px; max-width: 130px;
     white-space: normal;
   }
+  /* 상태 배지 등은 가로로 (세로 줄바꿈 방지) */
+  .co-m-content .company-table .company-badge,
+  .co-m-content .company-table td { white-space: nowrap; }
+  .co-m-content .company-card .company-table td:first-child { white-space: normal; }
   .co-m-content .company-card .company-table th:first-child { background: #fafafa; text-align: left; }
   /* 공고명 등 첫 칸은 최대 2줄까지만 */
   .co-m-content .company-card .company-table td:first-child { text-align: left; }

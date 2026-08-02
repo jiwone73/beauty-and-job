@@ -204,12 +204,10 @@ export default function CompanyDashboard() {
             <div className="company-stat-icon" style={{ background: stat.color + "18", color: stat.color }}>
               <stat.icon size={22} />
             </div>
-            <div style={{ minWidth: 0 }}>
-              <div className="company-stat-value">
-                {stat.value}<span className="company-stat-unit">{stat.unit}</span>
-              </div>
-              <div className="company-stat-label">{stat.label}</div>
+            <div className="company-stat-value">
+              {stat.value}<span className="company-stat-unit">{stat.unit}</span>
             </div>
+            <div className="company-stat-label">{stat.label}</div>
           </div>
         ))}
       </div>
@@ -223,9 +221,9 @@ export default function CompanyDashboard() {
           </div>
           <div style={{ padding: "8px 6px 4px 0" }}>
             <ResponsiveContainer width="100%" height={170}>
-              <BarChart data={chartData} margin={{ top: 6, right: 8, left: -20, bottom: 0 }}>
+              <BarChart data={chartData} margin={{ top: 6, right: 8, left: -8, bottom: 0 }}>
                 <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={0} />
-                <YAxis tick={{ fontSize: 11 }} allowDecimals={false} width={30} />
+                <YAxis tick={{ fontSize: 11 }} allowDecimals={false} width={26} />
                 <Tooltip
                   cursor={{ fill: "rgba(95,0,128,0.06)" }}
                   contentStyle={{ border: "none", boxShadow: "none", background: "transparent", padding: 0 }}
@@ -369,18 +367,18 @@ export default function CompanyDashboard() {
           {groupDist.length === 0 ? (
             <EmptyState icon={<Users size={32} />} message={loading ? "불러오는 중..." : "아직 지원자가 없습니다"} />
           ) : (
-            <div style={{ padding: "10px 10px", display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ flex: "0 0 38%" }}>
-                <ResponsiveContainer width="100%" height={124}>
+            <div style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: 14 }}>
+              <div style={{ flex: "0 0 34%" }}>
+                <ResponsiveContainer width="100%" height={104}>
                   <PieChart>
-                    <Pie data={groupDist} cx="50%" cy="50%" innerRadius={30} outerRadius={52} dataKey="value" paddingAngle={2}>
+                    <Pie data={groupDist} cx="50%" cy="50%" innerRadius={26} outerRadius={44} dataKey="value" paddingAngle={2}>
                       {groupDist.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                     </Pie>
                     <Tooltip formatter={(v) => [`${v}명`, ""]} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "7px 12px", fontSize: 12.5, alignContent: "center" }}>
+              <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr", gap: "7px 0", fontSize: 12.5, alignContent: "center" }}>
                 {groupDist.map((d, i) => (
                   <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                     <span style={{ width: 9, height: 9, borderRadius: "50%", flexShrink: 0, background: PIE_COLORS[i % PIE_COLORS.length] }} />
