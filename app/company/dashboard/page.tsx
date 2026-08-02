@@ -222,7 +222,8 @@ export default function CompanyDashboard() {
           <div style={{ padding: "8px 6px 4px 0" }}>
             <ResponsiveContainer width="100%" height={170}>
               <BarChart data={chartData} margin={{ top: 6, right: 8, left: -8, bottom: 0 }}>
-                <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={0} />
+                <XAxis dataKey="day" tick={{ fontSize: 10 }} minTickGap={4}
+                  interval={chartData.length <= 8 ? 0 : Math.max(1, Math.ceil(chartData.length / 6) - 1)} />
                 <YAxis tick={{ fontSize: 11 }} allowDecimals={false} width={26} />
                 <Tooltip
                   cursor={{ fill: "rgba(95,0,128,0.06)" }}
