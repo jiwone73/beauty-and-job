@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, SlidersHorizontal, Trash2, ChevronDown } from "lucide-react";
+import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, Trash2, ChevronDown } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { formatPhone } from "@/lib/phone";
 import Link from "next/link";
@@ -60,7 +60,7 @@ function ApplicantsContent() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [jobSheetOpen, setJobSheetOpen] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
 
   useEffect(() => {
@@ -253,11 +253,11 @@ function ApplicantsContent() {
   };
 
   const statCardsData = [
-    { label: "전체 지원자", value: String(counts.전체), unit: "명", color: "#5f0080" },
-    { label: "신규", value: String(counts.신규), unit: "명", color: "#0ea5e9" },
-    { label: "검토중", value: String(counts.검토중), unit: "명", color: "#f59e0b" },
-    { label: "합격", value: String(counts.합격), unit: "명", color: "#10b981" },
-    { label: "불합격", value: String(counts.불합격), unit: "명", color: "#888" },
+    { label: "전체 지원자", value: String(counts.전체), unit: "명", color: "#5f0080", status: "전체" },
+    { label: "신규", value: String(counts.신규), unit: "명", color: "#0ea5e9", status: "신규" },
+    { label: "검토중", value: String(counts.검토중), unit: "명", color: "#f59e0b", status: "검토중" },
+    { label: "합격", value: String(counts.합격), unit: "명", color: "#10b981", status: "합격" },
+    { label: "불합격", value: String(counts.불합격), unit: "명", color: "#888", status: "불합격" },
   ];
 
   return (
@@ -272,12 +272,15 @@ function ApplicantsContent() {
           {summaryOpen && (
             <div className="company-stat-grid co-4">
               {statCardsData.map((s) => (
-                <div key={s.label} className="company-stat-card">
+                <button key={s.label} type="button"
+                  className={`company-stat-card co-statcard ${statusFilter === s.status ? "on" : ""}`}
+                  onClick={() => setStatusFilter(s.status)}
+                  style={statusFilter === s.status ? { borderColor: s.color, background: "#faf7fd" } : undefined}>
                   <div className="company-stat-value" style={{color: s.color}}>
                     {s.value}<span className="company-stat-unit">{s.unit}</span>
                   </div>
                   <div className="company-stat-label">{s.label}</div>
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -295,7 +298,7 @@ function ApplicantsContent() {
         </div>
       )}
 
-      {jobFilter && (
+      {!isMobile && jobFilter && (
         <div style={{
           background: "#faf5ff",
           border: "1px solid #ede0f8",
@@ -360,6 +363,11 @@ function ApplicantsContent() {
             .company-stat-grid.co-4 .company-stat-card { padding: 9px 5px; align-items: center; text-align: center; gap: 2px; }
             .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
             .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+            .co-statcard { display: flex; flex-direction: column; cursor: pointer; font: inherit; -webkit-appearance: none; appearance: none; transition: border-color .15s, background .15s; }
+            .co-jobdd { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; max-width: 190px; }
+            .co-jobdd .lbl { color: #999; flex-shrink: 0; }
+            .co-jobdd .val { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .co-jobdd .chev { flex-shrink: 0; color: #999; }
             .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
             .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }
             .co-mbar-count strong { color: #1a1a1a; }
@@ -385,12 +393,17 @@ function ApplicantsContent() {
             .co-statbar { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
             .co-statbar-label { font-size: 12.5px; color: #888; flex-shrink: 0; margin-right: 2px; }
             .co-statbtn { flex-shrink: 0; padding: 4px 2px; border: none; background: none; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+            .co-joblist { display: flex; flex-direction: column; gap: 2px; }
+            .co-jobopt { text-align: left; width: 100%; padding: 14px; border: none; background: none; border-radius: 10px; font-size: 15px; color: #333; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .co-jobopt.on { background: #f5eaff; color: #5f0080; font-weight: 600; }
           `}</style>
           <div className="co-mbar">
             <span className="co-mbar-count">총 <strong>{filtered.length}</strong>명</span>
             <div className="co-mbar-actions">
-              <button className={`co-mbar-btn ${filterOpen ? "on" : ""}`} onClick={() => setFilterOpen((v) => !v)}>
-                <SlidersHorizontal size={15} /> 필터
+              <button className="co-jobdd" onClick={() => setJobSheetOpen(true)}>
+                <span className="lbl">공고</span>
+                <span className="val">{jobFilterTitle || "전체"}</span>
+                <ChevronDown size={15} className="chev" />
               </button>
               <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
                 {selectMode ? "취소" : "선택"}
@@ -406,45 +419,27 @@ function ApplicantsContent() {
               ))}
             </div>
           )}
-          {filterOpen && (
-            <div className="co-sheet-ov" onClick={() => setFilterOpen(false)}>
+          {jobSheetOpen && (
+            <div className="co-sheet-ov" onClick={() => setJobSheetOpen(false)}>
               <div className="co-sheet" onClick={(e) => e.stopPropagation()}>
                 <div className="co-sheet-grip" />
                 <div className="co-sheet-head">
-                  <span className="co-sheet-title">필터</span>
-                  <button className="co-sheet-reset"
-                    onClick={() => { setSearch(""); setStatusFilter("전체"); setJobFilter(""); }}>
-                    초기화
-                  </button>
+                  <span className="co-sheet-title">공고 선택</span>
                 </div>
                 <div className="co-sheet-body">
-                  <div className="admin-search-wrap">
-                    <Search size={16} className="admin-search-icon" />
-                    <input className="admin-search-input" placeholder="지원자 이름 검색"
-                      value={search} onChange={(e) => setSearch(e.target.value)} />
-                  </div>
-                  <div>
-                    <div className="co-fseg-label">공고</div>
-                    <div className="co-fseg-opts">
-                      <button className={`co-fseg-btn ${jobFilter === "" ? "on" : ""}`}
-                        onClick={() => setJobFilter("")}>전체</button>
-                      {jobs.map((j) => (
-                        <button key={j.id} className={`co-fseg-btn ${jobFilter === j.id ? "on" : ""}`}
-                          onClick={() => setJobFilter(j.id)}>{j.title}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="co-fseg-label">상태</div>
-                    <div className="co-fseg-opts">
-                      {["전체", "신규", "검토중", "합격", "불합격"].map((o) => (
-                        <button key={o} className={`co-fseg-btn ${statusFilter === o ? "on" : ""}`}
-                          onClick={() => setStatusFilter(o)}>{o}</button>
-                      ))}
-                    </div>
+                  <div className="co-joblist">
+                    <button className={`co-jobopt ${jobFilter === "" ? "on" : ""}`}
+                      onClick={() => { setJobFilter(""); setJobSheetOpen(false); }}>
+                      전체 공고
+                    </button>
+                    {jobs.map((j) => (
+                      <button key={j.id} className={`co-jobopt ${jobFilter === j.id ? "on" : ""}`}
+                        onClick={() => { setJobFilter(j.id); setJobSheetOpen(false); }}>
+                        {j.title}
+                      </button>
+                    ))}
                   </div>
                 </div>
-                <button className="co-sheet-apply" onClick={() => setFilterOpen(false)}>적용</button>
               </div>
             </div>
           )}
