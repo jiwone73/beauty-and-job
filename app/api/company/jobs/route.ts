@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   const listQuery = `
     SELECT id, title, job_type, status, view_count,
            (SELECT COUNT(*)::int FROM applications a
-              WHERE a.job_posting_id = job_postings.id AND a.hidden_by_company = false) AS application_count,
+              WHERE a.job_posting_id = job_postings.id AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN') AS application_count,
            deadline, is_featured, created_at, closed_at
     FROM job_postings
     WHERE ${whereClause}

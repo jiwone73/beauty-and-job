@@ -28,13 +28,13 @@ export async function GET(req: NextRequest) {
     pool.query(
       `SELECT COUNT(*)::int AS cnt FROM applications a
        JOIN job_postings jp ON jp.id = a.job_posting_id
-       WHERE jp.company_id = $1 AND a.hidden_by_company = false${jobTypeFilter}`,
+       WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN'${jobTypeFilter}`,
       [companyId]
     ),
     pool.query(
       `SELECT COUNT(*)::int AS cnt FROM applications a
        JOIN job_postings jp ON jp.id = a.job_posting_id
-       WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.applied_at::date = CURRENT_DATE${jobTypeFilter}`,
+       WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN' AND a.applied_at::date = CURRENT_DATE${jobTypeFilter}`,
       [companyId]
     ),
     pool.query(
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
      FROM (SELECT generate_series(CURRENT_DATE - INTERVAL '6 days', CURRENT_DATE, '1 day') AS day) d
      LEFT JOIN applications a
        ON a.applied_at::date = d.day
-       AND a.hidden_by_company = false
+       AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN'
        AND a.job_posting_id IN (SELECT id FROM job_postings WHERE company_id = $1${jobTypeFilterNoAlias})
      GROUP BY d.day
      ORDER BY d.day`,
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
       `SELECT a.status AS status, COUNT(*)::int AS cnt
        FROM applications a
        JOIN job_postings jp ON jp.id = a.job_posting_id
-       WHERE jp.company_id = $1 AND a.hidden_by_company = false${jobTypeFilter}
+       WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN'${jobTypeFilter}
        GROUP BY a.status`,
       [companyId]
     ),
@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
       `SELECT COUNT(*)::int AS cnt
        FROM applications a
        JOIN job_postings jp ON jp.id = a.job_posting_id
-       WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.viewed_at IS NULL${jobTypeFilter}`,
+       WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN' AND a.viewed_at IS NULL${jobTypeFilter}`,
       [companyId]
     ),
   ])
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
   const conversionRes = await pool.query(
     `SELECT id, title, view_count::int AS view_count,
             (SELECT COUNT(*)::int FROM applications a
-               WHERE a.job_posting_id = job_postings.id AND a.hidden_by_company = false) AS application_count
+               WHERE a.job_posting_id = job_postings.id AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN') AS application_count
      FROM job_postings
      WHERE company_id = $1 AND status = 'ACTIVE'${jobTypeFilterNoAlias}
      ORDER BY view_count DESC

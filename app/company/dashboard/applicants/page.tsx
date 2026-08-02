@@ -371,9 +371,9 @@ function ApplicantsContent() {
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
-            .co-statbar { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
-            .co-statbar-label { font-size: 12.5px; color: #888; flex-shrink: 0; }
-            .co-statbtn { flex-shrink: 0; padding: 7px 14px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+            .co-statbar { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
+            .co-statbar-label { font-size: 12.5px; color: #888; flex-shrink: 0; margin-right: 2px; }
+            .co-statbtn { flex-shrink: 0; padding: 4px 2px; border: none; background: none; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
           `}</style>
           <div className="co-mbar">
             <span className="co-mbar-count">총 <strong>{filtered.length}</strong>명</span>
@@ -389,8 +389,8 @@ function ApplicantsContent() {
           {selectMode && checked.length > 0 && (
             <div className="co-statbar">
               <span className="co-statbar-label">{checked.length}명 상태변경</span>
-              {([["APPLIED", "신규", "#0ea5e9", "#e6f5fd"], ["VIEWED", "검토중", "#f59e0b", "#fef3e2"], ["PASSED", "합격", "#10b981", "#e7f8f0"], ["REJECTED", "불합격", "#e74c3c", "#fdecec"]] as [ApplicationStatus, string, string, string][]).map(([sv, sl, c, bg]) => (
-                <button key={sv} className="co-statbtn" style={{ color: c, borderColor: bg, background: bg }}
+              {([["APPLIED", "신규", "#0ea5e9"], ["VIEWED", "검토중", "#f59e0b"], ["PASSED", "합격", "#10b981"], ["REJECTED", "불합격", "#e74c3c"]] as [ApplicationStatus, string, string][]).map(([sv, sl, c]) => (
+                <button key={sv} className="co-statbtn" style={{ color: c }}
                   onClick={() => handleBulkStatus(sv)}>{sl}</button>
               ))}
             </div>
