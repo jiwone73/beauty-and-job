@@ -139,6 +139,28 @@ export default function CompanyJobsPage() {
     }
   };
 
+  // 선택한 공고 일괄 마감 (진행 중인 것만)
+  const handleBulkClose = async () => {
+    const targets = jobs.filter(j => checked.includes(j.id) && !isJobClosed(j));
+    if (targets.length === 0) { alert("마감할 진행 중인 공고가 없습니다."); return; }
+    if (!confirm(`선택한 ${targets.length}건을 마감하시겠습니까?`)) return;
+    try {
+      await Promise.all(targets.map(j => companyJobsApi.close(j.id)));
+      setChecked([]);
+      setSelectMode(false);
+      await loadJobs();
+    } catch (e) {
+      alert("마감 처리 중 오류가 발생했습니다.");
+      console.error("[handleBulkClose]", e);
+    }
+  };
+
+  // 재등록: 1건 선택 시 내용 복사해 새 공고 등록 화면으로
+  const handleReRegister = () => {
+    if (checked.length !== 1) return;
+    router.push(`/company/dashboard/jobs/new?copy=${checked[0]}`);
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm("삭제하시겠습니까?")) return;
     try {
@@ -252,6 +274,7 @@ export default function CompanyJobsPage() {
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
             .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
             .co-mbar-btn.primary { border: none; background: #5f0080; color: #fff; }
+            .co-mbar-btn:disabled { opacity: 0.4; cursor: not-allowed; }
             .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
             .co-sheet { width: 100%; background: #fff; border-radius: 18px 18px 0 0; padding: 0 18px calc(20px + env(safe-area-inset-bottom)); max-height: 82vh; overflow-y: auto; animation: co-sheet-up .22s ease; }
             @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -287,9 +310,21 @@ export default function CompanyJobsPage() {
           </div>
           <div className="co-mbar">
             <span className="co-mbar-count">총 <strong>{filtered.length}</strong>건</span>
-            <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
-              {selectMode ? "취소" : "선택"}
-            </button>
+            <div className="co-mbar-actions">
+              {selectMode && (
+                <>
+                  <button className="co-mbar-btn" disabled={checked.length === 0} onClick={handleBulkClose}>
+                    <Ban size={14} /> 마감
+                  </button>
+                  <button className="co-mbar-btn" disabled={checked.length !== 1} onClick={handleReRegister}>
+                    <Copy size={14} /> 재등록
+                  </button>
+                </>
+              )}
+              <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
+                {selectMode ? "취소" : "선택"}
+              </button>
+            </div>
           </div>
         </>
       )}
@@ -346,22 +381,9 @@ export default function CompanyJobsPage() {
                   onClick={() => selectMode ? toggleCheck(job.id) : router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
                   <div className="co-li-r1">
                     <span className="co-li-title">{job.title}</span>
-                    <div className="co-li-r1r">
-                      <span className="co-li-status" style={{ color: badgeColor }}>
-                        {badgeLabel}
-                      </span>
-                      {closed ? (
-                        <button className="co-rebtn"
-                          onClick={(e) => { e.stopPropagation(); router.push(`/company/dashboard/jobs/new?copy=${job.id}`); }}>
-                          <Copy size={12} /> 재등록
-                        </button>
-                      ) : (
-                        <button className="co-closebtn"
-                          onClick={(e) => { e.stopPropagation(); handleClose(job.id); }}>
-                          <Ban size={12} /> 마감
-                        </button>
-                      )}
-                    </div>
+                    <span className="co-li-status" style={{ color: badgeColor }}>
+                      {badgeLabel}
+                    </span>
                   </div>
                   <div className="co-li-r2">
                     <span>등록 <b>{new Date(job.created_at).toLocaleDateString("ko-KR")}</b></span>
