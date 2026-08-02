@@ -341,14 +341,13 @@ export default function CompanyJobsPage() {
             .co-li.on { border-color: #5f0080; background: #faf5fc; }
             .co-li-r1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
             .co-li-title { font-size: 15.5px; color: #5f0080; line-height: 1.35; word-break: break-all; min-width: 0; }
-            .co-li-status { font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; flex-shrink: 0; }
+            .co-li-status { font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
             .co-li-r2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #777; }
             .co-li-r2 b { color: #444; font-weight: 500; }
           `}</style>
           {filtered.map((job) => {
             const on = checked.includes(job.id);
             const statusColor = job.status === "ACTIVE" ? "#10b981" : job.status === "CLOSED" ? "#888" : "#f59e0b";
-            const statusBg = job.status === "ACTIVE" ? "#e7f8f0" : job.status === "CLOSED" ? "#f0f0f0" : "#fef3e2";
             return (
               <div key={job.id} className="co-row">
                 {selectMode && (
@@ -359,7 +358,7 @@ export default function CompanyJobsPage() {
                   onClick={() => selectMode ? toggleCheck(job.id) : router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
                   <div className="co-li-r1">
                     <span className="co-li-title">{job.title}</span>
-                    <span className="co-li-status" style={{ color: statusColor, background: statusBg }}>
+                    <span className="co-li-status" style={{ color: statusColor }}>
                       {STATUS_LABEL[job.status]}
                     </span>
                   </div>
