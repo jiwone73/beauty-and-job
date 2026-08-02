@@ -326,13 +326,16 @@ export default function CompanyJobsPage() {
             .co-li-r1r { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
             .co-li-status { font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
             .co-rebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #5f0080; background: #fff; color: #5f0080; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
+            .co-closebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #ddd; background: #fff; color: #666; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
             .co-li-r2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #777; }
             .co-li-r2 b { color: #444; font-weight: 500; }
           `}</style>
           {filtered.map((job) => {
             const on = checked.includes(job.id);
             const closed = isJobClosed(job);
-            const statusColor = closed ? "#888" : job.status === "ACTIVE" ? "#10b981" : "#f59e0b";
+            const dl = daysLeft(job.deadline);
+            const badgeLabel = closed ? "마감" : formatDeadline(job.deadline);
+            const badgeColor = closed ? "#888" : !job.deadline ? "#10b981" : (dl !== null && dl <= 7) ? "#e74c3c" : "#10b981";
             return (
               <div key={job.id} className="co-row">
                 {selectMode && (
@@ -344,20 +347,24 @@ export default function CompanyJobsPage() {
                   <div className="co-li-r1">
                     <span className="co-li-title">{job.title}</span>
                     <div className="co-li-r1r">
-                      <span className="co-li-status" style={{ color: statusColor }}>
-                        {closed ? "마감" : STATUS_LABEL[job.status]}
+                      <span className="co-li-status" style={{ color: badgeColor }}>
+                        {badgeLabel}
                       </span>
-                      {closed && (
+                      {closed ? (
                         <button className="co-rebtn"
                           onClick={(e) => { e.stopPropagation(); router.push(`/company/dashboard/jobs/new?copy=${job.id}`); }}>
                           <Copy size={12} /> 재등록
+                        </button>
+                      ) : (
+                        <button className="co-closebtn"
+                          onClick={(e) => { e.stopPropagation(); handleClose(job.id); }}>
+                          <Ban size={12} /> 마감
                         </button>
                       )}
                     </div>
                   </div>
                   <div className="co-li-r2">
                     <span>등록 <b>{new Date(job.created_at).toLocaleDateString("ko-KR")}</b></span>
-                    <span>마감 <b>{formatDeadline(job.deadline)}</b></span>
                     {job.application_count > 0 ? (
                       <span style={{ color: "#5f0080" }}
                         onClick={(e) => { if (!selectMode) { e.stopPropagation(); router.push(`/company/dashboard/applicants?job_id=${job.id}`); } }}>
