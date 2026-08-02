@@ -457,7 +457,7 @@ function ApplicantsContent() {
             .co-li-r1 { display: flex; align-items: center; gap: 10px; }
             .co-li-namerow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
             .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
-            .co-li-status { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; flex-shrink: 0; }
+            .co-li-status { font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
             .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #5f0080; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
@@ -471,7 +471,6 @@ function ApplicantsContent() {
             const on = checked.includes(a.id);
             const st = a.status;
             const stColor = st === "APPLIED" ? "#0ea5e9" : st === "VIEWED" ? "#f59e0b" : st === "PASSED" ? "#10b981" : "#999";
-            const stBg = st === "APPLIED" ? "#e6f5fd" : st === "VIEWED" ? "#fef3e2" : st === "PASSED" ? "#e7f8f0" : "#f0f0f0";
             const age = calcAge((a as any).user_birth_date);
             const ct = (a as any).career_type;
             const career = ct === "NEWCOMER" ? "신입"
@@ -500,7 +499,7 @@ function ApplicantsContent() {
                           <span className="co-li-name">{a.user_name}</span>
                           {ageGender && <span className="co-li-ageg">{ageGender}</span>}
                         </div>
-                        <span className="co-li-status" style={{ color: stColor, background: stBg }}>
+                        <span className="co-li-status" style={{ color: stColor }}>
                           {STATUS_LABEL[st]}
                         </span>
                       </div>
