@@ -171,13 +171,6 @@ export default function CompanyDashboard() {
 
   return (
     <CompanyLayout activePage="dashboard">
-      {/* 환영 메시지 */}
-      <div style={{ marginBottom: "24px" }}>
-        <h1 style={{ fontSize: "23px", fontWeight: 700, color: "#1a1a1a", margin: 0 }}>
-          대시보드
-        </h1>
-      </div>
-
       {/* 기업/매장 토글 (BOTH 회원만) */}
       {companyType === "BOTH" && (
         <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
@@ -228,12 +221,16 @@ export default function CompanyDashboard() {
             <h2 className="company-card-title">지원자 추이</h2>
             <CompanyRangeToggle range={trendRange} onChange={setTrendRange} />
           </div>
-          <div style={{ padding: "16px 8px" }}>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={chartData}>
-                <XAxis dataKey="day" tick={{ fontSize: 11 }} interval={0} />
-                <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
-                <Tooltip />
+          <div style={{ padding: "8px 6px 4px 0" }}>
+            <ResponsiveContainer width="100%" height={170}>
+              <BarChart data={chartData} margin={{ top: 6, right: 8, left: -20, bottom: 0 }}>
+                <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={0} />
+                <YAxis tick={{ fontSize: 11 }} allowDecimals={false} width={30} />
+                <Tooltip
+                  cursor={{ fill: "rgba(95,0,128,0.06)" }}
+                  contentStyle={{ border: "none", boxShadow: "none", background: "transparent", padding: 0 }}
+                  labelStyle={{ fontSize: 10, color: "#999", marginBottom: 0 }}
+                  itemStyle={{ fontSize: 10, color: "#5f0080", padding: 0 }} />
                 <Bar dataKey="지원수" fill="#5f0080" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -288,7 +285,7 @@ export default function CompanyDashboard() {
               <Link href="/company/dashboard/applicants" className="company-card-more">관리하기 →</Link>
             )}
           </div>
-          <div style={{ padding: 20 }}>
+          <div style={{ padding: "14px 14px 16px" }}>
             {sbTotal === 0 ? (
               <div style={{ padding: "28px 0", textAlign: "center", color: "#9a9a9a", fontSize: 14 }}>
                 {loading ? "불러오는 중..." : "아직 지원자가 없습니다"}
@@ -372,18 +369,18 @@ export default function CompanyDashboard() {
           {groupDist.length === 0 ? (
             <EmptyState icon={<Users size={32} />} message={loading ? "불러오는 중..." : "아직 지원자가 없습니다"} />
           ) : (
-            <div style={{ padding: "16px 8px", display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ flex: "0 0 46%" }}>
-                <ResponsiveContainer width="100%" height={200}>
+            <div style={{ padding: "10px 10px", display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ flex: "0 0 38%" }}>
+                <ResponsiveContainer width="100%" height={124}>
                   <PieChart>
-                    <Pie data={groupDist} cx="50%" cy="50%" innerRadius={45} outerRadius={72} dataKey="value" paddingAngle={3}>
+                    <Pie data={groupDist} cx="50%" cy="50%" innerRadius={30} outerRadius={52} dataKey="value" paddingAngle={2}>
                       {groupDist.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                     </Pie>
                     <Tooltip formatter={(v) => [`${v}명`, ""]} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 10px", fontSize: 13, alignContent: "center" }}>
+              <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "7px 12px", fontSize: 12.5, alignContent: "center" }}>
                 {groupDist.map((d, i) => (
                   <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                     <span style={{ width: 9, height: 9, borderRadius: "50%", flexShrink: 0, background: PIE_COLORS[i % PIE_COLORS.length] }} />
@@ -461,8 +458,8 @@ export default function CompanyDashboard() {
             <tbody>
               {jobs.map((job) => (
                 <tr key={job.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
-                  <td className="company-td-name">{job.title}</td>
-                  <td className="company-td-sub">{job.job_type === "STORE" ? "매장" : "기업"}</td>
+                  <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
+                  <td className="company-td-sub">{job.job_type === "STORE" ? "매장" : "본사"}</td>
                   <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
                   <td className="company-td-sub">{job.application_count}명</td>
                   <td className="company-td-sub">{job.view_count.toLocaleString()}</td>
