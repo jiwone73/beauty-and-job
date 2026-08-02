@@ -242,13 +242,13 @@ export default function JobGroupSelectModal({
                 className={activeType === "STORE" ? "on" : ""}
                 onClick={() => setActiveType("STORE")}
               >
-                매장직
+                매장
               </button>
               <button
                 className={activeType === "OFFICE" ? "on" : ""}
                 onClick={() => setActiveType("OFFICE")}
               >
-                사무직
+                본사
               </button>
             </div>
           )}

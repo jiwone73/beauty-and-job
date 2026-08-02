@@ -76,7 +76,7 @@ export default function HeroMobile() {
           <button key={t} type="button"
             className={`hero-m-toggle-btn ${jobType === t ? "active" : ""}`}
             onClick={() => setJobType(t)}>
-            {t === "전체" ? "전체" : t === "기업" ? "🏢 사무직" : "🏪 매장직"}
+            {t === "전체" ? "전체" : t === "기업" ? "🏢 본사" : "🏪 매장"}
           </button>
         ))}
       </div>

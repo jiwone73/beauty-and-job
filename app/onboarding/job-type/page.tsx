@@ -62,7 +62,7 @@ export default function OnboardingJobTypePage() {
                 ? "border-[#5f0080] bg-[#f5ebfa]"
                 : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
           >
-            <p className="text-[16px] font-bold text-[#111] mb-1">💄 매장직</p>
+            <p className="text-[16px] font-bold text-[#111] mb-1">💄 매장</p>
             <p className="text-[13px] text-[#6b6b6b]">
               뷰티 살롱, 네일샵, 피부관리실 등 현장 근무
             </p>
@@ -75,7 +75,7 @@ export default function OnboardingJobTypePage() {
                 ? "border-[#5f0080] bg-[#f5ebfa]"
                 : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
           >
-            <p className="text-[16px] font-bold text-[#111] mb-1">🏢 사무직</p>
+            <p className="text-[16px] font-bold text-[#111] mb-1">🏢 본사</p>
             <p className="text-[13px] text-[#6b6b6b]">
               뷰티 브랜드, MD, 마케팅, 기획 등 사무 근무
             </p>

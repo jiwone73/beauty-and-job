@@ -147,12 +147,12 @@ function Hero() {
                 <button type="button"
                   className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`}
                   onClick={() => setJobType("매장")}>
-                  매장직
+                  매장
                 </button>
                 <button type="button"
                   className={`hero-type-btn ${jobType === "기업" ? "active" : ""}`}
                   onClick={() => setJobType("기업")}>
-                  사무직
+                  본사
                 </button>
               </div>
               <div className="hero-searchbar-v2">
@@ -318,7 +318,7 @@ function SectionPick() {
                 className={`hero-type-btn ${tab === t ? "active" : ""}`}
                 onClick={() => setTab(t)}
               >
-                {t === "매장" ? "매장직" : t}
+                {t === "매장" ? "매장" : t === "사무직" ? "본사" : t}
               </button>
             ))}
           </div>
@@ -414,7 +414,7 @@ function SectionJobGroups() {
                 background: tab === t ? "#5f0080" : "#fff",
                 color: tab === t ? "#fff" : "#666",
               }}>
-              {t === "매장" ? "🏪 매장직" : "🏢 사무직"}
+              {t === "매장" ? "🏪 매장" : "🏢 본사"}
             </button>
           ))}
         </div>
