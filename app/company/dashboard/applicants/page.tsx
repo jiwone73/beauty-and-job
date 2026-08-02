@@ -487,8 +487,9 @@ function ApplicantsContent() {
             .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
             .co-li-job { font-size: 15.5px; color: #a06fca; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
             .co-li-metarow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 2px; }
-            .co-li-applylabel { font-size: 12px; color: #999; flex-shrink: 0; }
-            .co-li-date { font-size: 12px; color: #999; flex-shrink: 0; }
+            .co-li-date { font-size: 12px; color: #999; flex-shrink: 0; white-space: nowrap; }
+            .co-li-date .lbl { color: #bbb; margin-right: 3px; }
+            .co-li-career { font-size: 12.5px; color: #888; flex-shrink: 0; white-space: nowrap; }
           `}</style>
           {filtered.map((a) => {
             const on = checked.includes(a.id);
@@ -501,7 +502,6 @@ function ApplicantsContent() {
             const gender = genderLabel((a as any).user_gender);
             const ageGender = [age != null ? `${age}세` : null, gender || null].filter(Boolean).join(" · ");
             const region = shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" "));
-            const meta2 = [career, region].filter(Boolean).join(" · ");
             return (
               <div key={a.id} className="co-row">
                 {selectMode && (
@@ -528,11 +528,11 @@ function ApplicantsContent() {
                           <span className="co-li-name">{a.user_name}</span>
                           {ageGender && <span className="co-li-ageg">{ageGender}</span>}
                         </div>
-                        <span className="co-li-applylabel">지원일</span>
+                        {career && <span className="co-li-career">{career}</span>}
                       </div>
                       <div className="co-li-metarow">
-                        <span className="co-li-meta2">{meta2}</span>
-                        <span className="co-li-date">{formatDate(a.applied_at)}</span>
+                        <span className="co-li-meta2">{region}</span>
+                        <span className="co-li-date"><span className="lbl">지원일</span> {formatDate(a.applied_at)}</span>
                       </div>
                     </div>
                   </div>
