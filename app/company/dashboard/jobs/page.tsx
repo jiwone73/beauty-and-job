@@ -264,8 +264,8 @@ export default function CompanyJobsPage() {
             .co-addbtn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; height: 46px; padding: 0 15px; flex-shrink: 0; border-radius: 9px; border: none; background: #5f0080; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
             .co-statrow { display: flex; gap: 6px; flex: 1; min-width: 0; }
             .co-stat { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 46px; padding: 0 3px; border: 1px solid #eee; border-radius: 9px; background: #fff; cursor: pointer; font: inherit; transition: border-color .15s, background .15s; }
-            .co-stat .n { font-size: 16px; font-weight: 700; line-height: 1; }
-            .co-stat .l { font-size: 10.5px; color: #888; white-space: nowrap; }
+            .co-stat .n { font-size: 16px; font-weight: 600 !important; line-height: 1; }
+            .co-stat .l { font-size: 11px; color: #666; white-space: nowrap; }
             .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
             .co-mbar-left { display: flex; align-items: center; gap: 11px; }
             .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }

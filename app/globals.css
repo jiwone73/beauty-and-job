@@ -6851,11 +6851,11 @@ input[type="range"].career-slider::-moz-range-thumb {
     justify-content: center; align-items: center;
     column-gap: 5px; row-gap: 1px; padding: 8px 4px; text-align: center;
   }
-  .co-m-content .company-stat-icon { width: 24px; height: 24px; border-radius: 6px; }
-  .co-m-content .company-stat-icon svg { width: 14px; height: 14px; }
-  .co-m-content .company-stat-value { font-size: 15px; }
-  .co-m-content .company-stat-value .company-stat-unit { font-size: 10px; }
-  .co-m-content .company-stat-label { grid-area: label; font-size: 10px; white-space: nowrap; }
+  .co-m-content .company-stat-icon { width: 20px; height: 20px; border-radius: 5px; }
+  .co-m-content .company-stat-icon svg { width: 13px; height: 13px; }
+  .co-m-content .company-stat-value { font-size: 16px; font-weight: 600 !important; color: #1a1a1a; }
+  .co-m-content .company-stat-value .company-stat-unit { font-size: 10.5px; font-weight: 600 !important; }
+  .co-m-content .company-stat-label { grid-area: label; font-size: 11px; color: #666; white-space: nowrap; }
 
   /* 2열 그리드 → 1열 스택 */
   .co-m-content .company-dashboard-grid { grid-template-columns: 1fr; gap: 10px; }
