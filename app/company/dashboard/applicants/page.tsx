@@ -463,9 +463,11 @@ function ApplicantsContent() {
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
-            .co-li-sub { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-            .co-li-sub .title { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .co-li-sub .date { color: #888; flex-shrink: 0; }
+            .co-li-sub { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+            .co-li-sub .title { display: flex; align-items: center; gap: 5px; min-width: 0; }
+            .co-li-sub .title .ico { flex-shrink: 0; color: #b3b3b3; }
+            .co-li-sub .title .tt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .co-li-sub .date { color: #999; flex-shrink: 0; }
           `}</style>
           {filtered.map((a) => {
             const on = checked.includes(a.id);
@@ -507,7 +509,7 @@ function ApplicantsContent() {
                     </div>
                   </div>
                   <div className="co-li-sub">
-                    <span className="title">{a.job_title}</span>
+                    <span className="title"><FileText size={13} className="ico" /><span className="tt">{a.job_title}</span></span>
                     <span className="date">지원일 {formatDate(a.applied_at)}</span>
                   </div>
                 </div>

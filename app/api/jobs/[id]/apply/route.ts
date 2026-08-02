@@ -46,12 +46,17 @@ export async function POST(
   const companyNameDisplay = job.company_name || '외부 기업'
 
   const dupRes = await pool.query(
-    `SELECT id FROM applications WHERE job_posting_id = $1 AND user_id = $2`,
+    `SELECT id, status FROM applications WHERE job_posting_id = $1 AND user_id = $2`,
     [jobPostingId, auth!.sub]
   )
-  if (dupRes.rowCount && dupRes.rowCount > 0) {
+  const existingApp = dupRes.rows[0]
+  // 취소(WITHDRAWN)한 이력이 있으면 재지원 허용 → 기존 행을 되살린다.
+  // 그 외 상태(신규/검토중/합격/불합격)면 중복 지원으로 차단.
+  if (existingApp && existingApp.status !== 'WITHDRAWN') {
     return err('APP_001', '이미 지원하신 공고입니다.', 409)
   }
+  const reactivateId: string | null =
+    existingApp && existingApp.status === 'WITHDRAWN' ? existingApp.id : null
   const profileCheck = await pool.query(
     `SELECT name, phone, birth_date, gender, email, region_sido, preferred_regions, job_type,
             resume_file_url, resume_file_name, resume_file_size
@@ -119,26 +124,39 @@ export async function POST(
     captured_at: new Date().toISOString(),
   }
 
-  const result = await pool.query(
-    `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, resume_snapshot, status,
-                                resume_file_url, resume_file_name, resume_file_size, job_snapshot,
-                                delivery_status, third_party_consent)
-     VALUES ($1, $2, $3, $4, $5, 'APPLIED', $6, $7, $8, $9, $10, $11)
-     RETURNING id, status, applied_at`,
-    [
-      jobPostingId,
-      auth!.sub,
-      finalResumeId,
-      cover_letter || null,
-      snapshot ? JSON.stringify(snapshot) : null,
-      p.resume_file_url || null,
-      p.resume_file_name || null,
-      p.resume_file_size || null,
-      JSON.stringify(jobSnapshot),
-      isExternal ? 'PENDING' : null,
-      isExternal ? true : false,
-    ]
-  )
+  const applyParams = [
+    finalResumeId,
+    cover_letter || null,
+    snapshot ? JSON.stringify(snapshot) : null,
+    p.resume_file_url || null,
+    p.resume_file_name || null,
+    p.resume_file_size || null,
+    JSON.stringify(jobSnapshot),
+    isExternal ? 'PENDING' : null,
+    isExternal ? true : false,
+  ]
+  const result = reactivateId
+    ? await pool.query(
+        // 취소 이력 되살리기: 새 행을 만들지 않고 기존 행을 신규 지원으로 복원
+        `UPDATE applications
+           SET resume_id = $3, cover_letter = $4, resume_snapshot = $5,
+               resume_file_url = $6, resume_file_name = $7, resume_file_size = $8,
+               job_snapshot = $9, delivery_status = $10, third_party_consent = $11,
+               status = 'APPLIED', applied_at = now(), viewed_at = null,
+               status_updated_at = now(), updated_at = now()
+         WHERE id = $1 AND user_id = $2
+         RETURNING id, status, applied_at`,
+        [reactivateId, auth!.sub, ...applyParams]
+      )
+    : await pool.query(
+        `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, resume_snapshot,
+                                    resume_file_url, resume_file_name, resume_file_size, job_snapshot,
+                                    delivery_status, third_party_consent, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'APPLIED')
+         RETURNING id, status, applied_at`,
+        [jobPostingId, auth!.sub, ...applyParams]
+      )
+  // 지원자 수 +1 (취소 시 -1 되어 있으므로 재지원도 대칭으로 +1)
   await pool.query(
     `UPDATE job_postings SET application_count = application_count + 1 WHERE id = $1`,
     [jobPostingId]
