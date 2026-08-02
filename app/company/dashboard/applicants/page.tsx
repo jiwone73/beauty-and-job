@@ -28,6 +28,14 @@ const STATUS_BADGE_CLASS: Record<ApplicationStatus, string> = {
   WITHDRAWN: "company-badge-default",
 };
 
+function shortenRegion(region: string | null | undefined): string | null {
+  if (!region) return null;
+  return region
+    .replace(/특별자치도|특별자치시|특별시|광역시/g, "")
+    .replace(/\s+/g, " ")
+    .trim() || null;
+}
+
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
@@ -455,9 +463,9 @@ function ApplicantsContent() {
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
-            .co-li-sub { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; display: flex; flex-direction: column; gap: 3px; }
-            .co-li-sub .title { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-all; }
-            .co-li-sub .date { color: #888; }
+            .co-li-sub { font-size: 13px; color: #555; margin-top: 10px; padding-top: 9px; border-top: 1px solid #f2f2f2; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+            .co-li-sub .title { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .co-li-sub .date { color: #888; flex-shrink: 0; }
           `}</style>
           {filtered.map((a) => {
             const on = checked.includes(a.id);
@@ -470,6 +478,8 @@ function ApplicantsContent() {
               : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : "경력"; })();
             const gender = genderLabel((a as any).user_gender);
             const ageGender = [age != null ? `${age}세` : null, gender || null].filter(Boolean).join(" · ");
+            const region = shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" "));
+            const meta2 = [career, region].filter(Boolean).join(" · ");
             return (
               <div key={a.id} className="co-row">
                 {selectMode && (
@@ -494,7 +504,7 @@ function ApplicantsContent() {
                           {STATUS_LABEL[st]}
                         </span>
                       </div>
-                      <div className="co-li-meta2">{career}</div>
+                      <div className="co-li-meta2">{meta2}</div>
                     </div>
                   </div>
                   <div className="co-li-sub">

@@ -42,6 +42,8 @@ export async function GET(req: NextRequest) {
        u.birth_date AS user_birth_date,
        u.job_type AS user_job_type,
        u.avatar_url AS user_avatar_url,
+       u.region_sido AS user_region_sido,
+       u.region_sigungu AS user_region_sigungu,
        u.portfolio_url, u.portfolio_filename,
        (SELECT r.career_type FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS career_type,
        (SELECT rc.start_date FROM resume_careers rc
