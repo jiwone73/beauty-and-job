@@ -11266,7 +11266,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 메인 카드: 채용공고 페이지 카드와 썸네일(16:10)·본문 비율 통일 */
 .card-grid .jobcard { aspect-ratio: auto !important; }
 .card-grid .jobcard-cover { flex: 0 0 auto !important; aspect-ratio: 16 / 10 !important; }
-.card-grid .jobcard-body { flex: 0 0 auto !important; }
+.card-grid .jobcard-body { flex: 0 0 auto !important; padding: 12px 14px 13px !important; }
 
 @media (max-width: 480px) {
   .card-grid .jobcard { aspect-ratio: 1 / 1.1 !important; }
