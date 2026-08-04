@@ -57,8 +57,6 @@ export default function JobGroupSelectModal({
     setActiveGroup(getJobGroups(activeType)[0]?.group ?? "");
   }, [activeType]);
 
-  if (!open) return null;
-
   // 현재 활성 트랙 기준 선택값·변경함수
   const curSelected = enableToggle
     ? activeType === "STORE"
@@ -223,6 +221,7 @@ export default function JobGroupSelectModal({
         }
       `}</style>
 
+      {open && (
       <div className="jgm-backdrop">
         <div className="jgm-sheet" onClick={(e) => e.stopPropagation()}>
           {/* 헤더 */}
@@ -332,6 +331,7 @@ export default function JobGroupSelectModal({
           </div>
         </div>
       </div>
+      )}
     </>
   );
 }
