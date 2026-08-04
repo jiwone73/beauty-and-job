@@ -221,8 +221,8 @@ export default function CompanyDashboard() {
                   cursor={{ fill: "rgba(95,0,128,0.06)" }}
                   contentStyle={{ border: "none", boxShadow: "none", background: "transparent", padding: 0 }}
                   labelStyle={{ fontSize: 10, color: "#999", marginBottom: 0 }}
-                  itemStyle={{ fontSize: 10, color: "#5f0080", padding: 0 }} />
-                <Bar dataKey="지원수" fill="#5f0080" radius={[4, 4, 0, 0]} />
+                  itemStyle={{ fontSize: 10, color: "#3d9be0", padding: 0 }} />
+                <Bar dataKey="지원수" fill="#8ec8f0" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -444,13 +444,12 @@ export default function CompanyDashboard() {
         ) : (
           <table className="company-table" style={{ width: "100%" }}>
             <thead>
-              <tr><th>공고명</th><th>유형</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
+              <tr><th>공고명</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
             </thead>
             <tbody>
               {jobs.map((job) => (
                 <tr key={job.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
                   <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
-                  <td className="company-td-sub">{job.job_type === "STORE" ? "매장" : "본사"}</td>
                   <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
                   <td className="company-td-sub">{job.application_count}명</td>
                   <td className="company-td-sub">{job.view_count.toLocaleString()}</td>
