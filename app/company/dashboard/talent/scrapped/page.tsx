@@ -287,20 +287,21 @@ export default function ScrappedTalentPage() {
         <div className="rp-modal-overlay">
           <div className="rp-modal" onClick={e => e.stopPropagation()}>
             <div className="rp-modal-header">
+              <h2 style={{ fontSize: 18, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected.name}</h2>
               <div className="rp-modal-actions">
-                <button className="resume-action-btn" onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading}>
-                  <Download size={15} /><span>{isDownloading ? "저장 중..." : "PDF 저장"}</span>
+                <button onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading} title="PDF 다운로드"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#5f0080", cursor: (isDownloading || resumeLoading) ? "not-allowed" : "pointer", opacity: (isDownloading || resumeLoading) ? 0.5 : 1 }}>
+                  <Download size={20} />
                 </button>
-                <button className="resume-action-btn" onClick={handlePrint}>
-                  <Printer size={15} /><span>인쇄</span>
+                <button onClick={handlePrint} title="인쇄"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#5f0080", cursor: "pointer" }}>
+                  <Printer size={20} />
                 </button>
-                <button className="resume-action-btn danger" onClick={() => handleUnscrap(selected.user_id)}>
-                  스크랩 해제
+                <button onClick={() => setSelected(null)} title="닫기"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 4, borderRadius: 6, border: "none", background: "none", color: "#888", cursor: "pointer" }}>
+                  <X size={20} />
                 </button>
               </div>
-              <button className="rp-modal-close" onClick={() => setSelected(null)}>
-                <X size={20} />
-              </button>
             </div>
             <div className="rp-modal-body">
               {resumeLoading ? (
