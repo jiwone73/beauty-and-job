@@ -699,8 +699,11 @@ export default function TalentPage() {
                     </td>
                     <td className="company-td-sub">
                       {t.careerDetail ? (
-                        t.careerDetail.end_date ? (
-                          <span style={{ color: "#5f0080" }}>퇴직 ({String(t.careerDetail.end_date).slice(0, 7).replace(/-/g, ".")})</span>
+                        /^\d{4}/.test(String(t.careerDetail.end_date || "")) ? (
+                          <>
+                            <div style={{ color: "#5f0080" }}>퇴직</div>
+                            <div style={{ color: "#999", fontSize: 12, marginTop: 2 }}>{String(t.careerDetail.end_date).slice(0, 7).replace(/-/g, ".")}</div>
+                          </>
                         ) : (
                           <span style={{ color: "#888" }}>재직중</span>
                         )
