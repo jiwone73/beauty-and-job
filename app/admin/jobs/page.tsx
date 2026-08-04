@@ -237,9 +237,10 @@ function AdminJobsPageInner() {
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {checkedIds.size > 0 && (["승인완료", "승인대기", "반려"] as const).map((label) => {
               const color = label === "승인완료" ? "#10b981" : label === "승인대기" ? "#f59e0b" : "#e74c3c";
+              const disabled = Array.from(checkedIds).every((id) => jobs.find((j) => j.id === id)?.status === LABEL_TO_STATUS[label]);
               return (
-                <button key={label} onClick={() => handleBulkStatus(label)}
-                  style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${color}`, background: "#fff", color, fontSize: 14, fontWeight: 400, cursor: "pointer" }}>
+                <button key={label} onClick={() => handleBulkStatus(label)} disabled={disabled}
+                  style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${disabled ? "#e2e2e2" : color}`, background: "#fff", color: disabled ? "#c4c4c4" : color, fontSize: 14, fontWeight: 400, cursor: disabled ? "not-allowed" : "pointer" }}>
                   {label}
                 </button>
               );

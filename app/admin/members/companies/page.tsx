@@ -365,9 +365,10 @@ function AdminCompaniesContent() {
             {selectedIds.length > 0 && (["ACTIVE", "PENDING", "SUSPENDED", "REJECTED"] as const).map((key) => {
               const label = STATUS_TO_LABEL[key];
               const color = key === "ACTIVE" ? "#10b981" : key === "PENDING" ? "#f59e0b" : key === "SUSPENDED" ? "#e74c3c" : "#999";
+              const disabled = selectedIds.every((id) => companies.find((c) => c.id === id)?.status === key);
               return (
-                <button key={key} onClick={() => handleBulkStatus(key)}
-                  style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${color}`, background: "#fff", color, fontSize: 14, fontWeight: 400, cursor: "pointer" }}>
+                <button key={key} onClick={() => handleBulkStatus(key)} disabled={disabled}
+                  style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${disabled ? "#e2e2e2" : color}`, background: "#fff", color: disabled ? "#c4c4c4" : color, fontSize: 14, fontWeight: 400, cursor: disabled ? "not-allowed" : "pointer" }}>
                   {label}
                 </button>
               );

@@ -343,9 +343,10 @@ function AdminMembersPageInner() {
           {checked.length > 0 && (["ACTIVE", "INACTIVE", "SUSPENDED"] as const).map((key) => {
             const label = STATUS_TO_LABEL[key];
             const color = key === "ACTIVE" ? "#10b981" : key === "INACTIVE" ? "#f59e0b" : "#e74c3c";
+            const disabled = checked.every((id) => members.find((m) => m.id === id)?.status === key);
             return (
-              <button key={key} onClick={() => handleBulkStatus(key)}
-                style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${color}`, background: "#fff", color, fontSize: 14, fontWeight: 400, cursor: "pointer" }}>
+              <button key={key} onClick={() => handleBulkStatus(key)} disabled={disabled}
+                style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${disabled ? "#e2e2e2" : color}`, background: "#fff", color: disabled ? "#c4c4c4" : color, fontSize: 14, fontWeight: 400, cursor: disabled ? "not-allowed" : "pointer" }}>
                 {label}
               </button>
             );
