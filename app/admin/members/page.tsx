@@ -485,7 +485,7 @@ function AdminMembersPageInner() {
                     {/* 직군: 대분류 · 소분류 (프로필 직군) */}
                     <td className="admin-td-date" style={{ textAlign: "center" }}>
                       {(m.main_job_group || m.sub_job) ? (
-                        <div style={{ maxWidth: 180, margin: "0 auto", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                        <div style={{ maxWidth: 180, margin: "0 auto", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", whiteSpace: "normal", lineHeight: 1.4 }}
                           title={[m.main_job_group, m.sub_job].filter(Boolean).join(" · ")}>
                           {[m.main_job_group, m.sub_job].filter(Boolean).join(" · ")}
                         </div>
