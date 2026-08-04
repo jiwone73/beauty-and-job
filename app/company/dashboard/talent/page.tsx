@@ -365,6 +365,27 @@ export default function TalentPage() {
         </div>
       )}
 
+      {/* 인재 구분 — 매장/본사 세그먼트 (검색 뷰에서만) */}
+      {(view === "search" || !isMobile) && (
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+          <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
+          <div style={{ display: "inline-flex", background: "#f0eef3", borderRadius: 10, padding: 3 }}>
+            {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
+              <button key={tab} onClick={() => handleTabSwitch(tab)}
+                style={{
+                  padding: "7px 18px", borderRadius: 8, fontSize: 14, cursor: "pointer", border: "none",
+                  background: activeTab === tab ? "#fff" : "transparent",
+                  color: activeTab === tab ? "#5f0080" : "#888",
+                  boxShadow: activeTab === tab ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                  transition: "all .15s",
+                }}>
+                {tab === "STORE" ? "매장" : "본사"}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
       {/* 컨트롤 바 (모바일) */}
       {isMobile && (
@@ -747,8 +768,6 @@ export default function TalentPage() {
         jobType={activeTab}
         selected={selectedJobGroups}
         onChange={(groups: string[]) => setSelectedJobGroups(groups)}
-        showTrackToggle
-        onTrackChange={handleTabSwitch}
       />
 
       {/* 지역 모달 */}
