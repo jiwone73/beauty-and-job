@@ -236,11 +236,25 @@ export default function CompanyJobsPage() {
           <FilterDropdown label="진행상태" value={statusFilter}
             options={["전체", "진행중", "마감"]} onChange={setStatusFilter} />
         </div>
-        <div style={{display:"flex", gap:"8px"}}>
+        <div style={{display:"flex", gap:"8px", alignItems:"center"}}>
           {checked.length > 0 && (
-            <button className="admin-danger-btn" onClick={handleBulkDelete}>
-              <Trash2 size={15} /> 선택삭제 ({checked.length})
-            </button>
+            <>
+              <span style={{ fontSize: 13, color: "#888" }}>{checked.length}건 선택</span>
+              <button
+                style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color:"#555", fontSize:14, fontWeight:500, cursor:"pointer" }}
+                onClick={handleBulkClose}>
+                <Ban size={14} /> 마감
+              </button>
+              <button
+                style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color: checked.length !== 1 ? "#bbb" : "#555", fontSize:14, fontWeight:500, cursor: checked.length !== 1 ? "not-allowed" : "pointer" }}
+                disabled={checked.length !== 1}
+                onClick={handleReRegister}>
+                <Copy size={14} /> 재등록
+              </button>
+              <button className="admin-danger-btn" onClick={handleBulkDelete}>
+                <Trash2 size={15} /> 삭제 ({checked.length})
+              </button>
+            </>
           )}
           <Link href="/company/dashboard/jobs/new" className="company-primary-btn">
             <Plus size={15} /> 공고 등록
@@ -422,7 +436,6 @@ export default function CompanyJobsPage() {
                 <th>지원자</th>
                 <th>조회수</th>
                 <th>상태</th>
-                <th>관리</th>
               </tr>
             </thead>
             <tbody>
@@ -434,9 +447,8 @@ export default function CompanyJobsPage() {
                       onChange={() => toggleCheck(job.id)} />
                   </td>
                   <td>
-                    <span style={{color:"#1a1a1a", fontWeight:400, cursor:"pointer"}}
-                      onClick={() => router.push(`/jobs/${job.id}`)}>
-                      {job.title}
+                    <span className="tbl-name-btn" title="공고 보기" onClick={() => router.push(`/jobs/${job.id}`)}>
+                      <span className="tbl-name-txt" style={{color:"#1a1a1a", fontWeight:400}}>{job.title}</span>
                     </span>
                   </td>
                   <td className="company-td-sub">
@@ -450,24 +462,13 @@ export default function CompanyJobsPage() {
                     </Link>
                   </td>
                   <td className="company-td-sub">{job.view_count}</td>
-                  <td style={{ color: isJobClosed(job) ? "#888" : job.status === "ACTIVE" ? "#10b981" : "#f59e0b", fontWeight: 500, fontSize: 14 }}>
-                    {isJobClosed(job) ? "마감" : STATUS_LABEL[job.status]}
-                  </td>
                   <td>
-                    <div style={{display:"flex", gap:"6px", justifyContent:"center"}}>
-                      {job.status === "ACTIVE" && (
-                        <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:14, fontWeight:500, padding:"2px 4px"}}
-                          onClick={() => handleClose(job.id)}><Ban size={13} />마감</button>
-                      )}
-                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#1a1a1a", fontSize:14, fontWeight:500, padding:"2px 4px"}}
-                        onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
-                        <Edit size={13} />수정
-                      </button>
-                      <button style={{display:"inline-flex", alignItems:"center", gap:3, background:"none", border:"none", cursor:"pointer", color:"#1a1a1a", fontSize:14, fontWeight:500, padding:"2px 4px"}}
-                        onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
-                        <Copy size={13} />복사
-                      </button>
-                    </div>
+                    {(() => {
+                      const closed = isJobClosed(job);
+                      const dl = daysLeft(job.deadline);
+                      const color = closed ? "#888" : !job.deadline ? "#10b981" : (dl !== null && dl <= 7) ? "#e74c3c" : "#10b981";
+                      return <span style={{ color, fontWeight: 500, fontSize: 14 }}>{closed ? "마감" : formatDeadline(job.deadline)}</span>;
+                    })()}
                   </td>
                 </tr>
               ))}
