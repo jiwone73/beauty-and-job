@@ -195,6 +195,12 @@ function AdminMembersPageInner() {
     setMembers((prev) => prev.map((m) => m.id === id ? { ...m, status } : m));
   };
 
+  const handleBulkStatus = async (status: string) => {
+    if (!checked.length) return;
+    await Promise.all(checked.map((id) => changeStatus(id, status)));
+    setChecked([]);
+  };
+
   const handleBulkDelete = async () => {
     if (!checked.length) return;
     if (!confirm(`선택한 ${checked.length}명을 삭제하시겠습니까?`)) return;
@@ -333,7 +339,17 @@ function AdminMembersPageInner() {
       <div className="admin-card">
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>총 <strong>{filtered.length.toLocaleString()}</strong>명</span>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {checked.length > 0 && (["ACTIVE", "INACTIVE", "SUSPENDED"] as const).map((key) => {
+            const label = STATUS_TO_LABEL[key];
+            const color = key === "ACTIVE" ? "#10b981" : key === "INACTIVE" ? "#f59e0b" : "#e74c3c";
+            return (
+              <button key={key} onClick={() => handleBulkStatus(key)}
+                style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${color}`, background: "#fff", color, fontSize: 14, fontWeight: 400, cursor: "pointer" }}>
+                {label}
+              </button>
+            );
+          })}
           {/* [SMS 발송 기능 보류] 2026-07
           <button
             onClick={() => { if (checked.length) setSmsOpen(true); }}
@@ -559,22 +575,13 @@ function AdminMembersPageInner() {
 
                     {/* 상태 */}
                     <td>
-                      {m.status === "WITHDRAWN" ? (
-                        <span className="admin-status-withdrawn">탈퇴</span>
-                      ) : (
-                        <select
-                          className={`admin-status-select admin-status-${
-                            m.status === "ACTIVE" ? "success" :
-                            m.status === "SUSPENDED" ? "danger" : "warning"
-                          }`}
-                          value={m.status}
-                          onChange={(e) => changeStatus(m.id, e.target.value)}
-                        >
-                          <option value="ACTIVE">정상</option>
-                          <option value="INACTIVE">휴면</option>
-                          <option value="SUSPENDED">정지</option>
-                        </select>
-                      )}
+                      <span style={{ fontWeight: 500, color:
+                        m.status === "ACTIVE" ? "#10b981" :
+                        m.status === "INACTIVE" ? "#f59e0b" :
+                        m.status === "SUSPENDED" ? "#e74c3c" : "#999"
+                      }}>
+                        {STATUS_TO_LABEL[m.status] || m.status}
+                      </span>
                     </td>
                   </tr>
                 );

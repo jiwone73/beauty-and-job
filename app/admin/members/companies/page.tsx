@@ -199,6 +199,12 @@ function AdminCompaniesContent() {
     setCompanies((prev) => prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c)));
   };
 
+  const handleBulkStatus = async (status: string) => {
+    if (!selectedIds.length) return;
+    await Promise.all(selectedIds.map((id) => changeStatus(id, status)));
+    setSelectedIds([]);
+  };
+
   const toggleOne = (id: string) =>
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
@@ -356,6 +362,16 @@ function AdminCompaniesContent() {
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>총 <strong>{filtered.length}</strong>개사</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {selectedIds.length > 0 && (["ACTIVE", "PENDING", "SUSPENDED", "REJECTED"] as const).map((key) => {
+              const label = STATUS_TO_LABEL[key];
+              const color = key === "ACTIVE" ? "#10b981" : key === "PENDING" ? "#f59e0b" : key === "SUSPENDED" ? "#e74c3c" : "#999";
+              return (
+                <button key={key} onClick={() => handleBulkStatus(key)}
+                  style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${color}`, background: "#fff", color, fontSize: 14, fontWeight: 400, cursor: "pointer" }}>
+                  {label}
+                </button>
+              );
+            })}
             {/* [SMS 발송 기능 보류] 2026-07
             {!blockedMode && selectedIds.length > 0 && (
               <button
@@ -494,23 +510,13 @@ function AdminCompaniesContent() {
                   <td className="admin-td-date">{fmtDate(c.created_at)}</td>
                   {/* 상태 */}
                   <td>
-                    <select
-                      className={`admin-status-select admin-status-${
-                        c.status === "ACTIVE" ? "success" :
-                        c.status === "PENDING" ? "warning" : "danger"
-                      }`}
-                      value={STATUS_TO_LABEL[c.status]}
-                      onChange={(e) => {
-                        const label = e.target.value;
-                        const key = Object.keys(STATUS_TO_LABEL).find((k) => STATUS_TO_LABEL[k] === label);
-                        if (key) changeStatus(c.id, key);
-                      }}
-                    >
-                      <option value="승인대기">승인대기</option>
-                      <option value="승인완료">승인완료</option>
-                      <option value="정지">정지</option>
-                      <option value="반려">반려</option>
-                    </select>
+                    <span style={{ fontWeight: 500, color:
+                      c.status === "ACTIVE" ? "#10b981" :
+                      c.status === "PENDING" ? "#f59e0b" :
+                      c.status === "SUSPENDED" ? "#e74c3c" : "#999"
+                    }}>
+                      {STATUS_TO_LABEL[c.status] || c.status}
+                    </span>
                   </td>
                 </tr>
               ))}

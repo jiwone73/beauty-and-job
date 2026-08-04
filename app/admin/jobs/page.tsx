@@ -129,6 +129,11 @@ function AdminJobsPageInner() {
     });
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, status } : j)));
   };
+  const handleBulkStatus = async (label: string) => {
+    if (checkedIds.size === 0) return;
+    await Promise.all(Array.from(checkedIds).map((id) => changeStatus(id, label)));
+    setCheckedIds(new Set());
+  };
   const groupOf = (jobType: string) => (jobType === "STORE" ? "매장" : "기업");
   const isToday = (d: string) => {
     const dt = new Date(d); const now = new Date();
@@ -229,18 +234,29 @@ function AdminJobsPageInner() {
       <div className="admin-card">
         <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span>총 <strong>{filtered.length}</strong>건{checkedIds.size > 0 ? ` · ${checkedIds.size}건 선택` : ""}</span>
-          <button
-            onClick={handleBulkDelete}
-            disabled={checkedIds.size === 0}
-            style={{
-              display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8,
-              border: "none", fontSize: 14, fontWeight: 600,
-              cursor: checkedIds.size === 0 ? "not-allowed" : "pointer",
-              background: checkedIds.size === 0 ? "#eee" : "#d32f2f",
-              color: checkedIds.size === 0 ? "#aaa" : "#fff",
-            }}>
-            <Trash2 size={15} /> 선택 삭제{checkedIds.size > 0 ? ` (${checkedIds.size})` : ""}
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {checkedIds.size > 0 && (["승인완료", "승인대기", "반려"] as const).map((label) => {
+              const color = label === "승인완료" ? "#10b981" : label === "승인대기" ? "#f59e0b" : "#e74c3c";
+              return (
+                <button key={label} onClick={() => handleBulkStatus(label)}
+                  style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${color}`, background: "#fff", color, fontSize: 14, fontWeight: 400, cursor: "pointer" }}>
+                  {label}
+                </button>
+              );
+            })}
+            <button
+              onClick={handleBulkDelete}
+              disabled={checkedIds.size === 0}
+              style={{
+                display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8,
+                border: "none", fontSize: 14, fontWeight: 600,
+                cursor: checkedIds.size === 0 ? "not-allowed" : "pointer",
+                background: checkedIds.size === 0 ? "#eee" : "#d32f2f",
+                color: checkedIds.size === 0 ? "#aaa" : "#fff",
+              }}>
+              <Trash2 size={15} /> 선택 삭제{checkedIds.size > 0 ? ` (${checkedIds.size})` : ""}
+            </button>
+          </div>
         </div>
         <div style={{ overflowX: "auto" }}>
           <table className="admin-table" style={{ minWidth: 1360, whiteSpace: "nowrap" }}>
@@ -357,18 +373,13 @@ function AdminJobsPageInner() {
                   <td className="admin-td-date">{fmtDate(job.created_at)}</td>
                   {/* 상태 */}
                   <td>
-                    <select
-                      className={`admin-status-select admin-status-${
-                        job.status === "ACTIVE" ? "success" :
-                        job.status === "DRAFT" ? "warning" : "danger"
-                      }`}
-                      value={STATUS_TO_LABEL[job.status] || "승인대기"}
-                      onChange={(e) => changeStatus(job.id, e.target.value)}
-                    >
-                      <option value="승인대기">승인대기</option>
-                      <option value="승인완료">승인완료</option>
-                      <option value="반려">반려</option>
-                    </select>
+                    <span style={{ fontWeight: 500, color:
+                      job.status === "ACTIVE" ? "#10b981" :
+                      job.status === "DRAFT" ? "#f59e0b" :
+                      job.status === "HIDDEN" ? "#e74c3c" : "#999"
+                    }}>
+                      {STATUS_TO_LABEL[job.status] || "승인대기"}
+                    </span>
                   </td>
                 </tr>
               ))}
