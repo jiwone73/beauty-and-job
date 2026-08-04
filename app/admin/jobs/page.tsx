@@ -8,14 +8,14 @@ import Link from "next/link";
 import { formatDeadline } from "@/lib/jobFormat";
 import FilterDropdown from "@/components/company/FilterDropdown";
 const STATUS_TO_LABEL: Record<string, string> = {
-  ACTIVE: "승인완료",
+  ACTIVE: "진행중",
   DRAFT: "승인대기",
   HIDDEN: "반려",
   CLOSED: "마감",
-  EXPIRED: "만료",
+  EXPIRED: "마감",
 };
 const LABEL_TO_STATUS: Record<string, string> = {
-  승인완료: "ACTIVE",
+  진행중: "ACTIVE",
   승인대기: "DRAFT",
   반려: "HIDDEN",
 };
@@ -74,7 +74,7 @@ function AdminJobsPageInner() {
   const searchParams = useSearchParams();
   // 대시보드 카드에서 넘어온 초기 필터
   const initialStatus =
-    searchParams.get("status") === "active" ? "승인완료" :
+    searchParams.get("status") === "active" ? "진행중" :
     searchParams.get("status") === "pending" ? "승인대기" : "전체";
   const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
 
@@ -186,8 +186,9 @@ function AdminJobsPageInner() {
   const counts = {
     전체: jobs.length,
     승인대기: jobs.filter((j) => j.status === "DRAFT").length,
-    승인완료: jobs.filter((j) => j.status === "ACTIVE").length,
+    진행중: jobs.filter((j) => j.status === "ACTIVE").length,
     반려: jobs.filter((j) => j.status === "HIDDEN").length,
+    마감: jobs.filter((j) => j.status === "CLOSED" || j.status === "EXPIRED").length,
   };
   return (
     <AdminLayout activeMenu="jobs">
@@ -240,8 +241,8 @@ function AdminJobsPageInner() {
         <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span>총 <strong>{filtered.length}</strong>건{checkedIds.size > 0 ? ` · ${checkedIds.size}건 선택` : ""}</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {checkedIds.size > 0 && (["승인완료", "승인대기", "반려"] as const).map((label) => {
-              const color = label === "승인완료" ? "#10b981" : label === "승인대기" ? "#f59e0b" : "#e74c3c";
+            {checkedIds.size > 0 && (["진행중", "승인대기", "반려"] as const).map((label) => {
+              const color = label === "진행중" ? "#10b981" : label === "승인대기" ? "#f59e0b" : "#e74c3c";
               const disabled = Array.from(checkedIds).every((id) => jobs.find((j) => j.id === id)?.status === LABEL_TO_STATUS[label]);
               return (
                 <button key={label} onClick={() => handleBulkStatus(label)} disabled={disabled}
