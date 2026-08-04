@@ -270,10 +270,6 @@ function AdminCompaniesContent() {
     정지: companies.filter((c) => c.status === "SUSPENDED").length,
     반려: companies.filter((c) => c.status === "REJECTED").length,
   };
-  const planCounts = {
-    유료: companies.filter(isPaid).length,
-    무료: companies.filter((c) => !isPaid(c)).length,
-  };
 
   const lbl: React.CSSProperties = { color: "#888" };
   const modalBtn: React.CSSProperties = {
@@ -307,18 +303,6 @@ function AdminCompaniesContent() {
         </div>
       )}
       {!blockedMode && (
-        <div className="admin-mini-stats" style={{ marginTop: 12 }}>
-          {Object.entries(planCounts).map(([label, count]) => (
-            <div key={label} className="admin-mini-stat"
-              onClick={() => { setPlanFilter(planFilter === label ? "전체" : label); setPage(1); }}
-              style={{ cursor: "pointer", ...(planFilter === label ? { outline: "2px solid #5f0080", outlineOffset: "-2px" } : {}) }}>
-              <span className="admin-mini-stat-label">{label}</span>
-              <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">개사</span></span>
-            </div>
-          ))}
-        </div>
-      )}
-      {!blockedMode && (
         <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
           <span style={{ fontSize: 14, color: "#777" }}>회원 구분</span>
           {(["전체", "매장", "본사", "매장·본사"] as const).map((opt) => (
@@ -342,7 +326,7 @@ function AdminCompaniesContent() {
           </div>
           
           {!blockedMode && (
-          <FilterDropdown label="요금제"
+          <FilterDropdown label="멤버십"
             value={planFilter}
             options={["전체", "유료", "무료"]}
             onChange={(v) => { setPlanFilter(v); setPage(1); }} />

@@ -19,7 +19,6 @@ const LABEL_TO_STATUS: Record<string, string> = {
   승인대기: "DRAFT",
   반려: "HIDDEN",
 };
-const STATUS_OPTIONS = ["전체", "승인대기", "승인완료", "반려"];
 type Job = {
   id: string;
   title: string;
@@ -194,13 +193,27 @@ function AdminJobsPageInner() {
     <AdminLayout activeMenu="jobs">
       <div className="admin-mini-stats">
         {Object.entries(counts).map(([label, count]) => (
-          <div key={label} className="admin-mini-stat">
+          <div key={label} className="admin-mini-stat"
+            onClick={() => setStatusFilter(label)}
+            style={{ cursor: "pointer", ...(statusFilter === label ? { outline: "2px solid #5f0080", outlineOffset: "-2px" } : {}) }}>
             <span className="admin-mini-stat-label">{label}</span>
             <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">건</span></span>
           </div>
         ))}
       </div>
       <div style={{ width: "fit-content", maxWidth: "100%" }}>
+      {/* 공고 구분 — 매장/기업 라디오 */}
+      <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
+        <span style={{ fontSize: 14, color: "#777" }}>공고 구분</span>
+        {(["전체", "매장", "기업"] as const).map((opt) => (
+          <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobGroupFilter === opt ? "#5f0080" : "#555" }}>
+            <input type="radio" name="jobTrack" checked={jobGroupFilter === opt}
+              onChange={() => setJobGroupFilter(opt)}
+              style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
+            {opt}
+          </label>
+        ))}
+      </div>
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
@@ -208,18 +221,10 @@ function AdminJobsPageInner() {
             <input className="admin-search-input" placeholder="공고명, 기업명 검색"
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <FilterDropdown label="유형"
-            value={jobGroupFilter}
-            options={["전체", "매장", "기업"]}
-            onChange={(v) => setJobGroupFilter(v)} />
           <FilterDropdown label="회원구분"
             value={memberFilter}
             options={["전체", "회원", "비회원"]}
             onChange={(v) => setMemberFilter(v)} />
-          <FilterDropdown label="승인상태"
-            value={statusFilter}
-            options={STATUS_OPTIONS}
-            onChange={(v) => setStatusFilter(v)} />
           <FilterDropdown label="등록일"
             value={dateFilter === "today" ? "오늘" : "전체"}
             options={["전체", "오늘"]}
@@ -267,7 +272,7 @@ function AdminJobsPageInner() {
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
                 <th>공고명</th>
-                <th>매장/기업명</th>
+                <th>매장/본사명</th>
                 <th>등록상품</th>
                 <th>직군</th>
                 <th>지역</th>
@@ -323,9 +328,6 @@ function AdminJobsPageInner() {
                         style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#1a1a1a", cursor: "pointer", fontWeight: 400 }}
                         onClick={() => job.company_id && openCompany(job.company_id)}>
                         {job.company_name}
-                        <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
-                          {job.job_type === "STORE" ? "매장" : "기업"}
-                        </span>
                       </div>
                       {(() => {
                         const isMember = job.is_member !== false && job.source !== "EXTERNAL";
