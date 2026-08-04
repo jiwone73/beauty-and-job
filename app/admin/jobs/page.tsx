@@ -275,7 +275,7 @@ function AdminJobsPageInner() {
                 <th>공고명</th>
                 <th>매장/본사명</th>
                 <th>등록상품</th>
-                <th>직군</th>
+                <th>채용 직군</th>
                 <th>지역</th>
                 <th>지원자</th>
                 <th>마감일</th>
@@ -348,7 +348,7 @@ function AdminJobsPageInner() {
                       return <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 9px", borderRadius: 6, background: b.bg, color: b.color, whiteSpace: "nowrap" }}>{b.label}</span>;
                     })()}
                   </td>
-                  {/* 직군 (길면 2줄) */}
+                  {/* 모집 직군 (공고 직군, 길면 2줄) */}
                   <td className="admin-td-date">
                     {job.categories && job.categories.length > 0 ? (
                       <div style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", whiteSpace: "normal", maxWidth: 260, margin: "0 auto", lineHeight: 1.4 }}
