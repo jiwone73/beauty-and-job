@@ -47,11 +47,6 @@ function genderLabel(gender: string | null): string | null {
   return null;
 }
 
-const clamp2: React.CSSProperties = {
-  display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-  overflow: "hidden", textOverflow: "ellipsis", wordBreak: "break-word", lineHeight: 1.35,
-};
-
 export default function TalentPage() {
   const [activeTab, setActiveTab]     = useState<JobTab>("STORE");
   const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH">("BOTH");
@@ -649,11 +644,10 @@ export default function TalentPage() {
             <thead>
               <tr>
                 <th>이름</th>
-                <th>한줄소개</th>
                 <th>직군</th>
                 <th>지역</th>
                 <th>최근경력</th>
-                <th>재직여부</th>
+                <th>퇴직여부</th>
                 <th>연락처</th>
                 <th>이력서/포트폴리오</th>
               </tr>
@@ -664,7 +658,8 @@ export default function TalentPage() {
                 return (
                   <tr key={t.id}>
                     <td>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                      <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(t)}
+                        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
                         <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           {t.avatarUrl
                             ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -672,7 +667,7 @@ export default function TalentPage() {
                         </div>
                         <div style={{ minWidth: 0 }}>
                           <div style={{ fontWeight: 400, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
-                            <span>{t.name}</span>
+                            <span className="tbl-name-txt">{t.name}</span>
                             {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
                           </div>
                           <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
@@ -682,18 +677,13 @@ export default function TalentPage() {
                       </div>
                     </td>
                     <td className="company-td-sub">
-                      {t.intro ? (
-                        <div
-                          title={t.intro}
-                          style={{ ...clamp2, whiteSpace: "normal", width: 220, margin: "0 auto", textAlign: "left", fontSize: 13, color: "#666" }}
-                        >
-                          {t.intro}
+                      {(t.subJob || t.mainJobGroup) ? (
+                        <div title={[t.mainJobGroup, t.subJob].filter(Boolean).join(" · ")}
+                          style={{ width: 220, margin: "0 auto", textAlign: "left", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {[t.mainJobGroup, t.subJob].filter(Boolean).join(" · ")}
                         </div>
-                      ) : (
-                        <span style={{ color: "#ccc" }}>—</span>
-                      )}
+                      ) : "—"}
                     </td>
-                    <td className="company-td-sub">{t.mainJobGroup || "—"}</td>
                     <td className="company-td-sub">{shortenRegion(t.regionPrefer)}</td>
                     <td className="company-td-sub">
                       {t.careerDetail ? (

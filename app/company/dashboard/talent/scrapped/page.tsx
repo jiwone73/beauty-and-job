@@ -182,7 +182,7 @@ export default function ScrappedTalentPage() {
                   <th>직군</th>
                   <th>지역</th>
                   <th>최근경력</th>
-                  <th>재직여부</th>
+                  <th>퇴직여부</th>
                   <th>연락처</th>
                   <th>이력서/포트폴리오</th>
                 </tr>
@@ -196,7 +196,8 @@ export default function ScrappedTalentPage() {
                   return (
                     <tr key={t.user_id}>
                       <td>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                        <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(t)}
+                          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
                           <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                             {t.avatar_url
                               ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -204,7 +205,7 @@ export default function ScrappedTalentPage() {
                           </div>
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontWeight: 400, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
-                              <span>{t.name}</span>
+                              <span className="tbl-name-txt">{t.name}</span>
                               {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
                             </div>
                             <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
@@ -213,7 +214,14 @@ export default function ScrappedTalentPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="company-td-sub">{t.job_category || "—"}</td>
+                      <td className="company-td-sub">
+                        {(t.sub_job || t.job_category) ? (
+                          <div title={[t.job_category, t.sub_job].filter(Boolean).join(" · ")}
+                            style={{ width: 220, margin: "0 auto", textAlign: "left", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {[t.job_category, t.sub_job].filter(Boolean).join(" · ")}
+                          </div>
+                        ) : "—"}
+                      </td>
                       <td className="company-td-sub">{region}</td>
                       <td className="company-td-sub">
                         {t.careerDetail ? (

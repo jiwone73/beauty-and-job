@@ -6841,6 +6841,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-td-name { font-weight: 400; color: #1a1a1a !important; }
 .company-td-sub { color: #888 !important; white-space: nowrap; }
 
+/* 표에서 이름 클릭 → 이력서 열기 어포던스 */
+.tbl-name-btn { cursor: pointer; }
+.tbl-name-btn:hover .tbl-name-txt { color: #5f0080; text-decoration: underline; }
+
 /* 기업 대시보드 모바일 반응형 — 여백 최소화 / 공간활용 (co-m 셸 안에서만 적용) */
 @media (max-width: 768px) {
   /* 통계 카드 4개를 1행에 · 각 카드는 2행(아이콘+숫자 / 라벨) */

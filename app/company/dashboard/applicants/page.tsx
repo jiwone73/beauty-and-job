@@ -576,7 +576,8 @@ function ApplicantsContent() {
                   </td>
                   <td>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, width: 160, flexShrink: 0 }}>
+                      <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(a)}
+                        style={{ display: "flex", alignItems: "center", gap: 10, width: 160, flexShrink: 0 }}>
                       <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         {(a as any).user_avatar_url
                           ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -584,7 +585,7 @@ function ApplicantsContent() {
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          <span style={{ color: "#1a1a1a", fontWeight: 400, fontSize: 15 }}>{a.user_name}</span>
+                          <span className="tbl-name-txt" style={{ color: "#1a1a1a", fontWeight: 400, fontSize: 15 }}>{a.user_name}</span>
                           {genderLabel((a as any).user_gender) && (
                             <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{genderLabel((a as any).user_gender)}</span>
                           )}
