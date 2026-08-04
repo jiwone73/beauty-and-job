@@ -217,7 +217,7 @@ export default function ScrappedTalentPage() {
                       <td className="company-td-sub">
                         {(t.sub_job || t.job_category) ? (
                           <div title={[t.job_category, t.sub_job].filter(Boolean).join(" · ")}
-                            style={{ width: 220, margin: "0 auto", textAlign: "left", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            style={{ width: 220, margin: "0 auto", textAlign: "left", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", whiteSpace: "normal", lineHeight: 1.35, wordBreak: "break-word" }}>
                             {[t.job_category, t.sub_job].filter(Boolean).join(" · ")}
                           </div>
                         ) : "—"}
@@ -236,12 +236,9 @@ export default function ScrappedTalentPage() {
                       <td className="company-td-sub">
                         {t.careerDetail ? (
                           t.careerDetail.end_date ? (
-                            <>
-                              <div style={{ color: "#888" }}>퇴직</div>
-                              <div style={{ color: "#aaa", marginTop: 2 }}>{String(t.careerDetail.end_date).slice(0, 7).replace(/-/g, ".")}</div>
-                            </>
+                            <span style={{ color: "#5f0080" }}>퇴직 ({String(t.careerDetail.end_date).slice(0, 7).replace(/-/g, ".")})</span>
                           ) : (
-                            <span style={{ color: "#5f0080" }}>재직중</span>
+                            <span style={{ color: "#888" }}>재직중</span>
                           )
                         ) : <span style={{ color: "#ccc" }}>—</span>}
                       </td>
