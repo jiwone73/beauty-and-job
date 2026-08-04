@@ -17,6 +17,8 @@ export async function GET(req: NextRequest) {
         u.avatar_url,
         u.gender,
         u.birth_date,
+        (SELECT p.main_job_group FROM user_profiles p WHERE p.user_id = u.id) AS applicant_main_job_group,
+        (SELECT p.sub_job FROM user_profiles p WHERE p.user_id = u.id) AS applicant_sub_job,
         (
           SELECT json_build_object(
             'company', uc.company,

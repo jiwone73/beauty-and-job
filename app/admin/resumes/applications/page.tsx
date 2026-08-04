@@ -42,6 +42,8 @@ type App = {
   company_is_member: boolean | null;
   linked_at: string | null;
   job_categories: string[] | null;
+  applicant_main_job_group: string | null;
+  applicant_sub_job: string | null;
   cover_letter: string | null;
   resume_snapshot: any | null;
 };
@@ -233,11 +235,10 @@ function AdminApplicationsPageInner() {
                     </td>
                     {/* 공고명 */}
                     <td className="admin-td-title">{a.position}</td>
-                    {/* 직군 */}
+                    {/* 직군 (지원자 프로필 직군: 대분류 · 소분류) */}
                     <td className="admin-td-date">
-                      {a.job_categories && a.job_categories.length > 0
-                        ? a.job_categories.slice(0, 2).join(", ") +
-                          (a.job_categories.length > 2 ? ` 외 ${a.job_categories.length - 2}` : "")
+                      {(a.applicant_main_job_group || a.applicant_sub_job)
+                        ? [a.applicant_main_job_group, a.applicant_sub_job].filter(Boolean).join(" · ")
                         : "-"}
                     </td>
                     {/* 지원일 */}
