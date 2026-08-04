@@ -65,7 +65,7 @@
 }
 
 .header-inner {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 0 32px;
   height: 72px;
@@ -270,7 +270,7 @@
 .section-last { padding-bottom: 17px; }
 
 .container {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 0 32px;
 }
@@ -1737,7 +1737,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 헤더 */
 .jobs-header { background: white; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
-.jobs-header-inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; height: 64px; display: flex; align-items: center; gap: 32px; }
+.jobs-header-inner { max-width: 1360px; margin: 0 auto; padding: 0 32px; height: 64px; display: flex; align-items: center; gap: 32px; }
 .jobs-logo { flex-shrink: 0; }
 .jobs-logo-text { font-size: 22px; font-weight: 900; color: var(--color-primary); letter-spacing: -1px; }
 .jobs-gnb { display: flex; gap: 4px; flex: 1; }
@@ -1772,7 +1772,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobs-search-chip:hover { background: var(--color-primary-soft); color: var(--color-primary); }
 
 /* 컨테이너 */
-.jobs-container { max-width: 1280px; margin: 0 auto; padding: 0 32px 64px; }
+.jobs-container { max-width: 1360px; margin: 0 auto; padding: 0 32px 64px; }
 
 /* 필터 바 */
 .jobs-filter-bar { display: flex; align-items: center; justify-content: space-between; padding: 24px 0 0; gap: 16px; }
@@ -1860,7 +1860,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-top: 1px solid var(--color-primary-soft);
 }
 .footer-company-inner {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 20px 32px;
   display: flex;
@@ -1926,7 +1926,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   background: var(--color-primary-hover);
 }
 .footer-company-info {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 0 32px 20px;
   display: flex;
@@ -1984,7 +1984,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 
 .footer-new-top {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 48px 32px 32px;
   display: grid;
@@ -2052,14 +2052,14 @@ input[type="range"].career-slider::-moz-range-thumb {
 .footer-new-cta-btn:hover { background: var(--color-primary-hover); }
 
 .footer-new-divider {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
   height: 1px;
   background: var(--color-primary-soft);
 }
 
 .footer-new-bottom {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 20px 32px 32px;
   display: flex;
@@ -2130,7 +2130,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 헤더 */
 .job-detail-header { background: white; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
-.job-detail-header-inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.job-detail-header-inner { max-width: 1360px; margin: 0 auto; padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
 .job-detail-back { display: flex; align-items: center; gap: 4px; background: transparent; border: none; cursor: pointer; font-size: 14px; color: var(--color-text-sub); font-family: inherit; transition: color 0.15s; }
 .job-detail-back:hover { color: var(--color-primary); }
 .job-detail-logo { display: flex; align-items: center; text-decoration: none; } .job-detail-logo img { height: 30px; width: auto; }
@@ -2144,7 +2144,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-bookmark.active { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-pale); }
 
 /* 레이아웃 */
-.job-detail-layout { max-width: 1280px; margin: 0 auto; padding: 32px 32px 120px; display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+.job-detail-layout { max-width: 1360px; margin: 0 auto; padding: 32px 32px 120px; display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
 
 /* 메인 */
 .job-detail-main { display: flex; flex-direction: column; gap: 0; }
@@ -2256,7 +2256,7 @@ input[type="range"].career-slider::-moz-range-thumb {
    인사이트 페이지
    =========================================== */
 .insights-page { min-height: 100vh; background: transparent; }
-.insights-container { max-width: 1280px; margin: 0 auto; padding: 0 32px 64px; }
+.insights-container { max-width: 1360px; margin: 0 auto; padding: 0 32px 64px; }
 
 /* 히어로 배너 */
 .insights-hero {
@@ -2436,7 +2436,7 @@ input[type="range"].career-slider::-moz-range-thumb {
    =========================================== */
 .insight-detail-page { min-height: 100vh; background: transparent; }
 .insight-detail-layout {
-  max-width: 1280px; margin: 0 auto;
+  max-width: 1360px; margin: 0 auto;
   padding: 32px 32px 64px;
   display: grid;
   grid-template-columns: 1fr 320px;
@@ -2594,7 +2594,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 헤더 */
 .company-header { background: white; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
-.company-header-inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; height: 64px; display: flex; align-items: center; gap: 32px; }
+.company-header-inner { max-width: 1360px; margin: 0 auto; padding: 0 32px; height: 64px; display: flex; align-items: center; gap: 32px; }
 .company-logo { display: flex; align-items: center; flex-shrink: 0; }
 .company-gnb { display: flex; gap: 4px; flex: 1; }
 .company-gnb-item { font-size: 14px; font-weight: 500; color: #555; padding: 8px 12px; border-radius: 6px; text-decoration: none; transition: color 0.15s; }
@@ -2616,7 +2616,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-btn-outline-white:hover { border-color: white; background: rgba(255,255,255,0.1); }
 
 /* 컨테이너 */
-.company-container { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+.company-container { max-width: 1360px; margin: 0 auto; padding: 0 32px; }
 
 /* 섹션 공통 */
 .company-section { padding: 80px 0; }
@@ -2628,7 +2628,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 히어로 */
 .company-hero { background: linear-gradient(135deg, #f9f0ff 0%, #fce4ec 50%, #fff3e0 100%); padding: 80px 0 60px; }
-.company-hero-inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: 1fr 480px; gap: 64px; align-items: center; }
+.company-hero-inner { max-width: 1360px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: 1fr 480px; gap: 64px; align-items: center; }
 .company-hero-badge { display: inline-block; background: var(--color-primary); color: white; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 100px; margin-bottom: 20px; }
 .company-hero-title { font-size: 40px; font-weight: 900; color: var(--color-text); line-height: 1.25; letter-spacing: -1px; margin-bottom: 20px; }
 .company-hero-point { color: var(--color-primary); }
@@ -2833,7 +2833,7 @@ input[type="range"].career-slider::-moz-range-thumb {
    브랜드 페이지
    =========================================== */
 .brands-page { min-height: 100vh; background: transparent; }
-.brands-container { max-width: 1280px; margin: 0 auto; padding: 0 32px 64px; }
+.brands-container { max-width: 1360px; margin: 0 auto; padding: 0 32px 64px; }
 
 .brands-hero { padding: 40px 0 28px; text-align: center; }
 .brands-hero-title { font-size: 32px; font-weight: 800; color: var(--color-text); margin-bottom: 10px; letter-spacing: -0.5px; }
@@ -2880,7 +2880,7 @@ input[type="range"].career-slider::-moz-range-thumb {
    연봉어택 페이지
    =========================================== */
 .salary-page { min-height: 100vh; background: transparent; }
-.salary-container { max-width: 1280px; margin: 0 auto; padding: 0 32px 64px; }
+.salary-container { max-width: 1360px; margin: 0 auto; padding: 0 32px 64px; }
 
 .salary-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; padding: 48px 0 36px; }
 .salary-hero-badge { display: inline-block; background: var(--color-primary); color: white; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 100px; margin-bottom: 16px; }
@@ -2984,7 +2984,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   align-items: center;
   justify-content: flex-start;
   height: 72px;
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 0 32px;
   gap: 8px;
@@ -7495,7 +7495,7 @@ input[type="range"].career-slider::-moz-range-thumb {
    히어로 배너 (맨 위)
    ============================================ */
 .hero-wrap {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 16px 32px 12px;
 }
@@ -7931,7 +7931,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   display: flex;
   gap: 8px;
   padding: 20px 32px 0;
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
 }
 .jobs-type-tab {
