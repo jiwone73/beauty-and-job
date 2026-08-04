@@ -346,9 +346,18 @@ function ApplicantsContent() {
             options={["전체", "신규", "검토중", "합격", "불합격"]} onChange={setStatusFilter} />
         </div>
         {checked.length > 0 && (
-          <div style={{ marginLeft: "auto" }}>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 14 }}>
+            <span style={{ fontSize: 13, color: "#888" }}>{checked.length}명 선택 · 상태변경</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              {([["APPLIED", "신규", "#0ea5e9"], ["VIEWED", "검토중", "#f59e0b"], ["PASSED", "합격", "#10b981"], ["REJECTED", "불합격", "#e74c3c"]] as [ApplicationStatus, string, string][]).map(([sv, sl, c]) => (
+                <button key={sv} onClick={() => handleBulkStatus(sv)}
+                  style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${c}`, background: "#fff", color: c, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
+                  {sl}
+                </button>
+              ))}
+            </div>
             <button className="admin-danger-btn" onClick={handleBulkHide}>
-              <EyeOff size={15} /> 선택 삭제 ({checked.length})
+              <EyeOff size={15} /> 선택 삭제
             </button>
           </div>
         )}
@@ -561,6 +570,7 @@ function ApplicantsContent() {
                 <th>이름</th>
                 <th>지원 공고</th>
                 <th>지원일</th>
+                <th>지역</th>
                 <th>연락처</th>
                 <th>상태</th>
                 <th>이력서/포트폴리오</th>
@@ -607,6 +617,9 @@ function ApplicantsContent() {
                   <td className="company-td-sub">{a.job_title}</td>
                   <td className="company-td-sub">{formatDate(a.applied_at)}</td>
                   <td className="company-td-sub">
+                    {shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" ")) || <span style={{ color: "#ccc" }}>—</span>}
+                  </td>
+                  <td className="company-td-sub">
                     <div style={{ marginBottom: 2, ...(a.user_email ? {} : { color: "#ccc" }) }}>
                       {a.user_email || "이메일 없음"}
                     </div>
@@ -614,30 +627,10 @@ function ApplicantsContent() {
                       {a.user_phone ? formatPhone(a.user_phone) : "전화번호 없음"}
                     </div>
                   </td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    {a.status === "WITHDRAWN" ? (
-                      <span style={{ color: "#999", fontSize: 14, fontWeight: 500 }}>지원취소</span>
-                    ) : (
-                    <select
-                      value={a.status}
-                      onChange={(e) => handleStatusChange(a.id, e.target.value as ApplicationStatus)}
-                      style={{
-                        padding: "5px 8px",
-                        borderRadius: "6px",
-                        border: "1px solid #e0d0f0",
-                        background: "#fff",
-                        color: "#5f0080",
-                        fontSize: 14,
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                      }}
-                    >
-                      {(["APPLIED", "VIEWED", "PASSED", "REJECTED"] as ApplicationStatus[]).map((st) => (
-                        <option key={st} value={st}>{STATUS_LABEL[st]}</option>
-                      ))}
-                    </select>
-                    )}
+                  <td>
+                    <span style={{ color: a.status === "APPLIED" ? "#0ea5e9" : a.status === "VIEWED" ? "#f59e0b" : a.status === "PASSED" ? "#10b981" : a.status === "REJECTED" ? "#e74c3c" : "#999", fontSize: 14 }}>
+                      {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
+                    </span>
                   </td>
                   <td>
                     <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center" }}>
