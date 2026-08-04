@@ -347,12 +347,14 @@ function AdminJobsPageInner() {
                       return <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 9px", borderRadius: 6, background: b.bg, color: b.color, whiteSpace: "nowrap" }}>{b.label}</span>;
                     })()}
                   </td>
-                  {/* 직군 */}
+                  {/* 직군 (길면 2줄) */}
                   <td className="admin-td-date">
-                    {job.categories && job.categories.length > 0
-                      ? job.categories.slice(0, 2).join(", ") +
-                        (job.categories.length > 2 ? ` 외 ${job.categories.length - 2}` : "")
-                      : "-"}
+                    {job.categories && job.categories.length > 0 ? (
+                      <div style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", whiteSpace: "normal", maxWidth: 260, margin: "0 auto", lineHeight: 1.4 }}
+                        title={job.categories.join(", ")}>
+                        {job.categories.join(", ")}
+                      </div>
+                    ) : "-"}
                   </td>
                   {/* 지역 (시도 축약) */}
                   <td className="admin-td-date">{shortLocation(job.location)}</td>
