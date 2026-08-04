@@ -49,7 +49,7 @@ function genderLabel(gender: string | null): string | null {
 
 export default function TalentPage() {
   const [activeTab, setActiveTab]     = useState<JobTab>("STORE");
-  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH">("BOTH");
+  const [, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH">("BOTH");
   const [talents, setTalents]         = useState<TalentItem[]>([]);
   const [loading, setLoading]         = useState(true);
   const [total, setTotal]             = useState(0);
@@ -365,8 +365,8 @@ export default function TalentPage() {
         </div>
       )}
 
-      {/* 구직자 유형 — BOTH만 둘 다 노출 (검색 뷰에서만) */}
-      {companyType === "BOTH" && (view === "search" || !isMobile) && (
+      {/* 구직자 유형 — 매장/본사 라디오 (검색 뷰에서만) */}
+      {(view === "search" || !isMobile) && (
         <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 16 }}>
           <span style={{ fontSize: 14, color: "#777" }}>구직자 유형</span>
           {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (

@@ -52,16 +52,6 @@ export default function JobGroupSelectModal({
     setActiveGroup(getJobGroups(activeType)[0]?.group ?? "");
   }, [activeType]);
 
-  // 열려 있을 때 body 스크롤 잠금 (모바일 시트에서 특히 중요)
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
-
   if (!open) return null;
 
   // 현재 활성 트랙 기준 선택값·변경함수
