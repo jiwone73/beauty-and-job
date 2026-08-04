@@ -11182,11 +11182,12 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobcard-cover-name { position: absolute; left: 10px; right: 10px; bottom: 8px; text-align: left; font-size: 14px; font-weight: 700; color: rgba(95,0,128,.6); line-height: 1.25; word-break: keep-all; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .jobcard-bookmark { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #bbb; box-shadow: 0 2px 6px rgba(0,0,0,.12); transition: color .15s; z-index: 1; }
 .jobcard-bookmark:hover, .jobcard-bookmark.on { color: var(--color-primary); }
-.jobcard-body { flex: 0 0 50%; display: flex; flex-direction: column; justify-content: flex-start; padding: 8px 14px 10px; overflow: hidden; }
-.jobcard-title { margin: 0 0 5px; font-size: 13px; font-weight: 600; color: #222; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.jobcard-company { margin: 0 0 3px; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.jobcard-meta { margin: 0; font-size: 13px; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.jobcard-deadline { margin-top: 6px; font-size: 13px; font-weight: 600; }
+.jobcard-body { flex: 0 0 50%; display: flex; flex-direction: column; justify-content: flex-start; padding: 6px 14px 7px; overflow: hidden; }
+.jobcard-title { margin: 0 0 3px; font-size: 13px; font-weight: 600; color: #222; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.jobcard-company { margin: 0 0 2px; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jobcard-metarow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 1px; }
+.jobcard-meta { margin: 0; flex: 1; min-width: 0; font-size: 13px; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jobcard-deadline { margin-top: 0; flex-shrink: 0; font-size: 13px; font-weight: 600; }
 @media (max-width: 768px) { .jobs-grid { margin-top: 16px; } }
 @media (max-width: 480px) {
   .jobcard { aspect-ratio: 1 / 1; }
@@ -11258,10 +11259,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 /* D-day는 메인(card-grid)에만 노출, 채용공고 페이지(jobs-grid)는 숨김 */
 .jobs-grid .jobcard-deadline { display: none; }
-/* 메인 카드만 이미지 60% / 본문 40% */
+/* 채용공고 페이지 카드도 본문은 내용 높이에 맞추고 이미지가 남는 공간을 채워 하단 여백 제거 */
+.jobs-grid .jobcard-cover { flex: 1 1 auto; aspect-ratio: auto; }
+.jobs-grid .jobcard-body { flex: 0 0 auto; }
+/* 메인 카드: 본문은 내용 높이에 맞추고, 이미지가 남는 공간을 채워 하단 여백 제거 */
 .card-grid .jobcard { aspect-ratio: 1 / 1.1 !important; }
-.card-grid .jobcard-cover { flex: 0 0 54.5% !important; aspect-ratio: auto !important; }
-.card-grid .jobcard-body { flex: 0 0 45.5% !important; }
+.card-grid .jobcard-cover { flex: 1 1 auto !important; aspect-ratio: auto !important; }
+.card-grid .jobcard-body { flex: 0 0 auto !important; }
 
 @media (max-width: 480px) {
   .card-grid .jobcard { aspect-ratio: 1 / 1.1 !important; }
