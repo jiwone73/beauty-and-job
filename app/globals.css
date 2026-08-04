@@ -5063,7 +5063,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
 
 /* 콘텐츠 */
-.admin-content { padding: 28px; display: flex; flex-direction: column; gap: 20px; max-width: 1440px; margin: 0 auto; width: 100%; }
+.admin-content { padding: 28px; display: flex; flex-direction: column; gap: 20px; max-width: 1800px; margin: 0 auto; width: 100%; }
 
 /* 관리자 본문 글자 +1px (사이드바·타이틀은 .admin-content 밖이라 자동 제외, 표 헤더는 유지) */
 .admin-content .admin-table td { font-size: 15px; }
