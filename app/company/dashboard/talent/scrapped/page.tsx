@@ -179,7 +179,7 @@ export default function ScrappedTalentPage() {
               <thead>
                 <tr>
                   <th>이름</th>
-                  <th>직군</th>
+                  <th>구직 직군</th>
                   <th>지역</th>
                   <th>최근경력</th>
                   <th>퇴직여부</th>

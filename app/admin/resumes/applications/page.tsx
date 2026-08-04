@@ -164,7 +164,7 @@ function AdminApplicationsPageInner() {
                 <th>지원자</th>
                 <th>매장/기업명</th>
                 <th>공고명</th>
-                <th>직군</th>
+                <th>구직 직군</th>
                 <th>지원일</th>
                 <th>이력서/포트폴리오</th>
                 <th>상태</th>

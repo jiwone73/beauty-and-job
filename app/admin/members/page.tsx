@@ -420,7 +420,7 @@ function AdminMembersPageInner() {
                   <input type="checkbox" checked={allPageSelected} onChange={toggleAllPage} />
                 </th>
                 <th>이름</th>
-                <th style={{ textAlign: "center" }}>직군</th>
+                <th style={{ textAlign: "center" }}>구직 직군</th>
                 <th>지역</th>
                 <th style={{ textAlign: "center" }}>연락처</th>
                 <th>최근경력</th>
