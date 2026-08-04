@@ -39,14 +39,6 @@ interface ApplicantItem {
   viewed_at: string | null;
 }
 
-const STATUS_LABEL: Record<string, string> = {
-  ACTIVE: "진행중",
-  CLOSED: "마감",
-  HIDDEN: "숨김",
-  DRAFT: "임시저장",
-  EXPIRED: "만료",
-};
-
 const EXP_LABEL: Record<string, string> = {
   NEW: "신입",
   EXPERIENCED: "경력",
@@ -463,9 +455,13 @@ export default function CompanyDashboard() {
                   <td className="company-td-sub">{job.application_count}명</td>
                   <td className="company-td-sub">{job.view_count.toLocaleString()}</td>
                   <td>
-                    <span className={`company-badge ${job.status === "ACTIVE" ? "active" : "closed"}`}>
-                      {STATUS_LABEL[job.status] || job.status}
-                    </span>
+                    {(() => {
+                      const dl = job.deadline ? Math.ceil((new Date(job.deadline).getTime() - Date.now()) / 86400000) : null;
+                      const closed = job.status === "CLOSED" || (dl !== null && dl < 0);
+                      const label = closed ? "마감" : !job.deadline ? "상시" : `D-${dl}`;
+                      const color = closed ? "#888" : !job.deadline ? "#10b981" : (dl !== null && dl <= 7) ? "#e74c3c" : "#10b981";
+                      return <span style={{ color, whiteSpace: "nowrap" }}>{label}</span>;
+                    })()}
                   </td>
                 </tr>
               ))}

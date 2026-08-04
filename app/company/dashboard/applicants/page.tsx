@@ -488,7 +488,7 @@ function ApplicantsContent() {
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
-            .co-li-job { flex: 1; font-size: 15.5px; color: #a06fca; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+            .co-li-job { flex: 1; font-size: 15.5px; color: #5f0080; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
             .co-li-metarow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 2px; }
             .co-li-date { font-size: 12px; color: #999; flex-shrink: 0; white-space: nowrap; }
             .co-li-date .lbl { color: #999; margin-right: 3px; }

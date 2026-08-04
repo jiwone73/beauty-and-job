@@ -604,7 +604,7 @@ export default function TalentPage() {
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
-            .co-li-job { font-size: 15.5px; color: #a06fca; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .co-li-job { font-size: 15.5px; color: #5f0080; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
           `}</style>
           {talents.map((t) => {
             const gl = genderLabel(t.gender);
