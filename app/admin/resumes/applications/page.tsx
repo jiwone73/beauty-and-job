@@ -128,7 +128,7 @@ function AdminApplicationsPageInner() {
     const matchSearch = !search || (a.applicant_name || "").includes(search) || (a.company_name || "").includes(search) || (a.position || "").includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[a.status] === statusFilter;
     const matchDate = dateFilter === "전체" || isToday(a.applied_at);
-    const matchMember = memberFilter === "전체" || (memberFilter === "비회원 공고지원" ? !a.company_is_member : !!a.company_is_member);
+    const matchMember = memberFilter === "전체" || (memberFilter === "비회원기업 공고 지원" ? !a.company_is_member : !!a.company_is_member);
     return matchSearch && matchStatus && matchDate && matchMember;
   });
 
@@ -151,7 +151,7 @@ function AdminApplicationsPageInner() {
             onChange={(v) => setDateFilter(v === "오늘" ? "today" : "전체")} />
           <FilterDropdown label="지원구분"
             value={memberFilter}
-            options={["전체", "비회원 공고지원", "회원 공고지원"]}
+            options={["전체", "비회원기업 공고 지원", "회원기업 공고 지원"]}
             onChange={(v) => setMemberFilter(v)} />
         </div>
       </div>
