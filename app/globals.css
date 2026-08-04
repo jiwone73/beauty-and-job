@@ -11262,8 +11262,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 채용공고 페이지 카드도 본문은 내용 높이에 맞추고 이미지가 남는 공간을 채워 하단 여백 제거 */
 .jobs-grid .jobcard-cover { flex: 1 1 auto; aspect-ratio: auto; }
 .jobs-grid .jobcard-body { flex: 0 0 auto; }
-/* 메인 카드: 본문은 내용 높이에 맞추고, 이미지가 남는 공간을 채워 하단 여백 제거 */
-.card-grid .jobcard { aspect-ratio: 1 / 1.1 !important; }
+/* 메인 카드: 채용공고 페이지 카드와 동일한 정사각 비율 + 본문 auto·이미지 채움으로 하단 여백 제거 */
+.card-grid .jobcard { aspect-ratio: 1 / 1 !important; }
 .card-grid .jobcard-cover { flex: 1 1 auto !important; aspect-ratio: auto !important; }
 .card-grid .jobcard-body { flex: 0 0 auto !important; }
 
