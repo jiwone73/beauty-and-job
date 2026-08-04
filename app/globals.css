@@ -6757,7 +6757,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-content { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
 
 /* PC 기업회원 본문 글자 +1px (사이드바·타이틀은 .company-content 밖이라 자동 제외) */
-.company-content .company-table th { font-size: 17px; }
+.company-content .company-table th { font-size: 16px; }
 .company-content .company-table td { font-size: 15px; }
 .company-content .company-stat-value { font-size: 19px; }
 .company-content .company-stat-label { font-size: 13px; }
