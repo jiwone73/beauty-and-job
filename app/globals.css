@@ -5065,6 +5065,20 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 콘텐츠 */
 .admin-content { padding: 28px; display: flex; flex-direction: column; gap: 20px; max-width: 1440px; margin: 0 auto; width: 100%; }
 
+/* 관리자 본문 글자 +1px (사이드바·타이틀은 .admin-content 밖이라 자동 제외, 표 헤더는 유지) */
+.admin-content .admin-table td { font-size: 15px; }
+.admin-content .admin-stat-value { font-size: 29px; }
+.admin-content .admin-stat-label { font-size: 16px; }
+.admin-content .admin-card-title { font-size: 17px; }
+.admin-content .admin-table-meta { font-size: 15px; }
+.admin-content .admin-search-input { font-size: 15px; }
+.admin-content .admin-empty { font-size: 15px; }
+.admin-content .admin-danger-btn { font-size: 15px; }
+.admin-content .admin-primary-btn { font-size: 15px; }
+.admin-content .admin-page-btn { font-size: 14px; }
+.admin-content .admin-badge { font-size: 12px; }
+.admin-content .filter-dd-btn { font-size: 15px; }
+
 /* 통계 카드 */
 .admin-stat-grid {
   display: grid;
