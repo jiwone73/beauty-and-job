@@ -14,6 +14,8 @@ export async function GET(req: NextRequest) {
         u.kakao_id, u.naver_id, u.gender, u.birth_date, u.region_sido, u.region_sigungu,
         u.office_job_areas, u.preferred_regions, u.portfolio_url, u.resume_file_url, u.last_login_at, u.created_at, u.avatar_url,
         (SELECT p.skill_areas FROM user_profiles p WHERE p.user_id = u.id) AS skill_areas,
+        (SELECT p.main_job_group FROM user_profiles p WHERE p.user_id = u.id) AS main_job_group,
+        (SELECT p.sub_job FROM user_profiles p WHERE p.user_id = u.id) AS sub_job,
         (SELECT p.work_type_prefer FROM user_profiles p WHERE p.user_id = u.id) AS work_type_prefer,
         (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS resume_id,
         (SELECT r.career_type FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS career_type,

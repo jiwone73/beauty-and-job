@@ -109,6 +109,8 @@ type Member = {
   office_job_areas: string[] | null;
   preferred_regions: string[] | null;
   skill_areas: string[] | null;
+  main_job_group: string | null;
+  sub_job: string | null;
   work_type_prefer: string | null;
   portfolio_url: string | null;
   resume_file_url: string | null;
@@ -294,6 +296,22 @@ function AdminMembersPageInner() {
         ))}
       </div>
 
+      {/* 회원 구분 — 매장/본사 라디오 */}
+      <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
+        <span style={{ fontSize: 14, color: "#777" }}>회원 구분</span>
+        {(["전체", "매장", "본사"] as const).map((opt) => {
+          const active = (jobTypeFilter === "전체" && opt === "전체") || (jobTypeFilter === "매장기술직" && opt === "매장") || (jobTypeFilter === "기업사무직" && opt === "본사");
+          return (
+            <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: active ? "#5f0080" : "#555" }}>
+              <input type="radio" name="memberTrack" checked={active}
+                onChange={() => { setJobTypeFilter(opt === "매장" ? "매장기술직" : opt === "본사" ? "기업사무직" : "전체"); setPage(1); }}
+                style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
+              {opt}
+            </label>
+          );
+        })}
+      </div>
+
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
@@ -301,10 +319,6 @@ function AdminMembersPageInner() {
             <input className="admin-search-input" placeholder="이름, 이메일, 연락처 검색"
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
           </div>
-          <FilterDropdown label="구분"
-            value={jobTypeFilter === "매장기술직" ? "매장" : jobTypeFilter === "기업사무직" ? "본사" : "전체"}
-            options={["전체", "매장", "본사"]}
-            onChange={(v) => { setJobTypeFilter(v === "매장" ? "매장기술직" : v === "본사" ? "기업사무직" : "전체"); setPage(1); }} />
           <FilterDropdown label="상태"
             value={statusFilter}
             options={["전체", "정상", "휴면", "정지", "탈퇴"]}
@@ -468,12 +482,14 @@ function AdminMembersPageInner() {
                       </div>
                     </td>
 
-                    {/* 직군: 대분류 / 세부 */}
+                    {/* 직군: 대분류 · 소분류 (프로필 직군) */}
                     <td className="admin-td-date" style={{ textAlign: "center" }}>
-                      <div>{m.job_type === "STORE" ? "매장" : m.job_type === "OFFICE" ? "본사" : "-"}</div>
-                      <div style={{ marginTop: 2, fontSize: 13, color: "#888", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", margin: "2px auto 0" }} title={m.office_job_areas?.[0] || ""}>
-                        {m.office_job_areas && m.office_job_areas.length > 0 ? m.office_job_areas[0] : "-"}
-                      </div>
+                      {(m.main_job_group || m.sub_job) ? (
+                        <div style={{ maxWidth: 180, margin: "0 auto", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                          title={[m.main_job_group, m.sub_job].filter(Boolean).join(" · ")}>
+                          {[m.main_job_group, m.sub_job].filter(Boolean).join(" · ")}
+                        </div>
+                      ) : "-"}
                     </td>
 
                     {/* 지역: 시도 시군구 한 줄 */}
