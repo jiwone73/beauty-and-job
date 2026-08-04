@@ -365,22 +365,6 @@ export default function TalentPage() {
         </div>
       )}
 
-      {/* 구직자 유형 — 매장/본사 라디오 (검색 뷰에서만) */}
-      {(view === "search" || !isMobile) && (
-        <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 16 }}>
-          <span style={{ fontSize: 14, color: "#777" }}>구직자 유형</span>
-          {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
-            <label key={tab}
-              style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: activeTab === tab ? "#5f0080" : "#555" }}>
-              <input type="radio" name="seekerType" checked={activeTab === tab}
-                onChange={() => handleTabSwitch(tab)}
-                style={{ accentColor: "#5f0080", width: 16, height: 16, cursor: "pointer", margin: 0 }} />
-              {tab === "STORE" ? "매장" : "본사"}
-            </label>
-          ))}
-        </div>
-      )}
-
       <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
       {/* 컨트롤 바 (모바일) */}
       {isMobile && (
@@ -763,6 +747,8 @@ export default function TalentPage() {
         jobType={activeTab}
         selected={selectedJobGroups}
         onChange={(groups: string[]) => setSelectedJobGroups(groups)}
+        showTrackToggle
+        onTrackChange={handleTabSwitch}
       />
 
       {/* 지역 모달 */}

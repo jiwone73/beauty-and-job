@@ -21,6 +21,9 @@ interface Props {
   officeSelected?: string[];                    // 사무 트랙 선택값 (officeJobAreas)
   onChangeStore?: (next: string[]) => void;
   onChangeOffice?: (next: string[]) => void;
+  // ── 인재 구분(매장/본사) 헤더 라디오 (인재검색용) ──
+  showTrackToggle?: boolean;                    // true면 헤더에 인재 구분 라디오 노출
+  onTrackChange?: (t: JobType) => void;         // 구분 변경 시 부모 활성 트랙 전환
 }
 
 export default function JobGroupSelectModal({
@@ -36,6 +39,8 @@ export default function JobGroupSelectModal({
   officeSelected,
   onChangeStore,
   onChangeOffice,
+  showTrackToggle,
+  onTrackChange,
 }: Props) {
   const [activeType, setActiveType] = useState<JobType>(jobType);
   const groups = getJobGroups(activeType);
@@ -124,7 +129,10 @@ export default function JobGroupSelectModal({
           display: flex; align-items: center; justify-content: space-between;
           padding: 18px 20px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0;
         }
-        .jgm-title { font-size: 17px; font-weight: 400; color: #222; }
+        .jgm-title { font-size: 17px; font-weight: 400; color: #222; flex-shrink: 0; }
+        .jgm-track { display: inline-flex; align-items: center; gap: 14px; }
+        .jgm-track-label { font-size: 13px; color: #999; }
+        .jgm-track-radio { display: inline-flex; align-items: center; gap: 5px; font-size: 14px; cursor: pointer; }
         .jgm-close {
           background: none; border: none; font-size: 22px; line-height: 1;
           color: #999; cursor: pointer; padding: 0 4px;
@@ -219,7 +227,26 @@ export default function JobGroupSelectModal({
         <div className="jgm-sheet" onClick={(e) => e.stopPropagation()}>
           {/* 헤더 */}
           <div className="jgm-header">
-            <span className="jgm-title">{title}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 18, minWidth: 0 }}>
+              <span className="jgm-title">{title}</span>
+              {showTrackToggle && (
+                <div className="jgm-track">
+                  <span className="jgm-track-label">인재 구분</span>
+                  {(["STORE", "OFFICE"] as JobType[]).map((t) => (
+                    <label key={t} className="jgm-track-radio" style={{ color: activeType === t ? "#5f0080" : "#666" }}>
+                      <input
+                        type="radio"
+                        name="jgmTrack"
+                        checked={activeType === t}
+                        onChange={() => { setActiveType(t); onTrackChange?.(t); }}
+                        style={{ accentColor: "#5f0080", width: 15, height: 15, margin: 0, cursor: "pointer" }}
+                      />
+                      {t === "STORE" ? "매장" : "본사"}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
             <button className="jgm-close" onClick={onClose} aria-label="닫기">
               ×
             </button>
