@@ -318,6 +318,20 @@ function AdminCompaniesContent() {
           ))}
         </div>
       )}
+      {!blockedMode && (
+        <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
+          <span style={{ fontSize: 14, color: "#777" }}>회원 구분</span>
+          {(["전체", "매장", "본사", "매장·본사"] as const).map((opt) => (
+            <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: typeFilter === opt ? "#5f0080" : "#555" }}>
+              <input type="radio" name="companyTrack" checked={typeFilter === opt}
+                onChange={() => { setTypeFilter(opt); setPage(1); }}
+                style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
+              {opt}
+            </label>
+          ))}
+        </div>
+      )}
+
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
@@ -327,12 +341,6 @@ function AdminCompaniesContent() {
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} />
           </div>
           
-          {!blockedMode && (
-          <FilterDropdown label="구분"
-            value={typeFilter}
-            options={["전체", "매장", "본사", "매장·본사"]}
-            onChange={(v) => { setTypeFilter(v); setPage(1); }} />
-          )}
           {!blockedMode && (
           <FilterDropdown label="요금제"
             value={planFilter}
