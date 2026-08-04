@@ -6756,6 +6756,20 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
 .company-content { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
 
+/* PC 기업회원 본문 글자 +1px (사이드바·타이틀은 .company-content 밖이라 자동 제외) */
+.company-content .company-table th { font-size: 17px; }
+.company-content .company-table td { font-size: 15px; }
+.company-content .company-stat-value { font-size: 19px; }
+.company-content .company-stat-label { font-size: 13px; }
+.company-content .company-card-title { font-size: 17px; }
+.company-content .admin-table-meta { font-size: 15px; }
+.company-content .admin-search-input { font-size: 15px; }
+.company-content .admin-empty { font-size: 15px; }
+.company-content .admin-danger-btn { font-size: 15px; }
+.company-content .company-primary-btn { font-size: 14px; }
+.company-content .company-badge { font-size: 12px; }
+.company-content .filter-dd-btn { font-size: 15px; }
+
 /* 통계 카드 */
 .company-stat-grid {
   display: grid;
