@@ -6,6 +6,8 @@ import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import { Search, FileText, Paperclip } from "lucide-react";
 
+const DATE_LABELS: Record<string, string> = { "전체": "전체", today: "오늘", "7d": "최근 7일", "1m": "최근 1개월", "3m": "최근 3개월", "1y": "최근 1년" };
+const DATE_VALUES: Record<string, string> = { "전체": "전체", "오늘": "today", "최근 7일": "7d", "최근 1개월": "1m", "최근 3개월": "3m", "최근 1년": "1y" };
 const STATUS_TO_LABEL: Record<string, string> = {
   APPLIED: "지원완료",
   VIEWED: "열람됨",
@@ -86,6 +88,7 @@ function AdminApplicationsPageInner() {
   const [statusFilter, setStatusFilter] = useState("전체");
   const [dateFilter, setDateFilter] = useState(initialDate);
   const [memberFilter, setMemberFilter] = useState("전체");
+  const [jobTypeFilter, setJobTypeFilter] = useState("전체");
   const [selected, setSelected] = useState<App | null>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
@@ -116,24 +119,44 @@ function AdminApplicationsPageInner() {
     setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: key } : a)));
   };
 
-  const isToday = (d: string | null) => {
-    if (!d) return false;
-    const dt = new Date(d); const now = new Date();
-    const kst = new Date(dt.getTime() + 9*60*60*1000);
-    const todayKST = new Date(Date.now() + 9*60*60*1000);
-    return kst.toISOString().slice(0,10) === todayKST.toISOString().slice(0,10);
+  const matchPeriod = (d: string | null, period: string) => {
+    if (!d || period === "전체") return true;
+    const dt = new Date(d);
+    if (period === "today") {
+      const kst = new Date(dt.getTime() + 9*60*60*1000);
+      const todayKST = new Date(Date.now() + 9*60*60*1000);
+      return kst.toISOString().slice(0,10) === todayKST.toISOString().slice(0,10);
+    }
+    const days = period === "7d" ? 7 : period === "1m" ? 30 : period === "3m" ? 90 : period === "1y" ? 365 : 0;
+    if (!days) return true;
+    const from = new Date();
+    from.setDate(from.getDate() - days);
+    return dt >= from;
   };
 
   const filtered = apps.filter((a) => {
     const matchSearch = !search || (a.applicant_name || "").includes(search) || (a.company_name || "").includes(search) || (a.position || "").includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[a.status] === statusFilter;
-    const matchDate = dateFilter === "전체" || isToday(a.applied_at);
+    const matchDate = matchPeriod(a.applied_at, dateFilter);
     const matchMember = memberFilter === "전체" || (memberFilter === "비회원기업 공고 지원" ? !a.company_is_member : !!a.company_is_member);
-    return matchSearch && matchStatus && matchDate && matchMember;
+    const matchType = jobTypeFilter === "전체" || (a.job_type === "STORE" ? "매장" : "본사") === jobTypeFilter;
+    return matchSearch && matchStatus && matchDate && matchMember && matchType;
   });
 
   return (
     <AdminLayout activeMenu="resumes-applications">
+      {/* 인재 구분 — 매장/본사 라디오 */}
+      <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
+        <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
+        {(["전체", "매장", "본사"] as const).map((opt) => (
+          <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobTypeFilter === opt ? "#5f0080" : "#555" }}>
+            <input type="radio" name="applicantTrack" checked={jobTypeFilter === opt}
+              onChange={() => setJobTypeFilter(opt)}
+              style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
+            {opt}
+          </label>
+        ))}
+      </div>
       <div className="admin-toolbar">
         <div className="admin-toolbar-left">
           <div className="admin-search-wrap">
@@ -146,9 +169,9 @@ function AdminApplicationsPageInner() {
             options={STATUS_OPTIONS}
             onChange={(v) => setStatusFilter(v)} />
           <FilterDropdown label="지원일"
-            value={dateFilter === "today" ? "오늘" : "전체"}
-            options={["전체", "오늘"]}
-            onChange={(v) => setDateFilter(v === "오늘" ? "today" : "전체")} />
+            value={DATE_LABELS[dateFilter] || "전체"}
+            options={["전체", "오늘", "최근 7일", "최근 1개월", "최근 3개월", "최근 1년"]}
+            onChange={(v) => setDateFilter(DATE_VALUES[v] ?? "전체")} />
           <FilterDropdown label="지원구분"
             value={memberFilter}
             options={["전체", "비회원기업 공고 지원", "회원기업 공고 지원"]}

@@ -341,7 +341,7 @@ function AdminMembersPageInner() {
             onChange={(v) => { setResumeFilter(v); setPage(1); }} />
           <FilterDropdown label="가입"
             value={signupFilter}
-            options={["전체", "이메일", "카카오", "네이버"]}
+            options={["전체", "이메일", "카카오"]}
             onChange={(v) => { setSignupFilter(v); setPage(1); }} />
           <FilterDropdown label="가입일"
             value={DATE_LABELS[dateFilter] || "전체"}

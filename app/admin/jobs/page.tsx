@@ -7,6 +7,8 @@ import { Search, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatDeadline } from "@/lib/jobFormat";
 import FilterDropdown from "@/components/company/FilterDropdown";
+const DATE_LABELS: Record<string, string> = { "전체": "전체", today: "오늘", "7d": "최근 7일", "1m": "최근 1개월", "3m": "최근 3개월", "1y": "최근 1년" };
+const DATE_VALUES: Record<string, string> = { "전체": "전체", "오늘": "today", "최근 7일": "7d", "최근 1개월": "1m", "최근 3개월": "3m", "최근 1년": "1y" };
 const STATUS_TO_LABEL: Record<string, string> = {
   ACTIVE: "진행중",
   DRAFT: "승인대기",
@@ -134,17 +136,25 @@ function AdminJobsPageInner() {
     setCheckedIds(new Set());
   };
   const groupOf = (jobType: string) => (jobType === "STORE" ? "매장" : "기업");
-  const isToday = (d: string) => {
-    const dt = new Date(d); const now = new Date();
-    const kst = new Date(dt.getTime() + 9*60*60*1000);
+  const matchPeriod = (d: string | null, period: string) => {
+    if (!d || period === "전체") return true;
+    const dt = new Date(d);
+    if (period === "today") {
+      const kst = new Date(dt.getTime() + 9*60*60*1000);
       const todayKST = new Date(Date.now() + 9*60*60*1000);
       return kst.toISOString().slice(0,10) === todayKST.toISOString().slice(0,10);
+    }
+    const days = period === "7d" ? 7 : period === "1m" ? 30 : period === "3m" ? 90 : period === "1y" ? 365 : 0;
+    if (!days) return true;
+    const from = new Date();
+    from.setDate(from.getDate() - days);
+    return dt >= from;
   };
   const filtered = jobs.filter((j) => {
     const matchGroup = jobGroupFilter === "전체" || groupOf(j.job_type) === jobGroupFilter;
     const matchSearch = !search || j.title.includes(search) || j.company_name.includes(search);
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[j.status] === statusFilter;
-    const matchDate = dateFilter === "전체" || isToday(j.created_at);
+    const matchDate = matchPeriod(j.created_at, dateFilter);
     const isMember = j.is_member !== false && j.source !== "EXTERNAL";
     const matchMember = memberFilter === "전체" || (memberFilter === "회원" ? isMember : !isMember);
     return matchGroup && matchSearch && matchStatus && matchDate && matchMember;
@@ -227,9 +237,9 @@ function AdminJobsPageInner() {
             options={["전체", "회원", "비회원"]}
             onChange={(v) => setMemberFilter(v)} />
           <FilterDropdown label="등록일"
-            value={dateFilter === "today" ? "오늘" : "전체"}
-            options={["전체", "오늘"]}
-            onChange={(v) => setDateFilter(v === "오늘" ? "today" : "전체")} />
+            value={DATE_LABELS[dateFilter] || "전체"}
+            options={["전체", "오늘", "최근 7일", "최근 1개월", "최근 3개월", "최근 1년"]}
+            onChange={(v) => setDateFilter(DATE_VALUES[v] ?? "전체")} />
         </div>
         <div style={{display:"flex", gap:"8px"}}>
           <Link href="/admin/jobs/new" className="admin-primary-btn">
