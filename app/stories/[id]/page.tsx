@@ -106,14 +106,14 @@ export default function StoryDetailPage() {
 
   if (loading) {
     return (
-      <main style={{ maxWidth: 936, margin: "0 auto", padding: "0 16px" }}>
+      <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px" }}>
         <p style={{ textAlign: "center", padding: "80px 0", color: "#888" }}>불러오는 중...</p>
       </main>
     );
   }
   if (notFound || !post) {
     return (
-      <main style={{ maxWidth: 936, margin: "0 auto", padding: "0 16px" }}>
+      <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px" }}>
         <p style={{ textAlign: "center", padding: "80px 0", color: "#888" }}>글을 찾을 수 없어요.</p>
         <p style={{ textAlign: "center" }}>
           <Link href="/stories" style={{ color: "#5f0080" }}>이야기 목록으로</Link>
@@ -125,7 +125,7 @@ export default function StoryDetailPage() {
   const cs = CAT_STYLE[post.category] || { bg: "#f0f0f0", color: "#666" };
 
   return (
-    <main style={{ maxWidth: 936, margin: "0 auto", padding: "0 16px 40px" }}>
+    <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 40px" }}>
       <header style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 0" }}>
         <button onClick={() => router.back()} style={{ background: "none", border: "none", fontSize: 24, cursor: "pointer", color: "#333", lineHeight: 1 }}>‹</button>
         <Link href="/stories" style={{ fontSize: 15, fontWeight: 600, color: "#5f0080", textDecoration: "none" }}>현장이야기</Link>

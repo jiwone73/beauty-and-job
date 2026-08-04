@@ -361,12 +361,12 @@ export default function AdminStoriesPage() {
                     <input type="checkbox" checked={checked.includes(p.id)} onChange={() => toggleCheck(p.id)} />
                   </td>
                   <td style={td}>{p.category}</td>
-                  <td style={{ ...td, maxWidth: 340, cursor: "pointer", textAlign: "left" }} onClick={() => openExpand(p)}>
+                  <td style={{ ...td, maxWidth: 442, cursor: "pointer", textAlign: "left" }} onClick={() => openExpand(p)}>
                     <div style={{ fontWeight: 600, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
                       <span style={{ color: "#bbb", fontSize: 12 }}>{expandedId === p.id ? "▼" : "▶"}</span>
                       {p.title || "(제목 없음)"}
                     </div>
-                    <div style={{ color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 320 }}>{p.body}</div>
+                    <div style={{ color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 416 }}>{p.body}</div>
                   </td>
                   {tab === "pending" ? (
                     <td style={{ ...td, color: "#888" }}>{p.source === "ai" ? "🤖 AI" : p.source === "user_story" ? "사용자" : "운영자"}</td>
