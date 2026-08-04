@@ -727,10 +727,11 @@ export default function TalentPage() {
                           </button>
                           <button
                             className={`talent-scrap-btn ${t.scrapped ? "scrapped" : ""}`}
-                            style={{ padding: "6px 8px" }}
+                            style={{ padding: "6px 8px", gap: 4 }}
                             onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}
                           >
                             {t.scrapped ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
+                            <span style={{ fontSize: 13 }}>스크랩</span>
                           </button>
                         </div>
                         {t.portfolioUrl ? (

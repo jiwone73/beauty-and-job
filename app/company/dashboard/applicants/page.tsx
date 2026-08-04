@@ -639,9 +639,11 @@ function ApplicantsContent() {
                           style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: 0 }}>
                           <FileText size={16} /><span>이력서</span>
                         </button>
-                        <span title={(a as any).scrapped ? "스크랩한 인재" : "미스크랩"} style={{ display: "inline-flex" }}>
+                        <span title={(a as any).scrapped ? "스크랩한 인재" : "미스크랩"}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 3, color: (a as any).scrapped ? "#5f0080" : "#d0d0d0", fontSize: 13 }}>
                           <Bookmark size={15}
                             style={{ color: (a as any).scrapped ? "#5f0080" : "#d0d0d0", fill: (a as any).scrapped ? "#5f0080" : "none" }} />
+                          <span>스크랩</span>
                         </span>
                       </div>
                       {(a as any).portfolio_url ? (

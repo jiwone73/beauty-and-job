@@ -256,9 +256,10 @@ export default function ScrappedTalentPage() {
                               onClick={(e) => { e.stopPropagation(); setSelected(t); }}>
                               <FileText size={14} /><span>이력서</span>
                             </button>
-                            <button className="talent-scrap-btn scrapped" style={{ padding: "6px 8px" }}
+                            <button className="talent-scrap-btn scrapped" style={{ padding: "6px 8px", gap: 4 }}
                               onClick={(e) => { e.stopPropagation(); handleUnscrap(t.user_id); }}>
                               <BookmarkCheck size={16} />
+                              <span style={{ fontSize: 13 }}>스크랩</span>
                             </button>
                           </div>
                           {t.portfolio_url ? (
