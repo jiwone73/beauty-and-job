@@ -294,14 +294,14 @@ function AdminJobsPageInner() {
                     <input type="checkbox" checked={checkedIds.has(job.id)}
                       onChange={() => toggleCheck(job.id)} />
                   </td>
-                  {/* 공고명 (길면 2줄) */}
-                  <td style={{ minWidth: 220 }}>
+                  {/* 공고명 (직군과 동일 폭, 길면 2줄) */}
+                  <td>
                     <span
                       title={job.title}
                       style={{
                         color: "#333", cursor: "pointer", fontWeight: 400,
                         display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-                        overflow: "hidden", whiteSpace: "normal", maxWidth: 460, lineHeight: 1.4,
+                        overflow: "hidden", whiteSpace: "normal", maxWidth: 260, lineHeight: 1.4,
                       }}
                       onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank")}>
                       {job.title}
