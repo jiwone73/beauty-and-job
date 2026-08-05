@@ -216,8 +216,8 @@ export default function ScrappedTalentPage() {
                       </td>
                       <td className="company-td-sub">
                         {(t.sub_job || t.job_category) ? (
-                          <div title={[t.job_category, t.sub_job].filter(Boolean).join(" · ")}
-                            style={{ width: 220, margin: "0 auto", textAlign: "left", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", whiteSpace: "normal", lineHeight: 1.35, wordBreak: "break-word" }}>
+                          <div className="adm-td2 adm-w-md" style={{ textAlign: "left", wordBreak: "break-word" }}
+                            title={[t.job_category, t.sub_job].filter(Boolean).join(" · ")}>
                             {[t.job_category, t.sub_job].filter(Boolean).join(" · ")}
                           </div>
                         ) : "—"}

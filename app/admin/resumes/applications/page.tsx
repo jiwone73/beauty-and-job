@@ -258,15 +258,14 @@ function AdminApplicationsPageInner() {
                     </td>
                     {/* 공고명 (길면 2줄) */}
                     <td className="admin-td-title">
-                      <div style={{ maxWidth: 260, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", whiteSpace: "normal", lineHeight: 1.4 }}
-                        title={a.position}>
+                      <div className="adm-td2 adm-w-lg" style={{ margin: 0 }} title={a.position}>
                         {a.position}
                       </div>
                     </td>
                     {/* 구직 직군 (지원자 프로필 직군: 대분류 · 소분류, 길면 2줄) */}
                     <td className="admin-td-date">
                       {(a.applicant_main_job_group || a.applicant_sub_job) ? (
-                        <div style={{ maxWidth: 180, margin: "0 auto", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", whiteSpace: "normal", lineHeight: 1.4 }}
+                        <div className="adm-td2 adm-w-md"
                           title={[a.applicant_main_job_group, a.applicant_sub_job].filter(Boolean).join(" · ")}>
                           {[a.applicant_main_job_group, a.applicant_sub_job].filter(Boolean).join(" · ")}
                         </div>

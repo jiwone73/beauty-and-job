@@ -485,7 +485,7 @@ function AdminMembersPageInner() {
                     {/* 직군: 대분류 · 소분류 (프로필 직군) */}
                     <td className="admin-td-date" style={{ textAlign: "center" }}>
                       {(m.main_job_group || m.sub_job) ? (
-                        <div style={{ maxWidth: 180, margin: "0 auto", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", whiteSpace: "normal", lineHeight: 1.4 }}
+                        <div className="adm-td2 adm-w-md"
                           title={[m.main_job_group, m.sub_job].filter(Boolean).join(" · ")}>
                           {[m.main_job_group, m.sub_job].filter(Boolean).join(" · ")}
                         </div>
@@ -501,7 +501,7 @@ function AdminMembersPageInner() {
 
                     {/* 연락처: 이메일 / 전화 */}
                     <td className="admin-td-date" style={{ textAlign: "center" }}>
-                      <div style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto" }} title={m.email || ""}>{m.email || "-"}</div>
+                      <div className="adm-w-md" style={{ overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto", whiteSpace: "nowrap" }} title={m.email || ""}>{m.email || "-"}</div>
                       <div style={{ marginTop: 4, color: "#888" }}>{m.phone ? formatPhone(m.phone) : "-"}</div>
                     </td>
 

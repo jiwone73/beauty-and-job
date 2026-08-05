@@ -6873,6 +6873,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 .tbl-name-btn { cursor: pointer; }
 .tbl-name-btn:hover .tbl-name-txt { color: #5f0080; text-decoration: underline; }
 
+/* 관리자/기업 표 셀 내용 폭 표준 — 내용이 꽉 찼을 때 열 최대폭을 일관되게 통일.
+   2줄까지 감싸고 넘치면 말줄임(…), 전체는 title 툴팁. margin auto로 가운데 정렬 셀과 호환. */
+.adm-td2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; line-height: 1.4; margin: 0 auto; }
+.adm-w-sm { max-width: 150px; }   /* 경력·연락처·지역 등 짧은 내용 */
+.adm-w-md { max-width: 220px; }   /* 직군·회사명 등 중간 내용 */
+.adm-w-lg { max-width: 300px; }   /* 공고명·제목 등 긴 내용 */
+
 /* 기업 대시보드 모바일 반응형 — 여백 최소화 / 공간활용 (co-m 셸 안에서만 적용) */
 @media (max-width: 768px) {
   /* 통계 카드 4개를 1행에 · 각 카드는 2행(아이콘+숫자 / 라벨) */

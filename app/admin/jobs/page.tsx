@@ -304,15 +304,11 @@ function AdminJobsPageInner() {
                     <input type="checkbox" checked={checkedIds.has(job.id)}
                       onChange={() => toggleCheck(job.id)} />
                   </td>
-                  {/* 공고명 (직군과 동일 폭, 길면 2줄) */}
+                  {/* 공고명 (길면 2줄) */}
                   <td>
-                    <span
+                    <span className="adm-td2 adm-w-lg"
                       title={job.title}
-                      style={{
-                        color: "#333", cursor: "pointer", fontWeight: 400,
-                        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-                        overflow: "hidden", whiteSpace: "normal", maxWidth: 260, lineHeight: 1.4,
-                      }}
+                      style={{ color: "#333", cursor: "pointer", fontWeight: 400 }}
                       onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank")}>
                       {job.title}
                     </span>
@@ -361,7 +357,7 @@ function AdminJobsPageInner() {
                   {/* 모집 직군 (공고 직군, 길면 2줄) */}
                   <td className="admin-td-date">
                     {job.categories && job.categories.length > 0 ? (
-                      <div style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", whiteSpace: "normal", maxWidth: 260, margin: "0 auto", lineHeight: 1.4 }}
+                      <div className="adm-td2 adm-w-md"
                         title={job.categories.join(", ")}>
                         {job.categories.join(", ")}
                       </div>
