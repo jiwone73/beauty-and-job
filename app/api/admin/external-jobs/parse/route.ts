@@ -2,6 +2,8 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { ok, err, requireAuth } from "@/lib/api";
+import { parseStructured } from "@/lib/external/parsers/structured";
+import { getAllJobItems } from "@/lib/data/jobGroups";
 
 function htmlToText(html: string): string {
   return html
@@ -46,8 +48,9 @@ function metaContent(html: string, prop: string): string {
 
 // ── 뷰티워크 폼과 100% 일치시켜야 하는 선택지 (드롭다운·칩) ──
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
-const STORE_CATEGORIES = ["헤어 디자이너", "헤어 스태프·인턴", "바버(이용)", "두피·탈모 관리", "가발·증모", "메이크업 아티스트", "웨딩·방송 메이크업", "메이크업 강사", "네일 아티스트", "젤·패디큐어 전문", "네일 스태프·인턴", "피부관리사(에스테티션)", "바디·체형 관리", "스파·테라피", "두피·스칼프 케어", "속눈썹 연장", "왁싱", "반영구 화장(눈썹·아이라인·입술)", "타투", "애견 미용사(그루머)", "애견 미용 스태프·인턴", "펫 스파·목욕", "뷰티 어드바이저(BA)·화장품 판매", "샵 매니저·실장", "안내데스크·리셉션", "상담·코디네이터", "원장·교육강사"];
-const OFFICE_CATEGORIES = ["브랜드 마케팅", "퍼포먼스·디지털 마케팅", "콘텐츠·SNS·인플루언서", "홍보·PR", "상품기획", "MD(머천다이징)", "트렌드·시장조사", "국내영업(H&B·백화점·면세)", "온라인·이커머스 영업", "글로벌·수출 영업", "영업관리·VMD", "화장품 연구개발(처방·제형)", "생산관리·SCM", "품질관리(QC·QA)·인허가(RA)", "패키지·제품 디자인", "그래픽·웹 디자인", "영상·콘텐츠 제작", "인사·총무", "재무·회계·법무", "경영기획·전략", "IT·개발", "고객상담·CS·교육"];
+// 직군 목록은 단일 출처(jobGroups.ts)에서 가져온다 — 직군 재편 시 자동 반영(드리프트 방지)
+const STORE_CATEGORIES = getAllJobItems("STORE");
+const OFFICE_CATEGORIES = getAllJobItems("OFFICE");
 const STORE_TAGS = ["기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능", "4대보험", "주말·공휴일 휴무", "정규직 전환"];
 const OFFICE_TAGS = ["인센티브", "자기계발비", "식대 지원", "주차 가능", "4대보험", "정규직 전환", "재택근무", "유연근무"];
 
@@ -283,7 +286,24 @@ export async function POST(req: NextRequest) {
     employment_type: "", career: "", salary: "", salary_type: "", salary_amount: 0, salary_amount_max: 0, salary_negotiable: false, work_days: "", work_time: "", extra_notes: "", main_duties: "",
   };
 
-  if (process.env.ANTHROPIC_API_KEY) {
+  // ── 무료 파싱: 알려진 잡보드(헤어인잡 등)는 정규식으로 필드 추출 → AI 건너뜀(비용 0) ──
+  let freeParsed = false;
+  if (!bodyText) { // 붙여넣은 본문이 없을 때(=URL 불러오기)만 구조화 파서 시도
+    try {
+      const st = parseStructured(hostname || "", html || "");
+      if (st && st._confident) {
+        delete st._confident;
+        out = { ...out, ...st };
+        out.ai_parsed = true;
+        out.parsed_by = "structured";
+        freeParsed = true;
+      }
+    } catch (e) {
+      console.error("[structured parse]", e);
+    }
+  }
+
+  if (!freeParsed && process.env.ANTHROPIC_API_KEY) {
     try {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
