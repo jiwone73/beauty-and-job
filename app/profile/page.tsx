@@ -1189,7 +1189,7 @@ function AppliedTab({ userName }: { userName: string }) {
     INTERVIEW: "#1e40af", PASSED: "#16a34a", REJECTED: "#d9534f", WITHDRAWN: "#999",
   };
   const statusLabel: Record<string, string> = {
-    APPLIED: "서류검토중", REVIEWING: "서류검토중", VIEWED: "열람됨",
+    APPLIED: "지원완료", REVIEWING: "서류검토중", VIEWED: "열람됨",
     INTERVIEW: "면접예정", PASSED: "합격", REJECTED: "불합격", WITHDRAWN: "지원취소",
   };
   const statusStyle: Record<string, string> = {
