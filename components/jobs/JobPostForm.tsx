@@ -139,7 +139,7 @@ export default function JobPostForm({
   const [findQuery, setFindQuery] = useState("");
   const [finding, setFinding] = useState(false);
   const [findMsg, setFindMsg] = useState("");
-  const [findResults, setFindResults] = useState<{ idx: number; title: string; url: string }[]>([]);
+  const [findResults, setFindResults] = useState<{ idx: number; title: string; url: string; source: string }[]>([]);
   const [contactNotice, setContactNotice] = useState("");
   const [curating, setCurating] = useState(false);
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
@@ -613,7 +613,7 @@ export default function JobPostForm({
       });
       const j = await res.json();
       if (!j.success) { setFindMsg(j.error || "조회에 실패했어요."); return; }
-      const jobs = (j.jobs || []) as { idx: number; title: string; url: string }[];
+      const jobs = (j.jobs || []) as { idx: number; title: string; url: string; source: string }[];
       setFindResults(jobs);
       setFindMsg(jobs.length ? `${jobs.length}건 찾았어요. 공고를 선택하면 자동으로 불러와요.` : "일치하는 공고가 없어요. (헤어인잡 기준)");
     } catch {
@@ -875,6 +875,7 @@ export default function JobPostForm({
               <div style={{ marginTop: 8, maxHeight: 220, overflowY: "auto", border: "1px solid #e5e0eb", borderRadius: 8, background: "#fff" }}>
                 {findResults.map((r) => (
                   <div key={r.idx} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f2eef8" }}>
+                    <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "#5f0080", background: "#f3e5f5", border: "1px solid #e4d3f2", borderRadius: 5, padding: "1px 6px" }}>{r.source}</span>
                     <span style={{ flex: 1, fontSize: 13, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.title}>{r.title}</span>
                     <a href={r.url} target="_blank" rel="noreferrer" style={{ fontSize: 11.5, color: "#999", flexShrink: 0, textDecoration: "none" }}>원문↗</a>
                     <button type="button" onClick={() => pickFoundJob(r.url)} disabled={parsing}

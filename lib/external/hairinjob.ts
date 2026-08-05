@@ -19,6 +19,7 @@ export interface FoundJob {
   idx: number;
   title: string;
   url: string;
+  source: string; // 출처 사이트 표시명 (예: "헤어인잡")
 }
 
 function decodeEntities(s: string): string {
@@ -64,7 +65,7 @@ function extractJobs(html: string): FoundJob[] {
       .trim();
     if (!title) continue;
     seen.add(idx);
-    out.push({ idx, title, url: `${BASE}/cms/s01_v.php?idx=${idx}` });
+    out.push({ idx, title, url: `${BASE}/cms/s01_v.php?idx=${idx}`, source: "헤어인잡" });
   }
   return out;
 }
