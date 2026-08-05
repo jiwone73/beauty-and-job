@@ -279,6 +279,22 @@ function parseAlbamon(html: string): StructuredResult | null {
     job_categories: sug.job_categories,
     _confident: !!(title && (company || region)),
   };
+  // 상세요강 이미지: SSR HTML의 file.albamon.com/albamon/Recruit/Photo/RecuitDetail_View... (순서 그대로).
+  // 공고 본문이 이미지로 된 경우(예: 준오헤어)가 많아 반드시 가져와야 함. 핫링크 대비 재호스팅.
+  const images = [
+    ...new Set(
+      [...html.matchAll(/https?:(?:\\u002[Ff]|\\?\/){2}file\.albamon\.com[^\s"'<>()\\]+?\.(?:jpe?g|png|webp|gif)/gi)]
+        .map((m) => m[0].replace(/\\u002[Ff]/gi, "/").replace(/\\\//g, "/"))
+        .filter((u) => /\/Recruit\//i.test(u))
+    ),
+  ].slice(0, 12);
+  if (images.length) {
+    out.images = images;
+    out._rehost = true;
+    out._rehostReferer = "https://www.albamon.com/";
+  } else {
+    out.images = [];
+  }
   return out;
 }
 
