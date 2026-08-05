@@ -4,6 +4,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { ok, err, requireAuth } from "@/lib/api";
 import { parseStructured } from "@/lib/external/parsers/structured";
 import { getAllJobItems } from "@/lib/data/jobGroups";
+import { rehostImages } from "@/lib/external/rehost";
 
 function htmlToText(html: string): string {
   return html
@@ -370,8 +371,24 @@ export async function POST(req: NextRequest) {
 
   out.source_site = hostname;
   out.source_url = url;
-  out.cover_image = /^https?:\/\//i.test(ogImage) ? ogImage : "";
-  out.images = images;
+  // 이미지: 무료 파서가 이미지를 뽑았으면 우선(핫링크 차단 사이트는 재호스팅), 아니면 기존 범용 추출.
+  if (freeParsed && Array.isArray(out.images) && out.images.length) {
+    if (out._rehost) {
+      try {
+        const rehosted = await rehostImages(out.images, out._rehostReferer || "");
+        out.images = rehosted; // 재호스팅 성공분만(실패 시 빈 배열 → 사용자가 수동 추가)
+      } catch (e) {
+        console.error("[rehost images]", e);
+        out.images = [];
+      }
+    }
+    out.cover_image = out.images[0] || "";
+  } else {
+    out.cover_image = /^https?:\/\//i.test(ogImage) ? ogImage : "";
+    out.images = images;
+  }
+  delete out._rehost;
+  delete out._rehostReferer;
   // 연락처: AI가 못 뽑았으면 정규식 후보로 폴백 + 형식 정리.
   if (typeof out.contact_phone !== "string" || out.contact_phone.replace(/\D/g, "").length < 9) out.contact_phone = phones[0] || "";
   if (typeof out.contact_email !== "string" || !/@/.test(out.contact_email)) out.contact_email = emails[0] || "";

@@ -103,6 +103,15 @@ function parseHairinjob(html: string): StructuredResult | null {
 
   const always_open = /상시|수시|충원|채용\s*시/.test(title);
 
+  // 공고 이미지: /upload/upload/offer_user/... (실제 상세 이미지). 헤어인잡은 핫링크 차단이라 재호스팅 필요.
+  const images = [
+    ...new Set(
+      [...html.matchAll(/\/upload\/upload\/offer_user\/\d+\/[^"'\s)]+\.(?:jpe?g|png|gif)/gi)].map((m) => m[0])
+    ),
+  ]
+    .map((p) => `https://www.hairinjob.com${p}`)
+    .slice(0, 10);
+
   const out: StructuredResult = {
     job_type,
     job_categories,
@@ -118,6 +127,11 @@ function parseHairinjob(html: string): StructuredResult | null {
     _confident: job_categories.length > 0 || salary_type !== "" || salary_negotiable,
   };
   if (title) out.title = title;
+  if (images.length) {
+    out.images = images;
+    out._rehost = true; // 핫링크 차단 → 라우트에서 재호스팅
+    out._rehostReferer = "https://www.hairinjob.com/";
+  }
   return out;
 }
 
