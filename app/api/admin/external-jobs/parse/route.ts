@@ -371,18 +371,20 @@ export async function POST(req: NextRequest) {
 
   out.source_site = hostname;
   out.source_url = url;
-  // 이미지: 무료 파서가 이미지를 뽑았으면 우선(핫링크 차단 사이트는 재호스팅), 아니면 기존 범용 추출.
-  if (freeParsed && Array.isArray(out.images) && out.images.length) {
-    if (out._rehost) {
+  // 이미지: 무료 파서로 뽑았으면 그걸 사용(핫링크 차단 사이트는 재호스팅, 이미지 없는 소스는 빈 배열).
+  // 무료 파싱이 아니면 기존 범용 추출 사용.
+  if (freeParsed) {
+    if (out._rehost && Array.isArray(out.images) && out.images.length) {
       try {
-        const rehosted = await rehostImages(out.images, out._rehostReferer || "");
-        out.images = rehosted; // 재호스팅 성공분만(실패 시 빈 배열 → 사용자가 수동 추가)
+        out.images = await rehostImages(out.images, out._rehostReferer || "");
       } catch (e) {
         console.error("[rehost images]", e);
         out.images = [];
       }
+    } else if (!Array.isArray(out.images)) {
+      out.images = []; // 잡코리아·알바몬 등 이미지 없는 소스 → 범용 추출 잡음 방지
     }
-    out.cover_image = out.images[0] || "";
+    out.cover_image = (Array.isArray(out.images) && out.images[0]) || "";
   } else {
     out.cover_image = /^https?:\/\//i.test(ogImage) ? ogImage : "";
     out.images = images;
