@@ -10,6 +10,7 @@ import { NextRequest } from "next/server";
 import type { FoundJob } from "@/lib/external/hairinjob";
 import { findJobsByCompany as findHairinjob } from "@/lib/external/hairinjob";
 import { findJobsByCompany as findJobkorea } from "@/lib/external/jobkorea";
+import { findJobsByCompany as findAlbamon } from "@/lib/external/albamon";
 import { findSelfSites } from "@/lib/external/selfSites";
 
 export const runtime = "nodejs"; // TextDecoder('euc-kr') 등 때문에 nodejs 고정
@@ -33,6 +34,7 @@ export async function GET(req: NextRequest) {
   // 잡보드(비동기) — 한 곳이 실패해도 나머지는 반환
   const settled = await Promise.allSettled([
     findHairinjob(company, { maxPages, strict }),
+    findAlbamon(company, { strict }),
     findJobkorea(company, { strict }),
   ]);
 
@@ -47,12 +49,13 @@ export async function GET(req: NextRequest) {
     return [];
   };
   const hairJobs = pull(0, "헤어인잡");
-  const jkJobs = pull(1, "잡코리아");
+  const albaJobs = pull(1, "알바몬");
+  const jkJobs = pull(2, "잡코리아");
 
-  // 병합(자사 → 헤어인잡 → 잡코리아) + url 기준 중복 제거
+  // 병합(자사 → 알바몬 → 헤어인잡 → 잡코리아) + url 기준 중복 제거
   const seen = new Set<string>();
   const jobs: FoundJob[] = [];
-  for (const j of [...selfJobs, ...hairJobs, ...jkJobs]) {
+  for (const j of [...selfJobs, ...albaJobs, ...hairJobs, ...jkJobs]) {
     if (seen.has(j.url)) continue;
     seen.add(j.url);
     jobs.push(j);
@@ -63,6 +66,7 @@ export async function GET(req: NextRequest) {
     company,
     sources: {
       자사홈페이지: selfJobs.length,
+      알바몬: albaJobs.length,
       헤어인잡: hairJobs.length,
       잡코리아: jkJobs.length,
     },
