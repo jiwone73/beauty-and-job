@@ -131,8 +131,7 @@ export default function JobPostForm({
   const [nmManagerName, setNmManagerName] = useState("");
   const [nmManagerPhone, setNmManagerPhone] = useState("");
   const [parseUrl, setParseUrl] = useState("");
-  const [parseText, setParseText] = useState("");
-  const [showPaste, setShowPaste] = useState(false);
+  const [importMode, setImportMode] = useState<"url" | "ocr">("url"); // 직접입력(URL) vs OCR(캡처)
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
   // 회사명으로 공고 찾기(헤어인잡)
@@ -491,22 +490,8 @@ export default function JobPostForm({
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
-  const runParse = async (urlOverride?: string) => {
-    const useUrl = (typeof urlOverride === "string" ? urlOverride : parseUrl).trim();
-    if (!useUrl && !parseText.trim()) { setParseMsg("URL 또는 공고 본문을 입력해주세요."); return; }
-    if (mode === "admin") { setNonMember(true); setCompanyId(null); }
-    setParsing(true); setParseMsg(""); setContactNotice("");
-    try {
-      // 관리자는 admin_token, 기업회원은 access_token 사용
-      const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
-      const res = await fetch("/api/admin/external-jobs/parse", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ url: useUrl, text: parseText.trim() }),
-      });
-      const j = await res.json();
-      if (!j.success) { setParseMsg(j.error?.message || "불러오기에 실패했어요."); return; }
-      const d = j.data;
+  // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
+  const applyParsed = (d: any) => {
       // 회사 정보(회사명·홈페이지·이메일·주소·소개·업종·지원방식)는 관리자 비회원 입력에만 채움.
       // 기업회원은 자기 프로필을 쓰되, 불러온 값이 있으면 우선 반영(레이아웃 편집 단계에서 필드로 노출 예정).
       if (mode === "admin") {
@@ -595,8 +580,47 @@ export default function JobPostForm({
       if (d.ai_parsed) {
         setParseMsg("✓ 불러왔어요. 직군·경력·지역·급여·근무조건·이미지까지 자동 반영했어요. 값만 확인하고 등록하세요.");
       } else {
-        setParseMsg("⚠ AI 자동 정리에 실패해 제목·회사 등 기본 정보만 채웠어요. 공고 본문 전체를 아래 칸에 붙여넣고 다시 '불러오기'를 눌러주세요.");
+        setParseMsg("⚠ AI 자동 정리에 실패해 제목·회사 등 기본 정보만 채웠어요. 다른 URL을 넣거나 OCR(화면 캡처)로 다시 시도해보세요.");
       }
+  };
+
+  const runParse = async (urlOverride?: string) => {
+    const useUrl = (typeof urlOverride === "string" ? urlOverride : parseUrl).trim();
+    if (!useUrl) { setParseMsg("공고 URL을 입력해주세요."); return; }
+    if (mode === "admin") { setNonMember(true); setCompanyId(null); }
+    setParsing(true); setParseMsg(""); setContactNotice("");
+    try {
+      // 관리자는 admin_token, 기업회원은 access_token 사용
+      const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
+      const res = await fetch("/api/admin/external-jobs/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ url: useUrl }),
+      });
+      const j = await res.json();
+      if (!j.success) { setParseMsg(j.error?.message || "불러오기에 실패했어요."); return; }
+      applyParsed(j.data);
+    } catch { setParseMsg("오류가 발생했습니다."); }
+    finally { setParsing(false); }
+  };
+
+  // OCR: 공고 화면 캡처 이미지를 업로드→서버가 비전(Haiku)으로 읽어 폼에 반영
+  const runOcr = async (file: File) => {
+    if (!file) return;
+    if (mode === "admin") { setNonMember(true); setCompanyId(null); }
+    setParsing(true); setParseMsg(""); setContactNotice("");
+    try {
+      const up = await uploadImage(file);
+      if (!up.success || !up.url) { setParseMsg(up.error || "이미지 업로드에 실패했어요."); return; }
+      const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
+      const res = await fetch("/api/admin/external-jobs/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ image_url: up.url }),
+      });
+      const j = await res.json();
+      if (!j.success) { setParseMsg(j.error?.message || "이미지 인식에 실패했어요."); return; }
+      applyParsed(j.data);
     } catch { setParseMsg("오류가 발생했습니다."); }
     finally { setParsing(false); }
   };
@@ -857,6 +881,7 @@ export default function JobPostForm({
       )}
 
       {mode === "admin" && (
+        <>
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기 (자동 작성)" : "타 사이트 공고 불러오기 (자동 작성)"}</div>
 
@@ -874,43 +899,56 @@ export default function JobPostForm({
             {findResults.length > 0 && (
               <div style={{ marginTop: 8, maxHeight: 220, overflowY: "auto", border: "1px solid #e5e0eb", borderRadius: 8, background: "#fff" }}>
                 {findResults.map((r) => (
-                  <div key={r.idx} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f2eef8" }}>
+                  <div key={r.idx}
+                    onClick={() => window.open(r.url, "_blank", "noopener,noreferrer")}
+                    title="클릭하면 원문 공고 페이지가 새 탭으로 열려요"
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#faf7fe")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f2eef8", cursor: "pointer", transition: "background 0.12s" }}>
                     <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "#5f0080", background: "#f3e5f5", border: "1px solid #e4d3f2", borderRadius: 5, padding: "1px 6px" }}>{r.source}</span>
-                    <span style={{ flex: 1, fontSize: 13, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.title}>{r.title}</span>
-                    <a href={r.url} target="_blank" rel="noreferrer" style={{ fontSize: 11.5, color: "#999", flexShrink: 0, textDecoration: "none" }}>원문↗</a>
-                    <button type="button" onClick={() => pickFoundJob(r.url)} disabled={parsing}
+                    <span style={{ flex: 1, fontSize: 13, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.title}>{r.title} <span style={{ color: "#bbb", fontSize: 11 }}>↗</span></span>
+                    <button type="button" onClick={(e) => { e.stopPropagation(); pickFoundJob(r.url); }} disabled={parsing}
                       style={{ flexShrink: 0, padding: "5px 10px", borderRadius: 6, border: "none", background: "#5f0080", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>불러오기</button>
                   </div>
                 ))}
               </div>
             )}
             <div style={{ borderTop: "1px dashed #d9d0e6", margin: "10px 0 8px" }} />
-            <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>또는 공고 URL을 직접 입력:</div>
+            <div style={{ fontSize: 12, color: "#888", marginBottom: 6 }}>또는 직접 불러오기:</div>
+
+            {/* 불러오기 방식: 공고 URL 직접입력 / OCR(화면 캡처 인식) */}
+            <div style={{ display: "flex", gap: 16, marginBottom: 8, fontSize: 13 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", color: "#444" }}>
+                <input type="radio" name="importMode" checked={importMode === "url"} onChange={() => { setImportMode("url"); setParseMsg(""); }} /> 공고 URL 직접입력
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", color: "#444" }}>
+                <input type="radio" name="importMode" checked={importMode === "ocr"} onChange={() => { setImportMode("ocr"); setParseMsg(""); }} /> OCR (공고 화면 캡처 인식)
+              </label>
+            </div>
           </div>
 
-          <div style={{ display: "flex", gap: 8 }}>
-            <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
-            <button type="button" onClick={() => runParse()} disabled={parsing || curating} style={{ flexShrink: 0, padding: "0 20px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "불러오는 중..." : "불러오기"}</button>
-            {mode === "admin" && (
-              <button type="button" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 내용을 뷰티워크 톤·형식으로 AI가 다듬어요"
-                style={{ flexShrink: 0, padding: "0 16px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: curating ? 0.6 : 1, whiteSpace: "nowrap" }}>{curating ? "다듬는 중..." : "✨ 큐레이션"}</button>
-            )}
-          </div>
+          {importMode === "url" ? (
+            // URL 입력창 + 안쪽에 '불러오기' 버튼 임베드
+            <div style={{ position: "relative" }}>
+              <input className="admin-form-input" style={{ width: "100%", paddingRight: 104, boxSizing: "border-box" }}
+                placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl}
+                onChange={(e) => setParseUrl(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
+              <button type="button" onClick={() => runParse()} disabled={parsing}
+                style={{ position: "absolute", top: 4, bottom: 4, right: 4, padding: "0 16px", borderRadius: 7, border: "none", background: "#5f0080", color: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>
+                {parsing ? "불러오는 중..." : "불러오기"}</button>
+            </div>
+          ) : (
+            // OCR: 캡처 이미지 업로드 → 서버가 비전으로 화면 글자 인식
+            <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, minHeight: 92, padding: "14px", borderRadius: 8, border: "1.5px dashed #c9b8de", background: "#fff", color: "#5f0080", cursor: parsing ? "default" : "pointer", textAlign: "center" }}>
+              <input type="file" accept="image/*" hidden disabled={parsing}
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) runOcr(f); e.currentTarget.value = ""; }} />
+              <span style={{ fontWeight: 700, fontSize: 13.5 }}>{parsing ? "이미지 인식 중..." : "📷 공고 화면 캡처 이미지 올리기"}</span>
+              <span style={{ fontSize: 11.5, color: "#999" }}>클릭해 이미지를 선택하면 화면 속 글자를 읽어 자동으로 채워요 (인스타·비정형 공고에 적합)</span>
+            </label>
+          )}
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
           {contactNotice && <div style={{ fontSize: 12.5, marginTop: 6, padding: "8px 10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: 8, color: "#9a3412", lineHeight: 1.5 }}>{contactNotice}</div>}
-          {/* URL로 안 되는 사이트(AJAX·차단 등) 폴백: 본문 붙여넣기 */}
-          <button type="button" onClick={() => setShowPaste((v) => !v)}
-            style={{ marginTop: 6, background: "none", border: "none", color: "#5f0080", fontSize: 12, cursor: "pointer", padding: 0 }}>
-            {showPaste ? "▲ 본문 붙여넣기 접기" : "▾ URL로 안 되거나 내용이 부실하면 · 공고 본문 붙여넣기"}
-          </button>
-          {showPaste && (
-            <textarea
-              style={{ width: "100%", marginTop: 8, minHeight: 110, padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e0eb", fontSize: 13, lineHeight: 1.5, resize: "vertical", boxSizing: "border-box" }}
-              placeholder="공고 화면에 보이는 내용을 통째로 복사해 붙여넣고 '불러오기'를 누르세요. (급여·경력·근무조건 등 표 값까지 전체 복사). URL과 함께 넣으면 가장 정확해요."
-              value={parseText}
-              onChange={(e) => setParseText(e.target.value)}
-            />
-          )}
           {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
           {mode === "admin" && nonMember && (
             <div style={{ display: "grid", gridTemplateColumns: applyMethod === "REDIRECT" ? "240px 1fr" : "240px", gap: 12, marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb", alignItems: "end" }}>
@@ -921,6 +959,14 @@ export default function JobPostForm({
             </div>
           )}
         </div>
+
+        {/* 큐레이션: 불러오기 박스 밖 — 채워진 공고 전체를 뷰티워크 톤으로 다듬는 마무리 액션 */}
+        <div style={{ width: "100%", maxWidth: 760, margin: "-4px auto 16px", display: "flex", justifyContent: "flex-end", boxSizing: "border-box" }}>
+          <button type="button" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 공고 내용을 뷰티워크 톤·형식으로 AI가 다듬어요"
+            style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13.5, fontWeight: 700, cursor: "pointer", opacity: curating ? 0.6 : 1, whiteSpace: "nowrap" }}>
+            {curating ? "다듬는 중..." : "✨ 큐레이션 (AI 다듬기)"}</button>
+        </div>
+        </>
       )}
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}

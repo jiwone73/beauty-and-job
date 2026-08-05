@@ -93,6 +93,7 @@ export async function POST(req: NextRequest) {
 
   const b = await req.json().catch(() => ({}));
   const pastedText = (b.text || "").trim();
+  const imageUrl = (b.image_url || "").trim(); // OCR: 공고 화면 캡처 이미지 URL(업로드 후 전달)
 
   let url = (b.url || "").trim();
   let hostname = "";
@@ -105,7 +106,7 @@ export async function POST(req: NextRequest) {
   let ogImage = "";
   let images: string[] = [];
 
-  if (!pastedText && !url) return err("VALIDATION_001", "URL 또는 공고 텍스트를 입력해주세요.", 400);
+  if (!pastedText && !url && !imageUrl) return err("VALIDATION_001", "URL·공고 텍스트·이미지 중 하나를 입력해주세요.", 400);
 
   // URL이 있으면 서버에서 fetch. 실패하더라도 붙여넣은 본문이 있으면 계속 진행.
   if (url) {
@@ -350,11 +351,35 @@ export async function POST(req: NextRequest) {
 - 입력 중 [붙여넣은 공고 본문]이 있으면 그 내용을 최우선으로 신뢰하고, [페이지 텍스트]·[JSON-LD]·[__NEXT_DATA__]는 빠진 값을 채우는 보완용으로만 사용할 것.
 - 모르는 값은 빈 문자열 "" 또는 빈 배열 [].`;
       const user = `URL: ${url || "(없음)"}\n호스트: ${hostname || "(없음)"}\n\n[붙여넣은 공고 본문 · 최우선 신뢰]\n${bodyText || "(없음)"}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${pageText || "(없음)"}`;
+
+      // OCR 모드: 캡처 이미지를 받아 비전으로 읽는다(텍스트/URL 없이 이미지 한 장).
+      let userContent: any = user;
+      if (imageUrl) {
+        try {
+          const ir = await fetch(imageUrl, {
+            headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" },
+          });
+          if (ir.ok) {
+            const ibuf = Buffer.from(await ir.arrayBuffer());
+            let mt = (ir.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+            if (!/^image\/(jpeg|png|gif|webp)$/.test(mt)) mt = "image/jpeg";
+            if (ibuf.byteLength > 0 && ibuf.byteLength <= 5 * 1024 * 1024) {
+              userContent = [
+                { type: "image", source: { type: "base64", media_type: mt, data: ibuf.toString("base64") } },
+                { type: "text", text: `아래 이미지는 채용공고 화면을 캡처한 거야. 이미지 속 글자를 정확히 읽어(OCR) 위 규칙대로 JSON "하나만" 출력해. URL·호스트 정보는 없어.\n\n${user}` },
+              ];
+            }
+          }
+        } catch (e) {
+          console.error("[ocr image fetch]", e);
+        }
+      }
+
       const msg = await anthropic.messages.create({
         model: "claude-haiku-4-5",
         max_tokens: 3000,
         system: sys,
-        messages: [{ role: "user", content: user }],
+        messages: [{ role: "user", content: userContent }],
       });
       const raw = msg.content.map((c: any) => (c.type === "text" ? c.text : "")).join("").trim();
       const parsed = safeJsonParse(raw);
