@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   getJobGroups,
   getJobSubGroups,
+  searchJobItems,
   type JobType,
+  type JobSearchResult,
 } from "@/lib/data/jobGroups";
 
 interface Props {
@@ -46,10 +48,17 @@ export default function JobGroupSelectModal({
   const groups = getJobGroups(activeType);
   const [activeGroup, setActiveGroup] = useState<string>(groups[0]?.group ?? "");
 
-  // 열릴 때 활성 트랙을 기본값(잡타입)으로 초기화
+  // ── 실시간 추천검색 ──
+  const [query, setQuery] = useState("");
+  const [activeIdx, setActiveIdx] = useState(0);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // 열릴 때 활성 트랙을 기본값(잡타입)으로 초기화 + 검색 초기화
   useEffect(() => {
     if (!open) return;
     setActiveType(jobType);
+    setQuery("");
+    setActiveIdx(0);
   }, [open, jobType]);
 
   // 활성 트랙이 바뀌면 대분류 초기화
@@ -78,6 +87,68 @@ export default function JobGroupSelectModal({
         return;
       }
       curOnChange([...curSelected, item]);
+    }
+  };
+
+  // ── 추천검색 결과 (단일 트랙 모드면 현재 트랙만, 이중 트랙이면 매장·본사 전체) ──
+  const searchTrack = enableToggle ? undefined : activeType;
+  const results = useMemo<JobSearchResult[]>(
+    () => (query.trim() ? searchJobItems(query, searchTrack, 8) : []),
+    [query, searchTrack]
+  );
+  const showDropdown = query.trim().length > 0;
+
+  const isItemSelected = (track: JobType, item: string) =>
+    enableToggle
+      ? (track === "STORE" ? storeSelected ?? [] : officeSelected ?? []).includes(item)
+      : selected.includes(item);
+
+  const addItemToTrack = (track: JobType, item: string) => {
+    if (enableToggle) {
+      const cur = track === "STORE" ? storeSelected ?? [] : officeSelected ?? [];
+      const chg = track === "STORE" ? onChangeStore : onChangeOffice;
+      if (cur.includes(item)) return;
+      if (maxSelect && cur.length >= maxSelect) {
+        alert(`최대 ${maxSelect}개까지 선택할 수 있어요.`);
+        return;
+      }
+      chg?.([...cur, item]);
+    } else {
+      if (selected.includes(item)) return;
+      if (maxSelect && selected.length >= maxSelect) {
+        alert(`최대 ${maxSelect}개까지 선택할 수 있어요.`);
+        return;
+      }
+      onChange([...selected, item]);
+    }
+  };
+
+  // 추천 항목 클릭: 해당 트랙·대분류로 이동하고, 소분류면 선택에 추가
+  const selectResult = (r: JobSearchResult) => {
+    if (enableToggle && r.jobType !== activeType) {
+      setActiveType(r.jobType);
+      onTrackChange?.(r.jobType);
+    }
+    setActiveGroup(r.group);
+    if (r.item) addItemToTrack(r.jobType, r.item);
+    setQuery("");
+    setActiveIdx(0);
+  };
+
+  const onSearchKey = (e: React.KeyboardEvent) => {
+    if (!showDropdown || results.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIdx((i) => (i + 1) % results.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIdx((i) => (i - 1 + results.length) % results.length);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const r = results[activeIdx] ?? results[0];
+      if (r) selectResult(r);
+    } else if (e.key === "Escape") {
+      setQuery("");
     }
   };
 
@@ -158,6 +229,46 @@ export default function JobGroupSelectModal({
           cursor: pointer; font-size: 14px; line-height: 1; padding: 0;
         }
         .jgm-chips-empty { color: #aaa; font-size: 13px; }
+        .jgm-search { position: relative; padding: 12px 20px 4px; flex-shrink: 0; }
+        .jgm-search-box {
+          display: flex; align-items: center; gap: 8px;
+          border: 1.5px solid #e2e0e6; border-radius: 10px; padding: 9px 12px;
+          transition: border-color 0.15s;
+        }
+        .jgm-search-box:focus-within { border-color: #5f0080; }
+        .jgm-search-box .ic { color: #bbb; font-size: 15px; flex-shrink: 0; }
+        .jgm-search-box input {
+          flex: 1; border: none; outline: none; background: none;
+          font-size: 14px; color: #222; padding: 0; min-width: 0;
+        }
+        .jgm-search-box input::placeholder { color: #bbb; }
+        .jgm-search-clear {
+          background: none; border: none; color: #bbb; cursor: pointer;
+          font-size: 16px; line-height: 1; padding: 0 2px; flex-shrink: 0;
+        }
+        .jgm-dd {
+          position: absolute; left: 20px; right: 20px; top: calc(100% - 4px);
+          z-index: 30; background: #fff; border: 1px solid #eee;
+          border-radius: 0 0 12px 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+          max-height: 264px; overflow-y: auto;
+        }
+        .jgm-dd-item {
+          display: flex; align-items: center; justify-content: space-between; gap: 10px;
+          padding: 10px 13px; cursor: pointer; border-top: 1px solid #f5f5f5;
+          font-size: 13.5px; color: #333;
+        }
+        .jgm-dd-item:first-child { border-top: none; }
+        .jgm-dd-item:hover, .jgm-dd-item.active { background: #faf5fc; }
+        .jgm-dd-left { display: flex; align-items: center; gap: 7px; min-width: 0; }
+        .jgm-dd-left .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .jgm-dd-left .chk { color: #5f0080; font-size: 12px; flex-shrink: 0; }
+        .jgm-dd-left .allbadge {
+          font-size: 11px; color: #5f0080; background: #f3e5f5;
+          border-radius: 6px; padding: 1px 6px; flex-shrink: 0;
+        }
+        .jgm-dd-item .path { color: #999; font-size: 11.5px; flex-shrink: 0; white-space: nowrap; }
+        .jgm-dd-item .path.office { color: #1f5fbf; }
+        .jgm-dd-empty { padding: 13px; color: #aaa; font-size: 13px; text-align: center; }
         .jgm-body { display: flex; min-height: 300px; max-height: 50vh; }
         .jgm-left {
           width: 40%; flex-shrink: 0; background: #fafafa;
@@ -268,6 +379,59 @@ export default function JobGroupSelectModal({
               </button>
             </div>
           )}
+
+          {/* 실시간 추천검색 */}
+          <div className="jgm-search" ref={searchRef}>
+            <div className="jgm-search-box">
+              <span className="ic">🔍</span>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => { setQuery(e.target.value); setActiveIdx(0); }}
+                onKeyDown={onSearchKey}
+                placeholder="직군·키워드 검색 (예: 네일, 메이크업, R&D)"
+                autoComplete="off"
+              />
+              {query && (
+                <button
+                  className="jgm-search-clear"
+                  onClick={() => { setQuery(""); setActiveIdx(0); }}
+                  aria-label="검색어 지우기"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+
+            {showDropdown && (
+              <div className="jgm-dd">
+                {results.length === 0 ? (
+                  <div className="jgm-dd-empty">“{query}” 검색 결과가 없어요</div>
+                ) : (
+                  results.map((r, i) => {
+                    const sel = r.item ? isItemSelected(r.jobType, r.item) : false;
+                    return (
+                      <div
+                        key={`${r.jobType}-${r.group}-${r.item ?? "all"}`}
+                        className={`jgm-dd-item ${i === activeIdx ? "active" : ""}`}
+                        onMouseEnter={() => setActiveIdx(i)}
+                        onClick={() => selectResult(r)}
+                      >
+                        <span className="jgm-dd-left">
+                          {sel && <span className="chk">✓</span>}
+                          <span className="nm">{r.label}</span>
+                          {!r.item && <span className="allbadge">대분류 전체</span>}
+                        </span>
+                        <span className={`path ${r.jobType === "OFFICE" ? "office" : ""}`}>
+                          {r.path}
+                        </span>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+          </div>
 
           {/* 선택된 칩 */}
           <div className="jgm-chips">

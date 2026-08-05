@@ -349,6 +349,21 @@ export default function TalentPage() {
   return (
     <CompanyLayout activePage="talent">
 
+      {/* 인재 구분 — 매장/본사 라디오 (모바일, 검색창 위) */}
+      {isMobile && view === "search" && (
+        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 12 }}>
+          <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
+          {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
+            <label key={tab} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: activeTab === tab ? "#5f0080" : "#555" }}>
+              <input type="radio" name="talentTrackM" checked={activeTab === tab}
+                onChange={() => handleTabSwitch(tab)}
+                style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
+              {tab === "STORE" ? "매장" : "본사"}
+            </label>
+          ))}
+        </div>
+      )}
+
       {/* 검색창 (모바일) — 전체 행 */}
       {isMobile && view === "search" && (
         <div style={{ position: "relative", marginBottom: 14 }}>
@@ -365,8 +380,8 @@ export default function TalentPage() {
         </div>
       )}
 
-      {/* 인재 구분 — 매장/본사 세그먼트 (검색 뷰에서만) */}
-      {(view === "search" || !isMobile) && (
+      {/* 인재 구분 — 매장/본사 세그먼트 (데스크톱) */}
+      {!isMobile && (
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
           <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
           <div style={{ display: "inline-flex", background: "#f0eef3", borderRadius: 10, padding: 3 }}>
