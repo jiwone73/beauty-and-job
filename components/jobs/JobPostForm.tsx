@@ -135,6 +135,11 @@ export default function JobPostForm({
   const [showPaste, setShowPaste] = useState(false);
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
+  // 회사명으로 공고 찾기(헤어인잡)
+  const [findQuery, setFindQuery] = useState("");
+  const [finding, setFinding] = useState(false);
+  const [findMsg, setFindMsg] = useState("");
+  const [findResults, setFindResults] = useState<{ idx: number; title: string; url: string }[]>([]);
   const [contactNotice, setContactNotice] = useState("");
   const [curating, setCurating] = useState(false);
   const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
@@ -486,8 +491,9 @@ export default function JobPostForm({
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
-  const runParse = async () => {
-    if (!parseUrl.trim() && !parseText.trim()) { setParseMsg("URL 또는 공고 본문을 입력해주세요."); return; }
+  const runParse = async (urlOverride?: string) => {
+    const useUrl = (typeof urlOverride === "string" ? urlOverride : parseUrl).trim();
+    if (!useUrl && !parseText.trim()) { setParseMsg("URL 또는 공고 본문을 입력해주세요."); return; }
     if (mode === "admin") { setNonMember(true); setCompanyId(null); }
     setParsing(true); setParseMsg(""); setContactNotice("");
     try {
@@ -496,7 +502,7 @@ export default function JobPostForm({
       const res = await fetch("/api/admin/external-jobs/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ url: parseUrl.trim(), text: parseText.trim() }),
+        body: JSON.stringify({ url: useUrl, text: parseText.trim() }),
       });
       const j = await res.json();
       if (!j.success) { setParseMsg(j.error?.message || "불러오기에 실패했어요."); return; }
@@ -593,6 +599,33 @@ export default function JobPostForm({
       }
     } catch { setParseMsg("오류가 발생했습니다."); }
     finally { setParsing(false); }
+  };
+
+  // 회사명으로 헤어인잡 공고 조회 → 결과에서 '불러오기'로 자동 파싱 연결
+  const runFindByCompany = async () => {
+    const q = findQuery.trim();
+    if (!q) { setFindMsg("회사명을 입력해주세요."); return; }
+    setFinding(true); setFindMsg(""); setFindResults([]);
+    try {
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch(`/api/admin/external-jobs/find-by-company?company=${encodeURIComponent(q)}&maxPages=5`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      const j = await res.json();
+      if (!j.success) { setFindMsg(j.error || "조회에 실패했어요."); return; }
+      const jobs = (j.jobs || []) as { idx: number; title: string; url: string }[];
+      setFindResults(jobs);
+      setFindMsg(jobs.length ? `${jobs.length}건 찾았어요. 공고를 선택하면 자동으로 불러와요.` : "일치하는 공고가 없어요. (헤어인잡 기준)");
+    } catch {
+      setFindMsg("조회 중 오류가 발생했어요.");
+    } finally { setFinding(false); }
+  };
+
+  const pickFoundJob = (url: string) => {
+    setParseUrl(url);
+    setFindResults([]);
+    setFindMsg("");
+    runParse(url);
   };
 
   // 큐레이션(관리자 전용): 현재 채워진 내용을 뷰티워크 톤·형식으로 AI가 다듬기
@@ -826,9 +859,37 @@ export default function JobPostForm({
       {mode === "admin" && (
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기 (자동 작성)" : "타 사이트 공고 불러오기 (자동 작성)"}</div>
+
+          {/* ① 회사명으로 공고 찾기 (헤어인잡) */}
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ display: "flex", gap: 8 }}>
+              <input className="admin-form-input" style={{ flex: 1 }} placeholder="회사명으로 공고 찾기 (예: 준오헤어, 리안헤어)"
+                value={findQuery} onChange={(e) => setFindQuery(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runFindByCompany(); } }} />
+              <button type="button" onClick={runFindByCompany} disabled={finding}
+                style={{ flexShrink: 0, padding: "0 16px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: finding ? 0.6 : 1, whiteSpace: "nowrap" }}>
+                {finding ? "찾는 중..." : "🔍 공고 찾기"}</button>
+            </div>
+            {findMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: findResults.length ? "#10b981" : "#c0392b" }}>{findMsg}</div>}
+            {findResults.length > 0 && (
+              <div style={{ marginTop: 8, maxHeight: 220, overflowY: "auto", border: "1px solid #e5e0eb", borderRadius: 8, background: "#fff" }}>
+                {findResults.map((r) => (
+                  <div key={r.idx} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f2eef8" }}>
+                    <span style={{ flex: 1, fontSize: 13, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.title}>{r.title}</span>
+                    <a href={r.url} target="_blank" rel="noreferrer" style={{ fontSize: 11.5, color: "#999", flexShrink: 0, textDecoration: "none" }}>원문↗</a>
+                    <button type="button" onClick={() => pickFoundJob(r.url)} disabled={parsing}
+                      style={{ flexShrink: 0, padding: "5px 10px", borderRadius: 6, border: "none", background: "#5f0080", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>불러오기</button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ borderTop: "1px dashed #d9d0e6", margin: "10px 0 8px" }} />
+            <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>또는 공고 URL을 직접 입력:</div>
+          </div>
+
           <div style={{ display: "flex", gap: 8 }}>
             <input className="admin-form-input" style={{ flex: 1 }} placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl} onChange={(e) => setParseUrl(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
-            <button type="button" onClick={runParse} disabled={parsing || curating} style={{ flexShrink: 0, padding: "0 20px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "불러오는 중..." : "불러오기"}</button>
+            <button type="button" onClick={() => runParse()} disabled={parsing || curating} style={{ flexShrink: 0, padding: "0 20px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>{parsing ? "불러오는 중..." : "불러오기"}</button>
             {mode === "admin" && (
               <button type="button" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 내용을 뷰티워크 톤·형식으로 AI가 다듬어요"
                 style={{ flexShrink: 0, padding: "0 16px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: curating ? 0.6 : 1, whiteSpace: "nowrap" }}>{curating ? "다듬는 중..." : "✨ 큐레이션"}</button>
