@@ -86,21 +86,26 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     <div className="job-detail-layout" ref={ref}>
       {/* 왼쪽: 공고 본문 */}
       <main className="job-detail-main">
-        {/* 썸네일 갤러리(원티드 스타일 3장) + 기본 정보 */}
+        {/* 상단 배너: 커버 이미지만(상세 이미지는 본문에 세로 스택으로 별도 표시). */}
         {(() => {
-          const heroImgs = [
-            ...(Array.isArray(job.cover_images) ? job.cover_images.map((c: any) => c?.url) : []),
-            ...(Array.isArray(job.detailImages) ? job.detailImages.map((d: any) => d?.url) : []),
-          ].filter(Boolean) as string[];
-          const uniq = [...new Set(heroImgs)];
-          // 이미지가 있으면 3장 갤러리, 없으면 기존 플레이스홀더 히어로
-          if (uniq.length) {
+          const coverUrls = [...new Set(
+            (Array.isArray(job.cover_images) ? job.cover_images.map((c: any) => c?.url) : []).filter(Boolean)
+          )] as string[];
+          const hasDetail = Array.isArray(job.detailImages) && job.detailImages.some((d: any) => d?.url);
+          // 배너가 있으면: 1장은 전체폭 이미지, 여러 장은 캐러셀.
+          if (coverUrls.length) {
             return (
               <div style={{ width: "100%", marginBottom: 4 }}>
-                <ImageCarousel images={uniq} alt={job.brand} />
+                {coverUrls.length === 1 ? (
+                  <img src={coverUrls[0]} alt={job.brand} style={{ display: "block", width: "100%", height: "auto", borderRadius: 12 }} />
+                ) : (
+                  <ImageCarousel images={coverUrls} alt={job.brand} />
+                )}
               </div>
             );
           }
+          // 배너는 없지만 상세 이미지가 본문을 채우면 상단 히어로 생략.
+          if (hasDetail) return null;
           return (
             <div className="job-detail-hero" style={{ background: job.color }}>
               <div className="job-detail-hero-placeholder">
@@ -165,6 +170,23 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             </div>
           )}
         </div>
+
+        {/* 상세 내용 이미지(본문) — 이미지형 공고의 상세요강을 전체폭 세로 스택으로 표시 */}
+        {(() => {
+          const detailUrls = [...new Set(
+            (Array.isArray(job.detailImages) ? job.detailImages.map((d: any) => d?.url) : []).filter(Boolean)
+          )] as string[];
+          if (!detailUrls.length) return null;
+          return (
+            <section className="job-detail-section" style={{ padding: 0 }}>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {detailUrls.map((u, i) => (
+                  <img key={i} src={u} alt={`상세 이미지 ${i + 1}`} style={{ display: "block", width: "100%", height: "auto" }} />
+                ))}
+              </div>
+            </section>
+          );
+        })()}
 
         {/* 포지션 소개 */}
         {job.description?.trim() && (

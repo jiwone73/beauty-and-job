@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2, Upload, Eye, Save } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
-import JobDetailView, { ImageCarousel } from "@/components/jobs/JobDetailView";
+import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
 import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
@@ -415,8 +415,8 @@ export default function JobPostForm({
   const processFiles = async (fileList: FileList | File[]) => {
     const files = Array.from(fileList);
     if (files.length === 0) return;
-    if (detailImages.length + files.length > 5) {
-      alert("이미지는 최대 5장까지 첨부할 수 있습니다."); return;
+    if (detailImages.length + files.length > 12) {
+      alert("상세 이미지는 최대 12장까지 첨부할 수 있습니다."); return;
     }
     setUploading(true);
     try {
@@ -448,6 +448,41 @@ export default function JobPostForm({
 
   const removeImage = (idx: number) =>
     setDetailImages((prev) => prev.filter((_, i) => i !== idx));
+
+  // ── 배너(nmCover) ↔ 상세 이미지(detailImages) 드래그 이동 ──
+  const imgDragRef = useRef<{ zone: "banner" | "body"; idx: number } | null>(null);
+  const dropToBanner = () => {
+    const src = imgDragRef.current; imgDragRef.current = null;
+    if (!src || src.zone === "banner") return;
+    const body = [...detailImages];
+    const moved = body[src.idx];
+    if (!moved) return;
+    body.splice(src.idx, 1);
+    if (nmCover) body.unshift({ url: nmCover, name: "이전 배너" }); // 기존 배너 → 본문 맨 앞으로
+    setNmCover(moved.url);
+    setDetailImages(body);
+  };
+  const dropToBody = (dropIdx: number | null) => {
+    const src = imgDragRef.current; imgDragRef.current = null;
+    if (!src) return;
+    if (src.zone === "banner") {
+      if (!nmCover) return;
+      const body = [...detailImages];
+      const item = { url: nmCover, name: `이미지 ${body.length + 1}` };
+      if (dropIdx == null) body.push(item);
+      else body.splice(dropIdx, 0, item);
+      setNmCover("");
+      setDetailImages(body);
+    } else {
+      // 본문 내 재정렬
+      if (dropIdx == null || dropIdx === src.idx) return;
+      const body = [...detailImages];
+      const [it] = body.splice(src.idx, 1);
+      const target = dropIdx > src.idx ? dropIdx - 1 : dropIdx;
+      body.splice(target, 0, it);
+      setDetailImages(body);
+    }
+  };
 
   const handleDownloadPdf = async () => {
     if (!previewRef.current) return;
@@ -981,43 +1016,67 @@ export default function JobPostForm({
           </div>
         </div>
       ) : (() => {
-        const gimgs = [nmCover, ...detailImages.map((d) => d.url)].filter(Boolean);
-        const guniq = [...new Set(gimgs)];
-        // 썸네일 ×삭제: 커버면 다음 이미지를 커버로 승격, 아니면 상세이미지에서 제거
-        const removeGImg = (u: string) => {
-          if (u === nmCover) {
-            if (detailImages.length) { setNmCover(detailImages[0].url); setDetailImages(detailImages.slice(1)); }
-            else setNmCover("");
-          } else {
-            setDetailImages(detailImages.filter((d) => d.url !== u));
-          }
-        };
         return (
           <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
-            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 상단 이미지</h2>
-            <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box" }}>
-              {guniq.length > 0 && <ImageCarousel images={guniq} alt="공고 이미지" />}
-              {/* 썸네일 + 작은 추가(+) 타일 — 직접 업로드는 드물어 최소 공간만 차지 */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: guniq.length > 0 ? 12 : 0, alignItems: "center" }}>
-                {guniq.map((u, idx) => (
-                  <div key={idx} style={{ position: "relative", width: 84 }}>
-                    <img src={u} alt={`이미지 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
-                    <button type="button" onClick={() => removeGImg(u)} title="삭제"
-                      style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
-                  </div>
-                ))}
-                <label title="이미지 추가"
+            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 이미지</h2>
+            <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
+
+              {/* ── 상단 배너 (cover) ── */}
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 6 }}>상단 배너 <span style={{ fontWeight: 400, color: "#999" }}>· 공개 화면 최상단 (1장)</span></div>
+                <div
                   onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                   onDragLeave={() => setDragOver(false)}
-                  onDrop={(e) => { e.preventDefault(); setDragOver(false); if (!uploading && detailImages.length < 5) processFiles(e.dataTransfer.files); }}
-                  style={{ width: 84, height: 84, flexShrink: 0, border: `1.5px dashed ${dragOver ? "#5f0080" : "#c4b5d4"}`, borderRadius: 8, background: dragOver ? "#f4ebfb" : "#fdfbff", color: "#5f0080", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: uploading ? "wait" : "pointer" }}>
-                  <span style={{ fontSize: 22, lineHeight: 1 }}>{uploading ? "…" : "+"}</span>
-                  <span style={{ fontSize: 10 }}>추가</span>
-                  <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || detailImages.length >= 5} onChange={handleImageUpload} style={{ display: "none" }} />
-                </label>
-                {guniq.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>불러온 이미지가 없어요. 필요하면 직접 추가하세요.</span>}
+                  onDrop={(e) => { e.preventDefault(); setDragOver(false); if (imgDragRef.current) { dropToBanner(); return; } const f = e.dataTransfer.files; if (f && f.length && !nmCoverUploading) uploadSingle(f[0], setNmCover, setNmCoverUploading); }}
+                  style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${dragOver ? "#5f0080" : "#e0d5ee"}`, background: dragOver ? "#f7f1fd" : "#fbf9ff" }}>
+                  {nmCover ? (
+                    <div draggable onDragStart={() => { imgDragRef.current = { zone: "banner", idx: 0 }; }}
+                      style={{ position: "relative", width: 132, height: 76, flexShrink: 0, cursor: "grab" }}>
+                      <img src={nmCover} alt="배너" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
+                      <button type="button" onClick={() => setNmCover("")} title="배너에서 제거"
+                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                    </div>
+                  ) : (
+                    <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 132, height: 76, flexShrink: 0, borderRadius: 8, border: "1.5px dashed #c4b5d4", background: "#fff", color: "#5f0080", cursor: "pointer" }}>
+                      <span style={{ fontSize: 20, lineHeight: 1 }}>{nmCoverUploading ? "…" : "+"}</span>
+                      <span style={{ fontSize: 10, marginTop: 2 }}>배너 추가</span>
+                      <input type="file" accept="image/jpeg,image/png,image/webp" disabled={nmCoverUploading} onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmCover, setNmCoverUploading); e.currentTarget.value = ""; }} style={{ display: "none" }} />
+                    </label>
+                  )}
+                  <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>아래 상세 이미지를 여기로 <b>드래그</b>하면 배너가 돼요. 배너를 아래로 드래그하면 본문으로 내려가요.</span>
+                </div>
               </div>
-              <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999" }}>맨 앞 이미지가 공개 화면 상단에 노출됩니다. 필요 없는 이미지는 ×로 삭제하세요.</p>
+
+              {/* ── 상세 내용 이미지 (본문 세로 스택) ── */}
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 6 }}>상세 내용 이미지 <span style={{ fontWeight: 400, color: "#999" }}>· 본문에 위→아래 순서로 전체폭 표시 ({detailImages.length}/12)</span></div>
+                <div
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
+                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: "1.5px dashed #e0d5ee", background: "#fbf9ff" }}>
+                  {detailImages.map((d, idx) => (
+                    <div key={d.url + idx} draggable
+                      onDragStart={() => { imgDragRef.current = { zone: "body", idx }; }}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (imgDragRef.current) dropToBody(idx); }}
+                      style={{ position: "relative", width: 84, cursor: "grab" }}>
+                      <img src={d.url} alt={`상세 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
+                      <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
+                      <button type="button" onClick={() => removeImage(idx)} title="삭제"
+                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                    </div>
+                  ))}
+                  <label title="이미지 추가"
+                    style={{ width: 84, height: 84, flexShrink: 0, border: "1.5px dashed #c4b5d4", borderRadius: 8, background: "#fff", color: "#5f0080", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: uploading ? "wait" : "pointer" }}>
+                    <span style={{ fontSize: 22, lineHeight: 1 }}>{uploading ? "…" : "+"}</span>
+                    <span style={{ fontSize: 10 }}>추가</span>
+                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
+                  </label>
+                  {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세 이미지가 없어요. 배너에서 드래그하거나 직접 추가하세요.</span>}
+                </div>
+                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꾸거나 위 배너로 올릴 수 있어요. 상세 내용이 이미지면 아래 텍스트 항목은 비워도 됩니다(이미지로 표시).</p>
+              </div>
+
             </div>
           </div>
         );
