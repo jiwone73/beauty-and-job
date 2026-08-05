@@ -14,6 +14,7 @@ import { findJobsByCompany as findAlbamon } from "@/lib/external/albamon";
 import { findJobsByCompany as findBeautyjob } from "@/lib/external/beautyjob";
 import { findJobsByCompany as findBeautyjobManager } from "@/lib/external/beautyjobmanager";
 import { findJobsByCompany as findSaramin } from "@/lib/external/saramin";
+import { findJobsByCompany as findMiyonginjob } from "@/lib/external/miyonginjob";
 import { findSelfSites } from "@/lib/external/selfSites";
 
 export const runtime = "nodejs"; // TextDecoder('euc-kr') 등 때문에 nodejs 고정
@@ -42,6 +43,7 @@ export async function GET(req: NextRequest) {
     findBeautyjobManager(company, { strict }),
     findJobkorea(company, { strict }),
     findSaramin(company, { strict }),
+    findMiyonginjob(company, { strict }),
   ]);
 
   const sourceStatus: Record<string, string> = { 자사홈페이지: "ok" };
@@ -60,11 +62,12 @@ export async function GET(req: NextRequest) {
   const bjmJobs = pull(3, "뷰티잡매니저");
   const jkJobs = pull(4, "잡코리아");
   const srJobs = pull(5, "사람인");
+  const myJobs = pull(6, "미용인잡");
 
-  // 병합(자사 → 알바몬 → 헤어인잡 → 뷰티잡 → 뷰티잡매니저 → 잡코리아 → 사람인) + url 기준 중복 제거
+  // 병합(자사 → 알바몬 → 헤어인잡 → 뷰티잡 → 뷰티잡매니저 → 미용인잡 → 잡코리아 → 사람인) + url 기준 중복 제거
   const seen = new Set<string>();
   const jobs: FoundJob[] = [];
-  for (const j of [...selfJobs, ...albaJobs, ...hairJobs, ...bjJobs, ...bjmJobs, ...jkJobs, ...srJobs]) {
+  for (const j of [...selfJobs, ...albaJobs, ...hairJobs, ...bjJobs, ...bjmJobs, ...myJobs, ...jkJobs, ...srJobs]) {
     if (seen.has(j.url)) continue;
     seen.add(j.url);
     jobs.push(j);
@@ -79,6 +82,7 @@ export async function GET(req: NextRequest) {
       헤어인잡: hairJobs.length,
       뷰티잡: bjJobs.length,
       뷰티잡매니저: bjmJobs.length,
+      미용인잡: myJobs.length,
       잡코리아: jkJobs.length,
       사람인: srJobs.length,
     },
