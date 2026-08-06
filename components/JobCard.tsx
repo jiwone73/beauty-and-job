@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { Bookmark } from "lucide-react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { shortRegion } from "@/lib/regionShort";
+import { BannerImg } from "@/components/BannerImg";
 
 const PURPLE = "#5f0080";
 
@@ -58,7 +59,7 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
     <div className="jobcard" onClick={go}>
       <div className="jobcard-cover">
         {data.image ? (
-          <img src={data.image} alt={data.company} className="jobcard-cover-img" />
+          <BannerImg src={data.image} alt={data.company} />
         ) : (
           <span className="jobcard-cover-name">{data.company || "·"}</span>
         )}
