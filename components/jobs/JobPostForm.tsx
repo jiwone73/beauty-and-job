@@ -879,14 +879,14 @@ export default function JobPostForm({
     benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
     responsibilities: { label: "주요업무", placeholder: "주요 업무를 입력하세요" },
     description: {
-      label: "포지션 소개 · 상세 설명",
+      label: "포지션 소개",
       hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
-      placeholder: "이 포지션에 대한 소개를 자유롭게 적어주세요. 상세 이미지가 있으면 이미지 아래에 함께 표시돼요 (직군별 급여·매장별 근무시간 등 이미지로 못 담는 내용을 여기에).",
+      placeholder: "",
     },
-    requirements: { label: "자격요건", placeholder: "필수 자격요건을 입력하세요" },
-    preferred: { label: "우대사항", placeholder: "우대사항을 입력하세요" },
+    requirements: { label: "자격요건", placeholder: "" },
+    preferred: { label: "우대사항", placeholder: "" },
   };
-  const textFields: TextKey[] = ["description", "responsibilities", "requirements", "preferred", "benefits"];
+  const textFields: TextKey[] = ["description", "requirements", "preferred"];
 
   const processFilled = hiringProcess.length > 0;
   const notesFilled = !!notes.trim();
@@ -1087,6 +1087,92 @@ export default function JobPostForm({
               </div>
             </div>
           )}
+
+          {/* ── 관리 설정(구직자 미리보기엔 안 나옴): 기업 선택 · 채용 유형 ── */}
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb" }}>
+          {mode === "admin" && (
+            <div className="admin-form-row">
+              <label className="admin-form-label">기업 선택<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+
+              {/* 기업 선택 = 검색 가능 드롭다운 (기본값 비회원 + DB 회원사 목록) */}
+              <div style={{ position: "relative", justifySelf: "end", width: "100%", maxWidth: 320 }}>
+                <button type="button" onClick={() => setShowCompanyList((v) => !v)}
+                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6,
+                    padding: "4px 0", fontSize: (companyId || nonMember) ? 14 : 12, fontWeight: 400,
+                    border: "none", background: "transparent", cursor: "pointer", textAlign: "right", boxSizing: "border-box" }}>
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                    color: (companyId || nonMember) ? "#333" : "#999" }}>
+                    {companyId ? companyName : (nonMember ? (newCompanyName || "비회원 기업") : "기업명 검색")}
+                  </span>
+                  <ChevronDown size={16} color="#888" style={{ flexShrink: 0 }} />
+                </button>
+
+                {showCompanyList && (
+                  <>
+                    <div onClick={() => setShowCompanyList(false)} style={{ position: "fixed", inset: 0, zIndex: 19 }} />
+                    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, marginTop: 4,
+                      background: "#fff", border: "1px solid #e0e0e0", borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.08)", overflow: "hidden" }}>
+                      <div style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
+                        <input autoFocus className="admin-form-input" placeholder="기업명 검색"
+                          value={companyQuery} onChange={(e) => setCompanyQuery(e.target.value)} style={{ width: "100%", boxSizing: "border-box" }} />
+                      </div>
+                      <div style={{ maxHeight: 240, overflowY: "auto" }}>
+                        {/* 비회원 기업 (항상 맨 위, 기본값) */}
+                        <div onClick={() => { setNonMember(true); setCompanyId(null); setCompanyName(""); setShowCompanyList(false); setCompanyQuery(""); }}
+                          style={{ padding: "10px 14px", fontSize: 14, cursor: "pointer", borderBottom: "1px solid #f3f3f3", background: "#fff", color: "#333" }}>
+                          비회원 기업{newCompanyName ? <span style={{ color: "#888" }}> · {newCompanyName}</span> : null}
+                        </div>
+                        {/* DB 회원사 목록 */}
+                        {(() => {
+                          const q = companyQuery.trim().toLowerCase();
+                          const matched = companies.filter((c) =>
+                            !q || c.company_name.toLowerCase().includes(q) || (c.brand_name || "").toLowerCase().includes(q)
+                          ).slice(0, 50);
+                          if (matched.length === 0) {
+                            return <div style={{ padding: "10px 14px", fontSize: 13, color: "#999" }}>회원 기업이 없어요</div>;
+                          }
+                          return matched.map((c) => (
+                            <div key={c.id}
+                              onClick={() => {
+                                setNonMember(false); setCompanyId(c.id);
+                                setCompanyName(c.company_name + (c.brand_name ? ` (${c.brand_name})` : ""));
+                                setShowCompanyList(false); setCompanyQuery("");
+                              }}
+                              style={{ padding: "10px 14px", fontSize: 14, cursor: "pointer", borderBottom: "1px solid #f3f3f3",
+                                background: companyId === c.id ? "#faf7fd" : "#fff", fontWeight: companyId === c.id ? 600 : 400 }}>
+                              {c.company_name}{c.brand_name ? <span style={{ color: "#888" }}> ({c.brand_name})</span> : null}
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="admin-form-row">
+            <label className="admin-form-label">채용 유형{showTypeToggle && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</label>
+            {showTypeToggle ? (
+              <select className="admin-form-select" value={jobGroupType}
+                style={jobGroupType ? undefined : { color: "#bbb", fontSize: 12 }}
+                onChange={(e) => { setJobGroupType(e.target.value as "" | "기업" | "매장"); setCategories([]); }}>
+                <option value="">선택</option>
+                <option value="기업">본사 채용</option>
+                <option value="매장">매장 채용</option>
+              </select>
+            ) : (
+              <div style={{
+                display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px",
+              }}>
+                <span style={{ fontSize: "14px", fontWeight: 400, color: "#555" }}>
+                  {jobGroupType === "기업" ? "🏢 본사 채용" : "🏪 매장 채용"}
+                </span>
+              </div>
+            )}
+          </div>
+          </div>
         </div>
       )}
 
@@ -1151,155 +1237,17 @@ export default function JobPostForm({
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
 
-              {/* ── 관리 설정(구직자 미리보기엔 안 나옴): 기업 선택 · 채용 유형 ── */}
-              <div style={{ background: "#faf9fc", border: "1px solid #f0edf5", borderRadius: 10, padding: "2px 14px", marginBottom: 14 }}>
-              {mode === "admin" && (
-                <div className="admin-form-row">
-                  <label className="admin-form-label">기업 선택<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-
-                  {/* 기업 선택 = 검색 가능 드롭다운 (기본값 비회원 + DB 회원사 목록) */}
-                  <div style={{ position: "relative", justifySelf: "end", width: "100%", maxWidth: 320 }}>
-                    <button type="button" onClick={() => setShowCompanyList((v) => !v)}
-                      style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6,
-                        padding: "4px 0", fontSize: (companyId || nonMember) ? 14 : 12, fontWeight: 400,
-                        border: "none", background: "transparent", cursor: "pointer", textAlign: "right", boxSizing: "border-box" }}>
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                        color: (companyId || nonMember) ? "#333" : "#999" }}>
-                        {companyId ? companyName : (nonMember ? (newCompanyName || "비회원 기업") : "기업명 검색")}
-                      </span>
-                      <ChevronDown size={16} color="#888" style={{ flexShrink: 0 }} />
-                    </button>
-
-                    {showCompanyList && (
-                      <>
-                        <div onClick={() => setShowCompanyList(false)} style={{ position: "fixed", inset: 0, zIndex: 19 }} />
-                        <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, marginTop: 4,
-                          background: "#fff", border: "1px solid #e0e0e0", borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.08)", overflow: "hidden" }}>
-                          <div style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                            <input autoFocus className="admin-form-input" placeholder="기업명 검색"
-                              value={companyQuery} onChange={(e) => setCompanyQuery(e.target.value)} style={{ width: "100%", boxSizing: "border-box" }} />
-                          </div>
-                          <div style={{ maxHeight: 240, overflowY: "auto" }}>
-                            {/* 비회원 기업 (항상 맨 위, 기본값) */}
-                            <div onClick={() => { setNonMember(true); setCompanyId(null); setCompanyName(""); setShowCompanyList(false); setCompanyQuery(""); }}
-                              style={{ padding: "10px 14px", fontSize: 14, cursor: "pointer", borderBottom: "1px solid #f3f3f3", background: "#fff", color: "#333" }}>
-                              비회원 기업{newCompanyName ? <span style={{ color: "#888" }}> · {newCompanyName}</span> : null}
-                            </div>
-                            {/* DB 회원사 목록 */}
-                            {(() => {
-                              const q = companyQuery.trim().toLowerCase();
-                              const matched = companies.filter((c) =>
-                                !q || c.company_name.toLowerCase().includes(q) || (c.brand_name || "").toLowerCase().includes(q)
-                              ).slice(0, 50);
-                              if (matched.length === 0) {
-                                return <div style={{ padding: "10px 14px", fontSize: 13, color: "#999" }}>회원 기업이 없어요</div>;
-                              }
-                              return matched.map((c) => (
-                                <div key={c.id}
-                                  onClick={() => {
-                                    setNonMember(false); setCompanyId(c.id);
-                                    setCompanyName(c.company_name + (c.brand_name ? ` (${c.brand_name})` : ""));
-                                    setShowCompanyList(false); setCompanyQuery("");
-                                  }}
-                                  style={{ padding: "10px 14px", fontSize: 14, cursor: "pointer", borderBottom: "1px solid #f3f3f3",
-                                    background: companyId === c.id ? "#faf7fd" : "#fff", fontWeight: companyId === c.id ? 600 : 400 }}>
-                                  {c.company_name}{c.brand_name ? <span style={{ color: "#888" }}> ({c.brand_name})</span> : null}
-                                </div>
-                              ));
-                            })()}
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="admin-form-row">
-                <label className="admin-form-label">채용 유형{showTypeToggle && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</label>
-                {showTypeToggle ? (
-                  <select className="admin-form-select" value={jobGroupType}
-                    style={jobGroupType ? undefined : { color: "#bbb", fontSize: 12 }}
-                    onChange={(e) => { setJobGroupType(e.target.value as "" | "기업" | "매장"); setCategories([]); }}>
-                    <option value="">선택</option>
-                    <option value="기업">본사 채용</option>
-                    <option value="매장">매장 채용</option>
-                  </select>
-                ) : (
-                  <div style={{
-                    display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px",
-                  }}>
-                    <span style={{ fontSize: "14px", fontWeight: 400, color: "#555" }}>
-                      {jobGroupType === "기업" ? "🏢 본사 채용" : "🏪 매장 채용"}
-                    </span>
-                  </div>
-                )}
-              </div>
-              </div>
-
               {/* 공고 헤더(미리보기형): 실제 상세화면 최상단에 보일 브랜드 + 제목 */}
               <div style={{ padding: "4px 0 14px", borderBottom: "1px solid #f0edf5", marginBottom: 4 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: "#8a7fa0", marginBottom: 6 }}>
-                  {previewJob.brand || (mode === "admin" ? "회사를 선택하세요" : "우리 회사")}
+                  {previewJob.brand || ""}
                 </div>
                 <input
-                  placeholder="공고 제목을 입력하세요"
+                  placeholder="공고 제목을 입력하세요 *"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   style={{ width: "100%", border: "none", outline: "none", fontSize: 22, fontWeight: 800, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3 }}
                 />
-                {!form.title.trim() && (
-                  <div style={{ fontSize: 12, color: "#e74c3c", marginTop: 4 }}>* 공고 제목은 필수예요</div>
-                )}
-              </div>
-
-              {/* 근무지역(필터용 시·군·구) */}
-              <div className="admin-form-row" ref={regionInlineRef} style={{ position: "relative" }}>
-                <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                <div style={{ display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: 4, justifyContent: "flex-end" }}>
-                  {regionList.map((r) => (
-                    <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "#f3ecfa", color: "#5f0080", borderRadius: 12, padding: "1px 8px", fontSize: 13 }}>
-                      {shortRegion(r)}
-                      <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
-                        style={{ border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0, fontSize: 13, lineHeight: 1 }}>×</button>
-                    </span>
-                  ))}
-                  {regionOpen ? (
-                    <input autoFocus value={regionQuery} onChange={(e) => setRegionQuery(e.target.value)}
-                      placeholder="시·군·구 검색"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          const q = regionQuery.trim();
-                          const hit = ALL_REGIONS.find((x) => x.includes(q) || shortRegion(x).includes(q));
-                          if (hit && !regionList.includes(hit)) { setRegionList([...regionList, hit]); setRegionQuery(""); }
-                        }
-                      }}
-                      style={{ width: 110, border: "none", background: "transparent", fontSize: 13, color: "#333", padding: 0, outline: "none", textAlign: "right" }} />
-                  ) : (
-                    <button type="button" onClick={() => setRegionOpen(true)}
-                      style={{ border: "none", background: "transparent", padding: 0, cursor: "text", fontSize: 13, color: regionList.length ? "#8a7fa0" : "#cfcfcf" }}>
-                      {regionList.length ? "+ 지역" : <>선택<span style={{ color: "#e9a3a3" }}> *</span></>}
-                    </button>
-                  )}
-                  {regionOpen && regionQuery.trim() && (
-                    <div style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, zIndex: 60, minWidth: 180, maxHeight: 220, overflowY: "auto", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 4 }}>
-                      {(() => {
-                        const q = regionQuery.trim();
-                        const matches = ALL_REGIONS.filter((x) => (x.includes(q) || shortRegion(x).includes(q)) && !regionList.includes(x)).slice(0, 10);
-                        if (!matches.length) return <div style={{ padding: "8px 10px", fontSize: 13, color: "#aaa" }}>일치하는 지역이 없어요</div>;
-                        return matches.map((m) => (
-                          <div key={m} onClick={() => { setRegionList([...regionList, m]); setRegionQuery(""); }}
-                            style={{ padding: "8px 10px", fontSize: 13.5, color: "#333", cursor: "pointer", borderRadius: 6, textAlign: "left" }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = "#faf7fe")}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-                            {m}
-                          </div>
-                        ));
-                      })()}
-                    </div>
-                  )}
-                </div>
               </div>
 
               {/* ── 기본정보 그리드: 항상 2열 아이콘 그리드(지역·경력·모집·마감) ── */}
@@ -1308,7 +1256,7 @@ export default function JobPostForm({
                 <div className="job-detail-meta-item">
                   <Tag size={15} className="job-detail-meta-icon" />
                   {typeLocked ? (
-                    <span style={{ fontSize: 13, color: "#cfcfcf" }}>채용유형 먼저</span>
+                    <span style={{ fontSize: 13, color: "#cfcfcf" }}></span>
                   ) : (
                     <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="채용분야 *" />
                   )}
@@ -1356,42 +1304,10 @@ export default function JobPostForm({
                 </div>
               </div>
 
-              {/* 근무지 상세 주소: 위 근무지역(시·군·구)과 겹치는 앞부분은 빼고 그 뒤만 표시. 지도·저장엔 전체 주소 사용 */}
-              {nonMember && (() => {
-                const sigungu = (regionList[0] || "").trim().split(/\s+/).pop() || "";
-                const idx = sigungu && nmAddress.includes(sigungu) ? nmAddress.indexOf(sigungu) + sigungu.length : -1;
-                const addrPrefix = idx >= 0 ? nmAddress.slice(0, idx).trim() : "";
-                const addrDetail = idx >= 0 ? nmAddress.slice(idx).trim() : nmAddress;
-                return (
-                  <>
-                    <div className="admin-form-row">
-                      <label className="admin-form-label">근무지 상세 주소</label>
-                      <input className="admin-form-input" value={addrDetail}
-                        onChange={(e) => setNmAddress((addrPrefix ? addrPrefix + " " : "") + e.target.value)}
-                        placeholder="도로명·번지 (동·층 등)" />
-                    </div>
-                    {nmAddress.trim() && (
-                      <iframe title="근무지역 지도" width="100%" height={220}
-                        style={{ border: 0, borderRadius: 12, marginTop: 4 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"
-                        src={`https://maps.google.com/maps?q=${encodeURIComponent(nmAddress)}&output=embed&hl=ko`} />
-                    )}
-                  </>
-                );
-              })()}
-
               {/* ── 근무 조건: 고용형태·급여·근무요일·근무시간(라벨+값, 미리보기와 동일) ── */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 700, color: "#333" }}>근무 조건</div>
                 <div className="job-detail-company-info">
-                  {/* 고용형태 */}
-                  <div className="job-detail-company-row">
-                    <span className="job-detail-company-label">고용형태 <span style={{ color: "#e9a3a3" }}>*</span></span>
-                    <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
-                      style={{ border: "none", background: "transparent", fontSize: 13, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                      <option value="">선택</option>
-                      {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
-                  </div>
                   {/* 급여 */}
                   <div className="job-detail-company-row" ref={salaryRef} style={{ position: "relative" }}>
                     <span className="job-detail-company-label">급여</span>
@@ -1402,7 +1318,7 @@ export default function JobPostForm({
                         setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
                       }}
                       style={{ border: "none", background: "transparent", padding: 0, fontSize: 13, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
-                      {typeLocked ? "채용유형 먼저 선택" : ((salaryNego || form.salary) ? fmtSalary() : "선택")}
+                      {typeLocked ? "선택" : ((salaryNego || form.salary) ? fmtSalary() : "선택")}
                     </button>
                     {salaryModalOpen && (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
@@ -1437,6 +1353,15 @@ export default function JobPostForm({
                         </div>
                       </div>
                     )}
+                  </div>
+                  {/* 고용형태 */}
+                  <div className="job-detail-company-row">
+                    <span className="job-detail-company-label">고용형태 <span style={{ color: "#e9a3a3" }}>*</span></span>
+                    <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
+                      style={{ border: "none", background: "transparent", fontSize: 13, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                      <option value="">선택</option>
+                      {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
+                    </select>
                   </div>
                   {jobGroupType === "매장" && (<>
                     {/* 근무 요일 */}
@@ -1491,6 +1416,84 @@ export default function JobPostForm({
                   </>)}
                   </div>
                 </div>
+
+              {/* 근무지역(필터용 시·군·구) */}
+              <div className="admin-form-row" ref={regionInlineRef} style={{ position: "relative" }}>
+                <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                <div style={{ display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: 4, justifyContent: "flex-end" }}>
+                  {regionList.map((r) => (
+                    <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "#f3ecfa", color: "#5f0080", borderRadius: 12, padding: "1px 8px", fontSize: 13 }}>
+                      {shortRegion(r)}
+                      <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
+                        style={{ border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0, fontSize: 13, lineHeight: 1 }}>×</button>
+                    </span>
+                  ))}
+                  {regionOpen ? (
+                    <input autoFocus value={regionQuery} onChange={(e) => setRegionQuery(e.target.value)}
+                      placeholder="시·군·구 검색"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const q = regionQuery.trim();
+                          const hit = ALL_REGIONS.find((x) => x.includes(q) || shortRegion(x).includes(q));
+                          if (hit && !regionList.includes(hit)) { setRegionList([...regionList, hit]); setRegionQuery(""); }
+                        }
+                      }}
+                      style={{ width: 110, border: "none", background: "transparent", fontSize: 13, color: "#333", padding: 0, outline: "none", textAlign: "right" }} />
+                  ) : (
+                    <button type="button" onClick={() => setRegionOpen(true)}
+                      style={{ border: "none", background: "transparent", padding: 0, cursor: "text", fontSize: 13, color: regionList.length ? "#8a7fa0" : "#cfcfcf" }}>
+                      {regionList.length ? "+ 지역" : <>선택<span style={{ color: "#e9a3a3" }}> *</span></>}
+                    </button>
+                  )}
+                  {regionOpen && regionQuery.trim() && (
+                    <div style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, zIndex: 60, minWidth: 180, maxHeight: 220, overflowY: "auto", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 4 }}>
+                      {(() => {
+                        const q = regionQuery.trim();
+                        const matches = ALL_REGIONS.filter((x) => (x.includes(q) || shortRegion(x).includes(q)) && !regionList.includes(x)).slice(0, 10);
+                        if (!matches.length) return <div style={{ padding: "8px 10px", fontSize: 13, color: "#aaa" }}>일치하는 지역이 없어요</div>;
+                        return matches.map((m) => (
+                          <div key={m} onClick={() => { setRegionList([...regionList, m]); setRegionQuery(""); }}
+                            style={{ padding: "8px 10px", fontSize: 13.5, color: "#333", cursor: "pointer", borderRadius: 6, textAlign: "left" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = "#faf7fe")}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                            {m}
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 근무지 상세 주소: 위 근무지역(시·군·구)과 겹치는 앞부분은 빼고 그 뒤만 표시. 지도·저장엔 전체 주소 사용 */}
+              {nonMember && (() => {
+                const sigungu = (regionList[0] || "").trim().split(/\s+/).pop() || "";
+                const idx = sigungu && nmAddress.includes(sigungu) ? nmAddress.indexOf(sigungu) + sigungu.length : -1;
+                const addrPrefix = idx >= 0 ? nmAddress.slice(0, idx).trim() : "";
+                const addrDetail = idx >= 0 ? nmAddress.slice(idx).trim() : nmAddress;
+                return (
+                  <>
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">근무지 상세 주소</label>
+                      <input className="admin-form-input" value={addrDetail}
+                        onChange={(e) => setNmAddress((addrPrefix ? addrPrefix + " " : "") + e.target.value)}
+                        placeholder="도로명·번지 (동·층 등)" />
+                    </div>
+                    {nmAddress.trim() && (
+                      <iframe title="근무지역 지도" width="100%" height={220}
+                        style={{ border: 0, borderRadius: 12, marginTop: 4 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                        src={`https://maps.google.com/maps?q=${encodeURIComponent(nmAddress)}&output=embed&hl=ko`} />
+                    )}
+                  </>
+                );
+              })()}
+
+              {/* 복리후생 */}
+              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+                <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 700, color: "#333" }}>복리후생</div>
+                {typeLocked ? <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span> : <div className="benefit-chip-grid">{welfareOptions.map((b) => (<button key={b} type="button" className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`} onClick={() => toggleBenefit(b)}>{b}</button>))}</div>}
+              </div>
             </div>
           </div>
 
@@ -1534,34 +1537,6 @@ export default function JobPostForm({
                 <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꾸거나 위 배너로 올릴 수 있어요. 상세 내용이 이미지면 아래 텍스트 항목은 비워도 됩니다(이미지로 표시).</p>
               </div>
 
-              {/* 복리후생 (필터용) — 인라인 칩(그 자리에서 바로 토글) */}
-              <div style={{ padding: "16px 0", borderBottom: "1px solid var(--color-border)" }}>
-                <label className="admin-form-label" style={{ margin: "0 0 8px", display: "block" }}>복리후생</label>
-                {typeLocked ? (
-                  <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span>
-                ) : (
-                  <div className="benefit-chip-grid">
-                    {welfareOptions.map((b) => (
-                      <button key={b} type="button" className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`} onClick={() => toggleBenefit(b)}>{b}</button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* 근무조건 (필터용) — 인라인 칩 */}
-              <div style={{ padding: "16px 0", borderBottom: "1px solid var(--color-border)" }}>
-                <label className="admin-form-label" style={{ margin: "0 0 8px", display: "block" }}>근무조건</label>
-                {typeLocked ? (
-                  <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span>
-                ) : (
-                  <div className="benefit-chip-grid">
-                    {workcondOptions.map((b) => (
-                      <button key={b} type="button" className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`} onClick={() => toggleBenefit(b)}>{b}</button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
               {/* 상세 항목 → 그 자리에서 바로 쓰는 인라인 textarea(모달·팝오버 없음, 자동 높이) */}
               {textFields.map((k) => {
                 const meta = textFieldMeta[k];
@@ -1575,9 +1550,9 @@ export default function JobPostForm({
                       {meta.hint && <span style={{ fontSize: 11, fontWeight: 400, color: "#bbb", marginLeft: 6 }}>{meta.hint}</span>}
                     </label>
                     <textarea
-                      placeholder={meta.placeholder}
+                      placeholder=""
                       value={content}
-                      rows={content ? 3 : 2}
+                      rows={1}
                       onChange={(e) => setForm({ ...form, [k]: e.target.value })}
                       onInput={(e) => { const t = e.currentTarget; t.style.height = "auto"; t.style.height = Math.max(t.scrollHeight, 40) + "px"; }}
                       style={{ width: "100%", boxSizing: "border-box", border: "none", background: "transparent", resize: "vertical", fontSize: 14, color: "#333", lineHeight: 1.7, fontFamily: "inherit", outline: "none", padding: 0 }} />
