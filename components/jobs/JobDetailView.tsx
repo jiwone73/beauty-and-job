@@ -122,7 +122,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           );
         })()}
 
-        <div className="job-detail-info-box">
+        {/* 기본정보: PC에선 우측 카드로 대체돼 숨김이지만, 상세 이미지형 공고는 본문에 '배너→기본정보→상세이미지' 흐름이 필요해 강제 노출 */}
+        <div className="job-detail-info-box" style={hasDetailImages ? { display: "block" } : undefined}>
           <div className="job-detail-brand-row">
             <span
               className="job-detail-brand"
