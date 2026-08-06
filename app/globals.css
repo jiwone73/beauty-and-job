@@ -2188,6 +2188,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 사용자 선호: 상세/미리보기 영역은 볼드 없이 전부 평체(인라인 볼드까지 강제 무력화) */
 .job-detail-layout, .job-detail-layout * { font-weight: 400 !important; }
+/* 등록폼도 동일하게 볼드 없이 평체 */
+.jobpost-form, .jobpost-form * { font-weight: 400 !important; }
 .job-detail-desc { font-size: 15px; color: var(--color-text-sub); line-height: 1.8; white-space: pre-line; }
 .job-detail-brand-desc { font-size: 15px; color: var(--color-text-sub); line-height: 1.7; margin-bottom: 16px; }
 

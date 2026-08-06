@@ -1398,16 +1398,14 @@ export default function JobPostForm({
               {/* 복리후생 */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>복리후생</div>
-                {typeLocked ? <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span> : <div className="benefit-chip-grid">{welfareOptions.map((b) => (<button key={b} type="button" className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`} onClick={() => toggleBenefit(b)}>{b}</button>))}</div>}
+                {typeLocked ? <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span> : <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px" }}>{welfareOptions.map((b) => { const on = benefitTags.includes(b); return (<button key={b} type="button" onClick={() => toggleBenefit(b)} style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>{on ? "✓ " : ""}{b}</button>); })}</div>}
               </div>
 
-              {/* 채용 담당자 · 채용 절차 (2열) */}
-              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6, display: "grid", gridTemplateColumns: (mode === "admin" && nonMember) ? "1fr 1fr" : "1fr", gap: "0 28px", alignItems: "start" }}>
-              {/* 채용 담당자 (left) — 관리자 외부공고에서만 */}
+              {/* 채용 담당자 (기본정보 카드) — 관리자 외부공고에서만 */}
               {mode === "admin" && nonMember && (
-                <div>
+                <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                   <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>채용 담당자</div>
-                  <div className="job-detail-company-info" style={{ gridTemplateColumns: "1fr" }}>
+                  <div className="job-detail-company-info">
                     <div className="job-detail-company-row">
                       <span className="job-detail-company-label">이름</span>
                       <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={{ border: "none", background: "transparent", fontSize: 15, outline: "none", padding: 0, width: "100%" }} placeholder="선택" />
@@ -1424,8 +1422,8 @@ export default function JobPostForm({
                 </div>
               )}
 
-              {/* 채용 절차 (right) */}
-              <div>
+              {/* 채용 절차 (기본정보 카드) */}
+              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-row">
                   <div ref={processModalOpen ? processPopRef : undefined} style={{ position: "relative", width: "100%" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
@@ -1500,7 +1498,6 @@ export default function JobPostForm({
                     )}
                   </div>
                 </div>
-              </div>
               </div>
             </div>
           </div>

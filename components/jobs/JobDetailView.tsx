@@ -143,21 +143,19 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const benefitsBlock = job.benefits?.length > 0 ? (
     <div className="jd-subblock" key="benefits">
       <h2 className="job-detail-subtitle">복리후생</h2>
-      <div className="job-detail-benefits">
-        {job.benefits.map((item: string, i: number) => (
-          <span key={i} className="job-detail-benefit-chip">{item}</span>
-        ))}
+      <div style={{ fontSize: 15, color: "var(--color-text-sub)", lineHeight: 1.8 }}>
+        {job.benefits.join("   ·   ")}
       </div>
     </div>
   ) : null;
 
-  // 채용 담당자 · 채용 절차는 좌/우 2열로 배치(빈 값 자동 숨김).
+  // 채용 담당자 · 채용 절차는 각각 별도 항목(빈 값 자동 숨김).
   const hasContact = !!(job.contactName || job.contactPhone || job.contactEmail);
   const hasProcess = !!(job.process?.length > 0 || job.notes?.trim());
   const contactInner = hasContact ? (
     <div>
       <h2 className="job-detail-subtitle">채용 담당자</h2>
-      <div className="job-detail-company-info" style={{ gridTemplateColumns: "1fr" }}>
+      <div className="job-detail-company-info">
         {job.contactName && (
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">이름</span>
@@ -208,11 +206,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
-  const contactProcessBlock = (hasContact || hasProcess) ? (
-    <div className="jd-subblock jd-2col" key="contact-process">
-      <div>{contactInner}</div>
-      <div>{processInner}</div>
-    </div>
+  const contactBlock = hasContact ? (
+    <div className="jd-subblock" key="contact">{contactInner}</div>
+  ) : null;
+  const processBlock = hasProcess ? (
+    <div className="jd-subblock" key="process">{processInner}</div>
   ) : null;
 
   return (
@@ -304,7 +302,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {workCondSection}
           {locationSection}
           {benefitsBlock}
-          {contactProcessBlock}
+          {contactBlock}
+          {processBlock}
         </div>
 
         {/* 상세 내용 — 이미지형이면 상세요강(이미지) + 자유서술, 아니면 텍스트 항목(포지션 소개·자격요건·우대사항·주요업무) */}
