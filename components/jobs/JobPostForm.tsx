@@ -389,6 +389,35 @@ export default function JobPostForm({
       setSalaryNego(!j.salary_min);
       if (j.job_type) setJobGroupType(j.job_type === "STORE" ? "매장" : "기업");
       if (j.company_id) setCompanyId(j.company_id);
+
+      // 관리자 편집: 회원 공고면 회원 모드, 외부(비회원) 공고면 회사·담당자·지원방식 복원
+      if (mode === "admin") {
+        const isMemberJob = j.company?.is_member === true;
+        setNonMember(!isMemberJob);
+        if (!isMemberJob && j.company) {
+          setNewCompanyName(j.company.company_name || "");
+          setNewBrandName(j.company.brand_name || "");
+          setNmDescription(j.company.description || "");
+          setNmHomepage(j.company.website_url || "");
+          setNmAddress(
+            j.company.address ||
+            [j.company.region_sido, j.company.region_sigungu].filter(Boolean).join(" ") ||
+            ""
+          );
+          setNmIndustry(j.company.industry || "");
+          setNmSize(j.company.company_size || "");
+          setNmFounded(j.company.founded_year ? String(j.company.founded_year) : "");
+          setNmRepresentative(j.company.representative_name || "");
+          setNmPhone(j.company.company_phone || "");
+        }
+        setNmManagerName(j.external_contact_name || "");
+        setNmManagerPhone(j.external_contact_phone || "");
+        setNmContactEmail(j.external_contact_email || "");
+        if (["MANAGED", "EMAIL", "REDIRECT"].includes(j.apply_method)) {
+          setApplyMethod(j.apply_method === "EMAIL" ? "MANAGED" : j.apply_method);
+        }
+        setExternalApplyUrl(j.external_apply_url || "");
+      }
     }).catch(console.error);
   }, [editId, loadEditData]);
 

@@ -291,13 +291,14 @@ function AdminJobsPageInner() {
                 <th>마감일</th>
                 <th>등록일</th>
                 <th>상태</th>
+                <th style={{ width: 64 }}>관리</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={11} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+                <tr><td colSpan={11} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : filtered.map((job) => (
                 <tr key={job.id}>
                   <td>
@@ -392,6 +393,13 @@ function AdminJobsPageInner() {
                     }}>
                       {STATUS_TO_LABEL[job.status] || "승인대기"}
                     </span>
+                  </td>
+                  {/* 관리: 수정 */}
+                  <td>
+                    <Link href={`/admin/jobs/new?id=${job.id}`}
+                      style={{ display: "inline-block", padding: "4px 12px", borderRadius: 6, border: "1px solid #d9c8ec", color: "#5f0080", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", textDecoration: "none" }}>
+                      수정
+                    </Link>
                   </td>
                 </tr>
               ))}

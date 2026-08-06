@@ -32,6 +32,15 @@ function AdminJobNewForm() {
     return { success: false, error: data.error?.message };
   };
 
+  const loadEditData = async (id: string) => {
+    const res = await fetch(`/api/admin/jobs/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (!data.success) return null;
+    return data.data;
+  };
+
   const onSubmit = async (
     payload: any,
     status: "draft" | "publish",
@@ -40,8 +49,9 @@ function AdminJobNewForm() {
     const body: any = { ...payload, status: status === "draft" ? "DRAFT" : "ACTIVE" };
     if (company.companyId) body.company_id = company.companyId;
     if (company.newCompany) body.new_company = company.newCompany;
-    const res = await fetch("/api/admin/jobs", {
-      method: "POST",
+    // 편집이면 PATCH(기존 공고 갱신), 신규면 POST(등록)
+    const res = await fetch(editId ? `/api/admin/jobs/${editId}` : "/api/admin/jobs", {
+      method: editId ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify(body),
     });
@@ -59,6 +69,7 @@ function AdminJobNewForm() {
         companies={companies}
         uploadImage={uploadImage}
         onSubmit={onSubmit}
+        loadEditData={loadEditData}
       />
     </AdminLayout>
   );
