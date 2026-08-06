@@ -2167,7 +2167,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-tag { font-size: 13px; color: var(--color-text-mute); }
 .job-detail-title { font-size: 24px; font-weight: 800; color: var(--color-text); letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 16px; }
 .job-detail-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
-.job-detail-meta-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--color-text-sub); }
+.job-detail-meta-item { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--color-text-sub); }
 .job-detail-meta-icon { color: var(--color-primary-light); flex-shrink: 0; }
 .job-detail-meta-label { color: var(--color-text-mute); flex-shrink: 0; }
 .job-detail-meta-value { color: var(--color-text); }
@@ -2188,12 +2188,16 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-layout, .job-detail-layout * { font-weight: 400 !important; }
 /* 등록폼도 동일하게 볼드 없이 평체 */
 .jobpost-form, .jobpost-form * { font-weight: 400 !important; }
+/* 등록폼 기본정보: 필드 글자 크기 통일(공고 제목·회사명·섹션 제목 제외) */
+.jobpost-form .job-detail-meta-item, .jobpost-form .job-detail-meta-item *,
+.jobpost-form .job-detail-company-row, .jobpost-form .job-detail-company-row *,
+.jobpost-form .admin-form-label { font-size: 15px !important; }
 .job-detail-desc { font-size: 15px; color: var(--color-text-sub); line-height: 1.8; white-space: pre-line; }
 .job-detail-brand-desc { font-size: 15px; color: var(--color-text-sub); line-height: 1.7; margin-bottom: 16px; }
 
 /* 회사 정보 */
 .job-detail-company-info { background: transparent; border-radius: 8px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; }
-.job-detail-company-row { display: flex; gap: 16px; padding: 7px 0; font-size: 14px; }
+.job-detail-company-row { display: flex; gap: 16px; padding: 7px 0; font-size: 15px; }
 .job-detail-company-label { color: var(--color-text-mute); width: 60px; flex-shrink: 0; }
 @media (max-width: 640px) { .job-detail-company-info { grid-template-columns: 1fr; } }
 

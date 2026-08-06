@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -1397,7 +1397,7 @@ export default function JobPostForm({
                 <span className="admin-form-label" style={{ flexShrink: 0 }}>근무지역 <span style={{ color: "#e9a3a3" }}>*</span></span>
                 <input value={nmAddress}
                   onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
-                  style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, outline: "none", padding: 0, textAlign: "left" }}
+                  style={{ flex: 1, border: "none", background: "transparent", fontSize: 15, outline: "none", padding: 0, textAlign: "left" }}
                   placeholder="전체 주소 입력 (예: 서울 구로구 구일로10길 27 …)" />
               </div>
               {nmAddress.trim() && (
@@ -1447,22 +1447,17 @@ export default function JobPostForm({
                   <div ref={processModalOpen ? processPopRef : undefined} style={{ position: "relative", width: "100%" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                       <span style={{ fontSize: "15px", color: "#333" }}>채용 절차</span>
-                      <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
-                        <button type="button" className="resume-icon-btn" aria-label={processFilled ? "수정" : "설정"} title={processFilled ? "수정" : "설정"}
-                          onClick={() => { if (processModalOpen) setProcessModalOpen(false); else openProcessModal(); }}>
-                          <Pencil size={15} />
+                      {processFilled && (
+                        <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
+                          onClick={() => { if (confirm("채용 절차를 삭제할까요?")) setHiringProcess([]); }}>
+                          <Trash2 size={15} />
                         </button>
-                        {processFilled && (
-                          <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
-                            onClick={() => { if (confirm("채용 절차를 삭제할까요?")) setHiringProcess([]); }}>
-                            <Trash2 size={15} />
-                          </button>
-                        )}
-                      </div>
+                      )}
                     </div>
-                    <div style={{ marginTop: "8px", fontSize: processFilled ? "15px" : "13px", color: processFilled ? "#555" : "#bbb", lineHeight: 1.6, whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
+                    <button type="button" onClick={() => { if (processModalOpen) setProcessModalOpen(false); else openProcessModal(); }}
+                      style={{ marginTop: "8px", fontSize: "15px", color: processFilled ? "#555" : "#bbb", lineHeight: 1.6, whiteSpace: "normal", wordBreak: "break-word", textAlign: "left", border: "none", background: "none", padding: 0, cursor: "pointer", width: "100%" }}>
                       {processFilled ? hiringProcess.join(" → ") : "선택"}
-                    </div>
+                    </button>
                     {processModalOpen && (
                       <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", display: "flex", flexDirection: "column", gap: "16px" }}>
                         {/* 선택된 단계 */}
