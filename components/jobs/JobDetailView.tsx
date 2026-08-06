@@ -224,12 +224,17 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           )] as string[];
           if (!detailUrls.length) return null;
           return (
-            <section className="job-detail-section" style={{ padding: 0 }}>
+            <section className="job-detail-section" style={{ padding: 0, overflow: "hidden" }}>
+              <h2 className="job-detail-section-title" style={{ padding: "24px 24px 0", marginBottom: 16 }}>상세요강</h2>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 {detailUrls.map((u, i) => (
                   <img key={i} src={u} alt={`상세 이미지 ${i + 1}`} style={{ display: "block", width: "100%", height: "auto" }} />
                 ))}
               </div>
+              {/* 상세 이미지 아래 자유 서술(선택): 이미지로 못 담는 직군별 급여·매장별 시간 등을 자유롭게 */}
+              {job.description?.trim() && (
+                <p className="job-detail-desc" style={{ padding: "18px 24px 24px", margin: 0 }}>{job.description.trim()}</p>
+              )}
             </section>
           );
         })()}

@@ -109,12 +109,14 @@ function parseHairinjob(html: string): StructuredResult | null {
 
   const sug = suggestCats(`${job} ${title}`);
 
-  // 공고 이미지: /upload/upload/offer_user/... 핫링크 차단이라 재호스팅.
-  const images = [
+  // 공고 이미지 분리(핫링크 차단이라 재호스팅):
+  //   · _memcontents(상세요강 본문 포스터, 세로로 긴 이미지) → 상세 이미지
+  //   · 그 외 _mem/_mem2…(매장 사진 썸네일) → 상단 배너
+  const allImgs = [
     ...new Set([...html.matchAll(/\/upload\/upload\/offer_user\/\d+\/[^"'\s)]+\.(?:jpe?g|png|gif)/gi)].map((m) => m[0])),
-  ]
-    .map((p) => `https://www.hairinjob.com${p}`)
-    .slice(0, 10);
+  ].map((p) => `https://www.hairinjob.com${p}`);
+  const detailRaw = allImgs.filter((u) => /memcontents|_contents\./i.test(u)).slice(0, 12);
+  const bannerRaw = allImgs.filter((u) => !detailRaw.includes(u)).slice(0, 10);
 
   const out: StructuredResult = {
     title,
@@ -139,8 +141,9 @@ function parseHairinjob(html: string): StructuredResult | null {
     main_duties: job ? `모집분야: ${job}` : "",
     _confident: !!(title && (company || region || sug.job_categories.length)),
   };
-  if (images.length) {
-    out.images = images;
+  if (bannerRaw.length || detailRaw.length) {
+    out.images = bannerRaw;                       // 매장 사진 → 상단 배너
+    if (detailRaw.length) out._detailImagesRaw = detailRaw; // 상세요강 포스터 → 상세 이미지
     out._rehost = true; // 핫링크 차단 → 라우트에서 재호스팅
     out._rehostReferer = "https://www.hairinjob.com/";
   } else {

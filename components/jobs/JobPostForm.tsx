@@ -579,6 +579,8 @@ export default function JobPostForm({
         const detailImgs: string[] = Array.isArray(d.detail_images) ? d.detail_images.filter(Boolean) : [];
         if (detailImgs.length) {
           setDetailImages(detailImgs.slice(0, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
+          // 파서가 배너용 이미지(매장 사진 등)를 함께 내려주면 전부 상단 배너로.
+          if (imgs.length) setBannerImages(imgs.slice(0, 10).map((u) => ({ url: u, name: "배너" })));
         } else {
           const cover = imgs[0] || d.cover_image || "";
           // 기본 배분: 첫 이미지=배너(1장), 나머지=상세 본문. (관리자가 폼에서 드래그로 조정)
@@ -861,9 +863,9 @@ export default function JobPostForm({
     benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
     responsibilities: { label: "주요업무", placeholder: "주요 업무를 입력하세요" },
     description: {
-      label: "포지션 소개",
-      hint: detailImages.length > 0 ? "선택 (이미지로 대체됨)" : "필수 (이미지 없을 시)",
-      placeholder: "이 포지션에 대한 소개를 입력하세요. 비워두고 상세 이미지로 대체할 수도 있어요.",
+      label: "포지션 소개 · 상세 설명",
+      hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
+      placeholder: "이 포지션에 대한 소개를 자유롭게 적어주세요. 상세 이미지가 있으면 이미지 아래에 함께 표시돼요 (직군별 급여·매장별 근무시간 등 이미지로 못 담는 내용을 여기에).",
     },
     requirements: { label: "자격요건", placeholder: "필수 자격요건을 입력하세요" },
     preferred: { label: "우대사항", placeholder: "우대사항을 입력하세요" },

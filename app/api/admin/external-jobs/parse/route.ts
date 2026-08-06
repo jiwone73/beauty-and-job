@@ -448,9 +448,10 @@ export async function POST(req: NextRequest) {
   // 이미지: 무료 파서로 뽑았으면 그걸 사용(핫링크 차단 사이트는 재호스팅, 이미지 없는 소스는 빈 배열).
   // 무료 파싱이 아니면 기존 범용 추출 사용.
   if (freeParsed) {
+    const referer = out._rehostReferer || "";
     if (out._rehost && Array.isArray(out.images) && out.images.length) {
       try {
-        out.images = await rehostImages(out.images, out._rehostReferer || "");
+        out.images = await rehostImages(out.images, referer);
       } catch (e) {
         console.error("[rehost images]", e);
         out.images = [];
@@ -458,7 +459,15 @@ export async function POST(req: NextRequest) {
     } else if (!Array.isArray(out.images)) {
       out.images = []; // 잡코리아·알바몬 등 이미지 없는 소스 → 범용 추출 잡음 방지
     }
-    // 포스터형(뷰티잡): 배너가 아니라 상세 본문 이미지로 전달 → 폼이 상세 이미지 영역에 배치.
+    // 파서가 배너/상세를 구분해 상세 이미지를 따로 지정한 경우(헤어인잡: 매장사진=배너, 상세요강 포스터=상세) → 재호스팅해 detail_images로.
+    if (out._rehost && Array.isArray(out._detailImagesRaw) && out._detailImagesRaw.length) {
+      try {
+        out.detail_images = await rehostImages(out._detailImagesRaw, referer);
+      } catch (e) {
+        console.error("[rehost detail images]", e);
+      }
+    }
+    // 포스터형(뷰티잡): images 자체가 상세 본문 포스터 → detail_images로 이동(배너 비움).
     if (out._detailImages) {
       out.detail_images = Array.isArray(out.images) ? out.images : [];
       out.images = [];
@@ -471,6 +480,7 @@ export async function POST(req: NextRequest) {
   delete out._rehost;
   delete out._rehostReferer;
   delete out._detailImages;
+  delete out._detailImagesRaw;
   // 연락처: AI가 못 뽑았으면 정규식 후보로 폴백 + 형식 정리.
   if (typeof out.contact_phone !== "string" || out.contact_phone.replace(/\D/g, "").length < 9) out.contact_phone = phones[0] || "";
   if (typeof out.contact_email !== "string" || !/@/.test(out.contact_email)) out.contact_email = emails[0] || "";
