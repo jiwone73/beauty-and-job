@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2, Upload, Eye, Save, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -1264,77 +1264,106 @@ export default function JobPostForm({
                 )}
               </div>
 
-              {/* ── 미리보기형 인라인 메타(모달 없이 그 자리에서 입력/선택): 지역 · 경력 · 고용형태 · 모집인원 ── */}
-              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 10, rowGap: 8, padding: "10px 0" }}>
-                {/* 근무지역: 인라인 자동완성(타이핑→아래 제안→클릭해 칩 추가). 모달 없음 */}
-                <div ref={regionInlineRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: 4 }}>
-                  <MapPin size={14} style={{ color: regionList.length ? "#5f0080" : "#d0d0d0" }} />
-                  {regionList.map((r) => (
-                    <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "#f3ecfa", color: "#5f0080", borderRadius: 12, padding: "1px 8px", fontSize: 13 }}>
-                      {shortRegion(r)}
-                      <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
-                        style={{ border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0, fontSize: 13, lineHeight: 1 }}>×</button>
-                    </span>
-                  ))}
-                  {regionOpen ? (
-                    <input autoFocus value={regionQuery} onChange={(e) => setRegionQuery(e.target.value)}
-                      placeholder="시·군·구 검색"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
+              {/* ── 기본정보 그리드: 미리보기와 동일한 2열 아이콘 그리드(모달 없이 그 자리에서 편집) ── */}
+              <div className="job-detail-meta-grid" style={{ margin: "12px 0" }}>
+                {/* 근무지역 */}
+                <div className="job-detail-meta-item" ref={regionInlineRef} style={{ position: "relative" }}>
+                  <MapPin size={15} className="job-detail-meta-icon" />
+                  <div style={{ display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: 4 }}>
+                    {regionList.map((r) => (
+                      <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "#f3ecfa", color: "#5f0080", borderRadius: 12, padding: "1px 8px", fontSize: 13 }}>
+                        {shortRegion(r)}
+                        <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
+                          style={{ border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0, fontSize: 13, lineHeight: 1 }}>×</button>
+                      </span>
+                    ))}
+                    {regionOpen ? (
+                      <input autoFocus value={regionQuery} onChange={(e) => setRegionQuery(e.target.value)}
+                        placeholder="시·군·구 검색"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const q = regionQuery.trim();
+                            const hit = ALL_REGIONS.find((x) => x.includes(q) || shortRegion(x).includes(q));
+                            if (hit && !regionList.includes(hit)) { setRegionList([...regionList, hit]); setRegionQuery(""); }
+                          }
+                        }}
+                        style={{ width: 96, border: "none", background: "transparent", fontSize: 13, color: "#333", padding: 0, outline: "none" }} />
+                    ) : (
+                      <button type="button" onClick={() => setRegionOpen(true)}
+                        style={{ border: "none", background: "transparent", padding: 0, cursor: "text", fontSize: 13, color: regionList.length ? "#8a7fa0" : "#cfcfcf" }}>
+                        {regionList.length ? "+ 지역" : <>근무지역<span style={{ color: "#e9a3a3" }}> *</span></>}
+                      </button>
+                    )}
+                    {regionOpen && regionQuery.trim() && (
+                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 60, minWidth: 180, maxHeight: 220, overflowY: "auto", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 4 }}>
+                        {(() => {
                           const q = regionQuery.trim();
-                          const hit = ALL_REGIONS.find((x) => x.includes(q) || shortRegion(x).includes(q));
-                          if (hit && !regionList.includes(hit)) { setRegionList([...regionList, hit]); setRegionQuery(""); }
-                        }
-                      }}
-                      style={{ width: 110, border: "none", background: "transparent", fontSize: 14, color: "#333", padding: 0, outline: "none" }} />
-                  ) : (
-                    <button type="button" onClick={() => setRegionOpen(true)}
-                      style={{ border: "none", background: "transparent", padding: 0, cursor: "text", fontSize: 14, color: regionList.length ? "#8a7fa0" : "#cfcfcf" }}>
-                      {regionList.length ? "+ 지역 추가" : <>근무지역<span style={{ color: "#e9a3a3" }}> *</span></>}
-                    </button>
-                  )}
-                  {regionOpen && regionQuery.trim() && (
-                    <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 60, minWidth: 180, maxHeight: 220, overflowY: "auto", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 4 }}>
-                      {(() => {
-                        const q = regionQuery.trim();
-                        const matches = ALL_REGIONS.filter((x) => (x.includes(q) || shortRegion(x).includes(q)) && !regionList.includes(x)).slice(0, 10);
-                        if (!matches.length) return <div style={{ padding: "8px 10px", fontSize: 13, color: "#aaa" }}>일치하는 지역이 없어요</div>;
-                        return matches.map((m) => (
-                          <div key={m} onClick={() => { setRegionList([...regionList, m]); setRegionQuery(""); }}
-                            style={{ padding: "8px 10px", fontSize: 13.5, color: "#333", cursor: "pointer", borderRadius: 6 }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = "#faf7fe")}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-                            {m}
-                          </div>
-                        ));
-                      })()}
+                          const matches = ALL_REGIONS.filter((x) => (x.includes(q) || shortRegion(x).includes(q)) && !regionList.includes(x)).slice(0, 10);
+                          if (!matches.length) return <div style={{ padding: "8px 10px", fontSize: 13, color: "#aaa" }}>일치하는 지역이 없어요</div>;
+                          return matches.map((m) => (
+                            <div key={m} onClick={() => { setRegionList([...regionList, m]); setRegionQuery(""); }}
+                              style={{ padding: "8px 10px", fontSize: 13.5, color: "#333", cursor: "pointer", borderRadius: 6 }}
+                              onMouseEnter={(e) => (e.currentTarget.style.background = "#faf7fe")}
+                              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                              {m}
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {/* 경력 */}
+                <div className="job-detail-meta-item">
+                  <Briefcase size={15} className="job-detail-meta-icon" />
+                  <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
+                    style={{ border: "none", background: "transparent", fontSize: 13, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                    <option value="">경력 *</option>
+                    {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </div>
+                {/* 고용형태 */}
+                <div className="job-detail-meta-item">
+                  <Building2 size={15} className="job-detail-meta-icon" />
+                  <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
+                    style={{ border: "none", background: "transparent", fontSize: 13, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                    <option value="">고용형태 *</option>
+                    {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </div>
+                {/* 모집인원 */}
+                <div className="job-detail-meta-item">
+                  <Users size={15} className="job-detail-meta-icon" />
+                  <span style={{ color: form.headcount ? "#333" : "#cfcfcf" }}>모집 <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
+                    onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
+                    style={{ width: 30, border: "none", background: "transparent", fontSize: 13, color: "#333", padding: 0, textAlign: "center" }} /> 명</span>
+                </div>
+                {/* 마감 */}
+                <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
+                  <Clock size={15} className="job-detail-meta-icon" />
+                  <button type="button"
+                    onClick={() => {
+                      if (deadlineModalOpen) { setDeadlineModalOpen(false); return; }
+                      setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true);
+                    }}
+                    style={{ border: "none", background: "transparent", padding: 0, fontSize: 13, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                    {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : <>마감일<span style={{ color: "#e9a3a3" }}> *</span></>}
+                  </button>
+                  {deadlineModalOpen && (
+                    <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "240px" }}>
+                      <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
+                        style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
+                      <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                        <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
+                      </label>
+                      <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
+                        <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
+                        <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
+                      </div>
                     </div>
                   )}
                 </div>
-                <span style={{ color: "#ececec" }}>|</span>
-                {/* 경력 (테두리 없는 인라인 셀렉트 → 그 자리에서 열림) */}
-                <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
-                  style={{ border: "none", background: "transparent", fontSize: 14, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                  <option value="">경력 *</option>
-                  {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                </select>
-                <span style={{ color: "#ececec" }}>|</span>
-                {/* 고용형태 */}
-                <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
-                  style={{ border: "none", background: "transparent", fontSize: 14, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                  <option value="">고용형태 *</option>
-                  {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
-                </select>
-                <span style={{ color: "#ececec" }}>|</span>
-                {/* 모집인원 */}
-                <span style={{ fontSize: 14, color: form.headcount ? "#333" : "#cfcfcf", display: "inline-flex", alignItems: "center", gap: 2 }}>
-                  모집
-                  <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
-                    onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
-                    style={{ width: 32, border: "none", background: "transparent", fontSize: 14, color: "#333", padding: 0, textAlign: "center" }} />
-                  명
-                </span>
               </div>
 
               {/* 근무지 상세 주소: 위 근무지역(시·군·구)과 겹치는 앞부분은 빼고 그 뒤만 표시. 지도·저장엔 전체 주소 사용 */}
@@ -1362,16 +1391,15 @@ export default function JobPostForm({
 
               {/* 급여 · 마감: 인라인 문장형(선택창은 그 자리 아래에 뜸, 모달 없음) */}
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 10, rowGap: 8, padding: "6px 0 10px", borderTop: "1px solid #f5f2f9" }}>
-                <div ref={salaryRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ fontSize: 13 }}>💰</span>
-                  <button type="button" disabled={typeLocked}
+                <div ref={salaryRef} style={{ position: "relative", display: "inline-block" }}>
+                  <button type="button" disabled={typeLocked} className="job-detail-salary"
                     onClick={() => {
                       if (typeLocked) return;
                       if (salaryModalOpen) { setSalaryModalOpen(false); return; }
                       setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
                     }}
-                    style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", fontSize: 14, color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
-                    {typeLocked ? "채용유형 먼저" : ((salaryNego || form.salary) ? fmtSalary() : "급여")}
+                    style={{ border: "none", cursor: typeLocked ? "default" : "pointer", opacity: (salaryNego || form.salary) ? 1 : 0.6 }}>
+                    💰 {typeLocked ? "채용유형 먼저 선택" : ((salaryNego || form.salary) ? fmtSalary() : "급여 입력")}
                   </button>
                     {salaryModalOpen && (
                       <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
@@ -1407,91 +1435,63 @@ export default function JobPostForm({
                       </div>
                     )}
                   </div>
-                  <span style={{ color: "#ececec" }}>|</span>
-                  <div ref={deadlineRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                    <button type="button"
-                      onClick={() => {
-                        if (deadlineModalOpen) { setDeadlineModalOpen(false); return; }
-                        setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true);
-                      }}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", fontSize: 14, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
-                      {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : <>마감일<span style={{ color: "#e9a3a3" }}> *</span></>}
-                    </button>
-                    {deadlineModalOpen && (
-                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "240px" }}>
-                        <input type="date"
-                          min={new Date().toISOString().slice(0, 10)}
-                          value={alwaysOpenDraft ? "" : deadlineDraft}
-                          disabled={alwaysOpenDraft}
-                          onChange={(e) => setDeadlineDraft(e.target.value)}
-                          style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
-                        <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                          <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
-                        </label>
-                        <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
-                          <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
-                          <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 </div>
 
               {jobGroupType === "매장" && (
-              <>
-                {/* 근무 요일 (매장 전용) */}
-                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 10, rowGap: 8, padding: "0 0 4px" }}>
-                  <div ref={workDaysRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ fontSize: 13 }}>🗓</span>
-                    <button type="button" onClick={() => setWorkDaysOpen((v) => !v)}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", fontSize: 14, color: (workDaysNego || workDays.length) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
-                      {workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "근무요일")}
-                    </button>
-                    {workDaysOpen && (
-                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                          {WORK_DAY_OPTIONS.map((d) => {
-                            const on = workDays.includes(d);
-                            return (
-                              <button key={d} type="button" disabled={workDaysNego}
-                                onClick={() => setWorkDays(on ? workDays.filter((x) => x !== d) : [...workDays, d].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b)))}
-                                style={{ width: 32, height: 32, borderRadius: "50%", fontSize: "13px", cursor: workDaysNego ? "default" : "pointer",
-                                  border: on ? "1.5px solid #5f0080" : "1px solid #ddd", background: on ? "#5f0080" : "#fff",
-                                  color: workDaysNego ? "#ccc" : (on ? "#fff" : "#666") }}>{d}</button>
-                            );
-                          })}
+                <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+                  <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 700, color: "#333" }}>근무 조건</div>
+                  <div className="job-detail-company-info">
+                    {/* 근무 요일 */}
+                    <div className="job-detail-company-row" ref={workDaysRef} style={{ position: "relative" }}>
+                      <span className="job-detail-company-label">근무 요일</span>
+                      <button type="button" onClick={() => setWorkDaysOpen((v) => !v)}
+                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 13, color: (workDaysNego || workDays.length) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
+                        {workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "선택")}
+                      </button>
+                      {workDaysOpen && (
+                        <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                            {WORK_DAY_OPTIONS.map((d) => {
+                              const on = workDays.includes(d);
+                              return (
+                                <button key={d} type="button" disabled={workDaysNego}
+                                  onClick={() => setWorkDays(on ? workDays.filter((x) => x !== d) : [...workDays, d].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b)))}
+                                  style={{ width: 32, height: 32, borderRadius: "50%", fontSize: "13px", cursor: workDaysNego ? "default" : "pointer",
+                                    border: on ? "1.5px solid #5f0080" : "1px solid #ddd", background: on ? "#5f0080" : "#fff",
+                                    color: workDaysNego ? "#ccc" : (on ? "#fff" : "#666") }}>{d}</button>
+                              );
+                            })}
+                          </div>
+                          <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                            <input type="checkbox" checked={workDaysNego} onChange={(e) => setWorkDaysNego(e.target.checked)} /> 요일 협의
+                          </label>
                         </div>
-                        <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                          <input type="checkbox" checked={workDaysNego} onChange={(e) => setWorkDaysNego(e.target.checked)} /> 요일 협의
-                        </label>
-                      </div>
-                    )}
-                  </div>
-                  <span style={{ color: "#ececec" }}>|</span>
-                  <div ref={workTimeRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ fontSize: 13 }}>⏰</span>
-                    <button type="button" onClick={() => setWorkTimeOpen((v) => !v)}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", fontSize: 14, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
-                      {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "근무시간")}
-                    </button>
-                    {workTimeOpen && (
-                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <input type="time" disabled={workTimeNego} value={workTimeStart} onChange={(e) => setWorkTimeStart(e.target.value)}
-                            style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 10px", fontSize: "14px", background: workTimeNego ? "#f5f5f5" : "#fff", color: "#333" }} />
-                          <span style={{ color: "#888", flexShrink: 0 }}>~</span>
-                          <input type="time" disabled={workTimeNego} value={workTimeEnd} onChange={(e) => setWorkTimeEnd(e.target.value)}
-                            style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 10px", fontSize: "14px", background: workTimeNego ? "#f5f5f5" : "#fff", color: "#333" }} />
+                      )}
+                    </div>
+                    {/* 근무 시간 */}
+                    <div className="job-detail-company-row" ref={workTimeRef} style={{ position: "relative" }}>
+                      <span className="job-detail-company-label">근무 시간</span>
+                      <button type="button" onClick={() => setWorkTimeOpen((v) => !v)}
+                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 13, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
+                        {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "선택")}
+                      </button>
+                      {workTimeOpen && (
+                        <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <input type="time" disabled={workTimeNego} value={workTimeStart} onChange={(e) => setWorkTimeStart(e.target.value)}
+                              style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 10px", fontSize: "14px", background: workTimeNego ? "#f5f5f5" : "#fff", color: "#333" }} />
+                            <span style={{ color: "#888", flexShrink: 0 }}>~</span>
+                            <input type="time" disabled={workTimeNego} value={workTimeEnd} onChange={(e) => setWorkTimeEnd(e.target.value)}
+                              style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 10px", fontSize: "14px", background: workTimeNego ? "#f5f5f5" : "#fff", color: "#333" }} />
+                          </div>
+                          <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                            <input type="checkbox" checked={workTimeNego} onChange={(e) => setWorkTimeNego(e.target.checked)} /> 시간 협의
+                          </label>
                         </div>
-                        <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                          <input type="checkbox" checked={workTimeNego} onChange={(e) => setWorkTimeNego(e.target.checked)} /> 시간 협의
-                        </label>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
-
-              </>
               )}
             </div>
           </div>
@@ -1536,54 +1536,32 @@ export default function JobPostForm({
                 <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꾸거나 위 배너로 올릴 수 있어요. 상세 내용이 이미지면 아래 텍스트 항목은 비워도 됩니다(이미지로 표시).</p>
               </div>
 
-              {/* 복리후생 (필터용) */}
-              <div className="admin-form-row">
-                <label className="admin-form-label">복리후생</label>
-                <div ref={welfareRef} style={{ position: "relative", width: "100%" }}>
-                  <button type="button" disabled={typeLocked} onClick={() => { if (typeLocked) return; setWelfareOpen((v) => !v); }}
-                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (!typeLocked && welfareSel.length) ? "14px" : "12px", color: typeLocked ? "#bbb" : (welfareSel.length ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
-                    <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{typeLocked ? "채용유형 먼저 선택" : (welfareSel.length ? welfareSel.join(", ") : "선택")}</span>
-                    <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: welfareOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
-                  </button>
-                  {welfareOpen && (
-                    <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
-                      <div className="benefit-chip-grid">
-                        {welfareOptions.map((b) => (
-                          <button key={b} type="button"
-                            className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`}
-                            onClick={() => toggleBenefit(b)}>
-                            {b}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+              {/* 복리후생 (필터용) — 인라인 칩(그 자리에서 바로 토글) */}
+              <div style={{ padding: "16px 0", borderBottom: "1px solid var(--color-border)" }}>
+                <label className="admin-form-label" style={{ margin: "0 0 8px", display: "block" }}>복리후생</label>
+                {typeLocked ? (
+                  <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span>
+                ) : (
+                  <div className="benefit-chip-grid">
+                    {welfareOptions.map((b) => (
+                      <button key={b} type="button" className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`} onClick={() => toggleBenefit(b)}>{b}</button>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* 근무조건 (필터용) */}
-              <div className="admin-form-row">
-                <label className="admin-form-label">근무조건</label>
-                <div ref={workcondRef} style={{ position: "relative", width: "100%" }}>
-                  <button type="button" disabled={typeLocked} onClick={() => { if (typeLocked) return; setWorkcondOpen((v) => !v); }}
-                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (!typeLocked && workcondSel.length) ? "14px" : "12px", color: typeLocked ? "#bbb" : (workcondSel.length ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
-                    <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{typeLocked ? "채용유형 먼저 선택" : (workcondSel.length ? workcondSel.join(", ") : "선택")}</span>
-                    <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: workcondOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
-                  </button>
-                  {workcondOpen && (
-                    <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
-                      <div className="benefit-chip-grid">
-                        {workcondOptions.map((b) => (
-                          <button key={b} type="button"
-                            className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`}
-                            onClick={() => toggleBenefit(b)}>
-                            {b}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+              {/* 근무조건 (필터용) — 인라인 칩 */}
+              <div style={{ padding: "16px 0", borderBottom: "1px solid var(--color-border)" }}>
+                <label className="admin-form-label" style={{ margin: "0 0 8px", display: "block" }}>근무조건</label>
+                {typeLocked ? (
+                  <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span>
+                ) : (
+                  <div className="benefit-chip-grid">
+                    {workcondOptions.map((b) => (
+                      <button key={b} type="button" className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`} onClick={() => toggleBenefit(b)}>{b}</button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* 상세 항목 → 그 자리에서 바로 쓰는 인라인 textarea(모달·팝오버 없음, 자동 높이) */}
@@ -1715,40 +1693,16 @@ export default function JobPostForm({
                 </div>
               </div>
 
-              {/* 비고 · 유의사항 */}
-              <div className="admin-form-row">
-                <div ref={notesModalOpen ? notesPopRef : undefined} style={{ position: "relative", width: "100%" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-                    <span style={{ fontSize: "14px", color: "#555" }}>비고 · 유의사항</span>
-                    <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
-                      <button type="button" className="resume-icon-btn" aria-label={notesFilled ? "수정" : "작성"} title={notesFilled ? "수정" : "작성"}
-                        onClick={() => { if (notesModalOpen) setNotesModalOpen(false); else openNotesModal(); }}>
-                        <Pencil size={15} />
-                      </button>
-                      {notesFilled && (
-                        <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
-                          onClick={() => { if (confirm("비고를 삭제할까요?")) setNotes(""); }}>
-                          <Trash2 size={15} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  {notesModalOpen && (
-                    <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
-                      <textarea autoFocus
-                        placeholder={"지원 시 유의사항이나 안내문을 자유롭게 입력하세요.\n예) ※ 서류 합격자에 한하여 개별 연락드립니다."}
-                        value={notesModalValue} onChange={(e) => setNotesModalValue(e.target.value)}
-                        style={{ width: "100%", minHeight: "160px", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "10px 12px", fontSize: "14px", resize: "vertical", fontFamily: "inherit" }} />
-                      <div style={{ display: "flex", gap: "6px", marginTop: "10px", justifyContent: "flex-end" }}>
-                        <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setNotesModalOpen(false)}>취소</button>
-                        <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={saveNotesModal}>저장</button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {notesFilled
-                  ? <p style={{ margin: "8px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6, textAlign: "left" }}>{notes}</p>
-                  : <div style={{ marginTop: "8px", fontSize: "12px", color: "#bbb", textAlign: "left" }}>작성해주세요</div>}
+              {/* 비고 · 유의사항 — 그 자리에서 바로 쓰는 인라인 textarea */}
+              <div style={{ padding: "16px 0 0" }}>
+                <label className="admin-form-label" style={{ margin: "0 0 6px", display: "block" }}>비고 · 유의사항</label>
+                <textarea
+                  placeholder={"지원 시 유의사항이나 안내문을 자유롭게 입력하세요. 예) ※ 서류 합격자에 한하여 개별 연락드립니다."}
+                  value={notes}
+                  rows={notes ? 3 : 2}
+                  onChange={(e) => setNotes(e.target.value)}
+                  onInput={(e) => { const t = e.currentTarget; t.style.height = "auto"; t.style.height = Math.max(t.scrollHeight, 40) + "px"; }}
+                  style={{ width: "100%", boxSizing: "border-box", border: "none", background: "transparent", resize: "vertical", fontSize: 14, color: "#333", lineHeight: 1.7, fontFamily: "inherit", outline: "none", padding: 0 }} />
               </div>
             </div>
           </div>
