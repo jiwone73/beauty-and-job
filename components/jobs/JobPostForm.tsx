@@ -141,13 +141,13 @@ export default function JobPostForm({
   const [findResults, setFindResults] = useState<{ idx: number; title: string; url: string; source: string }[]>([]);
   const [contactNotice, setContactNotice] = useState("");
   const [curating, setCurating] = useState(false);
-  const [jobGroupType, setJobGroupType] = useState<"기업" | "매장">("기업");
+  const [jobGroupType, setJobGroupType] = useState<"" | "기업" | "매장">(""); // ""=미선택(선택 전 직군·급여·복지 잠금)
   const [categories, setCategories] = useState<string[]>([]);
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
   const [form, setForm] = useState({
     title: "", career: "",
-    type: "정규직", deadline: "", salary: "", description: "",
+    type: "", deadline: "", salary: "", description: "",
     requirements: "", preferred: "", benefits: "", responsibilities: "",
     headcount: "",
   });
@@ -188,6 +188,7 @@ export default function JobPostForm({
   const importSalaryRef = useRef(false);
   useEffect(() => {
     if (editId) return;
+    if (!jobGroupType) return; // 미선택이면 급여유형 자동설정 보류(선택 시 설정)
     if (importSalaryRef.current) { importSalaryRef.current = false; return; }
     setSalaryType(jobGroupType === "매장" ? "MONTHLY" : "ANNUAL");
   }, [jobGroupType, editId]);
@@ -326,7 +327,8 @@ export default function JobPostForm({
   }, [notesModalOpen]);
 
   useEffect(() => {
-    if (companyType === "BOTH") setJobGroupType("기업");
+    // 타입 고정 기업회원은 자동 지정(잠금 없음). 관리자·BOTH는 미선택("")으로 시작해 직접 고르게 함.
+    if (companyType === "BOTH") setJobGroupType("");
     else if (companyType === "STORE") setJobGroupType("매장");
     else if (companyType === "OFFICE") setJobGroupType("기업");
   }, [companyType]);
@@ -375,6 +377,8 @@ export default function JobPostForm({
   }, [editId, loadEditData]);
 
   const showTypeToggle = mode === "admin" || companyType === "BOTH";
+  // 채용유형 미선택(관리자·BOTH가 아직 안 고름) → 직군·급여·복지 입력 잠금
+  const typeLocked = showTypeToggle && !jobGroupType;
 
   // ── 텍스트 모달 핸들러 ─────────────────────
   const openTextModal = (key: TextKey) => {
@@ -762,9 +766,11 @@ export default function JobPostForm({
         alert("기업을 선택해주세요."); return;
       }
     }
+    if (showTypeToggle && !jobGroupType) { alert("채용유형(본사/매장)을 선택해주세요."); return; }
     if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
     if (categories.length === 0) { alert("직군을 선택해주세요."); return; }
     if (!form.career.trim()) { alert("경력 조건을 입력해주세요."); return; }
+    if (!form.type) { alert("고용형태를 선택해주세요."); return; }
     if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
     // 마감일: 날짜 선택 또는 상시채용 필수
     if (status === "publish" && !alwaysOpen && !form.deadline) {
@@ -1184,7 +1190,9 @@ export default function JobPostForm({
                 <label className="admin-form-label">채용 유형{showTypeToggle && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</label>
                 {showTypeToggle ? (
                   <select className="admin-form-select" value={jobGroupType}
-                    onChange={(e) => { setJobGroupType(e.target.value as "기업" | "매장"); setCategories([]); }}>
+                    style={jobGroupType ? undefined : { color: "#bbb" }}
+                    onChange={(e) => { setJobGroupType(e.target.value as "" | "기업" | "매장"); setCategories([]); }}>
+                    <option value="">선택</option>
                     <option value="기업">본사 채용</option>
                     <option value="매장">매장 채용</option>
                   </select>
@@ -1210,10 +1218,14 @@ export default function JobPostForm({
                 <label className="admin-form-label">
                   직군<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>
                 </label>
-                <JobGroupField
-                  jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
-                  value={categories} onChange={setCategories} maxSelect={5}
-                  placeholder="직군을 선택해주세요" />
+                {typeLocked ? (
+                  <span style={{ fontSize: 14, color: "#bbb" }}>채용유형 먼저 선택</span>
+                ) : (
+                  <JobGroupField
+                    jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
+                    value={categories} onChange={setCategories} maxSelect={5}
+                    placeholder="선택" />
+                )}
               </div>
 
               <div className="admin-form-row-2col">
@@ -1226,9 +1238,11 @@ export default function JobPostForm({
                   </select>
                 </div>
                 <div className="admin-form-row">
-                  <label className="admin-form-label">고용형태</label>
+                  <label className="admin-form-label">고용형태<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <select className="admin-form-select" value={form.type}
+                    style={form.type ? undefined : { color: "#bbb" }}
                     onChange={(e) => setForm({ ...form, type: e.target.value })}>
+                    <option value="">선택</option>
                     {EMPLOYMENT_TYPES.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
@@ -1247,7 +1261,7 @@ export default function JobPostForm({
                 <button type="button" onClick={() => setRegionModalOpen(true)}
                   style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: regionList.length ? "#555" : "#bbb", cursor: "pointer" }}>
                   <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
-                    {regionList.length ? regionList.map(shortRegion).join(", ") : "지역을 선택해주세요"}
+                    {regionList.length ? regionList.map(shortRegion).join(", ") : "선택"}
                   </span>
                   <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0 }}>›</span>
                 </button>
@@ -1278,16 +1292,17 @@ export default function JobPostForm({
 
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
-                  <label className="admin-form-label">{jobGroupType === "매장" ? "급여" : "연봉"}</label>
+                  <label className="admin-form-label">{jobGroupType === "기업" ? "연봉" : "급여"}</label>
                   <div ref={salaryRef} style={{ position: "relative", width: "100%" }}>
-                    <button type="button"
+                    <button type="button" disabled={typeLocked}
                       onClick={() => {
+                        if (typeLocked) return;
                         if (salaryModalOpen) { setSalaryModalOpen(false); return; }
                         setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
                       }}
-                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: (salaryNego || form.salary) ? "#555" : "#bbb", cursor: "pointer" }}>
+                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: typeLocked ? "#bbb" : ((salaryNego || form.salary) ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
                       <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
-                        {(salaryNego || form.salary) ? fmtSalary() : "급여를 입력해주세요"}
+                        {typeLocked ? "채용유형 먼저 선택" : ((salaryNego || form.salary) ? fmtSalary() : "선택")}
                       </span>
                       <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: salaryModalOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                     </button>
@@ -1438,9 +1453,9 @@ export default function JobPostForm({
               <div className="admin-form-row">
                 <label className="admin-form-label">복리후생</label>
                 <div ref={welfareRef} style={{ position: "relative", width: "100%" }}>
-                  <button type="button" onClick={() => setWelfareOpen((v) => !v)}
-                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: welfareSel.length ? "#555" : "#bbb", cursor: "pointer" }}>
-                    <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{welfareSel.length ? welfareSel.join(", ") : "선택해주세요"}</span>
+                  <button type="button" disabled={typeLocked} onClick={() => { if (typeLocked) return; setWelfareOpen((v) => !v); }}
+                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: typeLocked ? "#bbb" : (welfareSel.length ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
+                    <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{typeLocked ? "채용유형 먼저 선택" : (welfareSel.length ? welfareSel.join(", ") : "선택")}</span>
                     <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: welfareOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                   </button>
                   {welfareOpen && (
@@ -1463,9 +1478,9 @@ export default function JobPostForm({
               <div className="admin-form-row">
                 <label className="admin-form-label">근무조건</label>
                 <div ref={workcondRef} style={{ position: "relative", width: "100%" }}>
-                  <button type="button" onClick={() => setWorkcondOpen((v) => !v)}
-                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: workcondSel.length ? "#555" : "#bbb", cursor: "pointer" }}>
-                    <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{workcondSel.length ? workcondSel.join(", ") : "선택해주세요"}</span>
+                  <button type="button" disabled={typeLocked} onClick={() => { if (typeLocked) return; setWorkcondOpen((v) => !v); }}
+                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "14px", color: typeLocked ? "#bbb" : (workcondSel.length ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
+                    <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{typeLocked ? "채용유형 먼저 선택" : (workcondSel.length ? workcondSel.join(", ") : "선택")}</span>
                     <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: workcondOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                   </button>
                   {workcondOpen && (
@@ -1585,7 +1600,7 @@ export default function JobPostForm({
                     </div>
                   </div>
                   <div style={{ marginTop: "8px", fontSize: "14px", color: processFilled ? "#555" : "#bbb", lineHeight: 1.6, whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
-                    {processFilled ? hiringProcess.join(" → ") : "채용절차를 선택해주세요"}
+                    {processFilled ? hiringProcess.join(" → ") : "선택"}
                   </div>
                   {processModalOpen && (
                     <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", display: "flex", flexDirection: "column", gap: "16px" }}>
