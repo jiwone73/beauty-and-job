@@ -1032,16 +1032,17 @@ export default function JobPostForm({
           </div>
 
           {importMode === "url" ? (
-            // URL 입력창 + 안쪽에 '원본'·'불러오기' 버튼 임베드
+            // URL 입력창 + 안쪽에 '불러오기' 버튼 임베드 (원문은 ↗ 아이콘으로 새 창 열기)
             <div style={{ position: "relative" }}>
-              <input className="admin-form-input" style={{ width: "100%", paddingRight: 158, boxSizing: "border-box" }}
+              <input className="admin-form-input" style={{ width: "100%", paddingRight: 128, boxSizing: "border-box" }}
                 placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl}
                 onChange={(e) => setParseUrl(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
-              <button type="button" title="원본 공고를 새 창으로 열어 비교"
-                onClick={() => { const u = parseUrl.trim(); if (u) window.open(/^https?:\/\//i.test(u) ? u : "https://" + u, "_blank", "noopener,noreferrer"); }}
-                disabled={!parseUrl.trim()}
-                style={{ position: "absolute", top: 4, bottom: 4, right: 92, padding: "0 12px", borderRadius: 7, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 700, cursor: parseUrl.trim() ? "pointer" : "default", opacity: parseUrl.trim() ? 1 : 0.45 }}>원본</button>
+              {parseUrl.trim() && (
+                <button type="button" title="원문 새 창으로 열기"
+                  onClick={() => { const u = parseUrl.trim(); if (u) window.open(/^https?:\/\//i.test(u) ? u : "https://" + u, "_blank", "noopener,noreferrer"); }}
+                  style={{ position: "absolute", top: 4, bottom: 4, right: 90, width: 32, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 7, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>↗</button>
+              )}
               <button type="button" onClick={() => runParse()} disabled={parsing}
                 style={{ position: "absolute", top: 4, bottom: 4, right: 4, padding: "0 16px", borderRadius: 7, border: "none", background: "#5f0080", color: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>
                 {parsing ? "불러오는 중..." : "불러오기"}</button>
@@ -1366,6 +1367,105 @@ export default function JobPostForm({
                 <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>복리후생</div>
                 {typeLocked ? <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span> : <div className="benefit-chip-grid">{welfareOptions.map((b) => (<button key={b} type="button" className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`} onClick={() => toggleBenefit(b)}>{b}</button>))}</div>}
               </div>
+
+              {/* 채용 담당자 (기본정보 카드) — 관리자 외부공고에서만 */}
+              {mode === "admin" && nonMember && (
+                <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+                  <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>채용 담당자</div>
+                  <div className="job-detail-company-info">
+                    <div className="job-detail-company-row">
+                      <span className="job-detail-company-label">이름</span>
+                      <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={{ border: "none", background: "transparent", fontSize: 14, outline: "none", padding: 0, width: "100%" }} placeholder="선택" />
+                    </div>
+                    <div className="job-detail-company-row">
+                      <span className="job-detail-company-label">전화</span>
+                      <input value={nmManagerPhone} onChange={(e) => setNmManagerPhone(e.target.value)} inputMode="numeric" style={{ border: "none", background: "transparent", fontSize: 14, outline: "none", padding: 0, width: "100%" }} placeholder="선택" />
+                    </div>
+                    <div className="job-detail-company-row">
+                      <span className="job-detail-company-label">이메일</span>
+                      <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} style={{ border: "none", background: "transparent", fontSize: 14, outline: "none", padding: 0, width: "100%" }} placeholder="선택" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 채용 절차 (기본정보 카드) */}
+              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+                <div className="admin-form-row">
+                  <div ref={processModalOpen ? processPopRef : undefined} style={{ position: "relative", width: "100%" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                      <span style={{ fontSize: "14px", color: "#333" }}>채용 절차</span>
+                      <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                        <button type="button" className="resume-icon-btn" aria-label={processFilled ? "수정" : "설정"} title={processFilled ? "수정" : "설정"}
+                          onClick={() => { if (processModalOpen) setProcessModalOpen(false); else openProcessModal(); }}>
+                          <Pencil size={15} />
+                        </button>
+                        {processFilled && (
+                          <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
+                            onClick={() => { if (confirm("채용 절차를 삭제할까요?")) setHiringProcess([]); }}>
+                            <Trash2 size={15} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <div style={{ marginTop: "8px", fontSize: processFilled ? "14px" : "12px", color: processFilled ? "#555" : "#bbb", lineHeight: 1.6, whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
+                      {processFilled ? hiringProcess.join(" → ") : "선택"}
+                    </div>
+                    {processModalOpen && (
+                      <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", display: "flex", flexDirection: "column", gap: "16px" }}>
+                        {/* 선택된 단계 */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                          <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>선택된 단계</span>
+                          {processDraft.length === 0 ? (
+                            <div style={{ padding: "12px", border: "1.5px dashed #e0d4ee", borderRadius: "8px", fontSize: "13px", color: "#aaa", textAlign: "center" }}>아직 추가된 단계가 없어요.</div>
+                          ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              {processDraft.map((s, i) => (
+                                <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 10px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "8px" }}>
+                                  <span style={{ flexShrink: 0, width: "24px", height: "24px", borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: "12px", fontWeight: 400, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
+                                  <span style={{ flex: 1, fontSize: "14px", fontWeight: 400, color: "#5f0080" }}>{s}</span>
+                                  <button type="button" onClick={() => removeDraftStep(i)} style={{ flexShrink: 0, background: "none", border: "none", color: "#a78bba", cursor: "pointer", fontSize: "18px", lineHeight: 1, padding: "0 4px" }}>×</button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        {/* 프리셋 칩 */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                          <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>자주 쓰는 단계</span>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                            {(jobGroupType === "매장" ? PRESET_PROCESS.매장 : PRESET_PROCESS.기업).map((p) => {
+                              const on = processDraft.includes(p);
+                              return (
+                                <button key={p} type="button" onClick={() => togglePreset(p)}
+                                  style={{ padding: "8px 14px", borderRadius: "999px", fontSize: "13px", fontWeight: 400, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e0e0e0", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>
+                                  {on ? "✓ " : "+ "}{p}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        {/* 직접 입력 */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                          <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>직접 입력</span>
+                          <div style={{ display: "flex", gap: "8px" }}>
+                            <input style={{ flex: 1, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px" }}
+                              placeholder="예) 포트폴리오 제출" value={processCustom}
+                              onChange={(e) => setProcessCustom(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomStep(); } }} />
+                            <button type="button" onClick={addCustomStep}
+                              style={{ padding: "0 18px", borderRadius: "8px", border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontWeight: 400, fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap" }}>추가</button>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                          <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setProcessModalOpen(false)}>취소</button>
+                          <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={saveProcessModal}>저장</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1415,8 +1515,8 @@ export default function JobPostForm({
                 const content = ((form as any)[k] || "") as string;
                 const isReq = (k === "description" || k === "requirements") && detailImages.length === 0;
                 return (
-                  <div key={k} style={{ padding: "16px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
-                    <label className="admin-form-label" style={{ margin: "0 0 6px", display: "block" }}>
+                  <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
+                    <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block" }}>
                       {meta.label}
                       {isReq && <span style={{ color: "#dc2626", marginLeft: "3px" }}>*</span>}
                       {meta.hint && <span style={{ fontSize: 11, fontWeight: 400, color: "#bbb", marginLeft: 6 }}>{meta.hint}</span>}
@@ -1426,117 +1526,18 @@ export default function JobPostForm({
                       value={content}
                       rows={1}
                       onChange={(e) => setForm({ ...form, [k]: e.target.value })}
-                      onInput={(e) => { const t = e.currentTarget; t.style.height = "auto"; t.style.height = Math.max(t.scrollHeight, 40) + "px"; }}
-                      style={{ width: "100%", boxSizing: "border-box", border: "none", background: "transparent", resize: "vertical", fontSize: 14, color: "#333", lineHeight: 1.7, fontFamily: "inherit", outline: "none", padding: 0 }} />
+                      onInput={(e) => { const t = e.currentTarget; t.style.height = "auto"; t.style.height = t.scrollHeight + "px"; }}
+                      style={{ width: "100%", boxSizing: "border-box", border: "none", background: "transparent", resize: "none", fontSize: 14, color: "#333", lineHeight: 1.5, fontFamily: "inherit", outline: "none", padding: 0, overflow: "hidden", display: "block", ...({ fieldSizing: "content" } as any) }} />
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* 채용 담당자 — 관리자 외부공고면 항상 노출(위 체크마크 값 편집용) */}
-          {mode === "admin" && nonMember && (
-            <>
-              <h2 className="jobpost-section-title">채용 담당자</h2>
-              <div className="company-card" style={{ overflow: "visible" }}>
-                <div className="admin-form-body">
-                  <div className="admin-form-row">
-                    <label className="admin-form-label">이름</label>
-                    <input className="admin-form-input" value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="담당자명" />
-                  </div>
-                  <div className="admin-form-row">
-                    <label className="admin-form-label">전화번호</label>
-                    <input className="admin-form-input" value={nmManagerPhone} onChange={(e) => setNmManagerPhone(e.target.value)} placeholder="010-0000-0000" inputMode="numeric" />
-                  </div>
-                  <div className="admin-form-row">
-                    <label className="admin-form-label">이메일</label>
-                    <input className="admin-form-input" value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="hr@company.com" />
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* 채용 절차 · 비고 (하단 높이 맞춤용 flex:1) */}
-          <h2 className="jobpost-section-title">채용 절차</h2>
+          {/* 비고 · 유의사항 */}
+          <h2 className="jobpost-section-title">비고</h2>
           <div className="company-card" style={{ overflow: "visible", flex: 1 }}>
             <div className="admin-form-body">
-
-              {/* 채용 절차 */}
-              <div className="admin-form-row">
-                <div ref={processModalOpen ? processPopRef : undefined} style={{ position: "relative", width: "100%" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-                    <span style={{ fontSize: "14px", color: "#555" }}>채용 절차</span>
-                    <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
-                      <button type="button" className="resume-icon-btn" aria-label={processFilled ? "수정" : "설정"} title={processFilled ? "수정" : "설정"}
-                        onClick={() => { if (processModalOpen) setProcessModalOpen(false); else openProcessModal(); }}>
-                        <Pencil size={15} />
-                      </button>
-                      {processFilled && (
-                        <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
-                          onClick={() => { if (confirm("채용 절차를 삭제할까요?")) setHiringProcess([]); }}>
-                          <Trash2 size={15} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <div style={{ marginTop: "8px", fontSize: processFilled ? "14px" : "12px", color: processFilled ? "#555" : "#bbb", lineHeight: 1.6, whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
-                    {processFilled ? hiringProcess.join(" → ") : "선택"}
-                  </div>
-                  {processModalOpen && (
-                    <div style={{ position: "absolute", top: "100%", left: "-166px", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", display: "flex", flexDirection: "column", gap: "16px" }}>
-                      {/* 선택된 단계 */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>선택된 단계</span>
-                        {processDraft.length === 0 ? (
-                          <div style={{ padding: "12px", border: "1.5px dashed #e0d4ee", borderRadius: "8px", fontSize: "13px", color: "#aaa", textAlign: "center" }}>아직 추가된 단계가 없어요.</div>
-                        ) : (
-                          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                            {processDraft.map((s, i) => (
-                              <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 10px", background: "#faf5ff", border: "1px solid #ede0f8", borderRadius: "8px" }}>
-                                <span style={{ flexShrink: 0, width: "24px", height: "24px", borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: "12px", fontWeight: 400, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
-                                <span style={{ flex: 1, fontSize: "14px", fontWeight: 400, color: "#5f0080" }}>{s}</span>
-                                <button type="button" onClick={() => removeDraftStep(i)} style={{ flexShrink: 0, background: "none", border: "none", color: "#a78bba", cursor: "pointer", fontSize: "18px", lineHeight: 1, padding: "0 4px" }}>×</button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      {/* 프리셋 칩 */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>자주 쓰는 단계</span>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                          {(jobGroupType === "매장" ? PRESET_PROCESS.매장 : PRESET_PROCESS.기업).map((p) => {
-                            const on = processDraft.includes(p);
-                            return (
-                              <button key={p} type="button" onClick={() => togglePreset(p)}
-                                style={{ padding: "8px 14px", borderRadius: "999px", fontSize: "13px", fontWeight: 400, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e0e0e0", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>
-                                {on ? "✓ " : "+ "}{p}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      {/* 직접 입력 */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                        <span style={{ fontSize: "13px", fontWeight: 400, color: "#444" }}>직접 입력</span>
-                        <div style={{ display: "flex", gap: "8px" }}>
-                          <input style={{ flex: 1, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px" }}
-                            placeholder="예) 포트폴리오 제출" value={processCustom}
-                            onChange={(e) => setProcessCustom(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomStep(); } }} />
-                          <button type="button" onClick={addCustomStep}
-                            style={{ padding: "0 18px", borderRadius: "8px", border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontWeight: 400, fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap" }}>추가</button>
-                        </div>
-                      </div>
-                      <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
-                        <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setProcessModalOpen(false)}>취소</button>
-                        <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={saveProcessModal}>저장</button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
 
               {/* 비고 · 유의사항 — 그 자리에서 바로 쓰는 인라인 textarea */}
               <div style={{ padding: "16px 0 0" }}>

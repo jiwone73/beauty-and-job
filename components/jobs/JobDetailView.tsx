@@ -182,28 +182,36 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <h1 className="job-detail-title">{job.title}</h1>
 
           <div className="job-detail-meta-grid">
-            <div className="job-detail-meta-item">
-              <MapPin size={15} className="job-detail-meta-icon" />
-              <span>{shortRegion(job.region || "")}</span>
-            </div>
-            <div className="job-detail-meta-item">
-              <Briefcase size={15} className="job-detail-meta-icon" />
-              <span>{job.career}</span>
-            </div>
-            <div className="job-detail-meta-item">
-              <Building2 size={15} className="job-detail-meta-icon" />
-              <span>{job.employType}</span>
-            </div>
+            {job.region && (
+              <div className="job-detail-meta-item">
+                <MapPin size={15} className="job-detail-meta-icon" />
+                <span>{shortRegion(job.region)}</span>
+              </div>
+            )}
+            {job.career && (
+              <div className="job-detail-meta-item">
+                <Briefcase size={15} className="job-detail-meta-icon" />
+                <span>{job.career}</span>
+              </div>
+            )}
+            {job.employType && (
+              <div className="job-detail-meta-item">
+                <Building2 size={15} className="job-detail-meta-icon" />
+                <span>{job.employType}</span>
+              </div>
+            )}
             {job.headcount && (
               <div className="job-detail-meta-item">
                 <Users size={15} className="job-detail-meta-icon" />
                 <span>모집 {job.headcount}</span>
               </div>
             )}
-            <div className="job-detail-meta-item">
-              <Clock size={15} className="job-detail-meta-icon" />
-              <span>{job.deadline === "상시채용" ? "상시채용" : `~${job.deadline}`}</span>
-            </div>
+            {job.deadline && (
+              <div className="job-detail-meta-item">
+                <Clock size={15} className="job-detail-meta-icon" />
+                <span>{job.deadline === "상시채용" ? "상시채용" : `~${job.deadline}`}</span>
+              </div>
+            )}
           </div>
 
           {job.salary && (
@@ -394,9 +402,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {job.salary && (
             <div className="job-detail-aside-salary">{job.salary}</div>
           )}
-          <div className="job-detail-aside-deadline">
-            {job.deadline === "상시채용" ? <strong>상시채용</strong> : <>마감일: <strong>{job.deadline}</strong></>}
-          </div>
+          {job.deadline && (
+            <div className="job-detail-aside-deadline">
+              {job.deadline === "상시채용" ? <strong>상시채용</strong> : <>마감일: <strong>{job.deadline}</strong></>}
+            </div>
+          )}
           {asideAction}
         </div>
       </aside>
