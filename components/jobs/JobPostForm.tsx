@@ -1132,7 +1132,7 @@ export default function JobPostForm({
                   <div style={{ position: "relative", justifySelf: "end", width: "100%", maxWidth: 320 }}>
                     <button type="button" onClick={() => setShowCompanyList((v) => !v)}
                       style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6,
-                        padding: "4px 0", fontSize: 14, fontWeight: 400,
+                        padding: "4px 0", fontSize: 12, fontWeight: 400,
                         border: "none", background: "transparent", cursor: "pointer", textAlign: "right", boxSizing: "border-box" }}>
                       <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                         color: (companyId || nonMember) ? "#333" : "#999" }}>
@@ -1515,7 +1515,7 @@ export default function JobPostForm({
                           {isReq && <span style={{ color: "#dc2626", marginLeft: "3px" }}>*</span>}
                         </label>
                         <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
-                          {!filled && <span style={{ fontSize: "14px", color: "#bbb" }}>작성해주세요</span>}
+                          {!filled && <span style={{ fontSize: "12px", color: "#bbb" }}>작성해주세요</span>}
                           <button type="button" className="resume-icon-btn" aria-label={filled ? "수정" : "작성"} title={filled ? "수정" : "작성"}
                             onClick={() => { if (open) setTextModalKey(null); else openTextModal(k); }}>
                             <Pencil size={15} />
@@ -1543,7 +1543,7 @@ export default function JobPostForm({
                       )}
                     </div>
                     {filled && (
-                      <p style={{ margin: "10px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
+                      <p style={{ margin: "10px 0 0", fontSize: "12px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
                         {content}
                       </p>
                     )}
@@ -1599,7 +1599,7 @@ export default function JobPostForm({
                       )}
                     </div>
                   </div>
-                  <div style={{ marginTop: "8px", fontSize: "14px", color: processFilled ? "#555" : "#bbb", lineHeight: 1.6, whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
+                  <div style={{ marginTop: "8px", fontSize: "12px", color: processFilled ? "#555" : "#bbb", lineHeight: 1.6, whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
                     {processFilled ? hiringProcess.join(" → ") : "선택"}
                   </div>
                   {processModalOpen && (
@@ -1689,8 +1689,8 @@ export default function JobPostForm({
                   )}
                 </div>
                 {notesFilled
-                  ? <p style={{ margin: "8px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6, textAlign: "left" }}>{notes}</p>
-                  : <div style={{ marginTop: "8px", fontSize: "14px", color: "#bbb", textAlign: "left" }}>작성해주세요</div>}
+                  ? <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6, textAlign: "left" }}>{notes}</p>
+                  : <div style={{ marginTop: "8px", fontSize: "12px", color: "#bbb", textAlign: "left" }}>작성해주세요</div>}
               </div>
             </div>
           </div>
