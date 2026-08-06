@@ -1390,22 +1390,19 @@ export default function JobPostForm({
                 );
               })()}
 
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">{jobGroupType === "기업" ? "연봉" : "급여"}</label>
-                  <div ref={salaryRef} style={{ position: "relative", width: "100%" }}>
-                    <button type="button" disabled={typeLocked}
-                      onClick={() => {
-                        if (typeLocked) return;
-                        if (salaryModalOpen) { setSalaryModalOpen(false); return; }
-                        setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
-                      }}
-                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (!typeLocked && (salaryNego || form.salary)) ? "14px" : "12px", color: typeLocked ? "#bbb" : ((salaryNego || form.salary) ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
-                      <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
-                        {typeLocked ? "채용유형 먼저 선택" : ((salaryNego || form.salary) ? fmtSalary() : "선택")}
-                      </span>
-                      <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: salaryModalOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
-                    </button>
+              {/* 급여 · 마감: 인라인 문장형(선택창은 그 자리 아래에 뜸, 모달 없음) */}
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 10, rowGap: 8, padding: "6px 0 10px", borderTop: "1px solid #f5f2f9" }}>
+                <div ref={salaryRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ fontSize: 13 }}>💰</span>
+                  <button type="button" disabled={typeLocked}
+                    onClick={() => {
+                      if (typeLocked) return;
+                      if (salaryModalOpen) { setSalaryModalOpen(false); return; }
+                      setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
+                    }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", fontSize: 14, color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
+                    {typeLocked ? "채용유형 먼저" : ((salaryNego || form.salary) ? fmtSalary() : "급여")}
+                  </button>
                     {salaryModalOpen && (
                       <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
                         {/* 급여 단위 */}
@@ -1440,20 +1437,15 @@ export default function JobPostForm({
                       </div>
                     )}
                   </div>
-                </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">마감일<span style={{ color: "#dc2626", marginLeft: "3px" }}>*</span></label>
-                  <div ref={deadlineRef} style={{ position: "relative", width: "100%" }}>
+                  <span style={{ color: "#ececec" }}>|</span>
+                  <div ref={deadlineRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 4 }}>
                     <button type="button"
                       onClick={() => {
                         if (deadlineModalOpen) { setDeadlineModalOpen(false); return; }
                         setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true);
                       }}
-                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (alwaysOpen || form.deadline) ? "14px" : "12px", color: (alwaysOpen || form.deadline) ? "#555" : "#bbb", cursor: "pointer" }}>
-                      <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
-                        {alwaysOpen ? "상시채용" : form.deadline ? form.deadline.replace(/-/g, ".") : "마감일 선택"}
-                      </span>
-                      <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: deadlineModalOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
+                      style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", fontSize: 14, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                      {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : <>마감일<span style={{ color: "#e9a3a3" }}> *</span></>}
                     </button>
                     {deadlineModalOpen && (
                       <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "240px" }}>
@@ -1474,7 +1466,6 @@ export default function JobPostForm({
                     )}
                   </div>
                 </div>
-              </div>
 
               {jobGroupType === "매장" && (
               <>
