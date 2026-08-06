@@ -145,7 +145,7 @@ export default function JobPostForm({
   const [findResults, setFindResults] = useState<{ idx: number; title: string; url: string; source: string }[]>([]);
   const [contactNotice, setContactNotice] = useState("");
   const [curating, setCurating] = useState(false);
-  const [jobGroupType, setJobGroupType] = useState<"" | "기업" | "매장">(""); // ""=미선택(선택 전 직군·급여·복지 잠금)
+  const [jobGroupType, setJobGroupType] = useState<"" | "기업" | "매장">("매장"); // 기본값 매장(관리자). 선택 전 직군·급여·복지 잠금 해제용
   const [categories, setCategories] = useState<string[]>([]);
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
@@ -873,6 +873,13 @@ export default function JobPostForm({
   const toggleBenefit = (b: string) =>
     setBenefitTags(benefitTags.includes(b) ? benefitTags.filter((x) => x !== b) : [...benefitTags, b]);
 
+  // 전체 주소 문자열에서 필터용 근무지역(시도 시군구)을 추출
+  const deriveRegion = (addr: string) => {
+    const SIDO_MAP: Record<string, string> = { 서울: "서울특별시", 부산: "부산광역시", 대구: "대구광역시", 인천: "인천광역시", 광주: "광주광역시", 대전: "대전광역시", 울산: "울산광역시", 세종: "세종특별자치시", 경기: "경기도", 강원: "강원특별자치도", 충북: "충청북도", 충남: "충청남도", 전북: "전북특별자치도", 전남: "전라남도", 경북: "경상북도", 경남: "경상남도", 제주: "제주특별자치도" };
+    const m = (addr || "").match(/(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)\S*\s*([가-힣]+[시군구])/);
+    return m ? [`${SIDO_MAP[m[1]] || m[1]} ${m[2]}`] : [];
+  };
+
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   const textFieldMeta: Record<TextKey, { label: string; hint?: string; placeholder: string }> = {
@@ -1246,7 +1253,7 @@ export default function JobPostForm({
                   placeholder="공고 제목을 입력하세요 *"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  style={{ width: "100%", border: "none", outline: "none", fontSize: 22, fontWeight: 800, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3 }}
+                  style={{ width: "100%", border: "none", outline: "none", fontSize: 19, fontWeight: 400, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3 }}
                 />
               </div>
 
@@ -1263,6 +1270,7 @@ export default function JobPostForm({
                 </div>
                 {/* 경력 */}
                 <div className="job-detail-meta-item">
+                  <span style={{ fontSize: 12, color: "#999", flexShrink: 0 }}>경력</span>
                   <Briefcase size={15} className="job-detail-meta-icon" />
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
                     style={{ border: "none", background: "transparent", fontSize: 13, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
@@ -1279,6 +1287,7 @@ export default function JobPostForm({
                 </div>
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
+                  <span style={{ fontSize: 12, color: "#999", flexShrink: 0 }}>마감</span>
                   <Clock size={15} className="job-detail-meta-icon" />
                   <button type="button"
                     onClick={() => {
@@ -1417,77 +1426,18 @@ export default function JobPostForm({
                   </div>
                 </div>
 
-              {/* 근무지역(필터용 시·군·구) */}
-              <div className="admin-form-row" ref={regionInlineRef} style={{ position: "relative" }}>
+              {/* 근무지역: 전체 주소 입력 → 필터용 시·군·구 자동 추출 (지도는 아래) */}
+              <div className="admin-form-row">
                 <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                <div style={{ display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: 4, justifyContent: "flex-end" }}>
-                  {regionList.map((r) => (
-                    <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "#f3ecfa", color: "#5f0080", borderRadius: 12, padding: "1px 8px", fontSize: 13 }}>
-                      {shortRegion(r)}
-                      <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
-                        style={{ border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0, fontSize: 13, lineHeight: 1 }}>×</button>
-                    </span>
-                  ))}
-                  {regionOpen ? (
-                    <input autoFocus value={regionQuery} onChange={(e) => setRegionQuery(e.target.value)}
-                      placeholder="시·군·구 검색"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          const q = regionQuery.trim();
-                          const hit = ALL_REGIONS.find((x) => x.includes(q) || shortRegion(x).includes(q));
-                          if (hit && !regionList.includes(hit)) { setRegionList([...regionList, hit]); setRegionQuery(""); }
-                        }
-                      }}
-                      style={{ width: 110, border: "none", background: "transparent", fontSize: 13, color: "#333", padding: 0, outline: "none", textAlign: "right" }} />
-                  ) : (
-                    <button type="button" onClick={() => setRegionOpen(true)}
-                      style={{ border: "none", background: "transparent", padding: 0, cursor: "text", fontSize: 13, color: regionList.length ? "#8a7fa0" : "#cfcfcf" }}>
-                      {regionList.length ? "+ 지역" : <>선택<span style={{ color: "#e9a3a3" }}> *</span></>}
-                    </button>
-                  )}
-                  {regionOpen && regionQuery.trim() && (
-                    <div style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, zIndex: 60, minWidth: 180, maxHeight: 220, overflowY: "auto", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 4 }}>
-                      {(() => {
-                        const q = regionQuery.trim();
-                        const matches = ALL_REGIONS.filter((x) => (x.includes(q) || shortRegion(x).includes(q)) && !regionList.includes(x)).slice(0, 10);
-                        if (!matches.length) return <div style={{ padding: "8px 10px", fontSize: 13, color: "#aaa" }}>일치하는 지역이 없어요</div>;
-                        return matches.map((m) => (
-                          <div key={m} onClick={() => { setRegionList([...regionList, m]); setRegionQuery(""); }}
-                            style={{ padding: "8px 10px", fontSize: 13.5, color: "#333", cursor: "pointer", borderRadius: 6, textAlign: "left" }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = "#faf7fe")}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-                            {m}
-                          </div>
-                        ));
-                      })()}
-                    </div>
-                  )}
-                </div>
+                <input className="admin-form-input" value={nmAddress}
+                  onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
+                  placeholder="전체 주소 입력 (예: 서울 구로구 구일로10길 27 …)" />
               </div>
-
-              {/* 근무지 상세 주소: 위 근무지역(시·군·구)과 겹치는 앞부분은 빼고 그 뒤만 표시. 지도·저장엔 전체 주소 사용 */}
-              {nonMember && (() => {
-                const sigungu = (regionList[0] || "").trim().split(/\s+/).pop() || "";
-                const idx = sigungu && nmAddress.includes(sigungu) ? nmAddress.indexOf(sigungu) + sigungu.length : -1;
-                const addrPrefix = idx >= 0 ? nmAddress.slice(0, idx).trim() : "";
-                const addrDetail = idx >= 0 ? nmAddress.slice(idx).trim() : nmAddress;
-                return (
-                  <>
-                    <div className="admin-form-row">
-                      <label className="admin-form-label">근무지 상세 주소</label>
-                      <input className="admin-form-input" value={addrDetail}
-                        onChange={(e) => setNmAddress((addrPrefix ? addrPrefix + " " : "") + e.target.value)}
-                        placeholder="도로명·번지 (동·층 등)" />
-                    </div>
-                    {nmAddress.trim() && (
-                      <iframe title="근무지역 지도" width="100%" height={220}
-                        style={{ border: 0, borderRadius: 12, marginTop: 4 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"
-                        src={`https://maps.google.com/maps?q=${encodeURIComponent(nmAddress)}&output=embed&hl=ko`} />
-                    )}
-                  </>
-                );
-              })()}
+              {nmAddress.trim() && (
+                <iframe title="근무지역 지도" width="100%" height={220}
+                  style={{ border: 0, borderRadius: 12, marginTop: 4 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(nmAddress)}&output=embed&hl=ko`} />
+              )}
 
               {/* 복리후생 */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
