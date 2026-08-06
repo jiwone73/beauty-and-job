@@ -923,6 +923,11 @@ export default function JobPostForm({
           <div className="admin-form-actions">
             <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}><Save size={15} /> 임시저장</button>
             <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
+            {mode === "admin" && (
+              <button type="button" className="admin-secondary-btn" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 공고 내용을 뷰티워크 톤·형식으로 AI가 다듬어요">
+                {curating ? "다듬는 중..." : "✨ 큐레이션"}
+              </button>
+            )}
             <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
               {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
             </button>
@@ -943,7 +948,6 @@ export default function JobPostForm({
       )}
 
       {mode === "admin" && (
-        <>
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
           <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기 (자동 작성)" : "타 사이트 공고 불러오기 (자동 작성)"}</div>
 
@@ -1021,14 +1025,6 @@ export default function JobPostForm({
             </div>
           )}
         </div>
-
-        {/* 큐레이션: 불러오기 박스 밖 — 채워진 공고 전체를 뷰티워크 톤으로 다듬는 마무리 액션 */}
-        <div style={{ width: "100%", maxWidth: 760, margin: "-8px auto 2px", display: "flex", justifyContent: "flex-end", boxSizing: "border-box" }}>
-          <button type="button" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 공고 내용을 뷰티워크 톤·형식으로 AI가 다듬어요"
-            style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13.5, fontWeight: 700, cursor: "pointer", opacity: curating ? 0.6 : 1, whiteSpace: "nowrap" }}>
-            {curating ? "다듬는 중..." : "✨ 큐레이션 (AI 다듬기)"}</button>
-        </div>
-        </>
       )}
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
@@ -1708,6 +1704,12 @@ export default function JobPostForm({
         </div>
       )}
 
+      {isMobile && mode === "admin" && (
+        <button type="button" onClick={runCurate} disabled={parsing || curating}
+          style={{ width: "100%", maxWidth: 760, margin: "0 auto 12px", display: "block", padding: "10px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 700, boxSizing: "border-box", opacity: curating ? 0.6 : 1 }}>
+          {curating ? "다듬는 중..." : "✨ 큐레이션"}
+        </button>
+      )}
       {isMobile && (
         <button type="button" className="jobpost-mobile-submit" onClick={() => handleSubmit("publish")}>
           {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정 완료" : "공고 등록")}
