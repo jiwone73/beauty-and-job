@@ -18,8 +18,8 @@ const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트", "프리랜서"];
 const WELFARE_OPTIONS: Record<string, string[]> = {
-  매장: ["기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능"],
-  기업: ["인센티브", "자기계발비", "식대 지원", "주차 가능"],
+  매장: ["4대보험", "기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능"],
+  기업: ["4대보험", "인센티브", "자기계발비", "식대 지원", "주차 가능"],
 };
 const WORKCOND_OPTIONS: Record<string, string[]> = {
   매장: ["4대보험", "주말·공휴일 휴무", "정규직 전환"],
@@ -1160,7 +1160,7 @@ export default function JobPostForm({
             <div className="admin-form-body">
 
               {/* 공고 헤더(미리보기형): 실제 상세화면 최상단에 보일 브랜드 + 제목 */}
-              <div style={{ padding: "4px 0 14px", borderBottom: "1px solid #f0edf5", marginBottom: 4 }}>
+              <div style={{ padding: "4px 0 14px", marginBottom: 4 }}>
                 <div style={{ marginBottom: 6 }}>
                   <input
                     value={newCompanyName}
@@ -1181,21 +1181,21 @@ export default function JobPostForm({
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "12px 0", alignItems: "center" }}>
                 {/* 채용분야(직군) */}
                 <div className="job-detail-meta-item">
-                  <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>채용분야</span>
                   <Tag size={15} className="job-detail-meta-icon" />
+                  <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>채용분야<span style={{ color: "#e9a3a3" }}> *</span></span>
                   {typeLocked ? (
                     <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
                   ) : (
-                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="채용분야 *" />
+                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="선택" />
                   )}
                 </div>
                 {/* 경력 */}
                 <div className="job-detail-meta-item">
-                  <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>경력</span>
                   <Briefcase size={15} className="job-detail-meta-icon" />
+                  <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>경력<span style={{ color: "#e9a3a3" }}> *</span></span>
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
                     style={{ border: "none", background: "transparent", fontSize: 14, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                    <option value="">경력 *</option>
+                    <option value="">선택</option>
                     {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
@@ -1208,15 +1208,15 @@ export default function JobPostForm({
                 </div>
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
-                  <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>마감</span>
                   <Clock size={15} className="job-detail-meta-icon" />
+                  <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
                   <button type="button"
                     onClick={() => {
                       if (deadlineModalOpen) { setDeadlineModalOpen(false); return; }
                       setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true);
                     }}
                     style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
-                    {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : <>마감일<span style={{ color: "#e9a3a3" }}> *</span></>}
+                    {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "선택"}
                   </button>
                   {deadlineModalOpen && (
                     <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "240px" }}>
@@ -1352,7 +1352,7 @@ export default function JobPostForm({
                 <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 <input className="admin-form-input" value={nmAddress}
                   onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
-                  style={{ fontSize: 14 }}
+                  style={{ fontSize: 14, width: "100%", textAlign: "left" }}
                   placeholder="전체 주소 입력 (예: 서울 구로구 구일로10길 27 …)" />
               </div>
               {nmAddress.trim() && (

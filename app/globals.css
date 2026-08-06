@@ -11194,9 +11194,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 /* 복리후생 체크박스 (공고 등록폼) */
 .benefit-chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-.benefit-chip { padding: 7px 13px; border: 1.5px solid #ddd; border-radius: 100px; background: #fff; font-size: 13px; color: #555; cursor: pointer; transition: all 0.15s; font-family: inherit; }
-.benefit-chip:hover { border-color: var(--color-primary); }
-.benefit-chip.on { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
+.benefit-chip { padding: 7px 13px; border: none; border-radius: 100px; background: #f2eef7; font-size: 13px; color: #555; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.benefit-chip:hover { background: #e7dff2; }
+.benefit-chip.on { background: var(--color-primary); color: #fff; }
 .jobs-dropdown-benefit { min-width: 200px; max-height: 320px; overflow-y: auto; }
 .jobs-dropdown-multi { display: flex; align-items: center; gap: 8px; }
 .jobs-dropdown-multi .jobs-checkbox { width: 16px; height: 16px; border: 1.5px solid #ccc; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; color: #fff; flex-shrink: 0; }
