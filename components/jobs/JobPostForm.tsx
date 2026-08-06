@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -1253,69 +1253,65 @@ export default function JobPostForm({
                 )}
               </div>
 
-              <div className="admin-form-row">
-                <label className="admin-form-label">
-                  직군<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>
-                </label>
-                {typeLocked ? (
-                  <span style={{ fontSize: 12, color: "#bbb" }}>채용유형 먼저 선택</span>
-                ) : (
-                  <JobGroupField
-                    jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
-                    value={categories} onChange={setCategories} maxSelect={5}
-                    placeholder="선택" />
-                )}
+              {/* 근무지역(필터용 시·군·구) */}
+              <div className="admin-form-row" ref={regionInlineRef} style={{ position: "relative" }}>
+                <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                <div style={{ display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: 4, justifyContent: "flex-end" }}>
+                  {regionList.map((r) => (
+                    <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "#f3ecfa", color: "#5f0080", borderRadius: 12, padding: "1px 8px", fontSize: 13 }}>
+                      {shortRegion(r)}
+                      <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
+                        style={{ border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0, fontSize: 13, lineHeight: 1 }}>×</button>
+                    </span>
+                  ))}
+                  {regionOpen ? (
+                    <input autoFocus value={regionQuery} onChange={(e) => setRegionQuery(e.target.value)}
+                      placeholder="시·군·구 검색"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const q = regionQuery.trim();
+                          const hit = ALL_REGIONS.find((x) => x.includes(q) || shortRegion(x).includes(q));
+                          if (hit && !regionList.includes(hit)) { setRegionList([...regionList, hit]); setRegionQuery(""); }
+                        }
+                      }}
+                      style={{ width: 110, border: "none", background: "transparent", fontSize: 13, color: "#333", padding: 0, outline: "none", textAlign: "right" }} />
+                  ) : (
+                    <button type="button" onClick={() => setRegionOpen(true)}
+                      style={{ border: "none", background: "transparent", padding: 0, cursor: "text", fontSize: 13, color: regionList.length ? "#8a7fa0" : "#cfcfcf" }}>
+                      {regionList.length ? "+ 지역" : <>선택<span style={{ color: "#e9a3a3" }}> *</span></>}
+                    </button>
+                  )}
+                  {regionOpen && regionQuery.trim() && (
+                    <div style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, zIndex: 60, minWidth: 180, maxHeight: 220, overflowY: "auto", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 4 }}>
+                      {(() => {
+                        const q = regionQuery.trim();
+                        const matches = ALL_REGIONS.filter((x) => (x.includes(q) || shortRegion(x).includes(q)) && !regionList.includes(x)).slice(0, 10);
+                        if (!matches.length) return <div style={{ padding: "8px 10px", fontSize: 13, color: "#aaa" }}>일치하는 지역이 없어요</div>;
+                        return matches.map((m) => (
+                          <div key={m} onClick={() => { setRegionList([...regionList, m]); setRegionQuery(""); }}
+                            style={{ padding: "8px 10px", fontSize: 13.5, color: "#333", cursor: "pointer", borderRadius: 6, textAlign: "left" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = "#faf7fe")}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                            {m}
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* ── 기본정보 그리드: 항상 2열 아이콘 그리드(지역·경력·모집·마감) ── */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "12px 0", alignItems: "center" }}>
-                {/* 근무지역 */}
-                <div className="job-detail-meta-item" ref={regionInlineRef} style={{ position: "relative" }}>
-                  <MapPin size={15} className="job-detail-meta-icon" />
-                  <div style={{ display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: 4 }}>
-                    {regionList.map((r) => (
-                      <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "#f3ecfa", color: "#5f0080", borderRadius: 12, padding: "1px 8px", fontSize: 13 }}>
-                        {shortRegion(r)}
-                        <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
-                          style={{ border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0, fontSize: 13, lineHeight: 1 }}>×</button>
-                      </span>
-                    ))}
-                    {regionOpen ? (
-                      <input autoFocus value={regionQuery} onChange={(e) => setRegionQuery(e.target.value)}
-                        placeholder="시·군·구 검색"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            const q = regionQuery.trim();
-                            const hit = ALL_REGIONS.find((x) => x.includes(q) || shortRegion(x).includes(q));
-                            if (hit && !regionList.includes(hit)) { setRegionList([...regionList, hit]); setRegionQuery(""); }
-                          }
-                        }}
-                        style={{ width: 96, border: "none", background: "transparent", fontSize: 13, color: "#333", padding: 0, outline: "none" }} />
-                    ) : (
-                      <button type="button" onClick={() => setRegionOpen(true)}
-                        style={{ border: "none", background: "transparent", padding: 0, cursor: "text", fontSize: 13, color: regionList.length ? "#8a7fa0" : "#cfcfcf" }}>
-                        {regionList.length ? "+ 지역" : <>근무지역<span style={{ color: "#e9a3a3" }}> *</span></>}
-                      </button>
-                    )}
-                    {regionOpen && regionQuery.trim() && (
-                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 60, minWidth: 180, maxHeight: 220, overflowY: "auto", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 4 }}>
-                        {(() => {
-                          const q = regionQuery.trim();
-                          const matches = ALL_REGIONS.filter((x) => (x.includes(q) || shortRegion(x).includes(q)) && !regionList.includes(x)).slice(0, 10);
-                          if (!matches.length) return <div style={{ padding: "8px 10px", fontSize: 13, color: "#aaa" }}>일치하는 지역이 없어요</div>;
-                          return matches.map((m) => (
-                            <div key={m} onClick={() => { setRegionList([...regionList, m]); setRegionQuery(""); }}
-                              style={{ padding: "8px 10px", fontSize: 13.5, color: "#333", cursor: "pointer", borderRadius: 6 }}
-                              onMouseEnter={(e) => (e.currentTarget.style.background = "#faf7fe")}
-                              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-                              {m}
-                            </div>
-                          ));
-                        })()}
-                      </div>
-                    )}
-                  </div>
+                {/* 채용분야(직군) */}
+                <div className="job-detail-meta-item">
+                  <Tag size={15} className="job-detail-meta-icon" />
+                  {typeLocked ? (
+                    <span style={{ fontSize: 13, color: "#cfcfcf" }}>채용유형 먼저</span>
+                  ) : (
+                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="채용분야 *" />
+                  )}
                 </div>
                 {/* 경력 */}
                 <div className="job-detail-meta-item">
