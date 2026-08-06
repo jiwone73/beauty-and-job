@@ -18,11 +18,11 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
     display: "flex", alignItems: "center", justifyContent: "center",
   };
 
-  // 1장이면 원본 비율 그대로 크게
+  // 배너는 항상 3:1 와이드 띠로 고정(1장이어도). 세로 긴 이미지는 상단(로고·제목) 위주로 노출.
   if (n === 1) {
     return (
-      <div style={{ width: "100%", borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
-        <img src={images[0]} alt={alt} style={{ display: "block", width: "100%", height: "auto" }} />
+      <div style={{ width: "100%", aspectRatio: "3 / 1", borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
+        <img src={images[0]} alt={alt} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
       </div>
     );
   }
@@ -34,10 +34,10 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 0, borderRadius: 12, overflow: "hidden" }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 0, borderRadius: 12, overflow: "hidden", aspectRatio: "3 / 1" }}>
         {visible.map((src, k) => (
-          <div key={k} style={{ aspectRatio: "4 / 3", background: "#f4f4f4" }}>
-            <img src={src} alt={alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <div key={k} style={{ overflow: "hidden", background: "#f4f4f4" }}>
+            <img src={src} alt={alt} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
           </div>
         ))}
       </div>
