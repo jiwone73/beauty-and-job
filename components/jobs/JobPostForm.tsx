@@ -116,7 +116,7 @@ export default function JobPostForm({
   const [companyQuery, setCompanyQuery] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [showCompanyList, setShowCompanyList] = useState(false);
-  const [nonMember, setNonMember] = useState(false);
+  const [nonMember, setNonMember] = useState(mode === "admin");
   const [newCompanyName, setNewCompanyName] = useState("");
   const [newBrandName, setNewBrandName] = useState("");
   const [nmContactEmail, setNmContactEmail] = useState("");
@@ -1095,91 +1095,6 @@ export default function JobPostForm({
             </div>
           )}
 
-          {/* ── 관리 설정(구직자 미리보기엔 안 나옴): 기업 선택 · 채용 유형 ── */}
-          <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb" }}>
-          {mode === "admin" && (
-            <div className="admin-form-row">
-              <label className="admin-form-label">기업 선택<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-
-              {/* 기업 선택 = 검색 가능 드롭다운 (기본값 비회원 + DB 회원사 목록) */}
-              <div style={{ position: "relative", justifySelf: "end", width: "100%", maxWidth: 320 }}>
-                <button type="button" onClick={() => setShowCompanyList((v) => !v)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6,
-                    padding: "4px 0", fontSize: (companyId || nonMember) ? 14 : 12, fontWeight: 400,
-                    border: "none", background: "transparent", cursor: "pointer", textAlign: "right", boxSizing: "border-box" }}>
-                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                    color: (companyId || nonMember) ? "#333" : "#999" }}>
-                    {companyId ? companyName : (nonMember ? (newCompanyName || "비회원 기업") : "기업명 검색")}
-                  </span>
-                  <ChevronDown size={16} color="#888" style={{ flexShrink: 0 }} />
-                </button>
-
-                {showCompanyList && (
-                  <>
-                    <div onClick={() => setShowCompanyList(false)} style={{ position: "fixed", inset: 0, zIndex: 19 }} />
-                    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, marginTop: 4,
-                      background: "#fff", border: "1px solid #e0e0e0", borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.08)", overflow: "hidden" }}>
-                      <div style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                        <input autoFocus className="admin-form-input" placeholder="기업명 검색"
-                          value={companyQuery} onChange={(e) => setCompanyQuery(e.target.value)} style={{ width: "100%", boxSizing: "border-box" }} />
-                      </div>
-                      <div style={{ maxHeight: 240, overflowY: "auto" }}>
-                        {/* 비회원 기업 (항상 맨 위, 기본값) */}
-                        <div onClick={() => { setNonMember(true); setCompanyId(null); setCompanyName(""); setShowCompanyList(false); setCompanyQuery(""); }}
-                          style={{ padding: "10px 14px", fontSize: 14, cursor: "pointer", borderBottom: "1px solid #f3f3f3", background: "#fff", color: "#333" }}>
-                          비회원 기업{newCompanyName ? <span style={{ color: "#888" }}> · {newCompanyName}</span> : null}
-                        </div>
-                        {/* DB 회원사 목록 */}
-                        {(() => {
-                          const q = companyQuery.trim().toLowerCase();
-                          const matched = companies.filter((c) =>
-                            !q || c.company_name.toLowerCase().includes(q) || (c.brand_name || "").toLowerCase().includes(q)
-                          ).slice(0, 50);
-                          if (matched.length === 0) {
-                            return <div style={{ padding: "10px 14px", fontSize: 13, color: "#999" }}>회원 기업이 없어요</div>;
-                          }
-                          return matched.map((c) => (
-                            <div key={c.id}
-                              onClick={() => {
-                                setNonMember(false); setCompanyId(c.id);
-                                setCompanyName(c.company_name + (c.brand_name ? ` (${c.brand_name})` : ""));
-                                setShowCompanyList(false); setCompanyQuery("");
-                              }}
-                              style={{ padding: "10px 14px", fontSize: 14, cursor: "pointer", borderBottom: "1px solid #f3f3f3",
-                                background: companyId === c.id ? "#faf7fd" : "#fff", fontWeight: companyId === c.id ? 600 : 400 }}>
-                              {c.company_name}{c.brand_name ? <span style={{ color: "#888" }}> ({c.brand_name})</span> : null}
-                            </div>
-                          ));
-                        })()}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="admin-form-row">
-            <label className="admin-form-label">채용 유형{showTypeToggle && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</label>
-            {showTypeToggle ? (
-              <select className="admin-form-select" value={jobGroupType}
-                style={jobGroupType ? undefined : { color: "#bbb", fontSize: 12 }}
-                onChange={(e) => { setJobGroupType(e.target.value as "" | "기업" | "매장"); setCategories([]); }}>
-                <option value="">선택</option>
-                <option value="기업">본사 채용</option>
-                <option value="매장">매장 채용</option>
-              </select>
-            ) : (
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px",
-              }}>
-                <span style={{ fontSize: "14px", fontWeight: 400, color: "#555" }}>
-                  {jobGroupType === "기업" ? "🏢 본사 채용" : "🏪 매장 채용"}
-                </span>
-              </div>
-            )}
-          </div>
-          </div>
         </div>
       )}
 
@@ -1246,8 +1161,13 @@ export default function JobPostForm({
 
               {/* 공고 헤더(미리보기형): 실제 상세화면 최상단에 보일 브랜드 + 제목 */}
               <div style={{ padding: "4px 0 14px", borderBottom: "1px solid #f0edf5", marginBottom: 4 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#8a7fa0", marginBottom: 6 }}>
-                  {previewJob.brand || ""}
+                <div style={{ marginBottom: 6 }}>
+                  <input
+                    value={newCompanyName}
+                    onChange={(e) => setNewCompanyName(e.target.value)}
+                    placeholder="회사명 (예: 이철헤어커커 망원점)"
+                    style={{ fontSize: 14, fontWeight: 700, color: "#8a7fa0", border: "none", outline: "none", background: "transparent", padding: 0, width: "100%" }}
+                  />
                 </div>
                 <input
                   placeholder="공고 제목을 입력하세요 *"
@@ -1261,19 +1181,20 @@ export default function JobPostForm({
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "12px 0", alignItems: "center" }}>
                 {/* 채용분야(직군) */}
                 <div className="job-detail-meta-item">
+                  <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>채용분야</span>
                   <Tag size={15} className="job-detail-meta-icon" />
                   {typeLocked ? (
-                    <span style={{ fontSize: 13, color: "#cfcfcf" }}></span>
+                    <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
                   ) : (
                     <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="채용분야 *" />
                   )}
                 </div>
                 {/* 경력 */}
                 <div className="job-detail-meta-item">
-                  <span style={{ fontSize: 12, color: "#999", flexShrink: 0 }}>경력</span>
+                  <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>경력</span>
                   <Briefcase size={15} className="job-detail-meta-icon" />
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
-                    style={{ border: "none", background: "transparent", fontSize: 13, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                    style={{ border: "none", background: "transparent", fontSize: 14, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                     <option value="">경력 *</option>
                     {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
@@ -1281,20 +1202,20 @@ export default function JobPostForm({
                 {/* 모집인원 */}
                 <div className="job-detail-meta-item">
                   <Users size={15} className="job-detail-meta-icon" />
-                  <span style={{ color: form.headcount ? "#333" : "#cfcfcf" }}>모집 <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
+                  <span style={{ fontSize: 14, color: form.headcount ? "#333" : "#cfcfcf" }}>모집 <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
                     onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
-                    style={{ width: 30, border: "none", background: "transparent", fontSize: 13, color: "#333", padding: 0, textAlign: "center" }} /> 명</span>
+                    style={{ width: 30, border: "none", background: "transparent", fontSize: 14, color: "#333", padding: 0, textAlign: "center" }} /> 명</span>
                 </div>
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
-                  <span style={{ fontSize: 12, color: "#999", flexShrink: 0 }}>마감</span>
+                  <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>마감</span>
                   <Clock size={15} className="job-detail-meta-icon" />
                   <button type="button"
                     onClick={() => {
                       if (deadlineModalOpen) { setDeadlineModalOpen(false); return; }
                       setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true);
                     }}
-                    style={{ border: "none", background: "transparent", padding: 0, fontSize: 13, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                    style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
                     {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : <>마감일<span style={{ color: "#e9a3a3" }}> *</span></>}
                   </button>
                   {deadlineModalOpen && (
@@ -1315,18 +1236,18 @@ export default function JobPostForm({
 
               {/* ── 근무 조건: 고용형태·급여·근무요일·근무시간(라벨+값, 미리보기와 동일) ── */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
-                <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 700, color: "#333" }}>근무 조건</div>
+                <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>근무 조건</div>
                 <div className="job-detail-company-info">
                   {/* 급여 */}
                   <div className="job-detail-company-row" ref={salaryRef} style={{ position: "relative" }}>
-                    <span className="job-detail-company-label">급여</span>
+                    <span className="job-detail-company-label" style={{ fontSize: 14 }}>급여</span>
                     <button type="button" disabled={typeLocked}
                       onClick={() => {
                         if (typeLocked) return;
                         if (salaryModalOpen) { setSalaryModalOpen(false); return; }
                         setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
                       }}
-                      style={{ border: "none", background: "transparent", padding: 0, fontSize: 13, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
+                      style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
                       {typeLocked ? "선택" : ((salaryNego || form.salary) ? fmtSalary() : "선택")}
                     </button>
                     {salaryModalOpen && (
@@ -1365,9 +1286,9 @@ export default function JobPostForm({
                   </div>
                   {/* 고용형태 */}
                   <div className="job-detail-company-row">
-                    <span className="job-detail-company-label">고용형태 <span style={{ color: "#e9a3a3" }}>*</span></span>
+                    <span className="job-detail-company-label" style={{ fontSize: 14 }}>고용형태 <span style={{ color: "#e9a3a3" }}>*</span></span>
                     <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
-                      style={{ border: "none", background: "transparent", fontSize: 13, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                      style={{ border: "none", background: "transparent", fontSize: 14, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                       <option value="">선택</option>
                       {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
                     </select>
@@ -1375,9 +1296,9 @@ export default function JobPostForm({
                   {jobGroupType === "매장" && (<>
                     {/* 근무 요일 */}
                     <div className="job-detail-company-row" ref={workDaysRef} style={{ position: "relative" }}>
-                      <span className="job-detail-company-label">근무 요일</span>
+                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무 요일</span>
                       <button type="button" onClick={() => setWorkDaysOpen((v) => !v)}
-                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 13, color: (workDaysNego || workDays.length) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
+                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workDaysNego || workDays.length) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
                         {workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "선택")}
                       </button>
                       {workDaysOpen && (
@@ -1402,9 +1323,9 @@ export default function JobPostForm({
                     </div>
                     {/* 근무 시간 */}
                     <div className="job-detail-company-row" ref={workTimeRef} style={{ position: "relative" }}>
-                      <span className="job-detail-company-label">근무 시간</span>
+                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무 시간</span>
                       <button type="button" onClick={() => setWorkTimeOpen((v) => !v)}
-                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 13, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
+                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
                         {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "선택")}
                       </button>
                       {workTimeOpen && (
@@ -1431,6 +1352,7 @@ export default function JobPostForm({
                 <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 <input className="admin-form-input" value={nmAddress}
                   onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
+                  style={{ fontSize: 14 }}
                   placeholder="전체 주소 입력 (예: 서울 구로구 구일로10길 27 …)" />
               </div>
               {nmAddress.trim() && (
@@ -1441,7 +1363,7 @@ export default function JobPostForm({
 
               {/* 복리후생 */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
-                <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 700, color: "#333" }}>복리후생</div>
+                <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>복리후생</div>
                 {typeLocked ? <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span> : <div className="benefit-chip-grid">{welfareOptions.map((b) => (<button key={b} type="button" className={`benefit-chip ${benefitTags.includes(b) ? "on" : ""}`} onClick={() => toggleBenefit(b)}>{b}</button>))}</div>}
               </div>
             </div>
