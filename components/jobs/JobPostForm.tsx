@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2, Upload, Eye, Save } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2, Upload, Eye, Save, MapPin } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -1278,44 +1278,37 @@ export default function JobPostForm({
                 )}
               </div>
 
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">경력<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <select className="admin-form-select" value={form.career}
-                    style={form.career ? undefined : { color: "#bbb", fontSize: 12 }}
-                    onChange={(e) => setForm({ ...form, career: e.target.value })}>
-                    <option value="">선택</option>
-                    {CAREER_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">고용형태<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <select className="admin-form-select" value={form.type}
-                    style={form.type ? undefined : { color: "#bbb", fontSize: 12 }}
-                    onChange={(e) => setForm({ ...form, type: e.target.value })}>
-                    <option value="">선택</option>
-                    {EMPLOYMENT_TYPES.map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
-              </div>
-
-              <div className="admin-form-row">
-                <label className="admin-form-label">모집인원</label>
-                <input type="number" min={1} inputMode="numeric" className="admin-form-input"
-                  placeholder="예: 3 (미입력 시 표시 안 함)"
-                  value={form.headcount}
-                  onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })} />
-              </div>
-
-              <div className="admin-form-row">
-                <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span><span style={{ fontSize: 11, fontWeight: 400, color: "#aaa", marginLeft: 4 }}>(필터용 시·군·구)</span></label>
+              {/* ── 미리보기형 인라인 메타(모달 없이 그 자리에서 입력/선택): 지역 · 경력 · 고용형태 · 모집인원 ── */}
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 10, rowGap: 8, padding: "10px 0" }}>
+                {/* 근무지역 (필터용 시·군·구) */}
                 <button type="button" onClick={() => setRegionModalOpen(true)}
-                  style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: regionList.length ? "14px" : "12px", color: regionList.length ? "#555" : "#bbb", cursor: "pointer" }}>
-                  <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
-                    {regionList.length ? regionList.map(shortRegion).join(", ") : "선택"}
-                  </span>
-                  <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0 }}>›</span>
+                  style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer", fontSize: 14, color: regionList.length ? "#333" : "#bbb", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                  <MapPin size={14} style={{ color: regionList.length ? "#5f0080" : "#ccc" }} />
+                  {regionList.length ? regionList.map(shortRegion).join(", ") : <>근무지역<span style={{ color: "#e74c3c" }}> *</span></>}
                 </button>
+                <span style={{ color: "#e0e0e0" }}>|</span>
+                {/* 경력 (테두리 없는 인라인 셀렉트 → 그 자리에서 열림) */}
+                <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
+                  style={{ border: "none", background: "transparent", fontSize: 14, color: form.career ? "#333" : "#bbb", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                  <option value="">경력 *</option>
+                  {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                </select>
+                <span style={{ color: "#e0e0e0" }}>|</span>
+                {/* 고용형태 */}
+                <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
+                  style={{ border: "none", background: "transparent", fontSize: 14, color: form.type ? "#333" : "#bbb", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                  <option value="">고용형태 *</option>
+                  {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
+                </select>
+                <span style={{ color: "#e0e0e0" }}>|</span>
+                {/* 모집인원 */}
+                <span style={{ fontSize: 14, color: form.headcount ? "#333" : "#bbb", display: "inline-flex", alignItems: "center", gap: 2 }}>
+                  모집
+                  <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
+                    onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
+                    style={{ width: 32, border: "none", background: "transparent", fontSize: 14, color: "#333", padding: 0, textAlign: "center" }} />
+                  명
+                </span>
               </div>
 
               {/* 근무지 상세 주소: 위 근무지역(시·군·구)과 겹치는 앞부분은 빼고 그 뒤만 표시. 지도·저장엔 전체 주소 사용 */}
