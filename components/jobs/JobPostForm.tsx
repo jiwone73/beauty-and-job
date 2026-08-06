@@ -1151,22 +1151,8 @@ export default function JobPostForm({
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
 
-              {/* 공고 헤더(미리보기형): 실제 상세화면 최상단에 보일 브랜드 + 제목 */}
-              <div style={{ padding: "4px 0 14px", borderBottom: "1px solid #f0edf5", marginBottom: 4 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#8a7fa0", marginBottom: 6 }}>
-                  {previewJob.brand || (mode === "admin" ? "회사를 선택하세요" : "우리 회사")}
-                </div>
-                <input
-                  placeholder="공고 제목을 입력하세요"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  style={{ width: "100%", border: "none", outline: "none", fontSize: 22, fontWeight: 800, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3 }}
-                />
-                {!form.title.trim() && (
-                  <div style={{ fontSize: 12, color: "#e74c3c", marginTop: 4 }}>* 공고 제목은 필수예요</div>
-                )}
-              </div>
-
+              {/* ── 관리 설정(구직자 미리보기엔 안 나옴): 기업 선택 · 채용 유형 ── */}
+              <div style={{ background: "#faf9fc", border: "1px solid #f0edf5", borderRadius: 10, padding: "2px 14px", marginBottom: 14 }}>
               {mode === "admin" && (
                 <div className="admin-form-row">
                   <label className="admin-form-label">기업 선택<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
@@ -1249,6 +1235,23 @@ export default function JobPostForm({
                   </div>
                 )}
               </div>
+              </div>
+
+              {/* 공고 헤더(미리보기형): 실제 상세화면 최상단에 보일 브랜드 + 제목 */}
+              <div style={{ padding: "4px 0 14px", borderBottom: "1px solid #f0edf5", marginBottom: 4 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#8a7fa0", marginBottom: 6 }}>
+                  {previewJob.brand || (mode === "admin" ? "회사를 선택하세요" : "우리 회사")}
+                </div>
+                <input
+                  placeholder="공고 제목을 입력하세요"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  style={{ width: "100%", border: "none", outline: "none", fontSize: 22, fontWeight: 800, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3 }}
+                />
+                {!form.title.trim() && (
+                  <div style={{ fontSize: 12, color: "#e74c3c", marginTop: 4 }}>* 공고 제목은 필수예요</div>
+                )}
+              </div>
 
               <div className="admin-form-row">
                 <label className="admin-form-label">
@@ -1264,8 +1267,8 @@ export default function JobPostForm({
                 )}
               </div>
 
-              {/* ── 기본정보 그리드: 미리보기와 동일한 2열 아이콘 그리드(모달 없이 그 자리에서 편집) ── */}
-              <div className="job-detail-meta-grid" style={{ margin: "12px 0" }}>
+              {/* ── 기본정보 그리드: 항상 2열 아이콘 그리드(지역·경력·모집·마감) ── */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "12px 0", alignItems: "center" }}>
                 {/* 근무지역 */}
                 <div className="job-detail-meta-item" ref={regionInlineRef} style={{ position: "relative" }}>
                   <MapPin size={15} className="job-detail-meta-icon" />
@@ -1321,15 +1324,6 @@ export default function JobPostForm({
                     style={{ border: "none", background: "transparent", fontSize: 13, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                     <option value="">경력 *</option>
                     {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
-                {/* 고용형태 */}
-                <div className="job-detail-meta-item">
-                  <Building2 size={15} className="job-detail-meta-icon" />
-                  <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
-                    style={{ border: "none", background: "transparent", fontSize: 13, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                    <option value="">고용형태 *</option>
-                    {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
                 {/* 모집인원 */}
@@ -1389,20 +1383,33 @@ export default function JobPostForm({
                 );
               })()}
 
-              {/* 급여 · 마감: 인라인 문장형(선택창은 그 자리 아래에 뜸, 모달 없음) */}
-              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 10, rowGap: 8, padding: "6px 0 10px", borderTop: "1px solid #f5f2f9" }}>
-                <div ref={salaryRef} style={{ position: "relative", display: "inline-block" }}>
-                  <button type="button" disabled={typeLocked} className="job-detail-salary"
-                    onClick={() => {
-                      if (typeLocked) return;
-                      if (salaryModalOpen) { setSalaryModalOpen(false); return; }
-                      setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
-                    }}
-                    style={{ border: "none", cursor: typeLocked ? "default" : "pointer", opacity: (salaryNego || form.salary) ? 1 : 0.6 }}>
-                    💰 {typeLocked ? "채용유형 먼저 선택" : ((salaryNego || form.salary) ? fmtSalary() : "급여 입력")}
-                  </button>
+              {/* ── 근무 조건: 고용형태·급여·근무요일·근무시간(라벨+값, 미리보기와 동일) ── */}
+              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+                <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 700, color: "#333" }}>근무 조건</div>
+                <div className="job-detail-company-info">
+                  {/* 고용형태 */}
+                  <div className="job-detail-company-row">
+                    <span className="job-detail-company-label">고용형태 <span style={{ color: "#e9a3a3" }}>*</span></span>
+                    <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
+                      style={{ border: "none", background: "transparent", fontSize: 13, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                      <option value="">선택</option>
+                      {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                  </div>
+                  {/* 급여 */}
+                  <div className="job-detail-company-row" ref={salaryRef} style={{ position: "relative" }}>
+                    <span className="job-detail-company-label">급여</span>
+                    <button type="button" disabled={typeLocked}
+                      onClick={() => {
+                        if (typeLocked) return;
+                        if (salaryModalOpen) { setSalaryModalOpen(false); return; }
+                        setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
+                      }}
+                      style={{ border: "none", background: "transparent", padding: 0, fontSize: 13, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
+                      {typeLocked ? "채용유형 먼저 선택" : ((salaryNego || form.salary) ? fmtSalary() : "선택")}
+                    </button>
                     {salaryModalOpen && (
-                      <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
+                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
                         {/* 급여 단위 */}
                         <div style={{ display: "flex", gap: "6px", marginBottom: "10px" }}>
                           {([["ANNUAL", "연봉"], ["MONTHLY", "월급"], ["WEEKLY", "주급"], ["HOURLY", "시급"]] as [string, string][]).map(([val, lbl]) => (
@@ -1435,12 +1442,7 @@ export default function JobPostForm({
                       </div>
                     )}
                   </div>
-                </div>
-
-              {jobGroupType === "매장" && (
-                <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
-                  <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 700, color: "#333" }}>근무 조건</div>
-                  <div className="job-detail-company-info">
+                  {jobGroupType === "매장" && (<>
                     {/* 근무 요일 */}
                     <div className="job-detail-company-row" ref={workDaysRef} style={{ position: "relative" }}>
                       <span className="job-detail-company-label">근무 요일</span>
@@ -1490,9 +1492,9 @@ export default function JobPostForm({
                         </div>
                       )}
                     </div>
+                  </>)}
                   </div>
                 </div>
-              )}
             </div>
           </div>
 
