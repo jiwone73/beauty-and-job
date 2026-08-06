@@ -1104,7 +1104,7 @@ export default function JobPostForm({
       ) : (() => {
         return (
           <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
-            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 이미지</h2>
+            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>상단 배너</h2>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
 
               {/* ── 상단 배너 (cover, 여러 장 · 공개화면에서 3장씩 화살표로 회전) ── */}
@@ -1135,36 +1135,6 @@ export default function JobPostForm({
                   </label>
                   {bannerImages.length === 0 && <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>상세 이미지를 여기로 <b>드래그</b>하면 배너가 돼요. 여러 장 넣으면 3장씩 화살표로 넘겨봅니다.</span>}
                 </div>
-              </div>
-
-              {/* ── 상세 내용 이미지 (본문 세로 스택) ── */}
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 6 }}>상세 내용 이미지 <span style={{ fontWeight: 400, color: "#999" }}>· 본문에 위→아래 순서로 전체폭 표시 ({detailImages.length}/12)</span></div>
-                <div
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
-                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: "1.5px dashed #e0d5ee", background: "#fbf9ff" }}>
-                  {detailImages.map((d, idx) => (
-                    <div key={d.url + idx} draggable
-                      onDragStart={() => { imgDragRef.current = { zone: "body", idx }; }}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (imgDragRef.current) dropToBody(idx); }}
-                      style={{ position: "relative", width: 84, cursor: "grab" }}>
-                      <img src={d.url} alt={`상세 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
-                      <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
-                      <button type="button" onClick={() => removeImage(idx)} title="삭제"
-                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
-                    </div>
-                  ))}
-                  <label title="이미지 추가"
-                    style={{ width: 84, height: 84, flexShrink: 0, border: "1.5px dashed #c4b5d4", borderRadius: 8, background: "#fff", color: "#5f0080", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: uploading ? "wait" : "pointer" }}>
-                    <span style={{ fontSize: 22, lineHeight: 1 }}>{uploading ? "…" : "+"}</span>
-                    <span style={{ fontSize: 10 }}>추가</span>
-                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
-                  </label>
-                  {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세 이미지가 없어요. 배너에서 드래그하거나 직접 추가하세요.</span>}
-                </div>
-                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꾸거나 위 배너로 올릴 수 있어요. 상세 내용이 이미지면 아래 텍스트 항목은 비워도 됩니다(이미지로 표시).</p>
               </div>
 
             </div>
@@ -1535,6 +1505,37 @@ export default function JobPostForm({
           <h2 className="jobpost-section-title">상세 내용</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
+
+              {/* ── 상세 내용 이미지 (본문 세로 스택) — 실제 미리보기의 상세요강 위치와 동일 ── */}
+              <div style={{ paddingBottom: 16, borderBottom: "1px solid var(--color-border)", marginBottom: 4 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 6 }}>상세 내용 이미지 <span style={{ fontWeight: 400, color: "#999" }}>· 본문에 위→아래 순서로 전체폭 표시 ({detailImages.length}/12)</span></div>
+                <div
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
+                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: "1.5px dashed #e0d5ee", background: "#fbf9ff" }}>
+                  {detailImages.map((d, idx) => (
+                    <div key={d.url + idx} draggable
+                      onDragStart={() => { imgDragRef.current = { zone: "body", idx }; }}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (imgDragRef.current) dropToBody(idx); }}
+                      style={{ position: "relative", width: 84, cursor: "grab" }}>
+                      <img src={d.url} alt={`상세 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
+                      <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
+                      <button type="button" onClick={() => removeImage(idx)} title="삭제"
+                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                    </div>
+                  ))}
+                  <label title="이미지 추가"
+                    style={{ width: 84, height: 84, flexShrink: 0, border: "1.5px dashed #c4b5d4", borderRadius: 8, background: "#fff", color: "#5f0080", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: uploading ? "wait" : "pointer" }}>
+                    <span style={{ fontSize: 22, lineHeight: 1 }}>{uploading ? "…" : "+"}</span>
+                    <span style={{ fontSize: 10 }}>추가</span>
+                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
+                  </label>
+                  {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세 이미지가 없어요. 위 배너에서 드래그하거나 직접 추가하세요.</span>}
+                </div>
+                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꾸거나 위 배너로 올릴 수 있어요. 상세 내용이 이미지면 아래 텍스트 항목은 비워도 됩니다(이미지로 표시).</p>
+              </div>
+
               {/* 복리후생 (필터용) */}
               <div className="admin-form-row">
                 <label className="admin-form-label">복리후생</label>
