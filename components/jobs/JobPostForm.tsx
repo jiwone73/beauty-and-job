@@ -1384,6 +1384,11 @@ export default function JobPostForm({
                       )}
                     </div>
                   </>)}
+                  {/* 복리후생 — 근무 조건 안에 포함 */}
+                  <div className="job-detail-company-row" style={{ gridColumn: "1 / -1", alignItems: "center" }}>
+                    <span className="job-detail-company-label" style={{ fontSize: 14 }}>복리후생</span>
+                    {typeLocked ? <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span> : <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px" }}>{welfareOptions.map((b) => { const on = benefitTags.includes(b); return (<button key={b} type="button" onClick={() => toggleBenefit(b)} style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>{on ? "✓ " : ""}{b}</button>); })}</div>}
+                  </div>
                   </div>
                 </div>
 
@@ -1400,12 +1405,6 @@ export default function JobPostForm({
                   style={{ border: 0, borderRadius: 12, marginTop: 4 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"
                   src={`https://maps.google.com/maps?q=${encodeURIComponent(nmAddress)}&output=embed&hl=ko`} />
               )}
-
-              {/* 복리후생 */}
-              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
-                <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>복리후생</div>
-                {typeLocked ? <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span> : <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px" }}>{welfareOptions.map((b) => { const on = benefitTags.includes(b); return (<button key={b} type="button" onClick={() => toggleBenefit(b)} style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>{on ? "✓ " : ""}{b}</button>); })}</div>}
-              </div>
 
               {/* 채용 담당자 (기본정보 카드) — 관리자 외부공고에서만 */}
               {mode === "admin" && nonMember && (

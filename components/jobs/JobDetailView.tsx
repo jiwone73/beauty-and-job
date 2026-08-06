@@ -85,7 +85,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   // 근무조건·근무지역은 '기본정보' 성격이라, 이미지형 공고에선 세로로 긴 상세이미지 "앞"에 먼저 노출한다.
   // (블록을 한 번만 정의하고 위치만 바꿔 끼운다 — 텍스트형 공고는 기존 순서 그대로.)
-  const workCondSection = (job.salary || job.employType || job.workDaysText || job.workTimeText) ? (
+  const workCondSection = (job.salary || job.employType || job.workDaysText || job.workTimeText || job.benefits?.length > 0) ? (
     <div className="jd-subblock" key="workcond">
       <h2 className="job-detail-subtitle">근무 조건</h2>
       <div className="job-detail-company-info">
@@ -111,6 +111,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">근무 시간</span>
             <span>{job.workTimeText}</span>
+          </div>
+        )}
+        {job.benefits?.length > 0 && (
+          <div className="job-detail-company-row" style={{ gridColumn: "1 / -1" }}>
+            <span className="job-detail-company-label">복리후생</span>
+            <span>{job.benefits.join("   ·   ")}</span>
           </div>
         )}
       </div>
@@ -140,15 +146,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   ) : null;
 
   // 복리후생·채용 담당자·채용 절차도 '기본정보' 카드 안의 서브블록으로 합침(빈 값은 자동 숨김).
-  const benefitsBlock = job.benefits?.length > 0 ? (
-    <div className="jd-subblock" key="benefits">
-      <h2 className="job-detail-subtitle">복리후생</h2>
-      <div style={{ fontSize: 15, color: "var(--color-text-sub)", lineHeight: 1.8 }}>
-        {job.benefits.join("   ·   ")}
-      </div>
-    </div>
-  ) : null;
-
   // 채용 담당자 · 채용 절차는 각각 별도 항목(빈 값 자동 숨김).
   const hasContact = !!(job.contactName || job.contactPhone || job.contactEmail || job.contactMethods?.length);
   const hasProcess = !!(job.process?.length > 0 || job.notes?.trim());
@@ -307,7 +304,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {/* 근무조건·근무지역·복리후생·채용담당자·채용절차를 기본정보 카드 안에 통합(빈 값 자동 숨김) */}
           {workCondSection}
           {locationSection}
-          {benefitsBlock}
           {contactBlock}
           {processBlock}
         </div>
