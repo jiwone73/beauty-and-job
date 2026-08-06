@@ -83,6 +83,50 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 상세 이미지가 있으면 상세내용(텍스트) 섹션은 공개 화면에서 숨김(이미지로 대체). 데이터는 그대로 유지.
   const hasDetailImages = Array.isArray(job.detailImages) && job.detailImages.some((d: any) => d?.url);
 
+  // 근무조건·근무지역은 '기본정보' 성격이라, 이미지형 공고에선 세로로 긴 상세이미지 "앞"에 먼저 노출한다.
+  // (블록을 한 번만 정의하고 위치만 바꿔 끼운다 — 텍스트형 공고는 기존 순서 그대로.)
+  const workCondSection = (job.workDaysText || job.workTimeText) ? (
+    <section className="job-detail-section" key="workcond">
+      <h2 className="job-detail-section-title">근무 조건</h2>
+      <div className="job-detail-company-info">
+        {job.workDaysText && (
+          <div className="job-detail-company-row">
+            <span className="job-detail-company-label">근무 요일</span>
+            <span>{job.workDaysText}</span>
+          </div>
+        )}
+        {job.workTimeText && (
+          <div className="job-detail-company-row">
+            <span className="job-detail-company-label">근무 시간</span>
+            <span>{job.workTimeText}</span>
+          </div>
+        )}
+      </div>
+    </section>
+  ) : null;
+
+  const locationSection = hasMap ? (
+    <section className="job-detail-section" key="location">
+      <h2 className="job-detail-section-title">근무지역</h2>
+      {job.companyAddress?.trim() && (
+        <p className="job-detail-desc" style={{ marginBottom: "12px" }}>{job.companyAddress}</p>
+      )}
+      {ci.latitude && ci.longitude ? (
+        <KakaoMap latitude={Number(ci.latitude)} longitude={Number(ci.longitude)} name={ci.name} />
+      ) : (
+        <iframe
+          title="회사 위치"
+          width="100%"
+          height="280"
+          style={{ border: 0, borderRadius: "12px" }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          src={`https://maps.google.com/maps?q=${encodeURIComponent(job.companyAddress)}&output=embed&hl=ko`}
+        />
+      )}
+    </section>
+  ) : null;
+
   return (
     <div className="job-detail-layout" ref={ref}>
       {/* 왼쪽: 공고 본문 */}
@@ -168,6 +212,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             </div>
           )}
         </div>
+
+        {/* 이미지형 공고: '기본정보' 성격의 근무조건·근무지역을 상세이미지보다 먼저 노출(포스터가 길어 뒤로 밀리지 않게) */}
+        {hasDetailImages && workCondSection}
+        {hasDetailImages && locationSection}
 
         {/* 상세 내용 이미지(본문) — 이미지형 공고의 상세요강을 전체폭 세로 스택으로 표시 */}
         {(() => {
@@ -283,49 +331,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </section>
         )}
 
-        {/* 근무 조건 (매장직) */}
-        {(job.workDaysText || job.workTimeText) && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">근무 조건</h2>
-            <div className="job-detail-company-info">
-              {job.workDaysText && (
-                <div className="job-detail-company-row">
-                  <span className="job-detail-company-label">근무 요일</span>
-                  <span>{job.workDaysText}</span>
-                </div>
-              )}
-              {job.workTimeText && (
-                <div className="job-detail-company-row">
-                  <span className="job-detail-company-label">근무 시간</span>
-                  <span>{job.workTimeText}</span>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* 근무지역 */}
-        {hasMap && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">근무지역</h2>
-            {job.companyAddress?.trim() && (
-              <p className="job-detail-desc" style={{ marginBottom: "12px" }}>{job.companyAddress}</p>
-            )}
-            {ci.latitude && ci.longitude ? (
-              <KakaoMap latitude={Number(ci.latitude)} longitude={Number(ci.longitude)} name={ci.name} />
-            ) : (
-              <iframe
-                title="회사 위치"
-                width="100%"
-                height="280"
-                style={{ border: 0, borderRadius: "12px" }}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(job.companyAddress)}&output=embed&hl=ko`}
-              />
-            )}
-          </section>
-        )}
+        {/* 근무 조건·근무지역: 텍스트형 공고는 기존 위치(본문 아래)에 노출. 이미지형은 위에서 상세이미지 앞에 이미 표시함. */}
+        {!hasDetailImages && workCondSection}
+        {!hasDetailImages && locationSection}
 
         {/* 기업 정보 (공고 내용 아래) */}
         {hasCompanyInfo && (
