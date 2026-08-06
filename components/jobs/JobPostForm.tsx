@@ -565,7 +565,8 @@ export default function JobPostForm({
         if (d.contact_email) setNmContactEmail(d.contact_email);
         if (d.contact_phone) setNmManagerPhone(d.contact_phone);
         if (d.contact_name) setNmManagerName(d.contact_name);
-        if (["MANAGED", "EMAIL", "REDIRECT"].includes(d.apply_method)) setApplyMethod(d.apply_method);
+        // 이메일 중계(EMAIL)는 관리자 대행과 동일 동작이라 통합 → MANAGED로 정규화
+        if (["MANAGED", "EMAIL", "REDIRECT"].includes(d.apply_method)) setApplyMethod(d.apply_method === "EMAIL" ? "MANAGED" : d.apply_method);
         if (d.external_apply_url) setExternalApplyUrl(d.external_apply_url);
         if (d.company_description) setNmDescription(d.company_description);
         if (d.address) setNmAddress(d.address);
@@ -762,7 +763,6 @@ export default function JobPostForm({
       if (nonMember) {
         if (!newCompanyName.trim()) { alert("비회원 회사명을 입력해주세요."); return; }
         if (applyMethod === "REDIRECT" && !externalApplyUrl.trim()) { alert("외부 링크형은 외부 지원 URL이 필요해요."); return; }
-        if (applyMethod === "EMAIL" && !nmContactEmail.trim()) { alert("이메일 중계형은 채용 이메일이 필요해요."); return; }
       } else if (!companyId) {
         alert("기업을 선택해주세요."); return;
       }
@@ -1001,12 +1001,16 @@ export default function JobPostForm({
           </div>
 
           {importMode === "url" ? (
-            // URL 입력창 + 안쪽에 '불러오기' 버튼 임베드
+            // URL 입력창 + 안쪽에 '원본'·'불러오기' 버튼 임베드
             <div style={{ position: "relative" }}>
-              <input className="admin-form-input" style={{ width: "100%", paddingRight: 104, boxSizing: "border-box" }}
+              <input className="admin-form-input" style={{ width: "100%", paddingRight: 158, boxSizing: "border-box" }}
                 placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl}
                 onChange={(e) => setParseUrl(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
+              <button type="button" title="원본 공고를 새 창으로 열어 비교"
+                onClick={() => { const u = parseUrl.trim(); if (u) window.open(/^https?:\/\//i.test(u) ? u : "https://" + u, "_blank", "noopener,noreferrer"); }}
+                disabled={!parseUrl.trim()}
+                style={{ position: "absolute", top: 4, bottom: 4, right: 92, padding: "0 12px", borderRadius: 7, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 700, cursor: parseUrl.trim() ? "pointer" : "default", opacity: parseUrl.trim() ? 1 : 0.45 }}>원본</button>
               <button type="button" onClick={() => runParse()} disabled={parsing}
                 style={{ position: "absolute", top: 4, bottom: 4, right: 4, padding: "0 16px", borderRadius: 7, border: "none", background: "#5f0080", color: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>
                 {parsing ? "불러오는 중..." : "불러오기"}</button>
@@ -1023,35 +1027,35 @@ export default function JobPostForm({
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
           {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
           {mode === "admin" && nonMember && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb", alignItems: "start" }}>
-              {/* 지원방식 (라디오) */}
-              <div>
-                <div style={lbl}>지원방식</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {([["MANAGED", "관리자 대행"], ["EMAIL", "이메일 중계"], ["REDIRECT", "외부 링크형"]] as [string, string][]).map(([v, l]) => (
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb", display: "flex", flexDirection: "column", gap: 12 }}>
+              {/* 지원방식 (1행) */}
+              <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                <div style={{ ...lbl, marginBottom: 0, minWidth: 84 }}>지원방식</div>
+                <div style={{ display: "flex", gap: 18 }}>
+                  {([["MANAGED", "관리자 대행"], ["REDIRECT", "외부 링크형"]] as [string, string][]).map(([v, l]) => (
                     <label key={v} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: "#444" }}>
                       <input type="radio" name="applyMethod" checked={applyMethod === v} onChange={() => setApplyMethod(v as "MANAGED" | "EMAIL" | "REDIRECT")} /> {l}
                     </label>
                   ))}
                 </div>
-                {applyMethod === "REDIRECT" && (
-                  <div style={{ marginTop: 10 }}>
-                    <div style={lbl}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div>
-                    <input style={inp} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" />
-                  </div>
-                )}
               </div>
-              {/* 채용 담당자 연락처 — 자동으로 찾은 값 유무를 체크로 표시(값은 아래 '채용 담당자'에서 수정) */}
-              <div>
-                <div style={lbl}>채용 담당자 연락처</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {([["담당자 이름", nmManagerName], ["전화번호", nmManagerPhone], ["이메일", nmContactEmail]] as [string, string][]).map(([label, val]) => {
+              {applyMethod === "REDIRECT" && (
+                <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                  <div style={{ ...lbl, marginBottom: 0, minWidth: 84 }}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div>
+                  <input style={{ ...inp, flex: 1, minWidth: 220 }} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" />
+                </div>
+              )}
+              {/* 채용담당자 (1행) — 자동으로 찾은 값 유무를 체크로 표시(값 수정은 아래 채용 담당자 칸에서) */}
+              <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                <div style={{ ...lbl, marginBottom: 0, minWidth: 84 }}>채용담당자</div>
+                <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
+                  {([["이름", nmManagerName], ["전화", nmManagerPhone], ["이메일", nmContactEmail]] as [string, string][]).map(([label, val]) => {
                     const has = !!(val && val.trim());
                     return (
-                      <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                      <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
                         <span style={{ width: 16, height: 16, borderRadius: "50%", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", background: has ? "#10b981" : "#d5d5d5" }}>✓</span>
-                        <span style={{ color: "#666", flexShrink: 0 }}>{label}</span>
-                        <span style={{ marginLeft: "auto", color: has ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "right" }}>{has ? val : "미확인"}</span>
+                        <span style={{ color: "#666" }}>{label}</span>
+                        <span style={{ color: has ? "#333" : "#bbb", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{has ? val : "미확인"}</span>
                       </div>
                     );
                   })}
@@ -1583,8 +1587,8 @@ export default function JobPostForm({
             </div>
           </div>
 
-          {/* 채용 담당자 — 외부공고에 채용 이메일이 있으면(또는 이메일 중계 선택 시) 노출 */}
-          {mode === "admin" && nonMember && (nmContactEmail.trim() || nmManagerPhone.trim() || applyMethod === "EMAIL") && (
+          {/* 채용 담당자 — 관리자 외부공고면 항상 노출(위 체크마크 값 편집용) */}
+          {mode === "admin" && nonMember && (
             <>
               <h2 className="jobpost-section-title">채용 담당자</h2>
               <div className="company-card" style={{ overflow: "visible" }}>

@@ -285,7 +285,7 @@ export async function POST(req: NextRequest) {
     ai_parsed: false,
     company_name: "", homepage_url: "", contact_email: emails[0] || "", contact_phone: phones[0] || "", contact_name: "",
     title: ogTitle, job_type: "STORE", location: "", region: "", deadline: "", always_open: false,
-    apply_method: emails[0] ? "EMAIL" : "MANAGED", external_apply_url: "",
+    apply_method: "MANAGED", external_apply_url: "",
     description: ogDesc,
     company_description: "", address: "", industry: "",
     job_categories: [] as string[],
@@ -328,7 +328,7 @@ export async function POST(req: NextRequest) {
 - benefit_tags: 아래 job_type별 "복리후생·근무조건 태그 목록"에서 이 공고 내용과 맞는 것만 골라 문자열을 "정확히 그대로" 배열로(없으면 []). 이건 필터용 태그이고, 서술형 혜택 내용은 benefits에 따로 담아.
     · STORE 태그: ${STORE_TAGS.join(" / ")}
     · OFFICE 태그: ${OFFICE_TAGS.join(" / ")}
-- apply_method: 채용 이메일이 보이면 "EMAIL"(그 이메일을 contact_email에), 지원이 특정 지원페이지에서만 가능하면 "REDIRECT"(그 링크를 external_apply_url에), 애매하면 "MANAGED".
+- apply_method: 지원이 회사 홈페이지·특정 지원페이지에서만 가능하면 "REDIRECT"(그 링크를 external_apply_url에), 그 외에는 모두 "MANAGED". (채용 이메일이 보이면 contact_email에는 담되 apply_method는 MANAGED로.)
 - contact_phone: 지원·문의용 전화번호(담당자/채용 연락처)가 본문에 있으면 "010-1234-5678"처럼 하이픈 포함으로. 여러 개면 지원 담당 번호 우선(대표번호보다 채용 담당 우선). 없으면 "".
 - contact_name: 채용 담당자 "사람 이름"이 명시돼 있으면 그 이름만(예: "이은주"). 부서명·회사명·"담당자"라는 일반어는 제외. 없으면 "".
 - description: 채용공고 본문 요약(직무·자격·근무조건). 원문 복제 금지, 한국어 3~5문장으로 재작성.
@@ -428,6 +428,24 @@ export async function POST(req: NextRequest) {
   if (out.apply_method === "REDIRECT" && !out.external_apply_url && url) out.external_apply_url = url;
   if (!["STORE", "OFFICE"].includes(out.job_type)) out.job_type = "STORE";
   if (!["REDIRECT", "EMAIL", "MANAGED"].includes(out.apply_method)) out.apply_method = "MANAGED";
+
+  // ── 지원방식 자동판정 ──
+  // 이메일 중계(EMAIL)는 관리자 대행과 동일 동작 → 통합.
+  // 본문에 '홈페이지/자사 사이트에서 지원·접수' 신호가 있고 회사 홈페이지가 있으면 외부링크형, 그 외에는 관리자 대행.
+  if (out.apply_method === "EMAIL") out.apply_method = "MANAGED";
+  if (out.apply_method !== "REDIRECT") {
+    const applyText = `${bodyText} ${pageText} ${typeof out.description === "string" ? out.description : ""}`.replace(/\s+/g, " ");
+    const hpApply =
+      /(홈페이지|자사\s*사이트|공식\s*사이트|채용\s*사이트|자사\s*홈페이지)[^.]{0,14}(지원|접수|입사|이력서)/.test(applyText) ||
+      /(지원|접수|입사)[^.]{0,14}(홈페이지|자사\s*사이트|공식\s*사이트)/.test(applyText);
+    const hp = typeof out.homepage_url === "string" ? out.homepage_url.trim() : "";
+    if (hpApply && /^https?:\/\//i.test(hp)) {
+      out.apply_method = "REDIRECT";
+      out.external_apply_url = hp;
+    } else {
+      out.apply_method = "MANAGED";
+    }
+  }
 
   // ── 폼 선택지와 정확히 일치하는 값만 남기도록 검증(오타·off-list 방지) ──
   if (typeof out.career !== "string" || !CAREER_OPTIONS.includes(out.career)) out.career = "";
