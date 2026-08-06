@@ -435,13 +435,15 @@ export async function POST(req: NextRequest) {
   if (out.apply_method === "EMAIL") out.apply_method = "MANAGED";
   if (out.apply_method !== "REDIRECT") {
     const applyText = `${bodyText} ${pageText} ${typeof out.description === "string" ? out.description : ""}`.replace(/\s+/g, " ");
+    // '기업/회사/자사 홈페이지에서 지원' 류 문구가 있으면 외부링크형, 아니면 관리자 대행.
     const hpApply =
-      /(홈페이지|자사\s*사이트|공식\s*사이트|채용\s*사이트|자사\s*홈페이지)[^.]{0,14}(지원|접수|입사|이력서)/.test(applyText) ||
-      /(지원|접수|입사)[^.]{0,14}(홈페이지|자사\s*사이트|공식\s*사이트)/.test(applyText);
-    const hp = typeof out.homepage_url === "string" ? out.homepage_url.trim() : "";
-    if (hpApply && /^https?:\/\//i.test(hp)) {
+      /(기업|회사|자사|당사|공식)\s*(홈페이지|사이트|페이지)[^.]{0,18}(지원|접수|입사|이력서|제출)/.test(applyText) ||
+      /(지원|접수|입사|이력서)[^.]{0,18}(기업|회사|자사|당사|공식)\s*(홈페이지|사이트)/.test(applyText) ||
+      /홈페이지\s*(?:에서|로|를\s*통해)?\s*(?:지원|접수|입사)/.test(applyText);
+    if (hpApply) {
       out.apply_method = "REDIRECT";
-      out.external_apply_url = hp;
+      const hp = typeof out.homepage_url === "string" ? out.homepage_url.trim() : "";
+      if (/^https?:\/\//i.test(hp)) out.external_apply_url = hp; // 홈페이지 URL이 잡히면 미리 채움(없으면 관리자가 입력)
     } else {
       out.apply_method = "MANAGED";
     }
