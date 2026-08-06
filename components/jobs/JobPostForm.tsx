@@ -606,6 +606,7 @@ export default function JobPostForm({
         responsibilities: asText(d.main_duties, f.responsibilities),
         career: (CAREER_OPTIONS.includes(d.career) ? d.career : f.career),
         type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : f.type),
+        headcount: (d.headcount != null && Number(d.headcount) > 0) ? String(Number(d.headcount)) : f.headcount,
       }));
       // 급여: 구조화된 값이 있으면 급여 필드에 반영, 협의/비율제면 '협의' 처리
       const salaryStructured = Number(d.salary_amount) > 0 && ["ANNUAL", "MONTHLY", "WEEKLY", "HOURLY"].includes(d.salary_type);

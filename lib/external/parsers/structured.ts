@@ -33,104 +33,118 @@ function stripTags(s: string): string {
 }
 
 // ───────────── 헤어인잡 ─────────────
+// 상세: cms/s01_v.php?idx=<id> (EUC-KR). 본문이 <li>라벨</li><li>값</li> 구조.
+//   모집분야 값 = "헤어디자이너[경력] 01명 (정규직) > 300만원이상"
+//   업체주소·복리후생·근무형태·채용담당자도 같은 li쌍, 근무시간은 요약 아이콘(HH:MM~HH:MM),
+//   제목·회사·근무지역·마감은 og:description에서.
 function parseHairinjob(html: string): StructuredResult | null {
-  const title = ((html.match(/<meta property="og:title" content="([^"]+)"/) || [])[1] || "")
-    .replace(/\s*\|\s*헤어인잡.*$/, "")
-    .trim();
+  const strip = (s: string) =>
+    s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
+  const dec = (s: string) => s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
+  const liValue = (label: string): string => {
+    const re = new RegExp("<li[^>]*>\\s*" + label.replace(/\s/g, "\\s*") + "\\s*</li>\\s*<li[^>]*>([\\s\\S]{0,600}?)</li>", "i");
+    const m = html.match(re);
+    return m ? strip(m[1]) : "";
+  };
 
-  // 모집분야 표: 직종 | 급여 | 근무시간
-  const rows = [...html.matchAll(/<tr[^>]*>([\s\S]{0,320}?)<\/tr>/gi)]
-    .map((m) => stripTags(m[1]))
-    .filter(
-      (x) =>
-        /(월급|시급|연봉|주급|협의)/.test(x) &&
-        /(디자이너|스탭|스텝|네일|피부|점장|실장|메이크업|바버|인턴|관리|테라피|왁싱|속눈썹|미용|에스테|아티스트|스파)/.test(x)
-    );
-  if (!rows.length && !title) return null;
+  const ogD = dec((html.match(/property="og:description" content="([^"]*)"/) || [])[1] || "");
+  const mj = liValue("모집분야"); // "헤어디자이너[경력] 01명 (정규직) > 300만원이상"
 
-  const jobTexts = [
-    ...new Set(
-      rows
-        .map((r) => (r.match(/^([^월시연주협]+?)(?:\[[^\]]*\])?\s*(?:월급|시급|연봉|주급|협의)/) || [])[1])
-        .filter(Boolean)
-        .map((s) => s!.trim())
-    ),
-  ];
-
-  // 직종 → 우리 직군 매핑
-  let job_type = "STORE";
-  const job_categories: string[] = [];
-  for (const jt of jobTexts) {
-    const r = searchJobItems(jt, undefined, 1)[0];
-    if (r && r.item) {
-      if (!job_categories.includes(r.item)) job_categories.push(r.item);
-      job_type = r.jobType;
-    }
+  // 제목·회사·지역·주소
+  let title = (ogD.match(/채용\]\s*(.+?)\s*,\s*근무지역/) || [])[1] || "";
+  if (!title) {
+    title = ((html.match(/<meta property="og:title" content="([^"]+)"/) || [])[1] || "").replace(/\s*\|\s*헤어인잡.*$/, "").trim();
   }
+  const company = (ogD.match(/\[([^\]]+?)\s*채용\]/) || [])[1] || "";
+  if (!title && !company && !mj) return null;
 
-  // 급여(첫 행 기준)
-  let salary_type = "";
-  let salary_amount = 0;
-  let salary_negotiable = false;
-  let salary = "";
-  const sm = (rows[0] || "").match(/(월급|시급|연봉|주급)\s*([\d,]+)\s*(만?)원/);
-  if (sm) {
-    salary = sm[0].trim();
-    salary_type = ({ 월급: "MONTHLY", 시급: "HOURLY", 연봉: "ANNUAL", 주급: "WEEKLY" } as Record<string, string>)[sm[1]] || "";
+  const regionRaw = ((ogD.match(/근무지역\s*[:：]\s*([^,]+)/) || [])[1] || "").trim();
+  const region = normRegionLoose(regionRaw);
+  const address = liValue("업체주소");
+
+  // 모집분야: 직종 / 인원 / 고용형태 / 급여
+  const job = (mj.match(/^([가-힣A-Za-z/]+?)\s*\[/) || [])[1] || (mj.split(/[[\s(]/)[0] || "");
+  const careerMark = ((mj.match(/\[([^\]]+)\]/) || [])[1] || "").replace(/\s/g, "");
+  const headcount = Number(((mj.match(/(\d+)\s*명/) || [])[1] || "").replace(/^0+/, "")) || 0;
+
+  // 경력: [신입]→신입, [경력]→1년 이상, [신입및경력]→경력 무관
+  let career = "";
+  if (/신입.*경력|경력.*신입|신입및경력/.test(careerMark)) career = "경력 무관";
+  else if (/^신입$/.test(careerMark)) career = "신입";
+  else if (/경력/.test(careerMark)) career = "1년 이상";
+
+  // 고용형태: 근무형태 li 우선, 없으면 모집분야 괄호
+  const empRaw = liValue("근무형태") || ((mj.match(/\(([^)]+)\)/) || [])[1] || "");
+  let employment_type = "";
+  if (/정규/.test(empRaw)) employment_type = "정규직";
+  else if (/계약/.test(empRaw)) employment_type = "계약직";
+  else if (/파트|아르바이트|알바/.test(empRaw)) employment_type = "파트타임";
+
+  // 급여: "300만원이상"(접두어 없음)은 월급으로 간주
+  let salary_type = "", salary_amount = 0, salary_negotiable = false, salary = "";
+  const sm = mj.match(/(월급|시급|연봉|주급)?\s*([\d,]+)\s*만원/);
+  if (sm && sm[2]) {
+    salary_type = ({ 월급: "MONTHLY", 시급: "HOURLY", 연봉: "ANNUAL", 주급: "WEEKLY" } as Record<string, string>)[sm[1] || ""] || "MONTHLY";
     salary_amount = Number(sm[2].replace(/,/g, ""));
-    if (sm[1] === "시급" && sm[3] === "만") salary_amount *= 10000; // 시급은 원 단위
-  } else if (/협의/.test(rows[0] || "")) {
+    salary = (mj.match(/[\d,]+\s*만원\s*이?상?/) || [])[0]?.trim() || `${salary_amount}만원`;
+  } else if (/협의|면접|추후|내규/.test(mj)) {
     salary_negotiable = true;
-    salary = "협의";
   }
 
-  // 근무시간
-  let work_time = "";
-  const wt = (rows[0] || "").match(/(오전|오후)?\s*(\d{1,2}):(\d{2})\s*~\s*(오전|오후)?\s*(\d{1,2}):(\d{2})/);
-  if (wt) {
-    const h = (ap: string | undefined, hh: string) => {
-      let n = Number(hh);
-      if (ap === "오후" && n < 12) n += 12;
-      if (ap === "오전" && n === 12) n = 0;
-      return String(n).padStart(2, "0");
-    };
-    work_time = `${h(wt[1], wt[2])}:${wt[3]}~${h(wt[4], wt[5])}:${wt[6]}`;
-  }
+  // 근무시간: 페이지 내 첫 HH:MM~HH:MM
+  const work_time = parseWorkTime((html.match(/(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})/) || [])[0] || "");
 
-  // 지역(요약줄 "지역 : 서울 강남구")
-  const rg =
-    (html.match(/지\s*역\s*[:：]\s*([가-힣]+\s*[가-힣]+구|[가-힣]+\s*[가-힣]+시|[가-힣]+\s*[가-힣]+군)/) || [])[1] || "";
+  // 복리후생 + 필터 태그
+  const benefits = liValue("복리후생");
+  const benefit_tags: string[] = [];
+  if (/국민연금|고용보험|산재|건강보험|4대/.test(benefits)) benefit_tags.push("4대보험");
+  if (/인센티브/.test(benefits)) benefit_tags.push("인센티브");
+  if (/식대|중식|조식|식사|식비/.test(benefits)) benefit_tags.push("식대 지원");
+  if (/주차/.test(benefits)) benefit_tags.push("주차 가능");
+  if (/기숙사|숙소/.test(benefits)) benefit_tags.push("기숙사 제공");
+  if (/교육비|교육\s*지원/.test(benefits)) benefit_tags.push("교육비 지원");
 
-  const always_open = /상시|수시|충원|채용\s*시/.test(title);
+  const contact_name = (liValue("채용담당자").split(" ")[0] || "").trim();
+  const always_open = /채용시까지|상시|수시|충원/.test(ogD) || /채용시까지|상시|수시/.test(title);
 
-  // 공고 이미지: /upload/upload/offer_user/... (실제 상세 이미지). 헤어인잡은 핫링크 차단이라 재호스팅 필요.
+  const sug = suggestCats(`${job} ${title}`);
+
+  // 공고 이미지: /upload/upload/offer_user/... 핫링크 차단이라 재호스팅.
   const images = [
-    ...new Set(
-      [...html.matchAll(/\/upload\/upload\/offer_user\/\d+\/[^"'\s)]+\.(?:jpe?g|png|gif)/gi)].map((m) => m[0])
-    ),
+    ...new Set([...html.matchAll(/\/upload\/upload\/offer_user\/\d+\/[^"'\s)]+\.(?:jpe?g|png|gif)/gi)].map((m) => m[0])),
   ]
     .map((p) => `https://www.hairinjob.com${p}`)
     .slice(0, 10);
 
   const out: StructuredResult = {
-    job_type,
-    job_categories,
-    region: normRegion(rg),
+    title,
+    company_name: company,
+    region,
+    address,
+    job_type: sug.job_type || "STORE", // 헤어샵 = 매장
+    job_categories: sug.job_categories,
+    career,
+    employment_type,
+    headcount: headcount || 0,
     salary,
     salary_type,
     salary_amount,
     salary_amount_max: 0,
     salary_negotiable,
     work_time,
+    benefits,
+    benefit_tags,
+    contact_name,
     always_open,
-    main_duties: jobTexts.length ? `모집분야: ${jobTexts.join(", ")}` : "",
-    _confident: job_categories.length > 0 || salary_type !== "" || salary_negotiable,
+    main_duties: job ? `모집분야: ${job}` : "",
+    _confident: !!(title && (company || region || sug.job_categories.length)),
   };
-  if (title) out.title = title;
   if (images.length) {
     out.images = images;
     out._rehost = true; // 핫링크 차단 → 라우트에서 재호스팅
     out._rehostReferer = "https://www.hairinjob.com/";
+  } else {
+    out.images = [];
   }
   return out;
 }
