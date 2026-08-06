@@ -150,7 +150,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   ) : null;
 
   // 채용 담당자 · 채용 절차는 각각 별도 항목(빈 값 자동 숨김).
-  const hasContact = !!(job.contactName || job.contactPhone || job.contactEmail);
+  const hasContact = !!(job.contactName || job.contactPhone || job.contactEmail || job.contactMethods?.length);
   const hasProcess = !!(job.process?.length > 0 || job.notes?.trim());
   const contactInner = hasContact ? (
     <div>
@@ -172,6 +172,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">이메일</span>
             <span>{job.contactEmail}</span>
+          </div>
+        )}
+        {job.contactMethods?.length > 0 && (
+          <div className="job-detail-company-row">
+            <span className="job-detail-company-label">접수방법</span>
+            <span>{job.contactMethods.join(", ")}</span>
           </div>
         )}
       </div>

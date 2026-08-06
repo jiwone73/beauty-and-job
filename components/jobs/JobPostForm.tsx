@@ -134,6 +134,9 @@ export default function JobPostForm({
   const [nmCoverUploading, setNmCoverUploading] = useState(false);
   const [nmManagerName, setNmManagerName] = useState("");
   const [nmManagerPhone, setNmManagerPhone] = useState("");
+  const [contactMethods, setContactMethods] = useState<string[]>([]); // 접수방법: 문자·이메일·전화·온라인 지원(복수)
+  const toggleContactMethod = (m: string) =>
+    setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]));
   const [parseUrl, setParseUrl] = useState("");
   const [importMode, setImportMode] = useState<"url" | "ocr">("url"); // 직접입력(URL) vs OCR(캡처)
   const [parsing, setParsing] = useState(false);
@@ -413,6 +416,7 @@ export default function JobPostForm({
         setNmManagerName(j.external_contact_name || "");
         setNmManagerPhone(j.external_contact_phone || "");
         setNmContactEmail(j.external_contact_email || "");
+        setContactMethods(Array.isArray(j.contact_methods) ? j.contact_methods : []);
         if (["MANAGED", "EMAIL", "REDIRECT"].includes(j.apply_method)) {
           setApplyMethod(j.apply_method === "EMAIL" ? "MANAGED" : j.apply_method);
         }
@@ -880,6 +884,7 @@ export default function JobPostForm({
       external_contact_email: nmContactEmail.trim() || null,
       external_contact_name: nmManagerName.trim() || null,
       external_contact_phone: nmManagerPhone.replace(/\D/g, "") || null,
+      contact_methods: contactMethods,
     };
 
     const company: any = nonMember
@@ -977,6 +982,7 @@ export default function JobPostForm({
     contactName: isNm ? nmManagerName : "",
     contactPhone: isNm ? nmManagerPhone : "",
     contactEmail: isNm ? nmContactEmail : "",
+    contactMethods: isNm ? contactMethods : [],
   };
 
   return (
@@ -1417,6 +1423,20 @@ export default function JobPostForm({
                     <div className="job-detail-company-row">
                       <span className="job-detail-company-label">이메일</span>
                       <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} style={{ border: "none", background: "transparent", fontSize: 15, outline: "none", padding: 0, width: "100%" }} placeholder="선택" />
+                    </div>
+                    <div className="job-detail-company-row" style={{ alignItems: "center" }}>
+                      <span className="job-detail-company-label">접수방법</span>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
+                        {["문자", "이메일", "전화", "온라인 지원"].map((m) => {
+                          const on = contactMethods.includes(m);
+                          return (
+                            <button key={m} type="button" onClick={() => toggleContactMethod(m)}
+                              style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>
+                              {on ? "✓ " : ""}{m}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>

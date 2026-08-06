@@ -80,6 +80,7 @@ export async function PATCH(
     "responsibilities", "headcount",
     "apply_method", "external_apply_url",
     "external_contact_name", "external_contact_phone", "external_contact_email",
+    "contact_methods",
   ];
 
   const client = await pool.connect();

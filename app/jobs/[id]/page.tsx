@@ -215,6 +215,7 @@ export default function JobDetailPage() {
             contactName: j.external_contact_name || '',
             contactPhone: j.external_contact_phone || '',
             contactEmail: j.external_contact_email || '',
+            contactMethods: Array.isArray(j.contact_methods) ? j.contact_methods : [],
             companyInfo: {
               name: j.company?.company_name || '',
               brandName: j.company?.brand_name || '',
