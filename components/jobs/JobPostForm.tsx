@@ -1020,14 +1020,42 @@ export default function JobPostForm({
             </label>
           )}
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
-          {contactNotice && <div style={{ fontSize: 12.5, marginTop: 6, padding: "8px 10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: 8, color: "#9a3412", lineHeight: 1.5 }}>{contactNotice}</div>}
           {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
           {mode === "admin" && nonMember && (
-            <div style={{ display: "grid", gridTemplateColumns: applyMethod === "REDIRECT" ? "240px 1fr" : "240px", gap: 12, marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb", alignItems: "end" }}>
-              <div><div style={lbl}>지원방식</div><select style={sel} value={applyMethod} onChange={(e) => setApplyMethod(e.target.value as "MANAGED" | "EMAIL" | "REDIRECT")}><option value="MANAGED">관리자 대행</option><option value="EMAIL">이메일 중계</option><option value="REDIRECT">외부 링크형</option></select></div>
-              {applyMethod === "REDIRECT" && (
-                <div><div style={lbl}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" /></div>
-              )}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb", alignItems: "start" }}>
+              {/* 지원방식 (라디오) */}
+              <div>
+                <div style={lbl}>지원방식</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {([["MANAGED", "관리자 대행"], ["EMAIL", "이메일 중계"], ["REDIRECT", "외부 링크형"]] as [string, string][]).map(([v, l]) => (
+                    <label key={v} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: "#444" }}>
+                      <input type="radio" name="applyMethod" checked={applyMethod === v} onChange={() => setApplyMethod(v as "MANAGED" | "EMAIL" | "REDIRECT")} /> {l}
+                    </label>
+                  ))}
+                </div>
+                {applyMethod === "REDIRECT" && (
+                  <div style={{ marginTop: 10 }}>
+                    <div style={lbl}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div>
+                    <input style={inp} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" />
+                  </div>
+                )}
+              </div>
+              {/* 채용 담당자 연락처 — 자동으로 찾은 값 유무를 체크로 표시(값은 아래 '채용 담당자'에서 수정) */}
+              <div>
+                <div style={lbl}>채용 담당자 연락처</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {([["담당자 이름", nmManagerName], ["전화번호", nmManagerPhone], ["이메일", nmContactEmail]] as [string, string][]).map(([label, val]) => {
+                    const has = !!(val && val.trim());
+                    return (
+                      <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                        <span style={{ width: 16, height: 16, borderRadius: "50%", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", background: has ? "#10b981" : "#d5d5d5" }}>✓</span>
+                        <span style={{ color: "#666", flexShrink: 0 }}>{label}</span>
+                        <span style={{ marginLeft: "auto", color: has ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "right" }}>{has ? val : "미확인"}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
         </div>
