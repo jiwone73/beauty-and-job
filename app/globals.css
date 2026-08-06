@@ -2174,6 +2174,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 섹션 */
 .job-detail-section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 12px; }
 .job-detail-section-title { font-size: 17px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; letter-spacing: -0.3px; }
+
+/* 기본정보 카드 안의 서브블록(근무조건·근무지역·복리후생·채용담당자·채용절차) */
+.jd-subblock { padding-top: 16px; margin-top: 16px; border-top: 1px solid #f0edf5; }
+.job-detail-subtitle { font-size: 15px; color: var(--color-text); margin: 0 0 12px; letter-spacing: -0.3px; }
+
+/* 사용자 선호: 상세/미리보기 영역은 볼드 없이 전부 평체(인라인 볼드까지 강제 무력화) */
+.job-detail-layout, .job-detail-layout * { font-weight: 400 !important; }
 .job-detail-desc { font-size: 14px; color: var(--color-text-sub); line-height: 1.8; white-space: pre-line; }
 .job-detail-brand-desc { font-size: 14px; color: var(--color-text-sub); line-height: 1.7; margin-bottom: 16px; }
 

@@ -86,8 +86,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 근무조건·근무지역은 '기본정보' 성격이라, 이미지형 공고에선 세로로 긴 상세이미지 "앞"에 먼저 노출한다.
   // (블록을 한 번만 정의하고 위치만 바꿔 끼운다 — 텍스트형 공고는 기존 순서 그대로.)
   const workCondSection = (job.salary || job.employType || job.workDaysText || job.workTimeText) ? (
-    <section className="job-detail-section" key="workcond">
-      <h2 className="job-detail-section-title">근무 조건</h2>
+    <div className="jd-subblock" key="workcond">
+      <h2 className="job-detail-subtitle">근무 조건</h2>
       <div className="job-detail-company-info">
         {job.salary && (
           <div className="job-detail-company-row">
@@ -114,12 +114,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </div>
         )}
       </div>
-    </section>
+    </div>
   ) : null;
 
   const locationSection = hasMap ? (
-    <section className="job-detail-section" key="location">
-      <h2 className="job-detail-section-title">근무지역</h2>
+    <div className="jd-subblock" key="location">
+      <h2 className="job-detail-subtitle">근무지역</h2>
       {job.companyAddress?.trim() && (
         <p className="job-detail-desc" style={{ marginBottom: "12px" }}>{job.companyAddress}</p>
       )}
@@ -136,7 +136,73 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           src={`https://maps.google.com/maps?q=${encodeURIComponent(job.companyAddress)}&output=embed&hl=ko`}
         />
       )}
-    </section>
+    </div>
+  ) : null;
+
+  // 복리후생·채용 담당자·채용 절차도 '기본정보' 카드 안의 서브블록으로 합침(빈 값은 자동 숨김).
+  const benefitsBlock = job.benefits?.length > 0 ? (
+    <div className="jd-subblock" key="benefits">
+      <h2 className="job-detail-subtitle">복리후생</h2>
+      <div className="job-detail-benefits">
+        {job.benefits.map((item: string, i: number) => (
+          <span key={i} className="job-detail-benefit-chip">{item}</span>
+        ))}
+      </div>
+    </div>
+  ) : null;
+
+  const contactBlock = (job.contactName || job.contactPhone || job.contactEmail) ? (
+    <div className="jd-subblock" key="contact">
+      <h2 className="job-detail-subtitle">채용 담당자</h2>
+      <div className="job-detail-company-info">
+        {job.contactName && (
+          <div className="job-detail-company-row">
+            <span className="job-detail-company-label">이름</span>
+            <span>{job.contactName}</span>
+          </div>
+        )}
+        {job.contactPhone && (
+          <div className="job-detail-company-row">
+            <span className="job-detail-company-label">전화</span>
+            <span>{job.contactPhone}</span>
+          </div>
+        )}
+        {job.contactEmail && (
+          <div className="job-detail-company-row">
+            <span className="job-detail-company-label">이메일</span>
+            <span>{job.contactEmail}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  ) : null;
+
+  const processBlock = (job.process?.length > 0 || job.notes?.trim()) ? (
+    <div className="jd-subblock" key="process">
+      <h2 className="job-detail-subtitle">채용 절차</h2>
+      {job.process?.length > 0 && (
+        <div className="job-detail-process">
+          {job.process.map((step: string, i: number) => (
+            <div key={i} className="job-detail-process-step">
+              <div className="job-detail-process-num">{i + 1}</div>
+              <span className="job-detail-process-label">{step}</span>
+              {i < job.process.length - 1 && (
+                <ChevronRight size={16} className="job-detail-process-arrow" />
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      {job.notes?.trim() && (
+        <div style={{
+          marginTop: job.process?.length > 0 ? "20px" : "0",
+          padding: "14px 16px", background: "#faf8fc", borderRadius: "8px",
+          fontSize: "14px", color: "#555", lineHeight: 1.6, whiteSpace: "pre-line"
+        }}>
+          {job.notes}
+        </div>
+      )}
+    </div>
   ) : null;
 
   return (
@@ -219,83 +285,14 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               </div>
             )}
           </div>
+
+          {/* 근무조건·근무지역·복리후생·채용담당자·채용절차를 기본정보 카드 안에 통합(빈 값 자동 숨김) */}
+          {workCondSection}
+          {locationSection}
+          {benefitsBlock}
+          {contactBlock}
+          {processBlock}
         </div>
-
-        {/* 등록 폼과 동일한 순서: 근무 조건 → 근무지역 → 복리후생 → 채용 담당자 → 채용 절차 → 상세 내용 */}
-
-        {/* 근무 조건 */}
-        {workCondSection}
-
-        {/* 근무지역 */}
-        {locationSection}
-
-        {/* 복리후생 */}
-        {job.benefits?.length > 0 && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">복리후생</h2>
-            <div className="job-detail-benefits">
-              {job.benefits.map((item: string, i: number) => (
-                <span key={i} className="job-detail-benefit-chip">{item}</span>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 채용 담당자 (입력값이 있을 때만) */}
-        {(job.contactName || job.contactPhone || job.contactEmail) && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">채용 담당자</h2>
-            <div className="job-detail-company-info">
-              {job.contactName && (
-                <div className="job-detail-company-row">
-                  <span className="job-detail-company-label">이름</span>
-                  <span>{job.contactName}</span>
-                </div>
-              )}
-              {job.contactPhone && (
-                <div className="job-detail-company-row">
-                  <span className="job-detail-company-label">전화</span>
-                  <span>{job.contactPhone}</span>
-                </div>
-              )}
-              {job.contactEmail && (
-                <div className="job-detail-company-row">
-                  <span className="job-detail-company-label">이메일</span>
-                  <span>{job.contactEmail}</span>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* 채용 절차 */}
-        {(job.process?.length > 0 || job.notes?.trim()) && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">채용 절차</h2>
-            {job.process?.length > 0 && (
-              <div className="job-detail-process">
-                {job.process.map((step: string, i: number) => (
-                  <div key={i} className="job-detail-process-step">
-                    <div className="job-detail-process-num">{i + 1}</div>
-                    <span className="job-detail-process-label">{step}</span>
-                    {i < job.process.length - 1 && (
-                      <ChevronRight size={16} className="job-detail-process-arrow" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-            {job.notes?.trim() && (
-              <div style={{
-                marginTop: job.process?.length > 0 ? "20px" : "0",
-                padding: "14px 16px", background: "#faf8fc", borderRadius: "8px",
-                fontSize: "14px", color: "#555", lineHeight: 1.6, whiteSpace: "pre-line"
-              }}>
-                {job.notes}
-              </div>
-            )}
-          </section>
-        )}
 
         {/* 상세 내용 — 이미지형이면 상세요강(이미지) + 자유서술, 아니면 텍스트 항목(포지션 소개·자격요건·우대사항·주요업무) */}
         {hasDetailImages ? (
