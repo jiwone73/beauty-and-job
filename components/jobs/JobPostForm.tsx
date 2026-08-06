@@ -9,6 +9,10 @@ import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
 import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
+import { REGIONS } from "@/lib/data/regions";
+
+// 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
+const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.sido} ${g}`));
 
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
@@ -145,6 +149,9 @@ export default function JobPostForm({
   const [categories, setCategories] = useState<string[]>([]);
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
+  const [regionOpen, setRegionOpen] = useState(false);
+  const [regionQuery, setRegionQuery] = useState("");
+  const regionInlineRef = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState({
     title: "", career: "",
     type: "", deadline: "", salary: "", description: "",
@@ -200,6 +207,15 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [salaryModalOpen]);
+  // 근무지역 인라인 자동완성: 바깥 클릭 시 닫기
+  useEffect(() => {
+    if (!regionOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (regionInlineRef.current && !regionInlineRef.current.contains(e.target as Node)) { setRegionOpen(false); setRegionQuery(""); }
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [regionOpen]);
   const [deadlineModalOpen, setDeadlineModalOpen] = useState(false);
   const [deadlineDraft, setDeadlineDraft] = useState("");
   const [alwaysOpenDraft, setAlwaysOpenDraft] = useState(false);
@@ -1280,29 +1296,69 @@ export default function JobPostForm({
 
               {/* ── 미리보기형 인라인 메타(모달 없이 그 자리에서 입력/선택): 지역 · 경력 · 고용형태 · 모집인원 ── */}
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 10, rowGap: 8, padding: "10px 0" }}>
-                {/* 근무지역 (필터용 시·군·구) */}
-                <button type="button" onClick={() => setRegionModalOpen(true)}
-                  style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer", fontSize: 14, color: regionList.length ? "#333" : "#bbb", display: "inline-flex", alignItems: "center", gap: 3 }}>
-                  <MapPin size={14} style={{ color: regionList.length ? "#5f0080" : "#ccc" }} />
-                  {regionList.length ? regionList.map(shortRegion).join(", ") : <>근무지역<span style={{ color: "#e74c3c" }}> *</span></>}
-                </button>
-                <span style={{ color: "#e0e0e0" }}>|</span>
+                {/* 근무지역: 인라인 자동완성(타이핑→아래 제안→클릭해 칩 추가). 모달 없음 */}
+                <div ref={regionInlineRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: 4 }}>
+                  <MapPin size={14} style={{ color: regionList.length ? "#5f0080" : "#d0d0d0" }} />
+                  {regionList.map((r) => (
+                    <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "#f3ecfa", color: "#5f0080", borderRadius: 12, padding: "1px 8px", fontSize: 13 }}>
+                      {shortRegion(r)}
+                      <button type="button" onClick={() => setRegionList(regionList.filter((x) => x !== r))}
+                        style={{ border: "none", background: "transparent", color: "#5f0080", cursor: "pointer", padding: 0, fontSize: 13, lineHeight: 1 }}>×</button>
+                    </span>
+                  ))}
+                  {regionOpen ? (
+                    <input autoFocus value={regionQuery} onChange={(e) => setRegionQuery(e.target.value)}
+                      placeholder="시·군·구 검색"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const q = regionQuery.trim();
+                          const hit = ALL_REGIONS.find((x) => x.includes(q) || shortRegion(x).includes(q));
+                          if (hit && !regionList.includes(hit)) { setRegionList([...regionList, hit]); setRegionQuery(""); }
+                        }
+                      }}
+                      style={{ width: 110, border: "none", background: "transparent", fontSize: 14, color: "#333", padding: 0, outline: "none" }} />
+                  ) : (
+                    <button type="button" onClick={() => setRegionOpen(true)}
+                      style={{ border: "none", background: "transparent", padding: 0, cursor: "text", fontSize: 14, color: regionList.length ? "#8a7fa0" : "#cfcfcf" }}>
+                      {regionList.length ? "+ 지역 추가" : <>근무지역<span style={{ color: "#e9a3a3" }}> *</span></>}
+                    </button>
+                  )}
+                  {regionOpen && regionQuery.trim() && (
+                    <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 60, minWidth: 180, maxHeight: 220, overflowY: "auto", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 4 }}>
+                      {(() => {
+                        const q = regionQuery.trim();
+                        const matches = ALL_REGIONS.filter((x) => (x.includes(q) || shortRegion(x).includes(q)) && !regionList.includes(x)).slice(0, 10);
+                        if (!matches.length) return <div style={{ padding: "8px 10px", fontSize: 13, color: "#aaa" }}>일치하는 지역이 없어요</div>;
+                        return matches.map((m) => (
+                          <div key={m} onClick={() => { setRegionList([...regionList, m]); setRegionQuery(""); }}
+                            style={{ padding: "8px 10px", fontSize: 13.5, color: "#333", cursor: "pointer", borderRadius: 6 }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = "#faf7fe")}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                            {m}
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  )}
+                </div>
+                <span style={{ color: "#ececec" }}>|</span>
                 {/* 경력 (테두리 없는 인라인 셀렉트 → 그 자리에서 열림) */}
                 <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
-                  style={{ border: "none", background: "transparent", fontSize: 14, color: form.career ? "#333" : "#bbb", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                  style={{ border: "none", background: "transparent", fontSize: 14, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                   <option value="">경력 *</option>
                   {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
-                <span style={{ color: "#e0e0e0" }}>|</span>
+                <span style={{ color: "#ececec" }}>|</span>
                 {/* 고용형태 */}
                 <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
-                  style={{ border: "none", background: "transparent", fontSize: 14, color: form.type ? "#333" : "#bbb", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                  style={{ border: "none", background: "transparent", fontSize: 14, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                   <option value="">고용형태 *</option>
                   {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
-                <span style={{ color: "#e0e0e0" }}>|</span>
+                <span style={{ color: "#ececec" }}>|</span>
                 {/* 모집인원 */}
-                <span style={{ fontSize: 14, color: form.headcount ? "#333" : "#bbb", display: "inline-flex", alignItems: "center", gap: 2 }}>
+                <span style={{ fontSize: 14, color: form.headcount ? "#333" : "#cfcfcf", display: "inline-flex", alignItems: "center", gap: 2 }}>
                   모집
                   <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
                     onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
