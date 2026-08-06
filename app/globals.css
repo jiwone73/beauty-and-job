@@ -2163,12 +2163,16 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (min-width: 1025px) { .job-detail-info-box:not(.jd-show) { display: none; } }
 .job-detail-info-box.jd-show { display: block !important; }
 .job-detail-brand-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-.job-detail-brand { font-size: 14px; font-weight: 600; color: var(--color-text-sub); }
+.job-detail-brand { font-size: 15px; font-weight: 600; color: var(--color-text-sub); }
 .job-detail-tag { font-size: 13px; color: var(--color-text-mute); }
 .job-detail-title { font-size: 24px; font-weight: 800; color: var(--color-text); letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 16px; }
-.job-detail-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
-.job-detail-meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-text-sub); }
+.job-detail-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+.job-detail-meta-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--color-text-sub); }
 .job-detail-meta-icon { color: var(--color-primary-light); flex-shrink: 0; }
+.job-detail-meta-label { color: var(--color-text-mute); flex-shrink: 0; }
+/* 값이 채워지면(=표시되면) 제목도 값과 같은 진한 색 */
+.job-detail-meta-value { color: var(--color-text); }
+.job-detail-meta-item:has(.job-detail-meta-value) .job-detail-meta-label { color: var(--color-text); }
 .job-detail-salary { background: var(--color-primary-soft); color: var(--color-primary); font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 8px; display: inline-block; }
 
 /* 섹션 */
@@ -2177,16 +2181,19 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 기본정보 카드 안의 서브블록(근무조건·근무지역·복리후생·채용담당자·채용절차) */
 .jd-subblock { padding-top: 16px; margin-top: 16px; border-top: 1px solid #f0edf5; }
-.job-detail-subtitle { font-size: 15px; color: var(--color-text); margin: 0 0 12px; letter-spacing: -0.3px; }
+.job-detail-subtitle { font-size: 16px; color: var(--color-text); margin: 0 0 12px; letter-spacing: -0.3px; }
+/* 채용 담당자 · 채용 절차 2열 배치 */
+.jd-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 28px; align-items: start; }
+@media (max-width: 640px) { .jd-2col { grid-template-columns: 1fr; } }
 
 /* 사용자 선호: 상세/미리보기 영역은 볼드 없이 전부 평체(인라인 볼드까지 강제 무력화) */
 .job-detail-layout, .job-detail-layout * { font-weight: 400 !important; }
-.job-detail-desc { font-size: 14px; color: var(--color-text-sub); line-height: 1.8; white-space: pre-line; }
-.job-detail-brand-desc { font-size: 14px; color: var(--color-text-sub); line-height: 1.7; margin-bottom: 16px; }
+.job-detail-desc { font-size: 15px; color: var(--color-text-sub); line-height: 1.8; white-space: pre-line; }
+.job-detail-brand-desc { font-size: 15px; color: var(--color-text-sub); line-height: 1.7; margin-bottom: 16px; }
 
 /* 회사 정보 */
 .job-detail-company-info { background: transparent; border-radius: 8px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; }
-.job-detail-company-row { display: flex; gap: 16px; padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--color-border); }
+.job-detail-company-row { display: flex; gap: 16px; padding: 7px 0; font-size: 14px; }
 .job-detail-company-label { color: var(--color-text-mute); width: 60px; flex-shrink: 0; }
 @media (max-width: 640px) { .job-detail-company-info { grid-template-columns: 1fr; } }
 
@@ -2198,13 +2205,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 복리후생 */
 .job-detail-benefits { display: flex; flex-wrap: wrap; gap: 8px; }
-.job-detail-benefit-chip { background: var(--color-primary-soft); color: var(--color-primary); font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 100px; }
+.job-detail-benefit-chip { background: var(--color-primary-soft); color: var(--color-primary); font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 100px; }
 
-/* 채용 절차 */
-.job-detail-process { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+/* 채용 절차 — 동그라미 없이 숫자만 깔끔하게 */
+.job-detail-process { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
 .job-detail-process-step { display: flex; align-items: center; gap: 6px; }
-.job-detail-process-num { width: 28px; height: 28px; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
-.job-detail-process-label { font-size: 13px; font-weight: 500; color: var(--color-text); }
+.job-detail-process-num { color: var(--color-primary); font-size: 14px; flex-shrink: 0; }
+.job-detail-process-label { font-size: 14px; color: var(--color-text); }
 .job-detail-process-arrow { color: var(--color-text-mute); }
 
 /* 관련 공고 */

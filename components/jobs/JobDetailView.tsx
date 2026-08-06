@@ -151,10 +151,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
-  const contactBlock = (job.contactName || job.contactPhone || job.contactEmail) ? (
-    <div className="jd-subblock" key="contact">
+  // 채용 담당자 · 채용 절차는 좌/우 2열로 배치(빈 값 자동 숨김).
+  const hasContact = !!(job.contactName || job.contactPhone || job.contactEmail);
+  const hasProcess = !!(job.process?.length > 0 || job.notes?.trim());
+  const contactInner = hasContact ? (
+    <div>
       <h2 className="job-detail-subtitle">채용 담당자</h2>
-      <div className="job-detail-company-info">
+      <div className="job-detail-company-info" style={{ gridTemplateColumns: "1fr" }}>
         {job.contactName && (
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">이름</span>
@@ -177,14 +180,14 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
-  const processBlock = (job.process?.length > 0 || job.notes?.trim()) ? (
-    <div className="jd-subblock" key="process">
+  const processInner = hasProcess ? (
+    <div>
       <h2 className="job-detail-subtitle">채용 절차</h2>
       {job.process?.length > 0 && (
         <div className="job-detail-process">
           {job.process.map((step: string, i: number) => (
             <div key={i} className="job-detail-process-step">
-              <div className="job-detail-process-num">{i + 1}</div>
+              <span className="job-detail-process-num">{i + 1}</span>
               <span className="job-detail-process-label">{step}</span>
               {i < job.process.length - 1 && (
                 <ChevronRight size={16} className="job-detail-process-arrow" />
@@ -195,13 +198,20 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       )}
       {job.notes?.trim() && (
         <div style={{
-          marginTop: job.process?.length > 0 ? "20px" : "0",
+          marginTop: job.process?.length > 0 ? "16px" : "0",
           padding: "14px 16px", background: "#faf8fc", borderRadius: "8px",
-          fontSize: "14px", color: "#555", lineHeight: 1.6, whiteSpace: "pre-line"
+          fontSize: "15px", color: "#555", lineHeight: 1.6, whiteSpace: "pre-line"
         }}>
           {job.notes}
         </div>
       )}
+    </div>
+  ) : null;
+
+  const contactProcessBlock = (hasContact || hasProcess) ? (
+    <div className="jd-subblock jd-2col" key="contact-process">
+      <div>{contactInner}</div>
+      <div>{processInner}</div>
     </div>
   ) : null;
 
@@ -262,26 +272,30 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <div className="job-detail-meta-grid">
             {job.jobCategories?.length > 0 && (
               <div className="job-detail-meta-item">
-                <Tag size={15} className="job-detail-meta-icon" />
-                <span>{job.jobCategories.join(", ")}</span>
+                <Tag size={16} className="job-detail-meta-icon" />
+                <span className="job-detail-meta-label">채용분야</span>
+                <span className="job-detail-meta-value">{job.jobCategories.join(", ")}</span>
               </div>
             )}
             {job.career && (
               <div className="job-detail-meta-item">
-                <Briefcase size={15} className="job-detail-meta-icon" />
-                <span>{job.career}</span>
+                <Briefcase size={16} className="job-detail-meta-icon" />
+                <span className="job-detail-meta-label">경력</span>
+                <span className="job-detail-meta-value">{job.career}</span>
               </div>
             )}
             {job.headcount && (
               <div className="job-detail-meta-item">
-                <Users size={15} className="job-detail-meta-icon" />
-                <span>모집 {job.headcount}</span>
+                <Users size={16} className="job-detail-meta-icon" />
+                <span className="job-detail-meta-label">모집</span>
+                <span className="job-detail-meta-value">{job.headcount}</span>
               </div>
             )}
             {job.deadline && (
               <div className="job-detail-meta-item">
-                <Clock size={15} className="job-detail-meta-icon" />
-                <span>{job.deadline === "상시채용" ? "상시채용" : `~${job.deadline}`}</span>
+                <Clock size={16} className="job-detail-meta-icon" />
+                <span className="job-detail-meta-label">마감일</span>
+                <span className="job-detail-meta-value">{job.deadline === "상시채용" ? "상시채용" : `~${job.deadline}`}</span>
               </div>
             )}
           </div>
@@ -290,8 +304,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {workCondSection}
           {locationSection}
           {benefitsBlock}
-          {contactBlock}
-          {processBlock}
+          {contactProcessBlock}
         </div>
 
         {/* 상세 내용 — 이미지형이면 상세요강(이미지) + 자유서술, 아니면 텍스트 항목(포지션 소개·자격요건·우대사항·주요업무) */}
