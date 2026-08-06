@@ -910,6 +910,7 @@ export default function JobPostForm({
     tags: [] as string[],
     title: form.title || "공고 제목",
     jobType: jobGroupType === "기업" ? "사무직" : "매장직",
+    jobCategories: categories,
     career: form.career || "-",
     region: regionList.join(", "),
     employType: form.type || "정규직",
@@ -1349,11 +1350,11 @@ export default function JobPostForm({
                 </div>
 
               {/* 근무지역: 전체 주소 입력 → 필터용 시·군·구 자동 추출 (지도는 아래) */}
-              <div className="admin-form-row">
-                <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                <input className="admin-form-input" value={nmAddress}
+              <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "8px 0" }}>
+                <span className="admin-form-label" style={{ flexShrink: 0 }}>근무지역 <span style={{ color: "#e9a3a3" }}>*</span></span>
+                <input value={nmAddress}
                   onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
-                  style={{ fontSize: 14, width: "100%", textAlign: "left" }}
+                  style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, outline: "none", padding: 0, textAlign: "left" }}
                   placeholder="전체 주소 입력 (예: 서울 구로구 구일로10길 27 …)" />
               </div>
               {nmAddress.trim() && (

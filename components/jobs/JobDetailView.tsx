@@ -4,7 +4,7 @@ import Link from "next/link";
 import { shortRegion } from "@/lib/regionShort";
 import { BannerImg } from "@/components/BannerImg";
 import KakaoMap from "@/components/KakaoMap";
-import { MapPin, Clock, Briefcase, Building2, CheckCircle2, ChevronRight, ChevronLeft, Users } from "lucide-react";
+import { Clock, Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, Tag } from "lucide-react";
 
 // 공고 상단 이미지 갤러리(원티드 스타일). 한 번에 3장 노출, 좌우 화살표로 순환.
 export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
@@ -85,10 +85,22 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   // 근무조건·근무지역은 '기본정보' 성격이라, 이미지형 공고에선 세로로 긴 상세이미지 "앞"에 먼저 노출한다.
   // (블록을 한 번만 정의하고 위치만 바꿔 끼운다 — 텍스트형 공고는 기존 순서 그대로.)
-  const workCondSection = (job.workDaysText || job.workTimeText) ? (
+  const workCondSection = (job.salary || job.employType || job.workDaysText || job.workTimeText) ? (
     <section className="job-detail-section" key="workcond">
       <h2 className="job-detail-section-title">근무 조건</h2>
       <div className="job-detail-company-info">
+        {job.salary && (
+          <div className="job-detail-company-row">
+            <span className="job-detail-company-label">급여</span>
+            <span>{job.salary}</span>
+          </div>
+        )}
+        {job.employType && (
+          <div className="job-detail-company-row">
+            <span className="job-detail-company-label">고용형태</span>
+            <span>{job.employType}</span>
+          </div>
+        )}
         {job.workDaysText && (
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">근무 요일</span>
@@ -182,22 +194,16 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <h1 className="job-detail-title">{job.title}</h1>
 
           <div className="job-detail-meta-grid">
-            {job.region && (
+            {job.jobCategories?.length > 0 && (
               <div className="job-detail-meta-item">
-                <MapPin size={15} className="job-detail-meta-icon" />
-                <span>{shortRegion(job.region)}</span>
+                <Tag size={15} className="job-detail-meta-icon" />
+                <span>{job.jobCategories.join(", ")}</span>
               </div>
             )}
             {job.career && (
               <div className="job-detail-meta-item">
                 <Briefcase size={15} className="job-detail-meta-icon" />
                 <span>{job.career}</span>
-              </div>
-            )}
-            {job.employType && (
-              <div className="job-detail-meta-item">
-                <Building2 size={15} className="job-detail-meta-icon" />
-                <span>{job.employType}</span>
               </div>
             )}
             {job.headcount && (
@@ -213,12 +219,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               </div>
             )}
           </div>
-
-          {job.salary && (
-            <div className="job-detail-salary">
-              💰 {job.salary}
-            </div>
-          )}
         </div>
 
         {/* 이미지형 공고: '기본정보' 성격의 근무조건·근무지역을 상세이미지보다 먼저 노출(포스터가 길어 뒤로 밀리지 않게) */}
