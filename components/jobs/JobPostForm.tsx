@@ -1165,6 +1165,22 @@ export default function JobPostForm({
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
 
+              {/* 공고 헤더(미리보기형): 실제 상세화면 최상단에 보일 브랜드 + 제목 */}
+              <div style={{ padding: "4px 0 14px", borderBottom: "1px solid #f0edf5", marginBottom: 4 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#8a7fa0", marginBottom: 6 }}>
+                  {previewJob.brand || (mode === "admin" ? "회사를 선택하세요" : "우리 회사")}
+                </div>
+                <input
+                  placeholder="공고 제목을 입력하세요"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  style={{ width: "100%", border: "none", outline: "none", fontSize: 22, fontWeight: 800, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3 }}
+                />
+                {!form.title.trim() && (
+                  <div style={{ fontSize: 12, color: "#e74c3c", marginTop: 4 }}>* 공고 제목은 필수예요</div>
+                )}
+              </div>
+
               {mode === "admin" && (
                 <div className="admin-form-row">
                   <label className="admin-form-label">기업 선택<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
@@ -1246,13 +1262,6 @@ export default function JobPostForm({
                     </span>
                   </div>
                 )}
-              </div>
-
-              <div className="admin-form-row">
-                <label className="admin-form-label">공고 제목<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                <input className="admin-form-input"
-                  placeholder={jobGroupType === "매장" ? "예) 네일 아티스트 모집" : "예) 마케팅 매니저 (색조)"}
-                  value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
               </div>
 
               <div className="admin-form-row">
