@@ -126,7 +126,7 @@ export default function JobPostForm({
   const [nmFounded, setNmFounded] = useState("");
   const [nmRepresentative, setNmRepresentative] = useState("");
   const [nmPhone, setNmPhone] = useState("");
-  const [nmCover, setNmCover] = useState("");
+  const [bannerImages, setBannerImages] = useState<{ url: string; name: string }[]>([]); // 상단 배너(여러 장, 3장씩 회전)
   const [nmCoverUploading, setNmCoverUploading] = useState(false);
   const [nmManagerName, setNmManagerName] = useState("");
   const [nmManagerPhone, setNmManagerPhone] = useState("");
@@ -356,6 +356,7 @@ export default function JobPostForm({
       setCategories(j.categories || []);
       setRegionList(j.location ? String(j.location).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
       setDetailImages(j.detail_images || []);
+      setBannerImages(((j.cover_images && j.cover_images.length ? j.cover_images : j.company?.cover_images) || []).map((c: any) => ({ url: c?.url, name: "배너" })).filter((x: any) => x.url));
       setHiringProcess(j.hiring_process || []);
       setNotes(j.notes || "");
       setBenefitTags(j.benefit_tags || []);
@@ -449,39 +450,64 @@ export default function JobPostForm({
   const removeImage = (idx: number) =>
     setDetailImages((prev) => prev.filter((_, i) => i !== idx));
 
-  // ── 배너(nmCover) ↔ 상세 이미지(detailImages) 드래그 이동 ──
+  // ── 배너(bannerImages) ↔ 상세 이미지(detailImages) 드래그 이동/재정렬 ──
   const imgDragRef = useRef<{ zone: "banner" | "body"; idx: number } | null>(null);
-  const dropToBanner = () => {
-    const src = imgDragRef.current; imgDragRef.current = null;
-    if (!src || src.zone === "banner") return;
-    const body = [...detailImages];
-    const moved = body[src.idx];
-    if (!moved) return;
-    body.splice(src.idx, 1);
-    if (nmCover) body.unshift({ url: nmCover, name: "이전 배너" }); // 기존 배너 → 본문 맨 앞으로
-    setNmCover(moved.url);
-    setDetailImages(body);
-  };
-  const dropToBody = (dropIdx: number | null) => {
+  const dropToBanner = (dropIdx: number | null = null) => {
     const src = imgDragRef.current; imgDragRef.current = null;
     if (!src) return;
     if (src.zone === "banner") {
-      if (!nmCover) return;
-      const body = [...detailImages];
-      const item = { url: nmCover, name: `이미지 ${body.length + 1}` };
-      if (dropIdx == null) body.push(item);
-      else body.splice(dropIdx, 0, item);
-      setNmCover("");
-      setDetailImages(body);
+      // 배너 내 재정렬
+      if (dropIdx == null || dropIdx === src.idx) return;
+      const arr = [...bannerImages];
+      const [it] = arr.splice(src.idx, 1);
+      arr.splice(dropIdx > src.idx ? dropIdx - 1 : dropIdx, 0, it);
+      setBannerImages(arr);
     } else {
+      // 본문 → 배너
+      if (bannerImages.length >= 10) { alert("배너는 최대 10장까지예요."); return; }
+      const body = [...detailImages];
+      const moved = body[src.idx]; if (!moved) return;
+      body.splice(src.idx, 1);
+      const arr = [...bannerImages];
+      if (dropIdx == null) arr.push(moved); else arr.splice(dropIdx, 0, moved);
+      setDetailImages(body);
+      setBannerImages(arr);
+    }
+  };
+  const dropToBody = (dropIdx: number | null = null) => {
+    const src = imgDragRef.current; imgDragRef.current = null;
+    if (!src) return;
+    if (src.zone === "body") {
       // 본문 내 재정렬
       if (dropIdx == null || dropIdx === src.idx) return;
+      const arr = [...detailImages];
+      const [it] = arr.splice(src.idx, 1);
+      arr.splice(dropIdx > src.idx ? dropIdx - 1 : dropIdx, 0, it);
+      setDetailImages(arr);
+    } else {
+      // 배너 → 본문
+      const arr = [...bannerImages];
+      const moved = arr[src.idx]; if (!moved) return;
+      arr.splice(src.idx, 1);
       const body = [...detailImages];
-      const [it] = body.splice(src.idx, 1);
-      const target = dropIdx > src.idx ? dropIdx - 1 : dropIdx;
-      body.splice(target, 0, it);
+      if (dropIdx == null) body.push(moved); else body.splice(dropIdx, 0, moved);
+      setBannerImages(arr);
       setDetailImages(body);
     }
+  };
+  // 배너 직접 업로드(여러 장 추가)
+  const addBannerFiles = async (fileList: FileList | File[]) => {
+    const files = Array.from(fileList);
+    if (!files.length) return;
+    if (bannerImages.length + files.length > 10) { alert("배너는 최대 10장까지예요."); return; }
+    setNmCoverUploading(true);
+    try {
+      for (const file of files) {
+        const r = await uploadImage(file);
+        if (r.success && r.url) setBannerImages((prev) => [...prev, { url: r.url!, name: r.name || file.name }]);
+        else alert(r.error || "이미지 업로드에 실패했습니다.");
+      }
+    } finally { setNmCoverUploading(false); }
   };
 
   const handleDownloadPdf = async () => {
@@ -545,7 +571,8 @@ export default function JobPostForm({
         //  - 없으면 대표 이미지(og:image)라도 커버로.
         const imgs: string[] = Array.isArray(d.images) ? d.images.filter(Boolean) : [];
         const cover = imgs[0] || d.cover_image || "";
-        if (cover) setNmCover(cover);
+        // 기본 배분: 첫 이미지=배너(1장), 나머지=상세 본문. (관리자가 폼에서 드래그로 조정)
+        if (cover) setBannerImages([{ url: cover, name: "배너" }]);
         if (imgs.length > 1) {
           setDetailImages(imgs.slice(1, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
         }
@@ -796,7 +823,7 @@ export default function JobPostForm({
     };
 
     const company: any = nonMember
-      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, ""), logo_url: null, cover_images: nmCover ? [{ url: nmCover }] : [] } }
+      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, ""), logo_url: null, cover_images: bannerImages.map((b) => ({ url: b.url })) } }
       : { companyId, newCompany: null };
     const result = await onSubmit(payload, status, company);
     if (!result.success) {
@@ -860,7 +887,7 @@ export default function JobPostForm({
     process: hiringProcess.filter((s) => s.trim()),
     notes: notes,
     logo_url: isNm ? null : cp?.logo_url,
-    cover_images: isNm ? (nmCover ? [{ url: nmCover }] : []) : (cp?.cover_images || []),
+    cover_images: isNm ? bannerImages.map((b) => ({ url: b.url })) : (cp?.cover_images || []),
     detailImages: detailImages,
     companyInfo: {
       name: previewCompanyName,
@@ -996,7 +1023,7 @@ export default function JobPostForm({
         </div>
 
         {/* 큐레이션: 불러오기 박스 밖 — 채워진 공고 전체를 뷰티워크 톤으로 다듬는 마무리 액션 */}
-        <div style={{ width: "100%", maxWidth: 760, margin: "-4px auto 16px", display: "flex", justifyContent: "flex-end", boxSizing: "border-box" }}>
+        <div style={{ width: "100%", maxWidth: 760, margin: "-8px auto 2px", display: "flex", justifyContent: "flex-end", boxSizing: "border-box" }}>
           <button type="button" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 공고 내용을 뷰티워크 톤·형식으로 AI가 다듬어요"
             style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13.5, fontWeight: 700, cursor: "pointer", opacity: curating ? 0.6 : 1, whiteSpace: "nowrap" }}>
             {curating ? "다듬는 중..." : "✨ 큐레이션 (AI 다듬기)"}</button>
@@ -1021,29 +1048,33 @@ export default function JobPostForm({
             <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 이미지</h2>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
 
-              {/* ── 상단 배너 (cover) ── */}
+              {/* ── 상단 배너 (cover, 여러 장 · 공개화면에서 3장씩 화살표로 회전) ── */}
               <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 6 }}>상단 배너 <span style={{ fontWeight: 400, color: "#999" }}>· 공개 화면 최상단 (1장)</span></div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 6 }}>상단 배너 <span style={{ fontWeight: 400, color: "#999" }}>· 공개 화면 최상단, 여러 장이면 3장씩 화살표로 회전 ({bannerImages.length}/10)</span></div>
                 <div
                   onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                   onDragLeave={() => setDragOver(false)}
-                  onDrop={(e) => { e.preventDefault(); setDragOver(false); if (imgDragRef.current) { dropToBanner(); return; } const f = e.dataTransfer.files; if (f && f.length && !nmCoverUploading) uploadSingle(f[0], setNmCover, setNmCoverUploading); }}
-                  style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${dragOver ? "#5f0080" : "#e0d5ee"}`, background: dragOver ? "#f7f1fd" : "#fbf9ff" }}>
-                  {nmCover ? (
-                    <div draggable onDragStart={() => { imgDragRef.current = { zone: "banner", idx: 0 }; }}
-                      style={{ position: "relative", width: 132, height: 76, flexShrink: 0, cursor: "grab" }}>
-                      <img src={nmCover} alt="배너" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
-                      <button type="button" onClick={() => setNmCover("")} title="배너에서 제거"
+                  onDrop={(e) => { e.preventDefault(); setDragOver(false); if (imgDragRef.current) { dropToBanner(null); return; } const f = e.dataTransfer.files; if (f && f.length && !nmCoverUploading) addBannerFiles(f); }}
+                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${dragOver ? "#5f0080" : "#e0d5ee"}`, background: dragOver ? "#f7f1fd" : "#fbf9ff" }}>
+                  {bannerImages.map((b, idx) => (
+                    <div key={b.url + idx} draggable
+                      onDragStart={() => { imgDragRef.current = { zone: "banner", idx }; }}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (imgDragRef.current) dropToBanner(idx); }}
+                      style={{ position: "relative", width: 120, height: 76, flexShrink: 0, cursor: "grab" }}>
+                      <img src={b.url} alt={`배너 ${idx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
+                      <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
+                      <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="배너에서 제거"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
                     </div>
-                  ) : (
-                    <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 132, height: 76, flexShrink: 0, borderRadius: 8, border: "1.5px dashed #c4b5d4", background: "#fff", color: "#5f0080", cursor: "pointer" }}>
-                      <span style={{ fontSize: 20, lineHeight: 1 }}>{nmCoverUploading ? "…" : "+"}</span>
-                      <span style={{ fontSize: 10, marginTop: 2 }}>배너 추가</span>
-                      <input type="file" accept="image/jpeg,image/png,image/webp" disabled={nmCoverUploading} onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadSingle(f, setNmCover, setNmCoverUploading); e.currentTarget.value = ""; }} style={{ display: "none" }} />
-                    </label>
-                  )}
-                  <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>아래 상세 이미지를 여기로 <b>드래그</b>하면 배너가 돼요. 배너를 아래로 드래그하면 본문으로 내려가요.</span>
+                  ))}
+                  <label title="배너 추가"
+                    style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 120, height: 76, flexShrink: 0, borderRadius: 8, border: "1.5px dashed #c4b5d4", background: "#fff", color: "#5f0080", cursor: nmCoverUploading ? "wait" : "pointer" }}>
+                    <span style={{ fontSize: 20, lineHeight: 1 }}>{nmCoverUploading ? "…" : "+"}</span>
+                    <span style={{ fontSize: 10, marginTop: 2 }}>배너 추가</span>
+                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={nmCoverUploading || bannerImages.length >= 10} onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
+                  </label>
+                  {bannerImages.length === 0 && <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>상세 이미지를 여기로 <b>드래그</b>하면 배너가 돼요. 여러 장 넣으면 3장씩 화살표로 넘겨봅니다.</span>}
                 </div>
               </div>
 
