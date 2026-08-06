@@ -1132,7 +1132,7 @@ export default function JobPostForm({
                   <div style={{ position: "relative", justifySelf: "end", width: "100%", maxWidth: 320 }}>
                     <button type="button" onClick={() => setShowCompanyList((v) => !v)}
                       style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6,
-                        padding: "4px 0", fontSize: 12, fontWeight: 400,
+                        padding: "4px 0", fontSize: (companyId || nonMember) ? 14 : 12, fontWeight: 400,
                         border: "none", background: "transparent", cursor: "pointer", textAlign: "right", boxSizing: "border-box" }}>
                       <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                         color: (companyId || nonMember) ? "#333" : "#999" }}>
@@ -1190,7 +1190,7 @@ export default function JobPostForm({
                 <label className="admin-form-label">채용 유형{showTypeToggle && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</label>
                 {showTypeToggle ? (
                   <select className="admin-form-select" value={jobGroupType}
-                    style={jobGroupType ? undefined : { color: "#bbb" }}
+                    style={jobGroupType ? undefined : { color: "#bbb", fontSize: 12 }}
                     onChange={(e) => { setJobGroupType(e.target.value as "" | "기업" | "매장"); setCategories([]); }}>
                     <option value="">선택</option>
                     <option value="기업">본사 채용</option>
@@ -1200,7 +1200,7 @@ export default function JobPostForm({
                   <div style={{
                     display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px",
                   }}>
-                    <span style={{ fontSize: "12px", fontWeight: 400, color: "#555" }}>
+                    <span style={{ fontSize: "14px", fontWeight: 400, color: "#555" }}>
                       {jobGroupType === "기업" ? "🏢 본사 채용" : "🏪 매장 채용"}
                     </span>
                   </div>
@@ -1232,6 +1232,7 @@ export default function JobPostForm({
                 <div className="admin-form-row">
                   <label className="admin-form-label">경력<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <select className="admin-form-select" value={form.career}
+                    style={form.career ? undefined : { color: "#bbb", fontSize: 12 }}
                     onChange={(e) => setForm({ ...form, career: e.target.value })}>
                     <option value="">선택</option>
                     {CAREER_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1240,7 +1241,7 @@ export default function JobPostForm({
                 <div className="admin-form-row">
                   <label className="admin-form-label">고용형태<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <select className="admin-form-select" value={form.type}
-                    style={form.type ? undefined : { color: "#bbb" }}
+                    style={form.type ? undefined : { color: "#bbb", fontSize: 12 }}
                     onChange={(e) => setForm({ ...form, type: e.target.value })}>
                     <option value="">선택</option>
                     {EMPLOYMENT_TYPES.map(o => <option key={o} value={o}>{o}</option>)}
@@ -1259,7 +1260,7 @@ export default function JobPostForm({
               <div className="admin-form-row">
                 <label className="admin-form-label">근무지역<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span><span style={{ fontSize: 11, fontWeight: 400, color: "#aaa", marginLeft: 4 }}>(필터용 시·군·구)</span></label>
                 <button type="button" onClick={() => setRegionModalOpen(true)}
-                  style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "12px", color: regionList.length ? "#555" : "#bbb", cursor: "pointer" }}>
+                  style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: regionList.length ? "14px" : "12px", color: regionList.length ? "#555" : "#bbb", cursor: "pointer" }}>
                   <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
                     {regionList.length ? regionList.map(shortRegion).join(", ") : "선택"}
                   </span>
@@ -1300,7 +1301,7 @@ export default function JobPostForm({
                         if (salaryModalOpen) { setSalaryModalOpen(false); return; }
                         setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
                       }}
-                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "12px", color: typeLocked ? "#bbb" : ((salaryNego || form.salary) ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
+                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (!typeLocked && (salaryNego || form.salary)) ? "14px" : "12px", color: typeLocked ? "#bbb" : ((salaryNego || form.salary) ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
                       <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
                         {typeLocked ? "채용유형 먼저 선택" : ((salaryNego || form.salary) ? fmtSalary() : "선택")}
                       </span>
@@ -1349,7 +1350,7 @@ export default function JobPostForm({
                         if (deadlineModalOpen) { setDeadlineModalOpen(false); return; }
                         setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true);
                       }}
-                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "12px", color: (alwaysOpen || form.deadline) ? "#555" : "#bbb", cursor: "pointer" }}>
+                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (alwaysOpen || form.deadline) ? "14px" : "12px", color: (alwaysOpen || form.deadline) ? "#555" : "#bbb", cursor: "pointer" }}>
                       <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
                         {alwaysOpen ? "상시채용" : form.deadline ? form.deadline.replace(/-/g, ".") : "마감일 선택"}
                       </span>
@@ -1383,7 +1384,7 @@ export default function JobPostForm({
                   <label className="admin-form-label">근무 요일</label>
                   <div ref={workDaysRef} style={{ position: "relative", width: "100%" }}>
                     <button type="button" onClick={() => setWorkDaysOpen((v) => !v)}
-                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "12px", color: (workDaysNego || workDays.length) ? "#555" : "#bbb", cursor: "pointer" }}>
+                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (workDaysNego || workDays.length) ? "14px" : "12px", color: (workDaysNego || workDays.length) ? "#555" : "#bbb", cursor: "pointer" }}>
                       <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "선택")}</span>
                       <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: workDaysOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                     </button>
@@ -1414,7 +1415,7 @@ export default function JobPostForm({
                   <label className="admin-form-label">근무 시간</label>
                   <div ref={workTimeRef} style={{ position: "relative", width: "100%" }}>
                     <button type="button" onClick={() => setWorkTimeOpen((v) => !v)}
-                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "12px", color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#555" : "#bbb", cursor: "pointer" }}>
+                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (workTimeNego || (workTimeStart && workTimeEnd)) ? "14px" : "12px", color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#555" : "#bbb", cursor: "pointer" }}>
                       <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "선택")}</span>
                       <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: workTimeOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                     </button>
@@ -1454,7 +1455,7 @@ export default function JobPostForm({
                 <label className="admin-form-label">복리후생</label>
                 <div ref={welfareRef} style={{ position: "relative", width: "100%" }}>
                   <button type="button" disabled={typeLocked} onClick={() => { if (typeLocked) return; setWelfareOpen((v) => !v); }}
-                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "12px", color: typeLocked ? "#bbb" : (welfareSel.length ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
+                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (!typeLocked && welfareSel.length) ? "14px" : "12px", color: typeLocked ? "#bbb" : (welfareSel.length ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
                     <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{typeLocked ? "채용유형 먼저 선택" : (welfareSel.length ? welfareSel.join(", ") : "선택")}</span>
                     <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: welfareOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                   </button>
@@ -1479,7 +1480,7 @@ export default function JobPostForm({
                 <label className="admin-form-label">근무조건</label>
                 <div ref={workcondRef} style={{ position: "relative", width: "100%" }}>
                   <button type="button" disabled={typeLocked} onClick={() => { if (typeLocked) return; setWorkcondOpen((v) => !v); }}
-                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: "12px", color: typeLocked ? "#bbb" : (workcondSel.length ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
+                    style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (!typeLocked && workcondSel.length) ? "14px" : "12px", color: typeLocked ? "#bbb" : (workcondSel.length ? "#555" : "#bbb"), cursor: typeLocked ? "default" : "pointer" }}>
                     <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{typeLocked ? "채용유형 먼저 선택" : (workcondSel.length ? workcondSel.join(", ") : "선택")}</span>
                     <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: workcondOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
                   </button>
@@ -1543,7 +1544,7 @@ export default function JobPostForm({
                       )}
                     </div>
                     {filled && (
-                      <p style={{ margin: "10px 0 0", fontSize: "12px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
+                      <p style={{ margin: "10px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
                         {content}
                       </p>
                     )}
@@ -1599,7 +1600,7 @@ export default function JobPostForm({
                       )}
                     </div>
                   </div>
-                  <div style={{ marginTop: "8px", fontSize: "12px", color: processFilled ? "#555" : "#bbb", lineHeight: 1.6, whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
+                  <div style={{ marginTop: "8px", fontSize: processFilled ? "14px" : "12px", color: processFilled ? "#555" : "#bbb", lineHeight: 1.6, whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
                     {processFilled ? hiringProcess.join(" → ") : "선택"}
                   </div>
                   {processModalOpen && (
@@ -1689,7 +1690,7 @@ export default function JobPostForm({
                   )}
                 </div>
                 {notesFilled
-                  ? <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6, textAlign: "left" }}>{notes}</p>
+                  ? <p style={{ margin: "8px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6, textAlign: "left" }}>{notes}</p>
                   : <div style={{ marginTop: "8px", fontSize: "12px", color: "#bbb", textAlign: "left" }}>작성해주세요</div>}
               </div>
             </div>

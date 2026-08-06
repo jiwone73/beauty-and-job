@@ -123,9 +123,14 @@ export async function POST(req: NextRequest) {
       if (m) url = `https://www.albamon.com/jobs/detail/${m[1]}`;
     }
     if (url) {
-      // 알바몬 등은 봇 차단 시 정상 HTTP 200으로 "접속 차단" 안내 페이지를 돌려줌 → 본문으로 차단 판별.
-      const looksBlocked = (h: string) =>
-        /(?:접속이?\s*차단|페이지\s*접근\s*불가|접근이?\s*제한|비정상적인\s*접근)/.test(h) && h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().length < 3000;
+      // 알바몬 등은 봇 차단 시 정상 HTTP 200으로 "보안정책"·"접속 차단" 안내 페이지를 돌려줌 → 본문으로 차단 판별.
+      const looksBlocked = (h: string) => {
+        const title = (h.match(/<title>([^<]*)<\/title>/i)?.[1] || "").trim();
+        // 차단 페이지는 제목이 '보안정책/접근 차단' 등으로 시작하고 본문이 짧다.
+        if (/^(보안\s*정책|접근\s*차단|접속\s*차단|접근\s*제한|비정상적인\s*접근|robot\s*check|captcha)/i.test(title)) return true;
+        const text = h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+        return /(?:접속이?\s*차단|페이지\s*접근\s*불가|접근이?\s*제한|비정상적인\s*접근|보안\s*정책\s*위반)/.test(h) && text.length < 3000;
+      };
       const fetchOnce = async (): Promise<{ status: number; html: string }> => {
         const ctl = new AbortController();
         const t = setTimeout(() => ctl.abort(), 12000);
