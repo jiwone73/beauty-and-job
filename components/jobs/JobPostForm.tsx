@@ -575,11 +575,17 @@ export default function JobPostForm({
         //  - 갤러리(d.images)가 있으면 그걸 그대로 사용(첫 장=커버, 나머지=상세).
         //  - 없으면 대표 이미지(og:image)라도 커버로.
         const imgs: string[] = Array.isArray(d.images) ? d.images.filter(Boolean) : [];
-        const cover = imgs[0] || d.cover_image || "";
-        // 기본 배분: 첫 이미지=배너(1장), 나머지=상세 본문. (관리자가 폼에서 드래그로 조정)
-        if (cover) setBannerImages([{ url: cover, name: "배너" }]);
-        if (imgs.length > 1) {
-          setDetailImages(imgs.slice(1, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
+        // 포스터형 공고(뷰티잡 등): 서버가 detail_images로 내려줌 → 배너 없이 상세 본문 이미지로 배치.
+        const detailImgs: string[] = Array.isArray(d.detail_images) ? d.detail_images.filter(Boolean) : [];
+        if (detailImgs.length) {
+          setDetailImages(detailImgs.slice(0, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
+        } else {
+          const cover = imgs[0] || d.cover_image || "";
+          // 기본 배분: 첫 이미지=배너(1장), 나머지=상세 본문. (관리자가 폼에서 드래그로 조정)
+          if (cover) setBannerImages([{ url: cover, name: "배너" }]);
+          if (imgs.length > 1) {
+            setDetailImages(imgs.slice(1, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
+          }
         }
       }
       // 채용유형: 토글이 열려 있을 때만(관리자 또는 BOTH 기업) 불러온 값으로 변경. 타입 고정 기업회원은 유지.

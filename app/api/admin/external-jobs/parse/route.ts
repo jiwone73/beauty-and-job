@@ -310,6 +310,50 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // ── 뷰티잡: 상세 포스터 이미지는 본문 HTML엔 없고, jobkorea_iframe.php(iframe·서버렌더) 안에 있다.
+  //    공고 URL 경로(/<bo_table>/<wr_id>)로 iframe 주소를 만들어 2차 fetch → 포스터 이미지 추출 → 상세 본문 이미지로 배치.
+  if (freeParsed && /^beautyjob\.kr$/i.test(hostname) && url) {
+    try {
+      const seg = new URL(url).pathname.split("/").filter(Boolean);
+      const boTable = seg[0] || "";
+      const wrId = seg[1] || "";
+      if (boTable && /^\d+$/.test(wrId)) {
+        const iframeUrl = `https://www.beautyjob.kr/jobkorea_iframe.php?bo_table=${encodeURIComponent(boTable)}&wr_id=${wrId}`;
+        const ctl = new AbortController();
+        const t = setTimeout(() => ctl.abort(), 12000);
+        try {
+          const ir = await fetch(iframeUrl, {
+            signal: ctl.signal,
+            headers: {
+              "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+              "Accept-Language": "ko,en;q=0.8",
+              "Referer": url,
+            },
+          });
+          if (ir.ok) {
+            const ih = new TextDecoder("utf-8").decode(Buffer.from(await ir.arrayBuffer()));
+            const posters = [...new Set(
+              [...ih.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["']/gi)]
+                .map((m) => m[1])
+                .filter((s) => /CorpEditor|DownImage|file2\.jobkorea/i.test(s))
+                .map((s) => (s.startsWith("//") ? "https:" + s : s))
+                .filter((s) => /^https?:\/\//i.test(s))
+            )].slice(0, 12);
+            if (posters.length) {
+              out.images = posters;
+              out._rehost = true;
+              out._rehostReferer = "https://www.beautyjob.kr/";
+              out._detailImages = true; // 배너가 아니라 상세 본문 이미지로 배치(포스터형 공고)
+            }
+          }
+        } finally { clearTimeout(t); }
+      }
+    } catch (e) {
+      console.error("[beautyjob iframe images]", e);
+    }
+  }
+
   if (!freeParsed && process.env.ANTHROPIC_API_KEY) {
     try {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -414,6 +458,11 @@ export async function POST(req: NextRequest) {
     } else if (!Array.isArray(out.images)) {
       out.images = []; // 잡코리아·알바몬 등 이미지 없는 소스 → 범용 추출 잡음 방지
     }
+    // 포스터형(뷰티잡): 배너가 아니라 상세 본문 이미지로 전달 → 폼이 상세 이미지 영역에 배치.
+    if (out._detailImages) {
+      out.detail_images = Array.isArray(out.images) ? out.images : [];
+      out.images = [];
+    }
     out.cover_image = (Array.isArray(out.images) && out.images[0]) || "";
   } else {
     out.cover_image = /^https?:\/\//i.test(ogImage) ? ogImage : "";
@@ -421,6 +470,7 @@ export async function POST(req: NextRequest) {
   }
   delete out._rehost;
   delete out._rehostReferer;
+  delete out._detailImages;
   // 연락처: AI가 못 뽑았으면 정규식 후보로 폴백 + 형식 정리.
   if (typeof out.contact_phone !== "string" || out.contact_phone.replace(/\D/g, "").length < 9) out.contact_phone = phones[0] || "";
   if (typeof out.contact_email !== "string" || !/@/.test(out.contact_email)) out.contact_email = emails[0] || "";

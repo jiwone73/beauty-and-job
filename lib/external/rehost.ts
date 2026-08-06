@@ -33,7 +33,7 @@ export async function rehostImages(
       const ct = res.headers.get("content-type") || "";
       if (!/^image\//i.test(ct)) continue;
       const buf = await res.arrayBuffer();
-      if (buf.byteLength < 1000 || buf.byteLength > 8 * 1024 * 1024) continue; // 아이콘/과대 제외
+      if (buf.byteLength < 1000 || buf.byteLength > 15 * 1024 * 1024) continue; // 아이콘/과대 제외(뷰티잡 등 세로로 긴 포스터 대응)
       const fileName = `external/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extOf(ct)}`;
       const { error } = await supabaseAdmin.storage
         .from(BUCKET)
