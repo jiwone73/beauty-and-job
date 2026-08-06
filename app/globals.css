@@ -2170,9 +2170,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-meta-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--color-text-sub); }
 .job-detail-meta-icon { color: var(--color-primary-light); flex-shrink: 0; }
 .job-detail-meta-label { color: var(--color-text-mute); flex-shrink: 0; }
-/* 값이 채워지면(=표시되면) 제목도 값과 같은 진한 색 */
 .job-detail-meta-value { color: var(--color-text); }
-.job-detail-meta-item:has(.job-detail-meta-value) .job-detail-meta-label { color: var(--color-text); }
 .job-detail-salary { background: var(--color-primary-soft); color: var(--color-primary); font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 8px; display: inline-block; }
 
 /* 섹션 */

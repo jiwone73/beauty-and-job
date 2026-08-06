@@ -1222,7 +1222,7 @@ export default function JobPostForm({
                 {/* 채용분야(직군) */}
                 <div className="job-detail-meta-item">
                   <Tag size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: categories.length ? "#333" : "#999", flexShrink: 0 }}>채용분야<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>채용분야<span style={{ color: "#e9a3a3" }}> *</span></span>
                   {typeLocked ? (
                     <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
                   ) : (
@@ -1232,7 +1232,7 @@ export default function JobPostForm({
                 {/* 경력 */}
                 <div className="job-detail-meta-item">
                   <Briefcase size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: form.career ? "#333" : "#999", flexShrink: 0 }}>경력<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>경력<span style={{ color: "#e9a3a3" }}> *</span></span>
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
                     style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                     <option value="">선택</option>
@@ -1242,14 +1242,14 @@ export default function JobPostForm({
                 {/* 모집인원 */}
                 <div className="job-detail-meta-item">
                   <Users size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: form.headcount ? "#333" : "#999" }}>모집 <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
+                  <span style={{ fontSize: 15, color: "#999" }}>모집 <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
                     onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
                     style={{ width: 30, border: "none", background: "transparent", fontSize: 15, color: "#333", padding: 0, textAlign: "center" }} /> 명</span>
                 </div>
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <Clock size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#999", flexShrink: 0 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
                   <button type="button"
                     onClick={() => {
                       if (deadlineModalOpen) { setDeadlineModalOpen(false); return; }
