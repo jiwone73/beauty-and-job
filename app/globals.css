@@ -5544,6 +5544,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobpost-form .admin-form-input::placeholder { color: #cfcfcf; font-size: 12px; }
 /* 미리보기형 인라인 입력(제목·지역검색 등)도 placeholder 흐리게 */
 .jobpost-form input::placeholder { color: #d3d3d3; }
+/* 원티드식 인라인 편집 카드: 편집 중이면 보라 테두리 강조 */
+.jobpost-form .company-card { transition: border-color .15s, box-shadow .15s; }
+.jobpost-form .company-card:focus-within { border-color: #b389d4; box-shadow: 0 0 0 3px rgba(95,0,128,0.06); }
 /* number 스피너(위/아래 화살표) 제거 — 숫자 잘림 방지 */
 .jobpost-form input[type="number"]::-webkit-outer-spin-button,
 .jobpost-form input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }

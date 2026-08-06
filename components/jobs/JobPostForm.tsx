@@ -1470,13 +1470,12 @@ export default function JobPostForm({
               {jobGroupType === "매장" && (
               <>
                 {/* 근무 요일 (매장 전용) */}
-                <div className="admin-form-row">
-                  <label className="admin-form-label">근무 요일</label>
-                  <div ref={workDaysRef} style={{ position: "relative", width: "100%" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: 10, rowGap: 8, padding: "0 0 4px" }}>
+                  <div ref={workDaysRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ fontSize: 13 }}>🗓</span>
                     <button type="button" onClick={() => setWorkDaysOpen((v) => !v)}
-                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (workDaysNego || workDays.length) ? "14px" : "12px", color: (workDaysNego || workDays.length) ? "#555" : "#bbb", cursor: "pointer" }}>
-                      <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "선택")}</span>
-                      <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: workDaysOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
+                      style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", fontSize: 14, color: (workDaysNego || workDays.length) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                      {workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "근무요일")}
                     </button>
                     {workDaysOpen && (
                       <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
@@ -1498,16 +1497,12 @@ export default function JobPostForm({
                       </div>
                     )}
                   </div>
-                </div>
-
-                {/* 근무 시간 */}
-                <div className="admin-form-row">
-                  <label className="admin-form-label">근무 시간</label>
-                  <div ref={workTimeRef} style={{ position: "relative", width: "100%" }}>
+                  <span style={{ color: "#ececec" }}>|</span>
+                  <div ref={workTimeRef} style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ fontSize: 13 }}>⏰</span>
                     <button type="button" onClick={() => setWorkTimeOpen((v) => !v)}
-                      style={{ width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: "6px", padding: 0, border: "none", background: "transparent", fontSize: (workTimeNego || (workTimeStart && workTimeEnd)) ? "14px" : "12px", color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#555" : "#bbb", cursor: "pointer" }}>
-                      <span style={{ textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "선택")}</span>
-                      <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0, transform: workTimeOpen ? "rotate(90deg)" : "none", transition: "transform 0.15s" }}>›</span>
+                      style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", fontSize: 14, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                      {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "근무시간")}
                     </button>
                     {workTimeOpen && (
                       <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
