@@ -1585,54 +1585,25 @@ export default function JobPostForm({
                 </div>
               </div>
 
-              {/* 상세 항목 (포지션 소개 / 자격요건 / 우대사항) → 라벨 + 아래 전체 내용, 팝오버 작성 */}
+              {/* 상세 항목 → 그 자리에서 바로 쓰는 인라인 textarea(모달·팝오버 없음, 자동 높이) */}
               {textFields.map((k) => {
                 const meta = textFieldMeta[k];
                 const content = ((form as any)[k] || "") as string;
-                const filled = !!content.trim();
                 const isReq = (k === "description" || k === "requirements") && detailImages.length === 0;
-                const open = textModalKey === k;
                 return (
-                  <div key={k} style={{ padding: "18px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
-                    <div ref={open ? textPopRef : undefined} style={{ position: "relative" }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-                        <label className="admin-form-label" style={{ margin: 0 }}>
-                          {meta.label}
-                          {isReq && <span style={{ color: "#dc2626", marginLeft: "3px" }}>*</span>}
-                        </label>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
-                          {!filled && <span style={{ fontSize: "12px", color: "#bbb" }}>작성해주세요</span>}
-                          <button type="button" className="resume-icon-btn" aria-label={filled ? "수정" : "작성"} title={filled ? "수정" : "작성"}
-                            onClick={() => { if (open) setTextModalKey(null); else openTextModal(k); }}>
-                            <Pencil size={15} />
-                          </button>
-                          {filled && (
-                            <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
-                              onClick={() => { if (confirm("작성한 내용을 삭제할까요?")) setForm({ ...form, [k]: "" }); }}>
-                              <Trash2 size={15} />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                      {open && (
-                        <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px" }}>
-                          <textarea autoFocus
-                            placeholder={meta.placeholder}
-                            value={textModalValue}
-                            onChange={(e) => setTextModalValue(e.target.value)}
-                            style={{ width: "100%", minHeight: "160px", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "10px 12px", fontSize: "14px", resize: "vertical", fontFamily: "inherit" }} />
-                          <div style={{ display: "flex", gap: "6px", marginTop: "10px", justifyContent: "flex-end" }}>
-                            <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setTextModalKey(null)}>취소</button>
-                            <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={saveTextModal}>저장</button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    {filled && (
-                      <p style={{ margin: "10px 0 0", fontSize: "14px", color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
-                        {content}
-                      </p>
-                    )}
+                  <div key={k} style={{ padding: "16px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
+                    <label className="admin-form-label" style={{ margin: "0 0 6px", display: "block" }}>
+                      {meta.label}
+                      {isReq && <span style={{ color: "#dc2626", marginLeft: "3px" }}>*</span>}
+                      {meta.hint && <span style={{ fontSize: 11, fontWeight: 400, color: "#bbb", marginLeft: 6 }}>{meta.hint}</span>}
+                    </label>
+                    <textarea
+                      placeholder={meta.placeholder}
+                      value={content}
+                      rows={content ? 3 : 2}
+                      onChange={(e) => setForm({ ...form, [k]: e.target.value })}
+                      onInput={(e) => { const t = e.currentTarget; t.style.height = "auto"; t.style.height = Math.max(t.scrollHeight, 40) + "px"; }}
+                      style={{ width: "100%", boxSizing: "border-box", border: "none", background: "transparent", resize: "vertical", fontSize: 14, color: "#333", lineHeight: 1.7, fontFamily: "inherit", outline: "none", padding: 0 }} />
                   </div>
                 );
               })}
