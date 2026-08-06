@@ -5526,15 +5526,26 @@ input[type="range"].career-slider::-moz-range-thumb {
   box-shadow: none !important;
   text-align: right;
   color: #555;
-  font-size: 14px;
+  font-size: 12px;
   appearance: none !important;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
 }
 .jobpost-form select.admin-form-select { text-align-last: right; }
+/* 셀렉트도 다른 선택 항목처럼 오른쪽 화살표(›) 표시 */
+.jobpost-form select.admin-form-select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23c9c9c9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right center !important;
+  padding-right: 16px !important;
+}
 /* 네이티브 셀렉트 화살표 자리 제거 */
 .jobpost-form .admin-form-select::-ms-expand { display: none; }
 .jobpost-form .admin-form-input::placeholder { color: #cfcfcf; }
+/* number 스피너(위/아래 화살표) 제거 — 숫자 잘림 방지 */
+.jobpost-form input[type="number"]::-webkit-outer-spin-button,
+.jobpost-form input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.jobpost-form input[type="number"] { -moz-appearance: textfield; }
 /* 기업 정보 입력칸: 값이 안 들어온(빈) 필드는 연한 회색으로 죽여 표시 */
 .jp-company-box input::placeholder,
 .jp-company-box textarea::placeholder { color: #cfcfcf; }
