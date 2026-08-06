@@ -62,12 +62,16 @@ export async function POST(req: NextRequest) {
     preferred_qualifications, salary_min, salary_max, salary_type,
     location, address, work_type, experience_level, deadline, categories,
     detail_images, hiring_process, notes, benefits, employment_type, benefit_tags,
-    work_days, work_time, work_time_slots, responsibilities, headcount
+    work_days, work_time, work_time_slots, responsibilities, headcount,
+    status: reqStatus
   } = body
 
   if (!title || !job_type) {
     return err('JOB_002', '제목과 직군 유형은 필수입니다.')
   }
+
+  // 임시저장(draft)이면 DRAFT, 그 외에는 ACTIVE로 등록. 화이트리스트 검증(문자열 인젝션 방지).
+  const jobStatus = reqStatus === 'DRAFT' || reqStatus === 'draft' ? 'DRAFT' : 'ACTIVE'
 
   const result = await pool.query(
     `INSERT INTO job_postings (
@@ -78,7 +82,7 @@ export async function POST(req: NextRequest) {
        benefits, employment_type, benefit_tags,
        work_days, work_time, work_time_slots, responsibilities, headcount, status
      ) VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, 'ACTIVE'
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, '${jobStatus}'
      ) RETURNING id, title, status, created_at`,
     [
       auth!.sub, title, job_type, job_category_id || null, description || null,

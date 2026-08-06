@@ -945,6 +945,9 @@ export default function JobPostForm({
     companyAddress: isNm ? nmAddress : (cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : ""),
     workDaysText: workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : ""),
     workTimeText: workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : ""),
+    contactName: isNm ? nmManagerName : "",
+    contactPhone: isNm ? nmManagerPhone : "",
+    contactEmail: isNm ? nmContactEmail : "",
   };
 
   return (

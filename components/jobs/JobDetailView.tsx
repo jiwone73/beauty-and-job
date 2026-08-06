@@ -177,8 +177,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           );
         })()}
 
-        {/* 기본정보: PC에선 우측 카드로 대체돼 숨김이지만, 상세 이미지형 공고(.jd-show)는 본문에 '배너→기본정보→상세이미지' 흐름이 필요해 강제 노출 */}
-        <div className={`job-detail-info-box${hasDetailImages ? " jd-show" : ""}`}>
+        {/* 기본정보: 등록 폼과 동일하게 본문에 항상 노출(채용분야·경력·모집·마감일) */}
+        <div className="job-detail-info-box jd-show">
           <div className="job-detail-brand-row">
             <span
               className="job-detail-brand"
@@ -221,91 +221,18 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </div>
         </div>
 
-        {/* 이미지형 공고: '기본정보' 성격의 근무조건·근무지역을 상세이미지보다 먼저 노출(포스터가 길어 뒤로 밀리지 않게) */}
-        {hasDetailImages && workCondSection}
-        {hasDetailImages && locationSection}
+        {/* 등록 폼과 동일한 순서: 근무 조건 → 근무지역 → 복리후생 → 채용 담당자 → 채용 절차 → 상세 내용 */}
 
-        {/* 상세 내용 이미지(본문) — 이미지형 공고의 상세요강을 전체폭 세로 스택으로 표시 */}
-        {(() => {
-          const detailUrls = [...new Set(
-            (Array.isArray(job.detailImages) ? job.detailImages.map((d: any) => d?.url) : []).filter(Boolean)
-          )] as string[];
-          if (!detailUrls.length) return null;
-          return (
-            <section className="job-detail-section" style={{ padding: 0, overflow: "hidden" }}>
-              <h2 className="job-detail-section-title" style={{ padding: "24px 24px 0", marginBottom: 16 }}>상세요강</h2>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                {detailUrls.map((u, i) => (
-                  <img key={i} src={u} alt={`상세 이미지 ${i + 1}`} style={{ display: "block", width: "100%", height: "auto" }} />
-                ))}
-              </div>
-              {/* 상세 이미지 아래 자유 서술(선택): 이미지로 못 담는 직군별 급여·매장별 시간 등을 자유롭게 */}
-              {job.description?.trim() && (
-                <p className="job-detail-desc" style={{ padding: "18px 24px 24px", margin: 0 }}>{job.description.trim()}</p>
-              )}
-            </section>
-          );
-        })()}
+        {/* 근무 조건 */}
+        {workCondSection}
 
-        {/* 상세내용(텍스트) — 상세 이미지가 없을 때만 노출. 이미지가 있으면 위 상세 이미지로 대체(값은 유지). */}
-        {!hasDetailImages && (<>
-        {/* 포지션 소개 */}
-        {job.description?.trim() && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">포지션 소개</h2>
-            <p className="job-detail-desc">{job.description.trim()}</p>
-          </section>
-        )}
+        {/* 근무지역 */}
+        {locationSection}
 
-        {/* 주요 업무 */}
-        {job.responsibilities?.length > 0 && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">주요 업무</h2>
-            <ul className="job-detail-list">
-              {job.responsibilities.map((item: string, i: number) => (
-                <li key={i} className="job-detail-list-item">
-                  <CheckCircle2 size={16} className="job-detail-list-icon" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* 자격 요건 */}
-        {job.requirements?.length > 0 && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">자격 요건</h2>
-            <ul className="job-detail-list">
-              {job.requirements.map((item: string, i: number) => (
-                <li key={i} className="job-detail-list-item">
-                  <CheckCircle2 size={16} className="job-detail-list-icon" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* 우대 사항 */}
-        {job.preferreds?.length > 0 && (
-          <section className="job-detail-section">
-            <h2 className="job-detail-section-title">우대 사항</h2>
-            <ul className="job-detail-list">
-              {job.preferreds.map((item: string, i: number) => (
-                <li key={i} className="job-detail-list-item">
-                  <CheckCircle2 size={16} className="job-detail-list-icon check-soft" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* 혜택 및 복지 */}
+        {/* 복리후생 */}
         {job.benefits?.length > 0 && (
           <section className="job-detail-section">
-            <h2 className="job-detail-section-title">혜택 및 복지</h2>
+            <h2 className="job-detail-section-title">복리후생</h2>
             <div className="job-detail-benefits">
               {job.benefits.map((item: string, i: number) => (
                 <span key={i} className="job-detail-benefit-chip">{item}</span>
@@ -313,7 +240,33 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             </div>
           </section>
         )}
-        </>)}
+
+        {/* 채용 담당자 (입력값이 있을 때만) */}
+        {(job.contactName || job.contactPhone || job.contactEmail) && (
+          <section className="job-detail-section">
+            <h2 className="job-detail-section-title">채용 담당자</h2>
+            <div className="job-detail-company-info">
+              {job.contactName && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">이름</span>
+                  <span>{job.contactName}</span>
+                </div>
+              )}
+              {job.contactPhone && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">전화</span>
+                  <span>{job.contactPhone}</span>
+                </div>
+              )}
+              {job.contactEmail && (
+                <div className="job-detail-company-row">
+                  <span className="job-detail-company-label">이메일</span>
+                  <span>{job.contactEmail}</span>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* 채용 절차 */}
         {(job.process?.length > 0 || job.notes?.trim()) && (
@@ -344,9 +297,81 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </section>
         )}
 
-        {/* 근무 조건·근무지역: 텍스트형 공고는 기존 위치(본문 아래)에 노출. 이미지형은 위에서 상세이미지 앞에 이미 표시함. */}
-        {!hasDetailImages && workCondSection}
-        {!hasDetailImages && locationSection}
+        {/* 상세 내용 — 이미지형이면 상세요강(이미지) + 자유서술, 아니면 텍스트 항목(포지션 소개·자격요건·우대사항·주요업무) */}
+        {hasDetailImages ? (
+          (() => {
+            const detailUrls = [...new Set(
+              (Array.isArray(job.detailImages) ? job.detailImages.map((d: any) => d?.url) : []).filter(Boolean)
+            )] as string[];
+            if (!detailUrls.length) return null;
+            return (
+              <section className="job-detail-section" style={{ padding: 0, overflow: "hidden" }}>
+                <h2 className="job-detail-section-title" style={{ padding: "24px 24px 0", marginBottom: 16 }}>상세요강</h2>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {detailUrls.map((u, i) => (
+                    <img key={i} src={u} alt={`상세 이미지 ${i + 1}`} style={{ display: "block", width: "100%", height: "auto" }} />
+                  ))}
+                </div>
+                {job.description?.trim() && (
+                  <p className="job-detail-desc" style={{ padding: "18px 24px 24px", margin: 0 }}>{job.description.trim()}</p>
+                )}
+              </section>
+            );
+          })()
+        ) : (<>
+          {/* 포지션 소개 */}
+          {job.description?.trim() && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">포지션 소개</h2>
+              <p className="job-detail-desc">{job.description.trim()}</p>
+            </section>
+          )}
+
+          {/* 자격 요건 */}
+          {job.requirements?.length > 0 && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">자격 요건</h2>
+              <ul className="job-detail-list">
+                {job.requirements.map((item: string, i: number) => (
+                  <li key={i} className="job-detail-list-item">
+                    <CheckCircle2 size={16} className="job-detail-list-icon" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* 우대 사항 */}
+          {job.preferreds?.length > 0 && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">우대 사항</h2>
+              <ul className="job-detail-list">
+                {job.preferreds.map((item: string, i: number) => (
+                  <li key={i} className="job-detail-list-item">
+                    <CheckCircle2 size={16} className="job-detail-list-icon check-soft" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* 주요 업무 */}
+          {job.responsibilities?.length > 0 && (
+            <section className="job-detail-section">
+              <h2 className="job-detail-section-title">주요 업무</h2>
+              <ul className="job-detail-list">
+                {job.responsibilities.map((item: string, i: number) => (
+                  <li key={i} className="job-detail-list-item">
+                    <CheckCircle2 size={16} className="job-detail-list-icon" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </>)}
 
         {/* 기업 정보 (공고 내용 아래) */}
         {hasCompanyInfo && (

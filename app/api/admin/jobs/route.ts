@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
   const {
-    company_id, new_company,
+    company_id, new_company, status: reqStatus,
     title, job_type, job_category_id, description, requirements,
     preferred_qualifications, salary_min, salary_max, salary_type,
     location, address, work_type, experience_level, deadline, categories,
@@ -87,6 +87,9 @@ export async function POST(req: NextRequest) {
   } = body
 
   if (!title || !job_type) return err('JOB_002', '제목과 채용유형은 필수입니다.')
+
+  // 임시저장(draft)이면 DRAFT, 그 외에는 ACTIVE로 등록. 화이트리스트 검증(문자열 인젝션 방지).
+  const jobStatus = reqStatus === 'DRAFT' || reqStatus === 'draft' ? 'DRAFT' : 'ACTIVE'
 
   const client = await pool.connect()
   try {
@@ -171,7 +174,7 @@ export async function POST(req: NextRequest) {
          status, created_by, source, apply_method, external_apply_url, external_contact_email, responsibilities,
          external_contact_name, external_contact_phone
        ) VALUES (
-         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 'ACTIVE', $21, $22, $23, $24, $25, $26, $27, $28
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, '${jobStatus}', $21, $22, $23, $24, $25, $26, $27, $28
        ) RETURNING id, title, status, created_at`,
       [
         finalCompanyId, title, job_type, job_category_id || null, description || null,

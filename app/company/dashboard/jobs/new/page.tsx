@@ -47,7 +47,7 @@ function CompanyJobNewForm() {
     return data.data;
   };
 
-  const onSubmit = async (payload: any, _status: "draft" | "publish") => {
+  const onSubmit = async (payload: any, status: "draft" | "publish") => {
     const token = localStorage.getItem("access_token");
     if (!token) return { success: false, error: "로그인이 필요합니다." };
     const res = await fetch(
@@ -55,7 +55,7 @@ function CompanyJobNewForm() {
       {
         method: editId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, status: status === "draft" ? "DRAFT" : "ACTIVE" }),
       }
     );
     const data = await res.json();

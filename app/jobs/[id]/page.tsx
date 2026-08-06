@@ -191,6 +191,7 @@ export default function JobDetailPage() {
             title: j.title,
             jobType: j.job_type === 'OFFICE' ? '사무직' : '매장직',
             career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
+            jobCategories: Array.isArray(j.categories) ? j.categories : [],
             region: j.location || '',
             employType: j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직',
             headcount: j.headcount ? `${j.headcount}명` : '',
@@ -211,6 +212,9 @@ export default function JobDetailPage() {
             detailImages: j.detail_images || [],
             workDaysText: j.work_days === "협의" ? "요일 협의" : (j.work_days ? String(j.work_days).split(",").join("·") : ""),
             workTimeText: j.work_time === "협의" ? "시간 협의" : (j.work_time || ""),
+            contactName: j.external_contact_name || '',
+            contactPhone: j.external_contact_phone || '',
+            contactEmail: j.external_contact_email || '',
             companyInfo: {
               name: j.company?.company_name || '',
               brandName: j.company?.brand_name || '',
