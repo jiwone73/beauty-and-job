@@ -60,7 +60,15 @@ function parseHairinjob(html: string): StructuredResult | null {
 
   const regionRaw = ((ogD.match(/근무지역\s*[:：]\s*([^,]+)/) || [])[1] || "").trim();
   const region = normRegionLoose(regionRaw);
-  const address = liValue("업체주소");
+  // 업체주소: 프랜차이즈 등은 '본사 주소'가 들어와 근무지역(og)과 시·도가 다를 수 있다.
+  // 이 경우 상세주소로 쓰면 지도가 엉뚱한 곳(본사)을 가리키므로 비운다(잘못된 주소보다 없는 게 낫다).
+  let address = liValue("업체주소");
+  if (address && region) {
+    const aS = (address.match(/^\s*(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/) || [])[1] || "";
+    const aFull = SIDO[aS] || aS;
+    const rFull = region.split(" ")[0];
+    if (aFull && rFull && aFull !== rFull) address = "";
+  }
 
   // 모집분야: 직종 / 인원 / 고용형태 / 급여
   const job = (mj.match(/^([가-힣A-Za-z/]+?)\s*\[/) || [])[1] || (mj.split(/[[\s(]/)[0] || "");
@@ -196,7 +204,18 @@ function regionFromAddress(loc: any): string {
   return m2 ? `${SIDO[m2[1]] || m2[1]} ${m2[2]}` : "";
 }
 // 제목·회사명으로 우리 직군 자동 추천(맞으면 job_type·categories, 아니면 사용자가 선택)
+// searchJobItems는 "짧은 검색어"가 직군명/태그의 부분문자열일 때 매칭된다. 긴 문장을 통째로 넘기면
+// (예: "헤어디자이너 ★ 블루클럽 인천.송도점 ★") 어떤 직군에도 안 걸리므로, 토큰으로 쪼개 각각 검색한다.
 function suggestCats(text: string): { job_type?: string; job_categories: string[] } {
+  const tokens = (text || "")
+    .split(/[\s,.\/·|\-\[\]()★☆*!~"'`]+/)
+    .map((s) => s.trim())
+    .filter((t) => t.length >= 2);
+  for (const tok of tokens) {
+    const r = searchJobItems(tok, undefined, 1)[0];
+    if (r && r.item) return { job_type: r.jobType, job_categories: [r.item] };
+  }
+  // 폴백: 원문 전체(짧은 경우 대비)
   const r = searchJobItems(text, undefined, 1)[0];
   if (r && r.item) return { job_type: r.jobType, job_categories: [r.item] };
   return { job_categories: [] };
