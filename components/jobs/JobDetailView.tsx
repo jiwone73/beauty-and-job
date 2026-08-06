@@ -81,6 +81,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       target="_blank" rel="noreferrer" style={{ color: "#5f0080", wordBreak: "break-all" }}>{ci.website}</a>]);
   if (ci.location) companyRows.push(["주소", ci.location]);
   const hasCompanyInfo = job.brandDesc?.trim() || companyRows.length > 0;
+  // 상세 이미지가 있으면 상세내용(텍스트) 섹션은 공개 화면에서 숨김(이미지로 대체). 데이터는 그대로 유지.
+  const hasDetailImages = Array.isArray(job.detailImages) && job.detailImages.some((d: any) => d?.url);
 
   return (
     <div className="job-detail-layout" ref={ref}>
@@ -184,6 +186,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           );
         })()}
 
+        {/* 상세내용(텍스트) — 상세 이미지가 없을 때만 노출. 이미지가 있으면 위 상세 이미지로 대체(값은 유지). */}
+        {!hasDetailImages && (<>
         {/* 포지션 소개 */}
         {job.description?.trim() && (
           <section className="job-detail-section">
@@ -248,6 +252,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             </div>
           </section>
         )}
+        </>)}
 
         {/* 채용 절차 */}
         {(job.process?.length > 0 || job.notes?.trim()) && (
