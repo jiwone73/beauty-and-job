@@ -2198,7 +2198,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 회사 정보 */
 .job-detail-company-info { background: transparent; border-radius: 8px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; }
 .job-detail-company-row { display: flex; gap: 16px; padding: 7px 0; font-size: 15px; }
-.job-detail-company-label { color: var(--color-text-mute); width: 60px; flex-shrink: 0; }
+.job-detail-company-label { color: var(--color-text-mute); width: 72px; flex-shrink: 0; white-space: nowrap; }
 @media (max-width: 640px) { .job-detail-company-info { grid-template-columns: 1fr; } }
 
 /* 리스트 */
