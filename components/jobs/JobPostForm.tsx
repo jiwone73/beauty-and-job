@@ -1653,21 +1653,24 @@ export default function JobPostForm({
                 const req: CSSProperties = { color: "#e9a3a3" };
                 const inp3: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" };
                 const sel3 = (filled: boolean): CSSProperties => ({ ...inp3, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", cursor: "pointer", paddingRight: 22, color: filled ? "#333" : "#cfcfcf", backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23bbb' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 2px center" });
-                return (<>
-                  <div style={{ ...row, alignItems: "flex-start" }}>
-                    <span style={{ ...lbl2, paddingTop: 6 }}>기업 소개</span>
-                    <textarea ref={nmDescRef} rows={1} style={{ ...inp3, minHeight: 40, resize: "none", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden" }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="회사를 소개하는 글 (상세의 '기업 정보'에 표시)" />
+                const full: CSSProperties = { gridColumn: "1 / -1" };
+                return (
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "2px 28px" }}>
+                    <div style={{ ...row, ...full, alignItems: "flex-start" }}>
+                      <span style={{ ...lbl2, paddingTop: 6 }}>기업 소개</span>
+                      <textarea ref={nmDescRef} rows={1} style={{ ...inp3, minHeight: 40, resize: "none", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden" }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="회사를 소개하는 글 (상세의 '기업 정보'에 표시)" />
+                    </div>
+                    <div style={row}><span style={lbl2}>회사명<span style={req}> *</span></span><input style={inp3} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
+                    <div style={row}><span style={lbl2}>업종<span style={req}> *</span></span><select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
+                    <div style={row}><span style={lbl2}>브랜드명</span><input style={inp3} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="선택" /></div>
+                    <div style={row}><span style={lbl2}>웹사이트</span><input style={inp3} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} placeholder="https:// (선택)" /></div>
+                    <div style={{ ...row, ...full }}><span style={lbl2}>주소<span style={req}> *</span></span><input style={inp3} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역" /></div>
+                    <div style={row}><span style={lbl2}>사원수</span><select style={sel3(!!nmSize)} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value="">선택</option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
+                    <div style={row}><span style={lbl2}>설립연도</span><input type="number" min="1900" max={new Date().getFullYear()} style={inp3} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} placeholder="예) 2020" /></div>
+                    <div style={row}><span style={lbl2}>대표자</span><input style={inp3} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="선택" /></div>
+                    <div style={row}><span style={lbl2}>회사 대표번호</span><input style={inp3} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} placeholder="02-000-0000 (선택)" /></div>
                   </div>
-                  <div style={row}><span style={lbl2}>회사명<span style={req}> *</span></span><input style={inp3} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
-                  <div style={row}><span style={lbl2}>업종<span style={req}> *</span></span><select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
-                  <div style={row}><span style={lbl2}>브랜드명</span><input style={inp3} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="선택" /></div>
-                  <div style={row}><span style={lbl2}>웹사이트</span><input style={inp3} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} placeholder="https:// (선택)" /></div>
-                  <div style={row}><span style={lbl2}>주소<span style={req}> *</span></span><input style={inp3} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역" /></div>
-                  <div style={row}><span style={lbl2}>사원수</span><select style={sel3(!!nmSize)} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value="">선택</option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
-                  <div style={row}><span style={lbl2}>설립연도</span><input type="number" min="1900" max={new Date().getFullYear()} style={inp3} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} placeholder="예) 2020" /></div>
-                  <div style={row}><span style={lbl2}>대표자</span><input style={inp3} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="선택" /></div>
-                  <div style={row}><span style={lbl2}>회사 대표번호</span><input style={inp3} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} placeholder="02-000-0000 (선택)" /></div>
-                </>);
+                );
               })()}
             </div>
           </div>
