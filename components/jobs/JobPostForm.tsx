@@ -879,10 +879,12 @@ export default function JobPostForm({
       if (benefitTags.length === 0) { alert("복리후생을 1개 이상 선택해주세요."); return; }
       if (mode === "admin" && nonMember && contactMethods.length === 0) { alert("지원방법을 선택해주세요."); return; }
     }
-    // 상세요강 이미지 필수(발행 시).
+    // 상세요강: 이미지 1장 이상 첨부하거나, 이미지가 없으면 포지션 소개·자격요건을 채워야 함(발행 시).
     if (status === "publish" && detailImages.length === 0) {
-      alert("상세요강 이미지를 1장 이상 첨부해주세요.\n\n(포지션·급여 등 상세 내용은 이미지로 안내됩니다.)");
-      return;
+      if (!form.description?.trim() || !form.requirements?.trim()) {
+        alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개와 자격요건을 입력해주세요.");
+        return;
+      }
     }
     // 마감일: 날짜 선택 또는 상시채용 필수
     if (status === "publish" && !alwaysOpen && !form.deadline) {
@@ -973,7 +975,7 @@ export default function JobPostForm({
       hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
       placeholder: "",
     },
-    requirements: { label: "자격요건", placeholder: "" },
+    requirements: { label: "자격요건", hint: detailImages.length > 0 ? undefined : "필수 (이미지 없을 시)", placeholder: "" },
     preferred: { label: "우대사항", placeholder: "" },
   };
   const textFields: TextKey[] = ["description", "requirements", "preferred"];
@@ -1592,7 +1594,7 @@ export default function JobPostForm({
 
               {/* ── 상세 내용 이미지 (본문 세로 스택) — 실제 미리보기의 상세요강 위치와 동일 ── */}
               <div style={{ paddingBottom: 16, borderBottom: "1px solid var(--color-border)", marginBottom: 4 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 6 }}>상세요강 이미지 <span style={{ color: "#e9a3a3" }}>*</span> <span style={{ fontWeight: 400, color: "#999" }}>· 발행 시 1장 이상 필수 · 위→아래 전체폭 표시 ({detailImages.length}/12)</span></div>
+                <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>상세요강 이미지와 텍스트를 붙여넣거나 드래그해서 올릴 수 있어요.</div>
                 <div
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
@@ -1617,14 +1619,15 @@ export default function JobPostForm({
                   </label>
                   {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세 이미지가 없어요. 위 배너에서 드래그하거나 직접 추가하세요.</span>}
                 </div>
-                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꾸거나 위 배너로 올릴 수 있어요. 상세 내용이 이미지면 아래 텍스트 항목은 비워도 됩니다(이미지로 표시).</p>
+                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 포지션 소개·자격요건은 필수예요.</p>
               </div>
 
               {/* 상세 항목 → 그 자리에서 바로 쓰는 인라인 textarea(모달·팝오버 없음, 자동 높이) */}
               {textFields.map((k) => {
                 const meta = textFieldMeta[k];
                 const content = ((form as any)[k] || "") as string;
-                const isReq = false; // 상세요강 이미지가 필수라 텍스트 항목은 모두 선택
+                // 상세 이미지가 없으면 포지션 소개·자격요건을 필수로 표시(이미지 대신 텍스트로 안내)
+                const isReq = detailImages.length === 0 && (k === "description" || k === "requirements");
                 return (
                   <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
                     <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block" }}>

@@ -142,11 +142,18 @@ function parseHairinjob(html: string): StructuredResult | null {
   {
     const mIdx = html.search(/class="[^"]*mid_view_main/i);
     if (mIdx >= 0) {
-      let t = stripLines(html.slice(mIdx, mIdx + 20000));
+      // 스크립트·스타일 블록 먼저 제거(네이버 지도 초기화 JS 등이 본문 텍스트로 섞여 들어오는 것 차단)
+      const raw = html.slice(mIdx, mIdx + 20000)
+        .replace(/<script[\s\S]*?<\/script>/gi, " ")
+        .replace(/<style[\s\S]*?<\/style>/gi, " ");
+      let t = stripLines(raw);
       const s = t.indexOf("상세내용");
       if (s >= 0) t = t.slice(s + 4);
-      t = t.split(/위\s*임플릿|저작권법|무단[^\n]*이용|신고하기/)[0];
+      // 로그인 안내·근무위치(지도)·저작권/신고 등 본문이 아닌 영역에서 끊는다.
+      t = t.split(/더\s*확인하|로그인|근무\s*위치|위\s*임플릿|저작권법|무단[^\n]*이용|신고하기|\$\(\s*document|naver\.maps|function\s*\(/)[0];
       descText = t.trim().slice(0, 2000);
+      // 로그인 게이트라 실질 내용이 남지 않으면 비운다.
+      if (descText.length < 10) descText = "";
     }
   }
 

@@ -194,8 +194,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       <h2 className="job-detail-subtitle">지원 안내</h2>
       {(hasContact || hasMethods) && (
         <div className="jd-2col">
-          <div>{contactInner}</div>
           <div>{methodsInner}</div>
+          <div>{contactInner}</div>
         </div>
       )}
       {processInner}
