@@ -5,9 +5,13 @@ import {
   getJobGroups,
   getJobSubGroups,
   searchJobItems,
+  isValidJobItem,
   type JobType,
   type JobSearchResult,
 } from "@/lib/data/jobGroups";
+
+// 정해진 직군 목록에 없는 자리는 여기서 직접 입력(기타)
+const OTHER_GROUP = "기타 · 직접 입력";
 
 interface Props {
   open: boolean;
@@ -88,6 +92,23 @@ export default function JobGroupSelectModal({
       }
       curOnChange([...curSelected, item]);
     }
+  };
+
+  // ── 기타(직접 입력) — 목록에 없는 자리를 자유롭게 추가 ──
+  const [customText, setCustomText] = useState("");
+  // 직접 입력값 = 현재 트랙 직군 목록에 없는 선택값(이중 트랙 모드에선 미사용)
+  const isCustom = (item: string) => !enableToggle && !isValidJobItem(activeType, item);
+  const customItems = enableToggle ? [] : curSelected.filter((i) => !isValidJobItem(activeType, i));
+  const addCustom = () => {
+    const v = customText.trim();
+    if (!v) return;
+    if (curSelected.includes(v)) { setCustomText(""); return; }
+    if (maxSelect && curSelected.length >= maxSelect) {
+      alert(`최대 ${maxSelect}개까지 선택할 수 있어요.`);
+      return;
+    }
+    curOnChange([...curSelected, v]);
+    setCustomText("");
   };
 
   // ── 추천검색 결과 (단일 트랙 모드면 현재 트랙만, 이중 트랙이면 매장·본사 전체) ──
@@ -303,6 +324,18 @@ export default function JobGroupSelectModal({
           justify-content: center; font-size: 12px; color: #fff;
         }
         .jgm-item.selected .jgm-check { background: #5f0080; border-color: #5f0080; }
+        /* 기타(직접 입력) 칩 · 입력 UI */
+        .jgm-chip.custom { background:#faf5ff; color:#7c3aed; border:1px dashed #cbb6ea; }
+        .jgm-chip.custom button { color:#7c3aed; }
+        .jgm-chip-tag { font-size:10px; background:#ece3fb; color:#7c3aed; border-radius:5px; padding:0 5px; }
+        .jgm-other-lead { font-size:13px; color:#999; line-height:1.6; margin-bottom:12px; }
+        .jgm-other-add { display:flex; gap:8px; margin-bottom:14px; }
+        .jgm-other-add input { flex:1; min-width:0; height:40px; border:1.5px solid #d9cdec; border-radius:9px; padding:0 12px; font-size:14px; outline:none; }
+        .jgm-other-add input:focus { border-color:#5f0080; }
+        .jgm-other-add input::placeholder { color:#bbb; }
+        .jgm-other-add button { padding:0 16px; height:40px; border-radius:9px; border:1.5px solid #5f0080; background:#fff; color:#5f0080; font-size:14px; cursor:pointer; white-space:nowrap; }
+        .jgm-other-list { display:flex; flex-direction:column; gap:4px; }
+        .jgm-other-empty { padding:10px 4px; color:#bbb; font-size:13px; }
         .jgm-footer {
           display: flex; gap: 10px; padding: 14px 20px;
           border-top: 1px solid #f0f0f0; flex-shrink: 0;
@@ -438,14 +471,18 @@ export default function JobGroupSelectModal({
             {chips.length === 0 ? (
               <span className="jgm-chips-empty">선택한 직군이 여기 표시돼요</span>
             ) : (
-              chips.map(({ item, track }) => (
-                <span key={`${track}-${item}`} className={`jgm-chip ${track === "OFFICE" ? "office" : ""}`}>
-                  {item}
-                  <button onClick={() => removeChip(item, track)} aria-label={`${item} 삭제`}>
-                    ×
-                  </button>
-                </span>
-              ))
+              chips.map(({ item, track }) => {
+                const custom = isCustom(item);
+                return (
+                  <span key={`${track}-${item}`} className={`jgm-chip ${track === "OFFICE" ? "office" : ""} ${custom ? "custom" : ""}`}>
+                    {item}
+                    {custom && <span className="jgm-chip-tag">직접입력</span>}
+                    <button onClick={() => removeChip(item, track)} aria-label={`${item} 삭제`}>
+                      ×
+                    </button>
+                  </span>
+                );
+              })
             )}
           </div>
 
@@ -465,22 +502,59 @@ export default function JobGroupSelectModal({
                   </button>
                 );
               })}
+              {!enableToggle && (
+                <button
+                  className={`jgm-group ${activeGroup === OTHER_GROUP ? "active" : ""}`}
+                  onClick={() => setActiveGroup(OTHER_GROUP)}
+                >
+                  <span>기타 · 직접 입력</span>
+                  {customItems.length > 0 && <span className="jgm-badge">{customItems.length}</span>}
+                </button>
+              )}
             </div>
 
             <div className="jgm-right">
-              {subItems.map((item) => {
-                const isSel = curSelected.includes(item);
-                return (
-                  <button
-                    key={item}
-                    className={`jgm-item ${isSel ? "selected" : ""}`}
-                    onClick={() => toggleItem(item)}
-                  >
-                    <span className="jgm-check">{isSel ? "✓" : ""}</span>
-                    <span>{item}</span>
-                  </button>
-                );
-              })}
+              {activeGroup === OTHER_GROUP ? (
+                <div>
+                  <div className="jgm-other-lead">목록에 없는 직무는 여기서 직접 추가하세요.<br/>상세요강 이미지에 적힌 포지션명을 그대로 넣으면 돼요.</div>
+                  <div className="jgm-other-add">
+                    <input
+                      value={customText}
+                      onChange={(e) => setCustomText(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustom(); } }}
+                      placeholder="포지션명 입력 (예: 왁싱 전문가, 실장, 인턴)"
+                      autoComplete="off"
+                    />
+                    <button type="button" onClick={addCustom}>추가</button>
+                  </div>
+                  <div className="jgm-other-list">
+                    {customItems.length === 0 ? (
+                      <div className="jgm-other-empty">아직 직접 입력한 항목이 없어요.</div>
+                    ) : (
+                      customItems.map((item) => (
+                        <button key={item} className="jgm-item selected" onClick={() => toggleItem(item)}>
+                          <span className="jgm-check">✓</span>
+                          <span>{item}</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              ) : (
+                subItems.map((item) => {
+                  const isSel = curSelected.includes(item);
+                  return (
+                    <button
+                      key={item}
+                      className={`jgm-item ${isSel ? "selected" : ""}`}
+                      onClick={() => toggleItem(item)}
+                    >
+                      <span className="jgm-check">{isSel ? "✓" : ""}</span>
+                      <span>{item}</span>
+                    </button>
+                  );
+                })
+              )}
             </div>
           </div>
 
