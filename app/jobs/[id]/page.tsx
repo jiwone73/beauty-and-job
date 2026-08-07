@@ -196,9 +196,9 @@ export default function JobDetailPage() {
             employType: j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직',
             headcount: j.headcount ? `${j.headcount}명` : '',
             deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, '.') : '상시채용',
-            salary: (j.salary_max && j.salary_max > j.salary_min)
+            salary: ((j.salary_max && j.salary_max > j.salary_min)
               ? `${formatSalaryWon(j.salary_min, j.salary_type)} ~ ${formatSalaryWon(j.salary_max, j.salary_type).replace(/^[^0-9]*/, '')}`
-              : formatSalaryWon(j.salary_min, j.salary_type),
+              : formatSalaryWon(j.salary_min, j.salary_type)) || '면접 후 협의',
             color: '#e8f0fe',
             description: j.description || '',
             requirements: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],
@@ -210,8 +210,8 @@ export default function JobDetailPage() {
             logo_url: j.company?.logo_url,
             cover_images: j.company?.cover_images || [],
             detailImages: j.detail_images || [],
-            workDaysText: j.work_days === "협의" ? "요일 협의" : (j.work_days ? String(j.work_days).split(",").join("·") : ""),
-            workTimeText: j.work_time === "협의" ? "시간 협의" : (j.work_time || ""),
+            workDaysText: j.work_days === "협의" ? "요일 협의" : (j.work_days ? String(j.work_days).split(",").join("·") : "요일 협의"),
+            workTimeText: j.work_time === "협의" ? "시간 협의" : (j.work_time || "시간 협의"),
             contactName: j.external_contact_name || '',
             contactPhone: j.external_contact_phone || '',
             contactEmail: j.external_contact_email || '',

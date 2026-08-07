@@ -826,19 +826,17 @@ export default function JobPostForm({
     }
     if (showTypeToggle && !jobGroupType) { alert("채용유형(본사/매장)을 선택해주세요."); return; }
     if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
-    if (categories.length === 0) { alert("직군을 선택해주세요."); return; }
-    if (!form.career.trim()) { alert("경력 조건을 입력해주세요."); return; }
-    if (!form.type) { alert("고용형태를 선택해주세요."); return; }
+    if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
     if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
+    // 상세요강 이미지 필수(발행 시). 경력·고용형태·급여·근무시간 등은 선택(미입력 시 '협의/무관'으로 표시).
+    // 임시저장(draft)은 미완성 허용.
+    if (status === "publish" && detailImages.length === 0) {
+      alert("상세요강 이미지를 1장 이상 첨부해주세요.\n\n(포지션·급여 등 상세 내용은 이미지로 안내됩니다.)");
+      return;
+    }
     // 마감일: 날짜 선택 또는 상시채용 필수
     if (status === "publish" && !alwaysOpen && !form.deadline) {
       alert("마감일을 선택하거나 상시채용을 체크해주세요.");
-      return;
-    }
-    // 상세 이미지가 없으면 포지션 소개·자격요건 필수, 있으면 선택
-    const hasDetailImages = detailImages.length > 0;
-    if (!hasDetailImages && status === "publish" && (!form.description.trim() || !form.requirements.trim())) {
-      alert("상세 이미지를 첨부하지 않으면 포지션 소개와 자격요건을 모두 입력해야 해요.\n\n(상세 이미지를 1장 이상 첨부하면 선택 항목으로 바뀌어요.)");
       return;
     }
 
@@ -945,12 +943,12 @@ export default function JobPostForm({
     title: form.title || "공고 제목",
     jobType: jobGroupType === "기업" ? "사무직" : "매장직",
     jobCategories: categories,
-    career: form.career || "-",
+    career: form.career || "경력무관",
     region: regionList.join(", "),
-    employType: form.type || "정규직",
+    employType: form.type || "협의",
     headcount: form.headcount ? `${form.headcount}명` : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
-    salary: fmtSalary(),
+    salary: fmtSalary() || "면접 후 협의",
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -977,8 +975,8 @@ export default function JobPostForm({
       longitude: null,
     },
     companyAddress: isNm ? nmAddress : (cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : ""),
-    workDaysText: workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : ""),
-    workTimeText: workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : ""),
+    workDaysText: workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의"),
+    workTimeText: workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의"),
     contactName: isNm ? nmManagerName : "",
     contactPhone: isNm ? nmManagerPhone : "",
     contactEmail: isNm ? nmContactEmail : "",
@@ -1232,7 +1230,7 @@ export default function JobPostForm({
                 {/* 경력 */}
                 <div className="job-detail-meta-item">
                   <Briefcase size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>경력<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>경력</span>
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
                     style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                     <option value="">선택</option>
@@ -1326,7 +1324,7 @@ export default function JobPostForm({
                   </div>
                   {/* 고용형태 */}
                   <div className="job-detail-company-row">
-                    <span className="job-detail-company-label" style={{ fontSize: 14 }}>고용형태 <span style={{ color: "#e9a3a3" }}>*</span></span>
+                    <span className="job-detail-company-label" style={{ fontSize: 14 }}>고용형태</span>
                     <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
                       style={{ border: "none", background: "transparent", fontSize: 14, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                       <option value="">선택</option>
@@ -1533,7 +1531,7 @@ export default function JobPostForm({
 
               {/* ── 상세 내용 이미지 (본문 세로 스택) — 실제 미리보기의 상세요강 위치와 동일 ── */}
               <div style={{ paddingBottom: 16, borderBottom: "1px solid var(--color-border)", marginBottom: 4 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 6 }}>상세 내용 이미지 <span style={{ fontWeight: 400, color: "#999" }}>· 본문에 위→아래 순서로 전체폭 표시 ({detailImages.length}/12)</span></div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 6 }}>상세요강 이미지 <span style={{ color: "#e9a3a3" }}>*</span> <span style={{ fontWeight: 400, color: "#999" }}>· 발행 시 1장 이상 필수 · 위→아래 전체폭 표시 ({detailImages.length}/12)</span></div>
                 <div
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
@@ -1565,7 +1563,7 @@ export default function JobPostForm({
               {textFields.map((k) => {
                 const meta = textFieldMeta[k];
                 const content = ((form as any)[k] || "") as string;
-                const isReq = (k === "description" || k === "requirements") && detailImages.length === 0;
+                const isReq = false; // 상세요강 이미지가 필수라 텍스트 항목은 모두 선택
                 return (
                   <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
                     <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block" }}>
