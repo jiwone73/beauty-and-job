@@ -153,25 +153,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const contactInner = hasContact ? (
     <div>
       <div className="jd-sublabel">채용 담당자</div>
-      <div className="job-detail-company-info">
-        {job.contactName && (
-          <div className="job-detail-company-row">
-            <span className="job-detail-company-label">이름</span>
-            <span>{job.contactName}</span>
-          </div>
-        )}
-        {job.contactPhone && (
-          <div className="job-detail-company-row">
-            <span className="job-detail-company-label">전화</span>
-            <span>{job.contactPhone}</span>
-          </div>
-        )}
-        {job.contactEmail && (
-          <div className="job-detail-company-row">
-            <span className="job-detail-company-label">이메일</span>
-            <span>{job.contactEmail}</span>
-          </div>
-        )}
+      <div style={{ fontSize: 15, color: "var(--color-text)", lineHeight: 1.7 }}>
+        {[job.contactName, job.contactPhone, job.contactEmail].filter(Boolean).join("   ·   ")}
       </div>
     </div>
   ) : null;
@@ -215,8 +198,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const applyGuideBlock = (hasContact || hasMethods || hasProcess) ? (
     <div className="jd-subblock" key="apply-guide">
       <h2 className="job-detail-subtitle">지원 안내</h2>
-      {hasContact && <div style={{ marginBottom: 18 }}>{contactInner}</div>}
-      {hasMethods && <div style={{ marginBottom: hasProcess ? 18 : 0 }}>{methodsInner}</div>}
+      {(hasContact || hasMethods) && (
+        <div className="jd-2col" style={{ marginBottom: hasProcess ? 18 : 0 }}>
+          <div>{contactInner}</div>
+          <div>{methodsInner}</div>
+        </div>
+      )}
       {hasProcess && <div>{processInner}</div>}
     </div>
   ) : null;
