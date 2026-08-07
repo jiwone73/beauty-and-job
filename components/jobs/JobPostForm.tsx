@@ -140,6 +140,7 @@ export default function JobPostForm({
   const [contactMethodsOpen, setContactMethodsOpen] = useState(false);
   const contactMethodsRef = useRef<HTMLDivElement>(null);
   const [parseUrl, setParseUrl] = useState("");
+  const [urlEditing, setUrlEditing] = useState(true); // 불러오기 후엔 URL을 링크로 표시(클릭 시 원문 새 창)
   const [importMode, setImportMode] = useState<"url" | "ocr">("url"); // 직접입력(URL) vs OCR(캡처)
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
@@ -737,6 +738,7 @@ export default function JobPostForm({
       const j = await res.json();
       if (!j.success) { setParseMsg(j.error?.message || "불러오기에 실패했어요."); return; }
       applyParsed(j.data);
+      if (useUrl) { setParseUrl(useUrl); setUrlEditing(false); } // 불러오기 성공 → URL을 링크로 표시
     } catch { setParseMsg("오류가 발생했습니다."); }
     finally { setParsing(false); }
   };
@@ -1087,16 +1089,23 @@ export default function JobPostForm({
           </div>
 
           {importMode === "url" ? (
-            // URL 입력창 + 안쪽에 '불러오기' 버튼 임베드 (원문은 ↗ 아이콘으로 새 창 열기)
+            // 불러오기 전: URL 입력창. 불러오기 후: URL을 링크로 표시(클릭 시 원문 새 창) + '수정'
             <div style={{ position: "relative" }}>
-              <input className="admin-form-input" style={{ width: "100%", paddingRight: 128, boxSizing: "border-box" }}
-                placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl}
-                onChange={(e) => setParseUrl(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
-              {parseUrl.trim() && (
-                <button type="button" title="원문 새 창으로 열기"
-                  onClick={() => { const u = parseUrl.trim(); if (u) window.open(/^https?:\/\//i.test(u) ? u : "https://" + u, "_blank", "noopener,noreferrer"); }}
-                  style={{ position: "absolute", top: 4, bottom: 4, right: 90, width: 32, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 7, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>↗</button>
+              {(!urlEditing && parseUrl.trim()) ? (
+                <div className="admin-form-input" style={{ width: "100%", paddingRight: 128, boxSizing: "border-box", display: "flex", alignItems: "center", overflow: "hidden" }}>
+                  <a href={/^https?:\/\//i.test(parseUrl.trim()) ? parseUrl.trim() : "https://" + parseUrl.trim()} target="_blank" rel="noopener noreferrer"
+                    title="클릭하면 원문 공고가 새 창으로 열려요"
+                    style={{ flex: 1, minWidth: 0, color: "#5f0080", textDecoration: "underline", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 13.5 }}>
+                    {parseUrl.trim()}
+                  </a>
+                  <button type="button" onClick={() => setUrlEditing(true)}
+                    style={{ position: "absolute", top: 4, bottom: 4, right: 90, padding: "0 10px", borderRadius: 7, border: "1px solid #ddd", background: "#fff", color: "#888", fontSize: 12.5, cursor: "pointer" }}>수정</button>
+                </div>
+              ) : (
+                <input className="admin-form-input" style={{ width: "100%", paddingRight: 96, boxSizing: "border-box" }}
+                  placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl}
+                  onChange={(e) => setParseUrl(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
               )}
               <button type="button" onClick={() => runParse()} disabled={parsing}
                 style={{ position: "absolute", top: 4, bottom: 4, right: 4, padding: "0 16px", borderRadius: 7, border: "none", background: "#5f0080", color: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>
