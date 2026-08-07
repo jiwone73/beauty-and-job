@@ -634,11 +634,9 @@ export default function JobPostForm({
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
-  // 빈 값 자리에 '눌러서 여는' 느낌을 주는 연한 칩(+아래꺾쇠). 값이 채워지면 평체 텍스트만 노출.
-  const pick = (label = "선택") => (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 2, padding: "3px 10px", borderRadius: 999, background: "#f3eefb", color: "#9b8bb4", fontSize: 14, lineHeight: 1.4, verticalAlign: "middle" }}>
-      {label}<ChevronDown size={13} style={{ marginTop: 1 }} />
-    </span>
+  // 빈 값 자리에 '눌러서 여는' 느낌을 주는 연한 아래꺾쇠 아이콘. 값이 채워지면 평체 텍스트만 노출.
+  const pick = () => (
+    <ChevronDown size={18} style={{ color: "#c4c4c4", verticalAlign: "middle", display: "inline-block" }} />
   );
   // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
   const applyParsed = (d: any) => {
