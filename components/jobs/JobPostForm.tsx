@@ -1705,7 +1705,7 @@ export default function JobPostForm({
               <span style={{ fontSize: "16px", fontWeight: 400 }}>공고 미리보기 (구직자에게 보이는 실제 화면)</span>
               <button onClick={() => setShowPreview(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
             </div>
-            <div style={{ padding: 0, maxHeight: "72vh", overflowY: "auto", background: "#faf7fc" }}>
+            <div className="jobpost-preview-scope" style={{ padding: 0, maxHeight: "72vh", overflowY: "auto", overflowX: "hidden", background: "#faf7fc" }}>
               <JobDetailView ref={previewRef} job={previewJob}
                 asideAction={
                   <button className="job-detail-apply-btn" disabled style={{ opacity: 0.7, cursor: "default" }}>

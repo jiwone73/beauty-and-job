@@ -118,6 +118,17 @@ function parseHairinjob(html: string): StructuredResult | null {
   const always_open = /채용시까지|상시|수시|충원/.test(ogD) || /채용시까지|상시|수시/.test(title);
 
   const sug = suggestCats(`${job} ${title}`);
+  // 헤어인잡은 미용 전문 사이트 → 모집분야 직종명을 우리 직군으로 우선 매핑.
+  // (자동 추천은 "스탭↔스태프" 표기 차이·복합어 때문에 자주 놓쳐서, 도메인 규칙을 먼저 적용)
+  let mappedCats: string[] = [];
+  {
+    const ck = `${job} ${mj} ${title}`.replace(/\s/g, "");
+    if (/바버|barber/i.test(ck)) mappedCats = ["바버(Barber)"];
+    else if (/웨딩|본식|업스타일|혼주/.test(ck)) mappedCats = ["웨딩 헤어디자이너"];
+    else if (/디자이너|스타일리스트|원장|실장/.test(ck)) mappedCats = ["헤어 디자이너"];
+    else if (/스탭|스태프|스텝|인턴|어시|샴푸|막내|수습/.test(ck)) mappedCats = ["헤어 스태프(시니어·주니어)"];
+  }
+  const job_categories = mappedCats.length ? mappedCats : sug.job_categories;
 
   // 상세요강 본문(텍스트형): 상세요강이 이미지가 아니라 텍스트로만 들어간 공고가 있다.
   //   mid_view_main div 안의 '상세내용' 이후 본문을 뽑아 포지션 소개(description)로 채운다.
@@ -154,7 +165,7 @@ function parseHairinjob(html: string): StructuredResult | null {
     region,
     address,
     job_type: sug.job_type || "STORE", // 헤어샵 = 매장
-    job_categories: sug.job_categories,
+    job_categories,
     career,
     employment_type,
     headcount: headcount || 0,
@@ -170,7 +181,7 @@ function parseHairinjob(html: string): StructuredResult | null {
     always_open,
     main_duties: job ? `모집분야: ${job}` : "",
     description: descText,
-    _confident: !!(title && (company || region || sug.job_categories.length)),
+    _confident: !!(title && (company || region || job_categories.length)),
   };
   if (bannerRaw.length || detailRaw.length) {
     out.images = bannerRaw;                       // 매장 사진 → 상단 배너
