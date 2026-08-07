@@ -1216,7 +1216,6 @@ export default function JobPostForm({
 
               {/* ── 상단 배너 (cover, 여러 장 · 공개화면에서 3장씩 화살표로 회전) ── */}
               <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#5f0080", marginBottom: 6 }}>상단 배너 <span style={{ fontWeight: 400, color: "#999" }}>· 공개 화면 최상단, 여러 장이면 3장씩 화살표로 회전 ({bannerImages.length}/10)</span></div>
                 <div
                   onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                   onDragLeave={() => setDragOver(false)}
