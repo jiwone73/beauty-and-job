@@ -637,7 +637,7 @@ export default function JobPostForm({
   // 빈 값 자리엔 흐린 회색 플레이스홀더 텍스트(칩·배경 없음). 채워지면 평체 텍스트로 노출.
   // 기업정보처럼 목록에서 고르는 항목은 '선택'(기본), 값을 직접 적는 항목은 '입력'.
   const pick = (label = "선택") => (
-    <span style={{ color: "#b3b3b3", fontSize: 15 }}>{label}</span>
+    <span style={{ color: "#cccccc", fontSize: 15 }}>{label}</span>
   );
   // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
   const applyParsed = (d: any) => {
@@ -1291,7 +1291,7 @@ export default function JobPostForm({
                   <Briefcase size={16} className="job-detail-meta-icon" />
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>경력</span>
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
-                    style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#b3b3b3", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                    style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#cccccc", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                     <option value="">선택</option>
                     {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
