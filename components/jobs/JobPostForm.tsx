@@ -634,9 +634,9 @@ export default function JobPostForm({
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
-  // 빈 값 자리에 '여기를 채우면 된다'는 느낌의 연한 회색 밑줄(빈칸). 값이 채워지면 평체 텍스트만 노출.
+  // 빈 값 자리엔 흐리게 '입력'만. 값이 채워지면 평체 검정 텍스트로 노출.
   const pick = () => (
-    <span style={{ display: "inline-block", width: 44, height: "1.1em", borderBottom: "1.5px solid #d4d4d4", verticalAlign: "middle" }} />
+    <span style={{ color: "#c4c4c4" }}>입력</span>
   );
   // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
   const applyParsed = (d: any) => {
@@ -1282,7 +1282,7 @@ export default function JobPostForm({
                   {typeLocked ? (
                     <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
                   ) : (
-                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="선택" title="모집분야 선택" />
+                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="입력" title="모집분야 선택" />
                   )}
                 </div>
                 {/* 경력 */}
@@ -1290,8 +1290,8 @@ export default function JobPostForm({
                   <Briefcase size={16} className="job-detail-meta-icon" />
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>경력</span>
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
-                    style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                    <option value="">선택</option>
+                    style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#c4c4c4", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                    <option value="">입력</option>
                     {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
@@ -1666,12 +1666,12 @@ export default function JobPostForm({
                     </div>
                     <div style={row}><span style={lbl2}>회사명<span style={req}> *</span></span><input style={inp3} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
                     <div style={row}><span style={lbl2}>업종<span style={req}> *</span></span><select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
-                    <div style={row}><span style={lbl2}>브랜드명</span><input style={inp3} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="선택" /></div>
+                    <div style={row}><span style={lbl2}>브랜드명</span><input style={inp3} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="입력" /></div>
                     <div style={row}><span style={lbl2}>웹사이트</span><input style={inp3} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} placeholder="https:// (선택)" /></div>
                     <div style={{ ...row, ...full }}><span style={lbl2}>주소<span style={req}> *</span></span><input style={inp3} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역" /></div>
                     <div style={row}><span style={lbl2}>사원수</span><select style={sel3(!!nmSize)} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value="">선택</option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
                     <div style={row}><span style={lbl2}>설립연도</span><input type="number" min="1900" max={new Date().getFullYear()} style={inp3} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} placeholder="예) 2020" /></div>
-                    <div style={row}><span style={lbl2}>대표자</span><input style={inp3} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="선택" /></div>
+                    <div style={row}><span style={lbl2}>대표자</span><input style={inp3} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="입력" /></div>
                     <div style={row}><span style={lbl2}>회사 대표번호</span><input style={inp3} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} placeholder="02-000-0000 (선택)" /></div>
                   </div>
                 );
