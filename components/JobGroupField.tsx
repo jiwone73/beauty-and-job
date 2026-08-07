@@ -36,7 +36,7 @@ export default function JobGroupField({
         }
         .jgf-value:disabled { opacity: 0.6; cursor: not-allowed; }
         .jgf-text { color: #555; font-weight: 400; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-        .jgf-pick { color: #c4c4c4; font-weight: 400; font-size: 15px; white-space: nowrap; }
+        .jgf-pick { display: inline-flex; align-items: center; padding: 3px 12px; border-radius: 999px; background: #f4f4f5; color: #999; font-weight: 400; font-size: 14px; white-space: nowrap; }
       `}</style>
 
       <div>

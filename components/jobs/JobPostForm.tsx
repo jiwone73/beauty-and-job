@@ -634,9 +634,9 @@ export default function JobPostForm({
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
-  // 빈 값 자리엔 흐리게 '입력'만. 값이 채워지면 평체 검정 텍스트로 노출.
+  // 빈 값 자리엔 아주 옅은 회색 pill에 '입력'. 값이 채워지면 평체 검정 텍스트로 노출.
   const pick = () => (
-    <span style={{ color: "#c4c4c4" }}>입력</span>
+    <span style={{ display: "inline-flex", alignItems: "center", padding: "3px 12px", borderRadius: 999, background: "#f4f4f5", color: "#999", fontSize: 14, lineHeight: 1.4, verticalAlign: "middle" }}>입력</span>
   );
   // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
   const applyParsed = (d: any) => {
@@ -1483,7 +1483,7 @@ export default function JobPostForm({
                 </div>
 
               {/* 근무지역: 전체 주소 입력 → 필터용 시·군·구 자동 추출 (지도는 아래) */}
-              <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "8px 0" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0 8px", borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <span className="admin-form-label" style={{ flexShrink: 0 }}>근무지역 <span style={{ color: "#e9a3a3" }}>*</span></span>
                 <input value={nmAddress}
                   onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
@@ -1658,7 +1658,7 @@ export default function JobPostForm({
                 const row: CSSProperties = { display: "flex", alignItems: "center", gap: 12, padding: "7px 0" };
                 const lbl2: CSSProperties = { width: 92, flexShrink: 0, color: "#999", fontSize: 15 };
                 const req: CSSProperties = { color: "#e9a3a3" };
-                const inp3: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" };
+                const inp3: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", boxSizing: "border-box" };
                 const sel3 = (filled: boolean): CSSProperties => ({ ...inp3, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", cursor: "pointer", paddingRight: 22, color: filled ? "#333" : "#cfcfcf", backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23bbb' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 2px center" });
                 const full: CSSProperties = { gridColumn: "1 / -1" };
                 return (
