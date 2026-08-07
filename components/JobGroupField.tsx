@@ -36,7 +36,8 @@ export default function JobGroupField({
         }
         .jgf-value:disabled { opacity: 0.6; cursor: not-allowed; }
         .jgf-text { color: #555; font-weight: 400; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-        .jgf-ph { color: #bbb; font-weight: 400; white-space: nowrap; font-size: 15px; }
+        .jgf-pick { display: inline-flex; align-items: center; gap: 2px; padding: 3px 10px; border-radius: 999px; background: #f3eefb; color: #9b8bb4; font-size: 14px; font-weight: 400; white-space: nowrap; }
+        .jgf-pick svg { width: 13px; height: 13px; }
       `}</style>
 
       <div>
@@ -46,9 +47,14 @@ export default function JobGroupField({
           onClick={() => !disabled && setOpen(true)}
           disabled={disabled}
         >
-          <span className={value.length ? "jgf-text" : "jgf-ph"}>
-            {value.length ? value.join(", ") : placeholder}
-          </span>
+          {value.length ? (
+            <span className="jgf-text">{value.join(", ")}</span>
+          ) : (
+            <span className="jgf-pick">
+              {placeholder}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+            </span>
+          )}
         </button>
       </div>
 

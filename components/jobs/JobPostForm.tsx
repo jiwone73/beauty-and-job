@@ -634,6 +634,12 @@ export default function JobPostForm({
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
+  // 빈 값 자리에 '눌러서 여는' 느낌을 주는 연한 칩(+아래꺾쇠). 값이 채워지면 평체 텍스트만 노출.
+  const pick = (label = "선택") => (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 2, padding: "3px 10px", borderRadius: 999, background: "#f3eefb", color: "#9b8bb4", fontSize: 14, lineHeight: 1.4, verticalAlign: "middle" }}>
+      {label}<ChevronDown size={13} style={{ marginTop: 1 }} />
+    </span>
+  );
   // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
   const applyParsed = (d: any) => {
       // 회사 정보(회사명·홈페이지·이메일·주소·소개·업종·지원방식)는 관리자 비회원 입력에만 채움.
@@ -1308,7 +1314,7 @@ export default function JobPostForm({
                       setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true);
                     }}
                     style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
-                    {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "선택"}
+                    {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : pick()}
                   </button>
                   {deadlineModalOpen && (
                     <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "240px" }}>
@@ -1340,7 +1346,7 @@ export default function JobPostForm({
                         setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
                       }}
                       style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
-                      {typeLocked ? "선택" : ((salaryNego || form.salary) ? fmtSalary() : "선택")}
+                      {typeLocked ? "선택" : ((salaryNego || form.salary) ? fmtSalary() : pick())}
                     </button>
                     {salaryModalOpen && (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
@@ -1381,7 +1387,7 @@ export default function JobPostForm({
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>고용형태<span style={{ color: "#e9a3a3" }}> *</span></span>
                     <button type="button" onClick={() => setEmployOpen((v) => !v)}
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: form.type ? "#333" : "#cfcfcf" }}>
-                      {form.type || "선택"}
+                      {form.type || pick()}
                     </button>
                     {employOpen && (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(320px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -1397,7 +1403,7 @@ export default function JobPostForm({
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무기간<span style={{ color: "#e9a3a3" }}> *</span></span>
                     <button type="button" onClick={() => setWorkPeriodOpen((v) => !v)}
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: workPeriod ? "#333" : "#cfcfcf" }}>
-                      {workPeriod || "선택"}
+                      {workPeriod || pick()}
                     </button>
                     {workPeriodOpen && (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(320px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -1414,7 +1420,7 @@ export default function JobPostForm({
                       <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무 요일<span style={{ color: "#e9a3a3" }}> *</span></span>
                       <button type="button" onClick={() => setWorkDaysOpen((v) => !v)}
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workDaysNego || workDays.length) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
-                        {workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "선택")}
+                        {workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : pick())}
                       </button>
                       {workDaysOpen && (
                         <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
@@ -1441,7 +1447,7 @@ export default function JobPostForm({
                       <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무 시간<span style={{ color: "#e9a3a3" }}> *</span></span>
                       <button type="button" onClick={() => setWorkTimeOpen((v) => !v)}
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
-                        {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "선택")}
+                        {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : pick())}
                       </button>
                       {workTimeOpen && (
                         <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
@@ -1464,7 +1470,7 @@ export default function JobPostForm({
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>복리후생<span style={{ color: "#e9a3a3" }}> *</span></span>
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
-                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "선택")}
+                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : pick())}
                     </button>
                     {welfareOpen && !typeLocked && (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(360px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -1504,7 +1510,7 @@ export default function JobPostForm({
                     <span style={{ width: 60, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6 }}>지원방법<span style={{ color: "#e9a3a3" }}> *</span></span>
                     <button type="button" onClick={() => setContactMethodsOpen((v) => !v)}
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: "6px 2px", fontSize: 15, cursor: "pointer", lineHeight: 1.6, color: contactMethods.length ? "#333" : "#cfcfcf" }}>
-                      {contactMethods.length ? contactMethods.join(", ") : "선택"}
+                      {contactMethods.length ? contactMethods.join(", ") : pick()}
                     </button>
                     {contactMethodsOpen && (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(320px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
