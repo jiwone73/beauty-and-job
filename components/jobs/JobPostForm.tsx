@@ -16,7 +16,8 @@ const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.s
 
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
-const EMPLOYMENT_TYPES = ["정규직", "계약직", "인턴", "아르바이트", "프리랜서"];
+const EMPLOYMENT_TYPES = ["정규직", "계약직", "정규직 전환 가능", "위촉직", "프리랜서", "인턴", "아르바이트"];
+const WORK_PERIODS = ["~6개월", "6개월 ~ 1년", "1년 이상", "협의"];
 const WELFARE_OPTIONS: Record<string, string[]> = {
   매장: ["4대보험", "기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능"],
   기업: ["4대보험", "인센티브", "자기계발비", "식대 지원", "주차 가능"],
@@ -283,7 +284,11 @@ export default function JobPostForm({
   const [workDaysNego, setWorkDaysNego] = useState(false);
   const [workDaysOpen, setWorkDaysOpen] = useState(false);
   const workDaysRef = useRef<HTMLDivElement>(null);
-  const [workPeriod, setWorkPeriod] = useState(""); // 근무기간: ~6개월 / 1년 / 1년 이상 / 협의
+  const [workPeriod, setWorkPeriod] = useState(""); // 근무기간
+  const [workPeriodOpen, setWorkPeriodOpen] = useState(false);
+  const workPeriodRef = useRef<HTMLDivElement>(null);
+  const [employOpen, setEmployOpen] = useState(false);
+  const employRef = useRef<HTMLDivElement>(null);
   const [workTimeStart, setWorkTimeStart] = useState("");
   const [workTimeEnd, setWorkTimeEnd] = useState("");
   const [workTimeNego, setWorkTimeNego] = useState(false);
@@ -301,6 +306,18 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [workTimeOpen]);
+  useEffect(() => {
+    if (!workPeriodOpen) return;
+    const onDown = (e: MouseEvent) => { if (workPeriodRef.current && !workPeriodRef.current.contains(e.target as Node)) setWorkPeriodOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [workPeriodOpen]);
+  useEffect(() => {
+    if (!employOpen) return;
+    const onDown = (e: MouseEvent) => { if (employRef.current && !employRef.current.contains(e.target as Node)) setEmployOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [employOpen]);
   // 회사 소개 textarea 자동 높이(불러오기로 긴 내용이 채워져도 잘리지 않게)
   const nmDescRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
@@ -1349,23 +1366,37 @@ export default function JobPostForm({
                       </div>
                     )}
                   </div>
-                  {/* 고용형태 */}
-                  <div className="job-detail-company-row">
+                  {/* 고용형태 — 팝오버(네이티브 풀다운 제거) */}
+                  <div className="job-detail-company-row" ref={employRef} style={{ position: "relative" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>고용형태</span>
-                    <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
-                      style={{ border: "none", background: "transparent", fontSize: 14, color: form.type ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                      <option value="">선택</option>
-                      {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
+                    <button type="button" onClick={() => setEmployOpen((v) => !v)}
+                      style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: form.type ? "#333" : "#cfcfcf" }}>
+                      {form.type || "선택"}
+                    </button>
+                    {employOpen && (
+                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(320px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {EMPLOYMENT_TYPES.map((o) => { const on = form.type === o; return (
+                          <button key={o} type="button" onClick={() => { setForm({ ...form, type: o }); setEmployOpen(false); }}
+                            style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{o}</button>
+                        ); })}
+                      </div>
+                    )}
                   </div>
-                  {/* 근무기간 */}
-                  <div className="job-detail-company-row">
+                  {/* 근무기간 — 팝오버(네이티브 풀다운 제거) */}
+                  <div className="job-detail-company-row" ref={workPeriodRef} style={{ position: "relative" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무기간</span>
-                    <select value={workPeriod} onChange={(e) => setWorkPeriod(e.target.value)}
-                      style={{ border: "none", background: "transparent", fontSize: 14, color: workPeriod ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                      <option value="">선택</option>
-                      {["~6개월", "1년", "1년 이상", "협의"].map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
+                    <button type="button" onClick={() => setWorkPeriodOpen((v) => !v)}
+                      style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: workPeriod ? "#333" : "#cfcfcf" }}>
+                      {workPeriod || "선택"}
+                    </button>
+                    {workPeriodOpen && (
+                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(320px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {WORK_PERIODS.map((o) => { const on = workPeriod === o; return (
+                          <button key={o} type="button" onClick={() => { setWorkPeriod(o); setWorkPeriodOpen(false); }}
+                            style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{o}</button>
+                        ); })}
+                      </div>
+                    )}
                   </div>
                   {jobGroupType === "매장" && (<>
                     {/* 근무 요일 */}
