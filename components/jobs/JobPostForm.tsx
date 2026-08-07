@@ -1222,7 +1222,7 @@ export default function JobPostForm({
                 {/* 채용분야(직군) */}
                 <div className="job-detail-meta-item">
                   <Tag size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>채용분야<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "#e9a3a3" }}> *</span></span>
                   {typeLocked ? (
                     <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
                   ) : (

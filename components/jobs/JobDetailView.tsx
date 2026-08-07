@@ -279,7 +279,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             {job.jobCategories?.length > 0 && (
               <div className="job-detail-meta-item">
                 <Tag size={16} className="job-detail-meta-icon" />
-                <span className="job-detail-meta-label">채용분야</span>
+                <span className="job-detail-meta-label">모집분야</span>
                 <span className="job-detail-meta-value">{job.jobCategories.join(", ")}</span>
               </div>
             )}
