@@ -1505,7 +1505,7 @@ export default function JobPostForm({
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 28px", alignItems: "start" }}>
                   {/* 지원방법 (좌) — 팝오버, 필수 */}
                   <div ref={contactMethodsRef} style={{ display: "flex", alignItems: "flex-start", gap: 10, position: "relative" }}>
-                    <span style={{ width: 60, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6 }}>지원방법<span style={{ color: "#e9a3a3" }}> *</span></span>
+                    <span style={{ width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 6 }}>지원방법<span style={{ color: "#e9a3a3" }}> *</span></span>
                     <button type="button" onClick={() => setContactMethodsOpen((v) => !v)}
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: "6px 2px", fontSize: 15, cursor: "pointer", lineHeight: 1.6, color: contactMethods.length ? "#333" : "#cfcfcf" }}>
                       {contactMethods.length ? contactMethods.join(", ") : pick()}
