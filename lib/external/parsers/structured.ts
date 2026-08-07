@@ -69,6 +69,8 @@ function parseHairinjob(html: string): StructuredResult | null {
     const rFull = region.split(" ")[0];
     if (aFull && rFull && aFull !== rFull) address = "";
   }
+  // 업체주소 li가 없거나(상세주소 마스킹 등) 비면 근무지역(시·군·구)이라도 주소로 사용
+  if (!address && region) address = region;
 
   // 모집분야: 직종 / 인원 / 고용형태 / 급여
   const job = (mj.match(/^([가-힣A-Za-z/]+?)\s*\[/) || [])[1] || (mj.split(/[[\s(]/)[0] || "");
@@ -117,6 +119,26 @@ function parseHairinjob(html: string): StructuredResult | null {
 
   const sug = suggestCats(`${job} ${title}`);
 
+  // 상세요강 본문(텍스트형): 상세요강이 이미지가 아니라 텍스트로만 들어간 공고가 있다.
+  //   mid_view_main div 안의 '상세내용' 이후 본문을 뽑아 포지션 소개(description)로 채운다.
+  const stripLines = (s: string) =>
+    s.replace(/<\s*br\s*\/?>/gi, "\n")
+      .replace(/<\/(p|div|li|tr|h[1-6])>/gi, "\n")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ")
+      .replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+  let descText = "";
+  {
+    const mIdx = html.search(/class="[^"]*mid_view_main/i);
+    if (mIdx >= 0) {
+      let t = stripLines(html.slice(mIdx, mIdx + 20000));
+      const s = t.indexOf("상세내용");
+      if (s >= 0) t = t.slice(s + 4);
+      t = t.split(/위\s*임플릿|저작권법|무단[^\n]*이용|신고하기/)[0];
+      descText = t.trim().slice(0, 2000);
+    }
+  }
+
   // 공고 이미지 분리(핫링크 차단이라 재호스팅):
   //   · _memcontents(상세요강 본문 포스터, 세로로 긴 이미지) → 상세 이미지
   //   · 그 외 _mem/_mem2…(매장 사진 썸네일) → 상단 배너
@@ -147,6 +169,7 @@ function parseHairinjob(html: string): StructuredResult | null {
     contact_name,
     always_open,
     main_duties: job ? `모집분야: ${job}` : "",
+    description: descText,
     _confident: !!(title && (company || region || sug.job_categories.length)),
   };
   if (bannerRaw.length || detailRaw.length) {
