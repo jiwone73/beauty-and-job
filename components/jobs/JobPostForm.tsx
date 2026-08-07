@@ -282,6 +282,7 @@ export default function JobPostForm({
   const [workDaysNego, setWorkDaysNego] = useState(false);
   const [workDaysOpen, setWorkDaysOpen] = useState(false);
   const workDaysRef = useRef<HTMLDivElement>(null);
+  const [workPeriod, setWorkPeriod] = useState(""); // 근무기간: ~6개월 / 1년 / 1년 이상 / 협의
   const [workTimeStart, setWorkTimeStart] = useState("");
   const [workTimeEnd, setWorkTimeEnd] = useState("");
   const [workTimeNego, setWorkTimeNego] = useState(false);
@@ -392,6 +393,7 @@ export default function JobPostForm({
       setNotes(j.notes || "");
       setBenefitTags(j.benefit_tags || []);
       // 근무 조건 복원
+      setWorkPeriod(j.work_period || "");
       if (j.work_days === "협의") { setWorkDaysNego(true); setWorkDays([]); }
       else { setWorkDaysNego(false); setWorkDays(j.work_days ? String(j.work_days).split(",").filter(Boolean) : []); }
       if (j.work_time === "협의") { setWorkTimeNego(true); setWorkTimeStart(""); setWorkTimeEnd(""); }
@@ -878,6 +880,7 @@ export default function JobPostForm({
       employment_type: form.type,
       experience_level: expLevel,
       benefit_tags: benefitTags,
+      work_period: workPeriod || null,
       work_days: workDaysNego ? "협의" : (workDays.length ? workDays.join(",") : null),
       work_time: workTimeNego ? "협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : null),
       work_time_slots: null,
@@ -986,6 +989,7 @@ export default function JobPostForm({
     },
     companyAddress: isNm ? nmAddress : (cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : ""),
     workDaysText: workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의"),
+    workPeriodText: workPeriod || "협의",
     workTimeText: workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의"),
     contactName: isNm ? nmManagerName : "",
     contactPhone: isNm ? nmManagerPhone : "",
@@ -1341,6 +1345,15 @@ export default function JobPostForm({
                       {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
                     </select>
                   </div>
+                  {/* 근무기간 */}
+                  <div className="job-detail-company-row">
+                    <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무기간</span>
+                    <select value={workPeriod} onChange={(e) => setWorkPeriod(e.target.value)}
+                      style={{ border: "none", background: "transparent", fontSize: 14, color: workPeriod ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                      <option value="">선택</option>
+                      {["~6개월", "1년", "1년 이상", "협의"].map((o) => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                  </div>
                   {jobGroupType === "매장" && (<>
                     {/* 근무 요일 */}
                     <div className="job-detail-company-row" ref={workDaysRef} style={{ position: "relative" }}>
@@ -1432,18 +1445,21 @@ export default function JobPostForm({
               {/* 담당자 · 지원방법 — 관리자 외부공고에서만 (2열, 값 넘치면 열 안에서 줄바꿈) */}
               {mode === "admin" && nonMember && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 28px", alignItems: "start" }}>
-                  {/* 담당자 (좌) — 이름/전화/메일 타이틀 */}
+                  {/* 채용담당자 (좌) — 이름/전화/메일 타이틀(플레이스홀더 없음, 폰트 통일) */}
                   <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <span style={{ width: 56, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6 }}>담당자</span>
+                    <span style={{ width: 76, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6 }}>채용담당자</span>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 12px", flex: 1, minWidth: 0 }}>
-                      <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="이름" style={{ flex: "1 1 100%", border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
                       <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                        <span style={{ fontSize: 13, color: "#bbb", flexShrink: 0 }}>전화</span>
-                        <input value={nmManagerPhone} onChange={(e) => setNmManagerPhone(e.target.value)} inputMode="numeric" placeholder="전화번호" style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
+                        <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>이름</span>
+                        <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                        <span style={{ fontSize: 13, color: "#bbb", flexShrink: 0 }}>메일</span>
-                        <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="이메일주소" style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
+                        <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>전화</span>
+                        <input value={nmManagerPhone} onChange={(e) => setNmManagerPhone(e.target.value)} inputMode="numeric" style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
+                        <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>메일</span>
+                        <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
                       </div>
                     </div>
                   </div>

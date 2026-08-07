@@ -83,7 +83,8 @@ export async function POST(req: NextRequest) {
     location, address, work_type, experience_level, deadline, categories,
     detail_images, hiring_process, notes, benefits, responsibilities, created_by,
     apply_method, external_apply_url, external_contact_email,
-    external_contact_name, external_contact_phone, contact_methods
+    external_contact_name, external_contact_phone, contact_methods,
+    employment_type, benefit_tags, work_days, work_time, work_time_slots, headcount, work_period
   } = body
 
   if (!title || !job_type) return err('JOB_002', '제목과 채용유형은 필수입니다.')
@@ -172,9 +173,10 @@ export async function POST(req: NextRequest) {
          salary_type, location, address, work_type, experience_level,
          deadline, categories, detail_images, hiring_process, notes, benefits,
          status, created_by, source, apply_method, external_apply_url, external_contact_email, responsibilities,
-         external_contact_name, external_contact_phone, contact_methods
+         external_contact_name, external_contact_phone, contact_methods,
+         employment_type, benefit_tags, work_days, work_time, work_time_slots, headcount, work_period
        ) VALUES (
-         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, '${jobStatus}', $21, $22, $23, $24, $25, $26, $27, $28, $29
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, '${jobStatus}', $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36
        ) RETURNING id, title, status, created_at`,
       [
         finalCompanyId, title, job_type, job_category_id || null, description || null,
@@ -187,7 +189,10 @@ export async function POST(req: NextRequest) {
         notes || null, benefits || null,
         created_by || 'admin',
         src, am, extUrl, extEmail, responsibilities || null,
-        extName, extPhone, contact_methods || []
+        extName, extPhone, contact_methods || [],
+        employment_type || null, benefit_tags || [],
+        work_days || null, work_time || null, work_time_slots || null,
+        headcount ?? null, work_period || null
       ]
     )
 
