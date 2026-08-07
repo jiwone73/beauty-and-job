@@ -634,9 +634,10 @@ export default function JobPostForm({
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
-  // 빈 값 자리엔 아주 옅은 회색 pill에 '입력'. 값이 채워지면 평체 검정 텍스트로 노출.
-  const pick = () => (
-    <span style={{ display: "inline-flex", alignItems: "center", padding: "3px 12px", borderRadius: 999, background: "#f4f4f5", color: "#999", fontSize: 14, lineHeight: 1.4, verticalAlign: "middle" }}>입력</span>
+  // 빈 값 자리엔 흐린 회색 플레이스홀더 텍스트(칩·배경 없음). 채워지면 평체 텍스트로 노출.
+  // 기업정보처럼 목록에서 고르는 항목은 '선택'(기본), 값을 직접 적는 항목은 '입력'.
+  const pick = (label = "선택") => (
+    <span style={{ color: "#b3b3b3", fontSize: 15 }}>{label}</span>
   );
   // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
   const applyParsed = (d: any) => {
@@ -1282,7 +1283,7 @@ export default function JobPostForm({
                   {typeLocked ? (
                     <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
                   ) : (
-                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="입력" title="모집분야 선택" />
+                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="선택" title="모집분야 선택" />
                   )}
                 </div>
                 {/* 경력 */}
@@ -1290,8 +1291,8 @@ export default function JobPostForm({
                   <Briefcase size={16} className="job-detail-meta-icon" />
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>경력</span>
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
-                    style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#c4c4c4", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                    <option value="">입력</option>
+                    style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#b3b3b3", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                    <option value="">선택</option>
                     {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
@@ -1344,7 +1345,7 @@ export default function JobPostForm({
                         setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
                       }}
                       style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
-                      {typeLocked ? "선택" : ((salaryNego || form.salary) ? fmtSalary() : pick())}
+                      {typeLocked ? "선택" : ((salaryNego || form.salary) ? fmtSalary() : pick("입력"))}
                     </button>
                     {salaryModalOpen && (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
@@ -1445,7 +1446,7 @@ export default function JobPostForm({
                       <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무 시간<span style={{ color: "#e9a3a3" }}> *</span></span>
                       <button type="button" onClick={() => setWorkTimeOpen((v) => !v)}
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
-                        {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : pick())}
+                        {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : pick("입력"))}
                       </button>
                       {workTimeOpen && (
                         <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
@@ -1527,7 +1528,7 @@ export default function JobPostForm({
                     // 온라인 지원처럼 담당자 정보가 필요 없는 방법만 골랐으면 '채용담당자' 자체를 숨김
                     // (아직 아무것도 안 골랐을 때는 제목만 흐리게 남겨둔다)
                     if (contactMethods.length > 0 && !canName) return null;
-                    const inp2: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" };
+                    const inp2: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #f4f3f6", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", boxSizing: "border-box" };
                     return (
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                         <span style={{ width: 76, flexShrink: 0, color: canName ? "#999" : "#cfcfcf", fontSize: 15, paddingTop: 6 }}>채용담당자</span>
@@ -1658,7 +1659,7 @@ export default function JobPostForm({
                 const row: CSSProperties = { display: "flex", alignItems: "center", gap: 12, padding: "7px 0" };
                 const lbl2: CSSProperties = { width: 92, flexShrink: 0, color: "#999", fontSize: 15 };
                 const req: CSSProperties = { color: "#e9a3a3" };
-                const inp3: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", boxSizing: "border-box" };
+                const inp3: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #f4f3f6", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", boxSizing: "border-box" };
                 const sel3 = (filled: boolean): CSSProperties => ({ ...inp3, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", cursor: "pointer", paddingRight: 22, color: filled ? "#333" : "#cfcfcf", backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23bbb' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 2px center" });
                 const full: CSSProperties = { gridColumn: "1 / -1" };
                 return (
