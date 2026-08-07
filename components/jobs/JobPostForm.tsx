@@ -1524,6 +1524,9 @@ export default function JobPostForm({
                     const canPhone = contactMethods.includes("문자") || contactMethods.includes("전화");
                     const canEmail = contactMethods.includes("이메일");
                     const canName = canPhone || canEmail;
+                    // 온라인 지원처럼 담당자 정보가 필요 없는 방법만 골랐으면 '채용담당자' 자체를 숨김
+                    // (아직 아무것도 안 골랐을 때는 제목만 흐리게 남겨둔다)
+                    if (contactMethods.length > 0 && !canName) return null;
                     const inp2: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" };
                     return (
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
