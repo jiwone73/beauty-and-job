@@ -1385,7 +1385,7 @@ export default function JobPostForm({
                   {/* 복리후생 — 근무 조건 안에 포함 */}
                   <div className="job-detail-company-row" style={{ gridColumn: "1 / -1", alignItems: "center" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>복리후생</span>
-                    {typeLocked ? <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span> : <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px" }}>{welfareOptions.map((b) => { const on = benefitTags.includes(b); return (<button key={b} type="button" onClick={() => toggleBenefit(b)} style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>{on ? "✓ " : ""}{b}</button>); })}</div>}
+                    {typeLocked ? <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span> : <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px" }}>{welfareOptions.map((b) => { const on = benefitTags.includes(b); return (<button key={b} type="button" onClick={() => toggleBenefit(b)} style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>{b}</button>); })}</div>}
                   </div>
                   </div>
                 </div>
@@ -1408,58 +1408,47 @@ export default function JobPostForm({
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ margin: "0 0 10px", fontWeight: 400, color: "#333" }}>지원 안내</div>
 
-              {/* 채용 담당자 · 접수방법 — 관리자 외부공고에서만 (2열, 라벨 대신 플레이스홀더) */}
-              {mode === "admin" && nonMember && (
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 28px", marginBottom: 12, alignItems: "start" }}>
-                  <div>
-                    <div style={{ fontSize: 15, color: "#999", margin: "0 0 6px" }}>채용 담당자</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                      <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="담당자 이름" style={{ border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", width: "100%", boxSizing: "border-box" }} />
-                      <input value={nmManagerPhone} onChange={(e) => setNmManagerPhone(e.target.value)} inputMode="numeric" placeholder="전화번호" style={{ border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", width: "100%", boxSizing: "border-box" }} />
-                      <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="이메일" style={{ border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", width: "100%", boxSizing: "border-box" }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 15, color: "#999", margin: "0 0 6px" }}>접수방법</div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
-                      {["문자", "이메일", "전화", "온라인 지원"].map((m) => {
-                        const on = contactMethods.includes(m);
-                        return (
-                          <button key={m} type="button" onClick={() => toggleContactMethod(m)}
-                            style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>
-                            {on ? "✓ " : ""}{m}
-                          </button>
-                        );
-                      })}
-                    </div>
+              {/* 담당자 · 접수방법 — 관리자 외부공고에서만 (라벨 + 값 한 줄) */}
+              {mode === "admin" && nonMember && (<>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
+                  <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6 }}>담당자</span>
+                  <div style={{ display: "flex", gap: 12, flex: 1, flexWrap: "wrap" }}>
+                    <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="이름" style={{ flex: "1 1 80px", minWidth: 70, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
+                    <input value={nmManagerPhone} onChange={(e) => setNmManagerPhone(e.target.value)} inputMode="numeric" placeholder="전화번호" style={{ flex: "1.3 1 120px", minWidth: 110, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
+                    <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="이메일주소" style={{ flex: "1.6 1 140px", minWidth: 130, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
                   </div>
                 </div>
-              )}
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
+                  <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>접수방법</span>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", flex: 1 }}>
+                    {["문자", "이메일", "전화", "온라인 지원"].map((m) => {
+                      const on = contactMethods.includes(m);
+                      return (
+                        <button key={m} type="button" onClick={() => toggleContactMethod(m)}
+                          style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>
+                          {m}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>)}
 
-              {/* 채용 절차 — 팝오버 없이 프리셋 칩 직접 선택(접수방법처럼, 탭 순서 = 전형 순서) */}
-              <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, margin: "0 0 6px" }}>
-                  <span style={{ fontSize: 15, color: "#999" }}>채용 절차</span>
-                  {hiringProcess.length > 0 && (
-                    <button type="button" onClick={() => setHiringProcess([])}
-                      style={{ border: "none", background: "none", fontSize: 12, color: "#bbb", cursor: "pointer", padding: 0 }}>초기화</button>
-                  )}
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
+              {/* 채용 절차 — 라벨 + 칩 한 줄(팝오버 없이 직접 선택, 탭 순서 = 전형 순서) */}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
+                <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차</span>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", flex: 1 }}>
                   {(jobGroupType === "매장" ? PRESET_PROCESS.매장 : PRESET_PROCESS.기업).map((p) => {
                     const on = hiringProcess.includes(p);
                     return (
                       <button key={p} type="button"
                         onClick={() => setHiringProcess(on ? hiringProcess.filter((x) => x !== p) : [...hiringProcess, p])}
                         style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>
-                        {on ? "✓ " : ""}{p}
+                        {p}
                       </button>
                     );
                   })}
                 </div>
-                {hiringProcess.length > 0 && (
-                  <div style={{ marginTop: 8, fontSize: 13, color: "#777" }}>{hiringProcess.join(" → ")}</div>
-                )}
               </div>
               </div>
             </div>

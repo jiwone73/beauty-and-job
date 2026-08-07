@@ -2181,6 +2181,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jd-subblock { padding-top: 16px; margin-top: 16px; border-top: 1px solid #f0edf5; }
 .job-detail-subtitle { font-size: 16px; color: var(--color-text); margin: 0 0 12px; letter-spacing: -0.3px; }
 .jd-sublabel { font-size: 15px; color: var(--color-text-mute); margin: 0 0 8px; }
+/* 지원 안내: 라벨 + 값 한 줄 */
+.jd-guide-row { display: flex; align-items: flex-start; gap: 12px; padding: 6px 0; font-size: 15px; color: var(--color-text); }
+.jd-guide-label { width: 72px; flex-shrink: 0; color: var(--color-text-mute); }
 /* 채용 담당자 · 채용 절차 2열 배치 */
 .jd-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 28px; align-items: start; }
 @media (max-width: 640px) { .jd-2col { grid-template-columns: 1fr; } }

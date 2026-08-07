@@ -150,43 +150,33 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const hasContact = !!(job.contactName || job.contactPhone || job.contactEmail);
   const hasMethods = !!(job.contactMethods?.length);
   const hasProcess = !!(job.process?.length > 0 || job.notes?.trim());
+  // 지원 안내: 담당자 · 접수방법 · 채용 절차 (라벨 + 값 한 줄)
   const contactInner = hasContact ? (
-    <div>
-      <div className="jd-sublabel">채용 담당자</div>
-      <div style={{ fontSize: 15, color: "var(--color-text)", lineHeight: 1.7 }}>
-        {[job.contactName, job.contactPhone, job.contactEmail].filter(Boolean).join("   ·   ")}
-      </div>
+    <div className="jd-guide-row">
+      <span className="jd-guide-label">담당자</span>
+      <span>{[job.contactName, job.contactPhone, job.contactEmail].filter(Boolean).join("   ·   ")}</span>
     </div>
   ) : null;
 
   const methodsInner = hasMethods ? (
-    <div>
-      <div className="jd-sublabel">접수방법</div>
-      <div style={{ fontSize: 15, color: "var(--color-text)" }}>{job.contactMethods.join("   ·   ")}</div>
+    <div className="jd-guide-row">
+      <span className="jd-guide-label">접수방법</span>
+      <span>{job.contactMethods.join("   ·   ")}</span>
     </div>
   ) : null;
 
   const processInner = hasProcess ? (
     <div>
-      <div className="jd-sublabel">채용 절차</div>
       {job.process?.length > 0 && (
-        <div className="job-detail-process">
-          {job.process.map((step: string, i: number) => (
-            <div key={i} className="job-detail-process-step">
-              <span className="job-detail-process-num">{i + 1}</span>
-              <span className="job-detail-process-label">{step}</span>
-              {i < job.process.length - 1 && (
-                <ChevronRight size={16} className="job-detail-process-arrow" />
-              )}
-            </div>
-          ))}
+        <div className="jd-guide-row">
+          <span className="jd-guide-label">채용 절차</span>
+          <span>{job.process.join("   →   ")}</span>
         </div>
       )}
       {job.notes?.trim() && (
         <div style={{
-          marginTop: job.process?.length > 0 ? "16px" : "0",
-          padding: "14px 16px", background: "#faf8fc", borderRadius: "8px",
-          fontSize: "15px", color: "#555", lineHeight: 1.6, whiteSpace: "pre-line"
+          marginTop: "6px", padding: "12px 14px", background: "#faf8fc", borderRadius: "8px",
+          fontSize: "14px", color: "#555", lineHeight: 1.6, whiteSpace: "pre-line"
         }}>
           {job.notes}
         </div>
@@ -194,17 +184,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
-  // 지원 안내: 채용 담당자 + 접수방법 + 채용 절차를 하나의 항목으로 묶음
   const applyGuideBlock = (hasContact || hasMethods || hasProcess) ? (
     <div className="jd-subblock" key="apply-guide">
       <h2 className="job-detail-subtitle">지원 안내</h2>
-      {(hasContact || hasMethods) && (
-        <div className="jd-2col" style={{ marginBottom: hasProcess ? 18 : 0 }}>
-          <div>{contactInner}</div>
-          <div>{methodsInner}</div>
-        </div>
-      )}
-      {hasProcess && <div>{processInner}</div>}
+      {contactInner}
+      {methodsInner}
+      {processInner}
     </div>
   ) : null;
 
