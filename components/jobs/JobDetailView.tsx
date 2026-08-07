@@ -120,9 +120,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </div>
         )}
         {job.benefits?.length > 0 && (
-          <div className="job-detail-company-row" style={{ gridColumn: "1 / -1" }}>
+          <div className="job-detail-company-row" style={{ alignItems: "flex-start" }}>
             <span className="job-detail-company-label">복리후생</span>
-            <span>{job.benefits.join("   ·   ")}</span>
+            <span>{job.benefits.join(", ")}</span>
           </div>
         )}
       </div>
@@ -275,7 +275,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             {job.headcount && (
               <div className="job-detail-meta-item">
                 <Users size={16} className="job-detail-meta-icon" />
-                <span className="job-detail-meta-label">모집</span>
+                <span className="job-detail-meta-label">모집인원</span>
                 <span className="job-detail-meta-value">{job.headcount}</span>
               </div>
             )}

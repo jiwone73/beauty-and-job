@@ -830,7 +830,9 @@ export default function JobPostForm({
   const handleSubmit = async (status: "draft" | "publish") => {
     if (mode === "admin") {
       if (nonMember) {
-        if (!newCompanyName.trim()) { alert("비회원 회사명을 입력해주세요."); return; }
+        if (!newCompanyName.trim()) { alert("회사명을 입력해주세요."); return; }
+        if (!nmIndustry) { alert("업종을 선택해주세요."); return; }
+        if (!nmAddress.trim()) { alert("회사 주소를 입력해주세요."); return; }
         if (applyMethod === "REDIRECT" && !externalApplyUrl.trim()) { alert("외부 링크형은 외부 지원 URL이 필요해요."); return; }
       } else if (!companyId) {
         alert("기업을 선택해주세요."); return;
@@ -839,6 +841,8 @@ export default function JobPostForm({
     if (showTypeToggle && !jobGroupType) { alert("채용유형(본사/매장)을 선택해주세요."); return; }
     if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
     if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
+    if (!form.career.trim()) { alert("경력을 선택해주세요."); return; }
+    if (!form.headcount) { alert("모집인원을 입력해주세요."); return; }
     if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
     // 상세요강 이미지 필수(발행 시). 경력·고용형태·급여·근무시간 등은 선택(미입력 시 '협의/무관'으로 표시).
     // 임시저장(draft)은 미완성 허용.
@@ -1244,7 +1248,7 @@ export default function JobPostForm({
                 {/* 경력 */}
                 <div className="job-detail-meta-item">
                   <Briefcase size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>경력</span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>경력<span style={{ color: "#e9a3a3" }}> *</span></span>
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
                     style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#cfcfcf", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                     <option value="">선택</option>
@@ -1254,7 +1258,7 @@ export default function JobPostForm({
                 {/* 모집인원 */}
                 <div className="job-detail-meta-item">
                   <Users size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999" }}>모집 <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
+                  <span style={{ fontSize: 15, color: "#999" }}>모집인원<span style={{ color: "#e9a3a3" }}> *</span> <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
                     onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
                     style={{ width: 30, border: "none", background: "transparent", fontSize: 15, color: "#333", padding: 0, textAlign: "center" }} /> 명</span>
                 </div>
@@ -1405,15 +1409,15 @@ export default function JobPostForm({
                       )}
                     </div>
                   </>)}
-                  {/* 복리후생 — 근무 조건 안에 포함 (팝오버 선택, 값은 콤마 텍스트로 줄바꿈 표시) */}
-                  <div className="job-detail-company-row" ref={welfareRef} style={{ gridColumn: "1 / -1", alignItems: "flex-start", position: "relative" }}>
+                  {/* 복리후생 — 근무시간과 같은 행(반열). 팝오버 선택, 값은 콤마 텍스트로 줄바꿈 표시 */}
+                  <div className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>복리후생</span>
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
                       {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "선택")}
                     </button>
                     {welfareOpen && !typeLocked && (
-                      <div style={{ position: "absolute", top: "100%", left: 72, right: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(360px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
                         {welfareOptions.map((b) => { const on = benefitTags.includes(b); return (
                           <button key={b} type="button" onClick={() => toggleBenefit(b)}
                             style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{b}</button>
@@ -1442,28 +1446,10 @@ export default function JobPostForm({
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ margin: "0 0 10px", fontWeight: 400, color: "#333" }}>지원 안내</div>
 
-              {/* 담당자 · 지원방법 — 관리자 외부공고에서만 (2열, 값 넘치면 열 안에서 줄바꿈) */}
+              {/* 지원방법(좌) · 채용담당자(우) — 관리자 외부공고에서만. 지원방법에 전화/이메일 있을 때만 담당자 활성화 */}
               {mode === "admin" && nonMember && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 28px", alignItems: "start" }}>
-                  {/* 채용담당자 (좌) — 이름/전화/메일 타이틀(플레이스홀더 없음, 폰트 통일) */}
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <span style={{ width: 76, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6 }}>채용담당자</span>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 12px", flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                        <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>이름</span>
-                        <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                        <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>전화</span>
-                        <input value={nmManagerPhone} onChange={(e) => setNmManagerPhone(e.target.value)} inputMode="numeric" style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                        <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>메일</span>
-                        <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
-                      </div>
-                    </div>
-                  </div>
-                  {/* 지원방법 (우) — 팝오버 선택, 값은 콤마 텍스트 */}
+                  {/* 지원방법 (좌) — 팝오버 */}
                   <div ref={contactMethodsRef} style={{ display: "flex", alignItems: "flex-start", gap: 10, position: "relative" }}>
                     <span style={{ width: 60, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6 }}>지원방법</span>
                     <button type="button" onClick={() => setContactMethodsOpen((v) => !v)}
@@ -1471,13 +1457,31 @@ export default function JobPostForm({
                       {contactMethods.length ? contactMethods.join(", ") : "선택"}
                     </button>
                     {contactMethodsOpen && (
-                      <div style={{ position: "absolute", top: "100%", left: 60, right: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(320px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
                         {["문자", "이메일", "전화", "온라인 지원"].map((m) => { const on = contactMethods.includes(m); return (
                           <button key={m} type="button" onClick={() => toggleContactMethod(m)}
                             style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{m}</button>
                         ); })}
                       </div>
                     )}
+                  </div>
+                  {/* 채용담당자 (우) — 전화 선택→전화칸, 이메일 선택→메일칸, 둘 중 하나라도 있으면 이름칸 활성화 */}
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                    <span style={{ width: 76, flexShrink: 0, color: (contactMethods.includes("전화") || contactMethods.includes("이메일")) ? "#999" : "#cfcfcf", fontSize: 15, paddingTop: 6 }}>채용담당자</span>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 12px", flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
+                        <span style={{ fontSize: 15, color: (contactMethods.includes("전화") || contactMethods.includes("이메일")) ? "#999" : "#cfcfcf", flexShrink: 0, width: 30 }}>이름</span>
+                        <input value={nmManagerName} disabled={!(contactMethods.includes("전화") || contactMethods.includes("이메일"))} onChange={(e) => setNmManagerName(e.target.value)} style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box", color: (contactMethods.includes("전화") || contactMethods.includes("이메일")) ? "#333" : "#c4c4c4", cursor: (contactMethods.includes("전화") || contactMethods.includes("이메일")) ? "text" : "not-allowed" }} />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
+                        <span style={{ fontSize: 15, color: contactMethods.includes("전화") ? "#999" : "#cfcfcf", flexShrink: 0, width: 30 }}>전화</span>
+                        <input value={nmManagerPhone} disabled={!contactMethods.includes("전화")} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box", color: contactMethods.includes("전화") ? "#333" : "#c4c4c4", cursor: contactMethods.includes("전화") ? "text" : "not-allowed" }} />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
+                        <span style={{ fontSize: 15, color: contactMethods.includes("이메일") ? "#999" : "#cfcfcf", flexShrink: 0, width: 30 }}>메일</span>
+                        <input value={nmContactEmail} disabled={!contactMethods.includes("이메일")} onChange={(e) => setNmContactEmail(e.target.value)} style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box", color: contactMethods.includes("이메일") ? "#333" : "#c4c4c4", cursor: contactMethods.includes("이메일") ? "text" : "not-allowed" }} />
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1569,24 +1573,6 @@ export default function JobPostForm({
             </div>
           </div>
 
-          {/* 비고 · 유의사항 */}
-          <h2 className="jobpost-section-title">비고</h2>
-          <div className="company-card" style={{ overflow: "visible", flex: 1 }}>
-            <div className="admin-form-body">
-
-              {/* 비고 · 유의사항 — 그 자리에서 바로 쓰는 인라인 textarea */}
-              <div style={{ padding: "16px 0 0" }}>
-                <label className="admin-form-label" style={{ margin: "0 0 6px", display: "block" }}>비고 · 유의사항</label>
-                <textarea
-                  placeholder={"지원 시 유의사항이나 안내문을 자유롭게 입력하세요. 예) ※ 서류 합격자에 한하여 개별 연락드립니다."}
-                  value={notes}
-                  rows={notes ? 3 : 2}
-                  onChange={(e) => setNotes(e.target.value)}
-                  onInput={(e) => { const t = e.currentTarget; t.style.height = "auto"; t.style.height = Math.max(t.scrollHeight, 40) + "px"; }}
-                  style={{ width: "100%", boxSizing: "border-box", border: "none", background: "transparent", resize: "vertical", fontSize: 14, color: "#333", lineHeight: 1.7, fontFamily: "inherit", outline: "none", padding: 0 }} />
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1599,10 +1585,10 @@ export default function JobPostForm({
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 20px" }}>
             <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>기업 소개</div><textarea ref={nmDescRef} style={{ ...inp, height: "auto", minHeight: 88, padding: "10px 12px", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden" }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} placeholder="회사를 소개하는 글을 입력해주세요. 공고 상세의 '기업 정보'에 표시돼요." /></div>
             <div><div style={lbl}>회사명 <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} placeholder="회사명" /></div>
-            <div><div style={lbl}>업종</div><select style={{ ...sel, color: nmIndustry ? "#333" : "#cfcfcf" }} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
+            <div><div style={lbl}>업종 <span style={{ color: "#e74c3c" }}>*</span></div><select style={{ ...sel, color: nmIndustry ? "#333" : "#cfcfcf" }} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value="">선택</option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
             <div><div style={lbl}>브랜드명</div><input style={inp} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="브랜드명 (선택)" /></div>
             <div><div style={lbl}>웹사이트</div><input style={inp} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} placeholder="https:// (선택)" /></div>
-            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>주소</div><input style={inp} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역 (선택)" /></div>
+            <div style={{ gridColumn: "1 / -1" }}><div style={lbl}>주소 <span style={{ color: "#e74c3c" }}>*</span></div><input style={inp} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} placeholder="회사 주소/지역" /></div>
             <div><div style={lbl}>사원수</div><select style={{ ...sel, color: nmSize ? "#333" : "#cfcfcf" }} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value="">선택</option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
             <div><div style={lbl}>설립연도</div><input type="number" min="1900" max={new Date().getFullYear()} style={inp} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} placeholder="예) 2020" /></div>
             <div><div style={lbl}>대표자</div><input style={inp} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} placeholder="대표자명 (선택)" /></div>
