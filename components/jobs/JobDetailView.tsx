@@ -146,21 +146,21 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   ) : null;
 
   // 복리후생·채용 담당자·채용 절차도 '기본정보' 카드 안의 서브블록으로 합침(빈 값은 자동 숨김).
-  // 채용 담당자 · 채용 절차는 각각 별도 항목(빈 값 자동 숨김).
-  const hasContact = !!(job.contactName || job.contactPhone || job.contactEmail);
+  // 담당자: 전화·이메일 중 하나라도 있어야 표기. 이름 없으면 '인사담당'으로.
+  const hasContact = !!(job.contactPhone || job.contactEmail);
   const hasMethods = !!(job.contactMethods?.length);
   const hasProcess = !!(job.process?.length > 0 || job.notes?.trim());
-  // 지원 안내: 담당자 · 접수방법 · 채용 절차 (라벨 + 값 한 줄)
+  // 지원 안내: 담당자 · 지원방법 · 채용 절차 (라벨 + 값 한 줄)
   const contactInner = hasContact ? (
     <div className="jd-guide-row">
       <span className="jd-guide-label">담당자</span>
-      <span>{[job.contactName, job.contactPhone, job.contactEmail].filter(Boolean).join("   ·   ")}</span>
+      <span>{[job.contactName || "인사담당", job.contactPhone, job.contactEmail].filter(Boolean).join("   ·   ")}</span>
     </div>
   ) : null;
 
   const methodsInner = hasMethods ? (
     <div className="jd-guide-row">
-      <span className="jd-guide-label">접수방법</span>
+      <span className="jd-guide-label">지원방법</span>
       <span>{job.contactMethods.join("   ·   ")}</span>
     </div>
   ) : null;
@@ -187,8 +187,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const applyGuideBlock = (hasContact || hasMethods || hasProcess) ? (
     <div className="jd-subblock" key="apply-guide">
       <h2 className="job-detail-subtitle">지원 안내</h2>
-      {contactInner}
-      {methodsInner}
+      {(hasContact || hasMethods) && (
+        <div className="jd-2col">
+          <div>{contactInner}</div>
+          <div>{methodsInner}</div>
+        </div>
+      )}
       {processInner}
     </div>
   ) : null;

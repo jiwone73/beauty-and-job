@@ -134,9 +134,11 @@ export default function JobPostForm({
   const [nmCoverUploading, setNmCoverUploading] = useState(false);
   const [nmManagerName, setNmManagerName] = useState("");
   const [nmManagerPhone, setNmManagerPhone] = useState("");
-  const [contactMethods, setContactMethods] = useState<string[]>([]); // 접수방법: 문자·이메일·전화·온라인 지원(복수)
+  const [contactMethods, setContactMethods] = useState<string[]>([]); // 지원방법: 문자·이메일·전화·온라인 지원(복수)
   const toggleContactMethod = (m: string) =>
     setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]));
+  const [contactMethodsOpen, setContactMethodsOpen] = useState(false);
+  const contactMethodsRef = useRef<HTMLDivElement>(null);
   const [parseUrl, setParseUrl] = useState("");
   const [importMode, setImportMode] = useState<"url" | "ocr">("url"); // 직접입력(URL) vs OCR(캡처)
   const [parsing, setParsing] = useState(false);
@@ -267,6 +269,14 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [workcondOpen]);
+  useEffect(() => {
+    if (!contactMethodsOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (contactMethodsRef.current && !contactMethodsRef.current.contains(e.target as Node)) setContactMethodsOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [contactMethodsOpen]);
   // 근무 조건(매장직): 요일 / 시간 / 시간대
   const [workDays, setWorkDays] = useState<string[]>([]);
   const [workDaysNego, setWorkDaysNego] = useState(false);
@@ -1382,10 +1392,21 @@ export default function JobPostForm({
                       )}
                     </div>
                   </>)}
-                  {/* 복리후생 — 근무 조건 안에 포함 */}
-                  <div className="job-detail-company-row" style={{ gridColumn: "1 / -1", alignItems: "center" }}>
+                  {/* 복리후생 — 근무 조건 안에 포함 (팝오버 선택, 값은 콤마 텍스트로 줄바꿈 표시) */}
+                  <div className="job-detail-company-row" ref={welfareRef} style={{ gridColumn: "1 / -1", alignItems: "flex-start", position: "relative" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>복리후생</span>
-                    {typeLocked ? <span style={{ fontSize: 12, color: "#cfcfcf" }}>채용유형을 먼저 선택하세요</span> : <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px" }}>{welfareOptions.map((b) => { const on = benefitTags.includes(b); return (<button key={b} type="button" onClick={() => toggleBenefit(b)} style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>{b}</button>); })}</div>}
+                    <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
+                      style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
+                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "선택")}
+                    </button>
+                    {welfareOpen && !typeLocked && (
+                      <div style={{ position: "absolute", top: "100%", left: 72, right: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {welfareOptions.map((b) => { const on = benefitTags.includes(b); return (
+                          <button key={b} type="button" onClick={() => toggleBenefit(b)}
+                            style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{b}</button>
+                        ); })}
+                      </div>
+                    )}
                   </div>
                   </div>
                 </div>
@@ -1408,48 +1429,61 @@ export default function JobPostForm({
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ margin: "0 0 10px", fontWeight: 400, color: "#333" }}>지원 안내</div>
 
-              {/* 담당자 · 접수방법 — 관리자 외부공고에서만 (라벨 + 값 한 줄) */}
-              {mode === "admin" && nonMember && (<>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
-                  <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6 }}>담당자</span>
-                  <div style={{ display: "flex", gap: 12, flex: 1, flexWrap: "wrap" }}>
-                    <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="이름" style={{ flex: "1 1 80px", minWidth: 70, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
-                    <input value={nmManagerPhone} onChange={(e) => setNmManagerPhone(e.target.value)} inputMode="numeric" placeholder="전화번호" style={{ flex: "1.3 1 120px", minWidth: 110, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
-                    <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="이메일주소" style={{ flex: "1.6 1 140px", minWidth: 130, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
+              {/* 담당자 · 지원방법 — 관리자 외부공고에서만 (2열, 값 넘치면 열 안에서 줄바꿈) */}
+              {mode === "admin" && nonMember && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 28px", alignItems: "start" }}>
+                  {/* 담당자 (좌) — 이름/전화/메일 타이틀 */}
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                    <span style={{ width: 56, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6 }}>담당자</span>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 12px", flex: 1, minWidth: 0 }}>
+                      <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="이름" style={{ flex: "1 1 100%", border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
+                        <span style={{ fontSize: 13, color: "#bbb", flexShrink: 0 }}>전화</span>
+                        <input value={nmManagerPhone} onChange={(e) => setNmManagerPhone(e.target.value)} inputMode="numeric" placeholder="전화번호" style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
+                        <span style={{ fontSize: 13, color: "#bbb", flexShrink: 0 }}>메일</span>
+                        <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="이메일주소" style={{ flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #ececf2", background: "transparent", fontSize: 15, outline: "none", padding: "6px 2px", boxSizing: "border-box" }} />
+                      </div>
+                    </div>
+                  </div>
+                  {/* 지원방법 (우) — 팝오버 선택, 값은 콤마 텍스트 */}
+                  <div ref={contactMethodsRef} style={{ display: "flex", alignItems: "flex-start", gap: 10, position: "relative" }}>
+                    <span style={{ width: 60, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6 }}>지원방법</span>
+                    <button type="button" onClick={() => setContactMethodsOpen((v) => !v)}
+                      style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: "6px 2px", fontSize: 15, cursor: "pointer", lineHeight: 1.6, color: contactMethods.length ? "#333" : "#cfcfcf" }}>
+                      {contactMethods.length ? contactMethods.join(", ") : "선택"}
+                    </button>
+                    {contactMethodsOpen && (
+                      <div style={{ position: "absolute", top: "100%", left: 60, right: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {["문자", "이메일", "전화", "온라인 지원"].map((m) => { const on = contactMethods.includes(m); return (
+                          <button key={m} type="button" onClick={() => toggleContactMethod(m)}
+                            style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{m}</button>
+                        ); })}
+                      </div>
+                    )}
                   </div>
                 </div>
+              )}
+
+              {/* 채용 절차 — 본사(기업) 공고에서만 노출 */}
+              {jobGroupType === "기업" && (
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
-                  <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>접수방법</span>
+                  <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차</span>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", flex: 1 }}>
-                    {["문자", "이메일", "전화", "온라인 지원"].map((m) => {
-                      const on = contactMethods.includes(m);
+                    {PRESET_PROCESS.기업.map((p) => {
+                      const on = hiringProcess.includes(p);
                       return (
-                        <button key={m} type="button" onClick={() => toggleContactMethod(m)}
+                        <button key={p} type="button"
+                          onClick={() => setHiringProcess(on ? hiringProcess.filter((x) => x !== p) : [...hiringProcess, p])}
                           style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>
-                          {m}
+                          {p}
                         </button>
                       );
                     })}
                   </div>
                 </div>
-              </>)}
-
-              {/* 채용 절차 — 라벨 + 칩 한 줄(팝오버 없이 직접 선택, 탭 순서 = 전형 순서) */}
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
-                <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차</span>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", flex: 1 }}>
-                  {(jobGroupType === "매장" ? PRESET_PROCESS.매장 : PRESET_PROCESS.기업).map((p) => {
-                    const on = hiringProcess.includes(p);
-                    return (
-                      <button key={p} type="button"
-                        onClick={() => setHiringProcess(on ? hiringProcess.filter((x) => x !== p) : [...hiringProcess, p])}
-                        style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>
-                        {p}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              )}
               </div>
             </div>
           </div>
