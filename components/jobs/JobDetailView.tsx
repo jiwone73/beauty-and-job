@@ -69,7 +69,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const companyRows: [string, ReactNode][] = [];
   if (ci.name) companyRows.push(["회사명", ci.name]);
   if (ci.brandName) companyRows.push(["브랜드명", ci.brandName]);
-  if (ci.companyType) companyRows.push(["기업 유형", ci.companyType]);
   if (ci.industry) companyRows.push(["업종", ci.industry]);
   if (ci.representative) companyRows.push(["대표자", ci.representative]);
   if (ci.size) companyRows.push(["규모", ci.size]);
