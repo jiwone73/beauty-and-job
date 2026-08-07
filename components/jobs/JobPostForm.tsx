@@ -1406,10 +1406,14 @@ export default function JobPostForm({
                   src={`https://maps.google.com/maps?q=${encodeURIComponent(nmAddress)}&output=embed&hl=ko`} />
               )}
 
-              {/* 채용 담당자 (기본정보 카드) — 관리자 외부공고에서만 */}
-              {mode === "admin" && nonMember && (
-                <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
-                  <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>채용 담당자</div>
+              {/* 지원 안내 (채용 담당자 · 접수방법 · 채용 절차) */}
+              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+                <div className="admin-form-label" style={{ margin: "0 0 10px", fontWeight: 400, color: "#333" }}>지원 안내</div>
+
+              {/* 채용 담당자 · 접수방법 — 관리자 외부공고에서만 */}
+              {mode === "admin" && nonMember && (<>
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 15, color: "#999", margin: "0 0 6px" }}>채용 담당자</div>
                   <div className="job-detail-company-info">
                     <div className="job-detail-company-row">
                       <span className="job-detail-company-label">이름</span>
@@ -1423,30 +1427,30 @@ export default function JobPostForm({
                       <span className="job-detail-company-label">이메일</span>
                       <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} style={{ border: "none", background: "transparent", fontSize: 15, outline: "none", padding: 0, width: "100%" }} placeholder="선택" />
                     </div>
-                    <div className="job-detail-company-row" style={{ alignItems: "center" }}>
-                      <span className="job-detail-company-label">접수방법</span>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
-                        {["문자", "이메일", "전화", "온라인 지원"].map((m) => {
-                          const on = contactMethods.includes(m);
-                          return (
-                            <button key={m} type="button" onClick={() => toggleContactMethod(m)}
-                              style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>
-                              {on ? "✓ " : ""}{m}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
                   </div>
                 </div>
-              )}
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 15, color: "#999", margin: "0 0 6px" }}>접수방법</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
+                    {["문자", "이메일", "전화", "온라인 지원"].map((m) => {
+                      const on = contactMethods.includes(m);
+                      return (
+                        <button key={m} type="button" onClick={() => toggleContactMethod(m)}
+                          style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>
+                          {on ? "✓ " : ""}{m}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>)}
 
-              {/* 채용 절차 (기본정보 카드) */}
-              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+              {/* 채용 절차 */}
+              <div>
                 <div className="admin-form-row">
                   <div ref={processModalOpen ? processPopRef : undefined} style={{ position: "relative", width: "100%" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-                      <span style={{ fontSize: "15px", color: "#333" }}>채용 절차</span>
+                      <span style={{ fontSize: "15px", color: "#999" }}>채용 절차</span>
                       {processFilled && (
                         <button type="button" className="resume-icon-btn danger" aria-label="삭제" title="삭제"
                           onClick={() => { if (confirm("채용 절차를 삭제할까요?")) setHiringProcess([]); }}>
@@ -1512,6 +1516,7 @@ export default function JobPostForm({
                     )}
                   </div>
                 </div>
+              </div>
               </div>
             </div>
           </div>

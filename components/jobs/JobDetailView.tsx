@@ -147,11 +147,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   // 복리후생·채용 담당자·채용 절차도 '기본정보' 카드 안의 서브블록으로 합침(빈 값은 자동 숨김).
   // 채용 담당자 · 채용 절차는 각각 별도 항목(빈 값 자동 숨김).
-  const hasContact = !!(job.contactName || job.contactPhone || job.contactEmail || job.contactMethods?.length);
+  const hasContact = !!(job.contactName || job.contactPhone || job.contactEmail);
+  const hasMethods = !!(job.contactMethods?.length);
   const hasProcess = !!(job.process?.length > 0 || job.notes?.trim());
   const contactInner = hasContact ? (
     <div>
-      <h2 className="job-detail-subtitle">채용 담당자</h2>
+      <div className="jd-sublabel">채용 담당자</div>
       <div className="job-detail-company-info">
         {job.contactName && (
           <div className="job-detail-company-row">
@@ -171,19 +172,20 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             <span>{job.contactEmail}</span>
           </div>
         )}
-        {job.contactMethods?.length > 0 && (
-          <div className="job-detail-company-row">
-            <span className="job-detail-company-label">접수방법</span>
-            <span>{job.contactMethods.join(", ")}</span>
-          </div>
-        )}
       </div>
+    </div>
+  ) : null;
+
+  const methodsInner = hasMethods ? (
+    <div>
+      <div className="jd-sublabel">접수방법</div>
+      <div style={{ fontSize: 15, color: "var(--color-text)" }}>{job.contactMethods.join("   ·   ")}</div>
     </div>
   ) : null;
 
   const processInner = hasProcess ? (
     <div>
-      <h2 className="job-detail-subtitle">채용 절차</h2>
+      <div className="jd-sublabel">채용 절차</div>
       {job.process?.length > 0 && (
         <div className="job-detail-process">
           {job.process.map((step: string, i: number) => (
@@ -209,11 +211,14 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
-  const contactBlock = hasContact ? (
-    <div className="jd-subblock" key="contact">{contactInner}</div>
-  ) : null;
-  const processBlock = hasProcess ? (
-    <div className="jd-subblock" key="process">{processInner}</div>
+  // 지원 안내: 채용 담당자 + 접수방법 + 채용 절차를 하나의 항목으로 묶음
+  const applyGuideBlock = (hasContact || hasMethods || hasProcess) ? (
+    <div className="jd-subblock" key="apply-guide">
+      <h2 className="job-detail-subtitle">지원 안내</h2>
+      {hasContact && <div style={{ marginBottom: 18 }}>{contactInner}</div>}
+      {hasMethods && <div style={{ marginBottom: hasProcess ? 18 : 0 }}>{methodsInner}</div>}
+      {hasProcess && <div>{processInner}</div>}
+    </div>
   ) : null;
 
   return (
@@ -304,8 +309,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {/* 근무조건·근무지역·복리후생·채용담당자·채용절차를 기본정보 카드 안에 통합(빈 값 자동 숨김) */}
           {workCondSection}
           {locationSection}
-          {contactBlock}
-          {processBlock}
+          {applyGuideBlock}
         </div>
 
         {/* 상세 내용 — 이미지형이면 상세요강(이미지) + 자유서술, 아니면 텍스트 항목(포지션 소개·자격요건·우대사항·주요업무) */}
