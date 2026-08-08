@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, type ChangeEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -1104,9 +1104,33 @@ export default function JobPostForm({
         headerSlot
       )}
 
+      {/* 채용유형(매장/오피스) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
+      {showTypeToggle && (
+        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 12px", boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "var(--color-primary)", fontSize: 16, fontWeight: 400 }}>
+            <Settings size={16} /> 채용유형
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            {([["매장", "매장"], ["기업", "오피스"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
+              const on = jobGroupType === val;
+              return (
+                <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 15, color: on ? "#1a1a1a" : "#666" }}>
+                  <span style={{ width: 18, height: 18, borderRadius: "50%", border: on ? "1.5px solid #5f0080" : "1.5px solid #cfcfcf", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {on && <span style={{ width: 9, height: 9, borderRadius: "50%", background: "#5f0080" }} />}
+                  </span>
+                  <input type="radio" name="jobGroupType" checked={on} onChange={() => setJobGroupType(val)} style={{ position: "absolute", opacity: 0, width: 0, height: 0 }} />
+                  {label}
+                </label>
+              );
+            })}
+          </div>
+          {!jobGroupType && <span style={{ fontSize: 12, color: "#e9a3a3" }}>선택하면 급여·복지 등 항목이 열립니다.</span>}
+        </div>
+      )}
+
       {mode === "admin" && (
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기 (자동 작성)" : "타 사이트 공고 불러오기 (자동 작성)"}</div>
+          <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</div>
 
           {/* ① 회사명으로 공고 찾기 (헤어인잡) */}
           <div style={{ marginBottom: 10 }}>
@@ -1226,28 +1250,6 @@ export default function JobPostForm({
       )}
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
-
-      {/* 채용유형: 매장 / 오피스 (관리자·겸업 기업회원). 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
-      {showTypeToggle && (
-        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
-          <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>채용유형</span>
-          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            {([["매장", "매장"], ["기업", "오피스"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
-              const on = jobGroupType === val;
-              return (
-                <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 15, color: on ? "#1a1a1a" : "#666" }}>
-                  <span style={{ width: 18, height: 18, borderRadius: "50%", border: on ? "1.5px solid #5f0080" : "1.5px solid #cfcfcf", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {on && <span style={{ width: 9, height: 9, borderRadius: "50%", background: "#5f0080" }} />}
-                  </span>
-                  <input type="radio" name="jobGroupType" checked={on} onChange={() => setJobGroupType(val)} style={{ position: "absolute", opacity: 0, width: 0, height: 0 }} />
-                  {label}
-                </label>
-              );
-            })}
-          </div>
-          {!jobGroupType && <span style={{ fontSize: 12, color: "#e9a3a3" }}>선택하면 급여·복지 등 항목이 열립니다.</span>}
-        </div>
-      )}
 
       {/* 공고 상단 이미지 */}
       {mode === "company" ? (
