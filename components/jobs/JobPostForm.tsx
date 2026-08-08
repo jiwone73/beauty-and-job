@@ -1145,14 +1145,14 @@ export default function JobPostForm({
       {/* 채용유형(매장/오피스) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
       {showTypeToggle && (
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 12px", boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "var(--color-primary)", fontSize: 16, fontWeight: 400 }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "var(--color-primary)", fontSize: 15, fontWeight: 400 }}>
             <Settings size={16} /> 채용유형
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
             {([["매장", "매장"], ["기업", "오피스"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
               const on = jobGroupType === val;
               return (
-                <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 15, color: on ? "#1a1a1a" : "#666" }}>
+                <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 15, fontWeight: 400, color: on ? "#1a1a1a" : "#666" }}>
                   <span style={{ width: 18, height: 18, borderRadius: "50%", border: on ? "1.5px solid #5f0080" : "1.5px solid #cfcfcf", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     {on && <span style={{ width: 9, height: 9, borderRadius: "50%", background: "#5f0080" }} />}
                   </span>
@@ -1169,10 +1169,10 @@ export default function JobPostForm({
       {mode === "admin" && (
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
           <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 16px", marginBottom: 8, marginLeft: 2 }}>
-            <span style={{ fontWeight: 400, fontSize: 16, color: "#5f0080" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</span>
-            <div style={{ display: "flex", gap: 16, fontSize: 13 }}>
+            <span style={{ fontWeight: 400, fontSize: 15, color: "#5f0080" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</span>
+            <div style={{ display: "flex", gap: 16, fontSize: 15 }}>
               {([["url", "회사명 / URL"], ["ocr", "화면 캡처"]] as ["url" | "ocr", string][]).map(([v, l]) => (
-                <label key={v} style={{ display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", color: importMode === v ? "#1a1a1a" : "#777" }}>
+                <label key={v} style={{ display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", fontSize: 15, fontWeight: 400, color: importMode === v ? "#1a1a1a" : "#777" }}>
                   <input type="radio" name="importMode" checked={importMode === v} onChange={() => { setImportMode(v); setParseMsg(""); }} /> {l}
                 </label>
               ))}
@@ -1233,11 +1233,10 @@ export default function JobPostForm({
               </label>
               {ocrFiles.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>공고 화면 캡처를 여기로 드래그하거나 추가하세요. 긴 공고는 위→아래로 여러 장 캡처하면 됩니다.</span>}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
               <button type="button" onClick={() => runOcrMulti(ocrFiles)} disabled={parsing || ocrFiles.length === 0}
-                style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: (parsing || ocrFiles.length === 0) ? 0.5 : 1 }}>
-                {parsing ? "인식 중..." : `인식하기${ocrFiles.length ? ` (${ocrFiles.length}장)` : ""}`}</button>
-              <span style={{ fontSize: 11.5, color: "#999" }}>여러 장을 위→아래 순서로 올리면 한 공고로 합쳐 인식해요.</span>
+                style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: (parsing || ocrFiles.length === 0) ? 0.5 : 1 }}>
+                {parsing ? "불러오는 중..." : `불러오기${ocrFiles.length ? ` (${ocrFiles.length}장)` : ""}`}</button>
             </div>
           </div>
           )}
