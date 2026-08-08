@@ -1240,7 +1240,7 @@ export default function JobPostForm({
               </label>
               {ocrFiles.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>공고 화면 캡처를 여기로 드래그하거나 추가하세요. 긴 공고는 위→아래로 여러 장 캡처하면 됩니다.</span>}
               <button type="button" onClick={() => runOcrMulti(ocrFiles)} disabled={parsing || ocrFiles.length === 0}
-                style={{ marginLeft: "auto", alignSelf: "flex-end", padding: "8px 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: (parsing || ocrFiles.length === 0) ? 0.5 : 1 }}>
+                style={{ marginLeft: "auto", alignSelf: "flex-end", padding: "8px 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: (parsing || ocrFiles.length === 0) ? "default" : "pointer", opacity: parsing ? 0.6 : 1 }}>
                 {parsing ? "불러오는 중..." : `불러오기${ocrFiles.length ? ` (${ocrFiles.length}장)` : ""}`}</button>
             </div>
           </div>
