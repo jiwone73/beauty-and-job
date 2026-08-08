@@ -831,6 +831,16 @@ export default function JobPostForm({
     runParse(url);
   };
 
+  // 통합 검색: 입력값이 URL 형태면 바로 불러오기, 아니면 회사명으로 공고 검색
+  const isUrlLike = (s: string) =>
+    /^https?:\/\//i.test(s) || /^www\./i.test(s) || /[a-z0-9가-힣-]+\.[a-z]{2,}(\/|\?|:|$)/i.test(s);
+  const runImport = () => {
+    const q = findQuery.trim();
+    if (!q) { setFindMsg("회사명 또는 공고 URL을 입력해주세요."); return; }
+    if (isUrlLike(q)) { setFindResults([]); setFindMsg(""); setParseUrl(q); runParse(q); }
+    else { runFindByCompany(); }
+  };
+
   // 큐레이션(관리자 전용): 현재 채워진 내용을 뷰티워크 톤·형식으로 AI가 다듬기
   const runCurate = async () => {
     const hasAny = [form.title, nmDescription, form.description, form.responsibilities, form.requirements, form.preferred, form.benefits, notes].some((v) => (v || "").trim());
@@ -1133,16 +1143,17 @@ export default function JobPostForm({
           <div style={{ fontWeight: 400, fontSize: 16, color: "#5f0080", marginBottom: 8, marginLeft: 2, textAlign: "left" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</div>
           <div style={{ background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
 
-          {/* ① 회사명으로 공고 찾기 (헤어인잡) */}
+          {/* 통합 검색: 회사명 또는 공고 URL을 한 칸에서 자동 구분 */}
           <div style={{ marginBottom: 10 }}>
             <div style={{ display: "flex", gap: 8 }}>
-              <input className="admin-form-input" style={{ flex: 1 }} placeholder="회사명으로 공고 찾기 (예: 준오헤어, 리안헤어)"
+              <input className="admin-form-input" style={{ flex: 1 }} placeholder="회사명 또는 공고 URL 입력 (예: 준오헤어 · https://…)"
                 value={findQuery} onChange={(e) => setFindQuery(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runFindByCompany(); } }} />
-              <button type="button" onClick={runFindByCompany} disabled={finding}
-                style={{ flexShrink: 0, padding: "0 16px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: finding ? 0.6 : 1, whiteSpace: "nowrap" }}>
-                {finding ? "찾는 중..." : "🔍 공고 찾기"}</button>
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runImport(); } }} />
+              <button type="button" onClick={runImport} disabled={finding || parsing}
+                style={{ flexShrink: 0, padding: "0 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: (finding || parsing) ? 0.6 : 1, whiteSpace: "nowrap" }}>
+                {(finding || parsing) ? "불러오는 중..." : "불러오기"}</button>
             </div>
+            <div style={{ fontSize: 12, color: "#999", marginTop: 6 }}>회사명을 넣으면 공고 목록을 보여주고, URL을 넣으면 바로 불러와요.</div>
             {findMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: findResults.length ? "#10b981" : "#c0392b" }}>{findMsg}</div>}
             {findResults.length > 0 && (
               <div style={{ marginTop: 8, maxHeight: 220, overflowY: "auto", border: "1px solid #e5e0eb", borderRadius: 8, background: "#fff" }}>
@@ -1161,52 +1172,16 @@ export default function JobPostForm({
                 ))}
               </div>
             )}
-            <div style={{ borderTop: "1px dashed #d9d0e6", margin: "10px 0 8px" }} />
-            <div style={{ fontSize: 12, color: "#888", marginBottom: 6 }}>또는 직접 불러오기:</div>
-
-            {/* 불러오기 방식: 공고 URL 직접입력 / OCR(화면 캡처 인식) */}
-            <div style={{ display: "flex", gap: 16, marginBottom: 8, fontSize: 13 }}>
-              <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", color: "#444" }}>
-                <input type="radio" name="importMode" checked={importMode === "url"} onChange={() => { setImportMode("url"); setParseMsg(""); }} /> 공고 URL 직접입력
-              </label>
-              <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", color: "#444" }}>
-                <input type="radio" name="importMode" checked={importMode === "ocr"} onChange={() => { setImportMode("ocr"); setParseMsg(""); }} /> OCR (공고 화면 캡처 인식)
-              </label>
-            </div>
           </div>
 
-          {importMode === "url" ? (
-            // 불러오기 전: URL 입력창. 불러오기 후: URL을 링크로 표시(클릭 시 원문 새 창) + '수정'
-            <div style={{ position: "relative" }}>
-              {(!urlEditing && parseUrl.trim()) ? (
-                <div className="admin-form-input" style={{ width: "100%", paddingRight: 128, boxSizing: "border-box", display: "flex", alignItems: "center", overflow: "hidden" }}>
-                  <a href={/^https?:\/\//i.test(parseUrl.trim()) ? parseUrl.trim() : "https://" + parseUrl.trim()} target="_blank" rel="noopener noreferrer"
-                    title="클릭하면 원문 공고가 새 창으로 열려요"
-                    style={{ flex: 1, minWidth: 0, color: "#5f0080", textDecoration: "underline", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 13.5 }}>
-                    {parseUrl.trim()}
-                  </a>
-                  <button type="button" onClick={() => setUrlEditing(true)}
-                    style={{ position: "absolute", top: 4, bottom: 4, right: 90, padding: "0 10px", borderRadius: 7, border: "1px solid #ddd", background: "#fff", color: "#888", fontSize: 12.5, cursor: "pointer" }}>수정</button>
-                </div>
-              ) : (
-                <input className="admin-form-input" style={{ width: "100%", paddingRight: 96, boxSizing: "border-box" }}
-                  placeholder="공고 URL 붙여넣기 (https://...)" value={parseUrl}
-                  onChange={(e) => setParseUrl(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runParse(); } }} />
-              )}
-              <button type="button" onClick={() => runParse()} disabled={parsing}
-                style={{ position: "absolute", top: 4, bottom: 4, right: 4, padding: "0 16px", borderRadius: 7, border: "none", background: "#5f0080", color: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>
-                {parsing ? "불러오는 중..." : "불러오기"}</button>
-            </div>
-          ) : (
-            // OCR: 캡처 이미지 업로드 → 서버가 비전으로 화면 글자 인식
-            <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, minHeight: 92, padding: "14px", borderRadius: 8, border: "1.5px dashed #c9b8de", background: "#fff", color: "#5f0080", cursor: parsing ? "default" : "pointer", textAlign: "center" }}>
-              <input type="file" accept="image/*" hidden disabled={parsing}
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) runOcr(f); e.currentTarget.value = ""; }} />
-              <span style={{ fontWeight: 700, fontSize: 13.5 }}>{parsing ? "이미지 인식 중..." : "📷 공고 화면 캡처 이미지 올리기"}</span>
-              <span style={{ fontSize: 11.5, color: "#999" }}>클릭해 이미지를 선택하면 화면 속 글자를 읽어 자동으로 채워요 (인스타·비정형 공고에 적합)</span>
-            </label>
-          )}
+          {/* OCR(보조) — 화면 캡처 인식. 화면에 보이는 부분만 인식됨 */}
+          <div style={{ borderTop: "1px dashed #d9d0e6", margin: "4px 0 8px" }} />
+          <label style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 8, border: "1.5px dashed #c9b8de", background: "#fff", color: "#5f0080", cursor: parsing ? "default" : "pointer" }}>
+            <input type="file" accept="image/*" hidden disabled={parsing}
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) runOcr(f); e.currentTarget.value = ""; }} />
+            <span style={{ fontWeight: 700, fontSize: 13, whiteSpace: "nowrap" }}>📷 {parsing ? "이미지 인식 중..." : "화면 캡처(OCR)로 인식"}</span>
+            <span style={{ fontSize: 11.5, color: "#999" }}>인스타·비정형 공고용 · 화면에 보이는 부분만 인식돼요</span>
+          </label>
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
           {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
           {mode === "admin" && nonMember && (
