@@ -94,6 +94,9 @@ export async function POST(req: NextRequest) {
   const b = await req.json().catch(() => ({}));
   const pastedText = (b.text || "").trim();
   const imageUrl = (b.image_url || "").trim(); // OCR: 공고 화면 캡처 이미지 URL(업로드 후 전달)
+  // OCR 다중 이미지: 긴 공고를 여러 장 캡처해 함께 인식(위→아래 순서 유지)
+  const imageUrls: string[] = [imageUrl, ...(Array.isArray(b.image_urls) ? b.image_urls : [])]
+    .map((s: any) => String(s || "").trim()).filter(Boolean).slice(0, 6);
 
   let url = (b.url || "").trim();
   let hostname = "";
@@ -106,7 +109,7 @@ export async function POST(req: NextRequest) {
   let ogImage = "";
   let images: string[] = [];
 
-  if (!pastedText && !url && !imageUrl) return err("VALIDATION_001", "URL·공고 텍스트·이미지 중 하나를 입력해주세요.", 400);
+  if (!pastedText && !url && imageUrls.length === 0) return err("VALIDATION_001", "URL·공고 텍스트·이미지 중 하나를 입력해주세요.", 400);
 
   // URL이 있으면 서버에서 fetch. 실패하더라도 붙여넣은 본문이 있으면 계속 진행.
   if (url) {
@@ -401,26 +404,31 @@ export async function POST(req: NextRequest) {
 - 모르는 값은 빈 문자열 "" 또는 빈 배열 [].`;
       const user = `URL: ${url || "(없음)"}\n호스트: ${hostname || "(없음)"}\n\n[붙여넣은 공고 본문 · 최우선 신뢰]\n${bodyText || "(없음)"}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${pageText || "(없음)"}`;
 
-      // OCR 모드: 캡처 이미지를 받아 비전으로 읽는다(텍스트/URL 없이 이미지 한 장).
+      // OCR 모드: 캡처 이미지(여러 장 가능)를 비전으로 읽는다. 위→아래 순서대로 이어붙여 한 공고로 인식.
       let userContent: any = user;
-      if (imageUrl) {
-        try {
-          const ir = await fetch(imageUrl, {
-            headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" },
-          });
-          if (ir.ok) {
+      if (imageUrls.length) {
+        const imgBlocks: any[] = [];
+        for (const iu of imageUrls) {
+          try {
+            const ir = await fetch(iu, {
+              headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" },
+            });
+            if (!ir.ok) continue;
             const ibuf = Buffer.from(await ir.arrayBuffer());
             let mt = (ir.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
             if (!/^image\/(jpeg|png|gif|webp)$/.test(mt)) mt = "image/jpeg";
             if (ibuf.byteLength > 0 && ibuf.byteLength <= 5 * 1024 * 1024) {
-              userContent = [
-                { type: "image", source: { type: "base64", media_type: mt, data: ibuf.toString("base64") } },
-                { type: "text", text: `아래 이미지는 채용공고 화면을 캡처한 거야. 이미지 속 글자를 정확히 읽어(OCR) 위 규칙대로 JSON "하나만" 출력해. URL·호스트 정보는 없어.\n\n${user}` },
-              ];
+              imgBlocks.push({ type: "image", source: { type: "base64", media_type: mt, data: ibuf.toString("base64") } });
             }
+          } catch (e) {
+            console.error("[ocr image fetch]", e);
           }
-        } catch (e) {
-          console.error("[ocr image fetch]", e);
+        }
+        if (imgBlocks.length) {
+          userContent = [
+            ...imgBlocks,
+            { type: "text", text: `위 이미지들은 하나의 채용공고 화면을 위에서 아래로 순서대로 캡처한 거야(총 ${imgBlocks.length}장). 모든 이미지의 글자를 정확히 읽어(OCR) 하나의 공고로 합쳐 위 규칙대로 JSON "하나만" 출력해. URL·호스트 정보는 없어.\n\n${user}` },
+          ];
         }
       }
 

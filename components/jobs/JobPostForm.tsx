@@ -144,7 +144,8 @@ export default function JobPostForm({
   const contactMethodsRef = useRef<HTMLDivElement>(null);
   const [parseUrl, setParseUrl] = useState("");
   const [urlEditing, setUrlEditing] = useState(true); // 불러오기 후엔 URL을 링크로 표시(클릭 시 원문 새 창)
-  const [importMode, setImportMode] = useState<"url" | "ocr">("url"); // 직접입력(URL) vs OCR(캡처)
+  const [importMode, setImportMode] = useState<"url" | "ocr">("url"); // 회사명/URL vs 화면 캡처(OCR)
+  const [ocrFiles, setOcrFiles] = useState<File[]>([]); // OCR: 여러 장 캡처 누적
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
   // 회사명으로 공고 찾기(헤어인잡)
@@ -804,6 +805,33 @@ export default function JobPostForm({
     finally { setParsing(false); }
   };
 
+  // OCR 다중: 여러 장의 캡처를 업로드해 한 번에 인식(위→아래 순서 유지)
+  const runOcrMulti = async (files: File[]) => {
+    if (!files.length) return;
+    if (mode === "admin") { setNonMember(true); setCompanyId(null); }
+    setParsing(true); setParseMsg(""); setContactNotice("");
+    try {
+      const urls: string[] = [];
+      for (const f of files) {
+        const up = await uploadImage(f);
+        if (up.success && up.url) urls.push(up.url);
+      }
+      if (!urls.length) { setParseMsg("이미지 업로드에 실패했어요."); return; }
+      const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
+      const res = await fetch("/api/admin/external-jobs/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ image_urls: urls }),
+      });
+      const j = await res.json();
+      if (!j.success) { setParseMsg(j.error?.message || "이미지 인식에 실패했어요."); return; }
+      applyParsed(j.data);
+      setParseMsg(`✓ ${urls.length}장 인식 완료`);
+      setOcrFiles([]);
+    } catch { setParseMsg("오류가 발생했습니다."); }
+    finally { setParsing(false); }
+  };
+
   // 회사명으로 헤어인잡 공고 조회 → 결과에서 '불러오기'로 자동 파싱 연결
   const runFindByCompany = async () => {
     const q = findQuery.trim();
@@ -1140,11 +1168,21 @@ export default function JobPostForm({
 
       {mode === "admin" && (
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
-          <div style={{ fontWeight: 400, fontSize: 16, color: "#5f0080", marginBottom: 8, marginLeft: 2, textAlign: "left" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</div>
+          <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 16px", marginBottom: 8, marginLeft: 2 }}>
+            <span style={{ fontWeight: 400, fontSize: 16, color: "#5f0080" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</span>
+            <div style={{ display: "flex", gap: 16, fontSize: 13 }}>
+              {([["url", "회사명 / URL"], ["ocr", "화면 캡처"]] as ["url" | "ocr", string][]).map(([v, l]) => (
+                <label key={v} style={{ display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", color: importMode === v ? "#1a1a1a" : "#777" }}>
+                  <input type="radio" name="importMode" checked={importMode === v} onChange={() => { setImportMode(v); setParseMsg(""); }} /> {l}
+                </label>
+              ))}
+            </div>
+          </div>
           <div style={{ background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
 
-          {/* 통합 검색: 회사명 또는 공고 URL을 한 칸에서 자동 구분 */}
-          <div style={{ marginBottom: 10 }}>
+          {importMode === "url" ? (
+          /* 통합 검색: 회사명 또는 공고 URL을 한 칸에서 자동 구분 */
+          <div>
             <div style={{ display: "flex", gap: 8 }}>
               <input className="admin-form-input" style={{ flex: 1 }} placeholder="회사명 또는 공고 URL 입력 (예: 준오헤어 · https://…)"
                 value={findQuery} onChange={(e) => setFindQuery(e.target.value)}
@@ -1173,15 +1211,36 @@ export default function JobPostForm({
               </div>
             )}
           </div>
-
-          {/* OCR(보조) — 화면 캡처 인식. 화면에 보이는 부분만 인식됨 */}
-          <div style={{ borderTop: "1px dashed #d9d0e6", margin: "4px 0 8px" }} />
-          <label style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 8, border: "1.5px dashed #c9b8de", background: "#fff", color: "#5f0080", cursor: parsing ? "default" : "pointer" }}>
-            <input type="file" accept="image/*" hidden disabled={parsing}
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) runOcr(f); e.currentTarget.value = ""; }} />
-            <span style={{ fontWeight: 700, fontSize: 13, whiteSpace: "nowrap" }}>📷 {parsing ? "이미지 인식 중..." : "화면 캡처(OCR)로 인식"}</span>
-            <span style={{ fontSize: 11.5, color: "#999" }}>인스타·비정형 공고용 · 화면에 보이는 부분만 인식돼요</span>
-          </label>
+          ) : (
+          /* 화면 캡처(OCR): 여러 장 드래그·추가 → 한 번에 인식 */
+          <div>
+            <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => { e.preventDefault(); const fs = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/")); if (fs.length) setOcrFiles((prev) => [...prev, ...fs]); }}
+              style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", minHeight: 96, padding: 12, borderRadius: 8, border: "1.5px dashed #c9b8de", background: "#fff" }}>
+              {ocrFiles.map((f, idx) => (
+                <div key={idx} style={{ position: "relative", width: 72 }}>
+                  <img src={URL.createObjectURL(f)} alt="" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 6, border: "1px solid #eee" }} />
+                  <span style={{ position: "absolute", bottom: 2, left: 2, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
+                  <button type="button" onClick={() => setOcrFiles((prev) => prev.filter((_, i) => i !== idx))}
+                    style={{ position: "absolute", top: 2, right: 2, width: 18, height: 18, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 11, lineHeight: 1 }}>×</button>
+                </div>
+              ))}
+              <label style={{ width: 72, height: 72, flexShrink: 0, border: "1.5px dashed #c4b5d4", borderRadius: 6, background: "#faf7fe", color: "#5f0080", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: "pointer" }}>
+                <span style={{ fontSize: 20, lineHeight: 1 }}>+</span>
+                <span style={{ fontSize: 10 }}>추가</span>
+                <input type="file" accept="image/*" multiple hidden onChange={(e) => { const fs = Array.from(e.target.files || []); if (fs.length) setOcrFiles((prev) => [...prev, ...fs]); e.currentTarget.value = ""; }} />
+              </label>
+              {ocrFiles.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>공고 화면 캡처를 여기로 드래그하거나 추가하세요. 긴 공고는 위→아래로 여러 장 캡처하면 됩니다.</span>}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
+              <button type="button" onClick={() => runOcrMulti(ocrFiles)} disabled={parsing || ocrFiles.length === 0}
+                style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: (parsing || ocrFiles.length === 0) ? 0.5 : 1 }}>
+                {parsing ? "인식 중..." : `인식하기${ocrFiles.length ? ` (${ocrFiles.length}장)` : ""}`}</button>
+              <span style={{ fontSize: 11.5, color: "#999" }}>여러 장을 위→아래 순서로 올리면 한 공고로 합쳐 인식해요.</span>
+            </div>
+          </div>
+          )}
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
           {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
           {mode === "admin" && nonMember && (
