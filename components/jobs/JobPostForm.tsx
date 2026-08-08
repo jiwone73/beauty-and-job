@@ -1211,15 +1211,32 @@ export default function JobPostForm({
           {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
           {mode === "admin" && nonMember && (
             <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb", display: "flex", flexDirection: "column", gap: 12 }}>
-              {/* 지원방식 (1행) */}
-              <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-                <div style={{ ...lbl, marginBottom: 0, minWidth: 84 }}>지원방식</div>
-                <div style={{ display: "flex", gap: 18 }}>
-                  {([["MANAGED", "관리자 대행"], ["REDIRECT", "외부 링크형"]] as [string, string][]).map(([v, l]) => (
-                    <label key={v} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: "#444" }}>
-                      <input type="radio" name="applyMethod" checked={applyMethod === v} onChange={() => setApplyMethod(v as "MANAGED" | "EMAIL" | "REDIRECT")} /> {l}
-                    </label>
-                  ))}
+              {/* 지원서 처리방식 + 연락처 공개 — 한 행 */}
+              <div style={{ display: "flex", alignItems: "center", gap: "10px 40px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ ...lbl, marginBottom: 0, whiteSpace: "nowrap" }}>지원서 처리방식</div>
+                  <div style={{ display: "flex", gap: 18 }}>
+                    {([["MANAGED", "관리자 대행"], ["REDIRECT", "외부 링크형"]] as [string, string][]).map(([v, l]) => (
+                      <label key={v} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: "#444" }}>
+                        <input type="radio" name="applyMethod" checked={applyMethod === v} onChange={() => setApplyMethod(v as "MANAGED" | "EMAIL" | "REDIRECT")} /> {l}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ ...lbl, marginBottom: 0, whiteSpace: "nowrap" }}>연락처 공개</div>
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
+                    {([["이름", nmManagerName], ["전화", nmManagerPhone], ["이메일", nmContactEmail]] as [string, string][]).map(([label, val]) => {
+                      const has = !!(val && val.trim());
+                      return (
+                        <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+                          <span style={{ width: 16, height: 16, borderRadius: "50%", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", background: has ? "#10b981" : "#d5d5d5" }}>✓</span>
+                          <span style={{ color: "#666" }}>{label}</span>
+                          <span style={{ color: has ? "#333" : "#bbb", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{has ? val : "미확인"}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
               {applyMethod === "REDIRECT" && (
@@ -1228,22 +1245,6 @@ export default function JobPostForm({
                   <input style={{ ...inp, flex: 1, minWidth: 220 }} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" />
                 </div>
               )}
-              {/* 채용담당자 (1행) — 자동으로 찾은 값 유무를 체크로 표시(값 수정은 아래 채용 담당자 칸에서) */}
-              <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-                <div style={{ ...lbl, marginBottom: 0, minWidth: 84 }}>채용담당자</div>
-                <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
-                  {([["이름", nmManagerName], ["전화", nmManagerPhone], ["이메일", nmContactEmail]] as [string, string][]).map(([label, val]) => {
-                    const has = !!(val && val.trim());
-                    return (
-                      <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-                        <span style={{ width: 16, height: 16, borderRadius: "50%", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", background: has ? "#10b981" : "#d5d5d5" }}>✓</span>
-                        <span style={{ color: "#666" }}>{label}</span>
-                        <span style={{ color: has ? "#333" : "#bbb", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{has ? val : "미확인"}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
             </div>
           )}
 
