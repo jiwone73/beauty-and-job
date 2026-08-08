@@ -668,19 +668,10 @@ export default function JobPostForm({
       if (mode === "admin") {
         if (d.company_name) setNewCompanyName(d.company_name);
         if (d.homepage_url) setNmHomepage(d.homepage_url);
+        // 담당자 연락처는 '관리자 확인용'으로만 저장(구직자 비노출). 파싱값이 있으면 채워둔다.
         if (d.contact_email) setNmContactEmail(d.contact_email);
         if (d.contact_phone) setNmManagerPhone(d.contact_phone);
         if (d.contact_name) setNmManagerName(d.contact_name);
-        // 연락처가 확인되면 '지원방법'(필수)을 자동 세팅 → 채용담당자 칸이 열리고 파싱값이 화면에 보이게.
-        // (전화 → '전화', 이메일 → '이메일'; 이미 고른 값은 유지하고 합집합)
-        if (d.contact_phone || d.contact_email) {
-          setContactMethods((prev) => {
-            const next = new Set(prev);
-            if (d.contact_phone) next.add("전화");
-            if (d.contact_email) next.add("이메일");
-            return [...next].sort((a, b) => CONTACT_METHOD_OPTIONS.indexOf(a) - CONTACT_METHOD_OPTIONS.indexOf(b));
-          });
-        }
         // 비회원 외부 불러오기는 '관리자 대행'만 사용 → 파싱값과 무관하게 MANAGED 고정
         setApplyMethod("MANAGED");
         if (d.company_description) setNmDescription(d.company_description);
@@ -966,7 +957,6 @@ export default function JobPostForm({
         if (!form.requirements?.trim()) { alert("자격요건을 입력해주세요."); return; }
       }
       if (benefitTags.length === 0) { alert("복리후생을 1개 이상 선택해주세요."); return; }
-      if (mode === "admin" && nonMember && contactMethods.length === 0) { alert("지원방법을 선택해주세요."); return; }
     }
     // 마감일: 날짜 선택 또는 상시채용 필수
     if (status === "publish" && !alwaysOpen && !form.deadline) {
@@ -1019,7 +1009,8 @@ export default function JobPostForm({
       external_contact_email: nmContactEmail.trim() || null,
       external_contact_name: nmManagerName.trim() || null,
       external_contact_phone: nmManagerPhone.replace(/\D/g, "") || null,
-      contact_methods: contactMethods,
+      // 비회원(관리자) 공고는 뷰티워크 온라인 지원만 받는다 → 지원방법 고정
+      contact_methods: (mode === "admin" && nonMember) ? ["온라인 지원"] : contactMethods,
     };
 
     const company: any = nonMember
@@ -1596,56 +1587,37 @@ export default function JobPostForm({
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ margin: "0 0 10px", fontWeight: 400, color: "#333" }}>지원 안내</div>
 
-              {/* 지원방법(좌) · 채용담당자(우) — 관리자 외부공고에서만. 지원방법에 전화/이메일 있을 때만 담당자 활성화 */}
+              {/* 지원방법(좌·고정) · 담당자 연락처(우·관리자 확인용) — 관리자 비회원 공고에서만 */}
               {mode === "admin" && nonMember && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 28px", alignItems: "start" }}>
-                  {/* 지원방법 (좌) — 팝오버, 필수 */}
-                  <div ref={contactMethodsRef} style={{ display: "flex", alignItems: "flex-start", gap: 10, position: "relative" }}>
-                    <span style={{ width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 6 }}>지원방법<span style={{ color: "#e9a3a3" }}> *</span></span>
-                    <button type="button" onClick={() => setContactMethodsOpen((v) => !v)}
-                      style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: "6px 2px", fontSize: 15, cursor: "pointer", lineHeight: 1.6, color: contactMethods.length ? "#333" : "#cfcfcf" }}>
-                      {contactMethods.length ? contactMethods.join(", ") : pick()}
-                    </button>
-                    {contactMethodsOpen && (
-                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(320px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
-                        {CONTACT_METHOD_OPTIONS.map((m) => { const on = contactMethods.includes(m); return (
-                          <button key={m} type="button" onClick={() => toggleContactMethod(m)}
-                            style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{m}</button>
-                        ); })}
-                      </div>
-                    )}
+                  {/* 지원방법 (좌) — 비회원 공고는 뷰티워크 온라인 지원만. 고정 */}
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                    <span style={{ width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 6 }}>지원방법</span>
+                    <div style={{ flex: 1, minWidth: 0, padding: "6px 2px" }}>
+                      <div style={{ fontSize: 15, color: "#333", lineHeight: 1.6 }}>온라인 지원</div>
+                      <div style={{ fontSize: 12, color: "#aaa", marginTop: 2, lineHeight: 1.5 }}>비회원 공고는 뷰티워크에서만 지원을 받아요. 구직자가 ‘지원하기’를 누르면 관리자 인박스로 접수됩니다.</div>
+                    </div>
                   </div>
-                  {/* 채용담당자 (우) — 지원방법 선택 전엔 제목만. 문자/전화→전화칸, 이메일→메일칸, 둘 중 하나라도 있으면 이름칸. 비활성 항목은 숨김 */}
+                  {/* 담당자 연락처 (우) — 관리자 확인·회원가입 유도용. 구직자에게는 노출되지 않음 */}
                   {(() => {
-                    const canPhone = contactMethods.includes("문자") || contactMethods.includes("전화");
-                    const canEmail = contactMethods.includes("이메일");
-                    const canName = canPhone || canEmail;
-                    // 온라인 지원처럼 담당자 정보가 필요 없는 방법만 골랐으면 '채용담당자' 자체를 숨김
-                    // (아직 아무것도 안 골랐을 때는 제목만 흐리게 남겨둔다)
-                    if (contactMethods.length > 0 && !canName) return null;
                     const inp2: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #f4f3f6", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", boxSizing: "border-box" };
                     return (
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                        <span style={{ width: 76, flexShrink: 0, color: canName ? "#999" : "#cfcfcf", fontSize: 15, paddingTop: 6 }}>채용담당자</span>
+                        <span style={{ width: 76, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6, lineHeight: 1.3 }}>담당자<br /><span style={{ fontSize: 10, color: "#c9a3d6" }}>관리자용</span></span>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 12px", flex: 1, minWidth: 0 }}>
-                          {canName && (
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                              <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>이름</span>
-                              <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={inp2} />
-                            </div>
-                          )}
-                          {canPhone && (
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                              <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>전화</span>
-                              <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} style={inp2} />
-                            </div>
-                          )}
-                          {canEmail && (
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                              <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>메일</span>
-                              <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} style={inp2} />
-                            </div>
-                          )}
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
+                            <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>이름</span>
+                            <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={inp2} />
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
+                            <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>전화</span>
+                            <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} style={inp2} />
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
+                            <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>메일</span>
+                            <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} style={inp2} />
+                          </div>
+                          <div style={{ fontSize: 11, color: "#b58fc7", flex: "1 1 100%", marginTop: 3 }}>구직자에게는 노출되지 않아요 · 회원가입 유도용 내부 연락처</div>
                         </div>
                       </div>
                     );
