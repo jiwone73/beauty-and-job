@@ -101,8 +101,17 @@ function parseHairinjob(html: string): StructuredResult | null {
     salary_negotiable = true;
   }
 
-  // 근무시간: 페이지 내 첫 HH:MM~HH:MM
-  const work_time = parseWorkTime((html.match(/(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})/) || [])[0] || "");
+  // 페이지 전체 텍스트(유동·선택형 근무조건 감지용)
+  const pageText = strip(html);
+  // 미용실 공고는 "근무시간 선택 가능", "근무요일 선택 가능(주5·주6·격주 등)"처럼 유동형이 많다.
+  // 이 경우 특정 값을 억지로 넣기보다 '협의'로 채워야 폼(협의 토글)과 자연스럽게 맞는다.
+  const flexTime = /근무\s*시간[^가-힣]{0,8}(선택|협의|조율|탄력|자율|자유)|시간\s*(선택\s*가능|협의|조율|탄력)|탄력\s*근무|자율\s*출퇴근/.test(pageText);
+  const flexDays = /근무\s*요일[^가-힣]{0,8}(선택|협의|조율|자유)|요일\s*(선택\s*가능|협의|조율|자유)|격주|주\s*[3-6]\s*일|스케줄\s*근무|근무\s*일수\s*(선택|협의)/.test(pageText);
+  // 근무시간: 유동형이면 협의, 아니면 페이지 내 첫 시간대(오전/오후 표기도 24시간으로 변환)
+  const firstTime = (pageText.match(/(?:오전|오후)?\s*\d{1,2}:\d{2}\s*~\s*(?:오전|오후)?\s*\d{1,2}:\d{2}/) || [])[0] || "";
+  const work_time = flexTime ? "협의" : parseWorkTime(firstTime);
+  // 근무요일: 유동형이면 협의. (구체 요일이 명시된 경우는 드물고 '휴무 요일' 오인 위험이 커서, 확실한 유동형만 채운다)
+  const work_days = flexDays ? "협의" : "";
 
   // 복리후생 + 필터 태그
   const benefits = liValue("복리후생");
@@ -166,6 +175,17 @@ function parseHairinjob(html: string): StructuredResult | null {
   const detailRaw = allImgs.filter((u) => /memcontents|_contents\./i.test(u)).slice(0, 12);
   const bannerRaw = allImgs.filter((u) => !detailRaw.includes(u)).slice(0, 10);
 
+  // 업종: 헤어인잡=미용 전문 사이트 → 직종/제목 기준으로 기본 업종을 지정(대다수 헤어살롱).
+  let industry = "헤어샵";
+  {
+    const ck = `${job} ${mj} ${title}`;
+    if (/네일/.test(ck)) industry = "네일샵";
+    else if (/속눈썹|왁싱|반영구|래쉬/.test(ck)) industry = "속눈썹·왁싱·반영구";
+    else if (/피부|에스테틱|스킨\s*케어|관리사/.test(ck)) industry = "피부·에스테틱";
+    else if (/메이크업|분장/.test(ck)) industry = "메이크업";
+    else if (/애견|반려|펫\s|펫미용/.test(ck)) industry = "애견미용";
+  }
+
   const out: StructuredResult = {
     title,
     company_name: company,
@@ -182,6 +202,8 @@ function parseHairinjob(html: string): StructuredResult | null {
     salary_amount_max: 0,
     salary_negotiable,
     work_time,
+    work_days,
+    industry,
     benefits,
     benefit_tags,
     contact_name,

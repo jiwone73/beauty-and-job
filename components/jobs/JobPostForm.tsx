@@ -951,7 +951,6 @@ export default function JobPostForm({
       if (!(salaryNego || form.salary.trim())) { alert("급여를 입력하거나 협의로 선택해주세요."); return; }
       if (!form.type) { alert("고용형태를 선택해주세요."); return; }
       if (jobGroupType === "매장") {
-        if (!workPeriod) { alert("근무기간을 선택해주세요."); return; }
         if (!(workDaysNego || workDays.length)) { alert("근무요일을 선택해주세요."); return; }
         if (!(workTimeNego || (workTimeStart && workTimeEnd))) { alert("근무시간을 입력해주세요."); return; }
         // 매장: 상세요강 이미지 또는 (포지션 소개+자격요건)
@@ -960,7 +959,8 @@ export default function JobPostForm({
           return;
         }
       } else {
-        // 오피스: 학력·담당업무·자격요건 필수
+        // 오피스: 경력·학력·담당업무·자격요건 필수
+        if (!form.career) { alert("경력을 선택해주세요."); return; }
         if (!form.education) { alert("학력을 선택해주세요."); return; }
         if (!form.responsibilities?.trim()) { alert("담당업무를 입력해주세요."); return; }
         if (!form.requirements?.trim()) { alert("자격요건을 입력해주세요."); return; }
@@ -1375,7 +1375,7 @@ export default function JobPostForm({
                 {/* 경력 */}
                 <div className="job-detail-meta-item">
                   <Briefcase size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>경력</span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>경력{isOffice && <span style={{ color: "#e9a3a3" }}> *</span>}</span>
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
                     style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.career) }}>
                     <option value=""></option>
@@ -1500,7 +1500,7 @@ export default function JobPostForm({
                   {/* 근무기간 — 매장 전용, 네이티브 풀다운 */}
                   {jobGroupType === "매장" && (
                     <div className="job-detail-company-row" style={{ position: "relative" }}>
-                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무기간<span style={{ color: "#e9a3a3" }}> *</span></span>
+                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무기간</span>
                       <select value={workPeriod} onChange={(e) => setWorkPeriod(e.target.value)}
                         style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!workPeriod) }}>
                         <option value=""></option>
