@@ -4,7 +4,7 @@ import Link from "next/link";
 import { shortRegion } from "@/lib/regionShort";
 import { BannerImg } from "@/components/BannerImg";
 import KakaoMap from "@/components/KakaoMap";
-import { Clock, Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, Tag } from "lucide-react";
+import { Clock, Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, Tag, GraduationCap } from "lucide-react";
 
 // 공고 상단 이미지 갤러리(원티드 스타일). 한 번에 3장 노출, 좌우 화살표로 순환.
 export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
@@ -269,6 +269,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 <Briefcase size={16} className="job-detail-meta-icon" />
                 <span className="job-detail-meta-label">경력</span>
                 <span className="job-detail-meta-value">{job.career}</span>
+              </div>
+            )}
+            {job.education && (
+              <div className="job-detail-meta-item">
+                <GraduationCap size={16} className="job-detail-meta-icon" />
+                <span className="job-detail-meta-label">학력</span>
+                <span className="job-detail-meta-value">{job.education}</span>
               </div>
             )}
             {job.headcount && (

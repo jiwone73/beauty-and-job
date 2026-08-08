@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, type ChangeEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -16,6 +16,7 @@ const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.s
 
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
+const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "정규직 전환 가능", "위촉직", "프리랜서", "인턴", "아르바이트"];
 const WORK_PERIODS = ["~6개월", "6개월 ~ 1년", "1년 이상", "협의"];
 const WELFARE_OPTIONS: Record<string, string[]> = {
@@ -160,7 +161,7 @@ export default function JobPostForm({
   const [regionQuery, setRegionQuery] = useState("");
   const regionInlineRef = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState({
-    title: "", career: "",
+    title: "", career: "", education: "",
     type: "", deadline: "", salary: "", description: "",
     requirements: "", preferred: "", benefits: "", responsibilities: "",
     headcount: "",
@@ -205,6 +206,8 @@ export default function JobPostForm({
     if (!jobGroupType) return; // 미선택이면 급여유형 자동설정 보류(선택 시 설정)
     if (importSalaryRef.current) { importSalaryRef.current = false; return; }
     setSalaryType(jobGroupType === "매장" ? "MONTHLY" : "ANNUAL");
+    // 오피스(기업)는 급여가 대부분 회사내규/면접 후 협의 → 협의를 기본값으로
+    setSalaryNego(jobGroupType === "기업");
   }, [jobGroupType, editId]);
   useEffect(() => {
     if (!salaryModalOpen) return;
@@ -395,7 +398,7 @@ export default function JobPostForm({
       setSalaryMax(j.salary_max && j.salary_max > j.salary_min ? String(loadedSalaryType === "HOURLY" ? j.salary_max : j.salary_max / 10000) : "");
       setSalaryType(loadedSalaryType);
       setForm({
-        title: j.title || "", career, type,
+        title: j.title || "", career, education: j.education || "", type,
         deadline: j.deadline ? String(j.deadline).slice(0, 10) : "",
         salary, description: j.description || "", requirements: j.requirements || "",
         preferred: j.preferred_qualifications || "", benefits: j.benefits || "",
@@ -867,24 +870,27 @@ export default function JobPostForm({
     if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
     if (!form.headcount) { alert("모집인원을 입력해주세요."); return; } // 경력은 선택
     if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
-    // 근무조건 전부 필수(발행 시). 급여·요일·시간은 값 또는 '협의' 체크로 충족.
+    // 근무조건 필수(발행 시). 급여는 값 또는 '협의' 체크로 충족.
     if (status === "publish") {
       if (!(salaryNego || form.salary.trim())) { alert("급여를 입력하거나 협의로 선택해주세요."); return; }
       if (!form.type) { alert("고용형태를 선택해주세요."); return; }
-      if (!workPeriod) { alert("근무기간을 선택해주세요."); return; }
       if (jobGroupType === "매장") {
+        if (!workPeriod) { alert("근무기간을 선택해주세요."); return; }
         if (!(workDaysNego || workDays.length)) { alert("근무 요일을 선택해주세요."); return; }
         if (!(workTimeNego || (workTimeStart && workTimeEnd))) { alert("근무 시간을 입력해주세요."); return; }
+        // 매장: 상세요강 이미지 또는 (포지션 소개+자격요건)
+        if (detailImages.length === 0 && (!form.description?.trim() || !form.requirements?.trim())) {
+          alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개와 자격요건을 입력해주세요.");
+          return;
+        }
+      } else {
+        // 오피스: 학력·담당업무·자격요건 필수
+        if (!form.education) { alert("학력을 선택해주세요."); return; }
+        if (!form.responsibilities?.trim()) { alert("담당업무를 입력해주세요."); return; }
+        if (!form.requirements?.trim()) { alert("자격요건을 입력해주세요."); return; }
       }
       if (benefitTags.length === 0) { alert("복리후생을 1개 이상 선택해주세요."); return; }
       if (mode === "admin" && nonMember && contactMethods.length === 0) { alert("지원방법을 선택해주세요."); return; }
-    }
-    // 상세요강: 이미지 1장 이상 첨부하거나, 이미지가 없으면 포지션 소개·자격요건을 채워야 함(발행 시).
-    if (status === "publish" && detailImages.length === 0) {
-      if (!form.description?.trim() || !form.requirements?.trim()) {
-        alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개와 자격요건을 입력해주세요.");
-        return;
-      }
     }
     // 마감일: 날짜 선택 또는 상시채용 필수
     if (status === "publish" && !alwaysOpen && !form.deadline) {
@@ -914,6 +920,7 @@ export default function JobPostForm({
       preferred_qualifications: form.preferred || null,
       benefits: form.benefits || null,
       responsibilities: form.responsibilities || null,
+      education: form.education || null,
       salary_min: salaryMin, salary_max: salaryMaxVal,
       salary_type: salaryMin ? salaryType : null,
       location: regionList.join(", ") || null,
@@ -968,18 +975,22 @@ export default function JobPostForm({
 
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
+  const isOffice = jobGroupType === "기업";
   const textFieldMeta: Record<TextKey, { label: string; hint?: string; placeholder: string }> = {
     benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
-    responsibilities: { label: "주요업무", placeholder: "주요 업무를 입력하세요" },
+    responsibilities: { label: "담당업무", hint: "필수 · 주요 업무를 입력", placeholder: "담당 업무를 입력하세요" },
     description: {
       label: "포지션 소개",
       hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
       placeholder: "",
     },
-    requirements: { label: "자격요건", hint: detailImages.length > 0 ? undefined : "필수 (이미지 없을 시)", placeholder: "" },
+    requirements: { label: "자격요건", hint: isOffice ? "필수" : (detailImages.length > 0 ? undefined : "필수 (이미지 없을 시)"), placeholder: "" },
     preferred: { label: "우대사항", placeholder: "" },
   };
-  const textFields: TextKey[] = ["description", "requirements", "preferred"];
+  // 오피스는 담당업무(JD) 중심, 매장은 포지션 소개 중심
+  const textFields: TextKey[] = isOffice
+    ? ["responsibilities", "requirements", "preferred"]
+    : ["description", "requirements", "preferred"];
 
   const processFilled = hiringProcess.length > 0;
   const notesFilled = !!notes.trim();
@@ -998,6 +1009,7 @@ export default function JobPostForm({
     jobType: jobGroupType === "기업" ? "사무직" : "매장직",
     jobCategories: categories,
     career: form.career || "경력무관",
+    education: form.education || "",
     region: regionList.join(", "),
     employType: form.type || "협의",
     headcount: form.headcount ? `${form.headcount}명` : "",
@@ -1315,6 +1327,16 @@ export default function JobPostForm({
                     style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#dadada", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
                     <option value="">선택</option>
                     {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </div>
+                {/* 학력 */}
+                <div className="job-detail-meta-item">
+                  <GraduationCap size={16} className="job-detail-meta-icon" />
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>학력{isOffice && <span style={{ color: "#e9a3a3" }}> *</span>}</span>
+                  <select value={form.education} onChange={(e) => setForm({ ...form, education: e.target.value })}
+                    style={{ border: "none", background: "transparent", fontSize: 15, color: form.education ? "#333" : "#dadada", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
+                    <option value="">선택</option>
+                    {EDUCATION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
                 {/* 모집인원 */}
@@ -1648,7 +1670,10 @@ export default function JobPostForm({
                 const meta = textFieldMeta[k];
                 const content = ((form as any)[k] || "") as string;
                 // 상세 이미지가 없으면 포지션 소개·자격요건을 필수로 표시(이미지 대신 텍스트로 안내)
-                const isReq = detailImages.length === 0 && (k === "description" || k === "requirements");
+                // 오피스: 담당업무·자격요건 필수 / 매장: 이미지 없을 때 포지션 소개·자격요건 필수
+                const isReq = isOffice
+                  ? (k === "responsibilities" || k === "requirements")
+                  : (detailImages.length === 0 && (k === "description" || k === "requirements"));
                 return (
                   <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
                     <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block" }}>

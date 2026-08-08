@@ -191,6 +191,7 @@ export default function JobDetailPage() {
             title: j.title,
             jobType: j.job_type === 'OFFICE' ? '사무직' : '매장직',
             career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
+            education: j.education || '',
             jobCategories: Array.isArray(j.categories) ? j.categories : [],
             region: j.location || '',
             employType: j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직',

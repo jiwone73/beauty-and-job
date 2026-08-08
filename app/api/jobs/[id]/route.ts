@@ -85,6 +85,7 @@ export async function GET(
     address: job.address,
     work_type: job.work_type,
     experience_level: job.experience_level,
+    education: job.education || '',
     deadline: job.deadline,
     headcount: job.headcount,
     categories: job.categories || [],
