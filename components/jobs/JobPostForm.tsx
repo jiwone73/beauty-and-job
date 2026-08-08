@@ -1072,7 +1072,7 @@ export default function JobPostForm({
           <ChevronLeft size={18} /> 목록으로
         </button>
         {!isMobile && (
-          <h2 style={{ fontSize: "18px", fontWeight: 400, color: "#1a1a1a", margin: 0 }}>
+          <h2 style={{ fontSize: "18px", fontWeight: 400, color: "#1a1a1a", margin: 0, marginRight: "auto", marginLeft: 16 }}>
             {editId ? "채용공고 수정" : "채용공고 등록"}
           </h2>
         )}
@@ -1129,8 +1129,9 @@ export default function JobPostForm({
       )}
 
       {mode === "admin" && (
-        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
-          <div style={{ fontWeight: 400, fontSize: 16, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</div>
+        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
+          <div style={{ fontWeight: 400, fontSize: 16, color: "#5f0080", marginBottom: 8, marginLeft: 2, textAlign: "left" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</div>
+          <div style={{ background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
 
           {/* ① 회사명으로 공고 찾기 (헤어인잡) */}
           <div style={{ marginBottom: 10 }}>
@@ -1246,6 +1247,7 @@ export default function JobPostForm({
             </div>
           )}
 
+          </div>
         </div>
       )}
 
