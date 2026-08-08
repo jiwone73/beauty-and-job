@@ -1108,11 +1108,7 @@ export default function JobPostForm({
         <button className="admin-back-btn" onClick={() => router.push(listHref)}>
           <ChevronLeft size={18} /> 목록으로
         </button>
-        {!isMobile && (
-          <h2 style={{ fontSize: "18px", fontWeight: 400, color: "#1a1a1a", margin: 0, marginRight: "auto", marginLeft: 16 }}>
-            {editId ? "채용공고 수정" : "채용공고 등록"}
-          </h2>
-        )}
+        {!isMobile && <span style={{ marginRight: "auto" }} />}
         {!isMobile && (
           <div className="admin-form-actions">
             <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}><Save size={15} /> 임시저장</button>
@@ -1139,6 +1135,15 @@ export default function JobPostForm({
           </button>
         </>,
         headerSlot
+      )}
+
+      {/* 페이지 제목 — 아래 콘텐츠(760 가운데 정렬)와 시작점을 맞춘다 */}
+      {!isMobile && (
+        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 10px", boxSizing: "border-box" }}>
+          <h2 style={{ fontSize: 18, fontWeight: 400, color: "#1a1a1a", margin: "0 0 0 2px" }}>
+            {editId ? "채용공고 수정" : "채용공고 등록"}
+          </h2>
+        </div>
       )}
 
       {/* 채용유형(매장/오피스) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
