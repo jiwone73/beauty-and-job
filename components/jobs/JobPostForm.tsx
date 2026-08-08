@@ -154,6 +154,8 @@ export default function JobPostForm({
   const [finding, setFinding] = useState(false);
   const [findMsg, setFindMsg] = useState("");
   const [findResults, setFindResults] = useState<{ idx: number; title: string; url: string; source: string }[]>([]);
+  // 검색 목록에서 특정 공고를 불러오면 상단 입력칸 대신 '선택한 공고'를 링크로 표시(클릭 시 원문 새 탭)
+  const [picked, setPicked] = useState<{ title: string; url: string; source?: string } | null>(null);
   const [contactNotice, setContactNotice] = useState("");
   const [curating, setCurating] = useState(false);
   const [jobGroupType, setJobGroupType] = useState<"" | "기업" | "매장">("매장"); // 기본값 매장(관리자). 선택 전 직군·급여·복지 잠금 해제용
@@ -862,11 +864,10 @@ export default function JobPostForm({
     } finally { setFinding(false); }
   };
 
-  const pickFoundJob = (url: string) => {
-    setParseUrl(url);
-    setFindResults([]);
-    setFindMsg("");
-    runParse(url);
+  // 검색 목록에서 라디오로 공고를 '선택'만 함 → 상단 검색칸에 제목 표시. 실제 불러오기는 상단 '불러오기' 버튼에서.
+  const selectFoundJob = (r: { title: string; url: string; source?: string }) => {
+    setPicked({ title: r.title, url: r.url, source: r.source });
+    setFindQuery(r.title);
   };
 
   // 통합 검색: 입력값이 URL 형태면 바로 불러오기, 아니면 회사명으로 공고 검색
@@ -875,8 +876,10 @@ export default function JobPostForm({
   const runImport = () => {
     const q = findQuery.trim();
     if (!q) { setFindMsg("회사명 또는 공고 URL을 입력해주세요."); return; }
+    // 목록에서 라디오로 고른 공고가 있으면(입력칸을 손대지 않았으면) 그 공고를 불러옴
+    if (picked && q === picked.title.trim()) { setFindResults([]); setFindMsg(""); setParseUrl(picked.url); runParse(picked.url); return; }
     if (isUrlLike(q)) { setFindResults([]); setFindMsg(""); setParseUrl(q); runParse(q); }
-    else { runFindByCompany(); }
+    else { setPicked(null); runFindByCompany(); }
   };
 
   // 큐레이션(관리자 전용): 현재 채워진 내용을 뷰티워크 톤·형식으로 AI가 다듬기
@@ -1203,29 +1206,31 @@ export default function JobPostForm({
           <div>
             <div style={{ display: "flex", gap: 8 }}>
               <input className="admin-form-input" style={{ flex: 1 }} placeholder="회사명 또는 공고 URL 입력 (예: 준오헤어 · https://…)"
-                value={findQuery} onChange={(e) => setFindQuery(e.target.value)}
+                value={findQuery} onChange={(e) => { setFindQuery(e.target.value); if (picked && e.target.value !== picked.title) setPicked(null); }}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runImport(); } }} />
               <button type="button" onClick={runImport} disabled={finding || parsing}
                 style={{ flexShrink: 0, padding: "0 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: (finding || parsing) ? 0.6 : 1, whiteSpace: "nowrap" }}>
                 {(finding || parsing) ? "불러오는 중..." : "불러오기"}</button>
             </div>
-            <div style={{ fontSize: 12, color: "#999", marginTop: 6 }}>회사명을 넣으면 공고 목록을 보여주고, URL을 넣으면 바로 불러와요.</div>
+            <div style={{ fontSize: 12, color: "#999", marginTop: 6 }}>회사명을 넣으면 공고 목록을 보여줘요. 목록에서 공고를 선택한 뒤 <b>불러오기</b>를 누르면 값을 가져와요. (URL을 넣으면 바로 불러와요.)</div>
             {findMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: findResults.length ? "#10b981" : "#c0392b" }}>{findMsg}</div>}
             {findResults.length > 0 && (
               <div style={{ marginTop: 8, maxHeight: 220, overflowY: "auto", border: "1px solid #e5e0eb", borderRadius: 8, background: "#fff" }}>
-                {findResults.map((r) => (
+                {findResults.map((r) => { const on = picked?.url === r.url; return (
                   <div key={r.idx}
-                    onClick={() => window.open(r.url, "_blank", "noopener,noreferrer")}
-                    title="클릭하면 원문 공고 페이지가 새 탭으로 열려요"
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#faf7fe")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f2eef8", cursor: "pointer", transition: "background 0.12s" }}>
+                    onClick={() => selectFoundJob(r)}
+                    title="선택하면 위 검색칸에 표시돼요. ↗로 원문을 새 탭에서 볼 수 있어요."
+                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f2eef8", cursor: "pointer", background: on ? "#faf7fe" : "transparent", transition: "background 0.12s" }}>
+                    {/* 라디오(선택) */}
+                    <span style={{ flexShrink: 0, width: 16, height: 16, borderRadius: "50%", border: on ? "1.5px solid #5f0080" : "1.5px solid #cfcfcf", display: "inline-flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
+                      {on && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#5f0080" }} />}
+                    </span>
                     <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "#5f0080", background: "#f3e5f5", border: "1px solid #e4d3f2", borderRadius: 5, padding: "1px 6px" }}>{r.source}</span>
-                    <span style={{ flex: 1, fontSize: 13, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.title}>{r.title} <span style={{ color: "#bbb", fontSize: 11 }}>↗</span></span>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); pickFoundJob(r.url); }} disabled={parsing}
-                      style={{ flexShrink: 0, padding: "5px 10px", borderRadius: 6, border: "none", background: "#5f0080", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: parsing ? 0.6 : 1 }}>불러오기</button>
+                    <span style={{ flex: 1, fontSize: 13, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.title}>{r.title}</span>
+                    <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} title="원문 공고 새 탭으로 열기"
+                      style={{ flexShrink: 0, color: "#bbb", fontSize: 13, textDecoration: "none", padding: "0 2px" }}>↗</a>
                   </div>
-                ))}
+                ); })}
               </div>
             )}
           </div>
