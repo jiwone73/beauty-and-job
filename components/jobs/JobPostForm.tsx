@@ -1654,7 +1654,7 @@ export default function JobPostForm({
 
               {/* ── 상세 내용 이미지 (본문 세로 스택) — 실제 미리보기의 상세요강 위치와 동일 ── */}
               <div style={{ paddingBottom: 16, borderBottom: "1px solid var(--color-border)", marginBottom: 4 }}>
-                <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>상세요강 이미지와 텍스트를 붙여넣거나 드래그해서 올릴 수 있어요.</div>
+                <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>갖고 계신 상세요강 이미지가 있다면 첨부해 주세요.</div>
                 <div
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
@@ -1677,7 +1677,7 @@ export default function JobPostForm({
                     <span style={{ fontSize: 10 }}>추가</span>
                     <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
                   </label>
-                  {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세 이미지가 없어요. 위 배너에서 드래그하거나 직접 추가하세요.</span>}
+                  {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부해 주세요.</span>}
                 </div>
                 <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 포지션 소개·자격요건은 필수예요.</p>
               </div>
