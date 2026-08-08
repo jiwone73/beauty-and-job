@@ -27,7 +27,7 @@ function mapJob(j: any): Job {
     brand: j.brand_name || j.company_name || "",
     title: j.title,
     region: j.location || "국내",
-    type: j.company_type === "OFFICE" ? "기업" : j.company_type === "STORE" ? "매장" : "기업",
+    type: j.company_type === "OFFICE" ? "오피스" : j.company_type === "STORE" ? "매장" : "오피스",
     career: expLevelLabel(j.experience_level),
     employment: j.employment_type || null,
     deadline: formatDeadline(j.deadline),

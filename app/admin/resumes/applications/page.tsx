@@ -139,16 +139,16 @@ function AdminApplicationsPageInner() {
     const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[a.status] === statusFilter;
     const matchDate = matchPeriod(a.applied_at, dateFilter);
     const matchMember = memberFilter === "전체" || (memberFilter === "비회원기업 공고 지원" ? !a.company_is_member : !!a.company_is_member);
-    const matchType = jobTypeFilter === "전체" || (a.job_type === "STORE" ? "매장" : "본사") === jobTypeFilter;
+    const matchType = jobTypeFilter === "전체" || (a.job_type === "STORE" ? "매장" : "오피스") === jobTypeFilter;
     return matchSearch && matchStatus && matchDate && matchMember && matchType;
   });
 
   return (
     <AdminLayout activeMenu="resumes-applications">
-      {/* 인재 구분 — 매장/본사 라디오 */}
+      {/* 인재 구분 — 매장/오피스 라디오 */}
       <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
         <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
-        {(["전체", "매장", "본사"] as const).map((opt) => (
+        {(["전체", "매장", "오피스"] as const).map((opt) => (
           <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobTypeFilter === opt ? "#5f0080" : "#555" }}>
             <input type="radio" name="applicantTrack" checked={jobTypeFilter === opt}
               onChange={() => setJobTypeFilter(opt)}
@@ -252,7 +252,7 @@ function AdminApplicationsPageInner() {
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
                         {a.company_name}
                         <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
-                          {a.job_type === "STORE" ? "매장" : "기업"}
+                          {a.job_type === "STORE" ? "매장" : "오피스"}
                         </span>
                       </span>
                     </td>

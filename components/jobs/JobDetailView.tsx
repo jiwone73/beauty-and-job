@@ -409,7 +409,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         {/* 관련 공고 */}
         {related.length > 0 && (
           <section className="job-detail-section">
-            <Link href={`/jobs?type=${job.jobType === "사무직" ? "기업" : "매장"}`} className="job-detail-more-link">
+            <Link href={`/jobs?type=${job.jobType === "오피스" ? "오피스" : "매장"}`} className="job-detail-more-link">
               <span>관련 채용공고<span className="job-detail-more-sub">비슷한 포지션 더보기</span></span>
               <ChevronRight size={20} />
             </Link>

@@ -135,7 +135,7 @@ function AdminJobsPageInner() {
     await Promise.all(Array.from(checkedIds).map((id) => changeStatus(id, label)));
     setCheckedIds(new Set());
   };
-  const groupOf = (jobType: string) => (jobType === "STORE" ? "매장" : "기업");
+  const groupOf = (jobType: string) => (jobType === "STORE" ? "매장" : "오피스");
   const matchPeriod = (d: string | null, period: string) => {
     if (!d || period === "전체") return true;
     const dt = new Date(d);
@@ -213,10 +213,10 @@ function AdminJobsPageInner() {
         ))}
       </div>
       <div style={{ width: "fit-content", maxWidth: "100%" }}>
-      {/* 공고 구분 — 매장/기업 라디오 */}
+      {/* 공고 구분 — 매장/오피스 라디오 */}
       <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
         <span style={{ fontSize: 14, color: "#777" }}>공고 구분</span>
-        {(["전체", "매장", "기업"] as const).map((opt) => (
+        {(["전체", "매장", "오피스"] as const).map((opt) => (
           <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobGroupFilter === opt ? "#5f0080" : "#555" }}>
             <input type="radio" name="jobTrack" checked={jobGroupFilter === opt}
               onChange={() => setJobGroupFilter(opt)}
@@ -283,7 +283,7 @@ function AdminJobsPageInner() {
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
                 <th>공고명</th>
-                <th>매장/본사명</th>
+                <th>매장/오피스명</th>
                 <th>등록상품</th>
                 <th>채용 직군</th>
                 <th>지역</th>

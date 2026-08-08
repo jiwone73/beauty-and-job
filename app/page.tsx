@@ -81,7 +81,7 @@ function Hero() {
   const [selected, setSelected] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [jobType, setJobType] = useState<"전체" | "기업" | "매장">("전체");
+  const [jobType, setJobType] = useState<"전체" | "오피스" | "매장">("전체");
   const shortSido = (s: string) => s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "");
 
   // 로그인(개인회원) 시 프로필의 직군·희망지역을 검색바 기본값으로 자동 채움
@@ -93,7 +93,7 @@ function Hero() {
       .then((r) => r.json())
       .then((res) => {
         const u = res.data || res;
-        if (u?.job_type === "OFFICE") setJobType("기업");
+        if (u?.job_type === "OFFICE") setJobType("오피스");
         else if (u?.job_type === "STORE") setJobType("매장");
         if (Array.isArray(u?.preferred_regions)) {
           const regions = u.preferred_regions
@@ -150,9 +150,9 @@ function Hero() {
                   매장
                 </button>
                 <button type="button"
-                  className={`hero-type-btn ${jobType === "기업" ? "active" : ""}`}
-                  onClick={() => setJobType("기업")}>
-                  본사
+                  className={`hero-type-btn ${jobType === "오피스" ? "active" : ""}`}
+                  onClick={() => setJobType("오피스")}>
+                  오피스
                 </button>
               </div>
               <div className="hero-searchbar-v2">
@@ -167,7 +167,7 @@ function Hero() {
                 <input className="hero-search-input-v2" type="text"
                   placeholder={jobType === "매장"
                     ? "헤어 디자이너, 네일리스트, 실장…"
-                    : jobType === "기업"
+                    : jobType === "오피스"
                     ? "마케터, MD, 뷰티 연구원…"
                     : "지역, 직무, 회사명으로 검색"}
                   value={searchQuery}
@@ -283,17 +283,17 @@ function SectionActiveHiring() {
 }
 
 function SectionPick() {
-  const [tab, setTab] = useState<"전체" | "매장" | "사무직">("전체");
+  const [tab, setTab] = useState<"전체" | "매장" | "오피스">("전체");
   const [jobs, setJobs] = useState<any[]>([]);
   useEffect(() => {
-    const q = tab === "매장" ? "?job_type=STORE&limit=4" : tab === "사무직" ? "?job_type=OFFICE&limit=4" : "?limit=4";
+    const q = tab === "매장" ? "?job_type=STORE&limit=4" : tab === "오피스" ? "?job_type=OFFICE&limit=4" : "?limit=4";
     fetch(`/api/jobs${q}`)
       .then((r) => r.json())
       .then((res) => { if (res.success && Array.isArray(res.data)) setJobs(res.data); else setJobs([]); })
       .catch(console.error);
   }, [tab]);
   const mappedJobs = jobs.map(mapJob);
-  const seeAll = tab === "매장" ? "/jobs?type=매장" : tab === "사무직" ? "/jobs?type=기업" : "/jobs";
+  const seeAll = tab === "매장" ? "/jobs?type=매장" : tab === "오피스" ? "/jobs?type=오피스" : "/jobs";
   return (
     <section className="section section-divider">
       <div className="container">
@@ -311,14 +311,14 @@ function SectionPick() {
 
         <div style={{ marginBottom: 24 }}>
           <div className="hero-type-toggle">
-            {(["전체", "매장", "사무직"] as const).map((t) => (
+            {(["전체", "매장", "오피스"] as const).map((t) => (
               <button
                 key={t}
                 type="button"
                 className={`hero-type-btn ${tab === t ? "active" : ""}`}
                 onClick={() => setTab(t)}
               >
-                {t === "매장" ? "매장" : t === "사무직" ? "본사" : t}
+                {t === "매장" ? "매장" : t === "오피스" ? "오피스" : t}
               </button>
             ))}
           </div>
@@ -393,7 +393,7 @@ function fmtStoryDate(d: string) {
    섹션: 직무별 채용 바로가기
    ============================================ */
 function SectionJobGroups() {
-  const [tab, setTab] = useState<"매장" | "기업">("매장");
+  const [tab, setTab] = useState<"매장" | "오피스">("매장");
   const groups = tab === "매장" ? STORE_JOB_GROUPS : OFFICE_JOB_GROUPS;
   return (
     <section className="section section-divider">
@@ -406,7 +406,7 @@ function SectionJobGroups() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-          {(["매장", "기업"] as const).map((t) => (
+          {(["매장", "오피스"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
               style={{
                 padding: "8px 18px", borderRadius: 100, fontSize: 14, fontWeight: 600, cursor: "pointer",
@@ -414,7 +414,7 @@ function SectionJobGroups() {
                 background: tab === t ? "#5f0080" : "#fff",
                 color: tab === t ? "#fff" : "#666",
               }}>
-              {t === "매장" ? "🏪 매장" : "🏢 본사"}
+              {t === "매장" ? "🏪 매장" : "🏢 오피스"}
             </button>
           ))}
         </div>

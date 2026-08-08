@@ -12,7 +12,7 @@ const shortSido = (s: string) =>
 
 export default function HeroMobile() {
   const router = useRouter();
-  const [jobType, setJobType] = useState<"전체" | "기업" | "매장">("전체");
+  const [jobType, setJobType] = useState<"전체" | "오피스" | "매장">("전체");
   const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -27,7 +27,7 @@ export default function HeroMobile() {
       .then((r) => r.json())
       .then((res) => {
         const u = res.data || res;
-        if (u?.job_type === "OFFICE") setJobType("기업");
+        if (u?.job_type === "OFFICE") setJobType("오피스");
         else if (u?.job_type === "STORE") setJobType("매장");
         if (Array.isArray(u?.preferred_regions)) {
           const regions = u.preferred_regions
@@ -72,11 +72,11 @@ export default function HeroMobile() {
       <p className="hero-m-search-label">어떤 일자리를 찾으세요?</p>
 
       <div className="hero-m-toggle">
-        {(["전체", "매장", "기업"] as const).map((t) => (
+        {(["전체", "매장", "오피스"] as const).map((t) => (
           <button key={t} type="button"
             className={`hero-m-toggle-btn ${jobType === t ? "active" : ""}`}
             onClick={() => setJobType(t)}>
-            {t === "전체" ? "전체" : t === "기업" ? "🏢 본사" : "🏪 매장"}
+            {t === "전체" ? "전체" : t === "오피스" ? "🏢 오피스" : "🏪 매장"}
           </button>
         ))}
       </div>
@@ -92,7 +92,7 @@ export default function HeroMobile() {
           </button>
           <span className="hero-m-divider" />
           <input className="hero-m-input" type="text"
-            placeholder={jobType === "매장" ? "헤어, 네일, 실장…" : jobType === "기업" ? "마케터, MD, 영업…" : "지역, 직무, 회사명…"}
+            placeholder={jobType === "매장" ? "헤어, 네일, 실장…" : jobType === "오피스" ? "마케터, MD, 영업…" : "지역, 직무, 회사명…"}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)} />
           <button type="submit" className="hero-m-search-btn">
