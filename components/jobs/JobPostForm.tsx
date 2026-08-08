@@ -17,7 +17,8 @@ const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.s
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
-const EMPLOYMENT_TYPES = ["정규직", "계약직", "정규직 전환 가능", "위촉직", "프리랜서", "인턴", "아르바이트"];
+const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트"];
+const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
 const WORK_PERIODS = ["~6개월", "6개월 ~ 1년", "1년 이상", "협의"];
 const WELFARE_OPTIONS: Record<string, string[]> = {
   매장: ["4대보험", "기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능"],
@@ -292,6 +293,7 @@ export default function JobPostForm({
   const workPeriodRef = useRef<HTMLDivElement>(null);
   const [employOpen, setEmployOpen] = useState(false);
   const employRef = useRef<HTMLDivElement>(null);
+  const [fullTimeConvertible, setFullTimeConvertible] = useState(false); // 계약직·인턴 → 정규직 전환 가능
   const [workTimeStart, setWorkTimeStart] = useState("");
   const [workTimeEnd, setWorkTimeEnd] = useState("");
   const [workTimeNego, setWorkTimeNego] = useState(false);
@@ -390,9 +392,13 @@ export default function JobPostForm({
       if (!j) return;
       const career = j.experience_level === "NEW" ? "신입"
         : j.experience_level === "EXPERIENCED" ? "2년 이상" : "경력 무관";
-      const type = j.employment_type
+      const rawType = j.employment_type
         || (j.work_type === "PART_TIME" ? "파트타임"
           : j.work_type === "CONTRACT" ? "계약직" : "정규직");
+      // 저장된 "계약직 · 정규직 전환 가능" → 기본 고용형태 + 전환 체크 복원
+      const convertible = typeof rawType === "string" && rawType.includes("정규직 전환 가능");
+      const type = convertible ? rawType.replace(CONVERTIBLE_SUFFIX, "").trim() : rawType;
+      setFullTimeConvertible(convertible);
       const loadedSalaryType = j.salary_type || (j.job_type === "STORE" ? "MONTHLY" : "ANNUAL");
       const salary = j.salary_min ? String(loadedSalaryType === "HOURLY" ? j.salary_min : j.salary_min / 10000) : "";
       setSalaryMax(j.salary_max && j.salary_max > j.salary_min ? String(loadedSalaryType === "HOURLY" ? j.salary_max : j.salary_max / 10000) : "");
@@ -639,9 +645,14 @@ export default function JobPostForm({
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
   // 빈 값 자리엔 흐린 회색 플레이스홀더 텍스트(칩·배경 없음). 채워지면 평체 텍스트로 노출.
   // 기업정보처럼 목록에서 고르는 항목은 '선택'(기본), 값을 직접 적는 항목은 '입력'.
-  const pick = (label = "선택") => (
-    <span style={{ color: "#dadada", fontSize: 15 }}>{label}</span>
+  // 빈 값 자리엔 텍스트 없이 4글자 폭의 연보라 하이라이트 블록으로 통일.
+  const pick = (_label?: string) => (
+    <span style={{ display: "inline-block", width: "4em", height: "1.15em", borderRadius: 5, background: "#ece5fb", verticalAlign: "middle" }} />
   );
+  // 네이티브 셀렉트(경력·학력·고용형태·근무기간)의 빈 값도 동일한 연보라 하이라이트로.
+  const emptySel = (filled: boolean): CSSProperties => filled
+    ? { background: "transparent" }
+    : { background: "#ece5fb", borderRadius: 5, minWidth: "4em" };
   // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
   const applyParsed = (d: any) => {
       // 회사 정보(회사명·홈페이지·이메일·주소·소개·업종·지원방식)는 관리자 비회원 입력에만 채움.
@@ -925,7 +936,7 @@ export default function JobPostForm({
       salary_type: salaryMin ? salaryType : null,
       location: regionList.join(", ") || null,
       work_type: workType,
-      employment_type: form.type,
+      employment_type: form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : ""),
       experience_level: expLevel,
       benefit_tags: benefitTags,
       work_period: workPeriod || null,
@@ -1011,7 +1022,7 @@ export default function JobPostForm({
     career: form.career || "경력무관",
     education: form.education || "",
     region: regionList.join(", "),
-    employType: form.type || "협의",
+    employType: (form.type ? form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : "") : "협의"),
     headcount: form.headcount ? `${form.headcount}명` : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
@@ -1324,8 +1335,8 @@ export default function JobPostForm({
                   <Briefcase size={16} className="job-detail-meta-icon" />
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>경력</span>
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
-                    style={{ border: "none", background: "transparent", fontSize: 15, color: form.career ? "#333" : "#dadada", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                    <option value="">선택</option>
+                    style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.career) }}>
+                    <option value=""></option>
                     {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
@@ -1334,8 +1345,8 @@ export default function JobPostForm({
                   <GraduationCap size={16} className="job-detail-meta-icon" />
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>학력{isOffice && <span style={{ color: "#e9a3a3" }}> *</span>}</span>
                   <select value={form.education} onChange={(e) => setForm({ ...form, education: e.target.value })}
-                    style={{ border: "none", background: "transparent", fontSize: 15, color: form.education ? "#333" : "#dadada", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0 }}>
-                    <option value="">선택</option>
+                    style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.education) }}>
+                    <option value=""></option>
                     {EDUCATION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
@@ -1426,38 +1437,31 @@ export default function JobPostForm({
                       </div>
                     )}
                   </div>
-                  {/* 고용형태 — 팝오버(네이티브 풀다운 제거) */}
-                  <div className="job-detail-company-row" ref={employRef} style={{ position: "relative" }}>
+                  {/* 고용형태 — 네이티브 풀다운. 계약직·인턴이면 '정규직 전환 가능' 하위 옵션 노출 */}
+                  <div className="job-detail-company-row" style={{ position: "relative", flexWrap: "wrap" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>고용형태<span style={{ color: "#e9a3a3" }}> *</span></span>
-                    <button type="button" onClick={() => setEmployOpen((v) => !v)}
-                      style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: form.type ? "#333" : "#cfcfcf" }}>
-                      {form.type || pick()}
-                    </button>
-                    {employOpen && (
-                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(320px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
-                        {EMPLOYMENT_TYPES.map((o) => { const on = form.type === o; return (
-                          <button key={o} type="button" onClick={() => { setForm({ ...form, type: o }); setEmployOpen(false); }}
-                            style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{o}</button>
-                        ); })}
-                      </div>
+                    <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
+                      style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.type) }}>
+                      <option value=""></option>
+                      {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                    {(form.type === "계약직" || form.type === "인턴") && (
+                      <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "#666", cursor: "pointer", flexBasis: "100%", paddingLeft: 72, marginTop: 4 }}>
+                        <input type="checkbox" checked={fullTimeConvertible} onChange={(e) => setFullTimeConvertible(e.target.checked)} /> 정규직 전환 가능
+                      </label>
                     )}
                   </div>
-                  {/* 근무기간 — 팝오버(네이티브 풀다운 제거) */}
-                  <div className="job-detail-company-row" ref={workPeriodRef} style={{ position: "relative" }}>
-                    <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무기간<span style={{ color: "#e9a3a3" }}> *</span></span>
-                    <button type="button" onClick={() => setWorkPeriodOpen((v) => !v)}
-                      style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: workPeriod ? "#333" : "#cfcfcf" }}>
-                      {workPeriod || pick()}
-                    </button>
-                    {workPeriodOpen && (
-                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(320px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
-                        {WORK_PERIODS.map((o) => { const on = workPeriod === o; return (
-                          <button key={o} type="button" onClick={() => { setWorkPeriod(o); setWorkPeriodOpen(false); }}
-                            style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{o}</button>
-                        ); })}
-                      </div>
-                    )}
-                  </div>
+                  {/* 근무기간 — 매장 전용, 네이티브 풀다운 */}
+                  {jobGroupType === "매장" && (
+                    <div className="job-detail-company-row" style={{ position: "relative" }}>
+                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무기간<span style={{ color: "#e9a3a3" }}> *</span></span>
+                      <select value={workPeriod} onChange={(e) => setWorkPeriod(e.target.value)}
+                        style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!workPeriod) }}>
+                        <option value=""></option>
+                        {WORK_PERIODS.map((o) => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                    </div>
+                  )}
                   {jobGroupType === "매장" && (<>
                     {/* 근무 요일 */}
                     <div className="job-detail-company-row" ref={workDaysRef} style={{ position: "relative" }}>

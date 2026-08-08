@@ -36,7 +36,7 @@ export default function JobGroupField({
         }
         .jgf-value:disabled { opacity: 0.6; cursor: not-allowed; }
         .jgf-text { color: #555; font-weight: 400; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-        .jgf-pick { color: #dadada; font-weight: 400; font-size: 15px; white-space: nowrap; }
+        .jgf-pick { display: inline-block; width: 4em; height: 1.15em; border-radius: 5px; background: #ece5fb; vertical-align: middle; }
       `}</style>
 
       <div>
@@ -49,7 +49,7 @@ export default function JobGroupField({
           {value.length ? (
             <span className="jgf-text">{value.join(", ")}</span>
           ) : (
-            <span className="jgf-pick">{placeholder}</span>
+            <span className="jgf-pick" />
           )}
         </button>
       </div>
