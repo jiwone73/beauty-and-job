@@ -717,8 +717,18 @@ export default function JobPostForm({
       // 마감일: 상시채용이면 토글 ON, 아니면 날짜 세팅
       const isAlways = d.always_open === true || (!d.deadline);
       setAlwaysOpen(isAlways);
-      // 텍스트 필드가 배열로 와도 안전하게 문자열로 변환
-      const asText = (v: any, fb: string) => Array.isArray(v) ? v.filter(Boolean).join("\n") : (typeof v === "string" && v ? v : fb);
+      // 불러온 본문 자동 정렬: 원문 HTML에서 <p>·<br>가 줄바꿈으로 변환되며 줄 사이 빈 줄(엔터 여러 번)이 잔뜩 끼는데,
+      // 이걸 그대로 두면 상세요강 행간이 과하게 벌어진다. → 줄 끝 공백 제거 + 빈 줄 모두 제거(단일 행간)로 정돈.
+      const tidyText = (s: string) => s
+        .replace(/\r\n?/g, "\n")
+        .split("\n").map((l) => l.replace(/\s+$/g, "")).join("\n")
+        .replace(/\n{2,}/g, "\n")
+        .trim();
+      // 텍스트 필드가 배열로 와도 안전하게 문자열로 변환 + 행간 정돈
+      const asText = (v: any, fb: string) => {
+        if (Array.isArray(v)) { const j = v.filter(Boolean).join("\n"); return j ? tidyText(j) : fb; }
+        return (typeof v === "string" && v.trim()) ? tidyText(v) : fb;
+      };
       setForm((f) => ({
         ...f,
         title: d.title || f.title,
