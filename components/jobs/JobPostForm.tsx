@@ -18,6 +18,7 @@ const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트"];
+const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "온라인 지원", "홈페이지 지원"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
 const WORK_PERIODS = ["~6개월", "6개월 ~ 1년", "1년 이상", "협의"];
 const WELFARE_OPTIONS: Record<string, string[]> = {
@@ -139,7 +140,7 @@ export default function JobPostForm({
   const [nmManagerPhone, setNmManagerPhone] = useState("");
   const [contactMethods, setContactMethods] = useState<string[]>([]); // 지원방법: 문자·이메일·전화·온라인 지원(복수)
   const toggleContactMethod = (m: string) =>
-    setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]));
+    setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]).sort((a, b) => CONTACT_METHOD_OPTIONS.indexOf(a) - CONTACT_METHOD_OPTIONS.indexOf(b)));
   const [contactMethodsOpen, setContactMethodsOpen] = useState(false);
   const contactMethodsRef = useRef<HTMLDivElement>(null);
   const [parseUrl, setParseUrl] = useState("");
@@ -668,6 +669,16 @@ export default function JobPostForm({
         if (d.contact_email) setNmContactEmail(d.contact_email);
         if (d.contact_phone) setNmManagerPhone(d.contact_phone);
         if (d.contact_name) setNmManagerName(d.contact_name);
+        // 연락처가 확인되면 '지원방법'(필수)을 자동 세팅 → 채용담당자 칸이 열리고 파싱값이 화면에 보이게.
+        // (전화 → '전화', 이메일 → '이메일'; 이미 고른 값은 유지하고 합집합)
+        if (d.contact_phone || d.contact_email) {
+          setContactMethods((prev) => {
+            const next = new Set(prev);
+            if (d.contact_phone) next.add("전화");
+            if (d.contact_email) next.add("이메일");
+            return [...next].sort((a, b) => CONTACT_METHOD_OPTIONS.indexOf(a) - CONTACT_METHOD_OPTIONS.indexOf(b));
+          });
+        }
         // 비회원 외부 불러오기는 '관리자 대행'만 사용 → 파싱값과 무관하게 MANAGED 고정
         setApplyMethod("MANAGED");
         if (d.company_description) setNmDescription(d.company_description);
@@ -1578,7 +1589,7 @@ export default function JobPostForm({
                     </button>
                     {contactMethodsOpen && (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(320px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
-                        {["문자", "이메일", "전화", "온라인 지원"].map((m) => { const on = contactMethods.includes(m); return (
+                        {CONTACT_METHOD_OPTIONS.map((m) => { const on = contactMethods.includes(m); return (
                           <button key={m} type="button" onClick={() => toggleContactMethod(m)}
                             style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{m}</button>
                         ); })}
