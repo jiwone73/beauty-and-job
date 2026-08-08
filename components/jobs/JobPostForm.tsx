@@ -891,8 +891,8 @@ export default function JobPostForm({
       if (!form.type) { alert("고용형태를 선택해주세요."); return; }
       if (jobGroupType === "매장") {
         if (!workPeriod) { alert("근무기간을 선택해주세요."); return; }
-        if (!(workDaysNego || workDays.length)) { alert("근무 요일을 선택해주세요."); return; }
-        if (!(workTimeNego || (workTimeStart && workTimeEnd))) { alert("근무 시간을 입력해주세요."); return; }
+        if (!(workDaysNego || workDays.length)) { alert("근무요일을 선택해주세요."); return; }
+        if (!(workTimeNego || (workTimeStart && workTimeEnd))) { alert("근무시간을 입력해주세요."); return; }
         // 매장: 상세요강 이미지 또는 (포지션 소개+자격요건)
         if (detailImages.length === 0 && (!form.description?.trim() || !form.requirements?.trim())) {
           alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개와 자격요건을 입력해주세요.");
@@ -1299,8 +1299,8 @@ export default function JobPostForm({
         {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
 
-          {/* 기본 정보 */}
-          <h2 className="jobpost-section-title">기본 정보</h2>
+          {/* 모집요강 */}
+          <h2 className="jobpost-section-title">모집요강</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
 
@@ -1471,9 +1471,9 @@ export default function JobPostForm({
                     </div>
                   )}
                   {jobGroupType === "매장" && (<>
-                    {/* 근무 요일 */}
+                    {/* 근무요일 */}
                     <div className="job-detail-company-row" ref={workDaysRef} style={{ position: "relative" }}>
-                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무 요일<span style={{ color: "#e9a3a3" }}> *</span></span>
+                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무요일<span style={{ color: "#e9a3a3" }}> *</span></span>
                       <button type="button" onClick={() => setWorkDaysOpen((v) => !v)}
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workDaysNego || workDays.length) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
                         {workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : pick())}
@@ -1498,9 +1498,9 @@ export default function JobPostForm({
                         </div>
                       )}
                     </div>
-                    {/* 근무 시간 */}
+                    {/* 근무시간 */}
                     <div className="job-detail-company-row" ref={workTimeRef} style={{ position: "relative" }}>
-                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무 시간<span style={{ color: "#e9a3a3" }}> *</span></span>
+                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무시간<span style={{ color: "#e9a3a3" }}> *</span></span>
                       <button type="button" onClick={() => setWorkTimeOpen((v) => !v)}
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
                         {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : pick("입력"))}
@@ -1642,8 +1642,8 @@ export default function JobPostForm({
         {/* ═══ 오른쪽 컬럼: 상세이미지 + 상세내용 + 채용절차·비고 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "16px" }}>
 
-          {/* 상세 내용 */}
-          <h2 className="jobpost-section-title">상세 내용</h2>
+          {/* 상세요강 */}
+          <h2 className="jobpost-section-title">상세요강</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
 
@@ -1712,7 +1712,7 @@ export default function JobPostForm({
       {/* ═══ 기업 정보 (맨 하단) · 상세 다른 섹션과 동일한 인라인 스타일 ═══ */}
       {mode === "admin" && nonMember && (
         <div className="jobpost-form" style={{ width: "100%", maxWidth: 760, margin: "16px auto 0", boxSizing: "border-box" }}>
-          <h2 className="jobpost-section-title">기업 정보</h2>
+          <h2 className="jobpost-section-title">기업정보</h2>
           <div style={{ fontSize: 12, color: "#999", margin: "0 0 8px 2px" }}>기업회원 페이지의 “기업 정보”를 불러와 자동 작성돼요 · 공고 상세 맨 아래에 표시됩니다</div>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">

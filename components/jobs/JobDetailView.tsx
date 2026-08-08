@@ -108,13 +108,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         )}
         {job.workDaysText && (
           <div className="job-detail-company-row">
-            <span className="job-detail-company-label">근무 요일</span>
+            <span className="job-detail-company-label">근무요일</span>
             <span>{job.workDaysText}</span>
           </div>
         )}
         {job.workTimeText && (
           <div className="job-detail-company-row">
-            <span className="job-detail-company-label">근무 시간</span>
+            <span className="job-detail-company-label">근무시간</span>
             <span>{job.workTimeText}</span>
           </div>
         )}
@@ -379,7 +379,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         {/* 기업 정보 (공고 내용 아래) */}
         {hasCompanyInfo && (
           <section className="job-detail-section">
-            <h2 className="job-detail-section-title">기업 정보</h2>
+            <h2 className="job-detail-section-title">기업정보</h2>
             {job.brandDesc?.trim() && (
               <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginBottom: companyRows.length ? "16px" : 0 }}>{job.brandDesc}</p>
             )}
