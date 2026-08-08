@@ -880,7 +880,7 @@ export default function JobPostForm({
         alert("기업을 선택해주세요."); return;
       }
     }
-    if (showTypeToggle && !jobGroupType) { alert("채용유형(본사/매장)을 선택해주세요."); return; }
+    if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
     if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
     if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
     if (!form.headcount) { alert("모집인원을 입력해주세요."); return; } // 경력은 선택
@@ -1227,22 +1227,25 @@ export default function JobPostForm({
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
 
-      {/* 채용유형: 매장 / 오피스 (관리자·겸업 기업회원). 불러오기로 자동 추정 후 여기서 확정·수정 */}
+      {/* 채용유형: 매장 / 오피스 (관리자·겸업 기업회원). 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
       {showTypeToggle && (
-        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
-          <div style={{ fontSize: 13, color: "#666", marginBottom: 6, marginLeft: 4 }}>채용유형</div>
-          <div style={{ display: "inline-flex", background: "#f4f2f8", border: "1px solid #e5e0eb", borderRadius: 10, padding: 3, gap: 3 }}>
+        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
+          <span style={{ fontSize: 14, color: "#999", flexShrink: 0 }}>채용유형</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
             {([["매장", "매장"], ["기업", "오피스"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
               const on = jobGroupType === val;
               return (
-                <button key={val} type="button" onClick={() => setJobGroupType(val)}
-                  style={{ padding: "8px 24px", borderRadius: 8, border: "none", fontSize: 14, cursor: "pointer", background: on ? "#5f0080" : "transparent", color: on ? "#fff" : "#888" }}>
+                <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 15, color: on ? "#1a1a1a" : "#666" }}>
+                  <span style={{ width: 18, height: 18, borderRadius: "50%", border: on ? "1.5px solid #5f0080" : "1.5px solid #cfcfcf", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {on && <span style={{ width: 9, height: 9, borderRadius: "50%", background: "#5f0080" }} />}
+                  </span>
+                  <input type="radio" name="jobGroupType" checked={on} onChange={() => setJobGroupType(val)} style={{ position: "absolute", opacity: 0, width: 0, height: 0 }} />
                   {label}
-                </button>
+                </label>
               );
             })}
           </div>
-          {!jobGroupType && <div style={{ marginTop: 6, marginLeft: 4, fontSize: 12, color: "#e9a3a3" }}>채용유형을 선택하면 급여·복지 등 항목이 열립니다.</div>}
+          {!jobGroupType && <span style={{ fontSize: 12, color: "#e9a3a3" }}>선택하면 급여·복지 등 항목이 열립니다.</span>}
         </div>
       )}
 
