@@ -1,9 +1,10 @@
-// 급여 표기 유틸 — salary_min(원 단위) + salary_type(ANNUAL/MONTHLY/WEEKLY/HOURLY)
+// 급여 표기 유틸 — salary_min(원 단위) + salary_type(ANNUAL/MONTHLY/WEEKLY/DAILY/HOURLY)
 
 export const SALARY_TYPE_LABEL: Record<string, string> = {
   ANNUAL: "연봉",
   MONTHLY: "월급",
   WEEKLY: "주급",
+  DAILY: "일급",
   HOURLY: "시급",
 };
 
@@ -14,7 +15,9 @@ export function formatSalaryWon(
 ): string {
   if (!salaryMin) return "급여 협의";
   const won = Number(salaryMin);
+  // 시급·일급은 원 단위로 그대로 표기
   if (salaryType === "HOURLY") return `시급 ${won.toLocaleString()}원`;
+  if (salaryType === "DAILY") return `일급 ${won.toLocaleString()}원`;
   const man = Math.round(won / 10000);
   const prefix = salaryType === "ANNUAL" ? "연" : salaryType === "WEEKLY" ? "주" : "월";
   return `${prefix} ${man.toLocaleString()}만원`;

@@ -185,7 +185,7 @@ export default function JobPostForm({
     if (salaryNego) return "급여 협의";
     const min = parseInt(String(form.salary).replace(/[^0-9]/g, "")) || 0;
     if (!min) return "급여 협의";
-    const unit = salaryType === "HOURLY" ? 1 : 10000;
+    const unit = (salaryType === "HOURLY" || salaryType === "DAILY") ? 1 : 10000;
     const base = formatSalaryWon(min * unit, salaryType);
     const max = parseInt(String(salaryMax).replace(/[^0-9]/g, "")) || 0;
     if (max > min) return `${base} ~ ${formatSalaryWon(max * unit, salaryType).replace(/^[^0-9]*/, "")}`;
@@ -900,9 +900,10 @@ export default function JobPostForm({
     let salaryMaxVal: number | null = null;
     if (!salaryNego && form.salary) {
       const n = parseInt(String(form.salary).replace(/[^0-9]/g, ""));
-      if (n > 0) salaryMin = salaryType === "HOURLY" ? n : n * 10000;
+      const wonUnit = (salaryType === "HOURLY" || salaryType === "DAILY");
+      if (n > 0) salaryMin = wonUnit ? n : n * 10000;
       const mx = parseInt(String(salaryMax).replace(/[^0-9]/g, "")) || 0;
-      if (mx > n) salaryMaxVal = salaryType === "HOURLY" ? mx : mx * 10000;
+      if (mx > n) salaryMaxVal = wonUnit ? mx : mx * 10000;
     }
 
     const payload: any = {
@@ -1199,6 +1200,25 @@ export default function JobPostForm({
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
 
+      {/* 채용유형: 매장 / 오피스 (관리자·겸업 기업회원). 불러오기로 자동 추정 후 여기서 확정·수정 */}
+      {showTypeToggle && (
+        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
+          <div style={{ fontSize: 13, color: "#666", marginBottom: 6, marginLeft: 4 }}>채용유형</div>
+          <div style={{ display: "inline-flex", background: "#f4f2f8", border: "1px solid #e5e0eb", borderRadius: 10, padding: 3, gap: 3 }}>
+            {([["매장", "매장"], ["기업", "오피스"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
+              const on = jobGroupType === val;
+              return (
+                <button key={val} type="button" onClick={() => setJobGroupType(val)}
+                  style={{ padding: "8px 24px", borderRadius: 8, border: "none", fontSize: 14, cursor: "pointer", background: on ? "#5f0080" : "transparent", color: on ? "#fff" : "#888" }}>
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+          {!jobGroupType && <div style={{ marginTop: 6, marginLeft: 4, fontSize: 12, color: "#e9a3a3" }}>채용유형을 선택하면 급여·복지 등 항목이 열립니다.</div>}
+        </div>
+      )}
+
       {/* 공고 상단 이미지 */}
       {mode === "company" ? (
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
@@ -1352,7 +1372,9 @@ export default function JobPostForm({
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
                         {/* 급여 단위 */}
                         <div style={{ display: "flex", gap: "6px", marginBottom: "10px" }}>
-                          {([["ANNUAL", "연봉"], ["MONTHLY", "월급"], ["WEEKLY", "주급"], ["HOURLY", "시급"]] as [string, string][]).map(([val, lbl]) => (
+                          {((jobGroupType === "기업"
+                            ? [["ANNUAL", "연봉"]]
+                            : [["MONTHLY", "월급"], ["WEEKLY", "주급"], ["DAILY", "일급"], ["HOURLY", "시급"]]) as [string, string][]).map(([val, lbl]) => (
                             <button key={val} type="button" disabled={salaryNegoDraft}
                               onClick={() => setSalaryTypeDraft(val)}
                               style={{ flex: 1, padding: "6px 0", borderRadius: "8px", fontSize: "13px", cursor: salaryNegoDraft ? "default" : "pointer",
@@ -1365,12 +1387,12 @@ export default function JobPostForm({
                         </div>
                         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                           <input type="number" autoFocus disabled={salaryNegoDraft}
-                            placeholder={salaryTypeDraft === "HOURLY" ? "예) 12,000" : salaryTypeDraft === "ANNUAL" ? "예) 4000" : "예) 250"}
+                            placeholder={salaryTypeDraft === "HOURLY" ? "예) 12,000" : salaryTypeDraft === "DAILY" ? "예) 100,000" : salaryTypeDraft === "ANNUAL" ? "예) 4000" : "예) 250"}
                             value={salaryNegoDraft ? "" : salaryDraft}
                             onChange={(e) => setSalaryDraft(e.target.value)}
                             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applySalary(); } }}
                             style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", textAlign: "left", background: salaryNegoDraft ? "#f5f5f5" : "#fff", color: "#333" }} />
-                          <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap", flexShrink: 0 }}>{salaryTypeDraft === "HOURLY" ? "원" : "만원"}</span>
+                          <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap", flexShrink: 0 }}>{(salaryTypeDraft === "HOURLY" || salaryTypeDraft === "DAILY") ? "원" : "만원"}</span>
                         </div>
                         <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
                           <input type="checkbox" checked={salaryNegoDraft} onChange={(e) => setSalaryNegoDraft(e.target.checked)} /> 협의 (금액 비공개)
