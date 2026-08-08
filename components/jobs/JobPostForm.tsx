@@ -878,7 +878,7 @@ export default function JobPostForm({
     if (!q) { setFindMsg("회사명 또는 공고 URL을 입력해주세요."); return; }
     // 목록에서 라디오로 고른 공고가 있으면(입력칸을 손대지 않았으면) 그 공고를 불러옴
     if (picked && q === picked.title.trim()) { setFindResults([]); setFindMsg(""); setParseUrl(picked.url); runParse(picked.url); return; }
-    if (isUrlLike(q)) { setFindResults([]); setFindMsg(""); setParseUrl(q); runParse(q); }
+    if (isUrlLike(q)) { setFindResults([]); setFindMsg(""); setParseUrl(q); setPicked({ title: q, url: q.startsWith("http") ? q : `https://${q}` }); runParse(q); }
     else { setPicked(null); runFindByCompany(); }
   };
 
@@ -1208,6 +1208,10 @@ export default function JobPostForm({
               <input className="admin-form-input" style={{ flex: 1 }} placeholder="회사명 또는 공고 URL 입력 (예: 준오헤어 · https://…)"
                 value={findQuery} onChange={(e) => { setFindQuery(e.target.value); if (picked && e.target.value !== picked.title) setPicked(null); }}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runImport(); } }} />
+              {picked && (
+                <a href={picked.url} target="_blank" rel="noopener noreferrer" title="선택한 공고 원문을 새 탭으로 열기"
+                  style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", padding: "0 12px", borderRadius: 8, border: "1px solid #e5e0eb", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>원문 ↗</a>
+              )}
               <button type="button" onClick={runImport} disabled={finding || parsing}
                 style={{ flexShrink: 0, padding: "0 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: (finding || parsing) ? 0.6 : 1, whiteSpace: "nowrap" }}>
                 {(finding || parsing) ? "불러오는 중..." : "불러오기"}</button>
