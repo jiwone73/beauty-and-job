@@ -668,9 +668,8 @@ export default function JobPostForm({
         if (d.contact_email) setNmContactEmail(d.contact_email);
         if (d.contact_phone) setNmManagerPhone(d.contact_phone);
         if (d.contact_name) setNmManagerName(d.contact_name);
-        // 이메일 중계(EMAIL)는 관리자 대행과 동일 동작이라 통합 → MANAGED로 정규화
-        if (["MANAGED", "EMAIL", "REDIRECT"].includes(d.apply_method)) setApplyMethod(d.apply_method === "EMAIL" ? "MANAGED" : d.apply_method);
-        if (d.external_apply_url) setExternalApplyUrl(d.external_apply_url);
+        // 비회원 외부 불러오기는 '관리자 대행'만 사용 → 파싱값과 무관하게 MANAGED 고정
+        setApplyMethod("MANAGED");
         if (d.company_description) setNmDescription(d.company_description);
         if (d.address) setNmAddress(d.address);
         if (d.industry) setNmIndustry(d.industry);
@@ -1245,44 +1244,6 @@ export default function JobPostForm({
           )}
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
           {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
-          {mode === "admin" && nonMember && (
-            <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e0eb", display: "flex", flexDirection: "column", gap: 12 }}>
-              {/* 지원서 처리방식 + 연락처 공개 — 한 행 */}
-              <div style={{ display: "flex", alignItems: "center", gap: "10px 40px", flexWrap: "wrap" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                  <div style={{ ...lbl, marginBottom: 0, whiteSpace: "nowrap" }}>지원서 처리방식</div>
-                  <div style={{ display: "flex", gap: 18 }}>
-                    {([["MANAGED", "관리자 대행"], ["REDIRECT", "외부 링크형"]] as [string, string][]).map(([v, l]) => (
-                      <label key={v} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: "#444" }}>
-                        <input type="radio" name="applyMethod" checked={applyMethod === v} onChange={() => setApplyMethod(v as "MANAGED" | "EMAIL" | "REDIRECT")} /> {l}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                  <div style={{ ...lbl, marginBottom: 0, whiteSpace: "nowrap" }}>연락처 공개</div>
-                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
-                    {([["이름", nmManagerName], ["전화", nmManagerPhone], ["이메일", nmContactEmail]] as [string, string][]).map(([label, val]) => {
-                      const has = !!(val && val.trim());
-                      return (
-                        <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-                          <span style={{ width: 16, height: 16, borderRadius: "50%", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", background: has ? "#10b981" : "#d5d5d5" }}>✓</span>
-                          <span style={{ color: "#666" }}>{label}</span>
-                          <span style={{ color: has ? "#333" : "#bbb", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{has ? val : "미확인"}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-              {applyMethod === "REDIRECT" && (
-                <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-                  <div style={{ ...lbl, marginBottom: 0, minWidth: 84 }}>외부 지원 URL <span style={{ color: "#e74c3c" }}>*</span></div>
-                  <input style={{ ...inp, flex: 1, minWidth: 220 }} value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://기업지원페이지" />
-                </div>
-              )}
-            </div>
-          )}
 
           </div>
         </div>
