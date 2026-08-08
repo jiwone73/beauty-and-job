@@ -1145,16 +1145,16 @@ export default function JobPostForm({
       {/* 채용유형(매장/오피스) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
       {showTypeToggle && (
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 12px", boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "var(--color-primary)", fontSize: 15, fontWeight: 400 }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#5f0080", fontSize: 16, fontWeight: 400 }}>
             <Settings size={16} /> 채용유형
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
             {([["매장", "매장"], ["기업", "오피스"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
               const on = jobGroupType === val;
               return (
-                <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 15, fontWeight: 400, color: on ? "#1a1a1a" : "#666" }}>
-                  <span style={{ width: 18, height: 18, borderRadius: "50%", border: on ? "1.5px solid #5f0080" : "1.5px solid #cfcfcf", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {on && <span style={{ width: 9, height: 9, borderRadius: "50%", background: "#5f0080" }} />}
+                <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: "#5f0080" }}>
+                  <span style={{ width: 16, height: 16, borderRadius: "50%", border: "1.5px solid #5f0080", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {on && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#5f0080" }} />}
                   </span>
                   <input type="radio" name="jobGroupType" checked={on} onChange={() => setJobGroupType(val)} style={{ position: "absolute", opacity: 0, width: 0, height: 0 }} />
                   {label}
@@ -1169,11 +1169,14 @@ export default function JobPostForm({
       {mode === "admin" && (
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
           <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 16px", marginBottom: 8, marginLeft: 2 }}>
-            <span style={{ fontWeight: 400, fontSize: 15, color: "#5f0080" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</span>
-            <div style={{ display: "flex", gap: 16, fontSize: 15 }}>
+            <span style={{ fontWeight: 400, fontSize: 16, color: "#5f0080" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</span>
+            <div style={{ display: "flex", gap: 20 }}>
               {([["url", "회사명 / URL"], ["ocr", "화면 캡처"]] as ["url" | "ocr", string][]).map(([v, l]) => (
-                <label key={v} style={{ display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", fontSize: 15, fontWeight: 400, color: importMode === v ? "#1a1a1a" : "#777" }}>
-                  <input type="radio" name="importMode" checked={importMode === v} onChange={() => { setImportMode(v); setParseMsg(""); }} /> {l}
+                <label key={v} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: "#5f0080" }}>
+                  <span style={{ width: 16, height: 16, borderRadius: "50%", border: "1.5px solid #5f0080", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {importMode === v && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#5f0080" }} />}
+                  </span>
+                  <input type="radio" name="importMode" checked={importMode === v} onChange={() => { setImportMode(v); setParseMsg(""); }} style={{ position: "absolute", opacity: 0, width: 0, height: 0 }} /> {l}
                 </label>
               ))}
             </div>
