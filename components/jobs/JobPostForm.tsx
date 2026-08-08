@@ -1130,7 +1130,7 @@ export default function JobPostForm({
 
       {mode === "admin" && (
         <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</div>
+          <div style={{ fontWeight: 400, fontSize: 16, color: "#5f0080", marginBottom: 6 }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</div>
 
           {/* ① 회사명으로 공고 찾기 (헤어인잡) */}
           <div style={{ marginBottom: 10 }}>
@@ -1451,7 +1451,7 @@ export default function JobPostForm({
                     )}
                   </div>
                   {/* 고용형태 — 네이티브 풀다운. 계약직·인턴이면 '정규직 전환 가능' 하위 옵션 노출 */}
-                  <div className="job-detail-company-row" style={{ position: "relative", flexWrap: "wrap" }}>
+                  <div className="job-detail-company-row" style={{ position: "relative", alignItems: "center" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>고용형태<span style={{ color: "#e9a3a3" }}> *</span></span>
                     <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
                       style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.type) }}>
@@ -1459,8 +1459,8 @@ export default function JobPostForm({
                       {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
                     </select>
                     {(form.type === "계약직" || form.type === "인턴") && (
-                      <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "#666", cursor: "pointer", flexBasis: "100%", paddingLeft: 72, marginTop: 4 }}>
-                        <input type="checkbox" checked={fullTimeConvertible} onChange={(e) => setFullTimeConvertible(e.target.checked)} /> 정규직 전환 가능
+                      <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, color: "#666", cursor: "pointer", whiteSpace: "nowrap" }}>
+                        <input type="checkbox" checked={fullTimeConvertible} onChange={(e) => setFullTimeConvertible(e.target.checked)} style={{ margin: 0 }} /> 정규직 전환 가능
                       </label>
                     )}
                   </div>
