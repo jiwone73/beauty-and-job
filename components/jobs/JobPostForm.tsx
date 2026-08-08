@@ -646,7 +646,7 @@ export default function JobPostForm({
   // 빈 값 자리엔 흐린 회색 플레이스홀더 텍스트(칩·배경 없음). 채워지면 평체 텍스트로 노출.
   // 기업정보처럼 목록에서 고르는 항목은 '선택'(기본), 값을 직접 적는 항목은 '입력'.
   // 빈 값 자리엔 텍스트 없이 화이트톤 연보라 하이라이트 블록으로 통일(4글자 폭·텍스트 높이, 고정 px).
-  const PH_BG = "#f4f1fb"; // 화이트에 가까운 연보라
+  const PH_BG = "#f8f6fd"; // 거의 화이트에 가까운 아주 연한 연보라
   const pick = (_label?: string) => (
     <span style={{ display: "inline-block", width: 56, height: 20, borderRadius: 5, background: PH_BG, verticalAlign: "middle" }} />
   );
@@ -1327,7 +1327,7 @@ export default function JobPostForm({
                 {/* 채용분야(직군) */}
                 <div className="job-detail-meta-item">
                   <Tag size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집분야<span style={{ color: "#e9a3a3" }}> *</span></span>
                   {typeLocked ? (
                     <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
                   ) : (
@@ -1337,7 +1337,7 @@ export default function JobPostForm({
                 {/* 경력 */}
                 <div className="job-detail-meta-item">
                   <Briefcase size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>경력</span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>경력</span>
                   <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
                     style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.career) }}>
                     <option value=""></option>
@@ -1347,24 +1347,28 @@ export default function JobPostForm({
                 {/* 학력 */}
                 <div className="job-detail-meta-item">
                   <GraduationCap size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>학력{isOffice && <span style={{ color: "#e9a3a3" }}> *</span>}</span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>학력{isOffice && <span style={{ color: "#e9a3a3" }}> *</span>}</span>
                   <select value={form.education} onChange={(e) => setForm({ ...form, education: e.target.value })}
                     style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.education) }}>
                     <option value=""></option>
                     {EDUCATION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
-                {/* 모집인원 */}
+                {/* 모집인원 — 빈 값은 하이라이트 1칸, 입력하면 숫자 */}
                 <div className="job-detail-meta-item">
                   <Users size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999" }}>모집인원<span style={{ color: "#e9a3a3" }}> *</span> <input type="number" min={1} inputMode="numeric" value={form.headcount} placeholder="0"
-                    onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
-                    style={{ width: 30, border: "none", background: "transparent", fontSize: 15, color: "#333", padding: 0, textAlign: "center" }} /> 명</span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집인원<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <input type="number" min={1} inputMode="numeric" value={form.headcount}
+                      onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
+                      style={{ border: "none", fontSize: 15, color: "#333", padding: 0, WebkitAppearance: "none", appearance: "none", height: 20, lineHeight: "20px", textAlign: form.headcount ? "center" : "left", background: form.headcount ? "transparent" : PH_BG, borderRadius: form.headcount ? 0 : 5, width: form.headcount ? 44 : 56 }} />
+                    <span style={{ fontSize: 15, color: "#999" }}>명</span>
+                  </span>
                 </div>
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <Clock size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
                   <button type="button"
                     onClick={() => {
                       if (deadlineModalOpen) { setDeadlineModalOpen(false); return; }
