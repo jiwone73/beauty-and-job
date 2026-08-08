@@ -645,14 +645,18 @@ export default function JobPostForm({
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
   // 빈 값 자리엔 흐린 회색 플레이스홀더 텍스트(칩·배경 없음). 채워지면 평체 텍스트로 노출.
   // 기업정보처럼 목록에서 고르는 항목은 '선택'(기본), 값을 직접 적는 항목은 '입력'.
-  // 빈 값 자리엔 텍스트 없이 4글자 폭의 연보라 하이라이트 블록으로 통일.
+  // 빈 값 자리엔 텍스트 없이 화이트톤 연보라 하이라이트 블록으로 통일(4글자 폭·텍스트 높이, 고정 px).
+  const PH_BG = "#f4f1fb"; // 화이트에 가까운 연보라
   const pick = (_label?: string) => (
-    <span style={{ display: "inline-block", width: "4em", height: "1.15em", borderRadius: 5, background: "#ece5fb", verticalAlign: "middle" }} />
+    <span style={{ display: "inline-block", width: 56, height: 20, borderRadius: 5, background: PH_BG, verticalAlign: "middle" }} />
   );
-  // 네이티브 셀렉트(경력·학력·고용형태·근무기간)의 빈 값도 동일한 연보라 하이라이트로.
-  const emptySel = (filled: boolean): CSSProperties => filled
-    ? { background: "transparent" }
-    : { background: "#ece5fb", borderRadius: 5, minWidth: "4em" };
+  // 네이티브 셀렉트(경력·학력·고용형태·근무기간)도 동일 규격. 값 유무와 무관하게 높이·글자크기 고정으로 '입력 시 커짐' 방지.
+  const emptySel = (filled: boolean): CSSProperties => ({
+    fontSize: 15, lineHeight: "20px", height: 20,
+    background: filled ? "transparent" : PH_BG,
+    borderRadius: filled ? 0 : 5,
+    width: filled ? "auto" : 56,
+  });
   // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
   const applyParsed = (d: any) => {
       // 회사 정보(회사명·홈페이지·이메일·주소·소개·업종·지원방식)는 관리자 비회원 입력에만 채움.
