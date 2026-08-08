@@ -40,9 +40,6 @@ export async function POST(
   if (isExternal && job.apply_method === 'REDIRECT') {
     return err('JOB_004', '이 공고는 기업 채용페이지에서 지원해주세요.', 400)
   }
-  if (isExternal && third_party_consent !== true) {
-    return err('APP_004', '외부 기업에 지원 정보를 제공하려면 개인정보 제3자 제공에 동의해주세요.', 422)
-  }
   const companyNameDisplay = job.company_name || '외부 기업'
 
   const dupRes = await pool.query(

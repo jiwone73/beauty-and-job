@@ -195,7 +195,6 @@ export default function ApplyModal({
   const handleApply = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) { alert("로그인이 필요합니다."); return; }
-    if (isExternal && !consent) { alert("지원서 접수·보관에 동의해주세요."); return; }
     setApplying(true);
     try {
       // 최신 이력서를 먼저 DB에 반영 → 스냅샷이 화면과 일치
@@ -209,7 +208,7 @@ export default function ApplyModal({
       const res = await fetch(`/api/jobs/${jobId}/apply`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ cover_letter: coverLetter.trim() || null, third_party_consent: isExternal ? consent : undefined }),
+        body: JSON.stringify({ cover_letter: coverLetter.trim() || null }),
       });
       const data = await res.json();
       if (!data.success) {
@@ -378,17 +377,9 @@ export default function ApplyModal({
                 />
               </div>
 
-              {!isExternal && (
-                <p style={{ fontSize: 12, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
-                  지원하면 위 이력서와 자기소개서가 그대로 전송·저장됩니다. 제출 후에는 수정할 수 없어요.
-                </p>
-              )}
-              {isExternal && (
-                <label style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "transparent", border: "none", padding: 0, marginBottom: 10, fontSize: 13, color: "#5a5560", cursor: "pointer", lineHeight: 1.6 }}>
-                  <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 2, flexShrink: 0, accentColor: "#5f0080" }} />
-                  <span>이 공고 기업은 아직 뷰티워크에 가입하지 않았어요. 지원하면 지원서가 접수·보관되고, 기업이 가입하면 기업이 직접 확인해요. 이에 동의합니다. (필수)</span>
-                </label>
-              )}
+              <p style={{ fontSize: 12, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
+                지원하면 위 이력서와 자기소개서가 그대로 전송·저장됩니다. 제출 후에는 수정할 수 없어요.
+              </p>
               <div style={{ display: "flex", gap: 8 }}>
                 <button
                   onClick={() => setStep("edit")}
