@@ -233,28 +233,30 @@ export default function AdminOutreachPage() {
 
         {/* 테이블 */}
         <div style={{ overflowX: "auto", border: "1px solid #eee", borderRadius: 10, background: "#fff" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1180 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1420 }}>
             <thead>
               <tr style={{ background: "#faf8fc" }}>
                 <th style={{ ...th, width: 32 }}>
                   <input type="checkbox" checked={allVisibleSelected} onChange={toggleAll} />
                 </th>
                 <th style={{ ...th, width: 34 }}>#</th>
-                <th style={{ ...th, minWidth: 180 }}>브랜드명</th>
+                <th style={{ ...th, minWidth: 170 }}>브랜드명</th>
+                <th style={{ ...th, minWidth: 130 }}>카테고리</th>
                 <th style={{ ...th, minWidth: 150 }}>홈페이지</th>
                 <th style={{ ...th, minWidth: 150 }}>채용유무</th>
                 <th style={{ ...th, width: 100 }}>등록유무</th>
                 <th style={{ ...th, minWidth: 120 }}>연락처</th>
                 <th style={{ ...th, minWidth: 150 }}>이메일</th>
+                <th style={{ ...th, minWidth: 200 }}>주요특징</th>
                 <th style={{ ...th, minWidth: 160 }}>메모</th>
                 <th style={{ ...th, width: 70 }}>저장</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={10} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
+                <tr><td colSpan={12} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={10} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
+                <tr><td colSpan={12} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
               ) : items.map((row) => {
                 const isChecking = checking.has(row.id);
                 const hv = String(val(row, "is_hiring"));
@@ -265,13 +267,11 @@ export default function AdminOutreachPage() {
                       <td style={{ ...td, color: "#9a92a6" }}>{row.seq ?? "-"}</td>
                       <td style={td}>
                         <div style={{ fontWeight: 600, color: "#2b2533" }}>{row.brand_name}</div>
-                        {row.category && <div style={{ fontSize: 11.5, color: "#9a92a6" }}>{row.category}</div>}
-                        {(row.scale || row.features) && (
-                          <div style={{ fontSize: 11, color: "#b7b0c0", marginTop: 2, maxWidth: 240 }}>
-                            {row.scale || row.features}
-                          </div>
+                        {row.scale && (
+                          <div style={{ fontSize: 11, color: "#b7b0c0", marginTop: 2, maxWidth: 200 }}>{row.scale}</div>
                         )}
                       </td>
+                      <td style={{ ...td, fontSize: 12, color: "#6b6473", maxWidth: 140 }}>{row.category || "-"}</td>
                       <td style={td}>
                         <input style={inp} placeholder="홈페이지 URL" value={val(row, "homepage") || ""}
                           onChange={(e) => setDraft(row.id, { homepage: e.target.value })} />
@@ -315,6 +315,7 @@ export default function AdminOutreachPage() {
                         <input style={inp} placeholder="이메일" value={val(row, "email") || ""}
                           onChange={(e) => setDraft(row.id, { email: e.target.value })} />
                       </td>
+                      <td style={{ ...td, fontSize: 11.5, color: "#6b6473", maxWidth: 220, lineHeight: 1.4 }}>{row.features || "-"}</td>
                       <td style={td}>
                         <input style={inp} placeholder="통화·컨택 메모" value={val(row, "note") || ""}
                           onChange={(e) => setDraft(row.id, { note: e.target.value })} />
@@ -328,7 +329,7 @@ export default function AdminOutreachPage() {
                     </tr>
                     {expanded === row.id && row.found_jobs?.length > 0 && (
                       <tr>
-                        <td style={{ ...td, background: "#faf8fc" }} colSpan={10}>
+                        <td style={{ ...td, background: "#faf8fc" }} colSpan={12}>
                           <div style={{ fontSize: 12, color: "#6b6473", marginBottom: 4, fontWeight: 600 }}>조회된 활성 공고</div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             {row.found_jobs.map((jb, i) => (
