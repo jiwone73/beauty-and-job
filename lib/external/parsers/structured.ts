@@ -575,27 +575,40 @@ function regionFromAddrText(addr: string): string {
 }
 
 // ───────────── 뷰티인잡(beautyinjob.kr) ─────────────
-// 상세: /job/detail/<id> (UTF-8). div.sub=업체, div.title=제목, dl 안 dt/dd 라벨쌍.
-// 급여 필드는 없음(있으면 제목 안). 포스터 이미지 /data/job/... → 핫링크 대비 재호스팅.
+// 상세: /job/detail/<id> (UTF-8, 서버 렌더). 리뉴얼로 마크업이 두 패턴 혼용:
+//   (A) <div><dt>라벨</dt><dd>값</dd></div>  — 모집마감·모집인원·모집업종·모집분야·경력·급여·복지정책, 그리고 dl.d_list 안 대표/주소/채용담당자/연락처
+//   (B) <div class="txt"><div class="sup">라벨</div><div class="sub">값</div></div> — 직종·근무기간·고용형태·업체명·휴무일
+//   근무지역: <h4>근무지역 <span class="info txt">주소</span></h4>
+//   제목: .text_wrap 안 .sub(업체) / .title(제목). 포스터 이미지 /data/job|member/... → 재호스팅.
 function parseBeautyinjob(html: string): StructuredResult | null {
   const clean = (s: string) =>
     s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
   const di = html.indexOf("detail_all");
   const body = di >= 0 ? html.slice(di) : html;
 
-  const title = clean((body.match(/class="title"[^>]*>([\s\S]{0,200}?)<\/div>/i) || [])[1] || "");
-  const sub = clean((body.match(/class="sub"[^>]*>([\s\S]{0,100}?)<\/div>/i) || [])[1] || "");
-  if (!title && !sub) return null;
+  // 제목·업체: 상단 .text_wrap 안 .sub(업체명) / .title(제목)
+  const tw = (body.match(/text_wrap[\s\S]{0,600}?<\/div>\s*<\/div>/i) || [])[0] || body.slice(0, 1500);
+  const company0 = clean((tw.match(/class="sub"[^>]*>([\s\S]{0,120}?)<\/div>/i) || [])[1] || "");
+  const title = clean((tw.match(/class="title"[^>]*>([\s\S]{0,200}?)<\/div>/i) || [])[1] || "");
+  if (!title && !company0) return null;
 
+  // 라벨-값 수집: (A) dt/dd, (B) sup/sub
   const pairs: Record<string, string> = {};
-  for (const m of body.matchAll(/<dt>([\s\S]{0,30}?)<\/dt>\s*<dd>([\s\S]{0,200}?)<\/dd>/gi)) {
-    const k = clean(m[1]);
-    const v = clean(m[2]);
+  for (const m of body.matchAll(/<dt>([\s\S]{0,40}?)<\/dt>\s*<dd>([\s\S]{0,500}?)<\/dd>/gi)) {
+    const k = clean(m[1]); const v = clean(m[2]);
+    if (k && !(k in pairs)) pairs[k] = v;
+  }
+  for (const m of body.matchAll(/class="sup"[^>]*>([\s\S]{0,40}?)<\/div>\s*<div class="sub"[^>]*>([\s\S]{0,200}?)<\/div>/gi)) {
+    const k = clean(m[1]); const v = clean(m[2]);
     if (k && !(k in pairs)) pairs[k] = v;
   }
 
-  const company = pairs["업체명"] || sub;
-  const region = regionFromAddrText(pairs["주소"] || "");
+  // 근무지역(주소): <h4>근무지역 <span ...>주소</span></h4> 우선, 없으면 업체정보 주소
+  const addr = clean((body.match(/근무지역\s*<span[^>]*>([\s\S]{0,200}?)<\/span>/i) || [])[1] || "") || pairs["주소"] || "";
+  const region = regionFromAddrText(addr);
+  const address = addr || region;
+
+  const company = pairs["업체명"] || company0;
   const career = mapCareer(pairs["경력"] || "");
   const empRaw = pairs["고용형태"] || "";
   let employment_type = "";
@@ -607,17 +620,51 @@ function parseBeautyinjob(html: string): StructuredResult | null {
   const always_open = /상시|수시|충원|채용\s*시/.test(dead) || !/\d{4}/.test(dead);
   const deadline = (dead.match(/\d{4}[-.]\d{1,2}[-.]\d{1,2}/) || [])[0]?.replace(/\./g, "-") || "";
 
-  // 급여: 라벨 없음 → 제목에서만 시도
-  const salTitle = (title.match(/(월급|시급|연봉|주급)?\s*[\d,]+\s*만?\s*원/) || [])[0] || "";
-  const sal = salTitle ? parseSalaryText(salTitle) : { salary: "", salary_type: "", salary_amount: 0, salary_amount_max: 0, salary_negotiable: false };
+  // 급여: '급여' 값(추후협의 등) 우선, 없으면 제목 속 금액
+  const salRaw = pairs["급여"] || "";
+  let sal: { salary: string; salary_type: string; salary_amount: number; salary_amount_max: number; salary_negotiable: boolean };
+  if (/협의|추후|면접|내규/.test(salRaw)) {
+    sal = { salary: "", salary_type: "", salary_amount: 0, salary_amount_max: 0, salary_negotiable: true };
+  } else {
+    const st = (salRaw.match(/(월급|시급|연봉|주급)?\s*[\d,]+\s*만?\s*원/) || [])[0] || (title.match(/(월급|시급|연봉|주급)?\s*[\d,]+\s*만?\s*원/) || [])[0] || "";
+    sal = st ? parseSalaryText(st) : { salary: "", salary_type: "", salary_amount: 0, salary_amount_max: 0, salary_negotiable: false };
+  }
 
-  // 직군 매핑: 모집분야 + 모집업종 + 제목
-  const sug = suggestCats(`${pairs["모집분야"] || ""} ${pairs["모집업종"] || ""} ${title}`);
+  // 복지정책 → 필터 태그
+  const welfare = pairs["복지정책"] || pairs["복리후생"] || "";
+  const benefit_tags: string[] = [];
+  if (/4대|국민연금|고용보험|산재|건강보험/.test(welfare)) benefit_tags.push("4대보험");
+  if (/인센/.test(welfare)) benefit_tags.push("인센티브");
+  if (/식대|중식|조식|식사|식비/.test(welfare)) benefit_tags.push("식대 지원");
+  if (/주차/.test(welfare)) benefit_tags.push("주차 가능");
+  if (/기숙사|숙소/.test(welfare)) benefit_tags.push("기숙사 제공");
+  if (/교육/.test(welfare)) benefit_tags.push("교육비 지원");
 
-  // 포스터 이미지(/data/job/...) → 절대경로, 재호스팅 플래그
+  const headcount = Number(((pairs["모집인원"] || "").match(/(\d+)\s*명/) || [])[1] || "") || 0;
+  const contact_name = (pairs["채용담당자"] || pairs["대표"] || "").split(" ")[0] || "";
+  const contact_phone = ((pairs["연락처"] || "").match(/01[016789][-\s]?\d{3,4}[-\s]?\d{4}/) || [])[0]?.replace(/[-\s]/g, "") || "";
+
+  // 직군: 직종 + 모집분야 + 모집업종 + 제목
+  const sug = suggestCats(`${pairs["직종"] || ""} ${pairs["모집분야"] || ""} ${pairs["모집업종"] || ""} ${title}`);
+
+  // 상세요강 본문 + 뷰티인잡 템플릿/저작권 푸터 제거
+  let descText = "";
+  {
+    const bt = clean(body);
+    const si = bt.indexOf("상세요강");
+    if (si >= 0) {
+      let t = bt.slice(si + 4);
+      t = t.split(/내용\s*더보기|근무지역|업체정보|본\s*정보는|무단\s*전재|문의\s*시|뷰티인잡\s*보고|채용담당자|연락처/)[0];
+      descText = t.trim().slice(0, 2000);
+      if (descText.length < 10) descText = "";
+    }
+  }
+
+  // 이미지: /data/job|member/... (썸네일 제외) → 절대경로, 재호스팅 플래그
   const images = [
-    ...new Set([...body.matchAll(/\/data\/job\/[^\s"')]+\.(?:jpe?g|png|gif|webp)/gi)].map((m) => m[0])),
+    ...new Set([...body.matchAll(/\/data\/(?:job|member)\/[^\s"')]+\.(?:jpe?g|png|gif|webp)/gi)].map((m) => m[0])),
   ]
+    .filter((u) => !/_thumb\./i.test(u))
     .map((p) => `https://www.beautyinjob.kr${p}`)
     .slice(0, 10);
 
@@ -625,11 +672,17 @@ function parseBeautyinjob(html: string): StructuredResult | null {
     title,
     company_name: company,
     region,
+    address,
     career,
     employment_type,
     always_open,
     deadline,
+    headcount: headcount || 0,
     ...sal,
+    benefit_tags,
+    contact_name,
+    contact_phone,
+    description: descText,
     job_type: sug.job_type || "STORE", // 뷰티인잡은 매장(샵)이 대부분
     job_categories: sug.job_categories,
     _confident: !!(title && (company || region || sug.job_categories.length)),
