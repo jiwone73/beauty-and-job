@@ -663,6 +663,20 @@ export default function JobPostForm({
   });
   // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
   const applyParsed = (d: any) => {
+      // ── 불러오기는 '새 소스로 통째 교체' ── 다른 공고로 갈아탈 때 이전 값(이미지·지역·회사정보 등)이
+      //    섞이지 않도록, 소스가 값을 주지 않는 항목도 먼저 비우고 시작한다.
+      setBannerImages([]); setDetailImages([]);
+      setRegionList([]);
+      setBenefitTags([]); setHiringProcess([]); setCategories([]);
+      setWorkPeriod(""); setWorkDays([]); setWorkDaysNego(false);
+      setWorkTimeStart(""); setWorkTimeEnd(""); setWorkTimeNego(false);
+      setSalaryNego(false); setSalaryMax(""); setNotes("");
+      if (mode === "admin") {
+        setNewCompanyName(""); setNewBrandName(""); setNmHomepage(""); setNmContactEmail("");
+        setNmDescription(""); setNmAddress(""); setNmIndustry("");
+        setNmRepresentative(""); setNmPhone("");
+        setNmManagerName(""); setNmManagerPhone("");
+      }
       // 회사 정보(회사명·홈페이지·이메일·주소·소개·업종·지원방식)는 관리자 비회원 입력에만 채움.
       // 기업회원은 자기 프로필을 쓰되, 불러온 값이 있으면 우선 반영(레이아웃 편집 단계에서 필드로 노출 예정).
       if (mode === "admin") {
@@ -722,20 +736,20 @@ export default function JobPostForm({
         if (Array.isArray(v)) { const j = v.filter(Boolean).join("\n"); return j ? tidyText(j) : fb; }
         return (typeof v === "string" && v.trim()) ? tidyText(v) : fb;
       };
+      // 불러오기는 '새 소스로 통째 교체' → 소스에 없는 항목은 이전 불러오기 잔여값을 남기지 않고 비운다.
       setForm((f) => ({
         ...f,
-        title: d.title || f.title,
-        // 불러오기는 '새 소스로 교체'가 기본 → 소스에 없는 텍스트 항목은 이전 불러오기 잔여값을 남기지 않고 비운다.
+        title: d.title || "",
         description: asText(d.description, ""),
-        deadline: isAlways ? "" : (d.deadline || f.deadline),
+        deadline: isAlways ? "" : (d.deadline || ""),
         requirements: asText(d.requirements, ""),
         preferred: asText(d.preferred, ""),
         benefits: asText(d.benefits, ""),
         responsibilities: asText(d.main_duties, ""),
-        career: (CAREER_OPTIONS.includes(d.career) ? d.career : f.career),
-        education: (EDUCATION_OPTIONS.includes(d.education) ? d.education : f.education),
-        type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : f.type),
-        headcount: (d.headcount != null && Number(d.headcount) > 0) ? String(Number(d.headcount)) : f.headcount,
+        career: (CAREER_OPTIONS.includes(d.career) ? d.career : ""),
+        education: (EDUCATION_OPTIONS.includes(d.education) ? d.education : ""),
+        type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : ""),
+        headcount: (d.headcount != null && Number(d.headcount) > 0) ? String(Number(d.headcount)) : "",
       }));
       // 급여: 구조화된 값이 있으면 급여 필드에 반영, 협의/비율제면 '협의' 처리
       const salaryStructured = Number(d.salary_amount) > 0 && ["ANNUAL", "MONTHLY", "WEEKLY", "HOURLY"].includes(d.salary_type);
