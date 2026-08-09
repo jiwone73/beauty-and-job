@@ -270,10 +270,41 @@ function regionFromAddress(loc: any): string {
   const m2 = street.match(/([가-힣]{2,})\s+([가-힣]+[시군구])/);
   return m2 ? `${SIDO[m2[1]] || m2[1]} ${m2[2]}` : "";
 }
+// 직군 우선순위 규칙(도메인 룰): 위에서부터 첫 매칭 채택. 공백 제거·소문자화한 텍스트 기준.
+// searchJobItems의 "이름 부분일치 > 키워드 일치" 점수 역전(예: '에스테틱'→'에스테틱 상담실장') 문제를 피하려고,
+// 실제 역할 단어를 구체적인 것부터 명시해 직군을 확정한다. (매칭 안 되면 아래 토큰 검색으로 폴백)
+function mapRole(text: string): { job_type: string; item: string } | null {
+  const ns = (text || "").toLowerCase().replace(/\s/g, "");
+  const R: [RegExp, string, string][] = [
+    [/네일(스탭|스태프|인턴|보조)/, "STORE", "네일 스태프·인턴"],
+    [/네일|nail|젤네일/, "STORE", "네일 아티스트"],
+    [/속눈썹|래쉬|eyelash|반영구|왁싱|제모|waxing/, "STORE", "속눈썹·반영구 아티스트"],
+    [/(웨딩|본식|혼주)메이크업|웨딩헤어메이크업/, "STORE", "웨딩·혼주 메이크업"],
+    [/메이크업|makeup|분장|mua/, "STORE", "메이크업 아티스트"],
+    [/바버|barber|이용사/, "STORE", "바버(Barber)"],
+    [/상담실장|상담사|카운셀러|counselor/, "STORE", "에스테틱 상담실장"],
+    [/두피|탈모|헤드스파/, "STORE", "두피 관리사"],
+    [/피부미용|피부관리|피부관리사|피부테라|에스테티션|aesthetician|페이셜|경락|스킨케어|에스테틱|바디관리|체형관리/, "STORE", "피부관리사(일반·경락)"],
+    [/스파테라|아로마테라|테라피스트/, "STORE", "스파 테라피스트"],
+    [/점장|샵마스터|매장관리/, "STORE", "매장 점장·샵마스터"],
+    [/샴푸|헤어스탭|헤어스태프|미용스탭|미용스태프/, "STORE", "헤어 스태프(시니어·주니어)"],
+    [/헤어디자이너|헤어스타일리스트|스타일리스트|미용사|hairstylist/, "STORE", "헤어 디자이너"],
+    [/화장품연구|제형연구|연구원|r&d/, "OFFICE", "화장품 연구원(R&D)"],
+    [/영상pd|영상편집|콘텐츠제작|크리에이티브디렉터|숏폼|영상디자이너/, "OFFICE", "영상 PD·크리에이티브 디렉터"],
+    [/브랜드매니저|상품기획|브랜드마케팅|퍼포먼스마케팅|마케터|마케팅담당/, "OFFICE", "브랜드 매니저(BM)·상품기획"],
+    [/머천다이저|뷰티md|상품소싱/, "OFFICE", "뷰티 MD(H&B·이커머스·글로벌)"],
+  ];
+  for (const [re, jt, item] of R) if (re.test(ns)) return { job_type: jt, item };
+  return null;
+}
+
 // 제목·회사명으로 우리 직군 자동 추천(맞으면 job_type·categories, 아니면 사용자가 선택)
 // searchJobItems는 "짧은 검색어"가 직군명/태그의 부분문자열일 때 매칭된다. 긴 문장을 통째로 넘기면
 // (예: "헤어디자이너 ★ 블루클럽 인천.송도점 ★") 어떤 직군에도 안 걸리므로, 토큰으로 쪼개 각각 검색한다.
 function suggestCats(text: string): { job_type?: string; job_categories: string[] } {
+  // 1순위: 도메인 역할 규칙(가장 신뢰도 높음)
+  const role = mapRole(text);
+  if (role) return { job_type: role.job_type, job_categories: [role.item] };
   const tokens = (text || "")
     .split(/[\s,.\/·|\-\[\]()★☆*!~"'`]+/)
     .map((s) => s.trim())
