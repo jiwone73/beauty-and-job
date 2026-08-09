@@ -276,7 +276,8 @@ export async function POST(req: NextRequest) {
   if (bodyText.length > 1000 && pageText) pageText = pageText.slice(0, 4000);
 
   const emails = [...new Set(((html || "") + " " + pastedText).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [])]
-    .filter((e) => !/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(e)).slice(0, 5);
+    // 이미지 파일명·잡코리아 등의 난독화(해시) 이메일 제외 → 실제 이메일만
+    .filter((e) => !/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(e) && !/^[0-9a-f]{20,}@/i.test(e)).slice(0, 5);
   // 전화번호(지원 연락처 후보): 표시 텍스트·붙여넣은 본문에서만 뽑아 오탐 최소화. 휴대폰/유선/대표번호 형식.
   const phones = [...new Set(((pageText || "") + " " + pastedText)
     .match(/(?:1[0-9]{3}[-.\s]?[0-9]{4})|(?:0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4})/g) || [])]
@@ -420,6 +421,64 @@ export async function POST(req: NextRequest) {
       }
     } catch (e) {
       console.error("[saramin view-detail]", e);
+    }
+  }
+
+  // ── 잡코리아: 상세(담당업무·자격요건·근무조건·디자인 이미지)는 GI_Read_Comt_Ifrm(iframe)에 있다.
+  //    Gno=공고번호(=GI_Read/<번호>)만으로 서버 2차 fetch 가능(비로그인).
+  if (freeParsed && /jobkorea\.co\.kr/i.test(hostname) && url) {
+    try {
+      const gno = (url.match(/GI_Read\/(\d+)/) || url.match(/Gno=(\d+)/) || [])[1] || "";
+      if (/^\d+$/.test(gno)) {
+        const ifrUrl = `https://www.jobkorea.co.kr/Recruit/GI_Read_Comt_Ifrm?Gno=${gno}&isHiringCenter=&hideMapView=`;
+        const ctl = new AbortController();
+        const t = setTimeout(() => ctl.abort(), 12000);
+        try {
+          const ir = await fetch(ifrUrl, {
+            signal: ctl.signal,
+            headers: {
+              "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+              "Accept-Language": "ko,en;q=0.8",
+              "Referer": url,
+            },
+          });
+          if (ir.ok) {
+            const ih = new TextDecoder("utf-8").decode(Buffer.from(await ir.arrayBuffer()));
+            const clean = (s: string) => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
+            // 디자인 이미지: file2.jobkorea …/DownImage/CorpEditor?file_No=N (JS 문자열 내 이스케이프 슬래시 대응)
+            const imgs = [...new Set([...ih.matchAll(/file2\.jobkorea\.co\.kr[\\/]+Net[\\/]+Mng[\\/]+DownImage[\\/]+CorpEditor\?file_No=\d+/gi)].map((m) => m[0].replace(/\\/g, "")))]
+              .map((u) => "https://" + u)
+              .slice(0, 12);
+            if (imgs.length) {
+              out.images = imgs;
+              out._rehost = true;
+              out._rehostReferer = "https://www.jobkorea.co.kr/";
+              out._detailImages = true;
+            }
+            // 텍스트: 담당업무/자격요건/근무조건 (헤더 '주요업무 및 자격요건' 이후의 실제 섹션부터 파싱)
+            const full = clean(ih);
+            const startI = full.indexOf("담당업무");
+            const body = startI >= 0 ? full.slice(startI) : full;
+            const betw = (a: string, stops: string[]) => {
+              const i = body.indexOf(a); if (i < 0) return "";
+              const s = body.slice(i + a.length);
+              const j = stops.map((x) => { const p = s.indexOf(x); return p < 0 ? Infinity : p; }).reduce((m, x) => Math.min(m, x), Infinity);
+              return (j === Infinity ? s : s.slice(0, j)).trim();
+            };
+            const duty = betw("담당업무", ["자격요건", "우대사항"]).slice(0, 1500);
+            const req = betw("자격요건", ["근무조건", "우대사항", "전형", "접수", "복리후생"]).slice(0, 1500);
+            const workcond = betw("근무조건", ["복리후생", "전형", "접수", "담당자", "마감", "우대", "기타"]);
+            if (duty && duty.length > 3) { out.description = duty; out.main_duties = duty; } // 매장=포지션소개 / 오피스=담당업무 양쪽 커버
+            if (req && req.length > 3) out.requirements = req;
+            if (/정규직/.test(workcond)) out.employment_type = "정규직";
+            else if (/계약직/.test(workcond)) out.employment_type = "계약직";
+            else if (/파트|아르바이트|알바/.test(workcond)) out.employment_type = "파트타임";
+          }
+        } finally { clearTimeout(t); }
+      }
+    } catch (e) {
+      console.error("[jobkorea iframe]", e);
     }
   }
 
