@@ -970,11 +970,13 @@ export default function JobPostForm({
           return;
         }
       } else {
-        // 오피스: 경력·학력·담당업무·자격요건 필수
+        // 오피스: 경력·학력 필수 / 담당업무·자격요건은 상세 이미지가 없을 때만 필수(디자인 템플릿형 공고 대응)
         if (!form.career) { alert("경력을 선택해주세요."); return; }
         if (!form.education) { alert("학력을 선택해주세요."); return; }
-        if (!form.responsibilities?.trim()) { alert("담당업무를 입력해주세요."); return; }
-        if (!form.requirements?.trim()) { alert("자격요건을 입력해주세요."); return; }
+        if (detailImages.length === 0) {
+          if (!form.responsibilities?.trim()) { alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
+          if (!form.requirements?.trim()) { alert("자격요건을 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
+        }
       }
       if (benefitTags.length === 0) { alert("복리후생을 1개 이상 선택해주세요."); return; }
     }
@@ -1714,7 +1716,7 @@ export default function JobPostForm({
                 // 상세 이미지가 없으면 포지션 소개·자격요건을 필수로 표시(이미지 대신 텍스트로 안내)
                 // 오피스: 담당업무·자격요건 필수 / 매장: 이미지 없을 때 포지션 소개·자격요건 필수
                 const isReq = isOffice
-                  ? (k === "responsibilities" || k === "requirements")
+                  ? (detailImages.length === 0 && (k === "responsibilities" || k === "requirements"))
                   : (detailImages.length === 0 && (k === "description" || k === "requirements"));
                 return (
                   <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>

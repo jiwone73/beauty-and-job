@@ -357,6 +357,72 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // ── 사람인: 상세(모집부문·근무조건·복리후생·디자인 이미지)는 본문이 아니라 relay/view-detail(iframe)에 있다.
+  //    rec_idx만으로 서버 2차 fetch 가능 → 디자인 이미지=상세요강, 복리후생/고용형태도 보강.
+  if (freeParsed && /saramin\.co\.kr/i.test(hostname) && url) {
+    try {
+      const recIdx = (new URL(url).searchParams.get("rec_idx") || (url.match(/rec_idx=(\d+)/) || [])[1] || "").trim();
+      if (/^\d+$/.test(recIdx)) {
+        const detailUrl = `https://www.saramin.co.kr/zf_user/jobs/relay/view-detail?rec_idx=${recIdx}`;
+        const ctl = new AbortController();
+        const t = setTimeout(() => ctl.abort(), 12000);
+        try {
+          const ir = await fetch(detailUrl, {
+            signal: ctl.signal,
+            headers: {
+              "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+              "Accept-Language": "ko,en;q=0.8",
+              "Referer": url,
+            },
+          });
+          if (ir.ok) {
+            const ih = new TextDecoder("utf-8").decode(Buffer.from(await ir.arrayBuffer()));
+            const clean = (s: string) => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
+            const full = clean(ih);
+            const between = (a: string, stops: string[]) => {
+              const i = full.indexOf(a); if (i < 0) return "";
+              const s = full.slice(i + a.length);
+              const j = stops.map((x) => { const p = s.indexOf(x); return p < 0 ? Infinity : p; }).reduce((m, x) => Math.min(m, x), Infinity);
+              return (j === Infinity ? s : s.slice(0, j)).trim();
+            };
+            // 디자인 이미지(/recruit/…) → 상세요강 이미지(워터마크 제외)
+            const imgs = [...new Set([...ih.matchAll(/\/recruit\/[^\s"')]+\.(?:png|jpe?g|gif)/gi)].map((m) => m[0]))]
+              .filter((u) => !/watermark/i.test(u))
+              .map((p) => `https://www.saramin.co.kr${p}`)
+              .slice(0, 12);
+            if (imgs.length) {
+              out.images = imgs;
+              out._rehost = true;
+              out._rehostReferer = "https://www.saramin.co.kr/";
+              out._detailImages = true; // 디자인 포스터 → 배너 아닌 상세 본문 이미지로 배치
+            }
+            // 근무조건 → 고용형태
+            const workcond = between("근무조건", ["복리후생", "접수", "지원방법"]);
+            if (/정규직/.test(workcond)) out.employment_type = "정규직";
+            else if (/계약직/.test(workcond)) out.employment_type = "계약직";
+            else if (/파트|아르바이트|알바/.test(workcond)) out.employment_type = "파트타임";
+            // 복리후생 → 태그 + 비고 보존
+            const welfare = between("복리후생", ["접수", "지원방법", "담당자", "홈페이지", "전형", "면접", "마감"]).slice(0, 500);
+            if (welfare) {
+              const tags: string[] = [];
+              if (/4대|국민연금|고용보험|산재|건강보험/.test(welfare)) tags.push("4대보험");
+              if (/인센/.test(welfare)) tags.push("인센티브");
+              if (/식대|식비|중식|조식|식사/.test(welfare)) tags.push("식대 지원");
+              if (/주차/.test(welfare)) tags.push("주차 가능");
+              if (/기숙사|숙소/.test(welfare)) tags.push("기숙사 제공");
+              if (/교육비|교육\s*지원|학원비|수강료/.test(welfare)) tags.push("교육비 지원");
+              if (tags.length) out.benefit_tags = tags;
+              out.extra_notes = [out.extra_notes, `복리후생: ${welfare}`].filter(Boolean).join("\n\n");
+            }
+          }
+        } finally { clearTimeout(t); }
+      }
+    } catch (e) {
+      console.error("[saramin view-detail]", e);
+    }
+  }
+
   if (!freeParsed && process.env.ANTHROPIC_API_KEY) {
     try {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
