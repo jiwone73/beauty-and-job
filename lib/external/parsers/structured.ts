@@ -493,7 +493,9 @@ function parseSaramin(html: string): StructuredResult | null {
   else if (/파트\s*타임|파트타임|아르바이트|알바/.test(title)) employment_type = "파트타임";
 
   const kw = decodeHtmlEntities((html.match(/<meta name="keywords" content="([^"]*)"/) || [])[1] || "");
-  const sug = suggestCats(`${title} ${kw}`);
+  // 직군 판정은 '제목' 우선(역할이 명확). 메타 keywords에는 브랜드 SEO 태그(예: 두피 브랜드의 '두피케어')가 섞여
+  // 역할을 오염시키므로, 제목으로 못 잡을 때만 keywords를 보조로 쓴다.
+  const sug = (() => { const s = suggestCats(title); return s.job_categories.length ? s : suggestCats(`${title} ${kw}`); })();
 
   // 경력: "신입/경력"·"신입·경력"처럼 둘 다면 경력 무관으로.
   let career = mapCareer(careerRaw);
