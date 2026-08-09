@@ -942,48 +942,43 @@ export default function JobPostForm({
   };
 
   const handleSubmit = async (status: "draft" | "publish") => {
-    if (mode === "admin") {
-      if (nonMember) {
-        if (!newCompanyName.trim()) { alert("회사명을 입력해주세요."); return; }
-        if (!nmIndustry) { alert("업종을 선택해주세요."); return; }
-        if (!nmAddress.trim()) { alert("회사 주소를 입력해주세요."); return; }
-        if (applyMethod === "REDIRECT" && !externalApplyUrl.trim()) { alert("외부 링크형은 외부 지원 URL이 필요해요."); return; }
-      } else if (!companyId) {
-        alert("기업을 선택해주세요."); return;
-      }
-    }
-    if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
-    if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
-    if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
-    if (!form.headcount) { alert("모집인원을 입력해주세요."); return; } // 경력은 선택
-    if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
-    // 근무조건 필수(발행 시). 급여는 값 또는 '협의' 체크로 충족.
-    if (status === "publish") {
-      if (!(salaryNego || form.salary.trim())) { alert("급여를 입력하거나 협의로 선택해주세요."); return; }
-      if (!form.type) { alert("고용형태를 선택해주세요."); return; }
-      if (jobGroupType === "매장") {
-        if (!(workDaysNego || workDays.length)) { alert("근무요일을 선택해주세요."); return; }
-        if (!(workTimeNego || (workTimeStart && workTimeEnd))) { alert("근무시간을 입력해주세요."); return; }
-        // 매장: 상세요강 이미지 또는 (포지션 소개+자격요건)
-        if (detailImages.length === 0 && (!form.description?.trim() || !form.requirements?.trim())) {
-          alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개와 자격요건을 입력해주세요.");
-          return;
+    // 비회원(관리자 대행) 공고는 관리자가 자유롭게 대행 등록 → 필수 검증 없이 등록 허용.
+    const isNmAdmin = mode === "admin" && nonMember;
+    if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return; }
+    if (!isNmAdmin) {
+      if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
+      if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
+      if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
+      if (!form.headcount) { alert("모집인원을 입력해주세요."); return; } // 경력은 선택
+      if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
+      // 근무조건 필수(발행 시). 급여는 값 또는 '협의' 체크로 충족.
+      if (status === "publish") {
+        if (!(salaryNego || form.salary.trim())) { alert("급여를 입력하거나 협의로 선택해주세요."); return; }
+        if (!form.type) { alert("고용형태를 선택해주세요."); return; }
+        if (jobGroupType === "매장") {
+          if (!(workDaysNego || workDays.length)) { alert("근무요일을 선택해주세요."); return; }
+          if (!(workTimeNego || (workTimeStart && workTimeEnd))) { alert("근무시간을 입력해주세요."); return; }
+          // 매장: 상세요강 이미지 또는 (포지션 소개+자격요건)
+          if (detailImages.length === 0 && (!form.description?.trim() || !form.requirements?.trim())) {
+            alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개와 자격요건을 입력해주세요.");
+            return;
+          }
+        } else {
+          // 오피스: 경력·학력 필수 / 담당업무·자격요건은 상세 이미지가 없을 때만 필수(디자인 템플릿형 공고 대응)
+          if (!form.career) { alert("경력을 선택해주세요."); return; }
+          if (!form.education) { alert("학력을 선택해주세요."); return; }
+          if (detailImages.length === 0) {
+            if (!form.responsibilities?.trim()) { alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
+            if (!form.requirements?.trim()) { alert("자격요건을 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
+          }
         }
-      } else {
-        // 오피스: 경력·학력 필수 / 담당업무·자격요건은 상세 이미지가 없을 때만 필수(디자인 템플릿형 공고 대응)
-        if (!form.career) { alert("경력을 선택해주세요."); return; }
-        if (!form.education) { alert("학력을 선택해주세요."); return; }
-        if (detailImages.length === 0) {
-          if (!form.responsibilities?.trim()) { alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
-          if (!form.requirements?.trim()) { alert("자격요건을 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
-        }
+        if (benefitTags.length === 0) { alert("복리후생을 1개 이상 선택해주세요."); return; }
       }
-      if (benefitTags.length === 0) { alert("복리후생을 1개 이상 선택해주세요."); return; }
-    }
-    // 마감일: 날짜 선택 또는 상시채용 필수
-    if (status === "publish" && !alwaysOpen && !form.deadline) {
-      alert("마감일을 선택하거나 상시채용을 체크해주세요.");
-      return;
+      // 마감일: 날짜 선택 또는 상시채용 필수
+      if (status === "publish" && !alwaysOpen && !form.deadline) {
+        alert("마감일을 선택하거나 상시채용을 체크해주세요.");
+        return;
+      }
     }
 
     const expLevel = form.career.includes("신입") ? "NEW"
@@ -1101,7 +1096,7 @@ export default function JobPostForm({
     education: form.education || "",
     region: regionList.join(", "),
     employType: (form.type ? form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : "") : "협의"),
-    headcount: form.headcount ? `${form.headcount}명` : "",
+    headcount: form.headcount ? `${form.headcount}명` : "00명", // 인원 미언급 시 '00명'(미정)으로 표기
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
     color: "#e8f0fe",
@@ -1765,7 +1760,7 @@ export default function JobPostForm({
                       <textarea ref={nmDescRef} rows={1} style={nmDescription ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", minHeight: 40, resize: "none", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden", boxSizing: "border-box" } : { ...inpHl(false), resize: "none", marginTop: 6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
                     </div>
                     <div style={row}><span style={lbl2}>회사명<span style={req}> *</span></span><input style={inpHl(!!newCompanyName)} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} /></div>
-                    <div style={row}><span style={lbl2}>업종<span style={req}> *</span></span><select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
+                    <div style={row}><span style={lbl2}>업종</span><select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
                     <div style={row}><span style={lbl2}>브랜드명</span><input style={inpHl(!!newBrandName)} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>웹사이트</span><input style={inpHl(!!nmHomepage)} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} /></div>
                     <div style={{ ...row, ...full }}><span style={lbl2}>주소<span style={req}> *</span></span><input style={inpHl(!!nmAddress)} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} /></div>

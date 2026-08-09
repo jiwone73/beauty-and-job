@@ -195,7 +195,7 @@ export default function JobDetailPage() {
             jobCategories: Array.isArray(j.categories) ? j.categories : [],
             region: j.location || '',
             employType: j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직',
-            headcount: j.headcount ? `${j.headcount}명` : '',
+            headcount: j.headcount ? `${j.headcount}명` : '00명', // 인원 미언급 시 '00명'(미정)
             deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, '.') : '상시채용',
             salary: ((j.salary_max && j.salary_max > j.salary_min)
               ? `${formatSalaryWon(j.salary_min, j.salary_type)} ~ ${formatSalaryWon(j.salary_max, j.salary_type).replace(/^[^0-9]*/, '')}`
