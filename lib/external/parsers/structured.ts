@@ -638,14 +638,29 @@ function parseBeautyinjob(html: string): StructuredResult | null {
   if (/식대|중식|조식|식사|식비/.test(welfare)) benefit_tags.push("식대 지원");
   if (/주차/.test(welfare)) benefit_tags.push("주차 가능");
   if (/기숙사|숙소/.test(welfare)) benefit_tags.push("기숙사 제공");
-  if (/교육/.test(welfare)) benefit_tags.push("교육비 지원");
+  // '내부교육' 같은 표현이 '교육비 지원'으로 오매칭되지 않게 — 교육비/수강료 계열만.
+  if (/교육비|교육\s*지원|학원비|수강료/.test(welfare)) benefit_tags.push("교육비 지원");
+  // 칩으로 매핑 안 되는 항목(명절휴무·여름휴가·월차 등)이 사라지지 않게 원문 복지 문구를 비고로 보존.
+  const extra_notes = welfare ? `복리후생: ${welfare}` : "";
 
   const headcount = Number(((pairs["모집인원"] || "").match(/(\d+)\s*명/) || [])[1] || "") || 0;
   const contact_name = (pairs["채용담당자"] || pairs["대표"] || "").split(" ")[0] || "";
   const contact_phone = ((pairs["연락처"] || "").match(/01[016789][-\s]?\d{3,4}[-\s]?\d{4}/) || [])[0]?.replace(/[-\s]/g, "") || "";
+  const representative_name = (pairs["대표"] || "").split(" ")[0] || "";
 
   // 직군: 직종 + 모집분야 + 모집업종 + 제목
   const sug = suggestCats(`${pairs["직종"] || ""} ${pairs["모집분야"] || ""} ${pairs["모집업종"] || ""} ${title}`);
+  // 업종: 모집업종/직종 기준(네일샵 등 STORE 업종 목록에 맞춤)
+  let industry = "";
+  {
+    const ck = `${pairs["모집업종"] || ""} ${pairs["직종"] || ""} ${pairs["모집분야"] || ""} ${title}`;
+    if (/네일/.test(ck)) industry = "네일샵";
+    else if (/속눈썹|왁싱|반영구|래쉬/.test(ck)) industry = "속눈썹·왁싱·반영구";
+    else if (/피부|에스테틱|스킨\s*케어|관리사/.test(ck)) industry = "피부·에스테틱";
+    else if (/메이크업|분장/.test(ck)) industry = "메이크업";
+    else if (/애견|반려|펫\s|펫미용/.test(ck)) industry = "애견미용";
+    else if (/헤어|미용실|살롱|바버|디자이너|미용사/.test(ck)) industry = "헤어샵";
+  }
 
   // 상세요강 본문 + 뷰티인잡 템플릿/저작권 푸터 제거
   let descText = "";
@@ -682,6 +697,9 @@ function parseBeautyinjob(html: string): StructuredResult | null {
     benefit_tags,
     contact_name,
     contact_phone,
+    representative_name,
+    industry,
+    extra_notes,
     description: descText,
     job_type: sug.job_type || "STORE", // 뷰티인잡은 매장(샵)이 대부분
     job_categories: sug.job_categories,

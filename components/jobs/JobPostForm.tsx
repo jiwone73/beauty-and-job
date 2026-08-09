@@ -677,6 +677,8 @@ export default function JobPostForm({
         if (d.company_description) setNmDescription(d.company_description);
         if (d.address) setNmAddress(d.address);
         if (d.industry) setNmIndustry(d.industry);
+        if (d.representative_name) setNmRepresentative(d.representative_name);
+        if (d.company_phone) setNmPhone(d.company_phone);
         // 이미지는 "외부공고에 보이는 순서 그대로" 반영.
         //  - 갤러리(d.images)가 있으면 그걸 그대로 사용(첫 장=커버, 나머지=상세).
         //  - 없으면 대표 이미지(og:image)라도 커버로.
@@ -723,12 +725,13 @@ export default function JobPostForm({
       setForm((f) => ({
         ...f,
         title: d.title || f.title,
-        description: asText(d.description, f.description),
+        // 불러오기는 '새 소스로 교체'가 기본 → 소스에 없는 텍스트 항목은 이전 불러오기 잔여값을 남기지 않고 비운다.
+        description: asText(d.description, ""),
         deadline: isAlways ? "" : (d.deadline || f.deadline),
-        requirements: asText(d.requirements, f.requirements),
-        preferred: asText(d.preferred, f.preferred),
-        benefits: asText(d.benefits, f.benefits),
-        responsibilities: asText(d.main_duties, f.responsibilities),
+        requirements: asText(d.requirements, ""),
+        preferred: asText(d.preferred, ""),
+        benefits: asText(d.benefits, ""),
+        responsibilities: asText(d.main_duties, ""),
         career: (CAREER_OPTIONS.includes(d.career) ? d.career : f.career),
         type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : f.type),
         headcount: (d.headcount != null && Number(d.headcount) > 0) ? String(Number(d.headcount)) : f.headcount,
@@ -1732,7 +1735,7 @@ export default function JobPostForm({
                 const req: CSSProperties = { color: "#e9a3a3" };
                 // 모집요강과 동일: 빈 값이면 텍스트 없는 연보라 하이라이트 블록, 입력하면 확장(플레이스홀더 없음)
                 const inpHl = (filled: boolean): CSSProperties => filled
-                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", height: 20, lineHeight: "20px", boxSizing: "border-box" }
+                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", height: 32, lineHeight: "20px", boxSizing: "border-box" }
                   : { flexShrink: 0, border: "none", background: PH_BG, borderRadius: 5, width: 56, height: 20, padding: 0, fontSize: 15, color: "#333", outline: "none", boxSizing: "border-box" };
                 const sel3 = (filled: boolean): CSSProperties => ({ ...inpHl(filled), appearance: "none", WebkitAppearance: "none", MozAppearance: "none", cursor: "pointer" });
                 const full: CSSProperties = { gridColumn: "1 / -1" };
