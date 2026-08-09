@@ -398,13 +398,25 @@ export async function POST(req: NextRequest) {
               out._rehostReferer = "https://www.saramin.co.kr/";
               out._detailImages = true; // 디자인 포스터 → 배너 아닌 상세 본문 이미지로 배치
             }
-            // 근무조건 → 고용형태
-            const workcond = between("근무조건", ["복리후생", "접수", "지원방법"]);
+            // 텍스트형 공고: 주요업무/담당업무·자격요건·우대사항이 깔끔한 텍스트로 있음 → 필드로 반영
+            // 섹션 머리 이모지(📋🏠🎁🚀)가 다음 섹션에서 꼬리에 새어 들어오므로 끝에서 제거.
+            const tail = (s: string) => s.replace(/[\s📋🏠🎁🚀✅💡•·]+$/gu, "").trim();
+            const duty = tail((between("주요업무", ["자격요건", "우대사항", "근무조건", "복지", "혜택"]) || between("담당업무", ["자격요건", "우대사항", "근무조건"])).slice(0, 1500));
+            const req = tail(between("자격요건", ["우대사항", "근무조건", "복지", "혜택", "전형", "접수"]).slice(0, 1500));
+            const pref = tail(between("우대사항", ["근무조건", "복지", "혜택", "채용절차", "전형", "접수"]).slice(0, 1500));
+            if (duty && duty.length > 3) { out.description = duty; out.main_duties = duty; } // 매장=포지션소개 / 오피스=담당업무
+            if (req && req.length > 3) out.requirements = req;
+            if (pref && pref.length > 3) out.preferred = pref;
+            // 근무조건 → 고용형태 + 근무지(주소)
+            const workcond = between("근무조건", ["복리후생", "복지", "혜택", "채용절차", "접수", "지원방법"]);
             if (/정규직/.test(workcond)) out.employment_type = "정규직";
             else if (/계약직/.test(workcond)) out.employment_type = "계약직";
             else if (/파트|아르바이트|알바/.test(workcond)) out.employment_type = "파트타임";
-            // 복리후생 → 태그 + 비고 보존
-            const welfare = between("복리후생", ["접수", "지원방법", "담당자", "홈페이지", "전형", "면접", "마감"]).slice(0, 500);
+            // 근무지역(텍스트형 공고엔 '근무지 : 서울 …' 형태로 주소가 있음. 없으면 관리자 입력)
+            const addr = (workcond.match(/근무지\s*[:：]?\s*([가-힣][^•·|\n]{4,80})/) || [])[1]?.trim() || "";
+            if (addr && !out.region) { out.address = addr; out.region = addr; }
+            // 복리후생 / 복지 및 혜택 → 태그 + 비고 보존
+            const welfare = (between("복리후생", ["채용절차", "접수", "지원방법", "담당자", "홈페이지", "전형", "마감"]) || between("복지", ["채용절차", "접수", "지원방법", "담당자", "홈페이지", "전형", "마감"])).slice(0, 500);
             if (welfare) {
               const tags: string[] = [];
               if (/4대|국민연금|고용보험|산재|건강보험/.test(welfare)) tags.push("4대보험");
