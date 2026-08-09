@@ -427,6 +427,15 @@ function parseSaramin(html: string): StructuredResult | null {
   const company = (ogD.split(/,\s*/)[0] || "").trim();
   const careerRaw = ((ogD.match(/경력\s*[:：]\s*([^,]+)/) || [])[1] || "").trim();
   const deadlineRaw = ((ogD.match(/마감일\s*[:：]\s*([^,]+)/) || [])[1] || "").trim();
+  // 학력·홈페이지도 메타에 있음(예: "학력:학력무관, …, 홈페이지:www.jennyhouse.co.kr")
+  const eduRaw = ((ogD.match(/학력\s*[:：]\s*([^,]+)/) || [])[1] || "").trim();
+  let education = "";
+  if (/무관/.test(eduRaw)) education = "학력무관";
+  else if (/고졸/.test(eduRaw)) education = "고졸 이상";
+  else if (/초대졸|전문대/.test(eduRaw)) education = "초대졸 이상";
+  else if (/대졸|학사/.test(eduRaw)) education = "대졸 이상";
+  else if (/석사|대학원/.test(eduRaw)) education = "석사 이상";
+  const homepage_url = ((ogD.match(/홈페이지\s*[:：]\s*([^\s,]+)/) || [])[1] || "").trim();
   // 급여: 학력 항목과 마감일 사이의 라벨 없는 조각
   const salTxt = ((ogD.match(/학력\s*[:：][^,]+,\s*([^,]+?)\s*,\s*마감일/) || [])[1] || "").trim();
 
@@ -452,11 +461,21 @@ function parseSaramin(html: string): StructuredResult | null {
   const kw = decodeHtmlEntities((html.match(/<meta name="keywords" content="([^"]*)"/) || [])[1] || "");
   const sug = suggestCats(`${title} ${kw}`);
 
+  // 경력: "신입/경력"·"신입·경력"처럼 둘 다면 경력 무관으로.
+  let career = mapCareer(careerRaw);
+  if (!career) {
+    if (/신입/.test(careerRaw) && /경력/.test(careerRaw)) career = "경력 무관";
+    else if (/신입/.test(careerRaw)) career = "신입";
+    else if (/경력/.test(careerRaw)) career = "1년 이상";
+  }
+
   return {
     title,
     company_name: company,
     region: "",
-    career: mapCareer(careerRaw),
+    career,
+    education,
+    homepage_url,
     employment_type,
     deadline,
     always_open: isAlways || !deadline,
