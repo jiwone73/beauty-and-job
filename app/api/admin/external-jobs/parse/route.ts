@@ -386,10 +386,10 @@ export async function POST(req: NextRequest) {
               const j = stops.map((x) => { const p = s.indexOf(x); return p < 0 ? Infinity : p; }).reduce((m, x) => Math.min(m, x), Infinity);
               return (j === Infinity ? s : s.slice(0, j)).trim();
             };
-            // 디자인 이미지(/recruit/…) → 상세요강 이미지(워터마크 제외)
-            const imgs = [...new Set([...ih.matchAll(/\/recruit\/[^\s"')]+\.(?:png|jpe?g|gif)/gi)].map((m) => m[0]))]
+            // 디자인 이미지 → 상세요강 이미지. 사람인 공고 이미지는 별도 CDN(www.saraminimage.co.kr)에 있음.
+            const imgs = [...new Set([...ih.matchAll(/(?:https?:)?\/\/[a-z0-9.]*saraminimage\.co\.kr\/recruit\/[^\s"')]+\.(?:png|jpe?g|gif)/gi)].map((m) => m[0]))]
+              .map((u) => (u.startsWith("//") ? "https:" + u : u))
               .filter((u) => !/watermark/i.test(u))
-              .map((p) => `https://www.saramin.co.kr${p}`)
               .slice(0, 12);
             if (imgs.length) {
               out.images = imgs;
