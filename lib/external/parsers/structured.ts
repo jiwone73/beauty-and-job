@@ -661,8 +661,35 @@ function parseBeautyinjob(html: string): StructuredResult | null {
     else if (/애견|반려|펫\s|펫미용/.test(ck)) industry = "애견미용";
     else if (/헤어|미용실|살롱|바버|디자이너|미용사/.test(ck)) industry = "헤어샵";
   }
+  // 직군 도메인 매핑(suggestCats가 놓칠 때 대비 — 뷰티인잡은 미용 샵 위주)
+  let job_categories = sug.job_categories;
+  {
+    const ck2 = `${pairs["직종"] || ""} ${pairs["모집분야"] || ""} ${pairs["모집업종"] || ""}`;
+    if (/네일/.test(ck2)) job_categories = ["네일 아티스트"];
+    else if (/속눈썹|반영구|래쉬/.test(ck2)) job_categories = ["속눈썹·반영구 아티스트"];
+    else if (/메이크업/.test(ck2)) job_categories = ["메이크업 아티스트"];
+    else if (/피부|에스테틱|관리사/.test(ck2)) job_categories = ["피부관리사(일반·경락)"];
+  }
+
+  // 학력: 라벨 '학력' → 뷰티워크 학력 옵션에 매핑
+  const eduRaw = pairs["학력"] || "";
+  let education = "";
+  if (/무관/.test(eduRaw)) education = "학력무관";
+  else if (/고졸/.test(eduRaw)) education = "고졸 이상";
+  else if (/초대졸|전문대/.test(eduRaw)) education = "초대졸 이상";
+  else if (/대졸|학사/.test(eduRaw)) education = "대졸 이상";
+  else if (/석사|대학원/.test(eduRaw)) education = "석사 이상";
+
+  // 근무기간: 라벨 '근무기간'(협의 등) → 뷰티워크 근무기간 옵션
+  const wpRaw = pairs["근무기간"] || "";
+  let work_period = "";
+  if (/협의/.test(wpRaw)) work_period = "협의";
+  else if (/6개월\s*~\s*1년|6개월.*1년/.test(wpRaw)) work_period = "6개월 ~ 1년";
+  else if (/1년\s*이상/.test(wpRaw)) work_period = "1년 이상";
+  else if (/6개월|단기/.test(wpRaw)) work_period = "~6개월";
 
   // 상세요강 본문 + 뷰티인잡 템플릿/저작권 푸터 제거
+  // (주의: 뷰티인잡은 상세요강 전문을 로그인 회원에게만 노출 → 서버 fetch로는 미리보기 앞부분까지만 확보 가능)
   let descText = "";
   {
     const bt = clean(body);
@@ -699,11 +726,13 @@ function parseBeautyinjob(html: string): StructuredResult | null {
     contact_phone,
     representative_name,
     industry,
+    education,
+    work_period,
     extra_notes,
     description: descText,
     job_type: sug.job_type || "STORE", // 뷰티인잡은 매장(샵)이 대부분
-    job_categories: sug.job_categories,
-    _confident: !!(title && (company || region || sug.job_categories.length)),
+    job_categories,
+    _confident: !!(title && (company || region || job_categories.length)),
   };
   if (images.length) {
     out.images = images;

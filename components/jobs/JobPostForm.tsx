@@ -733,6 +733,7 @@ export default function JobPostForm({
         benefits: asText(d.benefits, ""),
         responsibilities: asText(d.main_duties, ""),
         career: (CAREER_OPTIONS.includes(d.career) ? d.career : f.career),
+        education: (EDUCATION_OPTIONS.includes(d.education) ? d.education : f.education),
         type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : f.type),
         headcount: (d.headcount != null && Number(d.headcount) > 0) ? String(Number(d.headcount)) : f.headcount,
       }));
@@ -749,6 +750,8 @@ export default function JobPostForm({
         setSalaryMax("");
         setForm((f) => ({ ...f, salary: "" }));
       }
+      // 근무기간 (매장 공고)
+      if (typeof d.work_period === "string" && WORK_PERIODS.includes(d.work_period)) setWorkPeriod(d.work_period);
       // 근무요일 (매장 공고에 주로 필요)
       if (d.work_days === "협의") { setWorkDaysNego(true); setWorkDays([]); }
       else if (typeof d.work_days === "string" && d.work_days.trim()) {
