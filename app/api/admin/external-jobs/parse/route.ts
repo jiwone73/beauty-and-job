@@ -387,16 +387,24 @@ export async function POST(req: NextRequest) {
               const j = stops.map((x) => { const p = s.indexOf(x); return p < 0 ? Infinity : p; }).reduce((m, x) => Math.min(m, x), Infinity);
               return (j === Infinity ? s : s.slice(0, j)).trim();
             };
-            // 디자인 이미지 → 상세요강 이미지. 사람인 공고 이미지는 별도 CDN(www.saraminimage.co.kr)에 있음.
-            const imgs = [...new Set([...ih.matchAll(/(?:https?:)?\/\/[a-z0-9.]*saraminimage\.co\.kr\/recruit\/[^\s"')]+\.(?:png|jpe?g|gif)/gi)].map((m) => m[0]))]
-              .map((u) => (u.startsWith("//") ? "https:" + u : u))
-              .filter((u) => !/watermark/i.test(u))
-              .slice(0, 12);
-            if (imgs.length) {
-              out.images = imgs;
+            // 사람인 이미지는 별도 CDN(saraminimage.co.kr)에 있음. 두 종류를 구분한다:
+            //  · /recruit/… : 회사 디자인 포스터(제니하우스형) → 상세요강 이미지
+            //  · /static/hiring/images/template/… : 사람인 기본 템플릿 상단 배너(닥터스칼프형) → 상단 배너
+            const norm = (u: string) => (u.startsWith("//") ? "https:" + u : u);
+            const posters = [...new Set([...ih.matchAll(/(?:https?:)?\/\/[a-z0-9.]*saraminimage\.co\.kr\/recruit\/[^\s"')]+\.(?:png|jpe?g|gif|webp)/gi)].map((m) => m[0]))]
+              .map(norm).filter((u) => !/watermark/i.test(u)).slice(0, 12);
+            const banners = [...new Set([...ih.matchAll(/(?:https?:)?\/\/[a-z0-9.]*saraminimage\.co\.kr\/static\/hiring\/images\/template\/[^\s"')]+\.(?:png|jpe?g|gif|webp)/gi)].map((m) => m[0]))]
+              .map(norm).filter((u) => !/watermark/i.test(u)).slice(0, 3);
+            if (posters.length) {
+              out.images = posters;
               out._rehost = true;
               out._rehostReferer = "https://www.saramin.co.kr/";
-              out._detailImages = true; // 디자인 포스터 → 배너 아닌 상세 본문 이미지로 배치
+              out._detailImages = true; // 디자인 포스터 → 상세 본문 이미지
+            } else if (banners.length) {
+              out.images = banners;
+              out._rehost = true;
+              out._rehostReferer = "https://www.saramin.co.kr/";
+              // 템플릿 배너 → 상단 배너(_detailImages 미설정)
             }
             // 텍스트형 공고: 주요업무/담당업무·자격요건·우대사항이 깔끔한 텍스트로 있음 → 필드로 반영
             // 섹션 머리 이모지(📋🏠🎁🚀)가 다음 섹션에서 꼬리에 새어 들어오므로 끝에서 제거.
