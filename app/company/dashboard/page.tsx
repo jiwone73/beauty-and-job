@@ -169,7 +169,7 @@ export default function CompanyDashboard() {
           {[
             { value: "전체", label: "전체" },
             { value: "STORE", label: "🏪 매장" },
-            { value: "OFFICE", label: "🏢 본사" },
+            { value: "OFFICE", label: "🏢 오피스" },
           ].map((t) => (
             <button
               key={t.value}

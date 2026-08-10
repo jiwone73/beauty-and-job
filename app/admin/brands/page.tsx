@@ -14,7 +14,7 @@ type Brand = {
   created_at: string;
 };
 
-const TYPE_LABEL: Record<string, string> = { OFFICE: "본사", STORE: "매장", BOTH: "매장·본사" };
+const TYPE_LABEL: Record<string, string> = { OFFICE: "오피스", STORE: "매장", BOTH: "매장·오피스" };
 const STATUS_LABEL: Record<string, string> = { PENDING: "승인대기", ACTIVE: "정상", SUSPENDED: "정지", REJECTED: "반려" };
 const STATUS_BADGE: Record<string, string> = { PENDING: "admin-badge-warning", ACTIVE: "admin-badge-success", SUSPENDED: "admin-badge-danger", REJECTED: "admin-badge-neutral" };
 const STATUS_FILTERS = ["전체", "승인대기", "정상", "정지", "반려"];

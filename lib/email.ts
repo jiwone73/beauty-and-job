@@ -121,7 +121,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
                   <p style="font-size:21px;font-weight:700;color:#7c3aed;margin:0 0 6px;">환영합니다, ${name} 님</p>
                   <p style="font-size:15px;color:#5f5e5a;margin:0 0 18px;">뷰티 커리어의 시작을 함께할게요.</p>
                   <p style="font-size:15px;color:#444444;line-height:1.7;margin:0 0 24px;">
-                    가입해 주셔서 감사해요. 뷰티워크는 메이크업·헤어·네일·피부부터 매장직·사무직까지, 뷰티 업계 채용만 모았어요. 지금 이력서를 완성하면 더 많은 매장·본사에 내 프로필이 노출돼요.
+                    가입해 주셔서 감사해요. 뷰티워크는 메이크업·헤어·네일·피부부터 매장직·사무직까지, 뷰티 업계 채용만 모았어요. 지금 이력서를 완성하면 더 많은 매장·오피스에 내 프로필이 노출돼요.
                   </p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
                     <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">

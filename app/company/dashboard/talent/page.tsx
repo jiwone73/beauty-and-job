@@ -28,7 +28,7 @@ function shortenRegion(region: string | null | undefined): string {
 
 function jobTypeLabel(jobType: string | null | undefined): string | null {
   if (jobType === "STORE") return "매장";
-  if (jobType === "OFFICE") return "본사";
+  if (jobType === "OFFICE") return "오피스";
   return null;
 }
 
@@ -349,7 +349,7 @@ export default function TalentPage() {
   return (
     <CompanyLayout activePage="talent">
 
-      {/* 인재 구분 — 매장/본사 라디오 (모바일, 검색창 위) */}
+      {/* 인재 구분 — 매장/오피스 라디오 (모바일, 검색창 위) */}
       {isMobile && view === "search" && (
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 12 }}>
           <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
@@ -358,7 +358,7 @@ export default function TalentPage() {
               <input type="radio" name="talentTrackM" checked={activeTab === tab}
                 onChange={() => handleTabSwitch(tab)}
                 style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
-              {tab === "STORE" ? "매장" : "본사"}
+              {tab === "STORE" ? "매장" : "오피스"}
             </label>
           ))}
         </div>
@@ -380,7 +380,7 @@ export default function TalentPage() {
         </div>
       )}
 
-      {/* 인재 구분 — 매장/본사 세그먼트 (데스크톱) */}
+      {/* 인재 구분 — 매장/오피스 세그먼트 (데스크톱) */}
       {!isMobile && (
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
           <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
@@ -394,7 +394,7 @@ export default function TalentPage() {
                   boxShadow: activeTab === tab ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
                   transition: "all .15s",
                 }}>
-                {tab === "STORE" ? "매장" : "본사"}
+                {tab === "STORE" ? "매장" : "오피스"}
               </button>
             ))}
           </div>
@@ -824,7 +824,7 @@ export default function TalentPage() {
                   birthDisplay={resumeData.user?.birth_date
                     ? `${String(resumeData.user.birth_date).slice(0, 4)}년 (${calcAge(resumeData.user.birth_date)}세, ${resumeData.user.gender === "FEMALE" ? "여" : resumeData.user.gender === "MALE" ? "남" : ""})`
                     : ""}
-                  jobDisplay={resumeData.user?.job_type === "STORE" ? "매장" : "본사"}
+                  jobDisplay={resumeData.user?.job_type === "STORE" ? "매장" : "오피스"}
                   phone={resumeData.user?.phone || ""}
                   email={resumeData.user?.email || ""}
                   portfolioUrl={resumeData.user?.portfolio_url || null}

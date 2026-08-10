@@ -296,15 +296,15 @@ function AdminMembersPageInner() {
         ))}
       </div>
 
-      {/* 회원 구분 — 매장/본사 라디오 */}
+      {/* 회원 구분 — 매장/오피스 라디오 */}
       <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
         <span style={{ fontSize: 14, color: "#777" }}>회원 구분</span>
-        {(["전체", "매장", "본사"] as const).map((opt) => {
-          const active = (jobTypeFilter === "전체" && opt === "전체") || (jobTypeFilter === "매장기술직" && opt === "매장") || (jobTypeFilter === "기업사무직" && opt === "본사");
+        {(["전체", "매장", "오피스"] as const).map((opt) => {
+          const active = (jobTypeFilter === "전체" && opt === "전체") || (jobTypeFilter === "매장기술직" && opt === "매장") || (jobTypeFilter === "기업사무직" && opt === "오피스");
           return (
             <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: active ? "#5f0080" : "#555" }}>
               <input type="radio" name="memberTrack" checked={active}
-                onChange={() => { setJobTypeFilter(opt === "매장" ? "매장기술직" : opt === "본사" ? "기업사무직" : "전체"); setPage(1); }}
+                onChange={() => { setJobTypeFilter(opt === "매장" ? "매장기술직" : opt === "오피스" ? "기업사무직" : "전체"); setPage(1); }}
                 style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
               {opt}
             </label>

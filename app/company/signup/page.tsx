@@ -14,8 +14,8 @@ interface Term {
 
 const COMPANY_TYPES = [
   { value: "STORE", label: "매장", icon: "💄", desc: "현장직 채용" },
-  { value: "OFFICE", label: "본사", icon: "🏢", desc: "사무직 채용" },
-  { value: "BOTH", label: "매장·본사", icon: "🏢+💄", desc: "둘 다 채용" },
+  { value: "OFFICE", label: "오피스", icon: "🏢", desc: "사무직 채용" },
+  { value: "BOTH", label: "매장·오피스", icon: "🏢+💄", desc: "둘 다 채용" },
 ];
 
 export default function CompanySignupPage() {

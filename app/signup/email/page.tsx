@@ -285,7 +285,7 @@ export default function SignupEmailPage() {
                 }`}
               >
                 <span className="text-2xl mb-1">🏢</span>
-                <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">본사</span>
+                <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">오피스</span>
                 <span className="text-[10px] md:text-[11px] mt-0.5 text-center leading-tight">
                   브랜드 · 마케팅 · MD
                 </span>

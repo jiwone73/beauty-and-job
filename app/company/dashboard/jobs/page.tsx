@@ -96,7 +96,7 @@ export default function CompanyJobsPage() {
 
   const filtered = jobs.filter(j => {
     const matchGroup = jobGroupFilter === "전체" ||
-      (jobGroupFilter === "본사" && j.job_type === "OFFICE") ||
+      (jobGroupFilter === "오피스" && j.job_type === "OFFICE") ||
       (jobGroupFilter === "매장" && j.job_type === "STORE");
     const matchSearch = !search || j.title.includes(search);
     const dl = daysLeft(j.deadline);
@@ -177,7 +177,7 @@ export default function CompanyJobsPage() {
     전체: jobs.length,
     진행중: jobs.filter(j => !isJobClosed(j)).length,
     마감: jobs.filter(j => isJobClosed(j)).length,
-    본사: jobs.filter(j => j.job_type === "OFFICE").length,
+    오피스: jobs.filter(j => j.job_type === "OFFICE").length,
     매장: jobs.filter(j => j.job_type === "STORE").length,
   };
   const totalApplicants = jobs.reduce((s, j) => s + (j.application_count || 0), 0);
@@ -188,7 +188,7 @@ export default function CompanyJobsPage() {
     { label: "마감", value: String(counts.마감), unit: "건", color: "#888" },
     { label: "총 지원자", value: String(totalApplicants), unit: "명", color: "#0ea5e9" },
     ...(isBoth ? [
-      { label: "본사 공고", value: String(counts.본사), unit: "건", color: "#5f0080" },
+      { label: "오피스 공고", value: String(counts.오피스), unit: "건", color: "#5f0080" },
       { label: "매장 공고", value: String(counts.매장), unit: "건", color: "#e91e8c" },
     ] : []),
   ];
@@ -231,7 +231,7 @@ export default function CompanyJobsPage() {
           </div>
           {isBoth && (
             <FilterDropdown label="채용유형" value={jobGroupFilter}
-              options={["전체", "매장", "본사"]} onChange={setJobGroupFilter} />
+              options={["전체", "매장", "오피스"]} onChange={setJobGroupFilter} />
           )}
           <FilterDropdown label="진행상태" value={statusFilter}
             options={["전체", "진행중", "마감"]} onChange={setStatusFilter} />
@@ -495,7 +495,7 @@ export default function CompanyJobsPage() {
             <div className="admin-modal-header">
               <div>
                 <span className={`jobs-type-badge ${selected.job_type === "STORE" ? "store" : "corp"}`}>
-                  {selected.job_type === "STORE" ? "🏪 매장" : "🏢 본사"}
+                  {selected.job_type === "STORE" ? "🏪 매장" : "🏢 오피스"}
                 </span>
                 <h2 className="admin-modal-title">{selected.title}</h2>
               </div>

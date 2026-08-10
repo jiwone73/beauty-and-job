@@ -27,7 +27,7 @@ interface Props {
   officeSelected?: string[];                    // 사무 트랙 선택값 (officeJobAreas)
   onChangeStore?: (next: string[]) => void;
   onChangeOffice?: (next: string[]) => void;
-  // ── 인재 구분(매장/본사) 헤더 라디오 (인재검색용) ──
+  // ── 인재 구분(매장/오피스) 헤더 라디오 (인재검색용) ──
   showTrackToggle?: boolean;                    // true면 헤더에 인재 구분 라디오 노출
   onTrackChange?: (t: JobType) => void;         // 구분 변경 시 부모 활성 트랙 전환
 }
@@ -111,7 +111,7 @@ export default function JobGroupSelectModal({
     setCustomText("");
   };
 
-  // ── 추천검색 결과 (단일 트랙 모드면 현재 트랙만, 이중 트랙이면 매장·본사 전체) ──
+  // ── 추천검색 결과 (단일 트랙 모드면 현재 트랙만, 이중 트랙이면 매장·오피스 전체) ──
   const searchTrack = enableToggle ? undefined : activeType;
   const results = useMemo<JobSearchResult[]>(
     () => (query.trim() ? searchJobItems(query, searchTrack, 8) : []),
@@ -384,7 +384,7 @@ export default function JobGroupSelectModal({
                         onChange={() => { setActiveType(t); onTrackChange?.(t); }}
                         style={{ accentColor: "#5f0080", width: 15, height: 15, margin: 0, cursor: "pointer" }}
                       />
-                      {t === "STORE" ? "매장" : "본사"}
+                      {t === "STORE" ? "매장" : "오피스"}
                     </label>
                   ))}
                 </div>
@@ -408,7 +408,7 @@ export default function JobGroupSelectModal({
                 className={activeType === "OFFICE" ? "on" : ""}
                 onClick={() => setActiveType("OFFICE")}
               >
-                본사
+                오피스
               </button>
             </div>
           )}

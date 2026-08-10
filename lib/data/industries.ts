@@ -31,6 +31,6 @@ export function industryGroupsFor(companyType: CompanyTypeLike): { label: string
   // BOTH 또는 미지정: 둘 다 그룹으로
   return [
     { label: "매장", items: STORE_INDUSTRIES },
-    { label: "본사", items: OFFICE_INDUSTRIES },
+    { label: "오피스", items: OFFICE_INDUSTRIES },
   ];
 }

@@ -1116,7 +1116,7 @@ export default function JobPostForm({
       brandName: isNm ? newBrandName : (cp?.brand_name || ""),
       industry: isNm ? nmIndustry : "",
       representative: isNm ? nmRepresentative : (cp?.representative_name || ""),
-      companyType: jobGroupType === "매장" ? "매장" : "본사",
+      companyType: jobGroupType === "매장" ? "매장" : "오피스",
       size: isNm ? nmSize : (cp?.company_size || ""),
       founded: isNm ? (nmFounded ? `${nmFounded}년` : "") : (cp?.founded_year || ""),
       phone: isNm ? nmPhone : (cp?.company_phone || ""),
@@ -1645,7 +1645,7 @@ export default function JobPostForm({
                 </div>
               )}
 
-              {/* 채용 절차 — 본사(기업) 공고에서만 노출 */}
+              {/* 채용 절차 — 오피스(기업) 공고에서만 노출 */}
               {jobGroupType === "기업" && (
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
                   <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차</span>

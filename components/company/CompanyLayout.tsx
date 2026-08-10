@@ -42,7 +42,7 @@ export default function CompanyLayout({ children, activePage }: {
         if (res.success && res.data) {
           setCompanyInfo({
             name: res.data.company_name || "",
-            category: res.data.company_type === "OFFICE" ? "본사" : res.data.company_type === "STORE" ? "매장" : "매장·본사",
+            category: res.data.company_type === "OFFICE" ? "오피스" : res.data.company_type === "STORE" ? "매장" : "매장·오피스",
             logo: res.data.logo_url || "",
             type: res.data.company_type || "",
             cover: (Array.isArray(res.data.cover_images) && res.data.cover_images[0]?.url) ? res.data.cover_images[0].url : "",

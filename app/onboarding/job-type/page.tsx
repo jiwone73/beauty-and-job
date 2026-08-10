@@ -75,7 +75,7 @@ export default function OnboardingJobTypePage() {
                 ? "border-[#5f0080] bg-[#f5ebfa]"
                 : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
           >
-            <p className="text-[16px] font-bold text-[#111] mb-1">🏢 본사</p>
+            <p className="text-[16px] font-bold text-[#111] mb-1">🏢 오피스</p>
             <p className="text-[13px] text-[#6b6b6b]">
               뷰티 브랜드, MD, 마케팅, 기획 등 사무 근무
             </p>

@@ -316,7 +316,7 @@ export default function ScrappedTalentPage() {
                       ? `${String(resumeData.user.birth_date).slice(0, 4)}년 (${calcAgeFromBirth(resumeData.user.birth_date)}세, ${resumeData.user.gender === "FEMALE" ? "여" : resumeData.user.gender === "MALE" ? "남" : ""})`
                       : ""
                   }
-                  jobDisplay={resumeData.user?.job_type === "STORE" ? "매장" : "본사"}
+                  jobDisplay={resumeData.user?.job_type === "STORE" ? "매장" : "오피스"}
                   phone={resumeData.user?.phone || ""}
                   email={resumeData.user?.email || ""}
                   portfolioUrl={resumeData.user?.portfolio_url || null}
