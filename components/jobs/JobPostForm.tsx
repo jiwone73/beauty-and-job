@@ -1,6 +1,6 @@
 "use client";
 import { industryGroupsFor } from "@/lib/data/industries";
-import { useState, useEffect, useRef, type ChangeEvent, type CSSProperties } from "react";
+import { useState, useEffect, useRef, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings } from "lucide-react";
@@ -251,6 +251,8 @@ export default function JobPostForm({
   }, [deadlineModalOpen]);
   const [imgModalOpen, setImgModalOpen] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  // 붙여넣기(Ctrl+V) 대상 표시 — 포커스된 드롭존을 강조해 어디로 붙는지 알려준다.
+  const [pasteZone, setPasteZone] = useState<"banner" | "body" | null>(null);
   const imgRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!imgModalOpen) return;
@@ -533,6 +535,18 @@ export default function JobPostForm({
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     await processFiles(e.target.files || []);
     e.target.value = "";
+  };
+  // 클립보드(Ctrl+V)에 담긴 이미지 파일 추출 — 스크린샷·복사한 이미지 붙여넣기 지원(드롭존이 포커스일 때)
+  const imagesFromClipboard = (e: ClipboardEvent): File[] => {
+    const items = e.clipboardData?.items ? Array.from(e.clipboardData.items) : [];
+    const out: File[] = [];
+    for (const it of items) {
+      if (it.kind === "file" && it.type.startsWith("image/")) {
+        const f = it.getAsFile();
+        if (f) out.push(f);
+      }
+    }
+    return out;
   };
   // 비회원 기업 로고/커버 단일 업로드
   const uploadSingle = async (file: File, setUrl: (u: string) => void, setBusy: (b: boolean) => void) => {
@@ -1315,10 +1329,14 @@ export default function JobPostForm({
               {/* ── 상단 배너 (cover, 여러 장 · 공개화면에서 3장씩 화살표로 회전) ── */}
               <div>
                 <div
+                  tabIndex={0}
+                  onFocus={() => setPasteZone("banner")}
+                  onBlur={() => setPasteZone((z) => (z === "banner" ? null : z))}
                   onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                   onDragLeave={() => setDragOver(false)}
                   onDrop={(e) => { e.preventDefault(); setDragOver(false); if (imgDragRef.current) { dropToBanner(null); return; } const f = e.dataTransfer.files; if (f && f.length && !nmCoverUploading) addBannerFiles(f); }}
-                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${dragOver ? "#5f0080" : "#e0d5ee"}`, background: dragOver ? "#f7f1fd" : "#fbf9ff" }}>
+                  onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!nmCoverUploading) addBannerFiles(fs); } }}
+                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${dragOver || pasteZone === "banner" ? "#5f0080" : "#e0d5ee"}`, background: dragOver || pasteZone === "banner" ? "#f7f1fd" : "#fbf9ff", outline: "none" }}>
                   {bannerImages.map((b, idx) => (
                     <div key={b.url + idx} draggable
                       onDragStart={() => { imgDragRef.current = { zone: "banner", idx }; }}
@@ -1337,7 +1355,7 @@ export default function JobPostForm({
                     <span style={{ fontSize: 10, marginTop: 2 }}>배너 추가</span>
                     <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={nmCoverUploading || bannerImages.length >= 10} onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
                   </label>
-                  {bannerImages.length === 0 && <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>상세 이미지를 여기로 <b>드래그</b>하면 배너가 돼요. 여러 장 넣으면 3장씩 화살표로 넘겨봅니다.</span>}
+                  {bannerImages.length === 0 && <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>상세 이미지를 여기로 <b>드래그</b>하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어도 배너가 돼요. 여러 장 넣으면 3장씩 화살표로 넘겨봅니다.</span>}
                 </div>
               </div>
 
@@ -1683,9 +1701,13 @@ export default function JobPostForm({
               <div style={{ paddingBottom: 16, borderBottom: "1px solid var(--color-border)", marginBottom: 4 }}>
                 <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>갖고 계신 상세요강 이미지가 있다면 첨부해 주세요.</div>
                 <div
+                  tabIndex={0}
+                  onFocus={() => setPasteZone("body")}
+                  onBlur={() => setPasteZone((z) => (z === "body" ? null : z))}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
-                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: "1.5px dashed #e0d5ee", background: "#fbf9ff" }}>
+                  onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) processFiles(fs); } }}
+                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#5f0080" : "#e0d5ee"}`, background: pasteZone === "body" ? "#f7f1fd" : "#fbf9ff", outline: "none" }}>
                   {detailImages.map((d, idx) => (
                     <div key={d.url + idx} draggable
                       onDragStart={() => { imgDragRef.current = { zone: "body", idx }; }}
@@ -1704,7 +1726,7 @@ export default function JobPostForm({
                     <span style={{ fontSize: 10 }}>추가</span>
                     <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
                   </label>
-                  {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부해 주세요.</span>}
+                  {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어 주세요.</span>}
                 </div>
                 <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 포지션 소개·자격요건은 필수예요.</p>
               </div>
