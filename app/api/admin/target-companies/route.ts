@@ -22,6 +22,8 @@ export async function GET(req: NextRequest) {
   const group = (sp.get("group") || "").trim();
   const hiring = (sp.get("hiring") || "").trim();
   const reg = (sp.get("reg") || "").trim();
+  const phone = (sp.get("phone") || "").trim();  // y=있음 | n=없음
+  const email = (sp.get("email") || "").trim();  // y=있음 | n=없음
   const q = (sp.get("q") || "").trim();
 
   const where: string[] = [];
@@ -29,6 +31,10 @@ export async function GET(req: NextRequest) {
   if (group) { params.push(group); where.push(`group_name = $${params.length}`); }
   if (hiring) { params.push(hiring); where.push(`is_hiring = $${params.length}`); }
   if (reg) { params.push(reg); where.push(`is_registered = $${params.length}`); }
+  if (phone === "y") where.push(`(phone IS NOT NULL AND phone <> '')`);
+  else if (phone === "n") where.push(`(phone IS NULL OR phone = '')`);
+  if (email === "y") where.push(`(email IS NOT NULL AND email <> '')`);
+  else if (email === "n") where.push(`(email IS NULL OR email = '')`);
   if (q) { params.push(`%${q}%`); where.push(`(brand_name ILIKE $${params.length} OR features ILIKE $${params.length})`); }
   const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
 
