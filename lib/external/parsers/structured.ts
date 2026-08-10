@@ -951,7 +951,15 @@ function parseBeautyjobManager(html: string): StructuredResult | null {
 
   const sug = suggestCats(`${pairs["모집직종"] || ""} ${pairs["담당업무"] || ""} ${title}`);
 
-  return {
+  // 이미지: 에디터/공고 업로드 이미지(/wysiwyg/PEG/ · /PEG/)만. 사이트 크롬(/images/)은 제외. 핫링크 대비 재호스팅.
+  const imgs = [...new Set(
+    [...html.matchAll(/(?:src|href)=["']([^"']+\.(?:jpe?g|png|gif|webp))["']/gi)].map((m) => m[1])
+  )]
+    .filter((u) => /(?:^|\/)(?:wysiwyg\/)?PEG\//i.test(u))
+    .map((u) => (/^https?:\/\//i.test(u) ? u : `https://beautyjobmanager.com/${u.replace(/^[./]+/, "")}`))
+    .slice(0, 12);
+
+  const out: StructuredResult = {
     title,
     company_name: company,
     region,
@@ -965,9 +973,11 @@ function parseBeautyjobManager(html: string): StructuredResult | null {
     main_duties: pairs["담당업무"] || "",
     job_type: sug.job_type || "STORE", // 뷰티잡매니저는 매장(샵)이 대부분
     job_categories: sug.job_categories,
-    images: [],
+    images: imgs,
     _confident: !!(title && (company || region || sug.job_categories.length)),
   };
+  if (imgs.length) { out._rehost = true; out._rehostReferer = "https://beautyjobmanager.com/"; }
+  return out;
 }
 
 // ───────────── 미용인잡(miyonginjob.com) ─────────────
@@ -1011,7 +1021,15 @@ function parseMiyonginjob(html: string): StructuredResult | null {
   const kw = clean((html.match(/name="keywords" content="([^"]*)"/) || [])[1] || "");
   const sug = suggestCats(`${title} ${desc} ${kw}`);
 
-  return {
+  // 이미지: 에디터 업로드(/wysiwyg/PEG/ · /PEG/)만. 사이트 크롬(/images/) 제외. 핫링크 대비 재호스팅.
+  const imgs = [...new Set(
+    [...html.matchAll(/(?:src|href)=["']([^"']+\.(?:jpe?g|png|gif|webp))["']/gi)].map((m) => m[1])
+  )]
+    .filter((u) => /(?:^|\/)(?:wysiwyg\/)?PEG\//i.test(u))
+    .map((u) => (/^https?:\/\//i.test(u) ? u : `https://www.miyonginjob.com/${u.replace(/^[./]+/, "")}`))
+    .slice(0, 12);
+
+  const out: StructuredResult = {
     title,
     company_name: company,
     region,
@@ -1022,9 +1040,11 @@ function parseMiyonginjob(html: string): StructuredResult | null {
     ...sal,
     job_type: sug.job_type || "STORE", // 미용실·네일샵이 대부분
     job_categories: sug.job_categories,
-    images: [],
+    images: imgs,
     _confident: !!(title && (company || region || sug.job_categories.length)),
   };
+  if (imgs.length) { out._rehost = true; out._rehostReferer = "https://www.miyonginjob.com/"; }
+  return out;
 }
 
 // ───────────── 디스패처 ─────────────
