@@ -1,6 +1,8 @@
 "use client";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Search } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import FilterDropdown from "@/components/company/FilterDropdown";
 
 // 비회원 컨택 대상 업체 리스트(아웃리치 관리대장)
 // 엑셀 "채용공고 등록 DB 정리본"을 인앱화. 체크박스 선택 → 상단 일괄 "업데이트"로 9개 채용사이트 조회(무료).
@@ -264,26 +266,28 @@ export default function AdminOutreachPage() {
 
         {/* 필터 + 일괄 */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 12 }}>
-          <input placeholder="브랜드·특징 검색" value={q} onChange={(e) => setQ(e.target.value)}
-            style={{ ...inp, width: 180, minWidth: 150 }} />
-          <select value={hiringFilter} onChange={(e) => setHiringFilter(e.target.value)} style={{ ...inp, width: 120 }}>
-            <option value="">채용유무 전체</option>
-            {HIRING.map((h) => <option key={h} value={h}>{h}</option>)}
-          </select>
-          <select value={regFilter} onChange={(e) => setRegFilter(e.target.value)} style={{ ...inp, width: 120 }}>
-            <option value="">등록유무 전체</option>
-            {REG.map((r) => <option key={r} value={r}>{r}</option>)}
-          </select>
-          <select value={phoneFilter} onChange={(e) => setPhoneFilter(e.target.value)} style={{ ...inp, width: 110 }}>
-            <option value="">연락처 전체</option>
-            <option value="y">연락처 있음</option>
-            <option value="n">연락처 없음</option>
-          </select>
-          <select value={emailFilter} onChange={(e) => setEmailFilter(e.target.value)} style={{ ...inp, width: 110 }}>
-            <option value="">이메일 전체</option>
-            <option value="y">이메일 있음</option>
-            <option value="n">이메일 없음</option>
-          </select>
+          {/* 검색·필터 — 다른 관리자 페이지(입사지원·채용공고)와 동일 UI */}
+          <div className="admin-search-wrap" style={{ width: 240 }}>
+            <Search size={16} className="admin-search-icon" />
+            <input className="admin-search-input" placeholder="브랜드·특징 검색"
+              value={q} onChange={(e) => setQ(e.target.value)} />
+          </div>
+          <FilterDropdown label="채용유무"
+            value={hiringFilter || "전체"}
+            options={["전체", ...HIRING]}
+            onChange={(v) => setHiringFilter(v === "전체" ? "" : v)} />
+          <FilterDropdown label="등록유무"
+            value={regFilter || "전체"}
+            options={["전체", ...REG]}
+            onChange={(v) => setRegFilter(v === "전체" ? "" : v)} />
+          <FilterDropdown label="연락처"
+            value={phoneFilter === "y" ? "있음" : phoneFilter === "n" ? "없음" : "전체"}
+            options={["전체", "있음", "없음"]}
+            onChange={(v) => setPhoneFilter(v === "있음" ? "y" : v === "없음" ? "n" : "")} />
+          <FilterDropdown label="이메일"
+            value={emailFilter === "y" ? "있음" : emailFilter === "n" ? "없음" : "전체"}
+            options={["전체", "있음", "없음"]}
+            onChange={(v) => setEmailFilter(v === "있음" ? "y" : v === "없음" ? "n" : "")} />
           <div style={{ flex: 1 }} />
           {dirtyCount > 0 ? (
             <button onClick={flushDrafts}
