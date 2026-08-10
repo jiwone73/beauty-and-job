@@ -18,6 +18,8 @@ const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트", "협의"];
+// 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)
+const ISSUE_FIELDS = ["제목", "회사명", "모집분야(직군)", "경력", "학력", "마감일", "급여", "고용형태", "근무기간", "근무요일", "근무시간", "복리후생", "근무지역/주소", "담당자 연락처", "상단 배너", "상세요강 이미지", "포지션 소개", "자격요건", "우대사항", "회사 소개(기업정보)", "지원방식", "기타"];
 const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "온라인 지원", "홈페이지 지원"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
 const WORK_PERIODS = ["~6개월", "6개월 ~ 1년", "1년 이상", "협의"];
@@ -98,6 +100,10 @@ export default function JobPostForm({
     listDrafts().then((d) => setDrafts(Array.isArray(d) ? d : [])).catch(() => {});
   }, [listDrafts]);
   useEffect(() => { reloadDrafts(); }, [reloadDrafts]);
+  // ── 이 공고 이슈 메모(불러온 원문 URL에 매칭, DB 저장 → 클로드가 조회·수정) ──
+  const [issueItems, setIssueItems] = useState<{ field: string; note: string }[]>([]);
+  const [issueStatus, setIssueStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const issueTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!draftMenuOpen) return;
     const onDown = (e: MouseEvent) => { if (draftMenuRef.current && !draftMenuRef.current.contains(e.target as Node)) setDraftMenuOpen(false); };
@@ -175,6 +181,39 @@ export default function JobPostForm({
   const [findResults, setFindResults] = useState<{ idx: number; title: string; url: string; source: string }[]>([]);
   // 검색 목록에서 특정 공고를 불러오면 상단 입력칸 대신 '선택한 공고'를 링크로 표시(클릭 시 원문 새 탭)
   const [picked, setPicked] = useState<{ title: string; url: string; source?: string } | null>(null);
+  // 이슈 메모: 불러온 원문 URL이 바뀌면 그 공고의 저장된 이슈를 불러온다.
+  useEffect(() => {
+    if (mode !== "admin" || !picked?.url) { setIssueItems([]); setIssueStatus("idle"); return; }
+    const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
+    fetch(`/api/admin/app-notes?key=${encodeURIComponent(`jobissue:${picked.url}`)}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        if (!res.success) return;
+        try { const v = JSON.parse(res.data.value || "{}"); setIssueItems(Array.isArray(v.items) ? v.items : []); }
+        catch { setIssueItems([]); }
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [picked?.url, mode]);
+  // 이슈 메모 저장(디바운스) — 전체 목록을 원문 URL 키로 저장
+  const saveIssues = (items: { field: string; note: string }[]) => {
+    if (!picked?.url) return;
+    setIssueStatus("saving");
+    if (issueTimer.current) clearTimeout(issueTimer.current);
+    const url = picked.url, title = picked.title;
+    issueTimer.current = setTimeout(async () => {
+      try {
+        const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
+        await fetch(`/api/admin/app-notes`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ key: `jobissue:${url}`, value: JSON.stringify({ title, items: items.filter((it) => it.field || it.note.trim()) }) }),
+        });
+        setIssueStatus("saved");
+      } catch { setIssueStatus("idle"); }
+    }, 600);
+  };
+  const updateIssues = (items: { field: string; note: string }[]) => { setIssueItems(items); saveIssues(items); };
   const [contactNotice, setContactNotice] = useState("");
   const [curating, setCurating] = useState(false);
   const [jobGroupType, setJobGroupType] = useState<"" | "기업" | "매장">("매장"); // 기본값 매장(관리자). 선택 전 직군·급여·복지 잠금 해제용
@@ -1386,6 +1425,35 @@ export default function JobPostForm({
           {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
 
           </div>
+        </div>
+      )}
+
+      {/* 이 공고 이슈 메모 — 불러온 원문(picked.url)에 매칭. 필드 선택 + 한 줄 메모, 자동저장 */}
+      {mode === "admin" && picked?.url && (
+        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box", border: "1px solid #f0d9d9", background: "#fff8f6", borderRadius: 10, padding: "10px 12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: issueItems.length ? 8 : 0 }}>
+            <span style={{ fontSize: 14, fontWeight: 500, color: "#c0392b" }}>🐞 이 공고 이슈</span>
+            <span style={{ fontSize: 12, color: "#b08a86" }}>불러온 원문과 다른·잘못된 항목을 적어두면 자동저장돼요</span>
+            <span style={{ marginLeft: "auto", fontSize: 12, color: issueStatus === "saved" ? "#22a06b" : "#c4a29e", minWidth: 44, textAlign: "right" }}>
+              {issueStatus === "saving" ? "저장 중…" : issueStatus === "saved" ? "저장됨 ✓" : ""}
+            </span>
+          </div>
+          {issueItems.map((it, idx) => (
+            <div key={idx} style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 6 }}>
+              <select value={it.field} onChange={(e) => updateIssues(issueItems.map((x, i) => (i === idx ? { ...x, field: e.target.value } : x)))}
+                style={{ flexShrink: 0, width: 150, padding: "6px 8px", borderRadius: 6, border: "1px solid #e6cfca", background: "#fff", fontSize: 13, color: it.field ? "#2b2533" : "#aaa" }}>
+                <option value="">필드 선택</option>
+                {ISSUE_FIELDS.map((f) => <option key={f} value={f}>{f}</option>)}
+              </select>
+              <input value={it.note} placeholder="무엇이 잘못됐는지 / 올바른 값"
+                onChange={(e) => updateIssues(issueItems.map((x, i) => (i === idx ? { ...x, note: e.target.value } : x)))}
+                style={{ flex: 1, minWidth: 0, padding: "6px 10px", borderRadius: 6, border: "1px solid #e6cfca", background: "#fff", fontSize: 13.5, boxSizing: "border-box" }} />
+              <button type="button" title="삭제" onClick={() => updateIssues(issueItems.filter((_, i) => i !== idx))}
+                style={{ flexShrink: 0, width: 26, height: 26, borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#c0392b", cursor: "pointer", fontSize: 14, lineHeight: 1 }}>×</button>
+            </div>
+          ))}
+          <button type="button" onClick={() => updateIssues([...issueItems, { field: "", note: "" }])}
+            style={{ marginTop: issueItems.length ? 2 : 8, padding: "5px 12px", borderRadius: 6, border: "1px dashed #d9b3ac", background: "#fff", color: "#c0392b", fontSize: 13, cursor: "pointer" }}>+ 이슈 추가</button>
         </div>
       )}
 

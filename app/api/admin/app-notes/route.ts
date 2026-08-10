@@ -6,14 +6,19 @@ import { ok, err, requireAuth } from "@/lib/api";
 // 관리자 자유 메모(키-값). 아웃리치 "등록 이슈 노트" 등 화면별 메모 저장.
 // 테이블: app_notes (migrations/2026-08-10_app_notes.sql)
 
-// 허용 key 화이트리스트(오남용 방지)
+// 허용 key: 고정 화이트리스트 + 공고별 이슈메모(jobissue:<원문 URL>)
 const ALLOWED_KEYS = new Set(["outreach_registration_issues"]);
+function keyAllowed(key: string): boolean {
+  if (ALLOWED_KEYS.has(key)) return true;
+  // jobissue:https://... (원문 URL을 키로 — 불러온 공고에 이슈 메모를 매칭)
+  return /^jobissue:https?:\/\/[^\s]{1,1000}$/.test(key);
+}
 
 export async function GET(req: NextRequest) {
   const { res: authErr } = requireAuth(req, "admin");
   if (authErr) return authErr;
   const key = (new URL(req.url).searchParams.get("key") || "").trim();
-  if (!ALLOWED_KEYS.has(key)) return err("BAD_REQUEST", "허용되지 않은 key", 400);
+  if (!keyAllowed(key)) return err("BAD_REQUEST", "허용되지 않은 key", 400);
   const r = await pool.query("SELECT value, updated_at FROM app_notes WHERE key = $1", [key]);
   return ok({ key, value: r.rows[0]?.value ?? "", updated_at: r.rows[0]?.updated_at ?? null });
 }
@@ -24,7 +29,7 @@ export async function PUT(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const key = String(body.key || "").trim();
   const value = typeof body.value === "string" ? body.value : "";
-  if (!ALLOWED_KEYS.has(key)) return err("BAD_REQUEST", "허용되지 않은 key", 400);
+  if (!keyAllowed(key)) return err("BAD_REQUEST", "허용되지 않은 key", 400);
   if (value.length > 20000) return err("BAD_REQUEST", "메모가 너무 깁니다(최대 20000자).", 400);
   const r = await pool.query(
     `INSERT INTO app_notes (key, value, updated_at) VALUES ($1, $2, now())
