@@ -42,6 +42,18 @@ function AdminJobNewForm() {
     return data.data;
   };
 
+  // 관리자 직접등록 임시저장(DRAFT · created_by=admin) 목록 — 공고 직접 등록 페이지 상단에서 이어쓰기용
+  const listDrafts = async () => {
+    const res = await fetch("/api/admin/jobs?status=DRAFT", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (!data.success) return [];
+    return (data.data.items || [])
+      .filter((j: any) => j.created_by === "admin")
+      .map((j: any) => ({ id: j.id, title: j.title, company_name: j.company_name, created_at: j.created_at }));
+  };
+
   const onSubmit = async (
     payload: any,
     status: "draft" | "publish",
@@ -57,7 +69,7 @@ function AdminJobNewForm() {
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    if (data.success) return { success: true };
+    if (data.success) return { success: true, id: (editId || data.data?.id) as string };
     return { success: false, error: data.error?.message };
   };
 
@@ -71,6 +83,7 @@ function AdminJobNewForm() {
         uploadImage={uploadImage}
         onSubmit={onSubmit}
         loadEditData={loadEditData}
+        listDrafts={listDrafts}
         initialFindQuery={initialFind}
       />
     </AdminLayout>

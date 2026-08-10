@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
       SELECT
         jp.id, jp.title, jp.job_type, jp.status, jp.location,
         jp.experience_level, jp.view_count, jp.application_count, jp.created_at,
-        jp.deadline, jp.product_type, jp.source,
+        jp.deadline, jp.product_type, jp.source, jp.created_by,
         c.id AS company_id, c.company_name, c.logo_url, c.is_member,
         jc.name AS category_name,
         jp.categories
