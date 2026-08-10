@@ -364,6 +364,107 @@ function parseJobkorea(html: string): StructuredResult | null {
 
 function parseAlbamon(html: string): StructuredResult | null {
   const jp = getJobPostingLd(html);
+  // 알바몬 상세는 __NEXT_DATA__.props.pageProps.data.viewData 에 전 필드가 구조화돼 있다(JSON-LD는 빈약).
+  let vd: any = null;
+  const ndm = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/i);
+  if (ndm) { try { vd = JSON.parse(ndm[1])?.props?.pageProps?.data?.viewData || null; } catch { vd = null; } }
+
+  // 이미지: SSR HTML의 file.albamon.com/Recruit/… (이미지 공고 대응). 핫링크 대비 재호스팅.
+  const albamonImages = () => [
+    ...new Set(
+      [...html.matchAll(/https?:(?:\\u002[Ff]|\\?\/){2}file\.albamon\.com[^\s"'<>()\\]+?\.(?:jpe?g|png|webp|gif)/gi)]
+        .map((m) => m[0].replace(/\\u002[Ff]/gi, "/").replace(/\\\//g, "/"))
+        .filter((u) => /\/Recruit\//i.test(u))
+    ),
+  ].slice(0, 12);
+
+  if (vd && (vd.recruitTitle || vd.recruitCompanyName)) {
+    const title = stripTags(String(vd.recruitTitle || ""));
+    const company = stripTags(String(vd.recruitCompanyName || ""));
+    const addr = stripTags(String(vd.workingAddress || vd.area?.description || ""));
+    const region = regionFromAddrText(addr);
+    // 고용형태: 여러 개면 폼 옵션에 맞는 첫 값(정규직 우선)
+    const EMP = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트"];
+    const empList = Array.isArray(vd.employmentType) ? vd.employmentType.map((e: any) => String(e?.description || "")) : [];
+    const employment_type = EMP.find((x) => empList.includes(x)) || "";
+    // 근무기간
+    const wpDesc = String(vd.workPeriod?.description || "");
+    let work_period = "";
+    if (/협의/.test(wpDesc)) work_period = "협의";
+    else if (/6개월[\s~]*1년/.test(wpDesc)) work_period = "6개월 ~ 1년";
+    else if (/1년\s*이상/.test(wpDesc)) work_period = "1년 이상";
+    else if (/6개월|단기/.test(wpDesc)) work_period = "~6개월";
+    // 근무요일
+    const wdDesc = String(vd.workDays?.description || "");
+    let work_days = "";
+    if (/협의/.test(wdDesc)) work_days = "협의";
+    else { const ds = ["월", "화", "수", "목", "금", "토", "일"].filter((d) => wdDesc.includes(d)); if (ds.length) work_days = ds.join(","); }
+    // 근무시간
+    let work_time = "";
+    if (vd.workTimeConsult) work_time = "협의";
+    else {
+      const a = String(vd.workStartTime || "").match(/(\d{1,2}):(\d{2})/);
+      const b = String(vd.workEndTime || "").match(/(\d{1,2}):(\d{2})/);
+      if (a && b) work_time = `${a[1].padStart(2, "0")}:${a[2]}~${b[1].padStart(2, "0")}:${b[2]}`;
+    }
+    // 급여: 표준 단위(시급/주급/월급/연봉)면 구조화, 건별 등 비표준이면 텍스트로만
+    let salary_type = "", salary_amount = 0, salary = "", salary_negotiable = false;
+    const stKey = String(vd.salaryType?.key || "").toUpperCase();
+    const stDesc = String(vd.salaryType?.description || "");
+    const amt = Number(vd.salary) || 0;
+    const stMap: Record<string, string> = { HOUR: "HOURLY", DAY: "HOURLY", WEEK: "WEEKLY", MONTH: "MONTHLY", YEAR: "ANNUAL" };
+    if (stMap[stKey] && amt > 0) {
+      salary_type = stMap[stKey];
+      salary_amount = salary_type === "HOURLY" ? amt : Math.round(amt / 10000);
+      salary = `${({ HOURLY: "시급", WEEKLY: "주급", MONTHLY: "월급", ANNUAL: "연봉" } as Record<string, string>)[salary_type]} ${salary_amount}${salary_type === "HOURLY" ? "원" : "만원"}`;
+    } else if (amt > 0) {
+      salary = `${stDesc || "급여"} ${amt.toLocaleString()}원`;
+      salary_negotiable = !!vd.salaryConsult;
+    } else {
+      salary_negotiable = true;
+    }
+    // 학력
+    const eduDesc = Array.isArray(vd.educationLevels) ? String(vd.educationLevels[0]?.description || "") : "";
+    let education = "";
+    if (/무관/.test(eduDesc)) education = "학력무관";
+    else if (/고졸/.test(eduDesc)) education = "고졸 이상";
+    else if (/초대졸|전문대/.test(eduDesc)) education = "초대졸 이상";
+    else if (/대졸|학사/.test(eduDesc)) education = "대졸 이상";
+    else if (/석사|대학원/.test(eduDesc)) education = "석사 이상";
+    // 마감/모집인원/우대
+    const allTime = !!vd.allTime || /상시/.test(String(vd.deadlineDate || ""));
+    const deadline = allTime ? "" : ((String(vd.deadlineDate || "").match(/\d{4}[-.]\d{1,2}[-.]\d{1,2}/) || [])[0] || "").replace(/\./g, "-");
+    const headcount = Number(String(vd.recruitMemberCount || "").replace(/\D/g, "")) || 0;
+    const preferred = stripTags(String(vd.preferences || "")).trim();
+    // 직군: part(직무) + 제목
+    const partText = Array.isArray(vd.part) ? vd.part.map((p: any) => p?.description || "").join(" ") : "";
+    const sug = suggestCats(`${partText} ${title}`);
+    // 경력: JSON-LD 우선, 없으면 초보가능 → 경력 무관
+    const career = mapCareer(stripTags(jp?.experienceRequirements || "")) || (vd.beginnerAvailableStatus ? "경력 무관" : "");
+    const description = stripTags(String(vd.simpleRecruitContents || "")).replace(/\s+/g, " ").trim().slice(0, 800);
+    // 칩에 안 담기는 근무요일 부가설명·급여옵션은 비고로 보존
+    const extra_notes = [
+      vd.workWeekEtc ? `근무요일: ${stripTags(String(vd.workWeekEtc))}` : "",
+      Array.isArray(vd.payAddTypes) && vd.payAddTypes.length ? `급여: ${vd.payAddTypes.map((p: any) => p?.description).filter(Boolean).join(", ")}` : "",
+    ].filter(Boolean).join("\n");
+
+    const out: StructuredResult = {
+      title, company_name: company, region, address: addr,
+      career, employment_type, work_period, work_days, work_time, education,
+      deadline, always_open: allTime, headcount,
+      salary, salary_type, salary_amount, salary_amount_max: 0, salary_negotiable,
+      preferred, description, extra_notes,
+      job_type: sug.job_type || "STORE",
+      job_categories: sug.job_categories,
+      _confident: !!(title && (company || region)),
+    };
+    const imgs = albamonImages();
+    if (imgs.length) { out.images = imgs; out._rehost = true; out._rehostReferer = "https://www.albamon.com/"; }
+    else out.images = [];
+    return out;
+  }
+
+  // ── viewData 없으면 JSON-LD 폴백(기존 로직) ──
   if (!jp || !jp.title) return null;
   const title = stripTags(jp.title);
   const company = stripTags(jp.hiringOrganization?.name || "");
