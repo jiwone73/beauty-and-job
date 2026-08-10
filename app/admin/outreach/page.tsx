@@ -225,20 +225,24 @@ export default function AdminOutreachPage() {
     if (!all.length) { setImgScanMsg("분석할 조회 공고가 없어요. 먼저 업데이트로 활성 공고를 조회하세요."); return; }
     setImgScanning(true); setImgScanMsg(`0/${all.length} 분석 중…`);
     const next: Record<string, "company" | "site_only" | "none"> = { ...imgBadges };
-    try {
-      for (let i = 0; i < all.length; i += 15) {
-        const chunk = all.slice(i, i + 15);
+    let done = 0, failed = 0;
+    // 1건씩 처리 → 타임아웃 회피. 한 건 실패해도 멈추지 않고 계속(성공분은 캐시라 재시도 시 건너뜀).
+    for (let i = 0; i < all.length; i++) {
+      try {
         const res = await fetch("/api/admin/external-jobs/image-scan", {
-          method: "POST", headers: { "Content-Type": "application/json", ...authH }, body: JSON.stringify({ postings: chunk }),
+          method: "POST", headers: { "Content-Type": "application/json", ...authH }, body: JSON.stringify({ postings: [all[i]] }),
         });
-        const j = await res.json();
-        if (j.success) for (const r of (j.data.results || [])) next[r.url] = r.badge;
-        setImgBadges({ ...next });
-        setImgScanMsg(`${Math.min(i + 15, all.length)}/${all.length} 분석 중…`);
-      }
-      setImgScanMsg(`이미지 분석 완료 (${all.length}건). 이미 검증된 건은 재분석하지 않았어요.`);
-    } catch { setImgScanMsg("분석 중 오류가 발생했어요."); }
-    finally { setImgScanning(false); }
+        const j = await res.json().catch(() => ({ success: false }));
+        if (j.success && Array.isArray(j.data?.results)) { for (const r of j.data.results) next[r.url] = r.badge; done++; }
+        else failed++;
+      } catch { failed++; }
+      setImgBadges({ ...next });
+      setImgScanMsg(`${i + 1}/${all.length} 분석 중… (완료 ${done}${failed ? ` · 실패 ${failed}` : ""})`);
+    }
+    setImgScanMsg(failed
+      ? `분석 완료: 성공 ${done} · 실패 ${failed} / 총 ${all.length}. 다시 누르면 실패분만 이어서 재시도해요(성공분은 캐시로 건너뜀).`
+      : `이미지 분석 완료 (${all.length}건). 이미 검증된 건은 재분석하지 않았어요.`);
+    setImgScanning(false);
   };
 
   const updateAllTabs = async () => {
