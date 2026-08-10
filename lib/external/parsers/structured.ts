@@ -708,11 +708,7 @@ function parseBeautyjob(html: string): StructuredResult | null {
   const sal = parseSalaryText(afterBody("급여조건"));
   const work_time = parseWorkTime(afterBody("근무시간"));
   const career = mapCareer(afterBody("경력조건"));
-  const empRaw = afterBody("고용형태");
-  let employment_type = "";
-  if (/정규/.test(empRaw)) employment_type = "정규직";
-  else if (/계약/.test(empRaw)) employment_type = "계약직";
-  else if (/파트|아르바이트|알바/.test(empRaw)) employment_type = "파트타임";
+  const employment_type = mapEmploymentKo(afterBody("고용형태"));
 
   // 직군 매핑: 모집업종(jobArea) + 제목
   const sug = suggestCats(`${jobArea} ${title}`);

@@ -569,6 +569,9 @@ export async function POST(req: NextRequest) {
             if (/정규직/.test(workcond)) out.employment_type = "정규직";
             else if (/계약직/.test(workcond)) out.employment_type = "계약직";
             else if (/파트|아르바이트|알바/.test(workcond)) out.employment_type = "파트타임";
+            // 근무시간: 본문에 "근무시간 … HH:MM ~ HH:MM"(평일 등 접두 허용)이 있으면 추출
+            const wtm = full.match(/근무시간[^0-9]{0,20}(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})/);
+            if (wtm && !out.work_time) out.work_time = `${wtm[1].padStart(2, "0")}:${wtm[2]}~${wtm[3].padStart(2, "0")}:${wtm[4]}`;
           }
         } finally { clearTimeout(t); }
       }
