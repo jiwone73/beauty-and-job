@@ -214,7 +214,7 @@ function AdminJobsPageInner() {
       </div>
       <div style={{ width: "fit-content", maxWidth: "100%" }}>
       {/* 공고 구분 — 매장/오피스 라디오 */}
-      <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
         <span style={{ fontSize: 14, color: "#777" }}>공고 구분</span>
         {(["전체", "매장", "오피스"] as const).map((opt) => (
           <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobGroupFilter === opt ? "#5f0080" : "#555" }}>

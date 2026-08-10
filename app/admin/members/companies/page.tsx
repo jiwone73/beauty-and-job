@@ -280,7 +280,7 @@ function AdminCompaniesContent() {
 
   return (
     <AdminLayout activeMenu="members-companies">
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, borderBottom: "1px solid #eee" }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 2, borderBottom: "1px solid #eee" }}>
         {([["member", "회원 기업"], ["external", "비회원 기업"]] as const).map(([key, label]) => (
           <button key={key} onClick={() => setTab(key)}
             style={{ padding: "10px 16px", border: "none", background: "none", cursor: "pointer", fontSize: 14, fontWeight: tab === key ? 700 : 500, color: tab === key ? "#5f0080" : "#888", borderBottom: tab === key ? "2px solid #5f0080" : "2px solid transparent", marginBottom: -1 }}>
@@ -303,7 +303,7 @@ function AdminCompaniesContent() {
         </div>
       )}
       {!blockedMode && (
-        <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           <span style={{ fontSize: 14, color: "#777" }}>회원 구분</span>
           {(["전체", "매장", "오피스", "매장·오피스"] as const).map((opt) => (
             <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: typeFilter === opt ? "#5f0080" : "#555" }}>
