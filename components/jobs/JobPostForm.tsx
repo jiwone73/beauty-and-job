@@ -251,6 +251,8 @@ export default function JobPostForm({
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [benefitTags, setBenefitTags] = useState<string[]>([]);
+  const [benefitTagOptions, setBenefitTagOptions] = useState<{ name: string; is_curated: boolean }[]>([]); // 복리후생 마스터(DB)
+  const [benefitSearch, setBenefitSearch] = useState("");
   const [salaryNego, setSalaryNego] = useState(false);
   const [salaryModalOpen, setSalaryModalOpen] = useState(false);
   const [salaryDraft, setSalaryDraft] = useState("");
@@ -1154,13 +1156,34 @@ export default function JobPostForm({
     setTimeout(() => router.push(listHref), 1000);
   };
 
-  // ── 복리후생 / 근무조건 (분리) ─────────────
-  const welfareOptions = jobGroupType === "매장" ? WELFARE_OPTIONS.매장 : WELFARE_OPTIONS.기업;
-  const workcondOptions = jobGroupType === "매장" ? WORKCOND_OPTIONS.매장 : WORKCOND_OPTIONS.기업;
-  const welfareSel = benefitTags.filter((t) => welfareOptions.includes(t));
-  const workcondSel = benefitTags.filter((t) => workcondOptions.includes(t));
+  // ── 복리후생: DB 마스터 태그 + 검색/자동완성 + 새 태그 소프트 등록 ─────────────
+  const benefitJobType = jobGroupType === "기업" ? "OFFICE" : jobGroupType === "매장" ? "STORE" : "";
+  const benefitAuthToken = () => (typeof window !== "undefined" ? localStorage.getItem(mode === "admin" ? "admin_token" : "access_token") : null);
+  useEffect(() => {
+    if (!benefitJobType) return;
+    fetch(`/api/benefit-tags?job_type=${benefitJobType}`, { headers: { Authorization: `Bearer ${benefitAuthToken()}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setBenefitTagOptions(res.data.items || []); })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [benefitJobType, mode]);
   const toggleBenefit = (b: string) =>
     setBenefitTags(benefitTags.includes(b) ? benefitTags.filter((x) => x !== b) : [...benefitTags, b]);
+  // 목록에 없는 복리후생 직접 추가 → 선택 + DB에 소프트 등록(관리자 검수 대상)
+  const addNewBenefit = async (raw: string) => {
+    const name = raw.replace(/\s+/g, " ").trim();
+    if (!name || name.length > 40) return;
+    if (!benefitTags.includes(name)) setBenefitTags([...benefitTags, name]);
+    setBenefitSearch("");
+    if (!benefitTagOptions.some((o) => o.name === name)) setBenefitTagOptions((prev) => [{ name, is_curated: false }, ...prev]);
+    try {
+      await fetch(`/api/benefit-tags`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${benefitAuthToken()}` },
+        body: JSON.stringify({ name, job_type: benefitJobType || "BOTH" }),
+      });
+    } catch { /* 등록 실패해도 이 공고엔 선택된 채로 유지 */ }
+  };
 
   // 전체 주소 문자열에서 필터용 근무지역(시도 시군구)을 추출
   const deriveRegion = (addr: string) => {
@@ -1774,14 +1797,38 @@ export default function JobPostForm({
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
                       {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : pick())}
                     </button>
-                    {welfareOpen && !typeLocked && (
-                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: "max-content", maxWidth: "min(360px, 80vw)", display: "flex", flexWrap: "wrap", gap: 8 }}>
-                        {welfareOptions.map((b) => { const on = benefitTags.includes(b); return (
-                          <button key={b} type="button" onClick={() => toggleBenefit(b)}
-                            style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{b}</button>
-                        ); })}
+                    {welfareOpen && !typeLocked && (() => {
+                      const qq = benefitSearch.trim().toLowerCase();
+                      const match = (n: string) => !qq || n.toLowerCase().includes(qq);
+                      // 선택됐지만 마스터에 없는 커스텀 태그를 먼저, 그다음 마스터 옵션
+                      const customSel = benefitTags.filter((t) => !benefitTagOptions.some((o) => o.name === t) && match(t)).map((t) => ({ name: t, is_curated: false }));
+                      const visible = [...customSel, ...benefitTagOptions.filter((o) => match(o.name))];
+                      const exact = benefitTagOptions.some((o) => o.name === benefitSearch.trim()) || benefitTags.includes(benefitSearch.trim());
+                      const canAdd = benefitSearch.trim().length > 0 && !exact;
+                      return (
+                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 360, maxWidth: "80vw" }}>
+                        <input autoFocus value={benefitSearch} onChange={(e) => setBenefitSearch(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (canAdd) addNewBenefit(benefitSearch); } }}
+                          placeholder="복리후생 검색 또는 직접 추가 후 Enter"
+                          style={{ width: "100%", boxSizing: "border-box", padding: "8px 10px", borderRadius: 8, border: "1px solid #e0d5ee", fontSize: 14, marginBottom: 10, outline: "none" }} />
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxHeight: 200, overflowY: "auto" }}>
+                          {visible.map((o) => { const on = benefitTags.includes(o.name); return (
+                            <button key={o.name} type="button" onClick={() => toggleBenefit(o.name)}
+                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>
+                              {o.name}{!o.is_curated && <span style={{ marginLeft: 4, fontSize: 10, color: on ? "#e6d5f0" : "#b9a9cc" }}>추가됨</span>}
+                            </button>
+                          ); })}
+                          {canAdd && (
+                            <button type="button" onClick={() => addNewBenefit(benefitSearch)}
+                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: "1.5px dashed #5f0080", background: "#faf7ff", color: "#5f0080", fontWeight: 600 }}>
+                              + &quot;{benefitSearch.trim()}&quot; 추가
+                            </button>
+                          )}
+                          {visible.length === 0 && !canAdd && <span style={{ fontSize: 13, color: "#bbb" }}>검색 결과가 없어요.</span>}
+                        </div>
                       </div>
-                    )}
+                      );
+                    })()}
                   </div>
                   </div>
                 </div>
