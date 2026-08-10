@@ -228,17 +228,17 @@ export default function AdminOutreachPage() {
     setSelected(allVisibleSelected ? new Set() : new Set(items.map((r) => r.id)));
 
   // 스타일
-  const th: React.CSSProperties = { padding: "8px 8px", fontSize: 13, color: "#6b6473", fontWeight: 600, textAlign: "left", whiteSpace: "nowrap", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 2, background: "#faf8fc" };
+  const th: React.CSSProperties = { padding: "8px 8px", fontSize: 13, color: "#6b6473", fontWeight: 400, textAlign: "left", whiteSpace: "nowrap", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 2, background: "#faf8fc" };
   const td: React.CSSProperties = { padding: "6px 8px", fontSize: 14, verticalAlign: "top", borderBottom: "1px solid #f3f0f7" };
   const inp: React.CSSProperties = { width: "100%", minWidth: 90, padding: "5px 7px", border: "1px solid #ddd", borderRadius: 6, fontSize: 13.5, boxSizing: "border-box" };
   const clamp2: React.CSSProperties = { display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis" };
   const chip = (active: boolean): React.CSSProperties => ({
-    padding: "6px 12px", borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: "pointer",
+    padding: "6px 12px", borderRadius: 999, fontSize: 14, fontWeight: 400, cursor: "pointer",
     border: active ? `1px solid ${PURPLE}` : "1px solid #e3dcec",
     background: active ? PURPLE : "#fff", color: active ? "#fff" : "#6b6473",
   });
   const badge = (color: string): React.CSSProperties => ({
-    display: "inline-block", padding: "2px 8px", borderRadius: 999, fontSize: 13, fontWeight: 600,
+    display: "inline-block", padding: "2px 8px", borderRadius: 999, fontSize: 13, fontWeight: 400,
     color, background: `${color}18`,
   });
 
@@ -246,7 +246,7 @@ export default function AdminOutreachPage() {
     <AdminLayout activeMenu="outreach">
       <div style={{ padding: "4px 4px 40px" }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#2b2533", margin: 0 }}>외부업체 컨택 리스트</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 400, color: "#2b2533", margin: 0 }}>외부업체 컨택 리스트</h1>
           <span style={{ fontSize: 14, color: "#9a92a6" }}>총 {totalCount}개 · 비회원 공고 등록 대상</span>
         </div>
         <p style={{ fontSize: 13.5, color: "#9a92a6", margin: "0 0 14px" }}>
@@ -291,7 +291,7 @@ export default function AdminOutreachPage() {
               변경사항 저장 ({dirtyCount})
             </button>
           ) : (
-            <span style={{ fontSize: 13.5, color: "#0a7d34", fontWeight: 600, padding: "0 4px" }}>저장됨 ✓</span>
+            <span style={{ fontSize: 13.5, color: "#0a7d34", fontWeight: 400, padding: "0 4px" }}>저장됨 ✓</span>
           )}
           <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
             style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
@@ -356,11 +356,11 @@ export default function AdminOutreachPage() {
                           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                             {home ? (
                               <a href={normUrl(String(home))} target="_blank" rel="noreferrer"
-                                style={{ fontWeight: 600, color: PURPLE, textDecoration: "none" }}>
+                                style={{ fontWeight: 400, color: PURPLE, textDecoration: "none" }}>
                                 {row.brand_name} <span style={{ fontSize: 12 }}>↗</span>
                               </a>
                             ) : (
-                              <span style={{ fontWeight: 600, color: "#2b2533" }}>{row.brand_name}</span>
+                              <span style={{ fontWeight: 400, color: "#2b2533" }}>{row.brand_name}</span>
                             )}
                             <button onClick={() => setEditHomeId(row.id)} title={home ? "홈페이지 수정" : "홈페이지 링크 추가"}
                               style={{ border: "none", background: "none", cursor: "pointer", color: "#b7b0c0", fontSize: 13, padding: 0 }}>✎</button>
@@ -372,7 +372,7 @@ export default function AdminOutreachPage() {
                       <td style={td}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <select value={hv} onChange={(e) => quickPatch(row, { is_hiring: e.target.value })}
-                            style={{ ...inp, width: 90, color: hiringColor[hv], fontWeight: 600 }}>
+                            style={{ ...inp, width: 90, color: hiringColor[hv], fontWeight: 400 }}>
                             {HIRING.map((h) => <option key={h} value={h}>{h}</option>)}
                           </select>
                           {isChecking && <span style={{ fontSize: 12, color: PURPLE }}>조회중…</span>}
@@ -390,7 +390,7 @@ export default function AdminOutreachPage() {
                       {/* 등록유무 */}
                       <td style={td}>
                         <select value={rv} onChange={(e) => quickPatch(row, { is_registered: e.target.value })}
-                          style={{ ...inp, width: 90, color: regColor[rv], fontWeight: 600 }}>
+                          style={{ ...inp, width: 90, color: regColor[rv], fontWeight: 400 }}>
                           {REG.map((r) => <option key={r} value={r}>{r}</option>)}
                         </select>
                       </td>
@@ -431,7 +431,7 @@ export default function AdminOutreachPage() {
                     {expanded === row.id && row.found_jobs?.length > 0 && (
                       <tr>
                         <td style={{ ...td, background: "#faf8fc" }} colSpan={9}>
-                          <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 4, fontWeight: 600 }}>
+                          <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 4, fontWeight: 400 }}>
                             조회된 활성 공고 <span style={{ fontWeight: 400, color: "#9a92a6" }}>· 라디오로 선택 후 상단 "선택 공고 등록"을 누르면 등록 페이지 검색창에 채워집니다</span>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
