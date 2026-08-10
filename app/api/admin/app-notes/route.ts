@@ -14,7 +14,25 @@ function keyAllowed(key: string): boolean {
 export async function GET(req: NextRequest) {
   const { res: authErr } = requireAuth(req, "admin");
   if (authErr) return authErr;
-  const key = (new URL(req.url).searchParams.get("key") || "").trim();
+  const sp = new URL(req.url).searchParams;
+
+  // 전체 공고 이슈 모아보기: jobissue:* 를 모두 반환(이슈 항목이 있는 것만).
+  if (sp.get("list") === "jobissue") {
+    const r = await pool.query("SELECT key, value, updated_at FROM app_notes WHERE key LIKE 'jobissue:%' ORDER BY updated_at DESC");
+    const items = r.rows
+      .map((row) => {
+        let parsed: any = {};
+        try { parsed = JSON.parse(row.value || "{}"); } catch { parsed = {}; }
+        const its = Array.isArray(parsed.items)
+          ? parsed.items.filter((x: any) => x && (x.field || String(x.note || "").trim()))
+          : [];
+        return { url: String(row.key).slice("jobissue:".length), title: parsed.title || "", items: its, updated_at: row.updated_at };
+      })
+      .filter((x) => x.items.length > 0);
+    return ok({ items });
+  }
+
+  const key = (sp.get("key") || "").trim();
   if (!keyAllowed(key)) return err("BAD_REQUEST", "허용되지 않은 key", 400);
   const r = await pool.query("SELECT value, updated_at FROM app_notes WHERE key = $1", [key]);
   return ok({ key, value: r.rows[0]?.value ?? "", updated_at: r.rows[0]?.updated_at ?? null });

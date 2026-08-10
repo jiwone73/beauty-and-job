@@ -104,12 +104,28 @@ export default function JobPostForm({
   const [issueItems, setIssueItems] = useState<{ field: string; note: string }[]>([]);
   const [issueStatus, setIssueStatus] = useState<"idle" | "saving" | "saved">("idle");
   const issueTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // ── 전체 공고 이슈 모아보기(상단 '이슈' 드롭다운) ──
+  const [issueList, setIssueList] = useState<{ url: string; title: string; items: { field: string; note: string }[] }[]>([]);
+  const [issueMenuOpen, setIssueMenuOpen] = useState(false);
+  const issueMenuRef = useRef<HTMLDivElement>(null);
+  const reloadIssueList = useCallback(() => {
+    if (mode !== "admin") return;
+    const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
+    fetch(`/api/admin/app-notes?list=jobissue`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setIssueList(res.data.items || []); })
+      .catch(() => {});
+  }, [mode]);
+  useEffect(() => { reloadIssueList(); }, [reloadIssueList]);
   useEffect(() => {
-    if (!draftMenuOpen) return;
-    const onDown = (e: MouseEvent) => { if (draftMenuRef.current && !draftMenuRef.current.contains(e.target as Node)) setDraftMenuOpen(false); };
+    if (!draftMenuOpen && !issueMenuOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (draftMenuOpen && draftMenuRef.current && !draftMenuRef.current.contains(e.target as Node)) setDraftMenuOpen(false);
+      if (issueMenuOpen && issueMenuRef.current && !issueMenuRef.current.contains(e.target as Node)) setIssueMenuOpen(false);
+    };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
-  }, [draftMenuOpen]);
+  }, [draftMenuOpen, issueMenuOpen]);
 
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -210,6 +226,7 @@ export default function JobPostForm({
           body: JSON.stringify({ key: `jobissue:${url}`, value: JSON.stringify({ title, items: items.filter((it) => it.field || it.note.trim()) }) }),
         });
         setIssueStatus("saved");
+        reloadIssueList(); // 상단 '이슈' 드롭다운 카운트·목록 갱신
       } catch { setIssueStatus("idle"); }
     }, 600);
   };
@@ -979,6 +996,15 @@ export default function JobPostForm({
     if (isUrlLike(q)) { setFindResults([]); setFindMsg(""); setParseUrl(q); setPicked({ title: q, url: q.startsWith("http") ? q : `https://${q}` }); runParse(q); }
     else { setPicked(null); runFindByCompany(); }
   };
+  // 상단 '이슈' 드롭다운에서 공고 선택 → 그 원문을 불러와 이슈 확인·수정
+  const loadIssuePosting = (url: string, title: string) => {
+    setIssueMenuOpen(false);
+    setFindResults([]); setFindMsg("");
+    setFindQuery(title || url);
+    setPicked({ title: title || url, url });
+    setParseUrl(url);
+    runParse(url);
+  };
 
   // 큐레이션(관리자 전용): 현재 채워진 내용을 뷰티워크 톤·형식으로 AI가 다듬기
   const runCurate = async () => {
@@ -1281,6 +1307,36 @@ export default function JobPostForm({
                 </div>
               )}
             </div>
+            {/* 이슈 모아보기 — 이슈가 기록된 공고 목록, 클릭하면 원문을 불러와 수정 */}
+            {mode === "admin" && issueList.length > 0 && (
+              <div ref={issueMenuRef} style={{ position: "relative", display: "inline-flex" }}>
+                <button type="button" className="admin-secondary-btn" onClick={() => setIssueMenuOpen((v) => !v)} title="이슈가 기록된 공고 모아보기"
+                  style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  🐞 이슈 <span style={{ fontSize: 12, fontWeight: 700, color: "#c0392b" }}>{issueList.length}</span>
+                  <ChevronDown size={13} style={{ color: "#999", transform: issueMenuOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} />
+                </button>
+                {issueMenuOpen && (
+                  <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 60, width: 380, maxWidth: "85vw", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 8 }}>
+                    <div style={{ fontSize: 12, color: "#9a92a6", padding: "2px 6px 6px" }}>이슈 기록된 공고 {issueList.length}건 · 클릭하면 원문을 불러와 수정</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 360, overflowY: "auto" }}>
+                      {issueList.map((p) => (
+                        <button key={p.url} type="button" onClick={() => loadIssuePosting(p.url, p.title)}
+                          style={{ textAlign: "left", width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #f0e0dd", background: "#fff8f6", cursor: "pointer", font: "inherit" }}>
+                          <div style={{ fontSize: 13.5, color: "#2b2533", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 500 }}>{p.title || p.url}</div>
+                          <div style={{ fontSize: 12, color: "#a05c54", marginTop: 3, lineHeight: 1.5 }}>
+                            {p.items.map((it, i) => (
+                              <span key={i} style={{ marginRight: 8 }}>
+                                {it.field && <b style={{ color: "#c0392b" }}>{it.field}</b>}{it.field && it.note ? ": " : ""}{it.note}
+                              </span>
+                            ))}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
             {mode === "admin" && (
               <button type="button" className="admin-secondary-btn" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 공고 내용을 뷰티워크 톤·형식으로 AI가 다듬어요">
