@@ -131,6 +131,38 @@ export default function AdminOutreachPage() {
     }
   };
 
+  // 미저장(칸을 안 벗어난) 편집 개수
+  const dirtyCount = Object.values(drafts).reduce((a, o) => a + Object.keys(o).length, 0);
+
+  // 상단 "변경사항 저장" — 아직 blur 안 된 편집분까지 한 번에 PATCH
+  const flushDrafts = async () => {
+    const entries = Object.entries(drafts);
+    for (const [id, patch] of entries) {
+      const keys = Object.keys(patch);
+      if (!keys.length) continue;
+      const body: Record<string, unknown> = { id };
+      keys.forEach((k) => { body[k] = (patch as Record<string, unknown>)[k]; });
+      try {
+        const res = await fetch(`/api/admin/target-companies`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", ...authH },
+          body: JSON.stringify(body),
+        });
+        const j = await res.json();
+        if (j.data?.item) setItems((its) => its.map((r) => (r.id === id ? j.data.item : r)));
+      } catch { /* noop */ }
+    }
+    setDrafts({});
+  };
+
+  // 미저장 편집이 있는 채로 페이지를 벗어날 때 경고
+  useEffect(() => {
+    if (!dirtyCount) return;
+    const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("beforeunload", h);
+    return () => window.removeEventListener("beforeunload", h);
+  }, [dirtyCount]);
+
   // 즉시 저장(드롭다운)
   const quickPatch = async (row: Row, patch: Partial<Row>) => {
     setItems((its) => its.map((r) => (r.id === row.id ? { ...r, ...patch } : r)));
@@ -174,6 +206,20 @@ export default function AdminOutreachPage() {
     setTimeout(() => setBulkMsg(""), 4000);
   };
 
+  // 6개 탭 전체(현재 필터 무시) 일괄 업데이트
+  const updateAllTabs = async () => {
+    setBulkMsg("전체 목록 불러오는 중…");
+    let allIds: string[] = [];
+    try {
+      const res = await fetch(`/api/admin/target-companies`, { headers: authH });
+      const j = await res.json();
+      allIds = (j.data?.items || []).map((r: Row) => r.id);
+    } catch { setBulkMsg(""); return; }
+    if (!allIds.length) { setBulkMsg(""); return; }
+    await bulkCheck(allIds);
+    fetchList(); // 현재 탭 새로고침
+  };
+
   const toggleSel = (id: string) =>
     setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const allVisibleSelected = items.length > 0 && items.every((r) => selected.has(r.id));
@@ -203,7 +249,7 @@ export default function AdminOutreachPage() {
           <span style={{ fontSize: 13, color: "#9a92a6" }}>총 {totalCount}개 · 비회원 공고 등록 대상</span>
         </div>
         <p style={{ fontSize: 12.5, color: "#9a92a6", margin: "0 0 14px" }}>
-          체크박스로 업체를 선택하고 상단 "선택 N건 업데이트"(또는 "화면 전체 업데이트")를 누르면, 브랜드명으로 9개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·뷰티인잡·뷰티잡매니저·미용인잡·자사홈)를 조회해 채용유무를 자동 확인합니다. 입력값은 자동저장됩니다. 조회는 무료입니다.
+          체크박스로 업체를 선택하고 "선택/전체 업데이트"를 누르거나, "6개 탭 전체 업데이트"로 모든 탭을 한 번에 조회할 수 있습니다. 브랜드명으로 9개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·뷰티인잡·뷰티잡매니저·미용인잡·자사홈)를 조회해 채용유무를 자동 확인합니다. 입력값은 자동저장됩니다. 조회는 무료입니다.
         </p>
 
         {/* 그룹 탭 */}
@@ -238,13 +284,22 @@ export default function AdminOutreachPage() {
             <option value="n">이메일 없음</option>
           </select>
           <div style={{ flex: 1 }} />
+          {dirtyCount > 0 ? (
+            <button onClick={flushDrafts}
+              style={{ ...chip(false), borderColor: "#c2410c", color: "#c2410c", background: "#fff7ed" }}>
+              변경사항 저장 ({dirtyCount})
+            </button>
+          ) : (
+            <span style={{ fontSize: 12.5, color: "#0a7d34", fontWeight: 600, padding: "0 4px" }}>저장됨 ✓</span>
+          )}
           <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
-            style={{ ...chip(false), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
-            선택 {selected.size}건 업데이트
+            style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
+            {selected.size > 0 && allVisibleSelected ? `전체 ${selected.size}건 업데이트` : `선택 ${selected.size}건 업데이트`}
           </button>
-          <button onClick={() => bulkCheck(items.map((r) => r.id))} disabled={!items.length}
-            style={{ ...chip(true), opacity: items.length ? 1 : 0.5 }}>
-            화면 전체 업데이트
+          <button onClick={updateAllTabs} disabled={!totalCount}
+            title="현재 탭과 상관없이 6개 탭 전체를 조회합니다 (시간이 걸립니다)"
+            style={{ ...chip(true), opacity: totalCount ? 1 : 0.5 }}>
+            6개 탭 전체 업데이트{totalCount ? ` (${totalCount})` : ""}
           </button>
           <a href="/admin/jobs/new" target="_blank" rel="noreferrer"
             style={{ ...chip(false), textDecoration: "none", borderColor: PURPLE, color: PURPLE }}>
