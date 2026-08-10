@@ -6,11 +6,8 @@ import { ok, err, requireAuth } from "@/lib/api";
 // 관리자 자유 메모(키-값). 아웃리치 "등록 이슈 노트" 등 화면별 메모 저장.
 // 테이블: app_notes (migrations/2026-08-10_app_notes.sql)
 
-// 허용 key: 고정 화이트리스트 + 공고별 이슈메모(jobissue:<원문 URL>)
-const ALLOWED_KEYS = new Set(["outreach_registration_issues"]);
+// 허용 key: 공고별 이슈메모(jobissue:<원문 URL>) — 불러온 공고에 이슈 메모를 매칭
 function keyAllowed(key: string): boolean {
-  if (ALLOWED_KEYS.has(key)) return true;
-  // jobissue:https://... (원문 URL을 키로 — 불러온 공고에 이슈 메모를 매칭)
   return /^jobissue:https?:\/\/[^\s]{1,1000}$/.test(key);
 }
 
