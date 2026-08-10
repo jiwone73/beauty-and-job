@@ -341,16 +341,20 @@ export async function POST(req: NextRequest) {
           if (ir.ok) {
             const ih = new TextDecoder("utf-8").decode(Buffer.from(await ir.arrayBuffer()));
             const norm = (s: string) => (s.startsWith("//") ? "https:" + s : s);
-            // 상세요강 이미지 후보 ─ 잡코리아 CorpEditor(신디케이션) + 뷰티잡 자체 /data/editor|file/ 풀사이즈(썸네일 제외)
+            // 상세요강 이미지 후보 ─ 잡코리아 CorpEditor(신디케이션) + iframe 안 콘텐츠 이미지 전부
+            //   (뷰티잡 자체 /data/ 뿐 아니라 회사가 쓰는 외부 호스트 — godohosting·cafe24·자체CDN 등 — 도 포함)
             const jkImgs = [...new Set(
               [...ih.matchAll(/file2\.jobkorea\.co\.kr[\\/]+Net[\\/]+Mng[\\/]+DownImage[\\/]+CorpEditor\?file_No=\d+/gi)]
                 .map((m) => m[0].replace(/\\/g, ""))
             )].map((u) => "https://" + u);
+            // 사이트 크롬(아이콘·로고·버튼·SNS 등)만 배제하고, iframe(=상세요강 본문)의 실제 이미지는 호스트 불문 수집
+            const isChrome = (u: string) => /(?:icon|logo|sprite|favicon|badge|spacer|blank|btn|button|arrow|bullet|_bg|banner|sns|kakao|naver|facebook|instagram|pixel|1x1|\/skin\/|\/common\/|\/images\/(?:main|newhair|btn)\/)/i.test(u);
             const bjImgs = [...new Set(
               [...ih.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["']/gi)].map((m) => m[1])
             )]
               .map(norm)
-              .filter((s) => /^https?:\/\//i.test(s) && /\/data\/(?:editor|file)\//i.test(s))
+              .filter((s) => /^https?:\/\//i.test(s) && /\.(?:jpe?g|png|gif|webp)(?:$|\?|#)/i.test(s))
+              .filter((s) => !isChrome(s))
               .filter((s) => !/\/thumb-|_\d+x\d+\.(?:jpe?g|png|gif|webp)/i.test(s)); // 목록 썸네일 제외 → 풀사이즈만
             const posters = [...new Set([...jkImgs, ...bjImgs])].slice(0, 12);
             if (posters.length) {
