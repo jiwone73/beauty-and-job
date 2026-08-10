@@ -55,13 +55,21 @@ export function classifyOrigin(url: string): "company" | "site_upload" | "site_t
   return "company";
 }
 
-// 공고 URL → 상세 콘텐츠 이미지 원본 URL들(본문 + 알려진 iframe). 해시 대조용.
-export async function extractPostingImages(url: string): Promise<string[]> {
-  let host = ""; try { host = new URL(url).hostname.replace(/^www\./, ""); } catch { return []; }
+// 페이지에 "무단 이용/전재/복제 금지·저작권" 등 사이트가 이미지 재사용을 금지하는 문구가 있는지
+export function hasCopyrightNotice(html: string): boolean {
+  const t = html.replace(/<[^>]+>/g, " ");
+  return /무단\s*(?:으로\s*)?(?:이용|전재|복제|게재|사용|배포)|저작권법에\s*(?:의해|의거)|타\s*사이트에\s*게재|템플릿으로\s*제작/.test(t);
+}
+
+// 공고 URL → { images: 상세 콘텐츠 이미지 원본 URL들(본문+iframe), protected: 저작권 문구 유무 }
+export async function extractPostingImages(url: string): Promise<{ images: string[]; protected: boolean }> {
+  let host = ""; try { host = new URL(url).hostname.replace(/^www\./, ""); } catch { return { images: [], protected: false }; }
   const out = new Set<string>();
   const abs = (u: string) => { try { return new URL(u.replace(/&amp;/g, "&"), url).href; } catch { return ""; } };
   const collect = (h: string) => { for (const m of h.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["']/gi)) { const a = abs(m[1]); if (isContentImg(a)) out.add(a); } };
-  collect(await fetchHtml(url));
+  const mainHtml = await fetchHtml(url);
+  collect(mainHtml);
+  const isProtected = hasCopyrightNotice(mainHtml);
   try {
     if (/beautyjob\.kr/i.test(host)) {
       const seg = new URL(url).pathname.split("/").filter(Boolean);
@@ -78,5 +86,5 @@ export async function extractPostingImages(url: string): Promise<string[]> {
       if (rec) collect(await fetchHtml(`https://www.saramin.co.kr/zf_user/jobs/relay/view-detail?rec_idx=${rec}`, url));
     }
   } catch { /* iframe 실패 무시 */ }
-  return [...out].slice(0, 10);
+  return { images: [...out].slice(0, 10), protected: isProtected };
 }

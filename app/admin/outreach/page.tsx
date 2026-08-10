@@ -68,11 +68,12 @@ export default function AdminOutreachPage() {
   const [editHomeId, setEditHomeId] = useState<string | null>(null);
   const [editMemoId, setEditMemoId] = useState<string | null>(null);
   const [pickedJobUrl, setPickedJobUrl] = useState<string | null>(null); // 조회된 공고 중 라디오 선택 → 공고 등록으로 전달
-  // 이미지 출처 분석(전체·증분): url → company | site_only | none
-  const [imgBadges, setImgBadges] = useState<Record<string, "company" | "site_only" | "none">>({});
+  // 이미지 출처 분석(증분): url → company(기업 제공 확실) | uncertain(확인 필요) | none
+  const [imgBadges, setImgBadges] = useState<Record<string, "company" | "uncertain" | "none">>({});
+  const [imgProtected, setImgProtected] = useState<Record<string, boolean>>({}); // 저작권/무단이용 금지 문구 유무
   const [imgScanningRow, setImgScanningRow] = useState<string | null>(null); // 현재 자동분석 중인 업체 행 id
   const [imgScanMsg, setImgScanMsg] = useState("");
-  const [imgFilter, setImgFilter] = useState<"전체" | "기업" | "의심" | "확실">("전체");
+  const [imgFilter, setImgFilter] = useState<"전체" | "기업" | "확인">("전체");
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
   const authH = { Authorization: `Bearer ${token}` };
@@ -222,7 +223,8 @@ export default function AdminOutreachPage() {
     if (!todo.length) return;
     todo.forEach((jb) => analyzedRef.current.add(jb.url)); // 중복 실행 방지
     setImgScanningRow(rowId); setImgScanMsg(`0/${todo.length} 분석 중…`);
-    const next: Record<string, "company" | "site_only" | "none"> = {};
+    const nextB: Record<string, "company" | "uncertain" | "none"> = {};
+    const nextP: Record<string, boolean> = {};
     let done = 0, failed = 0;
     for (let i = 0; i < todo.length; i++) {
       try {
@@ -230,10 +232,11 @@ export default function AdminOutreachPage() {
           method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ postings: [todo[i]] }),
         });
         const j = await res.json().catch(() => ({ success: false }));
-        if (j.success && Array.isArray(j.data?.results)) { for (const r of j.data.results) next[r.url] = r.badge; done++; }
+        if (j.success && Array.isArray(j.data?.results)) { for (const r of j.data.results) { nextB[r.url] = r.badge; nextP[r.url] = !!r.protected; } done++; }
         else { failed++; analyzedRef.current.delete(todo[i].url); }
       } catch { failed++; analyzedRef.current.delete(todo[i].url); }
-      setImgBadges((prev) => ({ ...prev, ...next }));
+      setImgBadges((prev) => ({ ...prev, ...nextB }));
+      setImgProtected((prev) => ({ ...prev, ...nextP }));
       setImgScanMsg(`${i + 1}/${todo.length} 분석 중…${failed ? ` (실패 ${failed})` : ""}`);
     }
     setImgScanMsg(failed ? `분석 완료 · 실패 ${failed}건(펼침을 다시 열면 실패분 재시도)` : "");
@@ -478,12 +481,11 @@ export default function AdminOutreachPage() {
                       </td>
                     </tr>
                     {expanded === row.id && row.found_jobs?.length > 0 && (() => {
-                      // 3단계 판정: 회사가 여러 사이트에 있으면(대조 가능) 사이트전용을 '확실', 한 사이트뿐이면 '의심'
-                      const distinctSites = new Set(row.found_jobs.map((jb) => jb.source)).size;
-                      const tierOf = (url: string): { key: "기업" | "의심" | "확실" | "none" | ""; t: string; c: string } => {
+                      // 정직한 2단계: 확실히 기업 제공(외부호스트·자사홈·타사이트 공통)만 🟢, 사이트 CDN은 🟡 확인 필요
+                      const tierOf = (url: string): { key: "기업" | "확인" | "none" | ""; t: string; c: string } => {
                         const bd = imgBadges[url];
                         if (bd === "company") return { key: "기업", t: "🟢 기업 제공", c: "#16a34a" };
-                        if (bd === "site_only") return distinctSites >= 2 ? { key: "확실", t: "🔴 사이트 전용(확실)", c: "#dc2626" } : { key: "의심", t: "🟠 사이트 전용(의심)", c: "#d97706" };
+                        if (bd === "uncertain") return { key: "확인", t: imgProtected[url] ? "🟡 확인 필요 ⚠저작권" : "🟡 확인 필요", c: "#d97706" };
                         if (bd === "none") return { key: "none", t: "· 이미지 없음", c: "#b3adbd" };
                         return { key: "", t: "", c: "" };
                       };
@@ -496,10 +498,10 @@ export default function AdminOutreachPage() {
                             {analyzing && <span style={{ fontSize: 12, color: "#5f0080" }}>🖼 이미지 출처 분석 중… {imgScanMsg}</span>}
                             <span style={{ marginLeft: "auto", display: "flex", gap: 4, alignItems: "center" }}>
                               <span style={{ fontSize: 12, color: "#9a92a6" }}>필터:</span>
-                              {(["전체", "기업", "의심", "확실"] as const).map((f) => (
+                              {(["전체", "기업", "확인"] as const).map((f) => (
                                 <button key={f} onClick={() => setImgFilter(f)}
                                   style={{ padding: "3px 9px", borderRadius: 999, fontSize: 12, cursor: "pointer", border: `1px solid ${imgFilter === f ? PURPLE : "#e0d5ee"}`, background: imgFilter === f ? PURPLE : "#fff", color: imgFilter === f ? "#fff" : "#777" }}>
-                                  {f === "기업" ? "🟢 기업" : f === "의심" ? "🟠 의심" : f === "확실" ? "🔴 확실" : "전체"}
+                                  {f === "기업" ? "🟢 기업 제공" : f === "확인" ? "🟡 확인 필요" : "전체"}
                                 </button>
                               ))}
                             </span>
