@@ -5183,18 +5183,19 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-card:has(.admin-table) {
   width: fit-content;
   max-width: 100%;
-  overflow: visible; /* 카드(overflow:hidden)가 헤더 sticky를 가두지 않도록 */
 }
-/* 표 헤더 고정: 표를 감싼 래퍼가 세로 스크롤 컨테이너가 되어 sticky를 가로채지 않도록 풀고,
-   페이지를 그냥 스크롤해도 열 제목이 상단 관리자바(64px) 아래에 고정되게 함.
-   (목록이 짧아도 동작, 표 위에서 스크롤할 필요 없음) */
-div:has(> table.admin-table) {
-  overflow: visible !important;
+/* 표 헤더 고정: 외부업체 리스트와 동일한 스크롤 박스 방식.
+   표 영역(래퍼 div 또는 표를 바로 담은 카드)을 화면 높이 스크롤 박스로 만들고,
+   그 박스 안에서 헤더를 top:0으로 고정. 표 위에서 스크롤하면 열 제목이 계속 보임. */
+div:has(> table.admin-table),
+.admin-card:has(> table.admin-table) {
+  overflow: auto;
+  max-height: calc(100vh - 200px);
 }
 .admin-table thead th {
   position: sticky;
-  top: 60px;               /* 관리자바(64px, z-index:10, 흰 배경) 밑으로 4px 겹쳐 물려 이음새 틈(빈 줄 번쩍임) 제거 */
-  z-index: 4;
+  top: 0;
+  z-index: 5;
   background: #fafafa;      /* 스크롤 시 뒤 내용 비침 방지 */
   background-clip: padding-box;
 }
@@ -5222,7 +5223,8 @@ div:has(> table.admin-table) {
 .admin-table {
   width: auto;
   max-width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; /* collapse면 sticky 헤더 스크롤 시 경계선이 떨리고 빈 줄이 번쩍임 → separate로 방지 */
+  border-spacing: 0;
 }
 .admin-table th {
   padding: 12px 16px;

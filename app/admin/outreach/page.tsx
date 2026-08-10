@@ -313,7 +313,7 @@ export default function AdminOutreachPage() {
 
         {/* 테이블 */}
         <div style={{ overflow: "auto", maxHeight: "calc(100vh - 250px)", border: "1px solid #eee", borderRadius: 10, background: "#fff" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1220 }}>
+          <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0, minWidth: 1220 }}>
             <thead>
               <tr style={{ background: "#faf8fc" }}>
                 <th style={{ ...th, width: 32 }}>
