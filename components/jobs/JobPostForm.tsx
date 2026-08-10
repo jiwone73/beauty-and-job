@@ -23,14 +23,7 @@ const ISSUE_FIELDS = ["채용유형", "제목", "회사명", "모집분야(직�
 const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "온라인 지원", "홈페이지 지원"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
 const WORK_PERIODS = ["~6개월", "6개월 ~ 1년", "1년 이상", "협의"];
-const WELFARE_OPTIONS: Record<string, string[]> = {
-  매장: ["4대보험", "기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능"],
-  기업: ["4대보험", "인센티브", "자기계발비", "식대 지원", "주차 가능"],
-};
-const WORKCOND_OPTIONS: Record<string, string[]> = {
-  매장: ["4대보험", "주말·공휴일 휴무", "정규직 전환"],
-  기업: ["4대보험", "정규직 전환", "재택근무", "유연근무"],
-};
+// 복리후생 옵션은 DB 마스터(benefit_tags)로 이관 → /api/benefit-tags 에서 로드
 const PRESET_PROCESS: Record<string, string[]> = {
   기업: ["서류전형", "전화면접", "1차 면접", "2차 면접", "과제전형", "최종합격"],
   매장: ["서류전형", "전화면접", "대면면접", "시술테스트", "최종합격"],
