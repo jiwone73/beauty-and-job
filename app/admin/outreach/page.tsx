@@ -191,7 +191,7 @@ export default function AdminOutreachPage() {
           <span style={{ fontSize: 13, color: "#9a92a6" }}>총 {totalCount}개 · 비회원 공고 등록 대상</span>
         </div>
         <p style={{ fontSize: 12.5, color: "#9a92a6", margin: "0 0 14px" }}>
-          "업데이트"를 누르면 브랜드명으로 9개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·뷰티인잡·뷰티잡매니저·미용인잡·자사홈)를 조회해 채용유무를 자동 확인합니다. 조회는 무료입니다.
+          체크박스로 업체를 선택하고 상단 "선택 N건 업데이트"(또는 "화면 전체 업데이트")를 누르면, 브랜드명으로 9개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·뷰티인잡·뷰티잡매니저·미용인잡·자사홈)를 조회해 채용유무를 자동 확인합니다. 조회는 무료입니다.
         </p>
 
         {/* 그룹 탭 */}
@@ -233,16 +233,15 @@ export default function AdminOutreachPage() {
 
         {/* 테이블 */}
         <div style={{ overflowX: "auto", border: "1px solid #eee", borderRadius: 10, background: "#fff" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1420 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1280 }}>
             <thead>
               <tr style={{ background: "#faf8fc" }}>
                 <th style={{ ...th, width: 32 }}>
                   <input type="checkbox" checked={allVisibleSelected} onChange={toggleAll} />
                 </th>
                 <th style={{ ...th, width: 34 }}>#</th>
-                <th style={{ ...th, minWidth: 170 }}>브랜드명</th>
+                <th style={{ ...th, minWidth: 210 }}>브랜드명 <span style={{ fontWeight: 400, color: "#b7b0c0" }}>(클릭=홈페이지)</span></th>
                 <th style={{ ...th, minWidth: 130 }}>카테고리</th>
-                <th style={{ ...th, minWidth: 150 }}>홈페이지</th>
                 <th style={{ ...th, minWidth: 150 }}>채용유무</th>
                 <th style={{ ...th, width: 100 }}>등록유무</th>
                 <th style={{ ...th, minWidth: 120 }}>연락처</th>
@@ -254,9 +253,9 @@ export default function AdminOutreachPage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={12} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
+                <tr><td colSpan={11} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={12} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
+                <tr><td colSpan={11} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
               ) : items.map((row) => {
                 const isChecking = checking.has(row.id);
                 const hv = String(val(row, "is_hiring"));
@@ -266,30 +265,29 @@ export default function AdminOutreachPage() {
                       <td style={td}><input type="checkbox" checked={selected.has(row.id)} onChange={() => toggleSel(row.id)} /></td>
                       <td style={{ ...td, color: "#9a92a6" }}>{row.seq ?? "-"}</td>
                       <td style={td}>
-                        <div style={{ fontWeight: 600, color: "#2b2533" }}>{row.brand_name}</div>
-                        {row.scale && (
-                          <div style={{ fontSize: 11, color: "#b7b0c0", marginTop: 2, maxWidth: 200 }}>{row.scale}</div>
+                        {val(row, "homepage") ? (
+                          <a href={normUrl(String(val(row, "homepage")))} target="_blank" rel="noreferrer"
+                            style={{ fontWeight: 600, color: PURPLE, textDecoration: "none" }}>
+                            {row.brand_name} <span style={{ fontSize: 11 }}>↗</span>
+                          </a>
+                        ) : (
+                          <div style={{ fontWeight: 600, color: "#2b2533" }}>{row.brand_name}</div>
                         )}
+                        {row.scale && (
+                          <div style={{ fontSize: 11, color: "#b7b0c0", margin: "2px 0", maxWidth: 200 }}>{row.scale}</div>
+                        )}
+                        <input style={{ ...inp, fontSize: 11, padding: "3px 6px", marginTop: 2, color: "#8a8296" }}
+                          placeholder="홈페이지 URL 입력" value={val(row, "homepage") || ""}
+                          onChange={(e) => setDraft(row.id, { homepage: e.target.value })} />
                       </td>
                       <td style={{ ...td, fontSize: 12, color: "#6b6473", maxWidth: 140 }}>{row.category || "-"}</td>
                       <td style={td}>
-                        <input style={inp} placeholder="홈페이지 URL" value={val(row, "homepage") || ""}
-                          onChange={(e) => setDraft(row.id, { homepage: e.target.value })} />
-                        {row.homepage && (
-                          <a href={normUrl(row.homepage)} target="_blank" rel="noreferrer"
-                            style={{ fontSize: 11.5, color: PURPLE, textDecoration: "none" }}>열기 ↗</a>
-                        )}
-                      </td>
-                      <td style={td}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <select value={hv} onChange={(e) => quickPatch(row, { is_hiring: e.target.value })}
-                            style={{ ...inp, width: 84, color: hiringColor[hv], fontWeight: 600 }}>
+                            style={{ ...inp, width: 90, color: hiringColor[hv], fontWeight: 600 }}>
                             {HIRING.map((h) => <option key={h} value={h}>{h}</option>)}
                           </select>
-                          <button onClick={() => checkHiring([row.id])} disabled={isChecking}
-                            style={{ padding: "5px 9px", borderRadius: 6, border: `1px solid ${PURPLE}`, background: isChecking ? "#eee" : "#fff", color: PURPLE, fontSize: 12, fontWeight: 600, cursor: isChecking ? "default" : "pointer" }}>
-                            {isChecking ? "조회중…" : "업데이트"}
-                          </button>
+                          {isChecking && <span style={{ fontSize: 11, color: PURPLE }}>조회중…</span>}
                         </div>
                         {row.found_count > 0 && (
                           <button onClick={() => setExpanded(expanded === row.id ? null : row.id)}
@@ -329,7 +327,7 @@ export default function AdminOutreachPage() {
                     </tr>
                     {expanded === row.id && row.found_jobs?.length > 0 && (
                       <tr>
-                        <td style={{ ...td, background: "#faf8fc" }} colSpan={12}>
+                        <td style={{ ...td, background: "#faf8fc" }} colSpan={11}>
                           <div style={{ fontSize: 12, color: "#6b6473", marginBottom: 4, fontWeight: 600 }}>조회된 활성 공고</div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             {row.found_jobs.map((jb, i) => (
