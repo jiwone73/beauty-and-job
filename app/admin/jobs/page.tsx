@@ -21,6 +21,10 @@ const LABEL_TO_STATUS: Record<string, string> = {
   승인대기: "DRAFT",
   반려: "HIDDEN",
 };
+// DRAFT는 두 종류가 섞임: 관리자 직접등록 임시저장(created_by=admin) vs 기업 제출 후 승인대기.
+//  → 관리자 초안은 "임시저장", 그 외 DRAFT는 "승인대기"로 구분 표기.
+const labelOf = (j: { status: string; created_by?: string | null }) =>
+  j.status === "DRAFT" ? (j.created_by === "admin" ? "임시저장" : "승인대기") : (STATUS_TO_LABEL[j.status] || "승인대기");
 type Job = {
   id: string;
   title: string;
@@ -40,6 +44,7 @@ type Job = {
   product_type: string;
   source?: string | null;
   is_member?: boolean | null;
+  created_by?: string | null;
 };
 const EXP_LABEL: Record<string, string> = {
   NEW: "신입",
@@ -153,7 +158,7 @@ function AdminJobsPageInner() {
   const filtered = jobs.filter((j) => {
     const matchGroup = jobGroupFilter === "전체" || groupOf(j.job_type) === jobGroupFilter;
     const matchSearch = !search || j.title.includes(search) || j.company_name.includes(search);
-    const matchStatus = statusFilter === "전체" || STATUS_TO_LABEL[j.status] === statusFilter;
+    const matchStatus = statusFilter === "전체" || labelOf(j) === statusFilter;
     const matchDate = matchPeriod(j.created_at, dateFilter);
     const isMember = j.is_member !== false && j.source !== "EXTERNAL";
     const matchMember = memberFilter === "전체" || (memberFilter === "회원" ? isMember : !isMember);
@@ -195,7 +200,8 @@ function AdminJobsPageInner() {
   };
   const counts = {
     전체: jobs.length,
-    승인대기: jobs.filter((j) => j.status === "DRAFT").length,
+    임시저장: jobs.filter((j) => j.status === "DRAFT" && j.created_by === "admin").length,
+    승인대기: jobs.filter((j) => j.status === "DRAFT" && j.created_by !== "admin").length,
     진행중: jobs.filter((j) => j.status === "ACTIVE").length,
     반려: jobs.filter((j) => j.status === "HIDDEN").length,
     마감: jobs.filter((j) => j.status === "CLOSED" || j.status === "EXPIRED").length,
@@ -384,15 +390,18 @@ function AdminJobsPageInner() {
                   </td>
                   {/* 등록일 */}
                   <td className="admin-td-date">{fmtDate(job.created_at)}</td>
-                  {/* 상태 */}
+                  {/* 상태 — DRAFT는 관리자 임시저장/기업 승인대기로 구분 */}
                   <td>
+                    {(() => { const lb = labelOf(job); return (
                     <span style={{ fontWeight: 500, color:
-                      job.status === "ACTIVE" ? "#10b981" :
-                      job.status === "DRAFT" ? "#f59e0b" :
-                      job.status === "HIDDEN" ? "#e74c3c" : "#999"
+                      lb === "진행중" ? "#10b981" :
+                      lb === "임시저장" ? "#8a7fa0" :
+                      lb === "승인대기" ? "#f59e0b" :
+                      lb === "반려" ? "#e74c3c" : "#999"
                     }}>
-                      {STATUS_TO_LABEL[job.status] || "승인대기"}
+                      {lb}
                     </span>
+                    ); })()}
                   </td>
                   {/* 관리: 수정 */}
                   <td>
