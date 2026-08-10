@@ -1155,6 +1155,9 @@ export default function JobPostForm({
     contactMethods: isNm ? ["온라인 지원"] : contactMethods,
   };
 
+  // 본문 콘텐츠(760px) 가로 정렬: 관리자 직접등록은 목록과 맞춰 왼쪽 정렬, 기업회원 폼은 기존대로 가운데 정렬.
+  const mx = mode === "admin" ? "0" : "auto";
+
   return (
     <>
       <div className="admin-form-header">
@@ -1192,9 +1195,9 @@ export default function JobPostForm({
         headerSlot
       )}
 
-      {/* 페이지 제목 — 아래 콘텐츠(760 가운데 정렬)와 시작점을 맞춘다 */}
+      {/* 페이지 제목 — 아래 콘텐츠(760px, mx 정렬)와 시작점을 맞춘다 */}
       {!isMobile && (
-        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 10px", boxSizing: "border-box" }}>
+        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 10px`, boxSizing: "border-box" }}>
           <h2 style={{ fontSize: 18, fontWeight: 400, color: "#1a1a1a", margin: "0 0 0 2px" }}>
             {editId ? "채용공고 수정" : "채용공고 등록"}
           </h2>
@@ -1203,7 +1206,7 @@ export default function JobPostForm({
 
       {/* 채용유형(매장/오피스) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
       {showTypeToggle && (
-        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 12px", boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
+        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 12px`, boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#5f0080", fontSize: 16, fontWeight: 400 }}>
             <Settings size={16} /> 채용유형
           </span>
@@ -1226,7 +1229,7 @@ export default function JobPostForm({
       )}
 
       {mode === "admin" && (
-        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
+        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
           <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 16px", marginBottom: 8, marginLeft: 2 }}>
             <span style={{ fontWeight: 400, fontSize: 16, color: "#5f0080" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</span>
             <div style={{ display: "flex", gap: 20 }}>
@@ -1317,7 +1320,7 @@ export default function JobPostForm({
 
       {/* 공고 상단 이미지 */}
       {mode === "company" ? (
-        <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
+        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
           <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 상단 이미지</h2>
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
             <CoverBanner images={coverImages} />
@@ -1326,7 +1329,7 @@ export default function JobPostForm({
         </div>
       ) : (() => {
         return (
-          <div style={{ width: "100%", maxWidth: 760, margin: "0 auto 16px", boxSizing: "border-box" }}>
+          <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
             <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>상단 배너</h2>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
 
@@ -1368,7 +1371,7 @@ export default function JobPostForm({
         );
       })()}
 
-      <div className="admin-form-grid jobpost-form" style={{ width: "100%", maxWidth: 760, margin: "0 auto", gridTemplateColumns: "1fr", justifyContent: "stretch", justifyItems: "stretch", rowGap: "16px" }}>
+      <div className="admin-form-grid jobpost-form" style={{ width: "100%", maxWidth: 760, margin: mx, gridTemplateColumns: "1fr", justifyContent: "stretch", justifyItems: "stretch", rowGap: "16px" }}>
         {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "8px" }}>
 
@@ -1769,7 +1772,7 @@ export default function JobPostForm({
 
       {/* ═══ 기업 정보 (맨 하단) · 상세 다른 섹션과 동일한 인라인 스타일 ═══ */}
       {mode === "admin" && nonMember && (
-        <div className="jobpost-form" style={{ width: "100%", maxWidth: 760, margin: "16px auto 0", boxSizing: "border-box" }}>
+        <div className="jobpost-form" style={{ width: "100%", maxWidth: 760, margin: `16px ${mx} 0`, boxSizing: "border-box" }}>
           <h2 className="jobpost-section-title">기업정보</h2>
           <div style={{ fontSize: 12, color: "#999", margin: "8px 0 8px 2px" }}>기업회원 페이지의 “기업 정보”를 불러와 자동 작성돼요 · 공고 상세 맨 아래에 표시됩니다</div>
           <div className="company-card" style={{ overflow: "visible" }}>
@@ -1809,7 +1812,7 @@ export default function JobPostForm({
 
       {isMobile && mode === "admin" && (
         <button type="button" onClick={runCurate} disabled={parsing || curating}
-          style={{ width: "100%", maxWidth: 760, margin: "0 auto 12px", display: "block", padding: "10px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 700, boxSizing: "border-box", opacity: curating ? 0.6 : 1 }}>
+          style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 12px`, display: "block", padding: "10px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14, fontWeight: 700, boxSizing: "border-box", opacity: curating ? 0.6 : 1 }}>
           {curating ? "다듬는 중..." : "✨ 큐레이션"}
         </button>
       )}
