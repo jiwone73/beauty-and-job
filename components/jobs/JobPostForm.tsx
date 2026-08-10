@@ -47,6 +47,7 @@ export interface JobPostFormProps {
   uploadImage: (file: File) => Promise<{ success: boolean; url?: string; name?: string; error?: string }>;
   onSubmit: (payload: any, status: "draft" | "publish", company: { companyId: string | null; newCompany: { company_name: string; brand_name: string } | null }) => Promise<{ success: boolean; error?: string }>;
   loadEditData?: (editId: string) => Promise<any | null>;
+  initialFindQuery?: string; // 외부에서 전달된 초기 검색어(회사명/URL) — 검색창에 미리 채움
 }
 
 // 공고 상단 이미지(기업 커버) 표시 전용 배너 — 한 배너에 최대 3개 균등, 3개 초과 시 ▶로 회전
@@ -82,7 +83,7 @@ function CoverBanner({ images }: { images: string[] }) {
 
 export default function JobPostForm({
   mode, editId = null, listHref, companyType = null, companies = [],
-  uploadImage, onSubmit, loadEditData,
+  uploadImage, onSubmit, loadEditData, initialFindQuery = "",
 }: JobPostFormProps) {
   const router = useRouter();
 
@@ -150,7 +151,7 @@ export default function JobPostForm({
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
   // 회사명으로 공고 찾기(헤어인잡)
-  const [findQuery, setFindQuery] = useState("");
+  const [findQuery, setFindQuery] = useState(initialFindQuery);
   const [finding, setFinding] = useState(false);
   const [findMsg, setFindMsg] = useState("");
   const [findResults, setFindResults] = useState<{ idx: number; title: string; url: string; source: string }[]>([]);
@@ -1137,9 +1138,11 @@ export default function JobPostForm({
   return (
     <>
       <div className="admin-form-header">
-        <button className="admin-back-btn" onClick={() => router.push(listHref)}>
-          <ChevronLeft size={18} /> 목록으로
-        </button>
+        {mode !== "admin" && (
+          <button className="admin-back-btn" onClick={() => router.push(listHref)}>
+            <ChevronLeft size={18} /> 목록으로
+          </button>
+        )}
         {!isMobile && <span style={{ marginRight: "auto" }} />}
         {!isMobile && (
           <div className="admin-form-actions">

@@ -9,6 +9,7 @@ type Company = { id: string; company_name: string; brand_name: string | null };
 function AdminJobNewForm() {
   const searchParams = useSearchParams();
   const editId = searchParams?.get("id") || null;
+  const initialFind = searchParams?.get("url") || searchParams?.get("q") || "";
   const [companies, setCompanies] = useState<Company[]>([]);
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
 
@@ -61,7 +62,7 @@ function AdminJobNewForm() {
   };
 
   return (
-    <AdminLayout activeMenu="jobs">
+    <AdminLayout activeMenu={editId ? "jobs" : "jobs-new"}>
       <JobPostForm
         mode="admin"
         editId={editId}
@@ -70,6 +71,7 @@ function AdminJobNewForm() {
         uploadImage={uploadImage}
         onSubmit={onSubmit}
         loadEditData={loadEditData}
+        initialFindQuery={initialFind}
       />
     </AdminLayout>
   );

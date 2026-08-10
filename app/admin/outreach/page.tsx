@@ -65,6 +65,7 @@ export default function AdminOutreachPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [editHomeId, setEditHomeId] = useState<string | null>(null);
   const [editMemoId, setEditMemoId] = useState<string | null>(null);
+  const [pickedJobUrl, setPickedJobUrl] = useState<string | null>(null); // 조회된 공고 중 라디오 선택 → 공고 등록으로 전달
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
   const authH = { Authorization: `Bearer ${token}` };
@@ -301,9 +302,11 @@ export default function AdminOutreachPage() {
             style={{ ...chip(true), opacity: totalCount ? 1 : 0.5 }}>
             6개 탭 전체 업데이트{totalCount ? ` (${totalCount})` : ""}
           </button>
-          <a href="/admin/jobs/new" target="_blank" rel="noreferrer"
-            style={{ ...chip(false), textDecoration: "none", borderColor: PURPLE, color: PURPLE }}>
-            + 공고 등록
+          <a href={pickedJobUrl ? `/admin/jobs/new?url=${encodeURIComponent(pickedJobUrl)}` : "/admin/jobs/new"}
+            target="_blank" rel="noreferrer"
+            title={pickedJobUrl ? "선택한 공고 URL이 등록 페이지 검색창에 채워집니다" : "빈 등록 페이지 열기"}
+            style={{ ...chip(!!pickedJobUrl), textDecoration: "none", ...(pickedJobUrl ? {} : { borderColor: PURPLE, color: PURPLE }) }}>
+            {pickedJobUrl ? "선택 공고 등록 ↗" : "+ 공고 등록"}
           </a>
         </div>
         {bulkMsg && <div style={{ fontSize: 12.5, color: PURPLE, marginBottom: 8 }}>{bulkMsg}</div>}
@@ -428,14 +431,17 @@ export default function AdminOutreachPage() {
                     {expanded === row.id && row.found_jobs?.length > 0 && (
                       <tr>
                         <td style={{ ...td, background: "#faf8fc" }} colSpan={9}>
-                          <div style={{ fontSize: 12, color: "#6b6473", marginBottom: 4, fontWeight: 600 }}>조회된 활성 공고</div>
+                          <div style={{ fontSize: 12, color: "#6b6473", marginBottom: 4, fontWeight: 600 }}>
+                            조회된 활성 공고 <span style={{ fontWeight: 400, color: "#9a92a6" }}>· 라디오로 선택 후 상단 "선택 공고 등록"을 누르면 등록 페이지 검색창에 채워집니다</span>
+                          </div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             {row.found_jobs.map((jb, i) => (
-                              <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 12.5 }}>
+                              <label key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 12.5, cursor: "pointer" }}>
+                                <input type="radio" name="pickedFoundJob" checked={pickedJobUrl === jb.url} onChange={() => setPickedJobUrl(jb.url)} />
                                 <span style={badge(PURPLE)}>{jb.source}</span>
                                 <span style={{ color: "#2b2533" }}>{jb.title}</span>
-                                <a href={normUrl(jb.url)} target="_blank" rel="noreferrer" style={{ color: PURPLE, textDecoration: "none" }}>원문 ↗</a>
-                              </div>
+                                <a href={normUrl(jb.url)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: PURPLE, textDecoration: "none" }}>원문 ↗</a>
+                              </label>
                             ))}
                           </div>
                         </td>

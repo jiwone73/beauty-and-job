@@ -20,6 +20,7 @@ const NAV_ITEMS = [
     id: "jobs", label: "채용공고", icon: Briefcase, href: "/admin/jobs",
     children: [
       { id: "jobs", label: "채용공고 목록", href: "/admin/jobs" },
+      { id: "jobs-new", label: "공고 직접 등록", href: "/admin/jobs/new" },
     ]
   },
   {
@@ -39,6 +40,7 @@ const NAV_ITEMS = [
 const PAGE_TITLES: Record<string, string> = {
   "dashboard": "대시보드",
   "jobs": "채용공고",
+  "jobs-new": "채용공고",
   "jobs-scrapped": "스크랩 채용공고",
   "jobs-viewed": "열람한 채용공고",
   "jobs-external-inbox": "외부 지원 인박스",
@@ -61,6 +63,7 @@ const PAGE_SUBTITLES: Record<string, string> = {
   "members": "개인회원",
   "members-companies": "기업회원",
   "jobs": "채용공고 목록",
+  "jobs-new": "공고 직접 등록",
   "resumes-applications": "입사지원 목록",
 };
 
