@@ -834,7 +834,8 @@ export default function JobPostForm({
         responsibilities: asText(d.main_duties, ""),
         career: (CAREER_OPTIONS.includes(d.career) ? d.career : ""),
         education: (EDUCATION_OPTIONS.includes(d.education) ? d.education : ""),
-        type: (["정규직", "파트타임", "계약직"].includes(d.employment_type) ? d.employment_type : ""),
+        // 고용형태: 폼 옵션(EMPLOYMENT_TYPES) 전체 허용 + 예전 '파트타임'은 '아르바이트'로 별칭 매핑
+        type: (() => { const e = d.employment_type === "파트타임" ? "아르바이트" : d.employment_type; return EMPLOYMENT_TYPES.includes(e) ? e : ""; })(),
         headcount: (d.headcount != null && Number(d.headcount) > 0) ? String(Number(d.headcount)) : "",
       }));
       // 급여: 구조화된 값이 있으면 급여 필드에 반영, 협의/비율제면 '협의' 처리

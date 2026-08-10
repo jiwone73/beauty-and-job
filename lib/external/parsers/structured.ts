@@ -253,7 +253,19 @@ function mapCareer(exp: string): string {
   return "";
 }
 function mapEmployment(t: string): string {
-  return ({ FULL_TIME: "정규직", PART_TIME: "파트타임", CONTRACTOR: "계약직", TEMPORARY: "계약직", INTERN: "계약직" } as Record<string, string>)[t] || "";
+  return ({ FULL_TIME: "정규직", PART_TIME: "아르바이트", CONTRACTOR: "계약직", TEMPORARY: "계약직", INTERN: "인턴" } as Record<string, string>)[t] || "";
+}
+// 한국어 고용형태 텍스트 → 폼 옵션(정규직/계약직/위촉직/프리랜서/인턴/아르바이트/협의)
+function mapEmploymentKo(s: string): string {
+  const t = String(s || "");
+  if (/정규/.test(t)) return "정규직";
+  if (/계약/.test(t)) return "계약직";
+  if (/위촉/.test(t)) return "위촉직";
+  if (/프리랜|자유직업|자유직/.test(t)) return "프리랜서";
+  if (/인턴/.test(t)) return "인턴";
+  if (/파트|아르바이트|알바|단기/.test(t)) return "아르바이트";
+  if (/협의|추후|면접\s*후|내규/.test(t)) return "협의";
+  return "";
 }
 function regionFromAddress(loc: any): string {
   const a = loc && (Array.isArray(loc) ? loc[0] : loc);
@@ -919,11 +931,18 @@ function parseBeautyjobManager(html: string): StructuredResult | null {
 
   const region = normRegionLoose(pairs["근무지역"] || "");
   const career = mapCareer((pairs["경력"] || "").replace(/[↑↓]/g, " ").trim());
-  const empRaw = pairs["근무형태"] || "";
-  let employment_type = "";
-  if (/정규/.test(empRaw)) employment_type = "정규직";
-  else if (/계약/.test(empRaw)) employment_type = "계약직";
-  else if (/파트|아르바이트|알바/.test(empRaw)) employment_type = "파트타임";
+  const employment_type = mapEmploymentKo(pairs["근무형태"] || pairs["고용형태"] || "");
+  const work_time = parseWorkTime(pairs["근무시간"] || "");
+  // 복리후생 → 필터 태그(원문에 있으면)
+  const welfare = pairs["복리후생"] || pairs["복지"] || "";
+  const benefit_tags: string[] = [];
+  if (/4대|국민연금|고용보험|산재|건강보험/.test(welfare)) benefit_tags.push("4대보험");
+  if (/인센/.test(welfare)) benefit_tags.push("인센티브");
+  if (/식대|중식|조식|식사|식비/.test(welfare)) benefit_tags.push("식대 지원");
+  if (/주차/.test(welfare)) benefit_tags.push("주차 가능");
+  if (/기숙사|숙소|숙식/.test(welfare)) benefit_tags.push("기숙사 제공");
+  if (/교육비|교육\s*지원|학원비|수강료/.test(welfare)) benefit_tags.push("교육비 지원");
+  if (/퇴직금/.test(welfare)) benefit_tags.push("퇴직금");
 
   const sal = parseSalaryText(pairs["급여사항"] || "");
   const accept = pairs["접수기간"] || "";
@@ -938,6 +957,8 @@ function parseBeautyjobManager(html: string): StructuredResult | null {
     region,
     career,
     employment_type,
+    work_time,
+    benefit_tags,
     always_open,
     deadline,
     ...sal,
@@ -983,10 +1004,9 @@ function parseMiyonginjob(html: string): StructuredResult | null {
   careerRaw = careerRaw.replace(/신입\s*및\s*경력/, "무관");
   const career = mapCareer(careerRaw);
 
-  let employment_type = "";
-  if (/정규/.test(empRaw)) employment_type = "정규직";
-  else if (/계약/.test(empRaw)) employment_type = "계약직";
-  else if (/파트|아르바이트|알바/.test(empRaw)) employment_type = "파트타임";
+  const employment_type = mapEmploymentKo(empRaw);
+  // 근무시간: 본문에 "HH:MM~HH:MM" 형식이 있으면만(‘11시~7시’ 등 시 표기는 오전/오후 모호 → 잘못된 값 방지 위해 스킵)
+  const work_time = parseWorkTime((clean(html).match(/근무시간\s*([\s\S]{0,40})/) || [])[1] || "");
 
   const kw = clean((html.match(/name="keywords" content="([^"]*)"/) || [])[1] || "");
   const sug = suggestCats(`${title} ${desc} ${kw}`);
@@ -997,6 +1017,7 @@ function parseMiyonginjob(html: string): StructuredResult | null {
     region,
     career,
     employment_type,
+    work_time,
     always_open: true, // 미용인잡은 상시 채용 위주(마감일 미표기)
     ...sal,
     job_type: sug.job_type || "STORE", // 미용실·네일샵이 대부분
