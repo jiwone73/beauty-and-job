@@ -135,6 +135,7 @@ export default function AdminBrandsPage() {
         {loading ? (
           <div className="admin-empty">불러오는 중...</div>
         ) : (
+          <div style={{ overflowX: "auto" }}>
           <table className="admin-table">
             <thead>
               <tr><th>브랜드명</th><th>유형</th><th>채용공고</th><th>등록일</th><th>사업자등록증</th><th>상태</th><th>관리</th></tr>
@@ -191,6 +192,7 @@ export default function AdminBrandsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
         {!loading && filtered.length === 0 && <div className="admin-empty">조건에 맞는 기업이 없습니다.</div>}
       </div>

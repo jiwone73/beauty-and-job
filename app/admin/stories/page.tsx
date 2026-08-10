@@ -342,6 +342,7 @@ export default function AdminStoriesPage() {
               선택 삭제{checked.length ? ` (${checked.length})` : ""}
             </button>
           </div>
+          <div style={{ overflowX: "auto" }}>
           <table className="admin-table">
             <thead>
               <tr>
@@ -437,6 +438,7 @@ export default function AdminStoriesPage() {
               )}
             </tbody>
           </table>
+          </div>
           </>
         )}
       </div>

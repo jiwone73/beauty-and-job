@@ -413,6 +413,7 @@ function AdminCompaniesContent() {
           </div>
         </div>
         {(
+          <div style={{ overflowX: "auto" }}>
           <table className="admin-table" style={{ minWidth: 1160, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
@@ -515,6 +516,7 @@ function AdminCompaniesContent() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
 
         {totalPages > 1 && (
