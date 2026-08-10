@@ -437,7 +437,7 @@ export default function AdminOutreachPage() {
                           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             {row.found_jobs.map((jb, i) => (
                               <label key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13.5, cursor: "pointer" }}>
-                                <input type="radio" name="pickedFoundJob" checked={pickedJobUrl === jb.url} onChange={() => setPickedJobUrl(jb.url)} />
+                                <input type="radio" name="pickedFoundJob" checked={pickedJobUrl === jb.url} onChange={() => setPickedJobUrl(jb.url)} style={{ width: 14, height: 14, flexShrink: 0 }} />
                                 <span style={badge(PURPLE)}>{jb.source}</span>
                                 <span style={{ color: "#2b2533" }}>{jb.title}</span>
                                 <a href={normUrl(jb.url)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: PURPLE, textDecoration: "none" }}>원문 ↗</a>
