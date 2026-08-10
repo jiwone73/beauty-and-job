@@ -41,14 +41,18 @@ function parseHairinjob(html: string): StructuredResult | null {
   const strip = (s: string) =>
     s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
   const dec = (s: string) => s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
-  const liValue = (label: string): string => {
-    const re = new RegExp("<li[^>]*>\\s*" + label.replace(/\s/g, "\\s*") + "\\s*</li>\\s*<li[^>]*>([\\s\\S]{0,600}?)</li>", "i");
-    const m = html.match(re);
-    return m ? strip(m[1]) : "";
+  // 값 li 원본 HTML(태그 유지). 다직종 모집분야는 600자를 넘어 잘리므로 넉넉히 2500자.
+  const liRaw = (label: string): string => {
+    const re = new RegExp("<li[^>]*>\\s*" + label.replace(/\s/g, "\\s*") + "\\s*</li>\\s*<li[^>]*>([\\s\\S]{0,2500}?)</li>", "i");
+    return (html.match(re) || [])[1] || "";
   };
+  const liValue = (label: string): string => strip(liRaw(label));
 
   const ogD = dec((html.match(/property="og:description" content="([^"]*)"/) || [])[1] || "");
-  const mj = liValue("모집분야"); // "헤어디자이너[경력] 01명 (정규직) > 300만원이상"
+  // 모집분야는 직종이 여러 개일 수 있다(각 <div> 한 블록). 필드가 서로 다른 직종에서 섞이지 않도록 "첫 직종"만 사용.
+  const mjRaw = liRaw("모집분야");
+  const firstDiv = (mjRaw.match(/<div\b[^>]*>([\s\S]*?)<\/div>/i) || [])[1] || mjRaw;
+  const mj = strip(firstDiv); // 첫 직종 텍스트: "헤어디자이너[신입] 01명 (정규직) >"
 
   // 제목·회사·지역·주소
   let title = (ogD.match(/채용\]\s*(.+?)\s*,\s*근무지역/) || [])[1] || "";
@@ -99,6 +103,11 @@ function parseHairinjob(html: string): StructuredResult | null {
     salary = (mj.match(/[\d,]+\s*만원\s*이?상?/) || [])[0]?.trim() || `${salary_amount}만원`;
   } else if (/협의|면접|추후|내규/.test(mj)) {
     salary_negotiable = true;
+  } else {
+    // 급여가 이미지 배지(<img src=".../pay_etc.gif" alt="협의">)라 텍스트로 못 잡은 경우 → 첫 직종의 alt/파일명으로 판정
+    const payImg = (firstDiv.match(/<img[^>]*pay_\w+\.gif[^>]*>/i) || [])[0] || "";
+    const altText = (payImg.match(/alt=["']([^"']*)["']/i) || [])[1] || "";
+    if (/협의|면접|추후|내규|기타/.test(altText) || /pay_etc/i.test(payImg)) salary_negotiable = true;
   }
 
   // 페이지 전체 텍스트(유동·선택형 근무조건 감지용)
