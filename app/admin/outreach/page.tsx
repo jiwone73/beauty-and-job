@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
@@ -70,9 +70,9 @@ export default function AdminOutreachPage() {
   const [pickedJobUrl, setPickedJobUrl] = useState<string | null>(null); // 조회된 공고 중 라디오 선택 → 공고 등록으로 전달
   // 이미지 출처 분석(전체·증분): url → company | site_only | none
   const [imgBadges, setImgBadges] = useState<Record<string, "company" | "site_only" | "none">>({});
-  const [imgScanning, setImgScanning] = useState(false);
+  const [imgScanningRow, setImgScanningRow] = useState<string | null>(null); // 현재 자동분석 중인 업체 행 id
   const [imgScanMsg, setImgScanMsg] = useState("");
-  const [imgFilter, setImgFilter] = useState<"전체" | "기업" | "사이트전용">("전체");
+  const [imgFilter, setImgFilter] = useState<"전체" | "기업" | "의심" | "확실">("전체");
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
   const authH = { Authorization: `Bearer ${token}` };
@@ -215,35 +215,36 @@ export default function AdminOutreachPage() {
   };
 
   // 6개 탭 전체(현재 필터 무시) 일괄 업데이트
-  // 이미지 출처 전체 분석(증분): 모든 행의 조회 공고를 40건씩 나눠 분석. 이미 해시된 건은 서버가 자동 건너뜀.
-  const analyzeImages = async () => {
-    const all: { url: string; source: string }[] = [];
-    const seen = new Set<string>();
-    for (const r of items) for (const jb of (r.found_jobs || [])) {
-      if (jb.url && !seen.has(jb.url)) { seen.add(jb.url); all.push({ url: jb.url, source: jb.source }); }
-    }
-    if (!all.length) { setImgScanMsg("분석할 조회 공고가 없어요. 먼저 업데이트로 활성 공고를 조회하세요."); return; }
-    setImgScanning(true); setImgScanMsg(`0/${all.length} 분석 중…`);
-    const next: Record<string, "company" | "site_only" | "none"> = { ...imgBadges };
+  // 업체별 이미지 출처 분석(펼칠 때 자동): 그 업체 조회공고만, 이미 분석된 건은 건너뜀. 1건씩 처리(타임아웃 회피).
+  const analyzedRef = useRef<Set<string>>(new Set());
+  const analyzeJobs = useCallback(async (rowId: string, jobs: { url: string; source: string }[]) => {
+    const todo = jobs.filter((jb) => jb.url && !analyzedRef.current.has(jb.url));
+    if (!todo.length) return;
+    todo.forEach((jb) => analyzedRef.current.add(jb.url)); // 중복 실행 방지
+    setImgScanningRow(rowId); setImgScanMsg(`0/${todo.length} 분석 중…`);
+    const next: Record<string, "company" | "site_only" | "none"> = {};
     let done = 0, failed = 0;
-    // 1건씩 처리 → 타임아웃 회피. 한 건 실패해도 멈추지 않고 계속(성공분은 캐시라 재시도 시 건너뜀).
-    for (let i = 0; i < all.length; i++) {
+    for (let i = 0; i < todo.length; i++) {
       try {
         const res = await fetch("/api/admin/external-jobs/image-scan", {
-          method: "POST", headers: { "Content-Type": "application/json", ...authH }, body: JSON.stringify({ postings: [all[i]] }),
+          method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ postings: [todo[i]] }),
         });
         const j = await res.json().catch(() => ({ success: false }));
         if (j.success && Array.isArray(j.data?.results)) { for (const r of j.data.results) next[r.url] = r.badge; done++; }
-        else failed++;
-      } catch { failed++; }
-      setImgBadges({ ...next });
-      setImgScanMsg(`${i + 1}/${all.length} 분석 중… (완료 ${done}${failed ? ` · 실패 ${failed}` : ""})`);
+        else { failed++; analyzedRef.current.delete(todo[i].url); }
+      } catch { failed++; analyzedRef.current.delete(todo[i].url); }
+      setImgBadges((prev) => ({ ...prev, ...next }));
+      setImgScanMsg(`${i + 1}/${todo.length} 분석 중…${failed ? ` (실패 ${failed})` : ""}`);
     }
-    setImgScanMsg(failed
-      ? `분석 완료: 성공 ${done} · 실패 ${failed} / 총 ${all.length}. 다시 누르면 실패분만 이어서 재시도해요(성공분은 캐시로 건너뜀).`
-      : `이미지 분석 완료 (${all.length}건). 이미 검증된 건은 재분석하지 않았어요.`);
-    setImgScanning(false);
-  };
+    setImgScanMsg(failed ? `분석 완료 · 실패 ${failed}건(펼침을 다시 열면 실패분 재시도)` : "");
+    setImgScanningRow((cur) => (cur === rowId ? null : cur));
+  }, [token]);
+  // 업체 행을 펼치면 그 업체 조회공고의 이미지 출처를 자동 분석(이미 한 건은 캐시로 건너뜀)
+  useEffect(() => {
+    if (!expanded) return;
+    const row = items.find((r) => r.id === expanded);
+    if (row?.found_jobs?.length) analyzeJobs(row.id, row.found_jobs.map((jb) => ({ url: jb.url, source: jb.source })));
+  }, [expanded, items, analyzeJobs]);
 
   const updateAllTabs = async () => {
     setBulkMsg("전체 목록 불러오는 중…");
@@ -358,25 +359,6 @@ export default function AdminOutreachPage() {
           )}
         </div>
         {bulkMsg && <div style={{ fontSize: 13.5, color: PURPLE, marginBottom: 8 }}>{bulkMsg}</div>}
-
-        {/* 이미지 출처 분석(전체·증분) + 필터 */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
-          <button onClick={analyzeImages} disabled={imgScanning}
-            title="모든 조회 공고의 상세 이미지를 지각해시로 분석해 출처(기업 제공/사이트 전용)를 판별합니다. 이미 검증한 건은 건너뜁니다."
-            style={{ ...chip(true), opacity: imgScanning ? 0.6 : 1, cursor: imgScanning ? "default" : "pointer" }}>
-            {imgScanning ? "분석 중…" : "🖼 이미지 출처 분석"}
-          </button>
-          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-            <span style={{ fontSize: 12.5, color: "#9a92a6" }}>이미지 필터:</span>
-            {(["전체", "기업", "사이트전용"] as const).map((f) => (
-              <button key={f} onClick={() => setImgFilter(f)}
-                style={{ padding: "4px 10px", borderRadius: 999, fontSize: 12.5, cursor: "pointer", border: `1px solid ${imgFilter === f ? PURPLE : "#e0d5ee"}`, background: imgFilter === f ? PURPLE : "#fff", color: imgFilter === f ? "#fff" : "#777" }}>
-                {f === "기업" ? "🟢 기업 제공" : f === "사이트전용" ? "🔴 사이트 전용" : "전체"}
-              </button>
-            ))}
-          </div>
-          {imgScanMsg && <span style={{ fontSize: 12.5, color: imgScanMsg.includes("완료") ? "#16a34a" : "#8a7fa0" }}>{imgScanMsg}</span>}
-        </div>
 
         {/* 테이블 */}
         <div style={{ overflow: "auto", maxHeight: "calc(100vh - 250px)", border: "1px solid #eee", borderRadius: 10, background: "#fff" }}>
@@ -495,23 +477,43 @@ export default function AdminOutreachPage() {
                         )}
                       </td>
                     </tr>
-                    {expanded === row.id && row.found_jobs?.length > 0 && (
+                    {expanded === row.id && row.found_jobs?.length > 0 && (() => {
+                      // 3단계 판정: 회사가 여러 사이트에 있으면(대조 가능) 사이트전용을 '확실', 한 사이트뿐이면 '의심'
+                      const distinctSites = new Set(row.found_jobs.map((jb) => jb.source)).size;
+                      const tierOf = (url: string): { key: "기업" | "의심" | "확실" | "none" | ""; t: string; c: string } => {
+                        const bd = imgBadges[url];
+                        if (bd === "company") return { key: "기업", t: "🟢 기업 제공", c: "#16a34a" };
+                        if (bd === "site_only") return distinctSites >= 2 ? { key: "확실", t: "🔴 사이트 전용(확실)", c: "#dc2626" } : { key: "의심", t: "🟠 사이트 전용(의심)", c: "#d97706" };
+                        if (bd === "none") return { key: "none", t: "· 이미지 없음", c: "#b3adbd" };
+                        return { key: "", t: "", c: "" };
+                      };
+                      const analyzing = imgScanningRow === row.id;
+                      return (
                       <tr>
                         <td style={{ ...td, background: "#faf8fc" }} colSpan={9}>
-                          <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 4, fontWeight: 400 }}>
-                            조회된 활성 공고 <span style={{ fontWeight: 400, color: "#9a92a6" }}>· 라디오로 선택 후 상단 "선택 공고 등록"을 누르면 등록 페이지 검색창에 채워집니다</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
+                            <span style={{ fontSize: 13, color: "#6b6473" }}>조회된 활성 공고 <span style={{ color: "#9a92a6" }}>· 라디오 선택 후 상단 "선택 공고 등록"</span></span>
+                            {analyzing && <span style={{ fontSize: 12, color: "#5f0080" }}>🖼 이미지 출처 분석 중… {imgScanMsg}</span>}
+                            <span style={{ marginLeft: "auto", display: "flex", gap: 4, alignItems: "center" }}>
+                              <span style={{ fontSize: 12, color: "#9a92a6" }}>필터:</span>
+                              {(["전체", "기업", "의심", "확실"] as const).map((f) => (
+                                <button key={f} onClick={() => setImgFilter(f)}
+                                  style={{ padding: "3px 9px", borderRadius: 999, fontSize: 12, cursor: "pointer", border: `1px solid ${imgFilter === f ? PURPLE : "#e0d5ee"}`, background: imgFilter === f ? PURPLE : "#fff", color: imgFilter === f ? "#fff" : "#777" }}>
+                                  {f === "기업" ? "🟢 기업" : f === "의심" ? "🟠 의심" : f === "확실" ? "🔴 확실" : "전체"}
+                                </button>
+                              ))}
+                            </span>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             {row.found_jobs
-                              .filter((jb) => imgFilter === "전체" || (imgFilter === "기업" ? imgBadges[jb.url] === "company" : imgBadges[jb.url] === "site_only"))
+                              .filter((jb) => imgFilter === "전체" || tierOf(jb.url).key === imgFilter)
                               .map((jb, i) => {
-                              const bd = imgBadges[jb.url];
-                              const im = bd === "company" ? { t: "🟢 기업", c: "#16a34a" } : bd === "site_only" ? { t: "🔴 사이트전용", c: "#dc2626" } : bd === "none" ? { t: "· 이미지없음", c: "#b3adbd" } : null;
+                              const im = tierOf(jb.url);
                               return (
                               <label key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13.5, cursor: "pointer" }}>
                                 <input type="radio" name="pickedFoundJob" checked={pickedJobUrl === jb.url} onChange={() => setPickedJobUrl(jb.url)} style={{ width: 14, height: 14, flexShrink: 0 }} />
                                 <span style={badge(PURPLE)}>{jb.source}</span>
-                                {im && <span style={{ fontSize: 11.5, color: im.c, fontWeight: 600, flexShrink: 0 }}>{im.t}</span>}
+                                {im.t && <span style={{ fontSize: 11.5, color: im.c, fontWeight: 600, flexShrink: 0 }}>{im.t}</span>}
                                 <span style={{ color: "#2b2533" }}>{jb.title}</span>
                                 <a href={normUrl(jb.url)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: PURPLE, textDecoration: "none" }}>원문 ↗</a>
                               </label>
@@ -520,7 +522,8 @@ export default function AdminOutreachPage() {
                           </div>
                         </td>
                       </tr>
-                    )}
+                      );
+                    })()}
                   </Fragment>
                 );
               })}
