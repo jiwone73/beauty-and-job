@@ -1,6 +1,6 @@
 "use client";
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Search, ChevronDown } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 
@@ -68,9 +68,38 @@ export default function AdminOutreachPage() {
   const [editHomeId, setEditHomeId] = useState<string | null>(null);
   const [editMemoId, setEditMemoId] = useState<string | null>(null);
   const [pickedJobUrl, setPickedJobUrl] = useState<string | null>(null); // 조회된 공고 중 라디오 선택 → 공고 등록으로 전달
+  // 등록 이슈 노트(자유 메모, DB 저장 → 클로드가 조회·수정)
+  const [issueNote, setIssueNote] = useState("");
+  const [issueOpen, setIssueOpen] = useState(false);
+  const [issueStatus, setIssueStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const issueTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
   const authH = { Authorization: `Bearer ${token}` };
+
+  // 등록 이슈 노트: 로드 + 자동저장(디바운스)
+  useEffect(() => {
+    fetch(`/api/admin/app-notes?key=outreach_registration_issues`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) { setIssueNote(res.data.value || ""); if ((res.data.value || "").trim()) setIssueOpen(true); } })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const onIssueChange = (text: string) => {
+    setIssueNote(text);
+    setIssueStatus("saving");
+    if (issueTimer.current) clearTimeout(issueTimer.current);
+    issueTimer.current = setTimeout(async () => {
+      try {
+        await fetch(`/api/admin/app-notes`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ key: "outreach_registration_issues", value: text }),
+        });
+        setIssueStatus("saved");
+      } catch { setIssueStatus("idle"); }
+    }, 700);
+  };
 
   const fetchList = useCallback(async () => {
     setLoading(true);
@@ -254,6 +283,25 @@ export default function AdminOutreachPage() {
         <p style={{ fontSize: 13.5, color: "#9a92a6", margin: "0 0 14px" }}>
           체크박스로 업체를 선택해 "선택 업데이트"를 누르거나, "전체 업데이트"로 모든 탭의 업체를 한 번에 조회할 수 있습니다. 브랜드명으로 9개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·뷰티인잡·뷰티잡매니저·미용인잡·자사홈)를 조회해 채용유무를 자동 확인합니다. 입력값은 자동저장됩니다. 조회는 무료입니다.
         </p>
+
+        {/* 등록 이슈 노트 — 알바가 등록 중 발견한 이슈를 자유롭게 적어두는 자동저장 메모(DB) */}
+        <div style={{ border: "1px solid #ece7f3", background: "#faf8ff", borderRadius: 10, padding: "8px 12px", marginBottom: 12 }}>
+          <button type="button" onClick={() => setIssueOpen((v) => !v)}
+            style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit", textAlign: "left" }}>
+            <span style={{ fontSize: 14, fontWeight: 500, color: "#5f0080" }}>📝 등록 이슈 노트</span>
+            <span style={{ fontSize: 12, color: "#9a92a6" }}>등록 중 발견한 이슈를 적어두면 자동저장돼요</span>
+            {issueNote.trim() && <span style={{ fontSize: 12, color: "#8a7fa0", fontWeight: 500 }}>· {issueNote.split("\n").filter((l) => l.trim()).length}줄</span>}
+            <span style={{ marginLeft: "auto", fontSize: 12, color: issueStatus === "saved" ? "#22a06b" : "#b3adbd", minWidth: 44, textAlign: "right" }}>
+              {issueStatus === "saving" ? "저장 중…" : issueStatus === "saved" ? "저장됨 ✓" : ""}
+            </span>
+            <ChevronDown size={15} style={{ color: "#b3adbd", transform: issueOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} />
+          </button>
+          {issueOpen && (
+            <textarea value={issueNote} onChange={(e) => onIssueChange(e.target.value)}
+              placeholder={"한 줄에 하나씩 · 지점명 + 원문 링크 + 이슈를 적어주세요\n예) 에이바헤어 봉화산역점 | https://... | 급여가 잘못 파싱됨(230~구해요)\n예) 에이바헤어 과천역점 | 담당자 전화 누락, 상세요강 이미지 안 불러와짐"}
+              style={{ width: "100%", marginTop: 8, minHeight: 130, resize: "vertical", border: "1px solid #e0d5ee", borderRadius: 8, padding: "8px 10px", fontSize: 13.5, lineHeight: 1.65, boxSizing: "border-box", fontFamily: "inherit", background: "#fff", color: "#2b2533" }} />
+          )}
+        </div>
 
         {/* 그룹 탭 */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
