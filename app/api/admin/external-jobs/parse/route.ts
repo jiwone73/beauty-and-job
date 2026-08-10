@@ -376,24 +376,50 @@ export async function POST(req: NextRequest) {
                 .split("\n").map((l) => l.replace(/[ \t]+/g, " ").replace(/^[·•\-]\s*/, "").trim())
                 .filter((l) => l && !/^상세\s*내용을\s*입력하세요\.?$/.test(l))
                 .join("\n").replace(/\n{2,}/g, "\n").trim();
-              // 잡코리아 신디케이션 구조화 텍스트(담당업무/자격요건/우대사항)면 필드로, 아니면 자유서술 → 포지션 소개.
+              // 잡코리아 신디케이션 구조화 텍스트(회사 소개 + 담당업무/자격요건/우대사항)면 필드로, 아니면 자유서술 → 포지션 소개.
               const isJk = /jobkorea\.co\.kr|data-sentry|포지션\s*및\s*자격요건|전형절차/i.test(ih);
-              if (isJk && /담당업무|자격요건/.test(detailText)) {
-                // "포지션 및 자격요건" 헤더의 '자격요건'과 실제 섹션이 충돌 → 담당업무 이후부터 구간을 잡는다.
-                const dutyI = detailText.indexOf("담당업무");
-                const flat = (dutyI >= 0 ? detailText.slice(dutyI) : detailText).replace(/\n/g, " ");
-                const betw = (a: string, stops: string[]) => {
-                  const i = flat.indexOf(a); if (i < 0) return "";
-                  const s = flat.slice(i + a.length);
-                  const j = stops.map((x) => { const p = s.indexOf(x); return p < 0 ? Infinity : p; }).reduce((m, x) => Math.min(m, x), Infinity);
-                  return (j === Infinity ? s : s.slice(0, j)).replace(/^[\s·ㆍ:]+/, "").trim();
-                };
-                const duty = betw("담당업무", ["스킬", "자격요건", "우대사항", "전형절차", "근무", "접수"]).slice(0, 1500);
-                const req = betw("자격요건", ["우대사항", "전형절차", "근무", "접수", "복리후생"]).slice(0, 1500);
-                const pref = betw("우대사항", ["전형절차", "근무", "접수", "복리후생", "담당자"]).slice(0, 1500);
-                if (duty && duty.length > 3) { out.main_duties = duty; out.description = duty; }
-                if (req && req.length > 3) out.requirements = req;
-                if (pref && pref.length > 3) out.preferred = pref;
+              if (isJk) {
+                // ── 회사 소개(기업정보) ── 잡코리아는 제목과 "포지션 및 자격요건" 사이에 회사 블러브를 둔다.
+                //    (예: "㈜○○는 2009년에 설립된 회사로 … 서울 강남구 …에 위치하고 있으며, …사업을 하고 있습니다.")
+                const introBlock = detailText.split(/포지션\s*및\s*자격요건/)[0] || "";
+                const compNorm = (s: string) => (s || "").replace(/\(주\)|㈜|주식회사|\(유\)|\s+/g, "").trim();
+                const cTitle = compNorm(typeof out.title === "string" ? out.title : "");
+                const cName = compNorm(typeof out.company_name === "string" ? out.company_name : "");
+                const descLines = introBlock.split("\n").map((l) => l.trim()).filter(Boolean)
+                  .filter((l) => { const n = compNorm(l); return n && n !== cTitle && n !== cName && l !== out.title; });
+                const compDesc = descLines.join("\n").trim();
+                if (compDesc.length > 10) {
+                  out.company_description = compDesc.slice(0, 800); // 기업 소개
+                  const fy = compDesc.match(/(19|20)\d{2}(?=\s*년\s*에?\s*설립)/);
+                  if (fy) out.founded_year = Number(fy[0]);             // 설립연도
+                  const emp = Number((compDesc.match(/사원수\s*([\d,]+)\s*명/) || [])[1]?.replace(/,/g, "") || 0);
+                  if (emp > 0) out.company_size = emp <= 10 ? "1~10명" : emp <= 50 ? "10~50명" : emp <= 100 ? "50~100명" : emp <= 300 ? "100~300명" : emp <= 1000 ? "300~1000명" : "1000명 이상"; // 사원수 버킷
+                  const addr = (compDesc.match(/((?:서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)[^,\n]*?)\s*에\s*위치/) || [])[1]?.trim() || "";
+                  if (addr && !out.address) out.address = addr;         // 주소(=근무지역 입력칸 공용)
+                  if (addr && !out.region) {
+                    const rm = addr.match(/(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)\s*([가-힣]+[시군구])/);
+                    const SIDO: Record<string, string> = { 서울: "서울특별시", 부산: "부산광역시", 대구: "대구광역시", 인천: "인천광역시", 광주: "광주광역시", 대전: "대전광역시", 울산: "울산광역시", 세종: "세종특별자치시", 경기: "경기도", 강원: "강원특별자치도", 충북: "충청북도", 충남: "충청남도", 전북: "전북특별자치도", 전남: "전라남도", 경북: "경상북도", 경남: "경상남도", 제주: "제주특별자치도" };
+                    if (rm) out.region = `${SIDO[rm[1]] || rm[1]} ${rm[2]}`; // 근무지역 필터
+                  }
+                }
+                // ── 담당업무/자격요건/우대사항 ──
+                if (/담당업무|자격요건/.test(detailText)) {
+                  // "포지션 및 자격요건" 헤더의 '자격요건'과 실제 섹션이 충돌 → 담당업무 이후부터 구간을 잡는다.
+                  const dutyI = detailText.indexOf("담당업무");
+                  const flat = (dutyI >= 0 ? detailText.slice(dutyI) : detailText).replace(/\n/g, " ");
+                  const betw = (a: string, stops: string[]) => {
+                    const i = flat.indexOf(a); if (i < 0) return "";
+                    const s = flat.slice(i + a.length);
+                    const j = stops.map((x) => { const p = s.indexOf(x); return p < 0 ? Infinity : p; }).reduce((m, x) => Math.min(m, x), Infinity);
+                    return (j === Infinity ? s : s.slice(0, j)).replace(/^[\s·ㆍ:]+/, "").trim();
+                  };
+                  const duty = betw("담당업무", ["스킬", "핵심역량", "자격요건", "우대사항", "전형절차", "근무", "접수"]).slice(0, 1500);
+                  const req = betw("자격요건", ["우대사항", "전형절차", "근무", "접수", "복리후생"]).slice(0, 1500);
+                  const pref = betw("우대사항", ["전형절차", "근무", "접수", "복리후생", "담당자"]).slice(0, 1500);
+                  if (duty && duty.length > 3) { out.main_duties = duty; out.description = duty; }
+                  if (req && req.length > 3) out.requirements = req;
+                  if (pref && pref.length > 3) out.preferred = pref;
+                }
               } else if (detailText.length > 10) {
                 // og:description은 뷰티잡 공용 사이트 문구라 무의미 → 실제 상세요강 본문으로 덮어쓴다.
                 out.description = detailText.slice(0, 2000);

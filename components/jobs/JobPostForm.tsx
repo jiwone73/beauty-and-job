@@ -689,6 +689,7 @@ export default function JobPostForm({
       if (mode === "admin") {
         setNewCompanyName(""); setNewBrandName(""); setNmHomepage(""); setNmContactEmail("");
         setNmDescription(""); setNmAddress(""); setNmIndustry("");
+        setNmSize(""); setNmFounded("");
         setNmRepresentative(""); setNmPhone("");
         setNmManagerName(""); setNmManagerPhone("");
       }
@@ -706,6 +707,9 @@ export default function JobPostForm({
         if (d.company_description) setNmDescription(d.company_description);
         if (d.address) setNmAddress(d.address);
         if (d.industry) setNmIndustry(d.industry);
+        // 설립연도·사원수(기업정보) — 잡코리아 회사 소개에서 파싱된 값
+        if (d.founded_year && Number(d.founded_year) > 1900) setNmFounded(String(Number(d.founded_year)));
+        if (typeof d.company_size === "string" && d.company_size.trim()) setNmSize(d.company_size.trim());
         if (d.representative_name) setNmRepresentative(d.representative_name);
         if (d.company_phone) setNmPhone(d.company_phone);
         // 이미지는 "외부공고에 보이는 순서 그대로" 반영.
