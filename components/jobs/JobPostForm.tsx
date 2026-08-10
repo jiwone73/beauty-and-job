@@ -1129,10 +1129,12 @@ export default function JobPostForm({
     workDaysText: workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의"),
     workPeriodText: workPeriod || "협의",
     workTimeText: workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의"),
-    contactName: isNm ? nmManagerName : "",
-    contactPhone: isNm ? nmManagerPhone : "",
-    contactEmail: isNm ? nmContactEmail : "",
-    contactMethods: isNm ? contactMethods : [],
+    // 비회원(관리자) 공고는 담당자 연락처를 구직자에게 노출하지 않음 → 미리보기도 동일하게 숨기고 '온라인 지원'만
+    isExternal: isNm,
+    contactName: "",
+    contactPhone: "",
+    contactEmail: "",
+    contactMethods: isNm ? ["온라인 지원"] : contactMethods,
   };
 
   return (
