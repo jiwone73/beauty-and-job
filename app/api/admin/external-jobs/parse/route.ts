@@ -314,8 +314,11 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ── 뷰티잡: 상세 포스터 이미지는 본문 HTML엔 없고, jobkorea_iframe.php(iframe·서버렌더) 안에 있다.
-  //    공고 URL 경로(/<bo_table>/<wr_id>)로 iframe 주소를 만들어 2차 fetch → 포스터 이미지 추출 → 상세 본문 이미지로 배치.
+  // ── 뷰티잡: 상세요강(포스터 이미지·본문 텍스트)은 목록/상세 본문 HTML엔 없고, jobkorea_iframe.php(iframe·서버렌더) 안에 있다.
+  //    공고 URL 경로(/<bo_table>/<wr_id>)로 iframe 주소를 만들어 2차 fetch → 3가지 형태로 배선한다:
+  //      · 포스터형   : 뷰티잡 자체 등록 → /data/editor|file/ 풀사이즈 이미지 → 상세 본문 이미지
+  //      · 신디케이션 : iframe이 통째로 잡코리아 페이지 → CorpEditor 디자인 이미지 또는 구조화 텍스트(담당업무/자격요건/우대사항)
+  //      · 텍스트형   : <p> 자유서술만 있는 공고 → 상세요강 본문 텍스트를 포지션 소개(description)로
   if (freeParsed && /^beautyjob\.kr$/i.test(hostname) && url) {
     try {
       const seg = new URL(url).pathname.split("/").filter(Boolean);
@@ -337,24 +340,70 @@ export async function POST(req: NextRequest) {
           });
           if (ir.ok) {
             const ih = new TextDecoder("utf-8").decode(Buffer.from(await ir.arrayBuffer()));
-            const posters = [...new Set(
-              [...ih.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["']/gi)]
-                .map((m) => m[1])
-                .filter((s) => /CorpEditor|DownImage|file2\.jobkorea/i.test(s))
-                .map((s) => (s.startsWith("//") ? "https:" + s : s))
-                .filter((s) => /^https?:\/\//i.test(s))
-            )].slice(0, 12);
+            const norm = (s: string) => (s.startsWith("//") ? "https:" + s : s);
+            // 상세요강 이미지 후보 ─ 잡코리아 CorpEditor(신디케이션) + 뷰티잡 자체 /data/editor|file/ 풀사이즈(썸네일 제외)
+            const jkImgs = [...new Set(
+              [...ih.matchAll(/file2\.jobkorea\.co\.kr[\\/]+Net[\\/]+Mng[\\/]+DownImage[\\/]+CorpEditor\?file_No=\d+/gi)]
+                .map((m) => m[0].replace(/\\/g, ""))
+            )].map((u) => "https://" + u);
+            const bjImgs = [...new Set(
+              [...ih.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["']/gi)].map((m) => m[1])
+            )]
+              .map(norm)
+              .filter((s) => /^https?:\/\//i.test(s) && /\/data\/(?:editor|file)\//i.test(s))
+              .filter((s) => !/\/thumb-|_\d+x\d+\.(?:jpe?g|png|gif|webp)/i.test(s)); // 목록 썸네일 제외 → 풀사이즈만
+            const posters = [...new Set([...jkImgs, ...bjImgs])].slice(0, 12);
             if (posters.length) {
               out.images = posters;
               out._rehost = true;
-              out._rehostReferer = "https://www.beautyjob.kr/";
+              // CorpEditor는 잡코리아 CDN(핫링크 차단) → 잡코리아 referer, 그 외 뷰티잡 자체 이미지.
+              out._rehostReferer = jkImgs.length ? "https://www.jobkorea.co.kr/" : "https://www.beautyjob.kr/";
               out._detailImages = true; // 배너가 아니라 상세 본문 이미지로 배치(포스터형 공고)
+            } else {
+              // ── 상세요강 텍스트형(이미지 없는 공고) ──
+              // <p>/<br>/<div> 경계를 줄바꿈으로, 나머지 태그·엔티티 정리. 잡코리아 기본 플레이스홀더는 버린다.
+              const detailText = ih
+                .replace(/<script[\s\S]*?<\/script>/gi, " ")
+                .replace(/<style[\s\S]*?<\/style>/gi, " ")
+                .replace(/<\/(?:p|div|li|h\d)>/gi, "\n")
+                .replace(/<br\s*\/?>/gi, "\n")
+                .replace(/<[^>]+>/g, " ")
+                .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')
+                .replace(/&[a-z#0-9]+;/gi, " ")
+                // 잡코리아 목록기호(ㆍ)는 한 줄에 여러 항목을 붙여 놓으므로 줄바꿈으로 분리 → 항목별 플레이스홀더 제거가 가능해진다.
+                .replace(/ㆍ/g, "\n")
+                // 줄 앞 목록기호(·•-)를 떼어 "· 상세내용을 입력하세요" 같은 플레이스홀더도 걸러지게 한다.
+                .split("\n").map((l) => l.replace(/[ \t]+/g, " ").replace(/^[·•\-]\s*/, "").trim())
+                .filter((l) => l && !/^상세\s*내용을\s*입력하세요\.?$/.test(l))
+                .join("\n").replace(/\n{2,}/g, "\n").trim();
+              // 잡코리아 신디케이션 구조화 텍스트(담당업무/자격요건/우대사항)면 필드로, 아니면 자유서술 → 포지션 소개.
+              const isJk = /jobkorea\.co\.kr|data-sentry|포지션\s*및\s*자격요건|전형절차/i.test(ih);
+              if (isJk && /담당업무|자격요건/.test(detailText)) {
+                // "포지션 및 자격요건" 헤더의 '자격요건'과 실제 섹션이 충돌 → 담당업무 이후부터 구간을 잡는다.
+                const dutyI = detailText.indexOf("담당업무");
+                const flat = (dutyI >= 0 ? detailText.slice(dutyI) : detailText).replace(/\n/g, " ");
+                const betw = (a: string, stops: string[]) => {
+                  const i = flat.indexOf(a); if (i < 0) return "";
+                  const s = flat.slice(i + a.length);
+                  const j = stops.map((x) => { const p = s.indexOf(x); return p < 0 ? Infinity : p; }).reduce((m, x) => Math.min(m, x), Infinity);
+                  return (j === Infinity ? s : s.slice(0, j)).replace(/^[\s·ㆍ:]+/, "").trim();
+                };
+                const duty = betw("담당업무", ["스킬", "자격요건", "우대사항", "전형절차", "근무", "접수"]).slice(0, 1500);
+                const req = betw("자격요건", ["우대사항", "전형절차", "근무", "접수", "복리후생"]).slice(0, 1500);
+                const pref = betw("우대사항", ["전형절차", "근무", "접수", "복리후생", "담당자"]).slice(0, 1500);
+                if (duty && duty.length > 3) { out.main_duties = duty; out.description = duty; }
+                if (req && req.length > 3) out.requirements = req;
+                if (pref && pref.length > 3) out.preferred = pref;
+              } else if (detailText.length > 10) {
+                // og:description은 뷰티잡 공용 사이트 문구라 무의미 → 실제 상세요강 본문으로 덮어쓴다.
+                out.description = detailText.slice(0, 2000);
+              }
             }
           }
         } finally { clearTimeout(t); }
       }
     } catch (e) {
-      console.error("[beautyjob iframe images]", e);
+      console.error("[beautyjob iframe]", e);
     }
   }
 
