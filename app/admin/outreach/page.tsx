@@ -300,7 +300,7 @@ export default function AdminOutreachPage() {
           <button onClick={updateAllTabs} disabled={!totalCount}
             title="현재 탭과 상관없이 6개 탭 전체를 조회합니다 (시간이 걸립니다)"
             style={{ ...chip(true), opacity: totalCount ? 1 : 0.5 }}>
-            6개 탭 전체 업데이트{totalCount ? ` (${totalCount})` : ""}
+            전체 업데이트{totalCount ? `(${totalCount})` : ""}
           </button>
           <a href={pickedJobUrl ? `/admin/jobs/new?url=${encodeURIComponent(pickedJobUrl)}` : "/admin/jobs/new"}
             target="_blank" rel="noreferrer"
