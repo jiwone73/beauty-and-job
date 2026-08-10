@@ -228,17 +228,17 @@ export default function AdminOutreachPage() {
     setSelected(allVisibleSelected ? new Set() : new Set(items.map((r) => r.id)));
 
   // 스타일
-  const th: React.CSSProperties = { padding: "8px 8px", fontSize: 12, color: "#6b6473", fontWeight: 600, textAlign: "left", whiteSpace: "nowrap", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 2, background: "#faf8fc" };
-  const td: React.CSSProperties = { padding: "6px 8px", fontSize: 13, verticalAlign: "top", borderBottom: "1px solid #f3f0f7" };
-  const inp: React.CSSProperties = { width: "100%", minWidth: 90, padding: "5px 7px", border: "1px solid #ddd", borderRadius: 6, fontSize: 12.5, boxSizing: "border-box" };
+  const th: React.CSSProperties = { padding: "8px 8px", fontSize: 13, color: "#6b6473", fontWeight: 600, textAlign: "left", whiteSpace: "nowrap", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 2, background: "#faf8fc" };
+  const td: React.CSSProperties = { padding: "6px 8px", fontSize: 14, verticalAlign: "top", borderBottom: "1px solid #f3f0f7" };
+  const inp: React.CSSProperties = { width: "100%", minWidth: 90, padding: "5px 7px", border: "1px solid #ddd", borderRadius: 6, fontSize: 13.5, boxSizing: "border-box" };
   const clamp2: React.CSSProperties = { display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis" };
   const chip = (active: boolean): React.CSSProperties => ({
-    padding: "6px 12px", borderRadius: 999, fontSize: 13, fontWeight: 600, cursor: "pointer",
+    padding: "6px 12px", borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: "pointer",
     border: active ? `1px solid ${PURPLE}` : "1px solid #e3dcec",
     background: active ? PURPLE : "#fff", color: active ? "#fff" : "#6b6473",
   });
   const badge = (color: string): React.CSSProperties => ({
-    display: "inline-block", padding: "2px 8px", borderRadius: 999, fontSize: 12, fontWeight: 600,
+    display: "inline-block", padding: "2px 8px", borderRadius: 999, fontSize: 13, fontWeight: 600,
     color, background: `${color}18`,
   });
 
@@ -247,9 +247,9 @@ export default function AdminOutreachPage() {
       <div style={{ padding: "4px 4px 40px" }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "#2b2533", margin: 0 }}>외부업체 컨택 리스트</h1>
-          <span style={{ fontSize: 13, color: "#9a92a6" }}>총 {totalCount}개 · 비회원 공고 등록 대상</span>
+          <span style={{ fontSize: 14, color: "#9a92a6" }}>총 {totalCount}개 · 비회원 공고 등록 대상</span>
         </div>
-        <p style={{ fontSize: 12.5, color: "#9a92a6", margin: "0 0 14px" }}>
+        <p style={{ fontSize: 13.5, color: "#9a92a6", margin: "0 0 14px" }}>
           체크박스로 업체를 선택하고 "선택/전체 업데이트"를 누르거나, "6개 탭 전체 업데이트"로 모든 탭을 한 번에 조회할 수 있습니다. 브랜드명으로 9개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·뷰티인잡·뷰티잡매니저·미용인잡·자사홈)를 조회해 채용유무를 자동 확인합니다. 입력값은 자동저장됩니다. 조회는 무료입니다.
         </p>
 
@@ -291,7 +291,7 @@ export default function AdminOutreachPage() {
               변경사항 저장 ({dirtyCount})
             </button>
           ) : (
-            <span style={{ fontSize: 12.5, color: "#0a7d34", fontWeight: 600, padding: "0 4px" }}>저장됨 ✓</span>
+            <span style={{ fontSize: 13.5, color: "#0a7d34", fontWeight: 600, padding: "0 4px" }}>저장됨 ✓</span>
           )}
           <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
             style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
@@ -309,7 +309,7 @@ export default function AdminOutreachPage() {
             {pickedJobUrl ? "선택 공고 등록 ↗" : "+ 공고 등록"}
           </a>
         </div>
-        {bulkMsg && <div style={{ fontSize: 12.5, color: PURPLE, marginBottom: 8 }}>{bulkMsg}</div>}
+        {bulkMsg && <div style={{ fontSize: 13.5, color: PURPLE, marginBottom: 8 }}>{bulkMsg}</div>}
 
         {/* 테이블 */}
         <div style={{ overflow: "auto", maxHeight: "calc(100vh - 250px)", border: "1px solid #eee", borderRadius: 10, background: "#fff" }}>
@@ -348,7 +348,7 @@ export default function AdminOutreachPage() {
                       {/* 브랜드명 = 홈페이지 링크, ✎로 URL 편집 */}
                       <td style={td}>
                         {editHomeId === row.id ? (
-                          <input autoFocus style={{ ...inp, fontSize: 12 }} placeholder="홈페이지 URL"
+                          <input autoFocus style={{ ...inp, fontSize: 13 }} placeholder="홈페이지 URL"
                             value={home || ""} onChange={(e) => setDraft(row.id, { homepage: e.target.value })}
                             onBlur={() => { saveField(row, "homepage"); setEditHomeId(null); }}
                             onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }} />
@@ -357,16 +357,16 @@ export default function AdminOutreachPage() {
                             {home ? (
                               <a href={normUrl(String(home))} target="_blank" rel="noreferrer"
                                 style={{ fontWeight: 600, color: PURPLE, textDecoration: "none" }}>
-                                {row.brand_name} <span style={{ fontSize: 11 }}>↗</span>
+                                {row.brand_name} <span style={{ fontSize: 12 }}>↗</span>
                               </a>
                             ) : (
                               <span style={{ fontWeight: 600, color: "#2b2533" }}>{row.brand_name}</span>
                             )}
                             <button onClick={() => setEditHomeId(row.id)} title={home ? "홈페이지 수정" : "홈페이지 링크 추가"}
-                              style={{ border: "none", background: "none", cursor: "pointer", color: "#b7b0c0", fontSize: 12, padding: 0 }}>✎</button>
+                              style={{ border: "none", background: "none", cursor: "pointer", color: "#b7b0c0", fontSize: 13, padding: 0 }}>✎</button>
                           </div>
                         )}
-                        {subtitle && <div style={{ fontSize: 11.5, color: "#9a92a6", marginTop: 2, maxWidth: 220 }}>{subtitle}</div>}
+                        {subtitle && <div style={{ fontSize: 12.5, color: "#9a92a6", marginTop: 2, maxWidth: 220 }}>{subtitle}</div>}
                       </td>
                       {/* 채용유무 */}
                       <td style={td}>
@@ -375,7 +375,7 @@ export default function AdminOutreachPage() {
                             style={{ ...inp, width: 90, color: hiringColor[hv], fontWeight: 600 }}>
                             {HIRING.map((h) => <option key={h} value={h}>{h}</option>)}
                           </select>
-                          {isChecking && <span style={{ fontSize: 11, color: PURPLE }}>조회중…</span>}
+                          {isChecking && <span style={{ fontSize: 12, color: PURPLE }}>조회중…</span>}
                         </div>
                         {row.found_count > 0 && (
                           <button onClick={() => setExpanded(expanded === row.id ? null : row.id)}
@@ -384,7 +384,7 @@ export default function AdminOutreachPage() {
                           </button>
                         )}
                         {row.last_checked_at && (
-                          <div style={{ fontSize: 10.5, color: "#b7b0c0", marginTop: 2 }}>확인 {fmtDate(row.last_checked_at)}</div>
+                          <div style={{ fontSize: 11.5, color: "#b7b0c0", marginTop: 2 }}>확인 {fmtDate(row.last_checked_at)}</div>
                         )}
                       </td>
                       {/* 등록유무 */}
@@ -408,7 +408,7 @@ export default function AdminOutreachPage() {
                       </td>
                       {/* 주요특징 (2줄 말줄임 + 툴팁) */}
                       <td style={{ ...td, maxWidth: 220 }}>
-                        <div title={row.features || ""} style={{ ...clamp2, fontSize: 11.5, color: "#6b6473", lineHeight: 1.45 }}>
+                        <div title={row.features || ""} style={{ ...clamp2, fontSize: 12.5, color: "#6b6473", lineHeight: 1.45 }}>
                           {row.features || "-"}
                         </div>
                       </td>
@@ -422,7 +422,7 @@ export default function AdminOutreachPage() {
                             onBlur={() => { saveField(row, "note"); setEditMemoId(null); }} />
                         ) : (
                           <div onClick={() => setEditMemoId(row.id)} title={row.note || ""}
-                            style={{ ...clamp2, minHeight: 34, padding: "5px 7px", border: "1px solid #eee", borderRadius: 6, fontSize: 12.5, color: row.note ? "#2b2533" : "#b7b0c0", cursor: "text", lineHeight: 1.4 }}>
+                            style={{ ...clamp2, minHeight: 34, padding: "5px 7px", border: "1px solid #eee", borderRadius: 6, fontSize: 13.5, color: row.note ? "#2b2533" : "#b7b0c0", cursor: "text", lineHeight: 1.4 }}>
                             {row.note || "메모 입력…"}
                           </div>
                         )}
@@ -431,12 +431,12 @@ export default function AdminOutreachPage() {
                     {expanded === row.id && row.found_jobs?.length > 0 && (
                       <tr>
                         <td style={{ ...td, background: "#faf8fc" }} colSpan={9}>
-                          <div style={{ fontSize: 12, color: "#6b6473", marginBottom: 4, fontWeight: 600 }}>
+                          <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 4, fontWeight: 600 }}>
                             조회된 활성 공고 <span style={{ fontWeight: 400, color: "#9a92a6" }}>· 라디오로 선택 후 상단 "선택 공고 등록"을 누르면 등록 페이지 검색창에 채워집니다</span>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             {row.found_jobs.map((jb, i) => (
-                              <label key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 12.5, cursor: "pointer" }}>
+                              <label key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13.5, cursor: "pointer" }}>
                                 <input type="radio" name="pickedFoundJob" checked={pickedJobUrl === jb.url} onChange={() => setPickedJobUrl(jb.url)} />
                                 <span style={badge(PURPLE)}>{jb.source}</span>
                                 <span style={{ color: "#2b2533" }}>{jb.title}</span>
