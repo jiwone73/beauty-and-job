@@ -245,7 +245,11 @@ export default function JobPostForm({
   const [saved, setSaved] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false); // 임시저장 완료 표시(발행완료와 구분)
   const [alwaysOpen, setAlwaysOpen] = useState(false);
-  const [detailImages, setDetailImages] = useState<{ url: string; name: string; origin?: string }[]>([]);
+  const [detailImages, setDetailImages] = useState<{ url: string; name: string; origin?: string; crossSite?: boolean }[]>([]);
+  // 타 사이트 이미지 교차대조(지각적 해시)
+  const [siblingJobs, setSiblingJobs] = useState<{ url: string; source: string }[]>([]);
+  const [provChecking, setProvChecking] = useState(false);
+  const [provMsg, setProvMsg] = useState("");
   const [uploading, setUploading] = useState(false);
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
@@ -992,9 +996,42 @@ export default function JobPostForm({
     const q = findQuery.trim();
     if (!q) { setFindMsg("회사명 또는 공고 URL을 입력해주세요."); return; }
     // 목록에서 라디오로 고른 공고가 있으면(입력칸을 손대지 않았으면) 그 공고를 불러옴
-    if (picked && q === picked.title.trim()) { setFindResults([]); setFindMsg(""); setParseUrl(picked.url); runParse(picked.url); return; }
-    if (isUrlLike(q)) { setFindResults([]); setFindMsg(""); setParseUrl(q); setPicked({ title: q, url: q.startsWith("http") ? q : `https://${q}` }); runParse(q); }
+    if (picked && q === picked.title.trim()) {
+      // 같은 회사의 타 사이트 공고를 이미지 교차대조용으로 보관(선택한 것 제외)
+      setSiblingJobs(findResults.filter((r) => r.url !== picked.url).map((r) => ({ url: r.url, source: r.source })));
+      setFindResults([]); setFindMsg(""); setParseUrl(picked.url); runParse(picked.url); return;
+    }
+    if (isUrlLike(q)) { setSiblingJobs([]); setFindResults([]); setFindMsg(""); setParseUrl(q); setPicked({ title: q, url: q.startsWith("http") ? q : `https://${q}` }); runParse(q); }
     else { setPicked(null); runFindByCompany(); }
+  };
+  // 타 사이트 이미지 교차대조(지각적 해시): 같은 이미지가 타 사이트에도 있으면 '기업 제공' 확정
+  const runProvenance = async () => {
+    const cur = detailImages.map((d) => d.url).filter(Boolean);
+    if (!cur.length || !siblingJobs.length) return;
+    setProvChecking(true); setProvMsg("");
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
+      const res = await fetch("/api/admin/external-jobs/image-provenance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ current: cur, siblings: siblingJobs }),
+      });
+      const j = await res.json();
+      if (!j.success) { setProvMsg(j.error?.message || "대조에 실패했어요."); return; }
+      const byUrl = new Map<string, { crossSite: boolean; sources: string[] }>();
+      for (const r of (j.data.results || [])) byUrl.set(r.url, { crossSite: !!r.crossSite, sources: r.sources || [] });
+      let confirmed = 0;
+      setDetailImages((prev) => prev.map((d) => {
+        const r = byUrl.get(d.url);
+        if (!r) return d;
+        if (r.crossSite) { confirmed++; return { ...d, crossSite: true, origin: "company" }; }
+        return { ...d, crossSite: false };
+      }));
+      setProvMsg(confirmed > 0
+        ? `타 사이트 대조: ${confirmed}개 이미지가 다른 사이트(${j.data.sibling_count}곳)에도 있어 → 기업 제공으로 확인됐어요.`
+        : `타 사이트(${j.data.sibling_count}곳)에서 동일 이미지를 못 찾음 → 이 사이트 전용일 수 있어 확인이 필요해요.`);
+    } catch { setProvMsg("대조 중 오류가 발생했어요."); }
+    finally { setProvChecking(false); }
   };
   // ?url= 로 진입(예: 이슈 페이지의 '불러와 수정')하면 그 원문을 자동으로 한 번 불러온다.
   const autoRanRef = useRef(false);
@@ -1944,9 +1981,9 @@ export default function JobPostForm({
                       <img src={d.url} alt={`상세 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
                       {d.origin && ORIGIN_BADGE[d.origin] && (
-                        <span title={ORIGIN_BADGE[d.origin].tip}
+                        <span title={d.crossSite ? "타 사이트에도 동일 이미지가 있어 기업 제공으로 확인됨" : ORIGIN_BADGE[d.origin].tip}
                           style={{ position: "absolute", top: 3, left: 3, background: ORIGIN_BADGE[d.origin].bg, color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 4, padding: "1px 4px", lineHeight: 1.3, cursor: "help" }}>
-                          {ORIGIN_BADGE[d.origin].t}
+                          {ORIGIN_BADGE[d.origin].t}{d.crossSite ? " ✓" : ""}
                         </span>
                       )}
                       <button type="button" onClick={() => removeImage(idx)} title="삭제"
@@ -1967,7 +2004,18 @@ export default function JobPostForm({
                     <span><b style={{ color: "#16a34a" }}>기업</b> 기업 제공(재사용 적합)</span>
                     <span><b style={{ color: "#d97706" }}>확인</b> 사이트 업로드(확인 필요)</span>
                     <span><b style={{ color: "#dc2626" }}>사이트</b> 사이트 디자인(주의)</span>
-                    <span style={{ color: "#b3adbd" }}>· 배지에 마우스를 올리면 설명이 떠요</span>
+                    <span style={{ color: "#b3adbd" }}>· <b>✓</b>=타 사이트에도 있음(기업 제공 확정)</span>
+                  </div>
+                )}
+                {/* 타 사이트 이미지 교차대조 — 같은 회사의 다른 사이트 공고와 이미지를 지각적 해시로 대조 */}
+                {mode === "admin" && detailImages.length > 0 && siblingJobs.length > 0 && (
+                  <div style={{ margin: "6px 2px 0", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                    <button type="button" onClick={runProvenance} disabled={provChecking}
+                      title="같은 회사의 타 사이트 공고 이미지와 대조해, 동일 이미지면 '기업 제공'으로 확정합니다"
+                      style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #5f0080", background: provChecking ? "#f3ecfb" : "#fff", color: "#5f0080", fontSize: 12.5, fontWeight: 600, cursor: provChecking ? "default" : "pointer" }}>
+                      {provChecking ? "대조 중… (타 사이트 이미지 분석)" : `🔍 타 사이트 이미지 대조 (${siblingJobs.length}곳)`}
+                    </button>
+                    {provMsg && <span style={{ fontSize: 12, color: provMsg.includes("확인됐") ? "#16a34a" : "#c0392b" }}>{provMsg}</span>}
                   </div>
                 )}
                 <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 포지션 소개·자격요건은 필수예요.</p>
