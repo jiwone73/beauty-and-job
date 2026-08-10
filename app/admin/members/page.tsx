@@ -155,7 +155,7 @@ function AdminMembersPageInner() {
   const [scrapList, setScrapList] = useState<{ id: string; name: string; logo_url: string | null; scrapped_at: string }[]>([]);
   const [scrapLoading, setScrapLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const PER_PAGE = 20;
+  const PER_PAGE = 100;
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
 

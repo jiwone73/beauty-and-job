@@ -5183,19 +5183,20 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-card:has(.admin-table) {
   width: fit-content;
   max-width: 100%;
+  overflow: visible; /* 카드(overflow:hidden)가 헤더 sticky를 가두지 않도록 */
 }
-/* 표 헤더 고정: 표 영역(래퍼 div 또는 표를 바로 담은 카드)을 화면 높이에 맞춘 스크롤 박스로 만들고,
-   그 박스 안에서 헤더를 상단 고정. 표 위에서 스크롤하면 열 제목이 계속 보인다. */
-div:has(> table.admin-table),
-.admin-card:has(> table.admin-table) {
-  overflow: auto;
-  max-height: calc(100vh - 200px);
+/* 표 헤더 고정: 표를 감싼 래퍼가 세로 스크롤 컨테이너가 되어 sticky를 가로채지 않도록 풀고,
+   페이지를 그냥 스크롤해도 열 제목이 상단 관리자바(64px) 아래에 고정되게 함.
+   (목록이 짧아도 동작, 표 위에서 스크롤할 필요 없음) */
+div:has(> table.admin-table) {
+  overflow: visible !important;
 }
 .admin-table thead th {
   position: sticky;
-  top: 0;
-  z-index: 5;
-  background: #fafafa; /* 스크롤 시 뒤 내용 비침 방지 */
+  top: 60px;               /* 관리자바(64px, z-index:10, 흰 배경) 밑으로 4px 겹쳐 물려 이음새 틈(빈 줄 번쩍임) 제거 */
+  z-index: 4;
+  background: #fafafa;      /* 스크롤 시 뒤 내용 비침 방지 */
+  background-clip: padding-box;
 }
 .admin-card-head {
   display: flex;

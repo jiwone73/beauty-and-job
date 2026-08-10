@@ -118,7 +118,7 @@ function AdminCompaniesContent() {
   const [companyPdfLoading, setCompanyPdfLoading] = useState(false);
   const companyPreviewRef = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState(1);
-  const PER_PAGE = 10;
+  const PER_PAGE = 100;
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
 
