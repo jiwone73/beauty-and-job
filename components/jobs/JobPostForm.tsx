@@ -102,7 +102,7 @@ export default function JobPostForm({
   useEffect(() => { reloadDrafts(); }, [reloadDrafts]);
   // ── 이 공고 이슈 메모(불러온 원문 URL에 매칭, DB 저장 → 클로드가 조회·수정) ──
   const [issueItems, setIssueItems] = useState<{ field: string; note: string }[]>([]);
-  const [issueStatus, setIssueStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const [issueStatus, setIssueStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const issueTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // ── 전체 공고 이슈 모아보기(상단 '이슈' 드롭다운) ──
   const [issueList, setIssueList] = useState<{ url: string; title: string; items: { field: string; note: string }[] }[]>([]);
@@ -220,14 +220,16 @@ export default function JobPostForm({
     issueTimer.current = setTimeout(async () => {
       try {
         const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
-        await fetch(`/api/admin/app-notes`, {
+        const res = await fetch(`/api/admin/app-notes`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ key: `jobissue:${url}`, value: JSON.stringify({ title, items: items.filter((it) => it.field || it.note.trim()) }) }),
         });
+        // fetch는 HTTP 400/500에도 예외를 안 던지므로 res.ok로 실제 성공 여부 판정(거짓 "저장됨" 방지)
+        if (!res.ok) { setIssueStatus("error"); return; }
         setIssueStatus("saved");
         reloadIssueList(); // 상단 '이슈' 드롭다운 카운트·목록 갱신
-      } catch { setIssueStatus("idle"); }
+      } catch { setIssueStatus("error"); }
     }, 600);
   };
   const updateIssues = (items: { field: string; note: string }[]) => { setIssueItems(items); saveIssues(items); };
@@ -1490,8 +1492,8 @@ export default function JobPostForm({
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: issueItems.length ? 8 : 0 }}>
             <span style={{ fontSize: 14, fontWeight: 500, color: "#c0392b" }}>🐞 이 공고 이슈</span>
             <span style={{ fontSize: 12, color: "#b08a86" }}>불러온 원문과 다른·잘못된 항목을 적어두면 자동저장돼요</span>
-            <span style={{ marginLeft: "auto", fontSize: 12, color: issueStatus === "saved" ? "#22a06b" : "#c4a29e", minWidth: 44, textAlign: "right" }}>
-              {issueStatus === "saving" ? "저장 중…" : issueStatus === "saved" ? "저장됨 ✓" : ""}
+            <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: issueStatus === "error" ? 600 : 400, color: issueStatus === "error" ? "#c0392b" : issueStatus === "saved" ? "#22a06b" : "#c4a29e", minWidth: 44, textAlign: "right" }}>
+              {issueStatus === "saving" ? "저장 중…" : issueStatus === "saved" ? "저장됨 ✓" : issueStatus === "error" ? "⚠ 저장 안 됨" : ""}
             </span>
           </div>
           {issueItems.map((it, idx) => (
