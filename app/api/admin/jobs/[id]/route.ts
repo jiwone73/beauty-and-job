@@ -77,7 +77,7 @@ export async function PATCH(
     "deadline", "status", "categories", "detail_images",
     "hiring_process", "notes",
     "work_days", "work_time", "work_time_slots", "work_period",
-    "responsibilities", "headcount", "education",
+    "responsibilities", "headcount", "education", "source_url",
     "apply_method", "external_apply_url",
     "external_contact_name", "external_contact_phone", "external_contact_email",
     "contact_methods",

@@ -1123,6 +1123,8 @@ export default function JobPostForm({
       external_contact_phone: nmManagerPhone.replace(/\D/g, "") || null,
       // 비회원(관리자) 공고는 뷰티워크 온라인 지원만 받는다 → 지원방법 고정
       contact_methods: (mode === "admin" && nonMember) ? ["온라인 지원"] : contactMethods,
+      // 불러온 원문 URL 저장 → 이후 파서 개선 시 일괄 재파싱·백필 가능(picked.url 우선)
+      source_url: (picked?.url || parseUrl || "").trim() || null,
     };
 
     const company: any = nonMember
