@@ -47,6 +47,20 @@ function metaContent(html: string, prop: string): string {
   return m ? m[1].trim() : "";
 }
 
+// 상세 이미지 출처 판별(재호스팅 전 원본 URL 기준):
+//   company      = 회사 자체 외부 호스트(회사 도메인·godohosting·cafe24 등) → 기업 제공, 재사용 OK
+//   site_upload  = 구직사이트 에디터 업로드 CDN(회사가 그 사이트에 올린 것 — 대개 기업제공이나 사이트 큐레이션 가능성) → 확인 필요
+//   site_template= 구직사이트 기본 템플릿/디자인 그래픽 → 사이트 디자인, 재사용 주의
+function classifyImageOrigin(url: string): "company" | "site_upload" | "site_template" {
+  const u = (url || "").toLowerCase();
+  // 사이트 기본 템플릿/디자인 그래픽
+  if (/\/template\/|\/static\/hiring\/images\/template\/|contents\.albamon\.[a-z]+\/[^"']*\/(?:template|assets|header)\/|\/images\/(?:newhair|main)\//.test(u)) return "site_template";
+  // 구직사이트 에디터 업로드 CDN(회사 업로드분)
+  if (/file2?\.jobkorea\.co\.kr|saraminimage\.co\.kr|file\.albamon\.com|beautyjob\.kr\/data\/|beautyinjob\.kr\/data\/|hairinjob\.com\/upload\/|\/wysiwyg\/peg\/|beautyjobmanager\.com|miyonginjob\.com/.test(u)) return "site_upload";
+  // 그 외 = 회사 외부 호스트 → 기업 제공
+  return "company";
+}
+
 // ── 뷰티워크 폼과 100% 일치시켜야 하는 선택지 (드롭다운·칩) ──
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 // 직군 목록은 단일 출처(jobGroups.ts)에서 가져온다 — 직군 재편 시 자동 반영(드리프트 방지)
@@ -684,6 +698,9 @@ export async function POST(req: NextRequest) {
   // 무료 파싱이 아니면 기존 범용 추출 사용.
   if (freeParsed) {
     const referer = out._rehostReferer || "";
+    // 재호스팅하면 호스트가 Supabase로 바뀌어 판별 불가 → 원본 URL로 출처를 미리 분류(포스터/상세 후보 각각)
+    const posterOrigins = (Array.isArray(out.images) ? out.images : []).map((u: any) => classifyImageOrigin(String(u)));
+    const detailRawOrigins = (Array.isArray(out._detailImagesRaw) ? out._detailImagesRaw : []).map((u: any) => classifyImageOrigin(String(u)));
     if (out._rehost && Array.isArray(out.images) && out.images.length) {
       try {
         out.images = await rehostImages(out.images, referer);
@@ -698,6 +715,7 @@ export async function POST(req: NextRequest) {
     if (out._rehost && Array.isArray(out._detailImagesRaw) && out._detailImagesRaw.length) {
       try {
         out.detail_images = await rehostImages(out._detailImagesRaw, referer);
+        out.detail_image_origins = detailRawOrigins.slice(0, out.detail_images.length);
       } catch (e) {
         console.error("[rehost detail images]", e);
       }
@@ -705,6 +723,7 @@ export async function POST(req: NextRequest) {
     // 포스터형(뷰티잡): images 자체가 상세 본문 포스터 → detail_images로 이동(배너 비움).
     if (out._detailImages) {
       out.detail_images = Array.isArray(out.images) ? out.images : [];
+      out.detail_image_origins = posterOrigins.slice(0, out.detail_images.length);
       out.images = [];
     }
     out.cover_image = (Array.isArray(out.images) && out.images[0]) || "";

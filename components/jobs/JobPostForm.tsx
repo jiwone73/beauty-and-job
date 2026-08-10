@@ -18,6 +18,12 @@ const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트", "협의"];
+// 상세 이미지 출처 배지 — 기업 제공(재사용OK) / 확인 필요 / 사이트 디자인(주의)
+const ORIGIN_BADGE: Record<string, { t: string; bg: string; tip: string }> = {
+  company: { t: "기업", bg: "#16a34a", tip: "회사 외부 호스트 이미지 → 기업이 제공한 이미지일 가능성이 높아요(여러 사이트에 같은 이미지일 확률↑, 재사용 적합)" },
+  site_upload: { t: "확인", bg: "#d97706", tip: "구직사이트에 업로드된 이미지 → 대개 기업이 올린 것이지만, 사이트가 디자인·큐레이션했을 수도 있어 확인 필요" },
+  site_template: { t: "사이트", bg: "#dc2626", tip: "구직사이트 기본 템플릿/디자인 그래픽 → 사이트가 만든 것이라 그대로 쓰기 부적합" },
+};
 // 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)
 const ISSUE_FIELDS = ["채용유형", "제목", "회사명", "모집분야(직군)", "경력", "학력", "마감일", "모집인원", "급여", "고용형태", "근무기간", "근무요일", "근무시간", "복리후생", "근무지역/주소", "담당자 연락처", "상단 배너", "상세요강 이미지", "포지션 소개", "자격요건", "우대사항", "회사 소개(기업정보)", "지원방식", "기타"];
 const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "온라인 지원", "홈페이지 지원"]; // 지원방법(복수)
@@ -239,7 +245,7 @@ export default function JobPostForm({
   const [saved, setSaved] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false); // 임시저장 완료 표시(발행완료와 구분)
   const [alwaysOpen, setAlwaysOpen] = useState(false);
-  const [detailImages, setDetailImages] = useState<{ url: string; name: string }[]>([]);
+  const [detailImages, setDetailImages] = useState<{ url: string; name: string; origin?: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
@@ -785,8 +791,9 @@ export default function JobPostForm({
         const imgs: string[] = Array.isArray(d.images) ? d.images.filter(Boolean) : [];
         // 포스터형 공고(뷰티잡 등): 서버가 detail_images로 내려줌 → 배너 없이 상세 본문 이미지로 배치.
         const detailImgs: string[] = Array.isArray(d.detail_images) ? d.detail_images.filter(Boolean) : [];
+        const detailOrigins: string[] = Array.isArray(d.detail_image_origins) ? d.detail_image_origins : [];
         if (detailImgs.length) {
-          setDetailImages(detailImgs.slice(0, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
+          setDetailImages(detailImgs.slice(0, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}`, origin: detailOrigins[i] })));
           // 파서가 배너용 이미지(매장 사진 등)를 함께 내려주면 전부 상단 배너로.
           if (imgs.length) setBannerImages(imgs.slice(0, 10).map((u) => ({ url: u, name: "배너" })));
         } else {
@@ -1936,6 +1943,12 @@ export default function JobPostForm({
                       style={{ position: "relative", width: 84, cursor: "grab" }}>
                       <img src={d.url} alt={`상세 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
+                      {d.origin && ORIGIN_BADGE[d.origin] && (
+                        <span title={ORIGIN_BADGE[d.origin].tip}
+                          style={{ position: "absolute", top: 3, left: 3, background: ORIGIN_BADGE[d.origin].bg, color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 4, padding: "1px 4px", lineHeight: 1.3, cursor: "help" }}>
+                          {ORIGIN_BADGE[d.origin].t}
+                        </span>
+                      )}
                       <button type="button" onClick={() => removeImage(idx)} title="삭제"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
                     </div>
@@ -1948,6 +1961,15 @@ export default function JobPostForm({
                   </label>
                   {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어 주세요.</span>}
                 </div>
+                {detailImages.some((d) => d.origin) && (
+                  <div style={{ margin: "8px 2px 0", fontSize: 11.5, color: "#8a7fa0", display: "flex", flexWrap: "wrap", gap: "4px 12px", alignItems: "center" }}>
+                    <span style={{ color: "#666" }}>이미지 출처:</span>
+                    <span><b style={{ color: "#16a34a" }}>기업</b> 기업 제공(재사용 적합)</span>
+                    <span><b style={{ color: "#d97706" }}>확인</b> 사이트 업로드(확인 필요)</span>
+                    <span><b style={{ color: "#dc2626" }}>사이트</b> 사이트 디자인(주의)</span>
+                    <span style={{ color: "#b3adbd" }}>· 배지에 마우스를 올리면 설명이 떠요</span>
+                  </div>
+                )}
                 <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 포지션 소개·자격요건은 필수예요.</p>
               </div>
 
