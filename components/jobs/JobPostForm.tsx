@@ -91,11 +91,19 @@ export default function JobPostForm({
   const pathname = usePathname();
   // 임시저장 목록(관리자 직접등록 전용) — 상단에서 이어쓰기
   const [drafts, setDrafts] = useState<Array<{ id: string; title: string; company_name?: string; created_at?: string }>>([]);
+  const [draftMenuOpen, setDraftMenuOpen] = useState(false); // 임시저장 버튼 옆 드롭다운(목록)
+  const draftMenuRef = useRef<HTMLDivElement>(null);
   const reloadDrafts = useCallback(() => {
     if (!listDrafts) return;
     listDrafts().then((d) => setDrafts(Array.isArray(d) ? d : [])).catch(() => {});
   }, [listDrafts]);
   useEffect(() => { reloadDrafts(); }, [reloadDrafts]);
+  useEffect(() => {
+    if (!draftMenuOpen) return;
+    const onDown = (e: MouseEvent) => { if (draftMenuRef.current && !draftMenuRef.current.contains(e.target as Node)) setDraftMenuOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [draftMenuOpen]);
 
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -1194,7 +1202,46 @@ export default function JobPostForm({
         {!isMobile && <span style={{ marginRight: "auto" }} />}
         {!isMobile && (
           <div className="admin-form-actions">
-            <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}><Save size={15} /> {draftSaved ? "임시저장됨 ✓" : "임시저장"}</button>
+            {/* 임시저장 버튼 + (관리자) 임시저장 목록 드롭다운 — 페이지를 밀지 않도록 버튼에서 팝오버로 노출 */}
+            <div ref={draftMenuRef} style={{ position: "relative", display: "inline-flex", alignItems: "stretch" }}>
+              <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}
+                style={mode === "admin" && drafts.length > 0 ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 } : undefined}>
+                <Save size={15} /> {draftSaved ? "임시저장됨 ✓" : "임시저장"}
+              </button>
+              {mode === "admin" && drafts.length > 0 && (
+                <button type="button" className="admin-secondary-btn" title="임시저장 목록"
+                  onClick={() => setDraftMenuOpen((v) => !v)}
+                  style={{ marginLeft: -1, padding: "0 8px", borderTopLeftRadius: 0, borderBottomLeftRadius: 0, display: "inline-flex", alignItems: "center", gap: 2 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#5f0080" }}>{drafts.length}</span>
+                  <ChevronDown size={13} style={{ color: "#999", transform: draftMenuOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} />
+                </button>
+              )}
+              {draftMenuOpen && drafts.length > 0 && (
+                <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 60, width: 340, maxWidth: "80vw", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 8 }}>
+                  <div style={{ fontSize: 12, color: "#9a92a6", padding: "2px 6px 6px" }}>임시저장 {drafts.length}건 · 클릭하면 이어서 작성돼요</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 3, maxHeight: 320, overflowY: "auto" }}>
+                    {drafts.map((d) => {
+                      const on = editId === d.id;
+                      return (
+                        <button key={d.id} type="button"
+                          onClick={() => { setDraftMenuOpen(false); if (!on) router.push(`${pathname}?id=${d.id}`); }}
+                          style={{ display: "flex", alignItems: "center", gap: 8, textAlign: "left", width: "100%", padding: "8px 10px", borderRadius: 8, border: on ? "1.5px solid #5f0080" : "1px solid #eee", background: on ? "#f3ecfb" : "#fff", cursor: on ? "default" : "pointer", font: "inherit" }}>
+                          <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, color: "#2b2533" }}>
+                            {d.title || "(제목 없음)"}
+                            {d.company_name && <span style={{ color: "#9a92a6", marginLeft: 6, fontSize: 13 }}>· {d.company_name}</span>}
+                          </span>
+                          {on ? (
+                            <span style={{ flexShrink: 0, fontSize: 12, color: "#5f0080", fontWeight: 600 }}>편집 중</span>
+                          ) : d.created_at ? (
+                            <span style={{ flexShrink: 0, fontSize: 12, color: "#b3adbd" }}>{new Date(d.created_at).toLocaleDateString("ko-KR")}</span>
+                          ) : null}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
             <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
             {mode === "admin" && (
               <button type="button" className="admin-secondary-btn" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 공고 내용을 뷰티워크 톤·형식으로 AI가 다듬어요">
@@ -1229,32 +1276,6 @@ export default function JobPostForm({
         </div>
       )}
 
-      {/* 임시저장 목록(관리자 직접등록) — 저장한 임시글을 이 페이지에서 바로 이어쓰기 */}
-      {!isMobile && mode === "admin" && drafts.length > 0 && (
-        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 12px`, boxSizing: "border-box", border: "1px solid #ece7f3", background: "#faf8ff", borderRadius: 10, padding: "10px 12px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-            <Save size={14} style={{ color: "#5f0080" }} />
-            <span style={{ fontSize: 14, fontWeight: 500, color: "#5f0080" }}>임시저장 목록</span>
-            <span style={{ fontSize: 12, color: "#9a92a6" }}>{drafts.length}건 · 클릭하면 이어서 작성돼요</span>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 220, overflowY: "auto" }}>
-            {drafts.map((d) => {
-              const on = editId === d.id;
-              return (
-                <button key={d.id} type="button" onClick={() => { if (!on) router.push(`${pathname}?id=${d.id}`); }}
-                  style={{ display: "flex", alignItems: "center", gap: 8, textAlign: "left", width: "100%", padding: "7px 10px", borderRadius: 8, border: on ? "1.5px solid #5f0080" : "1px solid #eee", background: on ? "#f3ecfb" : "#fff", cursor: on ? "default" : "pointer", font: "inherit" }}>
-                  <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, color: "#2b2533" }}>
-                    {d.title || "(제목 없음)"}
-                    {d.company_name && <span style={{ color: "#9a92a6", marginLeft: 6, fontSize: 13 }}>· {d.company_name}</span>}
-                  </span>
-                  {d.created_at && <span style={{ flexShrink: 0, fontSize: 12, color: "#b3adbd" }}>{new Date(d.created_at).toLocaleDateString("ko-KR")}</span>}
-                  {on && <span style={{ flexShrink: 0, fontSize: 12, color: "#5f0080", fontWeight: 600 }}>편집 중</span>}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {/* 채용유형(매장/오피스) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
       {showTypeToggle && (
