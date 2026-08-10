@@ -54,3 +54,12 @@ export async function PUT(req: NextRequest) {
   );
   return ok({ key, updated_at: r.rows[0].updated_at });
 }
+
+export async function DELETE(req: NextRequest) {
+  const { res: authErr } = requireAuth(req, "admin");
+  if (authErr) return authErr;
+  const key = (new URL(req.url).searchParams.get("key") || "").trim();
+  if (!keyAllowed(key)) return err("BAD_REQUEST", "허용되지 않은 key", 400);
+  await pool.query("DELETE FROM app_notes WHERE key = $1", [key]);
+  return ok({ key, deleted: true });
+}
