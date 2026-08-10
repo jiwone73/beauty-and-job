@@ -297,21 +297,30 @@ export default function AdminOutreachPage() {
           ) : (
             <span style={{ fontSize: 13.5, color: "#0a7d34", fontWeight: 400, padding: "0 4px" }}>저장됨 ✓</span>
           )}
-          <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
-            style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
-            {selected.size > 0 && allVisibleSelected ? `전체 ${selected.size}건 업데이트` : `선택 ${selected.size}건 업데이트`}
-          </button>
           <button onClick={updateAllTabs} disabled={!totalCount}
             title="현재 탭과 상관없이 6개 탭 전체를 조회합니다 (시간이 걸립니다)"
             style={{ ...chip(true), opacity: totalCount ? 1 : 0.5 }}>
             전체 업데이트{totalCount ? `(${totalCount})` : ""}
           </button>
-          <a href={pickedJobUrl ? `/admin/jobs/new?url=${encodeURIComponent(pickedJobUrl)}` : "/admin/jobs/new"}
-            target="_blank" rel="noreferrer"
-            title={pickedJobUrl ? "선택한 공고 URL이 등록 페이지 검색창에 채워집니다" : "빈 등록 페이지 열기"}
-            style={{ ...chip(!!pickedJobUrl), textDecoration: "none", ...(pickedJobUrl ? {} : { borderColor: PURPLE, color: PURPLE }) }}>
-            {pickedJobUrl ? "선택 공고 등록 ↗" : "+ 공고 등록"}
-          </a>
+          <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
+            style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
+            {selected.size > 0 && allVisibleSelected ? `전체 ${selected.size}건 업데이트` : `선택 ${selected.size}건 업데이트`}
+          </button>
+          {/* 선택 공고 등록: 조회된 활성 공고에서 라디오 선택(pickedJobUrl) 시에만 활성화 */}
+          {pickedJobUrl ? (
+            <a href={`/admin/jobs/new?url=${encodeURIComponent(pickedJobUrl)}`}
+              target="_blank" rel="noreferrer"
+              title="선택한 공고 URL이 등록 페이지 검색창에 채워집니다"
+              style={{ ...chip(true), textDecoration: "none" }}>
+              선택 공고 등록 ↗
+            </a>
+          ) : (
+            <button type="button" disabled
+              title="조회된 활성 공고 목록에서 라디오로 공고를 선택하면 활성화돼요"
+              style={{ ...chip(false), opacity: 0.5, cursor: "default", borderColor: "#e0d5ee", color: "#b7b0c0" }}>
+              선택 공고 등록
+            </button>
+          )}
         </div>
         {bulkMsg && <div style={{ fontSize: 13.5, color: PURPLE, marginBottom: 8 }}>{bulkMsg}</div>}
 
