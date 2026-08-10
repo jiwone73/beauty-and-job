@@ -1160,7 +1160,8 @@ export default function JobPostForm({
 
   return (
     <>
-      <div className="admin-form-header">
+      {/* 헤더 폭·정렬을 본문(760px)과 일치 → 상단 버튼 오른쪽 끝이 본문 오른쪽 끝과 맞음 */}
+      <div className="admin-form-header" style={{ maxWidth: 760, marginLeft: mx, marginRight: mx }}>
         {mode !== "admin" && (
           <button className="admin-back-btn" onClick={() => router.push(listHref)}>
             <ChevronLeft size={18} /> 목록으로
