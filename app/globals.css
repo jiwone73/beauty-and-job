@@ -5183,6 +5183,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-card:has(.admin-table) {
   width: fit-content;
   max-width: 100%;
+  overflow: visible; /* 표 헤더 sticky가 카드에 클리핑되지 않도록 */
+}
+/* 표 헤더 고정: 스크롤해도 상단 관리자 헤더(64px) 아래에 열 제목이 계속 보이게 */
+.admin-table thead th {
+  position: sticky;
+  top: 64px;
+  z-index: 5;
 }
 .admin-card-head {
   display: flex;

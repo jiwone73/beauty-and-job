@@ -227,7 +227,7 @@ export default function AdminOutreachPage() {
     setSelected(allVisibleSelected ? new Set() : new Set(items.map((r) => r.id)));
 
   // 스타일
-  const th: React.CSSProperties = { padding: "8px 8px", fontSize: 12, color: "#6b6473", fontWeight: 600, textAlign: "left", whiteSpace: "nowrap", borderBottom: "1px solid #eee" };
+  const th: React.CSSProperties = { padding: "8px 8px", fontSize: 12, color: "#6b6473", fontWeight: 600, textAlign: "left", whiteSpace: "nowrap", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 2, background: "#faf8fc" };
   const td: React.CSSProperties = { padding: "6px 8px", fontSize: 13, verticalAlign: "top", borderBottom: "1px solid #f3f0f7" };
   const inp: React.CSSProperties = { width: "100%", minWidth: 90, padding: "5px 7px", border: "1px solid #ddd", borderRadius: 6, fontSize: 12.5, boxSizing: "border-box" };
   const clamp2: React.CSSProperties = { display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis" };
@@ -309,7 +309,7 @@ export default function AdminOutreachPage() {
         {bulkMsg && <div style={{ fontSize: 12.5, color: PURPLE, marginBottom: 8 }}>{bulkMsg}</div>}
 
         {/* 테이블 */}
-        <div style={{ overflowX: "auto", border: "1px solid #eee", borderRadius: 10, background: "#fff" }}>
+        <div style={{ overflow: "auto", maxHeight: "calc(100vh - 250px)", border: "1px solid #eee", borderRadius: 10, background: "#fff" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1220 }}>
             <thead>
               <tr style={{ background: "#faf8fc" }}>
