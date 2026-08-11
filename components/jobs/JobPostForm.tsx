@@ -169,7 +169,7 @@ export default function JobPostForm({
   const [nmFounded, setNmFounded] = useState("");
   const [nmRepresentative, setNmRepresentative] = useState("");
   const [nmPhone, setNmPhone] = useState("");
-  const [bannerImages, setBannerImages] = useState<{ url: string; name: string }[]>([]); // 상단 배너(여러 장, 3장씩 회전)
+  const [bannerImages, setBannerImages] = useState<{ url: string; name: string; origin?: string }[]>([]); // 상단 배너(여러 장, 3장씩 회전)
   const [nmCoverUploading, setNmCoverUploading] = useState(false);
   const [nmManagerName, setNmManagerName] = useState("");
   const [nmManagerPhone, setNmManagerPhone] = useState("");
@@ -813,16 +813,17 @@ export default function JobPostForm({
         // 포스터형 공고(뷰티잡 등): 서버가 detail_images로 내려줌 → 배너 없이 상세 본문 이미지로 배치.
         const detailImgs: string[] = Array.isArray(d.detail_images) ? d.detail_images.filter(Boolean) : [];
         const detailOrigins: string[] = Array.isArray(d.detail_image_origins) ? d.detail_image_origins : [];
+        const imageOrigins: string[] = Array.isArray(d.image_origins) ? d.image_origins : [];
         if (detailImgs.length) {
           setDetailImages(detailImgs.slice(0, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}`, origin: detailOrigins[i] })));
-          // 파서가 배너용 이미지(매장 사진 등)를 함께 내려주면 전부 상단 배너로.
-          if (imgs.length) setBannerImages(imgs.slice(0, 10).map((u) => ({ url: u, name: "배너" })));
+          // 파서가 배너용 이미지(매장 사진 등)를 함께 내려주면 전부 상단 배너로. 출처 배지도 함께.
+          if (imgs.length) setBannerImages(imgs.slice(0, 10).map((u, i) => ({ url: u, name: "배너", origin: imageOrigins[i] })));
         } else {
           const cover = imgs[0] || d.cover_image || "";
-          // 기본 배분: 첫 이미지=배너(1장), 나머지=상세 본문. (관리자가 폼에서 드래그로 조정)
-          if (cover) setBannerImages([{ url: cover, name: "배너" }]);
+          // 기본 배분: 첫 이미지=배너(1장), 나머지=상세 본문. 각 이미지 출처 배지 함께.(관리자가 드래그로 조정)
+          if (cover) setBannerImages([{ url: cover, name: "배너", origin: imageOrigins[0] }]);
           if (imgs.length > 1) {
-            setDetailImages(imgs.slice(1, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
+            setDetailImages(imgs.slice(1, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}`, origin: imageOrigins[i + 1] })));
           }
         }
       }
@@ -1611,6 +1612,12 @@ export default function JobPostForm({
                       onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (imgDragRef.current) dropToBanner(idx); }}
                       style={{ position: "relative", width: 120, height: 76, flexShrink: 0, cursor: "grab" }}>
                       <img src={b.url} alt={`배너 ${idx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
+                      {b.origin && ORIGIN_BADGE[b.origin] && (
+                        <span title={ORIGIN_BADGE[b.origin].tip}
+                          style={{ position: "absolute", top: 3, left: 3, background: ORIGIN_BADGE[b.origin].bg, color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 4, padding: "1px 4px", lineHeight: 1.3, cursor: "help" }}>
+                          {ORIGIN_BADGE[b.origin].t}
+                        </span>
+                      )}
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
                       <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="배너에서 제거"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>

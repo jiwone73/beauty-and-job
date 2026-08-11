@@ -739,6 +739,8 @@ export async function POST(req: NextRequest) {
       out.images = [];
     }
     out.cover_image = (Array.isArray(out.images) && out.images[0]) || "";
+    // images(배너·상세로 배분되는 갤러리)에 대한 출처도 인덱스 정렬로 반환 → 폼에서 각 이미지 배지 표시
+    out.image_origins = (Array.isArray(out.images) ? posterOrigins.slice(0, out.images.length) : []);
   } else {
     out.cover_image = /^https?:\/\//i.test(ogImage) ? ogImage : "";
     out.images = images;
