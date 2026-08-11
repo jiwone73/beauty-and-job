@@ -770,9 +770,9 @@ export async function POST(req: NextRequest) {
 
   // ── 폼 선택지와 정확히 일치하는 값만 남기도록 검증(오타·off-list 방지) ──
   if (typeof out.career !== "string" || !CAREER_OPTIONS.includes(out.career)) out.career = "";
-  const catPool = out.job_type === "STORE" ? STORE_CATEGORIES : OFFICE_CATEGORIES;
-  out.job_categories = Array.isArray(out.job_categories)
-    ? out.job_categories.filter((c: any) => catPool.includes(c)).slice(0, 5) : [];
+  // 모집분야(직군) 자동추측 비활성화: 원문 카테고리가 넓거나 애매해 오분류가 잦음
+  //   → 항상 비워두고 관리자가 직접 선택. (job_type=매장/오피스만 유지해 폼 기본값 제공)
+  out.job_categories = [];
   const tagPool = out.job_type === "STORE" ? STORE_TAGS : OFFICE_TAGS;
   out.benefit_tags = Array.isArray(out.benefit_tags)
     ? [...new Set(out.benefit_tags.filter((t: any) => tagPool.includes(t)))] : [];
