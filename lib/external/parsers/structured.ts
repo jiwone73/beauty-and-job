@@ -23,7 +23,9 @@ function normRegion(s: string): string {
   if (!m) return s.trim();
   return `${SIDO[m[1]] || m[1]} ${m[2].trim()}`;
 }
-function stripTags(s: string): string {
+function stripTags(s: any): string {
+  // JSON-LD 필드가 문자열이 아닌 객체/배열로 오는 경우(예: experienceRequirements)를 방어 → 크래시 방지
+  if (typeof s !== "string") s = s == null ? "" : (typeof s === "object" ? "" : String(s));
   return s
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/g, " ")
