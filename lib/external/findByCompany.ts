@@ -20,9 +20,38 @@ export interface FindByCompanyResult {
   source_status: Record<string, string>;
 }
 
+const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36";
+
+// 제목에 '채용완료' 등 완료 표시가 있는 공고 = 마감(요청 없이 판별). '마감임박' 등 진행중 표현은 제외.
+const CLOSED_TITLE = /(?:채용|모집|충원|구인)\s*완료|마감\s*(?:되었|됐|완료)/;
+
+// 목록엔 남지만 상세는 막는 EUC-KR 보드(뷰티잡매니저·미용인잡)는 상세를 받아 마감 스크립트 유무로 판별.
+const VERIFY_SOURCES = new Set(["뷰티잡매니저", "미용인잡"]);
+async function isClosedDetail(url: string): Promise<boolean> {
+  try {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 8000);
+    const r = await fetch(url, { signal: ctl.signal, headers: { "User-Agent": UA, "Accept-Language": "ko,en;q=0.8" } });
+    clearTimeout(t);
+    if (!r.ok) return false;
+    const buf = Buffer.from(await r.arrayBuffer());
+    let h = new TextDecoder("utf-8").decode(buf);
+    if ((h.match(/�/g)?.length || 0) > 5) { try { h = new TextDecoder("euc-kr").decode(buf); } catch { /* keep */ } }
+    return /마감된\s*채용/.test(h) && /조회할\s*수\s*없|history\.back/.test(h);
+  } catch { return false; } // 오류 시 숨기지 않음(활성일 수 있음)
+}
+async function mapLimit<T, R>(items: T[], limit: number, fn: (x: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (i < items.length) { const idx = i++; out[idx] = await fn(items[idx]); }
+  }));
+  return out;
+}
+
 export async function findJobsForCompany(
   company: string,
-  opts: { maxPages?: number; strict?: boolean } = {}
+  opts: { maxPages?: number; strict?: boolean; verifyOpen?: boolean } = {}
 ): Promise<FindByCompanyResult> {
   const maxPages = opts.maxPages ?? 5;
   const strict = opts.strict ?? true;
@@ -63,26 +92,29 @@ export async function findJobsForCompany(
 
   // 병합 + url 기준 중복 제거
   const seen = new Set<string>();
-  const jobs: FoundJob[] = [];
+  const merged: FoundJob[] = [];
   for (const j of [...selfJobs, ...albaJobs, ...hairJobs, ...bjJobs, ...biJobs, ...bjmJobs, ...myJobs, ...jkJobs, ...srJobs]) {
     if (seen.has(j.url)) continue;
     seen.add(j.url);
-    jobs.push(j);
+    merged.push(j);
   }
 
-  return {
-    jobs,
-    sources: {
-      자사홈페이지: selfJobs.length,
-      알바몬: albaJobs.length,
-      헤어인잡: hairJobs.length,
-      뷰티잡: bjJobs.length,
-      뷰티인잡: biJobs.length,
-      뷰티잡매니저: bjmJobs.length,
-      미용인잡: myJobs.length,
-      잡코리아: jkJobs.length,
-      사람인: srJobs.length,
-    },
-    source_status: sourceStatus,
+  // 마감 공고 제외 — (1) 제목 완료표시(비용 0, 모든 소스) (2) 단건 조회 시 EUC-KR 보드는 상세 검증
+  let jobs = merged.filter((j) => !CLOSED_TITLE.test(j.title));
+  if (opts.verifyOpen) {
+    const toCheck = jobs.filter((j) => VERIFY_SOURCES.has(j.source));
+    if (toCheck.length) {
+      const flags = await mapLimit(toCheck, 6, (j) => isClosedDetail(j.url));
+      const closed = new Set(toCheck.filter((_, i) => flags[i]).map((j) => j.url));
+      if (closed.size) jobs = jobs.filter((j) => !closed.has(j.url));
+    }
+  }
+
+  // 소스별 카운트는 필터 후 실제 표시분 기준(목록과 숫자 일치)
+  const sources: Record<string, number> = {
+    자사홈페이지: 0, 알바몬: 0, 헤어인잡: 0, 뷰티잡: 0, 뷰티인잡: 0, 뷰티잡매니저: 0, 미용인잡: 0, 잡코리아: 0, 사람인: 0,
   };
+  for (const j of jobs) if (j.source in sources) sources[j.source] += 1;
+
+  return { jobs, sources, source_status: sourceStatus };
 }

@@ -24,7 +24,8 @@ export async function GET(req: NextRequest) {
   const maxPages = Number(sp.get("maxPages") || 5);
   const strict = sp.get("strict") !== "false"; // 기본: 제목에 회사명 포함만
 
-  const { jobs, sources, source_status } = await findJobsForCompany(company, { maxPages, strict });
+  // 단건 조회(사용자가 목록을 직접 봄) → 마감 검증 켬. 대량 채용유무 확인은 기본(off)이라 요청 폭증 없음.
+  const { jobs, sources, source_status } = await findJobsForCompany(company, { maxPages, strict, verifyOpen: true });
 
   return Response.json({
     success: true,
