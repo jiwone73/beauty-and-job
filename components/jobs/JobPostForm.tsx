@@ -1267,18 +1267,24 @@ export default function JobPostForm({
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 비회원(관리자) 자유입력 칸 공용 스타일 + 렌더 헬퍼(기존 위젯 옆에 추가). 채우면 저장값 우선.
-  // 비회원 직접입력: "직접입력" 클릭 → 팝오버 텍스트 입력. 채운 값은 항목 우측에 칩으로 표시(클릭해 수정).
-  const freeField = (key: string, val: string, setVal: (v: string) => void, ph = "직접 입력…") =>
+  // 비회원 직접입력: 트리거는 각 위젯 메뉴 안의 "직접입력" 항목(setFiOpen). 여기서는
+  //   ① 채운 값을 항목 우측에 일반 텍스트로 표시(클릭해 수정) ② 입력 팝오버(2행·넓게)만 렌더.
+  //   편집 중에는 값 텍스트를 숨겨 앵커 폭을 고정 → 타이핑 중 팝오버가 움직이지 않음.
+  //   showLink=true(모집인원처럼 메뉴가 없는 항목)일 때만 우측에 '직접입력' 링크를 직접 노출.
+  const freeField = (key: string, val: string, setVal: (v: string) => void, ph = "직접 입력…", showLink = false) =>
     nonMember ? (
-      <span className="fi-pop" style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 8 }}>
-        {val.trim()
-          ? <span onClick={() => setFiOpen(fiOpen === key ? null : key)} title="클릭해 수정" style={{ fontSize: 15, color: "#333", cursor: "pointer", maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
-          : <button type="button" onClick={() => setFiOpen(fiOpen === key ? null : key)} style={{ border: "none", background: "none", padding: 0, fontSize: 12, color: "#b0a7bf", cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>직접입력</button>}
+      <span className="fi-pop" style={{ position: "relative", display: "inline-flex", alignItems: "center", marginLeft: 8 }}>
+        {fiOpen === key
+          ? <span style={{ fontSize: 12, color: "#b0a7bf", whiteSpace: "nowrap" }}>입력 중…</span>
+          : (val.trim()
+              ? <span onClick={() => setFiOpen(key)} title="클릭해 수정" style={{ fontSize: 15, color: "#333", cursor: "pointer", maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
+              : (showLink
+                  ? <button type="button" onClick={() => setFiOpen(key)} style={{ border: "none", background: "none", padding: 0, fontSize: 12, color: "#b0a7bf", cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>직접입력</button>
+                  : null))}
         {fiOpen === key && (
-          <div style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, zIndex: 60, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 240 }}>
-            <input autoFocus type="text" value={val} onChange={(e) => setVal(e.target.value)} placeholder={ph}
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); setFiOpen(null); } }}
-              style={{ width: "100%", height: 34, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 8, padding: "0 10px", fontSize: 14 }} />
+          <div style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, zIndex: 60, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 360 }}>
+            <textarea autoFocus rows={2} value={val} onChange={(e) => setVal(e.target.value)} placeholder={ph}
+              style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 8, padding: "8px 10px", fontSize: 14, lineHeight: 1.5, resize: "vertical", fontFamily: "inherit" }} />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
               <button type="button" onClick={() => { setVal(""); setFiOpen(null); }} style={{ border: "none", background: "none", color: "#c0392b", fontSize: 12, cursor: "pointer" }}>지우기</button>
               <button type="button" onClick={() => setFiOpen(null)} className="company-primary-btn" style={{ padding: "5px 14px", fontSize: 13 }}>적용</button>
@@ -1732,7 +1738,7 @@ export default function JobPostForm({
                       style={{ border: "none", fontSize: 15, color: "#333", padding: 0, WebkitAppearance: "none", appearance: "none", height: 20, lineHeight: "20px", textAlign: form.headcount ? "center" : "left", background: form.headcount ? "transparent" : PH_BG, borderRadius: form.headcount ? 0 : 5, width: form.headcount ? 44 : 56 }} />
                     <span style={{ fontSize: 15, color: "#999" }}>명</span>
                   </span>
-                  {freeField("headcount", fiHeadcount, setFiHeadcount, "예: 인원미정")}
+                  {freeField("headcount", fiHeadcount, setFiHeadcount, "예: 인원미정(협의)", true)}
                 </div>
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
@@ -1808,6 +1814,8 @@ export default function JobPostForm({
                         <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
                           <input type="checkbox" checked={salaryNegoDraft} onChange={(e) => setSalaryNegoDraft(e.target.checked)} /> 협의 (금액 비공개)
                         </label>
+                        {nonMember && <button type="button" onClick={() => { setSalaryModalOpen(false); setFiOpen("salary"); }}
+                          style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#5f0080", cursor: "pointer" }}>✎ 직접입력…</button>}
                         <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
                           <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setSalaryModalOpen(false)}>취소</button>
                           <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applySalary}>적용</button>
@@ -1870,6 +1878,8 @@ export default function JobPostForm({
                           <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
                             <input type="checkbox" checked={workDaysNego} onChange={(e) => setWorkDaysNego(e.target.checked)} /> 요일 협의
                           </label>
+                          {nonMember && <button type="button" onClick={() => { setWorkDaysOpen(false); setFiOpen("days"); }}
+                            style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#5f0080", cursor: "pointer" }}>✎ 직접입력…</button>}
                         </div>
                       )}
                     </div>
@@ -1893,6 +1903,8 @@ export default function JobPostForm({
                           <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
                             <input type="checkbox" checked={workTimeNego} onChange={(e) => setWorkTimeNego(e.target.checked)} /> 시간 협의
                           </label>
+                          {nonMember && <button type="button" onClick={() => { setWorkTimeOpen(false); setFiOpen("time"); }}
+                            style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#5f0080", cursor: "pointer" }}>✎ 직접입력…</button>}
                         </div>
                       )}
                     </div>
@@ -1934,6 +1946,8 @@ export default function JobPostForm({
                           )}
                           {visible.length === 0 && !canAdd && <span style={{ fontSize: 13, color: "#bbb" }}>검색 결과가 없어요.</span>}
                         </div>
+                        {nonMember && <button type="button" onClick={() => { setWelfareOpen(false); setFiOpen("benefits"); }}
+                          style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#5f0080", cursor: "pointer" }}>✎ 직접입력…</button>}
                       </div>
                       );
                     })()}
