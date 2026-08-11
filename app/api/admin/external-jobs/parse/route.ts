@@ -564,10 +564,17 @@ export async function POST(req: NextRequest) {
           if (ir.ok) {
             const ih = new TextDecoder("utf-8").decode(Buffer.from(await ir.arrayBuffer()));
             const clean = (s: string) => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
-            // 디자인 이미지: file2.jobkorea …/DownImage/CorpEditor?file_No=N (JS 문자열 내 이스케이프 슬래시 대응)
-            const imgs = [...new Set([...ih.matchAll(/file2\.jobkorea\.co\.kr[\\/]+Net[\\/]+Mng[\\/]+DownImage[\\/]+CorpEditor\?file_No=\d+/gi)].map((m) => m[0].replace(/\\/g, "")))]
-              .map((u) => "https://" + u)
-              .slice(0, 12);
+            // 상세 디자인/콘텐츠 이미지: ① file2.jobkorea …/DownImage/CorpEditor?file_No=N(JS 문자열 이스케이프 대응)
+            //   ② 본문 <img> 콘텐츠 이미지(호스트 무관 — 외부호스트 pds.saramin 등도 포함). 사이트 크롬(로고·아이콘·배너·맵)은 제외.
+            const jkChrome = /(?:icon|logo|sprite|favicon|badge|spacer|blank|btn|button|arrow|bullet|_bg|banner|sns|kakao|naver|facebook|instagram|pixel|1x1|\/skin\/|\/common\/|\/gnb\/|\/footer\/|share_img|map|bl&nbsp;)/i;
+            const imgSet = new Set<string>();
+            for (const m of ih.matchAll(/file2\.jobkorea\.co\.kr[\\/]+Net[\\/]+Mng[\\/]+DownImage[\\/]+CorpEditor\?file_No=\d+/gi)) imgSet.add("https://" + m[0].replace(/\\/g, ""));
+            for (const m of ih.matchAll(/<img\b[^>]*\bsrc=["']([^"']+\.(?:jpe?g|png|gif|webp)(?:\?[^"']*)?)["']/gi)) {
+              let u = m[1].replace(/&amp;/g, "&");
+              if (/^\/\//.test(u)) u = "https:" + u;
+              if (/^https?:\/\//i.test(u) && !jkChrome.test(u)) imgSet.add(u);
+            }
+            const imgs = [...imgSet].slice(0, 12);
             if (imgs.length) {
               out.images = imgs;
               out._rehost = true;
