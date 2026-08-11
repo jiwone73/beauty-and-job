@@ -186,6 +186,11 @@ export async function POST(req: NextRequest) {
           if (h && looksBlocked(h) && attempt === 0) { await new Promise((res) => setTimeout(res, 1500)); continue; }
           break; // 차단 재시도 소진 또는 빈 응답
         }
+        // 원 사이트에서 마감된 공고: 상세 대신 "마감된 채용정보는 조회할 수 없습니다" 알림 스크립트만 옴
+        //   (뷰티잡매니저·미용인잡 등 EUC-KR 잡보드는 마감 공고도 목록엔 남기지만 상세는 막음)
+        if (html && /마감된\s*채용/.test(html) && /조회할\s*수\s*없|history\.back/.test(html)) {
+          return err("CLOSED_001", "원 사이트에서 이미 마감된 공고예요. 상세를 불러올 수 없어요. (목록엔 남아 있어도 마감 처리된 공고입니다)", 410);
+        }
         if (!html && !pastedText) {
           return err("FETCH_001", `페이지를 불러오지 못했어요 (${lastStatus ? "HTTP " + lastStatus : "접근 차단"}). 잠시 후 다시 시도하거나, 공고 본문을 복사해 ‘텍스트 붙여넣기’로 등록해보세요.`, 502);
         }
