@@ -81,7 +81,7 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-// 비회원 기업 삭제 (연결된 공고가 없을 때만)
+// 비회원 기업 삭제 (연결된 공고도 함께 삭제 — 공고중이어도 허용)
 export async function DELETE(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "admin");
   if (authErr) return authErr;
@@ -89,18 +89,24 @@ export async function DELETE(req: NextRequest) {
   if (!id) return err("VALIDATION_001", "id가 필요합니다.", 400);
   const client = await pool.connect();
   try {
-    const chk = await client.query(
-      `SELECT is_member, (SELECT COUNT(*)::int FROM job_postings WHERE company_id = $1) AS jobs
-       FROM companies WHERE id = $1`,
-      [id]
-    );
+    const chk = await client.query(`SELECT is_member FROM companies WHERE id = $1`, [id]);
     if (chk.rowCount === 0) return err("NOT_FOUND", "기업을 찾을 수 없습니다.", 404);
     if (chk.rows[0].is_member) return err("VALIDATION_002", "회원 기업은 여기서 삭제할 수 없습니다.", 409);
-    if ((chk.rows[0].jobs || 0) > 0) {
-      return err("VALIDATION_002", "이 기업에 연결된 공고가 있어요. 공고를 먼저 삭제하거나 다른 기업으로 옮긴 뒤 삭제하세요.", 409);
+    try {
+      await client.query("BEGIN");
+      // 공고에 딸린 참조부터 정리(applications·visibility_upgrades는 NO ACTION, bookmarks는 CASCADE)
+      await client.query(
+        `DELETE FROM applications WHERE job_posting_id IN (SELECT id FROM job_postings WHERE company_id = $1)`, [id]);
+      await client.query(
+        `DELETE FROM visibility_upgrades WHERE job_posting_id IN (SELECT id FROM job_postings WHERE company_id = $1)`, [id]);
+      const delJobs = await client.query(`DELETE FROM job_postings WHERE company_id = $1`, [id]);
+      await client.query(`DELETE FROM companies WHERE id = $1 AND is_member = false`, [id]);
+      await client.query("COMMIT");
+      return ok({ success: true, deleted_jobs: delJobs.rowCount || 0 });
+    } catch (e) {
+      await client.query("ROLLBACK");
+      throw e;
     }
-    await client.query(`DELETE FROM companies WHERE id = $1 AND is_member = false`, [id]);
-    return ok({ success: true });
   } finally {
     client.release();
   }

@@ -234,17 +234,17 @@ export default function ExternalCompaniesPanel() {
 
   const bulkDelete = async () => {
     if (selectedIds.length === 0) return;
-    if (typeof window !== "undefined" && !window.confirm(`선택한 ${selectedIds.length}개 비회원 기업을 삭제할까요? (공고가 있는 기업은 건너뜁니다)`)) return;
+    if (typeof window !== "undefined" && !window.confirm(`선택한 ${selectedIds.length}개 비회원 기업을 삭제할까요?\n연결된 공고·지원서도 함께 삭제됩니다. (복구 불가)`)) return;
     setBusy(true); setMsg("");
-    let done = 0, skipped = 0;
+    let done = 0, skipped = 0, jobs = 0;
     try {
       for (const id of selectedIds) {
         const res = await fetch(`/api/admin/external-companies?id=${id}`, { method: "DELETE", headers: authH });
         const j = await res.json().catch(() => ({}));
-        if (j.success) done++; else skipped++;
+        if (j.success) { done++; jobs += j.data?.deleted_jobs ?? 0; } else skipped++;
       }
       setSelectedIds([]);
-      setMsg(`삭제 ${done}개 완료${skipped ? ` · ${skipped}개는 공고가 있어 건너뜀(먼저 공고 정리 필요)` : ""}.`);
+      setMsg(`삭제 ${done}개 완료${jobs ? `(공고 ${jobs}건 포함)` : ""}${skipped ? ` · ${skipped}개 실패` : ""}.`);
       await load();
     } finally { setBusy(false); }
   };
