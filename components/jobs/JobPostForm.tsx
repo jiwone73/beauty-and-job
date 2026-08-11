@@ -300,6 +300,16 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [salaryModalOpen]);
+  // 직접입력 팝오버: 바깥 클릭 시 닫기(팝오버·트리거 영역 .fi-pop 밖 클릭이면 닫음)
+  const [fiOpen, setFiOpen] = useState<string | null>(null); // 열려 있는 직접입력 팝오버 키
+  useEffect(() => {
+    if (!fiOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement)?.closest?.(".fi-pop")) setFiOpen(null);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [fiOpen]);
   // 근무지역 인라인 자동완성: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!regionOpen) return;
@@ -1257,10 +1267,25 @@ export default function JobPostForm({
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 비회원(관리자) 자유입력 칸 공용 스타일 + 렌더 헬퍼(기존 위젯 옆에 추가). 채우면 저장값 우선.
-  const fiStyle: React.CSSProperties = { marginLeft: 8, border: "1px solid #e0d5ec", borderRadius: 5, padding: "1px 8px", fontSize: 12.5, color: "#5f0080", background: "#faf7fd", height: 22, width: 140, boxSizing: "border-box" };
-  const freeField = (val: string, setVal: (v: string) => void, ph = "자유입력") =>
+  // 비회원 직접입력: "직접입력" 클릭 → 팝오버 텍스트 입력. 채운 값은 항목 우측에 칩으로 표시(클릭해 수정).
+  const freeField = (key: string, val: string, setVal: (v: string) => void, ph = "직접 입력…") =>
     nonMember ? (
-      <input type="text" value={val} onChange={(e) => setVal(e.target.value)} placeholder={ph} title="비회원 자유입력 — 채우면 이 값으로 저장됩니다" style={fiStyle} />
+      <span className="fi-pop" style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 8 }}>
+        {val.trim()
+          ? <span onClick={() => setFiOpen(fiOpen === key ? null : key)} title="클릭해 수정" style={{ fontSize: 13, color: "#5f0080", background: "#faf7fd", border: "1px solid #e0d5ec", borderRadius: 5, padding: "1px 8px", cursor: "pointer", maxWidth: 240, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
+          : <button type="button" onClick={() => setFiOpen(fiOpen === key ? null : key)} style={{ border: "none", background: "none", padding: 0, fontSize: 12, color: "#b0a7bf", cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>직접입력</button>}
+        {fiOpen === key && (
+          <div style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, zIndex: 60, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 240 }}>
+            <input autoFocus type="text" value={val} onChange={(e) => setVal(e.target.value)} placeholder={ph}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); setFiOpen(null); } }}
+              style={{ width: "100%", height: 34, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 8, padding: "0 10px", fontSize: 14 }} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+              <button type="button" onClick={() => { setVal(""); setFiOpen(null); }} style={{ border: "none", background: "none", color: "#c0392b", fontSize: 12, cursor: "pointer" }}>지우기</button>
+              <button type="button" onClick={() => setFiOpen(null)} className="company-primary-btn" style={{ padding: "5px 14px", fontSize: 13 }}>적용</button>
+            </div>
+          </div>
+        )}
+      </span>
     ) : null;
   const isOffice = jobGroupType === "기업";
   const textFieldMeta: Record<TextKey, { label: string; hint?: string; placeholder: string }> = {
@@ -1298,15 +1323,15 @@ export default function JobPostForm({
     career: form.career || "경력무관",
     education: form.education || "",
     region: regionList.join(", "),
-    employType: (form.type ? form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : "") : "협의"),
-    headcount: form.headcount ? `${form.headcount}명` : "00명", // 인원 미언급 시 '00명'(미정)으로 표기
+    employType: fiEmployment.trim() || (form.type ? form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : "") : "협의"),
+    headcount: fiHeadcount.trim() || (form.headcount ? `${form.headcount}명` : "00명"), // 자유입력 우선, 미언급 시 '00명'
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
-    salary: fmtSalary() || "면접 후 협의",
+    salary: fiSalary.trim() || fmtSalary() || "면접 후 협의",
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
     preferreds: form.preferred ? form.preferred.split("\n").filter(Boolean) : [],
-    benefits: form.benefits ? form.benefits.split("\n").filter(Boolean) : benefitTags,
+    benefits: fiBenefits.trim() ? fiBenefits.split(",").map((s) => s.trim()).filter(Boolean) : (form.benefits ? form.benefits.split("\n").filter(Boolean) : benefitTags),
     responsibilities: form.responsibilities ? form.responsibilities.split("\n").filter(Boolean) : [],
     process: hiringProcess.filter((s) => s.trim()),
     notes: notes,
@@ -1316,7 +1341,7 @@ export default function JobPostForm({
     companyInfo: {
       name: previewCompanyName,
       brandName: isNm ? newBrandName : (cp?.brand_name || ""),
-      industry: isNm ? nmIndustry : "",
+      industry: isNm ? (fiIndustry.trim() || nmIndustry) : "",
       representative: isNm ? nmRepresentative : (cp?.representative_name || ""),
       companyType: jobGroupType === "매장" ? "매장" : "오피스",
       size: isNm ? nmSize : (cp?.company_size || ""),
@@ -1328,9 +1353,9 @@ export default function JobPostForm({
       longitude: null,
     },
     companyAddress: isNm ? nmAddress : (cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : ""),
-    workDaysText: workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의"),
-    workPeriodText: workPeriod || "협의",
-    workTimeText: workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의"),
+    workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의")),
+    workPeriodText: fiWorkPeriod.trim() || workPeriod || "협의",
+    workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의")),
     // 비회원(관리자) 공고는 담당자 연락처를 구직자에게 노출하지 않음 → 미리보기도 동일하게 숨기고 '온라인 지원'만
     isExternal: isNm,
     contactName: "",
@@ -1707,7 +1732,7 @@ export default function JobPostForm({
                       style={{ border: "none", fontSize: 15, color: "#333", padding: 0, WebkitAppearance: "none", appearance: "none", height: 20, lineHeight: "20px", textAlign: form.headcount ? "center" : "left", background: form.headcount ? "transparent" : PH_BG, borderRadius: form.headcount ? 0 : 5, width: form.headcount ? 44 : 56 }} />
                     <span style={{ fontSize: 15, color: "#999" }}>명</span>
                   </span>
-                  {freeField(fiHeadcount, setFiHeadcount, "예: 인원미정")}
+                  {freeField("headcount", fiHeadcount, setFiHeadcount, "예: 인원미정")}
                 </div>
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
@@ -1753,7 +1778,7 @@ export default function JobPostForm({
                       style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
                       {typeLocked ? "선택" : ((salaryNego || form.salary) ? fmtSalary() : pick("입력"))}
                     </button>
-                    {freeField(fiSalary, setFiSalary, "예: 추후협의")}
+                    {freeField("salary", fiSalary, setFiSalary, "예: 추후협의")}
                     {salaryModalOpen && (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
                         {/* 급여 단위 */}
@@ -1793,12 +1818,13 @@ export default function JobPostForm({
                   {/* 고용형태 — 네이티브 풀다운. 계약직·인턴이면 '정규직 전환 가능' 하위 옵션 노출 */}
                   <div className="job-detail-company-row" style={{ position: "relative", alignItems: "center" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>고용형태<span style={{ color: "#e9a3a3" }}> *</span></span>
-                    <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}
+                    <select value={form.type} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("employment"); return; } setForm({ ...form, type: e.target.value }); }}
                       style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.type) }}>
                       <option value=""></option>
                       {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
+                      {nonMember && <option value="__fi__">직접입력…</option>}
                     </select>
-                    {freeField(fiEmployment, setFiEmployment)}
+                    {freeField("employment", fiEmployment, setFiEmployment)}
                     {(form.type === "계약직" || form.type === "인턴") && (
                       <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, color: "#666", cursor: "pointer", whiteSpace: "nowrap" }}>
                         <input type="checkbox" checked={fullTimeConvertible} onChange={(e) => setFullTimeConvertible(e.target.checked)} style={{ margin: 0 }} /> 정규직 전환 가능
@@ -1809,12 +1835,13 @@ export default function JobPostForm({
                   {jobGroupType === "매장" && (
                     <div className="job-detail-company-row" style={{ position: "relative" }}>
                       <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무기간</span>
-                      <select value={workPeriod} onChange={(e) => setWorkPeriod(e.target.value)}
+                      <select value={workPeriod} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("period"); return; } setWorkPeriod(e.target.value); }}
                         style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!workPeriod) }}>
                         <option value=""></option>
                         {WORK_PERIODS.map((o) => <option key={o} value={o}>{o}</option>)}
+                        {nonMember && <option value="__fi__">직접입력…</option>}
                       </select>
-                      {freeField(fiWorkPeriod, setFiWorkPeriod)}
+                      {freeField("period", fiWorkPeriod, setFiWorkPeriod)}
                     </div>
                   )}
                   {jobGroupType === "매장" && (<>
@@ -1825,7 +1852,7 @@ export default function JobPostForm({
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workDaysNego || workDays.length) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
                         {workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : pick())}
                       </button>
-                      {freeField(fiWorkDays, setFiWorkDays, "예: 주말만/요일협의")}
+                      {freeField("days", fiWorkDays, setFiWorkDays, "예: 주말만/요일협의")}
                       {workDaysOpen && (
                         <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -1853,7 +1880,7 @@ export default function JobPostForm({
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
                         {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : pick("입력"))}
                       </button>
-                      {freeField(fiWorkTime, setFiWorkTime, "예: 시간협의/평일저녁")}
+                      {freeField("time", fiWorkTime, setFiWorkTime, "예: 시간협의/평일저녁")}
                       {workTimeOpen && (
                         <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -1877,7 +1904,7 @@ export default function JobPostForm({
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
                       {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : pick())}
                     </button>
-                    {freeField(fiBenefits, setFiBenefits, "예: 4대보험, 인센티브")}
+                    {freeField("benefits", fiBenefits, setFiBenefits, "예: 4대보험, 인센티브")}
                     {welfareOpen && !typeLocked && (() => {
                       const qq = benefitSearch.trim().toLowerCase();
                       const match = (n: string) => !qq || n.toLowerCase().includes(qq);
@@ -2118,7 +2145,7 @@ export default function JobPostForm({
                       <textarea ref={nmDescRef} rows={1} style={nmDescription ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", minHeight: 40, resize: "none", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden", boxSizing: "border-box" } : { ...inpHl(false), resize: "none", marginTop: 6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
                     </div>
                     <div style={row}><span style={lbl2}>회사명<span style={req}> *</span></span><input style={inpHl(!!newCompanyName)} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} /></div>
-                    <div style={row}><span style={lbl2}>업종</span><select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select>{freeField(fiIndustry, setFiIndustry)}</div>
+                    <div style={row}><span style={lbl2}>업종</span><select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("industry"); return; } setNmIndustry(e.target.value); }}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}{nonMember && <option value="__fi__">직접입력…</option>}</select>{freeField("industry", fiIndustry, setFiIndustry)}</div>
                     <div style={row}><span style={lbl2}>브랜드명</span><input style={inpHl(!!newBrandName)} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>웹사이트</span><input style={inpHl(!!nmHomepage)} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} /></div>
                     <div style={{ ...row, ...full }}><span style={lbl2}>주소<span style={req}> *</span></span><input style={inpHl(!!nmAddress)} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} /></div>
