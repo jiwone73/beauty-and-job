@@ -194,17 +194,18 @@ export default function JobDetailPage() {
             education: j.education || '',
             jobCategories: Array.isArray(j.categories) ? j.categories : [],
             region: j.location || '',
-            employType: j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직',
-            headcount: j.headcount ? `${j.headcount}명` : '00명', // 인원 미언급 시 '00명'(미정)
+            // 고용형태: 저장된 employment_type(비회원 자유입력 포함) 우선, 없으면 work_type 매핑
+            employType: j.employment_type || (j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직'),
+            headcount: j.headcount_text || (j.headcount ? `${j.headcount}명` : '00명'), // 자유입력 우선, 미언급 시 '00명'
             deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, '.') : '상시채용',
-            salary: ((j.salary_max && j.salary_max > j.salary_min)
+            salary: j.salary_text || (((j.salary_max && j.salary_max > j.salary_min)
               ? `${formatSalaryWon(j.salary_min, j.salary_type)} ~ ${formatSalaryWon(j.salary_max, j.salary_type).replace(/^[^0-9]*/, '')}`
-              : formatSalaryWon(j.salary_min, j.salary_type)) || '면접 후 협의',
+              : formatSalaryWon(j.salary_min, j.salary_type)) || '면접 후 협의'),
             color: '#e8f0fe',
             description: j.description || '',
             requirements: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],
             preferreds: j.preferred_qualifications ? j.preferred_qualifications.split('\n').filter(Boolean) : [],
-            benefits: j.benefits ? j.benefits.split('\n').filter(Boolean) : [],
+            benefits: (Array.isArray(j.benefit_tags) && j.benefit_tags.length) ? j.benefit_tags : (j.benefits ? j.benefits.split('\n').filter(Boolean) : []),
             responsibilities: j.responsibilities ? String(j.responsibilities).split('\n').filter(Boolean) : [],
             process: j.hiring_process || [],
             notes: j.notes || '',

@@ -381,6 +381,16 @@ export default function JobPostForm({
   const [workTimeStart, setWorkTimeStart] = useState("");
   const [workTimeEnd, setWorkTimeEnd] = useState("");
   const [workTimeNego, setWorkTimeNego] = useState(false);
+  // ── 비회원(관리자) 자유입력: 원문이 선택지에 안 맞을 때 그대로 입력. 채우면 저장값으로 우선 ──
+  //   문자열 필드는 기존 컬럼에 override 저장, 급여·모집인원은 salary_text·headcount_text에 저장.
+  const [fiEmployment, setFiEmployment] = useState(""); // 고용형태
+  const [fiWorkPeriod, setFiWorkPeriod] = useState(""); // 근무기간
+  const [fiWorkDays, setFiWorkDays] = useState("");     // 근무요일
+  const [fiWorkTime, setFiWorkTime] = useState("");     // 근무시간
+  const [fiBenefits, setFiBenefits] = useState("");     // 복리후생(콤마 구분)
+  const [fiIndustry, setFiIndustry] = useState("");     // 업종
+  const [fiSalary, setFiSalary] = useState("");         // 급여
+  const [fiHeadcount, setFiHeadcount] = useState("");   // 모집인원
   const [workTimeOpen, setWorkTimeOpen] = useState(false);
   const workTimeRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -513,6 +523,13 @@ export default function JobPostForm({
         setWorkTimeNego(false); setWorkTimeStart(st || ""); setWorkTimeEnd(en || "");
       } else { setWorkTimeNego(false); setWorkTimeStart(""); setWorkTimeEnd(""); }
       setSalaryNego(!j.salary_min);
+      // 비회원 자유입력 복원: 저장값이 선택지에 없으면 자유입력 칸으로(그래야 편집 저장 시 안 사라짐 + 관리자가 인지)
+      setFiSalary(j.salary_text || "");
+      setFiHeadcount(j.headcount_text || "");
+      setFiEmployment(type && !EMPLOYMENT_TYPES.includes(type) ? type : "");
+      setFiWorkPeriod(j.work_period && !WORK_PERIODS.includes(j.work_period) ? j.work_period : "");
+      setFiWorkDays(j.work_days && j.work_days !== "협의" && String(j.work_days).split(",").some((d: string) => !WORK_DAY_OPTIONS.includes(d.trim())) ? j.work_days : "");
+      setFiWorkTime(j.work_time && j.work_time !== "협의" && !String(j.work_time).includes("~") ? j.work_time : "");
       if (j.job_type) setJobGroupType(j.job_type === "STORE" ? "매장" : "기업");
       if (j.company_id) setCompanyId(j.company_id);
 
@@ -1088,15 +1105,15 @@ export default function JobPostForm({
       if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
       if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
       if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
-      if (!form.headcount) { alert("모집인원을 입력해주세요."); return; } // 경력은 선택
+      if (!form.headcount && !fiHeadcount.trim()) { alert("모집인원을 입력해주세요."); return; } // 경력은 선택
       if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
-      // 근무조건 필수(발행 시). 급여는 값 또는 '협의' 체크로 충족.
+      // 근무조건 필수(발행 시). 급여는 값 또는 '협의' 체크로 충족. 비회원 자유입력(fi*)도 충족으로 인정.
       if (status === "publish") {
-        if (!(salaryNego || form.salary.trim())) { alert("급여를 입력하거나 협의로 선택해주세요."); return; }
-        if (!form.type) { alert("고용형태를 선택해주세요."); return; }
+        if (!(salaryNego || form.salary.trim() || fiSalary.trim())) { alert("급여를 입력하거나 협의로 선택해주세요."); return; }
+        if (!form.type && !fiEmployment.trim()) { alert("고용형태를 선택해주세요."); return; }
         if (jobGroupType === "매장") {
-          if (!(workDaysNego || workDays.length)) { alert("근무요일을 선택해주세요."); return; }
-          if (!(workTimeNego || (workTimeStart && workTimeEnd))) { alert("근무시간을 입력해주세요."); return; }
+          if (!(workDaysNego || workDays.length || fiWorkDays.trim())) { alert("근무요일을 선택해주세요."); return; }
+          if (!(workTimeNego || (workTimeStart && workTimeEnd) || fiWorkTime.trim())) { alert("근무시간을 입력해주세요."); return; }
           // 매장: 상세요강 이미지 또는 (포지션 소개+자격요건)
           if (detailImages.length === 0 && (!form.description?.trim() || !form.requirements?.trim())) {
             alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개와 자격요건을 입력해주세요.");
@@ -1111,7 +1128,7 @@ export default function JobPostForm({
             if (!form.requirements?.trim()) { alert("자격요건을 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
           }
         }
-        if (benefitTags.length === 0) { alert("복리후생을 1개 이상 선택해주세요."); return; }
+        if (benefitTags.length === 0 && !fiBenefits.trim()) { alert("복리후생을 1개 이상 선택해주세요."); return; }
       }
       // 마감일: 날짜 선택 또는 상시채용 필수
       if (status === "publish" && !alwaysOpen && !form.deadline) {
@@ -1140,22 +1157,26 @@ export default function JobPostForm({
       description: form.description || null,
       requirements: form.requirements || null,
       preferred_qualifications: form.preferred || null,
-      benefits: form.benefits || null,
+      // 복리후생 자유입력이 있으면 텍스트 컬럼에도 줄바꿈으로 저장(공개 상세가 benefits 텍스트를 표시)
+      benefits: fiBenefits.trim() ? fiBenefits.split(",").map((s) => s.trim()).filter(Boolean).join("\n") : (form.benefits || null),
       responsibilities: form.responsibilities || null,
       education: form.education || null,
       salary_min: salaryMin, salary_max: salaryMaxVal,
       salary_type: salaryMin ? salaryType : null,
+      salary_text: fiSalary.trim() || null, // 비회원 자유입력(예: "추후협의") — 있으면 표시 우선
       location: regionList.join(", ") || null,
       work_type: workType,
-      employment_type: form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : ""),
+      // 자유입력(fi*)이 채워졌으면 그 값으로 override(비회원 원문 보존). 비어 있으면 기존 위젯 값.
+      employment_type: fiEmployment.trim() || (form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : "")),
       experience_level: expLevel,
-      benefit_tags: benefitTags,
-      work_period: workPeriod || null,
-      work_days: workDaysNego ? "협의" : (workDays.length ? workDays.join(",") : null),
-      work_time: workTimeNego ? "협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : null),
+      benefit_tags: fiBenefits.trim() ? fiBenefits.split(",").map((s) => s.trim()).filter(Boolean) : benefitTags,
+      work_period: fiWorkPeriod.trim() || workPeriod || null,
+      work_days: fiWorkDays.trim() || (workDaysNego ? "협의" : (workDays.length ? workDays.join(",") : null)),
+      work_time: fiWorkTime.trim() || (workTimeNego ? "협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : null)),
       work_time_slots: null,
       deadline: form.deadline || null,
       headcount: form.headcount ? parseInt(form.headcount, 10) : null,
+      headcount_text: fiHeadcount.trim() || null, // 비회원 자유입력(예: "인원미정") — 있으면 표시 우선
       categories,
       detail_images: detailImages,
       hiring_process: hiringProcess.filter((s) => s.trim()),
@@ -1172,7 +1193,7 @@ export default function JobPostForm({
     };
 
     const company: any = nonMember
-      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, ""), logo_url: null, cover_images: bannerImages.map((b) => ({ url: b.url })) } }
+      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: fiIndustry.trim() || nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, ""), logo_url: null, cover_images: bannerImages.map((b) => ({ url: b.url })) } }
       : { companyId, newCompany: null };
     const result = await onSubmit(payload, status, company);
     if (!result.success) {
@@ -1234,6 +1255,12 @@ export default function JobPostForm({
 
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
+  // 비회원(관리자) 자유입력 칸 공용 스타일 + 렌더 헬퍼(기존 위젯 옆에 추가). 채우면 저장값 우선.
+  const fiStyle: React.CSSProperties = { marginLeft: 8, border: "1px solid #e0d5ec", borderRadius: 5, padding: "1px 8px", fontSize: 12.5, color: "#5f0080", background: "#faf7fd", height: 22, width: 140, boxSizing: "border-box" };
+  const freeField = (val: string, setVal: (v: string) => void, ph = "자유입력") =>
+    nonMember ? (
+      <input type="text" value={val} onChange={(e) => setVal(e.target.value)} placeholder={ph} title="비회원 자유입력 — 채우면 이 값으로 저장됩니다" style={fiStyle} />
+    ) : null;
   const isOffice = jobGroupType === "기업";
   const textFieldMeta: Record<TextKey, { label: string; hint?: string; placeholder: string }> = {
     benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
@@ -1673,6 +1700,7 @@ export default function JobPostForm({
                       style={{ border: "none", fontSize: 15, color: "#333", padding: 0, WebkitAppearance: "none", appearance: "none", height: 20, lineHeight: "20px", textAlign: form.headcount ? "center" : "left", background: form.headcount ? "transparent" : PH_BG, borderRadius: form.headcount ? 0 : 5, width: form.headcount ? 44 : 56 }} />
                     <span style={{ fontSize: 15, color: "#999" }}>명</span>
                   </span>
+                  {freeField(fiHeadcount, setFiHeadcount, "예: 인원미정")}
                 </div>
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
@@ -1718,6 +1746,7 @@ export default function JobPostForm({
                       style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
                       {typeLocked ? "선택" : ((salaryNego || form.salary) ? fmtSalary() : pick("입력"))}
                     </button>
+                    {freeField(fiSalary, setFiSalary, "예: 추후협의")}
                     {salaryModalOpen && (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
                         {/* 급여 단위 */}
@@ -1762,6 +1791,7 @@ export default function JobPostForm({
                       <option value=""></option>
                       {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
                     </select>
+                    {freeField(fiEmployment, setFiEmployment)}
                     {(form.type === "계약직" || form.type === "인턴") && (
                       <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, color: "#666", cursor: "pointer", whiteSpace: "nowrap" }}>
                         <input type="checkbox" checked={fullTimeConvertible} onChange={(e) => setFullTimeConvertible(e.target.checked)} style={{ margin: 0 }} /> 정규직 전환 가능
@@ -1777,6 +1807,7 @@ export default function JobPostForm({
                         <option value=""></option>
                         {WORK_PERIODS.map((o) => <option key={o} value={o}>{o}</option>)}
                       </select>
+                      {freeField(fiWorkPeriod, setFiWorkPeriod)}
                     </div>
                   )}
                   {jobGroupType === "매장" && (<>
@@ -1787,6 +1818,7 @@ export default function JobPostForm({
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workDaysNego || workDays.length) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
                         {workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : pick())}
                       </button>
+                      {freeField(fiWorkDays, setFiWorkDays, "예: 주말만/요일협의")}
                       {workDaysOpen && (
                         <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -1814,6 +1846,7 @@ export default function JobPostForm({
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
                         {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : pick("입력"))}
                       </button>
+                      {freeField(fiWorkTime, setFiWorkTime, "예: 시간협의/평일저녁")}
                       {workTimeOpen && (
                         <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -1837,6 +1870,7 @@ export default function JobPostForm({
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
                       {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : pick())}
                     </button>
+                    {freeField(fiBenefits, setFiBenefits, "예: 4대보험, 인센티브")}
                     {welfareOpen && !typeLocked && (() => {
                       const qq = benefitSearch.trim().toLowerCase();
                       const match = (n: string) => !qq || n.toLowerCase().includes(qq);
@@ -2077,7 +2111,7 @@ export default function JobPostForm({
                       <textarea ref={nmDescRef} rows={1} style={nmDescription ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", minHeight: 40, resize: "none", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden", boxSizing: "border-box" } : { ...inpHl(false), resize: "none", marginTop: 6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
                     </div>
                     <div style={row}><span style={lbl2}>회사명<span style={req}> *</span></span><input style={inpHl(!!newCompanyName)} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} /></div>
-                    <div style={row}><span style={lbl2}>업종</span><select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select></div>
+                    <div style={row}><span style={lbl2}>업종</span><select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => setNmIndustry(e.target.value)}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}</select>{freeField(fiIndustry, setFiIndustry)}</div>
                     <div style={row}><span style={lbl2}>브랜드명</span><input style={inpHl(!!newBrandName)} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>웹사이트</span><input style={inpHl(!!nmHomepage)} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} /></div>
                     <div style={{ ...row, ...full }}><span style={lbl2}>주소<span style={req}> *</span></span><input style={inpHl(!!nmAddress)} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} /></div>
