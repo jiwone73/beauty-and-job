@@ -390,14 +390,24 @@ function parseAlbamon(html: string): StructuredResult | null {
   const ndm = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/i);
   if (ndm) { try { vd = JSON.parse(ndm[1])?.props?.pageProps?.data?.viewData || null; } catch { vd = null; } }
 
-  // 이미지: SSR HTML의 file.albamon.com/Recruit/… (이미지 공고 대응). 핫링크 대비 재호스팅.
-  const albamonImages = () => [
-    ...new Set(
-      [...html.matchAll(/https?:(?:\\u002[Ff]|\\?\/){2}file\.albamon\.com[^\s"'<>()\\]+?\.(?:jpe?g|png|webp|gif)/gi)]
-        .map((m) => m[0].replace(/\\u002[Ff]/gi, "/").replace(/\\\//g, "/"))
-        .filter((u) => /\/Recruit\//i.test(u))
-    ),
-  ].slice(0, 12);
+  // 이미지: 회사가 올린 사진만. 알바몬 템플릿(스톡 top-image·로고 등 contents.albamon.kr/…/template/)은 제외.
+  //   ① 이미지 공고(photoType C): recruitImages.photos[].imageUrl (coimg.jobkorea.co.kr/Company/Visual_Co/…)
+  //   ② 일부는 SSR HTML의 file.albamon.com/…/Recruit/… 에 존재. 둘 다 핫링크 대비 재호스팅.
+  const albamonImages = () => {
+    const out: string[] = [];
+    const photos = vd?.recruitImages?.photos;
+    if (Array.isArray(photos)) {
+      for (const p of photos) {
+        const u = String(p?.imageUrl || "");
+        if (/^https?:\/\//i.test(u) && !/noimg|no_image|blank|\/template\//i.test(u)) out.push(u);
+      }
+    }
+    for (const m of html.matchAll(/https?:(?:\\u002[Ff]|\\?\/){2}file\.albamon\.com[^\s"'<>()\\]+?\.(?:jpe?g|png|webp|gif)/gi)) {
+      const u = m[0].replace(/\\u002[Ff]/gi, "/").replace(/\\\//g, "/");
+      if (/\/Recruit\//i.test(u)) out.push(u);
+    }
+    return [...new Set(out)].slice(0, 12);
+  };
 
   if (vd && (vd.recruitTitle || vd.recruitCompanyName)) {
     const title = stripTags(String(vd.recruitTitle || ""));
