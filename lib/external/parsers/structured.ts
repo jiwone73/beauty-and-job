@@ -469,9 +469,10 @@ function parseAlbamon(html: string): StructuredResult | null {
     const deadline = allTime ? "" : ((String(vd.deadlineDate || "").match(/\d{4}[-.]\d{1,2}[-.]\d{1,2}/) || [])[0] || "").replace(/\./g, "-");
     const headcount = Number(String(vd.recruitMemberCount || "").replace(/\D/g, "")) || 0;
     const preferred = stripTags(String(vd.preferences || "")).trim();
-    // 직군: part(직무) + 제목
-    const partText = Array.isArray(vd.part) ? vd.part.map((p: any) => p?.description || "").join(" ") : "";
-    const sug = suggestCats(`${partText} ${title}`);
+    // 직군: 구체적인 jobField·제목만 사용. part(예: "헤어·미용·네일샵")는 여러 직종을 묶은
+    //   우산 카테고리라 "네일샵" 글자만 보고 네일로 오인하는 등 오탐을 유발 → 입력에서 제외.
+    const jobFieldStr = typeof vd.jobField === "string" ? vd.jobField : "";
+    const sug = suggestCats(`${jobFieldStr} ${title}`);
     // 경력: JSON-LD 우선, 없으면 초보가능 → 경력 무관
     const career = mapCareer(stripTags(jp?.experienceRequirements || "")) || (vd.beginnerAvailableStatus ? "경력 무관" : "");
     const description = stripTags(String(vd.simpleRecruitContents || "")).replace(/\s+/g, " ").trim().slice(0, 800);
