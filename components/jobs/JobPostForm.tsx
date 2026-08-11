@@ -1272,7 +1272,7 @@ export default function JobPostForm({
     nonMember ? (
       <span className="fi-pop" style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 8 }}>
         {val.trim()
-          ? <span onClick={() => setFiOpen(fiOpen === key ? null : key)} title="클릭해 수정" style={{ fontSize: 13, color: "#5f0080", background: "#faf7fd", border: "1px solid #e0d5ec", borderRadius: 5, padding: "1px 8px", cursor: "pointer", maxWidth: 240, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
+          ? <span onClick={() => setFiOpen(fiOpen === key ? null : key)} title="클릭해 수정" style={{ fontSize: 15, color: "#333", cursor: "pointer", maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
           : <button type="button" onClick={() => setFiOpen(fiOpen === key ? null : key)} style={{ border: "none", background: "none", padding: 0, fontSize: 12, color: "#b0a7bf", cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>직접입력</button>}
         {fiOpen === key && (
           <div style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, zIndex: 60, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 240 }}>
