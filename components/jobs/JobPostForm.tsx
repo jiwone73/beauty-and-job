@@ -1728,17 +1728,26 @@ export default function JobPostForm({
                     {EDUCATION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
-                {/* 모집인원 — 빈 값은 하이라이트 1칸, 입력하면 숫자 */}
+                {/* 모집인원 — 1~5 풀다운, 그 이상/미정은 '직접입력…' */}
                 <div className="job-detail-meta-item">
                   <Users size={16} className="job-detail-meta-icon" />
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집인원<span style={{ color: "#e9a3a3" }}> *</span></span>
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                    <input type="number" min={1} inputMode="numeric" value={form.headcount}
-                      onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
-                      style={{ border: "none", fontSize: 15, color: "#333", padding: 0, WebkitAppearance: "none", appearance: "none", height: 20, lineHeight: "20px", textAlign: form.headcount ? "center" : "left", background: form.headcount ? "transparent" : PH_BG, borderRadius: form.headcount ? 0 : 5, width: form.headcount ? 44 : 56 }} />
-                    <span style={{ fontSize: 15, color: "#999" }}>명</span>
+                    {nonMember ? (
+                      <select value={form.headcount} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("headcount"); return; } setForm({ ...form, headcount: e.target.value }); }}
+                        style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.headcount) }}>
+                        <option value=""></option>
+                        {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
+                        <option value="__fi__">직접입력…</option>
+                      </select>
+                    ) : (
+                      <input type="number" min={1} inputMode="numeric" value={form.headcount}
+                        onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
+                        style={{ border: "none", fontSize: 15, color: "#333", padding: 0, WebkitAppearance: "none", appearance: "none", height: 20, lineHeight: "20px", textAlign: form.headcount ? "center" : "left", background: form.headcount ? "transparent" : PH_BG, borderRadius: form.headcount ? 0 : 5, width: form.headcount ? 44 : 56 }} />
+                    )}
+                    {!fiHeadcount.trim() && <span style={{ fontSize: 15, color: "#999" }}>명</span>}
                   </span>
-                  {freeField("headcount", fiHeadcount, setFiHeadcount, "예: 인원미정(협의)", true)}
+                  {freeField("headcount", fiHeadcount, setFiHeadcount, "예: 인원미정(협의)")}
                 </div>
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
