@@ -1677,7 +1677,7 @@ export default function JobPostForm({
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runImport(); } }} />
               {picked && (
                 <a href={picked.url} target="_blank" rel="noopener noreferrer" title="선택한 공고 원문을 새 탭으로 열기"
-                  style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", padding: "0 12px", borderRadius: 8, border: "1px solid #e5e0eb", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>원문 ↗</a>
+                  style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", padding: "0 12px", borderRadius: 8, border: "1px solid #e5e0eb", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 400, textDecoration: "none", whiteSpace: "nowrap" }}>원문 ↗</a>
               )}
               <button type="button" onClick={runImport} disabled={finding || parsing}
                 style={{ flexShrink: 0, padding: "0 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: (finding || parsing) ? 0.6 : 1, whiteSpace: "nowrap" }}>
