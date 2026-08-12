@@ -27,7 +27,7 @@ type Row = {
   last_checked_at: string | null;
   updated_at: string | null;
 };
-type CountRow = { group_name: string; cnt: number; hiring_cnt: number; registered_cnt: number };
+type CountRow = { group_name: string; cnt: number; hiring_cnt: number; registered_cnt: number; active_cnt: number };
 
 const GROUPS = ["헤어샵", "메이크업", "네일&속눈썹", "스킨&바디케어", "두피&탈모", "리테일&커머스"];
 const SITE_ORDER = ["헤어인잡", "알바몬", "잡코리아", "사람인", "뷰티잡", "셀렉미", "자사홈페이지"]; // 사이트별 집계 표시 순서
@@ -115,7 +115,8 @@ export default function AdminOutreachPage() {
 
   useEffect(() => { fetchList(); }, [fetchList]);
 
-  const totalCount = useMemo(() => counts.reduce((a, c) => a + c.cnt, 0), [counts]);
+  const totalCount = useMemo(() => counts.reduce((a, c) => a + c.cnt, 0), [counts]); // 전체 업체 수
+  const totalActive = useMemo(() => counts.reduce((a, c) => a + (c.active_cnt || 0), 0), [counts]); // 6개 탭 전체 활성공고수
   const countOf = (g: string) => counts.find((c) => c.group_name === g)?.cnt ?? 0;
   // 현재 탭의 총 활성공고 건수 + 중복(추정): 같은 업체(브랜드)에서 '지점'이 같은 공고는 중복으로 본다.
   //   업체 내 found_jobs를 지점 시그니처로 그룹핑 → 각 지점 그룹의 초과분(개수 - 1)을 중복으로 카운트.
@@ -311,7 +312,7 @@ export default function AdminOutreachPage() {
       <div style={{ padding: "4px 4px 40px" }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
           <h1 style={{ fontSize: 20, fontWeight: 400, color: "#2b2533", margin: 0 }}>외부업체 컨택 리스트</h1>
-          <span style={{ fontSize: 14, color: "#9a92a6" }}>총 {totalCount}개 · 비회원 공고 등록 대상</span>
+          <span style={{ fontSize: 14, color: "#9a92a6" }}>활성공고 총 {totalActive.toLocaleString()}건 · 업체 {totalCount}개</span>
         </div>
         <p style={{ fontSize: 13.5, color: "#9a92a6", margin: "0 0 14px" }}>
           체크박스로 업체를 선택해 "선택 업데이트"를 누르거나, "전체 업데이트"로 모든 탭의 업체를 한 번에 조회할 수 있습니다. 브랜드명으로 7개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·셀렉미·자사홈)를 조회해 채용유무를 자동 확인합니다. 입력값은 자동저장됩니다. 조회는 무료입니다.

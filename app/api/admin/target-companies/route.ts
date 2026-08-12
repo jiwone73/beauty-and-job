@@ -54,7 +54,8 @@ export async function GET(req: NextRequest) {
     const counts = await client.query(
       `SELECT group_name, COUNT(*)::int AS cnt,
               COUNT(*) FILTER (WHERE is_hiring = '채용중')::int AS hiring_cnt,
-              COUNT(*) FILTER (WHERE is_registered = '등록완료')::int AS registered_cnt
+              COUNT(*) FILTER (WHERE is_registered = '등록완료')::int AS registered_cnt,
+              COALESCE(SUM(found_count), 0)::int AS active_cnt
          FROM target_companies GROUP BY group_name`
     );
     return ok({ items: result.rows, counts: counts.rows });
