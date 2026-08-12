@@ -26,13 +26,22 @@ export async function rehostImages(
   const out: string[] = [];
   for (const url of urls.slice(0, max)) {
     try {
-      const res = await fetch(url, {
-        headers: { Referer: referer, "User-Agent": UA, Accept: "image/*" },
-      });
-      if (!res.ok) continue;
-      const ct = res.headers.get("content-type") || "";
-      if (!/^image\//i.test(ct)) continue;
-      const buf = await res.arrayBuffer();
+      let ct: string;
+      let buf: Buffer;
+      // data:image/...;base64,... (잡코리아 등은 상세요강 이미지를 base64 인라인으로 넣기도 함)
+      const dataM = url.match(/^data:(image\/[a-z0-9.+-]+);base64,([A-Za-z0-9+/=]+)$/i);
+      if (dataM) {
+        ct = dataM[1];
+        buf = Buffer.from(dataM[2], "base64");
+      } else {
+        const res = await fetch(url, {
+          headers: { Referer: referer, "User-Agent": UA, Accept: "image/*" },
+        });
+        if (!res.ok) continue;
+        ct = res.headers.get("content-type") || "";
+        if (!/^image\//i.test(ct)) continue;
+        buf = Buffer.from(await res.arrayBuffer());
+      }
       if (buf.byteLength < 1000 || buf.byteLength > 15 * 1024 * 1024) continue; // 아이콘/과대 제외(뷰티잡 등 세로로 긴 포스터 대응)
       const fileName = `external/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extOf(ct)}`;
       const { error } = await supabaseAdmin.storage

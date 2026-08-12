@@ -594,6 +594,8 @@ export async function POST(req: NextRequest) {
               if (/^\/\//.test(u)) u = "https:" + u;
               if (/^https?:\/\//i.test(u) && !jkChrome.test(u)) imgSet.add(u);
             }
+            // ③ base64 인라인 이미지(일부 잡코리아 공고는 상세요강 포스터를 data URI로 넣음). 아이콘 제외 위해 충분히 큰 것만.
+            for (const m of ih.matchAll(/data:image\/(?:png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=]{2000,}/gi)) imgSet.add(m[0]);
             const imgs = [...imgSet].slice(0, 12);
             if (imgs.length) {
               out.images = imgs;
