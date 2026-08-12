@@ -238,6 +238,7 @@ export default function JobPostForm({
   const [parsedPrimary, setParsedPrimary] = useState<PosRow | null>(null);
   const [posShiftOpen, setPosShiftOpen] = useState<string | null>(null); // 근무요일/시간 팝오버가 열린 분야
   const [cellOpen, setCellOpen] = useState<string | null>(null); // 표 셀 직접입력 팝오버 `${cat}|${field}`
+  const [mgrOpen, setMgrOpen] = useState(false); // 담당자 정보 팝오버
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
   const [regionOpen, setRegionOpen] = useState(false);
@@ -336,6 +337,13 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [cellOpen]);
+  // 담당자 정보 팝오버: 바깥 클릭 시 닫기
+  useEffect(() => {
+    if (!mgrOpen) return;
+    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".mgr-pop")) setMgrOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [mgrOpen]);
   // 근무지역 인라인 자동완성: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!regionOpen) return;
@@ -1739,8 +1747,10 @@ export default function JobPostForm({
                 />
               </div>
 
+              {/* ── 모집부문 제목(모집분야 위, '지원 안내'와 동일 스타일) ── */}
+              <div className="admin-form-label" style={{ margin: "6px 0 10px", fontWeight: 400, color: "#333" }}>모집부문 <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400 }}>모집분야를 선택하면 분야별로 고용형태·성별·경력·학력·근무·급여를 입력해요{nonMember ? " (값이 안 맞으면 자유입력)" : ""}</span></div>
               {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "12px 0", alignItems: "center" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "0 0 12px", alignItems: "center" }}>
                 <div className="job-detail-meta-item">
                   <Tag size={16} className="job-detail-meta-icon" />
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집분야<span style={{ color: "#e9a3a3" }}> *</span></span>
@@ -1774,9 +1784,8 @@ export default function JobPostForm({
                 </div>
               </div>
 
-              {/* ── 모집부문 표: 모집분야별 경력·급여·인원 (매장·오피스 공통) ── */}
-              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
-                <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>모집부문 <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400 }}>모집분야를 선택하면 분야별로 경력·고용형태·급여·근무·성별을 입력해요{nonMember ? " (값이 안 맞으면 자유입력)" : ""}</span></div>
+              {/* ── 모집부문 표: 분야별 고용형태·성별·경력·학력·근무·급여 ── */}
+              <div>
                 {categories.length === 0 ? (
                   <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야</b>를 먼저 선택하세요.</div>
                 ) : (
@@ -1957,22 +1966,33 @@ export default function JobPostForm({
                   {(() => {
                     const inp2: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #f4f3f6", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", boxSizing: "border-box" };
                     return (
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <div className="mgr-pop" style={{ display: "flex", alignItems: "flex-start", gap: 10, position: "relative" }}>
                         <span style={{ width: 76, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6, lineHeight: 1.3 }}>담당자<br /><span style={{ fontSize: 10, color: "#c9a3d6" }}>관리자용</span></span>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 12px", flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                            <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>이름</span>
-                            <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={inp2} />
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                            <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>전화</span>
-                            <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} style={inp2} />
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, flex: "1 1 100%" }}>
-                            <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 30 }}>메일</span>
-                            <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} style={inp2} />
-                          </div>
-                          <div style={{ fontSize: 11, color: "#b58fc7", flex: "1 1 100%", marginTop: 3 }}>구직자에게는 노출되지 않아요 · 회원가입 유도용 내부 연락처</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <button type="button" onClick={() => setMgrOpen((v) => !v)}
+                            style={{ width: "100%", textAlign: "left", border: "none", borderBottom: "1px solid #f4f3f6", background: "transparent", fontSize: 15, cursor: "pointer", padding: "6px 2px", color: (nmManagerName || nmManagerPhone || nmContactEmail) ? "#333" : "#cfcfcf", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {(nmManagerName || nmManagerPhone || nmContactEmail) ? [nmManagerName, nmManagerPhone, nmContactEmail].filter(Boolean).join(" · ") : "담당자 정보 입력"}
+                          </button>
+                          <div style={{ fontSize: 11, color: "#b58fc7", marginTop: 3 }}>구직자에게는 노출되지 않아요 · 회원가입 유도용 내부 연락처</div>
+                          {mgrOpen && (
+                            <div style={{ position: "absolute", top: "100%", left: 76, right: 0, marginTop: 6, zIndex: 60, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                                <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>이름</span>
+                                <input autoFocus value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="담당자 이름" style={{ flex: 1, minWidth: 0, height: 34, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 14 }} />
+                              </div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                                <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>전화</span>
+                                <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} placeholder="010-0000-0000" style={{ flex: 1, minWidth: 0, height: 34, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 14 }} />
+                              </div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>메일</span>
+                                <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="email@example.com" style={{ flex: 1, minWidth: 0, height: 34, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 14 }} />
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
+                                <button type="button" onClick={() => setMgrOpen(false)} className="company-primary-btn" style={{ padding: "5px 14px", fontSize: 13 }}>확인</button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     );
