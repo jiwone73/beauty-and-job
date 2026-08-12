@@ -382,14 +382,11 @@ export default function AdminOutreachPage() {
           ) : (
             <span style={{ fontSize: 13.5, color: "#0a7d34", fontWeight: 400, padding: "0 4px" }}>저장됨 ✓</span>
           )}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-            <button onClick={updateAllTabs} disabled={!totalCount}
-              title="현재 탭과 상관없이 6개 탭 전체를 조회합니다 (시간이 걸립니다)"
-              style={{ ...chip(true), opacity: totalCount ? 1 : 0.5 }}>
-              전체 업데이트
-            </button>
-            {totalCount > 0 && <span style={{ fontSize: 10.5, color: "#9a92a6", lineHeight: 1 }}>({totalCount} 브랜드)</span>}
-          </div>
+          <button onClick={updateAllTabs} disabled={!totalCount}
+            title="현재 탭과 상관없이 6개 탭 전체를 조회합니다 (시간이 걸립니다)"
+            style={{ ...chip(true), opacity: totalCount ? 1 : 0.5 }}>
+            전체 업데이트{totalCount ? <span style={{ opacity: 0.8, fontSize: 12 }}> ({totalCount}개 브랜드)</span> : ""}
+          </button>
           <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
             style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
             {selected.size > 0 && allVisibleSelected ? `전체 ${selected.size}건 업데이트` : `선택 ${selected.size}건 업데이트`}
