@@ -9,8 +9,6 @@ import { Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, GraduationCa
 // 공고 상단 이미지 갤러리(원티드 스타일). 한 번에 3장 노출, 좌우 화살표로 순환.
 export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
   const [start, setStart] = useState(0);
-  // 각 이미지 원본 가로세로비(w/h). 로드되면 채워짐. 미로드시 기본 1.5(가로형 가정).
-  const [ratios, setRatios] = useState<Record<string, number>>({});
   const n = images.length;
   const arrow: CSSProperties = {
     position: "absolute", top: "50%", transform: "translateY(-50%)",
@@ -20,37 +18,26 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
     display: "flex", alignItems: "center", justifyContent: "center",
   };
 
-  // 배너는 한 배너 안에 여러 장을 나란히 표시. 모두 '같은 높이'로 맞추되 '원본 비율 그대로'(자르지 않음).
-  //   → 각 칸의 폭을 이미지 가로세로비에 비례시키면(플렉스 justified-gallery), 높이가 저절로 균일해지고
-  //     전체 폭도 꽉 채워진다. EXIF 회전은 무시(원 사이트와 동일한 원본 픽셀).
-  //   3장 초과면 좌우 화살표로 3장씩 순환.
+  // 배너는 '고정 높이'(가로세로비 고정)를 유지한다 — 공고마다 배너 높이가 달라지면 안 됨.
+  //   여러 장을 같은 폭으로 나눠 넣고, 각 이미지는 위·아래를 균등하게 잘라(center crop) 칸을 꽉 채운다.
+  //   EXIF는 브라우저 기본대로 적용(원 사이트처럼 똑바로). 3장 초과면 좌우 화살표로 3장씩 순환.
   const PER = 3;
   const cols = Math.min(n, PER);
   const s = ((start % n) + n) % n;
   const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ display: "flex", gap: 0, borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
-        {visible.map((src, k) => {
-          const r = ratios[src] || 1.5; // 로드 전엔 가로형 가정
-          return (
-            <div key={k} style={{ flexGrow: r, flexBasis: 0, minWidth: 0, display: "flex" }}>
-              <img
-                src={src}
-                alt={alt}
-                onLoad={(e) => {
-                  const im = e.currentTarget;
-                  if (im.naturalWidth && im.naturalHeight) {
-                    const nr = im.naturalWidth / im.naturalHeight;
-                    setRatios((prev) => (Math.abs((prev[src] || 0) - nr) < 0.001 ? prev : { ...prev, [src]: nr }));
-                  }
-                }}
-                // 폭은 칸에 100%, 높이는 비율따라 자동 → 모든 칸이 같은 높이. EXIF는 브라우저 기본대로 적용(원 사이트처럼 똑바로).
-                style={{ display: "block", width: "100%", height: "auto" }}
-              />
-            </div>
-          );
-        })}
+      <div style={{ display: "flex", gap: 0, aspectRatio: "15 / 7", borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
+        {visible.map((src, k) => (
+          <div key={k} style={{ flex: "1 1 0", minWidth: 0, height: "100%" }}>
+            <img
+              src={src}
+              alt={alt}
+              // 칸을 꽉 채우되 비율 유지 → 위·아래 균등 크롭. 배너 전체 높이는 항상 동일.
+              style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+            />
+          </div>
+        ))}
       </div>
       {n > PER && (
         <>
