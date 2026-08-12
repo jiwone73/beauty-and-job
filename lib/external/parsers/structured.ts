@@ -182,13 +182,19 @@ function parseHairinjob(html: string): StructuredResult | null {
   }
 
   // 공고 이미지 분리(핫링크 차단이라 재호스팅):
-  //   · _memcontents(상세요강 본문 포스터, 세로로 긴 이미지) → 상세 이미지
-  //   · 그 외 _mem/_mem2…(매장 사진 썸네일) → 상단 배너
-  const allImgs = [
-    ...new Set([...html.matchAll(/\/upload\/upload\/offer_user\/\d+\/[^"'\s)]+\.(?:jpe?g|png|gif)/gi)].map((m) => m[0])),
-  ].map((p) => `https://www.hairinjob.com${p}`);
-  const detailRaw = allImgs.filter((u) => /memcontents|_contents\./i.test(u)).slice(0, 12);
-  const bannerRaw = allImgs.filter((u) => !detailRaw.includes(u)).slice(0, 10);
+  //   원문 DOM 위치로 구분한다(파일명 규칙은 공고마다 달라 신뢰 불가):
+  //   · 상단 매장사진 슬라이더(#company_photo / .photo-wrap, "상세요강 블록 앞") → 배너
+  //   · #recruit_contents(상세요강) 안의 이미지 → 상세 이미지
+  const imgRe = /\/upload\/upload\/offer_user\/\d+\/[^"'\s)]+\.(?:jpe?g|png|gif)/gi;
+  const abs = (arr: string[]) => arr.map((p) => `https://www.hairinjob.com${p}`);
+  const grab = (frag: string) => [...new Set([...frag.matchAll(imgRe)].map((m) => m[0]))];
+  const recruitIdx = html.search(/id=["']recruit_contents["']/i);
+  const bannerFrag = recruitIdx > 0 ? html.slice(0, recruitIdx) : "";
+  const detailFrag = recruitIdx > 0 ? html.slice(recruitIdx) : html;
+  // 배너: 상세요강 블록 앞의 매장 사진. (recruit_contents 마커가 없으면 안전하게 배너 비움)
+  const bannerRaw = abs(grab(bannerFrag)).slice(0, 10);
+  // 상세요강: recruit_contents 안의 이미지에서 배너와 중복(같은 매장 사진 재노출)은 제외.
+  const detailRaw = abs(grab(detailFrag)).filter((u) => !bannerRaw.includes(u)).slice(0, 12);
 
   // 업종: 헤어인잡=미용 전문 사이트 → 직종/제목 기준으로 기본 업종을 지정(대다수 헤어살롱).
   let industry = "헤어샵";
