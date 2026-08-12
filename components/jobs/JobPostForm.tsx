@@ -1865,9 +1865,8 @@ export default function JobPostForm({
                 </div>
               </div>
 
-              {/* ── 근무 조건: 근무기간·복리후생 ── */}
-              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
-                <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>근무 조건</div>
+              {/* ── 근무기간·복리후생 (모집부문 안으로 통합, 별도 타이틀·구분선 없음) ── */}
+              <div style={{ marginTop: 4 }}>
                 <div className="job-detail-company-info">
                   {/* 근무기간 — 매장 전용, 네이티브 풀다운 */}
                   {jobGroupType === "매장" && (
@@ -1932,8 +1931,8 @@ export default function JobPostForm({
                   </div>
                 </div>
 
-              {/* 근무지역: 전체 주소 입력 → 필터용 시·군·구 자동 추출 (지도는 아래) */}
-              <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0 8px", borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+              {/* 근무지역: 전체 주소 입력 → 필터용 시·군·구 자동 추출 (지도는 아래). 모집부문 안에 이어짐(구분선 없음) */}
+              <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "8px 0" }}>
                 <span className="admin-form-label" style={{ flexShrink: 0 }}>근무지역 <span style={{ color: "#e9a3a3" }}>*</span></span>
                 <input value={nmAddress}
                   onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
