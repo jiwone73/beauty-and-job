@@ -813,7 +813,9 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
     .trim()
     .slice(0, 2000);
 
-  // 상세요강 이미지(포스터) → 상세 이미지. 배너는 없음.
+  // 이미지: shopImages(매장 사진) → 배너 / contentsImages(상세요강 포스터) → 상세
+  const shopM = chunk.match(/"shopImages":\[([^\]]*)\]/);
+  const bannerImgs = shopM ? [...new Set((shopM[1].match(/https?:\/\/[^"\\,\]]+/g) || []))].slice(0, 10) : [];
   const ciM = chunk.match(/"contentsImages":\[([^\]]*)\]/);
   const detailImgs = ciM ? [...new Set((ciM[1].match(/https?:\/\/[^"\\,\]]+/g) || []))].slice(0, 12) : [];
 
@@ -894,11 +896,11 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
     description,
     job_type: sug.job_type || "STORE", // 미용 샵이 대부분
     job_categories,
-    images: [],
+    images: bannerImgs, // 매장 사진 → 상단 배너
     _confident: !!(title && (shopName || region || job_categories.length)),
   };
-  if (detailImgs.length) {
-    out._detailImagesRaw = detailImgs;
+  if (bannerImgs.length || detailImgs.length) {
+    if (detailImgs.length) out._detailImagesRaw = detailImgs; // 상세요강 포스터 → 상세 이미지
     out._rehost = true;
     out._rehostReferer = "https://www.selectme.co.kr/";
   }
