@@ -317,7 +317,16 @@ export default function AdminOutreachPage() {
           체크박스로 업체를 선택해 "선택 업데이트"를 누르거나, "전체 업데이트"로 모든 탭의 업체를 한 번에 조회할 수 있습니다. 브랜드명으로 7개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·셀렉미·자사홈)를 조회해 채용유무를 자동 확인합니다. 입력값은 자동저장됩니다. 조회는 무료입니다.
         </p>
 
-        {/* 사이트별 활성 공고수(현재 탭) — 그룹 칩 위 */}
+        {/* 그룹 탭 */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
+          {GROUPS.map((g) => (
+            <button key={g} onClick={() => setGroup(g)} style={chip(group === g)}>
+              {g}
+            </button>
+          ))}
+        </div>
+
+        {/* 사이트별 활성 공고수(현재 탭) — 그룹 칩 아래 */}
         {(() => {
           const known = SITE_ORDER.filter((s) => bySite[s]);
           const etc = Object.keys(bySite).filter((s) => !SITE_ORDER.includes(s));
@@ -325,7 +334,7 @@ export default function AdminOutreachPage() {
           if (!sum) return null;
           const label = (s: string) => s === "자사홈페이지" ? "자사홈" : s;
           return (
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "4px 14px", marginBottom: 10, fontSize: 12.5, color: "#6b6473" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "4px 14px", marginBottom: 12, fontSize: 12.5, color: "#6b6473" }}>
               <span style={{ color: "#9a92a6" }}>사이트별 활성공고</span>
               {[...known, ...etc].map((s) => (
                 <span key={s}><b style={{ color: "#2b2533", fontWeight: 600 }}>{label(s)}</b> {bySite[s].toLocaleString()}</span>
@@ -338,15 +347,6 @@ export default function AdminOutreachPage() {
             </div>
           );
         })()}
-
-        {/* 그룹 탭 */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
-          {GROUPS.map((g) => (
-            <button key={g} onClick={() => setGroup(g)} style={chip(group === g)}>
-              {g}
-            </button>
-          ))}
-        </div>
 
         {/* 필터 + 일괄 */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 12 }}>
