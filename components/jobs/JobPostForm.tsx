@@ -18,12 +18,6 @@ const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트", "협의"];
-// 상세 이미지 출처 배지 — 기업 제공(재사용OK) / 확인 필요 / 사이트 디자인(주의)
-const ORIGIN_BADGE: Record<string, { t: string; bg: string; tip: string }> = {
-  company: { t: "기업", bg: "#16a34a", tip: "회사 외부 호스트 이미지 → 기업이 제공한 이미지일 가능성이 높아요(여러 사이트에 같은 이미지일 확률↑, 재사용 적합)" },
-  site_upload: { t: "확인", bg: "#d97706", tip: "구직사이트에 업로드된 이미지 → 대개 기업이 올린 것이지만, 사이트가 디자인·큐레이션했을 수도 있어 확인 필요" },
-  site_template: { t: "사이트", bg: "#dc2626", tip: "구직사이트 기본 템플릿/디자인 그래픽 → 사이트가 만든 것이라 그대로 쓰기 부적합" },
-};
 // 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)
 const ISSUE_FIELDS = ["채용유형", "제목", "회사명", "모집분야(직군)", "경력", "학력", "마감일", "모집인원", "급여", "고용형태", "근무기간", "근무요일", "근무시간", "복리후생", "근무지역/주소", "담당자 연락처", "상단 배너", "상세요강 이미지", "포지션 소개", "자격요건", "우대사항", "회사 소개(기업정보)", "지원방식", "기타"];
 const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "온라인 지원", "홈페이지 지원"]; // 지원방법(복수)
@@ -169,7 +163,7 @@ export default function JobPostForm({
   const [nmFounded, setNmFounded] = useState("");
   const [nmRepresentative, setNmRepresentative] = useState("");
   const [nmPhone, setNmPhone] = useState("");
-  const [bannerImages, setBannerImages] = useState<{ url: string; name: string; origin?: string }[]>([]); // 상단 배너(여러 장, 3장씩 회전)
+  const [bannerImages, setBannerImages] = useState<{ url: string; name: string }[]>([]); // 상단 배너(여러 장, 3장씩 회전)
   const [nmCoverUploading, setNmCoverUploading] = useState(false);
   const [nmManagerName, setNmManagerName] = useState("");
   const [nmManagerPhone, setNmManagerPhone] = useState("");
@@ -245,11 +239,7 @@ export default function JobPostForm({
   const [saved, setSaved] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false); // 임시저장 완료 표시(발행완료와 구분)
   const [alwaysOpen, setAlwaysOpen] = useState(false);
-  const [detailImages, setDetailImages] = useState<{ url: string; name: string; origin?: string; crossSite?: boolean }[]>([]);
-  // 타 사이트 이미지 교차대조(지각적 해시)
-  const [siblingJobs, setSiblingJobs] = useState<{ url: string; source: string }[]>([]);
-  const [provChecking, setProvChecking] = useState(false);
-  const [provMsg, setProvMsg] = useState("");
+  const [detailImages, setDetailImages] = useState<{ url: string; name: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
@@ -823,18 +813,16 @@ export default function JobPostForm({
         const imgs: string[] = Array.isArray(d.images) ? d.images.filter(Boolean) : [];
         // 포스터형 공고(뷰티잡 등): 서버가 detail_images로 내려줌 → 배너 없이 상세 본문 이미지로 배치.
         const detailImgs: string[] = Array.isArray(d.detail_images) ? d.detail_images.filter(Boolean) : [];
-        const detailOrigins: string[] = Array.isArray(d.detail_image_origins) ? d.detail_image_origins : [];
-        const imageOrigins: string[] = Array.isArray(d.image_origins) ? d.image_origins : [];
         if (detailImgs.length) {
-          setDetailImages(detailImgs.slice(0, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}`, origin: detailOrigins[i] })));
-          // 파서가 배너용 이미지(매장 사진 등)를 함께 내려주면 전부 상단 배너로. 출처 배지도 함께.
-          if (imgs.length) setBannerImages(imgs.slice(0, 10).map((u, i) => ({ url: u, name: "배너", origin: imageOrigins[i] })));
+          setDetailImages(detailImgs.slice(0, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
+          // 파서가 배너용 이미지(매장 사진 등)를 함께 내려주면 전부 상단 배너로.
+          if (imgs.length) setBannerImages(imgs.slice(0, 10).map((u) => ({ url: u, name: "배너" })));
         } else {
           const cover = imgs[0] || d.cover_image || "";
-          // 기본 배분: 첫 이미지=배너(1장), 나머지=상세 본문. 각 이미지 출처 배지 함께.(관리자가 드래그로 조정)
-          if (cover) setBannerImages([{ url: cover, name: "배너", origin: imageOrigins[0] }]);
+          // 기본 배분: 첫 이미지=배너(1장), 나머지=상세 본문.(관리자가 드래그로 조정)
+          if (cover) setBannerImages([{ url: cover, name: "배너" }]);
           if (imgs.length > 1) {
-            setDetailImages(imgs.slice(1, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}`, origin: imageOrigins[i + 1] })));
+            setDetailImages(imgs.slice(1, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
           }
         }
       }
@@ -1026,41 +1014,10 @@ export default function JobPostForm({
     if (!q) { setFindMsg("회사명 또는 공고 URL을 입력해주세요."); return; }
     // 목록에서 라디오로 고른 공고가 있으면(입력칸을 손대지 않았으면) 그 공고를 불러옴
     if (picked && q === picked.title.trim()) {
-      // 같은 회사의 타 사이트 공고를 이미지 교차대조용으로 보관(선택한 것 제외)
-      setSiblingJobs(findResults.filter((r) => r.url !== picked.url).map((r) => ({ url: r.url, source: r.source })));
       setFindResults([]); setFindMsg(""); setParseUrl(picked.url); runParse(picked.url); return;
     }
-    if (isUrlLike(q)) { setSiblingJobs([]); setFindResults([]); setFindMsg(""); setParseUrl(q); setPicked({ title: q, url: q.startsWith("http") ? q : `https://${q}` }); runParse(q); }
+    if (isUrlLike(q)) { setFindResults([]); setFindMsg(""); setParseUrl(q); setPicked({ title: q, url: q.startsWith("http") ? q : `https://${q}` }); runParse(q); }
     else { setPicked(null); runFindByCompany(); }
-  };
-  // 타 사이트 이미지 교차대조(지각적 해시): 같은 이미지가 타 사이트에도 있으면 '기업 제공' 확정
-  const runProvenance = async () => {
-    const cur = detailImages.map((d) => d.url).filter(Boolean);
-    if (!cur.length || !siblingJobs.length) return;
-    setProvChecking(true); setProvMsg("");
-    try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
-      const res = await fetch("/api/admin/external-jobs/image-provenance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ current: cur, siblings: siblingJobs }),
-      });
-      const j = await res.json();
-      if (!j.success) { setProvMsg(j.error?.message || "대조에 실패했어요."); return; }
-      const byUrl = new Map<string, { crossSite: boolean; sources: string[] }>();
-      for (const r of (j.data.results || [])) byUrl.set(r.url, { crossSite: !!r.crossSite, sources: r.sources || [] });
-      let confirmed = 0;
-      setDetailImages((prev) => prev.map((d) => {
-        const r = byUrl.get(d.url);
-        if (!r) return d;
-        if (r.crossSite) { confirmed++; return { ...d, crossSite: true, origin: "company" }; }
-        return { ...d, crossSite: false };
-      }));
-      setProvMsg(confirmed > 0
-        ? `타 사이트 대조: ${confirmed}개 이미지가 다른 사이트(${j.data.sibling_count}곳)에도 있어 → 기업 제공으로 확인됐어요.`
-        : `타 사이트(${j.data.sibling_count}곳)에서 동일 이미지를 못 찾음 → 이 사이트 전용일 수 있어 확인이 필요해요.`);
-    } catch { setProvMsg("대조 중 오류가 발생했어요."); }
-    finally { setProvChecking(false); }
   };
   // ?url= 로 진입(예: 이슈 페이지의 '불러와 수정')하면 그 원문을 자동으로 한 번 불러온다.
   const autoRanRef = useRef(false);
@@ -1647,12 +1604,6 @@ export default function JobPostForm({
                       onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (imgDragRef.current) dropToBanner(idx); }}
                       style={{ position: "relative", width: 120, height: 76, flexShrink: 0, cursor: "grab" }}>
                       <img src={b.url} alt={`배너 ${idx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
-                      {b.origin && ORIGIN_BADGE[b.origin] && (
-                        <span title={ORIGIN_BADGE[b.origin].tip}
-                          style={{ position: "absolute", top: 3, left: 3, background: ORIGIN_BADGE[b.origin].bg, color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 4, padding: "1px 4px", lineHeight: 1.3, cursor: "help" }}>
-                          {ORIGIN_BADGE[b.origin].t}
-                        </span>
-                      )}
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
                       <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="배너에서 제거"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
@@ -2089,12 +2040,6 @@ export default function JobPostForm({
                       style={{ position: "relative", width: 84, cursor: "grab" }}>
                       <img src={d.url} alt={`상세 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
-                      {d.origin && ORIGIN_BADGE[d.origin] && (
-                        <span title={d.crossSite ? "타 사이트에도 동일 이미지가 있어 기업 제공으로 확인됨" : ORIGIN_BADGE[d.origin].tip}
-                          style={{ position: "absolute", top: 3, left: 3, background: ORIGIN_BADGE[d.origin].bg, color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 4, padding: "1px 4px", lineHeight: 1.3, cursor: "help" }}>
-                          {ORIGIN_BADGE[d.origin].t}{d.crossSite ? " ✓" : ""}
-                        </span>
-                      )}
                       <button type="button" onClick={() => removeImage(idx)} title="삭제"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
                     </div>
@@ -2107,26 +2052,6 @@ export default function JobPostForm({
                   </label>
                   {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어 주세요.</span>}
                 </div>
-                {detailImages.some((d) => d.origin) && (
-                  <div style={{ margin: "8px 2px 0", fontSize: 11.5, color: "#8a7fa0", display: "flex", flexWrap: "wrap", gap: "4px 12px", alignItems: "center" }}>
-                    <span style={{ color: "#666" }}>이미지 출처:</span>
-                    <span><b style={{ color: "#16a34a" }}>기업</b> 기업 제공(재사용 적합)</span>
-                    <span><b style={{ color: "#d97706" }}>확인</b> 사이트 업로드(확인 필요)</span>
-                    <span><b style={{ color: "#dc2626" }}>사이트</b> 사이트 디자인(주의)</span>
-                    <span style={{ color: "#b3adbd" }}>· <b>✓</b>=타 사이트에도 있음(기업 제공 확정)</span>
-                  </div>
-                )}
-                {/* 타 사이트 이미지 교차대조 — 같은 회사의 다른 사이트 공고와 이미지를 지각적 해시로 대조 */}
-                {mode === "admin" && detailImages.length > 0 && siblingJobs.length > 0 && (
-                  <div style={{ margin: "6px 2px 0", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                    <button type="button" onClick={runProvenance} disabled={provChecking}
-                      title="같은 회사의 타 사이트 공고 이미지와 대조해, 동일 이미지면 '기업 제공'으로 확정합니다"
-                      style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #5f0080", background: provChecking ? "#f3ecfb" : "#fff", color: "#5f0080", fontSize: 12.5, fontWeight: 600, cursor: provChecking ? "default" : "pointer" }}>
-                      {provChecking ? "대조 중… (타 사이트 이미지 분석)" : `🔍 타 사이트 이미지 대조 (${siblingJobs.length}곳)`}
-                    </button>
-                    {provMsg && <span style={{ fontSize: 12, color: provMsg.includes("확인됐") ? "#16a34a" : "#c0392b" }}>{provMsg}</span>}
-                  </div>
-                )}
                 <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 포지션 소개·자격요건은 필수예요.</p>
               </div>
 
