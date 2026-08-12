@@ -1289,8 +1289,8 @@ export default function JobPostForm({
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 모집부문 표 셀 스타일
-  const thc: React.CSSProperties = { textAlign: "left", padding: "8px 10px", fontSize: 12.5, color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" };
-  const tdc: React.CSSProperties = { padding: "6px 10px", borderBottom: "1px solid #f3f0f8", verticalAlign: "middle" };
+  const thc: React.CSSProperties = { textAlign: "left", padding: "10px 10px", fontSize: 12.5, color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" };
+  const tdc: React.CSSProperties = { padding: "11px 10px", borderBottom: "1px solid #f3f0f8", verticalAlign: "middle" };
   const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
   const cellSelect: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff", WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
   // 클릭-선택 셀: 옵션 있으면 드롭다운(+비회원 '직접입력…'). 값이 목록에 없으면 클릭 텍스트→팝오버. 급여처럼 옵션 없으면 항상 팝오버.
@@ -1740,11 +1740,14 @@ export default function JobPostForm({
                     style={{ fontSize: 14, fontWeight: 700, color: "#8a7fa0", border: "none", outline: "none", background: "transparent", padding: 0, width: "100%" }}
                   />
                 </div>
-                <input
+                <textarea
                   placeholder="공고 제목을 입력하세요 *"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  style={{ width: "100%", border: "none", outline: "none", fontSize: 19, fontWeight: 400, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3 }}
+                  onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
+                  rows={1}
+                  ref={(el) => { if (el) { el.style.height = "auto"; el.style.height = `${el.scrollHeight}px`; } }}
+                  style={{ width: "100%", border: "none", outline: "none", fontSize: 19, fontWeight: 400, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3, resize: "none", overflow: "hidden", fontFamily: "inherit", display: "block" }}
                 />
               </div>
 
@@ -1786,7 +1789,7 @@ export default function JobPostForm({
               </div>
 
               {/* ── 모집부문 표: 분야별 고용형태·성별·경력·학력·근무·급여 ── */}
-              <div>
+              <div style={{ margin: "10px 0 22px" }}>
                 {categories.length === 0 ? (
                   <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야</b>를 먼저 선택하세요.</div>
                 ) : (
@@ -1947,7 +1950,7 @@ export default function JobPostForm({
                   style={{ flex: 1, border: "none", background: "transparent", fontSize: 15, outline: "none", padding: 0, textAlign: "left" }}
                   placeholder="전체 주소 입력 (예: 서울 구로구 구일로10길 27 …)" />
               </div>
-              {nmAddress.trim() && <AddressMap address={nmAddress} height={220} />}
+              {nmAddress.trim() && <AddressMap address={nmAddress} name={newCompanyName.trim() || undefined} height={220} />}
 
               {/* 지원 안내 (채용 담당자 · 접수방법 · 채용 절차) */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
