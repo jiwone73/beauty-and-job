@@ -119,7 +119,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                       ? ((p.workDays || p.workTime)
                           ? ((p.workDays === "협의" && p.workTime === "협의")
                               ? "협의"
-                              : <><div>{p.workDays || "-"}</div><div>{p.workTime || "-"}</div></>)
+                              : <>{p.workDays && <div>{p.workDays}</div>}{p.workTime && <div>{p.workTime}</div>}</>)
                           : "-")
                       : (c.get(p) || "-")}
                   </td>

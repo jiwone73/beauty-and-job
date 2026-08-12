@@ -1965,8 +1965,8 @@ export default function JobPostForm({
                                       <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>협의</div>
                                     ) : (
                                     <>
-                                      <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workDays || "-"}</div>
-                                      <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workTime || "-"}</div>
+                                      {row.workDays && <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workDays}</div>}
+                                      {row.workTime && <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workTime}</div>}
                                     </>
                                     )
                                   ) : "요일·시간 선택"}
