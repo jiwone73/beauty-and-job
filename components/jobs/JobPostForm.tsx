@@ -16,7 +16,7 @@ import { REGIONS } from "@/lib/data/regions";
 const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.sido} ${g}`));
 
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
-const WEEKDAY_DAYS = ["월", "화", "수", "목", "금"]; // 주중
+const WEEKDAY_DAYS = ["월", "화", "수", "목", "금"]; // 평일(미입력 시 기본값)
 const WEEKEND_DAYS = ["토", "일"]; // 주말
 // 근무시간 풀다운 옵션: 오전/오후 구분 없이 24시간 표기, 1시간 간격, 오전 9시~밤 11시(자정~오전 8시 제외)
 const TIME_OPTIONS = Array.from({ length: 15 }, (_, i) => `${String(i + 9).padStart(2, "0")}:00`);
@@ -1257,7 +1257,7 @@ export default function JobPostForm({
     }
 
     // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
     // 발행 시 모집부문 표 필수: 모집분야·고용형태·경력·근무요일/시간·급여(분야별). (성별우대·학력은 선택)
     if (status === "publish") {
       if (categories.length === 0) { alert("모집분야를 1개 이상 선택해주세요."); return; }
@@ -1492,7 +1492,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
-    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
+    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -1996,7 +1996,7 @@ export default function JobPostForm({
                                       </div>
                                       <div style={{ display: "flex", gap: 14, marginTop: 8 }}>
                                         <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: daysNego ? "#bbb" : "#555", cursor: daysNego ? "default" : "pointer" }}>
-                                          <input type="checkbox" disabled={daysNego} checked={allWeekday} onChange={(e) => toggleGroup(WEEKDAY_DAYS, e.target.checked)} /> 주중
+                                          <input type="checkbox" disabled={daysNego} checked={allWeekday} onChange={(e) => toggleGroup(WEEKDAY_DAYS, e.target.checked)} /> 평일
                                         </label>
                                         <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: daysNego ? "#bbb" : "#555", cursor: daysNego ? "default" : "pointer" }}>
                                           <input type="checkbox" disabled={daysNego} checked={allWeekend} onChange={(e) => toggleGroup(WEEKEND_DAYS, e.target.checked)} /> 주말
