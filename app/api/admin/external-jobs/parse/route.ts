@@ -56,7 +56,7 @@ function classifyImageOrigin(url: string): "company" | "site_upload" | "site_tem
   // 사이트 기본 템플릿/디자인 그래픽
   if (/\/template\/|\/static\/hiring\/images\/template\/|contents\.albamon\.[a-z]+\/[^"']*\/(?:template|assets|header)\/|\/images\/(?:newhair|main)\//.test(u)) return "site_template";
   // 구직사이트 에디터 업로드 CDN(회사 업로드분)
-  if (/file2?\.jobkorea\.co\.kr|saraminimage\.co\.kr|file\.albamon\.com|beautyjob\.kr\/data\/|beautyinjob\.kr\/data\/|hairinjob\.com\/upload\/|\/wysiwyg\/peg\/|beautyjobmanager\.com|miyonginjob\.com/.test(u)) return "site_upload";
+  if (/file2?\.jobkorea\.co\.kr|saraminimage\.co\.kr|file\.albamon\.com|beautyjob\.kr\/data\/|hairinjob\.com\/upload\/|file\.selectme\.co\.kr/.test(u)) return "site_upload";
   // 그 외 = 회사 외부 호스트 → 기업 제공
   return "company";
 }
@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
           break; // 차단 재시도 소진 또는 빈 응답
         }
         // 원 사이트에서 마감된 공고: 상세 대신 "마감된 채용정보는 조회할 수 없습니다" 알림 스크립트만 옴
-        //   (뷰티잡매니저·미용인잡 등 EUC-KR 잡보드는 마감 공고도 목록엔 남기지만 상세는 막음)
+        //   (일부 EUC-KR 잡보드는 마감 공고도 목록엔 남기지만 상세는 막음)
         if (html && /마감된\s*채용/.test(html) && /조회할\s*수\s*없|history\.back/.test(html)) {
           return err("CLOSED_001", "원 사이트에서 이미 마감된 공고예요. 상세를 불러올 수 없어요. (목록엔 남아 있어도 마감 처리된 공고입니다)", 410);
         }
@@ -320,7 +320,7 @@ export async function POST(req: NextRequest) {
   let freeParsed = false;
   if (!bodyText) { // 붙여넣은 본문이 없을 때(=URL 불러오기)만 구조화 파서 시도
     try {
-      const st = parseStructured(hostname || "", html || "");
+      const st = parseStructured(hostname || "", html || "", url || "");
       if (st && st._confident) {
         delete st._confident;
         out = { ...out, ...st };

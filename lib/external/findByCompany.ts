@@ -1,5 +1,5 @@
 // lib/external/findByCompany.ts
-// 회사명 → 외부 채용공고 조회(멀티소스 9개)의 공용 로직.
+// 회사명 → 외부 채용공고 조회(멀티소스: 자사홈 + 헤어인잡·알바몬·잡코리아·사람인·뷰티잡·셀렉미)의 공용 로직.
 // find-by-company API 라우트와 target-companies의 채용유무 자동확인(check-hiring)이 함께 사용.
 // 조회만 하므로 과금 없음(파싱/불러오기 때만 AI 과금).
 
@@ -8,10 +8,8 @@ import { findJobsByCompany as findHairinjob } from "@/lib/external/hairinjob";
 import { findJobsByCompany as findJobkorea } from "@/lib/external/jobkorea";
 import { findJobsByCompany as findAlbamon } from "@/lib/external/albamon";
 import { findJobsByCompany as findBeautyjob } from "@/lib/external/beautyjob";
-import { findJobsByCompany as findBeautyjobManager } from "@/lib/external/beautyjobmanager";
 import { findJobsByCompany as findSaramin } from "@/lib/external/saramin";
-import { findJobsByCompany as findMiyonginjob } from "@/lib/external/miyonginjob";
-import { findJobsByCompany as findBeautyinjob } from "@/lib/external/beautyinjob";
+import { findJobsByCompany as findSelectme } from "@/lib/external/selectme";
 import { findSelfSites } from "@/lib/external/selfSites";
 
 export interface FindByCompanyResult {
@@ -25,8 +23,8 @@ const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 // 제목에 '채용완료' 등 완료 표시가 있는 공고 = 마감(요청 없이 판별). '마감임박' 등 진행중 표현은 제외.
 const CLOSED_TITLE = /(?:채용|모집|충원|구인)\s*완료|마감\s*(?:되었|됐|완료)/;
 
-// 목록엔 남지만 상세는 막는 EUC-KR 보드(뷰티잡매니저·미용인잡)는 상세를 받아 마감 스크립트 유무로 판별.
-const VERIFY_SOURCES = new Set(["뷰티잡매니저", "미용인잡"]);
+// 상세 검증으로 마감을 걸러야 하는 소스(현재 없음 — 셀렉미는 status="ing"로 목록에서 이미 활성만 반환).
+const VERIFY_SOURCES = new Set<string>([]);
 async function isClosedDetail(url: string): Promise<boolean> {
   try {
     const ctl = new AbortController();
@@ -64,11 +62,9 @@ export async function findJobsForCompany(
     findHairinjob(company, { maxPages, strict }),
     findAlbamon(company, { strict }),
     findBeautyjob(company, { strict }),
-    findBeautyjobManager(company, { strict }),
+    findSelectme(company, { strict }),
     findJobkorea(company, { strict }),
     findSaramin(company, { strict }),
-    findMiyonginjob(company, { strict }),
-    findBeautyinjob(company, { strict }),
   ]);
 
   const sourceStatus: Record<string, string> = { 자사홈페이지: "ok" };
@@ -84,16 +80,14 @@ export async function findJobsForCompany(
   const hairJobs = pull(0, "헤어인잡");
   const albaJobs = pull(1, "알바몬");
   const bjJobs = pull(2, "뷰티잡");
-  const bjmJobs = pull(3, "뷰티잡매니저");
+  const smJobs = pull(3, "셀렉미");
   const jkJobs = pull(4, "잡코리아");
   const srJobs = pull(5, "사람인");
-  const myJobs = pull(6, "미용인잡");
-  const biJobs = pull(7, "뷰티인잡");
 
   // 병합 + url 기준 중복 제거
   const seen = new Set<string>();
   const merged: FoundJob[] = [];
-  for (const j of [...selfJobs, ...albaJobs, ...hairJobs, ...bjJobs, ...biJobs, ...bjmJobs, ...myJobs, ...jkJobs, ...srJobs]) {
+  for (const j of [...selfJobs, ...albaJobs, ...hairJobs, ...bjJobs, ...smJobs, ...jkJobs, ...srJobs]) {
     if (seen.has(j.url)) continue;
     seen.add(j.url);
     merged.push(j);
@@ -112,7 +106,7 @@ export async function findJobsForCompany(
 
   // 소스별 카운트는 필터 후 실제 표시분 기준(목록과 숫자 일치)
   const sources: Record<string, number> = {
-    자사홈페이지: 0, 알바몬: 0, 헤어인잡: 0, 뷰티잡: 0, 뷰티인잡: 0, 뷰티잡매니저: 0, 미용인잡: 0, 잡코리아: 0, 사람인: 0,
+    자사홈페이지: 0, 알바몬: 0, 헤어인잡: 0, 뷰티잡: 0, 셀렉미: 0, 잡코리아: 0, 사람인: 0,
   };
   for (const j of jobs) if (j.source in sources) sources[j.source] += 1;
 

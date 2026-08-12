@@ -1,5 +1,5 @@
 // app/api/admin/external-jobs/find-by-company/route.ts
-// 회사명 → 외부 채용공고 URL 자동 조회 (멀티소스 9개: 자사홈 + 헤어인잡·알바몬·잡코리아·사람인·뷰티잡·뷰티인잡·뷰티잡매니저·미용인잡)
+// 회사명 → 외부 채용공고 URL 자동 조회 (멀티소스 7개: 자사홈 + 헤어인잡·알바몬·잡코리아·사람인·뷰티잡·셀렉미)
 // 조회 로직은 lib/external/findByCompany.ts (target-companies 채용유무 자동확인과 공용). 조회는 무료.
 //
 // 사용: GET /api/admin/external-jobs/find-by-company?company=준오헤어&maxPages=5&strict=true

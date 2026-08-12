@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       const company = coreName(row.brand_name);
       let jobs: { idx: number; title: string; url: string; source: string }[] = [];
       try {
-        // verifyOpen: 마감 공고 제외(제목 완료표시 + 뷰티잡매니저·미용인잡 상세검증). 대상 소수라 부하 미미.
+        // verifyOpen: 마감 공고 제외(제목 완료표시 기준). 대상 소수라 부하 미미.
         const r = await findJobsForCompany(company, { maxPages: 3, strict: true, verifyOpen: true });
         jobs = r.jobs.slice(0, 30);
       } catch {
