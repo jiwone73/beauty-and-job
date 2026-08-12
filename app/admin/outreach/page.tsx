@@ -22,7 +22,7 @@ type Row = {
   scale: string | null;
   features: string | null;
   note: string | null;
-  found_jobs: { idx: number; title: string; url: string; source: string; date?: string }[];
+  found_jobs: { idx: number; title: string; url: string; source: string; date?: string; email?: string }[];
   found_count: number;
   last_checked_at: string | null;
   updated_at: string | null;
@@ -513,6 +513,13 @@ export default function AdminOutreachPage() {
                                 <span style={badge(PURPLE)}>{jb.source}</span>
                                 {jb.date && <span style={{ fontSize: 12.5, color: "#9a92a6", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{jb.date}</span>}
                                 <span style={{ color: "#2b2533" }}>{jb.title}</span>
+                                {jb.email && (
+                                  <button type="button" title="매장 채용 이메일 · 클릭하면 이 업체 이메일칸에 입력"
+                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); quickPatch(row, { email: jb.email }); }}
+                                    style={{ ...badge("#0a7d34"), border: "none", cursor: "pointer", flexShrink: 0 }}>
+                                    ✉ {jb.email}
+                                  </button>
+                                )}
                                 <a href={normUrl(jb.url)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: PURPLE, textDecoration: "none" }}>원문 ↗</a>
                               </label>
                             ))}

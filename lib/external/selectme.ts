@@ -26,6 +26,16 @@ export interface SelectmeRecruit {
   title: string;
   status: string;
   date: string; // 등록일 YYYY-MM-DD
+  email: string; // 매장 채용담당 이메일(managerEmail)
+}
+
+// 잡사이트 자체 도메인은 회사 이메일이 아니므로 제외(방어)
+const SITE_EMAIL_DOMAIN = /(?:selectme|albamon|jobkorea|saramin|beautyjob|hairinjob|incruit)\.(?:com|co\.kr|kr|net)$/i;
+function cleanEmail(e: string): string {
+  const v = (e || "").trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return "";
+  if (SITE_EMAIL_DOMAIN.test(v.split("@")[1] || "")) return "";
+  return v;
 }
 
 // RSC 텍스트에서 공고 객체들을 추출(각 객체는 isInvisibleClosedRecruit 플래그로 시작).
@@ -47,6 +57,7 @@ export function extractRecruits(html: string): SelectmeRecruit[] {
     if (!shopName) continue;
     // 등록일: startDisplayDate(게시 시작) 우선, 없으면 createdAt. RSC는 "$D2026-08-03T..." 형태.
     const dM = c.match(/"startDisplayDate":"?\$?D?(\d{4}-\d{2}-\d{2})/) || c.match(/"createdAt":"?\$?D?(\d{4}-\d{2}-\d{2})/);
+    const emM = c.match(/"managerEmail":"([^"]*)"/);
     seen.add(id);
     out.push({
       id,
@@ -54,6 +65,7 @@ export function extractRecruits(html: string): SelectmeRecruit[] {
       title: (tiM?.[1] || "").replace(/\\n/g, " ").replace(/\\/g, "").trim(),
       status: stM?.[1] || "",
       date: dM?.[1] || "",
+      email: cleanEmail(emM?.[1] || ""),
     });
   }
   return out;
@@ -77,6 +89,7 @@ export async function findJobsByCompany(
     url: `${BASE}/recruit/${r.id}`,
     source: "셀렉미",
     date: r.date || undefined,
+    email: r.email || undefined,
   });
   const active = recruits.filter((r) => r.status === "ing");
   const list: FoundJob[] = active.map(toJob);
