@@ -1735,15 +1735,39 @@ export default function JobPostForm({
                 />
               </div>
 
-              {/* ── 모집분야(모집부문 표의 행이 됨) ── */}
-              <div className="job-detail-meta-item" style={{ margin: "12px 0" }}>
-                <Tag size={16} className="job-detail-meta-icon" />
-                <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집분야<span style={{ color: "#e9a3a3" }}> *</span></span>
-                {typeLocked ? (
-                  <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
-                ) : (
-                  <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="선택" title="모집분야 선택" />
-                )}
+              {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "12px 0", alignItems: "center" }}>
+                <div className="job-detail-meta-item">
+                  <Tag size={16} className="job-detail-meta-icon" />
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집분야<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  {typeLocked ? (
+                    <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
+                  ) : (
+                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="선택" title="모집분야 선택" />
+                  )}
+                </div>
+                <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
+                  <Clock size={16} className="job-detail-meta-icon" />
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <button type="button"
+                    onClick={() => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true); }}
+                    style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                    {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : pick()}
+                  </button>
+                  {deadlineModalOpen && (
+                    <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "240px" }}>
+                      <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
+                        style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
+                      <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                        <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
+                      </label>
+                      <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
+                        <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
+                        <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* ── 모집부문 표: 모집분야별 경력·급여·인원 (매장·오피스 공통) ── */}
@@ -1752,7 +1776,7 @@ export default function JobPostForm({
                 {categories.length === 0 ? (
                   <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야</b>를 먼저 선택하세요.</div>
                 ) : (
-                  <div style={{ overflowX: "auto" }}>
+                  <div style={{ overflowX: (posShiftOpen || cellOpen) ? "visible" : "auto" }}>
                     <table style={{ minWidth: 720, borderCollapse: "collapse" }}>
                       <thead>
                         <tr>
@@ -1828,7 +1852,7 @@ export default function JobPostForm({
                 )}
               </div>
 
-              {/* ── 공통(전 직군): 학력·마감일 — 모집부문 표 아래 ── */}
+              {/* ── 공통(전 직군): 학력 — 모집부문 표 아래 ── */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "14px 0 4px", alignItems: "center", paddingTop: 14, borderTop: "1px solid #f0edf5" }}>
                 <div className="job-detail-meta-item">
                   <GraduationCap size={16} className="job-detail-meta-icon" />
@@ -1838,28 +1862,6 @@ export default function JobPostForm({
                     <option value=""></option>
                     {EDUCATION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
-                </div>
-                <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
-                  <Clock size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
-                  <button type="button"
-                    onClick={() => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true); }}
-                    style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
-                    {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : pick()}
-                  </button>
-                  {deadlineModalOpen && (
-                    <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "240px" }}>
-                      <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
-                        style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
-                      <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                        <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
-                      </label>
-                      <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
-                        <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
-                        <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
 
