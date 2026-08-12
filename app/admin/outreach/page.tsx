@@ -40,12 +40,13 @@ const PURPLE = "#5f0080";
 //   같은 업체(=브랜드)에서 지점이 같으면 중복으로 본다. 사이트마다 형식이 달라(강남역점/강남역 등)
 //   끝의 '점·지점·센터'는 떼어 맞춘다. 지점 신호가 없으면 판정 불가 → 제외(과다집계 방지).
 // 활성공고 제목으로 매장/오피스 추정(found_jobs엔 job_type이 없어 제목 기반).
-//   본사 사무직 신호 → OFFICE, 미용 시술·매장 현장 신호 → STORE, 애매하면 미분류("").
-function guessStoreOffice(title: string): "STORE" | "OFFICE" | "" {
+//   ① 뚜렷한 본사 사무직 신호 → OFFICE  ② 뚜렷한 매장 시술 신호 → STORE
+//   ③ 그 외: '제목에 지점이 있으면 매장, 없으면 오피스'(현장직은 지점명이 붙는다).
+function guessStoreOffice(title: string): "STORE" | "OFFICE" {
   const t = (title || "").replace(/\s/g, "");
   if (/인허가|regulatory|품질관리|머천다이저|상품기획|브랜드매니저|퍼포먼스마케팅|재무|회계|세무|법무|구매담당|물류|SCM|인사담당|채용담당|경영지원|전략기획|해외영업|수출입|개발자|엔지니어|데이터분석|약무|약사|고객센터|상담사|콜센터|본사|사무직|디렉터|기획자|마케터|영업관리|리크루터|헤드헌터|MD채용|재택/i.test(t)) return "OFFICE";
   if (/디자이너|스타일리스트|스탭|스태프|스텝|인턴|네일|속눈썹|왁싱|피부관리|에스테틱|메이크업|바버|헤어|원장|실장|미용사|점장|샵마스터|관리사|테라피|두피|시술|샴푸|왁서/.test(t)) return "STORE";
-  return "";
+  return branchSignature(title) ? "STORE" : "OFFICE"; // 지점 있으면 매장, 없으면 오피스
 }
 function branchSignature(title: string): string {
   const t = title || "";
@@ -133,16 +134,15 @@ export default function AdminOutreachPage() {
     return { total, dup };
   }, [items]);
   // 현재 탭의 사이트별 활성 공고수 + 매장/오피스 추정
-  const { bySite, storeCnt, officeCnt, etcCnt } = useMemo(() => {
+  const { bySite, storeCnt, officeCnt } = useMemo(() => {
     const m: Record<string, number> = {};
-    let store = 0, office = 0, etc = 0;
+    let store = 0, office = 0;
     for (const r of items) for (const j of (Array.isArray(r.found_jobs) ? r.found_jobs : [])) {
       const s = j?.source || "기타";
       m[s] = (m[s] || 0) + 1;
-      const so = guessStoreOffice(j?.title || "");
-      if (so === "STORE") store += 1; else if (so === "OFFICE") office += 1; else etc += 1;
+      if (guessStoreOffice(j?.title || "") === "STORE") store += 1; else office += 1;
     }
-    return { bySite: m, storeCnt: store, officeCnt: office, etcCnt: etc };
+    return { bySite: m, storeCnt: store, officeCnt: office };
   }, [items]);
 
   const setDraft = (id: string, patch: Partial<Row>) =>
@@ -329,7 +329,7 @@ export default function AdminOutreachPage() {
               ))}
               {(storeCnt > 0 || officeCnt > 0) && (
                 <span style={{ marginLeft: 4, paddingLeft: 12, borderLeft: "1px solid #e3dcec" }} title="공고 제목 기반 추정(정확한 매장/오피스는 불러오기 시 분류됨)">
-                  <b style={{ color: "#5f0080", fontWeight: 600 }}>매장</b> {storeCnt.toLocaleString()} · <b style={{ color: "#5f0080", fontWeight: 600 }}>오피스</b> {officeCnt.toLocaleString()}{etcCnt > 0 ? ` · 미분류 ${etcCnt.toLocaleString()}` : ""} <span style={{ color: "#b7b0c0" }}>(추정)</span>
+                  <b style={{ color: "#5f0080", fontWeight: 600 }}>매장</b> {storeCnt.toLocaleString()} · <b style={{ color: "#5f0080", fontWeight: 600 }}>오피스</b> {officeCnt.toLocaleString()} <span style={{ color: "#b7b0c0" }}>(추정)</span>
                 </span>
               )}
             </div>
