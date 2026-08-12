@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, useCallback, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -1748,11 +1748,12 @@ export default function JobPostForm({
               </div>
 
               {/* ── 모집부문 제목(모집분야 위, '지원 안내'와 동일 스타일) ── */}
-              <div className="admin-form-label" style={{ margin: "6px 0 10px", fontWeight: 400, color: "#333" }}>모집부문 <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400 }}>모집분야를 선택하면 분야별로 고용형태·성별·경력·학력·근무·급여를 입력해요{nonMember ? " (값이 안 맞으면 자유입력)" : ""}</span></div>
+              <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", paddingTop: 14, borderTop: "1px solid #f0edf5", fontWeight: 400, color: "#333" }}>
+                <Briefcase size={16} style={{ color: "#5f0080", flexShrink: 0 }} />모집부문 <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400 }}>모집분야를 선택하면 분야별로 고용형태·성별·경력·학력·근무·급여를 입력해요{nonMember ? " (값이 안 맞으면 자유입력)" : ""}</span>
+              </div>
               {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "0 0 12px", alignItems: "center" }}>
                 <div className="job-detail-meta-item">
-                  <Tag size={16} className="job-detail-meta-icon" />
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집분야<span style={{ color: "#e9a3a3" }}> *</span></span>
                   {typeLocked ? (
                     <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
@@ -1761,7 +1762,6 @@ export default function JobPostForm({
                   )}
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
-                  <Clock size={16} className="job-detail-meta-icon" />
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
                   <button type="button"
                     onClick={() => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true); }}
@@ -1935,7 +1935,7 @@ export default function JobPostForm({
 
               {/* 근무지역: 전체 주소 입력 → 필터용 시·군·구 자동 추출 (지도는 아래). 모집부문 안에 이어짐(구분선 없음) */}
               <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "8px 0" }}>
-                <span className="admin-form-label" style={{ flexShrink: 0 }}>근무지역 <span style={{ color: "#e9a3a3" }}>*</span></span>
+                <span className="job-detail-company-label" style={{ fontSize: 14, flexShrink: 0 }}>근무지역 <span style={{ color: "#e9a3a3" }}>*</span></span>
                 <input value={nmAddress}
                   onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
                   style={{ flex: 1, border: "none", background: "transparent", fontSize: 15, outline: "none", padding: 0, textAlign: "left" }}
@@ -1949,7 +1949,7 @@ export default function JobPostForm({
 
               {/* 지원 안내 (채용 담당자 · 접수방법 · 채용 절차) */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
-                <div className="admin-form-label" style={{ margin: "0 0 10px", fontWeight: 400, color: "#333" }}>지원 안내</div>
+                <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}><Send size={16} style={{ color: "#5f0080", flexShrink: 0 }} />지원 안내</div>
 
               {/* 지원방법(좌·고정) · 담당자 연락처(우·관리자 확인용) — 관리자 비회원 공고에서만 */}
               {mode === "admin" && nonMember && (
