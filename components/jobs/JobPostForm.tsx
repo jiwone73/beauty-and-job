@@ -1809,7 +1809,7 @@ export default function JobPostForm({
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (imgDragRef.current) dropToBanner(idx); }}
                       style={{ position: "relative", width: 120, height: 76, flexShrink: 0, cursor: "grab" }}>
-                      <img src={b.url} alt={`배너 ${idx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
+                      <img src={b.url} alt={`배너 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
                       <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="배너에서 제거"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
