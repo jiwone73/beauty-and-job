@@ -30,6 +30,7 @@ type Row = {
 type CountRow = { group_name: string; cnt: number; hiring_cnt: number; registered_cnt: number };
 
 const GROUPS = ["헤어샵", "메이크업", "네일&속눈썹", "스킨&바디케어", "두피&탈모", "리테일&커머스"];
+const SITE_ORDER = ["헤어인잡", "알바몬", "잡코리아", "사람인", "뷰티잡", "셀렉미", "자사홈페이지"]; // 사이트별 집계 표시 순서
 const HIRING = ["채용중", "없음"];
 const REG = ["미등록", "등록완료"];
 
@@ -38,6 +39,14 @@ const PURPLE = "#5f0080";
 // 중복 판정용 '지점' 시그니처: 제목에서 지점 토큰(○○역/○○동/○○점/○○센터)을 뽑아 정규화.
 //   같은 업체(=브랜드)에서 지점이 같으면 중복으로 본다. 사이트마다 형식이 달라(강남역점/강남역 등)
 //   끝의 '점·지점·센터'는 떼어 맞춘다. 지점 신호가 없으면 판정 불가 → 제외(과다집계 방지).
+// 활성공고 제목으로 매장/오피스 추정(found_jobs엔 job_type이 없어 제목 기반).
+//   본사 사무직 신호 → OFFICE, 미용 시술·매장 현장 신호 → STORE, 애매하면 미분류("").
+function guessStoreOffice(title: string): "STORE" | "OFFICE" | "" {
+  const t = (title || "").replace(/\s/g, "");
+  if (/인허가|regulatory|품질관리|머천다이저|상품기획|브랜드매니저|퍼포먼스마케팅|재무|회계|세무|법무|구매담당|물류|SCM|인사담당|채용담당|경영지원|전략기획|해외영업|수출입|개발자|엔지니어|데이터분석|약무|약사|고객센터|상담사|콜센터|본사|사무직|디렉터|기획자|마케터|영업관리|리크루터|헤드헌터|MD채용|재택/i.test(t)) return "OFFICE";
+  if (/디자이너|스타일리스트|스탭|스태프|스텝|인턴|네일|속눈썹|왁싱|피부관리|에스테틱|메이크업|바버|헤어|원장|실장|미용사|점장|샵마스터|관리사|테라피|두피|시술|샴푸|왁서/.test(t)) return "STORE";
+  return "";
+}
 function branchSignature(title: string): string {
   const t = title || "";
   const branches = [...new Set([...t.matchAll(/([가-힣A-Za-z0-9]{2,}(?:역|동|점|센터|지점))/g)]
@@ -122,6 +131,18 @@ export default function AdminOutreachPage() {
       for (const n of byBranch.values()) if (n >= 2) dup += n - 1;
     }
     return { total, dup };
+  }, [items]);
+  // 현재 탭의 사이트별 활성 공고수 + 매장/오피스 추정
+  const { bySite, storeCnt, officeCnt, etcCnt } = useMemo(() => {
+    const m: Record<string, number> = {};
+    let store = 0, office = 0, etc = 0;
+    for (const r of items) for (const j of (Array.isArray(r.found_jobs) ? r.found_jobs : [])) {
+      const s = j?.source || "기타";
+      m[s] = (m[s] || 0) + 1;
+      const so = guessStoreOffice(j?.title || "");
+      if (so === "STORE") store += 1; else if (so === "OFFICE") office += 1; else etc += 1;
+    }
+    return { bySite: m, storeCnt: store, officeCnt: office, etcCnt: etc };
   }, [items]);
 
   const setDraft = (id: string, patch: Partial<Row>) =>
@@ -292,6 +313,28 @@ export default function AdminOutreachPage() {
         <p style={{ fontSize: 13.5, color: "#9a92a6", margin: "0 0 14px" }}>
           체크박스로 업체를 선택해 "선택 업데이트"를 누르거나, "전체 업데이트"로 모든 탭의 업체를 한 번에 조회할 수 있습니다. 브랜드명으로 7개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·셀렉미·자사홈)를 조회해 채용유무를 자동 확인합니다. 입력값은 자동저장됩니다. 조회는 무료입니다.
         </p>
+
+        {/* 사이트별 활성 공고수(현재 탭) — 그룹 칩 위 */}
+        {(() => {
+          const known = SITE_ORDER.filter((s) => bySite[s]);
+          const etc = Object.keys(bySite).filter((s) => !SITE_ORDER.includes(s));
+          const sum = Object.values(bySite).reduce((a, b) => a + b, 0);
+          if (!sum) return null;
+          const label = (s: string) => s === "자사홈페이지" ? "자사홈" : s;
+          return (
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "4px 14px", marginBottom: 10, fontSize: 12.5, color: "#6b6473" }}>
+              <span style={{ color: "#9a92a6" }}>사이트별 활성공고</span>
+              {[...known, ...etc].map((s) => (
+                <span key={s}><b style={{ color: "#2b2533", fontWeight: 600 }}>{label(s)}</b> {bySite[s].toLocaleString()}</span>
+              ))}
+              {(storeCnt > 0 || officeCnt > 0) && (
+                <span style={{ marginLeft: 4, paddingLeft: 12, borderLeft: "1px solid #e3dcec" }} title="공고 제목 기반 추정(정확한 매장/오피스는 불러오기 시 분류됨)">
+                  <b style={{ color: "#5f0080", fontWeight: 600 }}>매장</b> {storeCnt.toLocaleString()} · <b style={{ color: "#5f0080", fontWeight: 600 }}>오피스</b> {officeCnt.toLocaleString()}{etcCnt > 0 ? ` · 미분류 ${etcCnt.toLocaleString()}` : ""} <span style={{ color: "#b7b0c0" }}>(추정)</span>
+                </span>
+              )}
+            </div>
+          );
+        })()}
 
         {/* 그룹 탭 */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
