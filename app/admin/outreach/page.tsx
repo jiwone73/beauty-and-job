@@ -343,7 +343,7 @@ export default function AdminOutreachPage() {
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
           {GROUPS.map((g) => (
             <button key={g} onClick={() => setGroup(g)} style={chip(group === g)}>
-              {g} <span style={{ opacity: 0.7 }}>{countOf(g)}</span>
+              {g}
             </button>
           ))}
         </div>
