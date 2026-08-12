@@ -20,6 +20,7 @@ export interface FoundJob {
   title: string;
   url: string;
   source: string; // 출처 사이트 표시명 (예: "헤어인잡")
+  date?: string;  // 원 사이트 등록일(YYYY-MM-DD). 소스가 목록에서 제공할 때만.
 }
 
 function decodeEntities(s: string): string {

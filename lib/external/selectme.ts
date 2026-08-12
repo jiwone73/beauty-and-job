@@ -25,6 +25,7 @@ export interface SelectmeRecruit {
   shopName: string;
   title: string;
   status: string;
+  date: string; // 등록일 YYYY-MM-DD
 }
 
 // RSC 텍스트에서 공고 객체들을 추출(각 객체는 isInvisibleClosedRecruit 플래그로 시작).
@@ -44,12 +45,15 @@ export function extractRecruits(html: string): SelectmeRecruit[] {
     const stM = c.match(/^(?:true|false),"status":"([^"]*)"/);
     const shopName = (snM?.[1] || "").trim();
     if (!shopName) continue;
+    // 등록일: startDisplayDate(게시 시작) 우선, 없으면 createdAt. RSC는 "$D2026-08-03T..." 형태.
+    const dM = c.match(/"startDisplayDate":"?\$?D?(\d{4}-\d{2}-\d{2})/) || c.match(/"createdAt":"?\$?D?(\d{4}-\d{2}-\d{2})/);
     seen.add(id);
     out.push({
       id,
       shopName,
       title: (tiM?.[1] || "").replace(/\\n/g, " ").replace(/\\/g, "").trim(),
       status: stM?.[1] || "",
+      date: dM?.[1] || "",
     });
   }
   return out;
@@ -67,16 +71,16 @@ export async function findJobsByCompany(
 
   const recruits = extractRecruits(html);
   // 활성(status "ing")만. shopName(공백 제거)이 회사명을 포함하면 매칭.
-  const active = recruits.filter((r) => r.status === "ing");
-  const list: FoundJob[] = active.map((r) => ({
+  const toJob = (r: SelectmeRecruit): FoundJob => ({
     idx: r.id,
     title: (r.title || r.shopName).slice(0, 80),
     url: `${BASE}/recruit/${r.id}`,
     source: "셀렉미",
-  }));
-  const matched = active
-    .filter((r) => r.shopName.replace(/\s+/g, "").includes(key))
-    .map((r) => ({ idx: r.id, title: (r.title || r.shopName).slice(0, 80), url: `${BASE}/recruit/${r.id}`, source: "셀렉미" }));
+    date: r.date || undefined,
+  });
+  const active = recruits.filter((r) => r.status === "ing");
+  const list: FoundJob[] = active.map(toJob);
+  const matched = active.filter((r) => r.shopName.replace(/\s+/g, "").includes(key)).map(toJob);
 
   const jobs = (opts.strict ?? true) ? matched : list;
   return { total: list.length, matched: matched.length, jobs };

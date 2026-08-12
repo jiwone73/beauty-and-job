@@ -22,7 +22,7 @@ type Row = {
   scale: string | null;
   features: string | null;
   note: string | null;
-  found_jobs: { idx: number; title: string; url: string; source: string }[];
+  found_jobs: { idx: number; title: string; url: string; source: string; date?: string }[];
   found_count: number;
   last_checked_at: string | null;
   updated_at: string | null;
@@ -65,6 +65,7 @@ export default function AdminOutreachPage() {
   const [checking, setChecking] = useState<Set<string>>(new Set());
   const [bulkMsg, setBulkMsg] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [srcTab, setSrcTab] = useState<string>(""); // 확장된 활성공고 목록의 사이트별 필터("" = 전체)
   const [editHomeId, setEditHomeId] = useState<string | null>(null);
   const [editMemoId, setEditMemoId] = useState<string | null>(null);
   const [pickedJobUrl, setPickedJobUrl] = useState<string | null>(null); // 조회된 공고 중 라디오 선택 → 공고 등록으로 전달
@@ -391,7 +392,7 @@ export default function AdminOutreachPage() {
                           {isChecking && <span style={{ fontSize: 12, color: PURPLE }}>조회중…</span>}
                         </div>
                         {row.found_count > 0 && (
-                          <button onClick={() => setExpanded(expanded === row.id ? null : row.id)}
+                          <button onClick={() => { setSrcTab(""); setExpanded(expanded === row.id ? null : row.id); }}
                             style={{ marginTop: 4, background: "none", border: "none", padding: 0, cursor: "pointer", ...badge("#0a7d34") }}>
                             공고 {row.found_count}건 {expanded === row.id ? "▲" : "▼"}
                           </button>
@@ -441,17 +442,36 @@ export default function AdminOutreachPage() {
                         )}
                       </td>
                     </tr>
-                    {expanded === row.id && row.found_jobs?.length > 0 && (
+                    {expanded === row.id && row.found_jobs?.length > 0 && (() => {
+                      // 사이트별 개수 집계(원문 순서 유지) + 탭 필터
+                      const bySrc: Record<string, number> = {};
+                      for (const jb of row.found_jobs) bySrc[jb.source] = (bySrc[jb.source] || 0) + 1;
+                      const srcList = Object.keys(bySrc).sort((a, b) => bySrc[b] - bySrc[a]);
+                      const activeTab = srcTab && bySrc[srcTab] ? srcTab : "";
+                      const shown = activeTab ? row.found_jobs.filter((jb) => jb.source === activeTab) : row.found_jobs;
+                      return (
                       <tr>
                         <td style={{ ...td, background: "#faf8fc" }} colSpan={9}>
-                          <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 4 }}>
-                            조회된 활성 공고 <span style={{ color: "#9a92a6" }}>· 라디오 선택 후 상단 "선택 공고 등록"</span>
+                          <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 6 }}>
+                            조회된 활성 공고 <span style={{ color: "#9a92a6" }}>· 라디오 선택 후 상단 &quot;선택 공고 등록&quot;</span>
+                          </div>
+                          {/* 사이트별 탭 */}
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+                            <button type="button" onClick={() => setSrcTab("")} style={{ ...chip(activeTab === ""), padding: "4px 11px", fontSize: 13 }}>
+                              전체 <span style={{ opacity: 0.7 }}>{row.found_jobs.length}</span>
+                            </button>
+                            {srcList.map((s) => (
+                              <button key={s} type="button" onClick={() => setSrcTab(s)} style={{ ...chip(activeTab === s), padding: "4px 11px", fontSize: 13 }}>
+                                {s} <span style={{ opacity: 0.7 }}>{bySrc[s]}</span>
+                              </button>
+                            ))}
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            {row.found_jobs.map((jb, i) => (
+                            {shown.map((jb, i) => (
                               <label key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13.5, cursor: "pointer" }}>
                                 <input type="radio" name="pickedFoundJob" checked={pickedJobUrl === jb.url} onChange={() => setPickedJobUrl(jb.url)} style={{ width: 14, height: 14, flexShrink: 0 }} />
                                 <span style={badge(PURPLE)}>{jb.source}</span>
+                                {jb.date && <span style={{ fontSize: 12.5, color: "#9a92a6", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{jb.date}</span>}
                                 <span style={{ color: "#2b2533" }}>{jb.title}</span>
                                 <a href={normUrl(jb.url)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: PURPLE, textDecoration: "none" }}>원문 ↗</a>
                               </label>
@@ -459,7 +479,8 @@ export default function AdminOutreachPage() {
                           </div>
                         </td>
                       </tr>
-                    )}
+                      );
+                    })()}
                   </Fragment>
                 );
               })}
