@@ -385,7 +385,7 @@ export default function AdminOutreachPage() {
           <button onClick={updateAllTabs} disabled={!totalCount}
             title="현재 탭과 상관없이 6개 탭 전체를 조회합니다 (시간이 걸립니다)"
             style={{ ...chip(true), opacity: totalCount ? 1 : 0.5 }}>
-            전체 업데이트{totalCount ? `(${totalCount})` : ""}
+            전체 업데이트{totalCount ? ` (업체 ${totalCount})` : ""}
           </button>
           <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
             style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
