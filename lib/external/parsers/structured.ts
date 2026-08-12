@@ -852,7 +852,7 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
   const employment_type = /permanent/.test(workType) ? "정규직"
     : /contract/.test(workType) ? "계약직"
     : /part|alba/i.test(workType) ? "파트타임"
-    : /spare/i.test(workType) ? "프리랜서" : "";
+    : /spare/i.test(workType) ? "스페어" : "";
 
   // 근무시간·요일(협의 플래그 우선)
   const isTimeConsult = /"isWorkTimeConsult":true/.test(chunk);

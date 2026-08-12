@@ -70,7 +70,7 @@ function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRE
   const startY = H / 2 - ((lines.length - 1) * lh) / 2;
   lines.forEach((ln, i) => ctx.fillText(ln, W / 2, startY + i * lh));
 }
-const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트", "협의"];
+const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트", "스페어", "협의"];
 // 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)
 // 불러오기 시 반드시 문제없이 들어와야 하는 핵심 항목만 이슈 대상으로.
 const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "모집분야", "근무지역", "상세요강 이미지", "기타"];
@@ -1268,7 +1268,7 @@ export default function JobPostForm({
     const primaryHeadcount = parseInt((p0.headcount || "").replace(/[^0-9]/g, "")) || null;
     const expLevel = p0.career.includes("신입") ? "NEW"
       : p0.career.match(/\d+년/) ? "EXPERIENCED" : "ANY";
-    const workType = p0.employment === "아르바이트" ? "PART_TIME"
+    const workType = (p0.employment === "아르바이트" || p0.employment === "스페어") ? "PART_TIME"
       : p0.employment === "계약직" ? "CONTRACT" : "FULL_TIME";
     let salaryMin: number | null = null;
     let salaryMaxVal: number | null = null;
