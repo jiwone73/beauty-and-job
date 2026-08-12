@@ -69,6 +69,7 @@ function normUrl(u: string) {
 export default function AdminOutreachPage() {
   const [items, setItems] = useState<Row[]>([]);
   const [counts, setCounts] = useState<CountRow[]>([]);
+  const [globalSO, setGlobalSO] = useState<{ store: number; office: number }>({ store: 0, office: 0 }); // 6개 탭 전체 매장/오피스(추정)
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState<string>("헤어샵");
   const [hiringFilter, setHiringFilter] = useState("");
@@ -103,6 +104,7 @@ export default function AdminOutreachPage() {
       const j = await res.json();
       setItems(j.data?.items || []);
       setCounts(j.data?.counts || []);
+      setGlobalSO({ store: j.data?.storeTotal || 0, office: j.data?.officeTotal || 0 });
     } catch {
       setItems([]);
     } finally {
@@ -312,7 +314,11 @@ export default function AdminOutreachPage() {
       <div style={{ padding: "4px 4px 40px" }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
           <h1 style={{ fontSize: 20, fontWeight: 400, color: "#2b2533", margin: 0 }}>외부업체 컨택 리스트</h1>
-          <span style={{ fontSize: 14, color: "#9a92a6" }}>활성공고 총 {totalActive.toLocaleString()}건 · 업체 {totalCount}개</span>
+          <span style={{ fontSize: 14, color: "#9a92a6" }}>
+            활성공고 총 {totalActive.toLocaleString()}건
+            {(globalSO.store > 0 || globalSO.office > 0) && <span title="공고 제목 기반 추정"> (매장 {globalSO.store.toLocaleString()} · 오피스 {globalSO.office.toLocaleString()})</span>}
+            {" · "}업체 {totalCount}개
+          </span>
         </div>
         <p style={{ fontSize: 13.5, color: "#9a92a6", margin: "0 0 14px" }}>
           체크박스로 업체를 선택해 "선택 업데이트"를 누르거나, "전체 업데이트"로 모든 탭의 업체를 한 번에 조회할 수 있습니다. 브랜드명으로 7개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·셀렉미·자사홈)를 조회해 채용유무를 자동 확인합니다. 입력값은 자동저장됩니다. 조회는 무료입니다.
@@ -385,7 +391,7 @@ export default function AdminOutreachPage() {
           <button onClick={updateAllTabs} disabled={!totalCount}
             title="현재 탭과 상관없이 6개 탭 전체를 조회합니다 (시간이 걸립니다)"
             style={{ ...chip(true), opacity: totalCount ? 1 : 0.5 }}>
-            전체 업데이트{totalCount ? <span style={{ opacity: 0.8, fontSize: 12 }}> ({totalCount}개 브랜드)</span> : ""}
+            전체 업데이트{totalCount ? <span style={{ opacity: 0.8, fontSize: 12 }}> (업체 {totalCount}개)</span> : ""}
           </button>
           <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
             style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>

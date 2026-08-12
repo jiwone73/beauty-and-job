@@ -15,6 +15,19 @@ const EDITABLE = new Set([
 const HIRING_VALUES = new Set(["채용중", "없음", "확인필요", "미확인"]);
 const REG_VALUES = new Set(["미등록", "등록완료", "보류"]);
 
+// 활성공고 제목으로 매장/오피스 추정(외부업체 리스트 UI와 동일 규칙).
+//   ① 뚜렷한 본사 사무직 신호 → OFFICE  ② 뚜렷한 매장 시술 신호 → STORE
+//   ③ 그 외: 제목에 지점(○○점/역/동)이 있으면 매장, 없으면 오피스.
+function hasBranch(title: string): boolean {
+  return /([가-힣A-Za-z0-9]{2,}(?:역|동|점|지점))/.test(title || "");
+}
+function guessStoreOffice(title: string): "STORE" | "OFFICE" {
+  const t = (title || "").replace(/\s/g, "");
+  if (/인허가|regulatory|품질관리|머천다이저|상품기획|브랜드매니저|퍼포먼스마케팅|재무|회계|세무|법무|구매담당|물류|SCM|인사담당|채용담당|경영지원|전략기획|해외영업|수출입|개발자|엔지니어|데이터분석|약무|약사|고객센터|상담사|콜센터|본사|사무직|디렉터|기획자|마케터|영업|리크루터|헤드헌터|MD채용|재택|자산운용|펀드|운용역|증권|투자|금융|렌탈|설치기사|생산직|제조|영양사/i.test(t)) return "OFFICE";
+  if (/디자이너|스타일리스트|스탭|스태프|스텝|인턴|네일|속눈썹|왁싱|피부관리|에스테틱|메이크업|바버|헤어|원장|실장|미용사|점장|샵마스터|관리사|테라피|두피|시술|샴푸/.test(t)) return "STORE";
+  return hasBranch(title) ? "STORE" : "OFFICE";
+}
+
 export async function GET(req: NextRequest) {
   const { res: authErr } = requireAuth(req, "admin");
   if (authErr) return authErr;
@@ -58,7 +71,18 @@ export async function GET(req: NextRequest) {
               COALESCE(SUM(found_count), 0)::int AS active_cnt
          FROM target_companies GROUP BY group_name`
     );
-    return ok({ items: result.rows, counts: counts.rows });
+    // 6개 탭 전체 활성공고를 제목으로 매장/오피스 추정 집계
+    const jobsRes = await client.query(
+      `SELECT found_jobs FROM target_companies WHERE found_count > 0 AND found_jobs IS NOT NULL`
+    );
+    let storeTotal = 0, officeTotal = 0;
+    for (const row of jobsRes.rows) {
+      const jobs = Array.isArray(row.found_jobs) ? row.found_jobs : [];
+      for (const j of jobs) {
+        if (guessStoreOffice(j?.title || "") === "STORE") storeTotal += 1; else officeTotal += 1;
+      }
+    }
+    return ok({ items: result.rows, counts: counts.rows, storeTotal, officeTotal });
   } finally {
     client.release();
   }
