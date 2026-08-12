@@ -23,7 +23,7 @@ const TIME_OPTIONS = Array.from({ length: 15 }, (_, i) => `${String(i + 9).padSt
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 // 모집부문 표용 간결 옵션(여백 확보, 직접입력 없음)
-const POS_CAREER = ["신입", "경력", "무관", "1년~", "3년~", "5년~", "10년~", "실장"];
+const POS_CAREER = ["신입", "경력", "무관", "1년~", "3년~", "5년~", "10년~", "실장", "부원장", "원장"];
 const POS_EDU = ["무관", "고졸", "초대졸", "대졸", "석사"];
 // 기본 배너 배경 프리셋(뷰티 필). bg=그라데이션 2색, text=제목색, wm=배경 'RECRUIT' 워터마크색
 const BANNER_PRESETS: { key: string; label: string; bg: [string, string]; text: string; wm: string }[] = [
