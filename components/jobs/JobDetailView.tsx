@@ -2,7 +2,6 @@
 import { forwardRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { shortRegion } from "@/lib/regionShort";
-import { BannerImg } from "@/components/BannerImg";
 import KakaoMap from "@/components/KakaoMap";
 import AddressMap from "@/components/AddressMap";
 import { Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, GraduationCap, MapPin, Send } from "lucide-react";
@@ -11,7 +10,6 @@ import { Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, GraduationCa
 export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
   const [start, setStart] = useState(0);
   const n = images.length;
-  const PER = 3;
   const arrow: CSSProperties = {
     position: "absolute", top: "50%", transform: "translateY(-50%)",
     width: 40, height: 40, borderRadius: "50%", border: "none",
@@ -20,30 +18,22 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
     display: "flex", alignItems: "center", justifyContent: "center",
   };
 
-  // 배너는 항상 3:1 와이드 띠로 고정(1장이어도). 이미지는 자르지 않고 축소해 담고 여백은 배경색으로 채움.
-  if (n === 1) {
-    return (
-      <div style={{ width: "100%", aspectRatio: "3 / 1", borderRadius: 12, overflow: "hidden" }}>
-        <BannerImg src={images[0]} alt={alt} />
-      </div>
-    );
-  }
-
-  const cols = Math.min(n, PER);
-  // 시작 위치를 순환(wrap)시켜 3장 이하라도 좌우 화살표로 로테이션되게 한다.
-  const s = ((start % n) + n) % n;
-  const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
-
+  // 배너는 '원본 이미지 비율 그대로' 한 장씩 표시(자르거나 3:1 띠로 왜곡하지 않음). 여러 장이면 좌우 화살표로 순환.
+  const cur = ((start % n) + n) % n;
   return (
-    <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 0, borderRadius: 12, overflow: "hidden", aspectRatio: "3 / 1" }}>
-        {visible.map((src, k) => (
-          <BannerImg key={k} src={src} alt={alt} />
-        ))}
-      </div>
-      {/* 이미지가 2장 이상이면 항상 좌우 화살표 노출 (순환) */}
-      <button type="button" aria-label="이전 이미지" onClick={() => setStart(s - 1)} style={{ ...arrow, left: 8 }}><ChevronLeft size={22} /></button>
-      <button type="button" aria-label="다음 이미지" onClick={() => setStart(s + 1)} style={{ ...arrow, right: 8 }}><ChevronRight size={22} /></button>
+    <div style={{ position: "relative", width: "100%", borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
+      <img
+        src={images[cur]}
+        alt={alt}
+        style={{ display: "block", width: "100%", height: "auto" }}
+      />
+      {n > 1 && (
+        <>
+          <button type="button" aria-label="이전 이미지" onClick={() => setStart(cur - 1)} style={{ ...arrow, left: 8 }}><ChevronLeft size={22} /></button>
+          <button type="button" aria-label="다음 이미지" onClick={() => setStart(cur + 1)} style={{ ...arrow, right: 8 }}><ChevronRight size={22} /></button>
+          <span style={{ position: "absolute", bottom: 10, right: 12, zIndex: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 12, fontWeight: 600, borderRadius: 999, padding: "3px 10px" }}>{cur + 1} / {n}</span>
+        </>
+      )}
     </div>
   );
 }

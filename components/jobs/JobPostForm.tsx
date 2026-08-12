@@ -941,13 +941,12 @@ export default function JobPostForm({
           setDetailImages(detailImgs.slice(0, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
           // 파서가 배너용 이미지(매장 사진 등)를 함께 내려주면 전부 상단 배너로.
           if (imgs.length) setBannerImages(imgs.slice(0, 10).map((u) => ({ url: u, name: "배너" })));
-        } else {
-          const cover = imgs[0] || d.cover_image || "";
-          // 기본 배분: 첫 이미지=배너(1장), 나머지=상세 본문.(관리자가 드래그로 조정)
-          if (cover) setBannerImages([{ url: cover, name: "배너" }]);
-          if (imgs.length > 1) {
-            setDetailImages(imgs.slice(1, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
-          }
+        } else if (imgs.length) {
+          // d.images는 파서가 '배너(매장 사진)'로 분류한 갤러리 → 전부 상단 배너로.
+          //   (기존엔 첫 장만 배너·나머지는 상세로 쪼개, 셀렉미 매장사진 여러 장이 상세요강으로 새던 버그)
+          setBannerImages(imgs.slice(0, 10).map((u) => ({ url: u, name: "배너" })));
+        } else if (d.cover_image) {
+          setBannerImages([{ url: d.cover_image, name: "배너" }]);
         }
       }
       // 채용유형: 토글이 열려 있을 때만(관리자 또는 BOTH 기업) 불러온 값으로 변경. 타입 고정 기업회원은 유지.
