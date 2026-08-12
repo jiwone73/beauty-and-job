@@ -1975,15 +1975,17 @@ export default function JobPostForm({
                   </div>
                 </div>
 
-              {/* 근무지역: 전체 주소 입력 → 필터용 시·군·구 자동 추출 (지도는 아래). 모집부문 안에 이어짐(구분선 없음) */}
-              <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "8px 0" }}>
-                <span className="job-detail-company-label" style={{ fontSize: 15, flexShrink: 0 }}>근무지역 <span style={{ color: "#e9a3a3" }}>*</span></span>
+              {/* 근무지역: 별도 섹션(제목+아이콘, 지원 안내와 동일 스타일). 전체 주소 → 필터용 시·군·구 자동 추출 + 지도 */}
+              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+                <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}>
+                  <MapPin size={16} style={{ color: "#5f0080", flexShrink: 0 }} />근무지역 <span style={{ color: "#e9a3a3" }}>*</span>
+                </div>
                 <input value={nmAddress}
                   onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
-                  style={{ flex: 1, border: "none", background: "transparent", fontSize: 15, outline: "none", padding: 0, textAlign: "left" }}
+                  style={{ width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }}
                   placeholder="전체 주소 입력 (예: 서울 구로구 구일로10길 27 …)" />
+                {nmAddress.trim() && <AddressMap address={nmAddress} name={newCompanyName.trim() || undefined} height={220} />}
               </div>
-              {nmAddress.trim() && <AddressMap address={nmAddress} name={newCompanyName.trim() || undefined} height={220} />}
 
               {/* 지원 안내 (채용 담당자 · 접수방법 · 채용 절차) */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>

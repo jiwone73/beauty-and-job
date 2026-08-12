@@ -5,7 +5,7 @@ import { shortRegion } from "@/lib/regionShort";
 import { BannerImg } from "@/components/BannerImg";
 import KakaoMap from "@/components/KakaoMap";
 import AddressMap from "@/components/AddressMap";
-import { Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, GraduationCap } from "lucide-react";
+import { Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, GraduationCap, MapPin, Send } from "lucide-react";
 
 // 공고 상단 이미지 갤러리(원티드 스타일). 한 번에 3장 노출, 좌우 화살표로 순환.
 export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
@@ -99,7 +99,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const posCols = posColDefs.filter((c) => c.key === "category" || positions.some((p: any) => (c.get(p) || "").toString().trim()));
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
-      <h2 className="job-detail-subtitle">모집부문</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#5f0080", flexShrink: 0 }} />모집부문</h2>
       <div style={{ overflowX: "auto" }}>
         <table style={{ minWidth: Math.min(640, posCols.length * 96), borderCollapse: "collapse", fontSize: 13.5 }}>
           <thead>
@@ -187,7 +187,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   const locationSection = hasMap ? (
     <div className="jd-subblock" key="location">
-      <h2 className="job-detail-subtitle">근무지역</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={16} style={{ color: "#5f0080", flexShrink: 0 }} />근무지역</h2>
       {job.companyAddress?.trim() && (
         <p className="job-detail-desc" style={{ marginBottom: "12px" }}>{job.companyAddress}</p>
       )}
@@ -241,7 +241,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   const applyGuideBlock = (hasContact || hasMethods || hasProcess) ? (
     <div className="jd-subblock" key="apply-guide">
-      <h2 className="job-detail-subtitle">지원 안내</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Send size={16} style={{ color: "#5f0080", flexShrink: 0 }} />지원 안내</h2>
       {(hasContact || hasMethods) && (
         <div className="jd-2col">
           <div>{methodsInner}</div>
