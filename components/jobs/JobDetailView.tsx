@@ -5,7 +5,7 @@ import { shortRegion } from "@/lib/regionShort";
 import { BannerImg } from "@/components/BannerImg";
 import KakaoMap from "@/components/KakaoMap";
 import AddressMap from "@/components/AddressMap";
-import { Clock, Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, Tag, GraduationCap } from "lucide-react";
+import { Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, GraduationCap } from "lucide-react";
 
 // 공고 상단 이미지 갤러리(원티드 스타일). 한 번에 3장 노출, 좌우 화살표로 순환.
 export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
@@ -99,19 +99,47 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             </tr>
           </thead>
           <tbody>
-            {positions.map((p: any, i: number) => (
-              <tr key={i}>
-                {[p.category, p.employment, p.gender, p.career, p.education, [p.workDays, p.workTime].filter(Boolean).join(" · "), p.salary].map((v: string, j: number) => (
-                  <td key={j} style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: j === 0 ? "#333" : "#555", whiteSpace: "nowrap" }}>{v || "-"}</td>
-                ))}
-              </tr>
-            ))}
+            {positions.map((p: any, i: number) => {
+              const cells = [p.category, p.employment, p.gender, p.career, p.education, null, p.salary];
+              return (
+                <tr key={i}>
+                  {cells.map((v: string | null, j: number) => (
+                    <td key={j} style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: j === 0 ? "#333" : "#555", whiteSpace: "nowrap", lineHeight: 1.35 }}>
+                      {/* 근무요일/시간 열(index 5)은 요일 1행·시간 2행으로 */}
+                      {j === 5
+                        ? ((p.workDays || p.workTime)
+                            ? <><div>{p.workDays || "-"}</div><div>{p.workTime || "-"}</div></>
+                            : "-")
+                        : (v || "-")}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
+      {/* 근무기간·복리후생: 별도 '근무 조건' 제목 없이 모집부문 블록에 이어 붙임(표와 동일한 밀도) */}
+      {(job.workPeriodText || job.benefits?.length > 0) && (
+        <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: 28, rowGap: 4 }}>
+          {job.workPeriodText && (
+            <div style={{ display: "flex", gap: 12, fontSize: 13.5, padding: "3px 0" }}>
+              <span style={{ color: "#7a6f8a", width: 60, flexShrink: 0 }}>근무기간</span>
+              <span style={{ color: "#555" }}>{job.workPeriodText}</span>
+            </div>
+          )}
+          {job.benefits?.length > 0 && (
+            <div style={{ display: "flex", gap: 12, fontSize: 13.5, padding: "3px 0", alignItems: "flex-start" }}>
+              <span style={{ color: "#7a6f8a", width: 60, flexShrink: 0 }}>복리후생</span>
+              <span style={{ color: "#555", lineHeight: 1.5 }}>{job.benefits.join(", ")}</span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   ) : null;
-  const workCondSection = (job.workPeriodText || job.benefits?.length > 0 || (positions.length === 0 && (job.employType || job.workDaysText || job.workTimeText))) ? (
+  // 모집부문 표가 있으면 근무기간·복리후생은 표 아래로 합쳐 넣으므로, 여기(근무 조건 제목 블록)는 텍스트형 공고에서만 노출.
+  const workCondSection = (positions.length === 0 && (job.workPeriodText || job.benefits?.length > 0 || job.employType || job.workDaysText || job.workTimeText)) ? (
     <div className="jd-subblock" key="workcond">
       <h2 className="job-detail-subtitle">근무 조건</h2>
       <div className="job-detail-company-info">
@@ -273,7 +301,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <div className="job-detail-meta-grid">
             {job.jobCategories?.length > 0 && (
               <div className="job-detail-meta-item">
-                <Tag size={16} className="job-detail-meta-icon" />
                 <span className="job-detail-meta-label">모집분야</span>
                 <span className="job-detail-meta-value">{job.jobCategories.join(", ")}</span>
               </div>
@@ -308,7 +335,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             )}
             {job.deadline && (
               <div className="job-detail-meta-item">
-                <Clock size={16} className="job-detail-meta-icon" />
                 <span className="job-detail-meta-label">마감일</span>
                 <span className="job-detail-meta-value">{job.deadline === "상시채용" ? "상시채용" : `~${job.deadline}`}</span>
               </div>
