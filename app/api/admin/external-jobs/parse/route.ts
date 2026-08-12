@@ -839,5 +839,23 @@ export async function POST(req: NextRequest) {
     else if (out[k] == null) out[k] = "";
   }
 
+  // ── 채용사이트 '사이트 소개' 문구 제거 ──
+  //   공고 내용이 아니라 사이트 홍보 문구(og:description 등)가 포지션 소개/회사 소개로 새는 것을 걸러낸다.
+  //   예) "뷰티잡은 미용분야의 구인구직 , 마사지구인구직 취업 정보를 제공하는 플랫폼 입니다."
+  const SITE_BOILERPLATE = [
+    /뷰티잡은?\s*미용\s*분야의?\s*구인구직\s*,?\s*마사지\s*구인구직\s*취업\s*정보를?\s*제공하는\s*플랫폼\s*입?니다\.?/g,
+    /(미용|헤어|마사지)[^.\n]{0,30}구인구직[^.\n]{0,40}(취업\s*정보|채용\s*정보)[^.\n]{0,20}(제공|플랫폼)[^.\n]{0,10}(입니다)?\.?/g,
+    /전국\s*미용[·\/ ]?헤어[·\/ ]?마사지\s*구인구직\s*플랫폼/g,
+    /[^\n.]{0,20}취업\s*정보를?\s*제공하는\s*(전문\s*)?플랫폼\s*입?니다\.?/g,
+  ];
+  for (const k of ["description", "company_description", "extra_notes"]) {
+    if (typeof out[k] === "string" && out[k]) {
+      let v = out[k] as string;
+      for (const re of SITE_BOILERPLATE) v = v.replace(re, " ");
+      v = v.replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+      out[k] = v;
+    }
+  }
+
   return ok(out);
 }
