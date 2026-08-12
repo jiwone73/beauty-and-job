@@ -17,6 +17,9 @@ const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.s
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
+// 모집부문 표용 간결 옵션(여백 확보, 직접입력 없음)
+const POS_CAREER = ["신입", "무관", "1년~", "3년~", "5년~", "10년~"];
+const POS_EDU = ["무관", "고졸", "초대졸", "대졸", "석사"];
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트", "협의"];
 // 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)
 const ISSUE_FIELDS = ["채용유형", "제목", "회사명", "모집분야(직군)", "경력", "학력", "마감일", "모집인원", "급여", "고용형태", "근무기간", "근무요일", "근무시간", "복리후생", "근무지역/주소", "담당자 연락처", "상단 배너", "상세요강 이미지", "포지션 소개", "자격요건", "우대사항", "회사 소개(기업정보)", "지원방식", "기타"];
@@ -1282,17 +1285,18 @@ export default function JobPostForm({
   const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
   const cellSelect: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff", WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
   // 클릭-선택 셀: 옵션 있으면 드롭다운(+비회원 '직접입력…'). 값이 목록에 없으면 클릭 텍스트→팝오버. 급여처럼 옵션 없으면 항상 팝오버.
-  const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력") => {
+  const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력", allowFi = true) => {
     const v = (posMeta[cat] || emptyPos)[field];
     const key = `${cat}|${field}`;
-    const asSelect = options.length > 0 && (v === "" || options.includes(v));
+    // allowFi=false면 직접입력 없이 항상 드롭다운(목록에 없는 값은 빈 선택으로)
+    const asSelect = options.length > 0 && (!allowFi || v === "" || options.includes(v));
     return (
       <span className="poscell-pop" style={{ position: "relative", display: "block" }}>
         {asSelect ? (
-          <select value={v} onChange={(e) => { if (e.target.value === "__fi__") { setCellOpen(key); return; } setPos(cat, field, e.target.value); }} style={cellSelect}>
+          <select value={options.includes(v) ? v : ""} onChange={(e) => { if (e.target.value === "__fi__") { setCellOpen(key); return; } setPos(cat, field, e.target.value); }} style={cellSelect}>
             <option value=""></option>
             {options.map((o) => <option key={o} value={o}>{o}</option>)}
-            {nonMember && <option value="__fi__">직접입력…</option>}
+            {allowFi && nonMember && <option value="__fi__">직접입력…</option>}
           </select>
         ) : (
           <button type="button" onClick={() => setCellOpen(key)} style={{ ...cellSelect, textAlign: "left", color: v ? "#333" : "#bbb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || "선택"}</button>
@@ -1781,12 +1785,12 @@ export default function JobPostForm({
                       <thead>
                         <tr>
                           <th style={{ ...thc, minWidth: 110 }}>모집분야</th>
-                          <th style={{ ...thc, minWidth: 84 }}>경력</th>
-                          <th style={{ ...thc, minWidth: 84 }}>학력</th>
                           <th style={{ ...thc, minWidth: 84 }}>고용형태</th>
-                          <th style={{ ...thc, minWidth: 100 }}>급여</th>
+                          <th style={{ ...thc, minWidth: 68 }}>성별우대</th>
+                          <th style={{ ...thc, minWidth: 76 }}>경력</th>
+                          <th style={{ ...thc, minWidth: 68 }}>학력</th>
                           <th style={{ ...thc, minWidth: 150 }}>근무요일 / 시간</th>
-                          <th style={{ ...thc, minWidth: 72 }}>성별우대</th>
+                          <th style={{ ...thc, minWidth: 100 }}>급여</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1795,10 +1799,10 @@ export default function JobPostForm({
                           return (
                             <tr key={cat}>
                               <td style={{ ...tdc, fontSize: 13, color: "#333" }}>{cat}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", CAREER_OPTIONS, "예: 3년↑/신입")}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", EDUCATION_OPTIONS, "예: 학력무관")}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "예: 정규직")}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "예: 월 300~350 / 협의")}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "예: 무관")}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
                                 <button type="button" onClick={() => setPosShiftOpen(posShiftOpen === cat ? null : cat)}
                                   style={{ width: "100%", textAlign: "left", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 12.5, background: "#fff", cursor: "pointer", color: (row.workDays || row.workTime) ? "#333" : "#bbb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
@@ -1844,7 +1848,7 @@ export default function JobPostForm({
                                   );
                                 })()}
                               </td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "예: 무관")}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "예: 월 300~350 / 협의")}</td>
                             </tr>
                           );
                         })}
