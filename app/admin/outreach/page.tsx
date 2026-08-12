@@ -50,8 +50,9 @@ function guessStoreOffice(title: string): "STORE" | "OFFICE" {
 }
 function branchSignature(title: string): string {
   const t = title || "";
-  const branches = [...new Set([...t.matchAll(/([가-힣A-Za-z0-9]{2,}(?:역|동|점|센터|지점))/g)]
-    .map((m) => m[1].replace(/(지점|센터|점)$/, "")).filter((b) => b.length >= 2))].sort();
+  // ○○점/○○역/○○동/○○지점만 지점으로. '센터'(고객센터·물류센터 등 부서명)는 지점이 아니므로 제외.
+  const branches = [...new Set([...t.matchAll(/([가-힣A-Za-z0-9]{2,}(?:역|동|점|지점))/g)]
+    .map((m) => m[1].replace(/(지점|점)$/, "")).filter((b) => b.length >= 2))].sort();
   return branches.length ? branches.join(",") : "";
 }
 const hiringColor: Record<string, string> = {
@@ -123,8 +124,10 @@ export default function AdminOutreachPage() {
     for (const r of items) {
       total += r.found_count || 0;
       const jobs = Array.isArray(r.found_jobs) ? r.found_jobs : [];
+      // 중복은 매장(브랜드+지점)에만 의미 → STORE 공고만, 지점 시그니처로 그룹핑.
       const byBranch = new Map<string, number>();
       for (const j of jobs) {
+        if (guessStoreOffice(j?.title || "") !== "STORE") continue;
         const sig = branchSignature(j?.title || "");
         if (!sig) continue;
         byBranch.set(sig, (byBranch.get(sig) || 0) + 1);
