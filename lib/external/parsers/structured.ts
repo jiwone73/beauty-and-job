@@ -873,12 +873,16 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
   }
 
   const contact_name = g(/"managerName":"([^"]*)"/).trim();
+  // 채용 담당자 이메일(대표 이메일이 아니라 공고 등록자=채용 담당). 유효할 때만.
+  const mEmail = g(/"managerEmail":"([^"]*)"/).trim();
+  const contact_email = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mEmail) ? mEmail : "";
 
   const out: StructuredResult = {
     title,
     company_name: shopName,
     region,
     address,
+    contact_email,
     employment_type,
     work_time,
     work_days,

@@ -294,9 +294,27 @@ export async function POST(req: NextRequest) {
   // 비용 절감: 본문을 충분히 붙여넣었으면 페이지 텍스트는 보조용으로 짧게만 전달(입력 토큰 대폭 감소)
   if (bodyText.length > 1000 && pageText) pageText = pageText.slice(0, 4000);
 
+  // 우리가 원하는 건 "회사 채용담당 이메일"이다. 잡사이트 자체 이메일(중계·문의용, 예: recruit@albamon.com)은 회사 이메일이 아니므로 제외.
+  const SITE_EMAIL_DOMAIN = /(?:albamon|jobkorea|saramin|beautyjob|hairinjob|selectme|incruit|work24|jobplanet|wanted|catch|linkareer|worknet|alba)\.(?:com|co\.kr|kr|net)$/i;
+  const hostBase = (hostname || "").replace(/^www\./, "");
+  const isSiteEmail = (domain: string) => SITE_EMAIL_DOMAIN.test(domain) || (!!hostBase && domain.endsWith(hostBase));
+  // 남은 '회사 이메일' 내 우선순위: 3=채용(recruit·hr·job·career·인사 등) > 2=일반 > 1=대표(ceo·대표·owner) > 0=시스템(noreply·master 등)
+  const emailScore = (local: string): number => {
+    if (/recruit|hr(?![a-z])|human|career|jobs?|hire|hiring|apply|employ|saram|ingsa|chaeyong|채용|인사/.test(local)) return 3;
+    if (/no-?reply|noreply|do-?not|donotreply|master|webmaster|postmaster|mailer|system/.test(local)) return 0;
+    if (/ceo|owner|president|代表|대표|rep(?![a-z])/.test(local)) return 1;
+    return 2;
+  };
   const emails = [...new Set(((html || "") + " " + pastedText).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [])]
     // 이미지 파일명·잡코리아 등의 난독화(해시) 이메일 제외 → 실제 이메일만
-    .filter((e) => !/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(e) && !/^[0-9a-f]{20,}@/i.test(e)).slice(0, 5);
+    .filter((e) => !/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(e) && !/^[0-9a-f]{20,}@/i.test(e))
+    // 잡사이트 자체 도메인 이메일 제외(회사 이메일만)
+    .filter((e) => !isSiteEmail((e.split("@")[1] || "").toLowerCase()))
+    // 채용 담당 이메일 우선 정렬(동점은 원문 등장 순서 유지)
+    .map((e, i) => ({ e, s: emailScore((e.split("@")[0] || "").toLowerCase()), i }))
+    .sort((a, b) => (b.s - a.s) || (a.i - b.i))
+    .map((x) => x.e)
+    .slice(0, 5);
   // 전화번호(지원 연락처 후보): 표시 텍스트·붙여넣은 본문에서만 뽑아 오탐 최소화. 휴대폰/유선/대표번호 형식.
   const phones = [...new Set(((pageText || "") + " " + pastedText)
     .match(/(?:1[0-9]{3}[-.\s]?[0-9]{4})|(?:0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4})/g) || [])]
@@ -630,6 +648,7 @@ export async function POST(req: NextRequest) {
     · OFFICE 태그: ${OFFICE_TAGS.join(" / ")}
 - apply_method: 지원이 회사 홈페이지·특정 지원페이지에서만 가능하면 "REDIRECT"(그 링크를 external_apply_url에), 그 외에는 모두 "MANAGED". (채용 이메일이 보이면 contact_email에는 담되 apply_method는 MANAGED로.)
 - contact_phone: 지원·문의용 전화번호(담당자/채용 연락처)가 본문에 있으면 "010-1234-5678"처럼 하이픈 포함으로. 여러 개면 지원 담당 번호 우선(대표번호보다 채용 담당 우선). 없으면 "".
+- contact_email: "회사(매장)의 채용담당 이메일"만. 잡사이트 자체 이메일(예: @albamon.com·@jobkorea.co.kr·@saramin.co.kr 등 채용사이트 도메인 = 중계/문의용)은 회사 이메일이 아니므로 제외. 회사 이메일이 여러 개면 채용/인사 담당(recruit·hr·job·career·인사·채용 등) 우선, 대표·일반(info·ceo·master)은 후순위. 없으면 "".
 - contact_name: 채용 담당자 "사람 이름"이 명시돼 있으면 그 이름만(예: "이은주"). 부서명·회사명·"담당자"라는 일반어는 제외. 없으면 "".
 - description: 채용공고 본문 요약(직무·자격·근무조건). 원문 복제 금지, 한국어 3~5문장으로 재작성.
 - company_description: 그 회사·브랜드 자체에 대한 소개 2~3문장(있으면). 채용 내용이 아니라 회사 소개. 없으면 "".
