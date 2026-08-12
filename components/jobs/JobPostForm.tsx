@@ -1831,10 +1831,14 @@ export default function JobPostForm({
                                 <button type="button" onClick={() => setPosShiftOpen(posShiftOpen === cat ? null : cat)}
                                   style={{ width: "100%", textAlign: "left", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 12.5, lineHeight: 1.35, background: "#fff", cursor: "pointer", color: (row.workDays || row.workTime) ? "#333" : "#bbb" }}>
                                   {(row.workDays || row.workTime) ? (
+                                    (row.workDays === "협의" && row.workTime === "협의") ? (
+                                      <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>협의</div>
+                                    ) : (
                                     <>
                                       <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workDays || "-"}</div>
                                       <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workTime || "-"}</div>
                                     </>
+                                    )
                                   ) : "요일·시간 선택"}
                                 </button>
                                 {posShiftOpen === cat && (() => {

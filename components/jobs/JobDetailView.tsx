@@ -117,7 +117,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                     {/* 근무요일/시간 열은 요일 1행·시간 2행으로 */}
                     {c.key === "shift"
                       ? ((p.workDays || p.workTime)
-                          ? <><div>{p.workDays || "-"}</div><div>{p.workTime || "-"}</div></>
+                          ? ((p.workDays === "협의" && p.workTime === "협의")
+                              ? "협의"
+                              : <><div>{p.workDays || "-"}</div><div>{p.workTime || "-"}</div></>)
                           : "-")
                       : (c.get(p) || "-")}
                   </td>
