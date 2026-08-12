@@ -177,8 +177,8 @@ export default function AdminOutreachPage() {
     }).catch(() => {});
   };
 
-  const checkHiring = async (ids: string[]) => {
-    if (!ids.length) return;
+  const checkHiring = async (ids: string[]): Promise<number> => {
+    if (!ids.length) return 0;
     setChecking((s) => new Set([...s, ...ids]));
     try {
       const res = await fetch(`/api/admin/target-companies/check-hiring`, {
@@ -192,22 +192,35 @@ export default function AdminOutreachPage() {
         const map = new Map(updated.map((u) => [u.id, u]));
         setItems((its) => its.map((r) => map.get(r.id) || r));
       }
+      return updated.reduce((n, u) => n + (u.found_count || 0), 0);
     } finally {
       setChecking((s) => { const n = new Set(s); ids.forEach((i) => n.delete(i)); return n; });
     }
   };
 
-  // 일괄: 50건씩 끊어 순차 호출
+  // 일괄: 업체 1개씩 동시성 풀(병렬)로 처리 → 빠르고, 완료마다 카운터가 1씩 올라 개별 단위로 보인다.
+  //   (서버가 배치를 순차 처리하던 기존 50개 청크 방식은 느리고 진행률이 50·100 단위로만 튀었음)
+  const BULK_CONCURRENCY = 6;
   const bulkCheck = async (ids: string[]) => {
     if (!ids.length) return;
-    setBulkMsg(`0 / ${ids.length} 조회 중…`);
-    for (let i = 0; i < ids.length; i += 50) {
-      const chunk = ids.slice(i, i + 50);
-      await checkHiring(chunk);
-      setBulkMsg(`${Math.min(i + 50, ids.length)} / ${ids.length} 조회 완료`);
-    }
-    setBulkMsg(`${ids.length}건 조회 완료`);
-    setTimeout(() => setBulkMsg(""), 4000);
+    const total = ids.length;
+    let done = 0, hit = 0;
+    setBulkMsg(`0 / ${total} 조회 중…`);
+    let cursor = 0;
+    const worker = async () => {
+      while (cursor < ids.length) {
+        const id = ids[cursor++];
+        try {
+          const found = await checkHiring([id]); // 1건 = 6개 소스 병렬. 반환: 조회된 공고 수
+          if (found > 0) hit++;
+        } catch { /* 개별 실패는 건너뜀 */ }
+        done++;
+        setBulkMsg(`${done} / ${total} 조회 중…  (채용중 ${hit}곳)`);
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(BULK_CONCURRENCY, ids.length) }, worker));
+    setBulkMsg(`완료 · ${total}곳 조회 (채용중 ${hit}곳)`);
+    setTimeout(() => setBulkMsg(""), 5000);
   };
 
   // 6개 탭 전체(현재 필터 무시) 일괄 업데이트
