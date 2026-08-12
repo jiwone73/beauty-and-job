@@ -498,7 +498,12 @@ export async function POST(req: NextRequest) {
           if (ir.ok) {
             const ih = new TextDecoder("utf-8").decode(Buffer.from(await ir.arrayBuffer()));
             const clean = (s: string) => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
-            const full = clean(ih);
+            // ★ <script>/<style> '내용'까지 제거(안 지우면 JS 코드가 본문 텍스트로 새어들어감: var showQuickLogin…).
+            const full = clean(ih.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<!--[\s\S]*?-->/g, " "));
+            // 고용24 연동 공고 등 사이트 꼬리 문구·잔여 스크립트 흔적 제거.
+            const cutBoiler = (s: string) => (s || "")
+              .split(/고용24|제공된\s*공고|공고입니다|var\s+[a-zA-Z]|window\.(?:top\.)?Saramin|document\.getElementsByTagName|function\s*\(/)[0]
+              .replace(/[\s'"''·\-–—:]+$/gu, "").trim();
             const between = (a: string, stops: string[]) => {
               const i = full.indexOf(a); if (i < 0) return "";
               const s = full.slice(i + a.length);
@@ -526,13 +531,22 @@ export async function POST(req: NextRequest) {
             }
             // 텍스트형 공고: 주요업무/담당업무·자격요건·우대사항이 깔끔한 텍스트로 있음 → 필드로 반영
             // 섹션 머리 이모지(📋🏠🎁🚀)가 다음 섹션에서 꼬리에 새어 들어오므로 끝에서 제거.
-            const tail = (s: string) => s.replace(/[\s📋🏠🎁🚀✅💡•·]+$/gu, "").trim();
-            const duty = tail((between("주요업무", ["자격요건", "우대사항", "근무조건", "복지", "혜택"]) || between("담당업무", ["자격요건", "우대사항", "근무조건"])).slice(0, 1500));
-            const req = tail(between("자격요건", ["우대사항", "근무조건", "복지", "혜택", "전형", "접수"]).slice(0, 1500));
-            const pref = tail(between("우대사항", ["근무조건", "복지", "혜택", "채용절차", "전형", "접수"]).slice(0, 1500));
+            // 라벨 대괄호 잔재([주요업무]의 '] '가 앞에, 다음 '[근무시간…'의 '['가 뒤에 남음) + 사이트 꼬리문구 제거
+            const tail = (s: string) => cutBoiler(s.replace(/[\s📋🏠🎁🚀✅💡•·]+$/gu, "").trim())
+              .replace(/^[\]\}\s:·\-–—]+/u, "").replace(/[\[\{\s·\-–—]+$/u, "").trim();
+            // 고용24형 공고는 [근무시간]·[급여조건]·[자격면허]·[기타 우대내용]·[접수 방법]·[기업분류] 라벨을 쓰므로 stop 단어에 포함(brackets는 clean 후에도 남음).
+            const S = ["자격요건", "자격면허", "우대사항", "기타 우대", "근무조건", "근무시간", "급여조건", "장애인채용", "병역특례", "접수", "기업분류", "복지", "혜택", "고용24"];
+            const duty = tail((between("주요업무", S) || between("담당업무", S)).slice(0, 1500));
+            const req = tail((between("자격요건", S.filter((x) => x !== "자격요건")) || between("자격면허", S.filter((x) => x !== "자격면허"))).slice(0, 1500));
+            const pref = tail((between("우대사항", S.filter((x) => x !== "우대사항")) || between("기타 우대내용", S.filter((x) => !/우대/.test(x))) || between("기타 우대", S.filter((x) => !/우대/.test(x)))).slice(0, 1500));
             if (duty && duty.length > 3) { out.description = duty; out.main_duties = duty; } // 매장=포지션소개 / 오피스=담당업무
             if (req && req.length > 3) out.requirements = req;
             if (pref && pref.length > 3) out.preferred = pref;
+            // 제목만으론 오피스로 새는 경우 보정: 자격면허에 미용 시술직 면허 + 담당업무가 매장 현장이면 매장(STORE)으로.
+            //   ('매장에서 일하는 사람만 매장' 원칙 — 미용사·네일·피부 등 시술 면허 소지자가 매장 응대/시술)
+            if (/미용사|네일|피부관리사|피부미용|속눈썹|왁싱|두피관리|에스테틱/.test(req) && /고객|손님|응대|매장|시술|접객|샵/.test(duty)) {
+              out.job_type = "STORE";
+            }
             // 근무조건 → 고용형태 + 근무지(주소)
             const workcond = between("근무조건", ["복리후생", "복지", "혜택", "채용절차", "접수", "지원방법"]);
             if (/정규직/.test(workcond)) out.employment_type = "정규직";
