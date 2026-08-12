@@ -86,36 +86,44 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 근무조건·근무지역은 '기본정보' 성격이라, 이미지형 공고에선 세로로 긴 상세이미지 "앞"에 먼저 노출한다.
   // (블록을 한 번만 정의하고 위치만 바꿔 끼운다 — 텍스트형 공고는 기존 순서 그대로.)
   const positions = Array.isArray(job.positions) ? job.positions.filter((p: any) => p && p.category) : [];
+  // 모집부문 표 열 정의. 값이 아무 행에도 없는 열은 미리보기/상세에서 숨긴다(모집분야는 항상 표시).
+  const posColDefs: { key: string; label: string; get: (p: any) => string }[] = [
+    { key: "category", label: "모집분야", get: (p) => p.category },
+    { key: "employment", label: "고용형태", get: (p) => p.employment },
+    { key: "gender", label: "성별우대", get: (p) => p.gender },
+    { key: "career", label: "경력", get: (p) => p.career },
+    { key: "education", label: "학력", get: (p) => p.education },
+    { key: "shift", label: "근무요일/시간", get: (p) => (p.workDays || p.workTime || "") },
+    { key: "salary", label: "급여", get: (p) => p.salary },
+  ];
+  const posCols = posColDefs.filter((c) => c.key === "category" || positions.some((p: any) => (c.get(p) || "").toString().trim()));
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
       <h2 className="job-detail-subtitle">모집부문</h2>
       <div style={{ overflowX: "auto" }}>
-        <table style={{ minWidth: 640, borderCollapse: "collapse", fontSize: 13.5 }}>
+        <table style={{ minWidth: Math.min(640, posCols.length * 96), borderCollapse: "collapse", fontSize: 13.5 }}>
           <thead>
             <tr style={{ background: "#faf7fd" }}>
-              {["모집분야", "고용형태", "성별우대", "경력", "학력", "근무요일/시간", "급여"].map((h) => (
-                <th key={h} style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" }}>{h}</th>
+              {posCols.map((c) => (
+                <th key={c.key} style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" }}>{c.label}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {positions.map((p: any, i: number) => {
-              const cells = [p.category, p.employment, p.gender, p.career, p.education, null, p.salary];
-              return (
-                <tr key={i}>
-                  {cells.map((v: string | null, j: number) => (
-                    <td key={j} style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: j === 0 ? "#333" : "#555", whiteSpace: "nowrap", lineHeight: 1.35 }}>
-                      {/* 근무요일/시간 열(index 5)은 요일 1행·시간 2행으로 */}
-                      {j === 5
-                        ? ((p.workDays || p.workTime)
-                            ? <><div>{p.workDays || "-"}</div><div>{p.workTime || "-"}</div></>
-                            : "-")
-                        : (v || "-")}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
+            {positions.map((p: any, i: number) => (
+              <tr key={i}>
+                {posCols.map((c, j) => (
+                  <td key={c.key} style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: j === 0 ? "#333" : "#555", whiteSpace: "nowrap", lineHeight: 1.35 }}>
+                    {/* 근무요일/시간 열은 요일 1행·시간 2행으로 */}
+                    {c.key === "shift"
+                      ? ((p.workDays || p.workTime)
+                          ? <><div>{p.workDays || "-"}</div><div>{p.workTime || "-"}</div></>
+                          : "-")
+                      : (c.get(p) || "-")}
+                  </td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
