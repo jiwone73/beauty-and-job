@@ -225,12 +225,14 @@ export default function JobPostForm({
   const [curating, setCurating] = useState(false);
   const [jobGroupType, setJobGroupType] = useState<"" | "기업" | "매장">("매장"); // 기본값 매장(관리자). 선택 전 직군·급여·복지 잠금 해제용
   const [categories, setCategories] = useState<string[]>([]);
-  // 모집부문 표: 모집분야(=categories)별 경력·급여·인원. 값은 분야명으로 키잉(선택 순서/추가에 안전).
-  const [posMeta, setPosMeta] = useState<Record<string, { career: string; salary: string; headcount: string }>>({});
-  const setPos = (cat: string, k: "career" | "salary" | "headcount", v: string) =>
-    setPosMeta((m) => { const cur = m[cat] || { career: "", salary: "", headcount: "" }; return { ...m, [cat]: { ...cur, [k]: v } }; });
+  // 모집부문 표: 모집분야(=categories)별 경력·고용형태·급여·근무요일·근무시간·인원·성별우대.
+  type PosRow = { career: string; employment: string; salary: string; workDays: string; workTime: string; headcount: string; gender: string };
+  const emptyPos: PosRow = { career: "", employment: "", salary: "", workDays: "", workTime: "", headcount: "", gender: "" };
+  const [posMeta, setPosMeta] = useState<Record<string, PosRow>>({});
+  const setPos = (cat: string, k: keyof PosRow, v: string) =>
+    setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, [k]: v } }; });
   // 불러오기로 파싱된 경력·급여·인원을, 관리자가 모집분야를 고르면 첫 행에 채워줌(수기 재입력 방지).
-  const [parsedPrimary, setParsedPrimary] = useState<{ career: string; salary: string; headcount: string } | null>(null);
+  const [parsedPrimary, setParsedPrimary] = useState<PosRow | null>(null);
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
   const [regionOpen, setRegionOpen] = useState(false);
@@ -312,7 +314,7 @@ export default function JobPostForm({
   useEffect(() => {
     if (!parsedPrimary || categories.length === 0) return;
     const c0 = categories[0];
-    setPosMeta((m) => (m[c0] && (m[c0].career || m[c0].salary || m[c0].headcount)) ? m : { ...m, [c0]: { ...parsedPrimary } });
+    setPosMeta((m) => (m[c0] && (m[c0].career || m[c0].salary || m[c0].headcount || m[c0].employment)) ? m : { ...m, [c0]: { ...emptyPos, ...parsedPrimary } });
     setParsedPrimary(null);
   }, [parsedPrimary, categories]);
   // 근무지역 인라인 자동완성: 바깥 클릭 시 닫기
@@ -523,7 +525,7 @@ export default function JobPostForm({
       });
       setAlwaysOpen(!j.deadline);
       setCategories(j.categories || []);
-      setPosMeta(Array.isArray(j.positions) ? Object.fromEntries(j.positions.filter((p: any) => p?.category).map((p: any) => [p.category, { career: p.career || "", salary: p.salary || "", headcount: p.headcount || "" }])) : {});
+      setPosMeta(Array.isArray(j.positions) ? Object.fromEntries(j.positions.filter((p: any) => p?.category).map((p: any) => [p.category, { career: p.career || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", headcount: p.headcount || "", gender: p.gender || "" }])) : {});
       setRegionList(j.location ? String(j.location).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
       setDetailImages(j.detail_images || []);
       setBannerImages(((j.cover_images && j.cover_images.length ? j.cover_images : j.company?.cover_images) || []).map((c: any) => ({ url: c?.url, name: "배너" })).filter((x: any) => x.url));
@@ -903,8 +905,12 @@ export default function JobPostForm({
         : (d.salary_negotiable ? "협의" : (typeof d.salary === "string" ? d.salary : ""));
       setParsedPrimary({
         career: typeof d.career === "string" ? d.career : "",
+        employment: (() => { const e = d.employment_type === "파트타임" ? "아르바이트" : d.employment_type; return typeof e === "string" ? e : ""; })(),
         salary: salaryStr,
+        workDays: typeof d.work_days === "string" ? d.work_days : "",
+        workTime: typeof d.work_time === "string" ? d.work_time : "",
         headcount: (d.headcount != null && Number(d.headcount) > 0) ? `${Number(d.headcount)}명` : "",
+        gender: "",
       });
       // 근무기간 (매장 공고)
       if (typeof d.work_period === "string" && WORK_PERIODS.includes(d.work_period)) setWorkPeriod(d.work_period);
@@ -1102,12 +1108,9 @@ export default function JobPostForm({
       if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
       if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
       if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
-      // 근무조건 필수(발행 시). 급여·경력·인원은 모집부문 표에서 분야별(협의·미정 허용)이라 하드 필수 아님.
+      // 근무조건 필수(발행 시). 경력·고용형태·급여·근무요일/시간·인원은 모집부문 표에서 분야별(협의·미정 허용)이라 하드 필수 아님.
       if (status === "publish") {
-        if (!form.type && !fiEmployment.trim()) { alert("고용형태를 선택해주세요."); return; }
         if (jobGroupType === "매장") {
-          if (!(workDaysNego || workDays.length || fiWorkDays.trim())) { alert("근무요일을 선택해주세요."); return; }
-          if (!(workTimeNego || (workTimeStart && workTimeEnd) || fiWorkTime.trim())) { alert("근무시간을 입력해주세요."); return; }
           // 매장: 상세요강 이미지 또는 (포지션 소개+자격요건)
           if (detailImages.length === 0 && (!form.description?.trim() || !form.requirements?.trim())) {
             alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개와 자격요건을 입력해주세요.");
@@ -1130,14 +1133,14 @@ export default function JobPostForm({
       }
     }
 
-    // 모집부문 표(positions) — 분야별 경력·급여·인원. 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => ({ category: c, career: (posMeta[c]?.career || "").trim(), salary: (posMeta[c]?.salary || "").trim(), headcount: (posMeta[c]?.headcount || "").trim() }));
-    const primaryCareer = positions[0]?.career || "";
-    const primaryHeadcount = parseInt((positions[0]?.headcount || "").replace(/[^0-9]/g, "")) || null;
-    const expLevel = primaryCareer.includes("신입") ? "NEW"
-      : primaryCareer.match(/\d+년/) ? "EXPERIENCED" : "ANY";
-    const workType = form.type === "파트타임" ? "PART_TIME"
-      : form.type === "계약직" ? "CONTRACT" : "FULL_TIME";
+    // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
+    const p0 = positions[0] || { career: "", employment: "", headcount: "", workDays: "", workTime: "", gender: "" };
+    const primaryHeadcount = parseInt((p0.headcount || "").replace(/[^0-9]/g, "")) || null;
+    const expLevel = p0.career.includes("신입") ? "NEW"
+      : p0.career.match(/\d+년/) ? "EXPERIENCED" : "ANY";
+    const workType = p0.employment === "아르바이트" ? "PART_TIME"
+      : p0.employment === "계약직" ? "CONTRACT" : "FULL_TIME";
     let salaryMin: number | null = null;
     let salaryMaxVal: number | null = null;
     if (!salaryNego && form.salary) {
@@ -1165,17 +1168,17 @@ export default function JobPostForm({
       location: regionList.join(", ") || null,
       work_type: workType,
       // 자유입력(fi*)이 채워졌으면 그 값으로 override(비회원 원문 보존). 비어 있으면 기존 위젯 값.
-      employment_type: fiEmployment.trim() || (form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : "")),
+      employment_type: p0.employment || null, // 모집부문 표 첫 행 기준(대표값)
       experience_level: expLevel,
       benefit_tags: fiBenefits.trim() ? fiBenefits.split(",").map((s) => s.trim()).filter(Boolean) : benefitTags,
       work_period: fiWorkPeriod.trim() || workPeriod || null,
-      work_days: fiWorkDays.trim() || (workDaysNego ? "협의" : (workDays.length ? workDays.join(",") : null)),
-      work_time: fiWorkTime.trim() || (workTimeNego ? "협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : null)),
+      work_days: p0.workDays || null,
+      work_time: p0.workTime || null,
       work_time_slots: null,
       deadline: form.deadline || null,
       headcount: primaryHeadcount,
       headcount_text: fiHeadcount.trim() || null, // 비회원 자유입력(예: "인원미정") — 있으면 표시 우선
-      gender_preference: jobGroupType === "매장" ? (genderPref || null) : null, // 성별우대(매장 전용)
+      gender_preference: p0.gender || null, // 모집부문 표 첫 행 기준
       categories,
       detail_images: detailImages,
       hiring_process: hiringProcess.filter((s) => s.trim()),
@@ -1330,7 +1333,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
-    positions: categories.map((c) => ({ category: c, career: (posMeta[c]?.career || "").trim(), salary: (posMeta[c]?.salary || "").trim(), headcount: (posMeta[c]?.headcount || "").trim() })),
+    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -1710,18 +1713,6 @@ export default function JobPostForm({
                     {EDUCATION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
-                {/* 성별우대 — 매장 전용 */}
-                {jobGroupType === "매장" && (
-                  <div className="job-detail-meta-item">
-                    <Users size={16} className="job-detail-meta-icon" />
-                    <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>성별우대</span>
-                    <select value={genderPref} onChange={(e) => setGenderPref(e.target.value)}
-                      style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!genderPref) }}>
-                      <option value=""></option>
-                      {["무관", "여성", "남성"].map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
-                  </div>
-                )}
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <Clock size={16} className="job-detail-meta-icon" />
@@ -1757,33 +1748,53 @@ export default function JobPostForm({
                   <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야</b>를 먼저 선택하세요.</div>
                 ) : (
                   <div style={{ overflowX: "auto" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <table style={{ minWidth: 720, borderCollapse: "collapse" }}>
                       <thead>
                         <tr>
-                          <th style={{ ...thc, width: "34%" }}>모집분야</th>
-                          <th style={{ ...thc, width: "24%" }}>경력</th>
-                          <th style={{ ...thc, width: "24%" }}>급여</th>
-                          <th style={{ ...thc, width: "18%" }}>모집인원</th>
+                          <th style={{ ...thc, minWidth: 110 }}>모집분야</th>
+                          <th style={{ ...thc, minWidth: 84 }}>경력</th>
+                          <th style={{ ...thc, minWidth: 84 }}>고용형태</th>
+                          <th style={{ ...thc, minWidth: 100 }}>급여</th>
+                          <th style={{ ...thc, minWidth: 100 }}>근무요일</th>
+                          <th style={{ ...thc, minWidth: 100 }}>근무시간</th>
+                          <th style={{ ...thc, minWidth: 76 }}>모집인원</th>
+                          <th style={{ ...thc, minWidth: 72 }}>성별우대</th>
                         </tr>
                       </thead>
                       <tbody>
                         {categories.map((cat) => {
-                          const row = posMeta[cat] || { career: "", salary: "", headcount: "" };
+                          const row = posMeta[cat] || emptyPos;
                           return (
                             <tr key={cat}>
-                              <td style={{ ...tdc, fontSize: 13.5, color: "#333" }}>{cat}</td>
+                              <td style={{ ...tdc, fontSize: 13, color: "#333" }}>{cat}</td>
                               <td style={tdc}>
                                 {nonMember
-                                  ? <input type="text" value={row.career} onChange={(e) => setPos(cat, "career", e.target.value)} placeholder="예: 3년↑ / 신입" style={cellInput} />
+                                  ? <input type="text" value={row.career} onChange={(e) => setPos(cat, "career", e.target.value)} placeholder="3년↑/신입" style={cellInput} />
                                   : <select value={row.career} onChange={(e) => setPos(cat, "career", e.target.value)} style={cellSelect}><option value=""></option>{CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}</select>}
                               </td>
                               <td style={tdc}>
-                                <input type="text" value={row.salary} onChange={(e) => setPos(cat, "salary", e.target.value)} placeholder="예: 월 300~350 / 협의" style={cellInput} />
+                                {nonMember
+                                  ? <input type="text" value={row.employment} onChange={(e) => setPos(cat, "employment", e.target.value)} placeholder="정규직 등" style={cellInput} />
+                                  : <select value={row.employment} onChange={(e) => setPos(cat, "employment", e.target.value)} style={cellSelect}><option value=""></option>{EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}</select>}
+                              </td>
+                              <td style={tdc}>
+                                <input type="text" value={row.salary} onChange={(e) => setPos(cat, "salary", e.target.value)} placeholder="월 300~350/협의" style={cellInput} />
+                              </td>
+                              <td style={tdc}>
+                                <input type="text" value={row.workDays} onChange={(e) => setPos(cat, "workDays", e.target.value)} placeholder="주5일(토일휴무)" style={cellInput} />
+                              </td>
+                              <td style={tdc}>
+                                <input type="text" value={row.workTime} onChange={(e) => setPos(cat, "workTime", e.target.value)} placeholder="10:00~20:00/협의" style={cellInput} />
                               </td>
                               <td style={tdc}>
                                 {nonMember
-                                  ? <input type="text" value={row.headcount} onChange={(e) => setPos(cat, "headcount", e.target.value)} placeholder="예: 1명 / 협의" style={cellInput} />
+                                  ? <input type="text" value={row.headcount} onChange={(e) => setPos(cat, "headcount", e.target.value)} placeholder="1명/협의" style={cellInput} />
                                   : <select value={row.headcount} onChange={(e) => setPos(cat, "headcount", e.target.value)} style={cellSelect}><option value=""></option>{[1, 2, 3, 4, 5].map((n) => <option key={n} value={String(n)}>{n}명</option>)}</select>}
+                              </td>
+                              <td style={tdc}>
+                                {nonMember
+                                  ? <input type="text" value={row.gender} onChange={(e) => setPos(cat, "gender", e.target.value)} placeholder="무관" style={cellInput} />
+                                  : <select value={row.gender} onChange={(e) => setPos(cat, "gender", e.target.value)} style={cellSelect}><option value=""></option>{["무관", "여성", "남성"].map((o) => <option key={o} value={o}>{o}</option>)}</select>}
                               </td>
                             </tr>
                           );
@@ -1798,24 +1809,6 @@ export default function JobPostForm({
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>근무 조건</div>
                 <div className="job-detail-company-info">
-                  {/* 고용형태 — 네이티브 풀다운. 계약직·인턴이면 '정규직 전환 가능' 하위 옵션 노출 */}
-                  <div className="job-detail-company-row" style={{ position: "relative", alignItems: "center" }}>
-                    <span className="job-detail-company-label" style={{ fontSize: 14 }}>고용형태<span style={{ color: "#e9a3a3" }}> *</span></span>
-                    {!fiEmployment.trim() && (
-                    <select value={form.type} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("employment"); return; } setFiEmployment(""); setForm({ ...form, type: e.target.value }); }}
-                      style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.type) }}>
-                      <option value=""></option>
-                      {EMPLOYMENT_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
-                      {nonMember && <option value="__fi__">직접입력…</option>}
-                    </select>
-                    )}
-                    {freeField("employment", fiEmployment, setFiEmployment, "직접 입력…", false, () => setForm((f) => ({ ...f, type: "" })))}
-                    {(form.type === "계약직" || form.type === "인턴") && (
-                      <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, color: "#666", cursor: "pointer", whiteSpace: "nowrap" }}>
-                        <input type="checkbox" checked={fullTimeConvertible} onChange={(e) => setFullTimeConvertible(e.target.checked)} style={{ margin: 0 }} /> 정규직 전환 가능
-                      </label>
-                    )}
-                  </div>
                   {/* 근무기간 — 매장 전용, 네이티브 풀다운 */}
                   {jobGroupType === "매장" && (
                     <div className="job-detail-company-row" style={{ position: "relative" }}>
@@ -1831,67 +1824,6 @@ export default function JobPostForm({
                       {freeField("period", fiWorkPeriod, setFiWorkPeriod, "직접 입력…", false, () => setWorkPeriod(""))}
                     </div>
                   )}
-                  {jobGroupType === "매장" && (<>
-                    {/* 근무요일 */}
-                    <div className="job-detail-company-row" ref={workDaysRef} style={{ position: "relative" }}>
-                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무요일<span style={{ color: "#e9a3a3" }}> *</span></span>
-                      {!fiWorkDays.trim() && (
-                      <button type="button" onClick={() => setWorkDaysOpen((v) => !v)}
-                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workDaysNego || workDays.length) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
-                        {workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : pick())}
-                      </button>
-                      )}
-                      {freeField("days", fiWorkDays, setFiWorkDays, "예: 주말만/요일협의", false, () => { setWorkDays([]); setWorkDaysNego(false); })}
-                      {workDaysOpen && (
-                        <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                            {WORK_DAY_OPTIONS.map((d) => {
-                              const on = workDays.includes(d);
-                              return (
-                                <button key={d} type="button" disabled={workDaysNego}
-                                  onClick={() => { setFiWorkDays(""); setWorkDays(on ? workDays.filter((x) => x !== d) : [...workDays, d].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b))); }}
-                                  style={{ width: 32, height: 32, borderRadius: "50%", fontSize: "13px", cursor: workDaysNego ? "default" : "pointer",
-                                    border: on ? "1.5px solid #5f0080" : "1px solid #ddd", background: on ? "#5f0080" : "#fff",
-                                    color: workDaysNego ? "#ccc" : (on ? "#fff" : "#666") }}>{d}</button>
-                              );
-                            })}
-                          </div>
-                          <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                            <input type="checkbox" checked={workDaysNego} onChange={(e) => { setFiWorkDays(""); setWorkDaysNego(e.target.checked); }} /> 요일 협의
-                          </label>
-                          {nonMember && <button type="button" onClick={() => { setWorkDaysOpen(false); setFiOpen("days"); }}
-                            style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#5f0080", cursor: "pointer" }}>✎ 직접입력…</button>}
-                        </div>
-                      )}
-                    </div>
-                    {/* 근무시간 */}
-                    <div className="job-detail-company-row" ref={workTimeRef} style={{ position: "relative" }}>
-                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무시간<span style={{ color: "#e9a3a3" }}> *</span></span>
-                      {!fiWorkTime.trim() && (
-                      <button type="button" onClick={() => setWorkTimeOpen((v) => !v)}
-                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, color: (workTimeNego || (workTimeStart && workTimeEnd)) ? "#333" : "#cfcfcf", cursor: "pointer", textAlign: "left" }}>
-                        {workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : pick("입력"))}
-                      </button>
-                      )}
-                      {freeField("time", fiWorkTime, setFiWorkTime, "예: 시간협의/평일저녁", false, () => { setWorkTimeStart(""); setWorkTimeEnd(""); setWorkTimeNego(false); })}
-                      {workTimeOpen && (
-                        <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                            <input type="time" disabled={workTimeNego} value={workTimeStart} onChange={(e) => { setFiWorkTime(""); setWorkTimeStart(e.target.value); }}
-                              style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 10px", fontSize: "14px", background: workTimeNego ? "#f5f5f5" : "#fff", color: "#333" }} />
-                            <span style={{ color: "#888", flexShrink: 0 }}>~</span>
-                            <input type="time" disabled={workTimeNego} value={workTimeEnd} onChange={(e) => { setFiWorkTime(""); setWorkTimeEnd(e.target.value); }}
-                              style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 10px", fontSize: "14px", background: workTimeNego ? "#f5f5f5" : "#fff", color: "#333" }} />
-                          </div>
-                          <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                            <input type="checkbox" checked={workTimeNego} onChange={(e) => { setFiWorkTime(""); setWorkTimeNego(e.target.checked); }} /> 시간 협의
-                          </label>
-                          {nonMember && <button type="button" onClick={() => { setWorkTimeOpen(false); setFiOpen("time"); }}
-                            style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#5f0080", cursor: "pointer" }}>✎ 직접입력…</button>}
-                        </div>
-                      )}
-                    </div>
-                  </>)}
                   {/* 복리후생 — 근무시간과 같은 행(반열). 팝오버 선택, 값은 콤마 텍스트로 줄바꿈 표시 */}
                   <div className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>복리후생<span style={{ color: "#e9a3a3" }}> *</span></span>

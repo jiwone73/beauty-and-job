@@ -89,22 +89,20 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     <div className="jd-subblock" key="positions">
       <h2 className="job-detail-subtitle">모집부문</h2>
       <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+        <table style={{ minWidth: 640, borderCollapse: "collapse", fontSize: 13.5 }}>
           <thead>
             <tr style={{ background: "#faf7fd" }}>
-              <th style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2" }}>모집분야</th>
-              <th style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2" }}>경력</th>
-              <th style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2" }}>급여</th>
-              <th style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2" }}>모집인원</th>
+              {["모집분야", "경력", "고용형태", "급여", "근무요일", "근무시간", "모집인원", "성별우대"].map((h) => (
+                <th key={h} style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" }}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {positions.map((p: any, i: number) => (
               <tr key={i}>
-                <td style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: "#333" }}>{p.category}</td>
-                <td style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: "#555" }}>{p.career || "-"}</td>
-                <td style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: "#555" }}>{p.salary || "-"}</td>
-                <td style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: "#555" }}>{p.headcount || "-"}</td>
+                {[p.category, p.career, p.employment, p.salary, p.workDays, p.workTime, p.headcount, p.gender].map((v: string, j: number) => (
+                  <td key={j} style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: j === 0 ? "#333" : "#555", whiteSpace: "nowrap" }}>{v || "-"}</td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -112,11 +110,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       </div>
     </div>
   ) : null;
-  const workCondSection = (job.employType || job.workPeriodText || job.workDaysText || job.workTimeText || job.benefits?.length > 0) ? (
+  const workCondSection = (job.workPeriodText || job.benefits?.length > 0 || (positions.length === 0 && (job.employType || job.workDaysText || job.workTimeText))) ? (
     <div className="jd-subblock" key="workcond">
       <h2 className="job-detail-subtitle">근무 조건</h2>
       <div className="job-detail-company-info">
-        {job.employType && (
+        {job.employType && positions.length === 0 && (
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">고용형태</span>
             <span>{job.employType}</span>
@@ -128,13 +126,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             <span>{job.workPeriodText}</span>
           </div>
         )}
-        {job.workDaysText && (
+        {job.workDaysText && positions.length === 0 && (
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">근무요일</span>
             <span>{job.workDaysText}</span>
           </div>
         )}
-        {job.workTimeText && (
+        {job.workTimeText && positions.length === 0 && (
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">근무시간</span>
             <span>{job.workTimeText}</span>
