@@ -25,7 +25,8 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
       <img
         src={images[cur]}
         alt={alt}
-        style={{ display: "block", width: "100%", height: "auto" }}
+        // EXIF 회전 태그 무시 → 원본 픽셀 그대로(원 사이트와 동일). 없으면 브라우저가 세로로 돌려 크롭된 것처럼 보임.
+        style={{ display: "block", width: "100%", height: "auto", imageOrientation: "none" }}
       />
       {n > 1 && (
         <>
@@ -360,7 +361,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 <h2 className="job-detail-section-title" style={{ padding: "24px 24px 0", marginBottom: 16 }}>상세요강</h2>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   {detailUrls.map((u, i) => (
-                    <img key={i} src={u} alt={`상세 이미지 ${i + 1}`} style={{ display: "block", width: "100%", height: "auto" }} />
+                    <img key={i} src={u} alt={`상세 이미지 ${i + 1}`} style={{ display: "block", width: "100%", height: "auto", imageOrientation: "none" }} />
                   ))}
                 </div>
                 {job.description?.trim() && (
