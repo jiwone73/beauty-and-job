@@ -18,8 +18,8 @@ const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.s
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const WEEKDAY_DAYS = ["월", "화", "수", "목", "금"]; // 주중
 const WEEKEND_DAYS = ["토", "일"]; // 주말
-// 근무시간 풀다운 옵션: 오전/오후 구분 없이 24시간 표기, 30분 간격
-const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => `${String(Math.floor(i / 2)).padStart(2, "0")}:${i % 2 ? "30" : "00"}`);
+// 근무시간 풀다운 옵션: 오전/오후 구분 없이 24시간 표기, 1시간 간격, 오전 9시~밤 11시(자정~오전 8시 제외)
+const TIME_OPTIONS = Array.from({ length: 15 }, (_, i) => `${String(i + 9).padStart(2, "0")}:00`);
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 // 모집부문 표용 간결 옵션(여백 확보, 직접입력 없음)
