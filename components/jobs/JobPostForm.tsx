@@ -233,6 +233,7 @@ export default function JobPostForm({
     setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, [k]: v } }; });
   // 불러오기로 파싱된 경력·급여·인원을, 관리자가 모집분야를 고르면 첫 행에 채워줌(수기 재입력 방지).
   const [parsedPrimary, setParsedPrimary] = useState<PosRow | null>(null);
+  const [posShiftOpen, setPosShiftOpen] = useState<string | null>(null); // 근무요일/시간 팝오버가 열린 분야
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
   const [regionOpen, setRegionOpen] = useState(false);
@@ -317,6 +318,13 @@ export default function JobPostForm({
     setPosMeta((m) => (m[c0] && (m[c0].career || m[c0].salary || m[c0].headcount || m[c0].employment)) ? m : { ...m, [c0]: { ...emptyPos, ...parsedPrimary } });
     setParsedPrimary(null);
   }, [parsedPrimary, categories]);
+  // 근무요일/시간 팝오버: 바깥 클릭 시 닫기
+  useEffect(() => {
+    if (!posShiftOpen) return;
+    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".posshift-pop")) setPosShiftOpen(null); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [posShiftOpen]);
   // 근무지역 인라인 자동완성: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!regionOpen) return;
@@ -1755,8 +1763,7 @@ export default function JobPostForm({
                           <th style={{ ...thc, minWidth: 84 }}>경력</th>
                           <th style={{ ...thc, minWidth: 84 }}>고용형태</th>
                           <th style={{ ...thc, minWidth: 100 }}>급여</th>
-                          <th style={{ ...thc, minWidth: 100 }}>근무요일</th>
-                          <th style={{ ...thc, minWidth: 100 }}>근무시간</th>
+                          <th style={{ ...thc, minWidth: 150 }}>근무요일 / 시간</th>
                           <th style={{ ...thc, minWidth: 76 }}>모집인원</th>
                           <th style={{ ...thc, minWidth: 72 }}>성별우대</th>
                         </tr>
@@ -1780,11 +1787,50 @@ export default function JobPostForm({
                               <td style={tdc}>
                                 <input type="text" value={row.salary} onChange={(e) => setPos(cat, "salary", e.target.value)} placeholder="월 300~350/협의" style={cellInput} />
                               </td>
-                              <td style={tdc}>
-                                <input type="text" value={row.workDays} onChange={(e) => setPos(cat, "workDays", e.target.value)} placeholder="주5일(토일휴무)" style={cellInput} />
-                              </td>
-                              <td style={tdc}>
-                                <input type="text" value={row.workTime} onChange={(e) => setPos(cat, "workTime", e.target.value)} placeholder="10:00~20:00/협의" style={cellInput} />
+                              <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
+                                <button type="button" onClick={() => setPosShiftOpen(posShiftOpen === cat ? null : cat)}
+                                  style={{ width: "100%", textAlign: "left", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 12.5, background: "#fff", cursor: "pointer", color: (row.workDays || row.workTime) ? "#333" : "#bbb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                  {(row.workDays || row.workTime) ? `${row.workDays || "-"} · ${row.workTime || "-"}` : "요일·시간 선택"}
+                                </button>
+                                {posShiftOpen === cat && (() => {
+                                  const days = (row.workDays && row.workDays !== "협의") ? row.workDays.split(/[·,]/).map((s) => s.trim()).filter((d) => WORK_DAY_OPTIONS.includes(d)) : [];
+                                  const daysNego = row.workDays === "협의";
+                                  const tm = (row.workTime || "").match(/^(\d{1,2}:\d{2})\s*~\s*(\d{1,2}:\d{2})$/);
+                                  const timeNego = row.workTime === "협의";
+                                  const toggleDay = (d: string) => { const nd = days.includes(d) ? days.filter((x) => x !== d) : [...days, d].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b)); setPos(cat, "workDays", nd.join("·")); };
+                                  return (
+                                    <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 60, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 260 }}>
+                                      <div style={{ fontSize: 12, color: "#888", marginBottom: 6 }}>근무요일</div>
+                                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                        {WORK_DAY_OPTIONS.map((d) => { const on = days.includes(d); return (
+                                          <button key={d} type="button" disabled={daysNego} onClick={() => toggleDay(d)}
+                                            style={{ width: 30, height: 30, borderRadius: "50%", fontSize: 13, cursor: daysNego ? "default" : "pointer", border: on ? "1.5px solid #5f0080" : "1px solid #ddd", background: on ? "#5f0080" : "#fff", color: daysNego ? "#ccc" : (on ? "#fff" : "#666") }}>{d}</button>
+                                        ); })}
+                                      </div>
+                                      <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12.5, color: "#555", cursor: "pointer" }}>
+                                        <input type="checkbox" checked={daysNego} onChange={(e) => setPos(cat, "workDays", e.target.checked ? "협의" : "")} /> 요일 협의
+                                      </label>
+                                      <div style={{ fontSize: 12, color: "#888", margin: "12px 0 6px" }}>근무시간</div>
+                                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                        <input type="time" disabled={timeNego} value={tm ? tm[1] : ""} onChange={(e) => setPos(cat, "workTime", `${e.target.value}~${tm ? tm[2] : ""}`)} style={{ flex: 1, minWidth: 0, height: 32, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 13, background: timeNego ? "#f5f5f5" : "#fff" }} />
+                                        <span style={{ color: "#888" }}>~</span>
+                                        <input type="time" disabled={timeNego} value={tm ? tm[2] : ""} onChange={(e) => setPos(cat, "workTime", `${tm ? tm[1] : ""}~${e.target.value}`)} style={{ flex: 1, minWidth: 0, height: 32, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 13, background: timeNego ? "#f5f5f5" : "#fff" }} />
+                                      </div>
+                                      <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12.5, color: "#555", cursor: "pointer" }}>
+                                        <input type="checkbox" checked={timeNego} onChange={(e) => setPos(cat, "workTime", e.target.checked ? "협의" : "")} /> 시간 협의
+                                      </label>
+                                      {nonMember && (
+                                        <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #eee" }}>
+                                          <input type="text" value={(days.length || daysNego) ? "" : row.workDays} onChange={(e) => setPos(cat, "workDays", e.target.value)} placeholder="요일 직접입력(예: 주말만)" style={{ ...cellInput, marginBottom: 6 }} />
+                                          <input type="text" value={(tm || timeNego) ? "" : row.workTime} onChange={(e) => setPos(cat, "workTime", e.target.value)} placeholder="시간 직접입력(예: 평일 저녁)" style={cellInput} />
+                                        </div>
+                                      )}
+                                      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
+                                        <button type="button" onClick={() => setPosShiftOpen(null)} className="company-primary-btn" style={{ padding: "5px 14px", fontSize: 13 }}>닫기</button>
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
                               </td>
                               <td style={tdc}>
                                 {nonMember
