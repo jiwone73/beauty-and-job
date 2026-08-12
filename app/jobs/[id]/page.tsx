@@ -199,7 +199,7 @@ export default function JobDetailPage() {
             headcount: j.headcount_text || (j.headcount ? `${j.headcount}명` : '00명'), // 자유입력 우선, 미언급 시 '00명'
             genderPref: j.gender_preference || '',
             deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, '.') : '상시채용',
-            salaryByCat: Array.isArray(j.salary_by_category) ? j.salary_by_category : [],
+            positions: Array.isArray(j.positions) ? j.positions : [],
             salary: j.salary_text || (((j.salary_max && j.salary_max > j.salary_min)
               ? `${formatSalaryWon(j.salary_min, j.salary_type)} ~ ${formatSalaryWon(j.salary_max, j.salary_type).replace(/^[^0-9]*/, '')}`
               : formatSalaryWon(j.salary_min, j.salary_type)) || '면접 후 협의'),

@@ -225,6 +225,12 @@ export default function JobPostForm({
   const [curating, setCurating] = useState(false);
   const [jobGroupType, setJobGroupType] = useState<"" | "기업" | "매장">("매장"); // 기본값 매장(관리자). 선택 전 직군·급여·복지 잠금 해제용
   const [categories, setCategories] = useState<string[]>([]);
+  // 모집부문 표: 모집분야(=categories)별 경력·급여·인원. 값은 분야명으로 키잉(선택 순서/추가에 안전).
+  const [posMeta, setPosMeta] = useState<Record<string, { career: string; salary: string; headcount: string }>>({});
+  const setPos = (cat: string, k: "career" | "salary" | "headcount", v: string) =>
+    setPosMeta((m) => { const cur = m[cat] || { career: "", salary: "", headcount: "" }; return { ...m, [cat]: { ...cur, [k]: v } }; });
+  // 불러오기로 파싱된 경력·급여·인원을, 관리자가 모집분야를 고르면 첫 행에 채워줌(수기 재입력 방지).
+  const [parsedPrimary, setParsedPrimary] = useState<{ career: string; salary: string; headcount: string } | null>(null);
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
   const [regionOpen, setRegionOpen] = useState(false);
@@ -302,6 +308,13 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [fiOpen]);
+  // 파싱값 → 모집분야 선택 시 첫 행에 시딩(한 번만)
+  useEffect(() => {
+    if (!parsedPrimary || categories.length === 0) return;
+    const c0 = categories[0];
+    setPosMeta((m) => (m[c0] && (m[c0].career || m[c0].salary || m[c0].headcount)) ? m : { ...m, [c0]: { ...parsedPrimary } });
+    setParsedPrimary(null);
+  }, [parsedPrimary, categories]);
   // 근무지역 인라인 자동완성: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!regionOpen) return;
@@ -510,6 +523,7 @@ export default function JobPostForm({
       });
       setAlwaysOpen(!j.deadline);
       setCategories(j.categories || []);
+      setPosMeta(Array.isArray(j.positions) ? Object.fromEntries(j.positions.filter((p: any) => p?.category).map((p: any) => [p.category, { career: p.career || "", salary: p.salary || "", headcount: p.headcount || "" }])) : {});
       setRegionList(j.location ? String(j.location).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
       setDetailImages(j.detail_images || []);
       setBannerImages(((j.cover_images && j.cover_images.length ? j.cover_images : j.company?.cover_images) || []).map((c: any) => ({ url: c?.url, name: "배너" })).filter((x: any) => x.url));
@@ -781,7 +795,7 @@ export default function JobPostForm({
       //    섞이지 않도록, 소스가 값을 주지 않는 항목도 먼저 비우고 시작한다.
       setBannerImages([]); setDetailImages([]);
       setRegionList([]);
-      setBenefitTags([]); setHiringProcess([]); setCategories([]);
+      setBenefitTags([]); setHiringProcess([]); setCategories([]); setPosMeta({});
       setWorkPeriod(""); setWorkDays([]); setWorkDaysNego(false);
       setWorkTimeStart(""); setWorkTimeEnd(""); setWorkTimeNego(false);
       setSalaryNego(false); setSalaryMax(""); setNotes("");
@@ -883,6 +897,15 @@ export default function JobPostForm({
         setSalaryMax("");
         setForm((f) => ({ ...f, salary: "" }));
       }
+      // 파싱값을 모집부문 표 첫 행 시딩용으로 보관(관리자가 모집분야 고르면 채워짐)
+      const salaryStr = salaryStructured
+        ? `${({ ANNUAL: "연봉", MONTHLY: "월급", WEEKLY: "주급", HOURLY: "시급", DAILY: "일급" } as Record<string, string>)[d.salary_type] || ""} ${Number(d.salary_amount).toLocaleString()}${(d.salary_type === "HOURLY" || d.salary_type === "DAILY") ? "원" : "만원"}`.trim()
+        : (d.salary_negotiable ? "협의" : (typeof d.salary === "string" ? d.salary : ""));
+      setParsedPrimary({
+        career: typeof d.career === "string" ? d.career : "",
+        salary: salaryStr,
+        headcount: (d.headcount != null && Number(d.headcount) > 0) ? `${Number(d.headcount)}명` : "",
+      });
       // 근무기간 (매장 공고)
       if (typeof d.work_period === "string" && WORK_PERIODS.includes(d.work_period)) setWorkPeriod(d.work_period);
       // 근무요일 (매장 공고에 주로 필요)
@@ -1078,11 +1101,9 @@ export default function JobPostForm({
       if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
       if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
       if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
-      if (!form.headcount && !fiHeadcount.trim()) { alert("모집인원을 입력해주세요."); return; } // 경력은 선택
       if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
-      // 근무조건 필수(발행 시). 급여는 값 또는 '협의' 체크로 충족. 비회원 자유입력(fi*)도 충족으로 인정.
+      // 근무조건 필수(발행 시). 급여·경력·인원은 모집부문 표에서 분야별(협의·미정 허용)이라 하드 필수 아님.
       if (status === "publish") {
-        if (!(salaryNego || form.salary.trim() || fiSalary.trim())) { alert("급여를 입력하거나 협의로 선택해주세요."); return; }
         if (!form.type && !fiEmployment.trim()) { alert("고용형태를 선택해주세요."); return; }
         if (jobGroupType === "매장") {
           if (!(workDaysNego || workDays.length || fiWorkDays.trim())) { alert("근무요일을 선택해주세요."); return; }
@@ -1093,8 +1114,7 @@ export default function JobPostForm({
             return;
           }
         } else {
-          // 오피스: 경력·학력 필수 / 담당업무·자격요건은 상세 이미지가 없을 때만 필수(디자인 템플릿형 공고 대응)
-          if (!form.career) { alert("경력을 선택해주세요."); return; }
+          // 오피스: 학력 필수 / 담당업무·자격요건은 상세 이미지가 없을 때만 필수(경력은 모집부문 표에서)
           if (!form.education) { alert("학력을 선택해주세요."); return; }
           if (detailImages.length === 0) {
             if (!form.responsibilities?.trim()) { alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
@@ -1110,8 +1130,12 @@ export default function JobPostForm({
       }
     }
 
-    const expLevel = form.career.includes("신입") ? "NEW"
-      : form.career.match(/\d+년/) ? "EXPERIENCED" : "ANY";
+    // 모집부문 표(positions) — 분야별 경력·급여·인원. 필터·호환용 대표값은 첫 행에서 유도.
+    const positions = categories.map((c) => ({ category: c, career: (posMeta[c]?.career || "").trim(), salary: (posMeta[c]?.salary || "").trim(), headcount: (posMeta[c]?.headcount || "").trim() }));
+    const primaryCareer = positions[0]?.career || "";
+    const primaryHeadcount = parseInt((positions[0]?.headcount || "").replace(/[^0-9]/g, "")) || null;
+    const expLevel = primaryCareer.includes("신입") ? "NEW"
+      : primaryCareer.match(/\d+년/) ? "EXPERIENCED" : "ANY";
     const workType = form.type === "파트타임" ? "PART_TIME"
       : form.type === "계약직" ? "CONTRACT" : "FULL_TIME";
     let salaryMin: number | null = null;
@@ -1137,7 +1161,7 @@ export default function JobPostForm({
       salary_min: salaryMin, salary_max: salaryMaxVal,
       salary_type: salaryMin ? salaryType : null,
       salary_text: fiSalary.trim() || null, // 비회원 자유입력(예: "추후협의") — 있으면 표시 우선
-      salary_by_category: (() => { const a = categories.map((c) => ({ category: c, text: (salaryByCat[c] || "").trim() })).filter((x) => x.text); return a.length ? a : null; })(), // 모집분야별 급여
+      positions: positions.length ? positions : null, // 모집부문 표(분야별 경력·급여·인원)
       location: regionList.join(", ") || null,
       work_type: workType,
       // 자유입력(fi*)이 채워졌으면 그 값으로 override(비회원 원문 보존). 비어 있으면 기존 위젯 값.
@@ -1149,7 +1173,7 @@ export default function JobPostForm({
       work_time: fiWorkTime.trim() || (workTimeNego ? "협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : null)),
       work_time_slots: null,
       deadline: form.deadline || null,
-      headcount: form.headcount ? parseInt(form.headcount, 10) : null,
+      headcount: primaryHeadcount,
       headcount_text: fiHeadcount.trim() || null, // 비회원 자유입력(예: "인원미정") — 있으면 표시 우선
       gender_preference: jobGroupType === "매장" ? (genderPref || null) : null, // 성별우대(매장 전용)
       categories,
@@ -1233,6 +1257,11 @@ export default function JobPostForm({
 
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
+  // 모집부문 표 셀 스타일
+  const thc: React.CSSProperties = { textAlign: "left", padding: "8px 10px", fontSize: 12.5, color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" };
+  const tdc: React.CSSProperties = { padding: "6px 10px", borderBottom: "1px solid #f3f0f8", verticalAlign: "middle" };
+  const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
+  const cellSelect: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff", WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
   // 비회원(관리자) 자유입력 칸 공용 스타일 + 렌더 헬퍼(기존 위젯 옆에 추가). 채우면 저장값 우선.
   // 비회원 직접입력: 트리거는 각 위젯 메뉴 안의 "직접입력" 항목(setFiOpen). 여기서는
   //   ① 채운 값을 항목 우측에 일반 텍스트로 표시(클릭해 수정) ② 입력 팝오버(2행·넓게)만 렌더.
@@ -1300,8 +1329,8 @@ export default function JobPostForm({
     headcount: fiHeadcount.trim() || (form.headcount ? `${form.headcount}명` : "00명"), // 자유입력 우선, 미언급 시 '00명'
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
-    salary: fiSalary.trim() || fmtSalary() || "면접 후 협의",
-    salaryByCat: categories.map((c) => ({ category: c, text: (salaryByCat[c] || "").trim() })).filter((x) => x.text),
+    salary: fmtSalary() || "면접 후 협의",
+    positions: categories.map((c) => ({ category: c, career: (posMeta[c]?.career || "").trim(), salary: (posMeta[c]?.salary || "").trim(), headcount: (posMeta[c]?.headcount || "").trim() })),
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -1671,16 +1700,6 @@ export default function JobPostForm({
                     <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="선택" title="모집분야 선택" />
                   )}
                 </div>
-                {/* 경력 */}
-                <div className="job-detail-meta-item">
-                  <Briefcase size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>경력{isOffice && <span style={{ color: "#e9a3a3" }}> *</span>}</span>
-                  <select value={form.career} onChange={(e) => setForm({ ...form, career: e.target.value })}
-                    style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.career) }}>
-                    <option value=""></option>
-                    {CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
                 {/* 학력 */}
                 <div className="job-detail-meta-item">
                   <GraduationCap size={16} className="job-detail-meta-icon" />
@@ -1690,29 +1709,6 @@ export default function JobPostForm({
                     <option value=""></option>
                     {EDUCATION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
-                </div>
-                {/* 모집인원 — 1~5 풀다운, 그 이상/미정은 '직접입력…' */}
-                <div className="job-detail-meta-item">
-                  <Users size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집인원<span style={{ color: "#e9a3a3" }}> *</span></span>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                    {nonMember ? (
-                      !fiHeadcount.trim() && (
-                      <select value={form.headcount} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("headcount"); return; } setFiHeadcount(""); setForm({ ...form, headcount: e.target.value }); }}
-                        style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.headcount) }}>
-                        <option value=""></option>
-                        {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}명</option>)}
-                        <option value="__fi__">직접입력…</option>
-                      </select>
-                      )
-                    ) : (
-                      <input type="number" min={1} inputMode="numeric" value={form.headcount}
-                        onChange={(e) => setForm({ ...form, headcount: e.target.value.replace(/[^0-9]/g, "") })}
-                        style={{ border: "none", fontSize: 15, color: "#333", padding: 0, WebkitAppearance: "none", appearance: "none", height: 20, lineHeight: "20px", textAlign: form.headcount ? "center" : "left", background: form.headcount ? "transparent" : PH_BG, borderRadius: form.headcount ? 0 : 5, width: form.headcount ? 44 : 56 }} />
-                    )}
-                    {!nonMember && <span style={{ fontSize: 15, color: "#999" }}>명</span>}
-                  </span>
-                  {freeField("headcount", fiHeadcount, setFiHeadcount, "예: 인원미정(협의)", false, () => setForm((f) => ({ ...f, headcount: "" })))}
                 </div>
                 {/* 성별우대 — 매장 전용 */}
                 {jobGroupType === "매장" && (
@@ -1754,80 +1750,54 @@ export default function JobPostForm({
                 </div>
               </div>
 
+              {/* ── 모집부문 표: 모집분야별 경력·급여·인원 (매장·오피스 공통) ── */}
+              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+                <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>모집부문 <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400 }}>모집분야를 선택하면 분야별 경력·급여·인원을 입력해요{nonMember ? " (값이 안 맞으면 자유입력)" : ""}</span></div>
+                {categories.length === 0 ? (
+                  <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야</b>를 먼저 선택하세요.</div>
+                ) : (
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr>
+                          <th style={{ ...thc, width: "34%" }}>모집분야</th>
+                          <th style={{ ...thc, width: "24%" }}>경력</th>
+                          <th style={{ ...thc, width: "24%" }}>급여</th>
+                          <th style={{ ...thc, width: "18%" }}>모집인원</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {categories.map((cat) => {
+                          const row = posMeta[cat] || { career: "", salary: "", headcount: "" };
+                          return (
+                            <tr key={cat}>
+                              <td style={{ ...tdc, fontSize: 13.5, color: "#333" }}>{cat}</td>
+                              <td style={tdc}>
+                                {nonMember
+                                  ? <input type="text" value={row.career} onChange={(e) => setPos(cat, "career", e.target.value)} placeholder="예: 3년↑ / 신입" style={cellInput} />
+                                  : <select value={row.career} onChange={(e) => setPos(cat, "career", e.target.value)} style={cellSelect}><option value=""></option>{CAREER_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}</select>}
+                              </td>
+                              <td style={tdc}>
+                                <input type="text" value={row.salary} onChange={(e) => setPos(cat, "salary", e.target.value)} placeholder="예: 월 300~350 / 협의" style={cellInput} />
+                              </td>
+                              <td style={tdc}>
+                                {nonMember
+                                  ? <input type="text" value={row.headcount} onChange={(e) => setPos(cat, "headcount", e.target.value)} placeholder="예: 1명 / 협의" style={cellInput} />
+                                  : <select value={row.headcount} onChange={(e) => setPos(cat, "headcount", e.target.value)} style={cellSelect}><option value=""></option>{[1, 2, 3, 4, 5].map((n) => <option key={n} value={String(n)}>{n}명</option>)}</select>}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
               {/* ── 근무 조건: 고용형태·급여·근무요일·근무시간(라벨+값, 미리보기와 동일) ── */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ margin: "0 0 8px", fontWeight: 400, color: "#333" }}>근무 조건</div>
                 <div className="job-detail-company-info">
-                  {/* 급여 */}
-                  <div className="job-detail-company-row" ref={salaryRef} style={{ position: "relative" }}>
-                    <span className="job-detail-company-label" style={{ fontSize: 14 }}>급여<span style={{ color: "#e9a3a3" }}> *</span></span>
-                    {!fiSalary.trim() && (
-                    <button type="button" disabled={typeLocked}
-                      onClick={() => {
-                        if (typeLocked) return;
-                        if (salaryModalOpen) { setSalaryModalOpen(false); return; }
-                        setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
-                      }}
-                      style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary || categories.some((c) => (salaryByCat[c] || "").trim())) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer", maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {typeLocked ? "선택" : (() => {
-                        const bc = categories.map((c) => [c, (salaryByCat[c] || "").trim()] as [string, string]).filter(([, v]) => v);
-                        if (bc.length) return bc.map(([c, v]) => `${c} ${v}`).join(" / ");
-                        return (salaryNego || form.salary) ? fmtSalary() : pick("입력");
-                      })()}
-                    </button>
-                    )}
-                    {freeField("salary", fiSalary, setFiSalary, "예: 추후협의", false, () => { setForm((f) => ({ ...f, salary: "" })); setSalaryNego(false); })}
-                    {salaryModalOpen && (
-                      <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "260px" }}>
-                        {/* 급여 단위 */}
-                        <div style={{ display: "flex", gap: "6px", marginBottom: "10px" }}>
-                          {((jobGroupType === "기업"
-                            ? [["ANNUAL", "연봉"]]
-                            : [["MONTHLY", "월급"], ["WEEKLY", "주급"], ["DAILY", "일급"], ["HOURLY", "시급"]]) as [string, string][]).map(([val, lbl]) => (
-                            <button key={val} type="button" disabled={salaryNegoDraft}
-                              onClick={() => setSalaryTypeDraft(val)}
-                              style={{ flex: 1, padding: "6px 0", borderRadius: "8px", fontSize: "13px", cursor: salaryNegoDraft ? "default" : "pointer",
-                                border: salaryTypeDraft === val ? "1.5px solid #5f0080" : "1px solid #ddd",
-                                background: salaryTypeDraft === val ? "#faf5ff" : "#fff",
-                                color: salaryNegoDraft ? "#bbb" : (salaryTypeDraft === val ? "#5f0080" : "#666") }}>
-                              {lbl}
-                            </button>
-                          ))}
-                        </div>
-                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                          <input type="number" autoFocus disabled={salaryNegoDraft}
-                            placeholder={salaryTypeDraft === "HOURLY" ? "예) 12,000" : salaryTypeDraft === "DAILY" ? "예) 100,000" : salaryTypeDraft === "ANNUAL" ? "예) 4000" : "예) 250"}
-                            value={salaryNegoDraft ? "" : salaryDraft}
-                            onChange={(e) => setSalaryDraft(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applySalary(); } }}
-                            style={{ flex: 1, minWidth: 0, height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", textAlign: "left", background: salaryNegoDraft ? "#f5f5f5" : "#fff", color: "#333" }} />
-                          <span style={{ fontSize: "13px", color: "#666", whiteSpace: "nowrap", flexShrink: 0 }}>{(salaryTypeDraft === "HOURLY" || salaryTypeDraft === "DAILY") ? "원" : "만원"}</span>
-                        </div>
-                        <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                          <input type="checkbox" checked={salaryNegoDraft} onChange={(e) => setSalaryNegoDraft(e.target.checked)} /> 협의 (금액 비공개)
-                        </label>
-                        {nonMember && <button type="button" onClick={() => { setSalaryModalOpen(false); setFiOpen("salary"); }}
-                          style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#5f0080", cursor: "pointer" }}>✎ 직접입력…</button>}
-                        {categories.length > 0 && (
-                          <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #eee" }}>
-                            <div style={{ fontSize: 12, color: "#888", marginBottom: 6 }}>모집분야별 급여 (선택)</div>
-                            {categories.map((cat) => (
-                              <div key={cat} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                                <span title={cat} style={{ fontSize: 12.5, color: "#5f0080", flexShrink: 0, minWidth: 72, maxWidth: 96, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cat}</span>
-                                <input type="text" value={salaryByCat[cat] || ""} onChange={(e) => setSalaryByCat((m) => ({ ...m, [cat]: e.target.value }))}
-                                  placeholder="예: 월 300~350 / 시급 12,000"
-                                  style={{ flex: 1, minWidth: 0, height: 30, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 13 }} />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
-                          <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setSalaryModalOpen(false)}>취소</button>
-                          <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applySalary}>적용</button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
                   {/* 고용형태 — 네이티브 풀다운. 계약직·인턴이면 '정규직 전환 가능' 하위 옵션 노출 */}
                   <div className="job-detail-company-row" style={{ position: "relative", alignItems: "center" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 14 }}>고용형태<span style={{ color: "#e9a3a3" }}> *</span></span>

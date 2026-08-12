@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     location, address, work_type, experience_level, deadline, categories,
     detail_images, hiring_process, notes, benefits, employment_type, benefit_tags,
     work_days, work_time, work_time_slots, responsibilities, headcount,
-    work_period, contact_methods, education, gender_preference, salary_by_category, status: reqStatus
+    work_period, contact_methods, education, gender_preference, positions, status: reqStatus
   } = body
 
   if (!title || !job_type) {
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
        salary_type, location, address, work_type, experience_level,
        deadline, categories, detail_images, hiring_process, notes,
        benefits, employment_type, benefit_tags,
-       work_days, work_time, work_time_slots, responsibilities, headcount, work_period, contact_methods, education, gender_preference, salary_by_category, status
+       work_days, work_time, work_time_slots, responsibilities, headcount, work_period, contact_methods, education, gender_preference, positions, status
      ) VALUES (
        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, '${jobStatus}'
      ) RETURNING id, title, status, created_at`,
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
       contact_methods || [],
       education || null,
       (gender_preference || '').trim() || null,
-      Array.isArray(salary_by_category) && salary_by_category.length ? JSON.stringify(salary_by_category) : null
+      Array.isArray(positions) && positions.length ? JSON.stringify(positions) : null
     ]
   )
   return ok(result.rows[0], 201)

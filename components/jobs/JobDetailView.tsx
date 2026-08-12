@@ -84,23 +84,38 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   // 근무조건·근무지역은 '기본정보' 성격이라, 이미지형 공고에선 세로로 긴 상세이미지 "앞"에 먼저 노출한다.
   // (블록을 한 번만 정의하고 위치만 바꿔 끼운다 — 텍스트형 공고는 기존 순서 그대로.)
-  const workCondSection = (job.salary || job.salaryByCat?.length > 0 || job.employType || job.workPeriodText || job.workDaysText || job.workTimeText || job.benefits?.length > 0) ? (
+  const positions = Array.isArray(job.positions) ? job.positions.filter((p: any) => p && p.category) : [];
+  const positionsSection = positions.length > 0 ? (
+    <div className="jd-subblock" key="positions">
+      <h2 className="job-detail-subtitle">모집부문</h2>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+          <thead>
+            <tr style={{ background: "#faf7fd" }}>
+              <th style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2" }}>모집분야</th>
+              <th style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2" }}>경력</th>
+              <th style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2" }}>급여</th>
+              <th style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2" }}>모집인원</th>
+            </tr>
+          </thead>
+          <tbody>
+            {positions.map((p: any, i: number) => (
+              <tr key={i}>
+                <td style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: "#333" }}>{p.category}</td>
+                <td style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: "#555" }}>{p.career || "-"}</td>
+                <td style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: "#555" }}>{p.salary || "-"}</td>
+                <td style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: "#555" }}>{p.headcount || "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  ) : null;
+  const workCondSection = (job.employType || job.workPeriodText || job.workDaysText || job.workTimeText || job.benefits?.length > 0) ? (
     <div className="jd-subblock" key="workcond">
       <h2 className="job-detail-subtitle">근무 조건</h2>
       <div className="job-detail-company-info">
-        {job.salaryByCat && job.salaryByCat.length > 0 ? (
-          job.salaryByCat.map((s: { category: string; text: string }, i: number) => (
-            <div className="job-detail-company-row" key={i}>
-              <span className="job-detail-company-label">급여{job.salaryByCat.length > 1 ? ` · ${s.category}` : ""}</span>
-              <span>{s.text}</span>
-            </div>
-          ))
-        ) : job.salary && (
-          <div className="job-detail-company-row">
-            <span className="job-detail-company-label">급여</span>
-            <span>{job.salary}</span>
-          </div>
-        )}
         {job.employType && (
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">고용형태</span>
@@ -272,7 +287,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 <span className="job-detail-meta-value">{job.jobCategories.join(", ")}</span>
               </div>
             )}
-            {job.career && (
+            {job.career && positions.length === 0 && (
               <div className="job-detail-meta-item">
                 <Briefcase size={16} className="job-detail-meta-icon" />
                 <span className="job-detail-meta-label">경력</span>
@@ -286,7 +301,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 <span className="job-detail-meta-value">{job.education}</span>
               </div>
             )}
-            {job.headcount && (
+            {job.headcount && positions.length === 0 && (
               <div className="job-detail-meta-item">
                 <Users size={16} className="job-detail-meta-icon" />
                 <span className="job-detail-meta-label">모집인원</span>
@@ -310,6 +325,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </div>
 
           {/* 근무조건·근무지역·복리후생·채용담당자·채용절차를 기본정보 카드 안에 통합(빈 값 자동 숨김) */}
+          {positionsSection}
           {workCondSection}
           {locationSection}
           {applyGuideBlock}

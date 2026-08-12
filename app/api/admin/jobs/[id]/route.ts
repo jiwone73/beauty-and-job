@@ -78,7 +78,7 @@ export async function PATCH(
     "hiring_process", "notes",
     "work_days", "work_time", "work_time_slots", "work_period",
     "responsibilities", "headcount", "education", "source_url",
-    "salary_text", "headcount_text", "gender_preference", "salary_by_category",
+    "salary_text", "headcount_text", "gender_preference", "positions",
     "apply_method", "external_apply_url",
     "external_contact_name", "external_contact_phone", "external_contact_email",
     "contact_methods",
@@ -91,7 +91,7 @@ export async function PATCH(
     const updates: string[] = [];
     const values: any[] = [];
     let idx = 1;
-    const jsonbFields = ["detail_images", "hiring_process", "salary_by_category"];
+    const jsonbFields = ["detail_images", "hiring_process", "positions"];
     for (const field of allowedFields) {
       if (body[field] !== undefined) {
         updates.push(`${field} = $${idx++}`);
