@@ -334,7 +334,7 @@ export default function AdminOutreachPage() {
           if (!sum) return null;
           const label = (s: string) => s === "자사홈페이지" ? "자사홈" : s;
           return (
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "4px 14px", marginBottom: 12, fontSize: 12.5, color: "#6b6473" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "4px 14px", marginBottom: 12, fontSize: 13.5, color: "#6b6473" }}>
               <span style={{ color: "#9a92a6" }}>사이트별 활성공고</span>
               {[...known, ...etc].map((s) => (
                 <span key={s}><b style={{ color: "#2b2533", fontWeight: 600 }}>{label(s)}</b> {bySite[s].toLocaleString()}</span>
