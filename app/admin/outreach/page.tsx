@@ -64,7 +64,6 @@ export default function AdminOutreachPage() {
   const [editHomeId, setEditHomeId] = useState<string | null>(null);
   const [editMemoId, setEditMemoId] = useState<string | null>(null);
   const [pickedJobUrl, setPickedJobUrl] = useState<string | null>(null); // 조회된 공고 중 라디오 선택 → 공고 등록으로 전달
-  const [findingEmail, setFindingEmail] = useState<Set<string>>(new Set()); // 홈페이지에서 채용 이메일 찾는 중
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
   const authH = { Authorization: `Bearer ${token}` };
@@ -191,31 +190,6 @@ export default function AdminOutreachPage() {
       return updated.reduce((n, u) => n + (u.found_count || 0), 0);
     } finally {
       setChecking((s) => { const n = new Set(s); ids.forEach((i) => n.delete(i)); return n; });
-    }
-  };
-
-  // 홈페이지에서 본사 채용담당 이메일 찾아 채우기(단건 = 덮어씀)
-  const findEmail = async (row: Row) => {
-    const home = String(val(row, "homepage") || "").trim();
-    if (!home) { setBulkMsg("홈페이지 주소가 없어요. 먼저 홈페이지를 입력하세요."); setTimeout(() => setBulkMsg(""), 3000); return; }
-    setFindingEmail((s) => new Set([...s, row.id]));
-    try {
-      const res = await fetch(`/api/admin/target-companies/find-email`, {
-        method: "POST", headers: { "Content-Type": "application/json", ...authH },
-        body: JSON.stringify({ id: row.id }),
-      });
-      const j = await res.json();
-      const updated: Row[] = j.data?.items || [];
-      if (updated.length) {
-        const map = new Map(updated.map((u) => [u.id, u]));
-        setItems((its) => its.map((r) => map.get(r.id) || r));
-        setDrafts((d) => { const n = { ...d }; delete n[row.id]; return n; });
-      } else {
-        setBulkMsg(`${row.brand_name}: 홈페이지에서 채용 이메일을 찾지 못했어요.`);
-        setTimeout(() => setBulkMsg(""), 3500);
-      }
-    } finally {
-      setFindingEmail((s) => { const n = new Set(s); n.delete(row.id); return n; });
     }
   };
 
@@ -447,18 +421,11 @@ export default function AdminOutreachPage() {
                           onChange={(e) => setDraft(row.id, { phone: e.target.value })}
                           onBlur={() => saveField(row, "phone")} />
                       </td>
-                      {/* 이메일 (자동저장) + 홈페이지에서 채용 이메일 찾기 */}
+                      {/* 이메일 (자동저장) */}
                       <td style={td}>
                         <input style={inp} placeholder="이메일" value={val(row, "email") || ""}
                           onChange={(e) => setDraft(row.id, { email: e.target.value })}
                           onBlur={() => saveField(row, "email")} />
-                        {home ? (
-                          <button type="button" onClick={() => findEmail(row)} disabled={findingEmail.has(row.id)}
-                            title="회사 홈페이지에서 본사 채용담당 이메일을 찾아 채웁니다"
-                            style={{ marginTop: 3, background: "none", border: "none", padding: 0, cursor: findingEmail.has(row.id) ? "wait" : "pointer", fontSize: 11.5, color: PURPLE }}>
-                            {findingEmail.has(row.id) ? "찾는 중…" : "🔎 홈피에서 채용 이메일 찾기"}
-                          </button>
-                        ) : null}
                       </td>
                       {/* 주요특징 (2줄 말줄임 + 툴팁) */}
                       <td style={{ ...td, maxWidth: 220 }}>
