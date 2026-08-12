@@ -16,6 +16,10 @@ import { REGIONS } from "@/lib/data/regions";
 const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.sido} ${g}`));
 
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
+const WEEKDAY_DAYS = ["월", "화", "수", "목", "금"]; // 주중
+const WEEKEND_DAYS = ["토", "일"]; // 주말
+// 근무시간 풀다운 옵션: 오전/오후 구분 없이 24시간 표기, 30분 간격
+const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => `${String(Math.floor(i / 2)).padStart(2, "0")}:${i % 2 ? "30" : "00"}`);
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 // 모집부문 표용 간결 옵션(여백 확보, 직접입력 없음)
@@ -1829,9 +1833,17 @@ export default function JobPostForm({
                                 {posShiftOpen === cat && (() => {
                                   const days = (row.workDays && row.workDays !== "협의") ? row.workDays.split(/[·,]/).map((s) => s.trim()).filter((d) => WORK_DAY_OPTIONS.includes(d)) : [];
                                   const daysNego = row.workDays === "협의";
-                                  const tm = (row.workTime || "").match(/^(\d{1,2}:\d{2})\s*~\s*(\d{1,2}:\d{2})$/);
+                                  const timeParts = (row.workTime && row.workTime !== "협의") ? row.workTime.split("~") : [];
+                                  const tStart = (timeParts[0] || "").trim();
+                                  const tEnd = (timeParts[1] || "").trim();
+                                  const tm = /^\d{1,2}:\d{2}~\d{1,2}:\d{2}$/.test((row.workTime || "").replace(/\s/g, "")) ? [row.workTime, tStart, tEnd] as const : null;
                                   const timeNego = row.workTime === "협의";
                                   const toggleDay = (d: string) => { const nd = days.includes(d) ? days.filter((x) => x !== d) : [...days, d].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b)); setPos(cat, "workDays", nd.join("·")); };
+                                  const setDays = (arr: string[]) => setPos(cat, "workDays", [...new Set(arr)].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b)).join("·"));
+                                  const toggleGroup = (grp: string[], on: boolean) => { const base = days.filter((d) => !grp.includes(d)); setDays(on ? [...base, ...grp] : base); };
+                                  const allWeekday = WEEKDAY_DAYS.every((d) => days.includes(d));
+                                  const allWeekend = WEEKEND_DAYS.every((d) => days.includes(d));
+                                  const timeSel: React.CSSProperties = { flex: 1, minWidth: 0, height: 32, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 13, background: timeNego ? "#f5f5f5" : "#fff", color: timeNego ? "#bbb" : "#333", cursor: timeNego ? "default" : "pointer" };
                                   return (
                                     <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 60, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 260 }}>
                                       <div style={{ fontSize: 12, color: "#888", marginBottom: 6 }}>근무요일</div>
@@ -1841,14 +1853,28 @@ export default function JobPostForm({
                                             style={{ width: 30, height: 30, borderRadius: "50%", fontSize: 13, cursor: daysNego ? "default" : "pointer", border: on ? "1.5px solid #5f0080" : "1px solid #ddd", background: on ? "#5f0080" : "#fff", color: daysNego ? "#ccc" : (on ? "#fff" : "#666") }}>{d}</button>
                                         ); })}
                                       </div>
-                                      <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12.5, color: "#555", cursor: "pointer" }}>
-                                        <input type="checkbox" checked={daysNego} onChange={(e) => setPos(cat, "workDays", e.target.checked ? "협의" : "")} /> 요일 협의
-                                      </label>
+                                      <div style={{ display: "flex", gap: 14, marginTop: 8 }}>
+                                        <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: daysNego ? "#bbb" : "#555", cursor: daysNego ? "default" : "pointer" }}>
+                                          <input type="checkbox" disabled={daysNego} checked={allWeekday} onChange={(e) => toggleGroup(WEEKDAY_DAYS, e.target.checked)} /> 주중
+                                        </label>
+                                        <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: daysNego ? "#bbb" : "#555", cursor: daysNego ? "default" : "pointer" }}>
+                                          <input type="checkbox" disabled={daysNego} checked={allWeekend} onChange={(e) => toggleGroup(WEEKEND_DAYS, e.target.checked)} /> 주말
+                                        </label>
+                                        <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "#555", cursor: "pointer" }}>
+                                          <input type="checkbox" checked={daysNego} onChange={(e) => setPos(cat, "workDays", e.target.checked ? "협의" : "")} /> 협의
+                                        </label>
+                                      </div>
                                       <div style={{ fontSize: 12, color: "#888", margin: "12px 0 6px" }}>근무시간</div>
                                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                        <input type="time" disabled={timeNego} value={tm ? tm[1] : ""} onChange={(e) => setPos(cat, "workTime", `${e.target.value}~${tm ? tm[2] : ""}`)} style={{ flex: 1, minWidth: 0, height: 32, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 13, background: timeNego ? "#f5f5f5" : "#fff" }} />
+                                        <select disabled={timeNego} value={TIME_OPTIONS.includes(tStart) ? tStart : ""} onChange={(e) => setPos(cat, "workTime", `${e.target.value}~${tEnd}`)} style={timeSel}>
+                                          <option value="">시작</option>
+                                          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+                                        </select>
                                         <span style={{ color: "#888" }}>~</span>
-                                        <input type="time" disabled={timeNego} value={tm ? tm[2] : ""} onChange={(e) => setPos(cat, "workTime", `${tm ? tm[1] : ""}~${e.target.value}`)} style={{ flex: 1, minWidth: 0, height: 32, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 13, background: timeNego ? "#f5f5f5" : "#fff" }} />
+                                        <select disabled={timeNego} value={TIME_OPTIONS.includes(tEnd) ? tEnd : ""} onChange={(e) => setPos(cat, "workTime", `${tStart}~${e.target.value}`)} style={timeSel}>
+                                          <option value="">종료</option>
+                                          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+                                        </select>
                                       </div>
                                       <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12.5, color: "#555", cursor: "pointer" }}>
                                         <input type="checkbox" checked={timeNego} onChange={(e) => setPos(cat, "workTime", e.target.checked ? "협의" : "")} /> 시간 협의
@@ -1856,7 +1882,7 @@ export default function JobPostForm({
                                       {nonMember && (
                                         <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #eee" }}>
                                           <input type="text" value={(days.length || daysNego) ? "" : row.workDays} onChange={(e) => setPos(cat, "workDays", e.target.value)} placeholder="요일 직접입력(예: 주말만)" style={{ ...cellInput, marginBottom: 6 }} />
-                                          <input type="text" value={(tm || timeNego) ? "" : row.workTime} onChange={(e) => setPos(cat, "workTime", e.target.value)} placeholder="시간 직접입력(예: 평일 저녁)" style={cellInput} />
+                                          <input type="text" value={(tm || timeNego || /[\d]|~/.test(row.workTime || "")) ? "" : row.workTime} onChange={(e) => setPos(cat, "workTime", e.target.value)} placeholder="시간 직접입력(예: 평일 저녁)" style={cellInput} />
                                         </div>
                                       )}
                                       <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
