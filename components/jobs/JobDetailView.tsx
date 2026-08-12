@@ -18,21 +18,29 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
     display: "flex", alignItems: "center", justifyContent: "center",
   };
 
-  // 배너는 '원본 이미지 비율 그대로' 한 장씩 표시(자르거나 3:1 띠로 왜곡하지 않음). 여러 장이면 좌우 화살표로 순환.
-  const cur = ((start % n) + n) % n;
+  // 배너는 한 배너 안에 여러 장을 나란히(그리드) 표시. 각 이미지는 '원본 비율 그대로'(자르지 않음) + EXIF 회전 무시.
+  //   3장 초과면 좌우 화살표로 3장씩 순환.
+  const PER = 3;
+  const cols = Math.min(n, PER);
+  const s = ((start % n) + n) % n;
+  const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
   return (
-    <div style={{ position: "relative", width: "100%", borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
-      <img
-        src={images[cur]}
-        alt={alt}
-        // EXIF 회전 태그 무시 → 원본 픽셀 그대로(원 사이트와 동일). 없으면 브라우저가 세로로 돌려 크롭된 것처럼 보임.
-        style={{ display: "block", width: "100%", height: "auto", imageOrientation: "none" }}
-      />
-      {n > 1 && (
+    <div style={{ position: "relative", width: "100%" }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 4, borderRadius: 12, overflow: "hidden", alignItems: "start", background: "#f4f4f4" }}>
+        {visible.map((src, k) => (
+          <img
+            key={k}
+            src={src}
+            alt={alt}
+            // EXIF 회전 태그 무시 → 원본 픽셀 그대로(원 사이트와 동일). 없으면 브라우저가 세로로 돌려 크롭된 것처럼 보임.
+            style={{ display: "block", width: "100%", height: "auto", imageOrientation: "none" }}
+          />
+        ))}
+      </div>
+      {n > PER && (
         <>
-          <button type="button" aria-label="이전 이미지" onClick={() => setStart(cur - 1)} style={{ ...arrow, left: 8 }}><ChevronLeft size={22} /></button>
-          <button type="button" aria-label="다음 이미지" onClick={() => setStart(cur + 1)} style={{ ...arrow, right: 8 }}><ChevronRight size={22} /></button>
-          <span style={{ position: "absolute", bottom: 10, right: 12, zIndex: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 12, fontWeight: 600, borderRadius: 999, padding: "3px 10px" }}>{cur + 1} / {n}</span>
+          <button type="button" aria-label="이전 이미지" onClick={() => setStart(s - 1)} style={{ ...arrow, left: 8 }}><ChevronLeft size={22} /></button>
+          <button type="button" aria-label="다음 이미지" onClick={() => setStart(s + 1)} style={{ ...arrow, right: 8 }}><ChevronRight size={22} /></button>
         </>
       )}
     </div>
