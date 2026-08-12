@@ -333,21 +333,35 @@ function mapRole(text: string): { job_type: string; item: string } | null {
 // 제목·회사명으로 우리 직군 자동 추천(맞으면 job_type·categories, 아니면 사용자가 선택)
 // searchJobItems는 "짧은 검색어"가 직군명/태그의 부분문자열일 때 매칭된다. 긴 문장을 통째로 넘기면
 // (예: "헤어디자이너 ★ 블루클럽 인천.송도점 ★") 어떤 직군에도 안 걸리므로, 토큰으로 쪼개 각각 검색한다.
-function suggestCats(text: string): { job_type?: string; job_categories: string[] } {
+function suggestCats(text: string, opts: { officeBias?: boolean } = {}): { job_type?: string; job_categories: string[] } {
   // 1순위: 도메인 역할 규칙(가장 신뢰도 높음)
   const role = mapRole(text);
   if (role) return { job_type: role.job_type, job_categories: [role.item] };
+  // 1.5순위: 본사 사무직(OFFICE) 강신호 → OFFICE로 확정(직군은 관리자가 선택).
+  //   매장 시술·접객직에는 없는 단어들이라 안전. '글로벌 인허가'의 '글로벌'이 '글로벌 세일즈(매장)'로
+  //   오매칭되던 것 같은 오분류(느슨한 토큰 부분일치)를 여기서 차단한다.
+  {
+    const ns = (text || "").replace(/\s/g, "");
+    if (/인허가|regulatory|품질관리|머천다이저|상품기획|브랜드매니저|퍼포먼스마케팅|재무|회계담당|세무|법무|구매담당|물류관리|SCM|인사담당|채용담당|노무|경영지원|전략기획|해외영업|수출입|개발자|엔지니어|데이터분석|약무|약사/i.test(ns)) {
+      return { job_type: "OFFICE", job_categories: [] };
+    }
+  }
+  // officeBias(잡코리아·사람인 등 일반 잡보드): "매장은 매장에서 일하는 사람"만 STORE.
+  //   느슨한 토큰 부분일치로 STORE 직군이 잡히는 건 신뢰하지 않고 건너뛴다(→ 기본 OFFICE, 직군은 관리자 선택).
+  //   진짜 매장 현장직(미용 시술·샵 판매/데스크)은 위 mapRole에서 이미 STORE로 잡힘.
+  const accept = (r: { jobType: string; item: string | null } | undefined) =>
+    r && r.item && !(opts.officeBias && r.jobType === "STORE") ? { job_type: r.jobType, job_categories: [r.item] } : null;
   const tokens = (text || "")
     .split(/[\s,.\/·|\-\[\]()★☆*!~"'`]+/)
     .map((s) => s.trim())
     .filter((t) => t.length >= 2);
   for (const tok of tokens) {
-    const r = searchJobItems(tok, undefined, 1)[0];
-    if (r && r.item) return { job_type: r.jobType, job_categories: [r.item] };
+    const hit = accept(searchJobItems(tok, undefined, 1)[0]);
+    if (hit) return hit;
   }
   // 폴백: 원문 전체(짧은 경우 대비)
-  const r = searchJobItems(text, undefined, 1)[0];
-  if (r && r.item) return { job_type: r.jobType, job_categories: [r.item] };
+  const hit = accept(searchJobItems(text, undefined, 1)[0]);
+  if (hit) return hit;
   return { job_categories: [] };
 }
 
@@ -368,7 +382,7 @@ function parseJobkorea(html: string): StructuredResult | null {
     salary_negotiable = true;
   }
   const deadline = String(jp.validThrough || "").slice(0, 10);
-  const sug = suggestCats(`${title} ${company}`);
+  const sug = suggestCats(`${title} ${company}`, { officeBias: true }); // 잡코리아=일반 잡보드 → 매장 현장직만 STORE, 나머지 오피스
   const out: StructuredResult = {
     title,
     company_name: company,
@@ -636,7 +650,7 @@ function parseSaramin(html: string): StructuredResult | null {
   const kw = decodeHtmlEntities((html.match(/<meta name="keywords" content="([^"]*)"/) || [])[1] || "");
   // 직군 판정은 '제목' 우선(역할이 명확). 메타 keywords에는 브랜드 SEO 태그(예: 두피 브랜드의 '두피케어')가 섞여
   // 역할을 오염시키므로, 제목으로 못 잡을 때만 keywords를 보조로 쓴다.
-  const sug = (() => { const s = suggestCats(title); return s.job_categories.length ? s : suggestCats(`${title} ${kw}`); })();
+  const sug = (() => { const s = suggestCats(title, { officeBias: true }); return s.job_categories.length ? s : suggestCats(`${title} ${kw}`, { officeBias: true }); })(); // 사람인=일반 잡보드 → 매장 현장직만 STORE
 
   // 경력: "신입/경력"·"신입·경력"처럼 둘 다면 경력 무관으로.
   let career = mapCareer(careerRaw);
