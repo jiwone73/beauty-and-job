@@ -26,7 +26,7 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
   const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 4, borderRadius: 12, overflow: "hidden", alignItems: "start", background: "#f4f4f4" }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 0, borderRadius: 12, overflow: "hidden", alignItems: "start", background: "#f4f4f4" }}>
         {visible.map((src, k) => (
           <img
             key={k}
