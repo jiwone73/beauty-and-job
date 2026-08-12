@@ -738,8 +738,21 @@ function parseBeautyjob(html: string): StructuredResult | null {
   const career = mapCareer(afterBody("경력조건"));
   const employment_type = mapEmploymentKo(afterBody("고용형태"));
 
-  // 직군 매핑: 모집업종(jobArea) + 제목
+  // 직군 매핑: 모집업종(jobArea) + 제목. suggestCats가 '두피·탈모'를 '헤어'로 오매핑하는 걸 막기 위해 도메인 규칙을 먼저 적용.
   const sug = suggestCats(`${jobArea} ${title}`);
+  let mappedCats: string[] = [];
+  let industry = "";
+  {
+    const ck = `${jobArea} ${title}`;
+    if (/두피|탈모/.test(ck)) { mappedCats = ["두피 관리사"]; industry = "피부·에스테틱"; }
+    else if (/네일/.test(ck)) { mappedCats = ["네일 아티스트"]; industry = "네일샵"; }
+    else if (/속눈썹|래쉬|반영구/.test(ck)) { mappedCats = ["속눈썹·반영구 아티스트"]; industry = "속눈썹·왁싱·반영구"; }
+    else if (/피부|에스테틱|경락|스킨\s*케어|마사지|관리사|테라피/.test(ck)) { mappedCats = ["피부관리사(일반·경락)"]; industry = "피부·에스테틱"; }
+    else if (/메이크업|분장/.test(ck)) { mappedCats = ["메이크업 아티스트"]; industry = "메이크업"; }
+    else if (/바버|barber/i.test(ck)) { mappedCats = ["바버(Barber)"]; industry = "헤어샵"; }
+    else if (/헤어|미용실|살롱|디자이너|미용사|스타일리스트/.test(ck)) { mappedCats = ["헤어 디자이너"]; industry = "헤어샵"; }
+  }
+  const job_categories = mappedCats.length ? mappedCats : sug.job_categories;
 
   return {
     title,
@@ -750,10 +763,11 @@ function parseBeautyjob(html: string): StructuredResult | null {
     always_open: true, // 뷰티잡은 상시 채용이 대부분(마감일 필드 없음)
     ...sal,
     work_time,
+    industry,
     job_type: sug.job_type || "STORE", // 뷰티잡은 매장(샵)이 대부분
-    job_categories: sug.job_categories,
+    job_categories,
     images: [],
-    _confident: !!(title && (company || sal.salary_type || sal.salary_negotiable || sug.job_categories.length)),
+    _confident: !!(title && (company || sal.salary_type || sal.salary_negotiable || job_categories.length)),
   };
 }
 

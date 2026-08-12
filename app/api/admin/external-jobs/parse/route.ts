@@ -418,7 +418,9 @@ export async function POST(req: NextRequest) {
                 .filter((l) => l && !/^상세\s*내용을\s*입력하세요\.?$/.test(l))
                 .join("\n").replace(/\n{2,}/g, "\n").trim();
               // 잡코리아 신디케이션 구조화 텍스트(회사 소개 + 담당업무/자격요건/우대사항)면 필드로, 아니면 자유서술 → 포지션 소개.
-              const isJk = /jobkorea\.co\.kr|data-sentry|포지션\s*및\s*자격요건|전형절차/i.test(ih);
+              //   ※뷰티잡 iframe은 모든 공고가 잡코리아 템플릿(data-sentry·jobkorea.co.kr)으로 감싸져 있어 그 마커로 판별하면 항상 오탐.
+              //     실제 신디케이션(구조화) 콘텐츠에만 있는 '포지션 및 자격요건' 헤더로만 판별한다.
+              const isJk = /포지션\s*및\s*자격요건/i.test(detailText);
               if (isJk) {
                 // ── 회사 소개(기업정보) ── 잡코리아는 제목과 "포지션 및 자격요건" 사이에 회사 블러브를 둔다.
                 //    (예: "㈜○○는 2009년에 설립된 회사로 … 서울 강남구 …에 위치하고 있으며, …사업을 하고 있습니다.")

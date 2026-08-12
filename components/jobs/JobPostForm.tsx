@@ -187,6 +187,7 @@ export default function JobPostForm({
   const [ocrFiles, setOcrFiles] = useState<File[]>([]); // OCR: 여러 장 캡처 누적
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
+  const [siteNameWarn, setSiteNameWarn] = useState(""); // 불러온 내용에 채용사이트 이름이 섞였을 때 경고(반드시 삭제)
   // 회사명으로 공고 찾기(헤어인잡)
   const [findQuery, setFindQuery] = useState(initialFindQuery);
   const [finding, setFinding] = useState(false);
@@ -976,6 +977,25 @@ export default function JobPostForm({
       } else {
         setParseMsg("⚠ AI 자동 정리에 실패해 제목·회사 등 기본 정보만 채웠어요. 다른 URL을 넣거나 OCR(화면 캡처)로 다시 시도해보세요.");
       }
+      // 불러온 내용에 '채용사이트 이름'이 섞였으면 경고 — 등록 전 반드시 삭제해야 함(타 사이트 홍보문구 유입 방지).
+      {
+        const SITE_NAMES = /뷰티잡매니저|뷰티잡|뷰티인잡|미용인잡|헤어인잡|알바몬|잡코리아|사람인|셀렉트?미|알바천국|인크루트|워크넷|beautyjob|hairinjob|albamon|jobkorea|saramin|selectme|incruit/i;
+        const scan: Record<string, any> = {
+          "제목": d.title, "포지션 소개": d.description, "자격요건": d.requirements, "우대사항": d.preferred,
+          "복리후생": d.benefits, "담당업무": d.main_duties, "회사 소개": d.company_description, "기타": d.extra_notes,
+        };
+        const hits: string[] = [];
+        for (const [label, v] of Object.entries(scan)) {
+          if (typeof v === "string") { const m = v.match(SITE_NAMES); if (m) hits.push(`${label}(“${m[0]}”)`); }
+        }
+        if (hits.length) {
+          const msg = `⚠ 불러온 내용에 채용사이트 이름이 들어 있어요: ${hits.join(", ")}.\n등록 전 반드시 삭제하세요.`;
+          setSiteNameWarn(msg);
+          if (typeof window !== "undefined") window.alert(msg);
+        } else {
+          setSiteNameWarn("");
+        }
+      }
   };
 
   const runParse = async (urlOverride?: string) => {
@@ -1643,6 +1663,12 @@ export default function JobPostForm({
           </div>
           )}
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
+          {siteNameWarn && (
+            <div style={{ marginTop: 8, padding: "10px 12px", background: "#fef2f2", border: "1px solid #f3c0c0", borderRadius: 8, fontSize: 13, color: "#b3261e", whiteSpace: "pre-line", display: "flex", alignItems: "flex-start", gap: 8 }}>
+              <span style={{ flex: 1 }}>{siteNameWarn}</span>
+              <button type="button" onClick={() => setSiteNameWarn("")} style={{ border: "none", background: "none", color: "#b3261e", cursor: "pointer", fontSize: 12, flexShrink: 0 }}>확인</button>
+            </div>
+          )}
           {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
 
           </div>
