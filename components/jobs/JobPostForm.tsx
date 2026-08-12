@@ -226,8 +226,8 @@ export default function JobPostForm({
   const [jobGroupType, setJobGroupType] = useState<"" | "기업" | "매장">("매장"); // 기본값 매장(관리자). 선택 전 직군·급여·복지 잠금 해제용
   const [categories, setCategories] = useState<string[]>([]);
   // 모집부문 표: 모집분야(=categories)별 경력·고용형태·급여·근무요일·근무시간·인원·성별우대.
-  type PosRow = { career: string; employment: string; salary: string; workDays: string; workTime: string; headcount: string; gender: string };
-  const emptyPos: PosRow = { career: "", employment: "", salary: "", workDays: "", workTime: "", headcount: "", gender: "" };
+  type PosRow = { career: string; education: string; employment: string; salary: string; workDays: string; workTime: string; headcount: string; gender: string };
+  const emptyPos: PosRow = { career: "", education: "", employment: "", salary: "", workDays: "", workTime: "", headcount: "", gender: "" };
   const [posMeta, setPosMeta] = useState<Record<string, PosRow>>({});
   const setPos = (cat: string, k: keyof PosRow, v: string) =>
     setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, [k]: v } }; });
@@ -541,7 +541,7 @@ export default function JobPostForm({
       });
       setAlwaysOpen(!j.deadline);
       setCategories(j.categories || []);
-      setPosMeta(Array.isArray(j.positions) ? Object.fromEntries(j.positions.filter((p: any) => p?.category).map((p: any) => [p.category, { career: p.career || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", headcount: p.headcount || "", gender: p.gender || "" }])) : {});
+      setPosMeta(Array.isArray(j.positions) ? Object.fromEntries(j.positions.filter((p: any) => p?.category).map((p: any) => [p.category, { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", headcount: p.headcount || "", gender: p.gender || "" }])) : {});
       setRegionList(j.location ? String(j.location).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
       setDetailImages(j.detail_images || []);
       setBannerImages(((j.cover_images && j.cover_images.length ? j.cover_images : j.company?.cover_images) || []).map((c: any) => ({ url: c?.url, name: "배너" })).filter((x: any) => x.url));
@@ -921,6 +921,7 @@ export default function JobPostForm({
         : (d.salary_negotiable ? "협의" : (typeof d.salary === "string" ? d.salary : ""));
       setParsedPrimary({
         career: typeof d.career === "string" ? d.career : "",
+        education: typeof d.education === "string" ? d.education : "",
         employment: (() => { const e = d.employment_type === "파트타임" ? "아르바이트" : d.employment_type; return typeof e === "string" ? e : ""; })(),
         salary: salaryStr,
         workDays: typeof d.work_days === "string" ? d.work_days : "",
@@ -1133,8 +1134,7 @@ export default function JobPostForm({
             return;
           }
         } else {
-          // 오피스: 학력 필수 / 담당업무·자격요건은 상세 이미지가 없을 때만 필수(경력은 모집부문 표에서)
-          if (!form.education) { alert("학력을 선택해주세요."); return; }
+          // 오피스: 담당업무·자격요건은 상세 이미지가 없을 때만 필수(경력·학력은 모집부문 표에서)
           if (detailImages.length === 0) {
             if (!form.responsibilities?.trim()) { alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
             if (!form.requirements?.trim()) { alert("자격요건을 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
@@ -1150,8 +1150,8 @@ export default function JobPostForm({
     }
 
     // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
-    const p0 = positions[0] || { career: "", employment: "", headcount: "", workDays: "", workTime: "", gender: "" };
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
+    const p0 = positions[0] || { career: "", education: "", employment: "", headcount: "", workDays: "", workTime: "", gender: "" };
     const primaryHeadcount = parseInt((p0.headcount || "").replace(/[^0-9]/g, "")) || null;
     const expLevel = p0.career.includes("신입") ? "NEW"
       : p0.career.match(/\d+년/) ? "EXPERIENCED" : "ANY";
@@ -1176,7 +1176,7 @@ export default function JobPostForm({
       // 복리후생 자유입력이 있으면 텍스트 컬럼에도 줄바꿈으로 저장(공개 상세가 benefits 텍스트를 표시)
       benefits: fiBenefits.trim() ? fiBenefits.split(",").map((s) => s.trim()).filter(Boolean).join("\n") : (form.benefits || null),
       responsibilities: form.responsibilities || null,
-      education: form.education || null,
+      education: p0.education || null, // 모집부문 표 첫 행 기준
       salary_min: salaryMin, salary_max: salaryMaxVal,
       salary_type: salaryMin ? salaryType : null,
       salary_text: fiSalary.trim() || null, // 비회원 자유입력(예: "추후협의") — 있으면 표시 우선
@@ -1377,7 +1377,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
-    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
+    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -1782,6 +1782,7 @@ export default function JobPostForm({
                         <tr>
                           <th style={{ ...thc, minWidth: 110 }}>모집분야</th>
                           <th style={{ ...thc, minWidth: 84 }}>경력</th>
+                          <th style={{ ...thc, minWidth: 84 }}>학력</th>
                           <th style={{ ...thc, minWidth: 84 }}>고용형태</th>
                           <th style={{ ...thc, minWidth: 100 }}>급여</th>
                           <th style={{ ...thc, minWidth: 150 }}>근무요일 / 시간</th>
@@ -1795,6 +1796,7 @@ export default function JobPostForm({
                             <tr key={cat}>
                               <td style={{ ...tdc, fontSize: 13, color: "#333" }}>{cat}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", CAREER_OPTIONS, "예: 3년↑/신입")}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", EDUCATION_OPTIONS, "예: 학력무관")}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "예: 정규직")}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "예: 월 300~350 / 협의")}</td>
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
@@ -1850,19 +1852,6 @@ export default function JobPostForm({
                     </table>
                   </div>
                 )}
-              </div>
-
-              {/* ── 공통(전 직군): 학력 — 모집부문 표 아래 ── */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "14px 0 4px", alignItems: "center", paddingTop: 14, borderTop: "1px solid #f0edf5" }}>
-                <div className="job-detail-meta-item">
-                  <GraduationCap size={16} className="job-detail-meta-icon" />
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>학력{isOffice && <span style={{ color: "#e9a3a3" }}> *</span>}</span>
-                  <select value={form.education} onChange={(e) => setForm({ ...form, education: e.target.value })}
-                    style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!form.education) }}>
-                    <option value=""></option>
-                    {EDUCATION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
               </div>
 
               {/* ── 근무기간·복리후생 (모집부문 안으로 통합, 별도 타이틀·구분선 없음) ── */}
