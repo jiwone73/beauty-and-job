@@ -35,22 +35,14 @@ const REG = ["미등록", "등록완료"];
 
 const PURPLE = "#5f0080";
 
-// '사이트만 다른 동일 채용' 추정용 시그니처: 제목에서 (지점 + 직무)를 뽑아 정규화.
-//   사이트마다 제목 형식이 달라(강남역점/강남역/회사명만 등) 지점 토큰의 끝 '점·지점·센터'는 떼어 맞춘다.
-const _ROLE: [RegExp, string][] = [
-  [/원장|부원장/, "원장"], [/실장/, "실장"], [/디자이너|스타일리스트/, "디자이너"],
-  [/스탭|스태프|스텝|인턴|수습|막내|어시/, "스탭"], [/네일/, "네일"], [/속눈썹|래쉬/, "속눈썹"],
-  [/왁싱|제모/, "왁싱"], [/피부|에스테틱|관리사|경락/, "피부"], [/메이크업/, "메이크업"],
-  [/바버|barber/i, "바버"], [/매니저|점장/, "매니저"], [/두피|탈모/, "두피"],
-];
-function jobSignature(title: string): string {
+// 중복 판정용 '지점' 시그니처: 제목에서 지점 토큰(○○역/○○동/○○점/○○센터)을 뽑아 정규화.
+//   같은 업체(=브랜드)에서 지점이 같으면 중복으로 본다. 사이트마다 형식이 달라(강남역점/강남역 등)
+//   끝의 '점·지점·센터'는 떼어 맞춘다. 지점 신호가 없으면 판정 불가 → 제외(과다집계 방지).
+function branchSignature(title: string): string {
   const t = title || "";
   const branches = [...new Set([...t.matchAll(/([가-힣A-Za-z0-9]{2,}(?:역|동|점|센터|지점))/g)]
     .map((m) => m[1].replace(/(지점|센터|점)$/, "")).filter((b) => b.length >= 2))].sort();
-  if (!branches.length) return ""; // 지점 신호 없으면 매칭 불가 → 중복 판정에서 제외(과다집계 방지)
-  let role = "";
-  for (const [re, v] of _ROLE) if (re.test(t)) { role = v; break; }
-  return `${branches.join(",")}#${role}`;
+  return branches.length ? branches.join(",") : "";
 }
 const hiringColor: Record<string, string> = {
   채용중: "#0a7d34", 없음: "#9a92a6",
@@ -114,22 +106,20 @@ export default function AdminOutreachPage() {
 
   const totalCount = useMemo(() => counts.reduce((a, c) => a + c.cnt, 0), [counts]);
   const countOf = (g: string) => counts.find((c) => c.group_name === g)?.cnt ?? 0;
-  // 현재 탭의 총 활성공고 건수 + 중복(추정): '사이트만 다른 동일 채용' = 업체 내에서 같은 (지점+직무)
-  //   시그니처가 ≥2개 사이트에 걸린 경우, 초과분(그룹 수 - 1)을 중복으로 센다.
+  // 현재 탭의 총 활성공고 건수 + 중복(추정): 같은 업체(브랜드)에서 '지점'이 같은 공고는 중복으로 본다.
+  //   업체 내 found_jobs를 지점 시그니처로 그룹핑 → 각 지점 그룹의 초과분(개수 - 1)을 중복으로 카운트.
   const tabStats = useMemo(() => {
     let total = 0, dup = 0;
     for (const r of items) {
       total += r.found_count || 0;
       const jobs = Array.isArray(r.found_jobs) ? r.found_jobs : [];
-      const groups = new Map<string, { n: number; sources: Set<string> }>();
+      const byBranch = new Map<string, number>();
       for (const j of jobs) {
-        const sig = jobSignature(j?.title || "");
+        const sig = branchSignature(j?.title || "");
         if (!sig) continue;
-        const g = groups.get(sig) || { n: 0, sources: new Set<string>() };
-        g.n += 1; g.sources.add(j?.source || "");
-        groups.set(sig, g);
+        byBranch.set(sig, (byBranch.get(sig) || 0) + 1);
       }
-      for (const g of groups.values()) if (g.sources.size >= 2) dup += g.n - 1; // 사이트만 다른 동일 채용의 초과분
+      for (const n of byBranch.values()) if (n >= 2) dup += n - 1;
     }
     return { total, dup };
   }, [items]);
@@ -377,7 +367,7 @@ export default function AdminOutreachPage() {
           <span style={{ fontSize: 14, color: "#2b2533", fontWeight: 600 }}>
             {group} · 활성공고 <span style={{ color: PURPLE }}>{tabStats.total.toLocaleString()}</span>건
           </span>
-          {tabStats.dup > 0 && <span style={{ fontSize: 12.5, color: "#c2410c" }} title="같은 채용이 사이트만 다르게 올라온 추정 건수(제목의 지점·직무로 매칭)">· 중복(추정) {tabStats.dup.toLocaleString()}건</span>}
+          {tabStats.dup > 0 && <span style={{ fontSize: 12.5, color: "#c2410c" }} title="같은 브랜드·지점이 여러 번 잡힌 추정 중복 건수(제목의 지점명으로 매칭)">· 중복(추정) {tabStats.dup.toLocaleString()}건</span>}
         </div>
 
         {/* 테이블 */}
