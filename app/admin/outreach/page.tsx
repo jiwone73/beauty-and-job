@@ -358,7 +358,7 @@ export default function AdminOutreachPage() {
                 <tr><td colSpan={9} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
               ) : items.length === 0 ? (
                 <tr><td colSpan={9} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
-              ) : items.map((row) => {
+              ) : items.map((row, rowIdx) => {
                 const isChecking = checking.has(row.id);
                 const hv = String(val(row, "is_hiring"));
                 const rv = String(val(row, "is_registered"));
@@ -368,7 +368,7 @@ export default function AdminOutreachPage() {
                   <Fragment key={row.id}>
                     <tr style={{ background: selected.has(row.id) ? "#f6f0fb" : "#fff" }}>
                       <td style={td}><input type="checkbox" checked={selected.has(row.id)} onChange={() => toggleSel(row.id)} /></td>
-                      <td style={{ ...td, color: "#9a92a6" }}>{row.seq ?? "-"}</td>
+                      <td style={{ ...td, color: "#9a92a6" }}>{rowIdx + 1}</td>
                       {/* 브랜드명 = 홈페이지 링크, ✎로 URL 편집 */}
                       <td style={td}>
                         {editHomeId === row.id ? (
