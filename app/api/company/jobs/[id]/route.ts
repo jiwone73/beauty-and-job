@@ -40,13 +40,13 @@ export async function PATCH(
     "deadline", "status", "categories", "detail_images",
     "hiring_process", "notes",
     "work_days", "work_time", "work_time_slots", "work_period",
-    "headcount", "contact_methods", "responsibilities", "education", "gender_preference",
+    "headcount", "contact_methods", "responsibilities", "education", "gender_preference", "salary_by_category",
   ];
 
   const updates: string[] = [];
   const values: any[] = [];
   let idx = 1;
-  const jsonbFields = ["detail_images", "hiring_process"];
+  const jsonbFields = ["detail_images", "hiring_process", "salary_by_category"];
   for (const field of allowedFields) {
     if (body[field] !== undefined) {
       updates.push(`${field} = $${idx++}`);

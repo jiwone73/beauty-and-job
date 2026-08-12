@@ -253,6 +253,7 @@ export default function JobPostForm({
   const [salaryType, setSalaryType] = useState<string>("MONTHLY");     // ANNUAL/MONTHLY/WEEKLY/HOURLY
   const [salaryTypeDraft, setSalaryTypeDraft] = useState<string>("MONTHLY");
   const [salaryMax, setSalaryMax] = useState<string>("");             // 급여 상한(범위 공고). 단일이면 ""
+  const [salaryByCat, setSalaryByCat] = useState<Record<string, string>>({}); // 모집분야별 급여(자유텍스트): {분야명: "월 300"}
   const salaryRef = useRef<HTMLDivElement>(null);
   // 급여 표시(범위면 "연봉 3,000만원 ~ 3,300만원")
   const fmtSalary = (): string => {
@@ -526,6 +527,7 @@ export default function JobPostForm({
         setWorkTimeNego(false); setWorkTimeStart(st || ""); setWorkTimeEnd(en || "");
       } else { setWorkTimeNego(false); setWorkTimeStart(""); setWorkTimeEnd(""); }
       setSalaryNego(!j.salary_min);
+      setSalaryByCat(Array.isArray(j.salary_by_category) ? Object.fromEntries(j.salary_by_category.map((x: any) => [x.category, x.text])) : {});
       // 비회원 자유입력 복원: 저장값이 선택지에 없으면 자유입력 칸으로(그래야 편집 저장 시 안 사라짐 + 관리자가 인지)
       setFiSalary(j.salary_text || "");
       setFiHeadcount(j.headcount_text || "");
@@ -1135,6 +1137,7 @@ export default function JobPostForm({
       salary_min: salaryMin, salary_max: salaryMaxVal,
       salary_type: salaryMin ? salaryType : null,
       salary_text: fiSalary.trim() || null, // 비회원 자유입력(예: "추후협의") — 있으면 표시 우선
+      salary_by_category: (() => { const a = categories.map((c) => ({ category: c, text: (salaryByCat[c] || "").trim() })).filter((x) => x.text); return a.length ? a : null; })(), // 모집분야별 급여
       location: regionList.join(", ") || null,
       work_type: workType,
       // 자유입력(fi*)이 채워졌으면 그 값으로 override(비회원 원문 보존). 비어 있으면 기존 위젯 값.
@@ -1298,6 +1301,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fiSalary.trim() || fmtSalary() || "면접 후 협의",
+    salaryByCat: categories.map((c) => ({ category: c, text: (salaryByCat[c] || "").trim() })).filter((x) => x.text),
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -1764,8 +1768,12 @@ export default function JobPostForm({
                         if (salaryModalOpen) { setSalaryModalOpen(false); return; }
                         setSalaryDraft(salaryNego ? "" : form.salary); setSalaryNegoDraft(salaryNego); setSalaryTypeDraft(salaryType); setSalaryModalOpen(true);
                       }}
-                      style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer" }}>
-                      {typeLocked ? "선택" : ((salaryNego || form.salary) ? fmtSalary() : pick("입력"))}
+                      style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, textAlign: "left", color: typeLocked ? "#cfcfcf" : ((salaryNego || form.salary || categories.some((c) => (salaryByCat[c] || "").trim())) ? "#333" : "#cfcfcf"), cursor: typeLocked ? "default" : "pointer", maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {typeLocked ? "선택" : (() => {
+                        const bc = categories.map((c) => [c, (salaryByCat[c] || "").trim()] as [string, string]).filter(([, v]) => v);
+                        if (bc.length) return bc.map(([c, v]) => `${c} ${v}`).join(" / ");
+                        return (salaryNego || form.salary) ? fmtSalary() : pick("입력");
+                      })()}
                     </button>
                     )}
                     {freeField("salary", fiSalary, setFiSalary, "예: 추후협의", false, () => { setForm((f) => ({ ...f, salary: "" })); setSalaryNego(false); })}
@@ -1800,6 +1808,19 @@ export default function JobPostForm({
                         </label>
                         {nonMember && <button type="button" onClick={() => { setSalaryModalOpen(false); setFiOpen("salary"); }}
                           style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#5f0080", cursor: "pointer" }}>✎ 직접입력…</button>}
+                        {categories.length > 0 && (
+                          <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #eee" }}>
+                            <div style={{ fontSize: 12, color: "#888", marginBottom: 6 }}>모집분야별 급여 (선택)</div>
+                            {categories.map((cat) => (
+                              <div key={cat} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                                <span title={cat} style={{ fontSize: 12.5, color: "#5f0080", flexShrink: 0, minWidth: 72, maxWidth: 96, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cat}</span>
+                                <input type="text" value={salaryByCat[cat] || ""} onChange={(e) => setSalaryByCat((m) => ({ ...m, [cat]: e.target.value }))}
+                                  placeholder="예: 월 300~350 / 시급 12,000"
+                                  style={{ flex: 1, minWidth: 0, height: 30, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 13 }} />
+                              </div>
+                            ))}
+                          </div>
+                        )}
                         <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
                           <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setSalaryModalOpen(false)}>취소</button>
                           <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applySalary}>적용</button>

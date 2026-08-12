@@ -82,6 +82,7 @@ export async function GET(
     salary_max: job.salary_max,
     salary_type: job.salary_type,
     salary_text: job.salary_text || null, // 비회원 자유입력 급여 — 있으면 표시 우선
+    salary_by_category: Array.isArray(job.salary_by_category) ? job.salary_by_category : [], // 모집분야별 급여
     location: job.location,
     address: job.address,
     work_type: job.work_type,

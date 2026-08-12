@@ -84,11 +84,18 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   // 근무조건·근무지역은 '기본정보' 성격이라, 이미지형 공고에선 세로로 긴 상세이미지 "앞"에 먼저 노출한다.
   // (블록을 한 번만 정의하고 위치만 바꿔 끼운다 — 텍스트형 공고는 기존 순서 그대로.)
-  const workCondSection = (job.salary || job.employType || job.workPeriodText || job.workDaysText || job.workTimeText || job.benefits?.length > 0) ? (
+  const workCondSection = (job.salary || job.salaryByCat?.length > 0 || job.employType || job.workPeriodText || job.workDaysText || job.workTimeText || job.benefits?.length > 0) ? (
     <div className="jd-subblock" key="workcond">
       <h2 className="job-detail-subtitle">근무 조건</h2>
       <div className="job-detail-company-info">
-        {job.salary && (
+        {job.salaryByCat && job.salaryByCat.length > 0 ? (
+          job.salaryByCat.map((s: { category: string; text: string }, i: number) => (
+            <div className="job-detail-company-row" key={i}>
+              <span className="job-detail-company-label">급여{job.salaryByCat.length > 1 ? ` · ${s.category}` : ""}</span>
+              <span>{s.text}</span>
+            </div>
+          ))
+        ) : job.salary && (
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">급여</span>
             <span>{job.salary}</span>
