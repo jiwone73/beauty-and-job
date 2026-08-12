@@ -45,8 +45,8 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
                     setRatios((prev) => (Math.abs((prev[src] || 0) - nr) < 0.001 ? prev : { ...prev, [src]: nr }));
                   }
                 }}
-                // 폭은 칸에 100%, 높이는 비율따라 자동 → 모든 칸이 같은 높이. EXIF 회전 무시(원본 픽셀 그대로).
-                style={{ display: "block", width: "100%", height: "auto", imageOrientation: "none" }}
+                // 폭은 칸에 100%, 높이는 비율따라 자동 → 모든 칸이 같은 높이. EXIF는 브라우저 기본대로 적용(원 사이트처럼 똑바로).
+                style={{ display: "block", width: "100%", height: "auto" }}
               />
             </div>
           );
@@ -384,7 +384,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 <h2 className="job-detail-section-title" style={{ padding: "24px 24px 0", marginBottom: 16 }}>상세요강</h2>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   {detailUrls.map((u, i) => (
-                    <img key={i} src={u} alt={`상세 이미지 ${i + 1}`} style={{ display: "block", width: "100%", height: "auto", imageOrientation: "none" }} />
+                    <img key={i} src={u} alt={`상세 이미지 ${i + 1}`} style={{ display: "block", width: "100%", height: "auto" }} />
                   ))}
                 </div>
                 {job.description?.trim() && (
