@@ -200,7 +200,9 @@ export default function AdminOutreachPage() {
 
   // 일괄: 업체 1개씩 동시성 풀(병렬)로 처리 → 빠르고, 완료마다 카운터가 1씩 올라 개별 단위로 보인다.
   //   (서버가 배치를 순차 처리하던 기존 50개 청크 방식은 느리고 진행률이 50·100 단위로만 튀었음)
-  const BULK_CONCURRENCY = 6;
+  // 동시성 = "사이트 1곳당 순간 동시 요청 수". 이게 차단 위험을 좌우한다(총 소켓 C×6이 아니라 C가 기준).
+  //   기존 순차=1(가장 안전·느림). 4는 순차 대비 ~4배 빠르면서 사이트당 4건이라 부담이 낮은 보수적 값.
+  const BULK_CONCURRENCY = 4;
   const bulkCheck = async (ids: string[]) => {
     if (!ids.length) return;
     const total = ids.length;
