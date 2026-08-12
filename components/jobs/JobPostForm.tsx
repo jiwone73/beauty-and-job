@@ -25,6 +25,51 @@ const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", 
 // 모집부문 표용 간결 옵션(여백 확보, 직접입력 없음)
 const POS_CAREER = ["신입", "경력", "무관", "1년~", "3년~", "5년~", "10년~", "실장"];
 const POS_EDU = ["무관", "고졸", "초대졸", "대졸", "석사"];
+// 기본 배너 배경 프리셋(뷰티 필). bg=그라데이션 2색, text=제목색, wm=배경 'RECRUIT' 워터마크색
+const BANNER_PRESETS: { key: string; label: string; bg: [string, string]; text: string; wm: string }[] = [
+  { key: "navy", label: "네이비", bg: ["#1e2c58", "#141f45"], text: "#ffffff", wm: "rgba(255,255,255,0.06)" },
+  { key: "purple", label: "뷰티 퍼플", bg: ["#5f0080", "#a13fb6"], text: "#ffffff", wm: "rgba(255,255,255,0.09)" },
+  { key: "rose", label: "로즈베이지", bg: ["#f3e2de", "#e6c9c3"], text: "#6a2f3f", wm: "rgba(120,60,80,0.07)" },
+  { key: "mint", label: "포레스트", bg: ["#12574f", "#0b3b37"], text: "#ffffff", wm: "rgba(255,255,255,0.07)" },
+  { key: "mono", label: "차콜", bg: ["#2b2b30", "#161619"], text: "#ffffff", wm: "rgba(255,255,255,0.06)" },
+];
+// 캔버스에 기본 배너 그림(1200x400): 그라데이션 + 'RECRUIT' 워터마크 + 가운데 제목(자동 줄바꿈)
+function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRESETS)[number], title: string) {
+  const W = 1200, H = 400;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, preset.bg[0]); g.addColorStop(1, preset.bg[1]);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // 배경 'RECRUIT' 워터마크(흩뿌림)
+  ctx.fillStyle = preset.wm;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.font = "700 96px 'Pretendard','Apple SD Gothic Neo',sans-serif";
+  const letters = "RECRUIT".split("");
+  const pos: [number, number][] = [[150, 70], [340, 150], [520, 55], [770, 60], [1010, 95], [230, 320], [560, 345], [880, 300], [1080, 250]];
+  letters.forEach((ch, i) => ctx.fillText(ch, pos[i % pos.length][0], pos[i % pos.length][1]));
+  // 가운데 제목(줄바꿈: 명시적 개행 + 폭 초과 시 자동 래핑)
+  ctx.fillStyle = preset.text;
+  ctx.font = "700 52px 'Pretendard','Apple SD Gothic Neo',sans-serif";
+  const maxW = W * 0.82;
+  const wrap = (line: string): string[] => {
+    if (ctx.measureText(line).width <= maxW) return [line];
+    const words = line.split(" ");
+    const out: string[] = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width <= maxW || !cur) cur = test;
+      else { out.push(cur); cur = w; }
+    }
+    if (cur) out.push(cur);
+    return out;
+  };
+  const lines = title.split("\n").flatMap((l) => wrap(l.trim())).filter(Boolean).slice(0, 3);
+  const lh = 66;
+  const startY = H / 2 - ((lines.length - 1) * lh) / 2;
+  lines.forEach((ln, i) => ctx.fillText(ln, W / 2, startY + i * lh));
+}
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트", "협의"];
 // 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)
 // 불러오기 시 반드시 문제없이 들어와야 하는 핵심 항목만 이슈 대상으로.
@@ -174,6 +219,11 @@ export default function JobPostForm({
   const [nmPhone, setNmPhone] = useState("");
   const [bannerImages, setBannerImages] = useState<{ url: string; name: string }[]>([]); // 상단 배너(여러 장, 3장씩 회전)
   const [nmCoverUploading, setNmCoverUploading] = useState(false);
+  // 기본 배너(가운데 제목만, 뷰티 배경) 생성 UI
+  const [bannerGenOpen, setBannerGenOpen] = useState(false);
+  const [bannerGenTitle, setBannerGenTitle] = useState("");
+  const [bannerGenPreset, setBannerGenPreset] = useState(0);
+  const [bannerGenBusy, setBannerGenBusy] = useState(false);
   const [nmManagerName, setNmManagerName] = useState("");
   const [nmManagerPhone, setNmManagerPhone] = useState("");
   const [contactMethods, setContactMethods] = useState<string[]>([]); // 지원방법: 문자·이메일·전화·온라인 지원(복수)
@@ -768,6 +818,26 @@ export default function JobPostForm({
         else alert(r.error || "이미지 업로드에 실패했습니다.");
       }
     } finally { setNmCoverUploading(false); }
+  };
+
+  // 기본 배너 생성 → PNG 업로드 → 배너에 추가
+  const addDefaultBanner = async () => {
+    const title = bannerGenTitle.trim();
+    if (!title) { alert("배너에 넣을 제목을 입력하세요."); return; }
+    if (bannerImages.length >= 10) { alert("배너는 최대 10장까지예요."); return; }
+    setBannerGenBusy(true);
+    try {
+      const canvas = document.createElement("canvas");
+      drawDefaultBanner(canvas, BANNER_PRESETS[bannerGenPreset] || BANNER_PRESETS[0], title);
+      const blob: Blob | null = await new Promise((res) => canvas.toBlob((b) => res(b), "image/png", 0.92));
+      if (!blob) { alert("배너 생성에 실패했어요."); return; }
+      const file = new File([blob], `banner-${Date.now()}.png`, { type: "image/png" });
+      const r = await uploadImage(file);
+      if (r.success && r.url) {
+        setBannerImages((prev) => [...prev, { url: r.url!, name: "기본 배너" }]);
+        setBannerGenOpen(false); setBannerGenTitle("");
+      } else alert(r.error || "배너 업로드에 실패했어요.");
+    } finally { setBannerGenBusy(false); }
   };
 
   const handleDownloadPdf = async () => {
@@ -1750,8 +1820,41 @@ export default function JobPostForm({
                     <span style={{ fontSize: 10, marginTop: 2 }}>배너 추가</span>
                     <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={nmCoverUploading || bannerImages.length >= 10} onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
                   </label>
-                  {bannerImages.length === 0 && <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>상세 이미지를 여기로 <b>드래그</b>하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어도 배너가 돼요. 여러 장 넣으면 3장씩 화살표로 넘겨봅니다.</span>}
+                  {/* 기본 배너(가운데 제목만, 뷰티 배경) */}
+                  <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="이미지 없이 제목만으로 기본 배너를 만들어요"
+                    style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, width: 120, height: 76, flexShrink: 0, borderRadius: 8, border: "1.5px dashed #c4b5d4", background: bannerGenOpen ? "#f7f1fd" : "#fff", color: "#5f0080", cursor: "pointer" }}>
+                    <span style={{ fontSize: 18, lineHeight: 1 }}>✎</span>
+                    <span style={{ fontSize: 10 }}>기본 배너</span>
+                  </button>
+                  {bannerImages.length === 0 && !bannerGenOpen && <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>이미지가 없으면 <b>기본 배너</b>로 제목만 넣어 만들 수 있어요. 또는 이미지를 <b>드래그</b>·<b>Ctrl+V</b> 하세요.</span>}
                 </div>
+                {/* 기본 배너 생성 패널 */}
+                {bannerGenOpen && (
+                  <div style={{ marginTop: 10, padding: 12, border: "1px solid #e5e2ea", borderRadius: 10, background: "#faf9fc" }}>
+                    <div style={{ fontSize: 13, color: "#5f0080", fontWeight: 600, marginBottom: 8 }}>기본 배너 만들기 <span style={{ fontWeight: 400, color: "#999" }}>· 가운데 제목만 넣어요(줄바꿈 가능)</span></div>
+                    <textarea value={bannerGenTitle} onChange={(e) => setBannerGenTitle(e.target.value)} rows={2}
+                      placeholder={"예: 부 원장 급 여자 선생님\n(중국어 가능자 우대)"}
+                      style={{ width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, padding: "8px 10px", fontSize: 14, resize: "vertical", outline: "none" }} />
+                    {/* 배경 프리셋 미리보기 */}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "10px 0" }}>
+                      {BANNER_PRESETS.map((p, i) => (
+                        <button key={p.key} type="button" onClick={() => setBannerGenPreset(i)}
+                          style={{ width: 108, height: 40, borderRadius: 8, cursor: "pointer", position: "relative", overflow: "hidden",
+                            border: bannerGenPreset === i ? "2px solid #5f0080" : "1.5px solid #e0d8ec",
+                            background: `linear-gradient(135deg, ${p.bg[0]}, ${p.bg[1]})`, color: p.text, fontSize: 11, fontWeight: 700 }}>
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button type="button" onClick={addDefaultBanner} disabled={bannerGenBusy || !bannerGenTitle.trim()}
+                        className="company-primary-btn" style={{ padding: "8px 16px", fontSize: 13, opacity: (bannerGenBusy || !bannerGenTitle.trim()) ? 0.6 : 1 }}>
+                        {bannerGenBusy ? "만드는 중…" : "배너로 추가"}
+                      </button>
+                      <button type="button" onClick={() => setBannerGenOpen(false)} style={{ border: "1px solid #e0d8ec", background: "#fff", borderRadius: 8, padding: "8px 14px", fontSize: 13, cursor: "pointer", color: "#666" }}>취소</button>
+                    </div>
+                  </div>
+                )}
               </div>
 
             </div>
