@@ -374,6 +374,7 @@ export default function JobPostForm({
   const [workDaysOpen, setWorkDaysOpen] = useState(false);
   const workDaysRef = useRef<HTMLDivElement>(null);
   const [workPeriod, setWorkPeriod] = useState(""); // 근무기간
+  const [genderPref, setGenderPref] = useState(""); // 성별우대(매장 전용): 남성/여성/무관
   const [workPeriodOpen, setWorkPeriodOpen] = useState(false);
   const workPeriodRef = useRef<HTMLDivElement>(null);
   const [employOpen, setEmployOpen] = useState(false);
@@ -516,6 +517,7 @@ export default function JobPostForm({
       setBenefitTags(j.benefit_tags || []);
       // 근무 조건 복원
       setWorkPeriod(j.work_period || "");
+      setGenderPref(j.gender_preference || "");
       if (j.work_days === "협의") { setWorkDaysNego(true); setWorkDays([]); }
       else { setWorkDaysNego(false); setWorkDays(j.work_days ? String(j.work_days).split(",").filter(Boolean) : []); }
       if (j.work_time === "협의") { setWorkTimeNego(true); setWorkTimeStart(""); setWorkTimeEnd(""); }
@@ -1146,6 +1148,7 @@ export default function JobPostForm({
       deadline: form.deadline || null,
       headcount: form.headcount ? parseInt(form.headcount, 10) : null,
       headcount_text: fiHeadcount.trim() || null, // 비회원 자유입력(예: "인원미정") — 있으면 표시 우선
+      gender_preference: jobGroupType === "매장" ? (genderPref || null) : null, // 성별우대(매장 전용)
       categories,
       detail_images: detailImages,
       hiring_process: hiringProcess.filter((s) => s.trim()),
@@ -1292,6 +1295,7 @@ export default function JobPostForm({
     region: regionList.join(", "),
     employType: fiEmployment.trim() || (form.type ? form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : "") : "협의"),
     headcount: fiHeadcount.trim() || (form.headcount ? `${form.headcount}명` : "00명"), // 자유입력 우선, 미언급 시 '00명'
+    genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fiSalary.trim() || fmtSalary() || "면접 후 협의",
     color: "#e8f0fe",
@@ -1706,6 +1710,18 @@ export default function JobPostForm({
                   </span>
                   {freeField("headcount", fiHeadcount, setFiHeadcount, "예: 인원미정(협의)", false, () => setForm((f) => ({ ...f, headcount: "" })))}
                 </div>
+                {/* 성별우대 — 매장 전용 */}
+                {jobGroupType === "매장" && (
+                  <div className="job-detail-meta-item">
+                    <Users size={16} className="job-detail-meta-icon" />
+                    <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>성별우대</span>
+                    <select value={genderPref} onChange={(e) => setGenderPref(e.target.value)}
+                      style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!genderPref) }}>
+                      <option value=""></option>
+                      {["무관", "여성", "남성"].map((o) => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                  </div>
+                )}
                 {/* 마감 */}
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <Clock size={16} className="job-detail-meta-icon" />

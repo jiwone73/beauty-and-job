@@ -197,6 +197,7 @@ export default function JobDetailPage() {
             // 고용형태: 저장된 employment_type(비회원 자유입력 포함) 우선, 없으면 work_type 매핑
             employType: j.employment_type || (j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직'),
             headcount: j.headcount_text || (j.headcount ? `${j.headcount}명` : '00명'), // 자유입력 우선, 미언급 시 '00명'
+            genderPref: j.gender_preference || '',
             deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, '.') : '상시채용',
             salary: j.salary_text || (((j.salary_max && j.salary_max > j.salary_min)
               ? `${formatSalaryWon(j.salary_min, j.salary_type)} ~ ${formatSalaryWon(j.salary_max, j.salary_type).replace(/^[^0-9]*/, '')}`

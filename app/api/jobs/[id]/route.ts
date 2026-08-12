@@ -91,6 +91,7 @@ export async function GET(
     deadline: job.deadline,
     headcount: job.headcount,
     headcount_text: job.headcount_text || null, // 비회원 자유입력 모집인원 — 있으면 표시 우선
+    gender_preference: job.gender_preference || '', // 성별우대(매장)
     categories: job.categories || [],
     detail_images: job.detail_images || [],
     hiring_process: job.hiring_process || [],

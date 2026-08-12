@@ -286,6 +286,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 <span className="job-detail-meta-value">{job.headcount}</span>
               </div>
             )}
+            {job.genderPref && (
+              <div className="job-detail-meta-item">
+                <Users size={16} className="job-detail-meta-icon" />
+                <span className="job-detail-meta-label">성별우대</span>
+                <span className="job-detail-meta-value">{job.genderPref}</span>
+              </div>
+            )}
             {job.deadline && (
               <div className="job-detail-meta-item">
                 <Clock size={16} className="job-detail-meta-icon" />
