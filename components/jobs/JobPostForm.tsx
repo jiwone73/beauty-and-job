@@ -46,9 +46,9 @@ function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRE
   ctx.fillStyle = preset.wm;
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.font = "700 96px 'Pretendard','Apple SD Gothic Neo',sans-serif";
-  const letters = "RECRUIT".split("");
+  const letters = "BEAUTY".split("");
   const pos: [number, number][] = [[150, 70], [340, 150], [520, 55], [770, 60], [1010, 95], [230, 320], [560, 345], [880, 300], [1080, 250]];
-  letters.forEach((ch, i) => ctx.fillText(ch, pos[i % pos.length][0], pos[i % pos.length][1]));
+  pos.forEach((p, i) => ctx.fillText(letters[i % letters.length], p[0], p[1]));
   // 가운데 제목(줄바꿈: 명시적 개행 + 폭 초과 시 자동 래핑)
   ctx.fillStyle = preset.text;
   ctx.font = "700 52px 'Pretendard','Apple SD Gothic Neo',sans-serif";
