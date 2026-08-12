@@ -4,6 +4,7 @@ import Link from "next/link";
 import { shortRegion } from "@/lib/regionShort";
 import { BannerImg } from "@/components/BannerImg";
 import KakaoMap from "@/components/KakaoMap";
+import AddressMap from "@/components/AddressMap";
 import { Clock, Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, Tag, GraduationCap } from "lucide-react";
 
 // 공고 상단 이미지 갤러리(원티드 스타일). 한 번에 3장 노출, 좌우 화살표로 순환.
@@ -157,15 +158,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       {ci.latitude && ci.longitude ? (
         <KakaoMap latitude={Number(ci.latitude)} longitude={Number(ci.longitude)} name={ci.name} />
       ) : (
-        <iframe
-          title="회사 위치"
-          width="100%"
-          height="280"
-          style={{ border: 0, borderRadius: "12px" }}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          src={`https://maps.google.com/maps?q=${encodeURIComponent(job.companyAddress)}&output=embed&hl=ko`}
-        />
+        <AddressMap address={job.companyAddress} name={ci.name} height={280} />
       )}
     </div>
   ) : null;

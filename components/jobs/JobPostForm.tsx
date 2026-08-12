@@ -9,6 +9,7 @@ import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
 import JobGroupField from "@/components/JobGroupField";
 import RegionSelectModal from "@/components/RegionSelectModal";
+import AddressMap from "@/components/AddressMap";
 import { REGIONS } from "@/lib/data/regions";
 
 // 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
@@ -1809,13 +1810,18 @@ export default function JobPostForm({
                             <tr key={cat}>
                               <td style={{ ...tdc, fontSize: 13, color: "#333" }}>{cat}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "예: 정규직")}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "예: 무관")}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "예: 무관", false)}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
                                 <button type="button" onClick={() => setPosShiftOpen(posShiftOpen === cat ? null : cat)}
-                                  style={{ width: "100%", textAlign: "left", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 12.5, background: "#fff", cursor: "pointer", color: (row.workDays || row.workTime) ? "#333" : "#bbb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                  {(row.workDays || row.workTime) ? `${row.workDays || "-"} · ${row.workTime || "-"}` : "요일·시간 선택"}
+                                  style={{ width: "100%", textAlign: "left", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 12.5, lineHeight: 1.35, background: "#fff", cursor: "pointer", color: (row.workDays || row.workTime) ? "#333" : "#bbb" }}>
+                                  {(row.workDays || row.workTime) ? (
+                                    <>
+                                      <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workDays || "-"}</div>
+                                      <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workTime || "-"}</div>
+                                    </>
+                                  ) : "요일·시간 선택"}
                                 </button>
                                 {posShiftOpen === cat && (() => {
                                   const days = (row.workDays && row.workDays !== "협의") ? row.workDays.split(/[·,]/).map((s) => s.trim()).filter((d) => WORK_DAY_OPTIONS.includes(d)) : [];
@@ -1873,7 +1879,7 @@ export default function JobPostForm({
                   {/* 근무기간 — 매장 전용, 네이티브 풀다운 */}
                   {jobGroupType === "매장" && (
                     <div className="job-detail-company-row" style={{ position: "relative" }}>
-                      <span className="job-detail-company-label" style={{ fontSize: 14 }}>근무기간</span>
+                      <span className="job-detail-company-label" style={{ fontSize: 15 }}>근무기간</span>
                       {!fiWorkPeriod.trim() && (
                       <select value={workPeriod} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("period"); return; } setFiWorkPeriod(""); setWorkPeriod(e.target.value); }}
                         style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!workPeriod) }}>
@@ -1887,7 +1893,7 @@ export default function JobPostForm({
                   )}
                   {/* 복리후생 — 근무시간과 같은 행(반열). 팝오버 선택, 값은 콤마 텍스트로 줄바꿈 표시 */}
                   <div className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative" }}>
-                    <span className="job-detail-company-label" style={{ fontSize: 14 }}>복리후생<span style={{ color: "#e9a3a3" }}> *</span></span>
+                    <span className="job-detail-company-label" style={{ fontSize: 15 }}>복리후생<span style={{ color: "#e9a3a3" }}> *</span></span>
                     {!fiBenefits.trim() && (
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
@@ -1935,17 +1941,13 @@ export default function JobPostForm({
 
               {/* 근무지역: 전체 주소 입력 → 필터용 시·군·구 자동 추출 (지도는 아래). 모집부문 안에 이어짐(구분선 없음) */}
               <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "8px 0" }}>
-                <span className="job-detail-company-label" style={{ fontSize: 14, flexShrink: 0 }}>근무지역 <span style={{ color: "#e9a3a3" }}>*</span></span>
+                <span className="job-detail-company-label" style={{ fontSize: 15, flexShrink: 0 }}>근무지역 <span style={{ color: "#e9a3a3" }}>*</span></span>
                 <input value={nmAddress}
                   onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
                   style={{ flex: 1, border: "none", background: "transparent", fontSize: 15, outline: "none", padding: 0, textAlign: "left" }}
                   placeholder="전체 주소 입력 (예: 서울 구로구 구일로10길 27 …)" />
               </div>
-              {nmAddress.trim() && (
-                <iframe title="근무지역 지도" width="100%" height={220}
-                  style={{ border: 0, borderRadius: 12, marginTop: 4 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(nmAddress)}&output=embed&hl=ko`} />
-              )}
+              {nmAddress.trim() && <AddressMap address={nmAddress} height={220} />}
 
               {/* 지원 안내 (채용 담당자 · 접수방법 · 채용 절차) */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>

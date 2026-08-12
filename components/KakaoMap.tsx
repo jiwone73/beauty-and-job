@@ -38,6 +38,8 @@ export default function KakaoMap({
           });
           iw.open(map, marker);
         }
+        // 확대/축소해도 목적지(마커)가 항상 지도 중앙에 오도록 재정렬
+        window.kakao.maps.event.addListener(map, "zoom_changed", () => map.setCenter(center));
       });
     };
 
@@ -55,7 +57,7 @@ export default function KakaoMap({
     }
     const script = document.createElement("script");
     script.id = "kakao-map-sdk";
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KEY}&autoload=false`;
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KEY}&autoload=false&libraries=services`;
     script.async = true;
     script.addEventListener("load", render);
     document.head.appendChild(script);
