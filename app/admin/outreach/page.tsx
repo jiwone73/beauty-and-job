@@ -30,15 +30,15 @@ type Row = {
 type CountRow = { group_name: string; cnt: number; hiring_cnt: number; registered_cnt: number };
 
 const GROUPS = ["헤어샵", "메이크업", "네일&속눈썹", "스킨&바디케어", "두피&탈모", "리테일&커머스"];
-const HIRING = ["미확인", "채용중", "없음", "확인필요"];
-const REG = ["미등록", "등록완료", "보류"];
+const HIRING = ["채용중", "없음"];
+const REG = ["미등록", "등록완료"];
 
 const PURPLE = "#5f0080";
 const hiringColor: Record<string, string> = {
-  채용중: "#0a7d34", 없음: "#9a92a6", 확인필요: "#c2410c", 미확인: "#9a92a6",
+  채용중: "#0a7d34", 없음: "#9a92a6",
 };
 const regColor: Record<string, string> = {
-  등록완료: "#0a7d34", 보류: "#c2410c", 미등록: "#9a92a6",
+  등록완료: "#0a7d34", 미등록: "#9a92a6",
 };
 
 function normUrl(u: string) {
@@ -96,6 +96,15 @@ export default function AdminOutreachPage() {
 
   const totalCount = useMemo(() => counts.reduce((a, c) => a + c.cnt, 0), [counts]);
   const countOf = (g: string) => counts.find((c) => c.group_name === g)?.cnt ?? 0;
+  // 현재 탭의 총 활성공고 건수 + 중복(같은 공고 URL이 여러 업체에 잡힌 수)
+  const tabStats = useMemo(() => {
+    let total = 0; const urls: string[] = [];
+    for (const r of items) {
+      total += r.found_count || 0;
+      if (Array.isArray(r.found_jobs)) for (const j of r.found_jobs) if (j?.url) urls.push(j.url);
+    }
+    return { total, dup: urls.length - new Set(urls).size };
+  }, [items]);
 
   const setDraft = (id: string, patch: Partial<Row>) =>
     setDrafts((d) => ({ ...d, [id]: { ...d[id], ...patch } }));
@@ -335,6 +344,14 @@ export default function AdminOutreachPage() {
         </div>
         {bulkMsg && <div style={{ fontSize: 13.5, color: PURPLE, marginBottom: 8 }}>{bulkMsg}</div>}
 
+        {/* 탭별 총 활성공고 건수(+중복) — 테이블 위 왼쪽 */}
+        <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 2px 8px" }}>
+          <span style={{ fontSize: 14, color: "#2b2533", fontWeight: 600 }}>
+            {group} · 활성공고 <span style={{ color: PURPLE }}>{tabStats.total.toLocaleString()}</span>건
+          </span>
+          {tabStats.dup > 0 && <span style={{ fontSize: 12.5, color: "#c2410c" }}>· 중복 {tabStats.dup.toLocaleString()}건</span>}
+        </div>
+
         {/* 테이블 */}
         <div style={{ overflow: "auto", maxHeight: "calc(100vh - 250px)", border: "1px solid #eee", borderRadius: 10, background: "#fff" }}>
           <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0, minWidth: 1220 }}>
@@ -395,8 +412,8 @@ export default function AdminOutreachPage() {
                       {/* 채용유무 */}
                       <td style={td}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <select value={hv} onChange={(e) => quickPatch(row, { is_hiring: e.target.value })}
-                            style={{ ...inp, width: 90, color: hiringColor[hv], fontWeight: 400 }}>
+                          <select value={HIRING.includes(hv) ? hv : "없음"} onChange={(e) => quickPatch(row, { is_hiring: e.target.value })}
+                            style={{ ...inp, width: 90, color: hiringColor[HIRING.includes(hv) ? hv : "없음"], fontWeight: 400 }}>
                             {HIRING.map((h) => <option key={h} value={h}>{h}</option>)}
                           </select>
                           {isChecking && <span style={{ fontSize: 12, color: PURPLE }}>조회중…</span>}
@@ -410,8 +427,8 @@ export default function AdminOutreachPage() {
                       </td>
                       {/* 등록유무 */}
                       <td style={td}>
-                        <select value={rv} onChange={(e) => quickPatch(row, { is_registered: e.target.value })}
-                          style={{ ...inp, width: 90, color: regColor[rv], fontWeight: 400 }}>
+                        <select value={REG.includes(rv) ? rv : "미등록"} onChange={(e) => quickPatch(row, { is_registered: e.target.value })}
+                          style={{ ...inp, width: 90, color: regColor[REG.includes(rv) ? rv : "미등록"], fontWeight: 400 }}>
                           {REG.map((r) => <option key={r} value={r}>{r}</option>)}
                         </select>
                       </td>
