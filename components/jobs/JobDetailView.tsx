@@ -92,7 +92,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         <table style={{ minWidth: 640, borderCollapse: "collapse", fontSize: 13.5 }}>
           <thead>
             <tr style={{ background: "#faf7fd" }}>
-              {["모집분야", "경력", "고용형태", "급여", "근무요일/시간", "모집인원", "성별우대"].map((h) => (
+              {["모집분야", "경력", "고용형태", "급여", "근무요일/시간", "성별우대"].map((h) => (
                 <th key={h} style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" }}>{h}</th>
               ))}
             </tr>
@@ -100,7 +100,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <tbody>
             {positions.map((p: any, i: number) => (
               <tr key={i}>
-                {[p.category, p.career, p.employment, p.salary, [p.workDays, p.workTime].filter(Boolean).join(" · "), p.headcount, p.gender].map((v: string, j: number) => (
+                {[p.category, p.career, p.employment, p.salary, [p.workDays, p.workTime].filter(Boolean).join(" · "), p.gender].map((v: string, j: number) => (
                   <td key={j} style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: j === 0 ? "#333" : "#555", whiteSpace: "nowrap" }}>{v || "-"}</td>
                 ))}
               </tr>
