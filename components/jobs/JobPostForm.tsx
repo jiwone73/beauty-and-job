@@ -1801,6 +1801,8 @@ export default function JobPostForm({
                   onDrop={(e) => { e.preventDefault(); setDragOver(false); if (imgDragRef.current) { dropToBanner(null); return; } const f = e.dataTransfer.files; if (f && f.length && !nmCoverUploading) addBannerFiles(f); }}
                   onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!nmCoverUploading) addBannerFiles(fs); } }}
                   style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${dragOver || pasteZone === "banner" ? "#5f0080" : "#e0d5ee"}`, background: dragOver || pasteZone === "banner" ? "#f7f1fd" : "#fbf9ff", outline: "none" }}>
+                  {/* 배너 이미지 썸네일: 서로 붙여서(gap 0) — 미리보기 배너와 동일 */}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 0, borderRadius: 8, overflow: "hidden" }}>
                   {bannerImages.map((b, idx) => (
                     <div key={b.url + idx} draggable
                       onDragStart={() => { imgDragRef.current = { zone: "banner", idx }; }}
@@ -1813,6 +1815,7 @@ export default function JobPostForm({
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
                     </div>
                   ))}
+                  </div>
                   <label title="배너 추가"
                     style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 120, height: 76, flexShrink: 0, borderRadius: 8, border: "1.5px dashed #c4b5d4", background: "#fff", color: "#5f0080", cursor: nmCoverUploading ? "wait" : "pointer" }}>
                     <span style={{ fontSize: 20, lineHeight: 1 }}>{nmCoverUploading ? "…" : "+"}</span>
