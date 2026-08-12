@@ -41,11 +41,6 @@ const regColor: Record<string, string> = {
   등록완료: "#0a7d34", 보류: "#c2410c", 미등록: "#9a92a6",
 };
 
-function fmtDate(d: string | null) {
-  if (!d) return "-";
-  const dt = new Date(d);
-  return `${dt.getMonth() + 1}/${dt.getDate()} ${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`;
-}
 function normUrl(u: string) {
   return u.startsWith("http") ? u : `https://${u}`;
 }
@@ -411,9 +406,6 @@ export default function AdminOutreachPage() {
                             style={{ marginTop: 4, background: "none", border: "none", padding: 0, cursor: "pointer", ...badge("#0a7d34") }}>
                             공고 {row.found_count}건 {expanded === row.id ? "▲" : "▼"}
                           </button>
-                        )}
-                        {row.last_checked_at && (
-                          <div style={{ fontSize: 11.5, color: "#b7b0c0", marginTop: 2 }}>확인 {fmtDate(row.last_checked_at)}</div>
                         )}
                       </td>
                       {/* 등록유무 */}
