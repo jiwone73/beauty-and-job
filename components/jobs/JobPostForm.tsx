@@ -1882,7 +1882,7 @@ export default function JobPostForm({
                   />
                 </div>
                 <textarea
-                  placeholder="공고 제목을 입력하세요 *"
+                  placeholder="공고 제목을 입력하세요 * (예: 리안헤어 광명점 헤어디자이너·인턴 모집)"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
