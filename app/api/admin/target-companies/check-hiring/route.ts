@@ -6,7 +6,7 @@ import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { findJobsForCompany } from "@/lib/external/findByCompany";
 
-// 채용유무 자동확인: 브랜드명으로 9개 채용사이트를 조회(무료)해서
+// 채용유무 자동확인: 브랜드명으로 7개 채용사이트를 조회(무료)해서
 // is_hiring / found_jobs / found_count / last_checked_at 를 갱신한다.
 // body: { id: "..." }  또는  { ids: ["...", ...] }  (일괄, 최대 50건/요청)
 
@@ -43,8 +43,9 @@ export async function POST(req: NextRequest) {
       let jobs: { idx: number; title: string; url: string; source: string }[] = [];
       try {
         // verifyOpen: 마감 공고 제외(제목 완료표시 기준). 대상 소수라 부하 미미.
+        // 개수 제한 없음: 예전 30개 cap 때문에 병합 순서상 뒤쪽 소스(셀렉미 등)가 잘려 배지에 안 보였음.
         const r = await findJobsForCompany(company, { maxPages: 3, strict: true, verifyOpen: true });
-        jobs = r.jobs.slice(0, 30);
+        jobs = r.jobs;
       } catch {
         jobs = [];
       }
