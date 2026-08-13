@@ -1560,7 +1560,9 @@ export default function JobPostForm({
     const st = f(a), en = f(b);
     return st || en ? `${st}~${en}` : "";
   };
-  const cellSelect: React.CSSProperties = { width: "100%", minHeight: 28, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "4px 7px", fontSize: 12.5, background: "#fff", WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
+  const cellSelect: React.CSSProperties = { width: "100%", minHeight: 24, boxSizing: "border-box", border: "none", borderRadius: 5, padding: "3px 6px", fontSize: 12.5, WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
+  // 값이 없으면 연보라 자리표시, 채우면 배경 없이 글자만(테두리는 쓰지 않음)
+  const cellFill = (filled: boolean): React.CSSProperties => ({ background: filled ? "transparent" : PH_BG });
   // 클릭-선택 셀: 옵션 있으면 드롭다운(+비회원 '직접입력…'). 값이 목록에 없으면 클릭 텍스트→팝오버. 급여처럼 옵션 없으면 항상 팝오버.
   // 급여 앞머리 교체: "월 300" 에서 주기만 바꿔도 금액은 남는다. 협의였으면 금액 없이 시작.
   const withSalaryUnit = (cur: string, prefix: string) => {
@@ -1580,7 +1582,7 @@ export default function JobPostForm({
       <span className="poscell-pop" style={{ position: "relative", display: "block" }}>
         <button type="button"
           onClick={(e) => { if (open) { setCellOpen(null); return; } setCellFree(false); openPopAt(e.currentTarget, width, height); setCellOpen(key); }}
-          style={{ ...cellSelect, textAlign: "left", color: v ? "#333" : "#bbb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || ""}</button>
+          style={{ ...cellSelect, ...cellFill(!!v), textAlign: "left", color: "#333", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || ""}</button>
         {open && popAt && (
           <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, boxSizing: "border-box",
             // 목록은 항목 길이에 맞춰 좁게(오른쪽 빈 공간 제거), 자유입력·급여는 입력칸이 있어 고정 폭
@@ -2226,7 +2228,7 @@ export default function JobPostForm({
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
                                 <button type="button" onClick={(e) => { if (posShiftOpen === cat) { setPosShiftOpen(null); return; } openPopAt(e.currentTarget, 244, 250); setPosShiftOpen(cat); }}
-                                  style={{ width: "100%", textAlign: "left", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 12.5, lineHeight: 1.35, background: "#fff", cursor: "pointer", color: (row.workDays || row.workTime) ? "#333" : "#bbb" }}>
+                                  style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "left", border: "none", borderRadius: 5, padding: "3px 6px", fontSize: 12.5, lineHeight: 1.35, cursor: "pointer", color: "#333", ...cellFill(!!(row.workDays || row.workTime)) }}>
                                   {(row.workDays || row.workTime) ? (
                                     (row.workDays === "협의" && row.workTime === "협의") ? (
                                       <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>협의</div>
@@ -2236,7 +2238,7 @@ export default function JobPostForm({
                                       {row.workTime && <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workTime}</div>}
                                     </>
                                     )
-                                  ) : "요일·시간 선택"}
+                                  ) : ""}
                                 </button>
                                 {posShiftOpen === cat && (() => {
                                   const days = (row.workDays && row.workDays !== "협의") ? row.workDays.split(/[·,]/).map((s) => s.trim()).filter((d) => WORK_DAY_OPTIONS.includes(d)) : [];
