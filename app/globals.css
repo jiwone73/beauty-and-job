@@ -2270,6 +2270,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   .job-detail-layout { grid-template-columns: 1fr; padding-bottom: 100px; }
   .job-detail-aside { display: none; }
   .job-detail-mobile-cta { display: flex; }
+  /* 미리보기 모달도 같이 1열로. (.jobpost-preview-scope .job-detail-layout 이 2클래스라
+     위 1클래스 규칙을 이겨서, 좁은 화면에서도 1fr 300px가 남아 본문이 한 글자 폭으로 찌그러졌다) */
+  .jobpost-preview-scope .job-detail-layout { grid-template-columns: minmax(0, 1fr); padding: 16px 14px 80px; gap: 16px; }
+  .jobpost-preview-scope .job-detail-aside { display: none; }
 }
 @media (max-width: 640px) {
   .job-detail-layout { padding: 16px 0 100px; }
