@@ -7,7 +7,6 @@ import { ChevronLeft, ChevronRight, ChevronDown, Trash2, Upload, Eye, Save, MapP
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
-import JobGroupField from "@/components/JobGroupField";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
@@ -304,14 +303,7 @@ export default function JobPostForm({
   const baseCat = (c: string) => c.replace(/#\d+$/, "");
   const nextDupKey = (base: string, list: string[]) => { let i = 2; while (list.includes(`${base}#${i}`)) i++; return `${base}#${i}`; };
   const MAX_POS_ROWS = 10;
-  // 모집분야 선택 모달은 '분야' 단위(중복 없음)로 다루고, 여기서 기존 중복 행을 보존하며 합친다.
-  const applyCatSelection = (nextBases: string[]) =>
-    setCategories((prev) => {
-      const kept = prev.filter((c) => nextBases.includes(baseCat(c)));
-      const has = new Set(kept.map(baseCat));
-      return [...kept, ...nextBases.filter((b) => !has.has(b))];
-    });
-  // 표 위 "행 추가"에서 고른 분야를 새 행으로 붙인다. 이미 있는 분야면 중복 행이 된다(신입/경력 분리 모집).
+  // "추가 ＋"에서 고른 분야를 새 행으로 붙인다. 이미 있는 분야면 중복 행이 된다(신입/경력 분리 모집).
   const addCatRow = (base: string) => {
     if (categories.length >= MAX_POS_ROWS) { alert(`모집부문은 최대 ${MAX_POS_ROWS}행까지예요.`); return; }
     const dup = categories.some((c) => baseCat(c) === base);
@@ -1952,15 +1944,11 @@ export default function JobPostForm({
               {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "0 0 12px", alignItems: "center" }}>
                 <div className="job-detail-meta-item">
-                  {/* 행 추가: 분야를 골라 모집부문 표에 행을 붙인다. 같은 분야를 또 골라 신입·경력을 나눠 모집할 수 있다. */}
-                  <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
-                    style={{ width: 22, height: 22, flexShrink: 0, marginRight: 6, borderRadius: 6, border: "1px solid #e0d8ec", background: "#fff", color: typeLocked ? "#ddd" : "#5f0080", fontSize: 13, lineHeight: 1, cursor: typeLocked ? "default" : "pointer" }}>＋</button>
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집분야<span style={{ color: "#e9a3a3" }}> *</span></span>
-                  {typeLocked ? (
-                    <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
-                  ) : (
-                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={[...new Set(categories.map(baseCat))]} onChange={applyCatSelection} maxSelect={5} placeholder="선택" title="모집분야 선택" />
-                  )}
+                  {/* 행 추가: 분야를 골라 모집부문 표에 행을 붙인다. 같은 분야를 또 골라 신입·경력을 나눠 모집할 수 있다. */}
+                  {/* 고른 분야는 아래 모집부문 표에만 행으로 보인다(여기엔 값 표시 안 함). */}
+                  <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0, borderRadius: 7, border: "1px solid #e0d8ec", background: "#fff", color: typeLocked ? "#ddd" : "#5f0080", fontSize: 12.5, lineHeight: 1, padding: "4px 8px", cursor: typeLocked ? "default" : "pointer" }}>추가 ＋</button>
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
