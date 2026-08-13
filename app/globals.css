@@ -5538,7 +5538,11 @@ div:has(> table.admin-table),
 
 /* 기업정보 컴팩트 폼: 개인 프로필처럼 라벨 좌·값 우 1행 */
 .admin-form-body.settings-compact { gap: 0; }
-.settings-compact .admin-form-row-2col { grid-template-columns: 1fr; gap: 0; }
+/* 기업정보는 공고등록의 '기업정보' 블록과 동일하게 2열로. 좁은 화면에선 1열로 쌓는다. */
+.settings-compact .admin-form-row-2col { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 28px; row-gap: 0; }
+@media (max-width: 767px) {
+  .settings-compact .admin-form-row-2col { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
+}
 .settings-compact .admin-form-row {
   padding: 13px 0;
   border-bottom: 1px solid #f2f2f2;
