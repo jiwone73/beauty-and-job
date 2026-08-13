@@ -355,6 +355,7 @@ export default function JobPostForm({
   const [cellOpen, setCellOpen] = useState<string | null>(null); // 표 셀 직접입력 팝오버 `${cat}|${field}`
   const cellInputRef = useRef<HTMLInputElement>(null); // 표 셀 직접입력 팝오버의 입력칸(주기 클릭 후 바로 타이핑되게)
   const [addRowOpen, setAddRowOpen] = useState(false); // 모집부문 '행 추가' — 분야를 골라 행을 붙임(같은 분야 중복 가능)
+  const [coverStart, setCoverStart] = useState(0); // 공고 상단 이미지 썸네일: 3장 초과 시 화살표로 넘길 시작 위치
   const [mgrOpen, setMgrOpen] = useState(false); // 담당자 정보 팝오버
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
@@ -1881,18 +1882,39 @@ export default function JobPostForm({
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
             {/* 썸네일마다 ×로 이 공고에서만 제거. 드롭존 없이 '이미지 추가' 버튼만 둔다(공간 절약). */}
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
-              {/* 썸네일은 한 줄을 꽉 채우도록 늘어난다(고정폭이면 줄바꿈 뒤 빈칸이 남음) */}
-              {bannerImages.length > 0 && (
-                <div style={{ width: "100%", display: "flex", flexWrap: "wrap", gap: 0, borderRadius: 8, overflow: "hidden" }}>
-                  {bannerImages.map((b, idx) => (
-                    <div key={b.url + idx} style={{ position: "relative", flex: "1 1 90px", minWidth: 0, aspectRatio: "3 / 2" }}>
-                      <img src={b.url} alt={`상단 이미지 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
-                      <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="이 공고에서 빼기 (기업정보 이미지는 그대로예요)"
-                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+              {/* 한 줄에 3장 고정(줄바꿈 없음). 3장을 넘으면 좌우 화살표로 넘겨 본다. */}
+              {bannerImages.length > 0 && (() => {
+                const PER = 3;
+                const n = bannerImages.length;
+                const cols = Math.min(n, PER);
+                const s = ((coverStart % n) + n) % n;
+                const shown = Array.from({ length: cols }, (_, k) => ({ b: bannerImages[(s + k) % n], idx: (s + k) % n }));
+                const arrow: CSSProperties = {
+                  position: "absolute", top: "50%", transform: "translateY(-50%)", width: 28, height: 28,
+                  borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.95)", color: "#333",
+                  cursor: "pointer", zIndex: 2, boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
+                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, lineHeight: 1,
+                };
+                return (
+                  <div style={{ width: "100%", position: "relative" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap: 0, borderRadius: 8, overflow: "hidden" }}>
+                      {shown.map(({ b, idx }) => (
+                        <div key={b.url + idx} style={{ position: "relative", minWidth: 0, aspectRatio: "3 / 2" }}>
+                          <img src={b.url} alt={`상단 이미지 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
+                          <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="이 공고에서 빼기 (기업정보 이미지는 그대로예요)"
+                            style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
+                    {n > PER && (
+                      <>
+                        <button type="button" aria-label="이전 이미지" onClick={() => setCoverStart(s - 1)} style={{ ...arrow, left: 4 }}>‹</button>
+                        <button type="button" aria-label="다음 이미지" onClick={() => setCoverStart(s + 1)} style={{ ...arrow, right: 4 }}>›</button>
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
               <label title="이미지 추가"
                 style={{ display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: nmCoverUploading ? "#bbb" : "#5f0080", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: nmCoverUploading ? "wait" : "pointer" }}>
                 {nmCoverUploading ? "올리는 중…" : "＋ 이미지"}
