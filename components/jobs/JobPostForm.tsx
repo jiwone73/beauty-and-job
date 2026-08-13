@@ -1,6 +1,6 @@
 "use client";
 import { industryGroupsFor } from "@/lib/data/industries";
-import { useState, useEffect, useRef, useCallback, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
 import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send } from "lucide-react";
@@ -381,6 +381,17 @@ export default function JobPostForm({
     popTrigger.current = { el, width, height };
     placePop(el, width, height);
   };
+  // 팝오버가 그려진 뒤 실제 크기를 재서 위치를 다시 잡는다(내용에 맞춘 폭이라 추정치와 다를 수 있음)
+  const popRef = useRef<HTMLDivElement | null>(null);
+  useLayoutEffect(() => {
+    const t = popTrigger.current;
+    const el = popRef.current;
+    if (!popAt || !t || !el) return;
+    const { width, height } = el.getBoundingClientRect();
+    if (Math.abs(width - t.width) < 1 && Math.abs(height - t.height) < 1) return;
+    popTrigger.current = { ...t, width, height };
+    placePop(t.el, width, height);
+  }, [popAt]);
   // 스크롤·리사이즈에는 닫지 말고 위치만 다시 잡는다.
   //   (터치로 표를 스크롤하면 곧바로 scroll 이벤트가 떠서, 닫아버리면 팝오버가 안 열린 것처럼 보인다)
   useEffect(() => {
@@ -1560,7 +1571,9 @@ export default function JobPostForm({
           onClick={(e) => { if (open) { setCellOpen(null); return; } setCellFree(false); openPopAt(e.currentTarget, width, height); setCellOpen(key); }}
           style={{ ...cellSelect, textAlign: "left", color: v ? "#333" : "#bbb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || ""}</button>
         {open && popAt && (
-          <div style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, width, boxSizing: "border-box" }}>
+          <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, boxSizing: "border-box",
+            // 목록은 항목 길이에 맞춰 좁게(오른쪽 빈 공간 제거), 자유입력·급여는 입력칸이 있어 고정 폭
+            ...(freeInput ? { width } : { width: "max-content", minWidth: 84, maxWidth: 220 }) }}>
             {!freeInput ? (
               <div style={{ maxHeight: 216, overflowY: "auto" }}>
                 {options.map((o) => (
@@ -2228,7 +2241,7 @@ export default function JobPostForm({
                                   const allWeekend = WEEKEND_DAYS.every((d) => days.includes(d));
                                   const timeSel: React.CSSProperties = { flex: 1, minWidth: 0, height: 29, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 6px", fontSize: 12, background: timeNego ? "#f5f5f5" : "#fff", color: timeNego ? "#bbb" : "#333", cursor: timeNego ? "default" : "pointer" };
                                   return (
-                                    <div style={{ position: "fixed", left: popAt?.left ?? 8, top: popAt?.top ?? 8, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 244 }}>
+                                    <div ref={popRef} style={{ position: "fixed", left: popAt?.left ?? 8, top: popAt?.top ?? 8, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 244 }}>
                                       <div style={{ fontSize: 11.5, color: "#888", marginBottom: 5 }}>근무요일</div>
                                       <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                                         {WORK_DAY_OPTIONS.map((d) => { const on = days.includes(d); return (
