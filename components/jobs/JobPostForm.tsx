@@ -2406,11 +2406,20 @@ export default function JobPostForm({
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}><Send size={16} style={{ color: "#5f0080", flexShrink: 0 }} />지원 안내</div>
 
-              {/* 지원방법 · 담당자 — 기업회원 공고. 상세화면(지원 안내)에 그대로 노출된다. */}
+              {/* 지원방법 · 담당자 — 기업회원 공고. 고른 방법에 필요한 칸만 열린다(상세화면 지원 안내에 그대로 노출). */}
               {!(mode === "admin" && nonMember) && (() => {
+                const canPhone = contactMethods.includes("문자") || contactMethods.includes("전화");
+                const canEmail = contactMethods.includes("이메일");
+                const canName = canPhone || canEmail;          // 연락처를 받는 방법이면 담당자 이름도 받는다
+                const canUrl = contactMethods.includes("홈페이지 지원");
                 const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 6 };
-                const mgrFilled = !!(nmManagerName || nmManagerPhone || nmContactEmail);
-                const inpM: CSSProperties = { flex: 1, minWidth: 0, height: 34, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 14 };
+                const subLbl: CSSProperties = { width: 44, flexShrink: 0, color: "#999", fontSize: 14 };
+                // 값이 없으면 연보라 블록, 채우면 글자만 — 폼의 다른 칸과 같은 규칙
+                const inp2 = (filled: boolean): CSSProperties => ({
+                  flex: 1, minWidth: 0, border: "none", background: filled ? "transparent" : PH_BG, borderRadius: 5,
+                  fontSize: 15, color: "#333", outline: "none", padding: filled ? "3px 2px" : "3px 6px", minHeight: 24, boxSizing: "border-box",
+                });
+                const rowS: CSSProperties = { display: "flex", alignItems: "center", gap: 8, flex: "1 1 100%", padding: "3px 0" };
                 return (
                   <>
                     {/* 지원방법(복수 선택) */}
@@ -2427,35 +2436,38 @@ export default function JobPostForm({
                         })}
                       </div>
                     </div>
-                    {/* 담당자 — 구직자에게 보이는 연락처 */}
-                    <div className="mgr-pop" style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "7px 0", position: "relative" }}>
-                      <span style={lblS}>담당자</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <button type="button" onClick={(e) => { if (mgrOpen) { setMgrOpen(false); return; } openPopAt(e.currentTarget, 260, 190); setMgrOpen(true); }}
-                          style={{ width: "100%", textAlign: "left", minHeight: 24, border: "none", borderRadius: 5, background: mgrFilled ? "transparent" : PH_BG, fontSize: 15, cursor: "pointer", padding: "3px 6px", color: "#333", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {mgrFilled ? [nmManagerName, nmManagerPhone, nmContactEmail].filter(Boolean).join(" · ") : ""}
-                        </button>
-                        {mgrOpen && popAt && (
-                          <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 260, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                              <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>이름</span>
-                              <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="담당자 이름" style={inpM} />
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                              <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>전화</span>
-                              <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} placeholder="010-0000-0000" style={inpM} />
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                              <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>메일</span>
-                              <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="email@example.com" style={inpM} />
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
-                              <button type="button" onClick={() => setMgrOpen(false)} className="company-primary-btn" style={{ padding: "5px 14px", fontSize: 13 }}>확인</button>
-                            </div>
-                          </div>
-                        )}
+                    {/* 홈페이지 지원 → 지원 URL */}
+                    {canUrl && (
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "3px 0" }}>
+                        <span style={lblS}>지원 URL</span>
+                        <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
+                          placeholder="https://" inputMode="url" style={inp2(!!externalApplyUrl)} />
                       </div>
-                    </div>
+                    )}
+                    {/* 담당자 — 전화·메일을 받는 방법을 골랐을 때만. 온라인 지원만 고르면 아예 숨김 */}
+                    {canName && (
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "3px 0" }}>
+                        <span style={lblS}>담당자</span>
+                        <div style={{ display: "flex", flexWrap: "wrap", flex: 1, minWidth: 0 }}>
+                          <div style={rowS}>
+                            <span style={subLbl}>이름</span>
+                            <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={inp2(!!nmManagerName)} />
+                          </div>
+                          {canPhone && (
+                            <div style={rowS}>
+                              <span style={subLbl}>전화</span>
+                              <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} style={inp2(!!nmManagerPhone)} />
+                            </div>
+                          )}
+                          {canEmail && (
+                            <div style={rowS}>
+                              <span style={subLbl}>메일</span>
+                              <input value={nmContactEmail} inputMode="email" onChange={(e) => setNmContactEmail(e.target.value)} style={inp2(!!nmContactEmail)} />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </>
                 );
               })()}
