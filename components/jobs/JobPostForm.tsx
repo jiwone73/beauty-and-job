@@ -48,30 +48,35 @@ function wrapLines(ctx: CanvasRenderingContext2D, title: string, maxW: number, m
 }
 
 // 캔버스에 기본 배너 그림: 사진을 배경으로 깔고 그 위에 제목을 얹는다.
-//   미리보기 배너 칸 비율(120:76)에 맞춘 1200x760 → 미리보기에서 잘리지 않는다.
+//   배너 표시 비율(3:1 고정)과 같은 1200x400으로 만들어 미리보기에서 잘리지 않게 한다.
 async function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRESETS)[number], title: string) {
-  const W = 1200, H = 760;
+  const W = 1200, H = 400;
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   ctx.fillStyle = preset.bg; ctx.fillRect(0, 0, W, H);
-  // 배경 사진: cover(비율 유지, 넘치는 쪽만 잘라 가운데 정렬)
+  // 배경 사진: cover. 세로는 아래쪽에 치우치게 잘라(0.68) 아래에 놓인 제품 연출이 살아남게 한다.
+  //   제목 가독성을 위해 크게 흐리게 하고 흰 막을 덮는다(테두리 번짐 방지로 살짝 확대해 그림).
   const img = new Image();
   img.crossOrigin = "anonymous";
   await new Promise<void>((res) => { img.onload = () => res(); img.onerror = () => res(); img.src = preset.img; });
   if (img.naturalWidth && img.naturalHeight) {
-    const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+    const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight) * 1.08;
     const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
-    ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+    ctx.save();
+    ctx.filter = "blur(16px)";
+    ctx.drawImage(img, (W - dw) / 2, (H - dh) * 0.68, dw, dh);
+    ctx.restore();
   }
-  // 제목: 오른쪽 영역에 배치(사진 왼쪽의 제품 연출을 가리지 않도록)
+  ctx.fillStyle = "rgba(255,255,255,0.42)"; ctx.fillRect(0, 0, W, H);
+  // 제목: 배너 정중앙 정렬
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillStyle = preset.text;
-  ctx.font = "700 64px 'Pretendard','Apple SD Gothic Neo',sans-serif";
-  const lines = wrapLines(ctx, title, W * 0.56);
-  const lh = 84;
+  ctx.font = "700 56px 'Pretendard','Apple SD Gothic Neo',sans-serif";
+  const lines = wrapLines(ctx, title, W * 0.72);
+  const lh = 72;
   const startY = H / 2 - ((lines.length - 1) * lh) / 2;
-  lines.forEach((ln, i) => ctx.fillText(ln, W * 0.66, startY + i * lh));
+  lines.forEach((ln, i) => ctx.fillText(ln, W / 2, startY + i * lh));
 }
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트", "스페어", "협의"];
 // 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)

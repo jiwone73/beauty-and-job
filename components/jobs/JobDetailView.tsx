@@ -18,8 +18,8 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
     display: "flex", alignItems: "center", justifyContent: "center",
   };
 
-  // 각 칸은 등록페이지 배너 썸네일과 '동일한 비율'(120:76 가로형)로 크롭한다.
-  //   → 전체 배너 비율 = 칸수 × (120/76). 이미지는 위·아래 균등 크롭(center)으로 칸을 꽉 채운다.
+  // 배너 크기는 장수와 무관하게 '항상 고정'(3:1 와이드) — 공고마다 높이가 달라지면 안 됨.
+  //   여러 장이면 폭을 균등하게 나눠 넣고, 각 이미지는 위·아래 균등 크롭(center)으로 칸을 꽉 채운다.
   //   EXIF는 브라우저 기본대로 적용(원 사이트처럼 똑바로). 3장 초과면 좌우 화살표로 3장씩 순환.
   const PER = 3;
   const cols = Math.min(n, PER);
@@ -27,7 +27,7 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt?: string 
   const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ display: "flex", gap: 0, aspectRatio: `${cols * 120} / 76`, borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
+      <div style={{ display: "flex", gap: 0, aspectRatio: "3 / 1", borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
         {visible.map((src, k) => (
           <div key={k} style={{ flex: "1 1 0", minWidth: 0, height: "100%" }}>
             <img
