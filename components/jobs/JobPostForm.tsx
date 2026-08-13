@@ -1951,7 +1951,8 @@ export default function JobPostForm({
                     value={newCompanyName}
                     onChange={(e) => setNewCompanyName(e.target.value)}
                     placeholder="회사명 (예: 리안헤어 광명점)"
-                    style={{ fontSize: 14, fontWeight: 700, color: "#8a7fa0", border: "none", outline: "none", background: "transparent", padding: 0, width: "100%" }}
+                    className="jobpost-brand-input"
+                    style={{ fontWeight: 700, color: "#8a7fa0", border: "none", outline: "none", background: "transparent", padding: 0, width: "100%" }}
                   />
                 </div>
                 <textarea
@@ -1961,7 +1962,8 @@ export default function JobPostForm({
                   onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
                   rows={1}
                   ref={(el) => { if (el) { el.style.height = "auto"; el.style.height = `${el.scrollHeight}px`; } }}
-                  style={{ width: "100%", border: "none", outline: "none", fontSize: 19, fontWeight: 400, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3, resize: "none", overflow: "hidden", fontFamily: "inherit", display: "block" }}
+                  className="jobpost-title-input"
+                  style={{ width: "100%", border: "none", outline: "none", fontWeight: 400, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3, resize: "none", overflow: "hidden", fontFamily: "inherit", display: "block" }}
                 />
               </div>
 
@@ -1976,7 +1978,7 @@ export default function JobPostForm({
                   {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                       고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
                   <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0, borderRadius: 7, border: "1px solid #e0d8ec", background: "#fff", color: typeLocked ? "#ddd" : "#999", fontSize: 15, lineHeight: 1, padding: "4px 8px", cursor: typeLocked ? "default" : "pointer" }}>추가 ＋</button>
+                    style={{ display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0, borderRadius: 7, border: "1px solid #e0d8ec", background: "#fff", color: typeLocked ? "#ddd" : "#999", fontSize: 15, lineHeight: 1, padding: "4px 8px", cursor: typeLocked ? "default" : "pointer" }}>＋</button>
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
@@ -2004,7 +2006,7 @@ export default function JobPostForm({
               {/* ── 모집부문 표: 분야별 고용형태·성별·경력/직책·학력·근무·급여 ── */}
               <div style={{ margin: "10px 0 22px" }}>
                 {categories.length === 0 ? (
-                  <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야 · 추가 ＋</b>를 눌러 모집할 분야를 담아주세요.</div>
+                  <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야 ＋</b>를 눌러 모집할 분야를 담아주세요.</div>
                 ) : (
                   <div style={{ overflowX: (posShiftOpen || cellOpen) ? "visible" : "auto" }}>
                     <table style={{ minWidth: 720, borderCollapse: "collapse" }}>

@@ -5467,12 +5467,20 @@ div:has(> table.admin-table),
 
 /* ── 채용공고 등록/수정 폼: 프로필 기본정보와 동일한 1행(라벨 좌·내용 우) 레이아웃 ── */
 /* 상세(미리보기) 레이아웃처럼 단일 컬럼(가운데 정렬) — 등록/수정 폼 흐름 통일 */
-.jobpost-form { grid-template-columns: minmax(0, 760px); justify-content: center; }
+/* 컬럼 폭을 760px로 '고정'하면 화면이 좁아도 트랙이 760px을 유지해 모집부문 표(720px)와 함께
+   페이지 전체가 가로로 밀린다. 1fr + max-width로 두면 좁은 화면에서 줄어들고, 표만 제자리에서 스크롤된다. */
+.jobpost-form { grid-template-columns: minmax(0, 1fr); max-width: 760px; margin-left: auto; margin-right: auto; }
+/* 그리드 항목의 기본 min-width:auto가 모집부문 표(min-content 720px)에 걸려 트랙을 밀어낸다.
+   0으로 낮춰야 좁은 화면에서 컬럼이 줄고, 표는 자기 칸 안에서 가로 스크롤된다. */
+.jobpost-form > * { min-width: 0; }
 .admin-form-header { width: 100%; max-width: 1216px; margin-left: auto; margin-right: auto; }
 .jobpost-form .company-card-title { color: var(--color-primary); font-weight: 400; font-size: 16px; }
 /* 섹션 타이틀을 카드 밖(위)으로 — 프로필 기본정보와 동일 */
 .jobpost-section-title { color: var(--color-primary); font-size: 16px; font-weight: 400; margin: 4px 0 0 4px; }
 .jobpost-form .admin-form-label { color: #555; font-size: 14px; }
+/* 공고 헤더(회사명·제목) — 화면 폭에 따라 크기를 줄인다(인라인 style 대신 여기서 관리) */
+.jobpost-brand-input { font-size: 14px; }
+.jobpost-title-input { font-size: 19px; }
 .jobpost-form .admin-form-body { padding: 2px 20px; gap: 0; }
 
 /* 라벨이 직접 자식인 행 → 라벨 좌 / 내용 우 + 하단 구분선 */
@@ -5509,6 +5517,15 @@ div:has(> table.admin-table),
   .admin-form-row-2col { grid-template-columns: 1fr; gap: 0; }
   /* 좌우 여백(패딩) 축소 */
   .admin-form-body { padding: 14px; }
+  /* 좁은 화면에선 글자를 한 단계 줄여 한 줄에 더 담기게 */
+  .jobpost-form .job-detail-meta-item, .jobpost-form .job-detail-meta-item *,
+  .jobpost-form .job-detail-company-row, .jobpost-form .job-detail-company-row *,
+  .jobpost-form .admin-form-label { font-size: 13.5px !important; }
+  .jobpost-form .jobpost-title-input { font-size: 17px; }
+  .jobpost-form .jobpost-brand-input { font-size: 13.5px; }
+  .jobpost-section-title { font-size: 14.5px; }
+  .jobpost-form .company-card-title { font-size: 14.5px; }
+  .jobpost-form .job-detail-desc, .jobpost-form textarea { font-size: 13.5px; }
 }
 
 /* 기업정보 컴팩트 폼: 개인 프로필처럼 라벨 좌·값 우 1행 */
