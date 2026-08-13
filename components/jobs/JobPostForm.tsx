@@ -1598,12 +1598,12 @@ export default function JobPostForm({
                 🐞 이슈 <span style={{ fontSize: 12, fontWeight: 700, color: "#c0392b" }}>{issueList.length}</span>
               </button>
             )}
-            <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
             {mode === "admin" && (
               <button type="button" className="admin-secondary-btn" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 공고 내용을 뷰티워크 톤·형식으로 AI가 다듬어요">
                 {curating ? "다듬는 중..." : "✨ 큐레이션"}
               </button>
             )}
+            <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
             <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
               {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
             </button>
