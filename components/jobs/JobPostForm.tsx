@@ -1878,9 +1878,18 @@ export default function JobPostForm({
       {/* 공고 상단 이미지 */}
       {mode === "company" ? (
         <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
-          <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 상단 이미지</h2>
+          {/* 제목 옆에 ＋(이미지 추가) — 카드 안 공간을 쓰지 않는다 */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
+            <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고 상단 이미지</h2>
+            <label title="이미지 추가 (3MB 이하 권장 · 큰 사진은 자동으로 줄여서 올라가요)"
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: nmCoverUploading ? "#bbb" : "#5f0080", borderRadius: 7, fontSize: 13, lineHeight: 1, cursor: nmCoverUploading ? "wait" : "pointer" }}>
+              {nmCoverUploading ? "…" : "＋"}
+              <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
+                onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
+            </label>
+          </div>
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
-            {/* 썸네일마다 ×로 이 공고에서만 제거. 드롭존 없이 '이미지 추가' 버튼만 둔다(공간 절약). */}
+            {/* 썸네일마다 ×로 이 공고에서만 제거 */}
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
               {/* 한 줄에 3장 고정(줄바꿈 없음). 3장을 넘으면 좌우 화살표로 넘겨 본다. */}
               {bannerImages.length > 0 && (() => {
@@ -1915,23 +1924,11 @@ export default function JobPostForm({
                   </div>
                 );
               })()}
-              <label title="이미지 추가"
-                style={{ display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: nmCoverUploading ? "#bbb" : "#5f0080", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: nmCoverUploading ? "wait" : "pointer" }}>
-                {nmCoverUploading ? "올리는 중…" : "＋ 이미지"}
-                <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
-                  onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
-              </label>
               {coverImages.length > 0 && bannerImages.length === 0 && (
                 <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
                   style={{ flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
               )}
             </div>
-            <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999", lineHeight: 1.6 }}>
-              {bannerImages.length === 0
-                ? "상단 이미지 없이 등록돼요. 필요하면 이미지를 추가하세요."
-                : "기업설정 커버가 기본으로 들어가요. 여기서 빼거나 바꿔도 기업정보에 저장된 이미지는 그대로예요."}
-              <br />이미지는 <b>3MB 이하</b>로 올려주세요. 큰 사진은 자동으로 줄여서 올라가요.
-            </p>
           </div>
         </div>
       ) : (() => {
