@@ -8,6 +8,7 @@ import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
 import JobGroupField from "@/components/JobGroupField";
+import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
 import { REGIONS } from "@/lib/data/regions";
@@ -310,13 +311,15 @@ export default function JobPostForm({
       const has = new Set(kept.map(baseCat));
       return [...kept, ...nextBases.filter((b) => !has.has(b))];
     });
-  // 같은 분야 한 행 더(바로 아래에 추가) — 값은 복제해 두고 다른 부분만 고치게
-  const addSameCatRow = (cat: string) => {
+  // 표 위 "행 추가"에서 고른 분야를 새 행으로 붙인다. 이미 있는 분야면 중복 행이 된다(신입/경력 분리 모집).
+  const addCatRow = (base: string) => {
     if (categories.length >= MAX_POS_ROWS) { alert(`모집부문은 최대 ${MAX_POS_ROWS}행까지예요.`); return; }
-    const key = nextDupKey(baseCat(cat), categories);
-    const i = categories.indexOf(cat);
-    setCategories([...categories.slice(0, i + 1), key, ...categories.slice(i + 1)]);
-    setPosMeta((m) => ({ ...m, [key]: { ...(m[cat] || emptyPos) } }));
+    const dup = categories.some((c) => baseCat(c) === base);
+    const key = dup ? nextDupKey(base, categories) : base;
+    setCategories([...categories, key]);
+    // 같은 분야가 이미 있으면 첫 행 값을 복제해 두고 다른 부분(경력 등)만 고치게
+    const src = categories.find((c) => baseCat(c) === base);
+    if (src) setPosMeta((m) => ({ ...m, [key]: { ...(m[src] || emptyPos) } }));
   };
   const removeCatRow = (cat: string) => {
     setCategories((prev) => prev.filter((c) => c !== cat));
@@ -326,6 +329,7 @@ export default function JobPostForm({
   const [parsedPrimary, setParsedPrimary] = useState<PosRow | null>(null);
   const [posShiftOpen, setPosShiftOpen] = useState<string | null>(null); // 근무요일/시간 팝오버가 열린 분야
   const [cellOpen, setCellOpen] = useState<string | null>(null); // 표 셀 직접입력 팝오버 `${cat}|${field}`
+  const [addRowOpen, setAddRowOpen] = useState(false); // 모집부문 '행 추가' — 분야를 골라 행을 붙임(같은 분야 중복 가능)
   const [mgrOpen, setMgrOpen] = useState(false); // 담당자 정보 팝오버
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
@@ -1980,8 +1984,15 @@ export default function JobPostForm({
 
               {/* ── 모집부문 표: 분야별 고용형태·성별·경력·학력·근무·급여 ── */}
               <div style={{ margin: "10px 0 22px" }}>
+                {/* 행 추가: 분야를 골라 행을 붙인다. 같은 분야를 또 골라 신입/경력을 나눠 모집할 수 있다. */}
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+                  <button type="button" onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 4, border: "1px solid #e0d8ec", background: "#fff", color: "#5f0080", borderRadius: 7, padding: "5px 10px", fontSize: 12.5, cursor: "pointer" }}>
+                    ＋ 행 추가
+                  </button>
+                </div>
                 {categories.length === 0 ? (
-                  <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야</b>를 먼저 선택하세요.</div>
+                  <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야</b>를 선택하거나 <b>행 추가</b>를 눌러 시작하세요.</div>
                 ) : (
                   <div style={{ overflowX: (posShiftOpen || cellOpen) ? "visible" : "auto" }}>
                     <table style={{ minWidth: 720, borderCollapse: "collapse" }}>
@@ -2004,8 +2015,6 @@ export default function JobPostForm({
                               <td style={{ ...tdc, fontSize: 13, color: "#333" }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                                   <span style={{ flex: 1, minWidth: 0 }}>{baseCat(cat)}</span>
-                                  <button type="button" onClick={() => addSameCatRow(cat)} title="같은 분야 한 행 더 추가 (예: 신입 / 경력 나눠 모집)"
-                                    style={{ width: 20, height: 20, flexShrink: 0, borderRadius: 5, border: "1px solid #e0d8ec", background: "#fff", color: "#5f0080", fontSize: 13, lineHeight: 1, cursor: "pointer" }}>＋</button>
                                   <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
                                     style={{ width: 20, height: 20, flexShrink: 0, borderRadius: 5, border: "1px solid #eee", background: "#fff", color: "#bbb", fontSize: 13, lineHeight: 1, cursor: "pointer" }}>×</button>
                                 </div>
@@ -2098,6 +2107,15 @@ export default function JobPostForm({
                     </table>
                   </div>
                 )}
+                {/* 행 추가용 분야 선택 — 고르는 즉시 행이 붙는다(선택 상태를 비워 둬 같은 분야도 다시 고를 수 있음) */}
+                <JobGroupSelectModal
+                  open={addRowOpen}
+                  jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
+                  selected={[]}
+                  onChange={(next) => { const picked = next[next.length - 1]; if (picked) addCatRow(picked); setAddRowOpen(false); }}
+                  onClose={() => setAddRowOpen(false)}
+                  title="모집분야 추가 (같은 분야도 다시 고를 수 있어요)"
+                />
               </div>
 
               {/* ── 근무기간·복리후생 (모집부문 안으로 통합, 별도 타이틀·구분선 없음) ── */}
