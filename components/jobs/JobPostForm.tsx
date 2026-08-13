@@ -23,7 +23,7 @@ const TIME_OPTIONS = Array.from({ length: 15 }, (_, i) => `${String(i + 9).padSt
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 // 모집부문 표용 간결 옵션(여백 확보, 직접입력 없음)
-const POS_CAREER = ["신입", "경력", "무관", "1년~", "3년~", "5년~", "10년~", "실장", "부원장", "원장"];
+const POS_CAREER = ["무관", "신입", "경력", "1년~", "3년~", "5년~", "10년~", "매니저", "실장", "부원장", "원장"];
 // 급여: 지급 주기를 고르면 앞머리(시·주·월·연)가 자동으로 붙고 금액만 적으면 된다. 협의는 단독 값.
 const SALARY_UNITS: { label: string; prefix: string }[] = [
   { label: "시급", prefix: "시" },
@@ -1307,11 +1307,11 @@ export default function JobPostForm({
 
     // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
     const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
-    // 발행 시 모집부문 표 필수: 모집분야·고용형태·경력·근무요일/시간·급여(분야별). (성별우대·학력은 선택)
+    // 발행 시 모집부문 표 필수: 모집분야·고용형태·경력/직책·근무요일/시간·급여(분야별). (성별우대·학력은 선택)
     if (status === "publish") {
       if (categories.length === 0) { alert("모집분야를 1개 이상 선택해주세요."); return; }
       const miss = positions.find((p) => !p.employment || !p.career || (!p.workDays && !p.workTime) || !p.salary);
-      if (miss) { alert(`'${miss.category}' 분야의 고용형태·경력·근무요일/시간·급여를 모두 입력해주세요.`); return; }
+      if (miss) { alert(`'${miss.category}' 분야의 고용형태·경력/직책·근무요일/시간·급여를 모두 입력해주세요.`); return; }
     }
     const p0 = positions[0] || { career: "", education: "", employment: "", headcount: "", workDays: "", workTime: "", gender: "" };
     const primaryHeadcount = parseInt((p0.headcount || "").replace(/[^0-9]/g, "")) || null;
@@ -1967,7 +1967,7 @@ export default function JobPostForm({
 
               {/* ── 모집부문 제목(모집분야 위, '지원 안내'와 동일 스타일) ── */}
               <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", paddingTop: 14, borderTop: "1px solid #f0edf5", fontWeight: 400, color: "#333" }}>
-                <Briefcase size={16} style={{ color: "#5f0080", flexShrink: 0 }} />모집부문 <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400 }}>모집분야를 선택하면 분야별로 고용형태·성별·경력·학력·근무·급여를 입력해요{nonMember ? " (값이 안 맞으면 자유입력)" : ""}</span>
+                <Briefcase size={16} style={{ color: "#5f0080", flexShrink: 0 }} />모집부문 <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400 }}>모집분야를 선택하면 분야별로 고용형태·성별·경력/직책·학력·근무·급여를 입력해요{nonMember ? " (값이 안 맞으면 자유입력)" : ""}</span>
               </div>
               {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "0 0 12px", alignItems: "center" }}>
@@ -2001,7 +2001,7 @@ export default function JobPostForm({
                 </div>
               </div>
 
-              {/* ── 모집부문 표: 분야별 고용형태·성별·경력·학력·근무·급여 ── */}
+              {/* ── 모집부문 표: 분야별 고용형태·성별·경력/직책·학력·근무·급여 ── */}
               <div style={{ margin: "10px 0 22px" }}>
                 {categories.length === 0 ? (
                   <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야 · 추가 ＋</b>를 눌러 모집할 분야를 담아주세요.</div>
@@ -2013,7 +2013,7 @@ export default function JobPostForm({
                           <th style={{ ...thc, minWidth: 110 }}>모집분야{reqStar}</th>
                           <th style={{ ...thc, minWidth: 84 }}>고용형태{reqStar}</th>
                           <th style={{ ...thc, minWidth: 68 }}>성별우대</th>
-                          <th style={{ ...thc, minWidth: 76 }}>경력{reqStar}</th>
+                          <th style={{ ...thc, minWidth: 88 }}>경력/직책{reqStar}</th>
                           <th style={{ ...thc, minWidth: 68 }}>학력</th>
                           <th style={{ ...thc, minWidth: 150 }}>근무요일 / 시간{reqStar}</th>
                           <th style={{ ...thc, minWidth: 100 }}>급여{reqStar}</th>
