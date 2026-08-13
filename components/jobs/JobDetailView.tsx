@@ -204,7 +204,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   // 복리후생·채용 담당자·채용 절차도 '기본정보' 카드 안의 서브블록으로 합침(빈 값은 자동 숨김).
   // 담당자: 전화·이메일 중 하나라도 있어야 표기. 이름 없으면 '인사담당'으로.
-  // 비회원(관리자 대행) 공고는 뷰티워크 온라인 지원만 받고, 기업 담당자 연락처를 구직자에게 노출하지 않는다.
+  // 비회원(관리자 대행) 공고는 뷰티워크 온라인지원만 받고, 기업 담당자 연락처를 구직자에게 노출하지 않는다.
   const hasContact = !job.isExternal && !!(job.contactPhone || job.contactEmail);
   const hasMethods = !!job.isExternal || !!(job.contactMethods?.length);
   const hasProcess = !!(job.process?.length > 0 || job.notes?.trim());
@@ -219,7 +219,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const methodsInner = hasMethods ? (
     <div className="jd-guide-row">
       <span className="jd-guide-label">지원방법</span>
-      <span>{job.isExternal ? "온라인 지원" : job.contactMethods.join("   ·   ")}</span>
+      <span>{job.isExternal ? "뷰티워크 온라인지원" : job.contactMethods.join("   ·   ")}</span>
     </div>
   ) : null;
 

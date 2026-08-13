@@ -142,7 +142,7 @@ const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서",
 // 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)
 // 불러오기 시 반드시 문제없이 들어와야 하는 핵심 항목만 이슈 대상으로.
 const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "모집분야", "근무지역", "상세요강 이미지", "기타"];
-const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "온라인 지원", "홈페이지 지원"]; // 지원방법(복수)
+const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "뷰티워크 온라인지원", "회사 홈페이지 지원"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
 const WORK_PERIODS = ["~6개월", "6개월 ~ 1년", "1년 이상", "협의"];
 // 복리후생 옵션은 DB 마스터(benefit_tags)로 이관 → /api/benefit-tags 에서 로드
@@ -272,7 +272,7 @@ export default function JobPostForm({
   const [bannerGenBusy, setBannerGenBusy] = useState(false);
   const [nmManagerName, setNmManagerName] = useState("");
   const [nmManagerPhone, setNmManagerPhone] = useState("");
-  const [contactMethods, setContactMethods] = useState<string[]>([]); // 지원방법: 문자·이메일·전화·온라인 지원(복수)
+  const [contactMethods, setContactMethods] = useState<string[]>([]); // 지원방법: 문자·이메일·전화·뷰티워크 온라인지원(복수)
   const toggleContactMethod = (m: string) =>
     setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]).sort((a, b) => CONTACT_METHOD_OPTIONS.indexOf(a) - CONTACT_METHOD_OPTIONS.indexOf(b)));
   const [contactMethodsOpen, setContactMethodsOpen] = useState(false);
@@ -566,6 +566,11 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [workcondOpen]);
+  // 매장으로 바꾸면 '회사 홈페이지 지원'은 선택지에서 사라지므로, 이미 골라둔 값도 함께 정리한다.
+  useEffect(() => {
+    if (jobGroupType === "기업") return;
+    setContactMethods((prev) => (prev.includes("회사 홈페이지 지원") ? prev.filter((m) => m !== "회사 홈페이지 지원") : prev));
+  }, [jobGroupType]);
   useEffect(() => {
     if (!contactMethodsOpen) return;
     const onDown = (e: MouseEvent) => {
@@ -1723,12 +1728,12 @@ export default function JobPostForm({
     workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의")),
     workPeriodText: fiWorkPeriod.trim() || workPeriod || "협의",
     workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의")),
-    // 비회원(관리자) 공고는 담당자 연락처를 구직자에게 노출하지 않음 → 미리보기도 동일하게 숨기고 '온라인 지원'만
+    // 비회원(관리자) 공고는 담당자 연락처를 구직자에게 노출하지 않음 → 미리보기도 동일하게 숨기고 '뷰티워크 온라인지원'만
     isExternal: isNm,
     contactName: "",
     contactPhone: "",
     contactEmail: "",
-    contactMethods: isNm ? ["온라인 지원"] : contactMethods,
+    contactMethods: isNm ? ["뷰티워크 온라인지원"] : contactMethods,
   };
 
   // 본문 콘텐츠(760px) 가로 정렬: 관리자 직접등록은 목록과 맞춰 왼쪽 정렬, 기업회원 폼은 기존대로 가운데 정렬.
@@ -2399,14 +2404,18 @@ export default function JobPostForm({
 
               {/* 지원방법(좌) · 담당자(우) 2열 — 기업회원·비회원 공용.
                   지원방법을 팝오버에서 고르면, 그 방법에 필요한 칸만 오른쪽에 생긴다.
-                  문자·전화 → 전화 / 이메일 → 메일 / 둘 중 하나라도 → 이름 / 홈페이지 지원 → 지원 URL.
-                  온라인 지원만 고르면 담당자 칸은 생기지 않는다(연락처가 필요 없는 방법이라).
+                  문자·전화 → 전화 / 이메일 → 메일 / 둘 중 하나라도 → 이름 / 회사 홈페이지 지원 → 홈페이지 URL.
+                  뷰티워크 온라인지원만 고르면 담당자 칸은 생기지 않는다(연락처가 필요 없는 방법이라).
                   비회원 공고의 담당자 연락처는 상세화면에서 구직자에게 노출되지 않는다(JobDetailView). */}
               {(() => {
+                // 매장 공고는 자체 채용 홈페이지가 없는 경우가 대부분이라 '회사 홈페이지 지원'을 빼고, 오피스에서만 쓴다.
+                const methodOptions = CONTACT_METHOD_OPTIONS.filter((m) => m !== "회사 홈페이지 지원" || isOffice);
                 const canPhone = contactMethods.includes("문자") || contactMethods.includes("전화");
                 const canEmail = contactMethods.includes("이메일");
                 const canName = canPhone || canEmail;
-                const canUrl = contactMethods.includes("홈페이지 지원");
+                const canUrl = isOffice && contactMethods.includes("회사 홈페이지 지원");
+                // 담당자 칸이 생기면 URL은 지원방법 밑(좌)에, 우측이 비면 URL을 우측에 둔다.
+                const urlOnLeft = canUrl && canName;
                 const isNmAdminJob = mode === "admin" && nonMember;
                 const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 4 };
                 const subLbl: CSSProperties = { width: 34, flexShrink: 0, color: "#999", fontSize: 14 };
@@ -2420,7 +2429,8 @@ export default function JobPostForm({
                   /* 좁은 화면에선 두 칸이 너무 좁아 세로로 쌓는다(.jobpost-form이 admin-form-row-2col을 1열로 덮어서 직접 지정) */
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
                     {/* 지원방법 (좌) — 연보라 블록을 눌러 팝오버에서 복수 선택 */}
-                    <div ref={contactMethodsRef} style={{ display: "flex", alignItems: "flex-start", gap: 10, position: "relative", padding: "4px 0" }}>
+                    <div ref={contactMethodsRef} style={{ position: "relative" }}>
+                     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0" }}>
                       <span style={lblS}>지원방법</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <button type="button"
@@ -2430,7 +2440,7 @@ export default function JobPostForm({
                         </button>
                         {contactMethodsOpen && popAt && (
                           <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
-                            {CONTACT_METHOD_OPTIONS.map((m) => {
+                            {methodOptions.map((m) => {
                               const on = contactMethods.includes(m);
                               return (
                                 <button key={m} type="button"
@@ -2441,20 +2451,26 @@ export default function JobPostForm({
                           </div>
                         )}
                       </div>
+                     </div>
+                     {urlOnLeft && (
+                       <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0" }}>
+                         <span style={{ ...lblS, width: 88 }}>홈페이지 URL</span>
+                         <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
+                           placeholder="https://example.com/recruit" inputMode="url" style={fld(!!externalApplyUrl)} />
+                       </div>
+                     )}
                     </div>
-                    {/* 담당자 (우) — 고른 방법에 필요한 칸만 생성 */}
+                    {/* 담당자 (우) — 고른 방법에 필요한 칸만 생성. 우측이 빌 때는 홈페이지 URL을 여기에 둔다 */}
                     {(canName || canUrl) ? (
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0" }}>
-                        <span style={lblS}>
-                          {canName ? "담당자" : "지원 URL"}
+                        <span style={{ ...lblS, ...(canName ? null : { width: 88 }) }}>
+                          {canName ? "담당자" : "홈페이지 URL"}
                           {isNmAdminJob && canName && <><br /><span style={{ fontSize: 10, color: "#c9a3d6" }}>관리자용</span></>}
                         </span>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          {canUrl && (
-                            <div style={rowS}>
-                              {canName && <span style={subLbl}>URL</span>}
-                              <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://" inputMode="url" style={fld(!!externalApplyUrl)} />
-                            </div>
+                          {canUrl && !urlOnLeft && (
+                            <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
+                              placeholder="https://example.com/recruit" inputMode="url" style={fld(!!externalApplyUrl)} />
                           )}
                           {canName && (
                             <div style={rowS}>
