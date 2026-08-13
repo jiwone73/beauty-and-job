@@ -159,7 +159,7 @@ export interface JobPostFormProps {
   mode: "company" | "admin";
   editId?: string | null;
   listHref: string;
-  companyType?: "OFFICE" | "STORE" | "BOTH" | null;
+  companyType?: "OFFICE" | "STORE" | null;
   companies?: Company[];
   uploadImage: (file: File) => Promise<{ success: boolean; url?: string; name?: string; error?: string }>;
   onSubmit: (payload: any, status: "draft" | "publish", company: { companyId: string | null; newCompany: { company_name: string; brand_name: string } | null }) => Promise<{ success: boolean; error?: string; id?: string }>;
@@ -224,6 +224,7 @@ export default function JobPostForm({
   // 기업설정에 등록한 커버 이미지 — 신규 공고의 상단 이미지 기본값으로 한 번만 채운다.
   //   여기서 지우거나 바꿔도 기업정보의 커버는 건드리지 않는다(공고 단위로만 저장).
   const [coverImages, setCoverImages] = useState<string[]>([]);
+  const [companyProfile, setCompanyProfile] = useState<any>(null); // 기업정보 페이지 값(미리보기·공고 하단 기업정보에 사용)
   const coverSeeded = useRef(false);
   useEffect(() => {
     if (mode !== "company") return;
@@ -232,14 +233,30 @@ export default function JobPostForm({
     fetch("/api/company/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((res) => {
-        if (res.success && Array.isArray(res.data?.cover_images)) {
-          const urls = res.data.cover_images.map((c: any) => c?.url).filter(Boolean);
+        if (!res.success || !res.data) return;
+        const c = res.data;
+        if (Array.isArray(c.cover_images)) {
+          const urls = c.cover_images.map((x: any) => x?.url).filter(Boolean);
           setCoverImages(urls);
           // 수정 모드(editId)는 저장된 공고 값이 들어오므로 기본값을 덮어쓰지 않는다.
           if (!editId && !coverSeeded.current && urls.length) {
             coverSeeded.current = true;
             setBannerImages((prev) => (prev.length ? prev : urls.map((u: string) => ({ url: u, name: "기업 커버" }))));
           }
+        }
+        // 기업정보 페이지 값을 공고 하단 '기업정보'에 그대로 채운다(공고 상세 맨 아래에 표시됨).
+        setCompanyProfile(c);
+        if (!editId) {
+          setNewCompanyName((v) => v || c.company_name || "");
+          setNewBrandName((v) => v || c.brand_name || "");
+          setNmIndustry((v) => v || c.industry || "");
+          setNmHomepage((v) => v || c.website_url || "");
+          setNmSize((v) => v || c.company_size || "");
+          setNmFounded((v) => v || (c.founded_year ? String(c.founded_year) : ""));
+          setNmRepresentative((v) => v || c.representative_name || "");
+          setNmPhone((v) => v || c.company_phone || "");
+          setNmDescription((v) => v || c.description || "");
+          setNmAddress((v) => v || [c.address, c.address_detail].filter(Boolean).join(" "));
         }
       })
       .catch(() => {});
@@ -637,7 +654,6 @@ export default function JobPostForm({
     if (el) { el.style.height = "auto"; el.style.height = `${el.scrollHeight}px`; }
   }, [nmDescription, nonMember]);
   const [showPreview, setShowPreview] = useState(false);
-  const [companyProfile, setCompanyProfile] = useState<any>(null);
   useEffect(() => {
     if (!showPreview || mode !== "company" || companyProfile) return;
     const token = localStorage.getItem("access_token");
@@ -687,9 +703,8 @@ export default function JobPostForm({
   }, [notesModalOpen]);
 
   useEffect(() => {
-    // 타입 고정 기업회원은 자동 지정(잠금 없음). 관리자·BOTH는 미선택("")으로 시작해 직접 고르게 함.
-    if (companyType === "BOTH") setJobGroupType("");
-    else if (companyType === "STORE") setJobGroupType("매장");
+    // 업체 유형이 정해진 기업회원은 자동 지정(잠금 없음). 관리자는 미선택("")으로 시작해 직접 고르게 함.
+    if (companyType === "STORE") setJobGroupType("매장");
     else if (companyType === "OFFICE") setJobGroupType("기업");
   }, [companyType]);
 
@@ -797,7 +812,7 @@ export default function JobPostForm({
     }).catch(console.error);
   }, [editId, loadEditData]);
 
-  const showTypeToggle = mode === "admin" || companyType === "BOTH";
+  const showTypeToggle = mode === "admin";
   // 채용유형 미선택(관리자·BOTH가 아직 안 고름) → 직군·급여·복지 입력 잠금
   const typeLocked = showTypeToggle && !jobGroupType;
 

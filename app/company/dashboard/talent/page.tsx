@@ -49,7 +49,7 @@ function genderLabel(gender: string | null): string | null {
 
 export default function TalentPage() {
   const [activeTab, setActiveTab]     = useState<JobTab>("STORE");
-  const [, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH">("BOTH");
+  const [, setCompanyType] = useState<"OFFICE" | "STORE" | null>(null);
   const [talents, setTalents]         = useState<TalentItem[]>([]);
   const [loading, setLoading]         = useState(true);
   const [total, setTotal]             = useState(0);
@@ -219,7 +219,7 @@ export default function TalentPage() {
     fetch("/api/company/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((res) => {
-        const ct = res?.data?.company_type as "OFFICE" | "STORE" | "BOTH" | undefined;
+        const ct = res?.data?.company_type as "OFFICE" | "STORE" | undefined;
         if (ct) {
           setCompanyType(ct);
           if (ct === "OFFICE") setActiveTab("OFFICE");

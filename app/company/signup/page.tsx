@@ -12,10 +12,12 @@ interface Term {
   is_required: boolean;
 }
 
+// 업체 성격은 매장/오피스 둘 중 하나. 매장을 여럿 둔 직영 체인도 '매장'이고,
+// 본사 인력을 뽑을 땐 공고를 만들 때 유형(job_type)을 오피스로 고르면 된다.
+// (예전 'BOTH'는 공고 유형과 중복이라 선택지에서 뺐다 — 기존 데이터는 매장으로 취급)
 const COMPANY_TYPES = [
   { value: "STORE", label: "매장", icon: "💄", desc: "현장직 채용" },
   { value: "OFFICE", label: "오피스", icon: "🏢", desc: "사무직 채용" },
-  { value: "BOTH", label: "매장·오피스", icon: "🏢+💄", desc: "둘 다 채용" },
 ];
 
 export default function CompanySignupPage() {

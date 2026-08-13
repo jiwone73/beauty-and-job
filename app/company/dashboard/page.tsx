@@ -77,7 +77,7 @@ export default function CompanyDashboard() {
   const [jobs, setJobs] = useState<JobItem[]>([]);
   const [applicants, setApplicants] = useState<ApplicantItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH" | null>(null);
+  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | null>(null);
   const [jobTypeTab, setJobTypeTab] = useState<"전체" | "OFFICE" | "STORE">("전체");
   const [trendRange, setTrendRange] = useState<"7d" | "1m" | "3m">("7d");
   const [trendRows, setTrendRows] = useState<{ day: string; value: number }[]>([]);
@@ -163,30 +163,6 @@ export default function CompanyDashboard() {
 
   return (
     <CompanyLayout activePage="dashboard">
-      {/* 기업/매장 토글 (BOTH 회원만) */}
-      {companyType === "BOTH" && (
-        <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
-          {[
-            { value: "전체", label: "전체" },
-            { value: "STORE", label: "🏪 매장" },
-            { value: "OFFICE", label: "🏢 오피스" },
-          ].map((t) => (
-            <button
-              key={t.value}
-              onClick={() => setJobTypeTab(t.value as "전체" | "OFFICE" | "STORE")}
-              style={{
-                padding: "8px 18px", borderRadius: "20px", fontSize: "15px", fontWeight: 600,
-                border: jobTypeTab === t.value ? "2px solid #5f0080" : "2px solid #e0e0e0",
-                background: jobTypeTab === t.value ? "#5f0080" : "#fff",
-                color: jobTypeTab === t.value ? "#fff" : "#888",
-                cursor: "pointer", transition: "all 0.15s",
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-      )}
 
       <div style={{ maxWidth: "1440px" }}>
       {/* 통계 카드 */}

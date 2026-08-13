@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
   if (!bizv.valid) {
     return err('USER_002', bizv.message || '유효하지 않은 사업자등록번호입니다.')
   }
-  if (!['OFFICE', 'STORE', 'BOTH'].includes(company_type)) {
+  if (!['OFFICE', 'STORE'].includes(company_type)) {
     return err('USER_002', '올바른 기업 유형을 선택해주세요.')
   }
   if (!agreed_term_ids || agreed_term_ids.length === 0) {

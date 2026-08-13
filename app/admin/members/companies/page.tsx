@@ -22,7 +22,6 @@ const STATUS_TO_LABEL: Record<string, string> = {
 const TYPE_LABEL: Record<string, string> = {
   OFFICE: "오피스",
   STORE: "매장",
-  BOTH: "매장·오피스",
 };
 const STATUS_OPTIONS = ["전체", "승인대기", "승인완료", "정지", "반려"];
 const JOB_STATUS_LABEL: Record<string, string> = {
@@ -94,7 +93,7 @@ function AdminCompaniesContent() {
   const initialType =
     typeParam === "STORE" ? "매장" :
     typeParam === "OFFICE" ? "오피스" :
-    typeParam === "BOTH" ? "매장·오피스" : "전체";
+    "전체";
   const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
   const detailId = searchParams.get("detail");
 

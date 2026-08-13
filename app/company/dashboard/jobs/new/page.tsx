@@ -9,7 +9,7 @@ function CompanyJobNewForm() {
   const searchParams = useSearchParams();
   const editId = searchParams?.get("id") || null;
   const copyId = searchParams?.get("copy") || null;
-  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH" | null>(null);
+  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | null>(null);
 
   useEffect(() => {
     companyMeApi.get()

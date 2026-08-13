@@ -6,7 +6,7 @@ const STATUS_TO_LABEL: Record<string, string> = {
   PENDING: "승인대기", ACTIVE: "승인완료", SUSPENDED: "정지", REJECTED: "반려",
 };
 const TYPE_LABEL: Record<string, string> = {
-  OFFICE: "오피스", STORE: "매장", BOTH: "매장·오피스",
+  OFFICE: "오피스", STORE: "매장",
 };
 const JOB_STATUS_LABEL: Record<string, string> = {
   ACTIVE: "게시중", DRAFT: "승인대기", HIDDEN: "반려", CLOSED: "마감", EXPIRED: "만료",

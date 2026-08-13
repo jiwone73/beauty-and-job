@@ -25,6 +25,8 @@ export default function CompanyLayout({ children, activePage }: {
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  // 매장 회원이면 '매장정보', 오피스(기업) 회원이면 '기업정보'로 부른다.
+  const infoLabel = (t: string) => (t === "OFFICE" ? "기업정보" : "매장정보"); // 매장·매장+오피스는 매장으로 분류
   const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "" });
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifs, setNotifs] = useState<any[]>([]);
@@ -123,7 +125,7 @@ export default function CompanyLayout({ children, activePage }: {
     { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent` },
     { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped` },
     { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants` },
-    { id: "settings",  label: "기업 정보",     icon: Settings,     href: `${base}/settings` },
+    { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings` },
   ];
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -230,7 +232,7 @@ export default function CompanyLayout({ children, activePage }: {
           </>
         )}
 
-        <div className="co-m-title">{PAGE_TITLES[activePage] || "대시보드"}</div>
+        <div className="co-m-title">{activePage === "settings" ? infoLabel(companyInfo.type) : (PAGE_TITLES[activePage] || "대시보드")}</div>
         <div className="co-m-content">{children}</div>
 
         <nav className="co-m-tabs">
@@ -326,7 +328,7 @@ export default function CompanyLayout({ children, activePage }: {
 
       <div className="company-main">
         <header className="company-header">
-          <h1 className="company-page-title">{PAGE_TITLES[activePage] || "대시보드"}</h1>
+          <h1 className="company-page-title">{activePage === "settings" ? infoLabel(companyInfo.type) : (PAGE_TITLES[activePage] || "대시보드")}</h1>
         </header>
         <main className="company-content">{children}</main>
       </div>

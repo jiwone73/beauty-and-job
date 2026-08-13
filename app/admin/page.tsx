@@ -161,7 +161,7 @@ function TrendCard({
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
   const [indivTab, setIndivTab] = useState<"ALL" | "STORE" | "OFFICE">("ALL");
-  const [corpTab, setCorpTab] = useState<"ALL" | "STORE" | "OFFICE" | "BOTH">("ALL");
+  const [corpTab, setCorpTab] = useState<"ALL" | "STORE" | "OFFICE">("ALL");
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
@@ -193,7 +193,6 @@ export default function AdminDashboard() {
   // ── 직군별 채용공고 분포 (corpTab 연동)
   const jobDistRaw = corpTab === "STORE" ? mapDist(stats?.job_dist_store)
     : corpTab === "OFFICE" ? mapDist(stats?.job_dist_office)
-    : corpTab === "BOTH" ? mapDist(stats?.job_dist_both)
     : mapDist(stats?.job_dist_all);
   const jobDistJt = corpTab === "OFFICE" ? "OFFICE" : "STORE";
   const jobDist = rollup(jobDistRaw, jobDistJt);
@@ -230,7 +229,6 @@ export default function AdminDashboard() {
   // ── 기업 규모별 분포
   const companySizeRaw = corpTab === "STORE" ? stats?.company_size_store
     : corpTab === "OFFICE" ? stats?.company_size_office
-    : corpTab === "BOTH" ? stats?.company_size_both
     : stats?.company_size_all;
   const companySizeData = (companySizeRaw || []).map((r: any) => ({
     name: r.name, value: Number(r.value),
@@ -512,7 +510,7 @@ export default function AdminDashboard() {
           <Building2 size={20} className="admin-section-icon company" />
           <h2 className="admin-section-heading">기업회원 현황</h2>
           <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
-            {([["ALL","전체"],["STORE","🏪 매장"],["OFFICE","🏢 오피스"],["BOTH","🏪🏢 매장·오피스"]] as const).map(([val, label]) => (
+            {([["ALL","전체"],["STORE","🏪 매장"],["OFFICE","🏢 오피스"]] as const).map(([val, label]) => (
               <button key={val} onClick={() => setCorpTab(val)} style={tabBtn(corpTab === val)}>
                 {label}
               </button>
@@ -526,13 +524,13 @@ export default function AdminDashboard() {
         {[
           {
             label: "전체 기업회원",
-            value: fmt(corpTab === "STORE" ? c?.store_companies : corpTab === "OFFICE" ? c?.office_companies : corpTab === "BOTH" ? c?.both_companies : c?.total_companies),
+            value: fmt(corpTab === "STORE" ? c?.store_companies : corpTab === "OFFICE" ? c?.office_companies : c?.total_companies),
             unit: "개사",
             href: `/admin/members/companies?type=${corpTab}`,
           },
           {
             label: "오늘 신규 가입",
-            value: fmt(corpTab === "STORE" ? c?.today_companies_store : corpTab === "OFFICE" ? c?.today_companies_office : corpTab === "BOTH" ? c?.today_companies_both : c?.today_companies),
+            value: fmt(corpTab === "STORE" ? c?.today_companies_store : corpTab === "OFFICE" ? c?.today_companies_office : c?.today_companies),
             unit: "개사",
             href: `/admin/members/companies?type=${corpTab}&date=today`,
           },
@@ -544,7 +542,7 @@ export default function AdminDashboard() {
           },
           {
             label: "진행중 공고",
-            value: fmt(corpTab === "STORE" ? c?.active_jobs_store : corpTab === "OFFICE" ? c?.active_jobs_office : corpTab === "BOTH" ? c?.active_jobs_both : c?.active_jobs),
+            value: fmt(corpTab === "STORE" ? c?.active_jobs_store : corpTab === "OFFICE" ? c?.active_jobs_office : c?.active_jobs),
             unit: "건",
             href: `/admin/jobs?status=active`,
           },
@@ -576,7 +574,7 @@ export default function AdminDashboard() {
         <TrendCard title="기업회원 가입 추이" type="company" unit="개사" render={(rows, range) => {
           const data = rows.map((r: any) => ({
             day: fmtTrendDay(r.day, range),
-            기업: Number(corpTab === "STORE" ? r.companies_store : corpTab === "OFFICE" ? r.companies_office : corpTab === "BOTH" ? r.companies_both : r.companies) || 0,
+            기업: Number(corpTab === "STORE" ? r.companies_store : corpTab === "OFFICE" ? r.companies_office : r.companies) || 0,
           }));
           return (
             <ResponsiveContainer width="100%" height={200}>
@@ -602,7 +600,6 @@ export default function AdminDashboard() {
               day: fmtTrendDay(r.day, range),
               등록수: corpTab === "STORE" ? Number(r.store)
                     : corpTab === "OFFICE" ? Number(r.office)
-                    : corpTab === "BOTH" ? Number(r.both)
                     : Number(r.total),
             }));
             return (
@@ -625,7 +622,7 @@ export default function AdminDashboard() {
         <TrendCard title="기업프로필 완성 추이" type="company_completion" unit="개사" defaultMode="cumulative" render={(rows, range) => {
           const data = rows.map((r: any) => ({
             day: fmtTrendDay(r.day, range),
-            기업프로필: Number(corpTab === "STORE" ? r.done_store : corpTab === "OFFICE" ? r.done_office : corpTab === "BOTH" ? r.done_both : r.done) || 0,
+            기업프로필: Number(corpTab === "STORE" ? r.done_store : corpTab === "OFFICE" ? r.done_office : r.done) || 0,
           }));
           return (
             <ResponsiveContainer width="100%" height={200}>

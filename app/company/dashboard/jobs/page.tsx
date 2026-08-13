@@ -62,7 +62,7 @@ export default function CompanyJobsPage() {
       .then((res) => { if (res.success && res.data) setCompanyType(res.data.company_type || null); })
       .catch(() => {});
   }, []);
-  const isBoth = companyType === "BOTH";
+
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -180,6 +180,8 @@ export default function CompanyJobsPage() {
     오피스: jobs.filter(j => j.job_type === "OFFICE").length,
     매장: jobs.filter(j => j.job_type === "STORE").length,
   };
+  // 업체 유형(BOTH)이 아니라 실제 공고 구성으로 판단 — 매장 회원이 오피스 공고를 낸 경우도 필터가 살아있다.
+  const isBoth = counts.오피스 > 0 && counts.매장 > 0;
   const totalApplicants = jobs.reduce((s, j) => s + (j.application_count || 0), 0);
 
   const statCardsData = [

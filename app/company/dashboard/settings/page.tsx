@@ -14,6 +14,14 @@ declare global {
 export default function CompanySettingsPage() {
   const [activeTab, setActiveTab] = useState<"brand" | "account">("brand");
   const [info, setInfo] = useState<CompanyInfo | null>(null);
+  // 매장 회원은 '회사'가 아니라 '매장' 기준 용어를 쓴다.
+  const isStore = info?.company_type !== "OFFICE"; // 매장·매장+오피스는 매장 기준 용어를 쓴다
+  const L = {
+    name: isStore ? "매장명" : "기업명",
+    size: isStore ? "직원수" : "사원수",
+    phone: isStore ? "매장 전화번호" : "회사 대표번호",
+    intro: isStore ? "매장 소개" : "기업 소개",
+  };
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState("");
@@ -356,7 +364,7 @@ export default function CompanySettingsPage() {
 
   const handleSave = async () => {
     if (!form.company_name.trim()) {
-      alert("기업명은 필수입니다.");
+      alert(`${L.name}은 필수입니다.`);
       return;
     }
     if (!form.industry) {
@@ -364,7 +372,7 @@ export default function CompanySettingsPage() {
       return;
     }
     if (!form.company_size) {
-      alert("사원수는 필수입니다.");
+      alert(`${L.size}는 필수입니다.`);
       return;
     }
     if (!form.address.trim()) {
@@ -521,8 +529,8 @@ export default function CompanySettingsPage() {
 
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
-                  <label className="admin-form-label">기업명<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <input className="admin-form-input" placeholder="기업명"
+                  <label className="admin-form-label">{L.name}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <input className="admin-form-input" placeholder={L.name}
                     value={form.company_name}
                     onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
                 </div>
@@ -560,32 +568,9 @@ export default function CompanySettingsPage() {
                 </div>
               </div>
 
-              <div className="admin-form-row">
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <label className="admin-form-label" style={{ margin: 0 }}>주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  {form.address && (
-                    <button type="button" onClick={handleClearAddress}
-                      style={{ fontSize: "13px", color: "#999", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: "2px 4px" }}>
-                      초기화
-                    </button>
-                  )}
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "8px" : "12px" }}>
-                  <input className="admin-form-input" readOnly value={form.address}
-                    onClick={handleAddressSearch}
-                    placeholder="주소 검색을 눌러주세요"
-                    style={{ minWidth: 0, cursor: "pointer" }} />
-                  <input className="admin-form-input"
-                    placeholder="상세주소 (동·호수 등)"
-                    style={{ minWidth: 0 }}
-                    value={form.address_detail}
-                    onChange={(e) => setForm({ ...form, address_detail: e.target.value })} />
-                </div>
-              </div>
-
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
-                  <label className="admin-form-label">사원수<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="admin-form-label">{L.size}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <select className="admin-form-select"
                     style={{ height: 42, boxSizing: "border-box" }}
                     value={form.company_size}
@@ -616,7 +601,7 @@ export default function CompanySettingsPage() {
                     onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
                 </div>
                 <div className="admin-form-row">
-                  <label className="admin-form-label">회사 대표번호</label>
+                  <label className="admin-form-label">{L.phone}</label>
                   <input className="admin-form-input" placeholder="02-000-0000" inputMode="numeric" maxLength={13}
                     value={formatPhone(form.company_phone)}
                     onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
@@ -639,8 +624,31 @@ export default function CompanySettingsPage() {
                 </div>
               </div>
               <div className="admin-form-row">
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <label className="admin-form-label" style={{ margin: 0 }}>주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  {form.address && (
+                    <button type="button" onClick={handleClearAddress}
+                      style={{ fontSize: "13px", color: "#999", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: "2px 4px" }}>
+                      초기화
+                    </button>
+                  )}
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "8px" : "12px" }}>
+                  <input className="admin-form-input" readOnly value={form.address}
+                    onClick={handleAddressSearch}
+                    placeholder="주소 검색을 눌러주세요"
+                    style={{ minWidth: 0, cursor: "pointer" }} />
+                  <input className="admin-form-input"
+                    placeholder="상세주소 (동·호수 등)"
+                    style={{ minWidth: 0 }}
+                    value={form.address_detail}
+                    onChange={(e) => setForm({ ...form, address_detail: e.target.value })} />
+                </div>
+              </div>
+
+              <div className="admin-form-row">
                 <div>
-                <label className="admin-form-label">기업 소개</label>
+                <label className="admin-form-label">{L.intro}</label>
                 <textarea className="admin-form-textarea" rows={5}
                   placeholder="회사를 소개하는 글을 입력해주세요. 여기에 작성한 내용은 채용공고 상세 페이지의 '회사 소개' 영역에 표시돼요."
                   value={form.description}

@@ -227,7 +227,7 @@ export default function JobDetailPage() {
               name: j.company?.company_name || '',
               brandName: j.company?.brand_name || '',
               representative: j.company?.representative_name || '',
-              companyType: j.company?.company_type === 'STORE' ? '매장' : j.company?.company_type === 'BOTH' ? '매장·오피스' : j.company?.company_type === 'OFFICE' ? '오피스' : '',
+              companyType: j.company?.company_type === 'STORE' ? '매장' : j.company?.company_type === 'OFFICE' ? '오피스' : '',
               industry: j.company?.industry || '',
               size: j.company?.company_size || '',
               founded: j.company?.founded_year || '',
