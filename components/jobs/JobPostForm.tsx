@@ -19,7 +19,6 @@ const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const WEEKDAY_DAYS = ["월", "화", "수", "목", "금"]; // 평일(미입력 시 기본값)
 const WEEKEND_DAYS = ["토", "일"]; // 주말
 // 근무시간 풀다운 옵션: 오전/오후 구분 없이 24시간 표기, 1시간 간격, 오전 9시~밤 11시(자정~오전 8시 제외)
-const TIME_OPTIONS = Array.from({ length: 15 }, (_, i) => `${String(i + 9).padStart(2, "0")}:00`);
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 // 모집부문 표용 간결 옵션(여백 확보, 직접입력 없음)
@@ -1341,7 +1340,7 @@ export default function JobPostForm({
     }
 
     // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
     // 발행 시 모집부문 표 필수: 모집분야·고용형태·경력/직책·근무요일/시간·급여(분야별). (성별우대·학력은 선택)
     if (status === "publish") {
       if (categories.length === 0) { alert("모집분야를 1개 이상 선택해주세요."); return; }
@@ -1481,6 +1480,29 @@ export default function JobPostForm({
   const reqStar = <span style={{ color: "#e9a3a3" }}> *</span>; // 필수 열 표시
   const tdc: React.CSSProperties = { padding: "11px 10px", borderBottom: "1px solid #f3f0f8", verticalAlign: "middle" };
   const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
+  // 근무시간 숫자 입력: 타이핑 중에는 숫자·콜론만 남기고, 칸을 벗어날 때 HH:MM으로 정리한다.
+  //   "9"→09:00, "930"→09:30, "0930"→09:30, "2000"→20:00 (24시 넘거나 60분 넘으면 잘라 맞춤)
+  const cleanTime = (v: string) => v.replace(/[^\d:]/g, "").slice(0, 5);
+  const fmtTime = (v: string) => {
+    const d = v.replace(/\D/g, "").slice(0, 4);
+    if (!d) return "";
+    const h = parseInt(d.length <= 2 ? d : d.slice(0, d.length - 2), 10);
+    const m = d.length <= 2 ? 0 : parseInt(d.slice(-2), 10);
+    if (isNaN(h)) return "";
+    return `${String(Math.min(23, h)).padStart(2, "0")}:${String(Math.min(59, isNaN(m) ? 0 : m)).padStart(2, "0")}`;
+  };
+  // 둘 다 비면 workTime 자체를 비운다("~"만 남지 않게)
+  const setTimeRange = (cat: string, start: string, end: string) =>
+    setPos(cat, "workTime", start || end ? `${start}~${end}` : "");
+  // 저장·미리보기 시 한 번 더 정리 — 입력 직후 칸을 벗어나지 않고 바로 등록해도 09:30 형태로 나가게
+  const normWorkTime = (v: string) => {
+    const t = (v || "").trim();
+    if (!t || !t.includes("~")) return t;
+    const [a, b] = t.split("~");
+    const f = (x: string) => (/^\d{1,4}$/.test((x || "").trim()) ? fmtTime(x) : (x || "").trim());
+    const st = f(a), en = f(b);
+    return st || en ? `${st}~${en}` : "";
+  };
   const cellSelect: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff", WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
   // 클릭-선택 셀: 옵션 있으면 드롭다운(+비회원 '직접입력…'). 값이 목록에 없으면 클릭 텍스트→팝오버. 급여처럼 옵션 없으면 항상 팝오버.
   // 급여 앞머리 교체: "월 300" 에서 주기만 바꿔도 금액은 남는다. 협의였으면 금액 없이 시작.
@@ -1599,7 +1621,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
-    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
+    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -2171,16 +2193,19 @@ export default function JobPostForm({
                                         </label>
                                       </div>
                                       <div style={{ fontSize: 12, color: "#888", margin: "12px 0 6px" }}>근무시간</div>
+                                      {/* 30분 단위 등 자유로운 시간을 넣을 수 있게 숫자 입력. 0930 처럼 쳐도 09:30으로 정리된다. */}
                                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                        <select disabled={timeNego} value={TIME_OPTIONS.includes(tStart) ? tStart : ""} onChange={(e) => setPos(cat, "workTime", `${e.target.value}~${tEnd}`)} style={timeSel}>
-                                          <option value="">시작</option>
-                                          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
-                                        </select>
+                                        <input type="text" inputMode="numeric" disabled={timeNego} placeholder="0930" aria-label="근무 시작 시간"
+                                          value={tStart}
+                                          onChange={(e) => setTimeRange(cat, cleanTime(e.target.value), tEnd)}
+                                          onBlur={(e) => setTimeRange(cat, fmtTime(e.target.value), tEnd)}
+                                          style={{ ...timeSel, textAlign: "center", cursor: timeNego ? "default" : "text" }} />
                                         <span style={{ color: "#888" }}>~</span>
-                                        <select disabled={timeNego} value={TIME_OPTIONS.includes(tEnd) ? tEnd : ""} onChange={(e) => setPos(cat, "workTime", `${tStart}~${e.target.value}`)} style={timeSel}>
-                                          <option value="">종료</option>
-                                          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
-                                        </select>
+                                        <input type="text" inputMode="numeric" disabled={timeNego} placeholder="2000" aria-label="근무 종료 시간"
+                                          value={tEnd}
+                                          onChange={(e) => setTimeRange(cat, tStart, cleanTime(e.target.value))}
+                                          onBlur={(e) => setTimeRange(cat, tStart, fmtTime(e.target.value))}
+                                          style={{ ...timeSel, textAlign: "center", cursor: timeNego ? "default" : "text" }} />
                                       </div>
                                       <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12.5, color: "#555", cursor: "pointer" }}>
                                         <input type="checkbox" checked={timeNego} onChange={(e) => setPos(cat, "workTime", e.target.checked ? "협의" : "")} /> 시간 협의
