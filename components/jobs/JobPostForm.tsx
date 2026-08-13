@@ -388,6 +388,9 @@ export default function JobPostForm({
     const onMove = () => {
       const t = popTrigger.current;
       if (!t || !t.el.isConnected) return;
+      // 팝오버 안에서 입력 중이면 그대로 둔다(키보드가 뷰포트를 줄이면서 팝오버가 튀는 것 방지)
+      const ae = document.activeElement as HTMLElement | null;
+      if (ae?.closest?.(".poscell-pop, .posshift-pop")) return;
       placePop(t.el, t.width, t.height);
     };
     window.addEventListener("scroll", onMove, true);
@@ -1583,7 +1586,7 @@ export default function JobPostForm({
                       const on = v.trim().startsWith(u.prefix);
                       return (
                         <button key={u.label} type="button"
-                          onClick={() => { setPos(cat, field, withSalaryUnit(v, u.prefix)); cellInputRef.current?.focus(); }}
+                          onClick={() => { setPos(cat, field, withSalaryUnit(v, u.prefix)); cellInputRef.current?.focus({ preventScroll: true }); }}
                           style={{ border: `1px solid ${on ? "#5f0080" : "#e0d8ec"}`, background: on ? "#f7f1fd" : "#fff", color: on ? "#5f0080" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>{u.label}</button>
                       );
                     })}
@@ -1591,7 +1594,7 @@ export default function JobPostForm({
                       style={{ border: `1px solid ${v.trim() === "협의" ? "#5f0080" : "#e0d8ec"}`, background: v.trim() === "협의" ? "#f7f1fd" : "#fff", color: v.trim() === "협의" ? "#5f0080" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>협의</button>
                   </div>
                 )}
-                <input ref={cellInputRef} autoFocus type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph}
+                <input ref={cellInputRef} type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph}
                   onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
                   style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12 }} />
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
