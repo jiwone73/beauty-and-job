@@ -56,7 +56,7 @@ async function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANN
   if (!ctx) return;
   ctx.fillStyle = preset.bg; ctx.fillRect(0, 0, W, H);
   // 배경 사진: cover. 세로는 아래쪽에 치우치게 잘라(0.68) 아래에 놓인 제품 연출이 살아남게 한다.
-  //   제목 가독성을 위해 크게 흐리게 하고 흰 막을 덮는다(테두리 번짐 방지로 살짝 확대해 그림).
+  //   제목 가독성을 위해 살짝 흐리게 + 옅은 흰 막(형체는 알아볼 정도로만. 테두리 번짐 방지로 살짝 확대해 그림).
   const img = new Image();
   img.crossOrigin = "anonymous";
   await new Promise<void>((res) => { img.onload = () => res(); img.onerror = () => res(); img.src = preset.img; });
@@ -64,11 +64,11 @@ async function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANN
     const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight) * 1.08;
     const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
     ctx.save();
-    ctx.filter = "blur(16px)";
+    ctx.filter = "blur(5px)";
     ctx.drawImage(img, (W - dw) / 2, (H - dh) * 0.68, dw, dh);
     ctx.restore();
   }
-  ctx.fillStyle = "rgba(255,255,255,0.42)"; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "rgba(255,255,255,0.20)"; ctx.fillRect(0, 0, W, H);
   // 제목: 배너 정중앙 정렬
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillStyle = preset.text;
