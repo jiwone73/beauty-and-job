@@ -365,23 +365,35 @@ export default function JobPostForm({
   // 표 안 팝오버는 화면 기준(fixed) 좌표로 띄운다. 표를 overflow visible로 바꾸면 720px 표가
   //   페이지 밖으로 넘쳐 화면 전체가 옆으로 밀리기 때문(모바일에서 특히 심함).
   const [popAt, setPopAt] = useState<{ left: number; top: number } | null>(null);
-  const openPopAt = (el: HTMLElement | null, width: number, height: number) => {
-    if (!el) return;
+  const [cellFree, setCellFree] = useState(false); // 목록 대신 직접입력 모드
+  const popTrigger = useRef<{ el: HTMLElement; width: number; height: number } | null>(null);
+  const placePop = (el: HTMLElement, width: number, height: number) => {
     const r = el.getBoundingClientRect();
     const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
     // 아래 공간이 모자라면 트리거 위쪽으로 뒤집어 띄운다(모바일 하단에서 잘리지 않게)
     const below = r.bottom + 4;
-    const top = below + height > window.innerHeight - 8 ? Math.max(8, r.top - height - 4) : below;
+    const raw = below + height > window.innerHeight - 8 ? r.top - height - 4 : below;
+    const top = Math.max(8, Math.min(raw, window.innerHeight - height - 8)); // 항상 화면 안
     setPopAt({ left, top });
   };
-  // 스크롤하면 좌표가 어긋나므로 닫는다(표를 옆으로 밀며 열어둔 채 두는 상황 방지)
+  const openPopAt = (el: HTMLElement | null, width: number, height: number) => {
+    if (!el) return;
+    popTrigger.current = { el, width, height };
+    placePop(el, width, height);
+  };
+  // 스크롤·리사이즈에는 닫지 말고 위치만 다시 잡는다.
+  //   (터치로 표를 스크롤하면 곧바로 scroll 이벤트가 떠서, 닫아버리면 팝오버가 안 열린 것처럼 보인다)
   useEffect(() => {
     if (!popAt) return;
-    const close = () => { setCellOpen(null); setPosShiftOpen(null); setPopAt(null); };
-    window.addEventListener("scroll", close, true);
-    window.addEventListener("resize", close);
-    return () => { window.removeEventListener("scroll", close, true); window.removeEventListener("resize", close); };
-  }, [popAt]);
+    const onMove = () => {
+      const t = popTrigger.current;
+      if (!t || !t.el.isConnected) return;
+      placePop(t.el, t.width, t.height);
+    };
+    window.addEventListener("scroll", onMove, true);
+    window.addEventListener("resize", onMove);
+    return () => { window.removeEventListener("scroll", onMove, true); window.removeEventListener("resize", onMove); };
+  }, [popAt !== null]);
   const [coverStart, setCoverStart] = useState(0); // 공고 상단 이미지 썸네일: 3장 초과 시 화살표로 넘길 시작 위치
   const [mgrOpen, setMgrOpen] = useState(false); // 담당자 정보 팝오버
   const [regionList, setRegionList] = useState<string[]>([]);
@@ -1523,51 +1535,71 @@ export default function JobPostForm({
     const st = f(a), en = f(b);
     return st || en ? `${st}~${en}` : "";
   };
-  const cellSelect: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff", WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
+  const cellSelect: React.CSSProperties = { width: "100%", minHeight: 28, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "4px 7px", fontSize: 12.5, background: "#fff", WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
   // 클릭-선택 셀: 옵션 있으면 드롭다운(+비회원 '직접입력…'). 값이 목록에 없으면 클릭 텍스트→팝오버. 급여처럼 옵션 없으면 항상 팝오버.
   // 급여 앞머리 교체: "월 300" 에서 주기만 바꿔도 금액은 남는다. 협의였으면 금액 없이 시작.
   const withSalaryUnit = (cur: string, prefix: string) => {
     const rest = cur.replace(/^\s*[시주월연]\s*/, "").replace(/^협의\s*$/, "").trim();
     return rest ? `${prefix} ${rest}` : `${prefix} `;
   };
+  // 표 셀 입력: iOS 네이티브 select 피커가 화면 절반을 덮을 만큼 커서, 목록도 자체 팝오버로 띄운다.
+  //   options가 있으면 컴팩트 목록, units(급여)면 지급주기 칩, 그 외에는 자유입력.
   const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력", allowFi = true, units?: typeof SALARY_UNITS) => {
     const v = (posMeta[cat] || emptyPos)[field];
     const key = `${cat}|${field}`;
-    // allowFi=false면 직접입력 없이 항상 드롭다운(목록에 없는 값은 빈 선택으로)
-    const asSelect = options.length > 0 && (!allowFi || v === "" || options.includes(v));
+    const open = cellOpen === key;
+    const freeInput = options.length === 0 || cellFree;      // 목록 없는 칸이거나 '직접입력'을 고른 상태
+    const width = units ? 214 : 168;
+    const height = freeInput ? (units ? 126 : 88) : Math.min(options.length + (allowFi && nonMember ? 1 : 0), 7) * 30 + 14;
     return (
       <span className="poscell-pop" style={{ position: "relative", display: "block" }}>
-        {asSelect ? (
-          <select value={options.includes(v) ? v : ""} onChange={(e) => { if (e.target.value === "__fi__") { openPopAt(e.currentTarget, units ? 214 : 178, units ? 126 : 88); setCellOpen(key); return; } setPos(cat, field, e.target.value); }} style={cellSelect}>
-            <option value=""></option>
-            {options.map((o) => <option key={o} value={o}>{o}</option>)}
-            {allowFi && nonMember && <option value="__fi__">직접입력…</option>}
-          </select>
-        ) : (
-          <button type="button" onClick={(e) => { openPopAt(e.currentTarget, units ? 214 : 178, units ? 126 : 88); setCellOpen(key); }} style={{ ...cellSelect, textAlign: "left", color: v ? "#333" : "#bbb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || "선택"}</button>
-        )}
-        {cellOpen === key && popAt && (
-          <div style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 7, width: units ? 214 : 178 }}>
-            {units && (
-              /* 지급 주기 선택 → 앞머리(시·주·월·연) 자동 입력. 금액만 이어서 적으면 된다. */
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 6 }}>
-                {units.map((u) => {
-                  const on = v.trim().startsWith(u.prefix);
-                  return (
-                    <button key={u.label} type="button"
-                      onClick={() => { setPos(cat, field, withSalaryUnit(v, u.prefix)); cellInputRef.current?.focus(); }}
-                      style={{ border: `1px solid ${on ? "#5f0080" : "#e0d8ec"}`, background: on ? "#f7f1fd" : "#fff", color: on ? "#5f0080" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>{u.label}</button>
-                  );
-                })}
-                <button type="button" onClick={() => { setPos(cat, field, "협의"); setCellOpen(null); }}
-                  style={{ border: `1px solid ${v.trim() === "협의" ? "#5f0080" : "#e0d8ec"}`, background: v.trim() === "협의" ? "#f7f1fd" : "#fff", color: v.trim() === "협의" ? "#5f0080" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>협의</button>
+        <button type="button"
+          onClick={(e) => { if (open) { setCellOpen(null); return; } setCellFree(false); openPopAt(e.currentTarget, width, height); setCellOpen(key); }}
+          style={{ ...cellSelect, textAlign: "left", color: v ? "#333" : "#bbb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || ""}</button>
+        {open && popAt && (
+          <div style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, width, boxSizing: "border-box" }}>
+            {!freeInput ? (
+              <div style={{ maxHeight: 216, overflowY: "auto" }}>
+                {options.map((o) => (
+                  <button key={o} type="button" onClick={() => { setPos(cat, field, o); setCellOpen(null); }}
+                    style={{ display: "block", width: "100%", textAlign: "left", border: "none", borderRadius: 5, padding: "6px 8px", fontSize: 12.5, lineHeight: 1.2, cursor: "pointer",
+                      background: o === v ? "#f7f1fd" : "transparent", color: o === v ? "#5f0080" : "#333" }}>{o}</button>
+                ))}
+                {v && (
+                  <button type="button" onClick={() => { setPos(cat, field, ""); setCellOpen(null); }}
+                    style={{ display: "block", width: "100%", textAlign: "left", border: "none", borderTop: "1px solid #f0f0f0", background: "transparent", borderRadius: 5, padding: "6px 8px", fontSize: 11.5, color: "#aaa", cursor: "pointer" }}>선택 해제</button>
+                )}
+                {allowFi && nonMember && (
+                  <button type="button" onClick={() => setCellFree(true)}
+                    style={{ display: "block", width: "100%", textAlign: "left", border: "none", borderTop: "1px solid #f0f0f0", background: "transparent", borderRadius: 5, padding: "6px 8px", fontSize: 11.5, color: "#5f0080", cursor: "pointer" }}>직접입력…</button>
+                )}
               </div>
+            ) : (
+              <>
+                {units && (
+                  /* 지급 주기 선택 → 앞머리(시·주·월·연) 자동 입력. 금액만 이어서 적으면 된다. */
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 6 }}>
+                    {units.map((u) => {
+                      const on = v.trim().startsWith(u.prefix);
+                      return (
+                        <button key={u.label} type="button"
+                          onClick={() => { setPos(cat, field, withSalaryUnit(v, u.prefix)); cellInputRef.current?.focus(); }}
+                          style={{ border: `1px solid ${on ? "#5f0080" : "#e0d8ec"}`, background: on ? "#f7f1fd" : "#fff", color: on ? "#5f0080" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>{u.label}</button>
+                      );
+                    })}
+                    <button type="button" onClick={() => { setPos(cat, field, "협의"); setCellOpen(null); }}
+                      style={{ border: `1px solid ${v.trim() === "협의" ? "#5f0080" : "#e0d8ec"}`, background: v.trim() === "협의" ? "#f7f1fd" : "#fff", color: v.trim() === "협의" ? "#5f0080" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>협의</button>
+                  </div>
+                )}
+                <input ref={cellInputRef} autoFocus type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph}
+                  onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
+                  style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12 }} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
+                  {options.length > 0 ? <button type="button" onClick={() => setCellFree(false)} style={{ border: "none", background: "none", color: "#888", fontSize: 11.5, cursor: "pointer" }}>목록으로</button> : <span />}
+                  <button type="button" onClick={() => setCellOpen(null)} className="company-primary-btn" style={{ padding: "3px 11px", fontSize: 11.5 }}>확인</button>
+                </div>
+              </>
             )}
-            <input ref={cellInputRef} autoFocus type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph} onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }} style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12 }} />
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
-              {options.length > 0 ? <button type="button" onClick={() => { setPos(cat, field, ""); setCellOpen(null); }} style={{ border: "none", background: "none", color: "#888", fontSize: 11.5, cursor: "pointer" }}>목록으로</button> : <span />}
-              <button type="button" onClick={() => setCellOpen(null)} className="company-primary-btn" style={{ padding: "3px 11px", fontSize: 11.5 }}>확인</button>
-            </div>
           </div>
         )}
       </span>
