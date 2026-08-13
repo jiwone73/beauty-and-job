@@ -1666,7 +1666,7 @@ export default function JobPostForm({
       hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
       placeholder: "",
     },
-    requirements: { label: "자격요건", hint: "선택", placeholder: "" },
+    requirements: { label: "자격요건", placeholder: "" },
     preferred: { label: "우대사항", placeholder: "" },
   };
   // 오피스는 담당업무(JD) 중심, 매장은 포지션 소개 중심
@@ -2432,9 +2432,9 @@ export default function JobPostForm({
                 const rowS: CSSProperties = { display: "flex", alignItems: "center", gap: 8, padding: "3px 0" };
                 return (
                   /* 좁은 화면에선 두 칸이 너무 좁아 세로로 쌓는다(.jobpost-form이 admin-form-row-2col을 1열로 덮어서 직접 지정) */
-                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
                     {/* 지원방법 (좌) — 연보라 블록을 눌러 팝오버에서 복수 선택 */}
-                    <div ref={contactMethodsRef} style={{ position: "relative" }}>
+                    <div ref={contactMethodsRef} style={{ position: "relative", minWidth: 0 }}>
                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0" }}>
                       <span style={lblS}>지원방법</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -2467,7 +2467,7 @@ export default function JobPostForm({
                     </div>
                     {/* 담당자 (우) — 고른 방법에 필요한 칸만 생성. 우측이 빌 때는 홈페이지 URL을 여기에 둔다 */}
                     {(canName || canUrl) ? (
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0" }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0", minWidth: 0 }}>
                         <span style={{ ...lblS, ...(canName ? null : { width: 88 }) }}>
                           {canName ? "담당자" : "홈페이지 URL"}
                           {isNmAdminJob && canName && <><br /><span style={{ fontSize: 10, color: "#c9a3d6" }}>관리자용</span></>}
@@ -2533,21 +2533,28 @@ export default function JobPostForm({
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "8px" }}>
 
           {/* 상세요강 */}
-          <h2 className="jobpost-section-title">상세요강</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <h2 className="jobpost-section-title" style={{ margin: 0 }}>상세요강</h2>
+            <label title="상세요강 이미지 추가"
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: uploading ? "#bbb" : "#5f0080", borderRadius: 7, fontSize: 13, lineHeight: 1, cursor: uploading ? "wait" : "pointer" }}>
+              {uploading ? "…" : "＋"}
+              <input type="file" accept="image/*" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
+            </label>
+          </div>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
 
               {/* ── 상세 내용 이미지 (본문 세로 스택) — 실제 미리보기의 상세요강 위치와 동일 ── */}
               <div style={{ paddingBottom: 16, borderBottom: "1px solid var(--color-border)", marginBottom: 4 }}>
-                <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>갖고 계신 상세요강 이미지가 있다면 첨부해 주세요.</div>
+                {/* 점선 드롭존·안내 문구는 제거하고 썸네일만. 드래그·Ctrl+V 첨부는 이 영역에서 그대로 동작한다. */}
                 <div
-                  tabIndex={0}
+                  tabIndex={-1}
                   onFocus={() => setPasteZone("body")}
                   onBlur={() => setPasteZone((z) => (z === "body" ? null : z))}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
                   onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) processFiles(fs); } }}
-                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#5f0080" : "#e0d5ee"}`, background: pasteZone === "body" ? "#f7f1fd" : "#fbf9ff", outline: "none" }}>
+                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", outline: "none" }}>
                   {detailImages.map((d, idx) => (
                     <div key={d.url + idx} draggable
                       onDragStart={() => { imgDragRef.current = { zone: "body", idx }; }}
@@ -2560,13 +2567,6 @@ export default function JobPostForm({
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
                     </div>
                   ))}
-                  <label title="이미지 추가"
-                    style={{ width: 84, height: 84, flexShrink: 0, border: "1.5px dashed #c4b5d4", borderRadius: 8, background: "#fff", color: "#5f0080", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: uploading ? "wait" : "pointer" }}>
-                    <span style={{ fontSize: 22, lineHeight: 1 }}>{uploading ? "…" : "+"}</span>
-                    <span style={{ fontSize: 10 }}>추가</span>
-                    <input type="file" accept="image/*" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
-                  </label>
-                  {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어 주세요.</span>}
                 </div>
               </div>
 
