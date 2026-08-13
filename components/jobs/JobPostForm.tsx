@@ -26,15 +26,63 @@ const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", 
 const POS_CAREER = ["신입", "경력", "무관", "1년~", "3년~", "5년~", "10년~", "실장", "부원장", "원장"];
 const POS_EDU = ["무관", "고졸", "초대졸", "대졸", "석사"];
 // 기본 배너 배경 프리셋(뷰티 필). bg=그라데이션 2색, text=제목색, wm=배경 'RECRUIT' 워터마크색
-const BANNER_PRESETS: { key: string; label: string; bg: [string, string]; text: string; wm: string }[] = [
+// img가 있으면 그라데이션 대신 사진을 배경으로 깔고 그 위에 제목을 그린다(제목은 별도 입력).
+const BANNER_PRESETS: { key: string; label: string; bg: [string, string]; text: string; wm: string; img?: string }[] = [
+  { key: "aura", label: "화이트 뷰티", bg: ["#f7f5f2", "#efece7"], text: "#1f1b17", wm: "rgba(0,0,0,0)", img: "/banner-default.jpg" },
   { key: "navy", label: "네이비", bg: ["#1e2c58", "#141f45"], text: "#ffffff", wm: "rgba(255,255,255,0.06)" },
   { key: "purple", label: "뷰티 퍼플", bg: ["#5f0080", "#a13fb6"], text: "#ffffff", wm: "rgba(255,255,255,0.09)" },
   { key: "rose", label: "로즈베이지", bg: ["#f3e2de", "#e6c9c3"], text: "#6a2f3f", wm: "rgba(120,60,80,0.07)" },
   { key: "mint", label: "포레스트", bg: ["#12574f", "#0b3b37"], text: "#ffffff", wm: "rgba(255,255,255,0.07)" },
   { key: "mono", label: "차콜", bg: ["#2b2b30", "#161619"], text: "#ffffff", wm: "rgba(255,255,255,0.06)" },
 ];
-// 캔버스에 기본 배너 그림(1200x400): 그라데이션 + 'RECRUIT' 워터마크 + 가운데 제목(자동 줄바꿈)
-function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRESETS)[number], title: string) {
+// 폭 초과 시 자동 줄바꿈(명시적 개행 우선)
+function wrapLines(ctx: CanvasRenderingContext2D, title: string, maxW: number, maxLines = 3): string[] {
+  const wrap = (line: string): string[] => {
+    if (ctx.measureText(line).width <= maxW) return [line];
+    const words = line.split(" ");
+    const out: string[] = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width <= maxW || !cur) cur = test;
+      else { out.push(cur); cur = w; }
+    }
+    if (cur) out.push(cur);
+    return out;
+  };
+  return title.split("\n").flatMap((l) => wrap(l.trim())).filter(Boolean).slice(0, maxLines);
+}
+
+// 캔버스에 기본 배너 그림. 사진 프리셋(preset.img)이면 사진을 배경으로 깔고 그 위에 제목을 얹는다.
+//   사진 배너는 미리보기 배너 칸 비율(120:76)에 맞춘 1200x760 → 미리보기에서 잘리지 않는다.
+//   그라데이션 프리셋은 기존 1200x400 유지.
+async function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRESETS)[number], title: string) {
+  if (preset.img) {
+    const W = 1200, H = 760;
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.fillStyle = preset.bg[0]; ctx.fillRect(0, 0, W, H);
+    // 배경 사진: cover(비율 유지, 넘치는 쪽만 잘라 가운데 정렬)
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    await new Promise<void>((res) => { img.onload = () => res(); img.onerror = () => res(); img.src = preset.img!; });
+    if (img.naturalWidth && img.naturalHeight) {
+      const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+      const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
+      ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+    }
+    // 제목: 오른쪽 영역에 배치(사진 왼쪽의 제품 연출을 가리지 않도록)
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillStyle = preset.text;
+    ctx.font = "700 64px 'Pretendard','Apple SD Gothic Neo',sans-serif";
+    const maxW = W * 0.56;
+    const lines = wrapLines(ctx, title, maxW);
+    const lh = 84;
+    const cx = W * 0.66;
+    const startY = H / 2 - ((lines.length - 1) * lh) / 2;
+    lines.forEach((ln, i) => ctx.fillText(ln, cx, startY + i * lh));
+    return;
+  }
   const W = 1200, H = 400;
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d");
@@ -52,20 +100,7 @@ function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRE
   // 가운데 제목(줄바꿈: 명시적 개행 + 폭 초과 시 자동 래핑)
   ctx.fillStyle = preset.text;
   ctx.font = "700 52px 'Pretendard','Apple SD Gothic Neo',sans-serif";
-  const maxW = W * 0.82;
-  const wrap = (line: string): string[] => {
-    if (ctx.measureText(line).width <= maxW) return [line];
-    const words = line.split(" ");
-    const out: string[] = []; let cur = "";
-    for (const w of words) {
-      const test = cur ? cur + " " + w : w;
-      if (ctx.measureText(test).width <= maxW || !cur) cur = test;
-      else { out.push(cur); cur = w; }
-    }
-    if (cur) out.push(cur);
-    return out;
-  };
-  const lines = title.split("\n").flatMap((l) => wrap(l.trim())).filter(Boolean).slice(0, 3);
+  const lines = wrapLines(ctx, title, W * 0.82);
   const lh = 66;
   const startY = H / 2 - ((lines.length - 1) * lh) / 2;
   lines.forEach((ln, i) => ctx.fillText(ln, W / 2, startY + i * lh));
@@ -828,7 +863,7 @@ export default function JobPostForm({
     setBannerGenBusy(true);
     try {
       const canvas = document.createElement("canvas");
-      drawDefaultBanner(canvas, BANNER_PRESETS[bannerGenPreset] || BANNER_PRESETS[0], title);
+      await drawDefaultBanner(canvas, BANNER_PRESETS[bannerGenPreset] || BANNER_PRESETS[0], title);
       const blob: Blob | null = await new Promise((res) => canvas.toBlob((b) => res(b), "image/png", 0.92));
       if (!blob) { alert("배너 생성에 실패했어요."); return; }
       const file = new File([blob], `banner-${Date.now()}.png`, { type: "image/png" });
@@ -1843,7 +1878,10 @@ export default function JobPostForm({
                         <button key={p.key} type="button" onClick={() => setBannerGenPreset(i)}
                           style={{ width: 108, height: 40, borderRadius: 8, cursor: "pointer", position: "relative", overflow: "hidden",
                             border: bannerGenPreset === i ? "2px solid #5f0080" : "1.5px solid #e0d8ec",
-                            background: `linear-gradient(135deg, ${p.bg[0]}, ${p.bg[1]})`, color: p.text, fontSize: 11, fontWeight: 700 }}>
+                            // 사진 프리셋은 실제 사진을 미리 보여줌
+                            backgroundImage: p.img ? `url(${p.img})` : `linear-gradient(135deg, ${p.bg[0]}, ${p.bg[1]})`,
+                            backgroundSize: "cover", backgroundPosition: "center",
+                            color: p.text, fontSize: 11, fontWeight: 700 }}>
                           {p.label}
                         </button>
                       ))}
