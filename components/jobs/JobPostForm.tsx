@@ -1275,17 +1275,17 @@ export default function JobPostForm({
       if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
       // 근무조건 필수(발행 시). 경력·고용형태·급여·근무요일/시간·인원은 모집부문 표에서 분야별(협의·미정 허용)이라 하드 필수 아님.
       if (status === "publish") {
+        // 자격요건은 선택 — 조건 없이 뽑는 공고도 있어 필수로 두지 않는다.
         if (jobGroupType === "매장") {
-          // 매장: 상세요강 이미지 또는 (포지션 소개+자격요건)
-          if (detailImages.length === 0 && (!form.description?.trim() || !form.requirements?.trim())) {
-            alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개와 자격요건을 입력해주세요.");
+          // 매장: 상세요강 이미지 또는 포지션 소개
+          if (detailImages.length === 0 && !form.description?.trim()) {
+            alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개를 입력해주세요.");
             return;
           }
         } else {
-          // 오피스: 담당업무·자격요건은 상세 이미지가 없을 때만 필수(경력·학력은 모집부문 표에서)
-          if (detailImages.length === 0) {
-            if (!form.responsibilities?.trim()) { alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
-            if (!form.requirements?.trim()) { alert("자격요건을 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
+          // 오피스: 담당업무는 상세 이미지가 없을 때만 필수(경력·학력은 모집부문 표에서)
+          if (detailImages.length === 0 && !form.responsibilities?.trim()) {
+            alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return;
           }
         }
         if (benefitTags.length === 0 && !fiBenefits.trim()) { alert("복리후생을 1개 이상 선택해주세요."); return; }
@@ -1501,7 +1501,7 @@ export default function JobPostForm({
       hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
       placeholder: "",
     },
-    requirements: { label: "자격요건", hint: isOffice ? "필수" : (detailImages.length > 0 ? undefined : "필수 (이미지 없을 시)"), placeholder: "" },
+    requirements: { label: "자격요건", hint: "선택", placeholder: "" },
     preferred: { label: "우대사항", placeholder: "" },
   };
   // 오피스는 담당업무(JD) 중심, 매장은 포지션 소개 중심
@@ -1922,7 +1922,7 @@ export default function JobPostForm({
                   <input
                     value={newCompanyName}
                     onChange={(e) => setNewCompanyName(e.target.value)}
-                    placeholder="회사명 (예: 이철헤어커커 망원점)"
+                    placeholder="회사명 (예: 리안헤어 광명점)"
                     style={{ fontSize: 14, fontWeight: 700, color: "#8a7fa0", border: "none", outline: "none", background: "transparent", padding: 0, width: "100%" }}
                   />
                 </div>
@@ -2296,18 +2296,16 @@ export default function JobPostForm({
                   </label>
                   {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어 주세요.</span>}
                 </div>
-                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 포지션 소개·자격요건은 필수예요.</p>
+                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 {isOffice ? "담당업무" : "포지션 소개"}는 입력해주세요.</p>
               </div>
 
               {/* 상세 항목 → 그 자리에서 바로 쓰는 인라인 textarea(모달·팝오버 없음, 자동 높이) */}
               {textFields.map((k) => {
                 const meta = textFieldMeta[k];
                 const content = ((form as any)[k] || "") as string;
-                // 상세 이미지가 없으면 포지션 소개·자격요건을 필수로 표시(이미지 대신 텍스트로 안내)
-                // 오피스: 담당업무·자격요건 필수 / 매장: 이미지 없을 때 포지션 소개·자격요건 필수
-                const isReq = isOffice
-                  ? (detailImages.length === 0 && (k === "responsibilities" || k === "requirements"))
-                  : (detailImages.length === 0 && (k === "description" || k === "requirements"));
+                // 상세 이미지가 없을 때만 본문(오피스=담당업무 / 매장=포지션 소개)을 필수로 표시.
+                //   자격요건은 선택 — 조건 없이 뽑는 공고도 있다.
+                const isReq = detailImages.length === 0 && k === (isOffice ? "responsibilities" : "description");
                 return (
                   <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
                     <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block" }}>
