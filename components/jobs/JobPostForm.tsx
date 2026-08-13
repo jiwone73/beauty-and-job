@@ -2533,7 +2533,7 @@ export default function JobPostForm({
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "8px" }}>
 
           {/* 상세요강 */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
             <h2 className="jobpost-section-title" style={{ margin: 0 }}>상세요강</h2>
             <label title="상세요강 이미지 추가"
               style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: uploading ? "#bbb" : "#5f0080", borderRadius: 7, fontSize: 13, lineHeight: 1, cursor: uploading ? "wait" : "pointer" }}>
@@ -2546,7 +2546,11 @@ export default function JobPostForm({
 
               {/* ── 상세 내용 이미지 (본문 세로 스택) — 실제 미리보기의 상세요강 위치와 동일 ── */}
               <div style={{ paddingBottom: 16, borderBottom: "1px solid var(--color-border)", marginBottom: 4 }}>
-                {/* 점선 드롭존·안내 문구는 제거하고 썸네일만. 드래그·Ctrl+V 첨부는 이 영역에서 그대로 동작한다. */}
+                {detailImages.length === 0 && (
+                  <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>상세요강 이미지가 있다면 여기로 <b>＋</b>를 눌러서 첨부해 주세요.</div>
+                )}
+                {/* 점선 드롭존은 없애고 썸네일만(비율은 그대로, 좌우 간격만 절반으로).
+                    드래그·Ctrl+V 첨부는 이 영역에서 그대로 동작한다. */}
                 <div
                   tabIndex={-1}
                   onFocus={() => setPasteZone("body")}
@@ -2554,14 +2558,14 @@ export default function JobPostForm({
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
                   onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) processFiles(fs); } }}
-                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", outline: "none" }}>
+                  style={{ display: "flex", flexWrap: "wrap", gap: "8px 4px", alignItems: "center", outline: "none" }}>
                   {detailImages.map((d, idx) => (
                     <div key={d.url + idx} draggable
                       onDragStart={() => { imgDragRef.current = { zone: "body", idx }; }}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (imgDragRef.current) dropToBody(idx); }}
                       style={{ position: "relative", width: 84, cursor: "grab" }}>
-                      <img src={d.url} alt={`상세 ${idx + 1}`} style={{ width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
+                      <img src={d.url} alt={`상세 ${idx + 1}`} style={{ display: "block", width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
                       <button type="button" onClick={() => removeImage(idx)} title="삭제"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
