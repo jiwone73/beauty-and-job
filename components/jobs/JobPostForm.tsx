@@ -1016,11 +1016,12 @@ export default function JobPostForm({
   // 빈 값 자리엔 텍스트 없이 화이트톤 연보라 하이라이트 블록으로 통일(4글자 폭·텍스트 높이, 고정 px).
   const PH_BG = "#f8f6fd"; // 거의 화이트에 가까운 아주 연한 연보라
   const pick = (_label?: string) => (
-    <span style={{ display: "inline-block", width: 56, height: 20, borderRadius: 5, background: PH_BG, verticalAlign: "middle" }} />
+    <span style={{ display: "inline-block", width: 56, height: 20, padding: 0, borderRadius: 5, background: PH_BG, verticalAlign: "middle" }} />
   );
   // 네이티브 셀렉트(경력·학력·고용형태·근무기간)도 동일 규격. 값 유무와 무관하게 높이·글자크기 고정으로 '입력 시 커짐' 방지.
   const emptySel = (filled: boolean): CSSProperties => ({
     fontSize: 15, lineHeight: "20px", height: 20,
+    paddingLeft: 0, paddingRight: 0, // 좌우 패딩 없이(좁은 화면 공간 확보)
     background: filled ? "transparent" : PH_BG,
     borderRadius: filled ? 0 : 5,
     width: filled ? "auto" : 56,
@@ -1530,9 +1531,11 @@ export default function JobPostForm({
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 모집부문 표 셀 스타일
-  const thc: React.CSSProperties = { textAlign: "left", padding: "10px 10px", fontSize: 13.5, color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" };
+  const thc: React.CSSProperties = { textAlign: "left", padding: "9px 4px", fontSize: 12.5, color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" };
   const reqStar = <span style={{ color: "#e9a3a3" }}> *</span>; // 필수 열 표시
-  const tdc: React.CSSProperties = { padding: "11px 10px", borderBottom: "1px solid #f3f0f8", verticalAlign: "middle" };
+  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f3f0f8", verticalAlign: "middle" };
+  // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
+  const firstCol: React.CSSProperties = { paddingLeft: 0 };
   const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
   // 근무시간 숫자 입력: 타이핑 중에는 숫자·콜론만 남기고, 칸을 벗어날 때 HH:MM으로 정리한다.
   //   "9"→09:00, "930"→09:30, "0930"→09:30, "2000"→20:00 (24시 넘거나 60분 넘으면 잘라 맞춤)
@@ -2193,16 +2196,16 @@ export default function JobPostForm({
                   <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야 ＋</b>를 눌러 모집할 분야를 담아주세요.</div>
                 ) : (
                   <div style={{ overflowX: "auto" }}>
-                    <table style={{ minWidth: 720, borderCollapse: "collapse" }}>
+                    <table style={{ minWidth: 566, borderCollapse: "collapse" }}>
                       <thead>
                         <tr>
-                          <th style={{ ...thc, minWidth: 110 }}>모집분야{reqStar}</th>
-                          <th style={{ ...thc, minWidth: 84 }}>고용형태{reqStar}</th>
-                          <th style={{ ...thc, minWidth: 68 }}>성별우대</th>
-                          <th style={{ ...thc, minWidth: 88 }}>경력/직책{reqStar}</th>
-                          <th style={{ ...thc, minWidth: 68 }}>학력</th>
-                          <th style={{ ...thc, minWidth: 150 }}>근무요일 / 시간{reqStar}</th>
-                          <th style={{ ...thc, minWidth: 100 }}>급여{reqStar}</th>
+                          <th style={{ ...thc, ...firstCol, minWidth: 92 }}>모집분야{reqStar}</th>
+                          <th style={{ ...thc, minWidth: 66 }}>고용형태{reqStar}</th>
+                          <th style={{ ...thc, minWidth: 56 }}>성별우대</th>
+                          <th style={{ ...thc, minWidth: 72 }}>경력/직책{reqStar}</th>
+                          <th style={{ ...thc, minWidth: 52 }}>학력</th>
+                          <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간{reqStar}</th>
+                          <th style={{ ...thc, minWidth: 82 }}>급여{reqStar}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2210,11 +2213,11 @@ export default function JobPostForm({
                           const row = posMeta[cat] || emptyPos;
                           return (
                             <tr key={cat}>
-                              <td style={{ ...tdc, fontSize: 13, color: "#333" }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                              <td style={{ ...tdc, ...firstCol, fontSize: 12.5, color: "#333" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
                                   <span style={{ flex: 1, minWidth: 0 }}>{baseCat(cat)}</span>
                                   <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
-                                    style={{ width: 20, height: 20, flexShrink: 0, borderRadius: 5, border: "1px solid #eee", background: "#fff", color: "#bbb", fontSize: 13, lineHeight: 1, cursor: "pointer" }}>×</button>
+                                    style={{ width: 18, height: 18, flexShrink: 0, borderRadius: 5, border: "1px solid #eee", background: "#fff", color: "#bbb", fontSize: 12, lineHeight: 1, cursor: "pointer", padding: 0 }}>×</button>
                                 </div>
                               </td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "예: 정규직")}</td>
