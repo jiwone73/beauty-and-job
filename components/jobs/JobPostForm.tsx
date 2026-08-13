@@ -2547,7 +2547,7 @@ export default function JobPostForm({
               {/* ── 상세 내용 이미지 (본문 세로 스택) — 실제 미리보기의 상세요강 위치와 동일 ── */}
               <div style={{ paddingBottom: 16, borderBottom: "1px solid var(--color-border)", marginBottom: 4 }}>
                 {detailImages.length === 0 && (
-                  <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>상세요강 이미지가 있다면 여기로 <b>＋</b>를 눌러서 첨부해 주세요.</div>
+                  <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>상세요강 이미지가 있다면 <b>＋</b>를 눌러서 첨부해 주세요.</div>
                 )}
                 {/* 점선 드롭존은 없애고 썸네일만(비율은 그대로, 좌우 간격만 절반으로).
                     드래그·Ctrl+V 첨부는 이 영역에서 그대로 동작한다. */}
