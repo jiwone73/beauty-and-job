@@ -1983,7 +1983,7 @@ export default function JobPostForm({
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
 
       {/* 공고 상단 이미지 */}
-      {mode === "company" ? (
+      {mode === "company" && isMobile ? (
         <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
           {/* 제목 옆에 ＋(이미지 추가) — 카드 안 공간을 쓰지 않는다 */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
@@ -2041,7 +2041,7 @@ export default function JobPostForm({
       ) : (() => {
         return (
           <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
-            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>상단 배너</h2>
+            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>{mode === "company" ? "공고 상단 이미지" : "상단 배너"}</h2>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
 
               {/* ── 상단 배너 (cover, 여러 장 · 공개화면에서 3장씩 화살표로 회전) ── */}
@@ -2082,6 +2082,11 @@ export default function JobPostForm({
                     <span style={{ fontSize: 18, lineHeight: 1 }}>✎</span>
                     <span style={{ fontSize: 10 }}>기본 배너</span>
                   </button>
+                  {/* 기업회원: 기업설정 커버를 이 공고로 다시 가져오기(여기서 빼도 기업정보는 그대로) */}
+                  {mode === "company" && coverImages.length > 0 && bannerImages.length === 0 && (
+                    <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
+                      style={{ flexShrink: 0, border: "1.5px dashed #c4b5d4", background: "#fff", color: "#666", borderRadius: 8, padding: "0 12px", height: 76, fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
+                  )}
                   {bannerImages.length === 0 && !bannerGenOpen && <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>이미지가 없으면 <b>기본 배너</b>로 제목만 넣어 만들 수 있어요. 또는 이미지를 <b>드래그</b>·<b>Ctrl+V</b> 하세요.</span>}
                 </div>
                 {/* 기본 배너 생성 패널 */}
@@ -2153,7 +2158,7 @@ export default function JobPostForm({
 
               {/* ── 모집부문 제목(모집분야 위, '지원 안내'와 동일 스타일) ── */}
               <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", paddingTop: 14, borderTop: "1px solid #f0edf5", fontWeight: 400, color: "#333" }}>
-                <Briefcase size={16} style={{ color: "#5f0080", flexShrink: 0 }} />모집부문 <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400 }}>모집분야를 선택하면 분야별로 고용형태·성별·경력/직책·학력·근무·급여를 입력해요{nonMember ? " (값이 안 맞으면 자유입력)" : ""}</span>
+                <Briefcase size={16} style={{ color: "#5f0080", flexShrink: 0 }} />모집부문
               </div>
               {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "0 0 12px", alignItems: "center" }}>
@@ -2563,7 +2568,6 @@ export default function JobPostForm({
                   </label>
                   {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어 주세요.</span>}
                 </div>
-                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999", lineHeight: 1.6 }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 {isOffice ? "담당업무" : "포지션 소개"}는 입력해주세요.<br />이미지는 올릴 때 <b>자동으로 0.3MB 내외</b>로 줄여서 저장돼요.</p>
               </div>
 
               {/* 상세 항목 → 그 자리에서 바로 쓰는 인라인 textarea(모달·팝오버 없음, 자동 높이) */}
