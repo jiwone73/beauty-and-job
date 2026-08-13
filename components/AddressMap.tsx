@@ -56,23 +56,38 @@ export default function AddressMap({
       window.kakao.maps.event.addListener(map, "zoom_changed", () => map.setCenter(center));
     };
 
+    // 도로명 주소 뒤에 붙은 상세(동·건물명·상호)를 잘라낸다. 예) "서울 금천구 벚꽃로40 롯데캐슬골드파크 104동"
+    const detailM = addr.match(/^(.*?(?:대로|로|길)\s*\d+(?:-\d+)?)\s+(.+)$/);
+    const roadCore = (detailM?.[1] || "").match(/(\S*(?:대로|로|길))\s*(\d+(?:-\d+)?)/);
+    const roadKey = roadCore ? `${roadCore[1]}${roadCore[2]}` : "";
+    const norm = (s: string) => (s || "").replace(/\s+/g, "");
+
     const geocode = () => {
       if (cancelled || !window.kakao?.maps?.services) { showFallback(); return; }
       const geocoder = new window.kakao.maps.services.Geocoder();
-      geocoder.addressSearch(addr, (result: any[], status: string) => {
-        if (cancelled) return;
-        if (status === window.kakao.maps.services.Status.OK && result[0]) {
-          place(Number(result[0].y), Number(result[0].x));
-        } else {
-          // 도로명/지번 검색 실패 → 상호·건물명 등 키워드 검색으로 폴백
-          const ps = new window.kakao.maps.services.Places();
-          ps.keywordSearch(addr, (r2: any[], s2: string) => {
-            if (cancelled) return;
-            if (s2 === window.kakao.maps.services.Status.OK && r2[0]) place(Number(r2[0].y), Number(r2[0].x));
-            else showFallback();
-          });
-        }
-      });
+      const byAddress = (onFail: () => void) => {
+        geocoder.addressSearch(addr, (result: any[], status: string) => {
+          if (cancelled) return;
+          if (status === window.kakao.maps.services.Status.OK && result[0]) place(Number(result[0].y), Number(result[0].x));
+          else onFail();
+        });
+      };
+      const byKeyword = (onFail: () => void, mustMatchRoad = false) => {
+        const ps = new window.kakao.maps.services.Places();
+        ps.keywordSearch(addr, (r2: any[], s2: string) => {
+          if (cancelled) return;
+          const list = s2 === window.kakao.maps.services.Status.OK ? r2 : [];
+          // 같은 도로명 주소에 속한 결과만 채택(동명이 같은 다른 지역 아파트가 잡히지 않도록)
+          const hit = mustMatchRoad && roadKey
+            ? list.find((d) => norm(d.road_address_name || d.address_name || "").includes(roadKey))
+            : list[0];
+          if (hit) place(Number(hit.y), Number(hit.x));
+          else onFail();
+        });
+      };
+      // 상세(동·건물명)가 있으면 주소검색은 그 부분을 무시하고 도로명 지점만 찍는다 → 키워드 검색을 먼저 시도.
+      if (detailM) byKeyword(() => byAddress(showFallback), true);
+      else byAddress(() => byKeyword(showFallback));
     };
 
     const render = () => window.kakao.maps.load(geocode);
