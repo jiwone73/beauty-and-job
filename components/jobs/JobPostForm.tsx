@@ -24,6 +24,13 @@ const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 // 모집부문 표용 간결 옵션(여백 확보, 직접입력 없음)
 const POS_CAREER = ["신입", "경력", "무관", "1년~", "3년~", "5년~", "10년~", "실장", "부원장", "원장"];
+// 급여: 지급 주기를 고르면 앞머리(시·주·월·연)가 자동으로 붙고 금액만 적으면 된다. 협의는 단독 값.
+const SALARY_UNITS: { label: string; prefix: string }[] = [
+  { label: "시급", prefix: "시" },
+  { label: "주급", prefix: "주" },
+  { label: "월급", prefix: "월" },
+  { label: "연봉", prefix: "연" },
+];
 const POS_EDU = ["무관", "고졸", "초대졸", "대졸", "석사"];
 // 기본 배너 배경 프리셋(뷰티 필). bg=그라데이션 2색, text=제목색, wm=배경 'RECRUIT' 워터마크색
 // 사진을 배경으로 깔고 그 위에 제목을 그린다(제목은 별도 입력). bg는 사진 로드 실패 시 폴백 색.
@@ -321,6 +328,7 @@ export default function JobPostForm({
   const [parsedPrimary, setParsedPrimary] = useState<PosRow | null>(null);
   const [posShiftOpen, setPosShiftOpen] = useState<string | null>(null); // 근무요일/시간 팝오버가 열린 분야
   const [cellOpen, setCellOpen] = useState<string | null>(null); // 표 셀 직접입력 팝오버 `${cat}|${field}`
+  const cellInputRef = useRef<HTMLInputElement>(null); // 표 셀 직접입력 팝오버의 입력칸(주기 클릭 후 바로 타이핑되게)
   const [addRowOpen, setAddRowOpen] = useState(false); // 모집부문 '행 추가' — 분야를 골라 행을 붙임(같은 분야 중복 가능)
   const [mgrOpen, setMgrOpen] = useState(false); // 담당자 정보 팝오버
   const [regionList, setRegionList] = useState<string[]>([]);
@@ -1437,7 +1445,12 @@ export default function JobPostForm({
   const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
   const cellSelect: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff", WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
   // 클릭-선택 셀: 옵션 있으면 드롭다운(+비회원 '직접입력…'). 값이 목록에 없으면 클릭 텍스트→팝오버. 급여처럼 옵션 없으면 항상 팝오버.
-  const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력", allowFi = true) => {
+  // 급여 앞머리 교체: "월 300" 에서 주기만 바꿔도 금액은 남는다. 협의였으면 금액 없이 시작.
+  const withSalaryUnit = (cur: string, prefix: string) => {
+    const rest = cur.replace(/^\s*[시주월연]\s*/, "").replace(/^협의\s*$/, "").trim();
+    return rest ? `${prefix} ${rest}` : `${prefix} `;
+  };
+  const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력", allowFi = true, units?: typeof SALARY_UNITS) => {
     const v = (posMeta[cat] || emptyPos)[field];
     const key = `${cat}|${field}`;
     // allowFi=false면 직접입력 없이 항상 드롭다운(목록에 없는 값은 빈 선택으로)
@@ -1454,8 +1467,23 @@ export default function JobPostForm({
           <button type="button" onClick={() => setCellOpen(key)} style={{ ...cellSelect, textAlign: "left", color: v ? "#333" : "#bbb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || "선택"}</button>
         )}
         {cellOpen === key && (
-          <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 4, zIndex: 60, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 8, width: 190 }}>
-            <input autoFocus type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph} onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }} style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "6px 8px", fontSize: 13 }} />
+          <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 4, zIndex: 60, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 8, width: units ? 226 : 190 }}>
+            {units && (
+              /* 지급 주기 선택 → 앞머리(시·주·월·연) 자동 입력. 금액만 이어서 적으면 된다. */
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 6 }}>
+                {units.map((u) => {
+                  const on = v.trim().startsWith(u.prefix);
+                  return (
+                    <button key={u.label} type="button"
+                      onClick={() => { setPos(cat, field, withSalaryUnit(v, u.prefix)); cellInputRef.current?.focus(); }}
+                      style={{ border: `1px solid ${on ? "#5f0080" : "#e0d8ec"}`, background: on ? "#f7f1fd" : "#fff", color: on ? "#5f0080" : "#666", borderRadius: 6, padding: "3px 8px", fontSize: 12, cursor: "pointer" }}>{u.label}</button>
+                  );
+                })}
+                <button type="button" onClick={() => { setPos(cat, field, "협의"); setCellOpen(null); }}
+                  style={{ border: `1px solid ${v.trim() === "협의" ? "#5f0080" : "#e0d8ec"}`, background: v.trim() === "협의" ? "#f7f1fd" : "#fff", color: v.trim() === "협의" ? "#5f0080" : "#666", borderRadius: 6, padding: "3px 8px", fontSize: 12, cursor: "pointer" }}>협의</button>
+              </div>
+            )}
+            <input ref={cellInputRef} autoFocus type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph} onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }} style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "6px 8px", fontSize: 13 }} />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
               {options.length > 0 ? <button type="button" onClick={() => { setPos(cat, field, ""); setCellOpen(null); }} style={{ border: "none", background: "none", color: "#888", fontSize: 12, cursor: "pointer" }}>목록으로</button> : <span />}
               <button type="button" onClick={() => setCellOpen(null)} className="company-primary-btn" style={{ padding: "4px 12px", fontSize: 12 }}>확인</button>
@@ -2083,7 +2111,7 @@ export default function JobPostForm({
                                   );
                                 })()}
                               </td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "예: 월 300~350 / 협의")}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "예: 300~350", true, SALARY_UNITS)}</td>
                             </tr>
                           );
                         })}
