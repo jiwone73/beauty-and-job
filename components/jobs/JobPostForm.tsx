@@ -1998,7 +1998,8 @@ export default function JobPostForm({
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
             {/* 썸네일마다 ×로 이 공고에서만 제거 */}
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
-              {/* 한 줄에 3장 고정(줄바꿈 없음). 3장을 넘으면 좌우 화살표로 넘겨 본다. */}
+              {/* 한 줄에 3장 고정(줄바꿈 없음). 3장을 넘으면 좌우 화살표로 넘겨 본다.
+                  칸 비율은 PC 드래그 박스 썸네일(120x76)과 동일하게 맞춘다. */}
               {bannerImages.length > 0 && (() => {
                 const PER = 3;
                 const n = bannerImages.length;
@@ -2015,7 +2016,7 @@ export default function JobPostForm({
                   <div style={{ width: "100%", position: "relative" }}>
                     <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap: 0, borderRadius: 8, overflow: "hidden" }}>
                       {shown.map(({ b, idx }) => (
-                        <div key={b.url + idx} style={{ position: "relative", minWidth: 0, aspectRatio: "3 / 2" }}>
+                        <div key={b.url + idx} style={{ position: "relative", minWidth: 0, aspectRatio: "120 / 76" }}>
                           <img src={b.url} alt={`상단 이미지 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
                           <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="이 공고에서 빼기 (기업정보 이미지는 그대로예요)"
                             style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
