@@ -84,6 +84,53 @@ async function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANN
   const startY = H / 2 - ((lines.length - 1) * lh) / 2;
   lines.forEach((ln, i) => ctx.fillText(ln, W / 2, startY + i * lh));
 }
+// 업로드 전 압축. 서버는 5MB·JPG/PNG/WebP만 받는데, 휴대폰 사진은 그보다 크거나 HEIC라 그냥 올리면 실패한다.
+//   긴 변을 1600px로 줄이고 JPEG 품질을 낮춰가며 목표 용량 아래로 맞춘다.
+//   캔버스를 거치면서 HEIC도 JPEG로 바뀐다(사파리는 HEIC 디코딩 가능). EXIF 회전은 적용해서 그린다.
+const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
+async function compressImage(file: File, maxBytes = MAX_UPLOAD_BYTES, maxEdge = 1600): Promise<File> {
+  // 이미 규격에 맞고 충분히 작으면 원본 그대로(재인코딩으로 화질 깎지 않음)
+  if (/^image\/(jpeg|png|webp)$/i.test(file.type) && file.size <= maxBytes) return file;
+  let src: ImageBitmap | HTMLImageElement | null = null;
+  let objUrl = "";
+  try {
+    try {
+      src = await createImageBitmap(file, { imageOrientation: "from-image" });
+    } catch {
+      objUrl = URL.createObjectURL(file);
+      src = await new Promise<HTMLImageElement>((res, rej) => {
+        const im = new Image();
+        im.onload = () => res(im);
+        im.onerror = () => rej(new Error("decode"));
+        im.src = objUrl;
+      });
+    }
+    const w0 = (src as any).width as number;
+    const h0 = (src as any).height as number;
+    if (!w0 || !h0) return file;
+    const scale = Math.min(1, maxEdge / Math.max(w0, h0));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(w0 * scale));
+    canvas.height = Math.max(1, Math.round(h0 * scale));
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(src as any, 0, 0, canvas.width, canvas.height);
+    const name = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+    let last: Blob | null = null;
+    for (const q of [0.85, 0.72, 0.6, 0.5, 0.4]) {
+      const blob: Blob | null = await new Promise((res) => canvas.toBlob((b) => res(b), "image/jpeg", q));
+      if (!blob) break;
+      last = blob;
+      if (blob.size <= maxBytes) return new File([blob], name, { type: "image/jpeg" });
+    }
+    return last ? new File([last], name, { type: "image/jpeg" }) : file;
+  } catch {
+    return file; // 디코딩 실패 시 원본으로 시도(서버 검증 메시지가 뜨게)
+  } finally {
+    if (objUrl) URL.revokeObjectURL(objUrl);
+    if (src && "close" in (src as any)) (src as ImageBitmap).close();
+  }
+}
 const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트", "스페어", "협의"];
 // 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)
 // 불러오기 시 반드시 문제없이 들어와야 하는 핵심 항목만 이슈 대상으로.
@@ -749,7 +796,7 @@ export default function JobPostForm({
     setUploading(true);
     try {
       for (const file of files) {
-        const r = await uploadImage(file);
+        const r = await uploadImage(await compressImage(file));
         if (r.success && r.url) {
           setDetailImages((prev) => [...prev, { url: r.url!, name: r.name || file.name }]);
         } else {
@@ -842,7 +889,7 @@ export default function JobPostForm({
     setNmCoverUploading(true);
     try {
       for (const file of files) {
-        const r = await uploadImage(file);
+        const r = await uploadImage(await compressImage(file));
         if (r.success && r.url) setBannerImages((prev) => [...prev, { url: r.url!, name: r.name || file.name }]);
         else alert(r.error || "이미지 업로드에 실패했습니다.");
       }
@@ -1834,19 +1881,22 @@ export default function JobPostForm({
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
             {/* 썸네일마다 ×로 이 공고에서만 제거. 드롭존 없이 '이미지 추가' 버튼만 둔다(공간 절약). */}
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 0, borderRadius: 8, overflow: "hidden" }}>
-                {bannerImages.map((b, idx) => (
-                  <div key={b.url + idx} style={{ position: "relative", width: 104, height: 66, flexShrink: 0 }}>
-                    <img src={b.url} alt={`상단 이미지 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
-                    <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="이 공고에서 빼기 (기업정보 이미지는 그대로예요)"
-                      style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
-                  </div>
-                ))}
-              </div>
+              {/* 썸네일은 한 줄을 꽉 채우도록 늘어난다(고정폭이면 줄바꿈 뒤 빈칸이 남음) */}
+              {bannerImages.length > 0 && (
+                <div style={{ width: "100%", display: "flex", flexWrap: "wrap", gap: 0, borderRadius: 8, overflow: "hidden" }}>
+                  {bannerImages.map((b, idx) => (
+                    <div key={b.url + idx} style={{ position: "relative", flex: "1 1 90px", minWidth: 0, aspectRatio: "3 / 2" }}>
+                      <img src={b.url} alt={`상단 이미지 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
+                      <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="이 공고에서 빼기 (기업정보 이미지는 그대로예요)"
+                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
               <label title="이미지 추가"
                 style={{ display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: nmCoverUploading ? "#bbb" : "#5f0080", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: nmCoverUploading ? "wait" : "pointer" }}>
                 {nmCoverUploading ? "올리는 중…" : "＋ 이미지"}
-                <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
+                <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
                   onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
               </label>
               {coverImages.length > 0 && bannerImages.length === 0 && (
@@ -1854,10 +1904,11 @@ export default function JobPostForm({
                   style={{ flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
               )}
             </div>
-            <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999" }}>
+            <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999", lineHeight: 1.6 }}>
               {bannerImages.length === 0
                 ? "상단 이미지 없이 등록돼요. 필요하면 이미지를 추가하세요."
                 : "기업설정 커버가 기본으로 들어가요. 여기서 빼거나 바꿔도 기업정보에 저장된 이미지는 그대로예요."}
+              <br />이미지는 <b>3MB 이하</b>로 올려주세요. 큰 사진은 자동으로 줄여서 올라가요.
             </p>
           </div>
         </div>
@@ -1897,7 +1948,7 @@ export default function JobPostForm({
                     style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 120, height: 76, flexShrink: 0, borderRadius: 8, border: "1.5px dashed #c4b5d4", background: "#fff", color: "#5f0080", cursor: nmCoverUploading ? "wait" : "pointer" }}>
                     <span style={{ fontSize: 20, lineHeight: 1 }}>{nmCoverUploading ? "…" : "+"}</span>
                     <span style={{ fontSize: 10, marginTop: 2 }}>배너 추가</span>
-                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={nmCoverUploading || bannerImages.length >= 10} onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
+                    <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10} onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
                   </label>
                   {/* 기본 배너(가운데 제목만, 뷰티 배경) */}
                   <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="이미지 없이 제목만으로 기본 배너를 만들어요"
@@ -2329,11 +2380,11 @@ export default function JobPostForm({
                     style={{ width: 84, height: 84, flexShrink: 0, border: "1.5px dashed #c4b5d4", borderRadius: 8, background: "#fff", color: "#5f0080", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: uploading ? "wait" : "pointer" }}>
                     <span style={{ fontSize: 22, lineHeight: 1 }}>{uploading ? "…" : "+"}</span>
                     <span style={{ fontSize: 10 }}>추가</span>
-                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
+                    <input type="file" accept="image/*" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
                   </label>
                   {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어 주세요.</span>}
                 </div>
-                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999" }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 {isOffice ? "담당업무" : "포지션 소개"}는 입력해주세요.</p>
+                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999", lineHeight: 1.6 }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 {isOffice ? "담당업무" : "포지션 소개"}는 입력해주세요.<br />이미지는 <b>3MB 이하</b>로 올려주세요. 큰 사진은 자동으로 줄여서 올라가요.</p>
               </div>
 
               {/* 상세 항목 → 그 자리에서 바로 쓰는 인라인 textarea(모달·팝오버 없음, 자동 높이) */}
