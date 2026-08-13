@@ -72,22 +72,33 @@ export default function AddressMap({
           else onFail();
         });
       };
-      const byKeyword = (onFail: () => void, mustMatchRoad = false) => {
+      const byKeyword = (queries: string[], onFail: () => void, mustMatchRoad = false) => {
         const ps = new window.kakao.maps.services.Places();
-        ps.keywordSearch(addr, (r2: any[], s2: string) => {
+        const attempt = (i: number) => {
           if (cancelled) return;
-          const list = s2 === window.kakao.maps.services.Status.OK ? r2 : [];
-          // 같은 도로명 주소에 속한 결과만 채택(동명이 같은 다른 지역 아파트가 잡히지 않도록)
-          const hit = mustMatchRoad && roadKey
-            ? list.find((d) => norm(d.road_address_name || d.address_name || "").includes(roadKey))
-            : list[0];
-          if (hit) place(Number(hit.y), Number(hit.x));
-          else onFail();
-        });
+          if (i >= queries.length) { onFail(); return; }
+          ps.keywordSearch(queries[i], (r2: any[], s2: string) => {
+            if (cancelled) return;
+            const list = s2 === window.kakao.maps.services.Status.OK ? r2 : [];
+            // 같은 도로명 주소에 속한 결과만 채택(동명이 같은 다른 지역 아파트가 잡히지 않도록)
+            const hit = mustMatchRoad && roadKey
+              ? list.find((d) => norm(d.road_address_name || d.address_name || "").includes(roadKey))
+              : list[0];
+            if (hit) place(Number(hit.y), Number(hit.x));
+            else attempt(i + 1);
+          });
+        };
+        attempt(0);
       };
       // 상세(동·건물명)가 있으면 주소검색은 그 부분을 무시하고 도로명 지점만 찍는다 → 키워드 검색을 먼저 시도.
-      if (detailM) byKeyword(() => byAddress(showFallback), true);
-      else byAddress(() => byKeyword(showFallback));
+      //   호수·층까지 붙으면 검색이 안 잡히므로 그 뒤를 떼고 '…104동'까지로 한 번 더 시도한다.
+      if (detailM) {
+        const upToDong = addr.match(/^(.*?\d+\s*동)(?:\s|$)/)?.[1];
+        const queries = [addr, ...(upToDong && upToDong !== addr ? [upToDong] : [])];
+        byKeyword(queries, () => byAddress(showFallback), true);
+      } else {
+        byAddress(() => byKeyword([addr], showFallback));
+      }
     };
 
     const render = () => window.kakao.maps.load(geocode);

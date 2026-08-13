@@ -1356,11 +1356,19 @@ export default function JobPostForm({
     // 비회원(관리자 대행) 공고는 관리자가 자유롭게 대행 등록 → 필수 검증 없이 등록 허용.
     const isNmAdmin = mode === "admin" && nonMember;
     if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return; }
+    const effRegions = regionList.length ? regionList : deriveRegion(nmAddress);
     if (!isNmAdmin) {
       if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
       if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
       if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
-      if (regionList.length === 0) { alert("근무지역을 선택해주세요."); return; }
+      // 주소를 붙여넣거나 임시저장에서 복원하면 입력 onChange가 안 타 regionList가 비어 있을 수 있다.
+      //   저장 시점에 주소에서 한 번 더 뽑아 쓴다.
+      if (effRegions.length === 0) {
+        alert(nmAddress.trim()
+          ? "근무지역 주소에 시·군·구가 들어가게 입력해주세요. (예: 서울 금천구 벚꽃로 40)"
+          : "근무지역(주소)을 입력해주세요.");
+        return;
+      }
       // 근무조건 필수(발행 시). 경력·고용형태·급여·근무요일/시간·인원은 모집부문 표에서 분야별(협의·미정 허용)이라 하드 필수 아님.
       if (status === "publish") {
         // 자격요건은 선택 — 조건 없이 뽑는 공고도 있어 필수로 두지 않는다.
@@ -1423,7 +1431,7 @@ export default function JobPostForm({
       salary_type: salaryMin ? salaryType : null,
       salary_text: fiSalary.trim() || null, // 비회원 자유입력(예: "추후협의") — 있으면 표시 우선
       positions: positions.length ? positions : null, // 모집부문 표(분야별 경력·급여·인원)
-      location: regionList.join(", ") || null,
+      location: effRegions.join(", ") || null,
       work_type: workType,
       // 자유입력(fi*)이 채워졌으면 그 값으로 override(비회원 원문 보존). 비어 있으면 기존 위젯 값.
       employment_type: p0.employment || null, // 모집부문 표 첫 행 기준(대표값)
@@ -2158,12 +2166,13 @@ export default function JobPostForm({
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
                   <button type="button"
-                    onClick={() => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); setDeadlineModalOpen(true); }}
+                    onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
                     style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
                     {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : pick()}
                   </button>
-                  {deadlineModalOpen && (
-                    <div style={{ position: "absolute", top: "100%", left: 0, marginTop: "8px", zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "14px", width: "240px" }}>
+                  {deadlineModalOpen && popAt && (
+                    /* 절대위치 240px이라 좁은 화면에서 오른쪽으로 넘쳐 잘렸다 → 표 팝오버와 같은 화면 고정 좌표로. */
+                    <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "12px", width: 240, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
                       <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
                         style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
                       <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
