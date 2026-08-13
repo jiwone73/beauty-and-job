@@ -492,7 +492,8 @@ export default function AdminOutreachPage() {
                         {row.found_count > 0 && (
                           <button onClick={() => { setSrcTab(""); setExpanded(expanded === row.id ? null : row.id); }}
                             style={{ marginTop: 4, background: "none", border: "none", padding: 0, cursor: "pointer", ...badge("#0a7d34") }}>
-                            공고 {row.found_count}건 {expanded === row.id ? "▲" : "▼"}
+                            {/* 열렸을 때 ▼(아래=펼쳐진 목록을 가리킴), 닫혔을 때 ▶ */}
+                            공고 {row.found_count}건 {expanded === row.id ? "▼" : "▶"}
                           </button>
                         )}
                       </td>
