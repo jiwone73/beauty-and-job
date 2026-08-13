@@ -2425,10 +2425,10 @@ export default function JobPostForm({
                 const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 4 };
                 const subLbl: CSSProperties = { width: 34, flexShrink: 0, color: "#999", fontSize: 14 };
                 // 값이 없으면 연보라 블록, 채우면 글자만 — 폼의 다른 칸과 같은 규칙
-                const fld = (filled: boolean): CSSProperties => ({
-                  flex: 1, minWidth: 0, border: "none", background: filled ? "transparent" : PH_BG, borderRadius: 5,
-                  fontSize: 15, color: "#333", outline: "none", padding: filled ? "3px 2px" : "3px 6px", minHeight: 24, boxSizing: "border-box",
-                });
+                // 빈 값은 폼의 다른 항목과 같은 규격(56px 연보라 블록), 채우면 남은 폭을 쓴다.
+                const fld = (filled: boolean): CSSProperties => filled
+                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", borderRadius: 5, fontSize: 15, color: "#333", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
+                  : { flexShrink: 0, width: 56, height: 20, border: "none", background: PH_BG, borderRadius: 5, fontSize: 15, color: "#333", outline: "none", padding: 0, boxSizing: "border-box" };
                 const rowS: CSSProperties = { display: "flex", alignItems: "center", gap: 8, padding: "3px 0" };
                 return (
                   /* 좁은 화면에선 두 칸이 너무 좁아 세로로 쌓는다(.jobpost-form이 admin-form-row-2col을 1열로 덮어서 직접 지정) */
@@ -2440,7 +2440,7 @@ export default function JobPostForm({
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <button type="button"
                           onClick={(e) => { if (contactMethodsOpen) { setContactMethodsOpen(false); return; } openPopAt(e.currentTarget, 232, 150); setContactMethodsOpen(true); }}
-                          style={{ ...fld(contactMethods.length > 0), width: "100%", textAlign: "left", cursor: "pointer", lineHeight: 1.5 }}>
+                          style={{ ...fld(contactMethods.length > 0), textAlign: "left", cursor: "pointer", lineHeight: 1.5 }}>
                           {contactMethods.join(", ")}
                         </button>
                         {contactMethodsOpen && popAt && (
@@ -2533,8 +2533,9 @@ export default function JobPostForm({
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "8px" }}>
 
           {/* 상세요강 */}
-          {/* 모바일만 제목 옆 ＋(자리 절약). PC는 아래 드래그 박스에서 첨부한다. */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
+          {/* 모바일만 제목 옆 ＋(자리 절약). PC는 아래 드래그 박스에서 첨부한다.
+              위 여백은 '기본정보' 제목과 같게(앞 카드 아래 40px) — 컬럼 gap 8 + 카드 marginBottom을 감안해 24 추가. */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4, marginTop: 24 }}>
             <h2 className="jobpost-section-title" style={{ margin: 0 }}>상세요강</h2>
             {isMobile && (
               <label title="상세요강 이미지 추가"
