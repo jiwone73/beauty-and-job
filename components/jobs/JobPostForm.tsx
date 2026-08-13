@@ -1952,6 +1952,9 @@ export default function JobPostForm({
               {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "0 0 12px", alignItems: "center" }}>
                 <div className="job-detail-meta-item">
+                  {/* 행 추가: 분야를 골라 모집부문 표에 행을 붙인다. 같은 분야를 또 골라 신입·경력을 나눠 모집할 수 있다. */}
+                  <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
+                    style={{ width: 22, height: 22, flexShrink: 0, marginRight: 6, borderRadius: 6, border: "1px solid #e0d8ec", background: "#fff", color: typeLocked ? "#ddd" : "#5f0080", fontSize: 13, lineHeight: 1, cursor: typeLocked ? "default" : "pointer" }}>＋</button>
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집분야<span style={{ color: "#e9a3a3" }}> *</span></span>
                   {typeLocked ? (
                     <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
@@ -1984,15 +1987,8 @@ export default function JobPostForm({
 
               {/* ── 모집부문 표: 분야별 고용형태·성별·경력·학력·근무·급여 ── */}
               <div style={{ margin: "10px 0 22px" }}>
-                {/* 행 추가: 분야를 골라 행을 붙인다. 같은 분야를 또 골라 신입/경력을 나눠 모집할 수 있다. */}
-                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
-                  <button type="button" onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 4, border: "1px solid #e0d8ec", background: "#fff", color: "#5f0080", borderRadius: 7, padding: "5px 10px", fontSize: 12.5, cursor: "pointer" }}>
-                    ＋ 행 추가
-                  </button>
-                </div>
                 {categories.length === 0 ? (
-                  <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야</b>를 선택하거나 <b>행 추가</b>를 눌러 시작하세요.</div>
+                  <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야</b>를 선택하거나 <b>＋</b>를 눌러 시작하세요.</div>
                 ) : (
                   <div style={{ overflowX: (posShiftOpen || cellOpen) ? "visible" : "auto" }}>
                     <table style={{ minWidth: 720, borderCollapse: "collapse" }}>
