@@ -409,7 +409,6 @@ export default function JobPostForm({
     return () => { window.removeEventListener("scroll", onMove, true); window.removeEventListener("resize", onMove); };
   }, [popAt !== null]);
   const [coverStart, setCoverStart] = useState(0); // 공고 상단 이미지 썸네일: 3장 초과 시 화살표로 넘길 시작 위치
-  const [mgrOpen, setMgrOpen] = useState(false); // 담당자 정보 팝오버
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
   const [regionOpen, setRegionOpen] = useState(false);
@@ -508,13 +507,6 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [cellOpen]);
-  // 담당자 정보 팝오버: 바깥 클릭 시 닫기
-  useEffect(() => {
-    if (!mgrOpen) return;
-    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".mgr-pop")) setMgrOpen(false); };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [mgrOpen]);
   // 근무지역 인라인 자동완성: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!regionOpen) return;
@@ -1455,8 +1447,7 @@ export default function JobPostForm({
       external_contact_email: nmContactEmail.trim() || null,
       external_contact_name: nmManagerName.trim() || null,
       external_contact_phone: nmManagerPhone.replace(/\D/g, "") || null,
-      // 비회원(관리자) 공고는 뷰티워크 온라인 지원만 받는다 → 지원방법 고정
-      contact_methods: (mode === "admin" && nonMember) ? ["온라인 지원"] : contactMethods,
+      contact_methods: contactMethods,
       // 불러온 원문 URL 저장 → 이후 파서 개선 시 일괄 재파싱·백필 가능(picked.url 우선)
       source_url: (picked?.url || parseUrl || "").trim() || null,
       // 공고 전용 상단 이미지. 기업회원이 여기서 지워도 기업정보의 커버는 그대로 둔다.
@@ -2406,120 +2397,92 @@ export default function JobPostForm({
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}><Send size={16} style={{ color: "#5f0080", flexShrink: 0 }} />지원 안내</div>
 
-              {/* 지원방법 · 담당자 — 기업회원 공고. 고른 방법에 필요한 칸만 열린다(상세화면 지원 안내에 그대로 노출). */}
-              {!(mode === "admin" && nonMember) && (() => {
+              {/* 지원방법(좌) · 담당자(우) 2열 — 기업회원·비회원 공용.
+                  지원방법을 팝오버에서 고르면, 그 방법에 필요한 칸만 오른쪽에 생긴다.
+                  문자·전화 → 전화 / 이메일 → 메일 / 둘 중 하나라도 → 이름 / 홈페이지 지원 → 지원 URL.
+                  온라인 지원만 고르면 담당자 칸은 생기지 않는다(연락처가 필요 없는 방법이라).
+                  비회원 공고의 담당자 연락처는 상세화면에서 구직자에게 노출되지 않는다(JobDetailView). */}
+              {(() => {
                 const canPhone = contactMethods.includes("문자") || contactMethods.includes("전화");
                 const canEmail = contactMethods.includes("이메일");
-                const canName = canPhone || canEmail;          // 연락처를 받는 방법이면 담당자 이름도 받는다
+                const canName = canPhone || canEmail;
                 const canUrl = contactMethods.includes("홈페이지 지원");
-                const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 6 };
-                const subLbl: CSSProperties = { width: 44, flexShrink: 0, color: "#999", fontSize: 14 };
+                const isNmAdminJob = mode === "admin" && nonMember;
+                const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 4 };
+                const subLbl: CSSProperties = { width: 34, flexShrink: 0, color: "#999", fontSize: 14 };
                 // 값이 없으면 연보라 블록, 채우면 글자만 — 폼의 다른 칸과 같은 규칙
-                const inp2 = (filled: boolean): CSSProperties => ({
+                const fld = (filled: boolean): CSSProperties => ({
                   flex: 1, minWidth: 0, border: "none", background: filled ? "transparent" : PH_BG, borderRadius: 5,
                   fontSize: 15, color: "#333", outline: "none", padding: filled ? "3px 2px" : "3px 6px", minHeight: 24, boxSizing: "border-box",
                 });
-                const rowS: CSSProperties = { display: "flex", alignItems: "center", gap: 8, flex: "1 1 100%", padding: "3px 0" };
+                const rowS: CSSProperties = { display: "flex", alignItems: "center", gap: 8, padding: "3px 0" };
                 return (
-                  <>
-                    {/* 지원방법(복수 선택) */}
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "7px 0" }}>
+                  /* 좁은 화면에선 두 칸이 너무 좁아 세로로 쌓는다(.jobpost-form이 admin-form-row-2col을 1열로 덮어서 직접 지정) */
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
+                    {/* 지원방법 (좌) — 연보라 블록을 눌러 팝오버에서 복수 선택 */}
+                    <div ref={contactMethodsRef} style={{ display: "flex", alignItems: "flex-start", gap: 10, position: "relative", padding: "4px 0" }}>
                       <span style={lblS}>지원방법</span>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 14px", flex: 1, minWidth: 0, paddingTop: 5 }}>
-                        {CONTACT_METHOD_OPTIONS.map((m) => {
-                          const on = contactMethods.includes(m);
-                          return (
-                            <button key={m} type="button"
-                              onClick={() => setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]))}
-                              style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>{m}</button>
-                          );
-                        })}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <button type="button"
+                          onClick={(e) => { if (contactMethodsOpen) { setContactMethodsOpen(false); return; } openPopAt(e.currentTarget, 232, 150); setContactMethodsOpen(true); }}
+                          style={{ ...fld(contactMethods.length > 0), width: "100%", textAlign: "left", cursor: "pointer", lineHeight: 1.5 }}>
+                          {contactMethods.join(", ")}
+                        </button>
+                        {contactMethodsOpen && popAt && (
+                          <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
+                            {CONTACT_METHOD_OPTIONS.map((m) => {
+                              const on = contactMethods.includes(m);
+                              return (
+                                <button key={m} type="button"
+                                  onClick={() => setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]))}
+                                  style={{ padding: "5px 11px", borderRadius: 999, fontSize: 13, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>{m}</button>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     </div>
-                    {/* 홈페이지 지원 → 지원 URL */}
-                    {canUrl && (
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "3px 0" }}>
-                        <span style={lblS}>지원 URL</span>
-                        <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
-                          placeholder="https://" inputMode="url" style={inp2(!!externalApplyUrl)} />
-                      </div>
-                    )}
-                    {/* 담당자 — 전화·메일을 받는 방법을 골랐을 때만. 온라인 지원만 고르면 아예 숨김 */}
-                    {canName && (
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "3px 0" }}>
-                        <span style={lblS}>담당자</span>
-                        <div style={{ display: "flex", flexWrap: "wrap", flex: 1, minWidth: 0 }}>
-                          <div style={rowS}>
-                            <span style={subLbl}>이름</span>
-                            <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={inp2(!!nmManagerName)} />
-                          </div>
+                    {/* 담당자 (우) — 고른 방법에 필요한 칸만 생성 */}
+                    {(canName || canUrl) ? (
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0" }}>
+                        <span style={lblS}>
+                          {canName ? "담당자" : "지원 URL"}
+                          {isNmAdminJob && canName && <><br /><span style={{ fontSize: 10, color: "#c9a3d6" }}>관리자용</span></>}
+                        </span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          {canUrl && (
+                            <div style={rowS}>
+                              {canName && <span style={subLbl}>URL</span>}
+                              <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)} placeholder="https://" inputMode="url" style={fld(!!externalApplyUrl)} />
+                            </div>
+                          )}
+                          {canName && (
+                            <div style={rowS}>
+                              <span style={subLbl}>이름</span>
+                              <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={fld(!!nmManagerName)} />
+                            </div>
+                          )}
                           {canPhone && (
                             <div style={rowS}>
                               <span style={subLbl}>전화</span>
-                              <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} style={inp2(!!nmManagerPhone)} />
+                              <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} style={fld(!!nmManagerPhone)} />
                             </div>
                           )}
                           {canEmail && (
                             <div style={rowS}>
                               <span style={subLbl}>메일</span>
-                              <input value={nmContactEmail} inputMode="email" onChange={(e) => setNmContactEmail(e.target.value)} style={inp2(!!nmContactEmail)} />
+                              <input value={nmContactEmail} inputMode="email" onChange={(e) => setNmContactEmail(e.target.value)} style={fld(!!nmContactEmail)} />
                             </div>
+                          )}
+                          {isNmAdminJob && canName && (
+                            <div style={{ fontSize: 11, color: "#b58fc7", marginTop: 3 }}>구직자에게는 노출되지 않아요 · 회원가입 유도용 내부 연락처</div>
                           )}
                         </div>
                       </div>
-                    )}
-                  </>
+                    ) : <div />}
+                  </div>
                 );
               })()}
-
-              {/* 지원방법(좌·고정) · 담당자 연락처(우·관리자 확인용) — 관리자 비회원 공고에서만 */}
-              {mode === "admin" && nonMember && (
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 28px", alignItems: "start" }}>
-                  {/* 지원방법 (좌) — 비회원 공고는 뷰티워크 온라인 지원만. 고정 */}
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <span style={{ width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 6 }}>지원방법</span>
-                    <div style={{ flex: 1, minWidth: 0, padding: "6px 2px" }}>
-                      <div style={{ fontSize: 15, color: "#333", lineHeight: 1.6 }}>온라인 지원</div>
-                      <div style={{ fontSize: 12, color: "#aaa", marginTop: 2, lineHeight: 1.5 }}>비회원 공고는 뷰티워크에서만 지원을 받아요. 구직자가 ‘지원하기’를 누르면 관리자 인박스로 접수됩니다.</div>
-                    </div>
-                  </div>
-                  {/* 담당자 연락처 (우) — 관리자 확인·회원가입 유도용. 구직자에게는 노출되지 않음 */}
-                  {(() => {
-                    const inp2: CSSProperties = { flex: 1, minWidth: 0, border: "none", borderBottom: "1px solid #f4f3f6", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", boxSizing: "border-box" };
-                    return (
-                      <div className="mgr-pop" style={{ display: "flex", alignItems: "flex-start", gap: 10, position: "relative" }}>
-                        <span style={{ width: 76, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 6, lineHeight: 1.3 }}>담당자<br /><span style={{ fontSize: 10, color: "#c9a3d6" }}>관리자용</span></span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <button type="button" onClick={() => setMgrOpen((v) => !v)}
-                            style={{ width: "100%", textAlign: "left", border: "none", borderBottom: "1px solid #f4f3f6", background: "transparent", fontSize: 15, cursor: "pointer", padding: "6px 2px", color: (nmManagerName || nmManagerPhone || nmContactEmail) ? "#333" : "#cfcfcf", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                            {(nmManagerName || nmManagerPhone || nmContactEmail) ? [nmManagerName, nmManagerPhone, nmContactEmail].filter(Boolean).join(" · ") : "담당자 정보 입력"}
-                          </button>
-                          <div style={{ fontSize: 11, color: "#b58fc7", marginTop: 3 }}>구직자에게는 노출되지 않아요 · 회원가입 유도용 내부 연락처</div>
-                          {mgrOpen && (
-                            <div style={{ position: "absolute", top: "100%", left: 76, right: 0, marginTop: 6, zIndex: 60, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12 }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                                <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>이름</span>
-                                <input autoFocus value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="담당자 이름" style={{ flex: 1, minWidth: 0, height: 34, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 14 }} />
-                              </div>
-                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                                <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>전화</span>
-                                <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} placeholder="010-0000-0000" style={{ flex: 1, minWidth: 0, height: 34, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 14 }} />
-                              </div>
-                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>메일</span>
-                                <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="email@example.com" style={{ flex: 1, minWidth: 0, height: 34, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 14 }} />
-                              </div>
-                              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
-                                <button type="button" onClick={() => setMgrOpen(false)} className="company-primary-btn" style={{ padding: "5px 14px", fontSize: 13 }}>확인</button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
 
               {/* 채용 절차 — 오피스(기업) 공고에서만 노출 */}
               {jobGroupType === "기업" && (
