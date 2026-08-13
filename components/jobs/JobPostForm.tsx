@@ -298,6 +298,30 @@ export default function JobPostForm({
   const [posMeta, setPosMeta] = useState<Record<string, PosRow>>({});
   const setPos = (cat: string, k: keyof PosRow, v: string) =>
     setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, [k]: v } }; });
+  // 같은 모집분야를 여러 행으로 쓸 수 있게(예: 헤어디자이너 신입 1 · 경력 1) 내부 키에만 "#2" 꼬리표를 붙인다.
+  //   화면 표시·저장은 항상 꼬리표를 뗀 원래 분야명으로 나간다.
+  const baseCat = (c: string) => c.replace(/#\d+$/, "");
+  const nextDupKey = (base: string, list: string[]) => { let i = 2; while (list.includes(`${base}#${i}`)) i++; return `${base}#${i}`; };
+  const MAX_POS_ROWS = 10;
+  // 모집분야 선택 모달은 '분야' 단위(중복 없음)로 다루고, 여기서 기존 중복 행을 보존하며 합친다.
+  const applyCatSelection = (nextBases: string[]) =>
+    setCategories((prev) => {
+      const kept = prev.filter((c) => nextBases.includes(baseCat(c)));
+      const has = new Set(kept.map(baseCat));
+      return [...kept, ...nextBases.filter((b) => !has.has(b))];
+    });
+  // 같은 분야 한 행 더(바로 아래에 추가) — 값은 복제해 두고 다른 부분만 고치게
+  const addSameCatRow = (cat: string) => {
+    if (categories.length >= MAX_POS_ROWS) { alert(`모집부문은 최대 ${MAX_POS_ROWS}행까지예요.`); return; }
+    const key = nextDupKey(baseCat(cat), categories);
+    const i = categories.indexOf(cat);
+    setCategories([...categories.slice(0, i + 1), key, ...categories.slice(i + 1)]);
+    setPosMeta((m) => ({ ...m, [key]: { ...(m[cat] || emptyPos) } }));
+  };
+  const removeCatRow = (cat: string) => {
+    setCategories((prev) => prev.filter((c) => c !== cat));
+    setPosMeta((m) => { const { [cat]: _drop, ...rest } = m; return rest; });
+  };
   // 불러오기로 파싱된 경력·급여·인원을, 관리자가 모집분야를 고르면 첫 행에 채워줌(수기 재입력 방지).
   const [parsedPrimary, setParsedPrimary] = useState<PosRow | null>(null);
   const [posShiftOpen, setPosShiftOpen] = useState<string | null>(null); // 근무요일/시간 팝오버가 열린 분야
@@ -615,8 +639,23 @@ export default function JobPostForm({
         headcount: j.headcount != null ? String(j.headcount) : "",
       });
       setAlwaysOpen(!j.deadline);
-      setCategories(j.categories || []);
-      setPosMeta(Array.isArray(j.positions) ? Object.fromEntries(j.positions.filter((p: any) => p?.category).map((p: any) => [p.category, { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", headcount: p.headcount || "", gender: p.gender || "" }])) : {});
+      // 저장된 모집부문 행을 그대로 복원한다. 같은 분야가 여러 행이면 내부 키에 "#2"를 붙여 행을 유지.
+      const savedPos = (Array.isArray(j.positions) ? j.positions : []).filter((p: any) => p?.category);
+      if (savedPos.length) {
+        const keys: string[] = [];
+        const meta: Record<string, PosRow> = {};
+        for (const p of savedPos) {
+          const base = String(p.category);
+          const key = keys.includes(base) ? nextDupKey(base, keys) : base;
+          keys.push(key);
+          meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", headcount: p.headcount || "", gender: p.gender || "" };
+        }
+        setCategories(keys);
+        setPosMeta(meta);
+      } else {
+        setCategories(j.categories || []);
+        setPosMeta({});
+      }
       setRegionList(j.location ? String(j.location).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
       setDetailImages(j.detail_images || []);
       setBannerImages(((j.cover_images && j.cover_images.length ? j.cover_images : j.company?.cover_images) || []).map((c: any) => ({ url: c?.url, name: "배너" })).filter((x: any) => x.url));
@@ -1263,7 +1302,7 @@ export default function JobPostForm({
     }
 
     // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
     // 발행 시 모집부문 표 필수: 모집분야·고용형태·경력·근무요일/시간·급여(분야별). (성별우대·학력은 선택)
     if (status === "publish") {
       if (categories.length === 0) { alert("모집분야를 1개 이상 선택해주세요."); return; }
@@ -1314,7 +1353,7 @@ export default function JobPostForm({
       headcount: primaryHeadcount,
       headcount_text: fiHeadcount.trim() || null, // 비회원 자유입력(예: "인원미정") — 있으면 표시 우선
       gender_preference: p0.gender || null, // 모집부문 표 첫 행 기준
-      categories,
+      categories: [...new Set(categories.map(baseCat))],
       detail_images: detailImages,
       hiring_process: hiringProcess.filter((s) => s.trim()),
       notes: notes.trim() || null,
@@ -1489,7 +1528,7 @@ export default function JobPostForm({
     tags: [] as string[],
     title: form.title || "공고 제목",
     jobType: jobGroupType === "기업" ? "사무직" : "매장직",
-    jobCategories: categories,
+    jobCategories: [...new Set(categories.map(baseCat))],
     career: form.career || "경력무관",
     education: form.education || "",
     region: regionList.join(", "),
@@ -1498,7 +1537,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
-    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: c, career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
+    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: r.workTime.trim(), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
     color: "#e8f0fe",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -1913,7 +1952,7 @@ export default function JobPostForm({
                   {typeLocked ? (
                     <span style={{ fontSize: 14, color: "#cfcfcf" }}></span>
                   ) : (
-                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={categories} onChange={setCategories} maxSelect={5} placeholder="선택" title="모집분야 선택" />
+                    <JobGroupField jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"} value={[...new Set(categories.map(baseCat))]} onChange={applyCatSelection} maxSelect={5} placeholder="선택" title="모집분야 선택" />
                   )}
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
@@ -1962,7 +2001,15 @@ export default function JobPostForm({
                           const row = posMeta[cat] || emptyPos;
                           return (
                             <tr key={cat}>
-                              <td style={{ ...tdc, fontSize: 13, color: "#333" }}>{cat}</td>
+                              <td style={{ ...tdc, fontSize: 13, color: "#333" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                  <span style={{ flex: 1, minWidth: 0 }}>{baseCat(cat)}</span>
+                                  <button type="button" onClick={() => addSameCatRow(cat)} title="같은 분야 한 행 더 추가 (예: 신입 / 경력 나눠 모집)"
+                                    style={{ width: 20, height: 20, flexShrink: 0, borderRadius: 5, border: "1px solid #e0d8ec", background: "#fff", color: "#5f0080", fontSize: 13, lineHeight: 1, cursor: "pointer" }}>＋</button>
+                                  <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
+                                    style={{ width: 20, height: 20, flexShrink: 0, borderRadius: 5, border: "1px solid #eee", background: "#fff", color: "#bbb", fontSize: 13, lineHeight: 1, cursor: "pointer" }}>×</button>
+                                </div>
+                              </td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "예: 정규직")}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "예: 무관", false)}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
