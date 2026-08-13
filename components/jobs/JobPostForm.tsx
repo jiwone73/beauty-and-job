@@ -2406,6 +2406,60 @@ export default function JobPostForm({
               <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}><Send size={16} style={{ color: "#5f0080", flexShrink: 0 }} />지원 안내</div>
 
+              {/* 지원방법 · 담당자 — 기업회원 공고. 상세화면(지원 안내)에 그대로 노출된다. */}
+              {!(mode === "admin" && nonMember) && (() => {
+                const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 6 };
+                const mgrFilled = !!(nmManagerName || nmManagerPhone || nmContactEmail);
+                const inpM: CSSProperties = { flex: 1, minWidth: 0, height: 34, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 8px", fontSize: 14 };
+                return (
+                  <>
+                    {/* 지원방법(복수 선택) */}
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "7px 0" }}>
+                      <span style={lblS}>지원방법</span>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 14px", flex: 1, minWidth: 0, paddingTop: 5 }}>
+                        {CONTACT_METHOD_OPTIONS.map((m) => {
+                          const on = contactMethods.includes(m);
+                          return (
+                            <button key={m} type="button"
+                              onClick={() => setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]))}
+                              style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#5f0080" : "#c4c4c4" }}>{m}</button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {/* 담당자 — 구직자에게 보이는 연락처 */}
+                    <div className="mgr-pop" style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "7px 0", position: "relative" }}>
+                      <span style={lblS}>담당자</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <button type="button" onClick={(e) => { if (mgrOpen) { setMgrOpen(false); return; } openPopAt(e.currentTarget, 260, 190); setMgrOpen(true); }}
+                          style={{ width: "100%", textAlign: "left", minHeight: 24, border: "none", borderRadius: 5, background: mgrFilled ? "transparent" : PH_BG, fontSize: 15, cursor: "pointer", padding: "3px 6px", color: "#333", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {mgrFilled ? [nmManagerName, nmManagerPhone, nmContactEmail].filter(Boolean).join(" · ") : ""}
+                        </button>
+                        {mgrOpen && popAt && (
+                          <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 260, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                              <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>이름</span>
+                              <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} placeholder="담당자 이름" style={inpM} />
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                              <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>전화</span>
+                              <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} placeholder="010-0000-0000" style={inpM} />
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <span style={{ fontSize: 13, color: "#999", flexShrink: 0, width: 32 }}>메일</span>
+                              <input value={nmContactEmail} onChange={(e) => setNmContactEmail(e.target.value)} placeholder="email@example.com" style={inpM} />
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
+                              <button type="button" onClick={() => setMgrOpen(false)} className="company-primary-btn" style={{ padding: "5px 14px", fontSize: 13 }}>확인</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+
               {/* 지원방법(좌·고정) · 담당자 연락처(우·관리자 확인용) — 관리자 비회원 공고에서만 */}
               {mode === "admin" && nonMember && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 28px", alignItems: "start" }}>
