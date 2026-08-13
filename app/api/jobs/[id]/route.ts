@@ -20,7 +20,7 @@ export async function GET(
        c.brand_name,
        c.representative_name,
        c.company_phone,
-       c.logo_url, c.cover_images,
+       c.logo_url, c.cover_images AS company_cover_images,
        c.company_type,
        c.industry AS company_industry,
        c.description AS company_description,
@@ -115,6 +115,8 @@ export async function GET(
     is_external: job.source === 'EXTERNAL' || job.is_member === false,
     apply_method: job.apply_method,
     external_apply_url: job.external_apply_url,
+    // 공고 전용 상단 이미지. null이면 기업정보의 커버를 쓴다(빈 배열은 '이 공고는 없음').
+    cover_images: Array.isArray(job.cover_images) ? job.cover_images : null,
     company: {
       id: job.is_member === false ? null : job.company_id,
       company_name: job.company_name,
@@ -122,7 +124,7 @@ export async function GET(
       representative_name: job.representative_name,
       company_phone: job.company_phone,
       logo_url: job.logo_url,
-      cover_images: job.cover_images || [],
+      cover_images: job.company_cover_images || [],
       company_type: job.company_type,
       industry: job.company_industry,
       description: job.company_description,

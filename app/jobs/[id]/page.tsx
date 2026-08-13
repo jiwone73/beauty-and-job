@@ -212,7 +212,9 @@ export default function JobDetailPage() {
             process: j.hiring_process || [],
             notes: j.notes || '',
             logo_url: j.company?.logo_url,
-            cover_images: j.company?.cover_images || [],
+            // 공고에 지정한 상단 이미지가 있으면 그걸 쓰고, 없으면(null) 기업정보 커버로 폴백.
+            //   공고에서 지운 경우엔 빈 배열이 와서 상단 이미지 없이 표시된다(기업정보는 그대로).
+            cover_images: Array.isArray(j.cover_images) ? j.cover_images : (j.company?.cover_images || []),
             detailImages: j.detail_images || [],
             workPeriodText: j.work_period || "협의",
             workDaysText: j.work_days === "협의" ? "요일 협의" : (j.work_days ? String(j.work_days).split(",").join("·") : "요일 협의"),

@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     location, address, work_type, experience_level, deadline, categories,
     detail_images, hiring_process, notes, benefits, employment_type, benefit_tags,
     work_days, work_time, work_time_slots, responsibilities, headcount,
-    work_period, contact_methods, education, gender_preference, positions, status: reqStatus
+    work_period, contact_methods, education, gender_preference, positions, cover_images, status: reqStatus
   } = body
 
   if (!title || !job_type) {
@@ -80,9 +80,9 @@ export async function POST(req: NextRequest) {
        salary_type, location, address, work_type, experience_level,
        deadline, categories, detail_images, hiring_process, notes,
        benefits, employment_type, benefit_tags,
-       work_days, work_time, work_time_slots, responsibilities, headcount, work_period, contact_methods, education, gender_preference, positions, status
+       work_days, work_time, work_time_slots, responsibilities, headcount, work_period, contact_methods, education, gender_preference, positions, cover_images, status
      ) VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, '${jobStatus}'
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, '${jobStatus}'
      ) RETURNING id, title, status, created_at`,
     [
       auth!.sub, title, job_type, job_category_id || null, description || null,
@@ -103,7 +103,10 @@ export async function POST(req: NextRequest) {
       contact_methods || [],
       education || null,
       (gender_preference || '').trim() || null,
-      Array.isArray(positions) && positions.length ? JSON.stringify(positions) : null
+      Array.isArray(positions) && positions.length ? JSON.stringify(positions) : null,
+      // 공고별 상단 이미지. 미지정(undefined)이면 NULL → 상세에서 기업 커버로 폴백.
+      //   빈 배열로 보내면 '이 공고는 상단 이미지 없음'으로 저장된다(기업정보는 건드리지 않음).
+      Array.isArray(cover_images) ? JSON.stringify(cover_images) : null
     ]
   )
   return ok(result.rows[0], 201)

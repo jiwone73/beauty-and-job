@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useRef, useCallback, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send } from "lucide-react";
+import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -116,36 +116,6 @@ export interface JobPostFormProps {
 }
 
 // 공고 상단 이미지(기업 커버) 표시 전용 배너 — 한 배너에 최대 3개 균등, 3개 초과 시 ▶로 회전
-function CoverBanner({ images }: { images: string[] }) {
-  const [start, setStart] = useState(0);
-  if (!images.length) {
-    return (
-      <div style={{ height: 120, display: "flex", alignItems: "center", justifyContent: "center", background: "#faf7fc", border: "1px dashed #e0d4ec", borderRadius: 10, color: "#b0a0c0", fontSize: 13 }}>
-        기업설정에서 등록한 커버 이미지가 없어요.
-      </div>
-    );
-  }
-  const n = images.length;
-  const visible = n <= 3 ? images : [0, 1, 2].map((i) => images[(start + i) % n]);
-  return (
-    <div style={{ position: "relative" }}>
-      <div style={{ display: "flex", gap: 0, borderRadius: 10, overflow: "hidden", border: "1px solid #eee" }}>
-        {visible.map((u, i) => (
-          <div key={`${start}-${i}`} style={{ flex: 1, minWidth: 0, aspectRatio: "4 / 3", background: "#f3f3f3" }}>
-            <img src={u} alt={`커버 이미지 ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          </div>
-        ))}
-      </div>
-      {n > 3 && (
-        <button type="button" onClick={() => setStart((s) => (s + 1) % n)} aria-label="다음 이미지"
-          style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 34, height: 34, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.55)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-          <ChevronRight size={20} />
-        </button>
-      )}
-    </div>
-  );
-}
-
 export default function JobPostForm({
   mode, editId = null, listHref, companyType = null, companies = [],
   uploadImage, onSubmit, loadEditData, listDrafts, initialFindQuery = "",
@@ -197,8 +167,10 @@ export default function JobPostForm({
     setHeaderSlot(document.getElementById("co-m-header-slot"));
   }, [isMobile]);
 
-  // 기업설정에 등록한 커버 이미지(공고 상단 이미지) — 표시 전용
+  // 기업설정에 등록한 커버 이미지 — 신규 공고의 상단 이미지 기본값으로 한 번만 채운다.
+  //   여기서 지우거나 바꿔도 기업정보의 커버는 건드리지 않는다(공고 단위로만 저장).
   const [coverImages, setCoverImages] = useState<string[]>([]);
+  const coverSeeded = useRef(false);
   useEffect(() => {
     if (mode !== "company") return;
     const token = localStorage.getItem("access_token");
@@ -207,11 +179,17 @@ export default function JobPostForm({
       .then((r) => r.json())
       .then((res) => {
         if (res.success && Array.isArray(res.data?.cover_images)) {
-          setCoverImages(res.data.cover_images.map((c: any) => c?.url).filter(Boolean));
+          const urls = res.data.cover_images.map((c: any) => c?.url).filter(Boolean);
+          setCoverImages(urls);
+          // 수정 모드(editId)는 저장된 공고 값이 들어오므로 기본값을 덮어쓰지 않는다.
+          if (!editId && !coverSeeded.current && urls.length) {
+            coverSeeded.current = true;
+            setBannerImages((prev) => (prev.length ? prev : urls.map((u: string) => ({ url: u, name: "기업 커버" }))));
+          }
         }
       })
       .catch(() => {});
-  }, [mode]);
+  }, [mode, editId]);
 
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [companyQuery, setCompanyQuery] = useState("");
@@ -662,7 +640,8 @@ export default function JobPostForm({
       }
       setRegionList(j.location ? String(j.location).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
       setDetailImages(j.detail_images || []);
-      setBannerImages(((j.cover_images && j.cover_images.length ? j.cover_images : j.company?.cover_images) || []).map((c: any) => ({ url: c?.url, name: "배너" })).filter((x: any) => x.url));
+      // 공고에 저장된 상단 이미지를 그대로 복원. 빈 배열이면 '없음'을 유지(기업 커버로 되살리지 않음).
+      setBannerImages(((Array.isArray(j.cover_images) ? j.cover_images : (j.company?.cover_images || [])) as any[]).map((c: any) => ({ url: c?.url, name: "배너" })).filter((x: any) => x.url));
       setHiringProcess(j.hiring_process || []);
       setNotes(j.notes || "");
       setBenefitTags(j.benefit_tags || []);
@@ -1370,6 +1349,9 @@ export default function JobPostForm({
       contact_methods: (mode === "admin" && nonMember) ? ["온라인 지원"] : contactMethods,
       // 불러온 원문 URL 저장 → 이후 파서 개선 시 일괄 재파싱·백필 가능(picked.url 우선)
       source_url: (picked?.url || parseUrl || "").trim() || null,
+      // 공고 전용 상단 이미지. 기업회원이 여기서 지워도 기업정보의 커버는 그대로 둔다.
+      //   (빈 배열이면 '이 공고는 상단 이미지 없음'으로 저장)
+      ...(mode === "company" ? { cover_images: bannerImages.map((b) => ({ url: b.url })) } : {}),
     };
 
     const company: any = nonMember
@@ -1850,8 +1832,33 @@ export default function JobPostForm({
         <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
           <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 상단 이미지</h2>
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
-            <CoverBanner images={coverImages} />
-            <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999" }}>기업설정에 등록한 커버 이미지가 공고 상단에 표시돼요. 이미지 변경은 기업설정에서 할 수 있어요.</p>
+            {/* 썸네일마다 ×로 이 공고에서만 제거. 드롭존 없이 '이미지 추가' 버튼만 둔다(공간 절약). */}
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 0, borderRadius: 8, overflow: "hidden" }}>
+                {bannerImages.map((b, idx) => (
+                  <div key={b.url + idx} style={{ position: "relative", width: 104, height: 66, flexShrink: 0 }}>
+                    <img src={b.url} alt={`상단 이미지 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
+                    <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="이 공고에서 빼기 (기업정보 이미지는 그대로예요)"
+                      style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                  </div>
+                ))}
+              </div>
+              <label title="이미지 추가"
+                style={{ display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: nmCoverUploading ? "#bbb" : "#5f0080", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: nmCoverUploading ? "wait" : "pointer" }}>
+                {nmCoverUploading ? "올리는 중…" : "＋ 이미지"}
+                <input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
+                  onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
+              </label>
+              {coverImages.length > 0 && bannerImages.length === 0 && (
+                <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
+                  style={{ flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
+              )}
+            </div>
+            <p style={{ margin: "10px 2px 0", fontSize: 12, color: "#999" }}>
+              {bannerImages.length === 0
+                ? "상단 이미지 없이 등록돼요. 필요하면 이미지를 추가하세요."
+                : "기업설정 커버가 기본으로 들어가요. 여기서 빼거나 바꿔도 기업정보에 저장된 이미지는 그대로예요."}
+            </p>
           </div>
         </div>
       ) : (() => {
