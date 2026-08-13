@@ -87,9 +87,9 @@ async function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANN
 // 업로드 전 압축. 서버는 5MB·JPG/PNG/WebP만 받는데, 휴대폰 사진은 그보다 크거나 HEIC라 그냥 올리면 실패한다.
 //   긴 변을 1600px로 줄이고 JPEG 품질을 낮춰가며 목표 용량 아래로 맞춘다.
 //   캔버스를 거치면서 HEIC도 JPEG로 바뀐다(사파리는 HEIC 디코딩 가능). EXIF 회전은 적용해서 그린다.
-const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
-async function compressImage(file: File, maxBytes = MAX_UPLOAD_BYTES, maxEdge = 1600): Promise<File> {
-  // 이미 규격에 맞고 충분히 작으면 원본 그대로(재인코딩으로 화질 깎지 않음)
+const MAX_UPLOAD_BYTES = 300 * 1024; // 장당 0.3MB 목표
+async function compressImage(file: File, maxBytes = MAX_UPLOAD_BYTES): Promise<File> {
+  // 이미 규격이고 목표보다 작으면 원본 그대로(재인코딩으로 괜히 화질 깎지 않음)
   if (/^image\/(jpeg|png|webp)$/i.test(file.type) && file.size <= maxBytes) return file;
   let src: ImageBitmap | HTMLImageElement | null = null;
   let objUrl = "";
@@ -108,22 +108,30 @@ async function compressImage(file: File, maxBytes = MAX_UPLOAD_BYTES, maxEdge = 
     const w0 = (src as any).width as number;
     const h0 = (src as any).height as number;
     if (!w0 || !h0) return file;
-    const scale = Math.min(1, maxEdge / Math.max(w0, h0));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.max(1, Math.round(w0 * scale));
-    canvas.height = Math.max(1, Math.round(h0 * scale));
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return file;
-    ctx.drawImage(src as any, 0, 0, canvas.width, canvas.height);
     const name = file.name.replace(/\.[^.]+$/, "") + ".jpg";
-    let last: Blob | null = null;
-    for (const q of [0.85, 0.72, 0.6, 0.5, 0.4]) {
-      const blob: Blob | null = await new Promise((res) => canvas.toBlob((b) => res(b), "image/jpeg", q));
-      if (!blob) break;
-      last = blob;
-      if (blob.size <= maxBytes) return new File([blob], name, { type: "image/jpeg" });
+    // 긴 변을 단계적으로 줄이고, 각 단계에서 품질을 낮춰가며 목표 용량 이하가 되면 멈춘다.
+    //   사진마다 압축률이 달라 고정 품질로는 용량이 들쭉날쭉해서, 목표를 정해두고 맞춘다.
+    let smallest: Blob | null = null;
+    let prevW = Infinity;
+    for (const edge of [1600, 1280, 1024, 800]) {
+      const scale = Math.min(1, edge / Math.max(w0, h0));
+      const w = Math.max(1, Math.round(w0 * scale));
+      if (w >= prevW) continue; // 원본이 작아 이 단계에서 더 줄지 않으면 건너뜀
+      prevW = w;
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = Math.max(1, Math.round(h0 * scale));
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return file;
+      ctx.drawImage(src as any, 0, 0, canvas.width, canvas.height);
+      for (const q of [0.82, 0.7, 0.6, 0.5, 0.42]) {
+        const blob: Blob | null = await new Promise((res) => canvas.toBlob((b) => res(b), "image/jpeg", q));
+        if (!blob) break;
+        if (!smallest || blob.size < smallest.size) smallest = blob;
+        if (blob.size <= maxBytes) return new File([blob], name, { type: "image/jpeg" });
+      }
     }
-    return last ? new File([last], name, { type: "image/jpeg" }) : file;
+    return smallest ? new File([smallest], name, { type: "image/jpeg" }) : file;
   } catch {
     return file; // 디코딩 실패 시 원본으로 시도(서버 검증 메시지가 뜨게)
   } finally {
@@ -1881,7 +1889,7 @@ export default function JobPostForm({
           {/* 제목 옆에 ＋(이미지 추가) — 카드 안 공간을 쓰지 않는다 */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
             <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고 상단 이미지</h2>
-            <label title="이미지 추가 (3MB 이하 권장 · 큰 사진은 자동으로 줄여서 올라가요)"
+            <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)"
               style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: nmCoverUploading ? "#bbb" : "#5f0080", borderRadius: 7, fontSize: 13, lineHeight: 1, cursor: nmCoverUploading ? "wait" : "pointer" }}>
               {nmCoverUploading ? "…" : "＋"}
               <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
@@ -2403,7 +2411,7 @@ export default function JobPostForm({
                   </label>
                   {detailImages.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어 주세요.</span>}
                 </div>
-                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999", lineHeight: 1.6 }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 {isOffice ? "담당업무" : "포지션 소개"}는 입력해주세요.<br />이미지는 <b>3MB 이하</b>로 올려주세요. 큰 사진은 자동으로 줄여서 올라가요.</p>
+                <p style={{ margin: "8px 2px 0", fontSize: 12, color: "#999", lineHeight: 1.6 }}>썸네일을 <b>드래그</b>해 순서를 바꿀 수 있어요. 이미지를 넣으면 아래 텍스트는 비워도 되고, 이미지가 없으면 {isOffice ? "담당업무" : "포지션 소개"}는 입력해주세요.<br />이미지는 올릴 때 <b>자동으로 0.3MB 내외</b>로 줄여서 저장돼요.</p>
               </div>
 
               {/* 상세 항목 → 그 자리에서 바로 쓰는 인라인 textarea(모달·팝오버 없음, 자동 높이) */}
