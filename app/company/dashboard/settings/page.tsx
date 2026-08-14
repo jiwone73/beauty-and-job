@@ -563,72 +563,88 @@ export default function CompanySettingsPage() {
                 </div>
               </div>
 
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">브랜드명</label>
-                  <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
-                    value={form.brand_name}
-                    onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
-                </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">{L.site}</label>
-                  <input className="admin-form-input" placeholder={L.sitePh}
-                    value={form.website_url}
-                    onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
-                </div>
-              </div>
-
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">{L.size}</label>
-                  <select className="admin-form-select" data-empty={!form.company_size}
-                    style={{ height: 42, boxSizing: "border-box" }}
-                    value={form.company_size}
-                    onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
-                    <option value="">선택</option>
-                    <option value="1~10명">1~10명</option>
-                    <option value="10~50명">10~50명</option>
-                    <option value="50~100명">50~100명</option>
-                    <option value="100~300명">100~300명</option>
-                    <option value="300~1000명">300~1000명</option>
-                    <option value="1000명 이상">1000명 이상</option>
-                  </select>
-                </div>
-                {/* 설립연도·대표자는 본사에 지원할 때나 의미가 있다. 매장 지원자에겐 쓸모가 없어 매장에선 감춘다. */}
-                {!isStore && (
+              {/* 매장은 상호가 곧 브랜드라 이름 칸이 하나면 된다(브랜드명·대표자·설립연도·매장 전화번호 없음).
+                  오피스는 근로계약이 법인 기준이라 기업명과 브랜드명을 따로 받는다. */}
+              {isStore ? (
+                <div className="admin-form-row-2col">
                   <div className="admin-form-row">
-                    <label className="admin-form-label">설립연도</label>
-                    <input type="number" className="admin-form-input" placeholder="예) 2020"
+                    <label className="admin-form-label">{L.site}</label>
+                    <input className="admin-form-input" placeholder={L.sitePh}
+                      value={form.website_url}
+                      onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
+                  </div>
+                  <div className="admin-form-row">
+                    <label className="admin-form-label">{L.size}</label>
+                    <select className="admin-form-select" data-empty={!form.company_size}
                       style={{ height: 42, boxSizing: "border-box" }}
-                      min="1900" max={new Date().getFullYear()}
-                      value={form.founded_year}
-                      onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
+                      value={form.company_size}
+                      onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
+                      <option value="">선택</option>
+                      <option value="1~10명">1~10명</option>
+                      <option value="10~50명">10~50명</option>
+                      <option value="50~100명">50~100명</option>
+                      <option value="100~300명">100~300명</option>
+                      <option value="300~1000명">300~1000명</option>
+                      <option value="1000명 이상">1000명 이상</option>
+                    </select>
                   </div>
-                )}
-                {isStore && (
-                  <div className="admin-form-row">
-                    <label className="admin-form-label">{L.phone}</label>
-                    <input className="admin-form-input" placeholder="02-000-0000" inputMode="numeric" maxLength={13}
-                      value={formatPhone(form.company_phone)}
-                      onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
+                </div>
+              ) : (
+                <>
+                  <div className="admin-form-row-2col">
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">브랜드명</label>
+                      <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
+                        value={form.brand_name}
+                        onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
+                    </div>
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">{L.site}</label>
+                      <input className="admin-form-input" placeholder={L.sitePh}
+                        value={form.website_url}
+                        onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
+                    </div>
                   </div>
-                )}
-              </div>
-              {!isStore && (
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">대표자</label>
-                  <input className="admin-form-input" placeholder="대표자명"
-                    value={form.representative_name}
-                    onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
-                </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">{L.phone}</label>
-                  <input className="admin-form-input" placeholder="02-000-0000" inputMode="numeric" maxLength={13}
-                    value={formatPhone(form.company_phone)}
-                    onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
-                </div>
-              </div>
+                  <div className="admin-form-row-2col">
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">{L.size}</label>
+                      <select className="admin-form-select" data-empty={!form.company_size}
+                        style={{ height: 42, boxSizing: "border-box" }}
+                        value={form.company_size}
+                        onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
+                        <option value="">선택</option>
+                        <option value="1~10명">1~10명</option>
+                        <option value="10~50명">10~50명</option>
+                        <option value="50~100명">50~100명</option>
+                        <option value="100~300명">100~300명</option>
+                        <option value="300~1000명">300~1000명</option>
+                        <option value="1000명 이상">1000명 이상</option>
+                      </select>
+                    </div>
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">설립연도</label>
+                      <input type="number" className="admin-form-input" placeholder="예) 2020"
+                        style={{ height: 42, boxSizing: "border-box" }}
+                        min="1900" max={new Date().getFullYear()}
+                        value={form.founded_year}
+                        onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="admin-form-row-2col">
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">대표자</label>
+                      <input className="admin-form-input" placeholder="대표자명"
+                        value={form.representative_name}
+                        onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
+                    </div>
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">{L.phone}</label>
+                      <input className="admin-form-input" placeholder="02-000-0000" inputMode="numeric" maxLength={13}
+                        value={formatPhone(form.company_phone)}
+                        onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
+                    </div>
+                  </div>
+                </>
               )}
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">

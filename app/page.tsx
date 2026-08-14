@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { jobCompanyName } from "@/lib/companyName";
 import Link from "next/link";
 import Header from "@/components/Header";
 import HeroMobile from "@/components/HeroMobile";
@@ -33,7 +34,7 @@ function mapJob(j: any) {
   return {
     id: j.id,
     title: j.title,
-    company: j.brand_name || j.company_name,
+    company: jobCompanyName(j.company_type || j.job_type, j.company_name, j.brand_name),
     region: j.location || "협의",
     career: expLevelLabel(j.experience_level),
     employment: j.employment_type || null,

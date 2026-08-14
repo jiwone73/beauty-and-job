@@ -1,5 +1,6 @@
 "use client";
 import Header from "@/components/Header";
+import { jobCompanyName } from "@/lib/companyName";
 import { useState, useRef, useEffect, Suspense } from "react";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
@@ -127,7 +128,7 @@ function JobsPageInner() {
         if (res.success && Array.isArray(res.data)) {
           const mapped = res.data.map((j: any) => ({
             id: j.id,
-            brand: j.brand_name || j.company_name,
+            brand: jobCompanyName(j.company_type || j.job_type, j.company_name, j.brand_name),
             tags: [],
             category: null,
             title: j.title,

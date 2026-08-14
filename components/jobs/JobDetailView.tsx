@@ -469,7 +469,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         {/* 이 회사의 다른 공고 */}
         {companyJobsCount > 0 && job.brand && (
           <section className="job-detail-section">
-            <Link href={`/jobs?q=${encodeURIComponent(job.brand)}`} className="job-detail-more-link">
+            {/* 매장명은 "리안헤어 광명점"처럼 지점까지 붙어 있어 그대로 검색하면 이 지점만 잡힌다.
+                지점 표기를 뗀 앞부분(브랜드)으로 검색해 다른 지점 공고까지 보이게 한다. */}
+            <Link href={`/jobs?q=${encodeURIComponent(isOfficeJob ? job.brand : job.brand.replace(/\s*\S*(?:점|지점|支店)$/, "").trim() || job.brand)}`} className="job-detail-more-link">
               <span>{job.brand}의 다른 채용공고<span className="job-detail-more-sub">{companyJobsCount}건</span></span>
               <ChevronRight size={20} />
             </Link>

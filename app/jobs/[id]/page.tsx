@@ -1,5 +1,6 @@
 "use client";
 import LoginModal from "@/components/LoginModal";
+import { jobCompanyName } from "@/lib/companyName";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
 import { composeCompanyAddress } from "@/lib/address";
@@ -186,7 +187,7 @@ export default function JobDetailPage() {
             externalApplyUrl: j.external_apply_url || '',
             sourceUrl: j.source_url || '',
             companyId: j.company?.id || '',
-            brand: j.company?.brand_name || j.company?.company_name || '',
+            brand: jobCompanyName(j.company_type || j.job_type, j.company?.company_name, j.company?.brand_name),
             brandDesc: j.company?.description || '',
             tags: [],
             title: j.title,

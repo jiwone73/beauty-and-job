@@ -1,5 +1,6 @@
 "use client";
 import Header from "@/components/Header";
+import { jobCompanyName } from "@/lib/companyName";
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -24,7 +25,7 @@ type Job = {
 function mapJob(j: any): Job {
   return {
     id: j.id,
-    brand: j.brand_name || j.company_name || "",
+    brand: jobCompanyName(j.company_type || j.job_type, j.company_name, j.brand_name),
     title: j.title,
     region: j.location || "국내",
     type: j.company_type === "OFFICE" ? "오피스" : j.company_type === "STORE" ? "매장" : "오피스",

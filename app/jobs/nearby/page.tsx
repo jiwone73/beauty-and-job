@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { jobCompanyName } from "@/lib/companyName";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Crosshair } from "lucide-react";
@@ -221,7 +222,7 @@ export default function NearbyJobsPage() {
         map,
       });
       const iw = new window.kakao.maps.InfoWindow({
-        content: `<div style="padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis">${j.brand_name || j.company_name || ""} · ${fmtDist(j.distance_km)}</div>`,
+        content: `<div style="padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis">${jobCompanyName(j.job_type, j.company_name, j.brand_name)} · ${fmtDist(j.distance_km)}</div>`,
       });
       window.kakao.maps.event.addListener(marker, "click", () => router.push(`/jobs/${j.id}`));
       window.kakao.maps.event.addListener(marker, "mouseover", () => iw.open(map, marker));
@@ -307,10 +308,10 @@ export default function NearbyJobsPage() {
             <Link key={j.id} href={`/jobs/${j.id}`}
               style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderBottom: "1px solid #f2f2f2", textDecoration: "none", color: "inherit" }}>
               <div style={{ flexShrink: 0, width: 48, height: 48, borderRadius: 10, background: "#f3e5f5", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {j.logo_url ? <img src={j.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#5f0080", fontWeight: 700 }}>{(j.brand_name || j.company_name || "?")[0]}</span>}
+                {j.logo_url ? <img src={j.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#5f0080", fontWeight: 700 }}>{(jobCompanyName(j.job_type, j.company_name, j.brand_name) || "?")[0]}</span>}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 12.5, color: "#888", margin: 0 }}>{j.brand_name || j.company_name}</p>
+                <p style={{ fontSize: 12.5, color: "#888", margin: 0 }}>{jobCompanyName(j.job_type, j.company_name, j.brand_name)}</p>
                 <p style={{ fontSize: 14.5, fontWeight: 600, margin: "2px 0", color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.title}</p>
                 <p style={{ fontSize: 12.5, color: "#666", margin: 0 }}>
                   <span style={{ color: "#5f0080", fontWeight: 700 }}>{fmtDist(j.distance_km)}</span>

@@ -1,5 +1,6 @@
 "use client";
 import { shortRegion } from "@/lib/regionShort";
+import { jobCompanyName } from "@/lib/companyName";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
@@ -85,7 +86,7 @@ export default function BrandDetailPage() {
     );
   }
 
-  const displayName = company.brand_name || company.company_name;
+  const displayName = jobCompanyName(company.company_type, company.company_name, company.brand_name);
   const typeLabel = company.company_type === "STORE" ? "매장" : "오피스";
 
   return (
