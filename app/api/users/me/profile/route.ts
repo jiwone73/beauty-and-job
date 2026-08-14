@@ -39,6 +39,8 @@ export async function GET(req: NextRequest) {
     work_type_prefer: "",
     region_prefer: "",
     office_job_areas: [],
+    job_search_status: "SEEKING",   // 프로필이 아직 없으면 기본값
+    job_search_status_at: null,
   };
 
   return ok({
@@ -83,8 +85,8 @@ await client.query("BEGIN");
       `INSERT INTO user_profiles (
         user_id, intro, core_competencies, main_job_group, sub_job,
         is_career_verified, verified_date, skills,
-        skill_areas, work_type_prefer, region_prefer, office_job_areas, is_entry_level, entry_experience, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
+        skill_areas, work_type_prefer, region_prefer, office_job_areas, is_entry_level, entry_experience, job_search_status, job_search_status_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW())
       ON CONFLICT (user_id) DO UPDATE SET
         intro = EXCLUDED.intro,
         core_competencies = EXCLUDED.core_competencies,
@@ -95,6 +97,8 @@ await client.query("BEGIN");
         skills = EXCLUDED.skills,
         skill_areas = EXCLUDED.skill_areas,
         work_type_prefer = EXCLUDED.work_type_prefer,
+        job_search_status = EXCLUDED.job_search_status,
+        job_search_status_at = EXCLUDED.job_search_status_at,
         region_prefer = EXCLUDED.region_prefer,
         office_job_areas = EXCLUDED.office_job_areas,
         is_entry_level = EXCLUDED.is_entry_level,
@@ -115,6 +119,9 @@ await client.query("BEGIN");
         profile.office_job_areas || [],
         profile.is_entry_level || false,
         profile.entry_experience || "",
+        // 구직상태: 값이 없으면 기본 '구직중'. 상태가 바뀐 시점을 함께 남겨 인재검색에서 신선도를 보여준다.
+        ["SEEKING", "OPEN", "CLOSED"].includes(profile.job_search_status) ? profile.job_search_status : "SEEKING",
+        profile.job_search_status_at || new Date(),
       ]
     );
     // 1-2. resumes upsert (관리자 이력서 관리 노출용) - ON CONFLICT 한 방 처리
@@ -231,6 +238,11 @@ export async function PATCH(req: NextRequest) {
   if (typeof b.region_prefer === "string") fields.push(["region_prefer", b.region_prefer]);
   if (Array.isArray(b.office_job_areas)) fields.push(["office_job_areas", b.office_job_areas]);
   if (typeof b.entry_experience === "string") fields.push(["entry_experience", b.entry_experience]);
+  // 구직상태는 값을 바꾼 시점이 곧 신선도라, 상태와 갱신 시각을 항상 함께 저장한다.
+  if (["SEEKING", "OPEN", "CLOSED"].includes(b.job_search_status)) {
+    fields.push(["job_search_status", b.job_search_status]);
+    fields.push(["job_search_status_at", new Date()]);
+  }
 
   if (fields.length === 0) return ok({ saved: true });
 

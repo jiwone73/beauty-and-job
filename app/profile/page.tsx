@@ -22,6 +22,14 @@ import { validateBirth } from "@/lib/validateBirth";
 
 type ModalType = "notification" | null;
 
+type JobSearchStatus = "SEEKING" | "OPEN" | "CLOSED";
+// 기본값은 SEEKING(구직중) — 이력서를 만들어 공개한 것 자체가 구직 의사다.
+const JOB_SEARCH_OPTIONS: { value: JobSearchStatus; label: string; desc: string }[] = [
+  { value: "SEEKING", label: "구직중", desc: "지금 일자리를 찾고 있어요" },
+  { value: "OPEN", label: "좋은 제안은 검토", desc: "재직 중이지만 조건이 맞으면 이직할 수 있어요" },
+  { value: "CLOSED", label: "구직 안 함", desc: "당분간 제안을 받지 않을래요" },
+];
+
 export default function ProfilePage() {
   const router = useRouter();
   const {
@@ -74,6 +82,9 @@ export default function ProfilePage() {
   const [emailSending, setEmailSending] = useState(false);
   const [isKakao, setIsKakao] = useState(false);
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
+  // 구직상태 — 인재검색에서 기업이 보는 값. 기본은 '구직중'.
+  const [jobSearchStatus, setJobSearchStatus] = useState<JobSearchStatus>("SEEKING");
+  const [jsModalOpen, setJsModalOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarLoaded, setAvatarLoaded] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -181,6 +192,15 @@ export default function ProfilePage() {
     if (!token) { setAvatarLoaded(true); return; }
 
     useProfileStore.getState().loadFromServer();
+
+    // 구직상태 불러오기
+    fetch("/api/users/me/profile", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        const st = res?.data?.profile?.job_search_status;
+        if (st === "SEEKING" || st === "OPEN" || st === "CLOSED") setJobSearchStatus(st);
+      })
+      .catch(() => {});
 
     fetch("/api/users/me", {
       headers: { Authorization: `Bearer ${token}` },
@@ -392,6 +412,28 @@ export default function ProfilePage() {
         }),
       });
     } catch (e) { console.error("[persistStoreProfile]", e); }
+  };
+
+  const saveJobSearchStatus = async (next: JobSearchStatus) => {
+    setJobSearchStatus(next);
+    setJsModalOpen(false);
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    const s = useSignupStore.getState();
+    try {
+      await fetch("/api/users/me/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          skill_areas: s.skillAreas ?? [],
+          work_type_prefer: s.workTypePrefer ?? "",
+          region_prefer: s.regionPrefer ?? "",
+          office_job_areas: s.officeJobAreas ?? [],
+          job_search_status: next,
+          job_search_status_at: new Date().toISOString(),
+        }),
+      });
+    } catch (e) { console.error("[saveJobSearchStatus]", e); }
   };
 
   const saveOfficeJobAreas = async (newAreas: string[]) => {
@@ -983,11 +1025,43 @@ export default function ProfilePage() {
                   value={regionSummary}
                   isEmpty={preferredRegions.length === 0}
                   onClick={() => setPrefModalOpen(true)}
-                  isLast
                   required
+                />
+                {/* 구직상태 — 기업 인재검색에 그대로 보인다. 기본값 '구직중' */}
+                <InfoRow
+                  label="구직상태"
+                  value={JOB_SEARCH_OPTIONS.find((o) => o.value === jobSearchStatus)?.label || "구직중"}
+                  isEmpty={false}
+                  onClick={() => setJsModalOpen(true)}
+                  isLast
                 />
               </div>
             </section>
+
+            {/* 구직상태 선택 */}
+            {jsModalOpen && (
+              <div onClick={() => setJsModalOpen(false)}
+                style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
+                <div onClick={(e) => e.stopPropagation()}
+                  style={{ background: "#fff", width: "100%", maxWidth: 480, borderRadius: "16px 16px 0 0", padding: 18, boxSizing: "border-box" }}>
+                  <div style={{ fontSize: 16, color: "#222", marginBottom: 4 }}>구직상태</div>
+                  <div style={{ fontSize: 12.5, color: "#999", marginBottom: 14 }}>기업이 인재검색에서 이 상태를 봅니다. 언제든 바꿀 수 있어요.</div>
+                  {JOB_SEARCH_OPTIONS.map((o) => {
+                    const on = jobSearchStatus === o.value;
+                    return (
+                      <button key={o.value} type="button" onClick={() => saveJobSearchStatus(o.value)}
+                        style={{ display: "block", width: "100%", textAlign: "left", marginBottom: 8, padding: "12px 14px", borderRadius: 10, cursor: "pointer",
+                          border: on ? "1.5px solid #5f0080" : "1.5px solid #eee", background: on ? "#faf5fc" : "#fff" }}>
+                        <div style={{ fontSize: 15, color: on ? "#5f0080" : "#333" }}>{o.label}</div>
+                        <div style={{ fontSize: 12.5, color: "#999", marginTop: 2 }}>{o.desc}</div>
+                      </button>
+                    );
+                  })}
+                  <button type="button" onClick={() => setJsModalOpen(false)}
+                    style={{ width: "100%", marginTop: 6, padding: 12, borderRadius: 10, border: "1px solid #eee", background: "#fff", color: "#888", fontSize: 14, cursor: "pointer" }}>닫기</button>
+                </div>
+              </div>
+            )}
 
             <RegionSelectModal
               open={prefModalOpen}
