@@ -1045,7 +1045,12 @@ export default function ProfilePage() {
                 <div onClick={(e) => e.stopPropagation()}
                   style={{ background: "#fff", width: "100%", maxWidth: 480, borderRadius: "16px 16px 0 0", padding: 18, boxSizing: "border-box" }}>
                   <div style={{ fontSize: 16, color: "#222", marginBottom: 4 }}>구직상태</div>
-                  <div style={{ fontSize: 12.5, color: "#999", marginBottom: 14 }}>기업이 인재검색에서 이 상태를 봅니다. 언제든 바꿀 수 있어요.</div>
+                  <div style={{ fontSize: 12.5, color: "#999", marginBottom: 10 }}>기업이 인재검색에서 이 상태를 봅니다. 언제든 바꿀 수 있어요.</div>
+                  {/* 공개 범위를 고르는 화면이 따로 없으므로, 실제로 무엇이 보이는지 여기서 분명히 알린다. */}
+                  <div style={{ fontSize: 12, color: "#8a6d00", background: "#fdf4de", borderRadius: 8, padding: "9px 11px", lineHeight: 1.55, marginBottom: 14 }}>
+                    <b style={{ fontWeight: 600 }}>구직중 · 좋은 제안은 검토</b> 상태에서는 기업회원이 내 이름·연락처(휴대폰·이메일)와 이력서 전체를 열람하고 직접 연락할 수 있어요.
+                    <br /><b style={{ fontWeight: 600 }}>구직 안 함</b>을 고르면 인재검색에 나오지 않습니다.
+                  </div>
                   {JOB_SEARCH_OPTIONS.map((o) => {
                     const on = jobSearchStatus === o.value;
                     return (
