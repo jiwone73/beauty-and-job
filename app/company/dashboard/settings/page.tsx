@@ -5,6 +5,7 @@ import { Save, Camera, ImagePlus, X, ChevronRight } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { industryGroupsFor } from "@/lib/data/industries";
 import { downscaleImage } from "@/lib/imageResize";
+import BannerStrip from "@/components/jobs/BannerStrip";
 import type { CompanyInfo } from "@/lib/types/company";
 
 declare global {
@@ -500,44 +501,9 @@ export default function CompanySettingsPage() {
                     background:"#f7f4fb", border:"1px dashed #d9c9ec", borderRadius:10, color:"#b0a0c0", fontSize:13}}>
                     아직 등록한 이미지가 없어요.
                   </div>
-                ) : coverImages.length === 1 ? (
-                  <div style={{position:"relative", width:"100%", borderRadius:10, overflow:"hidden", border:"1px solid #eee", background:"#f4f4f4"}}>
-                    <img src={coverImages[0].url} alt="" style={{display:"block", width:"100%", height:"auto"}} />
-                    <button type="button" onClick={() => handleCoverDeleteOne(coverImages[0].url)} title="삭제"
-                      style={{position:"absolute", top:6, right:6, width:24, height:24, borderRadius:"50%",
-                        background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
-                        display:"flex", alignItems:"center", justifyContent:"center"}}>
-                      <X size={14} />
-                    </button>
-                  </div>
                 ) : (
-                  <div style={{position:"relative"}}>
-                    <div style={{display:"grid", gridTemplateColumns:`repeat(${Math.min(coverImages.length, 3)}, 1fr)`, gap:0, borderRadius:10, overflow:"hidden", border:"1px solid #eee"}}>
-                      {(coverImages.length <= 3
-                        ? coverImages
-                        : [0,1,2].map((i) => coverImages[(coverStart + i) % coverImages.length])
-                      ).map((c, i) => (
-                        <div key={`${coverStart}-${i}-${c.url}`}
-                          style={{position:"relative", aspectRatio:"4 / 3", background:"#f3f3f3"}}>
-                          <img src={c.url} alt="" style={{width:"100%", height:"100%", objectFit:"cover"}} />
-                          <button type="button" onClick={() => handleCoverDeleteOne(c.url)} title="삭제"
-                            style={{position:"absolute", top:5, right:5, width:22, height:22, borderRadius:"50%",
-                              background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
-                              display:"flex", alignItems:"center", justifyContent:"center"}}>
-                            <X size={13} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    {coverImages.length > 3 && (
-                      <button type="button" onClick={() => setCoverStart((s) => (s + 1) % coverImages.length)} aria-label="다음 이미지"
-                        style={{position:"absolute", right:8, top:"50%", transform:"translateY(-50%)", width:34, height:34,
-                          borderRadius:"50%", border:"none", background:"rgba(0,0,0,0.55)", color:"#fff",
-                          display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer"}}>
-                        <ChevronRight size={20} />
-                      </button>
-                    )}
-                  </div>
+                  /* 공고 상세와 같은 컴포넌트 — 여기서 보이는 모양이 실제 공고 배너와 같다. */
+                  <BannerStrip images={coverImages.map((c) => c.url)} onDelete={handleCoverDeleteOne} radius={10} />
                 )}
                 {/* 여기서 한 번 올리면 공고마다 다시 올릴 필요가 없다는 점을 알려, 공고 등록 단계의 부담을 덜어준다. */}
                 <p style={{fontSize:"12.5px", color:"#999", margin:"6px 0 0", lineHeight:1.55}}>

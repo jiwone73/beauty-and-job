@@ -1,52 +1,16 @@
 "use client";
-import { forwardRef, useState, type CSSProperties, type ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 import Link from "next/link";
 import { shortRegion } from "@/lib/regionShort";
 import KakaoMap from "@/components/KakaoMap";
 import AddressMap from "@/components/AddressMap";
-import { Briefcase, CheckCircle2, ChevronRight, ChevronLeft, Users, GraduationCap, MapPin, Send } from "lucide-react";
+import BannerStrip from "@/components/jobs/BannerStrip";
+import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send } from "lucide-react";
 
-// 공고 상단 이미지 갤러리(원티드 스타일). 한 번에 3장 노출, 좌우 화살표로 순환.
+// 공고 상단 이미지 갤러리. 표시 규칙(3:1 고정 · 한 장은 항상 1/3 폭)은 BannerStrip에 모아 두고,
+// 기업정보 설정·공고 등록 미리보기에서도 같은 컴포넌트를 써 어디서나 같은 모양으로 보이게 한다.
 export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
-  const [start, setStart] = useState(0);
-  const n = images.length;
-  const arrow: CSSProperties = {
-    position: "absolute", top: "50%", transform: "translateY(-50%)",
-    width: 40, height: 40, borderRadius: "50%", border: "none",
-    background: "rgba(255,255,255,0.95)", color: "#333",
-    cursor: "pointer", zIndex: 3, boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
-    display: "flex", alignItems: "center", justifyContent: "center",
-  };
-
-  // 배너 크기는 장수와 무관하게 '항상 고정'(3:1 와이드) — 공고마다 높이가 달라지면 안 됨.
-  //   여러 장이면 폭을 균등하게 나눠 넣고, 각 이미지는 위·아래 균등 크롭(center)으로 칸을 꽉 채운다.
-  //   EXIF는 브라우저 기본대로 적용(원 사이트처럼 똑바로). 3장 초과면 좌우 화살표로 3장씩 순환.
-  const PER = 3;
-  const cols = Math.min(n, PER);
-  const s = ((start % n) + n) % n;
-  const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
-  return (
-    <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ display: "flex", gap: 0, aspectRatio: "3 / 1", borderRadius: 12, overflow: "hidden", background: "#f4f4f4" }}>
-        {visible.map((src, k) => (
-          <div key={k} style={{ flex: "1 1 0", minWidth: 0, height: "100%" }}>
-            <img
-              src={src}
-              alt={alt}
-              // 칸을 꽉 채우되 비율 유지 → 위·아래 균등 크롭. 배너 전체 높이는 항상 동일.
-              style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
-            />
-          </div>
-        ))}
-      </div>
-      {n > PER && (
-        <>
-          <button type="button" aria-label="이전 이미지" onClick={() => setStart(s - 1)} style={{ ...arrow, left: 8 }}><ChevronLeft size={22} /></button>
-          <button type="button" aria-label="다음 이미지" onClick={() => setStart(s + 1)} style={{ ...arrow, right: 8 }}><ChevronRight size={22} /></button>
-        </>
-      )}
-    </div>
-  );
+  return <BannerStrip images={images} alt={alt} />;
 }
 
 interface JobDetailViewProps {

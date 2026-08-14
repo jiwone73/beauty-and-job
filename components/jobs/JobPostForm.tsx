@@ -10,6 +10,7 @@ import { formatSalaryWon } from "@/lib/salary";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
+import BannerStrip from "@/components/jobs/BannerStrip";
 import { REGIONS } from "@/lib/data/regions";
 import { composeCompanyAddress, splitAddress } from "@/lib/address";
 
@@ -2064,40 +2065,13 @@ export default function JobPostForm({
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
               {/* 한 줄에 3장 고정(줄바꿈 없음). 3장을 넘으면 좌우 화살표로 넘겨 본다.
                   칸 비율은 PC 드래그 박스 썸네일(120x76)과 동일하게 맞춘다. */}
-              {bannerImages.length > 0 && (() => {
-                const PER = 3;
-                const n = bannerImages.length;
-                const cols = Math.min(n, PER);
-                const s = ((coverStart % n) + n) % n;
-                const shown = Array.from({ length: cols }, (_, k) => ({ b: bannerImages[(s + k) % n], idx: (s + k) % n }));
-                const arrow: CSSProperties = {
-                  position: "absolute", top: "50%", transform: "translateY(-50%)", width: 28, height: 28,
-                  borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.95)", color: "#333",
-                  cursor: "pointer", zIndex: 2, boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
-                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, lineHeight: 1,
-                };
-                return (
-                  <div style={{ width: "100%", position: "relative" }}>
-                    {/* 배너 높이는 장수와 무관하게 고정(3:1) — 공고 페이지에 보이는 그대로.
-                        장수가 줄면 각 칸이 넓어질 뿐, 배너가 커지지 않는다. */}
-                    <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap: 0, aspectRatio: "3 / 1", borderRadius: 8, overflow: "hidden", background: "#f4f4f4" }}>
-                      {shown.map(({ b, idx }) => (
-                        <div key={b.url + idx} style={{ position: "relative", minWidth: 0, height: "100%" }}>
-                          <img src={b.url} alt={`상단 이미지 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
-                          <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="이 공고에서 빼기 (기업정보 이미지는 그대로예요)"
-                            style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
-                        </div>
-                      ))}
-                    </div>
-                    {n > PER && (
-                      <>
-                        <button type="button" aria-label="이전 이미지" onClick={() => setCoverStart(s - 1)} style={{ ...arrow, left: 4 }}>‹</button>
-                        <button type="button" aria-label="다음 이미지" onClick={() => setCoverStart(s + 1)} style={{ ...arrow, right: 4 }}>›</button>
-                      </>
-                    )}
-                  </div>
-                );
-              })()}
+              {bannerImages.length > 0 && (
+                <div style={{ width: "100%" }}>
+                  {/* 공고 상세와 같은 컴포넌트로 그린다 — 편집 화면에서 보이는 모양이 곧 공개 화면 모양. */}
+                  <BannerStrip images={bannerImages.map((b) => b.url)} radius={8}
+                    onDelete={(url) => setBannerImages((prev) => prev.filter((b) => b.url !== url))} />
+                </div>
+              )}
               {coverImages.length > 0 && bannerImages.length === 0 && (
                 <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
                   style={{ flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
