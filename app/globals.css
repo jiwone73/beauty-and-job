@@ -5557,28 +5557,32 @@ div:has(> table.admin-table),
 .settings-compact .admin-form-row:has(> .admin-form-label) > .admin-form-label {
   grid-column: 1; margin: 0; white-space: nowrap;
 }
-/* 공고등록의 기업정보 블록과 동일한 톤: 항목명은 연한 회색, 값 칸은 연보라 블록 */
+/* 공고등록의 기업정보 블록과 같은 규칙: 항목명은 연한 회색, 빈 칸만 56px 연보라 블록,
+   값이 들어오면 배경 없이 글자만 보인다. */
 .settings-compact .admin-form-label { color: #999; font-weight: 400; }
-.settings-compact .admin-form-input,
-.settings-compact .admin-form-select,
-.settings-compact .admin-form-textarea {
+.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:placeholder-shown,
+.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select[data-empty="true"] {
   background: #f8f6fd !important;
-  border: none !important;
   border-radius: 5px;
+  width: 56px;
+  margin-left: auto;
+  color: transparent;            /* 빈 칸엔 placeholder 대신 블록만 */
 }
-.settings-compact .admin-form-input:focus,
-.settings-compact .admin-form-select:focus,
-.settings-compact .admin-form-textarea:focus { background: #f4f1fb !important; }
+.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:placeholder-shown::placeholder { color: transparent; }
+.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:focus {
+  background: transparent !important; width: 100%; color: #333;
+}
+.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:focus::placeholder { color: #ccc; }
+/* 기업 소개(textarea)는 여러 줄이라 블록 대신 옅은 배경만 */
+.settings-compact .admin-form-textarea { background: #f8f6fd; border: none; border-radius: 8px; }
 .settings-compact .admin-form-row:has(> .admin-form-label) > *:not(.admin-form-label) {
   grid-column: 2; min-width: 0;
 }
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input,
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select {
   border: none !important;
-  /* 값 칸은 공고등록 기업정보와 동일한 연보라 블록 */
-  background: #f8f6fd !important;
-  border-radius: 5px;
-  padding: 0 8px !important;
+  background: transparent !important;
+  padding: 0 !important;
   height: 24px !important;
   line-height: 24px !important;
   text-align: right;

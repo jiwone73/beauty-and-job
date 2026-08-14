@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Save, Camera, ImagePlus, X, ChevronRight } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
@@ -206,8 +206,15 @@ export default function CompanySettingsPage() {
     }
   };
   // 카카오 우편번호 검색
+  // 주소 검색: 팝업(.open)은 모바일 인앱 브라우저에서 닫을 방법이 없어 갇힌다 → 닫기 버튼이 있는 레이어로 띄운다.
+  const addrBoxRef = useRef<HTMLDivElement>(null);
+  const [addrOpen, setAddrOpen] = useState(false);
   const handleAddressSearch = () => {
-    const open = () => {
+    setAddrOpen(true);
+    const embed = () => {
+      const el = addrBoxRef.current;
+      if (!el) return;
+      el.innerHTML = "";
       new window.daum.Postcode({
         oncomplete: (data: any) => {
           const base = data.roadAddress || data.jibunAddress || "";
@@ -217,17 +224,21 @@ export default function CompanySettingsPage() {
             region_sigungu: data.sigungu || "",
             address: data.buildingName ? `${base} (${data.buildingName})` : base,
           }));
+          setAddrOpen(false);
         },
-      }).open();
+        onclose: () => setAddrOpen(false),
+        width: "100%",
+        height: "100%",
+      }).embed(el);
     };
-    if (window.daum?.Postcode) {
-      open();
-    } else {
+    // 레이어가 그려진 뒤 삽입
+    setTimeout(() => {
+      if (window.daum?.Postcode) { embed(); return; }
       const script = document.createElement("script");
       script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
-      script.onload = open;
+      script.onload = embed;
       document.body.appendChild(script);
-    }
+    }, 0);
   };
   const handleChangePassword = async () => {
     if (!pwForm.current_password || !pwForm.new_password) {
@@ -536,7 +547,7 @@ export default function CompanySettingsPage() {
                 </div>
                 <div className="admin-form-row">
                   <label className="admin-form-label">업종<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <select className="admin-form-select" style={{ height: 42, boxSizing: "border-box" }}
+                  <select className="admin-form-select" data-empty={!form.industry} style={{ height: 42, boxSizing: "border-box" }}
                     value={form.industry}
                     onChange={(e) => setForm({ ...form, industry: e.target.value })}>
                     <option value="">선택</option>
@@ -571,7 +582,7 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">{L.size}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <select className="admin-form-select"
+                  <select className="admin-form-select" data-empty={!form.company_size}
                     style={{ height: 42, boxSizing: "border-box" }}
                     value={form.company_size}
                     onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
@@ -852,6 +863,21 @@ export default function CompanySettingsPage() {
           >
             {saving ? "저장 중..." : "저장하기"}
           </button>
+        </div>
+      )}
+      {/* 주소 검색 레이어 — 닫기 버튼이 있어 언제든 빠져나올 수 있다 */}
+      {addrOpen && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 12 }}
+          onClick={() => setAddrOpen(false)}>
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ background: "#fff", borderRadius: 12, width: "100%", maxWidth: 480, height: "min(560px, 85vh)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderBottom: "1px solid #f0f0f0", flexShrink: 0 }}>
+              <span style={{ fontSize: 15, color: "#222" }}>주소 검색</span>
+              <button type="button" onClick={() => setAddrOpen(false)}
+                style={{ border: "none", background: "none", fontSize: 22, lineHeight: 1, color: "#999", cursor: "pointer", padding: "0 4px" }} aria-label="닫기">×</button>
+            </div>
+            <div ref={addrBoxRef} style={{ flex: 1, minHeight: 0 }} />
+          </div>
         </div>
       )}
     </CompanyLayout>
