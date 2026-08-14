@@ -11,7 +11,7 @@ import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
 import { REGIONS } from "@/lib/data/regions";
-import { composeCompanyAddress } from "@/lib/address";
+import { composeCompanyAddress, splitAddress } from "@/lib/address";
 
 // 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
 const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.sido} ${g}`));
@@ -257,7 +257,8 @@ export default function JobPostForm({
           setNmRepresentative((v) => v || c.representative_name || "");
           setNmPhone((v) => v || c.company_phone || "");
           setNmDescription((v) => v || c.description || "");
-          setNmAddress((v) => v || [c.address, c.address_detail].filter(Boolean).join(" "));
+          setNmAddress((v) => v || c.address || "");
+          setNmAddressDetail((v) => v || c.address_detail || "");
         }
       })
       .catch(() => {});
@@ -275,7 +276,10 @@ export default function JobPostForm({
   const [applyMethod, setApplyMethod] = useState<"MANAGED" | "EMAIL" | "REDIRECT">("MANAGED");
   const [externalApplyUrl, setExternalApplyUrl] = useState("");
   const [nmDescription, setNmDescription] = useState("");
-  const [nmAddress, setNmAddress] = useState("");
+  const [nmAddress, setNmAddress] = useState("");        // 우편번호 검색으로 채우는 기본 주소
+  const [nmAddressDetail, setNmAddressDetail] = useState(""); // 동·호수 등 직접 입력
+  // 저장·미리보기·지도는 상세주소까지 합친 값을 쓴다(공고 API는 address 한 필드만 받는다).
+  const nmFullAddress = [nmAddress.trim(), nmAddressDetail.trim()].filter(Boolean).join(" ");
   // 주소는 자유입력이면 표기가 흔들려 지도 좌표도, 시·군·구 필터도 어긋난다.
   // 기업정보·개인 프로필과 같은 우편번호 검색으로 통일한다(팝업은 인앱 브라우저에서 닫히지 않아 레이어로 띄운다).
   const addrBoxRef = useRef<HTMLDivElement>(null);
@@ -822,11 +826,15 @@ export default function JobPostForm({
           setNewBrandName(j.company.brand_name || "");
           setNmDescription(j.company.description || "");
           setNmHomepage(j.company.website_url || "");
-          setNmAddress(
-            j.company.address ||
-            [j.company.region_sido, j.company.region_sigungu].filter(Boolean).join(" ") ||
-            ""
-          );
+          {
+            // 저장은 한 문자열이라, 편집할 땐 기본/상세로 되돌려 검색칸과 상세칸에 나눠 넣는다.
+            const a = splitAddress(
+              j.company.address ||
+              [j.company.region_sido, j.company.region_sigungu].filter(Boolean).join(" ")
+            );
+            setNmAddress(a.base);
+            setNmAddressDetail(a.detail);
+          }
           setNmIndustry(j.company.industry || "");
           setNmSize(j.company.company_size || "");
           setNmFounded(j.company.founded_year ? String(j.company.founded_year) : "");
@@ -1083,7 +1091,7 @@ export default function JobPostForm({
       setSalaryNego(false); setSalaryMax(""); setNotes("");
       if (mode === "admin") {
         setNewCompanyName(""); setNewBrandName(""); setNmHomepage(""); setNmContactEmail("");
-        setNmDescription(""); setNmAddress(""); setNmIndustry("");
+        setNmDescription(""); setNmAddress(""); setNmAddressDetail(""); setNmIndustry("");
         setNmSize(""); setNmFounded("");
         setNmRepresentative(""); setNmPhone("");
         setNmManagerName(""); setNmManagerPhone("");
@@ -1100,7 +1108,7 @@ export default function JobPostForm({
         // 비회원 외부 불러오기는 '관리자 대행'만 사용 → 파싱값과 무관하게 MANAGED 고정
         setApplyMethod("MANAGED");
         if (d.company_description) setNmDescription(d.company_description);
-        if (d.address) setNmAddress(d.address);
+        if (d.address) { const a = splitAddress(d.address); setNmAddress(a.base); setNmAddressDetail(a.detail); }
         if (d.industry) setNmIndustry(d.industry);
         // 설립연도·사원수(기업정보) — 잡코리아 회사 소개에서 파싱된 값
         if (d.founded_year && Number(d.founded_year) > 1900) setNmFounded(String(Number(d.founded_year)));
@@ -1402,7 +1410,7 @@ export default function JobPostForm({
     // 비회원(관리자 대행) 공고는 관리자가 자유롭게 대행 등록 → 필수 검증 없이 등록 허용.
     const isNmAdmin = mode === "admin" && nonMember;
     if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return; }
-    const effRegions = regionList.length ? regionList : deriveRegion(nmAddress);
+    const effRegions = regionList.length ? regionList : deriveRegion(nmFullAddress);
     if (!isNmAdmin) {
       if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
       if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
@@ -1410,7 +1418,7 @@ export default function JobPostForm({
       // 주소를 붙여넣거나 임시저장에서 복원하면 입력 onChange가 안 타 regionList가 비어 있을 수 있다.
       //   저장 시점에 주소에서 한 번 더 뽑아 쓴다.
       if (effRegions.length === 0) {
-        alert(nmAddress.trim()
+        alert(nmFullAddress
           ? "근무지역 주소에 시·군·구가 들어가게 입력해주세요. (예: 서울 금천구 벚꽃로 40)"
           : "근무지역(주소)을 입력해주세요.");
         return;
@@ -1509,7 +1517,7 @@ export default function JobPostForm({
     };
 
     const company: any = nonMember
-      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmAddress.trim(), industry: fiIndustry.trim() || nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, ""), logo_url: null, cover_images: bannerImages.map((b) => ({ url: b.url })) } }
+      ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmFullAddress, industry: fiIndustry.trim() || nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, ""), logo_url: null, cover_images: bannerImages.map((b) => ({ url: b.url })) } }
       : { companyId, newCompany: null };
     const result = await onSubmit(payload, status, company);
     if (!result.success) {
@@ -1768,11 +1776,11 @@ export default function JobPostForm({
       founded: isNm ? (nmFounded ? `${nmFounded}년` : "") : (cp?.founded_year || ""),
       phone: isNm ? nmPhone : (cp?.company_phone || ""),
       website: isNm ? nmHomepage : (cp?.website_url || ""),
-      location: isNm ? nmAddress : (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
+      location: isNm ? nmFullAddress : (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
       latitude: null,
       longitude: null,
     },
-    companyAddress: isNm ? nmAddress : (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
+    companyAddress: isNm ? nmFullAddress : (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
     workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의")),
     workPeriodText: fiWorkPeriod.trim() || workPeriod || "협의",
     workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의")),
@@ -2445,15 +2453,15 @@ export default function JobPostForm({
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}>
                   <MapPin size={16} style={{ color: "#5f0080", flexShrink: 0 }} />근무지역 <span style={{ color: "#e9a3a3" }}>*</span>
                 </div>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <input value={nmAddress}
-                    onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
-                    style={{ flex: 1, minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }}
-                    placeholder="주소 검색 후 동·호수를 이어서 입력" />
-                  <button type="button" onClick={openAddressSearch}
-                    style={{ flexShrink: 0, padding: "9px 14px", borderRadius: 8, border: "1px solid #e0d8ec", background: "#f8f6fd", color: "#5f0080", fontSize: 14, cursor: "pointer", whiteSpace: "nowrap" }}>주소 검색</button>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 12 }}>
+                  <input readOnly value={nmAddress} onClick={openAddressSearch}
+                    placeholder="주소 검색을 눌러주세요"
+                    style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left", cursor: "pointer" }} />
+                  <input value={nmAddressDetail} onChange={(e) => setNmAddressDetail(e.target.value)}
+                    placeholder="상세주소 (동·호수 등)"
+                    style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
                 </div>
-                {nmAddress.trim() && <AddressMap address={nmAddress} name={newCompanyName.trim() || undefined} height={220} />}
+                {nmFullAddress && <AddressMap address={nmFullAddress} name={newCompanyName.trim() || undefined} height={220} />}
               </div>
 
               {/* 지원 안내 (채용 담당자 · 접수방법 · 채용 절차) */}
@@ -2703,12 +2711,13 @@ export default function JobPostForm({
                     <div style={row}><span style={lbl2}>업종</span>{!fiIndustry.trim() && (<select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("industry"); return; } setFiIndustry(""); setNmIndustry(e.target.value); }}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}{nonMember && <option value="__fi__">직접입력…</option>}</select>)}{freeField("industry", fiIndustry, setFiIndustry, "직접 입력…", false, () => setNmIndustry(""))}</div>
                     <div style={row}><span style={lbl2}>브랜드명</span><input style={inpHl(!!newBrandName)} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>웹사이트</span><input style={inpHl(!!nmHomepage)} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} /></div>
-                    <div style={{ ...row, ...full }}><span style={lbl2}>주소<span style={req}> *</span></span>
-                      <input style={{ ...inpHl(!!nmAddress), flex: 1, minWidth: 0 }} value={nmAddress}
-                        onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
-                        placeholder="주소 검색 후 동·호수를 이어서 입력" />
-                      <button type="button" onClick={openAddressSearch}
-                        style={{ flexShrink: 0, marginLeft: 6, padding: "6px 12px", borderRadius: 8, border: "1px solid #e0d8ec", background: "#f8f6fd", color: "#5f0080", fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" }}>검색</button>
+                    <div style={row}><span style={lbl2}>주소<span style={req}> *</span></span>
+                      <input readOnly style={{ ...inpHl(!!nmAddress), cursor: "pointer" }} value={nmAddress}
+                        onClick={openAddressSearch} placeholder="주소 검색을 눌러주세요" />
+                    </div>
+                    <div style={row}><span style={lbl2}>상세주소</span>
+                      <input style={inpHl(!!nmAddressDetail)} value={nmAddressDetail}
+                        onChange={(e) => setNmAddressDetail(e.target.value)} placeholder="동·호수 등" />
                     </div>
                     <div style={row}><span style={lbl2}>사원수</span><select style={sel3(!!nmSize)} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value=""></option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
                     <div style={row}><span style={lbl2}>설립연도</span><input type="number" min="1900" max={new Date().getFullYear()} style={inpHl(!!nmFounded)} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} /></div>
