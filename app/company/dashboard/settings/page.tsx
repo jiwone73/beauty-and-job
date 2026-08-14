@@ -162,6 +162,17 @@ export default function CompanySettingsPage() {
     }
   };
 
+  // 배너 영역 버튼 — 공고 등록 화면과 같은 모양.
+  // 모바일은 제목 글자 높이를 넘지 않게 작게 줄이고, 아이콘 대신 짧은 글자만 남긴다.
+  const bannerBtn = (on: boolean): React.CSSProperties => isMobile
+    ? { display: "inline-flex", alignItems: "center", justifyContent: "center", height: 18, padding: "0 6px",
+        borderRadius: 5, border: "1px solid #dcdce0", background: on ? "#f4f4f6" : "#fff",
+        color: on ? "#5f0080" : "#777", fontSize: 11.5, lineHeight: 1, fontWeight: 500,
+        cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }
+    : { display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 11px", borderRadius: 9,
+        border: "1px solid #e2e2e6", background: on ? "#f4f4f6" : "#fff", color: "#666",
+        fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" };
+
   // 샘플 배너 — 쓸 만한 매장 사진이 없어도 배너를 비워 두지 않게, 준비된 배경에 문구만 얹어 만든다.
   const [sampleOpen, setSampleOpen] = useState(false);
   const [sampleText, setSampleText] = useState("");
@@ -523,25 +534,19 @@ export default function CompanySettingsPage() {
 
               {/* 공고 상단 배너 (여러 장) */}
               <div className="admin-form-row">
-                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
+                {/* 버튼은 제목 바로 옆에 붙인다(공고 등록 화면과 같은 자리).
+                    모바일은 테두리·아이콘을 빼고 글자만 남겨 좁은 폭을 제목에 내준다. */}
+                <div style={{display:"flex", alignItems:"center", gap:6, marginBottom:"8px"}}>
                   <label className="admin-form-label" style={{margin:0}}>공고 배너 이미지</label>
-                  <div style={{display:"flex", alignItems:"center", gap:6}}>
-                    <button type="button" onClick={() => setSampleOpen((v) => !v)}
-                      title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요"
-                      style={{display:"inline-flex", alignItems:"center", gap:5, padding:"6px 11px", borderRadius:9,
-                        border:"1px solid #e2e2e6", background: sampleOpen ? "#f7f1fd" : "#fff", color:"#5f0080",
-                        fontSize:13, fontWeight:500, cursor:"pointer"}}>
-                      <Wand2 size={16} />샘플 배너
-                    </button>
-                    <label title="여러 장 추가할 수 있어요"
-                      style={{display:"inline-flex", alignItems:"center", gap:5, padding:"6px 11px", borderRadius:9,
-                        border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080", fontSize:13, fontWeight:500,
-                        cursor: coverUploading ? "wait" : "pointer"}}>
-                      <ImagePlus size={17} />{coverUploading ? "업로드 중…" : "추가"}
-                      <input type="file" accept="image/jpeg,image/png,image/webp" multiple
-                        disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
-                    </label>
-                  </div>
+                  <label title="여러 장 추가할 수 있어요" style={{...bannerBtn(false), cursor: coverUploading ? "wait" : "pointer"}}>
+                    {!isMobile && <ImagePlus size={17} />}{coverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
+                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple
+                      disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
+                  </label>
+                  <button type="button" onClick={() => setSampleOpen((v) => !v)}
+                    title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요" style={bannerBtn(sampleOpen)}>
+                    {!isMobile && <Wand2 size={16} />}{isMobile ? "샘플" : "샘플 배너"}
+                  </button>
                 </div>
                 {coverImages.length === 0 ? (
                   <div style={{minHeight:110, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, padding:12,

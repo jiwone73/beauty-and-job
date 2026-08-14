@@ -268,12 +268,17 @@ export default function JobPostForm({
   const [nmRepresentative, setNmRepresentative] = useState("");
   const [nmPhone, setNmPhone] = useState("");
   const [bannerImages, setBannerImages] = useState<{ url: string; name: string }[]>([]); // 상단 배너(여러 장, 3장씩 회전)
-  // 배너 영역 버튼은 매장/기업정보 페이지와 같은 모양으로 맞춘다(아이콘 + 글자 알약).
-  const bannerBtn = (on: boolean): CSSProperties => ({
-    display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 11px", borderRadius: 9,
-    border: "1px solid #e2e2e6", background: on ? "#f7f1fd" : "#fff", color: "#5f0080",
-    fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap",
-  });
+  // 배너 영역 버튼은 매장/기업정보 페이지와 같은 모양으로 맞춘다.
+  // 모바일은 테두리·아이콘을 빼고 글자만 남겨 좁은 폭을 제목에 내준다.
+  const bannerBtn = (on: boolean): CSSProperties => isMobile
+    // 제목 글자 높이를 넘지 않게 작게: 테두리만 남기고 아이콘·여백을 줄인다.
+    ? { display: "inline-flex", alignItems: "center", justifyContent: "center", height: 18, padding: "0 6px",
+        borderRadius: 5, border: "1px solid #dcdce0", background: on ? "#f4f4f6" : "#fff",
+        color: on ? "#5f0080" : "#777", fontSize: 11.5, lineHeight: 1, fontWeight: 500,
+        cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }
+    : { display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 11px", borderRadius: 9,
+        border: "1px solid #e2e2e6", background: on ? "#f4f4f6" : "#fff", color: "#666",
+        fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" };
   // 배너 칸이 비어 있으면 "공고마다 또 올려야 하나" 싶어 그냥 넘어가기 쉽다.
   // 한 번 등록해 두면 자동으로 들어온다는 걸 이 자리에서 알려 준다.
   const infoPageLabel = companyProfile?.company_type === "OFFICE" ? "기업정보" : "매장정보";
@@ -2008,14 +2013,14 @@ export default function JobPostForm({
           {/* 제목 옆에 ＋(이미지 추가) — 카드 안 공간을 쓰지 않는다 */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
             <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고 배너 이미지</h2>
-            <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요" style={bannerBtn(bannerGenOpen)}>
-              <Wand2 size={15} />샘플 배너
-            </button>
             <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
-              <ImagePlus size={16} />{nmCoverUploading ? "업로드 중…" : "추가"}
+              {!isMobile && <ImagePlus size={16} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
               <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
                 onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
             </label>
+            <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요" style={bannerBtn(bannerGenOpen)}>
+              {!isMobile && <Wand2 size={15} />}{isMobile ? "샘플" : "샘플 배너"}
+            </button>
           </div>
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
             {/* 썸네일마다 ×로 이 공고에서만 제거 */}
@@ -2049,14 +2054,14 @@ export default function JobPostForm({
             {/* 제목 옆에 ＋(이미지 추가)·샘플 배너 — 드래그 박스 안을 버튼으로 채우지 않는다. */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
               <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고 배너 이미지</h2>
-              <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요" style={bannerBtn(bannerGenOpen)}>
-                <Wand2 size={16} />샘플 배너
-              </button>
               <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
-                <ImagePlus size={17} />{nmCoverUploading ? "업로드 중…" : "추가"}
+                {!isMobile && <ImagePlus size={17} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
                 <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
                   onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
               </label>
+              <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요" style={bannerBtn(bannerGenOpen)}>
+                {!isMobile && <Wand2 size={16} />}{isMobile ? "샘플" : "샘플 배너"}
+              </button>
               {mode === "company" && coverImages.length > 0 && bannerImages.length === 0 && (
                 <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
                   style={{ ...bannerBtn(false), color: "#666" }}>기업 이미지 불러오기</button>
