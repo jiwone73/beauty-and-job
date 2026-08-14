@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Save, Camera, ImagePlus, X, ChevronRight } from "lucide-react";
+import { Save, Camera, ImagePlus, Wand2, X, ChevronRight } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { industryGroupsFor } from "@/lib/data/industries";
 import { downscaleImage } from "@/lib/imageResize";
 import BannerStrip from "@/components/jobs/BannerStrip";
+import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import type { CompanyInfo } from "@/lib/types/company";
 
 declare global {
@@ -159,6 +160,33 @@ export default function CompanySettingsPage() {
     } catch (e) {
       console.error(e);
     }
+  };
+
+  // 샘플 배너 — 쓸 만한 매장 사진이 없어도 배너를 비워 두지 않게, 준비된 배경에 문구만 얹어 만든다.
+  const [sampleOpen, setSampleOpen] = useState(false);
+  const [sampleText, setSampleText] = useState("");
+  const [sampleBusy, setSampleBusy] = useState(false);
+  const addSampleBanner = async () => {
+    const text = sampleText.trim();
+    if (!text) { alert("배너에 넣을 문구를 입력해주세요."); return; }
+    const token = localStorage.getItem("access_token");
+    if (!token) { alert("로그인이 필요합니다."); return; }
+    setSampleBusy(true);
+    try {
+      const canvas = document.createElement("canvas");
+      await drawSampleBanner(canvas, BANNER_PRESETS[0], text);
+      const blob: Blob | null = await new Promise((res) => canvas.toBlob((b) => res(b), "image/png", 0.92));
+      if (!blob) { alert("배너 생성에 실패했어요."); return; }
+      const fd = new FormData();
+      fd.append("file", new File([blob], `sample-banner-${text.slice(0, 8)}.png`, { type: "image/png" }));
+      const res = await fetch("/api/company/me/cover", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const data = await res.json();
+      if (data.success) {
+        const cov = data.data.cover_images;
+        if (Array.isArray(cov)) setCoverImages(cov.filter((c: any) => c?.url));
+        setSampleOpen(false); setSampleText("");
+      } else alert(data.error?.message || "배너 등록에 실패했어요.");
+    } finally { setSampleBusy(false); }
   };
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -497,23 +525,51 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row">
                 <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
                   <label className="admin-form-label" style={{margin:0}}>공고 배너 이미지</label>
-                  <label title="여러 장 추가할 수 있어요"
-                    style={{display:"inline-flex", alignItems:"center", gap:5, padding:"6px 11px", borderRadius:9,
-                      border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080", fontSize:13, fontWeight:500,
-                      cursor: coverUploading ? "wait" : "pointer"}}>
-                    <ImagePlus size={17} />{coverUploading ? "업로드 중…" : "추가"}
-                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple
-                      disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
-                  </label>
+                  <div style={{display:"flex", alignItems:"center", gap:6}}>
+                    <button type="button" onClick={() => setSampleOpen((v) => !v)}
+                      title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요"
+                      style={{display:"inline-flex", alignItems:"center", gap:5, padding:"6px 11px", borderRadius:9,
+                        border:"1px solid #e2e2e6", background: sampleOpen ? "#f7f1fd" : "#fff", color:"#5f0080",
+                        fontSize:13, fontWeight:500, cursor:"pointer"}}>
+                      <Wand2 size={16} />샘플 배너
+                    </button>
+                    <label title="여러 장 추가할 수 있어요"
+                      style={{display:"inline-flex", alignItems:"center", gap:5, padding:"6px 11px", borderRadius:9,
+                        border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080", fontSize:13, fontWeight:500,
+                        cursor: coverUploading ? "wait" : "pointer"}}>
+                      <ImagePlus size={17} />{coverUploading ? "업로드 중…" : "추가"}
+                      <input type="file" accept="image/jpeg,image/png,image/webp" multiple
+                        disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
+                    </label>
+                  </div>
                 </div>
                 {coverImages.length === 0 ? (
-                  <div style={{height:110, display:"flex", alignItems:"center", justifyContent:"center",
-                    background:"#f7f4fb", border:"1px dashed #d9c9ec", borderRadius:10, color:"#b0a0c0", fontSize:13}}>
-                    아직 등록한 이미지가 없어요.
+                  <div style={{minHeight:110, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, padding:12,
+                    background:"#f7f4fb", border:"1px dashed #d9c9ec", borderRadius:10, color:"#b0a0c0", fontSize:13, textAlign:"center", lineHeight:1.5}}>
+                    아직 등록한 이미지가 없어요.<br />
+                    사진이 없다면 <b style={{color:"#8a72a8"}}>샘플 배너</b>로 문구만 넣어 만들어 보세요.
                   </div>
                 ) : (
                   /* 공고 상세와 같은 컴포넌트 — 여기서 보이는 모양이 실제 공고 배너와 같다. */
                   <BannerStrip images={coverImages.map((c) => c.url)} onDelete={handleCoverDeleteOne} radius={10} />
+                )}
+                {sampleOpen && (
+                  <div style={{marginTop:10, padding:12, border:"1px solid #e5e2ea", borderRadius:10, background:"#faf9fc"}}>
+                    <div style={{fontSize:13, color:"#5f0080", fontWeight:600, marginBottom:8}}>
+                      샘플 배너 만들기 <span style={{fontWeight:400, color:"#999"}}>· 가운데 문구만 넣어요(줄바꿈 가능)</span>
+                    </div>
+                    <textarea value={sampleText} onChange={(e) => setSampleText(e.target.value)} rows={2}
+                      placeholder={`예: ${form.company_name || "리안헤어 광명점"}\n함께 일할 디자이너를 찾습니다`}
+                      style={{width:"100%", boxSizing:"border-box", border:"1px solid #e0d8ec", borderRadius:8, padding:"8px 10px", fontSize:14, resize:"vertical", outline:"none"}} />
+                    <div style={{display:"flex", gap:8, marginTop:10}}>
+                      <button type="button" onClick={addSampleBanner} disabled={sampleBusy || !sampleText.trim()}
+                        className="company-primary-btn" style={{padding:"8px 16px", fontSize:13, opacity:(sampleBusy || !sampleText.trim()) ? 0.6 : 1}}>
+                        {sampleBusy ? "만드는 중…" : "배너로 추가"}
+                      </button>
+                      <button type="button" onClick={() => setSampleOpen(false)}
+                        style={{border:"1px solid #e0d8ec", background:"#fff", borderRadius:8, padding:"8px 14px", fontSize:13, cursor:"pointer", color:"#666"}}>취소</button>
+                    </div>
+                  </div>
                 )}
                 {/* 여기서 한 번 올리면 공고마다 다시 올릴 필요가 없다는 점을 알려, 공고 등록 단계의 부담을 덜어준다. */}
                 <p style={{fontSize:"12.5px", color:"#999", margin:"6px 0 0", lineHeight:1.55}}>
