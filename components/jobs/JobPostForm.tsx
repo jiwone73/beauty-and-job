@@ -318,6 +318,14 @@ export default function JobPostForm({
   const [nmRepresentative, setNmRepresentative] = useState("");
   const [nmPhone, setNmPhone] = useState("");
   const [bannerImages, setBannerImages] = useState<{ url: string; name: string }[]>([]); // 상단 배너(여러 장, 3장씩 회전)
+  // 배너 칸이 비어 있으면 "공고마다 또 올려야 하나" 싶어 그냥 넘어가기 쉽다.
+  // 한 번 등록해 두면 자동으로 들어온다는 걸 이 자리에서 알려 준다.
+  const infoPageLabel = companyProfile?.company_type === "OFFICE" ? "기업정보" : "매장정보";
+  const bannerHint = mode === "company" && bannerImages.length === 0 ? (
+    <p style={{ fontSize: 12.5, color: "#999", lineHeight: 1.55, margin: "8px 0 0" }}>
+      {infoPageLabel}에 배너를 등록해 두면 공고를 올릴 때마다 자동으로 들어가요.
+    </p>
+  ) : null;
   const [nmCoverUploading, setNmCoverUploading] = useState(false);
   // 기본 배너(가운데 제목만, 뷰티 배경) 생성 UI
   const [bannerGenOpen, setBannerGenOpen] = useState(false);
@@ -2095,6 +2103,7 @@ export default function JobPostForm({
                   style={{ flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
               )}
             </div>
+            {bannerHint}
           </div>
         </div>
       ) : (() => {
@@ -2148,6 +2157,7 @@ export default function JobPostForm({
                   )}
                   {bannerImages.length === 0 && !bannerGenOpen && <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>이미지가 없으면 <b>기본 배너</b>로 제목만 넣어 만들 수 있어요. 또는 이미지를 <b>드래그</b>·<b>Ctrl+V</b> 하세요.</span>}
                 </div>
+                {bannerHint}
                 {/* 기본 배너 생성 패널 */}
                 {bannerGenOpen && (
                   <div style={{ marginTop: 10, padding: 12, border: "1px solid #e5e2ea", borderRadius: 10, background: "#faf9fc" }}>
