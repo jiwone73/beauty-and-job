@@ -33,7 +33,7 @@ const SALARY_UNITS: { label: string; prefix: string }[] = [
   { label: "연봉", prefix: "연" },
 ];
 const POS_EDU = ["무관", "고졸", "초대졸", "대졸", "석사"];
-// 기본 배너 배경 프리셋(뷰티 필). bg=그라데이션 2색, text=제목색, wm=배경 'RECRUIT' 워터마크색
+// 제목 배너 배경 프리셋(뷰티 필). bg=그라데이션 2색, text=제목색, wm=배경 'RECRUIT' 워터마크색
 // 사진을 배경으로 깔고 그 위에 제목을 그린다(제목은 별도 입력). bg는 사진 로드 실패 시 폴백 색.
 const BANNER_PRESETS: { key: string; label: string; bg: string; text: string; img: string }[] = [
   { key: "aura", label: "화이트 뷰티", bg: "#f7f5f2", text: "#1f1b17", img: "/banner-default.jpg" },
@@ -55,7 +55,7 @@ function wrapLines(ctx: CanvasRenderingContext2D, title: string, maxW: number, m
   return title.split("\n").flatMap((l) => wrap(l.trim())).filter(Boolean).slice(0, maxLines);
 }
 
-// 캔버스에 기본 배너 그림: 사진을 배경으로 깔고 그 위에 제목을 얹는다.
+// 캔버스에 제목 배너 그림: 사진을 배경으로 깔고 그 위에 제목을 얹는다.
 //   배너 표시 비율(3:1 고정)과 같은 1200x400으로 만들어 미리보기에서 잘리지 않게 한다.
 async function drawDefaultBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRESETS)[number], title: string) {
   const W = 1200, H = 400;
@@ -328,7 +328,7 @@ export default function JobPostForm({
     </p>
   ) : null;
   const [nmCoverUploading, setNmCoverUploading] = useState(false);
-  // 기본 배너(가운데 제목만, 뷰티 배경) 생성 UI
+  // 제목 배너(사진 위에 공고 제목만) 생성 UI
   const [bannerGenOpen, setBannerGenOpen] = useState(false);
   const [bannerGenTitle, setBannerGenTitle] = useState("");
   const [bannerGenPreset, setBannerGenPreset] = useState(0);
@@ -1012,7 +1012,7 @@ export default function JobPostForm({
     } finally { setNmCoverUploading(false); }
   };
 
-  // 기본 배너 생성 → PNG 업로드 → 배너에 추가
+  // 제목 배너 생성 → PNG 업로드 → 배너에 추가
   const addDefaultBanner = async () => {
     const title = bannerGenTitle.trim();
     if (!title) { alert("배너에 넣을 제목을 입력하세요."); return; }
@@ -1026,7 +1026,7 @@ export default function JobPostForm({
       const file = new File([blob], `banner-${Date.now()}.png`, { type: "image/png" });
       const r = await uploadImage(file);
       if (r.success && r.url) {
-        setBannerImages((prev) => [...prev, { url: r.url!, name: "기본 배너" }]);
+        setBannerImages((prev) => [...prev, { url: r.url!, name: "제목 배너" }]);
         setBannerGenOpen(false); setBannerGenTitle("");
       } else alert(r.error || "배너 업로드에 실패했어요.");
     } finally { setBannerGenBusy(false); }
@@ -2068,8 +2068,14 @@ export default function JobPostForm({
               {bannerImages.length > 0 && (
                 <div style={{ width: "100%" }}>
                   {/* 공고 상세와 같은 컴포넌트로 그린다 — 편집 화면에서 보이는 모양이 곧 공개 화면 모양. */}
-                  <BannerStrip images={bannerImages.map((b) => b.url)} radius={8}
-                    onDelete={(url) => setBannerImages((prev) => prev.filter((b) => b.url !== url))} />
+                  <BannerStrip images={bannerImages.map((b) => b.url)} radius={8} showIndex
+                    onDelete={(url) => setBannerImages((prev) => prev.filter((b) => b.url !== url))}
+                    onReorder={(from, to) => setBannerImages((prev) => {
+                      const next = [...prev];
+                      const [moved] = next.splice(from, 1);
+                      next.splice(to, 0, moved);
+                      return next;
+                    })} />
                 </div>
               )}
               {coverImages.length > 0 && bannerImages.length === 0 && (
@@ -2083,7 +2089,24 @@ export default function JobPostForm({
       ) : (() => {
         return (
           <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
-            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 배너 이미지</h2>
+            {/* 제목 옆에 ＋(이미지 추가)·제목 배너 — 드래그 박스 안을 버튼으로 채우지 않는다. */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
+              <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고 배너 이미지</h2>
+              <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: nmCoverUploading ? "#bbb" : "#5f0080", borderRadius: 7, fontSize: 14, lineHeight: 1, cursor: nmCoverUploading ? "wait" : "pointer" }}>
+                {nmCoverUploading ? "…" : "＋"}
+                <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
+                  onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
+              </label>
+              <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="사진 없이 공고 제목만으로 배너를 만들어요"
+                style={{ display: "inline-flex", alignItems: "center", gap: 4, height: 26, padding: "0 10px", borderRadius: 7, border: "1px solid #e0d8ec", background: bannerGenOpen ? "#f7f1fd" : "#fff", color: "#5f0080", fontSize: 12.5, cursor: "pointer" }}>
+                <span style={{ fontSize: 13, lineHeight: 1 }}>✎</span>제목 배너
+              </button>
+              {mode === "company" && coverImages.length > 0 && bannerImages.length === 0 && (
+                <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
+                  style={{ height: 26, padding: "0 10px", borderRadius: 7, border: "1px solid #e0d8ec", background: "#fff", color: "#666", fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
+              )}
+            </div>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
 
               {/* ── 상단 배너 (cover, 여러 장 · 공개화면에서 3장씩 화살표로 회전) ── */}
@@ -2096,46 +2119,28 @@ export default function JobPostForm({
                   onDragLeave={() => setDragOver(false)}
                   onDrop={(e) => { e.preventDefault(); setDragOver(false); if (imgDragRef.current) { dropToBanner(null); return; } const f = e.dataTransfer.files; if (f && f.length && !nmCoverUploading) addBannerFiles(f); }}
                   onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!nmCoverUploading) addBannerFiles(fs); } }}
-                  style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${dragOver || pasteZone === "banner" ? "#5f0080" : "#e0d5ee"}`, background: dragOver || pasteZone === "banner" ? "#f7f1fd" : "#fbf9ff", outline: "none" }}>
-                  {/* 배너 이미지 썸네일: 서로 붙여서(gap 0) — 미리보기 배너와 동일 */}
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 0, borderRadius: 8, overflow: "hidden" }}>
-                  {bannerImages.map((b, idx) => (
-                    <div key={b.url + idx} draggable
-                      onDragStart={() => { imgDragRef.current = { zone: "banner", idx }; }}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (imgDragRef.current) dropToBanner(idx); }}
-                      style={{ position: "relative", width: 120, height: 76, flexShrink: 0, cursor: "grab" }}>
-                      <img src={b.url} alt={`배너 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
-                      <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
-                      <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="배너에서 제거"
-                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                  style={{ padding: bannerImages.length ? 6 : 10, borderRadius: 10, border: `1.5px dashed ${dragOver || pasteZone === "banner" ? "#5f0080" : "#e0d5ee"}`, background: dragOver || pasteZone === "banner" ? "#f7f1fd" : "#fbf9ff", outline: "none" }}>
+                  {bannerImages.length > 0 ? (
+                    /* 공고에 실제로 찍히는 모양(3:1 · 한 장은 1/3 폭) 그대로 보여준다. 끌어서 순서를 바꿀 수 있다. */
+                    <BannerStrip images={bannerImages.map((b) => b.url)} radius={8} showIndex
+                      onDelete={(url) => setBannerImages((prev) => prev.filter((b) => b.url !== url))}
+                      onReorder={(from, to) => setBannerImages((prev) => {
+                        const next = [...prev];
+                        const [moved] = next.splice(from, 1);
+                        next.splice(to, 0, moved);
+                        return next;
+                      })} />
+                  ) : (
+                    <div style={{ minHeight: 76, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12.5, color: "#999", lineHeight: 1.5, textAlign: "center" }}>
+                      이미지를 <b style={{ margin: "0 3px" }}>드래그</b>하거나 <b style={{ margin: "0 3px" }}>Ctrl+V</b>로 붙여넣어 주세요.
                     </div>
-                  ))}
-                  </div>
-                  <label title="배너 추가"
-                    style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 120, height: 76, flexShrink: 0, borderRadius: 8, border: "1.5px dashed #c4b5d4", background: "#fff", color: "#5f0080", cursor: nmCoverUploading ? "wait" : "pointer" }}>
-                    <span style={{ fontSize: 20, lineHeight: 1 }}>{nmCoverUploading ? "…" : "+"}</span>
-                    <span style={{ fontSize: 10, marginTop: 2 }}>배너 추가</span>
-                    <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10} onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
-                  </label>
-                  {/* 기본 배너(가운데 제목만, 뷰티 배경) */}
-                  <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="이미지 없이 제목만으로 기본 배너를 만들어요"
-                    style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, width: 120, height: 76, flexShrink: 0, borderRadius: 8, border: "1.5px dashed #c4b5d4", background: bannerGenOpen ? "#f7f1fd" : "#fff", color: "#5f0080", cursor: "pointer" }}>
-                    <span style={{ fontSize: 18, lineHeight: 1 }}>✎</span>
-                    <span style={{ fontSize: 10 }}>기본 배너</span>
-                  </button>
-                  {/* 기업회원: 기업설정 커버를 이 공고로 다시 가져오기(여기서 빼도 기업정보는 그대로) */}
-                  {mode === "company" && coverImages.length > 0 && bannerImages.length === 0 && (
-                    <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
-                      style={{ flexShrink: 0, border: "1.5px dashed #c4b5d4", background: "#fff", color: "#666", borderRadius: 8, padding: "0 12px", height: 76, fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
                   )}
-                  {bannerImages.length === 0 && !bannerGenOpen && <span style={{ fontSize: 12, color: "#999", lineHeight: 1.5 }}>이미지가 없으면 <b>기본 배너</b>로 제목만 넣어 만들 수 있어요. 또는 이미지를 <b>드래그</b>·<b>Ctrl+V</b> 하세요.</span>}
                 </div>
                 {bannerHint}
-                {/* 기본 배너 생성 패널 */}
+                {/* 제목 배너 생성 패널 */}
                 {bannerGenOpen && (
                   <div style={{ marginTop: 10, padding: 12, border: "1px solid #e5e2ea", borderRadius: 10, background: "#faf9fc" }}>
-                    <div style={{ fontSize: 13, color: "#5f0080", fontWeight: 600, marginBottom: 8 }}>기본 배너 만들기 <span style={{ fontWeight: 400, color: "#999" }}>· 가운데 제목만 넣어요(줄바꿈 가능)</span></div>
+                    <div style={{ fontSize: 13, color: "#5f0080", fontWeight: 600, marginBottom: 8 }}>제목 배너 만들기 <span style={{ fontWeight: 400, color: "#999" }}>· 가운데 제목만 넣어요(줄바꿈 가능)</span></div>
                     <textarea value={bannerGenTitle} onChange={(e) => setBannerGenTitle(e.target.value)} rows={2}
                       placeholder={"예: 부 원장 급 여자 선생님\n(중국어 가능자 우대)"}
                       style={{ width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, padding: "8px 10px", fontSize: 14, resize: "vertical", outline: "none" }} />

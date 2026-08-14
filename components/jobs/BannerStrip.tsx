@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 /**
@@ -8,8 +8,8 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
  * 규칙 두 가지만 지킨다.
  *  1. 전체 높이는 장수와 무관하게 3:1 고정. 공고마다 배너 높이가 달라지면 안 된다.
  *  2. 이미지 한 장의 폭은 언제나 전체의 1/3. 1~2장이라고 늘려 버리면 같은 사진이
- *     공고마다 다른 크기로 잘려 보인다. 남는 좌우는 그 사진을 크게 깔고 흐리게 처리해
- *     사진 배경색과 이어지는 여백으로 채운다.
+ *     공고마다 다른 크기로 잘려 보인다. 남는 좌우는 사진의 좌·우 테두리 색으로 채워
+ *     사진과 여백의 경계가 보이지 않게 한다.
  *
  * 3장을 넘으면 좌우 화살표로 3장씩 돌려 본다.
  */
@@ -17,14 +17,20 @@ export default function BannerStrip({
   images,
   alt,
   onDelete,
+  onReorder,
+  showIndex = false,
   radius = 12,
 }: {
   images: string[];
   alt?: string;
-  onDelete?: (url: string) => void;   // 편집 화면에서만 넘긴다(공개 화면은 생략)
+  onDelete?: (url: string) => void;                  // 편집 화면에서만 넘긴다(공개 화면은 생략)
+  onReorder?: (from: number, to: number) => void;    // 넘기면 끌어서 순서를 바꿀 수 있다
+  showIndex?: boolean;                               // 첫 장이 목록 카드 썸네일이 되므로 편집 화면에선 번호를 보여준다
   radius?: number;
 }) {
   const [start, setStart] = useState(0);
+  // 끌어 옮기는 출발 위치는 렌더와 무관하게 즉시 읽혀야 해서 ref로 둔다(상태면 같은 틱에 반영되지 않는다).
+  const dragFrom = useRef<number | null>(null);
   const [edge, setEdge] = useState<{ left: string; right: string } | null>(null);
   const n = images.length;
 
@@ -89,20 +95,37 @@ export default function BannerStrip({
           </>
         )}
         <div style={{ position: "relative", height: "100%", display: "flex", justifyContent: "center" }}>
-          {visible.map((src, k) => (
-            <div key={`${s}-${k}-${src}`} style={{ position: "relative", width: `${100 / PER}%`, height: "100%", flexShrink: 0 }}>
-              <img src={src} alt={alt}
-                style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
-              {onDelete && (
-                <button type="button" onClick={() => onDelete(src)} title="삭제"
-                  style={{ position: "absolute", top: 5, right: 5, width: 22, height: 22, borderRadius: "50%",
-                    background: "rgba(0,0,0,0.55)", color: "#fff", border: "none", cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <X size={13} />
-                </button>
-              )}
-            </div>
-          ))}
+          {visible.map((src, k) => {
+            const idx = (s + k) % n;   // 화살표로 돌려 봐도 원본 배열의 자리를 가리킨다
+            return (
+              <div key={`${s}-${k}-${src}`}
+                draggable={!!onReorder}
+                onDragStart={onReorder ? () => { dragFrom.current = idx; } : undefined}
+                onDragOver={onReorder ? (e) => e.preventDefault() : undefined}
+                onDrop={onReorder ? (e) => {
+                  e.preventDefault(); e.stopPropagation();
+                  const from = dragFrom.current;
+                  if (from !== null && from !== idx) onReorder(from, idx);
+                  dragFrom.current = null;
+                } : undefined}
+                style={{ position: "relative", width: `${100 / PER}%`, height: "100%", flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
+                <img src={src} alt={alt}
+                  style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+                {showIndex && (
+                  <span style={{ position: "absolute", bottom: 5, left: 5, background: "rgba(0,0,0,0.55)", color: "#fff",
+                    fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "1px 5px" }}>{idx + 1}</span>
+                )}
+                {onDelete && (
+                  <button type="button" onClick={() => onDelete(src)} title="삭제"
+                    style={{ position: "absolute", top: 5, right: 5, width: 22, height: 22, borderRadius: "50%",
+                      background: "rgba(0,0,0,0.55)", color: "#fff", border: "none", cursor: "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
       {n > PER && (
