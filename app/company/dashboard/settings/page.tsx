@@ -484,7 +484,7 @@ export default function CompanySettingsPage() {
               {/* 공고 상단 배너 (여러 장) */}
               <div className="admin-form-row">
                 <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
-                  <label className="admin-form-label" style={{margin:0}}>공고 상단 배너</label>
+                  <label className="admin-form-label" style={{margin:0}}>공고 배너 이미지</label>
                   <label title="여러 장 추가할 수 있어요"
                     style={{display:"inline-flex", alignItems:"center", gap:5, padding:"6px 11px", borderRadius:9,
                       border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080", fontSize:13, fontWeight:500,

@@ -2043,7 +2043,7 @@ export default function JobPostForm({
         <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
           {/* 제목 옆에 ＋(이미지 추가) — 카드 안 공간을 쓰지 않는다 */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
-            <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고 상단 이미지</h2>
+            <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고 배너 이미지</h2>
             <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)"
               style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: nmCoverUploading ? "#bbb" : "#5f0080", borderRadius: 7, fontSize: 13, lineHeight: 1, cursor: nmCoverUploading ? "wait" : "pointer" }}>
               {nmCoverUploading ? "…" : "＋"}
@@ -2070,10 +2070,12 @@ export default function JobPostForm({
                 };
                 return (
                   <div style={{ width: "100%", position: "relative" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap: 0, borderRadius: 8, overflow: "hidden" }}>
+                    {/* 배너 높이는 장수와 무관하게 고정(3:1) — 공고 페이지에 보이는 그대로.
+                        장수가 줄면 각 칸이 넓어질 뿐, 배너가 커지지 않는다. */}
+                    <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap: 0, aspectRatio: "3 / 1", borderRadius: 8, overflow: "hidden", background: "#f4f4f4" }}>
                       {shown.map(({ b, idx }) => (
-                        <div key={b.url + idx} style={{ position: "relative", minWidth: 0, aspectRatio: "120 / 76" }}>
-                          <img src={b.url} alt={`상단 이미지 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
+                        <div key={b.url + idx} style={{ position: "relative", minWidth: 0, height: "100%" }}>
+                          <img src={b.url} alt={`상단 이미지 ${idx + 1}`} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
                           <button type="button" onClick={() => setBannerImages((prev) => prev.filter((_, i) => i !== idx))} title="이 공고에서 빼기 (기업정보 이미지는 그대로예요)"
                             style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
                         </div>
@@ -2098,7 +2100,7 @@ export default function JobPostForm({
       ) : (() => {
         return (
           <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
-            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>{mode === "company" ? "공고 상단 이미지" : "상단 배너"}</h2>
+            <h2 className="jobpost-section-title" style={{ marginLeft: 4 }}>공고 배너 이미지</h2>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
 
               {/* ── 상단 배너 (cover, 여러 장 · 공개화면에서 3장씩 화살표로 회전) ── */}
