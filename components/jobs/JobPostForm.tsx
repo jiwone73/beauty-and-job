@@ -11,6 +11,7 @@ import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
 import { REGIONS } from "@/lib/data/regions";
+import { composeCompanyAddress } from "@/lib/address";
 
 // 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
 const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.sido} ${g}`));
@@ -275,6 +276,38 @@ export default function JobPostForm({
   const [externalApplyUrl, setExternalApplyUrl] = useState("");
   const [nmDescription, setNmDescription] = useState("");
   const [nmAddress, setNmAddress] = useState("");
+  // 주소는 자유입력이면 표기가 흔들려 지도 좌표도, 시·군·구 필터도 어긋난다.
+  // 기업정보·개인 프로필과 같은 우편번호 검색으로 통일한다(팝업은 인앱 브라우저에서 닫히지 않아 레이어로 띄운다).
+  const addrBoxRef = useRef<HTMLDivElement>(null);
+  const [addrOpen, setAddrOpen] = useState(false);
+  const openAddressSearch = () => {
+    setAddrOpen(true);
+    const embed = () => {
+      const el = addrBoxRef.current;
+      if (!el) return;
+      el.innerHTML = "";
+      new (window as any).daum.Postcode({
+        oncomplete: (data: any) => {
+          const base = data.roadAddress || data.jibunAddress || "";
+          const withBuilding = data.buildingName ? `${base} (${data.buildingName})` : base;
+          setNmAddress(withBuilding);
+          const r = deriveRegion(withBuilding);
+          if (r.length) setRegionList(r);
+          setAddrOpen(false);
+        },
+        onclose: () => setAddrOpen(false),
+        width: "100%",
+        height: "100%",
+      }).embed(el);
+    };
+    setTimeout(() => {
+      if ((window as any).daum?.Postcode) { embed(); return; }
+      const script = document.createElement("script");
+      script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+      script.onload = embed;
+      document.body.appendChild(script);
+    }, 0);
+  };
   const [nmIndustry, setNmIndustry] = useState("");
   const [nmSize, setNmSize] = useState("");
   const [nmFounded, setNmFounded] = useState("");
@@ -1735,11 +1768,11 @@ export default function JobPostForm({
       founded: isNm ? (nmFounded ? `${nmFounded}년` : "") : (cp?.founded_year || ""),
       phone: isNm ? nmPhone : (cp?.company_phone || ""),
       website: isNm ? nmHomepage : (cp?.website_url || ""),
-      location: isNm ? nmAddress : (cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : ""),
+      location: isNm ? nmAddress : (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
       latitude: null,
       longitude: null,
     },
-    companyAddress: isNm ? nmAddress : (cp ? [cp.region_sido, cp.region_sigungu, cp.address].filter(Boolean).join(" ") : ""),
+    companyAddress: isNm ? nmAddress : (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
     workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의")),
     workPeriodText: fiWorkPeriod.trim() || workPeriod || "협의",
     workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의")),
@@ -2412,10 +2445,14 @@ export default function JobPostForm({
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}>
                   <MapPin size={16} style={{ color: "#5f0080", flexShrink: 0 }} />근무지역 <span style={{ color: "#e9a3a3" }}>*</span>
                 </div>
-                <input value={nmAddress}
-                  onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
-                  style={{ width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }}
-                  placeholder="전체 주소 입력 (예: 서울 구로구 구일로10길 27 …)" />
+                <div style={{ display: "flex", gap: 6 }}>
+                  <input value={nmAddress}
+                    onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
+                    style={{ flex: 1, minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }}
+                    placeholder="주소 검색 후 동·호수를 이어서 입력" />
+                  <button type="button" onClick={openAddressSearch}
+                    style={{ flexShrink: 0, padding: "9px 14px", borderRadius: 8, border: "1px solid #e0d8ec", background: "#f8f6fd", color: "#5f0080", fontSize: 14, cursor: "pointer", whiteSpace: "nowrap" }}>주소 검색</button>
+                </div>
                 {nmAddress.trim() && <AddressMap address={nmAddress} name={newCompanyName.trim() || undefined} height={220} />}
               </div>
 
@@ -2666,7 +2703,13 @@ export default function JobPostForm({
                     <div style={row}><span style={lbl2}>업종</span>{!fiIndustry.trim() && (<select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("industry"); return; } setFiIndustry(""); setNmIndustry(e.target.value); }}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}{nonMember && <option value="__fi__">직접입력…</option>}</select>)}{freeField("industry", fiIndustry, setFiIndustry, "직접 입력…", false, () => setNmIndustry(""))}</div>
                     <div style={row}><span style={lbl2}>브랜드명</span><input style={inpHl(!!newBrandName)} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>웹사이트</span><input style={inpHl(!!nmHomepage)} value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} /></div>
-                    <div style={{ ...row, ...full }}><span style={lbl2}>주소<span style={req}> *</span></span><input style={inpHl(!!nmAddress)} value={nmAddress} onChange={(e) => setNmAddress(e.target.value)} /></div>
+                    <div style={{ ...row, ...full }}><span style={lbl2}>주소<span style={req}> *</span></span>
+                      <input style={{ ...inpHl(!!nmAddress), flex: 1, minWidth: 0 }} value={nmAddress}
+                        onChange={(e) => { const v = e.target.value; setNmAddress(v); const r = deriveRegion(v); if (r.length) setRegionList(r); }}
+                        placeholder="주소 검색 후 동·호수를 이어서 입력" />
+                      <button type="button" onClick={openAddressSearch}
+                        style={{ flexShrink: 0, marginLeft: 6, padding: "6px 12px", borderRadius: 8, border: "1px solid #e0d8ec", background: "#f8f6fd", color: "#5f0080", fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" }}>검색</button>
+                    </div>
                     <div style={row}><span style={lbl2}>사원수</span><select style={sel3(!!nmSize)} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value=""></option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
                     <div style={row}><span style={lbl2}>설립연도</span><input type="number" min="1900" max={new Date().getFullYear()} style={inpHl(!!nmFounded)} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>대표자</span><input style={inpHl(!!nmRepresentative)} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} /></div>
@@ -2697,6 +2740,20 @@ export default function JobPostForm({
         onClose={() => setRegionModalOpen(false)}
         onApply={(regions) => { setRegionList(regions); setRegionModalOpen(false); }}
       />
+
+      {/* 우편번호 검색 레이어 — 닫기 버튼을 직접 두어 인앱 브라우저에서도 빠져나올 수 있게 한다. */}
+      {addrOpen && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1200, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div style={{ background: "#fff", borderRadius: 12, width: "100%", maxWidth: 480, height: "70vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderBottom: "1px solid #eee" }}>
+              <span style={{ fontSize: 15 }}>주소 검색</span>
+              <button type="button" onClick={() => setAddrOpen(false)}
+                style={{ background: "none", border: "none", fontSize: 22, lineHeight: 1, color: "#888", cursor: "pointer" }}>×</button>
+            </div>
+            <div ref={addrBoxRef} style={{ flex: 1, minHeight: 0 }} />
+          </div>
+        </div>
+      )}
 
 
 

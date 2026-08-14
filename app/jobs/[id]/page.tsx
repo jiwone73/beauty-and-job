@@ -2,6 +2,7 @@
 import LoginModal from "@/components/LoginModal";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
+import { composeCompanyAddress } from "@/lib/address";
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -233,11 +234,11 @@ export default function JobDetailPage() {
               founded: j.company?.founded_year || '',
               phone: j.company?.company_phone || '',
               website: j.company?.website_url || '',
-              location: [j.company?.region_sido, j.company?.region_sigungu, j.company?.address].filter(Boolean).join(' ') || '',
+              location: composeCompanyAddress(j.company?.region_sido, j.company?.region_sigungu, j.company?.address),
               latitude: j.company?.latitude ?? null,
               longitude: j.company?.longitude ?? null,
             },
-            companyAddress: [j.company?.region_sido, j.company?.region_sigungu, j.company?.address].filter(Boolean).join(' '),
+            companyAddress: composeCompanyAddress(j.company?.region_sido, j.company?.region_sigungu, j.company?.address),
           });
           // 로그인한 기업이 이 공고의 주인인지 판별
           if (token) {
