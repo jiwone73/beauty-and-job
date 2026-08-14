@@ -385,10 +385,6 @@ export default function CompanySettingsPage() {
       alert("업종은 필수입니다.");
       return;
     }
-    if (!form.company_size) {
-      alert(`${L.size}는 필수입니다.`);
-      return;
-    }
     if (!form.address.trim()) {
       alert("주소는 필수입니다. 주소 검색으로 입력해주세요.");
       return;
@@ -584,7 +580,7 @@ export default function CompanySettingsPage() {
 
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
-                  <label className="admin-form-label">{L.size}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="admin-form-label">{L.size}</label>
                   <select className="admin-form-select" data-empty={!form.company_size}
                     style={{ height: 42, boxSizing: "border-box" }}
                     value={form.company_size}
