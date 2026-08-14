@@ -21,6 +21,9 @@ export default function CompanySettingsPage() {
     size: isStore ? "직원수" : "사원수",
     phone: isStore ? "매장 전화번호" : "회사 대표번호",
     intro: isStore ? "매장 소개" : "기업 소개",
+    // 매장은 홈페이지가 거의 없고 인스타가 사실상 포트폴리오라, 같은 필드를 SNS로 쓴다.
+    site: isStore ? "매장 SNS" : "웹사이트",
+    sitePh: isStore ? "인스타·유튜브 주소" : "https://",
   };
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -572,8 +575,8 @@ export default function CompanySettingsPage() {
                     onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
                 </div>
                 <div className="admin-form-row">
-                  <label className="admin-form-label">웹사이트</label>
-                  <input className="admin-form-input" placeholder="https://"
+                  <label className="admin-form-label">{L.site}</label>
+                  <input className="admin-form-input" placeholder={L.sitePh}
                     value={form.website_url}
                     onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
                 </div>
@@ -595,15 +598,27 @@ export default function CompanySettingsPage() {
                     <option value="1000명 이상">1000명 이상</option>
                   </select>
                 </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">설립연도</label>
-                  <input type="number" className="admin-form-input" placeholder="예) 2020"
-                    style={{ height: 42, boxSizing: "border-box" }}
-                    min="1900" max={new Date().getFullYear()}
-                    value={form.founded_year}
-                    onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
-                </div>
+                {/* 설립연도·대표자는 본사에 지원할 때나 의미가 있다. 매장 지원자에겐 쓸모가 없어 매장에선 감춘다. */}
+                {!isStore && (
+                  <div className="admin-form-row">
+                    <label className="admin-form-label">설립연도</label>
+                    <input type="number" className="admin-form-input" placeholder="예) 2020"
+                      style={{ height: 42, boxSizing: "border-box" }}
+                      min="1900" max={new Date().getFullYear()}
+                      value={form.founded_year}
+                      onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
+                  </div>
+                )}
+                {isStore && (
+                  <div className="admin-form-row">
+                    <label className="admin-form-label">{L.phone}</label>
+                    <input className="admin-form-input" placeholder="02-000-0000" inputMode="numeric" maxLength={13}
+                      value={formatPhone(form.company_phone)}
+                      onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
+                  </div>
+                )}
               </div>
+              {!isStore && (
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">대표자</label>
@@ -618,6 +633,7 @@ export default function CompanySettingsPage() {
                     onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
                 </div>
               </div>
+              )}
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">담당자<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>

@@ -68,18 +68,28 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 ) {
   const ci = job.companyInfo || {};
   const hasMap = (ci.latitude && ci.longitude) || job.companyAddress?.trim();
+  // 매장 공고는 법인 정보(회사명·대표자·설립·규모)가 지원 판단에 쓸모가 없고, 주소는 근무지역과,
+  // 브랜드명은 상단 제목과 그대로 겹친다. 그래서 매장은 소개글과 SNS만 남긴다.
+  const isOfficeJob = job.jobType === "오피스";
+  const linkCell = (url: string) => (
+    <a key="w" href={/^https?:\/\//.test(url) ? url : `https://${url}`}
+      target="_blank" rel="noreferrer" style={{ color: "#5f0080", wordBreak: "break-all" }}>{url}</a>
+  );
   const companyRows: [string, ReactNode][] = [];
-  if (ci.name) companyRows.push(["회사명", ci.name]);
-  if (ci.brandName) companyRows.push(["브랜드명", ci.brandName]);
-  if (ci.industry) companyRows.push(["업종", ci.industry]);
-  if (ci.representative) companyRows.push(["대표자", ci.representative]);
-  if (ci.size) companyRows.push(["규모", ci.size]);
-  if (ci.founded) companyRows.push(["설립", ci.founded]);
-  if (ci.phone) companyRows.push(["대표번호", ci.phone]);
-  if (ci.website) companyRows.push(["웹사이트",
-    <a key="w" href={/^https?:\/\//.test(ci.website) ? ci.website : `https://${ci.website}`}
-      target="_blank" rel="noreferrer" style={{ color: "#5f0080", wordBreak: "break-all" }}>{ci.website}</a>]);
-  if (ci.location) companyRows.push(["주소", ci.location]);
+  if (isOfficeJob) {
+    if (ci.name) companyRows.push(["회사명", ci.name]);
+    if (ci.brandName) companyRows.push(["브랜드명", ci.brandName]);
+    if (ci.industry) companyRows.push(["업종", ci.industry]);
+    if (ci.representative) companyRows.push(["대표자", ci.representative]);
+    if (ci.size) companyRows.push(["규모", ci.size]);
+    if (ci.founded) companyRows.push(["설립", ci.founded]);
+    if (ci.phone) companyRows.push(["대표번호", ci.phone]);
+    if (ci.website) companyRows.push(["웹사이트", linkCell(ci.website)]);
+    if (ci.location) companyRows.push(["주소", ci.location]);
+  } else if (ci.website) {
+    companyRows.push(["매장 SNS", linkCell(ci.website)]);
+  }
+  const companySectionTitle = isOfficeJob ? "기업정보" : "매장 소개";
   const hasCompanyInfo = job.brandDesc?.trim() || companyRows.length > 0;
   // 상세 이미지가 있으면 상세내용(텍스트) 섹션은 공개 화면에서 숨김(이미지로 대체). 데이터는 그대로 유지.
   const hasDetailImages = Array.isArray(job.detailImages) && job.detailImages.some((d: any) => d?.url);
@@ -438,7 +448,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         {/* 기업 정보 (공고 내용 아래) */}
         {hasCompanyInfo && (
           <section className="job-detail-section">
-            <h2 className="job-detail-section-title">기업정보</h2>
+            <h2 className="job-detail-section-title">{companySectionTitle}</h2>
             {job.brandDesc?.trim() && (
               <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginBottom: companyRows.length ? "16px" : 0 }}>{job.brandDesc}</p>
             )}
@@ -446,7 +456,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               <div className="job-detail-company-info">
                 {companyRows.map(([label, val], i) => (
                   <div key={i} className="job-detail-company-row"
-                    style={label === "웹사이트" || label === "주소" ? { gridColumn: "1 / -1" } : undefined}>
+                    style={label === "웹사이트" || label === "매장 SNS" || label === "주소" ? { gridColumn: "1 / -1" } : undefined}>
                     <span className="job-detail-company-label">{label}</span>
                     <span>{val}</span>
                   </div>
