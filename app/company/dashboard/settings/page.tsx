@@ -539,7 +539,11 @@ export default function CompanySettingsPage() {
                     )}
                   </div>
                 )}
-                <p style={{fontSize:"12.5px", color:"#999", margin:"6px 0 0"}}>채용공고 상단에 배너로 표시되는 이미지예요.</p>
+                {/* 여기서 한 번 올리면 공고마다 다시 올릴 필요가 없다는 점을 알려, 공고 등록 단계의 부담을 덜어준다. */}
+                <p style={{fontSize:"12.5px", color:"#999", margin:"6px 0 0", lineHeight:1.55}}>
+                  채용공고 상단에 배너로 표시돼요. {isStore ? "매장 내부·외관 사진" : "사무실이나 팀 사진"}을 올리면 홍보에도 좋아요.<br />
+                  한 번 등록해 두면 공고를 올릴 때마다 자동으로 들어가요.
+                </p>
               </div>
 
               <div className="admin-form-row-2col">
