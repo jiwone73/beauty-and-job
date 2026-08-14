@@ -123,7 +123,8 @@ export default function CompanySettingsPage() {
     if (!token) { alert("로그인이 필요합니다."); return; }
     setLogoUploading(true);
     try {
-      const resized = await downscaleImage(file, { maxDim: 512, mime: "image/webp" });
+      // 로고는 화면에서 최대 64px로 보인다. 256px면 3배 해상도 화면까지 충분해 파일이 훨씬 가벼워진다.
+      const resized = await downscaleImage(file, { maxDim: 256, maxBytes: 120 * 1024, mime: "image/webp" });
       const fd = new FormData();
       fd.append("file", resized);
       const res = await fetch("/api/company/me/logo", {
@@ -440,7 +441,9 @@ export default function CompanySettingsPage() {
         <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "800px" }}>
           <div className="company-card">
             <div className="admin-form-body settings-compact">
-              {/* 회사 로고 (라벨을 감싸 compact 그리드 제외) */}
+              {/* 회사 로고 — 매장은 상호가 곧 브랜드라 쓸 만한 로고 파일이 없는 경우가 많고,
+                  목록 썸네일·공고 상단은 배너 이미지가 이미 채운다. 그래서 오피스에만 둔다. */}
+              {!isStore && (
               <div className="admin-form-row">
                 <div>
                 <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
@@ -455,17 +458,18 @@ export default function CompanySettingsPage() {
                   </label>
                 </div>
                 <div style={{display:"flex", alignItems:"center", gap:"12px"}}>
-                  <div style={{position:"relative", width:"calc(100% / 3)", aspectRatio:"4 / 3", borderRadius:"10px", border:"1px solid #eee",
-                    background:"#f7f4fb", display:"flex", alignItems:"center", justifyContent:"center",
-                    overflow:"hidden", flexShrink:0}}>
+                  {/* 공고에 실제로 찍히는 크기(56px)에 맞춘 미리보기. 로고는 여백이 살아야 해서 잘라내지 않고(contain) 흰 바탕에 얹는다. */}
+                  <div style={{position:"relative", width:64, height:64, borderRadius:"12px", border:"1px solid #eee",
+                    background:"#fff", display:"flex", alignItems:"center", justifyContent:"center",
+                    overflow:"hidden", flexShrink:0, padding:6, boxSizing:"border-box"}}>
                     {logoUrl ? (
                       <>
-                        <img src={logoUrl} alt="회사 로고" style={{width:"100%", height:"100%", objectFit:"cover"}} />
+                        <img src={logoUrl} alt="회사 로고" style={{width:"100%", height:"100%", objectFit:"contain"}} />
                         <button type="button" onClick={handleLogoDelete} title="로고 삭제"
-                          style={{position:"absolute", top:5, right:5, width:22, height:22, borderRadius:"50%",
+                          style={{position:"absolute", top:2, right:2, width:18, height:18, borderRadius:"50%",
                             background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
                             display:"flex", alignItems:"center", justifyContent:"center"}}>
-                          <X size={13} />
+                          <X size={11} />
                         </button>
                       </>
                     ) : (
@@ -476,6 +480,7 @@ export default function CompanySettingsPage() {
                 </div>
                 </div>
               </div>
+              )}
 
               {/* 공고 상단 배너 (여러 장) */}
               <div className="admin-form-row">
