@@ -1,5 +1,5 @@
 "use client";
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 /**
@@ -25,13 +25,51 @@ export default function BannerStrip({
   radius?: number;
 }) {
   const [start, setStart] = useState(0);
+  const [edge, setEdge] = useState<{ left: string; right: string } | null>(null);
   const n = images.length;
-  if (!n) return null;
 
   const PER = 3;
   const cols = Math.min(n, PER);
-  const s = ((start % n) + n) % n;
+  const s = n ? ((start % n) + n) % n : 0;
   const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
+
+  // 남는 좌우는 사진의 맨 왼쪽·오른쪽 테두리 색으로 채운다 — 사진과 여백의 경계가 보이지 않는다.
+  // 사진을 못 읽는 경우(CORS 등)에는 색을 비워 두고 뒤 배경이 그대로 비치게 한다.
+  const firstShown = visible[0];
+  const lastShown = visible[cols - 1];
+  useEffect(() => {
+    if (!firstShown || cols >= PER) { setEdge(null); return; }
+    let alive = true;
+    // 왼쪽 여백은 맨 앞 사진의 왼쪽 테두리, 오른쪽 여백은 맨 뒤 사진의 오른쪽 테두리에서 뽑는다.
+    const edgeColor = (src: string, side: "left" | "right") =>
+      new Promise<string | null>((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onerror = () => resolve(null);
+        img.onload = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = 1; canvas.height = 24;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return resolve(null);
+            const sx = side === "left" ? 0 : Math.max(0, img.naturalWidth - 1);
+            ctx.drawImage(img, sx, 0, 1, img.naturalHeight, 0, 0, 1, 24);
+            const d = ctx.getImageData(0, 0, 1, 24).data;
+            let r = 0, g = 0, b = 0;
+            for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; }
+            const c = d.length / 4;
+            resolve(`rgb(${Math.round(r / c)}, ${Math.round(g / c)}, ${Math.round(b / c)})`);
+          } catch { resolve(null); }   // 캔버스를 읽을 수 없으면 여백은 배경 그대로 둔다
+        };
+        img.src = src;
+      });
+    Promise.all([edgeColor(firstShown, "left"), edgeColor(lastShown, "right")]).then(([left, right]) => {
+      if (alive && left && right) setEdge({ left, right });
+    });
+    return () => { alive = false; };
+  }, [firstShown, lastShown, cols]);
+
+  if (!n) return null;
 
   const arrow: CSSProperties = {
     position: "absolute", top: "50%", transform: "translateY(-50%)",
@@ -43,12 +81,12 @@ export default function BannerStrip({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ position: "relative", width: "100%", aspectRatio: "3 / 1", borderRadius: radius, overflow: "hidden", background: "#f4f4f4" }}>
-        {/* 남는 좌우: 같은 사진을 꽉 채워 깔고 흐리게 처리 → 사진 배경색과 이어지는 여백이 된다.
-            단색으로 칠하면 사진마다 색이 어긋나고, 사진을 늘리면 원본이 왜곡된다. */}
-        {cols < PER && (
-          <img src={visible[0]} alt="" aria-hidden
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "blur(22px)", transform: "scale(1.25)" }} />
+      <div style={{ position: "relative", width: "100%", aspectRatio: "3 / 1", borderRadius: radius, overflow: "hidden" }}>
+        {cols < PER && edge && (
+          <>
+            <div aria-hidden style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "50%", background: edge.left }} />
+            <div aria-hidden style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "50%", background: edge.right }} />
+          </>
         )}
         <div style={{ position: "relative", height: "100%", display: "flex", justifyContent: "center" }}>
           {visible.map((src, k) => (
