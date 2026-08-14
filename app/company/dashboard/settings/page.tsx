@@ -674,7 +674,8 @@ export default function CompanySettingsPage() {
       {activeTab === "account" && (
         <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "400px" }}>
           <div className="company-card">
-            <div className="admin-form-body" style={{ gap: 0, paddingTop: 0, paddingBottom: 0 }}>
+            {/* settings-compact를 함께 걸어 항목명 색을 프로필 탭과 통일 */}
+            <div className="admin-form-body settings-compact" style={{ gap: 0, paddingTop: 0, paddingBottom: 0 }}>
               <div className="admin-form-row" style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", borderBottom: "1px solid #f0f0f0" }}>
                 <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>사업자등록번호</label>
                 <span style={{ fontSize: "14px", color: info?.business_number ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{info?.business_number || "미등록"}</span>
