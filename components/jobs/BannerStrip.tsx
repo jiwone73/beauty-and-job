@@ -43,12 +43,9 @@ export default function BannerStrip({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ position: "relative", width: "100%", aspectRatio: "3 / 1", borderRadius: radius, overflow: "hidden", background: "#f4f4f4" }}>
-        {/* 좌우 여백 채움: 첫 장을 꽉 채워 깔고 흐리게 → 사진 배경색과 자연스럽게 이어진다. */}
-        {cols < PER && (
-          <img src={visible[0]} alt="" aria-hidden
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "blur(22px)", transform: "scale(1.25)" }} />
-        )}
+      {/* 남는 좌우는 색을 따로 칠하지 않고 비워 둔다 — 뒤에 깔린 여백(카드 흰 바탕 등)이 그대로 비쳐
+          어느 화면에 놓아도 주변 패딩과 같은 색이 된다. 사진을 늘리거나 흐리게 깔면 왜곡돼 보인다. */}
+      <div style={{ position: "relative", width: "100%", aspectRatio: "3 / 1", borderRadius: radius, overflow: "hidden", background: "transparent" }}>
         <div style={{ position: "relative", height: "100%", display: "flex", justifyContent: "center" }}>
           {visible.map((src, k) => (
             <div key={`${s}-${k}-${src}`} style={{ position: "relative", width: `${100 / PER}%`, height: "100%", flexShrink: 0 }}>
