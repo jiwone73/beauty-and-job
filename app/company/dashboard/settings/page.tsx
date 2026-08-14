@@ -210,6 +210,16 @@ export default function CompanySettingsPage() {
       console.error(e);
     }
   };
+  // 직원수 구간은 매장과 본사가 다르다. 미용실은 1인샵~20명 남짓이 현실 범위라
+  // "300~1000명" 같은 칸을 보여주면 고를 게 없다.
+  const SIZE_OPTIONS = isStore
+    ? ["1명 (1인샵)", "2~4명", "5~9명", "10~19명", "20명 이상"]
+    : ["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"];
+  // 예전에 저장된 값이 새 구간에 없더라도 그대로 보이게 선택지에 남겨 둔다(임의로 바꾸지 않는다).
+  const sizeOptions = form.company_size && !SIZE_OPTIONS.includes(form.company_size)
+    ? [form.company_size, ...SIZE_OPTIONS]
+    : SIZE_OPTIONS;
+
   // 카카오 우편번호 검색
   // 주소 검색: 팝업(.open)은 모바일 인앱 브라우저에서 닫을 방법이 없어 갇힌다 → 닫기 버튼이 있는 레이어로 띄운다.
   const addrBoxRef = useRef<HTMLDivElement>(null);
@@ -555,12 +565,7 @@ export default function CompanySettingsPage() {
                       value={form.company_size}
                       onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
                       <option value="">선택</option>
-                      <option value="1~10명">1~10명</option>
-                      <option value="10~50명">10~50명</option>
-                      <option value="50~100명">50~100명</option>
-                      <option value="100~300명">100~300명</option>
-                      <option value="300~1000명">300~1000명</option>
-                      <option value="1000명 이상">1000명 이상</option>
+                      {sizeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
                     </select>
                   </div>
                 </div>
@@ -588,12 +593,7 @@ export default function CompanySettingsPage() {
                         value={form.company_size}
                         onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
                         <option value="">선택</option>
-                        <option value="1~10명">1~10명</option>
-                        <option value="10~50명">10~50명</option>
-                        <option value="50~100명">50~100명</option>
-                        <option value="100~300명">100~300명</option>
-                        <option value="300~1000명">300~1000명</option>
-                        <option value="1000명 이상">1000명 이상</option>
+                        {sizeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
                       </select>
                     </div>
                     <div className="admin-form-row">
