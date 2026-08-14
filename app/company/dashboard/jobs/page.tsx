@@ -253,13 +253,16 @@ export default function CompanyJobsPage() {
                 onClick={handleReRegister}>
                 <Copy size={14} /> 재등록
               </button>
-              <button className="admin-danger-btn" onClick={handleBulkDelete}>
-                <Trash2 size={15} /> 삭제 ({checked.length})
+              {/* 삭제·공고 등록도 '마감'과 같은 규격(7px 12px · 14px)으로 맞춘다 */}
+              <button className="admin-danger-btn" onClick={handleBulkDelete}
+                style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, fontSize:14, fontWeight:500, border:"1px solid transparent" }}>
+                <Trash2 size={14} /> 삭제 ({checked.length})
               </button>
             </>
           )}
-          <Link href="/company/dashboard/jobs/new" className="company-primary-btn">
-            <Plus size={15} /> 공고 등록
+          <Link href="/company/dashboard/jobs/new" className="company-primary-btn"
+            style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, fontSize:14, fontWeight:500, border:"1px solid transparent" }}>
+            <Plus size={14} /> 공고 등록
           </Link>
         </div>
       </div>
