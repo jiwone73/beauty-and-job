@@ -26,6 +26,8 @@ export async function GET(req: NextRequest) {
         u.region_sido,
         u.region_sigungu,
         up.region_prefer AS location,
+        up.job_search_status::text AS job_search_status,
+        up.job_search_status_at,
         (
           SELECT json_build_object('school', school, 'major', major, 'status', status)
           FROM user_educations WHERE user_id = u.id ORDER BY created_at DESC LIMIT 1
@@ -73,6 +75,9 @@ export async function GET(req: NextRequest) {
       careerDetail: r.career_detail,
       career_years: r.career_years,
       career_count: r.career_count,
+      // 스크랩 목록에선 '구직 안 함'도 그대로 보여준다 — 이미 담아 둔 사람이라 상태 변화가 곧 정보다.
+      job_search_status: r.job_search_status || "SEEKING",
+      job_search_status_at: r.job_search_status_at || null,
       scrapped_at: r.scrapped_at,
       scrapped: true,
     }));

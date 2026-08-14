@@ -4,6 +4,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import { Search, BookmarkCheck, X, FileText, Paperclip, Download, Printer } from "lucide-react";
 import ResumePreview from "@/components/profile/ResumePreview";
 import { formatPhone } from "@/lib/phone";
+import { JS_LABEL, statusAge } from "@/lib/jobSearchStatus";
 
 function calcAgeFromBirth(birth: string | null): number {
   if (!birth) return 0;
@@ -182,7 +183,7 @@ export default function ScrappedTalentPage() {
                   <th>구직 직군</th>
                   <th>지역</th>
                   <th>최근경력</th>
-                  <th>퇴직여부</th>
+                  <th>구직상태</th>
                   <th>연락처</th>
                   <th>이력서/포트폴리오</th>
                 </tr>
@@ -234,16 +235,18 @@ export default function ScrappedTalentPage() {
                         ) : <span style={{ color: "#ccc" }}>—</span>}
                       </td>
                       <td className="company-td-sub">
-                        {t.careerDetail ? (
-                          /^\d{4}/.test(String(t.careerDetail.end_date || "")) ? (
+                        {(() => {
+                          const js = JS_LABEL[String(t.job_search_status || "SEEKING")] || JS_LABEL.SEEKING;
+                          const age = statusAge(t.job_search_status_at || null);
+                          return (
                             <>
-                              <div style={{ color: "#5f0080" }}>퇴직</div>
-                              <div style={{ color: "#999", fontSize: 12, marginTop: 2 }}>{String(t.careerDetail.end_date).slice(0, 7).replace(/-/g, ".")}</div>
+                              <div style={{ display: "inline-block", padding: "2px 8px", borderRadius: 11, fontSize: 12.5, fontWeight: 500, color: js.color, background: js.bg }}>
+                                {js.text}
+                              </div>
+                              {age && <div style={{ color: "#aaa", fontSize: 12, marginTop: 3 }}>{age}</div>}
                             </>
-                          ) : (
-                            <span style={{ color: "#888" }}>재직중</span>
-                          )
-                        ) : <span style={{ color: "#ccc" }}>—</span>}
+                          );
+                        })()}
                       </td>
                       <td className="company-td-sub">
                         <div style={{ marginBottom: 2, ...(email ? {} : { color: "#ccc" }) }}>{email || "이메일 없음"}</div>

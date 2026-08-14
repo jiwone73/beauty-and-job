@@ -102,6 +102,8 @@ export type TalentItem = {
   careerCount: number;
   educationDetail: { school: string; major: string | null; status: string | null; start_date: string | null; end_date: string | null } | null;
   careerDetail: { company: string; department: string | null; position: string | null; start_date: string | null; end_date: string | null } | null;
+  jobSearchStatus: "SEEKING" | "OPEN" | "CLOSED";
+  jobSearchStatusAt: string | null;
   scrapped: boolean;
 };
 
@@ -114,6 +116,7 @@ export const companyTalentApi = {
     regions?: string;
     ageGroup?: string;
     gender?: string;
+    jobSearchStatus?: string;
     page?: number;
     limit?: number;
   }) => {
@@ -128,6 +131,8 @@ export const companyTalentApi = {
       qs.set("ageGroup", params.ageGroup);
     if (params?.gender && params.gender !== "무관")
       qs.set("gender", params.gender);
+    if (params?.jobSearchStatus && params.jobSearchStatus !== "전체")
+      qs.set("jobSearchStatus", params.jobSearchStatus);
     if (params?.page) qs.set("page", String(params.page));
     if (params?.limit) qs.set("limit", String(params.limit));
     const query = qs.toString() ? `?${qs}` : "";

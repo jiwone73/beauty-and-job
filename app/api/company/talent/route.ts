@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
   const regions     = searchParams.get("regions") || null;        // 쉼표 구분 (매장직)
   const ageGroup    = searchParams.get("ageGroup") || null;       // 매장직
   const gender      = searchParams.get("gender") || null;         // 매장직
+  const jsFilter    = searchParams.get("jobSearchStatus") || null; // 구직중 | 제안검토 (미지정=둘 다)
   const page        = parseInt(searchParams.get("page") || "1");
   const limit       = parseInt(searchParams.get("limit") || "50");
   const offset      = (page - 1) * limit;
@@ -74,6 +75,11 @@ export async function GET(req: NextRequest) {
     params.push("MALE");
   }
 
+  // 구직상태: '구직 안 함'은 제안을 받지 않겠다는 뜻이라 검색 결과에서 항상 제외한다.
+  let jsClause = "AND up.job_search_status <> 'CLOSED'";
+  if (jsFilter === "구직중")        jsClause = "AND up.job_search_status = 'SEEKING'";
+  else if (jsFilter === "제안 검토") jsClause = "AND up.job_search_status = 'OPEN'";
+
   // 경력 (CTE 이후)
   let careerClause = "";
   if (careerFilter === "신입")  careerClause = "AND (career_years IS NULL OR career_years = 0)";
@@ -112,6 +118,8 @@ export async function GET(req: NextRequest) {
         u.region_sigungu,
         up.region_prefer,
         up.work_type_prefer,
+        up.job_search_status::text AS job_search_status,
+        up.job_search_status_at,
         (
           SELECT CASE
             WHEN MIN(start_date) ~ '^[0-9]{4}'
@@ -149,11 +157,13 @@ export async function GET(req: NextRequest) {
         ${searchClause}
         ${regionClause}
         ${genderClause}
+        ${jsClause}
     )
     SELECT *, COUNT(*) OVER()::int AS total_count
     FROM talent
     WHERE 1=1 ${careerClause} ${ageClause}
-    ORDER BY created_at DESC
+    -- 구직중이 먼저, 그 다음 상태를 최근에 갱신한 순서 (오래된 '구직중'은 자연히 뒤로 밀린다)
+    ORDER BY (job_search_status = 'SEEKING') DESC, job_search_status_at DESC NULLS LAST, created_at DESC
     LIMIT $${idx++} OFFSET $${idx++}
   `;
   params.push(limit, offset);
@@ -182,6 +192,8 @@ export async function GET(req: NextRequest) {
       careerCount: r.career_count,
       educationDetail: r.education_detail,
       careerDetail: r.career_detail,
+      jobSearchStatus: r.job_search_status || "SEEKING",
+      jobSearchStatusAt: r.job_search_status_at || null,
       scrapped: r.scrapped,
     }));
     return ok(data, 200, { total, page, limit });
