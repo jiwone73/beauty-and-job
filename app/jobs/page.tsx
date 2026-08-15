@@ -141,6 +141,12 @@ function JobsPageInner() {
             color: '#e8f0fe',
             deadline: formatDeadline(j.deadline),
             employment: j.employment_type || null,
+            // 상세 필터(경력·고용형태·복리후생·급여)가 읽는 원본 값. 카드 표시용으로 가공한
+            // career/employment 만 남기는 바람에 필터가 아무것도 못 맞추고 있었다.
+            experience_level: j.experience_level || null,
+            employment_type: j.employment_type || null,
+            benefit_tags: j.benefit_tags || [],
+            salary_min: j.salary_min ?? null,
           }));
           setApiJobs(mapped);
         }
@@ -184,7 +190,10 @@ function JobsPageInner() {
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
-    const matchCareer = selectedCareer === "경력 전체" || j.experience_level === selectedCareer;
+    // '경력무관' 공고는 신입에게도 경력자에게도 열려 있으니 양쪽 필터에 모두 걸린다.
+    // (신입·경력을 함께 뽑는 공고가 ANY 로 저장되는데, 예전에는 신입 필터에서 사라졌다.)
+    const matchCareer = selectedCareer === "경력 전체" || j.experience_level === selectedCareer
+      || (j.experience_level === "ANY" && (selectedCareer === "NEW" || selectedCareer === "EXPERIENCED"));
     const matchEmployment = selectedEmployment === "고용형태 전체" || j.employment_type === selectedEmployment;
     const matchBenefit = selectedBenefits.length === 0 || selectedBenefits.every((b) => (j.benefit_tags || []).includes(b));
     const matchSalary = selectedSalary === 0 || (j.salary_min && j.salary_min >= selectedSalary);

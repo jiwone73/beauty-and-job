@@ -1426,8 +1426,18 @@ export default function JobPostForm({
     }
     const p0 = positions[0] || { career: "", education: "", employment: "", headcount: "", workDays: "", workTime: "", gender: "" };
     const primaryHeadcount = parseInt((p0.headcount || "").replace(/[^0-9]/g, "")) || null;
-    const expLevel = p0.career.includes("신입") ? "NEW"
-      : p0.career.match(/\d+년/) ? "EXPERIENCED" : "ANY";
+    // 모집부문 표의 '경력/직책'을 공고 필터(신입·경력직·경력무관)로 옮긴다.
+    // 첫 행만 보면 '신입+경력' 처럼 섞인 공고가 한쪽으로만 잡히므로 모든 행을 본다.
+    // 직책(매니저·실장·부원장·원장)은 신입에게 주지 않는 자리라 경력직으로 센다.
+    const careers = positions.map((p) => p.career).filter(Boolean);
+    const isNew = (c: string) => c.includes("신입");
+    const isExp = (c: string) => /\d+\s*년/.test(c) || c.includes("경력") || /매니저|실장|부원장|원장|점장/.test(c);
+    const anyFree = careers.some((c) => c.includes("무관"));
+    const anyNew = careers.some(isNew);
+    const anyExp = careers.some((c) => !isNew(c) && isExp(c));
+    const expLevel = anyFree || (anyNew && anyExp) ? "ANY"
+      : anyNew ? "NEW"
+      : anyExp ? "EXPERIENCED" : "ANY";
     const workType = (p0.employment === "아르바이트" || p0.employment === "스페어") ? "PART_TIME"
       : p0.employment === "계약직" ? "CONTRACT" : "FULL_TIME";
     let salaryMin: number | null = null;
@@ -1529,6 +1539,8 @@ export default function JobPostForm({
   const addNewBenefit = async (raw: string) => {
     const name = raw.replace(/\s+/g, " ").trim();
     if (!name || name.length > 40) return;
+    // 한글 조합이 끝나기 전에 Enter 를 누르면 '명절귀향ㅂ' 처럼 자모가 남는다. 그대로 등록하지 않는다.
+    if (/[ㄱ-ㅎㅏ-ㅣ]/.test(name)) { alert("글자가 덜 입력됐어요. 다시 입력해주세요."); return; }
     setFiBenefits(""); // 태그 추가 시 직접입력(대체값) 해제
     if (!benefitTags.includes(name)) setBenefitTags([...benefitTags, name]);
     setBenefitSearch("");

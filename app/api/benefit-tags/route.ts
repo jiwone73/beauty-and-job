@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
   let jt = String(body.job_type || "BOTH").toUpperCase();
   if (!["STORE", "OFFICE", "BOTH"].includes(jt)) jt = "BOTH";
   if (name.length < 1 || name.length > 40) return err("BAD_REQUEST", "태그는 1~40자여야 합니다.", 400);
+  // 한글 조합이 끝나기 전에 Enter 를 누르면 '명절귀향ㅂ' 같은 자모 꼬리가 그대로 등록된다.
+  if (/[ㄱ-ㅎㅏ-ㅣ]/.test(name)) return err("BAD_REQUEST", "글자가 덜 입력됐어요. 다시 입력해주세요.", 400);
 
   // 이미 있으면 사용횟수만 +1, 없으면 미검수 태그로 삽입
   const r = await pool.query(
