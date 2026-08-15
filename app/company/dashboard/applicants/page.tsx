@@ -272,7 +272,9 @@ function ApplicantsContent() {
 
   const filtered = applicants.filter(a => {
     const matchSearch = !search || a.user_name.includes(search);
-    const matchStatus = statusFilter === "전체" || STATUS_LABEL[a.status] === statusFilter;
+    const matchStatus = statusFilter === "전체" ? true
+      : statusFilter === "미열람" ? !a.viewed_at
+      : STATUS_LABEL[a.status] === statusFilter;
     return matchSearch && matchStatus;
   });
 
@@ -292,6 +294,7 @@ function ApplicantsContent() {
 
   const counts = {
     전체: applicants.length,
+    미열람: applicants.filter(a => !a.viewed_at).length,
     신규: applicants.filter(a => a.status === "APPLIED").length,
     검토중: applicants.filter(a => a.status === "VIEWED").length,
     면접: applicants.filter(a => a.status === "INTERVIEW").length,
@@ -301,6 +304,8 @@ function ApplicantsContent() {
   // 합격·불합격은 기업이 이미 내린 결정이라 세어 줄 이유가 없어 뺐다. 면접은 일정을 잡아야 하는 진행 단계라 넣는다.
   const statCardsData = [
     { label: "전체", value: String(counts.전체), unit: "명", color: "#5f0080", status: "전체" },
+    // 아직 열어보지도 않은 지원 — 상태값과 별개로 가장 급하다.
+    { label: "미열람", value: String(counts.미열람), unit: "명", color: "#e05252", status: "미열람" },
     { label: "신규", value: String(counts.신규), unit: "명", color: "#0ea5e9", status: "신규" },
     { label: "검토중", value: String(counts.검토중), unit: "명", color: "#f59e0b", status: "검토중" },
     { label: "면접", value: String(counts.면접), unit: "명", color: "#8b5cf6", status: "면접" },
