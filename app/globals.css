@@ -6897,6 +6897,8 @@ div:has(> table.admin-table),
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   gap: 10px;
+  /* 카운터 → 툴바 → 표가 붙어 한 덩어리로 보이던 것을 줄 단위로 떼어 놓는다. */
+  margin-bottom: 16px;
 }
 @media (max-width: 700px) {
   .company-stat-grid { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); }
@@ -7111,6 +7113,7 @@ div:has(> table.admin-table),
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  margin-bottom: 12px;
 }
 .company-toolbar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
