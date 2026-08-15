@@ -110,6 +110,18 @@ function JobsPageInner() {
   const toggleBookmarkStore = useBookmarkStore((s) => s.toggle);
   const loadBookmarks = useBookmarkStore((s) => s.loadFromServer);
   const [apiJobs, setApiJobs] = useState<any[] | null>(null);
+  // 복리후생 필터 후보는 공고등록 폼과 같은 마스터(benefit_tags, 검수됨)에서 받는다.
+  // 화면마다 목록을 따로 적어 두면 등록 어휘와 필터 어휘가 갈라진다.
+  const [curatedBenefits, setCuratedBenefits] = useState<string[]>(BENEFIT_FILTER);
+  useEffect(() => {
+    fetch("/api/benefit-tags?curated=1")
+      .then((r) => r.json())
+      .then((res) => {
+        const names = (res?.data?.items || []).map((t: any) => t.name).filter(Boolean);
+        if (names.length) setCuratedBenefits(names);
+      })
+      .catch(() => { /* 못 받아도 기본 목록으로 돈다 */ });
+  }, []);
   useEffect(() => {
     const qs = new URLSearchParams();
     const t = searchParams.get("type");
@@ -189,7 +201,7 @@ function JobsPageInner() {
   const salaryOpts = jobTypeFilter === "매장" ? SALARY_STORE : SALARY_OFFICE;
   // 아무 공고에도 없는 복리후생은 눌러도 0건이라 칩을 아예 감춘다.
   // 목록에 그 조건이 생기면 저절로 다시 나타난다.
-  const benefitOptions = BENEFIT_FILTER.filter((b) =>
+  const benefitOptions = curatedBenefits.filter((b) =>
     (apiJobs || []).some((j: any) => (j.benefit_tags || []).includes(b)) || selectedBenefits.includes(b));
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";

@@ -10,14 +10,20 @@ const norm = (s: string) => s.replace(/\s+/g, " ").trim();
 
 // 태그 조회(검색/자동완성). job_type=STORE|OFFICE → 해당 + BOTH 노출.
 export async function GET(req: NextRequest) {
-  const { res: authErr } = requireAuth(req); // 관리자·기업회원 모두 허용
-  if (authErr) return authErr;
   const sp = new URL(req.url).searchParams;
+  // curated=1 은 공개 어휘(검수된 마스터)라 로그인 없이도 준다 — 공고 목록 필터가 이걸 쓴다.
+  // 미검수 태그까지 보는 건 등록 폼(자동완성)뿐이라 로그인 상태에서만.
+  const curatedOnly = sp.get("curated") === "1";
+  if (!curatedOnly) {
+    const { res: authErr } = requireAuth(req); // 관리자·기업회원 모두 허용
+    if (authErr) return authErr;
+  }
   const jt = (sp.get("job_type") || "").toUpperCase();
   const q = norm(sp.get("q") || "");
 
   const where: string[] = [];
   const params: unknown[] = [];
+  if (curatedOnly) where.push("is_curated = true");
   if (jt === "STORE" || jt === "OFFICE") { params.push(jt); where.push(`(job_type = $${params.length} OR job_type = 'BOTH')`); }
   if (q) { params.push(`%${q}%`); where.push(`name ILIKE $${params.length}`); }
   const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
