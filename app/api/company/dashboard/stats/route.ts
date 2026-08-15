@@ -101,23 +101,12 @@ export async function GET(req: NextRequest) {
     rate: r.view_count > 0 ? Math.round((r.application_count / r.view_count) * 1000) / 10 : null,
   }))
 
-  // 마감 임박/지난 공고 (진행중, 마감일 3일 이내 또는 지남)
-  const deadlineRes = await pool.query(
-    `SELECT id, title, deadline, (deadline::date - CURRENT_DATE)::int AS days_left
-     FROM job_postings
-     WHERE company_id = $1 AND status = 'ACTIVE' AND deadline IS NOT NULL
-       AND deadline::date <= CURRENT_DATE + 3${jobTypeFilterNoAlias}
-     ORDER BY deadline ASC
-     LIMIT 6`,
-    [companyId]
-  )
-  const deadline_alerts = deadlineRes.rows
-  // 목록은 6건까지만 뽑으므로 카운터에는 쓸 수 없다. 건수는 따로 센다.
-  const deadlineCountRes = await pool.query(
+  // 오늘 마감 — 오늘 안에 손쓰지 않으면 내려가는 공고. '3일 내'는 오늘 할 일과 섞여 급한 정도가 흐려진다.
+  const deadlineTodayRes = await pool.query(
     `SELECT COUNT(*)::int AS cnt
      FROM job_postings
      WHERE company_id = $1 AND status = 'ACTIVE' AND deadline IS NOT NULL
-       AND deadline::date <= CURRENT_DATE + 3${jobTypeFilterNoAlias}`,
+       AND deadline::date = CURRENT_DATE${jobTypeFilterNoAlias}`,
     [companyId]
   )
 
@@ -129,7 +118,6 @@ export async function GET(req: NextRequest) {
     status_breakdown,
     oldest_pending_at: oldestRes.rows[0]?.oldest ?? null,
     job_conversion,
-    deadline_alerts,
-    deadline_soon: deadlineCountRes.rows[0].cnt,
+    deadline_today: deadlineTodayRes.rows[0].cnt,
   })
 }

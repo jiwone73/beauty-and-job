@@ -48,6 +48,7 @@ export default function CompanyJobsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");
+  const [sortBy, setSortBy] = useState("등록일순");
   const [selected, setSelected] = useState<CompanyJob | null>(null);
   const [checked, setChecked] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
@@ -103,11 +104,20 @@ export default function CompanyJobsPage() {
     const matchStatus =
       statusFilter === "전체" ? true :
       statusFilter === "진행중" ? !isJobClosed(j) :
+      statusFilter === "오늘 마감" ? (!isJobClosed(j) && dl === 0) :
       statusFilter === "마감" ? isJobClosed(j) :
       statusFilter === "<D-7" ? (!isJobClosed(j) && dl !== null && dl <= 7) :
       statusFilter === ">D-7" ? (!isJobClosed(j) && (dl === null || dl > 7)) :
       STATUS_LABEL[j.status] === statusFilter;
     return matchGroup && matchSearch && matchStatus;
+  }).sort((a, b) => {
+    // 마감일순: 임박한 것이 먼저. 상시(마감일 없음)는 급할 게 없어 맨 뒤로 보낸다.
+    if (sortBy === "마감일순") {
+      const av = a.deadline ? new Date(a.deadline).getTime() : Infinity;
+      const bv = b.deadline ? new Date(b.deadline).getTime() : Infinity;
+      if (av !== bv) return av - bv;
+    }
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
   const toggleCheck = (id: string) => setChecked(c => c.includes(id) ? c.filter(x => x !== id) : [...c, id]);
@@ -236,7 +246,9 @@ export default function CompanyJobsPage() {
               options={["전체", "매장", "오피스"]} onChange={setJobGroupFilter} />
           )}
           <FilterDropdown label="진행상태" value={statusFilter}
-            options={["전체", "진행중", "마감"]} onChange={setStatusFilter} />
+            options={["전체", "진행중", "오늘 마감", "마감"]} onChange={setStatusFilter} />
+          <FilterDropdown label="정렬" value={sortBy}
+            options={["등록일순", "마감일순"]} onChange={setSortBy} />
         </div>
         <div style={{display:"flex", gap:"8px", alignItems:"center"}}>
           {checked.length > 0 && (
@@ -451,9 +463,9 @@ export default function CompanyJobsPage() {
                       checked={checked.includes(job.id)}
                       onChange={() => toggleCheck(job.id)} />
                   </td>
-                  <td>
+                  <td className="company-td-name">
                     <span className="tbl-name-btn" title="공고 보기" onClick={() => router.push(`/jobs/${job.id}`)}>
-                      <span className="tbl-name-txt" style={{color:"#1a1a1a", fontWeight:400}}>{job.title}</span>
+                      <span className="tbl-name-txt td-clamp2" style={{color:"#1a1a1a", fontWeight:400}}>{job.title}</span>
                     </span>
                   </td>
                   <td className="company-td-sub">

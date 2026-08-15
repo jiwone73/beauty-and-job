@@ -14,8 +14,7 @@ interface Stats {
   status_breakdown: { new: number; reviewing: number; passed: number; rejected: number };
   oldest_pending_at: string | null;
   job_conversion: { id: string; title: string; view_count: number; application_count: number; rate: number | null }[];
-  deadline_alerts: { id: string; title: string; deadline: string; days_left: number }[];
-  deadline_soon: number;
+  deadline_today: number;
 }
 
 interface JobItem {
@@ -136,8 +135,8 @@ export default function CompanyDashboard() {
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#5f0080", icon: FileText, href: "/company/dashboard/jobs" },
     { label: "총 지원자", value: stats?.total_applications ?? 0, unit: "명", color: "#0ea5e9", icon: Users, href: "/company/dashboard/applicants" },
     { label: "오늘 지원", value: stats?.today_applications ?? 0, unit: "명", color: "#10b981", icon: TrendingUp, href: "/company/dashboard/applicants" },
-    // 마감은 놓치면 되돌릴 수 없어 목록보다 건수를 먼저 보는 게 맞다(3일 내 마감·마감 지남).
-    { label: "마감 임박", value: stats?.deadline_soon ?? 0, unit: "건", color: "#e05252", icon: AlarmClock, href: "/company/dashboard/jobs" },
+    // 오늘 안에 손쓰지 않으면 내려가는 공고. 목록으로 넘어가면 같은 조건이 걸린 채로 보인다.
+    { label: "오늘 마감", value: stats?.deadline_today ?? 0, unit: "건", color: "#e05252", icon: AlarmClock, href: "/company/dashboard/jobs" },
   ];
 
   const fmtTrendDay = (day: string, range: string) => {
@@ -160,7 +159,6 @@ export default function CompanyDashboard() {
     return Number.isFinite(d) && d >= 0 ? d : null;
   })();
   const conversion = stats?.job_conversion ?? [];
-  const deadlineAlerts = stats?.deadline_alerts ?? [];
 
   return (
     <CompanyLayout activePage="dashboard">
@@ -275,12 +273,13 @@ export default function CompanyDashboard() {
           ) : (
             <table className="company-table" style={{ width: "100%" }}>
               <thead>
-                <tr><th>공고명</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
+                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
               </thead>
               <tbody>
                 {jobs.map((job) => (
                   <tr key={job.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
                     <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
+                    <td className="company-td-sub">{formatDate(job.created_at)}</td>
                     <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
                     <td className="company-td-sub">{job.application_count}명</td>
                     <td className="company-td-sub">{job.view_count.toLocaleString()}</td>
@@ -327,7 +326,7 @@ export default function CompanyDashboard() {
                   // 표본이 쌓여 공고끼리 비교가 될 때 다시 판단한다.
                   return (
                     <tr key={c.id}>
-                      <td className="company-td-name" style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "left" }} title={c.title}>{c.title}</td>
+                      <td className="company-td-name" style={{ textAlign: "left" }} title={c.title}><span className="td-clamp2" style={{ margin: 0 }}>{c.title}</span></td>
                       <td className="company-td-sub">{c.view_count.toLocaleString()}</td>
                       <td className="company-td-sub">{c.application_count}</td>
                       <td className="company-td-sub" style={{ fontWeight: 600 }}>{rate === null ? "—" : `${rate}%`}</td>

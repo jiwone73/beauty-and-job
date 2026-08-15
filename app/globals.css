@@ -6975,6 +6975,21 @@ div:has(> table.admin-table),
 .company-table tr:hover td { background: #fafafa; }
 .company-td-name { font-weight: 400; color: #1a1a1a !important; }
 .company-td-sub { color: #888 !important; white-space: nowrap; }
+/* 공고명처럼 긴 값은 칸이 모자라면 두 줄까지 감싸고, 넘치면 말줄임(…). 한 줄로 버티며 표를 밀어내지 않는다. */
+.company-table .td-clamp2 {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  white-space: normal; line-height: 1.4; max-width: 100%; margin: 0 auto;
+  overflow-wrap: anywhere;
+}
+/* 공고명·이름 칸이 남는 폭을 모두 가져가고, 나머지 열(날짜·수치)은 제 내용 폭만 차지한다.
+   width:100%는 "남는 만큼 다 먹어라"는 뜻으로 동작해 표가 카드를 넘지 않는다.
+   첫 칸이 아니라 이름 칸을 기준으로 잡는다 — 목록에 따라 첫 칸이 체크박스일 수 있다. */
+.company-card .company-table { width: 100%; table-layout: auto; }
+.company-card .company-table .company-td-name { width: 100%; }
+/* 대시보드 카드는 표 두 개가 나란히 놓여 폭이 빠듯하다. 좌우 여백을 줄여 공고명에 자리를 내준다. */
+.company-card .company-table th,
+.company-card .company-table td { padding-left: 10px; padding-right: 10px; }
+.company-card .company-table .company-badge { white-space: nowrap; }
 
 /* 표에서 이름 클릭 → 이력서 열기 어포던스 */
 .tbl-name-btn { cursor: pointer; }
