@@ -11815,3 +11815,13 @@ button,
 @media (max-width: 480px) {
   .jobs-grid .jobcard .jobcard-company, .jobs-grid .jobcard .jobcard-meta { font-size: 13px; }
 }
+
+/* 모바일 카드: 두 장이 붙어 보이도록 사이 간격을 줄이고, 아래 여백도 조인다.
+   내용 글자는 한 단계 낮춰(12px) 카드가 세로로 길어 보이지 않게 한다. */
+@media (max-width: 768px) {
+  .jobs-grid { gap: 8px; }
+  .jobs-grid .jobcard .jobcard-body { padding: 5px 10px 4px; }
+  .jobs-grid .jobcard .jobcard-company,
+  .jobs-grid .jobcard .jobcard-meta,
+  .jobs-grid .jobcard .jobcard-deadline { font-size: 12px; }
+}
