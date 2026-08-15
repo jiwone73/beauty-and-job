@@ -199,10 +199,12 @@ function JobsPageInner() {
   };
 
   const salaryOpts = jobTypeFilter === "매장" ? SALARY_STORE : SALARY_OFFICE;
-  // 아무 공고에도 없는 복리후생은 눌러도 0건이라 칩을 아예 감춘다.
-  // 목록에 그 조건이 생기면 저절로 다시 나타난다.
+  // 복리후생 칩은 지금 보고 있는 탭(전체·매장·오피스) 안에서 실제로 달려 있는 것만 남긴다.
+  // 매장에 없는 조건이 매장 탭에 떠 있으면 눌러 봤자 0건이다.
+  const typeScoped = (apiJobs || []).filter((j: any) =>
+    jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both");
   const benefitOptions = curatedBenefits.filter((b) =>
-    (apiJobs || []).some((j: any) => (j.benefit_tags || []).includes(b)) || selectedBenefits.includes(b));
+    typeScoped.some((j: any) => (j.benefit_tags || []).includes(b)) || selectedBenefits.includes(b));
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
@@ -362,7 +364,8 @@ function JobsPageInner() {
               )}
             </div>
 
-            {/* 복리후생 (PC) */}
+            {/* 복리후생 (PC) — 지금 목록에 달린 조건이 없으면 버튼도 감춘다. */}
+            {benefitOptions.length > 0 && (
             <div className="jobs-dropdown-wrap jobs-pc-only">
               <button
                 className={`jobs-filter-btn ${selectedBenefits.length > 0 ? "active" : ""}`}
@@ -384,6 +387,7 @@ function JobsPageInner() {
                 </div>
               )}
             </div>
+            )}
 
             {/* 급여 (PC) */}
             {jobTypeFilter !== "전체" && (

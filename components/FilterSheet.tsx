@@ -63,7 +63,8 @@ interface Props {
 }
 
 export default function FilterSheet({ open, jobType, initial, onClose, onApply, benefitOptions }: Props) {
-  const benefitList = benefitOptions && benefitOptions.length ? benefitOptions : BENEFIT_FILTER;
+  // 빈 배열도 '보여 줄 게 없다'는 답이다 — 기본 목록으로 되돌리면 0건 칩이 다시 살아난다.
+  const benefitList = benefitOptions ?? BENEFIT_FILTER;
   const [draft, setDraft] = useState<FilterDraft>(initial);
 
   useEffect(() => {
@@ -134,7 +135,8 @@ export default function FilterSheet({ open, jobType, initial, onClose, onApply, 
             </div>
           )}
 
-          {/* 복리후생 */}
+          {/* 복리후생 — 지금 목록에 달린 조건이 하나도 없으면 칸 자체를 접는다. */}
+          {benefitList.length > 0 && (
           <div className="filter-section">
             <div className="filter-section-title">복리후생 · 근무조건</div>
             <div className="filter-chip-grid">
@@ -147,6 +149,7 @@ export default function FilterSheet({ open, jobType, initial, onClose, onApply, 
               ))}
             </div>
           </div>
+          )}
         </div>
 
         <div className="region-modal-foot filter-sheet-foot">
