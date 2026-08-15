@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, Trash2, ChevronDown, Star, Instagram } from "lucide-react";
+import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, Trash2, ChevronDown, Instagram } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { formatPhone } from "@/lib/phone";
 import LinkCell from "@/components/company/LinkCell";
@@ -10,7 +10,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
-import { companyApplicationsApi, companyJobsApi } from "@/lib/api/company";
+import { companyApplicationsApi, companyJobsApi, companyTalentApi } from "@/lib/api/company";
 import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company";
 
 // 지원자 첨부 이력서 파일 배너 노출 여부 (개인회원 첨부 기능 숨김에 따라 비활성화, 추후 재사용 대비 코드 유지)
@@ -268,6 +268,23 @@ function ApplicantsContent() {
     } catch (e) {
       alert("상태 변경 중 오류가 발생했습니다.");
       console.error("[handleStatusChange]", e);
+    }
+  };
+
+  // 스크랩은 이력서가 아니라 사람에 대한 표시라 이름 옆에서 켜고 끈다. 인재검색·스크랩 인재와 같은 자리.
+  const toggleScrap = async (a: CompanyApplication) => {
+    const userId = (a as any).user_id;
+    if (!userId) return;
+    const was = !!(a as any).scrapped;
+    setApplicants(prev => prev.map(x =>
+      (x as any).user_id === userId ? ({ ...x, scrapped: !was } as any) : x));
+    try {
+      if (was) await companyTalentApi.unscrap(userId);
+      else await companyTalentApi.scrap(userId);
+    } catch (e) {
+      setApplicants(prev => prev.map(x =>
+        (x as any).user_id === userId ? ({ ...x, scrapped: was } as any) : x));
+      console.error("[toggleScrap]", e);
     }
   };
 
@@ -569,9 +586,13 @@ function ApplicantsContent() {
                       )}
                       <div className="co-li-namerow">
                         <div className="co-li-nameinfo">
-                          {(a as any).scrapped && <Star size={13} style={{ color: "#f59e0b", fill: "#f59e0b", flexShrink: 0 }} />}
                           <span className="co-li-name">{a.user_name}</span>
                           {ageGender && <span className="co-li-ageg">{ageGender}</span>}
+                          <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
+                            onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}
+                            style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
+                            <Bookmark size={15} style={{ color: (a as any).scrapped ? "#5f0080" : "#c8c8c8", fill: (a as any).scrapped ? "#5f0080" : "none" }} />
+                          </button>
                         </div>
                         <span className="co-li-status" style={{ color: stColor }}>
                           {STATUS_LABEL[st]}
@@ -636,11 +657,15 @@ function ApplicantsContent() {
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          {(a as any).scrapped && <Star size={13} style={{ color: "#f59e0b", fill: "#f59e0b", flexShrink: 0 }} />}
                           <span className="tbl-name-txt" style={{ color: "#1a1a1a", fontWeight: 400, fontSize: 15 }}>{a.user_name}</span>
                           {genderLabel((a as any).user_gender) && (
                             <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{genderLabel((a as any).user_gender)}</span>
                           )}
+                          <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
+                            onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}
+                            style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
+                            <Bookmark size={15} style={{ color: (a as any).scrapped ? "#5f0080" : "#c8c8c8", fill: (a as any).scrapped ? "#5f0080" : "none" }} />
+                          </button>
                         </div>
                         <span style={{ fontSize: 13, color: "#888" }}>
                           {(() => {
@@ -689,12 +714,6 @@ function ApplicantsContent() {
                           style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: 0 }}>
                           <FileText size={16} /><span>이력서</span>
                         </button>
-                        <span title={(a as any).scrapped ? "스크랩한 인재" : "미스크랩"}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 3, color: (a as any).scrapped ? "#5f0080" : "#d0d0d0", fontSize: 13 }}>
-                          <Bookmark size={15}
-                            style={{ color: (a as any).scrapped ? "#5f0080" : "#d0d0d0", fill: (a as any).scrapped ? "#5f0080" : "none" }} />
-                          <span>스크랩</span>
-                        </span>
                       </div>
                     </div>
                   </td>

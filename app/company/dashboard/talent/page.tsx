@@ -715,6 +715,14 @@ export default function TalentPage() {
                           <div style={{ fontWeight: 400, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
                             <span className="tbl-name-txt">{t.name}</span>
                             {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
+                            {/* 스크랩은 이력서가 아니라 사람에 대한 표시라 이름 옆에 둔다. */}
+                            <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
+                              onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}
+                              style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
+                              {t.scrapped
+                                ? <BookmarkCheck size={15} style={{ color: "#5f0080" }} />
+                                : <Bookmark size={15} style={{ color: "#c8c8c8" }} />}
+                            </button>
                           </div>
                           <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
                             {[t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
@@ -770,14 +778,6 @@ export default function TalentPage() {
                           >
                             <FileText size={14} />
                             <span>이력서</span>
-                          </button>
-                          <button
-                            className={`talent-scrap-btn ${t.scrapped ? "scrapped" : ""}`}
-                            style={{ padding: "6px 8px", gap: 4 }}
-                            onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}
-                          >
-                            {t.scrapped ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
-                            <span style={{ fontSize: 13 }}>스크랩</span>
                           </button>
                         </div>
                       </div>
