@@ -24,10 +24,11 @@ function wrapLines(ctx: CanvasRenderingContext2D, title: string, maxW: number, m
 }
 
 // 캔버스에 샘플 배너 그림: 사진을 배경으로 깔고 그 위에 문구를 얹는다.
-//   배너 한 칸은 전체 폭의 1/3(=3:1 배너에서 1:1)이라, 정사각으로 만들어야 글자가 잘리지 않는다.
-//   사진 몇 장과 나란히 놓여도, 혼자 놓여도 칸 비율은 늘 같다.
+//   비율은 3:2 — 정사각으로 만들면 사진 비율을 그대로 쓰는 모바일에서 혼자만 키가 커진다.
+//   PC 배너는 칸을 정사각으로 잘라 쓰므로, 글자는 가운데 정사각(=높이) 안에서만 줄바꿈해
+//   어느 쪽에서도 잘리지 않게 한다.
 export async function drawSampleBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRESETS)[number], title: string) {
-  const W = 900, H = 900;
+  const W = 1350, H = 900;
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -49,7 +50,7 @@ export async function drawSampleBanner(canvas: HTMLCanvasElement, preset: (typeo
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillStyle = preset.text;
   ctx.font = "700 62px 'Pretendard','Apple SD Gothic Neo',sans-serif";
-  const lines = wrapLines(ctx, title, W * 0.82, 4);
+  const lines = wrapLines(ctx, title, Math.min(W, H) * 0.82, 4);
   const lh = 84;
   const startY = H / 2 - ((lines.length - 1) * lh) / 2;
   lines.forEach((ln, i) => ctx.fillText(ln, W / 2, startY + i * lh));
