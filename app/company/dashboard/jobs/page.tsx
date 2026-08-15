@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
@@ -41,13 +41,18 @@ function isJobClosed(job: { status: string; deadline: string | null }): boolean 
   return dl !== null && dl < 0;
 }
 
-export default function CompanyJobsPage() {
+function CompanyJobsContent() {
   const router = useRouter();
+  // 대시보드 '오늘 마감' 카운터에서 넘어오면 같은 조건이 걸린 채로 열린다.
+  const searchParams = useSearchParams();
+  const initialStatus = searchParams.get("status");
   const [jobs, setJobs] = useState<CompanyJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   // 기본은 진행중 + 마감일순 — 이 화면에서 할 일은 대개 "곧 내려가는 진행 공고"를 손보는 것이다.
-  const [statusFilter, setStatusFilter] = useState("진행중");
+  const [statusFilter, setStatusFilter] = useState(
+    initialStatus && ["전체", "진행중", "오늘 마감", "마감"].includes(initialStatus) ? initialStatus : "진행중"
+  );
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");
   const [sortBy, setSortBy] = useState("마감일순");
   const [selected, setSelected] = useState<CompanyJob | null>(null);
@@ -564,5 +569,14 @@ export default function CompanyJobsPage() {
         </div>
       )}
     </CompanyLayout>
+  );
+}
+
+// useSearchParams는 Suspense 경계가 필요하다(지원자 관리 화면과 같은 구조).
+export default function CompanyJobsPage() {
+  return (
+    <Suspense fallback={<CompanyLayout activePage="jobs"><div /></CompanyLayout>}>
+      <CompanyJobsContent />
+    </Suspense>
   );
 }

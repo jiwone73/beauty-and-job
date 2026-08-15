@@ -136,7 +136,7 @@ export default function CompanyDashboard() {
     { label: "총 지원자", value: stats?.total_applications ?? 0, unit: "명", color: "#0ea5e9", icon: Users, href: "/company/dashboard/applicants" },
     { label: "오늘 지원", value: stats?.today_applications ?? 0, unit: "명", color: "#10b981", icon: TrendingUp, href: "/company/dashboard/applicants" },
     // 오늘 안에 손쓰지 않으면 내려가는 공고. 목록으로 넘어가면 같은 조건이 걸린 채로 보인다.
-    { label: "오늘 마감", value: stats?.deadline_today ?? 0, unit: "건", color: "#e05252", icon: AlarmClock, href: "/company/dashboard/jobs" },
+    { label: "오늘 마감", value: stats?.deadline_today ?? 0, unit: "건", color: "#e05252", icon: AlarmClock, href: "/company/dashboard/jobs?status=오늘 마감" },
   ];
 
   const fmtTrendDay = (day: string, range: string) => {
