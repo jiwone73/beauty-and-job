@@ -440,6 +440,8 @@ export default function CompanyJobsPage() {
       {!loading && filtered.length > 0 && !isMobile && (
         <div className="company-card">
           <div className="admin-table-meta">총 <strong>{filtered.length}</strong>건</div>
+          {/* 폭이 모자라면 칸을 눌러 글자를 쪼개지 말고 가로로 넘긴다 — 공고명만 두 줄까지 감싼다. */}
+          <div style={{ overflowX: "auto" }}>
           <table className="company-table">
             <thead>
               <tr>
@@ -485,13 +487,14 @@ export default function CompanyJobsPage() {
                       const closed = isJobClosed(job);
                       const dl = daysLeft(job.deadline);
                       const color = closed ? "#888" : !job.deadline ? "#10b981" : (dl !== null && dl <= 7) ? "#e74c3c" : "#10b981";
-                      return <span style={{ color, fontWeight: 500, fontSize: 14 }}>{closed ? "마감" : formatDeadline(job.deadline)}</span>;
+                      return <span style={{ color, fontWeight: 500, fontSize: 14, whiteSpace: "nowrap" }}>{closed ? "마감" : formatDeadline(job.deadline)}</span>;
                     })()}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
       </div>

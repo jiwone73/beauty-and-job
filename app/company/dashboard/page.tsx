@@ -223,6 +223,7 @@ export default function CompanyDashboard() {
               hint={loading ? "" : "채용공고를 등록하면 지원자가 들어와요"}
             />
           ) : (
+            <div style={{ overflowX: "auto" }}>
             <table className="company-table" style={{ width: "100%" }}>
               <thead>
                 <tr><th>이름</th><th>지원공고</th><th>경력</th><th>지원일</th><th>열람</th></tr>
@@ -243,6 +244,7 @@ export default function CompanyDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>
@@ -271,6 +273,7 @@ export default function CompanyDashboard() {
               }
             />
           ) : (
+            <div style={{ overflowX: "auto" }}>
             <table className="company-table" style={{ width: "100%" }}>
               <thead>
                 <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
@@ -296,6 +299,7 @@ export default function CompanyDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
         {/* 공고별 지원 전환율 */}
@@ -309,6 +313,7 @@ export default function CompanyDashboard() {
               message={loading ? "불러오는 중..." : "진행중인 공고가 없습니다"}
             />
           ) : (
+            <div style={{ overflowX: "auto" }}>
             <table className="company-table" style={{ width: "100%" }}>
               <thead>
                 <tr>
@@ -335,6 +340,7 @@ export default function CompanyDashboard() {
                 })}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>
