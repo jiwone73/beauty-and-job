@@ -54,6 +54,14 @@ function elapsedDays(a: CompanyApplication): number | null {
   return Number.isFinite(d) && d >= 0 ? d : null;
 }
 
+// 사람이 직접 고르는 상태만 버튼으로 둔다.
+// 신규·검토중은 이력서를 열면 자동으로 바뀌므로 손댈 이유가 없다.
+const STATUS_ACTIONS: [ApplicationStatus, string, string][] = [
+  ["INTERVIEW", "면접", "#8b5cf6"],
+  ["PASSED", "합격", "#10b981"],
+  ["REJECTED", "불합격", "#e74c3c"],
+];
+
 function ApplicantsContent() {
   const searchParams = useSearchParams();
   // 면접을 보고 나면 누가 어땠는지 금방 섞인다. 지원자별 메모를 이력서 화면 안에서 바로 적는다.
@@ -395,7 +403,7 @@ function ApplicantsContent() {
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 14 }}>
             <span style={{ fontSize: 13, color: "#888" }}>{checked.length}명 선택 · 상태변경</span>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              {([["APPLIED", "신규", "#0ea5e9"], ["VIEWED", "검토중", "#f59e0b"], ["PASSED", "합격", "#10b981"], ["REJECTED", "불합격", "#e74c3c"]] as [ApplicationStatus, string, string][]).map(([sv, sl, c]) => (
+              {(STATUS_ACTIONS).map(([sv, sl, c]) => (
                 <button key={sv} onClick={() => handleBulkStatus(sv)}
                   style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${c}`, background: "#fff", color: c, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
                   {sl}
@@ -472,7 +480,7 @@ function ApplicantsContent() {
           {selectMode && checked.length > 0 && (
             <div className="co-statbar">
               <span className="co-statbar-label">{checked.length}명 상태변경</span>
-              {([["APPLIED", "신규", "#0ea5e9"], ["VIEWED", "검토중", "#f59e0b"], ["PASSED", "합격", "#10b981"], ["REJECTED", "불합격", "#e74c3c"]] as [ApplicationStatus, string, string][]).map(([sv, sl, c]) => (
+              {(STATUS_ACTIONS).map(([sv, sl, c]) => (
                 <button key={sv} className="co-statbtn" style={{ color: c }}
                   onClick={() => handleBulkStatus(sv)}>{sl}</button>
               ))}
