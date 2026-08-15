@@ -9,11 +9,24 @@ export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
   const result = await pool.query(
-    `SELECT id, company_name, brand_name, industry, business_number, representative_name, manager_name, company_type,
-            email, phone, company_phone, logo_url, cover_images, description, website_url, address, address_detail,
-            company_size, founded_year, region_sido, region_sigungu,
-            status, business_license_path, created_at
-     FROM companies WHERE id = $1`,
+    `SELECT c.id, c.company_name, c.brand_name, c.industry, c.business_number, c.representative_name, c.manager_name, c.company_type,
+            c.email, c.phone, c.company_phone, c.logo_url, c.cover_images, c.description, c.website_url, c.address, c.address_detail,
+            c.company_size, c.founded_year, c.region_sido, c.region_sigungu,
+            c.status, c.business_license_path, c.created_at,
+            -- 헤더·사이드바에 쓸 대표 사진. 매장은 로고를 받지 않으므로 배너 첫 장이 얼굴이고,
+            -- 오피스는 로고가 먼저다. 어느 쪽이든 없으면 남은 것으로 채운다.
+            CASE WHEN c.company_type = 'OFFICE'
+              THEN COALESCE(c.logo_url, c.cover_images->0->>'url', jp.cover)
+              ELSE COALESCE(c.cover_images->0->>'url', jp.cover, c.logo_url)
+            END AS thumb_url
+     FROM companies c
+     LEFT JOIN LATERAL (
+       SELECT j.cover_images->0->>'url' AS cover
+       FROM job_postings j
+       WHERE j.company_id = c.id AND j.cover_images->0->>'url' IS NOT NULL
+       ORDER BY j.created_at DESC LIMIT 1
+     ) jp ON true
+     WHERE c.id = $1`,
     [auth!.sub]
   );
   if (result.rowCount === 0) {

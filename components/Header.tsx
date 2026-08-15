@@ -15,15 +15,20 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const { isLoggedIn, ownerType, userName, avatarUrl, setAvatar, logout } = useAuthStore();
   const [open, setOpen] = useState(false);
 
-  // 프로필 사진을 올린 사람은 헤더에서도 자기 얼굴을 본다. 로그인 후 한 번만 읽어 스토어에 담아 둔다.
+  // 헤더에서도 자기 얼굴을 본다. 개인은 프로필 사진, 기업은 대표 사진
+  // (매장=공고 배너 첫 장, 오피스=로고). 로그인 후 한 번만 읽어 스토어에 담아 둔다.
   useEffect(() => {
-    if (!isLoggedIn || ownerType !== "user") return;
+    if (!isLoggedIn || !ownerType) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
     let alive = true;
-    fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
+    const url = ownerType === "company" ? "/api/company/me" : "/api/users/me";
+    fetch(url, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
-      .then((res) => { if (alive && res.success) setAvatar(res.data?.avatar_url || ""); })
+      .then((res) => {
+        if (!alive || !res.success) return;
+        setAvatar(ownerType === "company" ? (res.data?.thumb_url || "") : (res.data?.avatar_url || ""));
+      })
       .catch(() => { /* 아바타는 없어도 되는 정보라 조용히 넘어간다 */ });
     return () => { alive = false; };
   }, [isLoggedIn, ownerType, setAvatar]);
@@ -35,7 +40,7 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
           <button className="auth-user-btn" onClick={() => setOpen(!open)}>
             {avatarUrl ? (
               <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
-                style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", display: "block", background: "#f3e5f5" }} />
+                style={{ width: 32, height: 32, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block", background: "#f3e5f5" }} />
             ) : (
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <circle cx="16" cy="16" r="16" fill="#f3e5f5"/>

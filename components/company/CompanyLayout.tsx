@@ -27,7 +27,7 @@ export default function CompanyLayout({ children, activePage }: {
   const pathname = usePathname();
   // 매장 회원이면 '매장정보', 오피스(기업) 회원이면 '기업정보'로 부른다.
   const infoLabel = (t: string) => (t === "OFFICE" ? "기업정보" : "매장정보"); // 매장·매장+오피스는 매장으로 분류
-  const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "" });
+  const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "", thumb: "" });
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unread, setUnread] = useState(0);
@@ -48,6 +48,7 @@ export default function CompanyLayout({ children, activePage }: {
             logo: res.data.logo_url || "",
             type: res.data.company_type || "",
             cover: (Array.isArray(res.data.cover_images) && res.data.cover_images[0]?.url) ? res.data.cover_images[0].url : "",
+            thumb: res.data.thumb_url || "",
           });
         }
       })
@@ -139,7 +140,7 @@ export default function CompanyLayout({ children, activePage }: {
   }, []);
 
   if (isMobile) {
-    const logoImg = companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
+    const logoImg = companyInfo.thumb || companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
     const MTABS = [
       { id: "dashboard", label: "대시보드", icon: Briefcase, href: base },
       { id: "jobs", label: "공고", icon: FileText, href: `${base}/jobs` },
@@ -254,7 +255,7 @@ export default function CompanyLayout({ children, activePage }: {
           <Link href={base} className="company-logo-link">
             <div className="company-logo-mark">
               {(() => {
-                const img = companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
+                const img = companyInfo.thumb || companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
                 return img ? (
                   <img src={img} alt={`${companyInfo.name}`} />
                 ) : (
