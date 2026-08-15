@@ -56,21 +56,14 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
-  // 지원자 처리 현황 (상태별 분포 + 미열람 + 가장 오래 기다린 미처리 지원)
-  const [statusRes, unviewedRes, oldestRes] = await Promise.all([
+  // 지원자 처리 현황 (상태별 분포 + 가장 오래 기다린 미처리 지원)
+  const [statusRes, oldestRes] = await Promise.all([
     pool.query(
       `SELECT a.status AS status, COUNT(*)::int AS cnt
        FROM applications a
        JOIN job_postings jp ON jp.id = a.job_posting_id
        WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN'${jobTypeFilter}
        GROUP BY a.status`,
-      [companyId]
-    ),
-    pool.query(
-      `SELECT COUNT(*)::int AS cnt
-       FROM applications a
-       JOIN job_postings jp ON jp.id = a.job_posting_id
-       WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN' AND a.viewed_at IS NULL${jobTypeFilter}`,
       [companyId]
     ),
     // 급한 정도는 '몇 건'보다 '얼마나 기다렸나'가 알려준다. 아직 결정하지 않은 지원 중 가장 오래된 것.
@@ -112,24 +105,6 @@ export async function GET(req: NextRequest) {
     rate: r.view_count > 0 ? Math.round((r.application_count / r.view_count) * 1000) / 10 : null,
   }))
 
-  // 직군별 지원 분포 (공고 대표 직군 = categories[1] 기준)
-  const groupDistRes = await pool.query(
-    `SELECT COALESCE(jp.categories[1], '미분류') AS name, COUNT(*)::int AS value
-     FROM applications a
-     JOIN job_postings jp ON jp.id = a.job_posting_id
-     WHERE jp.company_id = $1${jobTypeFilter}
-     GROUP BY COALESCE(jp.categories[1], '미분류')
-     ORDER BY value DESC`,
-    [companyId]
-  )
-  const gdRows = groupDistRes.rows as { name: string; value: number }[]
-  let job_group_dist = gdRows
-  if (gdRows.length > 6) {
-    const top = gdRows.slice(0, 5)
-    const etc = gdRows.slice(5).reduce((sum, r) => sum + r.value, 0)
-    job_group_dist = [...top, { name: '기타', value: etc }]
-  }
-
   // 마감 임박/지난 공고 (진행중, 마감일 3일 이내 또는 지남)
   const deadlineRes = await pool.query(
     `SELECT id, title, deadline, (deadline::date - CURRENT_DATE)::int AS days_left
@@ -149,10 +124,8 @@ export async function GET(req: NextRequest) {
     scrapped_talents: scrappedTalents.rows[0].cnt,
     trends: trendsRes.rows,
     status_breakdown,
-    unviewed: unviewedRes.rows[0].cnt,
     oldest_pending_at: oldestRes.rows[0]?.oldest ?? null,
     job_conversion,
-    job_group_dist,
     deadline_alerts,
   })
 }

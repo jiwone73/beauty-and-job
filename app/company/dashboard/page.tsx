@@ -13,10 +13,8 @@ interface Stats {
   scrapped_talents: number;
   trends: { label: string; value: number }[];
   status_breakdown: { new: number; reviewing: number; passed: number; rejected: number };
-  unviewed: number;
   oldest_pending_at: string | null;
   job_conversion: { id: string; title: string; view_count: number; application_count: number; rate: number | null }[];
-  job_group_dist: { name: string; value: number }[];
   deadline_alerts: { id: string; title: string; deadline: string; days_left: number }[];
 }
 
