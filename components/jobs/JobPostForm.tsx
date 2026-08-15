@@ -1554,6 +1554,23 @@ export default function JobPostForm({
     } catch { /* 등록 실패해도 이 공고엔 선택된 채로 유지 */ }
   };
 
+  // 직접 추가한 태그 삭제 — 오타로 만든 값을 스스로 지운다(공용 검수 태그는 대상 아님).
+  const removeNewBenefit = async (name: string) => {
+    if (!confirm(`'${name}'을(를) 목록에서 지울까요?`)) return;
+    try {
+      const res = await fetch(`/api/benefit-tags?name=${encodeURIComponent(name)}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${benefitAuthToken()}` },
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!d.success) { alert(d.error?.message || "지우지 못했어요."); return; }
+      setBenefitTagOptions((prev) => prev.filter((o) => o.name !== name));
+      setBenefitTags((prev) => prev.filter((t) => t !== name));
+    } catch {
+      alert("네트워크 오류가 발생했습니다.");
+    }
+  };
+
   // 전체 주소 문자열에서 필터용 근무지역(시도 시군구)을 추출
   const deriveRegion = (addr: string) => {
     const SIDO_MAP: Record<string, string> = { 서울: "서울특별시", 부산: "부산광역시", 대구: "대구광역시", 인천: "인천광역시", 광주: "광주광역시", 대전: "대전광역시", 울산: "울산광역시", 세종: "세종특별자치시", 경기: "경기도", 강원: "강원특별자치도", 충북: "충청북도", 충남: "충청남도", 전북: "전북특별자치도", 전남: "전라남도", 경북: "경상북도", 경남: "경상남도", 제주: "제주특별자치도" };
@@ -2390,8 +2407,14 @@ export default function JobPostForm({
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxHeight: 200, overflowY: "auto" }}>
                           {visible.map((o) => { const on = benefitTags.includes(o.name); return (
                             <button key={o.name} type="button" onClick={() => toggleBenefit(o.name)}
-                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666" }}>
-                              {o.name}{!o.is_curated && <span style={{ marginLeft: 4, fontSize: 10, color: on ? "#e6d5f0" : "#b9a9cc" }}>추가됨</span>}
+                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #5f0080" : "1.5px solid #e5e2ea", background: on ? "#5f0080" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              {o.name}
+                              {!o.is_curated && <span style={{ fontSize: 10, color: on ? "#e6d5f0" : "#b9a9cc" }}>추가됨</span>}
+                              {!o.is_curated && (
+                                <span role="button" title="목록에서 지우기" aria-label={`${o.name} 지우기`}
+                                  onClick={(e) => { e.stopPropagation(); removeNewBenefit(o.name); }}
+                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: on ? "#e6d5f0" : "#b9a9cc" }}>×</span>
+                              )}
                             </button>
                           ); })}
                           {canAdd && (

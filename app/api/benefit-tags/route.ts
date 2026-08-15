@@ -78,3 +78,27 @@ export async function POST(req: NextRequest) {
   );
   return ok(r.rows[0]);
 }
+
+// 직접 추가한 태그 삭제 — 오타로 만든 값을 스스로 지운다.
+// 내가 등록한 미검수 태그만. 검수된 공용 태그와 남의 태그는 손대지 못한다.
+export async function DELETE(req: NextRequest) {
+  const { auth, res: authErr } = requireAuth(req);
+  if (authErr) return authErr;
+  const name = norm(new URL(req.url).searchParams.get("name") || "");
+  if (!name) return err("BAD_REQUEST", "지울 태그 이름이 필요합니다.", 400);
+
+  const isAdmin = auth!.owner_type === "admin";
+  const me = auth!.owner_type === "company" ? String(auth!.sub) : null;
+  if (!isAdmin && !me) return err("AUTH_002", "권한이 없습니다.", 403);
+
+  const r = isAdmin
+    ? await pool.query(`DELETE FROM benefit_tags WHERE name = $1 AND is_curated = false RETURNING name`, [name])
+    : await pool.query(
+        `DELETE FROM benefit_tags
+         WHERE name = $1 AND is_curated = false AND created_by_company_id = $2::uuid
+         RETURNING name`,
+        [name, me]
+      );
+  if (r.rowCount === 0) return err("NOT_FOUND", "직접 추가한 태그만 지울 수 있어요.", 404);
+  return ok({ deleted: name });
+}
