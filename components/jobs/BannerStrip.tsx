@@ -140,8 +140,9 @@ export default function BannerStrip({
       </div>
       {n > PER && (
         <>
-          <button type="button" aria-label="이전 이미지" onClick={() => setStart(s - 1)} style={{ ...arrow, left: 8 }}><ChevronLeft size={20} /></button>
-          <button type="button" aria-label="다음 이미지" onClick={() => setStart(s + 1)} style={{ ...arrow, right: 8 }}><ChevronRight size={20} /></button>
+          {/* 보이는 만큼(PER) 통째로 넘긴다 — 한 장씩 밀면 같은 사진이 자리만 옮겨 다녀 넘긴 티가 안 난다. */}
+          <button type="button" aria-label="이전 이미지" onClick={() => setStart(s - PER)} style={{ ...arrow, left: 8 }}><ChevronLeft size={20} /></button>
+          <button type="button" aria-label="다음 이미지" onClick={() => setStart(s + PER)} style={{ ...arrow, right: 8 }}><ChevronRight size={20} /></button>
         </>
       )}
     </div>
