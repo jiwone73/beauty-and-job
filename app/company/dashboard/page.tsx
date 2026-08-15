@@ -14,6 +14,7 @@ interface Stats {
   trends: { label: string; value: number }[];
   status_breakdown: { new: number; reviewing: number; passed: number; rejected: number };
   unviewed: number;
+  oldest_pending_at: string | null;
   job_conversion: { id: string; title: string; view_count: number; application_count: number; rate: number | null }[];
   job_group_dist: { name: string; value: number }[];
   deadline_alerts: { id: string; title: string; deadline: string; days_left: number }[];
@@ -149,13 +150,23 @@ export default function CompanyDashboard() {
 
   const sb = stats?.status_breakdown ?? { new: 0, reviewing: 0, passed: 0, rejected: 0 };
   const sbTotal = sb.new + sb.reviewing + sb.passed + sb.rejected;
-  const statusSegs = [
-    { key: "new", label: "신규", value: sb.new, color: "#5f0080" },
-    { key: "reviewing", label: "검토중", value: sb.reviewing, color: "#f59e0b" },
-    { key: "passed", label: "합격", value: sb.passed, color: "#10b981" },
-    { key: "rejected", label: "불합격", value: sb.rejected, color: "#9ca3af" },
+  // 합격·불합격은 이미 내린 결정이라 오늘 할 일을 바꾸지 않는다. 남은 일(확인 안 함·검토 중)만 앞에 두고
+  // 끝난 건은 한 줄로 접는다. 비율 막대는 쓰지 않는다 — 신규 1건뿐일 때 100%로 꽉 차 다 끝난 것처럼 보인다.
+  // '확인 안 함'이 아니라 '미처리'다 — 열어는 봤지만 합격/불합격을 정하지 않은 건이 여기 들어온다.
+  // 열람 자체가 안 된 건은 위쪽 빨간 배너가 따로 알린다.
+  const pendingRows = [
+    { key: "new", label: "미처리", value: sb.new },
+    { key: "reviewing", label: "검토 중", value: sb.reviewing },
   ];
+  const doneCount = sb.passed + sb.rejected;
   const unviewed = stats?.unviewed ?? 0;
+  // 급한 정도는 건수보다 기다린 시간이 알려준다.
+  const waitedDays = (() => {
+    const at = stats?.oldest_pending_at;
+    if (!at) return null;
+    const d = Math.floor((Date.now() - new Date(at).getTime()) / 86400000);
+    return Number.isFinite(d) && d >= 0 ? d : null;
+  })();
   const conversion = stats?.job_conversion ?? [];
   const groupDist = stats?.job_group_dist ?? [];
   const deadlineAlerts = stats?.deadline_alerts ?? [];
@@ -268,19 +279,22 @@ export default function CompanyDashboard() {
                     <span>아직 열람하지 않은 지원자 <strong>{unviewed}명</strong>이 있어요 →</span>
                   </Link>
                 )}
-                <div style={{ display: "flex", height: 12, borderRadius: 6, overflow: "hidden", background: "#f1f1f4" }}>
-                  {statusSegs.filter((x) => x.value > 0).map((x) => (
-                    <div key={x.key} title={`${x.label} ${x.value}명`} style={{ width: `${(x.value / sbTotal) * 100}%`, background: x.color }} />
-                  ))}
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px", marginTop: 16 }}>
-                  {statusSegs.map((x) => (
-                    <div key={x.key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ width: 10, height: 10, borderRadius: 3, background: x.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 13, color: "#666" }}>{x.label}</span>
-                      <span style={{ marginLeft: "auto", fontSize: 15, fontWeight: 700, color: "#1a1a1a" }}>{x.value}</span>
+                <div>
+                  {pendingRows.map((x) => (
+                    <div key={x.key} style={{ display: "flex", alignItems: "baseline", gap: 8, padding: "9px 2px", borderBottom: "1px solid #f4f4f6" }}>
+                      <span style={{ fontSize: 14, color: "#555" }}>{x.label}</span>
+                      <span style={{ marginLeft: "auto", fontSize: 20, fontWeight: 700, color: x.value > 0 ? "#1a1a1a" : "#c4c4c8" }}>{x.value}</span>
+                      <span style={{ fontSize: 13, color: "#999" }}>명</span>
                     </div>
                   ))}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, paddingTop: 11, fontSize: 13, color: "#999" }}>
+                    <span>처리 완료 {doneCount}명</span>
+                    {waitedDays !== null && (
+                      <span style={{ marginLeft: "auto" }}>
+                        가장 오래 기다린 지원 · {waitedDays === 0 ? "오늘" : `${waitedDays}일째`}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </>
             )}

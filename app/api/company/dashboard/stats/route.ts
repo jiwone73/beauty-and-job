@@ -56,8 +56,8 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
-  // 지원자 처리 현황 (상태별 분포 + 미열람)
-  const [statusRes, unviewedRes] = await Promise.all([
+  // 지원자 처리 현황 (상태별 분포 + 미열람 + 가장 오래 기다린 미처리 지원)
+  const [statusRes, unviewedRes, oldestRes] = await Promise.all([
     pool.query(
       `SELECT a.status AS status, COUNT(*)::int AS cnt
        FROM applications a
@@ -71,6 +71,15 @@ export async function GET(req: NextRequest) {
        FROM applications a
        JOIN job_postings jp ON jp.id = a.job_posting_id
        WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN' AND a.viewed_at IS NULL${jobTypeFilter}`,
+      [companyId]
+    ),
+    // 급한 정도는 '몇 건'보다 '얼마나 기다렸나'가 알려준다. 아직 결정하지 않은 지원 중 가장 오래된 것.
+    pool.query(
+      `SELECT MIN(a.applied_at) AS oldest
+       FROM applications a
+       JOIN job_postings jp ON jp.id = a.job_posting_id
+       WHERE jp.company_id = $1 AND a.hidden_by_company = false
+         AND a.status IN ('APPLIED', 'VIEWED')${jobTypeFilter}`,
       [companyId]
     ),
   ])
@@ -141,6 +150,7 @@ export async function GET(req: NextRequest) {
     trends: trendsRes.rows,
     status_breakdown,
     unviewed: unviewedRes.rows[0].cnt,
+    oldest_pending_at: oldestRes.rows[0]?.oldest ?? null,
     job_conversion,
     job_group_dist,
     deadline_alerts,
