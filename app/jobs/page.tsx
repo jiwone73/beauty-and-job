@@ -114,15 +114,6 @@ function JobsPageInner() {
   // 화면마다 목록을 따로 적어 두면 등록 어휘와 필터 어휘가 갈라진다.
   const [curatedBenefits, setCuratedBenefits] = useState<string[]>(BENEFIT_FILTER);
   useEffect(() => {
-    fetch("/api/benefit-tags?curated=1")
-      .then((r) => r.json())
-      .then((res) => {
-        const names = (res?.data?.items || []).map((t: any) => t.name).filter(Boolean);
-        if (names.length) setCuratedBenefits(names);
-      })
-      .catch(() => { /* 못 받아도 기본 목록으로 돈다 */ });
-  }, []);
-  useEffect(() => {
     const qs = new URLSearchParams();
     const t = searchParams.get("type");
     const sd = searchParams.get("sido");
@@ -199,6 +190,19 @@ function JobsPageInner() {
   };
 
   const salaryOpts = jobTypeFilter === "매장" ? SALARY_STORE : SALARY_OFFICE;
+  // 복리후생 어휘 자체가 매장·오피스에서 다르다(기숙사 제공은 매장, 재택근무는 오피스).
+  // 탭을 바꾸면 그 업태의 태그만 다시 받아 온다.
+  useEffect(() => {
+    const jt = jobTypeFilter === "매장" ? "STORE" : jobTypeFilter === "오피스" ? "OFFICE" : "";
+    fetch(`/api/benefit-tags?curated=1${jt ? `&job_type=${jt}` : ""}`)
+      .then((r) => r.json())
+      .then((res) => {
+        const names = (res?.data?.items || []).map((t: any) => t.name).filter(Boolean);
+        if (names.length) setCuratedBenefits(names);
+      })
+      .catch(() => { /* 못 받아도 기본 목록으로 돈다 */ });
+  }, [jobTypeFilter]);
+
   // 복리후생 칩은 지금 보고 있는 탭(전체·매장·오피스) 안에서 실제로 달려 있는 것만 남긴다.
   // 매장에 없는 조건이 매장 탭에 떠 있으면 눌러 봤자 0건이다.
   const typeScoped = (apiJobs || []).filter((j: any) =>
