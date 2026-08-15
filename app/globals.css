@@ -11794,8 +11794,11 @@ button,
 .jobcard.jobcard-photo .jobcard-cover { flex: none !important; height: auto !important; aspect-ratio: 3 / 2 !important; }
 .jobcard.jobcard-photo .jobcard-body { flex: 1 1 auto !important; height: auto !important; }
 
-/* 제목은 한 줄짜리라도 두 줄 자리를 잡아 둔다 — 카드마다 회사명·지역 줄이 들쭉날쭉하지 않게. */
-.jobcard-title { min-height: 2.7em; }
+/* 제목은 한 줄짜리라도 두 줄 자리를 잡아 둔다 — 카드마다 회사명·지역 줄이 들쭉날쭉하지 않게.
+   높이는 '줄간격 × 2' 로 딱 맞춘다. 조금이라도 남으면 잘린 3번째 줄이 그 틈으로 비친다. */
+.jobcard-title,
+.jobs-grid .jobcard .jobcard-title,
+.card-grid .jobcard-title { line-height: 1.35; min-height: 2.7em; max-height: 2.7em; overflow: hidden; }
 
 /* 사진이 없는 카드도 같은 3:2 칸을 쓴다(그리드별 16/10·1:1 override 무력화). */
 .jobs-grid .jobcard .jobcard-cover.jobcard-cover-empty,
