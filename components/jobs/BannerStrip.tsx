@@ -6,16 +6,13 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
  * 공고 배너 띠 — 공고 상세·기업정보 설정·공고 등록 미리보기에서 같은 모양으로 쓴다.
  *
  * 규칙 두 가지만 지킨다.
- *  1. 이미지 한 장의 폭은 언제나 전체의 1/PER(PC 3장, 모바일 2장). 장수가 적다고 늘려 버리면
- *     같은 사진이 공고마다 다른 크기로 보인다. 남는 좌우는 사진의 좌·우 테두리 색으로 채워
- *     사진과 여백의 경계가 보이지 않게 한다.
- *  2. 높이는 화면에 따라 다르게 잡는다.
- *     - PC: 3:1 고정. 공고마다 배너 높이가 들쭉날쭉하면 목록이 흔들린다.
- *     - 모바일: 사진 비율 그대로. 폭이 좁아 정사각으로 자르면 사진이 알아볼 수 없게 잘린다.
- *       높이는 사진이 정한다.
+ *  1. 한 화면에 두 장. 한 장의 폭은 언제나 전체의 절반이다. 장수가 적다고 늘려 버리면
+ *     같은 사진이 공고마다 다른 크기로 보인다. 한 장뿐이면 남는 옆자리는 그 사진의
+ *     테두리 색으로 채워 사진과 여백의 경계가 보이지 않게 한다.
+ *  2. 높이는 사진이 정한다. 폭이 절반으로 정해져 있으니 비율만 지키면 세로는 따라온다.
+ *     잘라내지 않으므로 가로로 긴 로고 배너도 온전히 보인다.
  *
- * 넘치는 장수는 좌우 화살표로 돌려 본다. 좁은 화면(모바일)에서는 3장이 너무 작아
- * 한 번에 2장만 보여 준다 — 그래도 한 장의 폭·비율은 그대로다.
+ * 세 장부터는 좌우 화살표로 두 장씩 넘겨 본다.
  */
 export default function BannerStrip({
   images,
@@ -33,23 +30,13 @@ export default function BannerStrip({
   radius?: number;
 }) {
   const [start, setStart] = useState(0);
-  // 모바일에서는 2장, 그 위로는 3장. 화면 폭이 바뀌면 따라간다.
-  const [per, setPer] = useState(3);
-  useEffect(() => {
-    const apply = () => setPer(window.innerWidth < 768 ? 2 : 3);
-    apply();
-    window.addEventListener("resize", apply);
-    return () => window.removeEventListener("resize", apply);
-  }, []);
   // 끌어 옮기는 출발 위치는 렌더와 무관하게 즉시 읽혀야 해서 ref로 둔다(상태면 같은 틱에 반영되지 않는다).
   const dragFrom = useRef<number | null>(null);
   const [edge, setEdge] = useState<{ left: string; right: string } | null>(null);
   const n = images.length;
 
-  const PER = per;
+  const PER = 2;                     // 화면 크기와 무관하게 한 번에 두 장
   const cols = Math.min(n, PER);
-  // 좁은 화면에서는 잘라내지 않고 사진 비율을 그대로 쓴다(높이는 사진이 정한다).
-  const natural = per === 2;
   const s = n ? ((start % n) + n) % n : 0;
   const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
 
@@ -101,15 +88,14 @@ export default function BannerStrip({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      {/* 모바일은 사진 비율대로(높이 자동), PC는 '보여 주는 장수 : 1' 고정. */}
-      <div style={{ position: "relative", width: "100%", ...(natural ? {} : { aspectRatio: `${PER} / 1` }), borderRadius: radius, overflow: "hidden" }}>
+      <div style={{ position: "relative", width: "100%", borderRadius: radius, overflow: "hidden" }}>
         {cols < PER && edge && (
           <>
             <div aria-hidden style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "50%", background: edge.left }} />
             <div aria-hidden style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "50%", background: edge.right }} />
           </>
         )}
-        <div style={{ position: "relative", height: natural ? "auto" : "100%", display: "flex", justifyContent: "center", alignItems: natural ? "center" : "flex-start" }}>
+        <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center" }}>
           {visible.map((src, k) => {
             const idx = (s + k) % n;   // 화살표로 돌려 봐도 원본 배열의 자리를 가리킨다
             return (
@@ -123,11 +109,8 @@ export default function BannerStrip({
                   if (from !== null && from !== idx) onReorder(from, idx);
                   dragFrom.current = null;
                 } : undefined}
-                style={{ position: "relative", width: `${100 / PER}%`, height: natural ? "auto" : "100%", flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
-                <img src={src} alt={alt}
-                  style={natural
-                    ? { display: "block", width: "100%", height: "auto" }
-                    : { display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+                style={{ position: "relative", width: `${100 / PER}%`, flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
+                <img src={src} alt={alt} style={{ display: "block", width: "100%", height: "auto" }} />
                 {showIndex && (
                   <span style={{ position: "absolute", bottom: 5, left: 5, background: "rgba(0,0,0,0.55)", color: "#fff",
                     fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "1px 5px" }}>{idx + 1}</span>
