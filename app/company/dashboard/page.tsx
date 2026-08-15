@@ -310,13 +310,15 @@ export default function CompanyDashboard() {
               <tbody>
                 {conversion.map((c) => {
                   const rate = c.rate;
-                  const rateColor = rate === null ? "#bbb" : rate >= 5 ? "#10b981" : rate >= 2 ? "#f59e0b" : "#e05252";
+                  // 전환율에 색을 입히지 않는다. 대시보드에서 빨강은 "지금 조치가 필요하다"로 읽히는데,
+                  // 조회 7건에서 나온 0%와 89건에서 나온 0%는 성격이 전혀 다르다.
+                  // 표본이 쌓여 공고끼리 비교가 될 때 다시 판단한다.
                   return (
                     <tr key={c.id}>
                       <td className="company-td-name" style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "left" }} title={c.title}>{c.title}</td>
                       <td className="company-td-sub">{c.view_count.toLocaleString()}</td>
                       <td className="company-td-sub">{c.application_count}</td>
-                      <td style={{ fontWeight: 700, color: rateColor }}>{rate === null ? "—" : `${rate}%`}</td>
+                      <td className="company-td-sub" style={{ fontWeight: 600 }}>{rate === null ? "—" : `${rate}%`}</td>
                     </tr>
                   );
                 })}
