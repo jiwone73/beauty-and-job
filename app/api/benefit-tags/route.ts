@@ -14,9 +14,13 @@ export async function GET(req: NextRequest) {
   // curated=1 은 공개 어휘(검수된 마스터)라 로그인 없이도 준다 — 공고 목록 필터가 이걸 쓴다.
   // 미검수 태그까지 보는 건 등록 폼(자동완성)뿐이라 로그인 상태에서만.
   const curatedOnly = sp.get("curated") === "1";
+  let me: string | null = null;      // 기업회원이면 자기 id
+  let isAdmin = false;
   if (!curatedOnly) {
-    const { res: authErr } = requireAuth(req); // 관리자·기업회원 모두 허용
+    const { auth, res: authErr } = requireAuth(req); // 관리자·기업회원 모두 허용
     if (authErr) return authErr;
+    isAdmin = auth!.owner_type === "admin";
+    me = auth!.owner_type === "company" ? String(auth!.sub) : null;
   }
   const jt = (sp.get("job_type") || "").toUpperCase();
   const q = norm(sp.get("q") || "");
@@ -24,6 +28,19 @@ export async function GET(req: NextRequest) {
   const where: string[] = [];
   const params: unknown[] = [];
   if (curatedOnly) where.push("is_curated = true");
+  // 직접 추가한 태그는 공용이 아니다 — 등록한 기업(과 그 태그를 이미 쓴 기업)만 본다.
+  // 관리자는 비회원 공고를 대신 넣으므로 제한하지 않는다.
+  if (!curatedOnly && !isAdmin) {
+    if (me) {
+      params.push(me);
+      const p = `$${params.length}`;
+      where.push(`(is_curated OR created_by_company_id = ${p}::uuid
+        OR EXISTS (SELECT 1 FROM job_postings jp
+                   WHERE jp.company_id = ${p}::uuid AND benefit_tags.name = ANY(jp.benefit_tags)))`);
+    } else {
+      where.push("is_curated");
+    }
+  }
   if (jt === "STORE" || jt === "OFFICE") { params.push(jt); where.push(`(job_type = $${params.length} OR job_type = 'BOTH')`); }
   if (q) { params.push(`%${q}%`); where.push(`name ILIKE $${params.length}`); }
   const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
@@ -38,7 +55,7 @@ export async function GET(req: NextRequest) {
 
 // 새 태그 소프트 등록(기업이 목록에 없는 복리후생 추가). is_curated=false로 저장, 관리자가 나중에 정규화.
 export async function POST(req: NextRequest) {
-  const { res: authErr } = requireAuth(req);
+  const { auth, res: authErr } = requireAuth(req);
   if (authErr) return authErr;
   const body = await req.json().catch(() => ({}));
   const name = norm(String(body.name || ""));
@@ -49,12 +66,15 @@ export async function POST(req: NextRequest) {
   if (/[ㄱ-ㅎㅏ-ㅣ]/.test(name)) return err("BAD_REQUEST", "글자가 덜 입력됐어요. 다시 입력해주세요.", 400);
 
   // 이미 있으면 사용횟수만 +1, 없으면 미검수 태그로 삽입
+  const owner = auth && auth.owner_type === "company" ? String(auth.sub) : null;
   const r = await pool.query(
-    `INSERT INTO benefit_tags (name, job_type, is_curated, usage_count)
-     VALUES ($1, $2, false, 1)
-     ON CONFLICT (name, job_type) DO UPDATE SET usage_count = benefit_tags.usage_count + 1
+    `INSERT INTO benefit_tags (name, job_type, is_curated, usage_count, created_by_company_id)
+     VALUES ($1, $2, false, 1, $3::uuid)
+     ON CONFLICT (name, job_type) DO UPDATE SET
+       usage_count = benefit_tags.usage_count + 1,
+       created_by_company_id = COALESCE(benefit_tags.created_by_company_id, EXCLUDED.created_by_company_id)
      RETURNING name, job_type, is_curated`,
-    [name, jt]
+    [name, jt, owner]
   );
   return ok(r.rows[0]);
 }
