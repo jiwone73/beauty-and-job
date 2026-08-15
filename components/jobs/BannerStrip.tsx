@@ -6,12 +6,13 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
  * 공고 배너 띠 — 공고 상세·기업정보 설정·공고 등록 미리보기에서 같은 모양으로 쓴다.
  *
  * 규칙 두 가지만 지킨다.
- *  1. 전체 높이는 장수와 무관하게 3:1 고정. 공고마다 배너 높이가 달라지면 안 된다.
- *  2. 이미지 한 장의 폭은 언제나 전체의 1/3. 1~2장이라고 늘려 버리면 같은 사진이
+ *  1. 전체 높이는 담긴 장수와 무관하게 고정(PC 3:1, 모바일 2:1). 공고마다 배너 높이가 달라지면 안 된다.
+ *  2. 이미지 한 장의 폭은 언제나 전체의 1/PER. 장수가 적다고 늘려 버리면 같은 사진이
  *     공고마다 다른 크기로 잘려 보인다. 남는 좌우는 사진의 좌·우 테두리 색으로 채워
  *     사진과 여백의 경계가 보이지 않게 한다.
  *
- * 3장을 넘으면 좌우 화살표로 3장씩 돌려 본다.
+ * 넘치는 장수는 좌우 화살표로 돌려 본다. 좁은 화면(모바일)에서는 3장이 너무 작아
+ * 한 번에 2장만 보여 준다 — 그래도 한 장의 폭·비율은 그대로다.
  */
 export default function BannerStrip({
   images,
@@ -29,12 +30,20 @@ export default function BannerStrip({
   radius?: number;
 }) {
   const [start, setStart] = useState(0);
+  // 모바일에서는 2장, 그 위로는 3장. 화면 폭이 바뀌면 따라간다.
+  const [per, setPer] = useState(3);
+  useEffect(() => {
+    const apply = () => setPer(window.innerWidth < 768 ? 2 : 3);
+    apply();
+    window.addEventListener("resize", apply);
+    return () => window.removeEventListener("resize", apply);
+  }, []);
   // 끌어 옮기는 출발 위치는 렌더와 무관하게 즉시 읽혀야 해서 ref로 둔다(상태면 같은 틱에 반영되지 않는다).
   const dragFrom = useRef<number | null>(null);
   const [edge, setEdge] = useState<{ left: string; right: string } | null>(null);
   const n = images.length;
 
-  const PER = 3;
+  const PER = per;
   const cols = Math.min(n, PER);
   const s = n ? ((start % n) + n) % n : 0;
   const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
@@ -87,7 +96,8 @@ export default function BannerStrip({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ position: "relative", width: "100%", aspectRatio: "3 / 1", borderRadius: radius, overflow: "hidden" }}>
+      {/* 한 장이 늘 정사각으로 잘리도록 전체 비율은 '보여 주는 장수 : 1'. */}
+      <div style={{ position: "relative", width: "100%", aspectRatio: `${PER} / 1`, borderRadius: radius, overflow: "hidden" }}>
         {cols < PER && edge && (
           <>
             <div aria-hidden style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "50%", background: edge.left }} />

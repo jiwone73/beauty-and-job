@@ -2144,10 +2144,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-bookmark.active { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-pale); }
 
 /* 레이아웃 */
-.job-detail-layout { max-width: 1360px; margin: 0 auto; padding: 32px 32px 120px; display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+.job-detail-layout { max-width: 1360px; margin: 0 auto; padding: 32px 32px 120px; display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
 
 /* 메인 */
-.job-detail-main { display: flex; flex-direction: column; gap: 0; }
+/* min-width:auto 면 안쪽 표의 최소 폭이 그대로 밀고 나와 페이지가 가로로 넘친다.
+   가로 스크롤은 모집분야 표 안에서만 일어나야 한다. */
+.job-detail-main { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+.job-detail-main > * { min-width: 0; max-width: 100%; }
 
 .job-detail-hero { position: relative; width: 100%; aspect-ratio: 3 / 1; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .job-detail-hero-logo { position: absolute; left: 16px; bottom: 16px; width: 56px; height: 56px; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 6px; }
@@ -2267,7 +2270,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 반응형 */
 @media (max-width: 1024px) {
-  .job-detail-layout { grid-template-columns: 1fr; padding-bottom: 100px; }
+  .job-detail-layout { grid-template-columns: minmax(0, 1fr); padding-bottom: 100px; }
   .job-detail-aside { display: none; }
   .job-detail-mobile-cta { display: flex; }
   /* 미리보기 모달도 같이 1열로. (.jobpost-preview-scope .job-detail-layout 이 2클래스라
@@ -2279,7 +2282,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .job-detail-layout { padding: 16px 0 100px; }
   .job-detail-header-inner { padding: 0 16px; }
   .job-detail-info-box { padding: 20px 16px; }
-  .job-detail-title { font-size: 20px; }
+  .job-detail-title { font-size: 17px; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere; }
   .job-detail-meta-grid { grid-template-columns: 1fr; }
 }
 
@@ -4195,7 +4198,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobs-card-grid { grid-template-columns: 1fr; }
 
   /* 채용공고 상세 */
-  .job-detail-layout { grid-template-columns: 1fr; }
+  .job-detail-layout { grid-template-columns: minmax(0, 1fr); }
   .job-detail-sidebar { display: none; }
   .job-detail-apply-bar {
     display: flex;
