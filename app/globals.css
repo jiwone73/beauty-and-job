@@ -11800,3 +11800,14 @@ button,
 /* 사진이 없는 카드도 같은 3:2 칸을 쓴다(그리드별 16/10·1:1 override 무력화). */
 .jobs-grid .jobcard .jobcard-cover.jobcard-cover-empty,
 .card-grid .jobcard .jobcard-cover.jobcard-cover-empty { aspect-ratio: 3 / 2 !important; flex: none !important; height: auto !important; }
+
+/* 본문 여백은 원티드 카드 기준으로 조인다 — 줄간격은 1.4, 줄 사이 간격은 2px.
+   (제목 2줄 자리는 그대로 두고, 회사명·지역 줄의 헐거운 line-height 만 줄인다.) */
+.jobcard-body { padding-bottom: 6px; }
+.jobcard-title { margin-bottom: 2px; }
+.jobcard-company { margin-bottom: 2px; line-height: 1.4; }
+.jobcard-metarow { margin-top: 0; }
+.jobcard-meta, .jobcard-deadline { line-height: 1.4; }
+@media (min-width: 768px) {
+  .jobcard-company, .jobcard-meta, .jobcard-deadline { font-size: 13px; }
+}
