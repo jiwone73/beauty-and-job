@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Users, Briefcase, FileText, BookmarkCheck, TrendingUp, Plus, Inbox } from "lucide-react";
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 interface Stats {
   active_jobs: number;
@@ -149,17 +149,10 @@ export default function CompanyDashboard() {
   const chartData = trendRows.map((t) => ({ day: fmtTrendDay(t.day, trendRange), 지원수: t.value }));
 
   const sb = stats?.status_breakdown ?? { new: 0, reviewing: 0, passed: 0, rejected: 0 };
-  const sbTotal = sb.new + sb.reviewing + sb.passed + sb.rejected;
   // 합격·불합격은 이미 내린 결정이라 오늘 할 일을 바꾸지 않는다. 남은 일(확인 안 함·검토 중)만 앞에 두고
   // 끝난 건은 한 줄로 접는다. 비율 막대는 쓰지 않는다 — 신규 1건뿐일 때 100%로 꽉 차 다 끝난 것처럼 보인다.
-  // '확인 안 함'이 아니라 '미처리'다 — 열어는 봤지만 합격/불합격을 정하지 않은 건이 여기 들어온다.
-  // 열람 자체가 안 된 건은 위쪽 빨간 배너가 따로 알린다.
-  const pendingRows = [
-    { key: "new", label: "미처리", value: sb.new },
-    { key: "reviewing", label: "검토 중", value: sb.reviewing },
-  ];
-  const doneCount = sb.passed + sb.rejected;
-  const unviewed = stats?.unviewed ?? 0;
+  // 아직 합격/불합격을 정하지 않은 건. 열어는 봤지만 결정을 미룬 것도 포함한다.
+  const pendingCount = sb.new + sb.reviewing;
   // 급한 정도는 건수보다 기다린 시간이 알려준다.
   const waitedDays = (() => {
     const at = stats?.oldest_pending_at;
@@ -168,9 +161,7 @@ export default function CompanyDashboard() {
     return Number.isFinite(d) && d >= 0 ? d : null;
   })();
   const conversion = stats?.job_conversion ?? [];
-  const groupDist = stats?.job_group_dist ?? [];
   const deadlineAlerts = stats?.deadline_alerts ?? [];
-  const PIE_COLORS = ["#5f0080", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
   return (
     <CompanyLayout activePage="dashboard">
@@ -218,6 +209,12 @@ export default function CompanyDashboard() {
         <div className="company-card">
           <div className="company-card-head">
             <h2 className="company-card-title">최근 지원자</h2>
+            {/* 밀린 일과 누구를 처리하면 되는지를 한자리에 둔다 — 따로 카드를 두면 같은 얘기를 두 번 하게 된다. */}
+            {pendingCount > 0 && (
+              <span style={{ marginLeft: 10, fontSize: 12.5, color: "#991b1b", background: "#fee2e2", borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap" }}>
+                미처리 {pendingCount}명{waitedDays !== null && waitedDays > 0 ? ` · ${waitedDays}일째` : ""}
+              </span>
+            )}
             {applicants.length > 0 && (
               <Link href="/company/dashboard/applicants" className="company-card-more">전체보기 →</Link>
             )}
@@ -253,54 +250,8 @@ export default function CompanyDashboard() {
         </div>
       </div>
 
-      {/* 지원자 처리 현황 + 공고별 전환율 */}
+      {/* 공고별 전환율 + 마감 임박 공고 */}
       <div className="company-dashboard-grid" style={{ marginTop: 16 }}>
-        {/* 지원자 처리 현황 */}
-        <div className="company-card">
-          <div className="company-card-head">
-            <h2 className="company-card-title">지원자 처리 현황</h2>
-            {stats && stats.total_applications > 0 && (
-              <Link href="/company/dashboard/applicants" className="company-card-more">관리하기 →</Link>
-            )}
-          </div>
-          <div style={{ padding: "14px 14px 16px" }}>
-            {sbTotal === 0 ? (
-              <div style={{ padding: "28px 0", textAlign: "center", color: "#9a9a9a", fontSize: 14 }}>
-                {loading ? "불러오는 중..." : "아직 지원자가 없습니다"}
-              </div>
-            ) : (
-              <>
-                {unviewed > 0 && (
-                  <Link
-                    href="/company/dashboard/applicants"
-                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", borderRadius: 8, background: "#fee2e2", color: "#991b1b", fontSize: 13.5, fontWeight: 500, textDecoration: "none", marginBottom: 16 }}
-                  >
-                    <span style={{ display: "inline-flex", width: 18, height: 18, borderRadius: "50%", background: "#991b1b", color: "#fff", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>!</span>
-                    <span>아직 열람하지 않은 지원자 <strong>{unviewed}명</strong>이 있어요 →</span>
-                  </Link>
-                )}
-                <div>
-                  {pendingRows.map((x) => (
-                    <div key={x.key} style={{ display: "flex", alignItems: "baseline", gap: 8, padding: "9px 2px", borderBottom: "1px solid #f4f4f6" }}>
-                      <span style={{ fontSize: 14, color: "#555" }}>{x.label}</span>
-                      <span style={{ marginLeft: "auto", fontSize: 20, fontWeight: 700, color: x.value > 0 ? "#1a1a1a" : "#c4c4c8" }}>{x.value}</span>
-                      <span style={{ fontSize: 13, color: "#999" }}>명</span>
-                    </div>
-                  ))}
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, paddingTop: 11, fontSize: 13, color: "#999" }}>
-                    <span>처리 완료 {doneCount}명</span>
-                    {waitedDays !== null && (
-                      <span style={{ marginLeft: "auto" }}>
-                        가장 오래 기다린 지원 · {waitedDays === 0 ? "오늘" : `${waitedDays}일째`}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
         {/* 공고별 지원 전환율 */}
         <div className="company-card">
           <div className="company-card-head">
@@ -338,41 +289,6 @@ export default function CompanyDashboard() {
                 })}
               </tbody>
             </table>
-          )}
-        </div>
-      </div>
-
-      {/* 직군별 지원 분포 + 마감 임박 공고 */}
-      <div className="company-dashboard-grid" style={{ marginTop: 16 }}>
-        {/* 직군별 지원 분포 */}
-        <div className="company-card">
-          <div className="company-card-head">
-            <h2 className="company-card-title">직군별 지원 분포</h2>
-          </div>
-          {groupDist.length === 0 ? (
-            <EmptyState icon={<Users size={32} />} message={loading ? "불러오는 중..." : "아직 지원자가 없습니다"} />
-          ) : (
-            <div style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: 14 }}>
-              <div style={{ flex: "0 0 34%" }}>
-                <ResponsiveContainer width="100%" height={104}>
-                  <PieChart>
-                    <Pie data={groupDist} cx="50%" cy="50%" innerRadius={26} outerRadius={44} dataKey="value" paddingAngle={2}>
-                      {groupDist.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip formatter={(v) => [`${v}명`, ""]} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr", gap: "7px 0", fontSize: 12.5, alignContent: "center" }}>
-                {groupDist.map((d, i) => (
-                  <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                    <span style={{ width: 9, height: 9, borderRadius: "50%", flexShrink: 0, background: PIE_COLORS[i % PIE_COLORS.length] }} />
-                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#555" }}>{d.name}</span>
-                    <span style={{ marginLeft: "auto", fontWeight: 700, color: "#1a1a1a" }}>{d.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
           )}
         </div>
 
