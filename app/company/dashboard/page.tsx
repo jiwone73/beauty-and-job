@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Users, Briefcase, FileText, BookmarkCheck, TrendingUp, Plus, Inbox } from "lucide-react";
+import { Users, Briefcase, FileText, BookmarkCheck, TrendingUp, Plus, Inbox, AlarmClock } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 interface Stats {
@@ -16,6 +16,7 @@ interface Stats {
   oldest_pending_at: string | null;
   job_conversion: { id: string; title: string; view_count: number; application_count: number; rate: number | null }[];
   deadline_alerts: { id: string; title: string; deadline: string; days_left: number }[];
+  deadline_soon: number;
 }
 
 interface JobItem {
@@ -137,6 +138,8 @@ export default function CompanyDashboard() {
     { label: "총 지원자", value: stats?.total_applications ?? 0, unit: "명", color: "#0ea5e9", icon: Users, href: "/company/dashboard/applicants" },
     { label: "오늘 지원", value: stats?.today_applications ?? 0, unit: "명", color: "#10b981", icon: TrendingUp, href: "/company/dashboard/applicants" },
     { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, unit: "명", color: "#f59e0b", icon: BookmarkCheck, href: "/company/dashboard/talent/scrapped" },
+    // 마감은 놓치면 되돌릴 수 없어 목록보다 건수를 먼저 보는 게 맞다(3일 내 마감·마감 지남).
+    { label: "마감 임박", value: stats?.deadline_soon ?? 0, unit: "건", color: "#e05252", icon: AlarmClock, href: "/company/dashboard/jobs" },
   ];
 
   const fmtTrendDay = (day: string, range: string) => {
@@ -248,8 +251,56 @@ export default function CompanyDashboard() {
         </div>
       </div>
 
-      {/* 공고별 전환율 + 마감 임박 공고 */}
+      {/* 내 채용공고 + 공고별 전환율 */}
       <div className="company-dashboard-grid" style={{ marginTop: 16 }}>
+        {/* 내 채용공고 */}
+        <div className="company-card">
+          <div className="company-card-head">
+            <h2 className="company-card-title">내 채용공고</h2>
+            <Link href="/company/dashboard/jobs" className="company-text-link">
+              전체 보기 →
+            </Link>
+          </div>
+          {jobs.length === 0 ? (
+            <EmptyState
+              icon={<Briefcase size={32} />}
+              message={loading ? "불러오는 중..." : "아직 등록된 공고가 없습니다"}
+              hint={loading ? "" : "첫 번째 채용공고를 등록해보세요"}
+              cta={
+                !loading && (
+                  <Link href="/company/dashboard/jobs/new" className="company-primary-btn" style={{ marginTop: 16 }}>
+                    <Plus size={15} /> 공고 등록하기
+                  </Link>
+                )
+              }
+            />
+          ) : (
+            <table className="company-table" style={{ width: "100%" }}>
+              <thead>
+                <tr><th>공고명</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
+              </thead>
+              <tbody>
+                {jobs.map((job) => (
+                  <tr key={job.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
+                    <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
+                    <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
+                    <td className="company-td-sub">{job.application_count}명</td>
+                    <td className="company-td-sub">{job.view_count.toLocaleString()}</td>
+                    <td>
+                      {(() => {
+                        const dl = job.deadline ? Math.ceil((new Date(job.deadline).getTime() - Date.now()) / 86400000) : null;
+                        const closed = job.status === "CLOSED" || (dl !== null && dl < 0);
+                        const label = closed ? "마감" : !job.deadline ? "상시" : `D-${dl}`;
+                        const color = closed ? "#888" : !job.deadline ? "#10b981" : (dl !== null && dl <= 7) ? "#e74c3c" : "#10b981";
+                        return <span style={{ color, whiteSpace: "nowrap" }}>{label}</span>;
+                      })()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
         {/* 공고별 지원 전환율 */}
         <div className="company-card">
           <div className="company-card-head">
@@ -289,90 +340,6 @@ export default function CompanyDashboard() {
             </table>
           )}
         </div>
-
-        {/* 마감 임박 공고 */}
-        <div className="company-card">
-          <div className="company-card-head">
-            <h2 className="company-card-title">마감 임박 공고</h2>
-            <Link href="/company/dashboard/jobs" className="company-card-more">전체보기 →</Link>
-          </div>
-          {deadlineAlerts.length === 0 ? (
-            <EmptyState
-              icon={<Briefcase size={32} />}
-              message={loading ? "불러오는 중..." : "마감 임박 공고가 없어요"}
-              hint={loading ? "" : "3일 내 마감되는 공고가 여기 표시돼요"}
-            />
-          ) : (
-            <div style={{ padding: "8px 6px" }}>
-              {deadlineAlerts.map((j) => {
-                const d = j.days_left;
-                const label = d < 0 ? "마감 지남" : d === 0 ? "오늘 마감" : `D-${d}`;
-                const isUrgent = d <= 1;
-                const color = isUrgent ? "#e05252" : "#b8860b";
-                const bg = isUrgent ? "#fee2e2" : "#fef3c7";
-                return (
-                  <Link
-                    key={j.id}
-                    href="/company/dashboard/jobs"
-                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 10px", borderRadius: 8, textDecoration: "none", color: "inherit" }}
-                  >
-                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, color: "#1a1a1a" }}>{j.title}</span>
-                    <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color, background: bg, borderRadius: 20, padding: "3px 10px" }}>{label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 내 채용공고 */}
-      <div className="company-card">
-        <div className="company-card-head">
-          <h2 className="company-card-title">내 채용공고</h2>
-          <Link href="/company/dashboard/jobs" className="company-text-link">
-            전체 보기 →
-          </Link>
-        </div>
-        {jobs.length === 0 ? (
-          <EmptyState
-            icon={<Briefcase size={32} />}
-            message={loading ? "불러오는 중..." : "아직 등록된 공고가 없습니다"}
-            hint={loading ? "" : "첫 번째 채용공고를 등록해보세요"}
-            cta={
-              !loading && (
-                <Link href="/company/dashboard/jobs/new" className="company-primary-btn" style={{ marginTop: 16 }}>
-                  <Plus size={15} /> 공고 등록하기
-                </Link>
-              )
-            }
-          />
-        ) : (
-          <table className="company-table" style={{ width: "100%" }}>
-            <thead>
-              <tr><th>공고명</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
-            </thead>
-            <tbody>
-              {jobs.map((job) => (
-                <tr key={job.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
-                  <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
-                  <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
-                  <td className="company-td-sub">{job.application_count}명</td>
-                  <td className="company-td-sub">{job.view_count.toLocaleString()}</td>
-                  <td>
-                    {(() => {
-                      const dl = job.deadline ? Math.ceil((new Date(job.deadline).getTime() - Date.now()) / 86400000) : null;
-                      const closed = job.status === "CLOSED" || (dl !== null && dl < 0);
-                      const label = closed ? "마감" : !job.deadline ? "상시" : `D-${dl}`;
-                      const color = closed ? "#888" : !job.deadline ? "#10b981" : (dl !== null && dl <= 7) ? "#e74c3c" : "#10b981";
-                      return <span style={{ color, whiteSpace: "nowrap" }}>{label}</span>;
-                    })()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
       </div>
       </div>
     </CompanyLayout>

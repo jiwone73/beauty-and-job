@@ -116,6 +116,14 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
   const deadline_alerts = deadlineRes.rows
+  // 목록은 6건까지만 뽑으므로 카운터에는 쓸 수 없다. 건수는 따로 센다.
+  const deadlineCountRes = await pool.query(
+    `SELECT COUNT(*)::int AS cnt
+     FROM job_postings
+     WHERE company_id = $1 AND status = 'ACTIVE' AND deadline IS NOT NULL
+       AND deadline::date <= CURRENT_DATE + 3${jobTypeFilterNoAlias}`,
+    [companyId]
+  )
 
   return ok({
     active_jobs: activeJobs.rows[0].cnt,
@@ -127,5 +135,6 @@ export async function GET(req: NextRequest) {
     oldest_pending_at: oldestRes.rows[0]?.oldest ?? null,
     job_conversion,
     deadline_alerts,
+    deadline_soon: deadlineCountRes.rows[0].cnt,
   })
 }
