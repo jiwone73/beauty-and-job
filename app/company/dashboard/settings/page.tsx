@@ -561,7 +561,7 @@ export default function CompanySettingsPage() {
                   </div>
                 ) : (
                   /* 공고 상세와 같은 컴포넌트 — 여기서 보이는 모양이 실제 공고 배너와 같다. */
-                  <BannerStrip images={coverImages.map((c) => c.url)} onDelete={handleCoverDeleteOne} radius={10} />
+                  <BannerStrip images={coverImages.map((c) => c.url)} onDelete={handleCoverDeleteOne} />
                 )}
                 {sampleOpen && (
                   <div style={{marginTop:10, padding:12, border:"1px solid #e5e2ea", borderRadius:10, background:"#faf9fc"}}>

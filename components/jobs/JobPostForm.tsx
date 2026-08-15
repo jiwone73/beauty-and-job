@@ -2058,7 +2058,7 @@ export default function JobPostForm({
               {bannerImages.length > 0 && (
                 <div style={{ width: "100%" }}>
                   {/* 공고 상세와 같은 컴포넌트로 그린다 — 편집 화면에서 보이는 모양이 곧 공개 화면 모양. */}
-                  <BannerStrip images={bannerImages.map((b) => b.url)} radius={8} showIndex
+                  <BannerStrip images={bannerImages.map((b) => b.url)} showIndex
                     onDelete={(url) => setBannerImages((prev) => prev.filter((b) => b.url !== url))}
                     onReorder={(from, to) => setBannerImages((prev) => {
                       const next = [...prev];
@@ -2110,7 +2110,7 @@ export default function JobPostForm({
                   style={{ padding: bannerImages.length ? 6 : 10, borderRadius: 10, border: `1.5px dashed ${dragOver || pasteZone === "banner" ? "#5f0080" : "#e0d5ee"}`, background: dragOver || pasteZone === "banner" ? "#f7f1fd" : "#fbf9ff", outline: "none" }}>
                   {bannerImages.length > 0 ? (
                     /* 공고에 실제로 찍히는 모양(3:1 · 한 장은 1/3 폭) 그대로 보여준다. 끌어서 순서를 바꿀 수 있다. */
-                    <BannerStrip images={bannerImages.map((b) => b.url)} radius={8} showIndex
+                    <BannerStrip images={bannerImages.map((b) => b.url)} showIndex
                       onDelete={(url) => setBannerImages((prev) => prev.filter((b) => b.url !== url))}
                       onReorder={(from, to) => setBannerImages((prev) => {
                         const next = [...prev];

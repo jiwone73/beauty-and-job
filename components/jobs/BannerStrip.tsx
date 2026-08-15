@@ -20,14 +20,14 @@ export default function BannerStrip({
   onDelete,
   onReorder,
   showIndex = false,
-  radius = 12,
+  radius = 0,
 }: {
   images: string[];
   alt?: string;
   onDelete?: (url: string) => void;                  // 편집 화면에서만 넘긴다(공개 화면은 생략)
   onReorder?: (from: number, to: number) => void;    // 넘기면 끌어서 순서를 바꿀 수 있다
   showIndex?: boolean;                               // 첫 장이 목록 카드 썸네일이 되므로 편집 화면에선 번호를 보여준다
-  radius?: number;
+  radius?: number;                                   // 기본은 각진 모서리(공고 배너는 화면 폭을 꽉 채운다)
 }) {
   const [start, setStart] = useState(0);
   // 끌어 옮기는 출발 위치는 렌더와 무관하게 즉시 읽혀야 해서 ref로 둔다(상태면 같은 틱에 반영되지 않는다).
@@ -81,9 +81,9 @@ export default function BannerStrip({
 
   const arrow: CSSProperties = {
     position: "absolute", top: "50%", transform: "translateY(-50%)",
-    width: 34, height: 34, borderRadius: "50%", border: "none",
-    background: "rgba(255,255,255,0.95)", color: "#333",
-    cursor: "pointer", zIndex: 3, boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
+    width: 24, height: 24, borderRadius: "50%", border: "none",
+    background: "rgba(255,255,255,0.9)", color: "#333",
+    cursor: "pointer", zIndex: 3, boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
     display: "flex", alignItems: "center", justifyContent: "center",
   };
 
@@ -132,8 +132,8 @@ export default function BannerStrip({
       {n > PER && (
         <>
           {/* 보이는 만큼(PER) 통째로 넘긴다 — 한 장씩 밀면 같은 사진이 자리만 옮겨 다녀 넘긴 티가 안 난다. */}
-          <button type="button" aria-label="이전 이미지" onClick={() => setStart(s - PER)} style={{ ...arrow, left: 8 }}><ChevronLeft size={20} /></button>
-          <button type="button" aria-label="다음 이미지" onClick={() => setStart(s + PER)} style={{ ...arrow, right: 8 }}><ChevronRight size={20} /></button>
+          <button type="button" aria-label="이전 이미지" onClick={() => setStart(s - PER)} style={{ ...arrow, left: 6 }}><ChevronLeft size={15} /></button>
+          <button type="button" aria-label="다음 이미지" onClick={() => setStart(s + PER)} style={{ ...arrow, right: 6 }}><ChevronRight size={15} /></button>
         </>
       )}
     </div>
