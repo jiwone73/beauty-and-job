@@ -224,7 +224,7 @@ export default function CompanyDashboard() {
             />
           ) : (
             <div style={{ overflowX: "auto" }}>
-            <table className="company-table" style={{ width: "100%" }}>
+            <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
                 <tr><th>이름</th><th>지원공고</th><th>경력</th><th>지원일</th><th>열람</th></tr>
               </thead>
@@ -274,7 +274,7 @@ export default function CompanyDashboard() {
             />
           ) : (
             <div style={{ overflowX: "auto" }}>
-            <table className="company-table" style={{ width: "100%" }}>
+            <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
                 <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
               </thead>
@@ -314,7 +314,7 @@ export default function CompanyDashboard() {
             />
           ) : (
             <div style={{ overflowX: "auto" }}>
-            <table className="company-table" style={{ width: "100%" }}>
+            <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
                 <tr>
                   <th style={{ textAlign: "left" }}>공고명</th>

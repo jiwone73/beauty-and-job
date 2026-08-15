@@ -6997,6 +6997,15 @@ div:has(> table.admin-table),
 /* 표는 카드를 채우되, 남는 폭을 이름 칸 하나가 다 먹지 않게 한다.
    한 칸만 늘리면 넓은 화면에서 그 칸만 텅 비어 보인다 — 남는 폭은 열들이 나눠 갖는다. */
 .company-card .company-table { width: 100%; table-layout: auto; }
+/* 대시보드는 요약 화면이라 한 줄만 보여주고 넘치면 …로 끊는다.
+   이름·공고명이 길다고 행이 두 줄로 늘어나면 좌우 카드의 줄 높이가 서로 어긋난다. */
+.company-table.dash-table .company-td-name {
+  max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.company-table.dash-table .td-clamp2 {
+  display: block; -webkit-line-clamp: unset; max-width: 200px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; overflow-wrap: normal;
+}
 /* 대시보드 카드는 표 두 개가 나란히 놓여 폭이 빠듯하다. 좌우 여백을 줄여 공고명에 자리를 내준다. */
 .company-card .company-table th,
 .company-card .company-table td { padding-left: 10px; padding-right: 10px; }
