@@ -3,14 +3,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Users, Briefcase, FileText, BookmarkCheck, TrendingUp, Plus, Inbox, AlarmClock } from "lucide-react";
+import { Users, Briefcase, FileText, TrendingUp, Plus, Inbox, AlarmClock } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 interface Stats {
   active_jobs: number;
   total_applications: number;
   today_applications: number;
-  scrapped_talents: number;
   trends: { label: string; value: number }[];
   status_breakdown: { new: number; reviewing: number; passed: number; rejected: number };
   oldest_pending_at: string | null;
@@ -137,7 +136,6 @@ export default function CompanyDashboard() {
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#5f0080", icon: FileText, href: "/company/dashboard/jobs" },
     { label: "총 지원자", value: stats?.total_applications ?? 0, unit: "명", color: "#0ea5e9", icon: Users, href: "/company/dashboard/applicants" },
     { label: "오늘 지원", value: stats?.today_applications ?? 0, unit: "명", color: "#10b981", icon: TrendingUp, href: "/company/dashboard/applicants" },
-    { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, unit: "명", color: "#f59e0b", icon: BookmarkCheck, href: "/company/dashboard/talent/scrapped" },
     // 마감은 놓치면 되돌릴 수 없어 목록보다 건수를 먼저 보는 게 맞다(3일 내 마감·마감 지남).
     { label: "마감 임박", value: stats?.deadline_soon ?? 0, unit: "건", color: "#e05252", icon: AlarmClock, href: "/company/dashboard/jobs" },
   ];

@@ -18,8 +18,8 @@ export async function GET(req: NextRequest) {
     ? ` AND job_type = '${jobTypeParam}'`
     : ''
 
-  // 4가지 통계 한 번에 조회
-  const [activeJobs, totalApplications, todayApplications, scrappedTalents] = await Promise.all([
+  // 상단 통계 카운터 한 번에 조회
+  const [activeJobs, totalApplications, todayApplications] = await Promise.all([
     pool.query(
       `SELECT COUNT(*)::int AS cnt FROM job_postings 
        WHERE company_id = $1 AND status = 'ACTIVE'${jobTypeFilterNoAlias}`,
@@ -37,10 +37,6 @@ export async function GET(req: NextRequest) {
        WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN' AND a.applied_at::date = CURRENT_DATE${jobTypeFilter}`,
       [companyId]
     ),
-    pool.query(
-      `SELECT COUNT(*)::int AS cnt FROM talent_scraps WHERE company_id = $1`,
-      [companyId]
-    ).catch(() => ({ rows: [{ cnt: 0 }] }))
   ])
 
   // 최근 7일 일별 지원자 추이
@@ -129,7 +125,6 @@ export async function GET(req: NextRequest) {
     active_jobs: activeJobs.rows[0].cnt,
     total_applications: totalApplications.rows[0].cnt,
     today_applications: todayApplications.rows[0].cnt,
-    scrapped_talents: scrappedTalents.rows[0].cnt,
     trends: trendsRes.rows,
     status_breakdown,
     oldest_pending_at: oldestRes.rows[0]?.oldest ?? null,
