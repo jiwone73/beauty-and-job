@@ -6898,7 +6898,9 @@ div:has(> table.admin-table),
 .company-stat-grid {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  /* 화면 폭에 맞춰 늘리지 않는다 — 숫자 몇 자를 담는 칸이라 넓어질수록 허전해 보인다. */
+  grid-auto-columns: 156px;
+  justify-content: start;
   gap: 10px;
   /* 카운터 → 툴바 → 표가 붙어 한 덩어리로 보이던 것을 줄 단위로 떼어 놓는다. */
   margin-bottom: 16px;

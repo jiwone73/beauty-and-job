@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
           ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_start_date,
        EXISTS(SELECT 1 FROM company_talent_scraps s WHERE s.company_id = $1 AND s.user_id = u.id) AS scrapped,
        jp.id AS job_id, jp.title AS job_title,
-       jp.experience_level
+       jp.experience_level, jp.status AS job_status, jp.deadline AS job_deadline
      FROM applications a
      JOIN job_postings jp ON jp.id = a.job_posting_id
      JOIN users u ON u.id = a.user_id

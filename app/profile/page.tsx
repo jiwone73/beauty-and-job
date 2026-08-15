@@ -1263,18 +1263,22 @@ function AppliedTab({ userName }: { userName: string }) {
     setSelectedApps(new Set());
   };
 
+  // 면접·합격·불합격은 매장이 스스로 정리하려고 누르는 값이지 지원자에게 보내는 통보가 아니다.
+  // 그대로 노출하면 매장이 목록을 정리한 것뿐인데 '불합격 통보'처럼 읽힌다.
+  // 합격은 어차피 매장이 직접 연락하고, 떨어진 경우는 공고가 마감되면 알게 된다.
+  // 지원자에게는 '접수됐는지 / 열어봤는지'까지만 보여준다.
   const statusTextColor: Record<string, string> = {
     APPLIED: "#5f0080", REVIEWING: "#5f0080", VIEWED: "#5f0080",
-    INTERVIEW: "#1e40af", PASSED: "#16a34a", REJECTED: "#d9534f", WITHDRAWN: "#999",
+    INTERVIEW: "#5f0080", PASSED: "#5f0080", REJECTED: "#5f0080", WITHDRAWN: "#999",
   };
   const statusLabel: Record<string, string> = {
-    APPLIED: "지원완료", REVIEWING: "서류검토중", VIEWED: "열람됨",
-    INTERVIEW: "면접예정", PASSED: "합격", REJECTED: "불합격", WITHDRAWN: "지원취소",
+    APPLIED: "지원완료", REVIEWING: "열람됨", VIEWED: "열람됨",
+    INTERVIEW: "열람됨", PASSED: "열람됨", REJECTED: "열람됨", WITHDRAWN: "지원취소",
   };
   const statusStyle: Record<string, string> = {
     APPLIED: "applied-status-review", REVIEWING: "applied-status-review", VIEWED: "applied-status-review",
-    INTERVIEW: "applied-status-interview", PASSED: "applied-status-pass",
-    REJECTED: "applied-status-fail", WITHDRAWN: "applied-status-fail",
+    INTERVIEW: "applied-status-review", PASSED: "applied-status-review",
+    REJECTED: "applied-status-review", WITHDRAWN: "applied-status-fail",
   };
 
   if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;

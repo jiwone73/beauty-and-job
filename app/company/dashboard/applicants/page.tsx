@@ -16,7 +16,7 @@ import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company"
 const SHOW_RESUME_FILE_BANNER = false;
 
 const STATUS_LABEL: Record<ApplicationStatus, string> = {
-  APPLIED: "신규",
+  APPLIED: "미열람",
   VIEWED: "열람",
   INTERVIEW: "면접",
   PASSED: "합격",
@@ -280,9 +280,7 @@ function ApplicantsContent() {
 
   const filtered = applicants.filter(a => {
     const matchSearch = !search || a.user_name.includes(search);
-    const matchStatus = statusFilter === "전체" ? true
-      : statusFilter === "미열람" ? !a.viewed_at
-      : STATUS_LABEL[a.status] === statusFilter;
+    const matchStatus = statusFilter === "전체" || STATUS_LABEL[a.status] === statusFilter;
     return matchSearch && matchStatus;
   });
 
@@ -300,12 +298,20 @@ function ApplicantsContent() {
     }
   };
 
+  // 마감된 공고의 지원자는 지금 할 일이 아니다. 카운터에서 빼고 목록에는 '마감' 표시만 남긴다.
+  // (상태를 임의로 바꾸면 매장이 직접 남긴 면접·합격 기록과 섞이므로 값은 그대로 둔다.)
+  const isJobClosed = (a: CompanyApplication) =>
+    a.job_status === "CLOSED" || (!!a.job_deadline && new Date(a.job_deadline) < new Date());
+  const live = applicants.filter((a) => !isJobClosed(a));
+
   const counts = {
     전체: applicants.length,
-    미열람: applicants.filter(a => !a.viewed_at).length,
-    합격: applicants.filter(a => a.status === "PASSED").length,
-    열람: applicants.filter(a => a.status === "VIEWED").length,
-    면접: applicants.filter(a => a.status === "INTERVIEW").length,
+    // 배지와 같은 기준(상태값)으로 센다. 이력서를 열면 곧바로 VIEWED가 되므로 APPLIED가 곧 미열람이고,
+    // viewed_at 은 초기 데이터에 빠진 건이 있어 배지와 숫자가 어긋난다.
+    미열람: live.filter(a => a.status === "APPLIED").length,
+    합격: live.filter(a => a.status === "PASSED").length,
+    열람: live.filter(a => a.status === "VIEWED").length,
+    면접: live.filter(a => a.status === "INTERVIEW").length,
   };
 
   // 카운터가 곧 상태 필터다(드롭다운과 같은 값을 두 번 두지 않는다).
@@ -585,6 +591,7 @@ function ApplicantsContent() {
                       {!jobFilter && (
                         <div className="co-li-jobrow">
                           <span className="co-li-job">{a.job_title}</span>
+                          {isJobClosed(a) && <span style={{ flexShrink: 0, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
                         </div>
                       )}
                       <div className="co-li-namerow">
@@ -677,7 +684,10 @@ function ApplicantsContent() {
                     </div>
                     </div>
                   </td>
-                  <td className="company-td-sub">{a.job_title}</td>
+                  <td className="company-td-sub">
+                    {a.job_title}
+                    {isJobClosed(a) && <span style={{ marginLeft: 5, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
+                  </td>
                   <td className="company-td-sub">
                     {formatDate(a.applied_at)}
                     {(() => { const d = elapsedDays(a); return d === null ? null : (

@@ -36,6 +36,8 @@ export interface CompanyApplication {
   user_job_type?: "OFFICE" | "STORE";
   job_posting_id: string;
   job_title: string;
+  job_status?: string;                 // 공고가 마감됐는지 판단용
+  job_deadline?: string | null;
   resume_file_name?: string | null;
   resume_file_size?: number | null;
 }
