@@ -3,6 +3,14 @@ import { useState } from "react";
 
 type Target = { id: string; name: string; email: string | null; phone: string | null };
 
+function fmtPhone(p: string | null) {
+  if (!p) return "";
+  const d = p.replace(/[^0-9]/g, "");
+  if (d.length === 11) return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
+  if (d.length === 10) return `${d.slice(0, 2)}-${d.slice(2, 6)}-${d.slice(6)}`;
+  return p;
+}
+
 export default function BroadcastModal({
   targets,
   onClose,
@@ -87,10 +95,24 @@ export default function BroadcastModal({
             <button style={tabBtn(channel === "sms")} onClick={() => setChannel("sms")}>문자(SMS)</button>
           </div>
 
-          <div style={{ color: "#888", fontSize: 13, marginBottom: 10 }}>
+          <div style={{ color: "#888", fontSize: 13, marginBottom: 6 }}>
             수신 대상 <span style={{ color: "#5f0080" }}>{valid.length}명</span>
             {missing > 0 && <span style={{ color: "#e74c3c" }}> · {channel === "email" ? "이메일" : "번호"} 없음 {missing}명 제외</span>}
           </div>
+
+          {/* 누구에게 가는지 눈으로 확인하고 보내도록 이름을 편다. 잘못 고른 대상은 여기서 걸러진다. */}
+          {valid.length > 0 && (
+            <div style={{ maxHeight: 96, overflowY: "auto", border: "1px solid #eee", borderRadius: 8, padding: "6px 10px", marginBottom: 10 }}>
+              {valid.map((t) => (
+                <div key={t.id} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 13, padding: "2px 0" }}>
+                  <span style={{ color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name || "이름 없음"}</span>
+                  <span style={{ color: "#999", flexShrink: 0 }}>
+                    {channel === "email" ? t.email : fmtPhone(t.phone)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
 
           {channel === "email" && (
             <input className="cv-input" value={subject} onChange={(e) => setSubject(e.target.value)}

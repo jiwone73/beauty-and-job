@@ -22,7 +22,9 @@ function ageGroupOf(birth: string | null | undefined): string | null {
 import BroadcastModal from "@/components/admin/BroadcastModal";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Search, Trash2, FileText, Bookmark, Paperclip } from "lucide-react";
+import { Search, Trash2, FileText, Paperclip, Instagram } from "lucide-react";
+import LinkCell from "@/components/company/LinkCell";
+import { JS_LABEL, statusAge } from "@/lib/jobSearchStatus";
 import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
 
 const JOB_TYPE_LABEL: Record<string, string> = {
@@ -67,11 +69,6 @@ function fmtDate(d: string | null) {
   const dt = new Date(d);
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
-function fmtYearMonth(d: string | null) {
-  if (!d) return null;
-  const dt = new Date(d);
-  return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}`;
-}
 
 // career_type: NEWCOMER / EXPERIENCED / null
 function careerLabel(careerType: string | null) {
@@ -114,7 +111,9 @@ type Member = {
   work_type_prefer: string | null;
   portfolio_url: string | null;
   resume_file_url: string | null;
-  scrap_count: number;
+  sns_url: string | null;
+  job_search_status: string | null;
+  job_search_status_at: string | null;
   last_login_at: string | null;
   created_at: string;
   avatar_url: string | null;
@@ -151,25 +150,10 @@ function AdminMembersPageInner() {
   // [SMS 발송 기능 보류] 2026-07
   // const [smsOpen, setSmsOpen] = useState(false);
   const [selected, setSelected] = useState<Member | null>(null);
-  const [scrapTarget, setScrapTarget] = useState<Member | null>(null);
-  const [scrapList, setScrapList] = useState<{ id: string; name: string; logo_url: string | null; scrapped_at: string }[]>([]);
-  const [scrapLoading, setScrapLoading] = useState(false);
   const [page, setPage] = useState(1);
   const PER_PAGE = 100;
 
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
-
-  useEffect(() => {
-    if (!scrapTarget) return;
-    setScrapLoading(true);
-    fetch(`/api/admin/members/${scrapTarget.id}/scraps`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((d) => setScrapList(d.data?.items || []))
-      .catch(() => setScrapList([]))
-      .finally(() => setScrapLoading(false));
-  }, [scrapTarget]);
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -424,18 +408,19 @@ function AdminMembersPageInner() {
                 <th>지역</th>
                 <th style={{ textAlign: "center" }}>연락처</th>
                 <th>최근경력</th>
-                <th>재직여부</th>
+                <th>구직상태</th>
                 <th>가입</th>
                 <th>최종로그인</th>
-                <th>이력서/포트폴리오</th>
+                <th>이력서</th>
+                <th>포트폴리오</th>
                 <th>상태</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={12} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+                <tr><td colSpan={12} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : paginated.map((m) => {
                 const age = calcAge(m.birth_date);
                 const gender = genderLabel(m.gender);
@@ -521,20 +506,20 @@ function AdminMembersPageInner() {
                       )}
                     </td>
 
-                    {/* 재직여부 */}
+                    {/* 구직상태 — 경력 종료일(퇴직)은 지난 일이고, 지금 제안을 받을지는 본인이 고른 값이다. */}
                     <td className="admin-td-date">
-                      {m.recent_company ? (
-                        m.recent_end_date ? (
+                      {(() => {
+                        const js = JS_LABEL[m.job_search_status || "SEEKING"] || JS_LABEL.SEEKING;
+                        const age = statusAge(m.job_search_status_at);
+                        return (
                           <>
-                            <div style={{ color: "#888" }}>퇴직</div>
-                            <div style={{ marginTop: 2, fontSize: 13, color: "#aaa" }}>{fmtYearMonth(m.recent_end_date)}</div>
+                            <div style={{ display: "inline-block", padding: "2px 8px", borderRadius: 11, fontSize: 12.5, fontWeight: 500, color: js.color, background: js.bg }}>
+                              {js.text}
+                            </div>
+                            {age && <div style={{ color: "#aaa", fontSize: 12, marginTop: 3 }}>{age}</div>}
                           </>
-                        ) : (
-                          <span style={{ color: "#5f0080" }}>재직중</span>
-                        )
-                      ) : (
-                        <span style={{ color: "#ccc" }}>-</span>
-                      )}
+                        );
+                      })()}
                     </td>
 
                     {/* 가입: 가입일 / 가입방법 */}
@@ -554,39 +539,26 @@ function AdminMembersPageInner() {
                     {/* 최종로그인 */}
                     <td className="admin-td-date">{fmtDate(m.last_login_at)}</td>
 
-                    {/* 이력서 + 포트폴리오 */}
+                    {/* 이력서 */}
                     <td>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                        {/* 1행: 이력서 + 스크랩 */}
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          {m.resume_id ? (
-                            <button onClick={() => setSelected(m)} title="이력서 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: 0 }}>
-                              <FileText size={15} /><span>이력서</span>
-                            </button>
-                          ) : (
-                            <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#ccc", fontSize: 14 }}>
-                              <FileText size={15} /><span>이력서</span>
-                            </span>
-                          )}
-                          <button
-                            onClick={() => m.scrap_count > 0 && setScrapTarget(m)}
-                            disabled={!m.scrap_count}
-                            style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "none", border: "none", padding: 0, font: "inherit", fontSize: 13, cursor: m.scrap_count ? "pointer" : "default", color: m.scrap_count ? "#5f0080" : "#ccc" }}
-                            title="스크랩한 기업 보기"
-                          >
-                            <Bookmark size={13} /> {m.scrap_count || 0}
+                      <div style={{ display: "flex", justifyContent: "center" }}>
+                        {m.resume_id ? (
+                          <button onClick={() => setSelected(m)} title="이력서 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: 0 }}>
+                            <FileText size={15} /><span>이력서</span>
                           </button>
-                        </div>
-                        {/* 2행: 포트폴리오 */}
-                        {m.portfolio_url ? (
-                          <a href={m.portfolio_url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
-                            <Paperclip size={13} /><span>포트폴리오</span>
-                          </a>
                         ) : (
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
-                            <Paperclip size={13} /><span>포트폴리오</span>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#ccc", fontSize: 14 }}>
+                            <FileText size={15} /><span>이력서</span>
                           </span>
                         )}
+                      </div>
+                    </td>
+
+                    {/* 포트폴리오 · SNS — 기업회원 인재검색과 같은 구성 */}
+                    <td>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                        <LinkCell url={m.portfolio_url} icon={<Paperclip size={13} />} label="포트폴리오" />
+                        <LinkCell url={m.sns_url} icon={<Instagram size={13} />} label="SNS" />
                       </div>
                     </td>
 
@@ -618,47 +590,6 @@ function AdminMembersPageInner() {
           </div>
         )}
       </div>
-
-      {/* 스크랩 기업 모달 */}
-      {scrapTarget && (
-        <div onClick={() => setScrapTarget(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 12, padding: 24, width: 400, maxHeight: "70vh", overflow: "auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <h3 style={{ fontSize: 17, fontWeight: 700 }}>{scrapTarget.name}님을 스크랩한 기업</h3>
-              <button onClick={() => setScrapTarget(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 23, lineHeight: 1, color: "#888" }}>×</button>
-            </div>
-            {scrapLoading ? (
-              <div style={{ color: "#888", textAlign: "center", padding: 20 }}>불러오는 중…</div>
-            ) : scrapList.length === 0 ? (
-              <div style={{ color: "#888", textAlign: "center", padding: 20 }}>스크랩한 기업이 없습니다.</div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {scrapList.map((c) => (
-                  <a key={c.id} href={`/admin/jobs?search=${encodeURIComponent(c.name)}`}
-                    style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: "inherit", padding: "6px 8px", borderRadius: 8, transition: "background 0.15s" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#f7f5fa")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                  >
-                    <div style={{ width: 36, height: 36, borderRadius: 8, background: "#f3f0f7", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      {c.logo_url ? (
-                        <img src={c.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      ) : (
-                        <span style={{ color: "#5f0080", fontWeight: 700 }}>{c.name?.[0]}</span>
-                      )}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600 }}>{c.name}</div>
-                      <div style={{ fontSize: 13, color: "#aaa", marginTop: 2 }}>
-                        {new Date(c.scrapped_at).toLocaleString("ko-KR", { dateStyle: "medium", timeStyle: "short" })} 스크랩
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {selected && selected.resume_id && (
         <ResumePreviewModal resumeId={selected.resume_id} onClose={() => setSelected(null)} />

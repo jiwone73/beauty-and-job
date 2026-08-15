@@ -19,7 +19,12 @@ export async function GET(req: NextRequest) {
         (SELECT p.work_type_prefer FROM user_profiles p WHERE p.user_id = u.id) AS work_type_prefer,
         (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS resume_id,
         (SELECT r.career_type FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS career_type,
-        (SELECT COUNT(*)::int FROM company_talent_scraps s WHERE s.user_id = u.id) AS scrap_count,
+        (SELECT p.job_search_status::text FROM user_profiles p WHERE p.user_id = u.id) AS job_search_status,
+        (SELECT p.job_search_status_at FROM user_profiles p WHERE p.user_id = u.id) AS job_search_status_at,
+        (SELECT ul.url FROM user_links ul
+          WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''
+          ORDER BY (ul.url ILIKE '%instagram%') DESC, ul.created_at
+          LIMIT 1) AS sns_url,
         (SELECT uc.company FROM user_careers uc WHERE uc.user_id = u.id
           ORDER BY uc.start_date DESC NULLS LAST LIMIT 1) AS recent_company,
         (SELECT uc.position FROM user_careers uc WHERE uc.user_id = u.id
