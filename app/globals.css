@@ -6934,6 +6934,8 @@ div:has(> table.admin-table),
 .company-stat-card:has(.company-stat-icon) .company-stat-icon { flex-shrink: 0; grid-area: icon; }
 .company-stat-card:has(.company-stat-icon) .company-stat-value { grid-area: value; }
 .company-stat-card:has(.company-stat-icon) .company-stat-label { grid-area: label; }
+/* 카드 폭이 고정이라 라벨이 낱말 중간에서 꺾이면 안 된다. */
+.company-stat-card .company-stat-label { white-space: nowrap; }
 .company-stat-icon {
   width: 44px; height: 44px;
   border-radius: 10px;
