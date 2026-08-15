@@ -1,16 +1,16 @@
 "use client";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { BannerImg } from "@/components/BannerImg";
 
 /**
  * 공고 배너 띠 — 공고 상세·기업정보 설정·공고 등록 미리보기에서 같은 모양으로 쓴다.
  *
  * 규칙 두 가지만 지킨다.
- *  1. 한 화면에 두 장. 한 장의 폭은 언제나 전체의 절반이다. 장수가 적다고 늘려 버리면
- *     같은 사진이 공고마다 다른 크기로 보인다. 한 장뿐이면 남는 옆자리는 그 사진의
- *     테두리 색으로 채워 사진과 여백의 경계가 보이지 않게 한다.
- *  2. 높이는 사진이 정한다. 폭이 절반으로 정해져 있으니 비율만 지키면 세로는 따라온다.
- *     잘라내지 않으므로 가로로 긴 로고 배너도 온전히 보인다.
+ *  1. 한 화면에 두 장. 한 칸의 크기는 언제나 폭의 절반 × 3:2 로 고정이다.
+ *     사진마다 칸이 달라지면 목록이 들쭉날쭉해진다.
+ *  2. 사진은 자르지 않는다. 칸 안에 통째로 넣고(contain) 남는 자리는 사진 모서리
+ *     색으로 채운다 — 가로로 긴 로고 배너도 잘리지 않고, 비율도 왜곡되지 않는다.
  *
  * 세 장부터는 좌우 화살표로 두 장씩 넘겨 본다.
  */
@@ -36,6 +36,7 @@ export default function BannerStrip({
   const n = images.length;
 
   const PER = 2;                     // 화면 크기와 무관하게 한 번에 두 장
+  const CELL_RATIO = "3 / 2";        // 한 장의 칸 비율(고정)
   const cols = Math.min(n, PER);
   const s = n ? ((start % n) + n) % n : 0;
   const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
@@ -95,7 +96,7 @@ export default function BannerStrip({
             <div aria-hidden style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "50%", background: edge.right }} />
           </>
         )}
-        <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "stretch" }}>
           {visible.map((src, k) => {
             const idx = (s + k) % n;   // 화살표로 돌려 봐도 원본 배열의 자리를 가리킨다
             return (
@@ -109,8 +110,8 @@ export default function BannerStrip({
                   if (from !== null && from !== idx) onReorder(from, idx);
                   dragFrom.current = null;
                 } : undefined}
-                style={{ position: "relative", width: `${100 / PER}%`, flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
-                <img src={src} alt={alt} style={{ display: "block", width: "100%", height: "auto" }} />
+                style={{ position: "relative", width: `${100 / PER}%`, aspectRatio: CELL_RATIO, flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
+                <BannerImg src={src} alt={alt} />
                 {showIndex && (
                   <span style={{ position: "absolute", bottom: 5, left: 5, background: "rgba(0,0,0,0.55)", color: "#fff",
                     fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "1px 5px" }}>{idx + 1}</span>

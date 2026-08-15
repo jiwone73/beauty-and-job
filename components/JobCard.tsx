@@ -55,12 +55,13 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
   }
 
   // ===== grid (메인·채용공고 공용) =====
-  // 카드 썸네일은 사진 한 장이므로 높이도 그 한 장의 비율이 정한다(배너는 두 장 기준).
+  // 카드 썸네일 칸은 3:2 고정. 목록에서는 칸 높이가 일정한 게 우선이라 사진을 꽉 채워 자른다.
+  // (사진 전체는 공고 상세의 배너에서 자르지 않고 보여 준다.)
   return (
     <div className={`jobcard${data.image ? " jobcard-photo" : ""}`} onClick={go}>
       <div className={`jobcard-cover${data.image ? "" : " jobcard-cover-empty"}`}>
         {data.image ? (
-          <BannerImg src={data.image} alt={data.company} ratio />
+          <BannerImg src={data.image} alt={data.company} fill />
         ) : (
           <span className="jobcard-cover-name">{data.company || "·"}</span>
         )}

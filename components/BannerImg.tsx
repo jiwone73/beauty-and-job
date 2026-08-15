@@ -4,7 +4,8 @@ import { useState } from "react";
 // 배너/썸네일 한 칸.
 //  기본: 정해진 칸 높이에 맞춰 축소(contain), 남는 여백은 이미지 모서리 배경색으로 채움.
 //  ratio: 폭만 정해 두고 높이는 사진 비율이 정한다 — 여백 자체가 안 생긴다.
-export function BannerImg({ src, alt, ratio = false }: { src: string; alt?: string; ratio?: boolean }) {
+//  fill: 칸을 사진으로 꽉 채운다(cover). 칸 높이가 고정이라 위아래·좌우가 조금 잘린다.
+export function BannerImg({ src, alt, ratio = false, fill = false }: { src: string; alt?: string; ratio?: boolean; fill?: boolean }) {
   const [bg, setBg] = useState("#f4f4f4");
   const [noCors, setNoCors] = useState(false);
   const sample = (img: HTMLImageElement) => {
@@ -30,7 +31,9 @@ export function BannerImg({ src, alt, ratio = false }: { src: string; alt?: stri
         {...(noCors ? {} : { crossOrigin: "anonymous" as const })}
         onLoad={(e) => sample(e.currentTarget)}
         onError={() => setNoCors(true)}
-        style={ratio
+        style={fill
+          ? { width: "100%", height: "100%", objectFit: "cover", display: "block" }
+          : ratio
           ? { width: "100%", height: "auto", display: "block" }
           : { maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
       />
