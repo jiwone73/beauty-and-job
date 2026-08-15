@@ -429,7 +429,11 @@ function CompanyJobsContent() {
                     </span>
                   </div>
                   <div className="co-li-r2">
-                    <span>등록 <b>{new Date(job.created_at).toLocaleDateString("ko-KR")}</b></span>
+                    {/* 등록일 하나만 보여주면 기간 감이 안 온다. 같은 자리에 게시 기간으로 적는다(상시는 마감일 없음). */}
+                    <span>{(() => {
+                      const md = (d: string) => { const x = new Date(d); return `${String(x.getMonth() + 1).padStart(2, "0")}.${String(x.getDate()).padStart(2, "0")}`; };
+                      return job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`;
+                    })()}</span>
                     {job.application_count > 0 ? (
                       <span style={{ color: "#5f0080" }}
                         onClick={(e) => { if (!selectMode) { e.stopPropagation(); router.push(`/company/dashboard/applicants?job_id=${job.id}`); } }}>

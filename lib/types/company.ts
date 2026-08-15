@@ -25,6 +25,9 @@ export interface CompanyApplication {
   status: ApplicationStatus;
   applied_at: string;
   viewed_at: string | null;
+  status_updated_at?: string | null;   // 전형이 마지막으로 움직인 시점 — '며칠째 멈춰 있나'를 센다
+  note?: string | null;                // 기업 메모(면접 기록 등)
+  scrapped?: boolean;
   cover_letter: string | null;
   user_id: string;
   user_name: string;

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, Trash2, ChevronDown } from "lucide-react";
+import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, Trash2, ChevronDown, Star, StickyNote } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { formatPhone } from "@/lib/phone";
 import Link from "next/link";
@@ -46,8 +46,19 @@ function formatDate(dateStr: string): string {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
+// 전형이 마지막으로 움직인 뒤 며칠 지났나. 날짜만 보면 사람이 세어야 해서 '며칠째'로 적어 준다.
+function elapsedDays(a: CompanyApplication): number | null {
+  const base = a.status_updated_at || a.applied_at;
+  if (!base) return null;
+  const d = Math.floor((Date.now() - new Date(base).getTime()) / 86400000);
+  return Number.isFinite(d) && d >= 0 ? d : null;
+}
+
 function ApplicantsContent() {
   const searchParams = useSearchParams();
+  // 면접을 보고 나면 누가 어땠는지 금방 섞인다. 지원자별 메모를 이력서 화면 안에서 바로 적는다.
+  const [memo, setMemo] = useState("");
+  const [memoSaved, setMemoSaved] = useState<"idle" | "saving" | "saved">("idle");
   const [jobFilter, setJobFilter] = useState<string>(searchParams.get("job_id") || "");
   const [jobs, setJobs] = useState<{ id: string; title: string; applicationCount: number; createdAt: string; closed: boolean }[]>([]);
 
@@ -134,6 +145,29 @@ function ApplicantsContent() {
       regionPrefer: p.region_prefer || "",
     };
   };
+  // 메모 저장 — 이미 있는 PATCH(note 허용)를 쓴다. 칸에서 손을 떼면 저장한다.
+  const saveMemo = async () => {
+    if (!selected) return;
+    const next = memo.trim();
+    if ((selected.note || "") === next) return;
+    setMemoSaved("saving");
+    try {
+      const token = localStorage.getItem("access_token");
+      const res = await fetch(`/api/company/applications/${selected.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ note: next }),
+      });
+      if (!res.ok) throw new Error("save failed");
+      setSelected((prev) => (prev ? { ...prev, note: next } : prev));
+      setApplicants((prev) => prev.map((x) => (x.id === selected.id ? { ...x, note: next } : x)));
+      setMemoSaved("saved");
+    } catch {
+      setMemoSaved("idle");
+      alert("메모 저장에 실패했어요.");
+    }
+  };
+
   // selected 변경 시 이력서 데이터 fetch
   useEffect(() => {
     if (!selected) {
@@ -141,8 +175,10 @@ function ApplicantsContent() {
       setResumeFileInfo({ name: null, size: null, url: null });
       setDetailInfo({ gender: null, birth: null, sido: null, sigungu: null, road: null, detail: null });
       setCoverLetter("");
+      setMemo(""); setMemoSaved("idle");
       return;
     }
+    setMemo(selected.note || ""); setMemoSaved("idle");
     const token = localStorage.getItem("access_token");
     if (!token) return;
     // 이력서 열람 시 신규 → 검토중 자동 전환
@@ -540,8 +576,10 @@ function ApplicantsContent() {
                       )}
                       <div className="co-li-namerow">
                         <div className="co-li-nameinfo">
+                          {(a as any).scrapped && <Star size={13} style={{ color: "#f59e0b", fill: "#f59e0b", flexShrink: 0 }} />}
                           <span className="co-li-name">{a.user_name}</span>
                           {ageGender && <span className="co-li-ageg">{ageGender}</span>}
+                          {a.note?.trim() && <StickyNote size={12} style={{ color: "#5f0080", flexShrink: 0 }} />}
                         </div>
                         <span className="co-li-status" style={{ color: stColor }}>
                           {STATUS_LABEL[st]}
@@ -549,7 +587,12 @@ function ApplicantsContent() {
                       </div>
                       <div className="co-li-metarow">
                         <span className="co-li-meta2">{region}</span>
-                        <span className="co-li-date"><span className="lbl">지원일</span> {formatDate(a.applied_at)}</span>
+                        <span className="co-li-date">
+                          <span className="lbl">지원일</span> {formatDate(a.applied_at).slice(5)}
+                          {(() => { const d = elapsedDays(a); return d === null ? null : (
+                            <> · <span style={{ color: d >= 7 ? "#e05252" : "#999" }}>{d === 0 ? "오늘" : `${d}일 경과`}</span></>
+                          ); })()}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -600,10 +643,12 @@ function ApplicantsContent() {
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                          {(a as any).scrapped && <Star size={13} style={{ color: "#f59e0b", fill: "#f59e0b", flexShrink: 0 }} />}
                           <span className="tbl-name-txt" style={{ color: "#1a1a1a", fontWeight: 400, fontSize: 15 }}>{a.user_name}</span>
                           {genderLabel((a as any).user_gender) && (
                             <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{genderLabel((a as any).user_gender)}</span>
                           )}
+                          {a.note?.trim() && <span title="메모 있음" style={{ display: "inline-flex", flexShrink: 0 }}><StickyNote size={12} style={{ color: "#5f0080" }} /></span>}
                         </div>
                         <span style={{ fontSize: 13, color: "#888" }}>
                           {(() => {
@@ -620,7 +665,12 @@ function ApplicantsContent() {
                     </div>
                   </td>
                   <td className="company-td-sub">{a.job_title}</td>
-                  <td className="company-td-sub">{formatDate(a.applied_at)}</td>
+                  <td className="company-td-sub">
+                    {formatDate(a.applied_at)}
+                    {(() => { const d = elapsedDays(a); return d === null ? null : (
+                      <div style={{ fontSize: 12, marginTop: 2, color: d >= 7 ? "#e05252" : "#aaa" }}>{d === 0 ? "오늘" : `${d}일 경과`}</div>
+                    ); })()}
+                  </td>
                   <td className="company-td-sub">
                     {shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" ")) || <span style={{ color: "#ccc" }}>—</span>}
                   </td>
@@ -750,6 +800,21 @@ function ApplicantsContent() {
               ) : (
                 <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
               )}
+              <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #eee" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                  <StickyNote size={15} style={{ color: "#5f0080" }} />
+                  <span style={{ fontSize: 14, color: "#333" }}>메모</span>
+                  <span style={{ marginLeft: "auto", fontSize: 12, color: "#aaa" }}>
+                    {memoSaved === "saving" ? "저장 중…" : memoSaved === "saved" ? "저장됨" : "지원자에게는 보이지 않아요"}
+                  </span>
+                </div>
+                <textarea value={memo}
+                  onChange={(e) => { setMemo(e.target.value); setMemoSaved("idle"); }}
+                  onBlur={saveMemo}
+                  rows={3}
+                  placeholder="면접 인상, 가능한 근무일, 협의한 급여 등"
+                  style={{ width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, padding: "9px 11px", fontSize: 14, resize: "vertical", outline: "none", fontFamily: "inherit", lineHeight: 1.6 }} />
+              </div>
             </div>
           </div>
         </div>
