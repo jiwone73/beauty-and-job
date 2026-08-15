@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, Trash2, ChevronDown, Star } from "lucide-react";
+import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, Trash2, ChevronDown, Star, Instagram } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { formatPhone } from "@/lib/phone";
+import LinkCell from "@/components/company/LinkCell";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
@@ -612,7 +613,8 @@ function ApplicantsContent() {
                 <th>지역</th>
                 <th>연락처</th>
                 <th>상태</th>
-                <th>이력서/포트폴리오</th>
+                <th>이력서</th>
+                <th>포트폴리오</th>
               </tr>
             </thead>
             <tbody>
@@ -694,16 +696,13 @@ function ApplicantsContent() {
                           <span>스크랩</span>
                         </span>
                       </div>
-                      {(a as any).portfolio_url ? (
-                        <a href={(a as any).portfolio_url} target="_blank" rel="noopener noreferrer" title={(a as any).portfolio_filename || "포트폴리오"}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
-                          <Paperclip size={14} /><span>포트폴리오</span>
-                        </a>
-                      ) : (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
-                          <Paperclip size={14} /><span>포트폴리오</span>
-                        </span>
-                      )}
+                    </div>
+                  </td>
+                  {/* 작업물은 이력서와 성격이 달라 열을 나눈다 — 미용은 사진이 곧 경력이다. */}
+                  <td>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                      <LinkCell url={(a as any).portfolio_url} icon={<Paperclip size={14} />} label="포트폴리오" />
+                      <LinkCell url={(a as any).sns_url} icon={<Instagram size={14} />} label="SNS" />
                     </div>
                   </td>
                 </tr>

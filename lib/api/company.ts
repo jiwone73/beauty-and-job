@@ -88,6 +88,7 @@ export type TalentItem = {
   phone: string | null;
   avatarUrl: string | null;
   portfolioUrl: string | null;
+  snsUrl: string | null;      // 인스타 등 작업물 링크(user_links)
   gender: string | null;
   age: number | null;
   intro: string | null;

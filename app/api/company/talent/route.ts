@@ -103,6 +103,12 @@ export async function GET(req: NextRequest) {
         u.avatar_url,
         u.portfolio_url,
         u.portfolio_filename,
+        (
+          SELECT ul.url FROM user_links ul
+          WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''
+          ORDER BY (ul.url ILIKE '%instagram%') DESC, ul.created_at
+          LIMIT 1
+        ) AS sns_url,
         u.created_at,
         u.gender,
         CASE WHEN u.birth_date IS NOT NULL
@@ -178,6 +184,7 @@ export async function GET(req: NextRequest) {
       phone: r.phone || null,
       avatarUrl: r.avatar_url,
       portfolioUrl: r.portfolio_url || null,
+      snsUrl: r.sns_url || null,
       gender: r.gender,
       age: r.age,
       intro: r.intro,

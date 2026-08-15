@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import {
-  Search, BookmarkCheck, Bookmark, X, FileText, Paperclip,
+  Search, BookmarkCheck, Bookmark, X, FileText, Paperclip, Instagram,
   Download, Printer, MapPin, ChevronDown, SlidersHorizontal,
 } from "lucide-react";
 import { companyTalentApi, type TalentItem } from "@/lib/api/company";
@@ -12,6 +12,7 @@ import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { formatPhone } from "@/lib/phone";
+import LinkCell from "@/components/company/LinkCell";
 
 type JobTab = "OFFICE" | "STORE";
 
@@ -693,7 +694,8 @@ export default function TalentPage() {
                 <th>최근경력</th>
                 <th>구직상태</th>
                 <th>연락처</th>
-                <th>이력서/포트폴리오</th>
+                <th>이력서</th>
+                <th>포트폴리오</th>
               </tr>
             </thead>
             <tbody>
@@ -778,21 +780,13 @@ export default function TalentPage() {
                             <span style={{ fontSize: 13 }}>스크랩</span>
                           </button>
                         </div>
-                        {t.portfolioUrl ? (
-                          <a
-                            href={t.portfolioUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}
-                          >
-                            <Paperclip size={13} /><span>포트폴리오</span>
-                          </a>
-                        ) : (
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
-                            <Paperclip size={13} /><span>포트폴리오</span>
-                          </span>
-                        )}
+                      </div>
+                    </td>
+                    {/* 작업물은 이력서와 성격이 달라 열을 나눈다 — 미용은 사진이 곧 경력이다. */}
+                    <td>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                        <LinkCell url={t.portfolioUrl} icon={<Paperclip size={13} />} label="포트폴리오" />
+                        <LinkCell url={t.snsUrl} icon={<Instagram size={13} />} label="SNS" />
                       </div>
                     </td>
                   </tr>

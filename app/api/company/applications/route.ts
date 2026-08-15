@@ -45,6 +45,12 @@ export async function GET(req: NextRequest) {
        u.region_sido AS user_region_sido,
        u.region_sigungu AS user_region_sigungu,
        u.portfolio_url, u.portfolio_filename,
+        (
+          SELECT ul.url FROM user_links ul
+          WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''
+          ORDER BY (ul.url ILIKE '%instagram%') DESC, ul.created_at
+          LIMIT 1
+        ) AS sns_url,
        (SELECT r.career_type FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS career_type,
        (SELECT rc.start_date FROM resume_careers rc
           JOIN resumes r ON r.id = rc.resume_id

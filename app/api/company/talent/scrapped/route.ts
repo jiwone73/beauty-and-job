@@ -26,6 +26,12 @@ export async function GET(req: NextRequest) {
         u.region_sido,
         u.region_sigungu,
         up.region_prefer AS location,
+        (
+          SELECT ul.url FROM user_links ul
+          WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''
+          ORDER BY (ul.url ILIKE '%instagram%') DESC, ul.created_at
+          LIMIT 1
+        ) AS sns_url,
         up.job_search_status::text AS job_search_status,
         up.job_search_status_at,
         (
@@ -75,6 +81,7 @@ export async function GET(req: NextRequest) {
       careerDetail: r.career_detail,
       career_years: r.career_years,
       career_count: r.career_count,
+      sns_url: r.sns_url || null,
       // 스크랩 목록에선 '구직 안 함'도 그대로 보여준다 — 이미 담아 둔 사람이라 상태 변화가 곧 정보다.
       job_search_status: r.job_search_status || "SEEKING",
       job_search_status_at: r.job_search_status_at || null,
