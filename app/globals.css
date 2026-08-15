@@ -5113,7 +5113,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 통계 카드 */
 .admin-stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  /* 카운터는 숫자 몇 자를 담는 칸이라 화면 폭에 맞춰 늘리지 않는다. 넘치면 다음 줄로 내린다. */
+  grid-template-columns: repeat(auto-fill, 200px);
+  justify-content: start;
   gap: 16px;
 }
 .admin-stat-card {
@@ -6035,7 +6037,8 @@ div:has(> table.admin-table),
    ============================================ */
 .admin-resume-stat-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  grid-template-columns: 230px repeat(3, 180px);
+  justify-content: start;
   gap: 14px;
 }
 .admin-resume-stat-card {
@@ -6173,7 +6176,8 @@ div:has(> table.admin-table),
    ============================================ */
 .admin-resume-stat-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  grid-template-columns: 230px repeat(3, 180px);
+  justify-content: start;
   gap: 14px;
 }
 .admin-resume-stat-card {
@@ -6635,7 +6639,9 @@ div:has(> table.admin-table),
 /* 미니 통계 행 */
 .admin-mini-stat-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  /* 카운터는 폭을 고정한다 — 화면이 넓어질수록 늘어나면 숫자만 덩그러니 남는다. */
+  grid-template-columns: repeat(auto-fill, 156px);
+  justify-content: start;
   gap: 12px;
 }
 .admin-mini-stat-card {
@@ -6985,14 +6991,12 @@ div:has(> table.admin-table),
 /* 공고명처럼 긴 값은 칸이 모자라면 두 줄까지 감싸고, 넘치면 말줄임(…). 한 줄로 버티며 표를 밀어내지 않는다. */
 .company-table .td-clamp2 {
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  white-space: normal; line-height: 1.4; max-width: 100%; margin: 0 auto;
+  white-space: normal; line-height: 1.4; max-width: 260px; margin: 0 auto;
   overflow-wrap: anywhere;
 }
-/* 공고명·이름 칸이 남는 폭을 모두 가져가고, 나머지 열(날짜·수치)은 제 내용 폭만 차지한다.
-   width:100%는 "남는 만큼 다 먹어라"는 뜻으로 동작해 표가 카드를 넘지 않는다.
-   첫 칸이 아니라 이름 칸을 기준으로 잡는다 — 목록에 따라 첫 칸이 체크박스일 수 있다. */
+/* 표는 카드를 채우되, 남는 폭을 이름 칸 하나가 다 먹지 않게 한다.
+   한 칸만 늘리면 넓은 화면에서 그 칸만 텅 비어 보인다 — 남는 폭은 열들이 나눠 갖는다. */
 .company-card .company-table { width: 100%; table-layout: auto; }
-.company-card .company-table .company-td-name { width: 100%; }
 /* 대시보드 카드는 표 두 개가 나란히 놓여 폭이 빠듯하다. 좌우 여백을 줄여 공고명에 자리를 내준다. */
 .company-card .company-table th,
 .company-card .company-table td { padding-left: 10px; padding-right: 10px; }
