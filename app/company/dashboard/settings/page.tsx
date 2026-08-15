@@ -543,7 +543,12 @@ export default function CompanySettingsPage() {
                     <input type="file" accept="image/jpeg,image/png,image/webp" multiple
                       disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
                   </label>
-                  <button type="button" onClick={() => setSampleOpen((v) => !v)}
+                  <button type="button"
+                    onClick={() => setSampleOpen((v) => {
+                      // 배너에 들어갈 문구는 매장명으로 시작하는 게 대부분이라 열 때 미리 채워 둔다.
+                      if (!v && !sampleText.trim()) setSampleText(form.company_name || "");
+                      return !v;
+                    })}
                     title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요" style={bannerBtn(sampleOpen)}>
                     {!isMobile && <Wand2 size={16} />}{isMobile ? "샘플" : "샘플 배너"}
                   </button>
@@ -564,7 +569,7 @@ export default function CompanySettingsPage() {
                       샘플 배너 만들기 <span style={{fontWeight:400, color:"#999"}}>· 가운데 문구만 넣어요(줄바꿈 가능)</span>
                     </div>
                     <textarea value={sampleText} onChange={(e) => setSampleText(e.target.value)} rows={2}
-                      placeholder={`예: ${form.company_name || "리안헤어 광명점"}\n함께 일할 디자이너를 찾습니다`}
+                      placeholder={`${form.company_name || "리안헤어 광명점"}\n함께 일할 디자이너를 찾습니다 (자유 입력)`}
                       style={{width:"100%", boxSizing:"border-box", border:"1px solid #e0d8ec", borderRadius:8, padding:"8px 10px", fontSize:14, resize:"vertical", outline:"none"}} />
                     <div style={{display:"flex", gap:8, marginTop:10}}>
                       <button type="button" onClick={addSampleBanner} disabled={sampleBusy || !sampleText.trim()}
