@@ -56,6 +56,12 @@ export async function GET(req: NextRequest) {
         jp.experience_level, jp.view_count, jp.application_count, jp.created_at,
         jp.deadline, jp.product_type, jp.source, jp.created_by,
         c.id AS company_id, c.company_name, c.logo_url, c.is_member,
+        -- 매장은 로고를 받지 않는다. 공고 배너 → 매장 배너 → (오피스) 로고 순으로 쓴다.
+        COALESCE(
+          jp.cover_images->0->>'url',
+          c.cover_images->0->>'url',
+          c.logo_url
+        ) AS thumb_url,
         jc.name AS category_name,
         jp.categories
       FROM job_postings jp

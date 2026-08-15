@@ -47,6 +47,7 @@ type Company = {
   region_sigungu: string | null;
   phone: string | null;
   logo_url: string | null;
+  thumb_url: string | null;   // 매장은 로고가 없어 매장·공고 배너를 대신 쓴다
   description: string | null;
   website_url: string | null;
   address: string | null;
@@ -445,7 +446,7 @@ function AdminCompaniesContent() {
                       <div style={{ width: 28, height: 28, borderRadius: 6, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                         {(() => {
                           const cover = Array.isArray(c.cover_images) && c.cover_images[0]?.url ? c.cover_images[0].url : null;
-                          const img = c.logo_url || (c.company_type === "STORE" ? cover : null);
+                          const img = c.thumb_url || c.logo_url || cover;
                           return img ? (
                             <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           ) : (
@@ -561,8 +562,8 @@ function AdminCompaniesContent() {
                   <div style={{ position: "relative", height: 128, background: cover ? "#eee" : "#7c3aed" }}>
                     {cover && <img src={cover} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />}
                     <div style={{ position: "absolute", left: 20, bottom: -28, width: 64, height: 64, borderRadius: 12, background: "#5f0080", border: "3px solid #fff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 23, fontWeight: 700 }}>
-                      {companyDetail.logo_url
-                        ? <img src={companyDetail.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      {(companyDetail.logo_url || companyDetail.thumb_url)
+                        ? <img src={(companyDetail.logo_url || companyDetail.thumb_url) as string} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         : (companyDetail.company_name?.[0] || "·")}
                     </div>
                   </div>

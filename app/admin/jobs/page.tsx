@@ -37,6 +37,7 @@ type Job = {
   company_id: string;
   company_name: string;
   logo_url: string | null;
+  thumb_url: string | null;   // 매장은 로고가 없어 공고·매장 배너를 대신 쓴다
   category_name: string | null;
   categories: string[] | null;
   created_at: string;
@@ -323,9 +324,9 @@ function AdminJobsPageInner() {
                   {/* 기업 (+ 유형 텍스트) */}
                   <td>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      {job.logo_url ? (
+                      {job.thumb_url ? (
                         <img
-                          src={job.logo_url}
+                          src={job.thumb_url}
                           alt={job.company_name}
                           style={{ width: 26, height: 26, borderRadius: 6, objectFit: "cover", border: "1px solid #f0f0f0", flexShrink: 0 }}
                         />

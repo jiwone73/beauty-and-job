@@ -22,13 +22,17 @@ export async function GET(req: NextRequest) {
         c.company_size, c.founded_year, c.region_sido, c.region_sigungu,
         c.status, c.is_member, c.business_license_path, c.created_at,
         COALESCE(j.cnt, 0) AS job_count,
-        COALESCE(j.jobs, '[]'::json) AS jobs
+        COALESCE(j.jobs, '[]'::json) AS jobs,
+        -- 매장은 로고를 받지 않는다. 매장 배너 → 최근 공고 배너 첫 장 순으로 쓴다.
+        COALESCE(c.logo_url, c.cover_images->0->>'url', j.job_cover) AS thumb_url
       FROM companies c
       LEFT JOIN LATERAL (
         SELECT COUNT(*) AS cnt,
           json_agg(json_build_object(
             'id', jp.id, 'title', jp.title, 'status', jp.status, 'created_at', jp.created_at
           ) ORDER BY jp.created_at DESC) AS jobs
+          , (json_agg(jp.cover_images->0->>'url' ORDER BY jp.created_at DESC)
+             FILTER (WHERE jp.cover_images->0->>'url' IS NOT NULL))->>0 AS job_cover
         FROM job_postings jp WHERE jp.company_id = c.id
       ) j ON true
       ${memberFilter}
