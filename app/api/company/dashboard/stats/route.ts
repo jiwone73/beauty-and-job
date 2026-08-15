@@ -52,36 +52,6 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
-  // 지원자 처리 현황 (상태별 분포 + 가장 오래 기다린 미처리 지원)
-  const [statusRes, oldestRes] = await Promise.all([
-    pool.query(
-      `SELECT a.status AS status, COUNT(*)::int AS cnt
-       FROM applications a
-       JOIN job_postings jp ON jp.id = a.job_posting_id
-       WHERE jp.company_id = $1 AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN'${jobTypeFilter}
-       GROUP BY a.status`,
-      [companyId]
-    ),
-    // 급한 정도는 '몇 건'보다 '얼마나 기다렸나'가 알려준다. 아직 결정하지 않은 지원 중 가장 오래된 것.
-    pool.query(
-      `SELECT MIN(a.applied_at) AS oldest
-       FROM applications a
-       JOIN job_postings jp ON jp.id = a.job_posting_id
-       WHERE jp.company_id = $1 AND a.hidden_by_company = false
-         AND a.status IN ('APPLIED', 'VIEWED')${jobTypeFilter}`,
-      [companyId]
-    ),
-  ])
-
-  const statusMap: Record<string, number> = {}
-  for (const r of statusRes.rows) statusMap[r.status] = r.cnt
-  const status_breakdown = {
-    new: statusMap['APPLIED'] ?? 0,
-    reviewing: statusMap['VIEWED'] ?? 0,
-    passed: statusMap['PASSED'] ?? 0,
-    rejected: statusMap['REJECTED'] ?? 0,
-  }
-
   // 공고별 지원 전환율 (진행중 공고, 조회수 높은 순)
   const conversionRes = await pool.query(
     `SELECT id, title, view_count::int AS view_count,
@@ -115,8 +85,6 @@ export async function GET(req: NextRequest) {
     total_applications: totalApplications.rows[0].cnt,
     today_applications: todayApplications.rows[0].cnt,
     trends: trendsRes.rows,
-    status_breakdown,
-    oldest_pending_at: oldestRes.rows[0]?.oldest ?? null,
     job_conversion,
     deadline_today: deadlineTodayRes.rows[0].cnt,
   })
