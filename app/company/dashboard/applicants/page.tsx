@@ -295,19 +295,20 @@ function ApplicantsContent() {
   const counts = {
     전체: applicants.length,
     미열람: applicants.filter(a => !a.viewed_at).length,
+    합격: applicants.filter(a => a.status === "PASSED").length,
     검토중: applicants.filter(a => a.status === "VIEWED").length,
     면접: applicants.filter(a => a.status === "INTERVIEW").length,
   };
 
   // 카운터가 곧 상태 필터다(드롭다운과 같은 값을 두 번 두지 않는다).
-  // 합격·불합격은 기업이 이미 내린 결정이라 세어 줄 이유가 없어 뺐다. 면접은 일정을 잡아야 하는 진행 단계라 넣는다.
   const statCardsData = [
-    { label: "전체", value: String(counts.전체), unit: "명", color: "#5f0080", status: "전체" },
-    // '신규'(APPLIED) 자리를 대신한다 — 이력서를 열면 자동으로 검토중이 되므로 신규는 사실상 미열람이고,
-    // '아직 안 열어봤다'가 상태 이름보다 할 일을 분명히 말해 준다.
+    // 미열람 → 검토중 → 면접 → 합격 순서. '전체'는 바로 아래 '총 N명'이 이미 보여주므로 칸을 쓰지 않고,
+    // 선택된 카드를 다시 누르면 전체로 돌아간다.
+    // '신규'(APPLIED)는 이력서를 열면 자동으로 검토중이 되므로 사실상 미열람과 같아 미열람만 둔다.
     { label: "미열람", value: String(counts.미열람), unit: "명", color: "#e05252", status: "미열람" },
     { label: "검토중", value: String(counts.검토중), unit: "명", color: "#f59e0b", status: "검토중" },
     { label: "면접", value: String(counts.면접), unit: "명", color: "#8b5cf6", status: "면접" },
+    { label: "합격", value: String(counts.합격), unit: "명", color: "#10b981", status: "합격" },
   ];
 
   return (
@@ -323,7 +324,7 @@ function ApplicantsContent() {
             {statCardsData.map((s) => (
               <button key={s.label} type="button"
                 className={`co-stat ${statusFilter === s.status ? "on" : ""}`}
-                onClick={() => setStatusFilter(s.status)}
+                onClick={() => setStatusFilter((cur) => (cur === s.status ? "전체" : s.status))}
                 style={statusFilter === s.status ? { borderColor: s.color, background: "#faf7fd" } : undefined}>
                 <span className="n" style={{ color: s.color }}>{s.value}</span>
                 <span className="l">{s.label}</span>
@@ -335,7 +336,7 @@ function ApplicantsContent() {
         <div className="company-stat-grid">
           {statCardsData.map((s) => (
             <button key={s.label} type="button" className="company-stat-card"
-              onClick={() => setStatusFilter(s.status)}
+              onClick={() => setStatusFilter((cur) => (cur === s.status ? "전체" : s.status))}
               style={{ cursor: "pointer", textAlign: "left", font: "inherit",
                 border: statusFilter === s.status ? `1px solid ${s.color}` : undefined,
                 background: statusFilter === s.status ? "#faf7fd" : undefined }}>
