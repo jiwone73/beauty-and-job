@@ -254,7 +254,6 @@ export default function CompanyJobsPage() {
         <div style={{display:"flex", gap:"8px", alignItems:"center"}}>
           {checked.length > 0 && (
             <>
-              <span style={{ fontSize: 13, color: "#888" }}>{checked.length}건 선택</span>
               <button
                 style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color:"#555", fontSize:14, fontWeight:500, cursor:"pointer" }}
                 onClick={handleBulkClose}>
@@ -273,10 +272,14 @@ export default function CompanyJobsPage() {
               </button>
             </>
           )}
-          <Link href="/company/dashboard/jobs/new" className="company-primary-btn"
-            style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, fontSize:14, fontWeight:500, border:"1px solid transparent" }}>
-            <Plus size={14} /> 공고 등록
-          </Link>
+          {/* 선택 중에는 감춘다. '재등록'도 등록 화면으로 가기 때문에 나란히 두면 잘못 눌러 선택이 날아간다.
+              해제하면 바로 돌아오므로 접근을 막는 게 아니라 지금 할 일만 남기는 것이다. */}
+          {checked.length === 0 && (
+            <Link href="/company/dashboard/jobs/new" className="company-primary-btn"
+              style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, fontSize:14, fontWeight:500, border:"1px solid transparent" }}>
+              <Plus size={14} /> 신규 공고
+            </Link>
+          )}
         </div>
       </div>
       )}
@@ -325,9 +328,12 @@ export default function CompanyJobsPage() {
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
           `}</style>
           <div className="co-topbar">
-            <Link href="/company/dashboard/jobs/new" className="co-addbtn">
-              <Plus size={16} /> 공고등록
-            </Link>
+            {/* 모바일도 같은 규칙 — 선택 중에는 아래 선택 바의 액션만 남긴다. */}
+            {checked.length === 0 && (
+              <Link href="/company/dashboard/jobs/new" className="co-addbtn">
+                <Plus size={16} /> 신규 공고
+              </Link>
+            )}
             <div className="co-statrow">
               {statusCards.map((s) => (
                 <button key={s.label} type="button"
@@ -439,7 +445,13 @@ export default function CompanyJobsPage() {
       {/* 테이블 (데스크톱) */}
       {!loading && filtered.length > 0 && !isMobile && (
         <div className="company-card">
-          <div className="admin-table-meta">총 <strong>{filtered.length}</strong>건</div>
+          {/* 선택 건수는 버튼 줄이 아니라 목록 건수 옆에 둔다 — 무엇을 세는 숫자인지가 바로 붙어 읽힌다. */}
+          <div className="admin-table-meta">
+            총 <strong>{filtered.length}</strong>건
+            {checked.length > 0 && (
+              <span style={{ marginLeft: 8, color: "#5f0080" }}><strong>{checked.length}</strong>건 선택</span>
+            )}
+          </div>
           {/* 폭이 모자라면 칸을 눌러 글자를 쪼개지 말고 가로로 넘긴다 — 공고명만 두 줄까지 감싼다. */}
           <div style={{ overflowX: "auto" }}>
           <table className="company-table">
