@@ -563,6 +563,13 @@ function ApplicantsContent() {
             const gender = genderLabel((a as any).user_gender);
             const ageGender = [age != null ? `${age}세` : null, gender || null, career || null].filter(Boolean).join(" · ");
             const region = shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" "));
+            const scrapBtn = (
+              <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
+                onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}
+                style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
+                <Bookmark size={15} style={{ color: (a as any).scrapped ? "#5f0080" : "#c8c8c8", fill: (a as any).scrapped ? "#5f0080" : "none" }} />
+              </button>
+            );
             return (
               <div key={a.id} className="co-row">
                 {selectMode && (
@@ -582,17 +589,15 @@ function ApplicantsContent() {
                         <div className="co-li-jobrow">
                           <span className="co-li-job">{a.job_title}</span>
                           {isJobClosed(a) && <span style={{ flexShrink: 0, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
+                          {scrapBtn}
                         </div>
                       )}
                       <div className="co-li-namerow">
                         <div className="co-li-nameinfo">
                           <span className="co-li-name">{a.user_name}</span>
                           {ageGender && <span className="co-li-ageg">{ageGender}</span>}
-                          <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
-                            onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}
-                            style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
-                            <Bookmark size={15} style={{ color: (a as any).scrapped ? "#5f0080" : "#c8c8c8", fill: (a as any).scrapped ? "#5f0080" : "none" }} />
-                          </button>
+                          {/* 공고 행이 없으면(공고 필터) 이 줄이 첫 줄이라 여기 붙는다. */}
+                          {jobFilter && scrapBtn}
                         </div>
                         <span className="co-li-status" style={{ color: stColor }}>
                           {STATUS_LABEL[st]}
