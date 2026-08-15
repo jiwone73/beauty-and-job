@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, Building2, FilePlus, LayoutDashboard, ChevronDown } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -12,19 +12,37 @@ import { useAuthStore } from "@/lib/store/authStore";
 
 function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const router = useRouter();
-  const { isLoggedIn, ownerType, userName, logout } = useAuthStore();
+  const { isLoggedIn, ownerType, userName, avatarUrl, setAvatar, logout } = useAuthStore();
   const [open, setOpen] = useState(false);
+
+  // 프로필 사진을 올린 사람은 헤더에서도 자기 얼굴을 본다. 로그인 후 한 번만 읽어 스토어에 담아 둔다.
+  useEffect(() => {
+    if (!isLoggedIn || ownerType !== "user") return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    let alive = true;
+    fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => { if (alive && res.success) setAvatar(res.data?.avatar_url || ""); })
+      .catch(() => { /* 아바타는 없어도 되는 정보라 조용히 넘어간다 */ });
+    return () => { alive = false; };
+  }, [isLoggedIn, ownerType, setAvatar]);
 
   if (isLoggedIn) {
     return (
       <>
         <div className="auth-user-wrap">
           <button className="auth-user-btn" onClick={() => setOpen(!open)}>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <circle cx="16" cy="16" r="16" fill="#f3e5f5"/>
-              <circle cx="16" cy="13" r="5" fill="#5f0080"/>
-              <path d="M6 28c0-5.5 4.5-9 10-9s10 3.5 10 9" fill="#5f0080"/>
-            </svg>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
+                style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", display: "block", background: "#f3e5f5" }} />
+            ) : (
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="16" fill="#f3e5f5"/>
+                <circle cx="16" cy="13" r="5" fill="#5f0080"/>
+                <path d="M6 28c0-5.5 4.5-9 10-9s10 3.5 10 9" fill="#5f0080"/>
+              </svg>
+            )}
           </button>
           {open && (
             <div className="auth-dropdown auth-dropdown-right">

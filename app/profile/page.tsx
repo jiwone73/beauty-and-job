@@ -501,7 +501,10 @@ export default function ProfilePage() {
         body: formData,
       });
       const data = await res.json();
-      if (data.success) setAvatarUrl(data.data.avatar_url);
+      if (data.success) {
+        setAvatarUrl(data.data.avatar_url);
+        useAuthStore.getState().setAvatar(data.data.avatar_url || "");  // 헤더 아바타 즉시 반영
+      }
       else alert(data.error?.message || "업로드에 실패했습니다.");
     } catch {
       alert("네트워크 오류가 발생했습니다.");
@@ -522,7 +525,10 @@ export default function ProfilePage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      if (data.success) setAvatarUrl(null);
+      if (data.success) {
+        setAvatarUrl(null);
+        useAuthStore.getState().setAvatar("");
+      }
     } catch (e) {
       console.error(e);
     } finally {
