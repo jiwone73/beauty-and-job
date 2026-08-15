@@ -295,7 +295,6 @@ function ApplicantsContent() {
   const counts = {
     전체: applicants.length,
     미열람: applicants.filter(a => !a.viewed_at).length,
-    신규: applicants.filter(a => a.status === "APPLIED").length,
     검토중: applicants.filter(a => a.status === "VIEWED").length,
     면접: applicants.filter(a => a.status === "INTERVIEW").length,
   };
@@ -304,9 +303,9 @@ function ApplicantsContent() {
   // 합격·불합격은 기업이 이미 내린 결정이라 세어 줄 이유가 없어 뺐다. 면접은 일정을 잡아야 하는 진행 단계라 넣는다.
   const statCardsData = [
     { label: "전체", value: String(counts.전체), unit: "명", color: "#5f0080", status: "전체" },
-    // 아직 열어보지도 않은 지원 — 상태값과 별개로 가장 급하다.
+    // '신규'(APPLIED) 자리를 대신한다 — 이력서를 열면 자동으로 검토중이 되므로 신규는 사실상 미열람이고,
+    // '아직 안 열어봤다'가 상태 이름보다 할 일을 분명히 말해 준다.
     { label: "미열람", value: String(counts.미열람), unit: "명", color: "#e05252", status: "미열람" },
-    { label: "신규", value: String(counts.신규), unit: "명", color: "#0ea5e9", status: "신규" },
     { label: "검토중", value: String(counts.검토중), unit: "명", color: "#f59e0b", status: "검토중" },
     { label: "면접", value: String(counts.면접), unit: "명", color: "#8b5cf6", status: "면접" },
   ];
