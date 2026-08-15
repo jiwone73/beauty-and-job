@@ -244,7 +244,12 @@ export default function NearbyJobsPage() {
     <div style={{ maxWidth: 640, margin: "0 auto", paddingBottom: 40 }}>
       {/* 헤더 */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "14px 16px", borderBottom: "1px solid #eee", position: "sticky", top: 0, background: "#fff", zIndex: 20 }}>
-        <button onClick={() => router.back()} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", color: "#555" }}>
+        <button onClick={() => {
+          const cameFromSite = typeof document !== "undefined" && !!document.referrer
+            && document.referrer.startsWith(window.location.origin);
+          if (cameFromSite && window.history.length > 1) router.back();
+          else router.push("/jobs");
+        }} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", color: "#555" }}>
           <ChevronLeft size={22} />
         </button>
         <h1 style={{ fontSize: 17, fontWeight: 700, margin: 0 }}>내 주변 채용</h1>

@@ -334,7 +334,14 @@ export default function JobDetailPage() {
       {/* 헤더 */}
       <header className="job-detail-header">
         <div className="job-detail-header-inner">
-          <button className="job-detail-back" onClick={() => router.back()}>
+          {/* 새 탭으로 연 경우(관리자 미리보기·공유 링크)엔 되돌아갈 기록이 없어 back 이 먹지 않았다.
+              사이트 안에서 넘어온 게 확실할 때만 뒤로 가고(스크롤·필터 유지), 아니면 목록으로 보낸다. */}
+          <button className="job-detail-back" onClick={() => {
+            const cameFromSite = typeof document !== "undefined" && !!document.referrer
+              && document.referrer.startsWith(window.location.origin);
+            if (cameFromSite && window.history.length > 1) router.back();
+            else router.push("/jobs");
+          }}>
             <ChevronLeft size={20} />
             <span>채용공고</span>
           </button>
