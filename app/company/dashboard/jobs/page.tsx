@@ -46,9 +46,10 @@ export default function CompanyJobsPage() {
   const [jobs, setJobs] = useState<CompanyJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("전체");
+  // 기본은 진행중 + 마감일순 — 이 화면에서 할 일은 대개 "곧 내려가는 진행 공고"를 손보는 것이다.
+  const [statusFilter, setStatusFilter] = useState("진행중");
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");
-  const [sortBy, setSortBy] = useState("등록일순");
+  const [sortBy, setSortBy] = useState("마감일순");
   const [selected, setSelected] = useState<CompanyJob | null>(null);
   const [checked, setChecked] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
