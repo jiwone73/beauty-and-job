@@ -18,6 +18,7 @@ const SHOW_RESUME_FILE_BANNER = false;
 const STATUS_LABEL: Record<ApplicationStatus, string> = {
   APPLIED: "신규",
   VIEWED: "검토중",
+  INTERVIEW: "면접",
   PASSED: "합격",
   REJECTED: "불합격",
   WITHDRAWN: "지원취소",
@@ -26,6 +27,7 @@ const STATUS_LABEL: Record<ApplicationStatus, string> = {
 const STATUS_BADGE_CLASS: Record<ApplicationStatus, string> = {
   APPLIED: "company-badge-info",
   VIEWED: "company-badge-warning",
+  INTERVIEW: "company-badge-purple",
   PASSED: "company-badge-success",
   REJECTED: "company-badge-danger",
   WITHDRAWN: "company-badge-default",
@@ -256,15 +258,16 @@ function ApplicantsContent() {
     전체: applicants.length,
     신규: applicants.filter(a => a.status === "APPLIED").length,
     검토중: applicants.filter(a => a.status === "VIEWED").length,
-    합격: applicants.filter(a => a.status === "PASSED").length,
-    불합격: applicants.filter(a => a.status === "REJECTED").length,
+    면접: applicants.filter(a => a.status === "INTERVIEW").length,
   };
 
+  // 카운터가 곧 상태 필터다(드롭다운과 같은 값을 두 번 두지 않는다).
+  // 합격·불합격은 기업이 이미 내린 결정이라 세어 줄 이유가 없어 뺐다. 면접은 일정을 잡아야 하는 진행 단계라 넣는다.
   const statCardsData = [
     { label: "전체", value: String(counts.전체), unit: "명", color: "#5f0080", status: "전체" },
     { label: "신규", value: String(counts.신규), unit: "명", color: "#0ea5e9", status: "신규" },
     { label: "검토중", value: String(counts.검토중), unit: "명", color: "#f59e0b", status: "검토중" },
-    { label: "합격", value: String(counts.합격), unit: "명", color: "#10b981", status: "합격" },
+    { label: "면접", value: String(counts.면접), unit: "명", color: "#8b5cf6", status: "면접" },
   ];
 
   return (
@@ -291,12 +294,16 @@ function ApplicantsContent() {
       ) : (
         <div className="company-stat-grid">
           {statCardsData.map((s) => (
-            <div key={s.label} className="company-stat-card">
+            <button key={s.label} type="button" className="company-stat-card"
+              onClick={() => setStatusFilter(s.status)}
+              style={{ cursor: "pointer", textAlign: "left", font: "inherit",
+                border: statusFilter === s.status ? `1px solid ${s.color}` : undefined,
+                background: statusFilter === s.status ? "#faf7fd" : undefined }}>
               <div className="company-stat-value" style={{color: s.color}}>
                 {s.value}<span className="company-stat-unit">{s.unit}</span>
               </div>
               <div className="company-stat-label">{s.label}</div>
-            </div>
+            </button>
           ))}
         </div>
       )}
@@ -342,8 +349,6 @@ function ApplicantsContent() {
             <input className="admin-search-input" placeholder="지원자 이름 검색"
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <FilterDropdown label="상태" value={statusFilter}
-            options={["전체", "신규", "검토중", "합격", "불합격"]} onChange={setStatusFilter} />
         </div>
         {checked.length > 0 && (
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 14 }}>

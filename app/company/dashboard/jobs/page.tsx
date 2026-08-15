@@ -198,17 +198,15 @@ function CompanyJobsContent() {
   };
   // 업체 유형(BOTH)이 아니라 실제 공고 구성으로 판단 — 매장 회원이 오피스 공고를 낸 경우도 필터가 살아있다.
   const isBoth = counts.오피스 > 0 && counts.매장 > 0;
-  const totalApplicants = jobs.reduce((s, j) => s + (j.application_count || 0), 0);
 
+  // 카운터가 곧 진행상태 필터다(드롭다운과 같은 값을 두 번 두지 않는다).
+  // 총 지원자는 공고 상태가 아니라 사람 수라 이 줄에 섞지 않는다 — 지원자 관리의 '전체'가 같은 값을 센다.
+  const cntToday = jobs.filter(j => !isJobClosed(j) && daysLeft(j.deadline) === 0).length;
   const statCardsData = [
-    { label: "전체 공고", value: String(counts.전체), unit: "건", color: "#5f0080" },
-    { label: "진행중", value: String(counts.진행중), unit: "건", color: "#10b981" },
-    { label: "마감", value: String(counts.마감), unit: "건", color: "#888" },
-    { label: "총 지원자", value: String(totalApplicants), unit: "명", color: "#0ea5e9" },
-    ...(isBoth ? [
-      { label: "오피스 공고", value: String(counts.오피스), unit: "건", color: "#5f0080" },
-      { label: "매장 공고", value: String(counts.매장), unit: "건", color: "#e91e8c" },
-    ] : []),
+    { label: "전체 공고", value: String(counts.전체), unit: "건", color: "#5f0080", status: "전체" },
+    { label: "진행중", value: String(counts.진행중), unit: "건", color: "#10b981", status: "진행중" },
+    { label: "오늘 마감", value: String(cntToday), unit: "건", color: "#e05252", status: "오늘 마감" },
+    { label: "마감", value: String(counts.마감), unit: "건", color: "#888", status: "마감" },
   ];
 
   // 모바일 상단 상태 통계 카드 (마감 임박 기준 필터)
@@ -228,12 +226,16 @@ function CompanyJobsContent() {
       {!isMobile && (
         <div className="company-stat-grid">
           {statCardsData.map((s) => (
-            <div key={s.label} className="company-stat-card">
+            <button key={s.label} type="button" className="company-stat-card"
+              onClick={() => setStatusFilter(s.status)}
+              style={{ cursor: "pointer", textAlign: "left", font: "inherit",
+                border: statusFilter === s.status ? `1px solid ${s.color}` : undefined,
+                background: statusFilter === s.status ? "#faf7fd" : undefined }}>
               <div className="company-stat-value" style={{color: s.color}}>
                 {s.value}<span className="company-stat-unit">{s.unit}</span>
               </div>
               <div className="company-stat-label">{s.label}</div>
-            </div>
+            </button>
           ))}
         </div>
       )}
@@ -251,8 +253,6 @@ function CompanyJobsContent() {
             <FilterDropdown label="채용유형" value={jobGroupFilter}
               options={["전체", "매장", "오피스"]} onChange={setJobGroupFilter} />
           )}
-          <FilterDropdown label="진행상태" value={statusFilter}
-            options={["전체", "진행중", "오늘 마감", "마감"]} onChange={setStatusFilter} />
           <FilterDropdown label="정렬" value={sortBy}
             options={["등록일순", "마감일순"]} onChange={setSortBy} />
         </div>

@@ -7072,6 +7072,7 @@ div:has(> table.admin-table),
 .company-badge.viewed { background: #f3f4f6; color: #374151; }
 .company-badge-warning { background: #fef3c7; color: #4c1d95; }
 .company-badge-info { background: #dbeafe; color: #1e40af; }
+.company-badge-purple { background: #ede9fe; color: #5b21b6; }
 .company-badge-success { background: #ede9fe; color: #4c1d95; }
 .company-badge-danger { background: #fee2e2; color: #991b1b; }
 

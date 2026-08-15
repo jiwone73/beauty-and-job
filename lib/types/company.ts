@@ -2,7 +2,8 @@
 
 export type CompanyType = "OFFICE" | "STORE";
 export type JobStatus = "ACTIVE" | "CLOSED" | "DRAFT" | "PAUSED";
-export type ApplicationStatus = "APPLIED" | "VIEWED" | "PASSED" | "REJECTED" | "WITHDRAWN";
+// INTERVIEW는 DB에 쌓이고 있었는데 타입에 빠져 있어 화면에서 라벨 없이 떨어졌다.
+export type ApplicationStatus = "APPLIED" | "VIEWED" | "INTERVIEW" | "PASSED" | "REJECTED" | "WITHDRAWN";
 
 // 공고 (목록 응답용)
 export interface CompanyJob {
