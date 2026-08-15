@@ -7,7 +7,11 @@ import FilterDropdown from "@/components/company/FilterDropdown";
 const SORT_LABELS: Record<string, string> = { recent: "등록일순", name: "기업명순", stage: "진행 단계순" };
 const SORT_VALUES: Record<string, "recent" | "name" | "stage"> = { "등록일순": "recent", "기업명순": "name", "진행 단계순": "stage" };
 
-type Job = { id: string; title: string; status: string; created_at: string };
+type Job = {
+  id: string; title: string; status: string; created_at: string;
+  source_url: string | null; external_apply_url: string | null;
+  contact_phone: string | null; contact_email: string | null;
+};
 type NmCompany = {
   id: string;
   company_name: string;
@@ -16,6 +20,8 @@ type NmCompany = {
   phone: string | null;
   logo_url: string | null;
   website_url: string | null;
+  contact_phone: string | null;   // 기업 전화가 없으면 공고에 적힌 연락처
+  contact_email: string | null;
   region_sido: string | null;
   region_sigungu: string | null;
   address: string | null;
@@ -88,6 +94,18 @@ function fmtPhone(p: string | null) {
   if (d.length === 11) return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
   if (d.length === 10) return `${d.slice(0, 2)}-${d.slice(2, 6)}-${d.slice(6)}`;
   return p;
+}
+// 비회원 기업은 기업 연락처가 비어 있고 공고에만 적혀 있는 경우가 대부분이다.
+// 안내 발송·표시 모두 같은 값을 쓰도록 여기서 한 번에 정한다.
+function contactPhone(c: NmCompany): string | null {
+  if (c.phone) return c.phone;
+  if (c.contact_phone) return c.contact_phone;
+  return c.jobs?.find((j) => j.contact_phone)?.contact_phone || null;
+}
+function contactEmail(c: NmCompany): string | null {
+  if (c.email) return c.email;
+  if (c.contact_email) return c.contact_email;
+  return c.jobs?.find((j) => j.contact_email)?.contact_email || null;
 }
 const SIDO_SHORT: Record<string, string> = {
   "서울특별시": "서울", "부산광역시": "부산", "대구광역시": "대구", "인천광역시": "인천",
@@ -169,7 +187,7 @@ export default function ExternalCompaniesPanel() {
 
   const q = search.trim().toLowerCase();
   const searched = q
-    ? items.filter((c) => (c.company_name || "").toLowerCase().includes(q) || (c.phone || "").includes(q) || (c.email || "").toLowerCase().includes(q))
+    ? items.filter((c) => (c.company_name || "").toLowerCase().includes(q) || (contactPhone(c) || "").includes(q) || (contactEmail(c) || "").toLowerCase().includes(q))
     : items;
   const staged = stageFilter ? searched.filter((c) => stageOfCompany(c) === stageFilter) : searched;
   const filtered = [...staged].sort((a, b) => {
@@ -250,8 +268,8 @@ export default function ExternalCompaniesPanel() {
   };
 
   const selectedItems = items.filter((c) => selectedIds.includes(c.id));
-  const canEmail = selectedItems.some((c) => !!c.email && c.email.includes("@"));
-  const canSms = selectedItems.some((c) => !!c.phone && c.phone.replace(/[^0-9]/g, "").length >= 10);
+  const canEmail = selectedItems.some((c) => { const e = contactEmail(c); return !!e && e.includes("@"); });
+  const canSms = selectedItems.some((c) => { const p = contactPhone(c); return !!p && p.replace(/[^0-9]/g, "").length >= 10; });
   // 지원서 연결: 4.회원가입 완료 상태의 1개사만 활성화
   const linkOne = selectedItems.length === 1 ? selectedItems[0] : null;
   const canLink = !!linkOne && stageOfCompany(linkOne) === 4;
@@ -383,13 +401,22 @@ export default function ExternalCompaniesPanel() {
                   const selected = selectedIds.includes(c.id);
                   const jobTitle = (c.jobs && c.jobs[0]?.title) || "-";
                   const jobExtra = c.job_count > 1 ? ` 외 ${c.job_count - 1}` : "";
+                  // 크롤링한 공고는 원문 주소가 있다. 없으면(직접 등록) 링크 없이 제목만.
+                  const j0 = c.jobs && c.jobs[0];
+                  const jobUrl = j0?.source_url || j0?.external_apply_url || null;
                   return (
                     <tr key={c.id} style={{ background: selected ? "#faf5ff" : undefined }}>
                       <td style={{ textAlign: "center" }}>
                         <input type="checkbox" checked={selected} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
                       </td>
                       <td style={{ maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#333" }} title={jobTitle}>
-                        {jobTitle}{jobExtra && <span style={{ color: "#aaa" }}>{jobExtra}</span>}
+                        {jobUrl ? (
+                          <a href={jobUrl} target="_blank" rel="noopener noreferrer" title={`원문 보기 · ${jobTitle}`}
+                            style={{ color: "#5f0080", textDecoration: "none" }}>
+                            {jobTitle}
+                          </a>
+                        ) : jobTitle}
+                        {jobExtra && <span style={{ color: "#aaa" }}>{jobExtra}</span>}
                       </td>
                       <td className="admin-td-brand">
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -400,7 +427,7 @@ export default function ExternalCompaniesPanel() {
                         </div>
                       </td>
                       <td className="admin-td-date">{fmtRegion(c)}</td>
-                      <td className="admin-td-date">{fmtPhone(c.phone) || c.email || "-"}</td>
+                      <td className="admin-td-date">{fmtPhone(contactPhone(c)) || contactEmail(c) || "-"}</td>
                       <td className="admin-td-date" style={{ textAlign: "center" }}>
                         {cApps.length > 0 ? (
                           <a href={`/admin/resumes/applications?search=${encodeURIComponent(c.company_name)}`}
@@ -497,7 +524,7 @@ export default function ExternalCompaniesPanel() {
           initialChannel={broadcastChannel}
           targets={selectedIds.map((id) => {
             const c = items.find((x) => x.id === id);
-            return { id, name: c?.company_name || "", email: c?.email || null, phone: c?.phone || null };
+            return { id, name: c?.company_name || "", email: c ? contactEmail(c) : null, phone: c ? contactPhone(c) : null };
           })}
           onClose={() => setBroadcastOpen(false)}
           onSent={async (channel, ids) => {

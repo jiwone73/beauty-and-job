@@ -20,6 +20,9 @@ export async function GET(req: NextRequest) {
         mc.company_name AS merged_into_name,
         COALESCE(j.cnt, 0) AS job_count,
         COALESCE(j.jobs, '[]'::json) AS jobs,
+        -- 외부 공고는 연락처가 기업이 아니라 공고에 붙어 온다. 안내 발송용으로 끌어올린다.
+        COALESCE(c.phone, j.job_phone) AS contact_phone,
+        COALESCE(c.email::text, j.job_email) AS contact_email,
         COALESCE(ap.app_cnt, 0) AS application_count,
         COALESCE(ap.pending_cnt, 0) AS pending_count
       FROM companies c
@@ -27,8 +30,12 @@ export async function GET(req: NextRequest) {
       LEFT JOIN LATERAL (
         SELECT COUNT(*)::int AS cnt,
           json_agg(json_build_object(
-            'id', jp.id, 'title', jp.title, 'status', jp.status, 'created_at', jp.created_at
-          ) ORDER BY jp.created_at DESC) AS jobs
+            'id', jp.id, 'title', jp.title, 'status', jp.status, 'created_at', jp.created_at,
+            'source_url', jp.source_url, 'external_apply_url', jp.external_apply_url,
+            'contact_phone', jp.external_contact_phone, 'contact_email', jp.external_contact_email
+          ) ORDER BY jp.created_at DESC) AS jobs,
+          MIN(jp.external_contact_phone) FILTER (WHERE jp.external_contact_phone IS NOT NULL) AS job_phone,
+          MIN(jp.external_contact_email) FILTER (WHERE jp.external_contact_email IS NOT NULL) AS job_email
         FROM job_postings jp WHERE jp.company_id = c.id
       ) j ON true
       LEFT JOIN LATERAL (
