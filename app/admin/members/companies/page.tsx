@@ -555,23 +555,25 @@ function AdminCompaniesContent() {
 
             {/* 본문 (PDF·인쇄 캡처 대상) */}
             <div ref={companyPreviewRef} style={{ maxHeight: "72vh", overflow: "auto", background: "#fff" }}>
-              {/* 커버 + 로고 오버레이 */}
+              {/* 배너 (= 공고에 나가는 이미지) + 로고는 배너 안쪽 왼쪽 아래 */}
               {(() => {
-                const cover = Array.isArray(companyDetail.cover_images) && companyDetail.cover_images[0]?.url ? companyDetail.cover_images[0].url : null;
+                const cover = (Array.isArray(companyDetail.cover_images) && companyDetail.cover_images[0]?.url)
+                  || (companyDetail.thumb_url && companyDetail.thumb_url !== companyDetail.logo_url ? companyDetail.thumb_url : null);
+                const logo = companyDetail.logo_url || null;   // 매장은 로고를 받지 않는다
                 return (
                   <div style={{ position: "relative", height: 128, background: cover ? "#eee" : "#7c3aed" }}>
                     {cover && <img src={cover} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />}
-                    <div style={{ position: "absolute", left: 20, bottom: -28, width: 64, height: 64, borderRadius: 12, background: "#5f0080", border: "3px solid #fff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 23, fontWeight: 700 }}>
-                      {(companyDetail.logo_url || companyDetail.thumb_url)
-                        ? <img src={(companyDetail.logo_url || companyDetail.thumb_url) as string} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        : (companyDetail.company_name?.[0] || "·")}
-                    </div>
+                    {logo && (
+                      <div style={{ position: "absolute", left: 16, bottom: 12, width: 56, height: 56, borderRadius: 12, background: "#fff", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.2)", overflow: "hidden" }}>
+                        <img src={logo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
+                    )}
                   </div>
                 );
               })()}
 
               {/* 이름 + 배지 */}
-              <div style={{ padding: "38px 22px 0" }}>
+              <div style={{ padding: "18px 22px 0" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 19, fontWeight: 700, color: "#1a1a1a" }}>{companyDetail.company_name}</span>
                   <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, background: "#f3e8ff", color: "#5f0080" }}>{TYPE_LABEL[companyDetail.company_type] || companyDetail.company_type}</span>

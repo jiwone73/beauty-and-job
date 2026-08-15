@@ -83,7 +83,12 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
     }
   };
 
-  const cover = Array.isArray(company.cover_images) && company.cover_images[0]?.url ? company.cover_images[0].url : null;
+  // 배너는 공고에 나가는 그 이미지 그대로. 매장정보에 없으면 공고 배너 첫 장을 쓴다
+  // (thumb_url 이 로고인 오피스는 제외 — 그건 배너가 아니다).
+  const cover = (Array.isArray(company.cover_images) && company.cover_images[0]?.url)
+    || (company.thumb_url && company.thumb_url !== company.logo_url ? company.thumb_url : null);
+  // 매장은 로고를 받지 않는다. 로고가 있는 기업만 배너 안쪽 왼쪽 아래에 얹는다.
+  const logo = company.logo_url || null;
   const chip = STATUS_CHIP[company.status] || { bg: "#f0f0f0", color: "#777" };
 
   return (
@@ -111,14 +116,14 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
           <div ref={ref} style={{ maxHeight: "72vh", overflow: "auto", background: "#fff" }}>
             <div style={{ position: "relative", height: 128, background: cover ? "#eee" : "#7c3aed" }}>
               {cover && <img src={cover} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />}
-              <div style={{ position: "absolute", left: 20, bottom: -28, width: 64, height: 64, borderRadius: 12, background: "#5f0080", border: "3px solid #fff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 22, fontWeight: 700 }}>
-                {company.logo_url
-                  ? <img src={company.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  : (company.company_name?.[0] || "·")}
-              </div>
+              {logo && (
+                <div style={{ position: "absolute", left: 16, bottom: 12, width: 56, height: 56, borderRadius: 12, background: "#fff", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.2)", overflow: "hidden" }}>
+                  <img src={logo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              )}
             </div>
 
-            <div style={{ padding: "38px 22px 0" }}>
+            <div style={{ padding: "18px 22px 0" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a" }}>{company.company_name}</span>
                 <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: "#f3e8ff", color: "#5f0080" }}>{TYPE_LABEL[company.company_type] || company.company_type}</span>
