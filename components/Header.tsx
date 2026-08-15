@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Building2, FilePlus, ChevronDown } from "lucide-react";
+import { Search, Building2, FilePlus, LayoutDashboard, ChevronDown } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
@@ -49,9 +49,16 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
             </div>
           )}
         </div>
-        <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
-          기업 서비스 <ChevronDown size={14} />
-        </Link>
+        {/* 이미 로그인한 기업에게 '기업 서비스' 소개 페이지는 의미가 없다. 돌아갈 자리로 바꾼다. */}
+        {ownerType === "company" ? (
+          <Link href="/company/dashboard" className="btn btn-outline-biz gnb-biz-btn">
+            대시보드로 <ChevronDown size={14} style={{ transform: "rotate(-90deg)" }} />
+          </Link>
+        ) : (
+          <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
+            기업 서비스 <ChevronDown size={14} />
+          </Link>
+        )}
       </>
     );
   }
@@ -74,6 +81,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { isLoggedIn, ownerType } = useAuthStore();
+  const isCompany = isLoggedIn && ownerType === "company";
   const handleSearch = () => {
     router.push("/search");
   };
@@ -86,17 +94,20 @@ export default function Header({ onSearchClick }: HeaderProps) {
           </Link>
           <nav className="gnb">
             <Link href="/jobs" className={`gnb-with-tag ${pathname === "/jobs" ? "gnb-active" : ""}`}>채용공고</Link>
-            <button
-              type="button"
-              className="gnb-with-tag"
-              style={{ background: "none", border: "none", cursor: "pointer" }}
-              onClick={() => {
-                if (!isLoggedIn) router.push("/signup/email");
-                else if (ownerType === "company") router.push("/company/dashboard");
-                else router.push("/profile/resume");
-              }}>
-              이력서 등록
-            </button>
+            {/* 기업 계정에는 '이력서 등록'이 할 일이 없다. 눌렀을 때 대시보드로 튕겨 보내는 대신 메뉴 자리를
+                '기업 대시보드'로 바꾼다. 기업이 사이트를 도는 건 자기 공고가 어떻게 보이는지 확인하려는 것이라
+                막지 않고, 돌아갈 길만 눈에 띄게 둔다. */}
+            {isCompany ? (
+              <Link href="/company/dashboard" className="gnb-with-tag">기업 대시보드</Link>
+            ) : (
+              <button
+                type="button"
+                className="gnb-with-tag"
+                style={{ background: "none", border: "none", cursor: "pointer" }}
+                onClick={() => router.push(isLoggedIn ? "/profile/resume" : "/signup/email")}>
+                이력서 등록
+              </button>
+            )}
             <Link href="/stories" className="gnb-with-tag">
               현장이야기
             </Link>
@@ -106,12 +117,9 @@ export default function Header({ onSearchClick }: HeaderProps) {
               <Search size={20} />
             </button>
             <AuthButtons onLoginClick={() => router.push("/login")} />
-            <button className="icon-btn mob-hamburger" aria-label="이력서 등록" onClick={() => {
-              if (!isLoggedIn) router.push("/signup/email");
-              else if (ownerType === "company") router.push("/company/dashboard");
-              else router.push("/profile/resume");
-            }}>
-              <FilePlus size={22} />
+            <button className="icon-btn mob-hamburger" aria-label={isCompany ? "기업 대시보드" : "이력서 등록"}
+              onClick={() => router.push(isCompany ? "/company/dashboard" : isLoggedIn ? "/profile/resume" : "/signup/email")}>
+              {isCompany ? <LayoutDashboard size={22} /> : <FilePlus size={22} />}
             </button>
           </div>
         </div>
