@@ -346,8 +346,7 @@ function AdminJobsPageInner() {
                       {(() => {
                         const isMember = job.is_member !== false && job.source !== "EXTERNAL";
                         return (
-                          <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 7px", borderRadius: 5, whiteSpace: "nowrap",
-                            background: isMember ? "#f3e8ff" : "#f0f0f0", color: isMember ? "#7c3aed" : "#888" }}>
+                          <span style={{ fontSize: 12, whiteSpace: "nowrap", color: isMember ? "#7c3aed" : "#999" }}>
                             {isMember ? "회원" : "비회원"}
                           </span>
                         );
