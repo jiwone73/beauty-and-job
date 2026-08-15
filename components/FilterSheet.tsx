@@ -58,9 +58,12 @@ interface Props {
   initial: FilterDraft;
   onClose: () => void;
   onApply: (f: FilterDraft) => void;
+  // 지금 목록에 실제로 달려 있는 복리후생만 보여 준다(안 주면 전체).
+  benefitOptions?: string[];
 }
 
-export default function FilterSheet({ open, jobType, initial, onClose, onApply }: Props) {
+export default function FilterSheet({ open, jobType, initial, onClose, onApply, benefitOptions }: Props) {
+  const benefitList = benefitOptions && benefitOptions.length ? benefitOptions : BENEFIT_FILTER;
   const [draft, setDraft] = useState<FilterDraft>(initial);
 
   useEffect(() => {
@@ -135,7 +138,7 @@ export default function FilterSheet({ open, jobType, initial, onClose, onApply }
           <div className="filter-section">
             <div className="filter-section-title">복리후생 · 근무조건</div>
             <div className="filter-chip-grid">
-              {BENEFIT_FILTER.map((b) => (
+              {benefitList.map((b) => (
                 <button key={b} type="button"
                   className={`filter-chip ${draft.benefits.includes(b) ? "on" : ""}`}
                   onClick={() => toggleBenefit(b)}>

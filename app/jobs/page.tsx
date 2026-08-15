@@ -187,6 +187,10 @@ function JobsPageInner() {
   };
 
   const salaryOpts = jobTypeFilter === "매장" ? SALARY_STORE : SALARY_OFFICE;
+  // 아무 공고에도 없는 복리후생은 눌러도 0건이라 칩을 아예 감춘다.
+  // 목록에 그 조건이 생기면 저절로 다시 나타난다.
+  const benefitOptions = BENEFIT_FILTER.filter((b) =>
+    (apiJobs || []).some((j: any) => (j.benefit_tags || []).includes(b)) || selectedBenefits.includes(b));
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
@@ -357,7 +361,7 @@ function JobsPageInner() {
               </button>
               {showBenefitDrop && (
                 <div className="jobs-dropdown jobs-dropdown-benefit">
-                  {BENEFIT_FILTER.map((b) => (
+                  {benefitOptions.map((b) => (
                     <button key={b} type="button"
                       className={`jobs-dropdown-item jobs-dropdown-multi ${selectedBenefits.includes(b) ? "active" : ""}`}
                       onClick={() => setSelectedBenefits(selectedBenefits.includes(b) ? selectedBenefits.filter((x) => x !== b) : [...selectedBenefits, b])}>
@@ -409,6 +413,7 @@ function JobsPageInner() {
                 open={showFilterSheet}
                 jobType={jobTypeFilter}
                 initial={{ career: selectedCareer, employment: selectedEmployment, benefits: selectedBenefits, salary: selectedSalary }}
+                benefitOptions={benefitOptions}
                 onClose={() => setShowFilterSheet(false)}
                 onApply={(f) => { setSelectedCareer(f.career); setSelectedEmployment(f.employment); setSelectedBenefits(f.benefits); setSelectedSalary(f.salary); }}
               />
