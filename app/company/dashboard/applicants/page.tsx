@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, X, FileText, Bookmark, Paperclip, EyeOff, Download, Printer, Trash2, ChevronDown, Instagram } from "lucide-react";
+import { Search, X, FileText, Bookmark, BookmarkCheck, Paperclip, EyeOff, Download, Printer, Trash2, ChevronDown, Instagram } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { formatPhone } from "@/lib/phone";
 import LinkCell from "@/components/company/LinkCell";
@@ -567,7 +567,9 @@ function ApplicantsContent() {
               <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
                 onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}
                 style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
-                <Bookmark size={15} style={{ color: (a as any).scrapped ? "#5f0080" : "#c8c8c8", fill: (a as any).scrapped ? "#5f0080" : "none" }} />
+                {(a as any).scrapped
+                                ? <BookmarkCheck size={15} style={{ color: "#5f0080" }} />
+                                : <Bookmark size={15} style={{ color: "#c8c8c8" }} />}
               </button>
             );
             return (
@@ -669,7 +671,9 @@ function ApplicantsContent() {
                           <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
                             onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}
                             style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
-                            <Bookmark size={15} style={{ color: (a as any).scrapped ? "#5f0080" : "#c8c8c8", fill: (a as any).scrapped ? "#5f0080" : "none" }} />
+                            {(a as any).scrapped
+                                ? <BookmarkCheck size={15} style={{ color: "#5f0080" }} />
+                                : <Bookmark size={15} style={{ color: "#c8c8c8" }} />}
                           </button>
                         </div>
                         <span style={{ fontSize: 13, color: "#888" }}>
