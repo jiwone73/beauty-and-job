@@ -239,7 +239,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             (Array.isArray(job.cover_images) ? job.cover_images.map((c: any) => c?.url) : []).filter(Boolean)
           )] as string[];
           const hasDetail = Array.isArray(job.detailImages) && job.detailImages.some((d: any) => d?.url);
-          // 배너: 1장이면 전체폭, 여러 장이면 3장씩 + 좌우 화살표 회전(ImageCarousel).
+          // 배너: 한 화면에 두 장, 세 장부터는 좌우 화살표로 회전(BannerStrip).
           if (coverUrls.length) {
             return (
               <div style={{ width: "100%", marginBottom: 4 }}>

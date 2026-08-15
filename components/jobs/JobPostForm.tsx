@@ -267,7 +267,7 @@ export default function JobPostForm({
   const [nmFounded, setNmFounded] = useState("");
   const [nmRepresentative, setNmRepresentative] = useState("");
   const [nmPhone, setNmPhone] = useState("");
-  const [bannerImages, setBannerImages] = useState<{ url: string; name: string }[]>([]); // 상단 배너(여러 장, 3장씩 회전)
+  const [bannerImages, setBannerImages] = useState<{ url: string; name: string }[]>([]); // 상단 배너(여러 장, 두 장씩 회전)
   // 배너 영역 버튼은 매장/기업정보 페이지와 같은 모양으로 맞춘다.
   // 모바일은 테두리·아이콘을 빼고 글자만 남겨 좁은 폭을 제목에 내준다.
   const bannerBtn = (on: boolean): CSSProperties => isMobile
@@ -431,7 +431,7 @@ export default function JobPostForm({
     window.addEventListener("resize", onMove);
     return () => { window.removeEventListener("scroll", onMove, true); window.removeEventListener("resize", onMove); };
   }, [popAt !== null]);
-  const [coverStart, setCoverStart] = useState(0); // 공고 상단 이미지 썸네일: 3장 초과 시 화살표로 넘길 시작 위치
+  const [coverStart, setCoverStart] = useState(0); // 공고 상단 이미지 썸네일: 두 장을 넘으면 화살표로 넘길 시작 위치
   const [regionList, setRegionList] = useState<string[]>([]);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
   const [regionOpen, setRegionOpen] = useState(false);
@@ -2054,8 +2054,7 @@ export default function JobPostForm({
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
             {/* 썸네일마다 ×로 이 공고에서만 제거 */}
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
-              {/* 한 줄에 3장 고정(줄바꿈 없음). 3장을 넘으면 좌우 화살표로 넘겨 본다.
-                  칸 비율은 PC 드래그 박스 썸네일(120x76)과 동일하게 맞춘다. */}
+              {/* 한 줄에 두 장. 세 장부터는 좌우 화살표로 넘겨 본다. */}
               {bannerImages.length > 0 && (
                 <div style={{ width: "100%" }}>
                   {/* 공고 상세와 같은 컴포넌트로 그린다 — 편집 화면에서 보이는 모양이 곧 공개 화면 모양. */}
@@ -2098,7 +2097,7 @@ export default function JobPostForm({
             </div>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
 
-              {/* ── 상단 배너 (cover, 여러 장 · 공개화면에서 3장씩 화살표로 회전) ── */}
+              {/* ── 상단 배너 (cover, 여러 장 · 공개화면에서 두 장씩 화살표로 회전) ── */}
               <div>
                 <div
                   tabIndex={0}

@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
 
-// 배너/썸네일 한 칸: 이미지를 자르지 않고 높이에 맞춰 축소(contain), 남는 여백은 이미지 모서리 배경색으로 채움.
-export function BannerImg({ src, alt }: { src: string; alt?: string }) {
+// 배너/썸네일 한 칸.
+//  기본: 정해진 칸 높이에 맞춰 축소(contain), 남는 여백은 이미지 모서리 배경색으로 채움.
+//  ratio: 폭만 정해 두고 높이는 사진 비율이 정한다 — 여백 자체가 안 생긴다.
+export function BannerImg({ src, alt, ratio = false }: { src: string; alt?: string; ratio?: boolean }) {
   const [bg, setBg] = useState("#f4f4f4");
   const [noCors, setNoCors] = useState(false);
   const sample = (img: HTMLImageElement) => {
@@ -21,14 +23,16 @@ export function BannerImg({ src, alt }: { src: string; alt?: string }) {
     }
   };
   return (
-    <div style={{ width: "100%", height: "100%", background: bg, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+    <div style={{ width: "100%", height: ratio ? "auto" : "100%", background: ratio ? "transparent" : bg, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
       <img
         src={src}
         alt={alt}
         {...(noCors ? {} : { crossOrigin: "anonymous" as const })}
         onLoad={(e) => sample(e.currentTarget)}
         onError={() => setNoCors(true)}
-        style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
+        style={ratio
+          ? { width: "100%", height: "auto", display: "block" }
+          : { maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
       />
     </div>
   );
