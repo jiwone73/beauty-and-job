@@ -10,6 +10,8 @@ interface Props {
 }
 
 const LINK_CATEGORIES = ["인스타그램", "유튜브", "포트폴리오", "기타"];
+// 미용은 작업물이 곧 경력이라 링크의 대부분이 인스타다. 기본값으로 두고 다른 걸 고를 때만 바꾸게 한다.
+const DEFAULT_CATEGORY = LINK_CATEGORIES[0];
 
 export default function LinkModal({ isOpen, onClose, editTarget }: Props) {
   const { addLink, updateLink } = useProfileStore();
@@ -25,7 +27,7 @@ export default function LinkModal({ isOpen, onClose, editTarget }: Props) {
       setCategory(editTarget.category || "");
       setUrl(editTarget.url || "");
     } else {
-      setCategory("");
+      setCategory(DEFAULT_CATEGORY);
       setUrl("");
     }
     setShowCategory(false);
@@ -70,7 +72,7 @@ export default function LinkModal({ isOpen, onClose, editTarget }: Props) {
             </div>
           )}
           <label className="cv-field-label cv-required">URL</label>
-          <input className="cv-input" placeholder="https://" value={url} onChange={(e) => setUrl(e.target.value)} />
+          <input className="cv-input" placeholder={category === "인스타그램" ? "instagram.com/아이디" : "https://"} value={url} onChange={(e) => setUrl(e.target.value)} />
           <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
         </div>
       </div>
