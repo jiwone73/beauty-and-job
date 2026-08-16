@@ -203,12 +203,9 @@ function JobsPageInner() {
       .catch(() => { /* 못 받아도 기본 목록으로 돈다 */ });
   }, [jobTypeFilter]);
 
-  // 복리후생 칩은 지금 보고 있는 탭(전체·매장·오피스) 안에서 실제로 달려 있는 것만 남긴다.
-  // 매장에 없는 조건이 매장 탭에 떠 있으면 눌러 봤자 0건이다.
-  const typeScoped = (apiJobs || []).filter((j: any) =>
-    jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both");
-  const benefitOptions = curatedBenefits.filter((b) =>
-    typeScoped.some((j: any) => (j.benefit_tags || []).includes(b)) || selectedBenefits.includes(b));
+  // 복리후생 후보는 그 업태의 어휘 전체를 보여 준다(매장 21 · 오피스 27 · 전체 35).
+  // 지금 공고에 달린 것만 남기면 목록이 서너 개로 쪼그라들어, 무엇으로 거를 수 있는지조차 알 수 없다.
+  const benefitOptions = curatedBenefits;
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
@@ -368,8 +365,7 @@ function JobsPageInner() {
               )}
             </div>
 
-            {/* 복리후생 (PC) — 지금 목록에 달린 조건이 없으면 버튼도 감춘다. */}
-            {benefitOptions.length > 0 && (
+            {/* 복리후생 (PC) */}
             <div className="jobs-dropdown-wrap jobs-pc-only">
               <button
                 className={`jobs-filter-btn ${selectedBenefits.length > 0 ? "active" : ""}`}
@@ -391,7 +387,6 @@ function JobsPageInner() {
                 </div>
               )}
             </div>
-            )}
 
             {/* 급여 (PC) */}
             {jobTypeFilter !== "전체" && (

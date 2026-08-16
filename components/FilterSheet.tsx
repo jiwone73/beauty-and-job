@@ -135,7 +135,7 @@ export default function FilterSheet({ open, jobType, initial, onClose, onApply, 
             </div>
           )}
 
-          {/* 복리후생 — 지금 목록에 달린 조건이 하나도 없으면 칸 자체를 접는다. */}
+          {/* 복리후생 */}
           {benefitList.length > 0 && (
           <div className="filter-section">
             <div className="filter-section-title">복리후생 · 근무조건</div>
