@@ -6,18 +6,69 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 
+// 이메일 하나로 로그인·가입을 함께 처리한다.
+//  1단계: 이메일을 받아 계정이 있는지 본다
+//  2단계: 있으면 비밀번호, 없으면 가입 화면으로 (이미 입력한 이메일을 들고 간다)
+// 소셜로만 만든 계정은 비밀번호가 없으므로 그 소셜 버튼을 안내한다.
 export default function LoginEmailPage() {
   const router = useRouter();
   const { login } = useAuthStore();
+  const [step, setStep] = useState<"email" | "password">("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState<{ text: string; providers: string[] } | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const handleContinue = async () => {
+    const v = email.trim();
+    if (!EMAIL_RE.test(v)) {
+      setError("이메일 형식을 다시 확인해주세요.");
+      return;
+    }
+    setError("");
+    setNotice(null);
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/auth/check-email?email=${encodeURIComponent(v)}&scope=user`);
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error?.message || "확인에 실패했습니다.");
+        return;
+      }
+      const { available, kind, hasPassword, providers } = data.data;
+
+      if (available) {
+        router.push(`/signup/email?email=${encodeURIComponent(v)}`);
+        return;
+      }
+      if (kind === "company") {
+        setNotice({ text: "기업회원으로 가입된 이메일이에요. 기업 로그인으로 이동해 주세요.", providers: [] });
+        return;
+      }
+      if (!hasPassword) {
+        setNotice({
+          text: providers.length
+            ? "소셜 계정으로 가입한 이메일이에요. 아래 버튼으로 로그인해 주세요."
+            : "비밀번호가 없는 계정이에요. 비밀번호 재설정으로 만들어 주세요.",
+          providers,
+        });
+        return;
+      }
+      setStep("password");
+    } catch {
+      setError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      setError("이메일과 비밀번호를 입력해주세요.");
+    if (!password.trim()) {
+      setError("비밀번호를 입력해주세요.");
       return;
     }
     setError("");
@@ -42,7 +93,7 @@ export default function LoginEmailPage() {
         userJobAreas: data.data.user.office_job_areas || [],
       });
       router.push("/profile");
-    } catch (e) {
+    } catch {
       setError("네트워크 오류가 발생했습니다.");
     } finally {
       setLoading(false);
@@ -51,78 +102,107 @@ export default function LoginEmailPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      {/* 헤더 */}
       <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
-        <button onClick={() => router.back()} className="p-2">
+        <button
+          onClick={() => (step === "password" ? (setStep("email"), setPassword(""), setError("")) : router.back())}
+          className="p-2"
+          aria-label="뒤로"
+        >
           <ChevronLeft size={22} />
         </button>
       </header>
 
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
-          {/* 로고 */}
           <div className="flex justify-center mb-8">
             <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
 
           <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-8">
-            개인회원 로그인
+            이메일로 계속하기
           </h1>
 
-          {/* 이메일 입력 */}
+          {/* 이메일 — 2단계에서는 잠그고 값만 보여 준다 */}
           <div className="mb-3">
             <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">이메일</label>
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); setError(""); setNotice(null); }}
+              onKeyDown={(e) => e.key === "Enter" && step === "email" && handleContinue()}
               placeholder="이메일을 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+              disabled={step === "password"}
+              autoFocus
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080] disabled:bg-[#f7f7f7] disabled:text-[#6b6b6b]"
             />
           </div>
 
-          {/* 비밀번호 입력 */}
-          <div className="mb-2">
-            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">비밀번호</label>
-            <div className="relative">
-              <input
-                type={showPw ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="비밀번호를 입력해주세요"
-                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
-                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPw(!showPw)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a9a9a]"
-              >
-                {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+          {step === "password" && (
+            <div className="mb-2">
+              <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">비밀번호</label>
+              <div className="relative">
+                <input
+                  type={showPw ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="비밀번호를 입력해주세요"
+                  autoFocus
+                  className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw(!showPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a9a9a]"
+                  aria-label={showPw ? "비밀번호 숨기기" : "비밀번호 보기"}
+                >
+                  {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
-          </div>
-
-          {/* 에러 메시지 */}
-          {error && (
-            <p className="text-[13px] md:text-[14px] text-[#e74c3c] mb-3">{error}</p>
           )}
 
-          {/* 로그인 버튼 */}
+          {error && <p className="text-[13px] md:text-[14px] text-[#e74c3c] mb-3">{error}</p>}
+
+          {/* 다른 방법으로 가입한 계정 안내 */}
+          {notice && (
+            <div className="mb-3 rounded-lg bg-[#faf7fc] border border-[#eee4f5] p-3">
+              <p className="text-[13px] md:text-[14px] text-[#5f0080] mb-2">{notice.text}</p>
+              {notice.providers.includes("kakao") && (
+                <button
+                  onClick={() => { window.location.href = "/api/auth/kakao"; }}
+                  className="w-full h-[44px] bg-[#FEE500] text-[#1a1a1a] rounded-lg text-[14px] mb-2"
+                >
+                  카카오로 계속하기
+                </button>
+              )}
+              {notice.providers.includes("naver") && (
+                <button
+                  onClick={() => { window.location.href = "/api/auth/naver"; }}
+                  className="w-full h-[44px] bg-[#03C75A] text-white rounded-lg text-[14px] mb-2"
+                >
+                  네이버로 계속하기
+                </button>
+              )}
+              {notice.text.includes("기업회원") && (
+                <Link href="/company/login">
+                  <button className="w-full h-[44px] border border-[#5f0080] text-[#5f0080] rounded-lg text-[14px]">
+                    기업 로그인으로 이동
+                  </button>
+                </Link>
+              )}
+            </div>
+          )}
+
           <button
-            onClick={handleLogin}
+            onClick={step === "email" ? handleContinue : handleLogin}
             disabled={loading}
             className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-4 disabled:opacity-50 hover:opacity-90 transition"
           >
-            {loading ? "로그인 중..." : "로그인"}
+            {loading ? "확인 중..." : step === "email" ? "계속하기" : "로그인"}
           </button>
 
-          {/* 하단 링크 */}
           <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
-            <Link href="/signup/email" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              개인회원 가입
-            </Link>
-            <span className="text-[#d0d0d0]">·</span>
             <Link href="/login/password-reset" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
               비밀번호 재설정
             </Link>

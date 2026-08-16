@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, Eye, EyeOff, MessageCircle } from "lucide-react";
@@ -14,10 +14,11 @@ interface Term {
   is_required: boolean;
 }
 
-export default function SignupEmailPage() {
+function SignupEmailContent() {
   const router = useRouter();
   const { login } = useAuthStore();
   const [jobType, setJobType] = useState<"OFFICE" | "STORE" | "">("");
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
   const [name, setName] = useState("");
@@ -35,6 +36,13 @@ export default function SignupEmailPage() {
   const [agreed, setAgreed] = useState<Record<string, boolean>>({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // 로그인 화면에서 '계속하기'로 넘어온 경우 이미 친 이메일을 그대로 이어받는다.
+  useEffect(() => {
+    const prefill = (searchParams.get("email") || "").trim();
+    if (prefill) setEmail(prefill);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     fetch("/api/terms")
@@ -485,5 +493,14 @@ export default function SignupEmailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// useSearchParams 는 Suspense 경계 안에서만 쓸 수 있다(빌드가 막힌다).
+export default function SignupEmailPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <SignupEmailContent />
+    </Suspense>
   );
 }
