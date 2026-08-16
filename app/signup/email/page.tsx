@@ -285,7 +285,14 @@ export default function SignupEmailPage() {
             <input
               type="email"
               value={email}
-              onChange={(e) => { setEmail(e.target.value); setEmailStatus("idle"); }}
+              onChange={(e) => {
+                const v = e.target.value;
+                setEmail(v);
+                // 형식은 치는 중에 바로 알려 주고(3자부터), 중복은 다 치고 나서 확인한다.
+                const t = v.trim();
+                if (t.length >= 3 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) setEmailStatus("invalid");
+                else setEmailStatus("idle");
+              }}
               onBlur={checkEmailDup}
               placeholder="이메일을 입력해주세요"
               className={`w-full h-[48px] px-4 border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${
@@ -297,7 +304,7 @@ export default function SignupEmailPage() {
             {emailStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">확인 중이에요.</p>}
             {emailStatus === "ok" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#10b981]">사용할 수 있는 이메일이에요.</p>}
             {emailStatus === "taken" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">이미 가입된 이메일이에요. 로그인해 주세요.</p>}
-            {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">올바른 이메일을 입력해주세요.</p>}
+            {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">이메일 형식을 다시 확인해주세요.</p>}
           </div>
           {/* 이름 */}
           <div className="mb-4">
