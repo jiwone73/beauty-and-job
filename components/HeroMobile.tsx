@@ -1,4 +1,5 @@
 "use client";
+import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -76,7 +77,7 @@ export default function HeroMobile() {
           <button key={t} type="button"
             className={`hero-m-toggle-btn ${jobType === t ? "active" : ""}`}
             onClick={() => setJobType(t)}>
-            {t === "전체" ? "전체" : t === "오피스" ? "🏢 오피스" : "🏪 매장"}
+            {t === "전체" ? "전체" : t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span>}
           </button>
         ))}
       </div>

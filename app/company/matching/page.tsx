@@ -1,4 +1,5 @@
 "use client";
+import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -25,7 +26,7 @@ const PROCESS = [
 const FEES = [
   {
     type: "매장",
-    icon: "🏪",
+    Icon: StoreIcon,
     desc: "헤어디자이너, 네일아티스트, 피부관리사, 에스테틱, 왁싱, 속눈썹 등 현장 매장직",
     fee: "30만원",
     feeDesc: "채용 확정 1인당 고정",
@@ -33,7 +34,7 @@ const FEES = [
   },
   {
     type: "오피스",
-    icon: "🏢",
+    Icon: OfficeIcon,
     desc: "마케팅, MD, 브랜드, 영업, HR, 콘텐츠, 병원 코디네이터 등 오피스·전문직",
     fee: "연봉의 8%",
     feeDesc: "채용 확정 시 세전 연봉 기준",
@@ -161,7 +162,7 @@ export default function MatchingPage() {
             {FEES.map((f, i) => (
               <div key={i} className="mat-fee-card">
                 <div className="mat-fee-header">
-                  <span className="mat-fee-icon">{f.icon}</span>
+                  <span className="mat-fee-icon" style={{ color: "#5f0080", display: "inline-flex" }}><f.Icon size={30} /></span>
                   <h3 className="mat-fee-type">{f.type}</h3>
                 </div>
                 <p className="mat-fee-desc">{f.desc}</p>

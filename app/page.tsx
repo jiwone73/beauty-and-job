@@ -26,6 +26,7 @@ import {
   MapPin,
   ChevronDown, Rocket } from "lucide-react";
 import JobCard from "@/components/JobCard";
+import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
 /* ============================================
    공통 유틸
@@ -148,12 +149,12 @@ function Hero() {
                 <button type="button"
                   className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`}
                   onClick={() => setJobType("매장")}>
-                  매장
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>
                 </button>
                 <button type="button"
                   className={`hero-type-btn ${jobType === "오피스" ? "active" : ""}`}
                   onClick={() => setJobType("오피스")}>
-                  오피스
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>
                 </button>
               </div>
               <div className="hero-searchbar-v2">
@@ -319,7 +320,7 @@ function SectionPick() {
                 className={`hero-type-btn ${tab === t ? "active" : ""}`}
                 onClick={() => setTab(t)}
               >
-                {t === "매장" ? "매장" : t === "오피스" ? "오피스" : t}
+                {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span> : t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span> : t}
               </button>
             ))}
           </div>
@@ -415,7 +416,7 @@ function SectionJobGroups() {
                 background: tab === t ? "#5f0080" : "#fff",
                 color: tab === t ? "#fff" : "#666",
               }}>
-              {t === "매장" ? "🏪 매장" : "🏢 오피스"}
+              {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span>}
             </button>
           ))}
         </div>

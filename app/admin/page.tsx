@@ -1,4 +1,5 @@
 "use client";
+import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import Link from "next/link";
@@ -325,7 +326,7 @@ export default function AdminDashboard() {
           <UserCheck size={20} className="admin-section-icon individual" />
           <h2 className="admin-section-heading">개인회원 현황</h2>
           <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
-            {([["ALL","전체"],["STORE","🏪 매장"],["OFFICE","🏢 오피스"]] as const).map(([val, label]) => (
+            {([["ALL", "전체" as React.ReactNode], ["STORE", <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>], ["OFFICE", <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>]] as const).map(([val, label]) => (
               <button key={val} onClick={() => setIndivTab(val)} style={tabBtn(indivTab === val)}>
                 {label}
               </button>
@@ -510,7 +511,7 @@ export default function AdminDashboard() {
           <Building2 size={20} className="admin-section-icon company" />
           <h2 className="admin-section-heading">기업회원 현황</h2>
           <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
-            {([["ALL","전체"],["STORE","🏪 매장"],["OFFICE","🏢 오피스"]] as const).map(([val, label]) => (
+            {([["ALL", "전체" as React.ReactNode], ["STORE", <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>], ["OFFICE", <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>]] as const).map(([val, label]) => (
               <button key={val} onClick={() => setCorpTab(val)} style={tabBtn(corpTab === val)}>
                 {label}
               </button>
