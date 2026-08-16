@@ -11858,3 +11858,8 @@ button,
   font-size: 14px; color: #333; cursor: pointer;
 }
 .company-profile-menu button:hover { background: #faf7fc; color: #5f0080; }
+
+/* 가입 화면 매장·오피스 카드 아이콘 — 좁은 화면에서는 한 줄 설명을 살리려고 조금 줄인다. */
+@media (max-width: 767px) {
+  .jt-icon { width: 24px; height: 24px; }
+}

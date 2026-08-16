@@ -253,21 +253,21 @@ export default function SignupEmailPage() {
             <label className="block text-[13px] md:text-[16px] font-normal text-gray-700 mb-3">
               어떤 채용을 찾고 계신가요? <span className="text-red-500">*</span>
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setJobType("STORE")}
-                className={`relative flex items-center gap-2 p-4 pr-6 rounded-xl border-2 text-left transition-all ${
+                className={`relative flex items-center gap-1.5 px-2 py-2.5 rounded-xl border-2 text-left transition-all ${
                   jobType === "STORE"
                     ? "border-purple-500 bg-purple-50 text-purple-700"
                     : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
                 }`}
               >
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
-                <StoreIcon size={28} style={{ color: "#5f0080", flexShrink: 0 }} />
+                <StoreIcon size={28} className="jt-icon" style={{ color: "#5f0080", flexShrink: 0 }} />
                 <span className="flex flex-col min-w-0">
                   <span className="text-[13px] md:text-[16px] font-normal text-[#1a1a1a]">매장</span>
-                  <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight whitespace-nowrap">
+                  <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight">
                     뷰티샵 · 에스테틱 · 네일
                   </span>
                 </span>
@@ -282,17 +282,17 @@ export default function SignupEmailPage() {
               <button
                 type="button"
                 onClick={() => setJobType("OFFICE")}
-                className={`relative flex items-center gap-2 p-4 pr-6 rounded-xl border-2 text-left transition-all ${
+                className={`relative flex items-center gap-1.5 px-2 py-2.5 rounded-xl border-2 text-left transition-all ${
                   jobType === "OFFICE"
                     ? "border-purple-500 bg-purple-50 text-purple-700"
                     : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
                 }`}
               >
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
-                <OfficeIcon size={28} style={{ color: "#5f0080", flexShrink: 0 }} />
+                <OfficeIcon size={28} className="jt-icon" style={{ color: "#5f0080", flexShrink: 0 }} />
                 <span className="flex flex-col min-w-0">
                   <span className="text-[13px] md:text-[16px] font-normal text-[#1a1a1a]">오피스</span>
-                  <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight whitespace-nowrap">
+                  <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight">
                     브랜드 · 마케팅 · MD
                   </span>
                 </span>

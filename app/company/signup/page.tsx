@@ -343,23 +343,23 @@ export default function CompanySignupPage() {
           {/* 채용 유형 (최상단) */}
           <div className="mb-6">
             <p className="text-[13px] md:text-[15px] text-[#9a9a9a] mb-3">채용 형태에 맞는 유형을 선택해주세요</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-2">
               {COMPANY_TYPES.map((t) => (
                 <button
                   key={t.value}
                   type="button"
                   onClick={() => update("company_type", t.value)}
-                  className={`relative flex items-center gap-2.5 p-3 pr-6 border-2 rounded-xl text-left transition ${
+                  className={`relative flex items-center gap-1.5 px-2 py-2.5 border-2 rounded-xl text-left transition ${
                     form.company_type === t.value
                       ? "border-[#5f0080] bg-[#f5ebfa] text-[#5f0080]"
                       : "border-[#e0e0e0] text-[#6b6b6b] hover:border-[#c0c0c0]"
                   }`}
                 >
                   {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
-                  <t.Icon size={30} style={{ color: "#5f0080", flexShrink: 0 }} />
+                  <t.Icon size={30} className="jt-icon" style={{ color: "#5f0080", flexShrink: 0 }} />
                   <span className="flex flex-col min-w-0">
                     <span className="text-[13px] md:text-[16px] font-normal text-[#1a1a1a]">{t.label}</span>
-                    <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight whitespace-nowrap">{t.desc}</span>
+                    <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight">{t.desc}</span>
                   </span>
                   {form.company_type === t.value && (
                     <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#5f0080] rounded-full flex items-center justify-center">
