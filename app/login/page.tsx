@@ -4,12 +4,11 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Mail, Building2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function LoginStartPage() {
   const router = useRouter();
   const { isLoggedIn } = useAuthStore();
-  const [tab, setTab] = useState<"personal" | "company">("personal");
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -37,84 +36,40 @@ export default function LoginStartPage() {
           전문가 채용부터 업계 트렌드까지, 뷰티워크
         </p>
 
-        {/* 탭 */}
-        <div className="flex mb-8 border-b border-[#e0e0e0]">
+        {/* 개인 로그인만 앞에 둔다 — 들어오는 사람 대부분이 구직자다.
+            기업은 아래 링크로 보내고, 탭으로 먼저 고르게 하지 않는다. */}
+        <button
+          onClick={handleKakao}
+          className="w-full h-[52px] bg-[#FEE500] text-[#1a1a1a] rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-3 hover:opacity-90 transition"
+        >
+          <span>💬</span>
+          <span>카카오로 계속하기</span>
+        </button>
+        {/* 네이버 — 로그인용 앱 키가 준비된 환경에서만 보여 준다 */}
+        {process.env.NEXT_PUBLIC_NAVER_LOGIN === "1" && (
           <button
-            onClick={() => setTab("personal")}
-            className={`flex-1 pb-3 text-[15px] font-normal transition ${
-              tab === "personal"
-                ? "text-[#5f0080] border-b-2 border-[#5f0080]"
-                : "text-[#9a9a9a]"
-            }`}
+            onClick={() => { window.location.href = "/api/auth/naver"; }}
+            className="w-full h-[52px] bg-[#03C75A] text-white rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-3 hover:opacity-90 transition"
           >
-            개인회원
+            <span className="font-bold">N</span>
+            <span>네이버로 계속하기</span>
           </button>
-          <button
-            onClick={() => setTab("company")}
-            className={`flex-1 pb-3 text-[15px] font-normal transition ${
-              tab === "company"
-                ? "text-[#5f0080] border-b-2 border-[#5f0080]"
-                : "text-[#9a9a9a]"
-            }`}
-          >
-            기업회원
+        )}
+        <Link href="/login/email">
+          <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#1a1a1a] rounded-lg font-normal text-[15px] hover:border-[#5f0080] hover:bg-[#fafafa] transition flex items-center justify-center gap-2">
+            <Mail size={18} />
+            <span>이메일로 계속하기</span>
           </button>
-        </div>
+        </Link>
 
-        {tab === "personal" && (
-          <>
-            {/* 카카오 */}
-            <button
-              onClick={handleKakao}
-              className="w-full h-[52px] bg-[#FEE500] text-[#1a1a1a] rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-3 hover:opacity-90 transition"
-            >
-              <span>💬</span>
-              <span>카카오로 계속하기</span>
-            </button>
-            {/* 네이버 — 로그인용 앱 키가 준비된 환경에서만 보여 준다 */}
-            {process.env.NEXT_PUBLIC_NAVER_LOGIN === "1" && (
-            <button
-              onClick={() => { window.location.href = "/api/auth/naver"; }}
-              className="w-full h-[52px] bg-[#03C75A] text-white rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-3 hover:opacity-90 transition"
-            >
-              <span className="font-bold">N</span>
-              <span>네이버로 계속하기</span>
-            </button>
-            )}
-            {/* 이메일 로그인 */}
-            <Link href="/login/email">
-              <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#1a1a1a] rounded-lg font-normal text-[15px] hover:border-[#5f0080] hover:bg-[#fafafa] transition flex items-center justify-center gap-2">
-                <Mail size={18} />
-                <span>이메일로 로그인</span>
-              </button>
-            </Link>
-            {/* 회원가입 */}
-            <div className="mt-6 text-center">
-              <span className="text-[13px] md:text-[14px] text-[#6b6b6b]">아직 회원이 아니신가요? </span>
-              <Link href="/signup/email" className="text-[13px] md:text-[14px] text-[#5f0080] font-normal hover:underline">
-                회원가입하기
-              </Link>
-            </div>
-          </>
-        )}
-        {tab === "company" && (
-          <>
-            {/* 기업 이메일 로그인 */}
-            <Link href="/company/login">
-              <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#1a1a1a] rounded-lg font-normal text-[15px] hover:border-[#5f0080] hover:bg-[#fafafa] transition flex items-center justify-center gap-2">
-                <Building2 size={18} />
-                <span>이메일로 로그인</span>
-              </button>
-            </Link>
-            {/* 기업 회원가입 */}
-            <div className="mt-6 text-center">
-              <span className="text-[13px] md:text-[14px] text-[#6b6b6b]">아직 회원이 아니신가요? </span>
-              <Link href="/company/signup" className="text-[13px] md:text-[14px] text-[#5f0080] font-normal hover:underline">
-                회원가입하기
-              </Link>
-            </div>
-          </>
-        )}
+        {/* 보조 경로 — 처음 온 사람이 아니라 '길을 못 찾은 사람'에게 필요한 링크들 */}
+        <div className="mt-7 flex items-center justify-center gap-3 text-[13px] md:text-[14px] text-[#6b6b6b]">
+          <Link href="/login/find-account" className="hover:text-[#5f0080] hover:underline">계정 찾기</Link>
+          <span className="text-[#e0e0e0]">|</span>
+          <Link href="/company/login" className="hover:text-[#5f0080] hover:underline inline-flex items-center gap-1">
+            <Building2 size={15} /> 기업 회원
+          </Link>
+        </div>
 
         {/* 하단 약관 */}
         <div className="mt-12 flex justify-center gap-4 text-[12px] md:text-[13px] text-[#9a9a9a]">
