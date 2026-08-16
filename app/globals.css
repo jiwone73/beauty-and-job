@@ -11844,3 +11844,17 @@ button,
   .jobcard-bookmark { width: 22px; height: 22px; top: 5px; right: 5px; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
   .jobcard-bookmark svg { width: 12px; height: 12px; }
 }
+
+/* 기업 사이드바: 메뉴와 '사이트로 이동' 사이 구분선, 로고 클릭 시 뜨는 로그아웃 메뉴 */
+.company-nav-divider { height: 1px; background: #ececef; margin: 8px 12px; }
+.company-profile-menu {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 91;
+  min-width: 160px; background: #fff; border: 1px solid #ececef; border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 6px;
+}
+.company-profile-menu button {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 9px 10px; border: none; background: none; border-radius: 8px;
+  font-size: 14px; color: #333; cursor: pointer;
+}
+.company-profile-menu button:hover { background: #faf7fc; color: #5f0080; }

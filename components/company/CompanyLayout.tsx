@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
   Briefcase, Users, FileText, Settings,
-  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown
+  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink
 } from "lucide-react";
 
 
@@ -252,22 +252,41 @@ export default function CompanyLayout({ children, activePage }: {
     <div className="company-layout">
       <aside className={`company-sidebar ${sidebarOpen ? "" : "company-sidebar-closed"}`}>
         <div className="company-sidebar-logo">
-          <Link href={base} className="company-logo-link">
-            <div className="company-logo-mark">
-              {(() => {
-                const img = companyInfo.thumb || companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
-                return img ? (
-                  <img src={img} alt={`${companyInfo.name}`} />
-                ) : (
-                  <span>{companyInfo.name?.[0] || "·"}</span>
-                );
-              })()}
-            </div>
-            <div className="company-logo-info">
-              <span className="company-logo-name">{companyInfo.name}</span>
-              <span className="company-logo-category">{companyInfo.category}</span>
-            </div>
-          </Link>
+          {/* 로고를 누르면 로그아웃 (모바일 헤더와 같은 방식) — 사이드바 맨 아래에 따로 두지 않는다. */}
+          <div style={{ position: "relative" }}>
+            <button type="button" className="company-logo-link" onClick={() => setProfileOpen((v) => !v)}
+              style={{ background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit", textAlign: "left" }}>
+              <div className="company-logo-mark">
+                {(() => {
+                  const img = companyInfo.thumb || companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
+                  return img ? (
+                    <img src={img} alt={`${companyInfo.name}`} />
+                  ) : (
+                    <span>{companyInfo.name?.[0] || "·"}</span>
+                  );
+                })()}
+              </div>
+              <div className="company-logo-info">
+                <span className="company-logo-name">{companyInfo.name}</span>
+                <span className="company-logo-category">{companyInfo.category}</span>
+              </div>
+            </button>
+            {profileOpen && (
+              <>
+                <div style={{ position: "fixed", inset: 0, zIndex: 90 }} onClick={() => setProfileOpen(false)} />
+                <div className="company-profile-menu">
+                  <button onClick={() => {
+                    setProfileOpen(false);
+                    localStorage.removeItem("access_token");
+                    useAuthStore.getState().logout();
+                    router.push("/company/login");
+                  }}>
+                    <LogOut size={16} /> 로그아웃
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
           <div style={{ marginLeft: "auto", position: "relative" }}>
             <button className="company-header-btn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">
               <Bell size={18} />
@@ -309,22 +328,13 @@ export default function CompanyLayout({ children, activePage }: {
               <span>{item.label}</span>
             </Link>
           ))}
-        </nav>
-
-        <div className="company-sidebar-bottom">
+          {/* 사이트로 이동은 메뉴의 연장선이라 맨 아래가 아니라 마지막 메뉴 밑에 둔다. */}
+          <div className="company-nav-divider" />
           <button className="company-nav-item" onClick={() => router.push("/")}>
-            <LogOut size={20} />
+            <ExternalLink size={20} />
             <span>사이트로 이동</span>
           </button>
-          <button className="company-nav-item" onClick={() => {
-            localStorage.removeItem("access_token");
-            useAuthStore.getState().logout();
-            router.push("/company/login");
-          }}>
-            <LogOut size={20} />
-            <span>로그아웃</span>
-          </button>
-        </div>
+        </nav>
       </aside>
 
       <div className="company-main">
