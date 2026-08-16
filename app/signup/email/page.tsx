@@ -253,7 +253,7 @@ export default function SignupEmailPage() {
             <label className="block text-[13px] md:text-[16px] font-normal text-gray-700 mb-3">
               어떤 채용을 찾고 계신가요? <span className="text-red-500">*</span>
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={() => setJobType("STORE")}
@@ -267,7 +267,7 @@ export default function SignupEmailPage() {
                 <StoreIcon size={28} style={{ color: "#5f0080", flexShrink: 0 }} />
                 <span className="flex flex-col min-w-0">
                   <span className="text-[13px] md:text-[16px] font-normal text-[#1a1a1a]">매장</span>
-                  <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight">
+                  <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight whitespace-nowrap">
                     뷰티샵 · 에스테틱 · 네일
                   </span>
                 </span>
@@ -292,7 +292,7 @@ export default function SignupEmailPage() {
                 <OfficeIcon size={28} style={{ color: "#5f0080", flexShrink: 0 }} />
                 <span className="flex flex-col min-w-0">
                   <span className="text-[13px] md:text-[16px] font-normal text-[#1a1a1a]">오피스</span>
-                  <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight">
+                  <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight whitespace-nowrap">
                     브랜드 · 마케팅 · MD
                   </span>
                 </span>
