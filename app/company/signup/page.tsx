@@ -356,10 +356,10 @@ export default function CompanySignupPage() {
                   }`}
                 >
                   {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
-                  <t.Icon size={28} style={{ color: "#5f0080", flexShrink: 0 }} />
+                  <t.Icon size={30} style={{ color: "#5f0080", flexShrink: 0 }} />
                   <span className="flex flex-col min-w-0">
-                    <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">{t.label}</span>
-                    <span className="text-[10px] md:text-[11px] mt-0.5 leading-tight">{t.desc}</span>
+                    <span className="text-[13px] md:text-[16px] font-normal text-[#1a1a1a]">{t.label}</span>
+                    <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight">{t.desc}</span>
                   </span>
                   {form.company_type === t.value && (
                     <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#5f0080] rounded-full flex items-center justify-center">

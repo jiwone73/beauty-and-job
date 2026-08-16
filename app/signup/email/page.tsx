@@ -264,10 +264,10 @@ export default function SignupEmailPage() {
                 }`}
               >
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
-                <StoreIcon size={26} style={{ color: "#5f0080", flexShrink: 0 }} />
+                <StoreIcon size={28} style={{ color: "#5f0080", flexShrink: 0 }} />
                 <span className="flex flex-col min-w-0">
-                  <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">매장</span>
-                  <span className="text-[10px] md:text-[11px] mt-0.5 leading-tight">
+                  <span className="text-[13px] md:text-[16px] font-normal text-[#1a1a1a]">매장</span>
+                  <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight">
                     뷰티샵 · 에스테틱 · 네일
                   </span>
                 </span>
@@ -289,10 +289,10 @@ export default function SignupEmailPage() {
                 }`}
               >
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
-                <OfficeIcon size={26} style={{ color: "#5f0080", flexShrink: 0 }} />
+                <OfficeIcon size={28} style={{ color: "#5f0080", flexShrink: 0 }} />
                 <span className="flex flex-col min-w-0">
-                  <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">오피스</span>
-                  <span className="text-[10px] md:text-[11px] mt-0.5 leading-tight">
+                  <span className="text-[13px] md:text-[16px] font-normal text-[#1a1a1a]">오피스</span>
+                  <span className="text-[12px] md:text-[13px] mt-0.5 leading-tight">
                     브랜드 · 마케팅 · MD
                   </span>
                 </span>
