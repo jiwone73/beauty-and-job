@@ -538,7 +538,7 @@ function CompanyJobsContent() {
             <div className="admin-modal-header">
               <div>
                 <span className={`jobs-type-badge ${selected.job_type === "STORE" ? "store" : "corp"}`}>
-                  {selected.job_type === "STORE" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>}
+                  {selected.job_type === "STORE" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>}
                 </span>
                 <h2 className="admin-modal-title">{selected.title}</h2>
               </div>

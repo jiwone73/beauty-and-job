@@ -265,7 +265,7 @@ function JobsPageInner() {
             <button key={t}
               className={`jobs-type-tab ${jobTypeFilter === t ? "active" : ""}`}
               onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); }}>
-              {t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span> : t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : "전체"}
+              {t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span> : t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : "전체"}
             </button>
           ))}
         </div>

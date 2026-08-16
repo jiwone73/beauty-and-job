@@ -257,7 +257,7 @@ export default function SignupEmailPage() {
               <button
                 type="button"
                 onClick={() => setJobType("STORE")}
-                className={`jt-card relative flex items-center gap-2.5 px-2 py-2.5 rounded-xl border-2 text-left transition-all ${
+                className={`jt-card relative flex items-center gap-3 px-2 py-2.5 rounded-xl border-2 text-left transition-all ${
                   jobType === "STORE"
                     ? "border-purple-500 bg-purple-50 text-purple-700"
                     : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
@@ -282,7 +282,7 @@ export default function SignupEmailPage() {
               <button
                 type="button"
                 onClick={() => setJobType("OFFICE")}
-                className={`jt-card relative flex items-center gap-2.5 px-2 py-2.5 rounded-xl border-2 text-left transition-all ${
+                className={`jt-card relative flex items-center gap-3 px-2 py-2.5 rounded-xl border-2 text-left transition-all ${
                   jobType === "OFFICE"
                     ? "border-purple-500 bg-purple-50 text-purple-700"
                     : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"

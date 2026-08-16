@@ -11867,7 +11867,7 @@ button,
 /* 모바일 가입 카드: 1행 = 아이콘 + 제목, 2행 = 설명(카드 폭 전체).
    설명이 아이콘 옆 좁은 칸에 갇히지 않아 한 줄로 들어간다. */
 @media (max-width: 767px) {
-  .jt-card { display: grid; grid-template-columns: auto 1fr; column-gap: 9px; row-gap: 2px; align-items: center; }
+  .jt-card { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; row-gap: 2px; align-items: center; }
   .jt-card .jt-text { display: contents; }
   .jt-card .jt-title { grid-column: 2; }
   .jt-card .jt-desc { grid-column: 1 / -1; margin-top: 0; }

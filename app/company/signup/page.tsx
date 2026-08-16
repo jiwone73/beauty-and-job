@@ -349,7 +349,7 @@ export default function CompanySignupPage() {
                   key={t.value}
                   type="button"
                   onClick={() => update("company_type", t.value)}
-                  className={`jt-card relative flex items-center gap-2.5 px-2 py-2.5 border-2 rounded-xl text-left transition ${
+                  className={`jt-card relative flex items-center gap-3 px-2 py-2.5 border-2 rounded-xl text-left transition ${
                     form.company_type === t.value
                       ? "border-[#5f0080] bg-[#f5ebfa] text-[#5f0080]"
                       : "border-[#e0e0e0] text-[#6b6b6b] hover:border-[#c0c0c0]"
