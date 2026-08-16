@@ -57,7 +57,7 @@ export async function PATCH(req: NextRequest) {
   }
   const body = await req.json();
   const {
-    job_type,
+    job_type, phone,
     birth, gender, email, office_job_areas,
     address_road, address_detail, region_sido, region_sigungu, preferred_regions,
   } = body;
@@ -71,6 +71,24 @@ export async function PATCH(req: NextRequest) {
     }
     sets.push("job_type = $" + idx++);
     params.push(job_type);
+  }
+  // 휴대폰은 인증을 마친 번호만 저장한다(최근 10분 내 verified 기록).
+  if (phone !== undefined) {
+    const clean = String(phone).replace(/\D/g, "");
+    if (clean.length < 10) {
+      return err("USER_002", "휴대폰 번호가 올바르지 않습니다.", 400);
+    }
+    const v = await pool.query(
+      `SELECT 1 FROM phone_verifications
+        WHERE phone = $1 AND verified = true AND created_at > now() - interval '30 minutes'
+        LIMIT 1`,
+      [clean]
+    );
+    if (v.rowCount === 0) {
+      return err("USER_002", "휴대폰 인증을 먼저 완료해주세요.", 400);
+    }
+    sets.push("phone = $" + idx++);
+    params.push(clean);
   }
   if (birth !== undefined) {
     const birthDate = typeof birth === "string" && /^\d{8}$/.test(birth) ? birth : null;
