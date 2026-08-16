@@ -66,6 +66,21 @@ export async function GET(req: NextRequest) {
         ? account.email
         : null;
 
+    // 전화번호: 비즈 앱 + '전화번호' 동의 항목이 켜져 있어야 내려온다.
+    // 카카오는 "+82 10-1234-5678" 형식이라 국내 번호(01012345678)로 바꿔 저장한다.
+    const phone = (() => {
+      const raw: string = account.phone_number || "";
+      if (!raw) return null;
+      const digits = raw.replace(/[^0-9+]/g, "");
+      const local = digits.startsWith("+82")
+        ? "0" + digits.slice(3)
+        : digits.replace(/^\+/, "");
+      return /^01[0-9]{8,9}$/.test(local) ? local : null;
+    })();
+    if (!phone && account.phone_number_needs_agreement) {
+      console.warn("[kakao] 전화번호 동의가 필요합니다 — 동의 항목 설정을 확인하세요.");
+    }
+
     // 3) 회원 조회 / 연동 / 생성
     let user: any = null;
     let isNew = false;
@@ -91,23 +106,24 @@ export async function GET(req: NextRequest) {
           `UPDATE users
              SET kakao_id = $1,
                  avatar_url = COALESCE(avatar_url, $2),
+                 phone = COALESCE(phone, $3),
                  last_login_at = NOW()
-           WHERE id = $3
+           WHERE id = $4
            RETURNING id, email, name, phone, status, job_type, office_job_areas`,
-          [kakaoId, profileImage, byEmail.rows[0].id]
+          [kakaoId, profileImage, phone, byEmail.rows[0].id]
         );
         user = linked.rows[0];
       }
     }
 
-    // (c) 못 찾았으면 신규 가입 (phone은 없으므로 생략 → nullable)
+    // (c) 못 찾았으면 신규 가입 (번호를 못 받으면 비워 두고 온보딩에서 인증받는다)
     if (!user) {
       isNew = true;
       const ins = await pool.query(
-        `INSERT INTO users (kakao_id, name, email, avatar_url, status)
-         VALUES ($1, $2, $3, $4, 'ACTIVE')
+        `INSERT INTO users (kakao_id, name, email, phone, avatar_url, status)
+         VALUES ($1, $2, $3, $4, $5, 'ACTIVE')
          RETURNING id, email, name, phone, status, job_type, office_job_areas`,
-        [kakaoId, nickname, email, profileImage]
+        [kakaoId, nickname, email, phone, profileImage]
       );
       user = ins.rows[0];
     }
