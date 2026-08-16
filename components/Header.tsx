@@ -117,12 +117,9 @@ export default function Header({ onSearchClick }: HeaderProps) {
           </Link>
           <nav className="gnb">
             <Link href="/jobs" className={`gnb-with-tag ${pathname === "/jobs" ? "gnb-active" : ""}`}>채용공고</Link>
-            {/* 기업 계정에는 '이력서 등록'이 할 일이 없다. 눌렀을 때 대시보드로 튕겨 보내는 대신 메뉴 자리를
-                '기업 대시보드'로 바꾼다. 기업이 사이트를 도는 건 자기 공고가 어떻게 보이는지 확인하려는 것이라
-                막지 않고, 돌아갈 길만 눈에 띄게 둔다. */}
-            {isCompany ? (
-              <Link href="/company/dashboard" className="gnb-with-tag">기업 대시보드</Link>
-            ) : (
+            {/* 기업 계정에는 '이력서 등록'이 할 일이 없어 메뉴에서 뺀다. 돌아갈 길은 우측 상단
+                '대시보드로' 버튼 하나로 충분하다. */}
+            {!isCompany && (
               <button
                 type="button"
                 className="gnb-with-tag"
