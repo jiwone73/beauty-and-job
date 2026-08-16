@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Store, Building2 } from "lucide-react";
+import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useAuthStore } from "@/lib/store/authStore";
 
 export default function OnboardingJobTypePage() {
@@ -64,7 +64,7 @@ export default function OnboardingJobTypePage() {
                 : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
-              <Store size={18} strokeWidth={1.7} style={{ color: "#5f0080" }} /> 매장
+              <StoreIcon size={20} style={{ color: "#5f0080" }} /> 매장
             </p>
             <p className="text-[13px] text-[#6b6b6b]">
               뷰티 살롱, 네일샵, 피부관리실 등 현장 근무
@@ -79,7 +79,7 @@ export default function OnboardingJobTypePage() {
                 : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
-              <Building2 size={18} strokeWidth={1.7} style={{ color: "#5f0080" }} /> 오피스
+              <OfficeIcon size={20} style={{ color: "#5f0080" }} /> 오피스
             </p>
             <p className="text-[13px] text-[#6b6b6b]">
               뷰티 브랜드, MD, 마케팅, 기획 등 사무 근무

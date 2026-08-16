@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, Eye, EyeOff, Store, Building2 } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff } from "lucide-react";
+import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useAuthStore } from "@/lib/store/authStore";
 
 interface Term {
@@ -256,16 +257,19 @@ export default function SignupEmailPage() {
               <button
                 type="button"
                 onClick={() => setJobType("STORE")}
-                className={`relative flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+                className={`relative flex items-center gap-2 p-4 pr-6 rounded-xl border-2 text-left transition-all ${
                   jobType === "STORE"
                     ? "border-purple-500 bg-purple-50 text-purple-700"
                     : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
                 }`}
               >
-                <Store size={26} strokeWidth={1.6} className="mb-1" style={{ color: "#5f0080" }} />
-                <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">매장</span>
-                <span className="text-[10px] md:text-[11px] mt-0.5 text-center leading-tight">
-                  뷰티샵 · 에스테틱 · 네일
+                {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
+                <StoreIcon size={26} style={{ color: "#5f0080", flexShrink: 0 }} />
+                <span className="flex flex-col min-w-0">
+                  <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">매장</span>
+                  <span className="text-[10px] md:text-[11px] mt-0.5 leading-tight">
+                    뷰티샵 · 에스테틱 · 네일
+                  </span>
                 </span>
                 {jobType === "STORE" && (
                   <span className="absolute top-2 right-2 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
@@ -278,16 +282,19 @@ export default function SignupEmailPage() {
               <button
                 type="button"
                 onClick={() => setJobType("OFFICE")}
-                className={`relative flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+                className={`relative flex items-center gap-2 p-4 pr-6 rounded-xl border-2 text-left transition-all ${
                   jobType === "OFFICE"
                     ? "border-purple-500 bg-purple-50 text-purple-700"
                     : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
                 }`}
               >
-                <Building2 size={26} strokeWidth={1.6} className="mb-1" style={{ color: "#5f0080" }} />
-                <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">오피스</span>
-                <span className="text-[10px] md:text-[11px] mt-0.5 text-center leading-tight">
-                  브랜드 · 마케팅 · MD
+                {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
+                <OfficeIcon size={26} style={{ color: "#5f0080", flexShrink: 0 }} />
+                <span className="flex flex-col min-w-0">
+                  <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">오피스</span>
+                  <span className="text-[10px] md:text-[11px] mt-0.5 leading-tight">
+                    브랜드 · 마케팅 · MD
+                  </span>
                 </span>
                 {jobType === "OFFICE" && (
                   <span className="absolute top-2 right-2 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">

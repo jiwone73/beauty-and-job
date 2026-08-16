@@ -3,7 +3,8 @@ import { useState, useEffect, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, Eye, EyeOff, Store, Building2 } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff } from "lucide-react";
+import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 
 interface Term {
   id: string;
@@ -16,8 +17,8 @@ interface Term {
 // 본사 인력을 뽑을 땐 공고를 만들 때 유형(job_type)을 오피스로 고르면 된다.
 // (예전 'BOTH'는 공고 유형과 중복이라 선택지에서 뺐다 — 기존 데이터는 매장으로 취급)
 const COMPANY_TYPES = [
-  { value: "STORE", label: "매장", Icon: Store, desc: "현장직 채용" },
-  { value: "OFFICE", label: "오피스", Icon: Building2, desc: "사무직 채용" },
+  { value: "STORE", label: "매장", Icon: StoreIcon, desc: "현장직 채용" },
+  { value: "OFFICE", label: "오피스", Icon: OfficeIcon, desc: "사무직 채용" },
 ];
 
 export default function CompanySignupPage() {
@@ -348,15 +349,18 @@ export default function CompanySignupPage() {
                   key={t.value}
                   type="button"
                   onClick={() => update("company_type", t.value)}
-                  className={`relative flex flex-col items-center justify-center p-3 border-2 rounded-xl transition ${
+                  className={`relative flex items-center gap-2.5 p-3 pr-6 border-2 rounded-xl text-left transition ${
                     form.company_type === t.value
                       ? "border-[#5f0080] bg-[#f5ebfa] text-[#5f0080]"
                       : "border-[#e0e0e0] text-[#6b6b6b] hover:border-[#c0c0c0]"
                   }`}
                 >
-                  <t.Icon size={24} strokeWidth={1.6} className="mb-1" style={{ color: "#5f0080" }} />
-                  <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">{t.label}</span>
-                  <span className="text-[10px] md:text-[11px] mt-0.5 text-center leading-tight">{t.desc}</span>
+                  {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
+                  <t.Icon size={28} style={{ color: "#5f0080", flexShrink: 0 }} />
+                  <span className="flex flex-col min-w-0">
+                    <span className="text-[12px] md:text-[15px] font-normal text-[#1a1a1a]">{t.label}</span>
+                    <span className="text-[10px] md:text-[11px] mt-0.5 leading-tight">{t.desc}</span>
+                  </span>
                   {form.company_type === t.value && (
                     <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#5f0080] rounded-full flex items-center justify-center">
                       <svg width="8" height="8" viewBox="0 0 10 8" fill="none">
