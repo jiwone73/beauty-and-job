@@ -228,6 +228,14 @@ export default function SignupEmailPage() {
             <MessageCircle size={18} />
             <span>카카오로 3초 만에 가입</span>
           </button>
+          <button
+            type="button"
+            onClick={() => { window.location.href = "/api/auth/naver"; }}
+            className="w-full h-[50px] mt-2 bg-[#03C75A] text-white rounded-lg font-normal text-[14px] md:text-[15px] flex items-center justify-center gap-2 hover:opacity-90 transition"
+          >
+            <span className="font-bold">N</span>
+            <span>네이버로 3초 만에 가입</span>
+          </button>
           <div className="flex items-center gap-3 my-5">
             <div className="flex-1 h-px bg-[#eee]" />
             <span className="text-[12px] md:text-[13px] text-[#9a9a9a]">또는 이메일로 가입</span>

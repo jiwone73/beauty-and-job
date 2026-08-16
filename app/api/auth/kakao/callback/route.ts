@@ -144,8 +144,8 @@ export async function GET(req: NextRequest) {
 
     /* 수정 — 교체 */
     const b64 = Buffer.from(JSON.stringify(payload), "utf-8").toString("base64url");
-    const res = NextResponse.redirect(`${base}/login/kakao/callback`);
-    res.cookies.set("kakao_auth", b64, {
+    const res = NextResponse.redirect(`${base}/login/social/callback`);
+    res.cookies.set("social_auth", b64, {
       maxAge: 60,
       path: "/",
       httpOnly: false, // 클라 JS가 읽어야 함

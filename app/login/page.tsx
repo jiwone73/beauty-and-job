@@ -71,6 +71,14 @@ export default function LoginStartPage() {
               <span>💬</span>
               <span>카카오로 시작하기</span>
             </button>
+            {/* 네이버 */}
+            <button
+              onClick={() => { window.location.href = "/api/auth/naver"; }}
+              className="w-full h-[52px] bg-[#03C75A] text-white rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-3 hover:opacity-90 transition"
+            >
+              <span className="font-bold">N</span>
+              <span>네이버로 시작하기</span>
+            </button>
             {/* 이메일 로그인 */}
             <Link href="/login/email">
               <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#1a1a1a] rounded-lg font-normal text-[15px] hover:border-[#5f0080] hover:bg-[#fafafa] transition flex items-center justify-center gap-2">
