@@ -69,7 +69,7 @@ export default function LoginStartPage() {
               className="w-full h-[52px] bg-[#FEE500] text-[#1a1a1a] rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-3 hover:opacity-90 transition"
             >
               <span>💬</span>
-              <span>카카오로 시작하기</span>
+              <span>카카오로 계속하기</span>
             </button>
             {/* 네이버 — 로그인용 앱 키가 준비된 환경에서만 보여 준다 */}
             {process.env.NEXT_PUBLIC_NAVER_LOGIN === "1" && (
@@ -78,7 +78,7 @@ export default function LoginStartPage() {
               className="w-full h-[52px] bg-[#03C75A] text-white rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-3 hover:opacity-90 transition"
             >
               <span className="font-bold">N</span>
-              <span>네이버로 시작하기</span>
+              <span>네이버로 계속하기</span>
             </button>
             )}
             {/* 이메일 로그인 */}
