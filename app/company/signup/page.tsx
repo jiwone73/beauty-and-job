@@ -18,8 +18,8 @@ interface Term {
 // (예전 'BOTH'는 공고 유형과 중복이라 선택지에서 뺐다 — 기존 데이터는 매장으로 취급)
 const COMPANY_TYPES = [
   // 설명은 개인회원 가입과 같은 어휘로 — '현장직/사무직'보다 무엇을 뽑는 곳인지가 바로 읽힌다.
-  { value: "STORE", label: "매장", Icon: StoreIcon, desc: "뷰티샵 · 에스테틱 · 네일" },
-  { value: "OFFICE", label: "오피스", Icon: OfficeIcon, desc: "브랜드 · 마케팅 · MD" },
+  { value: "STORE", label: "매장", Icon: StoreIcon, desc: "헤어 · 네일 · 피부관리" },
+  { value: "OFFICE", label: "오피스", Icon: OfficeIcon, desc: "브랜드 · MD · 영업" },
 ];
 
 export default function CompanySignupPage() {
