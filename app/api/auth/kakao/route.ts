@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const base = process.env.NEXT_PUBLIC_BASE_URL || new URL(req.url).origin;
   const params = new URLSearchParams({
-    client_id: process.env.KAKAO_REST_API_KEY!,
+    client_id: (process.env.KAKAO_REST_API_KEY || "").trim(),
     redirect_uri: `${base}/api/auth/kakao/callback`,
     response_type: "code",
   });

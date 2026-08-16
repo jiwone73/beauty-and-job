@@ -33,8 +33,8 @@ export async function GET(req: NextRequest) {
       headers: { "Content-Type": "application/x-www-form-urlencoded;charset=utf-8" },
       body: new URLSearchParams({
         grant_type: "authorization_code",
-        client_id: process.env.NAVER_LOGIN_CLIENT_ID!,
-        client_secret: process.env.NAVER_LOGIN_CLIENT_SECRET!,
+        client_id: (process.env.NAVER_LOGIN_CLIENT_ID || "").trim(),
+        client_secret: (process.env.NAVER_LOGIN_CLIENT_SECRET || "").trim(),
         code,
         state: state || "",
       }),
