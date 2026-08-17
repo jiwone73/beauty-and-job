@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
-import { ChevronLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 // 이메일 하나로 로그인·가입을 함께 처리한다.
 //  1단계: 이메일을 받아 계정이 있는지 본다
@@ -102,22 +102,23 @@ export default function LoginEmailPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
+      <header className="h-14 flex items-center px-5 border-b border-[#f0f0f0]">
+        <Link href="/" className="inline-flex items-center">
+          <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} />
+        </Link>
+      </header>
+
+      <div className="px-5 pt-4">
         <button
           onClick={() => (step === "password" ? (setStep("email"), setPassword(""), setError("")) : router.back())}
-          className="p-2"
-          aria-label="뒤로"
+          className="inline-flex items-center gap-1.5 text-[13px] md:text-[14px] text-[#6b6b6b] hover:text-[#1a1a1a]"
         >
-          <ChevronLeft size={22} />
+          <ArrowLeft size={16} /> {step === "password" ? "이메일 다시 입력" : "취소하고 돌아가기"}
         </button>
-      </header>
+      </div>
 
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
-          <div className="flex justify-center mb-8">
-            <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
-          </div>
-
           <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-2">
             {step === "password" ? "다시 오셨네요" : "이메일로 계속하기"}
           </h1>

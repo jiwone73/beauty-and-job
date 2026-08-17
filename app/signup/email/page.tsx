@@ -3,7 +3,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useAuthStore } from "@/lib/store/authStore";
 
@@ -205,23 +205,23 @@ function SignupEmailContent() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* 헤더 */}
-      <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
+      <header className="h-14 flex items-center px-5 border-b border-[#f0f0f0]">
+        <Link href="/" className="inline-flex items-center">
+          <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} />
+        </Link>
+      </header>
+
+      <div className="px-5 pt-4">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-1 p-2 text-[14px] md:text-[16px] text-[#6b6b6b]"
+          className="inline-flex items-center gap-1.5 text-[13px] md:text-[14px] text-[#6b6b6b] hover:text-[#1a1a1a]"
         >
-          <ChevronLeft size={18} />
-          <span>취소하고 돌아가기</span>
+          <ArrowLeft size={16} /> 취소하고 돌아가기
         </button>
-      </header>
+      </div>
 
       <div className="flex-1 flex justify-center px-5 py-8">
         <div className="w-full max-w-[420px]">
-          {/* 로고 */}
-          <div className="flex justify-center mb-6">
-            <Link href="/" className="logo auth-logo"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
-          </div>
-
           <h1 className="text-[20px] md:text-[24px] font-normal text-[#1a1a1a] text-center mb-2">
             개인회원 가입
           </h1>

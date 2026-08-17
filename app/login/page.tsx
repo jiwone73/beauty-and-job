@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Building2, ChevronLeft } from "lucide-react";
+import { Mail, Building2, ArrowLeft } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect, Suspense } from "react";
 
@@ -36,28 +36,29 @@ function LoginStartContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      {/* 상단 바: 로고는 왼쪽 위 고정 자리 — 화면마다 위치가 달라지지 않게 한다 */}
+      <header className="h-14 flex items-center px-5 border-b border-[#f0f0f0]">
+        <Link href="/" className="inline-flex items-center">
+          <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} priority />
+        </Link>
+      </header>
+
       {/* 나가는 길 — 이력서 CTA 등으로 들어오면 여기가 막다른 화면이 된다.
           사이트 안에서 왔으면 뒤로, 새 탭·외부 유입이면 홈으로. */}
-      <header className="h-14 flex items-center px-4">
+      <div className="px-5 pt-4">
         <button
           onClick={() => {
             if (typeof window !== "undefined" && window.history.length > 1) router.back();
             else router.push("/");
           }}
-          className="p-2 -ml-2 text-[#1a1a1a]"
-          aria-label="뒤로"
+          className="inline-flex items-center gap-1.5 text-[13px] md:text-[14px] text-[#6b6b6b] hover:text-[#1a1a1a]"
         >
-          <ChevronLeft size={22} />
+          <ArrowLeft size={16} /> 취소하고 돌아가기
         </button>
-      </header>
+      </div>
 
       <div className="flex-1 flex items-center justify-center px-5 pb-14">
       <div className="w-full max-w-[400px]">
-        {/* 로고 */}
-        <div className="flex justify-center mb-6">
-          <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority /></Link>
-        </div>
-
         {/* 슬로건 */}
         <h1 className="text-center text-[20px] font-normal text-[#1a1a1a] mb-2">
           뷰티 커리어의 시작과 성장
