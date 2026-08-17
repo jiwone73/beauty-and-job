@@ -52,22 +52,22 @@ function LoginStartContent() {
       <div className="flex-1 flex items-center justify-center px-5 pb-14">
       <div className="w-full max-w-[400px]">
         {/* 슬로건 */}
-        <h1 className="text-center text-[20px] font-normal text-[#1a1a1a] mb-2">
+        <h1 className="text-center text-[22px] font-bold text-[#1a1a1a] mb-3">
           뷰티 커리어의 시작과 성장
         </h1>
-        <p className="text-center text-[14px] md:text-[15px] text-[#6b6b6b] mb-8">
+        <p className="text-center text-[14px] md:text-[15px] text-[#6b6b6b] mb-11">
           전문가 채용부터 업계 트렌드까지, 뷰티워크
         </p>
 
         {socialError && (
-          <p className="mb-4 text-center text-[13px] md:text-[14px] text-[#e74c3c]">{socialError}</p>
+          <p className="mb-5 text-center text-[13px] md:text-[14px] text-[#e74c3c]">{socialError}</p>
         )}
 
         {/* 개인 로그인만 앞에 둔다 — 들어오는 사람 대부분이 구직자다.
             기업은 아래 링크로 보내고, 탭으로 먼저 고르게 하지 않는다. */}
         <button
           onClick={handleKakao}
-          className="w-full h-[52px] bg-[#FEE500] text-[#1a1a1a] rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-3 hover:opacity-90 transition"
+          className="w-full h-[52px] bg-[#FEE500] text-[#1a1a1a] rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition"
         >
           <span>💬</span>
           <span>카카오로 계속하기</span>
@@ -76,7 +76,7 @@ function LoginStartContent() {
         {process.env.NEXT_PUBLIC_NAVER_LOGIN === "1" && (
           <button
             onClick={() => { window.location.href = "/api/auth/naver"; }}
-            className="w-full h-[52px] bg-[#03C75A] text-white rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-3 hover:opacity-90 transition"
+            className="w-full h-[52px] bg-[#03C75A] text-white rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition"
           >
             <span className="font-bold">N</span>
             <span>네이버로 계속하기</span>
@@ -90,7 +90,7 @@ function LoginStartContent() {
         </Link>
 
         {/* 보조 경로 — 처음 온 사람이 아니라 '길을 못 찾은 사람'에게 필요한 링크들 */}
-        <div className="mt-7 flex items-center justify-center gap-3 text-[13px] md:text-[14px] text-[#6b6b6b]">
+        <div className="mt-9 flex items-center justify-center gap-3 text-[13px] md:text-[14px] text-[#6b6b6b]">
           <Link href="/login/find-account" className="hover:text-[#5f0080] hover:underline inline-flex items-center gap-1">
             <UserSearch size={15} /> 계정 찾기
           </Link>
@@ -101,7 +101,7 @@ function LoginStartContent() {
         </div>
 
         {/* 하단 약관 */}
-        <div className="mt-12 flex justify-center gap-4 text-[12px] md:text-[13px] text-[#9a9a9a]">
+        <div className="mt-14 flex justify-center gap-4 text-[12px] md:text-[13px] text-[#9a9a9a]">
           <Link href="/support/terms" className="hover:underline">이용약관</Link>
           <span>·</span>
           <Link href="/support/privacy" className="hover:underline">개인정보처리방침</Link>
