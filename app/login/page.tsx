@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Building2, UserSearch } from "lucide-react";
+import { Mail, Building2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect, Suspense } from "react";
 
@@ -112,12 +112,9 @@ function LoginStartContent() {
           </button>
         </Link>
 
-        {/* 보조 경로 — 처음 온 사람이 아니라 '길을 못 찾은 사람'에게 필요한 링크 */}
-        <div className="mt-9 flex items-center justify-center text-[13px] md:text-[14px] text-[#6b6b6b]">
-          <Link href="/login/find-account" className="hover:text-[#5f0080] hover:underline inline-flex items-center gap-1">
-            <UserSearch size={15} /> 계정 찾기
-          </Link>
-        </div>
+        {/* 계정 찾기는 여기 두지 않는다 — 아직 아무도 막히지 않은 화면이다.
+            막히는 곳은 이메일 로그인 화면이고 거기에 이미 있다.
+            소셜로 가입한 사람에게는 이메일을 찾아 줘도 쓸 데가 없다. */}
 
         {/* 하단 약관 */}
         <div className="mt-14 flex justify-center gap-4 text-[12px] md:text-[13px] text-[#9a9a9a]">
