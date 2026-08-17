@@ -129,12 +129,23 @@ export default function CompanyLoginPage() {
           >
             {loading ? "로그인 중..." : "로그인"}
           </button>
-          {/* 하단 링크 — 셋을 한 줄에 두므로 아이콘은 14px, 글자와의 사이는 좁게 */}
+          {/* 아직 계정이 없는 기업의 갈래 — 이메일 로그인 화면과 같은 모양으로 둔다.
+              첫 화면에서 '기업 회원으로 계속하기'로 온 신규가 여기서 길을 잃으면 안 된다. */}
+          <div className="my-7 flex items-center gap-3">
+            <span className="h-px flex-1 bg-[#ececec]" />
+            <span className="text-[12px] md:text-[13px] text-[#9a9a9a]">또는</span>
+            <span className="h-px flex-1 bg-[#ececec]" />
+          </div>
+
+          <Link href="/company/signup">
+            <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#5f0080] rounded-lg font-normal text-[15px] hover:border-[#5f0080] hover:bg-[#faf7fc] transition flex items-center justify-center gap-2">
+              <Building2 size={18} />
+              기업 회원가입하기
+            </button>
+          </Link>
+
+          {/* 하단 링크 — 아이콘은 14px, 글자와의 사이는 좁게 */}
           <div className="mt-8 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
-            <Link href="/company/signup" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              <Building2 size={14} /> 기업 회원가입
-            </Link>
-            <span className="text-[#d0d0d0]">·</span>
             <Link href="/login/password-reset?type=company" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
               <KeyRound size={14} /> 비밀번호 재설정
             </Link>
