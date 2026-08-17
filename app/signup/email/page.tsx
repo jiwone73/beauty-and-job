@@ -204,14 +204,16 @@ function SignupEmailContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      {/* 헤더 */}
-      <header className="h-14 flex items-center px-5 border-b border-[#f0f0f0]">
-        <Link href="/" className="inline-flex items-center">
-          <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} />
-        </Link>
+      {/* 헤더 — 로고는 가운데 컨테이너의 왼쪽 (로그인 화면과 같은 자리) */}
+      <header className="h-14 border-b border-[#f0f0f0]">
+        <div className="mx-auto w-full max-w-[1060px] h-full flex items-center px-5">
+          <Link href="/" className="inline-flex items-center">
+            <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} />
+          </Link>
+        </div>
       </header>
 
-      <div className="px-5 pt-4">
+      <div className="mx-auto w-full max-w-[1060px] px-5 pt-4">
         <button
           onClick={() => router.back()}
           className="inline-flex items-center gap-1.5 text-[13px] md:text-[14px] text-[#6b6b6b] hover:text-[#1a1a1a]"

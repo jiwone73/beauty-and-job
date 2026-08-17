@@ -36,16 +36,19 @@ function LoginStartContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      {/* 상단 바: 로고는 왼쪽 위 고정 자리 — 화면마다 위치가 달라지지 않게 한다 */}
-      <header className="h-14 flex items-center px-5 border-b border-[#f0f0f0]">
-        <Link href="/" className="inline-flex items-center">
-          <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} priority />
-        </Link>
+      {/* 상단 바: 로고는 화면 맨 왼쪽이 아니라 가운데 컨테이너의 왼쪽에 붙인다.
+          아래 '돌아가기'와 세로줄이 맞고, 화면마다 위치가 달라지지 않는다. */}
+      <header className="h-14 border-b border-[#f0f0f0]">
+        <div className="mx-auto w-full max-w-[1060px] h-full flex items-center px-5">
+          <Link href="/" className="inline-flex items-center">
+            <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} priority />
+          </Link>
+        </div>
       </header>
 
       {/* 나가는 길 — 이력서 CTA 등으로 들어오면 여기가 막다른 화면이 된다.
           사이트 안에서 왔으면 뒤로, 새 탭·외부 유입이면 홈으로. */}
-      <div className="px-5 pt-4">
+      <div className="mx-auto w-full max-w-[1060px] px-5 pt-4">
         <button
           onClick={() => {
             if (typeof window !== "undefined" && window.history.length > 1) router.back();
