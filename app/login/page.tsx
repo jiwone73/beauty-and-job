@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Building2, ArrowLeft } from "lucide-react";
+import { Mail, Building2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect, Suspense } from "react";
 
@@ -46,19 +46,8 @@ function LoginStartContent() {
         </div>
       </header>
 
-      {/* 나가는 길 — 이력서 CTA 등으로 들어오면 여기가 막다른 화면이 된다.
-          사이트 안에서 왔으면 뒤로, 새 탭·외부 유입이면 홈으로. */}
-      <div className="mx-auto w-full max-w-[1060px] px-5 pt-4">
-        <button
-          onClick={() => {
-            if (typeof window !== "undefined" && window.history.length > 1) router.back();
-            else router.push("/");
-          }}
-          className="inline-flex items-center gap-1.5 text-[13px] md:text-[14px] text-[#6b6b6b] hover:text-[#1a1a1a]"
-        >
-          <ArrowLeft size={16} /> 취소하고 돌아가기
-        </button>
-      </div>
+      {/* 여기는 로그인의 출발점이라 되돌아갈 앞 단계가 없다.
+          나가려면 로고를 눌러 홈으로 가면 된다 — 별도 링크를 두지 않는다. */}
 
       <div className="flex-1 flex items-center justify-center px-5 pb-14">
       <div className="w-full max-w-[400px]">

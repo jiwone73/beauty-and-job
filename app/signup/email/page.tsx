@@ -213,12 +213,15 @@ function SignupEmailContent() {
         </div>
       </header>
 
+      {/* 뒤로 — 로그인 화면과 같이 화살표만 둔다 */}
       <div className="mx-auto w-full max-w-[1060px] px-5 pt-4">
         <button
           onClick={() => router.back()}
-          className="inline-flex items-center gap-1.5 text-[13px] md:text-[14px] text-[#6b6b6b] hover:text-[#1a1a1a]"
+          aria-label="뒤로"
+          title="뒤로"
+          className="-ml-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
         >
-          <ArrowLeft size={16} /> 취소하고 돌아가기
+          <ArrowLeft size={20} />
         </button>
       </div>
 

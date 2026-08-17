@@ -111,12 +111,16 @@ export default function LoginEmailPage() {
         </div>
       </header>
 
+      {/* 뒤로 — 글자 없이 화살표만. 뜻은 화면 흐름으로 충분히 읽힌다.
+          비밀번호 단계에서는 화면을 뜨지 않고 이메일 단계로만 되돌린다. */}
       <div className="mx-auto w-full max-w-[1060px] px-5 pt-4">
         <button
           onClick={() => (step === "password" ? (setStep("email"), setPassword(""), setError("")) : router.back())}
-          className="inline-flex items-center gap-1.5 text-[13px] md:text-[14px] text-[#6b6b6b] hover:text-[#1a1a1a]"
+          aria-label={step === "password" ? "이메일 다시 입력" : "뒤로"}
+          title={step === "password" ? "이메일 다시 입력" : "뒤로"}
+          className="-ml-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
         >
-          <ArrowLeft size={16} /> {step === "password" ? "이메일 다시 입력" : "취소하고 돌아가기"}
+          <ArrowLeft size={20} />
         </button>
       </div>
 
