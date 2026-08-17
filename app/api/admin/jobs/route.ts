@@ -195,7 +195,9 @@ export async function POST(req: NextRequest) {
         JSON.stringify(detail_images || []),
         JSON.stringify(hiring_process || []),
         notes || null, benefits || null,
-        created_by || 'admin',
+        // 누가 올렸는지는 토큰에서 가져온다 — 알바 실적 집계가 여기에 달려 있어
+        // 본문 값을 그대로 믿으면 안 된다.
+        auth?.sub || created_by || 'admin',
         src, am, extUrl, extEmail, responsibilities || null,
         extName, extPhone, contact_methods || [],
         employment_type || null, benefit_tags || [],

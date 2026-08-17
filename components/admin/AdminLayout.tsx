@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
+import WorkHeartbeat from "@/components/admin/WorkHeartbeat";
 import {
   LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Mail, Bell,
   LogOut, Menu, X, ChevronDown, ChevronRight, MessageSquare, Building2 } from "lucide-react";
@@ -14,6 +15,7 @@ const NAV_ITEMS = [
     children: [
       { id: "members", label: "개인회원", href: "/admin/members" },
       { id: "members-companies", label: "기업회원", href: "/admin/members/companies" },
+      { id: "members-alba", label: "알바 근무현황", href: "/admin/members/alba" },
     ]
   },
   {
@@ -48,6 +50,7 @@ const PAGE_TITLES: Record<string, string> = {
   "jobs-external-inbox": "외부 지원 인박스",
   "members": "회원관리",
   "members-companies": "회원관리",
+  "members-alba": "회원관리",
   "members-blocked": "열람제한기업",
   "members-favorites": "관심기업",
   "resumes": "인재정보",
@@ -64,6 +67,7 @@ const PAGE_TITLES: Record<string, string> = {
 const PAGE_SUBTITLES: Record<string, string> = {
   "members": "개인회원",
   "members-companies": "기업회원",
+  "members-alba": "알바 근무현황",
   "jobs": "채용공고 목록",
   "jobs-new": "공고 직접 등록",
   "resumes-applications": "입사지원 목록",
@@ -142,6 +146,8 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
 
   return (
     <div className="admin-layout">
+      {/* 알바 근무 시간 자동 측정 — 관리자 화면에 있는 동안만 센다 */}
+      <WorkHeartbeat />
       <aside className={`admin-sidebar ${sidebarOpen ? "open" : "closed"}`}>
         <div className="admin-sidebar-logo">
           <Link href="/admin" className="admin-logo-link">
