@@ -143,7 +143,7 @@ export default function CompanyLoginPage() {
 
           <Link href="/company/signup">
             <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#5f0080] rounded-lg font-normal text-[15px] hover:border-[#5f0080] hover:bg-[#faf7fc] transition">
-              기업회원 가입하기
+              기업회원으로 가입하기
             </button>
           </Link>
 
