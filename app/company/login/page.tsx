@@ -16,6 +16,10 @@ export default function CompanyLoginPage() {
   const [keepLogin, setKeepLogin] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // 이메일 로그인과 같은 규칙 — 둘 다 채우기 전에는 버튼을 잠가 둔다.
+  const canSubmit = email.trim().length > 0 && password.length > 0 && !loading;
+
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       setError("이메일과 비밀번호를 입력해주세요.");
@@ -83,7 +87,7 @@ export default function CompanyLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="이메일을 입력해주세요"
               className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+              onKeyDown={(e) => e.key === "Enter" && canSubmit && handleLogin()}
             />
           </div>
           {/* 비밀번호 입력 */}
@@ -96,7 +100,7 @@ export default function CompanyLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호를 입력해주세요"
                 className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
-                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                onKeyDown={(e) => e.key === "Enter" && canSubmit && handleLogin()}
               />
               <button
                 type="button"
@@ -124,8 +128,8 @@ export default function CompanyLoginPage() {
           {/* 로그인 버튼 */}
           <button
             onClick={handleLogin}
-            disabled={loading}
-            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-7 disabled:opacity-50 hover:opacity-90 transition"
+            disabled={!canSubmit}
+            className="w-full h-[52px] rounded-lg font-normal text-[15px] mt-7 transition bg-[#5f0080] text-white hover:opacity-90 disabled:bg-[#f2f2f2] disabled:text-[#b0b0b0] disabled:hover:opacity-100"
           >
             {loading ? "로그인 중..." : "로그인"}
           </button>
