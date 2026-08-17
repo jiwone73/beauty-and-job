@@ -3,7 +3,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle } from "lucide-react";
 
 function PasswordResetRequestForm() {
   const router = useRouter();
@@ -46,11 +46,25 @@ function PasswordResetRequestForm() {
   if (sent) {
     return (
       <div className="min-h-screen flex flex-col bg-white">
-        <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
-          <button onClick={() => router.push(loginPath)} className="p-2">
-            <ChevronLeft size={22} />
-          </button>
+        {/* 로고와 뒤로는 다른 로그인 화면과 같은 자리에 둔다 */}
+        <header className="h-14 border-b border-[#f0f0f0]">
+          <div className="mx-auto w-full max-w-[1060px] h-full flex items-center px-5">
+            <Link href="/" className="inline-flex items-center">
+              <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} />
+            </Link>
+          </div>
         </header>
+
+        <div className="mx-auto w-full max-w-[1060px] px-5 pt-4">
+          <button
+            onClick={() => router.push(loginPath)}
+            aria-label="뒤로"
+            title="뒤로"
+            className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+          >
+            <ArrowLeft size={26} />
+          </button>
+        </div>
         <div className="flex-1 flex items-center justify-center px-5">
           <div className="w-full max-w-[400px] text-center">
             <div className="flex justify-center mb-6">
@@ -82,25 +96,36 @@ function PasswordResetRequestForm() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
-        <button onClick={() => router.back()} className="p-2">
-          <ChevronLeft size={22} />
-        </button>
+      {/* 로고와 뒤로는 다른 로그인 화면과 같은 자리에 둔다 */}
+      <header className="h-14 border-b border-[#f0f0f0]">
+        <div className="mx-auto w-full max-w-[1060px] h-full flex items-center px-5">
+          <Link href="/" className="inline-flex items-center">
+            <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} />
+          </Link>
+        </div>
       </header>
+
+      <div className="mx-auto w-full max-w-[1060px] px-5 pt-4">
+        <button
+          onClick={() => router.back()}
+          aria-label="뒤로"
+          title="뒤로"
+          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+        >
+          <ArrowLeft size={26} />
+        </button>
+      </div>
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
-          <div className="flex justify-center mb-6">
-            <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
-          </div>
           <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
             {isCompany ? "기업 비밀번호 재설정" : "비밀번호 재설정"}
           </h1>
-          <p className="text-[13px] md:text-[14px] text-[#6b6b6b] text-center mb-8">
+          <p className="text-[13px] md:text-[14px] text-[#6b6b6b] text-center mb-10">
             {isCompany ? "기업회원으로 가입하신 이메일을 입력해주세요" : "가입하신 이메일을 입력해주세요"}<br />
             비밀번호 재설정 링크를 보내드릴게요
           </p>
-          <div className="mb-4">
-            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">이메일</label>
+          <div className="mb-5">
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-2">이메일</label>
             <input
               type="email"
               value={email}

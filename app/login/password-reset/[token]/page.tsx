@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, CheckCircle } from "lucide-react";
 
 export default function PasswordResetTokenPage() {
   const router = useRouter();
@@ -68,7 +68,7 @@ export default function PasswordResetTokenPage() {
             <h1 className="text-[20px] font-normal text-[#1a1a1a] mb-3">
               비밀번호 변경 완료
             </h1>
-            <p className="text-[14px] md:text-[15px] text-[#6b6b6b] mb-8">
+            <p className="text-[14px] md:text-[15px] text-[#6b6b6b] mb-10">
               새 비밀번호로 다시 로그인해주세요
             </p>
             <Link href="/login/email">
@@ -84,24 +84,35 @@ export default function PasswordResetTokenPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
-        <button onClick={() => router.push("/login/email")} className="p-2">
-          <ChevronLeft size={22} />
-        </button>
+      {/* 로고와 뒤로는 다른 로그인 화면과 같은 자리에 둔다 */}
+      <header className="h-14 border-b border-[#f0f0f0]">
+        <div className="mx-auto w-full max-w-[1060px] h-full flex items-center px-5">
+          <Link href="/" className="inline-flex items-center">
+            <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} />
+          </Link>
+        </div>
       </header>
+
+      <div className="mx-auto w-full max-w-[1060px] px-5 pt-4">
+        <button
+          onClick={() => router.push("/login/email")}
+          aria-label="뒤로"
+          title="뒤로"
+          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+        >
+          <ArrowLeft size={26} />
+        </button>
+      </div>
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
-          <div className="flex justify-center mb-6">
-            <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
-          </div>
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-2">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
             새 비밀번호 입력
           </h1>
-          <p className="text-[13px] md:text-[14px] text-[#6b6b6b] text-center mb-8">
+          <p className="text-[13px] md:text-[14px] text-[#6b6b6b] text-center mb-10">
             새로 사용할 비밀번호를 입력해주세요
           </p>
-          <div className="mb-2">
-            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">새 비밀번호</label>
+          <div className="mb-4">
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-2">새 비밀번호</label>
             <div className="relative mb-2">
               <input
                 type={showPw ? "text" : "password"}

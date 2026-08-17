@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { setLoginPersistence } from "@/lib/auth/session";
-import { ChevronLeft, Eye, EyeOff, Building2, KeyRound, UserSearch } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Building2, KeyRound, UserSearch } from "lucide-react";
 export default function CompanyLoginPage() {
   const router = useRouter();
   const { login } = useAuthStore();
@@ -50,24 +50,33 @@ export default function CompanyLoginPage() {
   };
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      {/* 헤더 */}
-      <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
-        <button onClick={() => router.back()} className="p-2">
-          <ChevronLeft size={22} />
-        </button>
+      {/* 로고와 뒤로는 다른 로그인 화면과 같은 자리에 둔다 */}
+      <header className="h-14 border-b border-[#f0f0f0]">
+        <div className="mx-auto w-full max-w-[1060px] h-full flex items-center px-5">
+          <Link href="/" className="inline-flex items-center">
+            <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} />
+          </Link>
+        </div>
       </header>
+
+      <div className="mx-auto w-full max-w-[1060px] px-5 pt-4">
+        <button
+          onClick={() => router.back()}
+          aria-label="뒤로"
+          title="뒤로"
+          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+        >
+          <ArrowLeft size={26} />
+        </button>
+      </div>
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
-          {/* 로고 */}
-          <div className="flex justify-center mb-8">
-            <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
-          </div>
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-8">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-10">
             기업회원 로그인
           </h1>
           {/* 이메일 입력 */}
-          <div className="mb-3">
-            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">이메일</label>
+          <div className="mb-5">
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-2">이메일</label>
             <input
               type="email"
               value={email}
@@ -78,8 +87,8 @@ export default function CompanyLoginPage() {
             />
           </div>
           {/* 비밀번호 입력 */}
-          <div className="mb-2">
-            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">비밀번호</label>
+          <div className="mb-4">
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-2">비밀번호</label>
             <div className="relative">
               <input
                 type={showPw ? "text" : "password"}
@@ -116,12 +125,12 @@ export default function CompanyLoginPage() {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-4 disabled:opacity-50 hover:opacity-90 transition"
+            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-7 disabled:opacity-50 hover:opacity-90 transition"
           >
             {loading ? "로그인 중..." : "로그인"}
           </button>
           {/* 하단 링크 — 셋을 한 줄에 두므로 아이콘은 14px, 글자와의 사이는 좁게 */}
-          <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
+          <div className="mt-8 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
             <Link href="/company/signup" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
               <Building2 size={14} /> 기업 회원가입
             </Link>

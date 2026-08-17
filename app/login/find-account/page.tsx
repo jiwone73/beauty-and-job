@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, LogIn, KeyRound } from "lucide-react";
+import { ArrowLeft, LogIn, KeyRound } from "lucide-react";
 
 export default function FindAccountPage() {
   const router = useRouter();
@@ -43,30 +43,39 @@ export default function FindAccountPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      {/* 헤더 */}
-      <header className="h-14 flex items-center px-4 border-b border-[#ececec]">
-        <button onClick={() => router.back()} className="p-2">
-          <ChevronLeft size={22} />
-        </button>
+      {/* 로고와 뒤로는 다른 로그인 화면과 같은 자리에 둔다 */}
+      <header className="h-14 border-b border-[#f0f0f0]">
+        <div className="mx-auto w-full max-w-[1060px] h-full flex items-center px-5">
+          <Link href="/" className="inline-flex items-center">
+            <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} />
+          </Link>
+        </div>
       </header>
+
+      <div className="mx-auto w-full max-w-[1060px] px-5 pt-4">
+        <button
+          onClick={() => router.back()}
+          aria-label="뒤로"
+          title="뒤로"
+          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+        >
+          <ArrowLeft size={26} />
+        </button>
+      </div>
 
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
-          {/* 로고 */}
-          <div className="flex justify-center mb-8">
-            <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
-          </div>
 
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-2">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
             계정 찾기
           </h1>
-          <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-8">
+          <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-10">
             가입 시 등록한 이름과 휴대폰번호로<br />가입된 이메일을 찾아드려요.
           </p>
 
           {/* 이름 */}
-          <div className="mb-3">
-            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">이름</label>
+          <div className="mb-5">
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-2">이름</label>
             <input
               type="text"
               value={name}
@@ -77,8 +86,8 @@ export default function FindAccountPage() {
           </div>
 
           {/* 휴대폰 */}
-          <div className="mb-2">
-            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">휴대폰번호</label>
+          <div className="mb-4">
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-2">휴대폰번호</label>
             <input
               type="tel"
               inputMode="numeric"
@@ -97,7 +106,7 @@ export default function FindAccountPage() {
           <button
             onClick={handleFind}
             disabled={loading}
-            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-4 disabled:opacity-50 hover:opacity-90 transition"
+            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-7 disabled:opacity-50 hover:opacity-90 transition"
           >
             {loading ? "조회 중..." : "이메일 찾기"}
           </button>
@@ -129,7 +138,7 @@ export default function FindAccountPage() {
           )}
 
           {/* 하단 링크 — 로그인 화면과 같은 아이콘·크기를 쓴다 */}
-          <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
+          <div className="mt-8 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
             <Link href="/login/email" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
               <LogIn size={14} /> 로그인
             </Link>

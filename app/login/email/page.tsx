@@ -130,18 +130,18 @@ export default function LoginEmailPage() {
 
       <div className="flex-1 flex items-center justify-center px-5">
         <div className="w-full max-w-[400px]">
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-2">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
             {step === "password" ? "다시 오셨네요" : "이메일로 계속하기"}
           </h1>
-          <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-8">
+          <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-10">
             {step === "password"
               ? "비밀번호를 입력하면 로그인돼요."
               : "가입하셨다면 로그인, 처음이시면 회원가입으로 이어져요."}
           </p>
 
           {/* 이메일 — 2단계에서는 잠그고 값만 보여 준다 */}
-          <div className="mb-3">
-            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">이메일</label>
+          <div className="mb-5">
+            <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-2">이메일</label>
             <input
               type="email"
               value={email}
@@ -155,8 +155,8 @@ export default function LoginEmailPage() {
           </div>
 
           {step === "password" && (
-            <div className="mb-2">
-              <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">비밀번호</label>
+            <div className="mb-4">
+              <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-2">비밀번호</label>
               <div className="relative">
                 <input
                   type={showPw ? "text" : "password"}
@@ -224,13 +224,13 @@ export default function LoginEmailPage() {
           <button
             onClick={step === "email" ? handleContinue : handleLogin}
             disabled={loading}
-            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-4 disabled:opacity-50 hover:opacity-90 transition"
+            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-7 disabled:opacity-50 hover:opacity-90 transition"
           >
             {loading ? "확인 중..." : step === "email" ? "계속하기" : "로그인"}
           </button>
 
           {/* 하단 링크 — 기업 로그인과 같은 아이콘·크기를 쓴다 */}
-          <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
+          <div className="mt-8 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
             <Link href="/login/password-reset" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
               <KeyRound size={14} /> 비밀번호 재설정
             </Link>
