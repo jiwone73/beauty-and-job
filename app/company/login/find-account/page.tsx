@@ -156,7 +156,7 @@ export default function CompanyFindAccountPage() {
             </Link>
             <span className="text-[#d0d0d0]">·</span>
             <Link href="/company/signup" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              <Building2 size={14} /> 기업 회원가입
+              <Building2 size={14} /> 기업회원 가입
             </Link>
           </div>
         </div>

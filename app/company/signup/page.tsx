@@ -335,7 +335,7 @@ export default function CompanySignupPage() {
           </div>
 
           <h1 className="text-[20px] md:text-[24px] font-normal text-[#1a1a1a] text-center mb-2">
-            기업 회원가입
+            기업회원 가입
           </h1>
           <p className="text-[14px] md:text-[16px] text-[#6b6b6b] text-center mb-8">
             뷰티워크에서 우수한 인재를 만나보세요
@@ -552,7 +552,7 @@ export default function CompanySignupPage() {
 
           <button onClick={handleSubmit} disabled={!isFormValid || loading}
             className="w-full h-[52px] mt-6 bg-[#5f0080] text-white rounded-lg font-normal text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition">
-            {loading ? "회원가입 중..." : "기업 회원가입"}
+            {loading ? "회원가입 중..." : "기업회원 가입"}
           </button>
 
         </div>
