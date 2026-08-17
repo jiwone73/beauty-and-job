@@ -167,7 +167,7 @@
 
 .hero-title {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 400;
   line-height: 1.2;
   letter-spacing: -1px;
   color: #1a1a1a;
@@ -285,7 +285,7 @@
 
 .section-title {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 400;
   color: #111;
   letter-spacing: -0.5px;
   display: flex;
@@ -7725,7 +7725,7 @@ div:has(> table.admin-table),
 }
 .hero-banner-title {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 400;
   color: #fff;
   margin: 0;
   white-space: nowrap;
@@ -8000,8 +8000,8 @@ div:has(> table.admin-table),
   margin-bottom: 18px;
 }
 .hero-right-title {
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 400;
   color: #1a1a1a;
 }
 .hero-right-cards {
