@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Building2 } from "lucide-react";
+import { Mail, Building2, UserSearch } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect, Suspense } from "react";
 
@@ -91,7 +91,9 @@ function LoginStartContent() {
 
         {/* 보조 경로 — 처음 온 사람이 아니라 '길을 못 찾은 사람'에게 필요한 링크들 */}
         <div className="mt-7 flex items-center justify-center gap-3 text-[13px] md:text-[14px] text-[#6b6b6b]">
-          <Link href="/login/find-account" className="hover:text-[#5f0080] hover:underline">계정 찾기</Link>
+          <Link href="/login/find-account" className="hover:text-[#5f0080] hover:underline inline-flex items-center gap-1">
+            <UserSearch size={15} /> 계정 찾기
+          </Link>
           <span className="text-[#e0e0e0]">|</span>
           <Link href="/company/login" className="hover:text-[#5f0080] hover:underline inline-flex items-center gap-1">
             <Building2 size={15} /> 기업 회원
