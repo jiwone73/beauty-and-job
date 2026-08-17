@@ -8,6 +8,9 @@
 export const ALBA_ADMIN_ID = "alba";
 export const ALBA_START_DATE = "2026-08-17"; // 1주차 월요일
 export const ALBA_WEEKLY_TARGET_HOURS = 6;
+// 이만큼 신호가 없으면 그 구간은 마지막 신호에서 끝난 것으로 본다.
+// 화면 안내 문구도 이 값을 그대로 쓴다 — 숫자가 따로 놀지 않게.
+export const ALBA_IDLE_GAP_MIN = 2;
 export const ALBA_TOTAL_TARGET_HOURS = 70;
 
 const KST = "Asia/Seoul";

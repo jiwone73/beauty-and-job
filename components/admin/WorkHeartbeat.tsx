@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Clock, PauseCircle } from "lucide-react";
+import { ALBA_IDLE_GAP_MIN } from "@/lib/alba";
 
 // 근무 시간 자동 측정기 + 실시간 타이머. 관리자 화면 어디에 있든 함께 돈다.
 //
@@ -11,7 +12,7 @@ import { Clock, PauseCircle } from "lucide-react";
 // 서버도 같은 시간만큼 조용하면 그 구간을 마지막 신호에서 끊는다 (lib/albaWork.ts).
 const PING_MS = 30_000;
 // 마지막 신호에서 이만큼 지나면 멈춘다. 서버의 IDLE_GAP_MIN 과 같은 값으로 둔다.
-const ACTIVE_WINDOW_MS = 2 * 60_000;
+const ACTIVE_WINDOW_MS = ALBA_IDLE_GAP_MIN * 60_000;
 
 // 시간을 재는 대상. 다른 관리자까지 재면 통계가 지저분해진다.
 const TRACKED = ["alba"];
@@ -86,7 +87,7 @@ export default function WorkHeartbeat() {
 
   return (
     <div
-      title={paused ? "조작이 없어 시간이 멈췄어요. 화면을 다시 쓰면 이어집니다." : "관리자 화면을 쓰는 동안 자동으로 쌓입니다."}
+      title={paused ? `${ALBA_IDLE_GAP_MIN}분 넘게 조작이 없어 멈췄어요. 화면을 다시 쓰면 이어집니다.` : "관리자 창이 화면에 떠 있는 동안 자동으로 쌓입니다."}
       style={{
         position: "fixed", right: 16, bottom: 16, zIndex: 9999,
         display: "flex", alignItems: "center", gap: 10,

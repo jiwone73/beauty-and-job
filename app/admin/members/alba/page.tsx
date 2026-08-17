@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { formatMinutes } from "@/lib/alba";
+import { ALBA_IDLE_GAP_MIN, formatMinutes } from "@/lib/alba";
 import { ExternalLink, Plus, Trash2, RefreshCw } from "lucide-react";
 
 type Week = {
@@ -200,7 +200,8 @@ export default function AlbaPage() {
         </button>
       </div>
       <p style={{ fontSize: 12, color: "#999", margin: "0 0 10px" }}>
-        관리자 화면을 쓰는 동안 자동으로 쌓입니다. 15분 넘게 조작이 없으면 마지막 활동 시각에서 끊깁니다.
+        관리자 창이 화면에 떠 있는 동안 자동으로 쌓입니다. {ALBA_IDLE_GAP_MIN}분 넘게 조작이 없으면
+        마지막 활동 시각에서 끊깁니다. 잘못 잡힌 구간은 지우고, 빠진 시간은 직접 추가하세요.
       </p>
 
       {adding && (
