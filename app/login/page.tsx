@@ -104,7 +104,10 @@ function LoginStartContent() {
         <Link href="/company/login">
           <button className="w-full h-[52px] bg-white border border-[#e0d3ea] text-[#5f0080] rounded-lg font-normal text-[15px] hover:border-[#5f0080] hover:bg-[#faf7fc] transition flex items-center justify-center gap-2">
             <Building2 size={18} />
-            <span>기업 회원으로 시작하기</span>
+            {/* 위 세 버튼과 같은 '계속하기' — 다른 건 무엇을 하느냐가 아니라 누구냐다.
+                그 구분은 위의 선이 이미 하고 있다. '시작하기'는 신규만 부르는데,
+                여기를 누르는 사람은 대개 이미 가입한 채용 담당자다. */}
+            <span>기업 회원으로 계속하기</span>
           </button>
         </Link>
 
