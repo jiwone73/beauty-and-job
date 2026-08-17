@@ -5,7 +5,7 @@ import pool from "@/lib/db";
 // 마지막 신호에서 IDLE_GAP_MIN 안이면 그 구간을 지금까지로 늘리고,
 // 더 조용했으면 그 구간은 마지막 신호에서 끝난 것으로 두고 새로 시작한다.
 // 그래서 깜빡하고 창을 켜 둬도 시간이 무한정 쌓이지 않는다.
-export const IDLE_GAP_MIN = 5;
+export const IDLE_GAP_MIN = 3;
 
 // 시간을 재는 대상. 다른 관리자까지 재면 통계가 지저분해진다.
 const TRACKED = new Set(["alba"]);

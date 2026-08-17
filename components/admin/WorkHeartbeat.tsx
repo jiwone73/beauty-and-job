@@ -11,7 +11,7 @@ import { Clock, PauseCircle } from "lucide-react";
 // 서버도 같은 시간만큼 조용하면 그 구간을 마지막 신호에서 끊는다 (lib/albaWork.ts).
 const PING_MS = 60_000;
 // 마지막 신호에서 이만큼 지나면 멈춘다. 서버의 IDLE_GAP_MIN 과 같은 값으로 둔다.
-const ACTIVE_WINDOW_MS = 5 * 60_000;
+const ACTIVE_WINDOW_MS = 3 * 60_000;
 
 // 시간을 재는 대상. 다른 관리자까지 재면 통계가 지저분해진다.
 const TRACKED = ["alba"];
