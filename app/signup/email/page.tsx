@@ -208,10 +208,10 @@ function SignupEmailContent() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* 헤더 — 로고는 가운데 컨테이너의 왼쪽 (로그인 화면과 같은 자리) */}
-      <header className="h-14 border-b border-[#f0f0f0]">
+      <header className="auth-header border-b border-[#f0f0f0]">
         <div className="mx-auto w-full max-w-[1060px] h-full flex items-center px-5">
           <Link href="/" className="inline-flex items-center">
-            <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} />
+            <Image src="/images/logo.png" className="auth-logo" alt="뷰티워크" width={140} height={36} />
           </Link>
         </div>
       </header>

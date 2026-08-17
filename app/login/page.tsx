@@ -38,10 +38,10 @@ function LoginStartContent() {
     <div className="min-h-screen flex flex-col bg-white">
       {/* 상단 바: 로고는 화면 맨 왼쪽이 아니라 가운데 컨테이너의 왼쪽에 붙인다.
           아래 '돌아가기'와 세로줄이 맞고, 화면마다 위치가 달라지지 않는다. */}
-      <header className="h-14 border-b border-[#f0f0f0]">
+      <header className="auth-header border-b border-[#f0f0f0]">
         <div className="mx-auto w-full max-w-[1060px] h-full flex items-center px-5">
           <Link href="/" className="inline-flex items-center">
-            <Image src="/images/logo.png" alt="뷰티워크" width={104} height={27} priority />
+            <Image src="/images/logo.png" className="auth-logo" alt="뷰티워크" width={140} height={36} priority />
           </Link>
         </div>
       </header>

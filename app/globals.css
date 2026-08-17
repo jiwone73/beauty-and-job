@@ -11677,9 +11677,19 @@ div:has(> table.admin-table),
   .jobcard-deadline { font-size: 15px; }
 }
 
+/* 로그인·가입 화면 상단 바 — 메인 헤더와 높이·로고 크기를 맞춘다.
+   (헤더가 낮으면 같은 로고도 작아 보인다.) */
+.auth-header { height: 72px; display: flex; align-items: center; }
+.auth-logo { height: 32px !important; width: auto !important; }
+@media (max-width: 380px) {
+  .auth-header { height: 56px; }
+  .auth-logo { width: 100px !important; height: auto !important; }
+}
+
 /* === PC(≥769px) 헤더 로고·네비 텍스트 2단계 확대 (모바일 유지) === */
 @media (min-width: 769px) {
   .header .logo img { height: 36px !important; }
+  .auth-logo { height: 36px !important; }
   footer .logo img { height: 36px !important; }
   .gnb a, .gnb button { font-size: 18px; }
   /* resume·프로필 페이지 헤더도 동일하게 (profile-* 클래스 사용) */
