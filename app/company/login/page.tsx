@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
-import { ChevronLeft, Eye, EyeOff } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff, Building2, KeyRound, UserSearch } from "lucide-react";
 export default function CompanyLoginPage() {
   const router = useRouter();
   const { login } = useAuthStore();
@@ -107,17 +107,18 @@ export default function CompanyLoginPage() {
             {loading ? "로그인 중..." : "로그인"}
           </button>
           {/* 하단 링크 */}
+          {/* 하단 링크 — 셋을 한 줄에 두므로 아이콘은 14px, 글자와의 사이는 좁게 */}
           <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
-            <Link href="/company/signup" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              기업회원 가입
+            <Link href="/company/signup" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+              <Building2 size={14} /> 기업회원 가입
             </Link>
             <span className="text-[#d0d0d0]">·</span>
-            <Link href="/login/password-reset?type=company" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              비밀번호 재설정
+            <Link href="/login/password-reset?type=company" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+              <KeyRound size={14} /> 비밀번호 재설정
             </Link>
             <span className="text-[#d0d0d0]">·</span>
-            <Link href="/company/login/find-account" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              계정 찾기
+            <Link href="/company/login/find-account" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+              <UserSearch size={14} /> 계정 찾기
             </Link>
           </div>
         </div>
