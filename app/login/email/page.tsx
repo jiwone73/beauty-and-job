@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { setLoginPersistence } from "@/lib/auth/session";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, KeyRound, UserSearch } from "lucide-react";
 
 // 이메일 하나로 로그인·가입을 함께 처리한다.
 //  1단계: 이메일을 받아 계정이 있는지 본다
@@ -229,13 +229,14 @@ export default function LoginEmailPage() {
             {loading ? "확인 중..." : step === "email" ? "계속하기" : "로그인"}
           </button>
 
+          {/* 하단 링크 — 기업 로그인과 같은 아이콘·크기를 쓴다 */}
           <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
-            <Link href="/login/password-reset" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              비밀번호 재설정
+            <Link href="/login/password-reset" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+              <KeyRound size={14} /> 비밀번호 재설정
             </Link>
             <span className="text-[#d0d0d0]">·</span>
-            <Link href="/login/find-account" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              계정 찾기
+            <Link href="/login/find-account" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+              <UserSearch size={14} /> 계정 찾기
             </Link>
           </div>
         </div>
