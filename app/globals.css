@@ -11840,6 +11840,11 @@ button,
   .jobs-grid { grid-template-columns: repeat(auto-fill, minmax(238px, 1fr)); column-gap: 12px; }
 }
 
+/* 메인 카드도 같은 규칙. 열 수가 고정(3·4)이라 좁힌 만큼 카드가 넓어진다. */
+@media (min-width: 769px) {
+  .card-grid-4, .card-grid-3 { column-gap: 12px; }
+}
+
 /* 메인 카드(가로 스크롤): 카드 사이 여백과 본문 위·아래 여백을 조인다.
    이미지는 크게, 글자는 붙여서 — 한 화면에 더 많이 보이게. */
 @media (max-width: 768px) {
