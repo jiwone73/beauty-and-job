@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
+import { setLoginPersistence } from "@/lib/auth/session";
 
 // 소셜 로그인 공통 착지 화면 — 서버가 심어 준 1회용 쿠키를 읽어 토큰을 옮긴다.
 // 카카오는 예전 쿠키 이름(kakao_auth)을 그대로 쓰고 있어 둘 다 본다.
@@ -33,6 +34,8 @@ export default function SocialCallbackPage() {
       const data = JSON.parse(new TextDecoder().decode(bytes));
 
       localStorage.setItem("access_token", data.access_token);
+      // 카카오·네이버는 외부 화면을 다녀오므로 '로그인 유지'를 물을 자리가 없다 — 유지 쪽으로 둔다.
+      setLoginPersistence(true);
       login({
         ownerType: "user",
         userName: data.user.name,

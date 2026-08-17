@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useAuthStore } from "@/lib/store/authStore";
+import { setLoginPersistence } from "@/lib/auth/session";
 
 interface Term {
   id: string;
@@ -188,6 +189,8 @@ function SignupEmailContent() {
         return;
       }
       localStorage.setItem("access_token", data.data.access_token);
+      // 방금 만든 계정이라 '로그인 유지'를 물을 자리가 없다 — 유지 쪽으로 둔다.
+      setLoginPersistence(true);
       login({
         ownerType: "user",
         userName: data.data.user.name,
@@ -228,7 +231,7 @@ function SignupEmailContent() {
       <div className="flex-1 flex justify-center px-5 py-8">
         <div className="w-full max-w-[420px]">
           <h1 className="text-[20px] md:text-[24px] font-normal text-[#1a1a1a] text-center mb-2">
-            개인회원 가입
+            개인 회원가입
           </h1>
           <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-8">
             처음 오셨네요. 아래 정보만 채우면 가입이 끝나요.
@@ -469,7 +472,7 @@ function SignupEmailContent() {
             disabled={!isFormValid || loading}
             className="w-full h-[52px] mt-6 bg-[#5f0080] text-white rounded-lg font-normal text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition"
           >
-            {loading ? "가입 중..." : "가입하기"}
+            {loading ? "회원가입 중..." : "회원가입하기"}
           </button>
 
         </div>

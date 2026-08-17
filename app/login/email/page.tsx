@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
+import { setLoginPersistence } from "@/lib/auth/session";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 // 이메일 하나로 로그인·가입을 함께 처리한다.
@@ -17,6 +18,8 @@ export default function LoginEmailPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
+  // 끄면 브라우저를 닫을 때 로그아웃된다. 공용 PC를 염두에 두고 기본은 꺼 둔다.
+  const [keepLogin, setKeepLogin] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState<{ text: string; providers: string[] } | null>(null);
   const [loading, setLoading] = useState(false);
@@ -85,6 +88,7 @@ export default function LoginEmailPage() {
         return;
       }
       localStorage.setItem("access_token", data.data.access_token);
+      setLoginPersistence(keepLogin);
       login({
         ownerType: "user",
         userName: data.data.user.name,
@@ -172,6 +176,16 @@ export default function LoginEmailPage() {
                   {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+
+              <label className="mt-2.5 inline-flex items-center gap-2 cursor-pointer text-[13px] md:text-[14px] text-[#3a3a3a] select-none">
+                <input
+                  type="checkbox"
+                  checked={keepLogin}
+                  onChange={(e) => setKeepLogin(e.target.checked)}
+                  className="w-4 h-4 accent-[#5f0080]"
+                />
+                로그인 유지
+              </label>
             </div>
           )}
 

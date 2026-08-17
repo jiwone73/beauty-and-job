@@ -28,6 +28,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
+      <head>
+        {/* '로그인 유지'를 끈 사람 정리 — lib/auth/session.ts 참고.
+            세션 쿠키가 사라졌다면 브라우저가 닫혔던 것이므로 토큰을 버린다.
+            화면을 그리기 전에 끝내야 로그인된 헤더가 번쩍이지 않는다. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{
+  if(localStorage.getItem('bw_login_session_only')==='1' &&
+     !document.cookie.split('; ').some(function(c){return c.indexOf('bw_sess=')===0})){
+    ['access_token','beautynjob-auth','beautynjob-profile','beautynjob-applications','bw_login_session_only']
+      .forEach(function(k){localStorage.removeItem(k)});
+  }
+}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="font-sans">
         <AuthInterceptor />
         <RoleGuard />

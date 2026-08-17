@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
+import { setLoginPersistence } from "@/lib/auth/session";
 import { ChevronLeft, Eye, EyeOff, Building2, KeyRound, UserSearch } from "lucide-react";
 export default function CompanyLoginPage() {
   const router = useRouter();
@@ -11,6 +12,8 @@ export default function CompanyLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
+  // 매장 카운터처럼 여러 사람이 쓰는 PC를 염두에 두고 기본은 꺼 둔다.
+  const [keepLogin, setKeepLogin] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const handleLogin = async () => {
@@ -32,6 +35,7 @@ export default function CompanyLoginPage() {
         return;
       }
       localStorage.setItem("access_token", data.data.access_token);
+      setLoginPersistence(keepLogin);
       login({
         ownerType: "company",
         userName: data.data.company.company_name,
@@ -93,6 +97,16 @@ export default function CompanyLoginPage() {
                 {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+
+            <label className="mt-2.5 inline-flex items-center gap-2 cursor-pointer text-[13px] md:text-[14px] text-[#3a3a3a] select-none">
+              <input
+                type="checkbox"
+                checked={keepLogin}
+                onChange={(e) => setKeepLogin(e.target.checked)}
+                className="w-4 h-4 accent-[#5f0080]"
+              />
+              로그인 유지
+            </label>
           </div>
           {/* 에러 메시지 */}
           {error && (
@@ -106,11 +120,10 @@ export default function CompanyLoginPage() {
           >
             {loading ? "로그인 중..." : "로그인"}
           </button>
-          {/* 하단 링크 */}
           {/* 하단 링크 — 셋을 한 줄에 두므로 아이콘은 14px, 글자와의 사이는 좁게 */}
           <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
             <Link href="/company/signup" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              <Building2 size={14} /> 기업회원 가입
+              <Building2 size={14} /> 기업 회원가입
             </Link>
             <span className="text-[#d0d0d0]">·</span>
             <Link href="/login/password-reset?type=company" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">

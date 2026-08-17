@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { clearLoginPersistence } from "@/lib/auth/session";
 
 export interface AuthState {
   isLoggedIn: boolean;
@@ -47,7 +48,8 @@ export const useAuthStore = create<AuthState>()(
 
       setAvatar: (url) => set({ avatarUrl: url }),
 
-      logout: () =>
+      logout: () => {
+        clearLoginPersistence();
         set({
           isLoggedIn: false,
           ownerType: null,
@@ -56,7 +58,8 @@ export const useAuthStore = create<AuthState>()(
           userJobType: "",
           userJobAreas: [],
           avatarUrl: null,
-        }),
+        });
+      },
     }),
     { name: "beautynjob-auth" }
   )
