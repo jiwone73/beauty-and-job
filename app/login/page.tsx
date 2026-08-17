@@ -55,8 +55,11 @@ function LoginStartContent() {
         <h1 className="text-center text-[22px] font-bold text-[#1a1a1a] mb-3">
           뷰티 커리어의 시작과 성장
         </h1>
-        <p className="text-center text-[14px] md:text-[15px] text-[#6b6b6b] mb-11">
-          전문가 채용부터 업계 트렌드까지, 뷰티워크
+        {/* 여기 온 사람이 궁금한 건 '내 일자리가 있느냐'다 —
+            매장과 오피스 양쪽을 구체적으로 짚어 준다. */}
+        <p className="text-center text-[14px] md:text-[15px] text-[#6b6b6b] leading-relaxed mb-11">
+          살롱·샵 현장직부터 브랜드 본사까지<br />
+          뷰티 업계 일자리를 한곳에서
         </p>
 
         {socialError && (
