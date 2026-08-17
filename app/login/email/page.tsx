@@ -136,7 +136,7 @@ export default function LoginEmailPage() {
           <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-8">
             {step === "password"
               ? "비밀번호를 입력하면 로그인돼요."
-              : "가입하셨다면 로그인, 처음이시면 가입으로 이어져요."}
+              : "가입하셨다면 로그인, 처음이시면 회원가입으로 이어져요."}
           </p>
 
           {/* 이메일 — 2단계에서는 잠그고 값만 보여 준다 */}

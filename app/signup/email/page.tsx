@@ -185,7 +185,7 @@ function SignupEmailContent() {
       const data = await res.json();
       if (!data.success) {
         if (res.status === 409 && (data.error?.message || "").includes("이메일")) setEmailStatus("taken");
-        setError(data.error?.message || "가입에 실패했습니다.");
+        setError(data.error?.message || "회원가입에 실패했습니다.");
         return;
       }
       localStorage.setItem("access_token", data.data.access_token);
@@ -234,7 +234,7 @@ function SignupEmailContent() {
             개인 회원가입
           </h1>
           <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-8">
-            처음 오셨네요. 아래 정보만 채우면 가입이 끝나요.
+            처음 오셨네요. 아래 정보만 채우면 회원가입이 끝나요.
           </p>
 
           {/* 직군 선택 */}

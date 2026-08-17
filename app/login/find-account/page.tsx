@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, LogIn, KeyRound } from "lucide-react";
 
 export default function FindAccountPage() {
   const router = useRouter();
@@ -128,14 +128,14 @@ export default function FindAccountPage() {
             </div>
           )}
 
-          {/* 하단 링크 */}
+          {/* 하단 링크 — 로그인 화면과 같은 아이콘·크기를 쓴다 */}
           <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
-            <Link href="/login/email" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              로그인
+            <Link href="/login/email" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+              <LogIn size={14} /> 로그인
             </Link>
             <span className="text-[#d0d0d0]">·</span>
-            <Link href="/login/password-reset" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              비밀번호 재설정
+            <Link href="/login/password-reset" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+              <KeyRound size={14} /> 비밀번호 재설정
             </Link>
           </div>
         </div>

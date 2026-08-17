@@ -266,7 +266,7 @@ export default function CompanySignupPage() {
       const data = await res.json();
       if (!data.success) {
         if (res.status === 409 && (data.error?.message || "").includes("이메일")) setEmailStatus("taken");
-        setError(data.error?.message || "가입에 실패했습니다.");
+        setError(data.error?.message || "회원가입에 실패했습니다.");
         return;
       }
       if (data.data?.access_token) {
@@ -299,7 +299,7 @@ export default function CompanySignupPage() {
                 <path d="M5 13l4 4L19 7" stroke="#5f0080" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h1 className="text-[16px] font-normal text-[#1a1a1a] mb-3">가입 신청이 완료되었습니다</h1>
+            <h1 className="text-[16px] font-normal text-[#1a1a1a] mb-3">회원가입 신청이 완료되었습니다</h1>
             <p className="text-[15px] text-[#6b6b6b] leading-relaxed mb-8">
               입력하신 기업 정보를 확인한 뒤 승인해 드립니다.<br />
               승인이 완료되면 로그인하여 채용공고를 등록하실 수 있습니다.<br />

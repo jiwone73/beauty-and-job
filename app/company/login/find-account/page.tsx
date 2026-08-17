@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Eye, EyeOff } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff, LogIn, Building2 } from "lucide-react";
 
 export default function CompanyFindAccountPage() {
   const router = useRouter();
@@ -140,14 +140,14 @@ export default function CompanyFindAccountPage() {
             </div>
           )}
 
-          {/* 하단 링크 */}
+          {/* 하단 링크 — 기업 로그인과 같은 아이콘·크기를 쓴다 */}
           <div className="mt-6 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
-            <Link href="/company/login" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              로그인
+            <Link href="/company/login" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+              <LogIn size={14} /> 로그인
             </Link>
             <span className="text-[#d0d0d0]">·</span>
-            <Link href="/company/signup" className="whitespace-nowrap hover:text-[#5f0080] hover:underline">
-              기업 회원가입
+            <Link href="/company/signup" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+              <Building2 size={14} /> 기업 회원가입
             </Link>
           </div>
         </div>
