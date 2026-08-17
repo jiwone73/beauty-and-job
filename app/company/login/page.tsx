@@ -69,7 +69,7 @@ export default function CompanyLoginPage() {
           <ArrowLeft size={26} />
         </button>
       </div>
-      <div className="flex-1 flex items-center justify-center px-5">
+      <div className="flex-1 flex justify-center px-5 pt-6 md:pt-10 pb-16">
         <div className="w-full max-w-[400px]">
           <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-10">
             기업회원 로그인

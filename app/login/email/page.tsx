@@ -128,7 +128,7 @@ export default function LoginEmailPage() {
         </button>
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-5">
+      <div className="flex-1 flex justify-center px-5 pt-6 md:pt-10 pb-16">
         <div className="w-full max-w-[400px]">
           <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
             {step === "password" ? "다시 오셨네요" : "이메일로 계속하기"}

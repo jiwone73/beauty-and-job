@@ -58,7 +58,7 @@ export default function PasswordResetTokenPage() {
   if (done) {
     return (
       <div className="min-h-screen flex flex-col bg-white">
-        <div className="flex-1 flex items-center justify-center px-5">
+        <div className="flex-1 flex justify-center px-5 pt-6 md:pt-10 pb-16">
           <div className="w-full max-w-[400px] text-center">
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 bg-[#f5ebfa] rounded-full flex items-center justify-center">
@@ -103,7 +103,7 @@ export default function PasswordResetTokenPage() {
           <ArrowLeft size={26} />
         </button>
       </div>
-      <div className="flex-1 flex items-center justify-center px-5">
+      <div className="flex-1 flex justify-center px-5 pt-6 md:pt-10 pb-16">
         <div className="w-full max-w-[400px]">
           <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
             새 비밀번호 입력
