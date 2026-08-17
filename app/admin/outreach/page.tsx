@@ -62,6 +62,8 @@ const regColor: Record<string, string> = {
   등록완료: "#0a7d34", 미등록: "#9a92a6",
 };
 
+import { normalizeSourceUrl } from "@/lib/sourceUrl";
+
 function normUrl(u: string) {
   return u.startsWith("http") ? u : `https://${u}`;
 }
@@ -116,6 +118,17 @@ export default function AdminOutreachPage() {
   }, [group, hiringFilter, regFilter, phoneFilter, emailFilter, q]);
 
   useEffect(() => { fetchList(); }, [fetchList]);
+
+  // 이미 공고로 올린 원문 주소. 목록에서 흐리게 표시해 두 번 올리지 않게 한다.
+  const [registered, setRegistered] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    fetch("/api/admin/outreach/registered", { headers: authH })
+      .then((r) => r.json())
+      .then((j) => { if (j.success) setRegistered(new Set<string>(j.data.urls)); })
+      .catch(() => { /* 못 받아도 목록은 그대로 보여 준다 */ });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const isRegistered = (u: string) => registered.has(normalizeSourceUrl(u));
 
   const totalCount = useMemo(() => counts.reduce((a, c) => a + c.cnt, 0), [counts]); // 전체 업체 수
   const totalActive = useMemo(() => counts.reduce((a, c) => a + (c.active_cnt || 0), 0), [counts]); // 6개 탭 전체 활성공고수
@@ -568,7 +581,11 @@ export default function AdminOutreachPage() {
                                 <input type="radio" name="pickedFoundJob" checked={pickedJobUrl === jb.url} onChange={() => setPickedJobUrl(jb.url)} style={{ width: 14, height: 14, flexShrink: 0 }} />
                                 <span style={badge(PURPLE)}>{jb.source}</span>
                                 {jb.date && <span style={{ fontSize: 12.5, color: "#9a92a6", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{jb.date}</span>}
-                                <span style={{ color: "#2b2533" }}>{jb.title}</span>
+                                {/* 이미 올린 공고는 흐리게 — 남은 일감만 눈에 들어오게 한다 */}
+                                <span style={{ color: isRegistered(jb.url) ? "#bdb8c4" : "#2b2533" }}>{jb.title}</span>
+                                {isRegistered(jb.url) && (
+                                  <span style={{ ...badge("#9a92a6"), flexShrink: 0 }} title="이미 공고로 등록했어요">등록됨</span>
+                                )}
                                 {jb.email && (
                                   <button type="button" title="매장 채용 이메일 · 클릭하면 이 업체 이메일칸에 입력"
                                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); quickPatch(row, { email: jb.email }); }}
