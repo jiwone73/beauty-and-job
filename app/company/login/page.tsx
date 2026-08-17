@@ -114,7 +114,7 @@ export default function CompanyLoginPage() {
                 onChange={(e) => setKeepLogin(e.target.checked)}
                 className="w-4 h-4 accent-[#5f0080]"
               />
-              로그인 유지
+              로그인 저장하기
             </label>
           </div>
           {/* 에러 메시지 */}
