@@ -3,19 +3,29 @@ import { useEffect, useRef, useState } from "react";
 import { Clock, PauseCircle } from "lucide-react";
 import { ALBA_IDLE_GAP_MIN } from "@/lib/alba";
 
-// 근무 시간 자동 측정기 + 실시간 타이머. 관리자 화면 어디에 있든 함께 돈다.
+// 근무 시간 자동 측정기 + 실시간 타이머. /admin 아래 모든 화면에서 함께 돈다.
 //
 // 로그인·로그아웃으로 재지 않는 이유는 서버 쪽 heartbeat 주석에 적어 뒀다.
-// 여기서는 '화면을 보고 있고, 최근에 손을 댔을 때'만 서버를 두드린다.
-//  · 탭이 뒤에 있으면(document.hidden) 두드리지 않는다 → 켜 두고 자리 비운 시간은 안 센다
+// 여기서는 '관리자 창이 화면에 떠 있고, 최근에 손을 댔을 때'만 서버를 두드린다.
+//  · 탭이 뒤에 있거나 창이 내려가 있으면(document.hidden) 두드리지 않는다
 //  · 마지막 조작이 ACTIVE_WINDOW_MS 보다 오래됐으면 두드리지 않고 '멈춤'으로 보여 준다
 // 서버도 같은 시간만큼 조용하면 그 구간을 마지막 신호에서 끊는다 (lib/albaWork.ts).
 const PING_MS = 30_000;
-// 마지막 신호에서 이만큼 지나면 멈춘다. 서버의 IDLE_GAP_MIN 과 같은 값으로 둔다.
 const ACTIVE_WINDOW_MS = ALBA_IDLE_GAP_MIN * 60_000;
 
 // 시간을 재는 대상. 다른 관리자까지 재면 통계가 지저분해진다.
 const TRACKED = ["alba"];
+
+function trackedToken(): string | null {
+  const token = localStorage.getItem("admin_token");
+  if (!token) return null;
+  try {
+    const sub = JSON.parse(atob(token.split(".")[1]))?.sub || "";
+    return TRACKED.includes(sub) ? token : null;
+  } catch {
+    return null;
+  }
+}
 
 function hm(min: number) {
   const h = Math.floor(min / 60);
@@ -33,26 +43,21 @@ export default function WorkHeartbeat() {
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("admin_token");
-    if (!token) return;
-
-    let adminId = "";
-    try {
-      adminId = JSON.parse(atob(token.split(".")[1]))?.sub || "";
-    } catch {
-      return;
-    }
-    if (!TRACKED.includes(adminId)) return;
-    setOn(true);
-
     const touch = () => { lastActive.current = Date.now(); };
     const events: (keyof DocumentEventMap)[] = ["pointerdown", "keydown", "scroll", "visibilitychange"];
     events.forEach((e) => document.addEventListener(e, touch, { passive: true }));
 
+    // 토큰은 주기마다 다시 읽는다. 이 레이아웃은 로그인 화면에서도 살아 있어서,
+    // 처음 한 번만 읽으면 로그인 직후에 측정이 시작되지 않는다.
     const ping = async () => {
+      const token = trackedToken();
+      setOn(!!token);
+      if (!token) return;
+
       const idle = document.hidden || Date.now() - lastActive.current > ACTIVE_WINDOW_MS;
       setPaused(idle);
       if (idle) return;
+
       try {
         const res = await fetch("/api/admin/alba/heartbeat", {
           method: "POST",
@@ -87,7 +92,9 @@ export default function WorkHeartbeat() {
 
   return (
     <div
-      title={paused ? `${ALBA_IDLE_GAP_MIN}분 넘게 조작이 없어 멈췄어요. 화면을 다시 쓰면 이어집니다.` : "관리자 창이 화면에 떠 있는 동안 자동으로 쌓입니다."}
+      title={paused
+        ? `${ALBA_IDLE_GAP_MIN}분 넘게 조작이 없어 멈췄어요. 화면을 다시 쓰면 이어집니다.`
+        : "관리자 창이 화면에 떠 있는 동안 자동으로 쌓입니다."}
       style={{
         position: "fixed", right: 16, bottom: 16, zIndex: 9999,
         display: "flex", alignItems: "center", gap: 10,

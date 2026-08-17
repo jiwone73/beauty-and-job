@@ -26,6 +26,7 @@ type Data = {
   currentWeek: Week | null; weeks: Week[];
   sessions: Session[]; postings: Posting[];
   running: { id: string; started_at: string; minutes: number } | null;
+  viewerIsOwner: boolean;
 };
 
 const fmtDate = (s: string) => s.slice(5).replace("-", "/");
@@ -86,6 +87,9 @@ export default function AlbaPage() {
   const weeklyTargetMin = data.weeklyTargetHours * 60;
   const cw = data.currentWeek;
   const cwPct = cw ? Math.min(100, Math.round((cw.minutes / weeklyTargetMin) * 100)) : 0;
+
+  // 본인은 자기 기록을 못 고친다 — 스스로 적을 수 있으면 근거가 되지 못한다.
+  const canEdit = !data.viewerIsOwner;
 
   const card: React.CSSProperties = {
     background: "#fff", border: "1px solid #eee", borderRadius: 12, padding: 18,
@@ -195,16 +199,21 @@ export default function AlbaPage() {
       {/* 근무 기록 */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "0 0 10px" }}>
         <h3 style={{ fontSize: 15, margin: 0, color: "#1a1a1a" }}>근무 기록</h3>
-        <button onClick={() => setAdding(!adding)} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, background: "none", border: "1px solid #ddd", borderRadius: 8, padding: "6px 12px", cursor: "pointer" }}>
-          <Plus size={14} /> 직접 추가
-        </button>
+        {canEdit && (
+          <button onClick={() => setAdding(!adding)} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, background: "none", border: "1px solid #ddd", borderRadius: 8, padding: "6px 12px", cursor: "pointer" }}>
+            <Plus size={14} /> 직접 추가
+          </button>
+        )}
       </div>
       <p style={{ fontSize: 12, color: "#999", margin: "0 0 10px" }}>
         관리자 창이 화면에 떠 있는 동안 자동으로 쌓입니다. {ALBA_IDLE_GAP_MIN}분 넘게 조작이 없으면
-        마지막 활동 시각에서 끊깁니다. 잘못 잡힌 구간은 지우고, 빠진 시간은 직접 추가하세요.
+        마지막 활동 시각에서 끊깁니다.
+        {canEdit
+          ? " 잘못 잡힌 구간은 지우고, 빠진 시간은 직접 추가하세요."
+          : " 빠지거나 잘못 잡힌 시간이 있으면 관리자에게 알려 주세요."}
       </p>
 
-      {adding && (
+      {canEdit && adding && (
         <div style={{ ...card, marginBottom: 12, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
           <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })}
             style={{ height: 36, padding: "0 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }} />
@@ -244,10 +253,12 @@ export default function AlbaPage() {
                 <td style={{ padding: "10px 14px", textAlign: "right" }}>{formatMinutes(s.minutes)}</td>
                 <td style={{ padding: "10px 14px", color: "#888" }}>{s.note || ""}</td>
                 <td style={{ padding: "10px 6px", textAlign: "center" }}>
-                  <button onClick={() => removeSession(s.id)} title="삭제"
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#c8c8c8" }}>
-                    <Trash2 size={15} />
-                  </button>
+                  {canEdit && (
+                    <button onClick={() => removeSession(s.id)} title="삭제"
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#c8c8c8" }}>
+                      <Trash2 size={15} />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

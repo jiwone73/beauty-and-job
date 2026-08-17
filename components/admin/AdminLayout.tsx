@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
-import WorkHeartbeat from "@/components/admin/WorkHeartbeat";
 import {
   LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Mail, Bell,
   LogOut, Menu, X, ChevronDown, ChevronRight, MessageSquare, Building2 } from "lucide-react";
@@ -146,8 +145,6 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
 
   return (
     <div className="admin-layout">
-      {/* 알바 근무 시간 자동 측정 — 관리자 화면에 있는 동안만 센다 */}
-      <WorkHeartbeat />
       <aside className={`admin-sidebar ${sidebarOpen ? "open" : "closed"}`}>
         <div className="admin-sidebar-logo">
           <Link href="/admin" className="admin-logo-link">
