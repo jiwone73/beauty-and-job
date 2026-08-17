@@ -122,9 +122,9 @@ export default function LoginEmailPage() {
           onClick={() => (step === "password" ? (setStep("email"), setPassword(""), setError("")) : router.back())}
           aria-label={step === "password" ? "이메일 다시 입력" : "뒤로"}
           title={step === "password" ? "이메일 다시 입력" : "뒤로"}
-          className="-ml-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={26} />
         </button>
       </div>
 
