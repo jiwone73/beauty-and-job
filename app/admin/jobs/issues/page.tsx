@@ -5,12 +5,15 @@ import { Search } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 
 type Issue = { field: string; note: string };
-type PostingIssues = { url: string; title: string; items: Issue[]; updated_at: string };
+type Reply = { at: string; by: string; text: string };
+type PostingIssues = { url: string; title: string; items: Issue[]; replies: Reply[]; updated_at: string };
 
 export default function JobIssuesPage() {
   const [list, setList] = useState<PostingIssues[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
+  const [draft, setDraft] = useState<Record<string, string>>({}); // 이슈별 코멘트 입력값
+  const [saving, setSaving] = useState<string | null>(null);
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
 
   const load = () => {
@@ -22,6 +25,34 @@ export default function JobIssuesPage() {
       .finally(() => setLoading(false));
   };
   useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
+
+  // 이슈 밑에 수정내용·코멘트를 남긴다. 이슈 본문은 그대로 두고 뒤에 붙는다.
+  const addReply = async (url: string) => {
+    const text = (draft[url] || "").trim();
+    if (!text) return;
+    setSaving(url);
+    try {
+      const res = await fetch("/api/admin/app-notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ key: `jobissue:${url}`, text }),
+      });
+      const d = await res.json();
+      if (!d.success) { alert(d.error?.message || "남기지 못했어요."); return; }
+      setDraft((prev) => ({ ...prev, [url]: "" }));
+      load();
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const removeReply = async (url: string, idx: number) => {
+    if (!confirm("이 코멘트를 지울까요?")) return;
+    await fetch(`/api/admin/app-notes?key=${encodeURIComponent(`jobissue:${url}`)}&reply=${idx}`, {
+      method: "DELETE", headers: { Authorization: `Bearer ${token}` },
+    });
+    load();
+  };
 
   const remove = async (url: string) => {
     if (!confirm("이 공고의 이슈 기록을 삭제할까요? (수정 완료 후 정리용)")) return;
@@ -82,6 +113,37 @@ export default function JobIssuesPage() {
                       <span style={{ color: "#4a4453", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{it.note}</span>
                     </div>
                   ))}
+                </div>
+
+                {/* 수정내용·코멘트 — 이슈 아래에 시간순으로 쌓인다 */}
+                <div style={{ marginTop: 10, borderTop: "1px solid #f2e3e0", paddingTop: 10 }}>
+                  {(p.replies || []).length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
+                      {(p.replies || []).map((r, i) => (
+                        <div key={i} style={{ display: "flex", gap: 8, alignItems: "baseline", fontSize: 13 }}>
+                          <span style={{ flexShrink: 0, minWidth: 130, color: "#7b7387" }}>
+                            {r.by} · {fmtDate(r.at)}
+                          </span>
+                          <span style={{ color: "#2b2533", whiteSpace: "pre-wrap", wordBreak: "break-word", flex: 1, minWidth: 0 }}>{r.text}</span>
+                          <button onClick={() => removeReply(p.url, i)} title="코멘트 삭제"
+                            style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: "#c8c8c8", fontSize: 12 }}>×</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <input
+                      value={draft[p.url] || ""}
+                      onChange={(e) => setDraft((prev) => ({ ...prev, [p.url]: e.target.value }))}
+                      onKeyDown={(e) => { if (e.key === "Enter") addReply(p.url); }}
+                      placeholder="수정한 내용이나 코멘트를 남겨주세요"
+                      style={{ flex: 1, minWidth: 0, height: 34, padding: "0 10px", border: "1px solid #e6dfe9", borderRadius: 6, fontSize: 13, background: "#fff" }}
+                    />
+                    <button onClick={() => addReply(p.url)} disabled={saving === p.url || !(draft[p.url] || "").trim()}
+                      style={{ flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 6, border: "none", background: "#5f0080", color: "#fff", fontSize: 13, cursor: "pointer", opacity: saving === p.url || !(draft[p.url] || "").trim() ? 0.45 : 1 }}>
+                      {saving === p.url ? "등록 중…" : "등록"}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
