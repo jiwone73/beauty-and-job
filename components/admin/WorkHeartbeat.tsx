@@ -9,9 +9,9 @@ import { Clock, PauseCircle } from "lucide-react";
 //  · 탭이 뒤에 있으면(document.hidden) 두드리지 않는다 → 켜 두고 자리 비운 시간은 안 센다
 //  · 마지막 조작이 ACTIVE_WINDOW_MS 보다 오래됐으면 두드리지 않고 '멈춤'으로 보여 준다
 // 서버도 같은 시간만큼 조용하면 그 구간을 마지막 신호에서 끊는다 (lib/albaWork.ts).
-const PING_MS = 60_000;
+const PING_MS = 30_000;
 // 마지막 신호에서 이만큼 지나면 멈춘다. 서버의 IDLE_GAP_MIN 과 같은 값으로 둔다.
-const ACTIVE_WINDOW_MS = 3 * 60_000;
+const ACTIVE_WINDOW_MS = 2 * 60_000;
 
 // 시간을 재는 대상. 다른 관리자까지 재면 통계가 지저분해진다.
 const TRACKED = ["alba"];
