@@ -122,7 +122,7 @@ export default function FindAccountPage() {
               <p className="text-[13px] md:text-[14px] text-[#6b6b6b] mb-4">
                 입력하신 정보로 가입된 계정을 찾을 수 없습니다.
               </p>
-              <Link href="/signup/email" className="text-[13px] md:text-[14px] text-[#5f0080] font-normal hover:underline">
+              <Link href="/login" className="text-[13px] md:text-[14px] text-[#5f0080] font-normal hover:underline">
                 회원가입 하러 가기
               </Link>
             </div>

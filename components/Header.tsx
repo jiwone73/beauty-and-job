@@ -124,7 +124,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
                 type="button"
                 className="gnb-with-tag"
                 style={{ background: "none", border: "none", cursor: "pointer" }}
-                onClick={() => router.push(isLoggedIn ? "/profile/resume" : "/signup/email")}>
+                onClick={() => router.push(isLoggedIn ? "/profile/resume" : "/login")}>
                 이력서 등록
               </button>
             )}
@@ -138,7 +138,7 @@ export default function Header({ onSearchClick }: HeaderProps) {
             </button>
             <AuthButtons onLoginClick={() => router.push("/login")} />
             <button className="icon-btn mob-hamburger" aria-label={isCompany ? "기업 대시보드" : "이력서 등록"}
-              onClick={() => router.push(isCompany ? "/company/dashboard" : isLoggedIn ? "/profile/resume" : "/signup/email")}>
+              onClick={() => router.push(isCompany ? "/company/dashboard" : isLoggedIn ? "/profile/resume" : "/login")}>
               {isCompany ? <LayoutDashboard size={22} /> : <FilePlus size={22} />}
             </button>
           </div>

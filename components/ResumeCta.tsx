@@ -15,7 +15,7 @@ export default function ResumeCta({
 }) {
   const { isLoggedIn, ownerType } = useAuthStore();
   const href = !isLoggedIn
-    ? "/signup/email"
+    ? "/login"
     : ownerType === "company"
     ? "/company/dashboard"
     : "/profile/resume";

@@ -3,7 +3,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, Eye, EyeOff, MessageCircle } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useAuthStore } from "@/lib/store/authStore";
 
@@ -222,35 +222,9 @@ function SignupEmailContent() {
             <Link href="/" className="logo auth-logo"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
 
-          <h1 className="text-[20px] md:text-[24px] font-normal text-[#1a1a1a] text-center mb-6">
+          <h1 className="text-[20px] md:text-[24px] font-normal text-[#1a1a1a] text-center mb-8">
             개인회원 가입
           </h1>
-
-          {/* 카카오로 가입 — 로그인 화면에만 있어서 신규 유저가 못 보고 지나쳤다.
-              가입 화면 맨 위에 두어 두 방법이 한 화면에서 보이게 한다. */}
-          <button
-            type="button"
-            onClick={() => { window.location.href = "/api/auth/kakao"; }}
-            className="w-full h-[50px] bg-[#FEE500] text-[#1a1a1a] rounded-lg font-normal text-[14px] md:text-[15px] flex items-center justify-center gap-2 hover:opacity-90 transition"
-          >
-            <MessageCircle size={18} />
-            <span>카카오로 3초 만에 가입</span>
-          </button>
-          {process.env.NEXT_PUBLIC_NAVER_LOGIN === "1" && (
-          <button
-            type="button"
-            onClick={() => { window.location.href = "/api/auth/naver"; }}
-            className="w-full h-[50px] mt-2 bg-[#03C75A] text-white rounded-lg font-normal text-[14px] md:text-[15px] flex items-center justify-center gap-2 hover:opacity-90 transition"
-          >
-            <span className="font-bold">N</span>
-            <span>네이버로 3초 만에 가입</span>
-          </button>
-          )}
-          <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-[#eee]" />
-            <span className="text-[12px] md:text-[13px] text-[#9a9a9a]">또는 이메일로 가입</span>
-            <div className="flex-1 h-px bg-[#eee]" />
-          </div>
 
           {/* 직군 선택 */}
           <div className="mb-6">
