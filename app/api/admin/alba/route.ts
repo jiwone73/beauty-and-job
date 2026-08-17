@@ -112,6 +112,5 @@ export async function GET(req: NextRequest) {
     sessions,
     postings,
     running,
-    viewerIsOwner: auth!.sub === adminId,
   });
 }
