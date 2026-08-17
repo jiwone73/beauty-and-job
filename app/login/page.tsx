@@ -92,14 +92,26 @@ function LoginStartContent() {
           </button>
         </Link>
 
-        {/* 보조 경로 — 처음 온 사람이 아니라 '길을 못 찾은 사람'에게 필요한 링크들 */}
-        <div className="mt-9 flex items-center justify-center gap-3 text-[13px] md:text-[14px] text-[#6b6b6b]">
+        {/* 여기서 갈라놓지 않으면, 채용하러 온 사람이 위 버튼을 눌러
+            개인 계정을 만들어 버린다. 그 이메일로는 기업 가입이 다시 안 된다.
+            선을 그어 '다른 로그인 방법'이 아니라 '다른 사람'임을 드러낸다. */}
+        <div className="my-7 flex items-center gap-3">
+          <span className="h-px flex-1 bg-[#ececec]" />
+          <span className="text-[12px] md:text-[13px] text-[#9a9a9a]">채용하시나요?</span>
+          <span className="h-px flex-1 bg-[#ececec]" />
+        </div>
+
+        <Link href="/company/login">
+          <button className="w-full h-[52px] bg-white border border-[#e0d3ea] text-[#5f0080] rounded-lg font-normal text-[15px] hover:border-[#5f0080] hover:bg-[#faf7fc] transition flex items-center justify-center gap-2">
+            <Building2 size={18} />
+            <span>기업 회원으로 시작하기</span>
+          </button>
+        </Link>
+
+        {/* 보조 경로 — 처음 온 사람이 아니라 '길을 못 찾은 사람'에게 필요한 링크 */}
+        <div className="mt-9 flex items-center justify-center text-[13px] md:text-[14px] text-[#6b6b6b]">
           <Link href="/login/find-account" className="hover:text-[#5f0080] hover:underline inline-flex items-center gap-1">
             <UserSearch size={15} /> 계정 찾기
-          </Link>
-          <span className="text-[#e0e0e0]">|</span>
-          <Link href="/company/login" className="hover:text-[#5f0080] hover:underline inline-flex items-center gap-1">
-            <Building2 size={15} /> 기업 회원
           </Link>
         </div>
 
