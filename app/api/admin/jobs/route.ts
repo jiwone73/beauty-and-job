@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
+import { isTracked, touchWorkSession } from '@/lib/albaWork'
 
 // 비회원 기업 중복판정용 근무지역 키: 주소에서 "시도 시군구"만 정규화 추출.
 // (동명 업체라도 지역이 다르면 다른 업체로 본다. 지역이 비면 "" → 자동합침 안 함.)
@@ -210,6 +211,14 @@ export async function POST(req: NextRequest) {
     )
 
     await client.query('COMMIT')
+
+    // 공고를 저장한 시각도 근무 신호로 남긴다.
+    // 외부 사이트에서 자료를 찾는 동안에는 관리자 창에 조작이 없어,
+    // 화면이 두드리는 것만으로는 실제 일한 시간이 잡히지 않는다.
+    if (isTracked(auth?.sub)) {
+      touchWorkSession(auth!.sub).catch((e) => console.error('[work session]', e))
+    }
+
     return ok(result.rows[0], 201)
   } catch (e) {
     await client.query('ROLLBACK')

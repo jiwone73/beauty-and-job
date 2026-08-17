@@ -13,6 +13,7 @@ import {
   totalWeeks,
   weekIndexOf,
 } from "@/lib/alba";
+import { IDLE_GAP_MIN } from "@/lib/albaWork";
 
 // 알바 현황 — 근무 시간, 올린 공고, 주차별 진행 상황을 한 번에 내려 준다.
 // 화면이 여러 번 물어보지 않아도 되게 집계까지 여기서 끝낸다.
@@ -47,7 +48,6 @@ export async function GET(req: NextRequest) {
 
   // 근무 기록 → 날짜별 분. 자정을 넘긴 근무는 시작한 날에 몰아 센다(집계가 단순해진다).
   // ended_at 은 마지막 활동 시각이라, 최근 IDLE_GAP_MIN 안이면 아직 일하는 중으로 본다.
-  const IDLE_GAP_MIN = 15;
   const minutesByDate: Record<string, number> = {};
   let running: { id: string; started_at: string; minutes: number } | null = null;
 

@@ -10,7 +10,10 @@ import { Clock, PauseCircle } from "lucide-react";
 //  · 마지막 조작이 ACTIVE_WINDOW_MS 보다 오래됐으면 두드리지 않고 '멈춤'으로 보여 준다
 // 서버는 15분 넘게 조용하면 그 구간을 마지막 두드림에서 끊는다.
 const PING_MS = 60_000;
-const ACTIVE_WINDOW_MS = 5 * 60_000;
+// 외부 사이트와 관리자 창을 나란히 띄워 놓고 일한다.
+// 자료를 찾는 동안에는 관리자 창에 조작이 없으므로, 5분으로 끊으면 실제 일한 시간이 통째로 빠진다.
+// 창이 화면에 떠 있는 것 자체가 이미 한 겹의 조건이라 여유를 20분까지 준다.
+const ACTIVE_WINDOW_MS = 20 * 60_000;
 
 // 시간을 재는 대상. 다른 관리자까지 재면 통계가 지저분해진다.
 const TRACKED = ["alba"];
