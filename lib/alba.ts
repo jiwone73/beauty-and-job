@@ -12,6 +12,9 @@ export const ALBA_WEEKLY_TARGET_HOURS = 6;
 // 화면 안내 문구도 이 값을 그대로 쓴다 — 숫자가 따로 놀지 않게.
 export const ALBA_IDLE_GAP_MIN = 2;
 export const ALBA_TOTAL_TARGET_HOURS = 70;
+// 주 6시간은 '최소'다. 더 하는 건 괜찮고, 못 채운 주가 생기면
+// 그 벌로 채워야 할 총 시간이 이만큼 늘어난다 (미달 주 1회당).
+export const ALBA_SHORTFALL_PENALTY_HOURS = 1;
 
 const KST = "Asia/Seoul";
 

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { ALBA_IDLE_GAP_MIN, formatMinutes } from "@/lib/alba";
-import { ExternalLink, RefreshCw } from "lucide-react";
+import { ExternalLink, Plus, Trash2, RefreshCw } from "lucide-react";
 
 type Week = {
   index: number; start: string; end: string;
@@ -26,6 +26,11 @@ type Data = {
   currentWeek: Week | null; weeks: Week[];
   sessions: Session[]; postings: Posting[];
   running: { id: string; started_at: string; minutes: number } | null;
+  penaltyPerShortfallHours: number;
+  shortfallWeeks: number;
+  penaltyHours: number;
+  adjustedTargetHours: number;
+  viewerIsOwner: boolean;
 };
 
 const fmtDate = (s: string) => s.slice(5).replace("-", "/");
@@ -35,6 +40,8 @@ const fmtClock = (iso: string | null) =>
 export default function AlbaPage() {
   const [data, setData] = useState<Data | null>(null);
   const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState(false);
+  const [form, setForm] = useState({ date: "", start: "", end: "", note: "" });
 
   const token = () => (typeof window === "undefined" ? "" : localStorage.getItem("admin_token") || "");
 
@@ -51,6 +58,29 @@ export default function AlbaPage() {
 
   useEffect(() => { load(); }, []);
 
+  const addSession = async () => {
+    if (!form.date || !form.start || !form.end) return;
+    const res = await fetch("/api/admin/alba/sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+      body: JSON.stringify(form),
+    });
+    const d = await res.json();
+    if (!d.success) { alert(d.error?.message || "추가하지 못했어요."); return; }
+    setForm({ date: "", start: "", end: "", note: "" });
+    setAdding(false);
+    load();
+  };
+
+  const removeSession = async (id: string) => {
+    if (!confirm("이 근무 기록을 지울까요?")) return;
+    await fetch(`/api/admin/alba/sessions?id=${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token()}` },
+    });
+    load();
+  };
+
   if (loading && !data) {
     return <AdminLayout activeMenu="members-alba"><div className="admin-empty">불러오는 중...</div></AdminLayout>;
   }
@@ -58,7 +88,10 @@ export default function AlbaPage() {
     return <AdminLayout activeMenu="members-alba"><div className="admin-empty">불러오지 못했어요.</div></AdminLayout>;
   }
 
-  const targetMin = data.totalTargetHours * 60;
+  // 본인은 자기 기록에 손대지 못한다 — 스스로 적을 수 있으면 근거가 되지 못한다.
+  const canEdit = !data.viewerIsOwner;
+  // 미달한 주가 있으면 채워야 할 총 시간이 늘어난다.
+  const targetMin = data.adjustedTargetHours * 60;
   const pct = Math.min(100, Math.round((data.totalMinutes / targetMin) * 100));
   const weeklyTargetMin = data.weeklyTargetHours * 60;
   const cw = data.currentWeek;
@@ -93,7 +126,14 @@ export default function AlbaPage() {
           <div style={{ height: 6, background: "#f1f1f1", borderRadius: 999, marginTop: 10, overflow: "hidden" }}>
             <div style={{ width: `${pct}%`, height: "100%", background: "#5f0080" }} />
           </div>
-          <p style={{ fontSize: 12, color: "#888", marginTop: 6 }}>{data.totalTargetHours}시간 중 {pct}%</p>
+          <p style={{ fontSize: 12, color: "#888", marginTop: 6 }}>
+            {data.adjustedTargetHours}시간 중 {pct}%
+            {data.penaltyHours > 0 && (
+              <span style={{ color: "#e74c3c" }}>
+                {" "}(기본 {data.totalTargetHours} + 미달 {data.shortfallWeeks}주 × {data.penaltyPerShortfallHours}시간)
+              </span>
+            )}
+          </p>
         </div>
 
         <div style={card}>
@@ -105,7 +145,7 @@ export default function AlbaPage() {
             <div style={{ width: `${cwPct}%`, height: "100%", background: cwPct >= 100 ? "#0f6e56" : "#5f0080" }} />
           </div>
           <p style={{ fontSize: 12, color: "#888", marginTop: 6 }}>
-            목표 {data.weeklyTargetHours}시간 · {cw && cw.minutes >= weeklyTargetMin
+            최소 {data.weeklyTargetHours}시간 · {cw && cw.minutes >= weeklyTargetMin
               ? "달성"
               : `${formatMinutes(Math.max(0, weeklyTargetMin - (cw?.minutes || 0)))} 남음`}
           </p>
@@ -160,7 +200,9 @@ export default function AlbaPage() {
                     {w.isFuture ? <span style={{ color: "#bbb" }}>예정</span>
                       : done ? <span style={{ color: "#0f6e56" }}>달성</span>
                       : w.isCurrent ? <span style={{ color: "#5f0080" }}>{formatMinutes(weeklyTargetMin - w.minutes)} 남음</span>
-                      : <span style={{ color: "#e74c3c" }}>미달 ({formatMinutes(weeklyTargetMin - w.minutes)})</span>}
+                      : <span style={{ color: "#e74c3c" }}>
+                          미달 {formatMinutes(weeklyTargetMin - w.minutes)} · 목표 +{data.penaltyPerShortfallHours}시간
+                        </span>}
                   </td>
                 </tr>
               );
@@ -170,11 +212,36 @@ export default function AlbaPage() {
       </div>
 
       {/* 근무 기록 */}
-      <h3 style={{ fontSize: 15, margin: "0 0 10px", color: "#1a1a1a" }}>근무 기록</h3>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "0 0 10px" }}>
+        <h3 style={{ fontSize: 15, margin: 0, color: "#1a1a1a" }}>근무 기록</h3>
+        {canEdit && (
+          <button onClick={() => setAdding(!adding)} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, background: "none", border: "1px solid #ddd", borderRadius: 8, padding: "6px 12px", cursor: "pointer" }}>
+            <Plus size={14} /> 직접 추가
+          </button>
+        )}
+      </div>
       <p style={{ fontSize: 12, color: "#999", margin: "0 0 10px" }}>
         관리자 창이 화면에 떠 있는 동안 자동으로 쌓입니다. {ALBA_IDLE_GAP_MIN}분 넘게 조작이 없으면
-        마지막 활동 시각에서 끊깁니다. 손으로 고치지 않습니다.
+        마지막 활동 시각에서 끊깁니다.
+        {canEdit
+          ? " 자동 측정이 놓친 시간은 직접 추가하세요."
+          : " 빠지거나 잘못 잡힌 시간이 있으면 관리자에게 알려 주세요."}
       </p>
+
+      {canEdit && adding && (
+        <div style={{ ...card, marginBottom: 12, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+          <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })}
+            style={{ height: 36, padding: "0 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }} />
+          <input type="time" value={form.start} onChange={(e) => setForm({ ...form, start: e.target.value })}
+            style={{ height: 36, padding: "0 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }} />
+          <span style={{ color: "#999" }}>~</span>
+          <input type="time" value={form.end} onChange={(e) => setForm({ ...form, end: e.target.value })}
+            style={{ height: 36, padding: "0 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }} />
+          <input type="text" placeholder="사유 (선택)" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })}
+            style={{ flex: 1, minWidth: 140, height: 36, padding: "0 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }} />
+          <button onClick={addSession} style={{ height: 36, padding: "0 16px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, cursor: "pointer" }}>추가</button>
+        </div>
+      )}
 
       <div style={{ ...card, padding: 0, overflowX: "auto", marginBottom: 24 }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 560 }}>
@@ -184,11 +251,12 @@ export default function AlbaPage() {
               <th style={{ textAlign: "left", padding: "10px 14px", whiteSpace: "nowrap" }}>시작~종료</th>
               <th style={{ textAlign: "right", padding: "10px 14px", whiteSpace: "nowrap" }}>시간</th>
               <th style={{ textAlign: "left", padding: "10px 14px" }}>메모</th>
+              {canEdit && <th style={{ width: 40 }} />}
             </tr>
           </thead>
           <tbody>
             {data.sessions.length === 0 && (
-              <tr><td colSpan={4} style={{ padding: 20, textAlign: "center", color: "#999" }}>아직 기록이 없어요.</td></tr>
+              <tr><td colSpan={canEdit ? 5 : 4} style={{ padding: 20, textAlign: "center", color: "#999" }}>아직 기록이 없어요.</td></tr>
             )}
             {data.sessions.map((s) => (
               <tr key={s.id} style={{ borderTop: "1px solid #f2f2f2" }}>
@@ -199,6 +267,14 @@ export default function AlbaPage() {
                 <td style={{ padding: "10px 14px", color: "#666", whiteSpace: "nowrap" }}>{fmtClock(s.started_at)} ~ {fmtClock(s.ended_at)}</td>
                 <td style={{ padding: "10px 14px", textAlign: "right" }}>{formatMinutes(s.minutes)}</td>
                 <td style={{ padding: "10px 14px", color: "#888" }}>{s.note || ""}</td>
+                {canEdit && (
+                  <td style={{ padding: "10px 6px", textAlign: "center" }}>
+                    <button onClick={() => removeSession(s.id)} title="삭제"
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#c8c8c8" }}>
+                      <Trash2 size={15} />
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

@@ -8,6 +8,7 @@ import {
   ALBA_START_DATE,
   ALBA_TOTAL_TARGET_HOURS,
   ALBA_WEEKLY_TARGET_HOURS,
+  ALBA_SHORTFALL_PENALTY_HOURS,
   buildWeeks,
   kstDate,
   totalWeeks,
@@ -88,12 +89,19 @@ export async function GET(req: NextRequest) {
 
   const weeks = buildWeeks(today, minutesByDate, postingsByDate);
   const totalMinutes = Object.values(minutesByDate).reduce((a, b) => a + b, 0);
-  const targetMinutes = ALBA_TOTAL_TARGET_HOURS * 60;
   const current = weeks.find((w) => w.isCurrent) || null;
 
+  // 주 6시간은 최소치다. 더 한 주는 그대로 인정하고, 못 채운 주는 벌로 총 목표를 늘린다.
+  // 이번 주는 아직 안 끝났으니 판정하지 않는다 — 지나간 주만 센다.
+  const weeklyTargetMinutes = ALBA_WEEKLY_TARGET_HOURS * 60;
+  const pastWeeks = weeks.filter((w) => !w.isFuture && !w.isCurrent);
+  const shortfallWeeks = pastWeeks.filter((w) => w.minutes < weeklyTargetMinutes).length;
+  const penaltyHours = shortfallWeeks * ALBA_SHORTFALL_PENALTY_HOURS;
+  const adjustedTargetHours = ALBA_TOTAL_TARGET_HOURS + penaltyHours;
+  const targetMinutes = adjustedTargetHours * 60;
+
   // 남은 주(이번 주 포함) 동안 주당 몇 시간씩 해야 목표를 채우는지
-  const doneWeeks = weeks.filter((w) => !w.isFuture && !w.isCurrent).length;
-  const weeksLeft = Math.max(1, totalWeeks() - doneWeeks);
+  const weeksLeft = Math.max(1, totalWeeks() - pastWeeks.length);
   const remainingMinutes = Math.max(0, targetMinutes - totalMinutes);
 
   return ok({
@@ -102,6 +110,10 @@ export async function GET(req: NextRequest) {
     today,
     weeklyTargetHours: ALBA_WEEKLY_TARGET_HOURS,
     totalTargetHours: ALBA_TOTAL_TARGET_HOURS,
+    penaltyPerShortfallHours: ALBA_SHORTFALL_PENALTY_HOURS,
+    shortfallWeeks,
+    penaltyHours,
+    adjustedTargetHours,
     plannedWeeks: totalWeeks(),
     totalMinutes,
     remainingMinutes,
@@ -112,5 +124,6 @@ export async function GET(req: NextRequest) {
     sessions,
     postings,
     running,
+    viewerIsOwner: auth!.sub === adminId,
   });
 }
