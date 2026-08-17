@@ -118,9 +118,14 @@ export default function LoginEmailPage() {
             <Link href="/"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
 
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-8">
-            이메일로 계속하기
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-2">
+            {step === "password" ? "다시 오셨네요" : "이메일로 계속하기"}
           </h1>
+          <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-8">
+            {step === "password"
+              ? "비밀번호를 입력하면 로그인돼요."
+              : "가입하셨다면 로그인, 처음이시면 가입으로 이어져요."}
+          </p>
 
           {/* 이메일 — 2단계에서는 잠그고 값만 보여 준다 */}
           <div className="mb-3">
@@ -139,10 +144,6 @@ export default function LoginEmailPage() {
 
           {step === "password" && (
             <div className="mb-2">
-              {/* 계정을 찾았다는 사실을 말해 주지 않으면 비밀번호 칸이 왜 떴는지 알 수 없다. */}
-              <p className="text-[13px] md:text-[14px] text-[#0a7a3d] mb-3">
-                이미 가입된 이메일이에요. 비밀번호를 입력해 주세요.
-              </p>
               <label className="block text-[13px] md:text-[14px] text-[#6b6b6b] mb-1.5">비밀번호</label>
               <div className="relative">
                 <input

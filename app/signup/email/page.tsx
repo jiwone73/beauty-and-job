@@ -222,9 +222,12 @@ function SignupEmailContent() {
             <Link href="/" className="logo auth-logo"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
 
-          <h1 className="text-[20px] md:text-[24px] font-normal text-[#1a1a1a] text-center mb-8">
+          <h1 className="text-[20px] md:text-[24px] font-normal text-[#1a1a1a] text-center mb-2">
             개인회원 가입
           </h1>
+          <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-8">
+            처음 오셨네요. 아래 정보만 채우면 가입이 끝나요.
+          </p>
 
           {/* 직군 선택 */}
           <div className="mb-6">
