@@ -230,7 +230,7 @@ function SignupEmailContent() {
 
       <div className="flex-1 flex justify-center px-5 py-8">
         <div className="w-full max-w-[420px]">
-          <h1 className="text-[20px] md:text-[24px] font-normal text-[#1a1a1a] text-center mb-2">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-2">
             개인 회원가입
           </h1>
           <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-8">

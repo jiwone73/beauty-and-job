@@ -111,7 +111,7 @@ export default function LoginEmailPage() {
 
       <div className="flex-1 flex justify-center px-5 pt-6 md:pt-10 pb-16">
         <div className="w-full max-w-[400px]">
-          <h1 className="text-[22px] md:text-[26px] font-bold text-[#1a1a1a] text-center mb-10">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-10">
             이메일로 로그인
           </h1>
 

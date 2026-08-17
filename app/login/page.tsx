@@ -49,10 +49,11 @@ function LoginStartContent() {
       {/* 여기는 로그인의 출발점이라 되돌아갈 앞 단계가 없다.
           나가려면 로고를 눌러 홈으로 가면 된다 — 별도 링크를 두지 않는다. */}
 
-      <div className="flex-1 flex items-center justify-center px-5 pb-14">
+      {/* 다른 로그인 화면과 같이 위쪽 정렬 — 화면 높이에 따라 자리가 흔들리지 않는다 */}
+      <div className="flex-1 flex justify-center px-5 pt-10 md:pt-14 pb-16">
       <div className="w-full max-w-[400px]">
         {/* 슬로건 */}
-        <h1 className="text-center text-[22px] font-bold text-[#1a1a1a] mb-3">
+        <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
           뷰티 커리어의 시작과 성장
         </h1>
         {/* 여기 온 사람이 궁금한 건 '내 일자리가 있느냐'다 —

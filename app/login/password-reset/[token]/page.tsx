@@ -65,7 +65,7 @@ export default function PasswordResetTokenPage() {
                 <CheckCircle size={32} className="text-[#5f0080]" />
               </div>
             </div>
-            <h1 className="text-[20px] font-normal text-[#1a1a1a] mb-3">
+            <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] mb-3">
               비밀번호 변경 완료
             </h1>
             <p className="text-[14px] md:text-[15px] text-[#6b6b6b] mb-10">
