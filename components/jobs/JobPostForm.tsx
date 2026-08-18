@@ -302,7 +302,11 @@ export default function JobPostForm({
   const contactMethodsRef = useRef<HTMLDivElement>(null);
   const [parseUrl, setParseUrl] = useState("");
   const [urlEditing, setUrlEditing] = useState(true); // 불러오기 후엔 URL을 링크로 표시(클릭 시 원문 새 창)
-  const [importMode, setImportMode] = useState<"url" | "ocr">("url"); // 회사명/URL vs 화면 캡처(OCR)
+  // 회사명/URL · 글 붙여넣기 · 화면 캡처
+  // 붙여넣기를 먼저 두는 이유: 카페·블로그 글은 드래그 복사가 되고,
+  // 글자로 보내면 캡처(이미지)보다 훨씬 싸고 전화번호를 잘못 읽을 일도 없다.
+  const [importMode, setImportMode] = useState<"url" | "paste" | "ocr">("url");
+  const [pasteText, setPasteText] = useState("");
   const [ocrFiles, setOcrFiles] = useState<File[]>([]); // OCR: 여러 장 캡처 누적
   // 캡처로 등록할 때의 원문 주소(인스타 게시물·카페 글 등).
   // 이게 없으면 어디서 가져온 공고인지 기록이 안 남아, 같은 글을 두 번 올려도 못 잡는다.
@@ -1223,6 +1227,33 @@ export default function JobPostForm({
       }
   };
 
+  // 붙여넣은 글을 클로드에 보내 폼을 채운다. 캡처와 같은 규칙을 쓰지만 입력이 글자다.
+  const runPaste = async () => {
+    const text = pasteText.trim();
+    if (!text) { setParseMsg("공고 내용을 붙여넣어 주세요."); return; }
+    if (mode === "admin") { setNonMember(true); setCompanyId(null); }
+    setParsing(true); setParseMsg("");
+    try {
+      const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
+      const res = await fetch("/api/admin/external-jobs/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        // 원문 주소는 '기록용'이라 파싱에 넘기지 않는다.
+        // 넘기면 서버가 그 페이지를 열어 이미지를 긁는데, 카페는 글 사진이 로그인 뒤에 있어
+        // 카페 로고가 대신 딸려 오고 그게 공고 배너로 박힌다.
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      if (!data.success) { setParseMsg(data.error?.message || "불러오지 못했어요."); return; }
+      applyParsed(data.data);
+      setParseMsg("✓ 붙여넣은 내용으로 채웠어요. 값을 확인해 주세요.");
+    } catch {
+      setParseMsg("네트워크 오류가 발생했어요.");
+    } finally {
+      setParsing(false);
+    }
+  };
+
   const runParse = async (urlOverride?: string) => {
     const useUrl = (typeof urlOverride === "string" ? urlOverride : parseUrl).trim();
     if (!useUrl) { setParseMsg("공고 URL을 입력해주세요."); return; }
@@ -1919,7 +1950,7 @@ export default function JobPostForm({
           <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 16px", marginBottom: 8, marginLeft: 2 }}>
             <span style={{ fontWeight: 400, fontSize: 16, color: "#5f0080" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</span>
             <div style={{ display: "flex", gap: 20 }}>
-              {([["url", "회사명 / URL"], ["ocr", "화면 캡처"]] as ["url" | "ocr", string][]).map(([v, l]) => (
+              {([["url", "회사명 / URL"], ["paste", "글 붙여넣기"], ["ocr", "화면 캡처"]] as ["url" | "paste" | "ocr", string][]).map(([v, l]) => (
                 <label key={v} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: importMode === v ? "#1a1a1a" : "#666" }}>
                   <span style={{ width: 16, height: 16, borderRadius: "50%", border: importMode === v ? "1.5px solid #555" : "1.5px solid #cfcfcf", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     {importMode === v && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#555" }} />}
@@ -1931,7 +1962,33 @@ export default function JobPostForm({
           </div>
           <div style={{ background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
 
-          {importMode === "url" ? (
+          {importMode === "paste" ? (
+          /* 글 붙여넣기: 카페·블로그 글은 드래그 복사가 된다. 캡처보다 싸고 정확하다. */
+          <div>
+            <textarea
+              value={pasteText}
+              onChange={(e) => setPasteText(e.target.value)}
+              placeholder={"공고 글을 통째로 복사해 붙여넣으세요.\n(제목·모집분야·급여·근무시간·연락처가 다 들어가면 좋아요)"}
+              style={{ width: "100%", minHeight: 160, padding: 12, border: "1.5px solid #c9b8de", borderRadius: 8, fontSize: 13.5, lineHeight: 1.6, resize: "vertical", background: "#fff" }}
+            />
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
+              <input
+                type="text"
+                value={ocrSourceUrl}
+                onChange={(e) => setOcrSourceUrl(e.target.value)}
+                placeholder="원문 주소 (예: cafe.naver.com/… , instagram.com/p/… )"
+                style={{ flex: 1, minWidth: 0, height: 38, padding: "0 12px", border: "1px solid #e0e0e0", borderRadius: 8, fontSize: 13.5 }}
+              />
+              <button type="button" onClick={runPaste} disabled={parsing || !pasteText.trim()}
+                style={{ flexShrink: 0, padding: "9px 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: (parsing || !pasteText.trim()) ? "default" : "pointer", opacity: parsing ? 0.6 : 1 }}>
+                {parsing ? "불러오는 중..." : "불러오기"}
+              </button>
+            </div>
+            <div style={{ fontSize: 12, color: "#9a92a6", marginTop: 4 }}>
+              사진이 중요한 공고면 <b>화면 캡처</b>를 쓰세요. 글만 있으면 붙여넣기가 더 정확하고 빠릅니다.
+            </div>
+          </div>
+          ) : importMode === "url" ? (
           /* 통합 검색: 회사명 또는 공고 URL을 한 칸에서 자동 구분 */
           <div>
             <div style={{ display: "flex", gap: 8 }}>
