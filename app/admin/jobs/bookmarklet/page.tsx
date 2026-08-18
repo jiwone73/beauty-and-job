@@ -40,6 +40,16 @@ export default function BookmarkletPage() {
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
   const code = origin ? buildCode(origin) : "";
+  const [copied, setCopied] = useState(false);
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.prompt("아래를 전부 복사하세요 (⌘A → ⌘C)", code);
+    }
+  };
 
   const box: React.CSSProperties = { background: "#fff", border: "1px solid #ece7f1", borderRadius: 12, padding: "16px 18px", marginBottom: 14 };
   const step: React.CSSProperties = { fontSize: 14, color: "#2b2533", margin: "0 0 6px" };
@@ -69,6 +79,29 @@ export default function BookmarkletPage() {
           )}
           <p style={{ fontSize: 12.5, color: "#8d84a0", margin: "10px 0 0" }}>
             ↑ 누르지 말고 <b>끌어다 놓으세요</b>. 눌러도 아무 일도 일어나지 않습니다.
+          </p>
+        </div>
+
+        <div style={box}>
+          <p style={{ ...step, fontWeight: 500 }}>끌어다 놓기가 안 되면 (맥 Safari)</p>
+          <p style={{ fontSize: 13.5, color: "#4a4453", margin: "0 0 10px", lineHeight: 1.8 }}>
+            Safari는 끌어다 놓기를 자주 놓칩니다. 그럴 때는 코드를 복사해 손으로 만드세요.
+          </p>
+          <button type="button" onClick={copyCode}
+            style={{ padding: "9px 16px", borderRadius: 8, border: "1px solid #5f0080", background: copied ? "#5f0080" : "#fff", color: copied ? "#fff" : "#5f0080", fontSize: 13.5, fontWeight: 500, cursor: "pointer", marginBottom: 12 }}>
+            {copied ? "복사했어요" : "코드 복사하기"}
+          </button>
+          <ol style={{ margin: 0, paddingLeft: 18, fontSize: 13.5, color: "#4a4453", lineHeight: 2 }}>
+            <li>위 <b>코드 복사하기</b>를 누릅니다</li>
+            <li>아무 웹페이지에서나 <b>⌘D</b> → 위치를 <b>즐겨찾기</b>로 두고 <b>추가</b></li>
+            <li>화면 맨 위 메뉴에서 <b>북마크</b> → <b>북마크 편집</b> (<b>⌥⌘B</b>)</li>
+            <li>방금 만든 북마크의 <b>이름</b>을 더블클릭해 <b>옮기기</b>로 바꿉니다</li>
+            <li>그 옆 <b>주소</b> 칸을 더블클릭해 전부 지우고 <b>⌘V</b>로 복사한 코드를 붙여넣습니다</li>
+            <li><b>Enter</b>를 누르고 창을 닫으면 끝입니다</li>
+          </ol>
+          <p style={{ fontSize: 12.5, color: "#8d84a0", margin: "12px 0 0", lineHeight: 1.8 }}>
+            이것도 번거로우면 <b>글 붙여넣기</b>를 쓰세요. 카페 글에서 <b>⌘A</b> → <b>⌘C</b> 하고
+            등록 화면에 <b>⌘V</b> 하면 결과는 같습니다(사진만 따로 챙기시면 됩니다).
           </p>
         </div>
 
