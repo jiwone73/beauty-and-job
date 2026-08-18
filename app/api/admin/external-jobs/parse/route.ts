@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { parseStructured } from "@/lib/external/parsers/structured";
 import { getAllJobItems } from "@/lib/data/jobGroups";
@@ -66,7 +67,31 @@ const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "
 // 직군 목록은 단일 출처(jobGroups.ts)에서 가져온다 — 직군 재편 시 자동 반영(드리프트 방지)
 const STORE_CATEGORIES = getAllJobItems("STORE");
 const OFFICE_CATEGORIES = getAllJobItems("OFFICE");
-const STORE_TAGS = ["기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능", "4대보험", "주말·공휴일 휴무", "정규직 전환"];
+// 폼·필터가 쓰는 태그는 benefit_tags 표에 있다. 여기에 목록을 또 적어 두면
+// 표에만 있는 태그(퇴직금·연차·주5일 근무 등)를 모델이 골라도 뒤에서 걸러져 사라진다.
+const CONTACT_METHODS = ["문자", "이메일", "전화", "뷰티워크 온라인지원", "회사 홈페이지 지원"];
+const STORE_TAGS_FALLBACK = ["기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능", "4대보험", "주말·공휴일 휴무", "정규직 전환"];
+let STORE_TAGS: string[] = STORE_TAGS_FALLBACK;
+let OFFICE_TAGS_DB: string[] | null = null;
+// 기업이 직접 만든 태그는 그 기업만 쓰는 것이라 뺀다(is_curated = 공용 태그).
+async function loadBenefitTags() {
+  try {
+    const r = await pool.query(
+      `SELECT name, job_type FROM benefit_tags WHERE is_curated = true ORDER BY name`
+    );
+    // job_type 은 STORE · OFFICE · BOTH 세 가지다. BOTH 를 빠뜨리면
+    // 퇴직금·연차처럼 양쪽에 다 쓰는 태그가 통째로 사라진다.
+    const pick = (t: string) =>
+      r.rows.filter((x: any) => !x.job_type || x.job_type === t || x.job_type === "BOTH")
+            .map((x: any) => String(x.name || "").trim()).filter(Boolean);
+    const store = pick("STORE");
+    const office = pick("OFFICE");
+    if (store.length) STORE_TAGS = [...new Set(store)];
+    if (office.length) OFFICE_TAGS_DB = [...new Set(office)];
+  } catch (e) {
+    console.error("[benefit tags]", e);
+  }
+}
 const OFFICE_TAGS = ["인센티브", "자기계발비", "식대 지원", "주차 가능", "4대보험", "정규직 전환", "재택근무", "유연근무"];
 
 // LLM JSON 파싱(잘린 응답도 최대한 복구). 실패 시 null.
@@ -648,6 +673,7 @@ export async function POST(req: NextRequest) {
 
   if (!freeParsed && process.env.ANTHROPIC_API_KEY) {
     try {
+      await loadBenefitTags();
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
 반드시 아래 키를 가진 JSON "하나만" 출력해(설명·코드펜스 금지):
@@ -661,6 +687,13 @@ export async function POST(req: NextRequest) {
 - region: 근무지의 시·도와 시·군·구를 "시도전체명 시군구" 형식으로(예: "경기도 수원시 영통구", "서울특별시 강남구"). 시도명은 축약하지 말고 전체명(경기도/서울특별시/부산광역시 등). 상세 도로명·번지는 빼고 시군구까지만. 없으면 "".
 - deadline: 특정 마감일이 "YYYY-MM-DD"로 명시된 경우만 그 날짜. 상시/수시/미상이면 "".
 - always_open: 상시채용·수시채용·채용시 마감·충원시 마감 등 마감일이 없는 상시 공고면 true, 아니면 false.
+- title: 원문 공고 제목을 "그대로" 쓴다. 이모지·★♥🌸 같은 장식 기호와 반복된 특수문자만 걷어내고, 낱말은 바꾸지 말 것.
+  (예: "🌸서울 은평구 네일샵 든든한 직원 구합니다🌸" → "서울 은평구 네일샵 든든한 직원 구합니다")
+  ★ 직무명으로 새로 지어내지 말 것("네일 아티스트(경력자)" 같은 요약 제목 금지). 원문에 제목이 없을 때만 내용으로 한 줄 짓는다.
+- contact_methods: 지원자가 연락할 수 있는 방법을 아래에서 골라 배열로. 없으면 [].
+    · 고를 수 있는 값: ${CONTACT_METHODS.join(" / ")}
+    · "문자 주세요/문자 지원" → "문자", "전화 문의/☎/📞 번호" → "전화", 이메일 주소가 있으면 "이메일".
+    · 전화번호가 하나라도 있으면 최소한 "전화"는 넣을 것(연락 수단이 비면 지원자가 연락할 방법이 사라진다).
 - benefit_tags: 아래 job_type별 "복리후생·근무조건 태그 목록"에서 이 공고 내용과 맞는 것만 골라 문자열을 "정확히 그대로" 배열로(없으면 []). 이건 필터용 태그이고, 서술형 혜택 내용은 benefits에 따로 담아.
     · STORE 태그: ${STORE_TAGS.join(" / ")}
     · OFFICE 태그: ${OFFICE_TAGS.join(" / ")}
@@ -828,7 +861,18 @@ export async function POST(req: NextRequest) {
         ? [...new Set((out.job_categories as any[]).filter((c) => typeof c === "string" && catPool.includes(c)))]
         : [];
   }
-  const tagPool = out.job_type === "STORE" ? STORE_TAGS : OFFICE_TAGS;
+  // 연락 수단: 목록에 있는 값만 남기고, 전화번호가 있는데 비었으면 "전화"라도 채운다.
+  out.contact_methods = Array.isArray(out.contact_methods)
+    ? [...new Set((out.contact_methods as any[]).filter((m) => CONTACT_METHODS.includes(m)))] : [];
+  {
+    // 모델이 놓쳐도 글에 적힌 수단은 살린다. "문자 주시면 연락드릴께요" 같은 문장이 흔하다.
+    const src = `${bodyText} ${pageText}`;
+    if (/문자\s*(로|주|남|지원|문의)|카톡|카카오톡/.test(src) && !out.contact_methods.includes("문자")) out.contact_methods.push("문자");
+    if (out.contact_email && !out.contact_methods.includes("이메일")) out.contact_methods.push("이메일");
+    if (!out.contact_methods.length && out.contact_phone) out.contact_methods.push("전화");
+  }
+
+  const tagPool = out.job_type === "STORE" ? STORE_TAGS : (OFFICE_TAGS_DB || OFFICE_TAGS);
   out.benefit_tags = Array.isArray(out.benefit_tags)
     ? [...new Set(out.benefit_tags.filter((t: any) => tagPool.includes(t)))] : [];
   out.always_open = out.always_open === true || (!out.deadline && out.always_open !== false && /상시|수시|충원|채용\s*시/.test(bodyText + " " + pageText));

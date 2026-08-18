@@ -1080,6 +1080,17 @@ export default function JobPostForm({
         // 담당자 연락처는 '관리자 확인용'으로만 저장(구직자 비노출). 파싱값이 있으면 채워둔다.
         if (d.contact_email) setNmContactEmail(d.contact_email);
         if (d.contact_phone) setNmManagerPhone(d.contact_phone);
+        // 지원방법을 골라야 담당자 연락처 칸이 화면에 나타난다.
+        // 이걸 안 채우면 번호를 읽어 와도 담을 자리가 없어 사라진 것처럼 보인다.
+        {
+          const ms: string[] = Array.isArray(d.contact_methods)
+            ? d.contact_methods.filter((m: any) => CONTACT_METHOD_OPTIONS.includes(m)) : [];
+          if (!ms.length) {
+            if (d.contact_phone) ms.push("전화");
+            if (d.contact_email) ms.push("이메일");
+          }
+          if (ms.length) setContactMethods([...new Set(ms)]);
+        }
         if (d.contact_name) setNmManagerName(d.contact_name);
         // 비회원 외부 불러오기는 '관리자 대행'만 사용 → 파싱값과 무관하게 MANAGED 고정
         setApplyMethod("MANAGED");
