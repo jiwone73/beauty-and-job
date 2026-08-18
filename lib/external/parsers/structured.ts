@@ -42,7 +42,9 @@ function stripTags(s: any): string {
 function parseHairinjob(html: string): StructuredResult | null {
   const strip = (s: string) =>
     s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
-  const dec = (s: string) => s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
+  // 공용 해독기를 쓴다. 여기서 따로 만들어 쓰다 보니 숫자형 엔티티(&#128153; 같은
+  // 이모지)를 못 풀어 제목에 글자 그대로 남았다.
+  const dec = decodeHtmlEntities;
   // 값 li 원본 HTML(태그 유지). 다직종 모집분야는 600자를 넘어 잘리므로 넉넉히 2500자.
   const liRaw = (label: string): string => {
     const re = new RegExp("<li[^>]*>\\s*" + label.replace(/\s/g, "\\s*") + "\\s*</li>\\s*<li[^>]*>([\\s\\S]{0,2500}?)</li>", "i");
@@ -59,7 +61,7 @@ function parseHairinjob(html: string): StructuredResult | null {
   // 제목·회사·지역·주소
   let title = (ogD.match(/채용\]\s*(.+?)\s*,\s*근무지역/) || [])[1] || "";
   if (!title) {
-    title = ((html.match(/<meta property="og:title" content="([^"]+)"/) || [])[1] || "").replace(/\s*\|\s*헤어인잡.*$/, "").trim();
+    title = dec((html.match(/<meta property="og:title" content="([^"]+)"/) || [])[1] || "").replace(/\s*\|\s*헤어인잡.*$/, "").trim();
   }
   const company = (ogD.match(/\[([^\]]+?)\s*채용\]/) || [])[1] || "";
   if (!title && !company && !mj) return null;
@@ -83,11 +85,17 @@ function parseHairinjob(html: string): StructuredResult | null {
   const careerMark = ((mj.match(/\[([^\]]+)\]/) || [])[1] || "").replace(/\s/g, "");
   const headcount = Number(((mj.match(/(\d+)\s*명/) || [])[1] || "").replace(/^0+/, "")) || 0;
 
-  // 경력: [신입]→신입, [경력]→1년 이상, [신입및경력]→경력 무관
+  // 경력: [신입]→신입, [신입및경력]→경력 무관, [경력3년]→3년 이상.
+  // 그냥 [경력]이면 "경력자를 찾는다"는 말일 뿐 몇 년인지는 어디에도 없다.
+  // 예전엔 여기에 1년 이상을 붙였는데, 원문에 없는 조건을 지어내는 것이라 비워 둔다.
   let career = "";
   if (/신입.*경력|경력.*신입|신입및경력/.test(careerMark)) career = "경력 무관";
   else if (/^신입$/.test(careerMark)) career = "신입";
-  else if (/경력/.test(careerMark)) career = "1년 이상";
+  else if (/경력/.test(careerMark)) {
+    const y = Number((careerMark.match(/(\d+)\s*년/) || [])[1] || 0);
+    // 폼 선택지가 1·2·3·5년이라 그 아래로 내려 맞춘다(4년 → 3년 이상).
+    career = y >= 5 ? "5년 이상" : y >= 3 ? "3년 이상" : y >= 2 ? "2년 이상" : y >= 1 ? "1년 이상" : "";
+  }
 
   // 고용형태: 근무형태 li 우선, 없으면 모집분야 괄호
   const empRaw = liValue("근무형태") || ((mj.match(/\(([^)]+)\)/) || [])[1] || "");
@@ -142,7 +150,12 @@ function parseHairinjob(html: string): StructuredResult | null {
   // (자동 추천은 "스탭↔스태프" 표기 차이·복합어 때문에 자주 놓쳐서, 도메인 규칙을 먼저 적용)
   let mappedCats: string[] = [];
   {
-    const ck = `${job} ${mj} ${title}`.replace(/\s/g, "");
+    // 사이트가 적어 준 직종(모집분야)이 있으면 그것만 본다.
+    // 제목까지 섞으면 "헤어스탭[신입]" 을 뽑는 글이라도 제목의 '디자이너 추가모집'에
+    // 끌려 디자이너로 잡힌다. 제목은 직종이 비었을 때만 쓴다.
+    const fromField = `${job} ${mj}`.replace(/\s/g, "");
+    const hasField = /바버|barber|웨딩|본식|업스타일|혼주|디자이너|스타일리스트|원장|실장|스탭|스태프|스텝|인턴|어시|샴푸|막내|수습/i.test(fromField);
+    const ck = hasField ? fromField : `${job} ${mj} ${title}`.replace(/\s/g, "");
     if (/바버|barber/i.test(ck)) mappedCats = ["바버(Barber)"];
     else if (/웨딩|본식|업스타일|혼주/.test(ck)) mappedCats = ["웨딩 헤어디자이너"];
     else if (/디자이너|스타일리스트|원장|실장/.test(ck)) mappedCats = ["헤어 디자이너"];
@@ -164,8 +177,13 @@ function parseHairinjob(html: string): StructuredResult | null {
   {
     const mIdx = html.search(/class="[^"]*mid_view_main/i);
     if (mIdx >= 0) {
+      // class= 자리에서 자르면 여는 태그 한가운데부터 시작해
+      // 'class="mid_view_main none_login">' 이 본문 맨 앞에 남는다. 앞에 '<' 가 없어
+      // 태그 제거 규칙에 안 걸리기 때문이다. 그 태그가 닫히는 '>' 다음부터 자른다.
+      const gt = html.indexOf(">", mIdx);
+      const from = gt >= 0 ? gt + 1 : mIdx;
       // 스크립트·스타일 블록 먼저 제거(네이버 지도 초기화 JS 등이 본문 텍스트로 섞여 들어오는 것 차단)
-      const raw = html.slice(mIdx, mIdx + 20000)
+      const raw = html.slice(from, from + 20000)
         .replace(/<script[\s\S]*?<\/script>/gi, " ")
         .replace(/<style[\s\S]*?<\/style>/gi, " ");
       let t = stripLines(raw);
@@ -612,6 +630,10 @@ function parseAlbamon(html: string): StructuredResult | null {
 // 지역은 외부(iframe)라 못 뽑음 → 관리자가 채움. title+회사가 나오면 신뢰 처리.
 function decodeHtmlEntities(s: string): string {
   return s
+    // 숫자형 엔티티(&#128153; = 💙 처럼 이모지를 이렇게 적는 공고가 많다).
+    // 이름형만 풀고 있어 제목에 &#128153; 이 글자 그대로 남아 있었다.
+    .replace(/&#(\d{1,7});/g, (m, n) => { try { return String.fromCodePoint(Number(n)); } catch { return m; } })
+    .replace(/&#x([0-9a-f]{1,6});/gi, (m, n) => { try { return String.fromCodePoint(parseInt(n, 16)); } catch { return m; } })
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
