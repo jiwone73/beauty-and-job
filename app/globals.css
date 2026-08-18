@@ -11898,3 +11898,30 @@ button,
   .jt-card .jt-title { grid-column: 2; }
   .jt-card .jt-desc { grid-column: 1 / -1; margin-top: 0; }
 }
+
+/* ── 내용에 맞춰 늘어나는 textarea ──
+   높이를 JS 로 재면 재는 순간의 폭에 좌우된다. 불러오기로 값이 채워질 때나
+   뒤늦게 배치가 다시 잡힐 때 엉뚱한 폭에서 잰 높이가 px 로 굳어, 글이 잘리거나
+   빈 자리가 남았다. 그래서 같은 글을 안 보이게 겹쳐 그려 두고, 그 글이 차지할
+   높이를 브라우저가 직접 정하게 한다 — 폭이 어떻게 바뀌든 언제나 맞는다.
+   글꼴·줄간격·여백은 바깥(.autogrow)에 주고 안쪽 둘이 그대로 물려받는다. */
+.autogrow { display: grid; }
+.autogrow::after,
+.autogrow > textarea {
+  grid-area: 1 / 1 / 2 / 2;
+  font: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+  min-width: 0;
+}
+/* 끝에 공백을 붙여야 마지막 줄이 줄바꿈으로 끝나도 그 줄만큼 자리를 잡는다 */
+.autogrow::after { content: attr(data-value) " "; visibility: hidden; }
+.autogrow > textarea { resize: none; overflow: hidden; outline: none; width: 100%; }

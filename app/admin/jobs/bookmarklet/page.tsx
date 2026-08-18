@@ -45,17 +45,23 @@ export default function BookmarkletPage() {
         </p>
 
         <div style={{ ...box, background: "#f7f1fd", border: "1px solid #e0d5ee" }}>
-          <p style={{ ...step, fontWeight: 500 }}>1. 이 버튼을 즐겨찾기 바로 끌어다 놓으세요</p>
-          <p style={{ fontSize: 13, color: "#6b6473", margin: "0 0 12px" }}>
-            즐겨찾기 바가 안 보이면 <b>Ctrl+Shift+B</b>(맥은 <b>⌘+Shift+B</b>)로 켜세요.
-          </p>
+          <p style={{ ...step, fontWeight: 500 }}>1. 처음 한 번만 — 버튼을 즐겨찾기 바에 끌어다 놓으세요</p>
+          <ol style={{ margin: "0 0 14px", paddingLeft: 18, fontSize: 13.5, color: "#4a4453", lineHeight: 1.95 }}>
+            <li><b>Ctrl+Shift+B</b>(맥은 <b>⌘+Shift+B</b>)를 눌러 브라우저 위쪽에 즐겨찾기 바를 띄웁니다</li>
+            <li>아래 보라색 버튼을 <b>마우스로 누른 채</b> 즐겨찾기 바까지 끌고 가서 놓습니다</li>
+            <li>즐겨찾기 바에 <b>뷰티워크로 옮기기</b>가 생기면 끝입니다</li>
+          </ol>
           {code && (
             <a href={code}
-              onClick={(e) => { e.preventDefault(); alert("클릭하지 말고 즐겨찾기 바로 끌어다 놓으세요."); }}
+              onClick={(e) => { e.preventDefault(); alert("누르는 게 아니라, 마우스로 잡고 즐겨찾기 바까지 끌어다 놓으세요."); }}
+              draggable
               style={{ display: "inline-block", padding: "10px 18px", borderRadius: 8, background: "#5f0080", color: "#fff", fontSize: 14, textDecoration: "none", cursor: "grab" }}>
               뷰티워크로 옮기기
             </a>
           )}
+          <p style={{ fontSize: 12.5, color: "#8d84a0", margin: "10px 0 0" }}>
+            ↑ 누르지 말고 <b>끌어다 놓으세요</b>. 눌러도 아무 일도 일어나지 않습니다.
+          </p>
         </div>
 
         <div style={box}>
@@ -73,7 +79,7 @@ export default function BookmarkletPage() {
           <p style={{ ...step, fontWeight: 500, color: "#c0392b" }}>저장 전에 꼭 확인하세요</p>
           <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13.5, color: "#6b6473", lineHeight: 1.9 }}>
             <li><b>연락처</b> — 없으면 지원이 매장에 닿지 않습니다. 없는 공고는 등록하지 마세요</li>
-            <li><b>모집분야</b> — 자동으로 안 채워집니다. 직접 고르세요</li>
+            <li><b>모집분야</b> — 자동으로 잡히지만 글에 여러 직군이 섞이면 빠질 수 있습니다. 비어 있으면 직접 고르세요</li>
             <li><b>급여·근무시간</b> — 원문과 다르게 읽는 경우가 있습니다</li>
           </ul>
         </div>
