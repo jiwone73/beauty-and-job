@@ -278,7 +278,12 @@ export default function ExternalCompaniesPanel() {
 
   const selectedItems = items.filter((c) => selectedIds.includes(c.id));
   const canEmail = selectedItems.some((c) => { const e = contactEmail(c); return !!e && e.includes("@"); });
-  const canSms = selectedItems.some((c) => { const p = contactPhone(c); return !!p && p.replace(/[^0-9]/g, "").length >= 10; });
+  // 문자는 휴대폰으로만 간다. 02·031 같은 일반전화로 보내면 그냥 실패한다.
+  // 고른 것 중 하나라도 휴대폰이 아니면 아예 못 누르게 막아, 일부만 나가고
+  // 나머지는 조용히 실패하는 일이 없게 한다.
+  const isMobile = (p: string | null) => !!p && /^010\d{7,8}$/.test(p.replace(/[^0-9]/g, ""));
+  const smsBad = selectedItems.filter((c) => !isMobile(contactPhone(c)));
+  const canSms = selectedItems.length > 0 && smsBad.length === 0;
   // 지원서 연결: 4.회원가입 완료 상태의 1개사만 활성화
   const linkOne = selectedItems.length === 1 ? selectedItems[0] : null;
   const canLink = !!linkOne && stageOfCompany(linkOne) === 4;
@@ -373,7 +378,11 @@ export default function ExternalCompaniesPanel() {
             <button onClick={() => { if (canEmail) { setBroadcastChannel("email"); setBroadcastOpen(true); } }} disabled={!canEmail} title={!canEmail && selectedIds.length ? "선택한 기업 중 이메일이 있는 곳이 없어요" : undefined} style={btn(canEmail, "#5f0080")}>
               이메일 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
-            <button onClick={() => { if (canSms) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }} disabled={!canSms} title={!canSms && selectedIds.length ? "선택한 기업 중 전화번호가 있는 곳이 없어요" : undefined} style={btn(canSms, "#5f0080")}>
+            <button onClick={() => { if (canSms) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }} disabled={!canSms}
+              title={!canSms && selectedIds.length
+                ? `문자는 휴대폰(010)으로만 보낼 수 있어요. 휴대폰이 아닌 곳 ${smsBad.length}곳: ${smsBad.slice(0, 3).map((c) => `${c.company_name}(${contactPhone(c) || "번호 없음"})`).join(", ")}${smsBad.length > 3 ? " 외" : ""}`
+                : undefined}
+              style={btn(canSms, "#5f0080")}>
               SMS 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
             <button onClick={openLink} disabled={!canLink}
@@ -394,6 +403,7 @@ export default function ExternalCompaniesPanel() {
                   <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor: "pointer" }} />
                 </th>
                 <th>외부공고명</th>
+                <th style={{ width: 78 }}>등록자</th>
                 <th>기업명</th>
                 <th>지역</th>
                 <th>연락처</th>
@@ -404,9 +414,9 @@ export default function ExternalCompaniesPanel() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>{items.length === 0 ? "비회원 기업이 아직 없어요. 외부 공고를 등록하면 여기에 쌓여요." : "검색 결과가 없습니다."}</td></tr>
+                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>{items.length === 0 ? "비회원 기업이 아직 없어요. 외부 공고를 등록하면 여기에 쌓여요." : "검색 결과가 없습니다."}</td></tr>
               ) : (
                 filtered.map((c) => {
                   const cApps = appsByCompany[c.id] || [];
@@ -444,15 +454,17 @@ export default function ExternalCompaniesPanel() {
                               원문 ↗
                             </a>
                           )}
-                          {/* 누가 올린 공고인지 — 알바 실적과 관리자 등록을 눈으로 가른다 */}
-                          {j0 && (
-                            <span style={{ flexShrink: 0, fontSize: 11, padding: "1px 6px", borderRadius: 999, whiteSpace: "nowrap",
-                              background: isAlba(j0) ? "#eef7f0" : "#f3f0f7",
-                              color: isAlba(j0) ? "#0a7d34" : "#7b7387" }}>
-                              {isAlba(j0) ? "알바" : "관리자"}
-                            </span>
-                          )}
                         </div>
+                      </td>
+                      {/* 누가 올린 공고인지 — 알바 실적과 관리자 등록을 눈으로 가른다 */}
+                      <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
+                        {j0 ? (
+                          <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 999,
+                            background: isAlba(j0) ? "#eef7f0" : "#f3f0f7",
+                            color: isAlba(j0) ? "#0a7d34" : "#7b7387" }}>
+                            {isAlba(j0) ? "알바" : "관리자"}
+                          </span>
+                        ) : <span style={{ color: "#ccc" }}>-</span>}
                       </td>
                       <td className="admin-td-brand">
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
