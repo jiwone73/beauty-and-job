@@ -61,6 +61,15 @@ const JOB_WORDS = new RegExp([
   "스텝", "스탭", "직원", "실장", "원장", "디자이너", "알바",
 ].join("|"));
 
+// 글이 몰리는 카페. 목록에서 탭으로 갈라 보려고 짧은 이름을 붙여 둔다.
+// (1,030건을 모아 보니 이 넷이 70% 였다. 나머지 149곳은 대부분 1~2건짜리 지역 카페.)
+export const MAIN_CAFES = [
+  { key: "mansa", label: "맨사", like: "%맨사%" },
+  { key: "viewnjob", label: "뷰앤잡", like: "%뷰앤잡%" },
+  { key: "skincare", label: "피부관리사모임", like: "%최고피부관리사%" },
+  { key: "geosamo", label: "거사모", like: "%거사모%" },
+] as const;
+
 export type CafeLead = {
   link: string;
   title: string;

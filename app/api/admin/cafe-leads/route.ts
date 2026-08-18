@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { collectCafeLeads, saveLeads } from "@/lib/external/naverCafe";
+import { collectCafeLeads, saveLeads, MAIN_CAFES } from "@/lib/external/naverCafe";
 
 // 카페에서 찾은 구인글 목록 — 알바가 아침에 여는 '오늘 확인할 것'.
 export async function GET(req: NextRequest) {
@@ -14,9 +14,18 @@ export async function GET(req: NextRequest) {
   const status = (sp.get("status") || "NEW").toUpperCase();
   const q = (sp.get("q") || "").trim();
 
+  // 카페 탭: 주요 4곳은 각각, 그 밖은 '기타'로 묶는다.
+  const cafe = (sp.get("cafe") || "").trim();
+  const notMain = MAIN_CAFES.map((c) => `cafe_name NOT ILIKE '${c.like}'`).join(" AND ");
+
   const params: any[] = [];
   const where: string[] = [];
   if (status !== "ALL") { params.push(status); where.push(`status = $${params.length}`); }
+  if (cafe === "etc") where.push(`(${notMain})`);
+  else if (cafe) {
+    const found = MAIN_CAFES.find((c) => c.key === cafe);
+    if (found) { params.push(found.like); where.push(`cafe_name ILIKE $${params.length}`); }
+  }
   if (q) { params.push(`%${q}%`); where.push(`(title ILIKE $${params.length} OR summary ILIKE $${params.length} OR cafe_name ILIKE $${params.length})`); }
 
   const { rows } = await pool.query(
@@ -30,6 +39,15 @@ export async function GET(req: NextRequest) {
   const counts = await pool.query(
     `SELECT status, count(*)::int n FROM cafe_leads GROUP BY status`
   );
+  // 카페별 건수는 지금 보고 있는 상태 안에서 센다 — 탭 숫자와 목록이 어긋나지 않게.
+  const statusCond = status === "ALL" ? "TRUE" : `status = '${status.replace(/[^A-Z]/g, "")}'`;
+  const cafeCounts = await pool.query(
+    `SELECT
+       ${MAIN_CAFES.map((c) => `count(*) FILTER (WHERE cafe_name ILIKE '${c.like}')::int AS "${c.key}"`).join(",\n       ")},
+       count(*) FILTER (WHERE ${notMain})::int AS etc,
+       count(*)::int AS all
+     FROM cafe_leads WHERE ${statusCond}`
+  );
   // 크론이 조용히 멈추면 목록만 봐서는 모른다. 마지막 수집 시각을 함께 내려 준다.
   const runs = await pool.query(
     `SELECT
@@ -40,6 +58,8 @@ export async function GET(req: NextRequest) {
   return ok({
     items: rows,
     counts: Object.fromEntries(counts.rows.map((r: any) => [r.status, r.n])),
+    cafes: MAIN_CAFES.map((c) => ({ key: c.key, label: c.label })),
+    cafeCounts: cafeCounts.rows[0] || {},
     lastRun: runs.rows[0]?.last_run || null,
     todayAdded: runs.rows[0]?.today_added ?? 0,
   });

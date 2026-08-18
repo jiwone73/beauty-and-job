@@ -21,6 +21,9 @@ const TABS: { key: string; label: string }[] = [
 export default function CafeLeadsPage() {
   const [items, setItems] = useState<Lead[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [cafes, setCafes] = useState<{ key: string; label: string }[]>([]);
+  const [cafeCounts, setCafeCounts] = useState<Record<string, number>>({});
+  const [cafe, setCafe] = useState("");   // "" = 전체, "etc" = 기타
   const [lastRun, setLastRun] = useState<string | null>(null);
   const [todayAdded, setTodayAdded] = useState(0);
   const [tab, setTab] = useState("NEW");
@@ -30,15 +33,16 @@ export default function CafeLeadsPage() {
   const [msg, setMsg] = useState("");
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
 
-  const load = (status = tab) => {
+  const load = (status = tab, c = cafe) => {
     setLoading(true);
-    fetch(`/api/admin/cafe-leads?status=${status}`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`/api/admin/cafe-leads?status=${status}${c ? `&cafe=${c}` : ""}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
-      .then((res) => { if (res.success) { setItems(res.data.items); setCounts(res.data.counts); setLastRun(res.data.lastRun); setTodayAdded(res.data.todayAdded || 0); } })
+      .then((res) => { if (res.success) { setItems(res.data.items); setCounts(res.data.counts); setLastRun(res.data.lastRun); setTodayAdded(res.data.todayAdded || 0);
+        setCafes(res.data.cafes || []); setCafeCounts(res.data.cafeCounts || {}); } })
       .catch(() => {})
       .finally(() => setLoading(false));
   };
-  useEffect(() => { load(tab); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [tab]);
+  useEffect(() => { load(tab, cafe); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [tab, cafe]);
 
   // 지금 바로 한 번 모으기. 정기 수집은 매일 밤 크론이 한다.
   const collectNow = async () => {
@@ -47,7 +51,7 @@ export default function CafeLeadsPage() {
       const res = await fetch("/api/admin/cafe-leads", { method: "POST", headers: { Authorization: `Bearer ${token}` } });
       const d = await res.json();
       setMsg(d.success ? `조회 ${d.data.found}건 · 새 글 ${d.data.added}건` : (d.error?.message || "수집 실패"));
-      load(tab);
+      load(tab, cafe);
     } finally { setCollecting(false); }
   };
 
@@ -107,6 +111,21 @@ export default function CafeLeadsPage() {
             style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, background: "none", border: "1px solid #ddd", borderRadius: 8, padding: "6px 12px", cursor: "pointer" }}>
             <RefreshCw size={14} /> {collecting ? "모으는 중…" : "지금 모으기"}
           </button>
+        </div>
+        {/* 카페 탭 — 글이 몰리는 4곳은 따로, 나머지는 기타로 묶는다.
+            카페마다 가입·등업이 필요해서, 들어갈 수 있는 곳부터 처리하게 나눠 둔다. */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 12.5, color: "#b3adbd", marginRight: 2 }}>카페</span>
+          {[{ key: "", label: "전체", n: cafeCounts.all }, ...cafes.map((c) => ({ ...c, n: cafeCounts[c.key] })), { key: "etc", label: "기타", n: cafeCounts.etc }]
+            .map((c) => (
+              <button key={c.key || "all"} onClick={() => setCafe(c.key)}
+                style={{ padding: "5px 12px", borderRadius: 999, fontSize: 12.5,
+                  border: cafe === c.key ? "1px solid #5f0080" : "1px solid #ece7f1",
+                  background: cafe === c.key ? "#f6f0fb" : "#fff",
+                  color: cafe === c.key ? "#5f0080" : "#9a92a6", cursor: "pointer" }}>
+                {c.label}{typeof c.n === "number" ? ` ${c.n}` : ""}
+              </button>
+            ))}
         </div>
         {msg && <div style={{ fontSize: 13, color: "#5f0080", marginBottom: 10 }}>{msg}</div>}
 
