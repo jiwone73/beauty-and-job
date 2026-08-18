@@ -36,6 +36,7 @@ type Job = {
   application_count: number;
   company_id: string;
   company_name: string;
+  source_url: string | null;  // 외부에서 옮겨 온 공고면 원문 주소
   logo_url: string | null;
   thumb_url: string | null;   // 매장은 로고가 없어 공고·매장 배너를 대신 쓴다
   category_name: string | null;
@@ -344,6 +345,15 @@ function AdminJobsPageInner() {
                         onClick={() => job.company_id && openCompany(job.company_id)}>
                         {job.company_name}
                       </div>
+                      {/* 옮겨 온 공고는 원문으로 갈 수 있어야 한다 — 값이 맞는지 대조하고,
+                          아직 사람을 뽑는지 확인할 때 쓴다. */}
+                      {job.source_url && (
+                        <a href={job.source_url} target="_blank" rel="noopener noreferrer"
+                          title="원문 보기" onClick={(e) => e.stopPropagation()}
+                          style={{ fontSize: 11, color: "#9a92a6", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>
+                          원문 ↗
+                        </a>
+                      )}
                       {(() => {
                         const isMember = job.is_member !== false && job.source !== "EXTERNAL";
                         return (

@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
       SELECT
         jp.id, jp.title, jp.job_type, jp.status, jp.location,
         jp.experience_level, jp.view_count, jp.application_count, jp.created_at,
-        jp.deadline, jp.product_type, jp.source, jp.created_by,
+        jp.deadline, jp.product_type, jp.source, jp.created_by, jp.source_url,
         c.id AS company_id, c.company_name, c.logo_url, c.is_member,
         -- 매장은 로고를 받지 않는다. 공고 배너 → 매장 배너 → (오피스) 로고 순으로 쓴다.
         COALESCE(
