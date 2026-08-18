@@ -10,18 +10,6 @@
     {
       "path": "/api/admin/recommendations/send",
       "schedule": "0 1 * * 1"
-    },
-    {
-      "path": "/api/cron/cafe-leads",
-      "schedule": "0 23 * * *"
-    },
-    {
-      "path": "/api/cron/cafe-leads",
-      "schedule": "0 5 * * *"
-    },
-    {
-      "path": "/api/cron/cafe-leads",
-      "schedule": "0 11 * * *"
     }
   ]
 }

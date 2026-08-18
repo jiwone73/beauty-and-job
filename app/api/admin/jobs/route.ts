@@ -221,17 +221,6 @@ export async function POST(req: NextRequest) {
 
     // 카페에서 찾아 둔 글로 등록했다면 그 줄을 '등록완료'로 바꾼다.
     // 알바가 목록에서 따로 체크할 필요가 없게, 저장 한 번으로 끝낸다.
-    const srcUrl = (source_url || '').trim()
-    if (srcUrl) {
-      pool
-        .query(
-          `UPDATE cafe_leads SET status = 'DONE', job_id = $2, updated_at = now()
-            WHERE link = $1 AND status <> 'DONE'`,
-          [srcUrl, result.rows[0].id]
-        )
-        .catch((e) => console.error('[cafe lead done]', e))
-    }
-
     return ok(result.rows[0], 201)
   } catch (e) {
     await client.query('ROLLBACK')
