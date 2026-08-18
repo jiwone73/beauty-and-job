@@ -11,16 +11,20 @@ import pool from "@/lib/db";
 const ENDPOINT = "https://openapi.naver.com/v1/search/cafearticle.json";
 
 // 미용 직종 구인글이 걸리는 검색어. 늘리면 그만큼 API 호출이 는다.
+// 검색어 하나 = 최신 100건짜리 창 하나다. 늘릴수록 놓치는 글이 줄어든다.
+// 감으로 고르지 않고, 실제로 모인 글 제목에서 자주 쓰이는 말을 뽑았다.
+//   구합니다 32% · 선생님 19% · 모집 11% · 모셔요 7% · 파트 7% …
+// (네이버 검색 API 는 하루 25,000건까지 무료라 늘려도 값이 안 든다.)
 export const CAFE_KEYWORDS = [
-  "미용실 구인",
-  "헤어디자이너 구인",
-  "헤어 스텝 구인",
-  "미용실 직원구함",
-  "네일 구인",
-  "속눈썹 구인",
-  "왁싱 구인",
-  "피부관리사 구인",
-  "메이크업 구인",
+  // 직종 × 구인
+  "미용실 구인", "헤어디자이너 구인", "헤어 스텝 구인", "미용실 직원구함",
+  "네일 구인", "속눈썹 구인", "왁싱 구인", "피부관리사 구인", "메이크업 구인",
+  // 실제 제목에 흔한 표현 — '구인'이라는 말을 안 쓰는 글이 많다
+  "네일 선생님 구합니다", "네일리스트 모집", "네일 디자이너 모집",
+  "속눈썹 선생님 구합니다", "피부관리사 모집", "왁싱 선생님 구합니다",
+  "헤어 디자이너 모집", "미용실 선생님 구합니다", "헤어 실장 구합니다",
+  // 근무 형태
+  "네일 프리랜서", "샵인샵 구합니다", "미용실 파트 구합니다",
 ];
 
 // 검색어에 걸리지만 우리 일이 아닌 카페들.
@@ -112,7 +116,7 @@ export async function collectCafeLeads(keywords = CAFE_KEYWORDS): Promise<CafeLe
 }
 
 /** 새 글만 넣는다. 링크가 기준이라 이미 본 글은 건드리지 않는다. */
-export async function saveLeads(leads: CafeLead[]) {
+export async function saveLeads(leads: CafeLead[], source: "cron" | "manual" = "cron") {
   let added = 0;
   for (const l of leads) {
     const r = await pool.query(
@@ -123,5 +127,9 @@ export async function saveLeads(leads: CafeLead[]) {
     );
     added += r.rowCount || 0;
   }
+  // 언제 돌았고 몇 건 들어왔는지 남긴다 — 크론이 멈춰도 화면에서 바로 보이게.
+  await pool
+    .query(`INSERT INTO cafe_collect_runs (found, added, source) VALUES ($1,$2,$3)`, [leads.length, added, source])
+    .catch((e) => console.error("[collect run]", e));
   return added;
 }

@@ -307,6 +307,8 @@ export default function JobPostForm({
   // 글자로 보내면 캡처(이미지)보다 훨씬 싸고 전화번호를 잘못 읽을 일도 없다.
   const [importMode, setImportMode] = useState<"url" | "paste" | "ocr">("url");
   const [pasteText, setPasteText] = useState("");
+  const [importImages, setImportImages] = useState<string[]>([]); // 북마클릿이 넘긴 사진 주소
+  const [importingImgs, setImportingImgs] = useState(false);
   const [ocrFiles, setOcrFiles] = useState<File[]>([]); // OCR: 여러 장 캡처 누적
   // 캡처로 등록할 때의 원문 주소(인스타 게시물·카페 글 등).
   // 이게 없으면 어디서 가져온 공고인지 기록이 안 남아, 같은 글을 두 번 올려도 못 잡는다.
@@ -1238,6 +1240,29 @@ export default function JobPostForm({
       }
   };
 
+  // 넘겨받은 사진을 우리 저장소로 옮겨 배너에 넣는다.
+  // 카페 이미지는 다른 도메인에서 직접 못 불러오고 원본이 지워지면 같이 사라진다.
+  const attachImportedImages = async () => {
+    if (!importImages.length) return;
+    setImportingImgs(true);
+    try {
+      const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
+      const res = await fetch("/api/admin/jobs/import-images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ urls: importImages, referer: ocrSourceUrl || undefined }),
+      });
+      const d = await res.json();
+      if (!d.success) { setParseMsg(d.error?.message || "사진을 가져오지 못했어요."); return; }
+      const got: string[] = d.data.urls || [];
+      if (got.length) setBannerImages((prev) => [...prev, ...got.map((u) => ({ url: u, name: "배너" }))]);
+      setImportImages([]);
+      setParseMsg(`✓ 사진 ${got.length}장을 배너에 넣었어요.`);
+    } finally {
+      setImportingImgs(false);
+    }
+  };
+
   // 붙여넣은 글을 클로드에 보내 폼을 채운다. 캡처와 같은 규칙을 쓰지만 입력이 글자다.
   const runPaste = async () => {
     const text = pasteText.trim();
@@ -1373,6 +1398,36 @@ export default function JobPostForm({
     if (isUrlLike(q)) { setFindResults([]); setFindMsg(""); setParseUrl(q); setPicked({ title: q, url: q.startsWith("http") ? q : `https://${q}` }); runParse(q); }
     else { setPicked(null); runFindByCompany(); }
   };
+  // 북마클릿이 넘겨준 내용(#import=...)을 받아 폼을 채운다.
+  //
+  // 카페 본문은 로그인 뒤에 있어 서버가 가져올 수 없다. 그래서 알바 브라우저에서
+  // 보고 있는 화면의 글·사진 주소를 그대로 넘겨받는다. 주소창 뒤(#)에 실어 보내므로
+  // 서버로는 가지 않고 이 화면에서만 읽힌다.
+  const importedRef = useRef(false);
+  useEffect(() => {
+    if (importedRef.current || editId) return;
+    const h = typeof window === "undefined" ? "" : window.location.hash;
+    const m = h.match(/[#&]import=([^&]+)/);
+    if (!m) return;
+    importedRef.current = true;
+    let payload: any = null;
+    try {
+      payload = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1])))));
+    } catch {
+      try { payload = JSON.parse(decodeURIComponent(m[1])); } catch { payload = null; }
+    }
+    // 주소창에서 지워 둔다 — 새로고침할 때 또 채워지지 않게.
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+    if (!payload) { setParseMsg("가져온 내용을 읽지 못했어요. 글을 복사해 붙여넣어 주세요."); return; }
+
+    setImportMode("paste");
+    if (payload.text) setPasteText(String(payload.text).slice(0, 16000));
+    if (payload.url) setOcrSourceUrl(String(payload.url));
+    if (Array.isArray(payload.images) && payload.images.length) setImportImages(payload.images.slice(0, 10));
+    setParseMsg("가져왔어요. [불러오기]를 누르면 항목별로 채워집니다.");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editId]);
+
   // ?url= 로 진입(예: 이슈 페이지의 '불러와 수정')하면 그 원문을 자동으로 한 번 불러온다.
   const autoRanRef = useRef(false);
   useEffect(() => {
@@ -1998,6 +2053,20 @@ export default function JobPostForm({
             <div style={{ fontSize: 12, color: "#9a92a6", marginTop: 4 }}>
               사진이 중요한 공고면 <b>화면 캡처</b>를 쓰세요. 글만 있으면 붙여넣기가 더 정확하고 빠릅니다.
             </div>
+            {importImages.length > 0 && (
+              <div style={{ marginTop: 8, padding: "10px 12px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 13, color: "#5f0080" }}>가져온 사진 {importImages.length}장</span>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {importImages.slice(0, 6).map((u, i) => (
+                    <img key={i} src={u} alt="" style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 6, border: "1px solid #e0d5ee" }} />
+                  ))}
+                </div>
+                <button type="button" onClick={attachImportedImages} disabled={importingImgs}
+                  style={{ marginLeft: "auto", padding: "7px 14px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 13, cursor: "pointer", opacity: importingImgs ? 0.6 : 1 }}>
+                  {importingImgs ? "가져오는 중…" : "배너에 넣기"}
+                </button>
+              </div>
+            )}
           </div>
           ) : importMode === "url" ? (
           /* 통합 검색: 회사명 또는 공고 URL을 한 칸에서 자동 구분 */

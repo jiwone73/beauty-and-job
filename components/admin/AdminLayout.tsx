@@ -23,6 +23,7 @@ const NAV_ITEMS = [
       { id: "jobs", label: "채용공고 목록", href: "/admin/jobs" },
       { id: "jobs-new", label: "공고 직접 등록", href: "/admin/jobs/new" },
       { id: "jobs-cafe", label: "카페 구인글", href: "/admin/jobs/cafe-leads" },
+      { id: "jobs-bookmarklet", label: "공고 옮기기 버튼", href: "/admin/jobs/bookmarklet" },
       { id: "jobs-issues", label: "등록 이슈", href: "/admin/jobs/issues" },
     ]
   },
@@ -46,6 +47,7 @@ const PAGE_TITLES: Record<string, string> = {
   "jobs-new": "채용공고",
   "jobs-issues": "채용공고",
   "jobs-cafe": "채용공고",
+  "jobs-bookmarklet": "채용공고",
   "jobs-scrapped": "스크랩 채용공고",
   "jobs-viewed": "열람한 채용공고",
   "jobs-external-inbox": "외부 지원 인박스",
@@ -72,6 +74,7 @@ const PAGE_SUBTITLES: Record<string, string> = {
   "jobs": "채용공고 목록",
   "jobs-new": "공고 직접 등록",
   "jobs-cafe": "카페 구인글",
+  "jobs-bookmarklet": "공고 옮기기 버튼",
   "resumes-applications": "입사지원 목록",
 };
 

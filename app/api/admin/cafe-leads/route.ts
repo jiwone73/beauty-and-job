@@ -30,9 +30,18 @@ export async function GET(req: NextRequest) {
   const counts = await pool.query(
     `SELECT status, count(*)::int n FROM cafe_leads GROUP BY status`
   );
+  // 크론이 조용히 멈추면 목록만 봐서는 모른다. 마지막 수집 시각을 함께 내려 준다.
+  const runs = await pool.query(
+    `SELECT
+       (SELECT ran_at FROM cafe_collect_runs ORDER BY ran_at DESC LIMIT 1) AS last_run,
+       COALESCE((SELECT SUM(added)::int FROM cafe_collect_runs
+                  WHERE (ran_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date), 0) AS today_added`
+  );
   return ok({
     items: rows,
     counts: Object.fromEntries(counts.rows.map((r: any) => [r.status, r.n])),
+    lastRun: runs.rows[0]?.last_run || null,
+    todayAdded: runs.rows[0]?.today_added ?? 0,
   });
 }
 
@@ -42,7 +51,7 @@ export async function POST(req: NextRequest) {
   if (authErr) return authErr;
 
   const leads = await collectCafeLeads();
-  const added = await saveLeads(leads);
+  const added = await saveLeads(leads, "manual");
   return ok({ found: leads.length, added });
 }
 

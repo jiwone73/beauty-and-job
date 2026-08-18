@@ -21,6 +21,8 @@ const TABS: { key: string; label: string }[] = [
 export default function CafeLeadsPage() {
   const [items, setItems] = useState<Lead[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [lastRun, setLastRun] = useState<string | null>(null);
+  const [todayAdded, setTodayAdded] = useState(0);
   const [tab, setTab] = useState("NEW");
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
@@ -32,7 +34,7 @@ export default function CafeLeadsPage() {
     setLoading(true);
     fetch(`/api/admin/cafe-leads?status=${status}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
-      .then((res) => { if (res.success) { setItems(res.data.items); setCounts(res.data.counts); } })
+      .then((res) => { if (res.success) { setItems(res.data.items); setCounts(res.data.counts); setLastRun(res.data.lastRun); setTodayAdded(res.data.todayAdded || 0); } })
       .catch(() => {})
       .finally(() => setLoading(false));
   };
@@ -76,8 +78,15 @@ export default function CafeLeadsPage() {
             확인 전 {counts.NEW || 0} · 등록완료 {counts.DONE || 0} · 제외 {counts.SKIP || 0}
           </span>
         </div>
+        {/* 크론이 조용히 멈춰도 목록만 봐서는 모른다 — 마지막 수집 시각을 눈에 띄게 둔다. */}
+        <p style={{ fontSize: 13, color: "#9a92a6", margin: "0 0 8px" }}>
+          {lastRun
+            ? <>마지막 수집 <b style={{ color: "#6b6473" }}>{new Date(lastRun).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</b>
+                {" · "}오늘 새 글 <b style={{ color: "#5f0080" }}>{todayAdded}건</b></>
+            : "아직 수집 기록이 없어요."}
+        </p>
         <p style={{ fontSize: 13.5, color: "#9a92a6", margin: "0 0 14px" }}>
-          네이버 카페에서 매일 밤 자동으로 모읍니다. 개인 매장 공고는 채용 사이트가 아니라 지역 카페·직종 커뮤니티에 올라와요.
+          네이버 카페에서 하루 세 번(아침·낮·저녁) 자동으로 모읍니다. 개인 매장 공고는 채용 사이트가 아니라 지역 카페·직종 커뮤니티에 올라와요.
           <b> 원문</b>을 열어 내용을 확인한 뒤 <b>등록</b>으로 옮기고, 아니면 <b>제외</b>하세요.
         </p>
 
