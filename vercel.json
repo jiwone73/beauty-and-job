@@ -1,7 +1,19 @@
 {
-  "regions": ["syd1"],
+  "regions": [
+    "syd1"
+  ],
   "crons": [
-    { "path": "/api/cron/generate-story", "schedule": "0 0 * * *" },
-    { "path": "/api/admin/recommendations/send", "schedule": "0 1 * * 1" }
+    {
+      "path": "/api/cron/generate-story",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/admin/recommendations/send",
+      "schedule": "0 1 * * 1"
+    },
+    {
+      "path": "/api/cron/cafe-leads",
+      "schedule": "0 22 * * *"
+    }
   ]
 }

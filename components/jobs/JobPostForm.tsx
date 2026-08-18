@@ -304,6 +304,9 @@ export default function JobPostForm({
   const [urlEditing, setUrlEditing] = useState(true); // 불러오기 후엔 URL을 링크로 표시(클릭 시 원문 새 창)
   const [importMode, setImportMode] = useState<"url" | "ocr">("url"); // 회사명/URL vs 화면 캡처(OCR)
   const [ocrFiles, setOcrFiles] = useState<File[]>([]); // OCR: 여러 장 캡처 누적
+  // 캡처로 등록할 때의 원문 주소(인스타 게시물·카페 글 등).
+  // 이게 없으면 어디서 가져온 공고인지 기록이 안 남아, 같은 글을 두 번 올려도 못 잡는다.
+  const [ocrSourceUrl, setOcrSourceUrl] = useState("");
   const [parsing, setParsing] = useState(false);
   const [parseMsg, setParseMsg] = useState("");
   const [siteNameWarn, setSiteNameWarn] = useState(""); // 불러온 내용에 채용사이트 이름이 섞였을 때 경고(반드시 삭제)
@@ -1333,7 +1336,7 @@ export default function JobPostForm({
   useEffect(() => {
     if (autoRanRef.current || editId) return;
     const q = (initialFindQuery || "").trim();
-    if (q && isUrlLike(q)) { autoRanRef.current = true; runImport(); }
+    if (q && isUrlLike(q)) { setOcrSourceUrl(q); autoRanRef.current = true; runImport(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFindQuery, editId]);
 
@@ -1489,7 +1492,7 @@ export default function JobPostForm({
       external_contact_phone: nmManagerPhone.replace(/\D/g, "") || null,
       contact_methods: contactMethods,
       // 불러온 원문 URL 저장 → 이후 파서 개선 시 일괄 재파싱·백필 가능(picked.url 우선)
-      source_url: (picked?.url || parseUrl || "").trim() || null,
+      source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
       // 공고 전용 상단 이미지. 기업회원이 여기서 지워도 기업정보의 커버는 그대로 둔다.
       //   (빈 배열이면 '이 공고는 상단 이미지 없음'으로 저장)
       ...(mode === "company" ? { cover_images: bannerImages.map((b) => ({ url: b.url })) } : {}),
@@ -1989,6 +1992,20 @@ export default function JobPostForm({
               <button type="button" onClick={() => runOcrMulti(ocrFiles)} disabled={parsing || ocrFiles.length === 0}
                 style={{ marginLeft: "auto", alignSelf: "flex-end", padding: "8px 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: (parsing || ocrFiles.length === 0) ? "default" : "pointer", opacity: parsing ? 0.6 : 1 }}>
                 {parsing ? "불러오는 중..." : `불러오기${ocrFiles.length ? ` (${ocrFiles.length}장)` : ""}`}</button>
+            </div>
+            {/* 원문 주소 — 인스타 게시물·카페 글 주소를 남겨야 같은 공고를 두 번 올리지 않는다.
+                캡처만 붙이면 어디서 가져왔는지 기록이 사라진다. */}
+            <div style={{ marginTop: 8 }}>
+              <input
+                type="text"
+                value={ocrSourceUrl}
+                onChange={(e) => setOcrSourceUrl(e.target.value)}
+                placeholder="원문 주소 (예: instagram.com/p/… , cafe.naver.com/… )"
+                style={{ width: "100%", height: 38, padding: "0 12px", border: "1px solid #e0e0e0", borderRadius: 8, fontSize: 13.5 }}
+              />
+              <div style={{ fontSize: 12, color: "#9a92a6", marginTop: 4 }}>
+                캡처한 공고의 원문 주소예요. 넣어 두면 같은 공고를 두 번 올리지 않고, 나중에 원문을 다시 볼 수 있어요.
+              </div>
             </div>
           </div>
           )}
