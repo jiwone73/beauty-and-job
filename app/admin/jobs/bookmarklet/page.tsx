@@ -5,13 +5,21 @@ import AdminLayout from "@/components/admin/AdminLayout";
 // 카페·인스타 글에서 본문과 사진을 뽑아 우리 등록 화면으로 넘기는 즐겨찾기 버튼.
 //
 // 서버가 카페를 긁는 게 아니라, 알바가 로그인해서 보고 있는 화면의 내용을 옮긴다.
+//
+// 아래 코드는 즐겨찾기 주소로 만들려고 한 줄로 합친다(개행 제거). 그래서 이 안에는
+// // 주석을 쓰면 안 된다 — 뒤따르는 코드가 전부 주석에 먹힌다.
+// junk 는 본문을 못 찾아 페이지째 퍼왔을 때 네이버가 붙인 메뉴 줄을 걷어내는 규칙이다.
 // (본문이 로그인 뒤에 있어 서버로는 가져올 방법이 없다.)
 function buildCode(origin: string) {
   const src = `(function(){
   try{
     var pick=function(sels){for(var i=0;i<sels.length;i++){var e=document.querySelector(sels[i]);if(e&&e.innerText&&e.innerText.trim().length>40)return e;}return null;};
-    var box=pick(['.se-main-container','#app .article_container','.article_viewer','#tbody','.NHN_Comment_Widget + div','article','main']);
-    var text=(box?box.innerText:document.body.innerText||'').replace(/\\n{3,}/g,'\\n\\n').trim().slice(0,16000);
+    var box=pick(['.se-main-container','.ArticleContentBox','.article_container','.article_viewer','.se-viewer','#tbody','.NHN_Comment_Widget + div','article','main']);
+    var raw=box?box.innerText:(document.body.innerText||'');
+    var navIn=/카페홈|이웃가입|내소식|사용자 링크|내정보 보기|네이버톡|서비스 더보기|전체글보기|카페 메인/;
+    var navEq=/^(검색|로그인|로그아웃|글쓰기|목록|답글|댓글|신고|공유하기|스크랩|채팅|이전|다음|더보기)$/;
+    raw=raw.split('\\n').filter(function(l){var t=l.trim();return t&&!navIn.test(t)&&!navEq.test(t);}).join('\\n');
+    var text=raw.replace(/\\n{3,}/g,'\\n\\n').trim().slice(0,16000);
     var imgs=[];var scope=box||document.body;
     Array.prototype.forEach.call(scope.querySelectorAll('img'),function(im){
       var u=im.currentSrc||im.src||'';
