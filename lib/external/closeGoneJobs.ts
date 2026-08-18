@@ -10,6 +10,15 @@ import { normalizeSourceUrl } from "@/lib/sourceUrl";
 // 지우지 않고 마감(CLOSED)으로 둔다. 구직자에게는 안 보이지만 관리자는 무엇이
 // 왜 내려갔는지 볼 수 있어야 하고, 잘못 내렸을 때 되돌릴 수 있어야 한다.
 
+// 로그인해야 글이 보이는 곳. 밖에서 열면 살아 있는 글이든 지워진 글이든
+// 똑같은 껍데기가 온다(맨사 카페로 확인: 32,913 vs 32,921바이트, 내용 동일).
+// 그러니 이런 주소는 열어 봐야 알 수 없다 — 나이로 판단한다.
+export const LOGIN_WALLED = /cafe\.naver\.com|instagram\.com|band\.us|facebook\.com|blog\.naver\.com\/PostView/i;
+
+// 로그인 벽 뒤 공고를 몇 날까지 살려 둘지. 외부 공고의 평균 수명이 34일이라
+// 그보다 넉넉히 잡았다. 너무 짧으면 살아 있는 공고를 내리게 된다.
+export const WALLED_MAX_AGE_DAYS = 45;
+
 const UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36";
 
@@ -46,7 +55,7 @@ async function isGone(url: string, title = ""): Promise<boolean> {
     // (헤어인잡은 날짜가 "( ~ 월 일까지 )"로 비어 있는 틀만 돌려준다).
     // 그런 경우를 가리려면 그 페이지에 이 공고 제목이 실제로 있는지 보면 된다.
     // 제목을 알아볼 낱말이 하나도 없으면 그 글은 거기 없는 것이다.
-    const keys = titleKeys(title);
+    const keys = LOGIN_WALLED.test(url) ? [] : titleKeys(title);
     if (keys.length >= 2) {
       const plain = h.replace(/<[^>]+>/g, " ");
       if (!keys.some((k) => plain.includes(k))) return true;
@@ -83,4 +92,46 @@ export async function closeGoneJobs(
     closed.push({ id: j.id, title: j.title, url: j.source_url });
   }
   return { checked: mine.length, closed };
+}
+
+/**
+ * 원문 주소를 가진 활성 공고를, 확인 안 된 지 오래된 순으로 돌아가며 살핀다.
+ * 외부업체 리스트에 없는 곳(카페·인스타에서 옮겨 온 개인 매장)까지 덮기 위한 것이다.
+ *
+ * 읽을 수 있는 사이트는 원문을 열어 보고, 로그인 벽 뒤라 열어 봐야 알 수 없는 곳은
+ * 나이로 판단한다 — 사람을 다 뽑은 공고가 몇 달씩 남아 지원자를 헛걸음시키는 것보다
+ * 낫다고 봤다. 마감으로만 두므로 관리자가 되살릴 수 있다.
+ */
+export async function sweepSourceUrls(
+  opts: { max?: number; deadlineAt?: number } = {}
+): Promise<{ checked: number; closed: { title: string; why: string }[] }> {
+  const max = opts.max ?? 10;
+  const { rows } = await pool.query(
+    `SELECT id, title, source_url, created_at FROM job_postings
+      WHERE status = 'ACTIVE' AND source_url IS NOT NULL AND source_url <> ''
+      ORDER BY source_checked_at ASC NULLS FIRST
+      LIMIT $1`,
+    [max]
+  );
+
+  const closed: { title: string; why: string }[] = [];
+  let checked = 0;
+  for (const j of rows) {
+    if (opts.deadlineAt && Date.now() > opts.deadlineAt) break;
+    checked++;
+    let why = "";
+    if (LOGIN_WALLED.test(j.source_url)) {
+      const days = (Date.now() - new Date(j.created_at).getTime()) / 86400000;
+      if (days > WALLED_MAX_AGE_DAYS) why = `올린 지 ${Math.round(days)}일 지남`;
+    } else if (await isGone(j.source_url, j.title)) {
+      why = "원문이 내려감";
+    }
+    if (why) {
+      await pool.query(`UPDATE job_postings SET status = 'CLOSED', updated_at = now() WHERE id = $1`, [j.id]);
+      closed.push({ title: j.title, why });
+    }
+    // 마감시켰든 아니든 본 시각은 남긴다 — 그래야 다음엔 다른 공고 차례가 온다.
+    await pool.query(`UPDATE job_postings SET source_checked_at = now() WHERE id = $1`, [j.id]);
+  }
+  return { checked, closed };
 }
