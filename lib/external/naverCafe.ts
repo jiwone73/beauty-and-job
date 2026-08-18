@@ -24,7 +24,7 @@ export const CAFE_KEYWORDS = [
   "속눈썹 선생님 구합니다", "피부관리사 모집", "왁싱 선생님 구합니다",
   "헤어 디자이너 모집", "미용실 선생님 구합니다", "헤어 실장 구합니다",
   // 근무 형태
-  "네일 프리랜서", "샵인샵 구합니다", "미용실 파트 구합니다",
+  "네일 프리랜서", "미용실 파트 구합니다",
 ];
 
 // 검색어에 걸리지만 우리 일이 아닌 카페들.
@@ -70,6 +70,19 @@ export const MAIN_CAFES = [
   { key: "geosamo", label: "거사모", like: "%거사모%" },
 ] as const;
 
+// 샵인샵·베드쉐어 분양은 채용이 아니라 자리를 빌려주는 글이다.
+// 맨사에도 '샵인샵 분양' 게시판이 따로 있다.
+// 다만 "미용실 샵인샵 직원구함"처럼 진짜 채용이 섞여 있어, 채용 낱말이 있으면 살린다.
+const LEASE_WORDS = new RegExp([
+  "샵인샵", "샵인샾", "베드\\s*쉐어", "베드쉐어",
+  "분양", "임대", "양도", "양수", "입점", "권리금", "보증금", "월세",
+  "자리\\s*(있|나|구)", "공간\\s*대여", "매매",
+].join("|"));
+const HIRE_WORDS = new RegExp([
+  "직원\\s*(구|모)", "스텝", "스탭", "알바", "아르바이트",
+  "파트\\s*타임", "파트타임", "정직원",
+].join("|"));
+
 export type CafeLead = {
   link: string;
   title: string;
@@ -103,6 +116,7 @@ export async function searchCafe(keyword: string, display = 100): Promise<CafeLe
     const title = strip(it.title);
     const summary = strip(it.description);
     if (!JOB_WORDS.test(`${title} ${summary}`)) continue;
+    if (LEASE_WORDS.test(title) && !HIRE_WORDS.test(title)) continue;
     if (EXCLUDE_TEXT.test(`${title} ${summary}`)) continue;
     if (!it.link) continue;
     out.push({ link: it.link, title, summary, cafeName, cafeUrl: strip(it.cafeurl), keyword });
