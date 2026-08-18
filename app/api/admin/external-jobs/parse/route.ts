@@ -882,7 +882,18 @@ export async function POST(req: NextRequest) {
   {
     // 모델이 놓쳐도 글에 적힌 수단은 살린다. "문자 주시면 연락드릴께요" 같은 문장이 흔하다.
     const src = `${bodyText} ${pageText}`;
-    if (/문자\s*(로|주|남|지원|문의)|카톡|카카오톡/.test(src) && !out.contact_methods.includes("문자")) out.contact_methods.push("문자");
+    // "지원방법 : 문자 010-…" 처럼 항목 이름 뒤에 수단만 적어 두는 글이 많다.
+    // 이때는 뒤에 오는 말이 조사가 아니라 전화번호라 아래 낱말 규칙에 안 걸린다.
+    const labeled = (m: string) =>
+      new RegExp(`(지원|접수|연락|문의)\\s*(방법|방식)?\\s*[:：]?[^\\n]{0,20}${m}`).test(src);
+    const add = (m: string) => { if (!out.contact_methods.includes(m)) out.contact_methods.push(m); };
+    if (/문자\s*(로|주|남|지원|문의|만|부탁|바람|환영|먼저|메시지|연락)|[·,/|&]\s*문자|문자\s*[·,/|&]|카톡|카카오톡/.test(src) || labeled("문자")) add("문자");
+    if (/전화\s*(로|주|문의|연락|바람|부탁|환영|먼저)/.test(src) || labeled("전화")) add("전화");
+    // "전화 문의는 정중히 사절합니다" 처럼 못 하게 막는 글도 있다 — 모델이 골랐어도 뺀다.
+    // "전화 문의는 정중히 사절합니다" — 거절하는 말이 몇 글자 뒤에 오기도 한다.
+    if (/전화\s*(문의|연락)?[^\n]{0,12}(사절|사양|금지|삼가|받지\s*않|자제)/.test(src)) {
+      out.contact_methods = out.contact_methods.filter((m: string) => m !== "전화");
+    }
     if (out.contact_email && !out.contact_methods.includes("이메일")) out.contact_methods.push("이메일");
     if (!out.contact_methods.length && out.contact_phone) out.contact_methods.push("전화");
   }
