@@ -32,7 +32,8 @@ export async function GET(req: NextRequest) {
           json_agg(json_build_object(
             'id', jp.id, 'title', jp.title, 'status', jp.status, 'created_at', jp.created_at,
             'source_url', jp.source_url, 'external_apply_url', jp.external_apply_url,
-            'contact_phone', jp.external_contact_phone, 'contact_email', jp.external_contact_email
+            'contact_phone', jp.external_contact_phone, 'contact_email', jp.external_contact_email,
+            'created_by', jp.created_by
           ) ORDER BY jp.created_at DESC) AS jobs,
           MIN(jp.external_contact_phone) FILTER (WHERE jp.external_contact_phone IS NOT NULL) AS job_phone,
           MIN(jp.external_contact_email) FILTER (WHERE jp.external_contact_email IS NOT NULL) AS job_email

@@ -143,6 +143,8 @@ export default function ExternalCompaniesPanel() {
   const [msg, setMsg] = useState("");
   const [sortBy, setSortBy] = useState<"recent" | "name" | "stage">("recent");
   const [stageFilter, setStageFilter] = useState<number | null>(null);
+  // 누가 올린 공고인지로 거르기. 공고를 저장할 때 로그인한 관리자 아이디가 created_by 에 남는다.
+  const [byFilter, setByFilter] = useState<"" | "alba" | "admin">("");
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -190,7 +192,14 @@ export default function ExternalCompaniesPanel() {
     ? items.filter((c) => (c.company_name || "").toLowerCase().includes(q) || (contactPhone(c) || "").includes(q) || (contactEmail(c) || "").toLowerCase().includes(q))
     : items;
   const staged = stageFilter ? searched.filter((c) => stageOfCompany(c) === stageFilter) : searched;
-  const filtered = [...staged].sort((a, b) => {
+  // 그 업체 공고 중 한 건이라도 해당 작성자가 올린 게 있으면 남긴다.
+  //  · 알바: created_by = 'alba'
+  //  · 관리자: 그 밖(admin·beauty, 그리고 작성자를 안 남기던 시절의 빈 값)
+  const isAlba = (j: any) => j?.created_by === "alba";
+  const byFiltered = byFilter
+    ? staged.filter((c) => (c.jobs || []).some((j: any) => (byFilter === "alba" ? isAlba(j) : !isAlba(j))))
+    : staged;
+  const filtered = [...byFiltered].sort((a, b) => {
     if (sortBy === "name") return (a.company_name || "").localeCompare(b.company_name || "", "ko");
     if (sortBy === "stage") {
       const d = stageOfCompany(b) - stageOfCompany(a);
@@ -308,6 +317,10 @@ export default function ExternalCompaniesPanel() {
             value={SORT_LABELS[sortBy]}
             options={["등록일순", "기업명순", "진행 단계순"]}
             onChange={(v) => setSortBy(SORT_VALUES[v] ?? "recent")} />
+          <FilterDropdown label="공고 등록자"
+            value={byFilter === "alba" ? "알바" : byFilter === "admin" ? "관리자" : "전체"}
+            options={["전체", "알바", "관리자"]}
+            onChange={(v) => setByFilter(v === "알바" ? "alba" : v === "관리자" ? "admin" : "")} />
           {stageFilter && (
             <FilterDropdown label="단계"
               value={`${stageFilter}. ${STAGES[stageFilter - 1]}`}
@@ -417,6 +430,14 @@ export default function ExternalCompaniesPanel() {
                           </a>
                         ) : jobTitle}
                         {jobExtra && <span style={{ color: "#aaa" }}>{jobExtra}</span>}
+                        {/* 누가 올린 공고인지 — 알바 실적과 관리자 등록을 눈으로 가른다 */}
+                        {j0 && (
+                          <span style={{ marginLeft: 6, fontSize: 11, padding: "1px 6px", borderRadius: 999,
+                            background: isAlba(j0) ? "#eef7f0" : "#f3f0f7",
+                            color: isAlba(j0) ? "#0a7d34" : "#7b7387" }}>
+                            {isAlba(j0) ? "알바" : "관리자"}
+                          </span>
+                        )}
                       </td>
                       <td className="admin-td-brand">
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
