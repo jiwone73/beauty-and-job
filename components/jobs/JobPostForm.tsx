@@ -1284,10 +1284,17 @@ export default function JobPostForm({
     try {
       // 연락처·주소·모집분야를 포스터 그림에만 넣는 공고가 많다. 글에 없는 값을
       // 그림에서 채우도록, 딸려 온 사진이 있으면 글과 함께 보낸다.
+      //
+      // 그 포스터는 구직자에게도 보여줘야 할 상세요강이다. 같은 파일을 두 번
+      // 올리게 하지 않도록, 올린 김에 상세요강에도 걸어 둔다(빼려면 ×를 누르면 된다).
       const imgs: string[] = [...importImages];
+      const posters: { url: string; name: string }[] = [];
       for (const f of pasteFiles) {
         const up = await uploadImage(await compressImage(f));
-        if (up.success && up.url) imgs.push(up.url);
+        if (up.success && up.url) { imgs.push(up.url); posters.push({ url: up.url, name: up.name || f.name }); }
+      }
+      if (posters.length) {
+        setDetailImages((prev) => [...prev, ...posters.filter((p) => !prev.some((d) => d.url === p.url))].slice(0, 12));
       }
       const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
       const res = await fetch("/api/admin/external-jobs/parse", {
@@ -1301,7 +1308,9 @@ export default function JobPostForm({
       const data = await res.json();
       if (!data.success) { setParseMsg(data.error?.message || "불러오지 못했어요."); return; }
       applyParsed(data.data);
-      setParseMsg("✓ 붙여넣은 내용으로 채웠어요. 값을 확인해 주세요.");
+      setParseMsg(posters.length
+        ? `✓ 글과 사진 ${posters.length}장으로 채웠어요. 사진은 상세요강에도 넣었습니다.`
+        : "✓ 붙여넣은 내용으로 채웠어요. 값을 확인해 주세요.");
     } catch {
       setParseMsg("네트워크 오류가 발생했어요.");
     } finally {
@@ -2097,6 +2106,8 @@ export default function JobPostForm({
             <div style={{ fontSize: 12, color: "#9a92a6", marginTop: 6, lineHeight: 1.7 }}>
               연락처·주소·모집분야를 <b>포스터 그림에만</b> 넣은 공고가 많습니다. 그럴 땐 그 그림을 함께 올리세요 —
               글에 있는 값은 글을 그대로 쓰고, 글에 없는 값만 그림에서 읽어 채웁니다.
+              올린 그림은 <b>상세요강에도 자동으로 걸립니다</b>(빼려면 상세요강에서 ×).
+              매장 사진처럼 <b>글자가 없는 사진</b>은 여기 말고 상세요강이나 배너에 바로 넣으세요.
             </div>
             {importImages.length > 0 && (
               <div style={{ marginTop: 8, padding: "10px 12px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
