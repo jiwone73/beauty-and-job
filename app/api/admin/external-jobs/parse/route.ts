@@ -695,19 +695,26 @@ export async function POST(req: NextRequest) {
     · "문자 주세요/문자 지원" → "문자", "전화 문의/☎/📞 번호" → "전화", 이메일 주소가 있으면 "이메일".
     · 전화번호가 하나라도 있으면 최소한 "전화"는 넣을 것(연락 수단이 비면 지원자가 연락할 방법이 사라진다).
 - benefit_tags: 아래 job_type별 "복리후생·근무조건 태그 목록"에서 이 공고 내용과 맞는 것만 골라 문자열을 "정확히 그대로" 배열로(없으면 []). 이건 필터용 태그이고, 서술형 혜택 내용은 benefits에 따로 담아.
+    ★ 글에 그 혜택이 실제로 적혀 있을 때만 고를 것. 비슷해 보인다고 넘겨짚지 마라.
+      예) "식사시간 1시간"은 쉬는 시간이지 식대 지원이 아니다. "3.3% 프리랜서"는 4대보험이 아니라 그 반대다.
     · STORE 태그: ${STORE_TAGS.join(" / ")}
     · OFFICE 태그: ${OFFICE_TAGS.join(" / ")}
 - apply_method: 지원이 회사 홈페이지·특정 지원페이지에서만 가능하면 "REDIRECT"(그 링크를 external_apply_url에), 그 외에는 모두 "MANAGED". (채용 이메일이 보이면 contact_email에는 담되 apply_method는 MANAGED로.)
 - contact_phone: 지원·문의용 전화번호(담당자/채용 연락처)가 본문에 있으면 "010-1234-5678"처럼 하이픈 포함으로. 여러 개면 지원 담당 번호 우선(대표번호보다 채용 담당 우선). 없으면 "".
 - contact_email: "회사(매장)의 채용담당 이메일"만. 잡사이트 자체 이메일(예: @albamon.com·@jobkorea.co.kr·@saramin.co.kr 등 채용사이트 도메인 = 중계/문의용)은 회사 이메일이 아니므로 제외. 회사 이메일이 여러 개면 채용/인사 담당(recruit·hr·job·career·인사·채용 등) 우선, 대표·일반(info·ceo·master)은 후순위. 없으면 "".
 - contact_name: 채용 담당자 "사람 이름"이 명시돼 있으면 그 이름만(예: "이은주"). 부서명·회사명·"담당자"라는 일반어는 제외. 없으면 "".
-- description: 채용공고 본문 요약(직무·자격·근무조건). 원문 복제 금지, 한국어 3~5문장으로 재작성.
-- company_description: 그 회사·브랜드 자체에 대한 소개 2~3문장(있으면). 채용 내용이 아니라 회사 소개. 없으면 "".
+- description: 공고 본문을 "원문 그대로" 옮길 것. 요약·재작성·의역 금지, 없는 문장을 지어내지 마라.
+    지우는 것은 ① 장식(이모지·♥·★·점만 있는 줄·연속 빈 줄)과 ② 카페/사이트가 붙인 안내문(게시판 이용안내·로그인 안내·저작권·해시태그)뿐이다.
+    급여·근무시간처럼 다른 항목에도 담은 내용이라도, 본문에 있던 말이면 여기서 지우지 마라.
+- company_description: 글에 회사·브랜드를 "소개하는 문장이 실제로 있을 때"만, 그 문장을 원문 그대로 옮길 것.
+    ★ 지어내지 마라. 채용 조건만 적힌 글이면 반드시 ""로 둘 것.
+      매장 분위기·고객층·재료 지원 같은 말을 근거로 소개 문장을 새로 만들어 내면 안 된다.
 - address: 회사/근무지의 전체 주소(도로명·번지 포함, 있으면). 없으면 "".
 - industry: job_type이 STORE면 [헤어샵, 네일샵, 피부·에스테틱, 속눈썹·왁싱·반영구, 메이크업, 애견미용, 토탈뷰티샵] 중 하나, OFFICE면 [화장품·미용기기 제조·브랜드, 뷰티 유통·이커머스, 프랜차이즈 본사, 미용 교육·아카데미, 피부과·성형외과, 뷰티 마케팅·미디어, 뷰티 서비스·플랫폼] 중 하나를 정확히 그대로. 애매하면 "".
 - requirements: 자격요건/지원자격을 한국어 텍스트로. 항목이 여러 개면 줄바꿈(\n)으로 구분. 없으면 "".
 - preferred: 우대사항을 텍스트로(줄바꿈 구분). 없으면 "".
 - benefits: 복리후생/혜택 및 복지/복지/베네핏 등 이름이 무엇이든 그 혜택 내용을 서술형 텍스트로(줄바꿈 구분). 없으면 "".
+    ★ 쉬는 날 조건(월 O회 휴무·연 O일 휴무·주 O일·연차)과 식사·휴게시간은 구직자가 가장 먼저 보는 값이다. 글에 있으면 반드시 담을 것.
 - hiring_process: 채용 절차 단계를 문자열 배열로(예: ["서류전형","면접","최종합격"]). 없으면 [].
 - employment_type: "정규직" | "파트타임" | "계약직" 중 하나 또는 "".
 - main_duties: 주요업무/담당업무를 텍스트로(여러 개면 줄바꿈 구분). 없으면 "".
@@ -725,7 +732,7 @@ export async function POST(req: NextRequest) {
   ★ 출근·퇴근 "시각"이 적혀 있을 때만 채운다. "일 9시간 근무", "1일 8시간", "주 40시간"처럼 시각이 아니라 총 근무 길이만 있으면 work_time 은 ""로 두고 그 내용은 extra_notes 에 적을 것. (시각으로 지어내지 말 것 — "일 9시간"을 "09:00~18:00"으로 바꾸면 사실과 다르다.)
 - homepage_url: 그 회사 자체의 홈페이지만. 지금 보고 있는 채용사이트(출처) 주소는 넣지 말 것. 회사 홈페이지가 없으면 "".
 - extra_notes: 위 항목에 안 담기는 나머지 정보(근태제도·담당자 연락처·기타 안내 등)를 한국어로 항목별 정리(줄바꿈 구분). 급여·근무요일·근무시간·복리후생은 각 전용 필드(salary/work_days/work_time/benefits)에 넣고 여기 중복하지 말 것. 없으면 "".
-- 원문 복제는 피하되 내용은 빠짐없이 옮길 것.
+- 원문의 표현을 그대로 살릴 것. 말을 다듬느라 정보를 빠뜨리지 마라.
 - 입력 중 [붙여넣은 공고 본문]이 있으면 그 내용을 최우선으로 신뢰하고, [페이지 텍스트]·[JSON-LD]·[__NEXT_DATA__]는 빠진 값을 채우는 보완용으로만 사용할 것.
 - 모르는 값은 빈 문자열 "" 또는 빈 배열 [].`;
       const user = `URL: ${url || "(없음)"}\n호스트: ${hostname || "(없음)"}\n\n[붙여넣은 공고 본문 · 최우선 신뢰]\n${bodyText || "(없음)"}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${pageText || "(없음)"}`;
@@ -924,6 +931,20 @@ export async function POST(req: NextRequest) {
   const tagPool = out.job_type === "STORE" ? STORE_TAGS : (OFFICE_TAGS_DB || OFFICE_TAGS);
   out.benefit_tags = Array.isArray(out.benefit_tags)
     ? [...new Set(out.benefit_tags.filter((t: any) => tagPool.includes(t)))] : [];
+  // 헷갈리기 쉬운 태그는 글에 근거가 있어야 남긴다. 잘못 붙으면 사실이 바뀐다.
+  //  · "식사시간 1시간"은 쉬는 시간이지 밥값을 준다는 말이 아니다.
+  //  · "3.3% 프리랜서"는 4대보험이 없다는 뜻이니 그 태그가 붙으면 정반대가 된다.
+  {
+    const src = [bodyText, pageText, out.description, out.benefits, out.extra_notes]
+      .map((v: any) => (Array.isArray(v) ? v.join(" ") : String(v || ""))).join(" ");
+    const drop = (tag: string, ok: RegExp, deny?: RegExp) => {
+      if (!out.benefit_tags.includes(tag)) return;
+      if (ok.test(src) && !(deny && deny.test(src))) return;
+      out.benefit_tags = out.benefit_tags.filter((t: string) => t !== tag);
+    };
+    drop("식대 지원", /식대|식비|밥값|중식|석식|점심\s*제공|식사\s*제공|끼니\s*제공/);
+    drop("4대보험", /4대\s*보험/, /4대\s*보험[^\n]{0,12}(무|없|미가입|미제공)|3\.3\s*%|프리랜서/);
+  }
   out.always_open = out.always_open === true || (!out.deadline && out.always_open !== false && /상시|수시|충원|채용\s*시/.test(bodyText + " " + pageText));
   if (out.always_open) out.deadline = "";
   if (typeof out.region !== "string") out.region = "";
