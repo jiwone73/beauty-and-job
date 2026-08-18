@@ -325,6 +325,7 @@ export default function JobPostForm({
   const [importMode, setImportMode] = useState<"url" | "paste" | "ocr">("url");
   const [pasteText, setPasteText] = useState("");
   const [importImages, setImportImages] = useState<string[]>([]); // 북마클릿이 넘긴 사진 주소
+  const [pasteFiles, setPasteFiles] = useState<File[]>([]); // 붙여넣기와 함께 읽힐 포스터 사진
   const [importingImgs, setImportingImgs] = useState(false);
   const [ocrFiles, setOcrFiles] = useState<File[]>([]); // OCR: 여러 장 캡처 누적
   // 캡처로 등록할 때의 원문 주소(인스타 게시물·카페 글 등).
@@ -1281,6 +1282,13 @@ export default function JobPostForm({
     if (mode === "admin") { setNonMember(true); setCompanyId(null); }
     setParsing(true); setParseMsg("");
     try {
+      // 연락처·주소·모집분야를 포스터 그림에만 넣는 공고가 많다. 글에 없는 값을
+      // 그림에서 채우도록, 딸려 온 사진이 있으면 글과 함께 보낸다.
+      const imgs: string[] = [...importImages];
+      for (const f of pasteFiles) {
+        const up = await uploadImage(await compressImage(f));
+        if (up.success && up.url) imgs.push(up.url);
+      }
       const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
       const res = await fetch("/api/admin/external-jobs/parse", {
         method: "POST",
@@ -1288,7 +1296,7 @@ export default function JobPostForm({
         // 원문 주소는 '기록용'이라 파싱에 넘기지 않는다.
         // 넘기면 서버가 그 페이지를 열어 이미지를 긁는데, 카페는 글 사진이 로그인 뒤에 있어
         // 카페 로고가 대신 딸려 오고 그게 공고 배너로 박힌다.
-        body: JSON.stringify({ text }),
+        body: JSON.stringify(imgs.length ? { text, image_urls: imgs.slice(0, 8) } : { text }),
       });
       const data = await res.json();
       if (!data.success) { setParseMsg(data.error?.message || "불러오지 못했어요."); return; }
@@ -2072,8 +2080,23 @@ export default function JobPostForm({
                 {parsing ? "불러오는 중..." : "불러오기"}
               </button>
             </div>
-            <div style={{ fontSize: 12, color: "#9a92a6", marginTop: 4 }}>
-              사진이 중요한 공고면 <b>화면 캡처</b>를 쓰세요. 글만 있으면 붙여넣기가 더 정확하고 빠릅니다.
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, flexWrap: "wrap" }}>
+              <label style={{ padding: "7px 12px", borderRadius: 8, border: "1px dashed #c9b8de", background: "#fff", color: "#5f0080", fontSize: 13, cursor: "pointer" }}>
+                ＋ 포스터 사진
+                <input type="file" accept="image/*" multiple style={{ display: "none" }}
+                  onChange={(e) => { setPasteFiles((p) => [...p, ...Array.from(e.target.files || [])].slice(0, 8)); e.target.value = ""; }} />
+              </label>
+              {pasteFiles.map((f, i) => (
+                <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", background: "#fff", border: "1px solid #e5e0eb", borderRadius: 8, fontSize: 12.5, color: "#4a4453" }}>
+                  {f.name.length > 18 ? f.name.slice(0, 18) + "…" : f.name}
+                  <button type="button" onClick={() => setPasteFiles((p) => p.filter((_, x) => x !== i))}
+                    style={{ border: "none", background: "none", color: "#c0392b", cursor: "pointer", padding: 0, fontSize: 13 }}>×</button>
+                </span>
+              ))}
+            </div>
+            <div style={{ fontSize: 12, color: "#9a92a6", marginTop: 6, lineHeight: 1.7 }}>
+              연락처·주소·모집분야를 <b>포스터 그림에만</b> 넣은 공고가 많습니다. 그럴 땐 그 그림을 함께 올리세요 —
+              글에 있는 값은 글을 그대로 쓰고, 글에 없는 값만 그림에서 읽어 채웁니다.
             </div>
             {importImages.length > 0 && (
               <div style={{ marginTop: 8, padding: "10px 12px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
