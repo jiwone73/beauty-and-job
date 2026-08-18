@@ -5,6 +5,7 @@ import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
 import Anthropic from "@anthropic-ai/sdk";
 import { refreshSampleData } from "@/lib/sampleDataRefresh"; // ⚠️ 상용화 시 삭제
+import { GET as sendRecommendations } from "@/app/api/admin/recommendations/send/route";
 
 const CATEGORIES = ["공감", "꿀팁", "질문", "정보"];
 
@@ -44,6 +45,21 @@ export async function GET(req: NextRequest) {
 
   if (!okAuth) {
     return err("AUTH_001", "인증되지 않은 요청입니다.", 401);
+  }
+
+  // 주간 추천 메일을 여기에 얹는다.
+  // 무료 요금제는 크론을 2개까지만 돌려 주는데 우리는 셋이 필요했다(현장이야기·
+  // 추천메일·활성공고 갱신). 추천은 월요일 하루뿐이라, 매일 도는 이 크론이
+  // 요일을 보고 월요일에만 함께 보내도록 묶었다.
+  // 실패해도 현장이야기 생성은 계속한다 — 둘은 서로 상관없는 일이다.
+  try {
+    const kstDay = new Date(Date.now() + 9 * 3600 * 1000).getUTCDay(); // 0=일, 1=월
+    if (kstDay === 1) {
+      const r = await sendRecommendations(req);
+      console.log("[cron] 주간 추천메일", r.status);
+    }
+  } catch (e) {
+    console.error("[cron 추천메일]", e);
   }
 
   // ⚠️ 샘플 데이터 자동 갱신 (인증 통과 후 항상 실행, 상용화 시 이 블록 삭제)

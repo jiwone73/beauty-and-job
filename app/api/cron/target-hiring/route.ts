@@ -43,9 +43,10 @@ export async function GET(req: NextRequest) {
     if (!targets.length) return ok({ checked: 0 });
 
     // 1쪽만 보고, 업체 사이에 1초 쉰다 — 상대 사이트에 몰아치지 않게.
-    const r = await checkHiringFor(targets, { maxPages: 1, gapMs: 1000 });
+    // 45초를 넘기면 남은 업체는 다음 날로 미룬다(무료 요금제 함수 제한 60초).
+    const r = await checkHiringFor(targets, { maxPages: 1, gapMs: 1000, deadlineMs: 45_000 });
     return ok({
-      checked: targets.length,
+      checked: r.updated.length,
       hiring: r.hiring,
       jobs: r.jobs,
       newly: r.newly,

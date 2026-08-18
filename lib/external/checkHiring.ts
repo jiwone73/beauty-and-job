@@ -23,10 +23,14 @@ export type HiringTarget = { id: string; brand_name: string };
  */
 export async function checkHiringFor(
   targets: HiringTarget[],
-  opts: { maxPages?: number; gapMs?: number } = {}
+  opts: { maxPages?: number; gapMs?: number; deadlineMs?: number } = {}
 ): Promise<{ updated: any[]; hiring: number; jobs: number; newly: number }> {
   const maxPages = opts.maxPages ?? 3;
   const gapMs = opts.gapMs ?? 0;
+  // 무료 요금제는 함수가 60초에서 끊긴다. 시간이 다 되면 남은 업체는 건드리지 않고
+  // 끝낸다 — 확인한 지 오래된 순으로 뽑으므로 다음 날 자연히 그 업체 차례가 온다.
+  const startedAt = Date.now();
+  const deadlineMs = opts.deadlineMs ?? 0;
 
   const client = await pool.connect();
   const updated: any[] = [];
@@ -35,6 +39,7 @@ export async function checkHiringFor(
   let newCnt = 0;
   try {
     for (let i = 0; i < targets.length; i++) {
+      if (deadlineMs && Date.now() - startedAt > deadlineMs) break;
       const row = targets[i];
       let jobs: { idx: number; title: string; url: string; source: string }[] = [];
       try {
