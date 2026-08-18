@@ -1,6 +1,6 @@
 "use client";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, RefreshCw } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 
@@ -23,7 +23,7 @@ type Row = {
   scale: string | null;
   features: string | null;
   note: string | null;
-  found_jobs: { idx: number; title: string; url: string; source: string; date?: string; email?: string }[];
+  found_jobs: { idx: number; title: string; url: string; source: string; date?: string; email?: string; first_seen?: string }[];
   found_count: number;
   last_checked_at: string | null;
   updated_at: string | null;
@@ -319,6 +319,14 @@ export default function AdminOutreachPage() {
     border: active ? `1px solid ${PURPLE}` : "1px solid #e3dcec",
     background: active ? PURPLE : "#fff", color: active ? "#fff" : "#6b6473",
   });
+  // 갱신할 때 처음 본 공고에 그 날짜를 찍어 둔다. 사흘 안쪽이면 새 공고로 표시한다.
+  // (날짜가 없는 건 언제 올라왔는지 모르는 옛 자료라 새 공고로 치지 않는다.)
+  const NEW_DAYS = 3;
+  const isNewJob = (firstSeen?: string) => {
+    if (!firstSeen) return false;
+    const t = Date.parse(firstSeen);
+    return Number.isFinite(t) && Date.now() - t < NEW_DAYS * 86400000;
+  };
   const badge = (color: string): React.CSSProperties => ({
     display: "inline-block", padding: "2px 8px", borderRadius: 999, fontSize: 13, fontWeight: 400,
     color, background: `${color}18`,
@@ -404,9 +412,10 @@ export default function AdminOutreachPage() {
             <span style={{ fontSize: 13.5, color: "#0a7d34", fontWeight: 400, padding: "0 4px" }}>저장됨 ✓</span>
           )}
           <button onClick={updateAllTabs} disabled={!totalCount}
-            title="현재 탭과 상관없이 6개 탭 전체를 조회합니다 (시간이 걸립니다)"
-            style={{ ...chip(true), opacity: totalCount ? 1 : 0.5 }}>
-            전체 업데이트{totalCount ? <span style={{ opacity: 0.8, fontSize: 12 }}> (업체 {totalCount}개)</span> : ""}
+            aria-label="전체 업데이트"
+            title={`6개 탭 전체 ${totalCount}개 업체를 다시 조회합니다 (시간이 걸립니다)`}
+            style={{ ...chip(false), display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "6px 10px", opacity: totalCount ? 1 : 0.5, cursor: totalCount ? "pointer" : "default" }}>
+            <RefreshCw size={15} />
           </button>
           <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
             style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
@@ -527,13 +536,23 @@ export default function AdminOutreachPage() {
                           </select>
                           {isChecking && <span style={{ fontSize: 12, color: PURPLE }}>조회중…</span>}
                         </div>
-                        {row.found_count > 0 && (
-                          <button onClick={() => { setSrcTab(""); setExpanded(expanded === row.id ? null : row.id); }}
-                            style={{ marginTop: 4, background: "none", border: "none", padding: 0, cursor: "pointer", ...badge("#0a7d34") }}>
-                            {/* 열렸을 때 ▼(아래=펼쳐진 목록을 가리킴), 닫혔을 때 ▶ */}
-                            공고 {row.found_count}건 {expanded === row.id ? "▼" : "▶"}
-                          </button>
-                        )}
+                        {row.found_count > 0 && (() => {
+                          const newCnt = (row.found_jobs || []).filter((j) => isNewJob(j.first_seen)).length;
+                          return (
+                            <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 4, flexWrap: "wrap" }}>
+                              <button onClick={() => { setSrcTab(""); setExpanded(expanded === row.id ? null : row.id); }}
+                                style={{ background: "none", border: "none", padding: 0, cursor: "pointer", ...badge("#0a7d34") }}>
+                                {/* 열렸을 때 ▼(아래=펼쳐진 목록을 가리킴), 닫혔을 때 ▶ */}
+                                공고 {row.found_count}건 {expanded === row.id ? "▼" : "▶"}
+                              </button>
+                              {newCnt > 0 && (
+                                <span style={{ ...badge("#c2410c"), fontWeight: 700 }} title="최근 사흘 안에 새로 올라온 공고">
+                                  NEW {newCnt}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </td>
                       {/* 등록유무 */}
                       <td style={td}>
@@ -605,6 +624,10 @@ export default function AdminOutreachPage() {
                               <label key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13.5, cursor: "pointer" }}>
                                 <input type="radio" name="pickedFoundJob" checked={pickedJobUrl === jb.url} onChange={() => setPickedJobUrl(jb.url)} style={{ width: 14, height: 14, flexShrink: 0 }} />
                                 <span style={badge(PURPLE)}>{jb.source}</span>
+                                {isNewJob(jb.first_seen) && (
+                                  <span style={{ ...badge("#c2410c"), flexShrink: 0, fontWeight: 700 }}
+                                    title={`${jb.first_seen}에 새로 올라온 공고예요`}>NEW</span>
+                                )}
                                 {jb.date && <span style={{ fontSize: 12.5, color: "#9a92a6", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{jb.date}</span>}
                                 {/* 이미 올린 공고는 흐리게 — 남은 일감만 눈에 들어오게 한다 */}
                                 <span style={{ color: isRegistered(jb.url) ? "#bdb8c4" : "#2b2533" }}>{jb.title}</span>

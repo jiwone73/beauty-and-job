@@ -4,19 +4,13 @@ export const runtime = "nodejs"; // findByCompany 가 euc-kr TextDecoder 사용 
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { findJobsForCompany } from "@/lib/external/findByCompany";
+import { checkHiringFor } from "@/lib/external/checkHiring";
 
 // 채용유무 자동확인: 브랜드명으로 7개 채용사이트를 조회(무료)해서
 // is_hiring / found_jobs / found_count / last_checked_at 를 갱신한다.
 // body: { id: "..." }  또는  { ids: ["...", ...] }  (일괄, 최대 50건/요청)
 
 const MAX_IDS = 50;
-
-// 검색용 정규화: 괄호(영문/구버전명) 제거 → 대표 브랜드명만 (예: "리안헤어 (RIAHN)" → "리안헤어")
-function coreName(brand: string): string {
-  const cut = brand.replace(/[\(（].*$/g, "").replace(/\s*\/.*$/g, "").trim();
-  return cut || brand.trim();
-}
 
 export async function POST(req: NextRequest) {
   const { res: authErr } = requireAuth(req, "admin");
@@ -28,38 +22,18 @@ export async function POST(req: NextRequest) {
   if (!ids.length) return err("VALIDATION_001", "id 또는 ids가 필요합니다.", 400);
   if (ids.length > MAX_IDS) return err("VALIDATION_001", `한 번에 최대 ${MAX_IDS}건까지 조회할 수 있습니다.`, 400);
 
-  const client = await pool.connect();
   try {
-    // 대상 로드
-    const rows = (await client.query(
+    const rows = (await pool.query(
       `SELECT id, brand_name FROM target_companies WHERE id = ANY($1::uuid[])`,
       [ids]
     )).rows as { id: string; brand_name: string }[];
 
-    const updated: unknown[] = [];
-    // 외부 사이트 부하를 고려해 순차 처리 (각 건 내부에서 8개 소스 병렬)
-    for (const row of rows) {
-      const company = coreName(row.brand_name);
-      let jobs: { idx: number; title: string; url: string; source: string }[] = [];
-      try {
-        // verifyOpen: 마감 공고 제외(제목 완료표시 기준). 대상 소수라 부하 미미.
-        // 개수 제한 없음: 예전 30개 cap 때문에 병합 순서상 뒤쪽 소스(셀렉미 등)가 잘려 배지에 안 보였음.
-        const r = await findJobsForCompany(company, { maxPages: 3, strict: true, verifyOpen: true });
-        jobs = r.jobs;
-      } catch {
-        jobs = [];
-      }
-      const hiring = jobs.length > 0 ? "채용중" : "없음";
-      const up = await client.query(
-        `UPDATE target_companies
-            SET is_hiring = $1, found_jobs = $2::jsonb, found_count = $3, last_checked_at = now()
-          WHERE id = $4 RETURNING *`,
-        [hiring, JSON.stringify(jobs), jobs.length, row.id]
-      );
-      if (up.rows.length) updated.push(up.rows[0]);
-    }
+    // 직접 누르는 조회는 3쪽까지 본다 — 활성공고 "총 건수"까지 정확해야 하기 때문.
+    const { updated } = await checkHiringFor(rows);
+
     return ok({ items: updated, checked: updated.length });
-  } finally {
-    client.release();
+  } catch (e) {
+    console.error("[check-hiring]", e);
+    return err("SERVER_001", "조회 중 오류가 발생했습니다.", 500);
   }
 }

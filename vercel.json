@@ -10,6 +10,10 @@
     {
       "path": "/api/admin/recommendations/send",
       "schedule": "0 1 * * 1"
+    },
+    {
+      "path": "/api/cron/target-hiring",
+      "schedule": "0 20 * * *"
     }
   ]
 }
