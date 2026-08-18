@@ -8,7 +8,7 @@ import { ok, err, requireAuth } from "@/lib/api";
 
 // 수정 가능한 컬럼 화이트리스트
 const EDITABLE = new Set([
-  "brand_name", "group_name", "category", "homepage",
+  "brand_name", "group_name", "category", "homepage", "instagram",
   "is_hiring", "is_registered", "phone", "email",
   "scale", "features", "note",
 ]);
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
   const client = await pool.connect();
   try {
     const result = await client.query(
-      `SELECT id, group_name, seq, brand_name, category, homepage,
+      `SELECT id, group_name, seq, brand_name, category, homepage, instagram,
               is_hiring, is_registered, phone, email, scale, features, note,
               found_jobs, found_count, last_checked_at, linked_company_id,
               created_at, updated_at
@@ -133,12 +133,13 @@ export async function POST(req: NextRequest) {
   const client = await pool.connect();
   try {
     const r = await client.query(
-      `INSERT INTO target_companies (group_name, brand_name, category, homepage, phone, email, scale, features, note)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+      `INSERT INTO target_companies (group_name, brand_name, category, homepage, instagram, phone, email, scale, features, note)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
       [
         group_name, brand_name,
         (b.category || "").trim() || null,
         (b.homepage || "").trim() || null,
+        (b.instagram || "").trim() || null,
         (b.phone || "").trim() || null,
         (b.email || "").trim() || null,
         (b.scale || "").trim() || null,

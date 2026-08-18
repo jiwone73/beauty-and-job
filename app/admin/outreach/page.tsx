@@ -15,6 +15,7 @@ type Row = {
   brand_name: string;
   category: string | null;
   homepage: string | null;
+  instagram: string | null;
   is_hiring: string;
   is_registered: string;
   phone: string | null;
@@ -86,6 +87,7 @@ export default function AdminOutreachPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [srcTab, setSrcTab] = useState<string>(""); // 확장된 활성공고 목록의 사이트별 필터("" = 전체)
   const [editHomeId, setEditHomeId] = useState<string | null>(null);
+  const [editInstaId, setEditInstaId] = useState<string | null>(null);
   const [editMemoId, setEditMemoId] = useState<string | null>(null);
   const [pickedJobUrl, setPickedJobUrl] = useState<string | null>(null); // 조회된 공고 중 라디오 선택 → 공고 등록으로 전달
 
@@ -464,6 +466,7 @@ export default function AdminOutreachPage() {
                 const hv = String(val(row, "is_hiring"));
                 const rv = String(val(row, "is_registered"));
                 const home = val(row, "homepage");
+                const insta = val(row, "instagram");
                 const subtitle = [row.category, row.scale].filter(Boolean).join(" · ");
                 return (
                   <Fragment key={row.id}>
@@ -492,6 +495,28 @@ export default function AdminOutreachPage() {
                           </div>
                         )}
                         {subtitle && <div style={{ fontSize: 12.5, color: "#9a92a6", marginTop: 2, maxWidth: 220 }}>{subtitle}</div>}
+                        {/* 인스타 — 매장 구인글은 채용 사이트보다 여기에 먼저 올라온다.
+                            한 번 적어 두면 다음부터 클릭 한 번으로 그 계정으로 간다. */}
+                        {editInstaId === row.id ? (
+                          <input autoFocus style={{ ...inp, fontSize: 12.5, marginTop: 3 }} placeholder="인스타 아이디 (@ 없이)"
+                            value={insta ? String(insta) : ""}
+                            onChange={(e) => setDraft(row.id, { instagram: e.target.value.trim().replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/[/?#].*$/, "") })}
+                            onBlur={() => { saveField(row, "instagram"); setEditInstaId(null); }}
+                            onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }} />
+                        ) : (
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                            {insta ? (
+                              <a href={`https://www.instagram.com/${insta}`} target="_blank" rel="noreferrer"
+                                style={{ fontSize: 12.5, color: "#c13584", textDecoration: "none" }}>
+                                @{insta} <span style={{ fontSize: 11 }}>↗</span>
+                              </a>
+                            ) : (
+                              <span style={{ fontSize: 12.5, color: "#c9c3d1" }}>인스타 없음</span>
+                            )}
+                            <button onClick={() => setEditInstaId(row.id)} title={insta ? "인스타 수정" : "인스타 계정 추가"}
+                              style={{ border: "none", background: "none", cursor: "pointer", color: "#d3cdda", fontSize: 12, padding: 0 }}>✎</button>
+                          </div>
+                        )}
                       </td>
                       {/* 채용유무 */}
                       <td style={td}>
