@@ -422,14 +422,23 @@ export default function ExternalCompaniesPanel() {
                       <td style={{ textAlign: "center" }}>
                         <input type="checkbox" checked={selected} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
                       </td>
-                      <td style={{ maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#333" }} title={jobTitle}>
-                        {jobUrl ? (
-                          <a href={jobUrl} target="_blank" rel="noopener noreferrer" title={`원문 보기 · ${jobTitle}`}
+                      <td style={{ maxWidth: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#333" }} title={jobTitle}>
+                        {/* 공고명은 우리가 올린 공고로 — 실제로 어떻게 나갔는지 바로 확인하는 게 먼저다. */}
+                        {j0?.id ? (
+                          <a href={`/jobs/${j0.id}`} target="_blank" rel="noopener noreferrer" title={`뷰티워크 공고 보기 · ${jobTitle}`}
                             style={{ color: "#5f0080", textDecoration: "none" }}>
                             {jobTitle}
                           </a>
                         ) : jobTitle}
                         {jobExtra && <span style={{ color: "#aaa" }}>{jobExtra}</span>}
+                        {/* 원문은 따로 — 옮겨 온 값이 맞는지 대조할 때 쓴다. */}
+                        {jobUrl && (
+                          <a href={jobUrl} target="_blank" rel="noopener noreferrer" title="원문 보기"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ marginLeft: 6, fontSize: 11, color: "#9a92a6", textDecoration: "none", whiteSpace: "nowrap" }}>
+                            원문 ↗
+                          </a>
+                        )}
                         {/* 누가 올린 공고인지 — 알바 실적과 관리자 등록을 눈으로 가른다 */}
                         {j0 && (
                           <span style={{ marginLeft: 6, fontSize: 11, padding: "1px 6px", borderRadius: 999,
