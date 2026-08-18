@@ -74,13 +74,25 @@ export const MAIN_CAFES = [
 // 맨사에도 '샵인샵 분양' 게시판이 따로 있다.
 // 다만 "미용실 샵인샵 직원구함"처럼 진짜 채용이 섞여 있어, 채용 낱말이 있으면 살린다.
 const LEASE_WORDS = new RegExp([
-  "샵인샵", "샵인샾", "베드\\s*쉐어", "베드쉐어",
+  "샵인샵", "샵인샾", "샵인\\s*[·ㆍ,]", "베드\\s*쉐어", "베드쉐어", "쉐어", "렌트",
   "분양", "임대", "양도", "양수", "입점", "권리금", "보증금", "월세",
   "자리\\s*(있|나|구)", "공간\\s*대여", "매매",
 ].join("|"));
 const HIRE_WORDS = new RegExp([
   "직원\\s*(구|모)", "스텝", "스탭", "알바", "아르바이트",
   "파트\\s*타임", "파트타임", "정직원",
+].join("|"));
+
+// 채용이 아닌 글. 실제로 모아 놓고 눈으로 확인해 추린 것들이다.
+const NOT_A_JOB = new RegExp([
+  // 미용학원·창업반 광고 — 제목에 '구인구직'을 잔뜩 박아 검색에 걸린다
+  "창업실무", "속성반", "양성반", "교육반", "미용학원", "아카데미", "수강",
+  // 안내·홍보 글
+  "구하는\\s*법", "이용법", "총정리", "추천\\s*드려요",
+  // 국내 서비스라 해외 공고는 담지 않는다
+  "일본\\s*워홀", "\\[상해\\]", "브리즈번", "밴쿠버", "시드니", "토론토",
+  // 성인업소로 흘러갈 위험이 있는 표현 — 우리가 다룰 업종이 아니다
+  "스웨디시", "건마", "홈타이", "1인샵\\s*(관리사|테라피)",
 ].join("|"));
 
 export type CafeLead = {
@@ -117,6 +129,7 @@ export async function searchCafe(keyword: string, display = 100): Promise<CafeLe
     const summary = strip(it.description);
     if (!JOB_WORDS.test(`${title} ${summary}`)) continue;
     if (LEASE_WORDS.test(title) && !HIRE_WORDS.test(title)) continue;
+    if (NOT_A_JOB.test(title)) continue;
     if (EXCLUDE_TEXT.test(`${title} ${summary}`)) continue;
     if (!it.link) continue;
     out.push({ link: it.link, title, summary, cafeName, cafeUrl: strip(it.cafeurl), keyword });
