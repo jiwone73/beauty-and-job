@@ -65,6 +65,22 @@ export default function BookmarkletPage() {
         </div>
 
         <div style={box}>
+          <p style={{ ...step, fontWeight: 500 }}>Safari를 쓰신다면</p>
+          <p style={{ fontSize: 13.5, color: "#4a4453", margin: "0 0 8px", lineHeight: 1.8 }}>
+            Safari는 즐겨찾기 스크립트를 기본으로 막아 둡니다. 눌렀을 때
+            <b> “스마트 검색 필드에서 JavaScript를 허용하지 않습니다”</b>가 뜨면 아래대로 한 번 풀어 주세요.
+          </p>
+          <ol style={{ margin: 0, paddingLeft: 18, fontSize: 13.5, color: "#4a4453", lineHeight: 1.95 }}>
+            <li>Safari → 설정(<b>⌘,</b>) → <b>고급</b> 탭</li>
+            <li>맨 아래 <b>웹 개발자용 기능 보기</b> 체크</li>
+            <li>새로 생긴 <b>개발자</b> 탭에서 <b>스마트 검색 필드에서 JavaScript 허용</b> 체크</li>
+          </ol>
+          <p style={{ fontSize: 12.5, color: "#8d84a0", margin: "10px 0 0" }}>
+            Chrome은 이 설정 없이 바로 됩니다. 여럿이 쓸 거라면 Chrome이 편합니다.
+          </p>
+        </div>
+
+        <div style={box}>
           <p style={{ ...step, fontWeight: 500 }}>2. 쓰는 법</p>
           <ol style={{ margin: 0, paddingLeft: 18, fontSize: 13.5, color: "#4a4453", lineHeight: 2 }}>
             <li>카페 구인글 목록에서 <b>원문</b>을 눌러 글을 엽니다</li>
