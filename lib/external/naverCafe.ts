@@ -42,6 +42,19 @@ const EXCLUDE_TEXT = new RegExp([
   "코스프레", "코스어", "구체관절", "메쿠사", "팀코",
 ].join("|"));
 
+// 구인글로 볼 만한 낱말. 제목이나 요약 어느 쪽에 있어도 통과시킨다.
+//
+// 느슨하게 잡는 게 맞다. 진짜 구인글을 버리면 그 기회는 사라지지만,
+// 일반 글이 섞이면 알바가 '제외'를 한 번 누르면 끝이다.
+// (제목만 보고 조였더니 "에이바헤어 …에서 함께하실 헤어디자이너"처럼
+//  '모집'이란 말을 안 쓴 진짜 구인글이 걸러졌다.)
+const JOB_WORDS = new RegExp([
+  "구인", "구직", "모집", "구합", "구해", "구함", "채용",
+  "모십", "모심", "모삽", "찾습", "찾아", "급구", "초빙", "영입",
+  "함께하실", "함께할", "함께 하실", "일하실", "출근",
+  "스텝", "스탭", "직원", "실장", "원장", "디자이너", "알바",
+].join("|"));
+
 export type CafeLead = {
   link: string;
   title: string;
@@ -74,6 +87,7 @@ export async function searchCafe(keyword: string, display = 100): Promise<CafeLe
     if (EXCLUDE_CAFE.test(cafeName)) continue;
     const title = strip(it.title);
     const summary = strip(it.description);
+    if (!JOB_WORDS.test(`${title} ${summary}`)) continue;
     if (EXCLUDE_TEXT.test(`${title} ${summary}`)) continue;
     if (!it.link) continue;
     out.push({ link: it.link, title, summary, cafeName, cafeUrl: strip(it.cafeurl), keyword });
