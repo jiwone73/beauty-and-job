@@ -1290,9 +1290,20 @@ export default function JobPostForm({
     }
   };
 
+  // 주소만으로는 못 읽는 곳. 본문이 로그인 뒤에 있어 카페 이름·로고만 딸려 온다.
+  // 막지 않으면 회사명에 카페 이름이 들어가고 엉뚱한 사진이 배너로 붙는다.
+  const LOGIN_WALLED = /cafe\.naver\.com|blog\.naver\.com\/PostView|instagram\.com|facebook\.com|band\.us/i;
+
   const runParse = async (urlOverride?: string) => {
     const useUrl = (typeof urlOverride === "string" ? urlOverride : parseUrl).trim();
     if (!useUrl) { setParseMsg("공고 URL을 입력해주세요."); return; }
+    if (LOGIN_WALLED.test(useUrl)) {
+      const where = /cafe\.naver/i.test(useUrl) ? "네이버 카페" : /instagram/i.test(useUrl) ? "인스타" : "이 사이트";
+      setParseMsg(`${where} 글은 주소만으로 못 읽어요. 글을 복사해 ‘글 붙여넣기’에 넣거나, 즐겨찾기의 ‘뷰티워크로 옮기기’를 쓰세요.`);
+      setImportMode("paste");
+      setOcrSourceUrl(useUrl);
+      return;
+    }
     if (mode === "admin") { setNonMember(true); setCompanyId(null); }
     setParsing(true); setParseMsg(""); setContactNotice("");
     try {
