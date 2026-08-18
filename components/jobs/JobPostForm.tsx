@@ -2148,8 +2148,12 @@ export default function JobPostForm({
                 <input type="file" accept="image/*" multiple hidden onChange={(e) => { const fs = Array.from(e.target.files || []); if (fs.length) setOcrFiles((prev) => [...prev, ...fs]); e.currentTarget.value = ""; }} />
               </label>
               {ocrFiles.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>공고 화면 캡처를 여기로 드래그하거나 추가하세요. 긴 공고는 위→아래로 여러 장 캡처하면 됩니다.</span>}
+              <button type="button" onClick={() => processFiles(ocrFiles)} disabled={uploading || ocrFiles.length === 0}
+                title="캡처한 그림을 그대로 상세요강에 넣습니다. 브라우저 화면이 같이 찍혔다면 잘라내고 넣으세요."
+                style={{ marginLeft: "auto", alignSelf: "flex-end", padding: "8px 14px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13.5, cursor: (uploading || ocrFiles.length === 0) ? "default" : "pointer", opacity: uploading ? 0.6 : 1 }}>
+                {uploading ? "넣는 중…" : "상세요강에 넣기"}</button>
               <button type="button" onClick={() => runOcrMulti(ocrFiles)} disabled={parsing || ocrFiles.length === 0}
-                style={{ marginLeft: "auto", alignSelf: "flex-end", padding: "8px 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: (parsing || ocrFiles.length === 0) ? "default" : "pointer", opacity: parsing ? 0.6 : 1 }}>
+                style={{ alignSelf: "flex-end", padding: "8px 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: (parsing || ocrFiles.length === 0) ? "default" : "pointer", opacity: parsing ? 0.6 : 1 }}>
                 {parsing ? "불러오는 중..." : `불러오기${ocrFiles.length ? ` (${ocrFiles.length}장)` : ""}`}</button>
             </div>
             {/* 원문 주소 — 인스타 게시물·카페 글 주소를 남겨야 같은 공고를 두 번 올리지 않는다.

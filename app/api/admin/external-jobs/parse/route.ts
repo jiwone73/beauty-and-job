@@ -864,7 +864,12 @@ export async function POST(req: NextRequest) {
     if (out.parsed_by === "structured") {
       out.job_categories = picked;
     } else {
-      const src = `${out.title || ""} ${bodyText} ${pageText}`.toLowerCase();
+      // 화면 캡처로 들어온 공고는 bodyText·pageText 가 비어 있다(내용이 전부 이미지 안에 있다).
+      // 그래서 근거는 원문뿐 아니라 모델이 읽어낸 결과에서도 찾는다.
+      const src = [
+        out.title, bodyText, pageText,
+        out.description, out.requirements, out.preferred, out.main_duties, out.extra_notes,
+      ].map((v: any) => (Array.isArray(v) ? v.join(" ") : String(v || ""))).join(" ").toLowerCase();
       // 이름에 붙은 괄호·구분자를 떼어 낱말 단위로 본다: "피부관리사(일반·경락)" → 피부관리사 / 일반 / 경락
       const grounded = (cat: string) => {
         const words = [
