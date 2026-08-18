@@ -6,6 +6,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
 import { checkHiringFor } from "@/lib/external/checkHiring";
+import { closeGoneJobs } from "@/lib/external/closeGoneJobs";
 
 // 외부업체의 활성공고를 매일 조금씩 갱신한다.
 //
@@ -45,11 +46,17 @@ export async function GET(req: NextRequest) {
     // 1쪽만 보고, 업체 사이에 1초 쉰다 — 상대 사이트에 몰아치지 않게.
     // 45초를 넘기면 남은 업체는 다음 날로 미룬다(무료 요금제 함수 제한 60초).
     const r = await checkHiringFor(targets, { maxPages: 1, gapMs: 1000, deadlineMs: 45_000 });
+    // 목록에서 사라진 원문 중, 우리가 올린 공고가 있는 것만 직접 열어 보고 마감시킨다.
+    // 열어 보는 값이라 확실할 때만 내려간다(못 열면 그냥 둔다).
+    const gone = await closeGoneJobs(r.gone, { max: 8 });
+
     return ok({
       checked: r.updated.length,
       hiring: r.hiring,
       jobs: r.jobs,
       newly: r.newly,
+      goneChecked: gone.checked,
+      closed: gone.closed.map((c) => c.title),
       brands: targets.map((t) => t.brand_name),
     });
   } catch (e) {

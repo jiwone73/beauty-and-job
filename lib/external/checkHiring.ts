@@ -24,7 +24,7 @@ export type HiringTarget = { id: string; brand_name: string };
 export async function checkHiringFor(
   targets: HiringTarget[],
   opts: { maxPages?: number; gapMs?: number; deadlineMs?: number } = {}
-): Promise<{ updated: any[]; hiring: number; jobs: number; newly: number }> {
+): Promise<{ updated: any[]; hiring: number; jobs: number; newly: number; gone: string[] }> {
   const maxPages = opts.maxPages ?? 3;
   const gapMs = opts.gapMs ?? 0;
   // 무료 요금제는 함수가 60초에서 끊긴다. 시간이 다 되면 남은 업체는 건드리지 않고
@@ -37,6 +37,7 @@ export async function checkHiringFor(
   let hiringCnt = 0;
   let jobCnt = 0;
   let newCnt = 0;
+  const gone: string[] = []; // 지난번엔 있었는데 이번엔 안 잡힌 원문 주소
   try {
     for (let i = 0; i < targets.length; i++) {
       if (deadlineMs && Date.now() - startedAt > deadlineMs) break;
@@ -65,6 +66,8 @@ export async function checkHiringFor(
         first_seen: prevSeen.has(j.url) ? prevSeen.get(j.url) || "" : today,
       }));
       const newly = marked.filter((j) => !prevSeen.has(j.url)).length;
+      const nowUrls = new Set(marked.map((j) => j.url));
+      for (const u of prevSeen.keys()) if (!nowUrls.has(u)) gone.push(u);
 
       const hiring = jobs.length > 0 ? "채용중" : "없음";
       if (jobs.length) { hiringCnt++; jobCnt += jobs.length; }
@@ -81,5 +84,5 @@ export async function checkHiringFor(
   } finally {
     client.release();
   }
-  return { updated, hiring: hiringCnt, jobs: jobCnt, newly: newCnt };
+  return { updated, hiring: hiringCnt, jobs: jobCnt, newly: newCnt, gone };
 }
