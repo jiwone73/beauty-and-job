@@ -928,9 +928,10 @@ export default function JobPostForm({
   // 그림에서 글자를 읽는 건 요금이 든다. 켠 적이 없는데 돈이 나가는 일이 없도록
   // 늘 꺼진 채로 시작하고, 저장해 두지도 않는다(다음에 열어도 다시 꺼져 있다).
   const [ocrEnabled, setOcrEnabled] = useState(false);
+  const readableImageUrls = ocrEnabled ? detailImages.filter((d) => d.readable).map((d) => d.url).slice(0, 8) : [];
   const readFromDetailImages = async () => {
     if (!ocrEnabled) return;
-    const urls = detailImages.filter((d) => d.readable).map((d) => d.url);
+    const urls = readableImageUrls;
     if (!urls.length) return;
     if (mode === "admin") { setNonMember(true); setCompanyId(null); }
     setReadingImgs(true); setParseMsg("");
@@ -1354,7 +1355,7 @@ export default function JobPostForm({
       //
       // 그 포스터는 구직자에게도 보여줘야 할 상세요강이다. 같은 파일을 두 번
       // 올리게 하지 않도록, 올린 김에 상세요강에도 걸어 둔다(빼려면 ×를 누르면 된다).
-      const imgs: string[] = [...importImages];
+      const imgs: string[] = [...importImages, ...readableImageUrls];
       const posters: { url: string; name: string }[] = [];
       for (const f of pasteFiles) {
         const up = await uploadImage(await compressImage(f));
@@ -1407,11 +1408,16 @@ export default function JobPostForm({
       const res = await fetch("/api/admin/external-jobs/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ url: useUrl }),
+        // 상세요강에 붙인 그림 중 '읽기 켬' 인 것을 함께 보낸다. 원문 페이지에 없는
+        // 연락처·주소가 포스터 그림에만 있는 공고가 많다. 토글을 켰을 때만 보낸다.
+        body: JSON.stringify(
+          readableImageUrls.length ? { url: useUrl, image_urls: readableImageUrls } : { url: useUrl }
+        ),
       });
       const j = await res.json();
       if (!j.success) { setParseMsg(j.error?.message || "불러오기에 실패했어요."); return; }
       applyParsed(j.data);
+      if (readableImageUrls.length) setParseMsg(`✓ 원문과 그림 ${readableImageUrls.length}장으로 채웠어요.`);
       if (useUrl) { setParseUrl(useUrl); setUrlEditing(false); } // 불러오기 성공 → URL을 링크로 표시
     } catch { setParseMsg("오류가 발생했습니다."); }
     finally { setParsing(false); }
@@ -1534,12 +1540,14 @@ export default function JobPostForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
 
-  // ?url= 로 진입(예: 이슈 페이지의 '불러와 수정')하면 그 원문을 자동으로 한 번 불러온다.
+  // ?url= 로 들어오면 검색칸에 주소만 채워 두고, 불러오기는 사람이 누른다.
+  // 예전엔 자동으로 한 번 불러왔는데, 들어오자마자 요금이 나가고 상세요강 그림에서
+  // 글자를 읽을지 고를 틈도 없이 값이 채워져 버렸다.
   const autoRanRef = useRef(false);
   useEffect(() => {
     if (autoRanRef.current || editId) return;
     const q = (initialFindQuery || "").trim();
-    if (q && isUrlLike(q)) { setOcrSourceUrl(q); autoRanRef.current = true; runImport(); }
+    if (q && isUrlLike(q)) { setOcrSourceUrl(q); autoRanRef.current = true; }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFindQuery, editId]);
 
@@ -2873,7 +2881,8 @@ export default function JobPostForm({
                           <span style={{ position: "absolute", top: 2, left: ocrEnabled ? 15 : 2, width: 13, height: 13, borderRadius: "50%", background: "#fff", transition: "left .15s" }} />
                         </span>
                         <span style={{ fontSize: 12.5, color: ocrEnabled ? "#5f0080" : "#8d84a0" }}>
-                          텍스트 인식 {ocrEnabled ? "켬" : "끔"} <span style={{ color: "#b9866b" }}>(유료)</span>
+                          텍스트 인식 {ocrEnabled ? "켬" : "끔"}
+                          {ocrEnabled && <span style={{ color: "#b9866b" }}> (유료)</span>}
                         </span>
                       </button>
                     </div>

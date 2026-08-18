@@ -414,8 +414,8 @@ export default function AdminOutreachPage() {
           <button onClick={updateAllTabs} disabled={!totalCount}
             aria-label="전체 업데이트"
             title={`6개 탭 전체 ${totalCount}개 업체를 다시 조회합니다 (시간이 걸립니다)`}
-            style={{ ...chip(false), display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "6px 10px", opacity: totalCount ? 1 : 0.5, cursor: totalCount ? "pointer" : "default" }}>
-            <RefreshCw size={15} />
+            style={{ ...chip(false), display: "inline-flex", alignItems: "center", justifyContent: "center", opacity: totalCount ? 1 : 0.5, cursor: totalCount ? "pointer" : "default" }}>
+            <RefreshCw size={15} /><span style={{ marginLeft: 6 }}>전체</span>
           </button>
           <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
             style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
