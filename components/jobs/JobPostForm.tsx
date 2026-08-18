@@ -925,7 +925,11 @@ export default function JobPostForm({
   // 상세요강에 붙인 그림(글자 있는 것)에서 값을 읽어 온다. 글을 붙여넣었으면 함께 보내
   // 글에 있는 값은 글을 그대로 쓰게 한다 — 그림에서 읽은 전화번호는 한 자리씩 틀린다.
   const [readingImgs, setReadingImgs] = useState(false);
+  // 그림에서 글자를 읽는 건 요금이 든다. 켠 적이 없는데 돈이 나가는 일이 없도록
+  // 늘 꺼진 채로 시작하고, 저장해 두지도 않는다(다음에 열어도 다시 꺼져 있다).
+  const [ocrEnabled, setOcrEnabled] = useState(false);
   const readFromDetailImages = async () => {
+    if (!ocrEnabled) return;
     const urls = detailImages.filter((d) => d.readable).map((d) => d.url);
     if (!urls.length) return;
     if (mode === "admin") { setNonMember(true); setCompanyId(null); }
@@ -2859,8 +2863,22 @@ export default function JobPostForm({
                   ? detailImages.length === 0 && (
                       <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>상세요강 이미지가 있다면 <b>＋</b>를 눌러서 첨부해 주세요.</div>
                     )
-                  : <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>갖고 계신 상세요강 이미지가 있다면 첨부해 주세요. 글자가 든 포스터면 여기서 값을 읽어 올 수 있어요.</div>}
-                {detailImages.some((d) => d.readable) && (
+                  : (
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
+                      <span style={{ fontSize: 12, color: "#999" }}>갖고 계신 상세요강 이미지가 있다면 첨부해 주세요.</span>
+                      <button type="button" role="switch" aria-checked={ocrEnabled} onClick={() => setOcrEnabled((v) => !v)}
+                        title="글자가 든 포스터에서 연락처·주소·모집분야를 읽어 옵니다. 읽을 때마다 요금이 듭니다."
+                        style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 7, padding: "4px 10px 4px 6px", borderRadius: 999, border: `1px solid ${ocrEnabled ? "#5f0080" : "#e0d8ec"}`, background: ocrEnabled ? "#f7f1fd" : "#fff", cursor: "pointer" }}>
+                        <span style={{ width: 30, height: 17, borderRadius: 999, background: ocrEnabled ? "#5f0080" : "#d6d0e0", position: "relative", transition: "background .15s" }}>
+                          <span style={{ position: "absolute", top: 2, left: ocrEnabled ? 15 : 2, width: 13, height: 13, borderRadius: "50%", background: "#fff", transition: "left .15s" }} />
+                        </span>
+                        <span style={{ fontSize: 12.5, color: ocrEnabled ? "#5f0080" : "#8d84a0" }}>
+                          텍스트 인식 {ocrEnabled ? "켬" : "끔"} <span style={{ color: "#b9866b" }}>(유료)</span>
+                        </span>
+                      </button>
+                    </div>
+                  )}
+                {ocrEnabled && detailImages.some((d) => d.readable) && (
                   <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", margin: "0 0 10px", padding: "10px 12px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 8 }}>
                     <span style={{ fontSize: 13, color: "#4a4453" }}>
                       글자가 든 그림이 <b>{detailImages.filter((d) => d.readable).length}장</b> 있어요.
@@ -2897,12 +2915,14 @@ export default function JobPostForm({
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
                       <button type="button" onClick={() => removeImage(idx)} title="삭제"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                      {ocrEnabled && (
                       <button type="button"
                         onClick={() => setDetailImages((prev) => prev.map((x, i) => (i === idx ? { ...x, readable: !x.readable } : x)))}
                         title={d.readable ? "이 그림의 글자를 읽습니다. 눌러서 끄기" : "읽지 않습니다. 눌러서 켜기"}
                         style={{ position: "absolute", bottom: 3, right: 3, padding: "1px 6px", borderRadius: 4, border: "none", cursor: "pointer", fontSize: 10, fontWeight: 700, lineHeight: 1.6, background: d.readable ? "#5f0080" : "rgba(0,0,0,0.45)", color: "#fff" }}>
                         읽기 {d.readable ? "켬" : "끔"}
                       </button>
+                      )}
                     </div>
                   ))}
                   {/* PC 드래그 박스 안의 추가 타일·안내(모바일은 제목 옆 ＋로 대체) */}
