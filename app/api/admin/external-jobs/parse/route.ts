@@ -5,6 +5,7 @@ import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { parseStructured } from "@/lib/external/parsers/structured";
 import { getAllJobItems, SEARCH_TAGS } from "@/lib/data/jobGroups";
+import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
 import { rehostImages } from "@/lib/external/rehost";
 
 function htmlToText(html: string): string {
@@ -716,7 +717,9 @@ export async function POST(req: NextRequest) {
 - benefits: 복리후생/혜택 및 복지/복지/베네핏 등 이름이 무엇이든 그 혜택 내용을 서술형 텍스트로(줄바꿈 구분). 없으면 "".
     ★ 쉬는 날 조건(월 O회 휴무·연 O일 휴무·주 O일·연차)과 식사·휴게시간은 구직자가 가장 먼저 보는 값이다. 글에 있으면 반드시 담을 것.
 - hiring_process: 채용 절차 단계를 문자열 배열로(예: ["서류전형","면접","최종합격"]). 없으면 [].
-- employment_type: "정규직" | "파트타임" | "계약직" 중 하나 또는 "".
+- employment_type: ${EMPLOYMENT_TYPES.join(" | ")} 중 하나를 정확히 그대로, 없으면 "".
+    ★ "3.3%", "3.3 프리", "사업소득", "4대보험 무"가 보이면 프리랜서다. 파트타임·정규직으로 넘겨짚지 마라.
+    ★ "주OO회"처럼 요일만 적은 것은 고용형태가 아니다. 근무요일에 넣어라.
 - main_duties: 주요업무/담당업무를 텍스트로(여러 개면 줄바꿈 구분). 없으면 "".
 - salary: 급여/처우 조건을 텍스트로(예: "월 250만원", "비율 5:5", "면접 후 협의"). 없으면 "".
 - salary_type · salary_amount: 이 둘은 "반드시 같은 급여 하나"를 가리켜야 한다. 형태와 금액을 절대 섞지 말 것 → "연봉 3000만원"이면 type "ANNUAL" + amount 3000, "월 250만원"이면 type "MONTHLY" + amount 250. (예: 월인데 amount 3000 ✗ 절대 금지). 한 공고에 월급·연봉이 함께 적혀 있으면 "연봉(ANNUAL)"을 우선 선택(예: "월 250만원 / 연봉 3000~3300만원" → ANNUAL + 3000). 범위면 하한값.
@@ -896,6 +899,15 @@ export async function POST(req: NextRequest) {
       };
       out.job_categories = picked.filter(grounded);
     }
+  }
+  // 고용형태: 폼에 없는 값은 버린다. 글이 프리랜서라고 분명히 말하면 그대로 따른다.
+  {
+    const src = [bodyText, pageText, out.description, out.benefits, out.extra_notes]
+      .map((v: any) => (Array.isArray(v) ? v.join(" ") : String(v || ""))).join(" ");
+    if (typeof out.employment_type !== "string" || !EMPLOYMENT_TYPES.includes(out.employment_type as any)) {
+      out.employment_type = out.employment_type === "파트타임" ? "아르바이트" : "";
+    }
+    if (/3\.3\s*%|3\.3\s*프리|사업\s*소득|프리랜서/.test(src)) out.employment_type = "프리랜서";
   }
   // "주 5일"이라 적힌 공고에 요일을 그보다 많이 넣으면 사실과 어긋난다.
   // 무슨 요일인지는 글에 없으니 지어내지 말고 비워, 관리자가 고르게 둔다.

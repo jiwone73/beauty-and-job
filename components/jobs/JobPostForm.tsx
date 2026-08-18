@@ -13,6 +13,7 @@ import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { REGIONS } from "@/lib/data/regions";
+import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
 import { composeCompanyAddress, splitAddress } from "@/lib/address";
 
 // 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
@@ -89,7 +90,7 @@ async function compressImage(file: File, maxBytes = MAX_UPLOAD_BYTES): Promise<F
     if (src && "close" in (src as any)) (src as ImageBitmap).close();
   }
 }
-const EMPLOYMENT_TYPES = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트", "스페어", "협의"];
+
 // 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)
 // 불러오기 시 반드시 문제없이 들어와야 하는 핵심 항목만 이슈 대상으로.
 const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "모집분야", "근무지역", "상세요강 이미지", "기타"];
@@ -473,7 +474,7 @@ export default function JobPostForm({
   const [saved, setSaved] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false); // 임시저장 완료 표시(발행완료와 구분)
   const [alwaysOpen, setAlwaysOpen] = useState(false);
-  const [detailImages, setDetailImages] = useState<{ url: string; name: string }[]>([]);
+  const [detailImages, setDetailImages] = useState<{ url: string; name: string; readable?: boolean }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
@@ -884,6 +885,67 @@ export default function JobPostForm({
   const openNotesModal = () => { setNotesModalValue(notes); setNotesModalOpen(true); };
   const saveNotesModal = () => { setNotes(notesModalValue); setNotesModalOpen(false); };
 
+  // 그림에 글자가 있는지 대충 가려낸다. 포스터는 흰 바탕에 검은 글씨라 밝기가
+  // 양극단에 몰리고 가로줄마다 밝기가 급하게 오르내린다. 매장 사진은 그 반대다.
+  // 정확한 판별이 아니라 "읽어 볼까요?" 를 먼저 권할지 정하는 용도다 — 사람이 끄고 켤 수 있다.
+  const looksLikeText = (file: File): Promise<boolean> =>
+    new Promise((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        try {
+          const W = 160, H = Math.max(1, Math.round((img.height / img.width) * W));
+          const cv = document.createElement("canvas");
+          cv.width = W; cv.height = H;
+          const cx = cv.getContext("2d");
+          if (!cx) return resolve(false);
+          cx.drawImage(img, 0, 0, W, H);
+          const px = cx.getImageData(0, 0, W, H).data;
+          const gray = new Float32Array(W * H);
+          let extreme = 0;
+          for (let i = 0; i < W * H; i++) {
+            const g = (px[i * 4] * 0.299 + px[i * 4 + 1] * 0.587 + px[i * 4 + 2] * 0.114) / 255;
+            gray[i] = g;
+            if (g < 0.2 || g > 0.85) extreme++;
+          }
+          let edges = 0;
+          for (let y = 0; y < H; y++) {
+            for (let x = 1; x < W; x++) {
+              if (Math.abs(gray[y * W + x] - gray[y * W + x - 1]) > 0.35) edges++;
+            }
+          }
+          resolve(extreme / (W * H) > 0.7 && edges / (W * H) > 0.02);
+        } catch { resolve(false); }
+        finally { URL.revokeObjectURL(url); }
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(false); };
+      img.src = url;
+    });
+
+  // 상세요강에 붙인 그림(글자 있는 것)에서 값을 읽어 온다. 글을 붙여넣었으면 함께 보내
+  // 글에 있는 값은 글을 그대로 쓰게 한다 — 그림에서 읽은 전화번호는 한 자리씩 틀린다.
+  const [readingImgs, setReadingImgs] = useState(false);
+  const readFromDetailImages = async () => {
+    const urls = detailImages.filter((d) => d.readable).map((d) => d.url);
+    if (!urls.length) return;
+    if (mode === "admin") { setNonMember(true); setCompanyId(null); }
+    setReadingImgs(true); setParseMsg("");
+    try {
+      const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
+      const text = pasteText.trim();
+      const res = await fetch("/api/admin/external-jobs/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(text ? { text, image_urls: urls.slice(0, 8) } : { image_urls: urls.slice(0, 8) }),
+      });
+      const j = await res.json();
+      if (!j.success) { setParseMsg(j.error?.message || "그림에서 읽지 못했어요."); return; }
+      applyParsed(j.data);
+      setParseMsg(`✓ 그림 ${urls.length}장에서 읽어 채웠어요. 값을 확인해 주세요.`);
+    } catch { setParseMsg("네트워크 오류가 발생했어요."); }
+    finally { setReadingImgs(false); }
+  };
+
   const processFiles = async (fileList: FileList | File[]) => {
     const files = Array.from(fileList);
     if (files.length === 0) return;
@@ -893,9 +955,10 @@ export default function JobPostForm({
     setUploading(true);
     try {
       for (const file of files) {
+        const hasText = await looksLikeText(file);
         const r = await uploadImage(await compressImage(file));
         if (r.success && r.url) {
-          setDetailImages((prev) => [...prev, { url: r.url!, name: r.name || file.name }]);
+          setDetailImages((prev) => [...prev, { url: r.url!, name: r.name || file.name, readable: hasText }]);
         } else {
           alert(r.error || "이미지 업로드에 실패했습니다.");
         }
@@ -2055,7 +2118,7 @@ export default function JobPostForm({
           <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 16px", marginBottom: 8, marginLeft: 2 }}>
             <span style={{ fontWeight: 400, fontSize: 16, color: "#5f0080" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</span>
             <div style={{ display: "flex", gap: 20 }}>
-              {([["url", "회사명 / URL"], ["paste", "글 붙여넣기"], ["ocr", "화면 캡처"]] as ["url" | "paste" | "ocr", string][]).map(([v, l]) => (
+              {([["url", "회사명 / URL"], ["paste", "글 붙여넣기"]] as ["url" | "paste" | "ocr", string][]).map(([v, l]) => (
                 <label key={v} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: importMode === v ? "#1a1a1a" : "#666" }}>
                   <span style={{ width: 16, height: 16, borderRadius: "50%", border: importMode === v ? "1.5px solid #555" : "1.5px solid #cfcfcf", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     {importMode === v && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#555" }} />}
@@ -2089,25 +2152,9 @@ export default function JobPostForm({
                 {parsing ? "불러오는 중..." : "불러오기"}
               </button>
             </div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8, flexWrap: "wrap" }}>
-              <label style={{ padding: "7px 12px", borderRadius: 8, border: "1px dashed #c9b8de", background: "#fff", color: "#5f0080", fontSize: 13, cursor: "pointer" }}>
-                ＋ 포스터 사진
-                <input type="file" accept="image/*" multiple style={{ display: "none" }}
-                  onChange={(e) => { setPasteFiles((p) => [...p, ...Array.from(e.target.files || [])].slice(0, 8)); e.target.value = ""; }} />
-              </label>
-              {pasteFiles.map((f, i) => (
-                <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", background: "#fff", border: "1px solid #e5e0eb", borderRadius: 8, fontSize: 12.5, color: "#4a4453" }}>
-                  {f.name.length > 18 ? f.name.slice(0, 18) + "…" : f.name}
-                  <button type="button" onClick={() => setPasteFiles((p) => p.filter((_, x) => x !== i))}
-                    style={{ border: "none", background: "none", color: "#c0392b", cursor: "pointer", padding: 0, fontSize: 13 }}>×</button>
-                </span>
-              ))}
-            </div>
             <div style={{ fontSize: 12, color: "#9a92a6", marginTop: 6, lineHeight: 1.7 }}>
-              연락처·주소·모집분야를 <b>포스터 그림에만</b> 넣은 공고가 많습니다. 그럴 땐 그 그림을 함께 올리세요 —
-              글에 있는 값은 글을 그대로 쓰고, 글에 없는 값만 그림에서 읽어 채웁니다.
-              올린 그림은 <b>상세요강에도 자동으로 걸립니다</b>(빼려면 상세요강에서 ×).
-              매장 사진처럼 <b>글자가 없는 사진</b>은 여기 말고 상세요강이나 배너에 바로 넣으세요.
+              연락처·주소를 <b>포스터 그림에만</b> 넣은 공고가 많습니다. 그럴 땐 아래 <b>상세요강</b> 칸에
+              그 그림을 붙여넣으세요(<b>Ctrl+V</b>). 글자가 보이면 거기서 읽어 올 수 있습니다.
             </div>
             {importImages.length > 0 && (
               <div style={{ marginTop: 8, padding: "10px 12px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -2812,7 +2859,23 @@ export default function JobPostForm({
                   ? detailImages.length === 0 && (
                       <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>상세요강 이미지가 있다면 <b>＋</b>를 눌러서 첨부해 주세요.</div>
                     )
-                  : <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>갖고 계신 상세요강 이미지가 있다면 첨부해 주세요.</div>}
+                  : <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>갖고 계신 상세요강 이미지가 있다면 첨부해 주세요. 글자가 든 포스터면 여기서 값을 읽어 올 수 있어요.</div>}
+                {detailImages.some((d) => d.readable) && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", margin: "0 0 10px", padding: "10px 12px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 8 }}>
+                    <span style={{ fontSize: 13, color: "#4a4453" }}>
+                      글자가 든 그림이 <b>{detailImages.filter((d) => d.readable).length}장</b> 있어요.
+                      연락처·주소·모집분야를 여기서 읽어 올까요?
+                    </span>
+                    <button type="button" onClick={readFromDetailImages} disabled={readingImgs}
+                      style={{ marginLeft: "auto", padding: "7px 14px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 500, cursor: readingImgs ? "default" : "pointer", opacity: readingImgs ? 0.6 : 1 }}>
+                      {readingImgs ? "읽는 중…" : "그림에서 읽기 (유료)"}
+                    </button>
+                    <span style={{ width: "100%", fontSize: 12, color: "#8d84a0", lineHeight: 1.7 }}>
+                      그림 한 장을 읽을 때마다 요금이 듭니다(장당 5원 안팎). 매장 사진처럼 글자가 없는 그림은
+                      아래 썸네일의 <b>읽기</b>를 꺼 두세요. 글을 붙여넣으셨다면 글에 있는 값은 글을 그대로 씁니다.
+                    </span>
+                  </div>
+                )}
                 {/* PC는 원래의 점선 드래그·붙여넣기 박스, 모바일은 테두리 없이 썸네일만(좌우 간격 절반). */}
                 <div
                   tabIndex={isMobile ? -1 : 0}
@@ -2834,6 +2897,12 @@ export default function JobPostForm({
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
                       <button type="button" onClick={() => removeImage(idx)} title="삭제"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                      <button type="button"
+                        onClick={() => setDetailImages((prev) => prev.map((x, i) => (i === idx ? { ...x, readable: !x.readable } : x)))}
+                        title={d.readable ? "이 그림의 글자를 읽습니다. 눌러서 끄기" : "읽지 않습니다. 눌러서 켜기"}
+                        style={{ position: "absolute", bottom: 3, right: 3, padding: "1px 6px", borderRadius: 4, border: "none", cursor: "pointer", fontSize: 10, fontWeight: 700, lineHeight: 1.6, background: d.readable ? "#5f0080" : "rgba(0,0,0,0.45)", color: "#fff" }}>
+                        읽기 {d.readable ? "켬" : "끔"}
+                      </button>
                     </div>
                   ))}
                   {/* PC 드래그 박스 안의 추가 타일·안내(모바일은 제목 옆 ＋로 대체) */}
