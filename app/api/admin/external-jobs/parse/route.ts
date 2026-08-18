@@ -4,7 +4,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { parseStructured } from "@/lib/external/parsers/structured";
-import { getAllJobItems } from "@/lib/data/jobGroups";
+import { getAllJobItems, SEARCH_TAGS } from "@/lib/data/jobGroups";
 import { rehostImages } from "@/lib/external/rehost";
 
 function htmlToText(html: string): string {
@@ -851,15 +851,30 @@ export async function POST(req: NextRequest) {
   // ── 폼 선택지와 정확히 일치하는 값만 남기도록 검증(오타·off-list 방지) ──
   if (typeof out.career !== "string" || !CAREER_OPTIONS.includes(out.career)) out.career = "";
   // 모집분야(직군) 자동추측:
-  //   · AI 경로(parsed_by!=="structured")는 원문 카테고리가 넓거나 애매해 오분류가 잦음 → 비워두고 관리자가 직접 선택.
-  //   · 구조화 파서(헤어인잡 등 미용 전문 사이트)는 직종명을 우리 직군으로 정밀 매핑하므로,
-  //     폼의 정식 직군 목록에 "정확히 일치"하는 값만 남겨 신뢰한다(오탈자·목록밖 값은 제거).
+  //   · 어느 경로든 폼의 정식 직군 목록에 "정확히 일치"하는 값만 남긴다(오탈자·목록밖 값 제거).
+  //   · 구조화 파서(헤어인잡 등)는 직종명을 우리 직군으로 정밀 매핑하므로 그대로 믿는다.
+  //   · AI 경로는 넓게 찍는 버릇이 있어, 원문에 근거가 보이는 것만 남긴다.
+  //     직군 이름이나 그 동의어(SEARCH_TAGS)가 글에 실제로 나와야 인정한다.
+  //     이건 걸러내기만 할 뿐 없는 직군을 만들어 붙이지는 않으므로 과잉 선택이 되지 않는다.
   {
     const catPool = out.job_type === "STORE" ? STORE_CATEGORIES : OFFICE_CATEGORIES;
-    out.job_categories =
-      out.parsed_by === "structured" && Array.isArray(out.job_categories)
-        ? [...new Set((out.job_categories as any[]).filter((c) => typeof c === "string" && catPool.includes(c)))]
-        : [];
+    const picked = Array.isArray(out.job_categories)
+      ? [...new Set((out.job_categories as any[]).filter((c) => typeof c === "string" && catPool.includes(c)))]
+      : [];
+    if (out.parsed_by === "structured") {
+      out.job_categories = picked;
+    } else {
+      const src = `${out.title || ""} ${bodyText} ${pageText}`.toLowerCase();
+      // 이름에 붙은 괄호·구분자를 떼어 낱말 단위로 본다: "피부관리사(일반·경락)" → 피부관리사 / 일반 / 경락
+      const grounded = (cat: string) => {
+        const words = [
+          ...cat.split(/[()·・,\/]| /).map((w) => w.trim()).filter((w) => w.length >= 2),
+          ...(SEARCH_TAGS[cat] || []).filter((w) => w.length >= 2),
+        ];
+        return words.some((w) => src.includes(w.toLowerCase()));
+      };
+      out.job_categories = picked.filter(grounded);
+    }
   }
   // 연락 수단: 목록에 있는 값만 남기고, 전화번호가 있는데 비었으면 "전화"라도 채운다.
   out.contact_methods = Array.isArray(out.contact_methods)

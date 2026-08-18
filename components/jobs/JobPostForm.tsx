@@ -662,12 +662,29 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [employOpen]);
-  // 회사 소개 textarea 자동 높이(불러오기로 긴 내용이 채워져도 잘리지 않게)
-  const nmDescRef = useRef<HTMLTextAreaElement>(null);
+  // ── 내용에 맞춰 늘어나는 textarea ──
+  // 불러오기로 값이 들어올 때는 타이핑이 없어 onInput 이 안 뛰고,
+  // 재는 시점에 폭이 아직 안 잡혀 있으면 엉뚱하게 큰 높이가 그대로 굳는다.
+  // 그래서 렌더 직후 한 번, 배치가 끝난 다음 프레임에 또 한 번 잰다.
+  const fitTextarea = (el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  };
+  // 콜백 ref 는 매 렌더마다 다시 불린다 — 값이 바뀔 때마다 저절로 다시 잰다.
+  const autoGrowRef = (el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.dataset.autogrow = "1";
+    fitTextarea(el);
+    requestAnimationFrame(() => fitTextarea(el));
+  };
+  // 창 폭이 바뀌면 줄 수가 달라지므로 다시 잰다.
   useEffect(() => {
-    const el = nmDescRef.current;
-    if (el) { el.style.height = "auto"; el.style.height = `${el.scrollHeight}px`; }
-  }, [nmDescription, nonMember]);
+    const onResize = () =>
+      document.querySelectorAll<HTMLTextAreaElement>("textarea[data-autogrow]").forEach(fitTextarea);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
   const [showPreview, setShowPreview] = useState(false);
   useEffect(() => {
     if (!showPreview || mode !== "company" || companyProfile) return;
@@ -2351,7 +2368,7 @@ export default function JobPostForm({
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
                   rows={1}
-                  ref={(el) => { if (el) { el.style.height = "auto"; el.style.height = `${el.scrollHeight}px`; } }}
+                  ref={autoGrowRef}
                   className="jobpost-title-input"
                   style={{ width: "100%", border: "none", outline: "none", fontWeight: 400, color: "#1a1a1a", padding: 0, background: "transparent", lineHeight: 1.3, resize: "none", overflow: "hidden", fontFamily: "inherit", display: "block" }}
                 />
@@ -2822,6 +2839,7 @@ export default function JobPostForm({
                       placeholder=""
                       value={content}
                       rows={1}
+                      ref={autoGrowRef}
                       onChange={(e) => setForm({ ...form, [k]: e.target.value })}
                       onInput={(e) => { const t = e.currentTarget; t.style.height = "auto"; t.style.height = t.scrollHeight + "px"; }}
                       style={{ width: "100%", boxSizing: "border-box", border: "none", background: "transparent", resize: "none", fontSize: 14, color: "#333", lineHeight: 1.5, fontFamily: "inherit", outline: "none", padding: 0, overflow: "hidden", display: "block", ...({ fieldSizing: "content" } as any) }} />
@@ -2855,7 +2873,7 @@ export default function JobPostForm({
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "2px 28px" }}>
                     <div style={{ ...row, ...full, alignItems: "flex-start" }}>
                       <span style={{ ...lbl2, paddingTop: 6 }}>기업 소개</span>
-                      <textarea ref={nmDescRef} rows={1} style={nmDescription ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", minHeight: 40, resize: "none", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden", boxSizing: "border-box" } : { ...inpHl(false), resize: "none", marginTop: 6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
+                      <textarea ref={autoGrowRef} rows={1} style={nmDescription ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", minHeight: 40, resize: "none", fontFamily: "inherit", lineHeight: 1.6, overflow: "hidden", boxSizing: "border-box" } : { ...inpHl(false), resize: "none", marginTop: 6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
                     </div>
                     <div style={row}><span style={lbl2}>회사명<span style={req}> *</span></span><input style={inpHl(!!newCompanyName)} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>업종</span>{!fiIndustry.trim() && (<select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("industry"); return; } setFiIndustry(""); setNmIndustry(e.target.value); }}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}{nonMember && <option value="__fi__">직접입력…</option>}</select>)}{freeField("industry", fiIndustry, setFiIndustry, "직접 입력…", false, () => setNmIndustry(""))}</div>
