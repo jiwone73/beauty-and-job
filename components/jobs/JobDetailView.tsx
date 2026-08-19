@@ -119,6 +119,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     { key: "shift", label: "근무요일/시간", get: (p) => (p.workDays || p.workTime || "") },
     { key: "salary", label: "급여", get: (p) => p.salary },
   ];
+  // 모집부문 첫 행의 급여 — 사이드 카드가 같은 값을 쓴다.
+  // 자리마다 급여가 다르면 카드 한 줄에 다 못 담으니, 표를 보라는 뜻으로 첫 값만 쓴다.
+  const asideSalary = positions.length && String(positions[0].salary || "").trim()
+    ? withNegotiable(positions[0].salary) : "";
   const posCols = posColDefs.filter((c) => c.key === "category" || positions.some((p: any) => (c.get(p) || "").toString().trim()));
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
@@ -504,8 +508,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             )}
             <span>{shortRegion(job.region || "")}</span>
           </div>
-          {job.salary && (
-            <div className="job-detail-aside-salary">{job.salary}</div>
+          {/* 급여는 모집부문 표에 적힌 값을 그대로 쓴다. 예전엔 카드가 따로 계산한
+              범위("월 210만원 ~ 250만원")를 보여줘, 표의 "월 210만원 이상 (협의)"와
+              한 화면에서 서로 다른 말을 했다. 두 값이 다르면 구직자는 어느 쪽이
+              사실인지 알 수 없다. 모집부문이 뽑는 자리별로 적는 원문에 가깝다. */}
+          {(asideSalary || job.salary) && (
+            <div className="job-detail-aside-salary">{asideSalary || job.salary}</div>
           )}
           {job.deadline && (
             <div className="job-detail-aside-deadline">
