@@ -4851,20 +4851,20 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .applied-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
 .applied-position {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #555;
   margin: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .applied-company {
-  font-size: 13px;
+  font-size: 14px;
   color: #555;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.applied-date { font-size: 11px; color: #bbb; white-space: nowrap; }
+.applied-date { font-size: 12px; color: #888; white-space: nowrap; }
 .applied-status-text {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
@@ -4890,9 +4890,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .bookmark-item:hover { border-color: #5f0080; }
 .bookmark-item-left { flex: 1; min-width: 0; }
-.bookmark-brand { font-size: 13px; color: #555; display: block; margin-bottom: 4px; }
+.bookmark-brand { font-size: 14px; color: #555; display: block; margin-bottom: 4px; }
 .bookmark-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #555;
   margin: 0 0 6px;
@@ -4900,9 +4900,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.bookmark-location { font-size: 11px; color: #bbb; }
+.bookmark-location { font-size: 12px; color: #666; }
 .bookmark-deadline {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #5f0080;
   flex-shrink: 0;
@@ -11753,6 +11753,17 @@ div:has(> table.admin-table),
   .bookmark-location { font-size: 13px; }
   .bookmark-deadline { font-size: 14px; }
 }
+
+/* === 지원현황·관심공고 위쪽 '선택' 줄 === */
+.profile-select-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.profile-select-all { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: #555; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
+.profile-select-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid #e0e0e0; background: #fff; color: #666; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: inherit; }
+.profile-select-btn.accent { border-color: #e0d0f0; color: #5f0080; }
+.profile-select-btn.danger { border-color: #f0d0d0; color: #c0392b; }
+/* 고르는 중에는 체크박스가 첫 줄(제목)과 눈높이를 맞춰야 한다.
+   카드가 가운데 정렬이라 그냥 두면 제목과 매장명 사이에 끼어 보인다. */
+.bookmark-item:has(> .applied-check) { align-items: flex-start; }
+.bookmark-item > .applied-check { margin-top: 2px; flex-shrink: 0; }
 
 /* === 지원현황 카드: 체크박스 + 텍스트 링크 레이아웃 === */
 .applied-item { align-items: flex-start; }

@@ -1169,6 +1169,9 @@ function AppliedTab({ userName }: { userName: string }) {
   const [showCert, setShowCert] = useState(false);
   const [certApp, setCertApp] = useState<any | null>(null);
   const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
+  // 평소엔 체크박스를 감춰 목록을 읽기 좋게 두고, '선택'을 눌렀을 때만 고르는 화면이 된다.
+  const [selectMode, setSelectMode] = useState(false);
+  const 선택끝내기 = () => { setSelectMode(false); setSelectedApps(new Set()); };
   const [menuAppId, setMenuAppId] = useState<string | null>(null);
   const toggleSelect = (id: string) =>
     setSelectedApps((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -1304,38 +1307,62 @@ function AppliedTab({ userName }: { userName: string }) {
 
   return (
     <div className="profile-tab-content">
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-        <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, color: "#555", cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }}>
-          <input type="checkbox" className="applied-check"
-            checked={apps.length > 0 && selectedApps.size === apps.length}
-            onChange={(e) => setSelectedApps(e.target.checked ? new Set(apps.map((a) => a.id)) : new Set())}
-          />
-          전체{selectedApps.size > 0 ? ` (${selectedApps.size})` : ""}
-        </label>
-        <button
-          onClick={() => { if (selectedApps.size === 0) { alert("증명서에 포함할 지원 내역을 선택해주세요."); return; } setShowCert(true); }}
-          style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 5, padding: "8px 12px", borderRadius: 8, border: "1px solid #e0d0f0", background: "#fff", color: "#5f0080", fontSize: 12.5, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
-        >
-          📄 취업활동 증명서
-        </button>
-        <button
-          onClick={handleBulkHide}
-          style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #e0e0e0", background: "#fff", color: "#888", fontSize: 12.5, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          삭제
-        </button>
+      <div className="profile-select-bar">
+        {selectMode ? (
+          <>
+            <label className="profile-select-all">
+              <input type="checkbox" className="applied-check"
+                checked={apps.length > 0 && selectedApps.size === apps.length}
+                onChange={(e) => setSelectedApps(e.target.checked ? new Set(apps.map((a) => a.id)) : new Set())}
+              />
+              전체{selectedApps.size > 0 ? ` (${selectedApps.size})` : ""}
+            </label>
+            <button className="profile-select-btn" style={{ marginLeft: "auto" }} onClick={선택끝내기}>취소</button>
+            {/* 삭제는 고른 것이 있을 때만 나타난다. 아무것도 안 고른 채 눌러 경고를 보는 일이 없다. */}
+            {selectedApps.size > 0 && (
+              <button className="profile-select-btn danger" onClick={async () => { await handleBulkHide(); setSelectMode(false); }}>
+                삭제 {selectedApps.size}
+              </button>
+            )}
+          </>
+        ) : (
+          <>
+            <button className="profile-select-btn" onClick={() => setSelectMode(true)}>선택</button>
+            <button
+              className="profile-select-btn accent"
+              style={{ marginLeft: "auto" }}
+              onClick={() => { setSelectMode(true); alert("증명서에 넣을 지원 내역을 골라 주세요."); }}
+            >
+              📄 취업활동 증명서
+            </button>
+          </>
+        )}
       </div>
+      {selectMode && selectedApps.size > 0 && (
+        <button
+          className="profile-select-btn accent"
+          style={{ width: "100%", marginBottom: 12 }}
+          onClick={() => setShowCert(true)}
+        >
+          📄 고른 {selectedApps.size}건으로 취업활동 증명서
+        </button>
+      )}
       <div className="applied-list">
         {apps.map((app) => {
           const date = new Date(app.applied_at);
           const dateStr = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
           return (
             <div key={app.id} className="applied-item">
-              <input type="checkbox" className="applied-check"
-                checked={selectedApps.has(app.id)}
-                onChange={() => toggleSelect(app.id)}
-              />
-              <div className="applied-body" onClick={() => app.job_id && router.push(`/jobs/${app.job_id}`)}>
+              {selectMode && (
+                <input type="checkbox" className="applied-check"
+                  checked={selectedApps.has(app.id)}
+                  onChange={() => toggleSelect(app.id)}
+                />
+              )}
+              <div
+                className="applied-body"
+                onClick={() => (selectMode ? toggleSelect(app.id) : app.job_id && router.push(`/jobs/${app.job_id}`))}
+              >
                 <h3 className="applied-position">{app.job_title}</h3>
                 <span className="applied-company">{app.brand_name || app.company_name}</span>
                 <span className="applied-date">지원일 {dateStr}</span>
@@ -1385,6 +1412,12 @@ function AppliedTab({ userName }: { userName: string }) {
 function BookmarksTab() {
   const [bookmarkedJobs, setBookmarkedJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  // 지원현황과 같은 방식 — 평소엔 목록만 보이고, '선택'을 눌렀을 때만 고르는 화면이 된다.
+  const [selectMode, setSelectMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const toggle = (id: string) =>
+    setSelected((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const 선택끝내기 = () => { setSelectMode(false); setSelected(new Set()); };
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) { setLoading(false); return; }
@@ -1405,23 +1438,20 @@ function BookmarksTab() {
     return `D-${dDay}`;
   };
 
-  const handleRemove = async (jobPostingId: string) => {
-    if (!confirm("이 공고를 관심목록에서 삭제할까요?")) return;
+
+  const 고른것삭제 = async () => {
+    if (selected.size === 0) return;
+    if (!confirm(`고른 ${selected.size}건을 관심목록에서 지울까요?`)) return;
     const token = localStorage.getItem("access_token");
-    try {
-      const res = await fetch(`/api/users/me/bookmarks?job_posting_id=${jobPostingId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (data.success) {
-        setBookmarkedJobs((prev) => prev.filter((j) => j.job_posting_id !== jobPostingId));
-      } else {
-        alert("삭제에 실패했어요.");
-      }
-    } catch {
-      alert("삭제 중 오류가 발생했어요.");
+    for (const id of Array.from(selected)) {
+      try {
+        await fetch(`/api/users/me/bookmarks?job_posting_id=${id}`, {
+          method: "DELETE", headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch { /* 한 건 실패해도 나머지는 계속 지운다 */ }
     }
+    setBookmarkedJobs((prev) => prev.filter((j) => !selected.has(j.job_posting_id)));
+    선택끝내기();
   };
 
   if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;
@@ -1435,25 +1465,53 @@ function BookmarksTab() {
 
   return (
     <div className="profile-tab-content">
+      <div className="profile-select-bar">
+        {selectMode ? (
+          <>
+            <label className="profile-select-all">
+              <input type="checkbox" className="applied-check"
+                checked={bookmarkedJobs.length > 0 && selected.size === bookmarkedJobs.length}
+                onChange={(e) => setSelected(e.target.checked ? new Set(bookmarkedJobs.map((j) => j.job_posting_id)) : new Set())}
+              />
+              전체{selected.size > 0 ? ` (${selected.size})` : ""}
+            </label>
+            <button className="profile-select-btn" style={{ marginLeft: "auto" }} onClick={선택끝내기}>취소</button>
+            {selected.size > 0 && (
+              <button className="profile-select-btn danger" onClick={고른것삭제}>삭제 {selected.size}</button>
+            )}
+          </>
+        ) : (
+          <button className="profile-select-btn" onClick={() => setSelectMode(true)}>선택</button>
+        )}
+      </div>
       <div className="bookmark-list">
-        {bookmarkedJobs.map((job) => (
-          <a key={job.id} href={`/jobs/${job.job_posting_id}`} className="bookmark-item">
-            <div className="bookmark-item-left">
-              <h3 className="bookmark-title">{job.title}</h3>
-              <span className="bookmark-brand">{job.brand_name || job.company_name}</span>
-              <span className="bookmark-location">📍 {job.location ? shortRegion(job.location) : "협의"}</span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+        {bookmarkedJobs.map((job) => {
+          const 안쪽 = (
+            <>
+              {selectMode && (
+                <input type="checkbox" className="applied-check"
+                  checked={selected.has(job.job_posting_id)}
+                  onChange={() => toggle(job.job_posting_id)}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              )}
+              <div className="bookmark-item-left">
+                <h3 className="bookmark-title">{job.title}</h3>
+                <span className="bookmark-brand">{job.brand_name || job.company_name}</span>
+                <span className="bookmark-location">📍 {job.location ? shortRegion(job.location) : "협의"}</span>
+              </div>
               <span className="bookmark-deadline">{formatDeadline(job.deadline)}</span>
-              <button
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemove(job.job_posting_id); }}
-                style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #eee", background: "#fff", color: "#999", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
-              >
-                삭제
-              </button>
+            </>
+          );
+          // 고르는 중에는 공고로 넘어가면 안 되므로 링크가 아니라 눌러서 체크하는 칸이 된다.
+          return selectMode ? (
+            <div key={job.id} className="bookmark-item" onClick={() => toggle(job.job_posting_id)} style={{ cursor: "pointer" }}>
+              {안쪽}
             </div>
-          </a>
-        ))}
+          ) : (
+            <a key={job.id} href={`/jobs/${job.job_posting_id}`} className="bookmark-item">{안쪽}</a>
+          );
+        })}
       </div>
     </div>
   );
