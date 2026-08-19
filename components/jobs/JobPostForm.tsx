@@ -1293,6 +1293,7 @@ export default function JobPostForm({
       if (d.job_type && showTypeToggle) setJobGroupType(d.job_type === "STORE" ? "매장" : "기업");
       if (Array.isArray(d.hiring_process) && d.hiring_process.length) setHiringProcess(d.hiring_process);
       // 직군(칩) — 서버가 공식 목록에 맞춰 골라줌
+      if (["남성", "여성", "무관"].includes(String(d.gender_preference || ""))) setGenderPref(String(d.gender_preference));
       if (Array.isArray(d.job_categories) && d.job_categories.length) setCategories(d.job_categories);
       // 우리 직군 목록에 없는 일이라도 원문에 적힌 말로 담는다.
       // 비워 두면 그 공고는 모집분야 없이 올라가 검색에도 안 걸린다.

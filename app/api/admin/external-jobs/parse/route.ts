@@ -65,6 +65,8 @@ function classifyImageOrigin(url: string): "company" | "site_upload" | "site_tem
 
 // ── 뷰티워크 폼과 100% 일치시켜야 하는 선택지 (드롭다운·칩) ──
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
+// 학력 선택지 — 등록 폼(JobPostForm)과 같은 목록이어야 값이 버려지지 않는다.
+const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 // 직군 목록은 단일 출처(jobGroups.ts)에서 가져온다 — 직군 재편 시 자동 반영(드리프트 방지)
 const STORE_CATEGORIES = getAllJobItems("STORE");
 const OFFICE_CATEGORIES = getAllJobItems("OFFICE");
@@ -357,6 +359,8 @@ export async function POST(req: NextRequest) {
     company_description: "", address: "", industry: "",
     job_categories: [] as string[],
     job_category_raw: "",
+    gender_preference: "",
+    education: "",
     requirements: "", preferred: "", benefits: "", benefit_tags: [] as string[], hiring_process: [] as string[],
     employment_type: "", career: "", salary: "", salary_type: "", salary_amount: 0, salary_amount_max: 0, salary_negotiable: false, work_days: "", work_time: "", extra_notes: "", main_duties: "",
   };
@@ -679,7 +683,7 @@ export async function POST(req: NextRequest) {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
 반드시 아래 키를 가진 JSON "하나만" 출력해(설명·코드펜스 금지):
-{"company_name","homepage_url","contact_email","contact_phone","contact_name","title","job_type","job_categories","job_category_raw","region","location","deadline","always_open","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","benefit_tags","hiring_process","employment_type","career","salary","salary_type","salary_amount","salary_amount_max","salary_negotiable","work_days","work_time","extra_notes","main_duties"}
+{"company_name","homepage_url","contact_email","contact_phone","contact_name","title","job_type","job_categories","job_category_raw","gender_preference","education","region","location","deadline","always_open","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","benefit_tags","hiring_process","employment_type","career","salary","salary_type","salary_amount","salary_amount_max","salary_negotiable","work_days","work_time","extra_notes","main_duties"}
 규칙:
 - job_type: "회사 업종"이 아니라 "실제 근무 직무"를 기준으로 판단한다. 물리적 매장·샵에 상주하며 일하는 현장직 — 미용실·네일·피부·속눈썹 등 시술직 + 매장 카운터·판매·접객·매장관리·안내데스크·리셉션 등 오프라인 매장 상주 직무 — 이면 "STORE". 본사·사무실 근무 사무직(브랜드 기획·마케팅·MD·영업관리·연구개발·인사·경영 등)이면 "OFFICE". ★ 회사가 "판매점·유통·이커머스·재료 전문점" 업종이어도, 채용 직무가 오프라인 매장의 카운터·판매·매장관리·접객이면 반드시 "STORE"로 분류(예: "네일재료 판매점 카운터 및 매장관리 직원" → STORE).
 - job_categories: 위 job_type에 맞는 아래 "직군 목록"에서 이 공고에 해당하는 항목을 1~3개 골라 그 문자열을 "정확히 그대로" 배열로. 목록에 딱 맞는 게 없으면 가장 가까운 것 1개. 전혀 없으면 [].
@@ -722,6 +726,10 @@ export async function POST(req: NextRequest) {
 - benefits: 복리후생/혜택 및 복지/복지/베네핏 등 이름이 무엇이든 그 혜택 내용을 서술형 텍스트로(줄바꿈 구분). 없으면 "".
     ★ 쉬는 날 조건(월 O회 휴무·연 O일 휴무·주 O일·연차)과 식사·휴게시간은 구직자가 가장 먼저 보는 값이다. 글에 있으면 반드시 담을 것.
 - hiring_process: 채용 절차 단계를 문자열 배열로(예: ["서류전형","면접","최종합격"]). 없으면 [].
+- education: ${EDUCATION_OPTIONS.join(" | ")} 중 하나를 정확히 그대로, 글에 없으면 "".
+    "학력 무관"·"학력 제한 없음"이면 "학력무관". 미용사 면허·자격증은 학력이 아니다(자격요건에 넣어라).
+- gender_preference: "남성" | "여성" | "무관" 중 하나, 글에 없으면 "".
+    "나이·성별 무관", "남녀 무관", "성별 상관없음" 이면 "무관". 특정 성별만 뽑는다고 적힌 경우만 남성/여성.
 - employment_type: ${EMPLOYMENT_TYPES.join(" | ")} 중 하나를 정확히 그대로, 없으면 "".
     ★ "3.3%", "3.3 프리", "사업소득", "4대보험 무"가 보이면 프리랜서다. 파트타임·정규직으로 넘겨짚지 마라.
     ★ "주OO회"처럼 요일만 적은 것은 고용형태가 아니다. 근무요일에 넣어라.
@@ -781,8 +789,11 @@ export async function POST(req: NextRequest) {
       }
 
       const msg = await anthropic.messages.create({
-        model: "claude-haiku-4-5",
-        max_tokens: 3000,
+        // 값이 틀리면 지원자가 헛걸음하고, 고치는 손이 더 든다. 느려도 정확한 쪽을 택했다.
+        model: "claude-opus-5",
+        // 이 모델은 답하기 전에 스스로 따져 보는데, 그 몫도 max_tokens 를 나눠 쓴다.
+        // 3000 으로 두면 따지다가 한도를 다 써 JSON 이 잘린 채 끝난다.
+        max_tokens: 16000,
         system: sys,
         messages: [{ role: "user", content: userContent }],
       });
@@ -874,6 +885,8 @@ export async function POST(req: NextRequest) {
 
   // ── 폼 선택지와 정확히 일치하는 값만 남기도록 검증(오타·off-list 방지) ──
   if (typeof out.career !== "string" || !CAREER_OPTIONS.includes(out.career)) out.career = "";
+  if (typeof out.education !== "string" || !EDUCATION_OPTIONS.includes(out.education)) out.education = "";
+  if (!["남성", "여성", "무관"].includes(String(out.gender_preference || ""))) out.gender_preference = "";
   // 모집분야(직군) 자동추측:
   //   · 어느 경로든 폼의 정식 직군 목록에 "정확히 일치"하는 값만 남긴다(오탈자·목록밖 값 제거).
   //   · 구조화 파서(헤어인잡 등)는 직종명을 우리 직군으로 정밀 매핑하므로 그대로 믿는다.
