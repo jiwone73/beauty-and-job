@@ -2830,6 +2830,36 @@ export default function JobPostForm({
                     placeholder="상세주소 (동·호수 등)"
                     style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
                 </div>
+                {/* 지점이 여럿이거나 인근까지 함께 뽑는 공고가 있다. 주소에서 뽑아낸 지역에
+                    더 얹을 수 있게 한다 — 여기 담긴 지역으로 구직자 검색에 걸린다. */}
+                {(() => {
+                  const derived = deriveRegion(nmFullAddress);
+                  const shown = regionList.length ? regionList : derived;
+                  const 지우기 = (r: string) => setRegionList(shown.filter((x) => x !== r));
+                  return (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+                      {shown.map((r) => (
+                        <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 8px 4px 10px", borderRadius: 999, background: "#f3f0f7", color: "#4a4453", fontSize: 13 }}>
+                          {r}
+                          <button type="button" onClick={() => 지우기(r)} title="이 지역 빼기"
+                            style={{ border: "none", background: "none", padding: 0, color: "#9a92a6", cursor: "pointer", fontSize: 13, lineHeight: 1 }}>×</button>
+                        </span>
+                      ))}
+                      <button type="button"
+                        onClick={() => {
+                          // 주소에서 뽑아낸 지역을 먼저 담아 둬야, 추가한 뒤에도 그 지역이 안 사라진다.
+                          if (!regionList.length && derived.length) setRegionList(derived);
+                          setRegionModalOpen(true);
+                        }}
+                        style={{ padding: "4px 10px", borderRadius: 999, border: "1px dashed #c9b8de", background: "#fff", color: "#5f0080", fontSize: 13, cursor: "pointer" }}>
+                        ＋ 근무지역 추가
+                      </button>
+                      {shown.length === 0 && (
+                        <span style={{ fontSize: 12, color: "#b3adbd" }}>주소를 넣으면 지역이 자동으로 잡혀요</span>
+                      )}
+                    </div>
+                  );
+                })()}
                 {nmFullAddress && <AddressMap address={nmFullAddress} name={newCompanyName.trim() || undefined} height={220} />}
               </div>
 
