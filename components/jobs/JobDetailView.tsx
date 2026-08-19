@@ -109,7 +109,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     // 금액이 적혀 있으면 그 자체로 읽힌다. 숫자가 없을 때만 무엇에 대한 말인지 붙인다.
     return !/\d/.test(t) && !/^급여/.test(t) ? `급여 ${t}` : t;
   })();
-  const posCols = posColDefs.filter((c) => c.key === "category" || positions.some((p: any) => (c.get(p) || "").toString().trim()));
+  // 값이 비어도 화면에는 "협의" 로 나가는 열(급여·근무요일/시간)은 숨기지 않는다.
+  // 숨기면 등록 폼에는 있는 열이 미리보기에서 사라져, 무엇이 어떻게 보일지 대조할 수
+  // 없게 된다. 나머지 열은 아무 행에도 값이 없으면 그대로 숨긴다.
+  const ALWAYS = new Set(["category", "salary", "shift"]);
+  const posCols = posColDefs.filter((c) => ALWAYS.has(c.key) || positions.some((p: any) => (c.get(p) || "").toString().trim()));
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
       <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#5f0080", flexShrink: 0 }} />모집부문</h2>
@@ -118,7 +122,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <thead>
             <tr style={{ background: "#faf7fd" }}>
               {posCols.map((c) => (
-                <th key={c.key} style={{ textAlign: "left", padding: "10px 20px 10px 0", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" }}>{c.label}</th>
+                <th key={c.key} className="jd-pos-th">{c.label}</th>
               ))}
             </tr>
           </thead>
@@ -126,7 +130,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             {positions.map((p: any, i: number) => (
               <tr key={i}>
                 {posCols.map((c, j) => (
-                  <td key={c.key} style={{ padding: "12px 20px 12px 0", borderBottom: "1px solid #f3f0f8", color: j === 0 ? "#333" : "#555", whiteSpace: "nowrap", lineHeight: 1.6 }}>
+                  <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#333" : "#555" }}>
                     {/* 근무요일/시간 열은 요일 1행·시간 2행으로 */}
                     {c.key === "shift"
                       ? ((p.workDays || p.workTime)
