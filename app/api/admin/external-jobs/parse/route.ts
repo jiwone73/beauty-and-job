@@ -1,4 +1,7 @@
 export const dynamic = "force-dynamic";
+// 오퍼스는 한 건에 30~60초가 걸린다. 이 줄이 없으면 배포 환경 기본값(짧다)에서
+// 긴 공고가 끊긴다. 무료 요금제 상한이 60초라 그 끝까지 준다.
+export const maxDuration = 60;
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import pool from "@/lib/db";
@@ -790,10 +793,15 @@ export async function POST(req: NextRequest) {
 
       const msg = await anthropic.messages.create({
         // 값이 틀리면 지원자가 헛걸음하고, 고치는 손이 더 든다. 느려도 정확한 쪽을 택했다.
-        model: "claude-opus-5",
+        // 배포를 다시 하지 않고 모델을 바꿔 보려고 환경변수로 열어 뒀다(값을 안 주면 오퍼스).
+        model: process.env.PARSE_MODEL || "claude-opus-5",
         // 이 모델은 답하기 전에 스스로 따져 보는데, 그 몫도 max_tokens 를 나눠 쓴다.
         // 3000 으로 두면 따지다가 한도를 다 써 JSON 이 잘린 채 끝난다.
         max_tokens: 16000,
+        // 얼마나 따져 볼지. 기본(안 주면 최대)이 가장 정확하지만 한 건에 30~60초가 걸린다.
+        // "medium" 으로 낮추면 25초로 줄지만 모집분야를 덜 잡고, 원문에 없는 근무요일을
+        // "협의"로 채우기 시작한다(다섯 건으로 대조). 그래서 기본을 그대로 둔다.
+        ...(process.env.PARSE_EFFORT ? { output_config: { effort: process.env.PARSE_EFFORT as "low" | "medium" | "high" } } : {}),
         system: sys,
         messages: [{ role: "user", content: userContent }],
       });
@@ -804,9 +812,13 @@ export async function POST(req: NextRequest) {
         out.ai_parsed = true;
       } else {
         console.error("[external parse LLM] JSON 파싱 실패. 원문 앞부분:", raw.slice(0, 300));
+        out.ai_failed = "읽어 온 값을 해석하지 못했어요.";
       }
     } catch (e) {
+      // 여기서 조용히 넘어가면 항목이 텅 빈 폼이 그냥 채워진다. 관리자는 원문에
+      // 내용이 없어서 빈 줄 알고 그대로 등록하게 된다. 실패는 실패라고 알린다.
       console.error("[external parse LLM]", e);
+      out.ai_failed = "불러오기가 실패했어요. 잠시 뒤 다시 눌러 주세요.";
     }
   }
 

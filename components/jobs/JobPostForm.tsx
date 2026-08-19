@@ -337,6 +337,7 @@ export default function JobPostForm({
   const [contactMethodsOpen, setContactMethodsOpen] = useState(false);
   const contactMethodsRef = useRef<HTMLDivElement>(null);
   const [parseUrl, setParseUrl] = useState("");
+  const [parseFail, setParseFail] = useState(""); // 모델 호출 자체가 실패했을 때만
   const [urlEditing, setUrlEditing] = useState(true); // 불러오기 후엔 URL을 링크로 표시(클릭 시 원문 새 창)
   // 회사명/URL · 글 붙여넣기 · 화면 캡처
   // 붙여넣기를 먼저 두는 이유: 카페·블로그 글은 드래그 복사가 되고,
@@ -1228,6 +1229,10 @@ export default function JobPostForm({
   });
   // 불러온 데이터(d)를 폼 각 필드에 반영 — URL 불러오기·OCR이 공용으로 사용
   const applyParsed = (d: any) => {
+      // 서버가 '모델 호출이 실패했다'고 알려 주면 띄운다. 이 말이 없으면 관리자는
+      // 빈 항목을 보고 "원문에 없나 보다" 하고 그대로 등록하게 된다.
+      // 뒤따라오는 성공 문구에 덮이지 않도록 별도 줄로 둔다.
+      setParseFail(d?.ai_failed ? String(d.ai_failed) : "");
       // ── 불러오기는 '새 소스로 통째 교체' ── 다른 공고로 갈아탈 때 이전 값(이미지·지역·회사정보 등)이
       //    섞이지 않도록, 소스가 값을 주지 않는 항목도 먼저 비우고 시작한다.
       //    다만 손으로 올린 그림(배너·포스터)은 이 화면에서 사람이 직접 넣은 것이라 지우면 안 된다.
@@ -2411,6 +2416,7 @@ export default function JobPostForm({
           </div>
           )}
           {parseMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: parseMsg.startsWith("✓") ? "#10b981" : "#c0392b" }}>{parseMsg}</div>}
+          {parseFail && <div style={{ fontSize: 12.5, marginTop: 4, color: "#c0392b" }}>⚠ {parseFail}</div>}
           {siteNameWarn && (
             <div style={{ marginTop: 8, padding: "10px 12px", background: "#fef2f2", border: "1px solid #f3c0c0", borderRadius: 8, fontSize: 13, color: "#b3261e", whiteSpace: "pre-line", display: "flex", alignItems: "flex-start", gap: 8 }}>
               <span style={{ flex: 1 }}>{siteNameWarn}</span>
