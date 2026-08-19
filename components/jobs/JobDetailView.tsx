@@ -6,6 +6,7 @@ import KakaoMap from "@/components/KakaoMap";
 import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send } from "lucide-react";
+import { hideContacts } from "@/lib/hideContacts";
 
   // 매장 공고는 적힌 값이 그대로 지켜지는 일이 드물다. 근무시간·급여는 면접에서
 // 다시 정하고, 복리후생은 매장마다 달라 표에 다 담기지 않는다. 그래서 구직자가
@@ -28,32 +29,10 @@ const withSeeDetail = (v: string) => {
   //
   // 원문은 DB에 그대로 둔다. 관리자는 등록 화면에서 값을 대조해야 하고, 매장에
   // 연락할 일도 있기 때문이다. 여기서는 보여줄 때만 가린다.
-  const APPLY_ONLY = "뷰티워크 온라인 지원";
-  const hideContacts = (t: string) =>
-    String(t || "")
-      // 전화번호: 010-1234-5678 / 01012345678 / 02-123-4567 등 (구분자는 - . 공백)
-      .replace(/(0\d{1,2})[-.\s]?(\d{3,4})[-.\s]?(\d{4})/g, APPLY_ONLY)
-      .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, APPLY_ONLY)
-      // "카톡 아이디 xxx" 처럼 아이디를 적어 두는 경우
-      .replace(/(카카오톡|카톡|오픈\s*채팅|카톡\s*아이디)\s*[:：]?\s*[A-Za-z0-9._-]{3,}/g, APPLY_ONLY)
-      // 매장 SNS. 들어가 보면 DM·프로필에 번호가 있어 전화번호를 가린 뜻이 없어진다.
-      .replace(/(https?:\/\/)?(www\.)?(instagram\.com|facebook\.com|band\.us|threads\.net|open\.kakao\.com|pf\.kakao\.com|blog\.naver\.com|cafe\.naver\.com|youtube\.com|youtu\.be|twitter\.com|x\.com)\/[^\s)\]]*/gi, APPLY_ONLY)
-      // 주소 없이 "인스타 @nail_shop" 처럼 계정만 적는 경우
-      .replace(/(인스타(?:그램)?|insta(?:gram)?|카톡|틱톡)\s*[:：]?\s*@?[A-Za-z0-9._]{3,}/gi, APPLY_ONLY)
-      // 번호를 지웠어도 "문자로 보내주세요" 가 남으면 구직자는 여전히 매장에 연락하려 든다.
-      // 지원 창구를 지시하는 말도 함께 바꾼다.
-      .replace(/지원\s*방법\s*[:：]\s*(?:문자|전화|이메일|메일|카톡|카카오톡|DM|디엠|인스타(?:그램)?)\s*(?:으로|로)?/gi, `지원방법: ${APPLY_ONLY} 시`)
-      .replace(/(?:문자|전화|톡|카톡|카카오톡|DM|디엠|이메일|메일|인스타(?:그램)?)\s*(?:으로|로)?\s*(?:만)?\s*(?:주세요|남겨\s*주세요|보내\s*주세요|연락\s*주세요|문의\s*주세요|지원\s*(?:해\s*)?주세요)/gi, "뷰티워크로 지원해 주세요")
-      .replace(/(?:문자|전화|카톡|카카오톡|DM|디엠|이메일|메일)\s*(?:으로|로)(?=\s|$)/gi, `${APPLY_ONLY}으로`)
-      // 바꾸고 나면 "위 번호로 뷰티워크로…", "이메일 지원 으로 보내주세요" 처럼
-      // 앞뒤에 쓸모없는 말이 남는다. 문장이 읽히도록 걷어낸다.
-      .replace(/(?:위|아래)?\s*(?:번호|연락처|주소)\s*(?:으로|로)\s*(?=뷰티워크)/g, "")
-      .replace(/(?:인스타(?:그램)?|카톡|카카오톡|문자|전화|이메일|메일|DM|디엠)\s+(?=뷰티워크)/gi, "")
-      .replace(new RegExp(`${APPLY_ONLY}\\s*(?:으로|로)?\\s*(?:보내\\s*주세요|남겨\\s*주세요|주세요)`, "g"), APPLY_ONLY)
-      // 같은 안내가 잇달아 나오면 한 번만 남긴다.
-      .replace(new RegExp(`(${APPLY_ONLY})([\\s,·/]*\\1)+`, "g"), "$1")
-      .replace(/(뷰티워크로 지원해 주세요)([\s,·/]*\1)+/g, "$1")
-      .replace(/[ \t]{2,}/g, " ");
+  // 규칙은 lib/hideContacts.ts 한곳에만 둔다. 예전엔 여기에 같은 규칙을 한 벌 더
+  // 두었는데, 서버 쪽만 고치는 사이 이 사본이 뒤처져 미리보기에서만 연락처가 샜다.
+  // 등록 폼은 원문을 그대로 보여준다 — 관리자는 값을 대조해야 하기 때문이다.
+  // 가리는 것은 구직자가 보는 화면(이 컴포넌트)과 공개 API 두 곳이다.
 
 // 공고 상단 이미지 갤러리. 표시 규칙(3:1 고정 · 한 장은 항상 1/3 폭)은 BannerStrip에 모아 두고,
 // 기업정보 설정·공고 등록 미리보기에서도 같은 컴포넌트를 써 어디서나 같은 모양으로 보이게 한다.
@@ -454,7 +433,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <section className="job-detail-section">
             <h2 className="job-detail-section-title">{companySectionTitle}</h2>
             {job.brandDesc?.trim() && (
-              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginBottom: companyRows.length ? "16px" : 0 }}>{job.brandDesc}</p>
+              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginBottom: companyRows.length ? "16px" : 0 }}>{hideContacts(job.brandDesc)}</p>
             )}
             {companyRows.length > 0 && (
               <div className="job-detail-company-info">

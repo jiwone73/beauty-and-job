@@ -137,7 +137,7 @@ export async function GET(
       cover_images: job.company_cover_images || [],
       company_type: job.company_type,
       industry: job.company_industry,
-      description: job.company_description,
+      description: hide(job.company_description), // 매장 소개에도 연락처·SNS가 들어간다
       // 매장 SNS(인스타 등)도 마찬가지다. 들어가 보면 DM·프로필에 번호가 있어
       // 연락처를 가린 뜻이 없어진다. 회원 기업의 홈페이지는 그대로 둔다.
       website_url: isExternalJob ? null : job.website_url,
