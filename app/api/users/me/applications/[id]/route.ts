@@ -16,7 +16,7 @@ export async function GET(
             a.user_id, u.name AS user_name, u.email::text AS user_email, u.phone AS user_phone,
             u.job_type AS user_job_type, u.gender, u.birth_date,
             u.address_road, u.address_detail, u.region_sido, u.region_sigungu,
-            u.portfolio_url, u.portfolio_filename, u.avatar_url AS user_avatar_url,
+            u.portfolio_images, u.avatar_url AS user_avatar_url,
             jp.title AS job_title, c.company_name
      FROM applications a
      JOIN users u ON u.id = a.user_id

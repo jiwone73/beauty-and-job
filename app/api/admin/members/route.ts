@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       SELECT
         u.id, u.name, u.email::text AS email, u.phone, u.job_type, u.status,
         u.kakao_id, u.naver_id, u.gender, u.birth_date, u.region_sido, u.region_sigungu,
-        u.office_job_areas, u.preferred_regions, u.portfolio_url, u.resume_file_url, u.last_login_at, u.created_at, u.avatar_url,
+        u.office_job_areas, u.preferred_regions, u.portfolio_images, u.resume_file_url, u.last_login_at, u.created_at, u.avatar_url,
         (SELECT p.skill_areas FROM user_profiles p WHERE p.user_id = u.id) AS skill_areas,
         (SELECT p.main_job_group FROM user_profiles p WHERE p.user_id = u.id) AS main_job_group,
         (SELECT p.sub_job FROM user_profiles p WHERE p.user_id = u.id) AS sub_job,

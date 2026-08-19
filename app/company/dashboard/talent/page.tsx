@@ -249,7 +249,7 @@ export default function TalentPage() {
         email: null,
         phone: r.phone ?? null,
         avatarUrl: r.avatar_url ?? null,
-        portfolioUrl: null,
+        portfolioImages: null,
         gender: r.gender ?? null,
         age: r.age ?? null,
         intro: r.headline ?? null,
@@ -785,7 +785,7 @@ export default function TalentPage() {
                     {/* 작업물은 이력서와 성격이 달라 열을 나눈다 — 미용은 사진이 곧 경력이다. */}
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                        <LinkCell url={t.portfolioUrl} icon={<Paperclip size={13} />} label="포트폴리오" />
+                        <LinkCell url={t.portfolioImages?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="포트폴리오" />
                         <LinkCell url={t.snsUrl} icon={<Instagram size={13} />} label="SNS" />
                       </div>
                     </td>
@@ -850,8 +850,7 @@ export default function TalentPage() {
                   jobDisplay={resumeData.user?.job_type === "STORE" ? "매장" : "오피스"}
                   phone={resumeData.user?.phone || ""}
                   email={resumeData.user?.email || ""}
-                  portfolioUrl={resumeData.user?.portfolio_url || null}
-                  portfolioFilename={resumeData.user?.portfolio_filename || null}
+                  portfolioImages={resumeData.user?.portfolio_images || []}
                   avatarUrl={resumeData.user?.avatar_url || null}
                   resumeType={resumeData.user?.job_type === "STORE" ? "salon" : "office"}
                   {...mapResume(resumeData)}

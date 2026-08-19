@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
        u.avatar_url AS user_avatar_url,
        u.region_sido AS user_region_sido,
        u.region_sigungu AS user_region_sigungu,
-       u.portfolio_url, u.portfolio_filename,
+       u.portfolio_images,
         (
           SELECT ul.url FROM user_links ul
           WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''

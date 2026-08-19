@@ -729,7 +729,7 @@ function ApplicantsContent() {
                   {/* 작업물은 이력서와 성격이 달라 열을 나눈다 — 미용은 사진이 곧 경력이다. */}
                   <td>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                      <LinkCell url={(a as any).portfolio_url} icon={<Paperclip size={14} />} label="포트폴리오" />
+                      <LinkCell url={(a as any).portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={14} />} label="포트폴리오" />
                       <LinkCell url={(a as any).sns_url} icon={<Instagram size={14} />} label="SNS" />
                     </div>
                   </td>
@@ -792,8 +792,7 @@ function ApplicantsContent() {
                     jobDisplay: "",
                     phone: selected.user_phone || "",
                     email: selected.user_email || "",
-                    portfolioUrl: (selected as any).portfolio_url || null,
-                    portfolioFilename: (selected as any).portfolio_filename || null,
+                    portfolioImages: (selected as any).portfolio_images || [],
                     avatarUrl: (selected as any).user_avatar_url || null,
                     resumeType: selected.user_job_type === "STORE" ? "salon" : "office",
                     ...mapResume(resumeData),

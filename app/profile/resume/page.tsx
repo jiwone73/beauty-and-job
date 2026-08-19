@@ -47,12 +47,10 @@ function ResumePageContent() {
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
-  const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
   const [portfolioImages, setPortfolioImages] = useState<{ url: string; w?: number; h?: number }[]>([]);
   const [addressDisplay, setAddressDisplay] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [officeAreas, setOfficeAreas] = useState<string[]>([]);
-  const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [resumeFileName, setResumeFileName] = useState<string | null>(null);
@@ -115,11 +113,9 @@ function ResumePageContent() {
           if (res.data.phone) setPhoneLocal(res.data.phone);
           if (res.data.job_type === "STORE") setResumeType("salon");
           else setResumeType("office");
-          if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
           if (Array.isArray(res.data.portfolio_images)) setPortfolioImages(res.data.portfolio_images);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
           if (Array.isArray(res.data.office_job_areas)) setOfficeAreas(res.data.office_job_areas);
-          if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
           if (res.data.resume_file_name) setResumeFileName(res.data.resume_file_name);
           if (res.data.resume_file_size) setResumeFileSize(res.data.resume_file_size);
           if (res.data.address_road) {

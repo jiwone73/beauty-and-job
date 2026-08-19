@@ -28,8 +28,7 @@ interface Props {
   languages: LanguageEntry[];
   experiences: ExperienceEntry[];
   links: LinkEntry[];
-  portfolioUrl: string | null;
-  portfolioFilename: string | null;
+  portfolioImages?: { url: string }[];
   resumeFileName?: string | null;
   resumeType: "office" | "salon";
   officeJobAreas: string[];
@@ -58,8 +57,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     languages,
     experiences,
     links,
-    portfolioUrl,
-    portfolioFilename,
+    portfolioImages = [],
     resumeFileName,
     resumeType,
     officeJobAreas,
@@ -256,10 +254,17 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           ))}
         </div>
       )}
-      {portfolioUrl && (
+      {portfolioImages.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">포트폴리오</h2>
-          <p className="rp-text">{portfolioFilename || "포트폴리오.pdf"}</p>
+          {/* 읽는 화면에서도 목록은 4:3 — 편집 화면과 같은 모양으로 보여준다. */}
+          <div className="portfolio-grid">
+            {portfolioImages.map((img) => (
+              <a key={img.url} href={img.url} target="_blank" rel="noopener noreferrer" className="portfolio-cell">
+                <img src={img.url} alt="" loading="lazy" />
+              </a>
+            ))}
+          </div>
         </div>
       )}
       {/* 첨부 이력서 — 현재 숨김 처리 */}

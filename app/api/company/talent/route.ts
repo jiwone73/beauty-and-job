@@ -101,8 +101,7 @@ export async function GET(req: NextRequest) {
         u.email,
         u.phone,
         u.avatar_url,
-        u.portfolio_url,
-        u.portfolio_filename,
+        u.portfolio_images,
         (
           SELECT ul.url FROM user_links ul
           WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''
@@ -183,7 +182,7 @@ export async function GET(req: NextRequest) {
       email: r.email || null,
       phone: r.phone || null,
       avatarUrl: r.avatar_url,
-      portfolioUrl: r.portfolio_url || null,
+      portfolioImages: r.portfolio_images || null,
       snsUrl: r.sns_url || null,
       gender: r.gender,
       age: r.age,

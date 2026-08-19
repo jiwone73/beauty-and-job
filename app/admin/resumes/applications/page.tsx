@@ -34,7 +34,7 @@ type App = {
   avatar_url: string | null;
   gender: string | null;
   birth_date: string | null;
-  portfolio_url: string | null;
+  portfolio_images: { url: string }[] | null;
   recent_career: { start_date: string | null; is_current: boolean } | null;
   career_count: number;
   resume_id: string | null;
@@ -286,8 +286,8 @@ function AdminApplicationsPageInner() {
                             <FileText size={15} /><span>이력서</span>
                           </span>
                         )}
-                        {a.portfolio_url ? (
-                          <a href={a.portfolio_url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기"
+                        {a.portfolio_images?.length ? (
+                          <a href={a.portfolio_images[0].url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기"
                             style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
                             <Paperclip size={13} /><span>포트폴리오</span>
                           </a>

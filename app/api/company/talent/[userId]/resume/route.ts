@@ -16,7 +16,7 @@ export async function GET(
 
   const userRes = await pool.query(
     `SELECT id, name, email, phone, gender, birth_date, job_type,
-            avatar_url, portfolio_url, portfolio_filename
+            avatar_url, portfolio_images
      FROM users WHERE id = $1 AND status = 'ACTIVE'`,
     [userId]
   );

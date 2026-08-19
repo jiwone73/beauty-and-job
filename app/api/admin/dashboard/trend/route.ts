@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
              WHERE date_trunc('${cfg.trunc}', u.created_at) ${cmp} d
                AND ( EXISTS (SELECT 1 FROM user_careers uc WHERE uc.user_id = u.id)
                   OR (u.resume_file_url IS NOT NULL AND u.resume_file_url <> '')
-                  OR (u.portfolio_url IS NOT NULL AND u.portfolio_url <> '') )
+                  OR (u.portfolio_images IS NOT NULL AND jsonb_array_length(u.portfolio_images) > 0) )
           ) AS resume_done
         FROM ${series} ORDER BY day
       `)

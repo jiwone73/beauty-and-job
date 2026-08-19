@@ -109,7 +109,7 @@ type Member = {
   main_job_group: string | null;
   sub_job: string | null;
   work_type_prefer: string | null;
-  portfolio_url: string | null;
+  portfolio_images: { url: string }[] | null;
   resume_file_url: string | null;
   sns_url: string | null;
   job_search_status: string | null;
@@ -229,7 +229,7 @@ function AdminMembersPageInner() {
     const matchGender = genderFilter === "전체" || (m.gender || "") === genderFilter;
     const matchAge = ageFilter === "전체" || ageGroupOf(m.birth_date) === ageFilter;
     // 이력서 완성: 경력 / 첨부 이력서 / 포트폴리오 중 하나라도 있으면
-    const resumeWritten = !!m.recent_company || !!m.resume_file_url || !!m.portfolio_url;
+    const resumeWritten = !!m.recent_company || !!m.resume_file_url || (m.portfolio_images?.length ?? 0) > 0;
     // 프로필 완성: 필수 항목(사진·거주지·직군·희망 근무지역) 모두 입력
     // 직군별 필수 직무영역: 사무직=직군 영역, 매장직=시술 분야·희망 근무형태
     const hasJobArea = m.job_type === "STORE"
@@ -557,7 +557,7 @@ function AdminMembersPageInner() {
                     {/* 포트폴리오 · SNS — 기업회원 인재검색과 같은 구성 */}
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                        <LinkCell url={m.portfolio_url} icon={<Paperclip size={13} />} label="포트폴리오" />
+                        <LinkCell url={m.portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="포트폴리오" />
                         <LinkCell url={m.sns_url} icon={<Instagram size={13} />} label="SNS" />
                       </div>
                     </td>
