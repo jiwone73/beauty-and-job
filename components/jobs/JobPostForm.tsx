@@ -490,6 +490,74 @@ export default function JobPostForm({
   const [salaryMax, setSalaryMax] = useState<string>("");             // 급여 상한(범위 공고). 단일이면 ""
   const [salaryByCat, setSalaryByCat] = useState<Record<string, string>>({}); // 모집분야별 급여(자유텍스트): {분야명: "월 300"}
   const salaryRef = useRef<HTMLDivElement>(null);
+
+  // ── 쓰던 내용을 브라우저에 남긴다 ──
+  //
+  // 배포될 때마다 화면이 새로 뜨는데, 그때 붙여넣은 글과 불러온 값이 다 날아가
+  // 처음부터 다시 해야 했다. 서버 임시저장은 버튼을 눌러야 하고, 그 전에 새로고침이
+  // 나면 소용이 없다. 그래서 값이 바뀔 때마다 이 브라우저에 조용히 남긴다.
+  //
+  // 새로 쓰는 공고에서만 한다. 기존 공고를 고칠 때는 서버 값이 맞는 값이라,
+  // 남아 있던 옛 입력이 그 위에 덮이면 안 된다.
+  const AUTOSAVE_KEY = "jobpost:autosave:new";
+  const autosaveReady = useRef(false);
+  const snapshot = () => ({
+    v: 1,
+    at: new Date().toISOString(),
+    form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType,
+    detailImages, bannerImages, hiringProcess, benefitTags,
+    salaryNego, salaryType, salaryMax, salaryByCat,
+    pasteText, ocrSourceUrl, parseUrl, importMode, findQuery,
+    nonMember, newCompanyName, newBrandName, nmDescription, nmAddress, nmAddressDetail,
+    nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
+    nmManagerName, nmManagerPhone, nmContactEmail, contactMethods,
+    applyMethod, externalApplyUrl,
+  });
+
+  // 값이 바뀔 때마다 저장. 타자마다 쓰지 않도록 잠깐 모았다가 한 번 쓴다.
+  useEffect(() => {
+    if (editId || mode !== "admin") return;
+    if (!autosaveReady.current) { autosaveReady.current = true; return; } // 복원 직후 한 번은 건너뛴다
+    const t = setTimeout(() => {
+      try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(snapshot())); } catch { /* 용량 초과 등은 무시 */ }
+    }, 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType, detailImages, bannerImages,
+      hiringProcess, benefitTags, salaryNego, salaryType, salaryMax, salaryByCat, pasteText, ocrSourceUrl,
+      parseUrl, importMode, findQuery, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
+      nmAddressDetail, nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
+      nmManagerName, nmManagerPhone, nmContactEmail, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
+
+  const [restored, setRestored] = useState<string | null>(null);
+  const clearAutosave = () => { try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ } setRestored(null); };
+
+  // 화면이 뜰 때 남아 있던 내용을 되살린다.
+  useEffect(() => {
+    if (editId || mode !== "admin") return;
+    let d: any = null;
+    try { d = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch { d = null; }
+    if (!d || d.v !== 1) return;
+    // 빈 껍데기는 되살릴 것이 없다.
+    const hasSomething = (d.pasteText || "").trim() || (d.form?.title || "").trim() || (d.newCompanyName || "").trim();
+    if (!hasSomething) return;
+    const set = <T,>(fn: (v: T) => void, v: T | undefined) => { if (v !== undefined && v !== null) fn(v); };
+    set(setForm, d.form); set(setNotes, d.notes); set(setCategories, d.categories); set(setPosMeta, d.posMeta);
+    set(setRegionList, d.regionList); set(setAlwaysOpen, d.alwaysOpen); set(setJobGroupType, d.jobGroupType);
+    set(setDetailImages, d.detailImages); set(setBannerImages, d.bannerImages);
+    set(setHiringProcess, d.hiringProcess); set(setBenefitTags, d.benefitTags);
+    set(setSalaryNego, d.salaryNego); set(setSalaryType, d.salaryType); set(setSalaryMax, d.salaryMax); set(setSalaryByCat, d.salaryByCat);
+    set(setPasteText, d.pasteText); set(setOcrSourceUrl, d.ocrSourceUrl); set(setParseUrl, d.parseUrl);
+    set(setImportMode, d.importMode); set(setFindQuery, d.findQuery);
+    set(setNonMember, d.nonMember); set(setNewCompanyName, d.newCompanyName); set(setNewBrandName, d.newBrandName);
+    set(setNmDescription, d.nmDescription); set(setNmAddress, d.nmAddress); set(setNmAddressDetail, d.nmAddressDetail);
+    set(setNmIndustry, d.nmIndustry); set(setNmSize, d.nmSize); set(setNmFounded, d.nmFounded);
+    set(setNmRepresentative, d.nmRepresentative); set(setNmPhone, d.nmPhone); set(setNmHomepage, d.nmHomepage);
+    set(setNmManagerName, d.nmManagerName); set(setNmManagerPhone, d.nmManagerPhone); set(setNmContactEmail, d.nmContactEmail);
+    set(setContactMethods, d.contactMethods); set(setApplyMethod, d.applyMethod); set(setExternalApplyUrl, d.externalApplyUrl);
+    setRestored(d.at || "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editId, mode]);
   // 급여 표시(범위면 "연봉 3,000만원 ~ 3,300만원")
   const fmtSalary = (): string => {
     if (salaryNego) return "급여 협의";
@@ -1731,6 +1799,7 @@ export default function JobPostForm({
       return;
     }
     setSaved(true);
+    clearAutosave(); // 등록됐으니 브라우저에 남겨 둔 내용은 지운다
     setTimeout(() => router.push(listHref), 1000);
   };
 
@@ -2135,6 +2204,22 @@ export default function JobPostForm({
             })}
           </div>
           {!jobGroupType && <span style={{ fontSize: 12, color: "#e9a3a3" }}>선택하면 급여·복지 등 항목이 열립니다.</span>}
+        </div>
+      )}
+
+      {/* 새로고침 뒤 남아 있던 내용을 되살렸다는 표시. 원치 않으면 여기서 비운다. */}
+      {restored && (
+        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 12px`, boxSizing: "border-box",
+          display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+          padding: "10px 14px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 10 }}>
+          <span style={{ fontSize: 13.5, color: "#4a4453" }}>
+            쓰던 내용을 되살렸어요{restored ? ` (${new Date(restored).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })} 기준)` : ""}.
+          </span>
+          <button type="button"
+            onClick={() => { if (confirm("쓰던 내용을 지우고 빈 화면에서 새로 쓸까요?")) { clearAutosave(); location.reload(); } }}
+            style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: 8, border: "1px solid #d9cfe8", background: "#fff", color: "#5f0080", fontSize: 13, cursor: "pointer" }}>
+            새로 쓰기
+          </button>
         </div>
       )}
 
