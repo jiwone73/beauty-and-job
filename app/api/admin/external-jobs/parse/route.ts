@@ -792,27 +792,22 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // 환경변수로 못 박으면 그 값이 먼저다(배포 없이 바꿔 보려고 열어 둔 문).
-      const LONG_INPUT = 1200;
-      const effort = (process.env.PARSE_EFFORT as "low" | "medium" | "high" | undefined)
-        || (typeof user === "string" && user.length > LONG_INPUT ? ("medium" as const) : undefined);
+      // 얼마나 따져 볼지. 평소엔 건드리지 않는다.
+      // 예전에 긴 글이면 자동으로 낮췄는데, 그건 오퍼스가 1,863자에서 58.5초까지
+      // 걸려 60초 벽에 닿던 때의 대책이었다. 하이쿠는 가장 긴 글도 22초라 벽이
+      // 없으니, 낮출 이유 없이 품질만 깎게 된다.
+      const effort = process.env.PARSE_EFFORT as "low" | "medium" | "high" | undefined;
 
       const ask = (cached: boolean) => anthropic.messages.create({
-        // 값이 틀리면 지원자가 헛걸음하고 고치는 손이 더 든다. 그렇다고 이 한 버튼이
-        // 요금의 대부분을 먹어서도 곤란하다(오퍼스로는 하루 20건에 월 8만원대).
+        // 매일 여러 건 누르는 버튼이라 건당 요금이 그대로 월 비용이 된다
+        // (오퍼스 월 8만원 / 소넷 2만 7천원 / 하이쿠 1만 4천원).
+        // 지어내는 실수는 아래 dropUnsupported 가 코드로 막고, 값은 사람이 어차피
+        // 전부 확인하고 등록한다. 그래서 가장 싼 쪽을 쓴다.
         // 배포를 다시 하지 않고 바꿔 보려고 환경변수로 열어 뒀다.
-        model: process.env.PARSE_MODEL || "claude-sonnet-5",
+        model: process.env.PARSE_MODEL || "claude-haiku-4-5",
         // 이 모델은 답하기 전에 스스로 따져 보는데, 그 몫도 max_tokens 를 나눠 쓴다.
         // 3000 으로 두면 따지다가 한도를 다 써 JSON 이 잘린 채 끝난다.
         max_tokens: 16000,
-        // 얼마나 따져 볼지. 기본(안 주면 최대)이 가장 정확하다. "medium" 으로 낮추면
-        // 빨라지지만 모집분야를 덜 잡고, 원문에 없는 근무요일을 "협의"로 채우기
-        // 시작한다(오퍼스로 실제 공고 다섯 건 대조).
-        //
-        // 그래서 기본을 쓰되, 긴 글일 때만 낮춘다. 60초에서 잘리면 아무것도 못
-        // 건지므로, 벽에 닿을 글은 조금 덜 따지더라도 끝까지 가는 편이 낫다.
-        // ※ 이 선(1,200자)은 오퍼스가 1,863자에서 58.5초 걸리던 때 그은 것이다.
-        //    소넷은 더 빠르니 선을 올리거나 아예 없애도 될 수 있다 — 재보고 정할 것.
         ...(effort ? { output_config: { effort } } : {}),
         // 이 8,600자 규칙서는 매번 글자 하나 안 바뀐다. 캐시에 올려 두면 두 번째
         // 호출부터 이 부분이 10분의 1 값이 된다. 처음 한 번은 1.25배로 조금 더
