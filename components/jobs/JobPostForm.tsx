@@ -93,6 +93,13 @@ async function compressImage(file: File, maxBytes = MAX_UPLOAD_BYTES): Promise<F
 
 // 공고 이슈 메모에서 선택하는 문제 필드 목록(불러오기 파싱 오류를 어느 항목인지 특정)
 // 불러오기 시 반드시 문제없이 들어와야 하는 핵심 항목만 이슈 대상으로.
+// 공고를 퍼 오는 카페 구인 게시판. 붙여넣기 할 때 여기로 바로 건너뛴다.
+// 다른 카페를 더 쓰게 되면 여기에 주소만 보태면 된다.
+const SOURCE_CAFES: { name: string; url: string }[] = [
+  { name: "맨사", url: "https://cafe.naver.com/f-e/cafes/16402471/menus/71" },
+  { name: "뷰앤잡", url: "https://cafe.naver.com/f-e/cafes/15101779/menus/45?viewType=L" },
+];
+
 const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "모집분야", "근무지역", "상세요강 이미지", "기타"];
 const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "뷰티워크 온라인지원", "회사 홈페이지 지원"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
@@ -2237,6 +2244,18 @@ export default function JobPostForm({
                 </label>
               ))}
             </div>
+            {/* 붙여넣기를 고르면 글을 퍼 올 카페로 바로 갈 수 있게 한다. */}
+            {importMode === "paste" && (
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 13, color: "#9a92a6" }}>구인글 보러가기</span>
+                {SOURCE_CAFES.map((c) => (
+                  <a key={c.name} href={c.url} target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: 13.5, color: "#5f0080", textDecoration: "none", whiteSpace: "nowrap" }}>
+                    {c.name} ↗
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
           <div style={{ background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
 
