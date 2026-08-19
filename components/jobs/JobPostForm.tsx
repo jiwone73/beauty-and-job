@@ -563,9 +563,22 @@ export default function JobPostForm({
     try { d = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch { d = null; }
     if (!d || d.v !== 1) return;
     // 빈 껍데기는 되살릴 것이 없다.
-    const hasSomething = (d.pasteText || "").trim() || (d.form?.title || "").trim() || (d.newCompanyName || "").trim()
-      || (d.detailImages || []).length || (d.bannerImages || []).length || (d.importImages || []).length;
-    if (!hasSomething) return;
+    //
+    // 여기에 항목을 빠뜨리면 저장은 됐는데 되살리지 않는다. 실제로 주소가 빠져 있어,
+    // 제목을 아직 안 쓴 채 근무지역만 넣고 새로고침하면 통째로 날아갔다.
+    // 그래서 낱낱이 세지 않고 "글자든 목록이든 뭐라도 들어 있으면" 으로 본다.
+    const 뭔가있음 = (v: any): boolean =>
+      typeof v === "string" ? !!v.trim()
+      : Array.isArray(v) ? v.some(뭔가있음)
+      : v && typeof v === "object" ? Object.values(v).some(뭔가있음)
+      : false;
+    const 살펴볼것 = ["form", "notes", "categories", "posMeta", "regionList", "extraLocations",
+      "detailImages", "bannerImages", "importImages", "hiringProcess", "benefitTags",
+      "pasteText", "ocrSourceUrl", "parseUrl", "findQuery",
+      "newCompanyName", "newBrandName", "nmDescription", "nmAddress", "nmAddressDetail",
+      "nmIndustry", "nmSize", "nmFounded", "nmRepresentative", "nmPhone", "nmHomepage",
+      "nmManagerName", "nmManagerPhone", "nmContactEmail", "contactMethods", "externalApplyUrl"];
+    if (!살펴볼것.some((k) => 뭔가있음(d[k]))) return;
     const set = <T,>(fn: (v: T) => void, v: T | undefined) => { if (v !== undefined && v !== null) fn(v); };
     set(setForm, d.form); set(setNotes, d.notes); set(setCategories, d.categories); set(setPosMeta, d.posMeta);
     set(setRegionList, d.regionList); set(setAlwaysOpen, d.alwaysOpen); set(setJobGroupType, d.jobGroupType);
