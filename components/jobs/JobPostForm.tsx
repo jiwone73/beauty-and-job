@@ -1757,11 +1757,15 @@ export default function JobPostForm({
 
     // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
     const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
-    // 발행 시 모집부문 표 필수: 모집분야·고용형태·경력/직책·근무요일/시간·급여(분야별). (성별우대·학력은 선택)
-    if (status === "publish") {
-      if (categories.length === 0) { alert("모집분야를 1개 이상 선택해주세요."); return; }
-      const miss = positions.find((p) => !p.employment || !p.career || (!p.workDays && !p.workTime) || !p.salary);
-      if (miss) { alert(`'${miss.category}' 분야의 고용형태·경력/직책·근무요일/시간·급여를 모두 입력해주세요.`); return; }
+    // 발행 시 꼭 있어야 하는 것은 모집분야뿐이다.
+    //
+    // 고용형태는 원문에 아예 언급이 없는 공고가 흔하다. 필수로 두면 관리자가 없는
+    // 값을 골라 채우게 되는데, 그건 "원문에 없으면 공란" 원칙과 정면으로 어긋난다
+    // (파서 쪽은 근거 없는 값을 코드로 지우고 있는데 폼이 도로 채우게 하는 꼴).
+    // 경력·급여·근무요일도 마찬가지라, 비면 화면에서 "협의"·"상세요강 참조"로 보인다.
+    if (status === "publish" && categories.length === 0) {
+      alert("모집분야를 1개 이상 선택해주세요.");
+      return;
     }
     const p0 = positions[0] || { career: "", education: "", employment: "", headcount: "", workDays: "", workTime: "", gender: "" };
     const primaryHeadcount = parseInt((p0.headcount || "").replace(/[^0-9]/g, "")) || null;
@@ -1925,7 +1929,7 @@ export default function JobPostForm({
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 모집부문 표 셀 스타일
   const thc: React.CSSProperties = { textAlign: "left", padding: "9px 4px", fontSize: 12.5, color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" };
-  const reqStar = <span style={{ color: "#e9a3a3" }}> *</span>; // 필수 열 표시
+  const reqStar = <span style={{ color: "#e9a3a3" }}> *</span>; // 필수 열 표시(모집분야만)
   const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f3f0f8", verticalAlign: "middle" };
   // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
   const firstCol: React.CSSProperties = { paddingLeft: 0 };
@@ -2683,12 +2687,12 @@ export default function JobPostForm({
                       <thead>
                         <tr>
                           <th style={{ ...thc, ...firstCol, minWidth: 92 }}>모집분야{reqStar}</th>
-                          <th style={{ ...thc, minWidth: 66 }}>고용형태{reqStar}</th>
+                          <th style={{ ...thc, minWidth: 66 }}>고용형태</th>
                           <th style={{ ...thc, minWidth: 56 }}>성별우대</th>
-                          <th style={{ ...thc, minWidth: 72 }}>경력/직책{reqStar}</th>
+                          <th style={{ ...thc, minWidth: 72 }}>경력/직책</th>
                           <th style={{ ...thc, minWidth: 52 }}>학력</th>
-                          <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간{reqStar}</th>
-                          <th style={{ ...thc, minWidth: 82 }}>급여{reqStar}</th>
+                          <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>
+                          <th style={{ ...thc, minWidth: 82 }}>급여</th>
                         </tr>
                       </thead>
                       <tbody>
