@@ -301,7 +301,9 @@ export default function JobPostForm({
   const [nmFounded, setNmFounded] = useState("");
   const [nmRepresentative, setNmRepresentative] = useState("");
   const [nmPhone, setNmPhone] = useState("");
-  const [bannerImages, setBannerImages] = useState<{ url: string; name: string }[]>([]); // 상단 배너(여러 장, 두 장씩 회전)
+  // fromSource: 불러오기가 원문에서 가져온 그림. 손으로 올린 그림과 구분해야
+  // 다시 불러올 때 원문 것만 갈아끼우고 손으로 올린 것은 살릴 수 있다.
+  const [bannerImages, setBannerImages] = useState<{ url: string; name: string; fromSource?: boolean }[]>([]); // 상단 배너(여러 장, 두 장씩 회전)
   // 배너 영역 버튼은 매장/기업정보 페이지와 같은 모양으로 맞춘다.
   // 모바일은 테두리·아이콘을 빼고 글자만 남겨 좁은 폭을 제목에 내준다.
   const bannerBtn = (on: boolean): CSSProperties => isMobile
@@ -490,7 +492,7 @@ export default function JobPostForm({
   const [saved, setSaved] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false); // 임시저장 완료 표시(발행완료와 구분)
   const [alwaysOpen, setAlwaysOpen] = useState(false);
-  const [detailImages, setDetailImages] = useState<{ url: string; name: string; readable?: boolean }[]>([]);
+  const [detailImages, setDetailImages] = useState<{ url: string; name: string; readable?: boolean; fromSource?: boolean }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
@@ -1228,7 +1230,10 @@ export default function JobPostForm({
   const applyParsed = (d: any) => {
       // ── 불러오기는 '새 소스로 통째 교체' ── 다른 공고로 갈아탈 때 이전 값(이미지·지역·회사정보 등)이
       //    섞이지 않도록, 소스가 값을 주지 않는 항목도 먼저 비우고 시작한다.
-      setBannerImages([]); setDetailImages([]);
+      //    다만 손으로 올린 그림(배너·포스터)은 이 화면에서 사람이 직접 넣은 것이라 지우면 안 된다.
+      //    지난번 불러오기가 원문에서 끌어온 그림만 걷어낸다.
+      setBannerImages((prev) => prev.filter((b) => !b.fromSource));
+      setDetailImages((prev) => prev.filter((b) => !b.fromSource));
       setRegionList([]);
       setBenefitTags([]); setHiringProcess([]); setCategories([]); setPosMeta({});
       setWorkPeriod(""); setWorkDays([]); setWorkDaysNego(false);
@@ -1277,16 +1282,22 @@ export default function JobPostForm({
         const imgs: string[] = Array.isArray(d.images) ? d.images.filter(Boolean) : [];
         // 포스터형 공고(뷰티잡 등): 서버가 detail_images로 내려줌 → 배너 없이 상세 본문 이미지로 배치.
         const detailImgs: string[] = Array.isArray(d.detail_images) ? d.detail_images.filter(Boolean) : [];
+        const addBanner = (urls: string[]) =>
+          setBannerImages((prev) =>
+            [...prev, ...urls.filter((u) => !prev.some((b) => b.url === u)).map((u) => ({ url: u, name: "배너", fromSource: true }))].slice(0, 10)
+          );
         if (detailImgs.length) {
-          setDetailImages(detailImgs.slice(0, 12).map((u, i) => ({ url: u, name: `이미지 ${i + 1}` })));
+          setDetailImages((prev) =>
+            [...prev, ...detailImgs.filter((u) => !prev.some((b) => b.url === u)).map((u, i) => ({ url: u, name: `이미지 ${i + 1}`, fromSource: true }))].slice(0, 12)
+          );
           // 파서가 배너용 이미지(매장 사진 등)를 함께 내려주면 전부 상단 배너로.
-          if (imgs.length) setBannerImages(imgs.slice(0, 10).map((u) => ({ url: u, name: "배너" })));
+          if (imgs.length) addBanner(imgs);
         } else if (imgs.length) {
           // d.images는 파서가 '배너(매장 사진)'로 분류한 갤러리 → 전부 상단 배너로.
           //   (기존엔 첫 장만 배너·나머지는 상세로 쪼개, 셀렉미 매장사진 여러 장이 상세요강으로 새던 버그)
-          setBannerImages(imgs.slice(0, 10).map((u) => ({ url: u, name: "배너" })));
+          addBanner(imgs);
         } else if (d.cover_image) {
-          setBannerImages([{ url: d.cover_image, name: "배너" }]);
+          addBanner([d.cover_image]);
         }
       }
       // 채용유형: 토글이 열려 있을 때만(관리자 또는 BOTH 기업) 불러온 값으로 변경. 타입 고정 기업회원은 유지.
