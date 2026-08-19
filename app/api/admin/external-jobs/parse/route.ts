@@ -791,6 +791,11 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // 환경변수로 못 박으면 그 값이 먼저다(배포 없이 바꿔 보려고 열어 둔 문).
+      const LONG_INPUT = 1200;
+      const effort = (process.env.PARSE_EFFORT as "low" | "medium" | "high" | undefined)
+        || (typeof user === "string" && user.length > LONG_INPUT ? ("medium" as const) : undefined);
+
       const msg = await anthropic.messages.create({
         // 값이 틀리면 지원자가 헛걸음하고, 고치는 손이 더 든다. 느려도 정확한 쪽을 택했다.
         // 배포를 다시 하지 않고 모델을 바꿔 보려고 환경변수로 열어 뒀다(값을 안 주면 오퍼스).
@@ -798,10 +803,15 @@ export async function POST(req: NextRequest) {
         // 이 모델은 답하기 전에 스스로 따져 보는데, 그 몫도 max_tokens 를 나눠 쓴다.
         // 3000 으로 두면 따지다가 한도를 다 써 JSON 이 잘린 채 끝난다.
         max_tokens: 16000,
-        // 얼마나 따져 볼지. 기본(안 주면 최대)이 가장 정확하지만 한 건에 30~60초가 걸린다.
-        // "medium" 으로 낮추면 25초로 줄지만 모집분야를 덜 잡고, 원문에 없는 근무요일을
-        // "협의"로 채우기 시작한다(다섯 건으로 대조). 그래서 기본을 그대로 둔다.
-        ...(process.env.PARSE_EFFORT ? { output_config: { effort: process.env.PARSE_EFFORT as "low" | "medium" | "high" } } : {}),
+        // 얼마나 따져 볼지. 기본(안 주면 최대)이 가장 정확하다. "medium" 으로 낮추면
+        // 빨라지지만 모집분야를 덜 잡고, 원문에 없는 근무요일을 "협의"로 채우기
+        // 시작한다(실제 공고 다섯 건으로 대조).
+        //
+        // 그래서 기본을 쓰되, 긴 글일 때만 낮춘다. 시간이 글 길이를 따라가기
+        // 때문이다(500~900자 31~41초 / 1,863자 58.5초). 60초에서 잘리면 아무것도
+        // 못 건지므로, 벽에 닿을 것 같은 긴 글은 조금 덜 따지더라도 끝까지 가는
+        // 편이 낫다. 저장된 공고 중 가장 긴 것이 1,863자라 그 아래에 선을 둔다.
+        ...(effort ? { output_config: { effort } } : {}),
         system: sys,
         messages: [{ role: "user", content: userContent }],
       });
@@ -818,7 +828,11 @@ export async function POST(req: NextRequest) {
       // 여기서 조용히 넘어가면 항목이 텅 빈 폼이 그냥 채워진다. 관리자는 원문에
       // 내용이 없어서 빈 줄 알고 그대로 등록하게 된다. 실패는 실패라고 알린다.
       console.error("[external parse LLM]", e);
-      out.ai_failed = "불러오기가 실패했어요. 잠시 뒤 다시 눌러 주세요.";
+      // 크레딧이 떨어진 것은 기다린다고 풀리지 않는다. 무엇을 해야 하는지 바로 알려준다.
+      const emsg = String((e as any)?.message || "");
+      out.ai_failed = /credit balance|billing/i.test(emsg)
+        ? "API 크레딧이 떨어졌어요. 콘솔에서 충전한 뒤 다시 눌러 주세요."
+        : "불러오기가 실패했어요. 잠시 뒤 다시 눌러 주세요.";
     }
   }
 
