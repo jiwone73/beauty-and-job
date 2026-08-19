@@ -328,13 +328,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 <span className="job-detail-meta-value">{job.headcount}</span>
               </div>
             )}
-            {job.genderPref && (
-              <div className="job-detail-meta-item">
-                <Users size={16} className="job-detail-meta-icon" />
-                <span className="job-detail-meta-label">성별우대</span>
-                <span className="job-detail-meta-value">{job.genderPref}</span>
-              </div>
-            )}
+            {/* 성별우대는 모집부문 표에만 둔다. 여기에도 있으면 한 화면에 두 번 나오고,
+                자리마다 다를 수 있는 값을 하나로 뭉뚱그려 보여주게 된다.
+                (경력·학력·인원은 표가 없을 때만 나오는데 이 항목만 그 조건이 빠져 있었다.) */}
             {job.deadline && (
               <div className="job-detail-meta-item">
                 <span className="job-detail-meta-label">마감일</span>

@@ -357,13 +357,34 @@ export default function JobDetailPage() {
         onBrandClick={() => { if (job.companyId) router.push(`/brands/${job.companyId}`); }}
         asideAction={
           isAdminPreview ? (
-            <div style={{
-              background: "#fff7ed", color: "#c2410c", borderRadius: "10px",
-              padding: "12px 14px", fontSize: "13px", lineHeight: 1.5,
-              textAlign: "center"
-            }}>
-              관리자 미리보기 화면이에요.<br />구직자에게는 지원·스크랩 버튼이 보여요.
-            </div>
+            <>
+              {/* 미리보기는 구직자가 볼 화면 그대로여야 한다. 버튼 자리에 안내문을 넣어 두면
+                  카드 생김새가 실제와 달라져, 무엇이 어디에 있는지 확인할 수가 없다.
+                  같은 버튼을 두되 눌리지 않게 한다. */}
+              <button className="job-detail-apply-btn" disabled style={{ opacity: 0.7, cursor: "default" }}>
+                지원서 작성하기
+              </button>
+              <button className="job-detail-aside-bookmark" disabled style={{ opacity: 0.7, cursor: "default" }}>
+                <Bookmark size={16} />
+                스크랩
+              </button>
+              {/* 미리보기에서 잘못된 값을 발견하면 그 자리에서 고치러 갈 수 있어야 한다.
+                  목록으로 되돌아가 다시 찾게 하면 고치다 말게 된다. */}
+              <button
+                className="admin-secondary-btn"
+                style={{ width: "100%", marginTop: "10px" }}
+                onClick={() => router.push(`/admin/jobs/new?id=${job.id}`)}
+              >
+                공고 수정하기
+              </button>
+              <div style={{
+                background: "#fff7ed", color: "#c2410c", borderRadius: "10px",
+                padding: "10px 12px", fontSize: "12.5px", lineHeight: 1.5,
+                textAlign: "center", marginTop: "10px"
+              }}>
+                관리자 미리보기라 위 두 버튼은 눌리지 않아요.
+              </div>
+            </>
           ) : isOwnerCompany ? (
             <>
               <div style={{
@@ -411,8 +432,8 @@ export default function JobDetailPage() {
       {/* 모바일 하단 CTA */}
       <div className="job-detail-mobile-cta">
         {isAdminPreview ? (
-          <button className="job-detail-mobile-apply" disabled style={{ opacity: 0.7 }}>
-            관리자 미리보기
+          <button className="job-detail-mobile-apply" onClick={() => router.push(`/admin/jobs/new?id=${job.id}`)}>
+            공고 수정하기
           </button>
         ) : isOwnerCompany ? (
           <button
