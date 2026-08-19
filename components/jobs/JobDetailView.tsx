@@ -100,8 +100,15 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   ];
   // 모집부문 첫 행의 급여 — 사이드 카드가 같은 값을 쓴다.
   // 자리마다 급여가 다르면 카드 한 줄에 다 못 담으니, 표를 보라는 뜻으로 첫 값만 쓴다.
-  const asideSalary = positions.length && String(positions[0].salary || "").trim()
-    ? withNegotiable(positions[0].salary) : "";
+  // 표에서는 "급여" 열 아래 있어 뜻이 통하지만, 카드에서는 홀로 떠 있어 무엇이
+  // 협의인지 알 수 없다. 금액이 없으면 무엇에 대한 말인지 붙여 준다.
+  const asideSalary = (() => {
+    const v = positions.length ? String(positions[0].salary || "").trim() : "";
+    const t = (v ? withNegotiable(v) : String(job.salary || "").trim());
+    if (!t) return "";
+    // 금액이 적혀 있으면 그 자체로 읽힌다. 숫자가 없을 때만 무엇에 대한 말인지 붙인다.
+    return !/\d/.test(t) && !/^급여/.test(t) ? `급여 ${t}` : t;
+  })();
   const posCols = posColDefs.filter((c) => c.key === "category" || positions.some((p: any) => (c.get(p) || "").toString().trim()));
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
@@ -491,8 +498,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               범위("월 210만원 ~ 250만원")를 보여줘, 표의 "월 210만원 이상 (협의)"와
               한 화면에서 서로 다른 말을 했다. 두 값이 다르면 구직자는 어느 쪽이
               사실인지 알 수 없다. 모집부문이 뽑는 자리별로 적는 원문에 가깝다. */}
-          {(asideSalary || job.salary) && (
-            <div className="job-detail-aside-salary">{asideSalary || job.salary}</div>
+          {asideSalary && (
+            <div className="job-detail-aside-salary">{asideSalary}</div>
           )}
           {job.deadline && (
             <div className="job-detail-aside-deadline">
