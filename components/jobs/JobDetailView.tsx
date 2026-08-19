@@ -7,6 +7,35 @@ import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send } from "lucide-react";
 
+  // 매장 공고는 적힌 값이 그대로 지켜지는 일이 드물다. 근무시간·급여는 면접에서
+// 다시 정하고, 복리후생은 매장마다 달라 표에 다 담기지 않는다. 그래서 구직자가
+// 표만 보고 단정하지 않도록 한마디씩 덧붙인다.
+const withNegotiable = (v: string) => {
+  const t = String(v || "").trim();
+  if (!t || t === "-") return "협의";
+  return /협의/.test(t) ? t : `${t} (협의)`;
+};
+const withSeeDetail = (v: string) => {
+  const t = String(v || "").trim();
+  return /상세요강\s*참조/.test(t) ? t : (t ? `${t} · 상세요강 참조` : "상세요강 참조");
+};
+
+// 상세요강 본문에 적힌 매장 연락처는 구직자에게 가린다.
+  //
+  // 카페·인스타 공고에는 "문자 주세요 010-…" 이 본문에 그대로 적혀 있다. 그대로 두면
+  // 구직자가 매장에 바로 연락해 버려, 뷰티워크를 거칠 이유가 없어진다. 지원은 우리
+  // 지원 버튼으로 받아야 매장에도 이력이 남고 우리도 성과를 안다.
+  //
+  // 원문은 DB에 그대로 둔다. 관리자는 등록 화면에서 값을 대조해야 하고, 매장에
+  // 연락할 일도 있기 때문이다. 여기서는 보여줄 때만 가린다.
+  const hideContacts = (t: string) =>
+    String(t || "")
+      // 전화번호: 010-1234-5678 / 01012345678 / 02-123-4567 등 (구분자는 - . 공백)
+      .replace(/(0\d{1,2})[-.\s]?(\d{3,4})[-.\s]?(\d{4})/g, "$1-****-****")
+      .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, "이메일 비공개")
+      // "카톡 아이디 xxx" 처럼 아이디를 적어 두는 경우
+      .replace(/(카카오톡|카톡|오픈\s*채팅|카톡\s*아이디)\s*[:：]?\s*[A-Za-z0-9._-]{3,}/g, "$1 비공개");
+
 // 공고 상단 이미지 갤러리. 표시 규칙(3:1 고정 · 한 장은 항상 1/3 폭)은 BannerStrip에 모아 두고,
 // 기업정보 설정·공고 등록 미리보기에서도 같은 컴포넌트를 써 어디서나 같은 모양으로 보이게 한다.
 export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
@@ -94,9 +123,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                       ? ((p.workDays || p.workTime)
                           ? ((p.workDays === "협의" && p.workTime === "협의")
                               ? "협의"
-                              : <>{p.workDays && <div>{p.workDays}</div>}{p.workTime && <div>{p.workTime}</div>}</>)
-                          : "-")
-                      : (c.get(p) || "-")}
+                              : <>{p.workDays && <div>{p.workDays}</div>}{p.workTime && <div>{withNegotiable(p.workTime)}</div>}</>)
+                          : "협의")
+                      : c.key === "salary"
+                        ? withNegotiable(c.get(p))
+                        : (c.get(p) || "-")}
                   </td>
                 ))}
               </tr>
@@ -116,7 +147,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {job.benefits?.length > 0 && (
             <div style={{ display: "flex", gap: 12, fontSize: 13.5, padding: "3px 0", alignItems: "flex-start" }}>
               <span style={{ color: "#7a6f8a", width: 60, flexShrink: 0 }}>복리후생</span>
-              <span style={{ color: "#555", lineHeight: 1.5 }}>{job.benefits.join(", ")}</span>
+              <span style={{ color: "#555", lineHeight: 1.5 }}>{withSeeDetail(job.benefits.join(", "))}</span>
             </div>
           )}
         </div>
@@ -155,7 +186,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         {job.benefits?.length > 0 && (
           <div className="job-detail-company-row" style={{ alignItems: "flex-start" }}>
             <span className="job-detail-company-label">복리후생</span>
-            <span>{job.benefits.join(", ")}</span>
+            <span>{withSeeDetail(job.benefits.join(", "))}</span>
           </div>
         )}
       </div>
@@ -210,7 +241,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           marginTop: "6px", padding: "12px 14px", background: "#faf8fc", borderRadius: "8px",
           fontSize: "14px", color: "#555", lineHeight: 1.6, whiteSpace: "pre-line"
         }}>
-          {job.notes}
+          {hideContacts(job.notes)}
         </div>
       )}
     </div>
@@ -333,6 +364,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {applyGuideBlock}
         </div>
 
+
         {/* 상세 내용 — 이미지형이면 상세요강(이미지) + 자유서술, 아니면 텍스트 항목(포지션 소개·자격요건·우대사항·주요업무) */}
         {hasDetailImages ? (
           (() => {
@@ -349,7 +381,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   ))}
                 </div>
                 {job.description?.trim() && (
-                  <p className="job-detail-desc" style={{ padding: "18px 24px 24px", margin: 0 }}>{job.description.trim()}</p>
+                  <p className="job-detail-desc" style={{ padding: "18px 24px 24px", margin: 0 }}>{hideContacts(job.description.trim())}</p>
                 )}
               </section>
             );
@@ -359,7 +391,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {job.description?.trim() && (
             <section className="job-detail-section">
               <h2 className="job-detail-section-title">상세요강</h2>
-              <p className="job-detail-desc">{job.description.trim()}</p>
+              <p className="job-detail-desc">{hideContacts(job.description.trim())}</p>
             </section>
           )}
 
@@ -368,10 +400,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             <section className="job-detail-section">
               <h2 className="job-detail-section-title">자격 요건</h2>
               <ul className="job-detail-list">
-                {job.requirements.map((item: string, i: number) => (
+                {job.requirements.map((raw: string, i: number) => (
                   <li key={i} className="job-detail-list-item">
                     <CheckCircle2 size={16} className="job-detail-list-icon" />
-                    <span>{item}</span>
+                    <span>{hideContacts(raw)}</span>
                   </li>
                 ))}
               </ul>
@@ -383,10 +415,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             <section className="job-detail-section">
               <h2 className="job-detail-section-title">우대 사항</h2>
               <ul className="job-detail-list">
-                {job.preferreds.map((item: string, i: number) => (
+                {job.preferreds.map((raw: string, i: number) => (
                   <li key={i} className="job-detail-list-item">
                     <CheckCircle2 size={16} className="job-detail-list-icon check-soft" />
-                    <span>{item}</span>
+                    <span>{hideContacts(raw)}</span>
                   </li>
                 ))}
               </ul>
@@ -401,7 +433,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 {job.responsibilities.map((item: string, i: number) => (
                   <li key={i} className="job-detail-list-item">
                     <CheckCircle2 size={16} className="job-detail-list-icon" />
-                    <span>{item}</span>
+                    <span>{hideContacts(item)}</span>
                   </li>
                 ))}
               </ul>

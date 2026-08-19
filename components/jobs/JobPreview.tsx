@@ -43,7 +43,11 @@ function Block({ title, text }: { title: string; text: string }) {
 
 const JobPreview = forwardRef<HTMLDivElement, JobPreviewProps>(function JobPreview(p, ref) {
   const steps = p.hiringProcess.filter((s) => s.trim());
-  const salaryText = p.salaryNego || !p.salary ? "협의" : `${p.salary}만원 (${p.jobGroupType === "매장" ? "월급" : "연봉"})`;
+  // 매장 공고는 적힌 급여가 그대로 지켜지는 일이 드물어 면접에서 다시 정한다.
+  // 구직자가 숫자만 보고 단정하지 않도록 '협의'를 함께 보인다.
+  const salaryText = p.salaryNego || !p.salary
+    ? "협의"
+    : `${p.salary}만원 (${p.jobGroupType === "매장" ? "월급" : "연봉"}) · 협의`;
   const deadlineText = p.alwaysOpen || !p.deadline ? "상시채용" : `~ ${p.deadline}`;
   return (
     <div ref={ref} className="rp-wrap">
@@ -68,7 +72,9 @@ const JobPreview = forwardRef<HTMLDivElement, JobPreviewProps>(function JobPrevi
         </div>
       )}
 
-      {p.benefits && <Block title={p.jobGroupType === "매장" ? "근무조건·복지" : "복리후생"} text={p.benefits} />}
+      {/* 복리후생은 매장마다 달라 표에 다 담기지 않는다 — 본문을 보게 안내한다. */}
+      <Block title={p.jobGroupType === "매장" ? "근무조건·복지" : "복리후생"}
+        text={(p.benefits ? `${p.benefits}\n` : "") + "· 그 밖의 조건은 상세요강 참조"} />
       {p.description && <Block title="상세요강" text={p.description} />}
       {p.requirements && <Block title="자격요건" text={p.requirements} />}
       {p.preferred && <Block title="우대사항" text={p.preferred} />}
