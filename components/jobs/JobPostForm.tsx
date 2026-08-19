@@ -3299,13 +3299,15 @@ export default function JobPostForm({
 
 
       {showPreview && (
-        <div onClick={() => setShowPreview(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "flex-start", justifyContent: "center", overflowY: "auto", padding: "40px 20px" }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: "12px", width: "100%", maxWidth: "1120px" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: "16px", fontWeight: 400 }}>공고 미리보기 (구직자에게 보이는 실제 화면)</span>
-              <button onClick={() => setShowPreview(false)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
+        <div className="jobpost-preview-overlay" onClick={() => setShowPreview(false)}>
+          <div className="jobpost-preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="jobpost-preview-head">
+              {/* 좁은 화면에서는 괄호 안 설명을 감춘다. 두 줄로 접히면 그만큼 정작 봐야 할
+                  공고가 밀려난다. 무엇을 보는 화면인지는 "공고 미리보기" 로 이미 통한다. */}
+              <span>공고 미리보기<span className="jobpost-preview-head-sub"> (구직자에게 보이는 실제 화면)</span></span>
+              <button onClick={() => setShowPreview(false)} aria-label="닫기">×</button>
             </div>
-            <div className="jobpost-preview-scope" style={{ padding: 0, maxHeight: "72vh", overflowY: "auto", overflowX: "hidden", background: "#faf7fc" }}>
+            <div className="jobpost-preview-scope">
               <JobDetailView ref={previewRef} job={previewJob}
                 asideAction={
                   <>
@@ -3321,7 +3323,7 @@ export default function JobPostForm({
                 }
               />
             </div>
-            <div style={{ display: "flex", gap: "8px", padding: "16px 20px", borderTop: "1px solid #eee", justifyContent: "flex-end" }}>
+            <div className="jobpost-preview-foot">
               <button className="admin-secondary-btn" onClick={handlePrint}>인쇄</button>
               <button className="admin-secondary-btn" onClick={handleDownloadPdf}>{isDownloading ? "저장 중..." : "PDF 다운로드"}</button>
               <button className="company-primary-btn" onClick={() => { setShowPreview(false); handleSubmit("publish"); }}>이대로 등록</button>
