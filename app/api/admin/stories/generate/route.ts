@@ -59,9 +59,9 @@ export async function POST(req: NextRequest) {
 ${recentTitles || "(없음)"}`;
 
     const msg = await anthropic.messages.create({
-      // 소넷 4는 은퇴해서 이 경로(앤트로픽 API 직접 호출)에서는 더 이상 부를 수 없다.
-      // 후속인 소넷 5는 값도 더 싸다($3/$15 → $2/$10 per MTok).
-      model: "claude-sonnet-5",
+      // 200자 발제글 한 편이라 체급이 갈릴 만한 일이 아니다. 창작 글에는
+      // "원문에 없으면 비운다" 같은 정답이 없어, 큰 모델을 쓸 이유가 약하다.
+      model: "claude-haiku-4-5",
       max_tokens: 500,
       system: sys,
       messages: [{ role: "user", content: user }],
