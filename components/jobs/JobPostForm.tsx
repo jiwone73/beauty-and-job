@@ -1926,6 +1926,18 @@ export default function JobPostForm({
       </span>
     ) : null;
   const isOffice = jobGroupType === "기업";
+  // 매장은 '회사'가 아니라 '매장' 기준으로 부른다. 기업회원 설정 화면
+  // (company/dashboard/settings)과 같은 말을 쓴다 — 같은 값을 두 화면에서
+  // 다르게 부르면 관리자도 매장도 헷갈린다.
+  const L = {
+    section: isOffice ? "기업정보" : "매장정보",
+    intro: isOffice ? "기업 소개" : "매장 소개",
+    name: isOffice ? "회사명" : "매장명",
+    size: isOffice ? "사원수" : "직원수",
+    phone: isOffice ? "회사 대표번호" : "매장 전화번호",
+    // 매장은 홈페이지가 거의 없고 인스타가 사실상 포트폴리오다.
+    site: isOffice ? "웹사이트" : "매장 SNS",
+  };
   const textFieldMeta: Record<TextKey, { label: string; hint?: string; placeholder: string }> = {
     benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
     responsibilities: { label: "담당업무", hint: "필수 · 주요 업무를 입력", placeholder: "담당 업무를 입력하세요" },
@@ -2981,8 +2993,8 @@ export default function JobPostForm({
       {/* ═══ 기업 정보 (맨 하단) · 상세 다른 섹션과 동일한 인라인 스타일 ═══ */}
       {mode === "admin" && nonMember && (
         <div className="jobpost-form" style={{ width: "100%", maxWidth: 760, margin: `16px ${mx} 0`, boxSizing: "border-box" }}>
-          <h2 className="jobpost-section-title">기업정보</h2>
-          <div style={{ fontSize: 12, color: "#999", margin: "8px 0 8px 2px" }}>기업회원 페이지의 “기업 정보”를 불러와 자동 작성돼요 · 공고 상세 맨 아래에 표시됩니다</div>
+          <h2 className="jobpost-section-title">{L.section}</h2>
+          <div style={{ fontSize: 12, color: "#999", margin: "8px 0 8px 2px" }}>기업회원 페이지의 “{L.section}”를 불러와 자동 작성돼요 · 공고 상세 맨 아래에 표시됩니다</div>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
               {(() => {
@@ -3000,13 +3012,13 @@ export default function JobPostForm({
                   // minmax(0,1fr) 이어야 칸 안에서 줄바꿈된다.
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: "2px 20px" }}>
                     <div style={{ ...row, ...full, alignItems: "flex-start" }}>
-                      <span style={{ ...lbl2, paddingTop: 6 }}>기업 소개</span>
+                      <span style={{ ...lbl2, paddingTop: 6 }}>{L.intro}</span>
                       <AutoTextarea style={nmDescription ? { flex: 1, minWidth: 0, fontSize: 15, color: "#333", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.6 } : { ...inpHl(false), marginTop: 6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
                     </div>
-                    <div style={row}><span style={lbl2}>회사명<span style={req}> *</span></span><input style={inpHl(!!newCompanyName)} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} /></div>
+                    <div style={row}><span style={lbl2}>{L.name}<span style={req}> *</span></span><input style={inpHl(!!newCompanyName)} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>업종</span>{!fiIndustry.trim() && (<select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("industry"); return; } setFiIndustry(""); setNmIndustry(e.target.value); }}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}{nonMember && <option value="__fi__">직접입력…</option>}</select>)}{freeField("industry", fiIndustry, setFiIndustry, "직접 입력…", false, () => setNmIndustry(""))}</div>
                     <div style={row}><span style={lbl2}>브랜드명</span><input style={inpHl(!!newBrandName)} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} /></div>
-                    <div style={{ ...row, alignItems: "flex-start" }}><span style={{ ...lbl2, paddingTop: 6 }}>웹사이트</span>
+                    <div style={{ ...row, alignItems: "flex-start" }}><span style={{ ...lbl2, paddingTop: 6 }}>{L.site}</span>
                       {/* 인스타 주소는 한 줄에 안 들어간다. input 은 줄바꿈이 안 되므로 늘어나는 칸을 쓴다. */}
                       <AutoTextarea style={nmHomepage ? { flex: 1, minWidth: 0, fontSize: 15, color: "#333", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.5 } : { ...inpHl(false), marginTop: 6 }}
                         value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} /></div>
@@ -3018,10 +3030,10 @@ export default function JobPostForm({
                       <input style={inpHl(!!nmAddressDetail)} value={nmAddressDetail}
                         onChange={(e) => setNmAddressDetail(e.target.value)} placeholder="동·호수 등" />
                     </div>
-                    <div style={row}><span style={lbl2}>사원수</span><select style={sel3(!!nmSize)} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value=""></option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
+                    <div style={row}><span style={lbl2}>{L.size}</span><select style={sel3(!!nmSize)} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value=""></option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
                     <div style={row}><span style={lbl2}>설립연도</span><input type="number" min="1900" max={new Date().getFullYear()} style={inpHl(!!nmFounded)} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>대표자</span><input style={inpHl(!!nmRepresentative)} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} /></div>
-                    <div style={row}><span style={lbl2}>회사 대표번호</span><input style={inpHl(!!nmPhone)} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} /></div>
+                    <div style={row}><span style={lbl2}>{L.phone}</span><input style={inpHl(!!nmPhone)} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} /></div>
                   </div>
                 );
               })()}
