@@ -282,7 +282,7 @@ export default function JobDetailPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [applying, setApplying] = useState(false);
   const { isLoggedIn, userName, ownerType } = useAuthStore();
-  const isCompany = ownerType === "company"; // 기업회원이면 지원·북마크 불가
+  const isCompany = ownerType === "company"; // 기업회원이면 지원·스크랩 불가
   const { apply, isApplied } = useApplicationStore();
   const alreadyApplied = job ? isApplied(String(job.id)) : false;
 
@@ -362,7 +362,7 @@ export default function JobDetailPage() {
               padding: "12px 14px", fontSize: "13px", lineHeight: 1.5,
               textAlign: "center"
             }}>
-              관리자 미리보기 화면이에요.<br />구직자에게는 지원·북마크 버튼이 보여요.
+              관리자 미리보기 화면이에요.<br />구직자에게는 지원·스크랩 버튼이 보여요.
             </div>
           ) : isOwnerCompany ? (
             <>
@@ -385,7 +385,7 @@ export default function JobDetailPage() {
               background: "#f6f6f8", color: "#888", borderRadius: "10px",
               padding: "12px 14px", fontSize: "13px", lineHeight: 1.5, textAlign: "center"
             }}>
-              기업회원 계정에서는 지원·북마크를 이용할 수 없어요.
+              기업회원 계정에서는 지원·스크랩을 이용할 수 없어요.
             </div>
           ) : (
             <>
@@ -401,7 +401,7 @@ export default function JobDetailPage() {
                 onClick={handleBookmark}
               >
                 <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />
-                {bookmarked ? "북마크 완료" : "북마크"}
+                {bookmarked ? "스크랩 완료" : "스크랩"}
               </button>
             </>
           )

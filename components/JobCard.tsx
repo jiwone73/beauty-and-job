@@ -47,7 +47,7 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
           <p style={{ margin: 0, fontSize: 13, color: "#888" }}>{meta}</p>
           <span style={{ display: "inline-block", marginTop: 5, fontSize: 13, fontWeight: 600, color: deadlineColor(deadlineLabel) }}>{deadlineLabel}</span>
         </div>
-        <button onClick={onMark} aria-label="북마크" style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: marked ? PURPLE : "#ccc" }}>
+        <button onClick={onMark} aria-label="스크랩" style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: marked ? PURPLE : "#ccc" }}>
           <Bookmark size={18} fill={marked ? "currentColor" : "none"} />
         </button>
       </div>
@@ -65,7 +65,7 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
         ) : (
           <span className="jobcard-cover-name">{data.company || "·"}</span>
         )}
-        <button onClick={onMark} aria-label="북마크" className={`jobcard-bookmark ${marked ? "on" : ""}`}>
+        <button onClick={onMark} aria-label="스크랩" className={`jobcard-bookmark ${marked ? "on" : ""}`}>
           <Bookmark size={16} fill={marked ? "currentColor" : "none"} />
         </button>
       </div>

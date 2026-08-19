@@ -1428,7 +1428,7 @@ function BookmarksTab() {
   if (bookmarkedJobs.length === 0) return (
     <div className="profile-empty-tab">
       <div className="profile-empty-icon">🔖</div>
-      <p>저장한 공고가 없어요<br />관심있는 공고를 북마크해보세요</p>
+      <p>저장한 공고가 없어요<br />관심있는 공고를 스크랩해보세요</p>
       <a href="/jobs" className="profile-empty-btn">채용공고 보러가기</a>
     </div>
   );

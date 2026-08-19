@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
-import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2 } from "lucide-react";
+import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -3231,9 +3231,16 @@ export default function JobPostForm({
             <div className="jobpost-preview-scope" style={{ padding: 0, maxHeight: "72vh", overflowY: "auto", overflowX: "hidden", background: "#faf7fc" }}>
               <JobDetailView ref={previewRef} job={previewJob}
                 asideAction={
-                  <button className="job-detail-apply-btn" disabled style={{ opacity: 0.7, cursor: "default" }}>
-                    지원서 작성하기
-                  </button>
+                  <>
+                    <button className="job-detail-apply-btn" disabled style={{ opacity: 0.7, cursor: "default" }}>
+                      지원서 작성하기
+                    </button>
+                    {/* 구직자 화면에 있는 버튼이라 미리보기에도 있어야 한다. 누를 일은 없으니 꺼 둔다. */}
+                    <button className="job-detail-aside-bookmark" disabled style={{ opacity: 0.7, cursor: "default" }}>
+                      <Bookmark size={16} />
+                      스크랩
+                    </button>
+                  </>
                 }
               />
             </div>
