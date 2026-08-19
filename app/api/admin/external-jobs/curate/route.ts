@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { ok, err, requireAuth } from "@/lib/api";
+import { WRITING_MODEL } from "@/lib/ai/models";
 
 // LLM JSON 파싱(잘린 응답도 최대한 복구). 실패 시 null.
 function safeJsonParse(raw: string): any | null {
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
 - 입력에 없는 정보는 절대 추가하지 말 것.`;
     const user = `job_type: ${src.job_type}\n\n[제목]\n${src.title || "(없음)"}\n\n[회사 소개]\n${src.company_description || "(없음)"}\n\n[포지션 소개]\n${src.description || "(없음)"}\n\n[주요업무]\n${src.responsibilities || "(없음)"}\n\n[자격요건]\n${src.requirements || "(없음)"}\n\n[우대사항]\n${src.preferred || "(없음)"}\n\n[혜택·복지]\n${src.benefits || "(없음)"}\n\n[비고]\n${src.notes || "(없음)"}`;
     const msg = await anthropic.messages.create({
-      model: "claude-haiku-4-5",
+      model: WRITING_MODEL,
       max_tokens: 3000,
       system: sys,
       messages: [{ role: "user", content: user }],

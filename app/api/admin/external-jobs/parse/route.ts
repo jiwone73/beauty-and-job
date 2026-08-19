@@ -11,6 +11,7 @@ import { getAllJobItems, SEARCH_TAGS } from "@/lib/data/jobGroups";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
 import { rehostImages } from "@/lib/external/rehost";
 import { dropUnsupported } from "@/lib/external/evidence";
+import { PARSE_MODEL } from "@/lib/ai/models";
 
 function htmlToText(html: string): string {
   return html
@@ -810,8 +811,7 @@ export async function POST(req: NextRequest) {
         // (오퍼스 월 8만원 / 소넷 2만 7천원 / 하이쿠 1만 4천원).
         // 지어내는 실수는 아래 dropUnsupported 가 코드로 막고, 값은 사람이 어차피
         // 전부 확인하고 등록한다. 그래서 가장 싼 쪽을 쓴다.
-        // 배포를 다시 하지 않고 바꿔 보려고 환경변수로 열어 뒀다.
-        model: process.env.PARSE_MODEL || "claude-haiku-4-5",
+        model: PARSE_MODEL,
         // 이 모델은 답하기 전에 스스로 따져 보는데, 그 몫도 max_tokens 를 나눠 쓴다.
         // 3000 으로 두면 따지다가 한도를 다 써 JSON 이 잘린 채 끝난다.
         max_tokens: 16000,

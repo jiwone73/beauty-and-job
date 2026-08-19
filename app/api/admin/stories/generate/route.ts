@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import Anthropic from "@anthropic-ai/sdk";
+import { WRITING_MODEL } from "@/lib/ai/models";
 
 const CATEGORIES = ["공감", "꿀팁", "질문", "정보"];
 
@@ -59,9 +60,7 @@ export async function POST(req: NextRequest) {
 ${recentTitles || "(없음)"}`;
 
     const msg = await anthropic.messages.create({
-      // 200자 발제글 한 편이라 체급이 갈릴 만한 일이 아니다. 창작 글에는
-      // "원문에 없으면 비운다" 같은 정답이 없어, 큰 모델을 쓸 이유가 약하다.
-      model: "claude-haiku-4-5",
+      model: WRITING_MODEL,
       max_tokens: 500,
       system: sys,
       messages: [{ role: "user", content: user }],

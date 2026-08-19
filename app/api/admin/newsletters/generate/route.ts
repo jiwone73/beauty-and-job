@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import Anthropic from "@anthropic-ai/sdk";
+import { WRITING_MODEL } from "@/lib/ai/models";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beauty-work.vercel.app";
 const LOGO_URL = `${SITE_URL}/images/logo.png`;
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
 {"newsletter_title":"제목(30자 이내)","intro":"인트로(2~3문장, 이번 주 흐름 요약)","items":[{"index":번호,"comment":"코멘트"}]}`;
     const user = `이번 주 뉴스 제목 목록:\n${titleList}`;
     const msg = await anthropic.messages.create({
-      model: "claude-haiku-4-5",
+      model: WRITING_MODEL,
       max_tokens: 1000,
       system: sys,
       messages: [{ role: "user", content: user }],
