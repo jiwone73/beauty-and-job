@@ -356,6 +356,7 @@ export async function POST(req: NextRequest) {
     description: ogDesc,
     company_description: "", address: "", industry: "",
     job_categories: [] as string[],
+    job_category_raw: "",
     requirements: "", preferred: "", benefits: "", benefit_tags: [] as string[], hiring_process: [] as string[],
     employment_type: "", career: "", salary: "", salary_type: "", salary_amount: 0, salary_amount_max: 0, salary_negotiable: false, work_days: "", work_time: "", extra_notes: "", main_duties: "",
   };
@@ -678,10 +679,12 @@ export async function POST(req: NextRequest) {
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
 반드시 아래 키를 가진 JSON "하나만" 출력해(설명·코드펜스 금지):
-{"company_name","homepage_url","contact_email","contact_phone","contact_name","title","job_type","job_categories","region","location","deadline","always_open","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","benefit_tags","hiring_process","employment_type","career","salary","salary_type","salary_amount","salary_amount_max","salary_negotiable","work_days","work_time","extra_notes","main_duties"}
+{"company_name","homepage_url","contact_email","contact_phone","contact_name","title","job_type","job_categories","job_category_raw","region","location","deadline","always_open","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","benefit_tags","hiring_process","employment_type","career","salary","salary_type","salary_amount","salary_amount_max","salary_negotiable","work_days","work_time","extra_notes","main_duties"}
 규칙:
 - job_type: "회사 업종"이 아니라 "실제 근무 직무"를 기준으로 판단한다. 물리적 매장·샵에 상주하며 일하는 현장직 — 미용실·네일·피부·속눈썹 등 시술직 + 매장 카운터·판매·접객·매장관리·안내데스크·리셉션 등 오프라인 매장 상주 직무 — 이면 "STORE". 본사·사무실 근무 사무직(브랜드 기획·마케팅·MD·영업관리·연구개발·인사·경영 등)이면 "OFFICE". ★ 회사가 "판매점·유통·이커머스·재료 전문점" 업종이어도, 채용 직무가 오프라인 매장의 카운터·판매·매장관리·접객이면 반드시 "STORE"로 분류(예: "네일재료 판매점 카운터 및 매장관리 직원" → STORE).
 - job_categories: 위 job_type에 맞는 아래 "직군 목록"에서 이 공고에 해당하는 항목을 1~3개 골라 그 문자열을 "정확히 그대로" 배열로. 목록에 딱 맞는 게 없으면 가장 가까운 것 1개. 전혀 없으면 [].
+- job_category_raw: 이 공고가 "무슨 일 할 사람"을 뽑는지, 글에 적힌 말 그대로 짧게(예: "발관리 전문가", "속눈썹 연장 디자이너"). 
+    위 목록에 맞는 게 없어도 반드시 채울 것 — 비면 그 공고는 모집분야 없이 올라간다. 지역·매장명·급여는 빼고 직무만.
     · STORE 직군: ${STORE_CATEGORIES.join(" / ")}
     · OFFICE 직군: ${OFFICE_CATEGORIES.join(" / ")}
 - career: 아래 중 "정확히 하나"만 고르기 → ${CAREER_OPTIONS.join(" / ")}. "경력무관/무관/경력 사항 없음"은 "경력 무관", "신입"만이면 "신입", "N년 이상/N년차"는 가장 가까운 값. 불명확하면 "".
@@ -900,6 +903,30 @@ export async function POST(req: NextRequest) {
         return words.some((w) => src.includes(w.toLowerCase()));
       };
       out.job_categories = picked.filter(grounded);
+    }
+
+    // 모델이 하나도 못 고르는 일이 있다. 직군 이름이 글의 말과 달라서다
+    // (예: '발관리 전문가' 를 뽑는 글인데 우리 직군 이름은 '문제성 네일 교정 전문가').
+    // 그럴 때만 글에서 직접 찾아 보탠다 — 모집분야가 비면 그 공고는 검색에 안 걸린다.
+    if (!out.job_categories.length) {
+      const src = [
+        out.title, bodyText, pageText,
+        out.description, out.requirements, out.preferred, out.main_duties, out.extra_notes,
+      ].map((v: any) => (Array.isArray(v) ? v.join(" ") : String(v || ""))).join(" ").toLowerCase();
+      // 여러 직군에 두루 나오는 말은 근거로 삼지 않는다.
+      // ('미용사'는 어느 직군이든 자격으로 적히고, '스태프·알바'는 고용형태에 가깝다.)
+      const 흔한말 = /^(스태프|스탭|스텝|인턴|staff|assistant|알바|아르바이트|파트타임|프리랜서|단기|일당|스페어|매장|교육|상담|관리사|아티스트|디자이너|미용사|모델|시술|샵)$/;
+      const 점수 = catPool
+        .map((cat) => {
+          const keys = [
+            ...cat.split(/[()·・,\/]| /).map((w) => w.trim()),
+            ...(SEARCH_TAGS[cat] || []),
+          ].filter((w) => w.length >= 3 && !흔한말.test(w));
+          return { cat, n: new Set(keys.filter((k) => src.includes(k.toLowerCase()))).size };
+        })
+        .filter((x) => x.n >= 2) // 한 낱말만 걸린 것은 우연일 수 있다
+        .sort((a, b) => b.n - a.n);
+      out.job_categories = 점수.slice(0, 2).map((x) => x.cat);
     }
   }
   // 고용형태: 폼에 없는 값은 버린다. 글이 프리랜서라고 분명히 말하면 그대로 따른다.

@@ -1294,6 +1294,9 @@ export default function JobPostForm({
       if (Array.isArray(d.hiring_process) && d.hiring_process.length) setHiringProcess(d.hiring_process);
       // 직군(칩) — 서버가 공식 목록에 맞춰 골라줌
       if (Array.isArray(d.job_categories) && d.job_categories.length) setCategories(d.job_categories);
+      // 우리 직군 목록에 없는 일이라도 원문에 적힌 말로 담는다.
+      // 비워 두면 그 공고는 모집분야 없이 올라가 검색에도 안 걸린다.
+      else if (String(d.job_category_raw || "").trim()) setCategories([String(d.job_category_raw).trim()]);
       // 근무지역 — "시도 시군구" 형식 그대로 반영
       if (d.region) setRegionList([d.region]);
       // 복리후생·근무조건 태그(칩)
