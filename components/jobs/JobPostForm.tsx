@@ -2877,7 +2877,14 @@ export default function JobPostForm({
                     placeholder="상세주소 (동·호수 등)"
                     style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
                 </div>
-                {nmFullAddress && <AddressMap address={nmFullAddress} name={newCompanyName.trim() || undefined} height={220} />}
+                {/* 주소 없이 지점명만 있으면 지도를 그리지 않는다. 카카오는 주소를 못 찾으면
+                    낱말로 장소를 검색해 첫 결과를 찍는데, "천안청당점" 으로는 엉뚱한 가게가
+                    잡힌다. 틀린 지도는 없는 지도보다 나쁘다 — 구직자가 그리로 찾아간다. */}
+                {nmAddress.trim()
+                  ? <AddressMap address={nmFullAddress} name={newCompanyName.trim() || undefined} height={220} />
+                  : nmAddressDetail.trim()
+                    ? <div style={{ fontSize: 12.5, color: "#c0392b", marginTop: 6 }}>주소 검색을 눌러 주소를 넣어야 지도가 나와요. 지점명만으로는 엉뚱한 곳이 찍혀요.</div>
+                    : null}
 
                 {/* 근무지가 여러 곳인 공고 — 주소 칸을 하나씩 더 만들고, 각자 지도를 붙인다.
                     여기 담긴 주소에서도 지역을 뽑아 검색에 걸리게 한다. */}
@@ -2903,7 +2910,13 @@ export default function JobPostForm({
                           placeholder="상세주소 (동·호수 등)"
                           style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
                       </div>
-                      {full && <AddressMap address={full} height={200} />}
+                      {/* 이름표는 지점명(상세 칸)을 쓴다. 그게 곧 그 자리의 이름이다.
+                          다만 주소 없이 지점명만으로는 지도를 그리지 않는다(위와 같은 이유). */}
+                      {loc.address.trim()
+                        ? <AddressMap address={full} name={loc.detail.trim() || newCompanyName.trim() || undefined} height={200} />
+                        : loc.detail.trim()
+                          ? <div style={{ fontSize: 12.5, color: "#c0392b", marginTop: 6 }}>주소 검색을 눌러 주소를 넣어야 지도가 나와요.</div>
+                          : null}
                     </div>
                   );
                 })}
