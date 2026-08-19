@@ -2264,7 +2264,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobpost-preview-head-sub { display: none; }
   .jobpost-preview-foot { padding: 10px 12px; gap: 6px; }
   /* 버튼 셋이 한 줄에 들어가도록 — 글자가 접히면 바닥이 두 줄로 늘어난다. */
-  .jobpost-preview-foot > button { flex: 1; min-width: 0; padding-left: 8px; padding-right: 8px; font-size: 13px; white-space: nowrap; }
+  /* 폭을 셋이 나눠 가지면 글자가 왼쪽에 몰린다. 칸 가운데로 모은다. */
+  .jobpost-preview-foot > button { flex: 1; min-width: 0; padding-left: 8px; padding-right: 8px; font-size: 13px; white-space: nowrap; text-align: center; display: flex; align-items: center; justify-content: center; }
   /* 머리·바닥을 뺀 나머지를 본문이 다 쓴다(전엔 72vh 로 묶여 아래가 비었다). */
   .jobpost-preview-scope { max-height: none; flex: 1; }
   /* 기본정보를 두 칸으로 만들어 봤다가 되돌렸다. "경력무관·00명" 같은 짧은 값으로는

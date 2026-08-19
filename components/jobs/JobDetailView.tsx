@@ -307,7 +307,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <h1 className="job-detail-title">{job.title}</h1>
 
           <div className="job-detail-meta-grid">
-            {job.jobCategories?.length > 0 && (
+            {/* 모집부문 표가 있으면 모집분야는 거기 자리별로 적혀 있다. 위에 또 적으면
+                같은 말이 한 화면에 두 번 나오고, 자리마다 다른 값을 하나로 뭉뚱그리게
+                된다. 표가 없는 공고에서만 남긴다(그때는 여기 말고 볼 곳이 없다). */}
+            {job.jobCategories?.length > 0 && positions.length === 0 && (
               <div className="job-detail-meta-item">
                 <span className="job-detail-meta-label">모집분야</span>
                 <span className="job-detail-meta-value">{job.jobCategories.join(", ")}</span>
