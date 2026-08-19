@@ -119,7 +119,14 @@ function AutoTextarea({
   // 크기가 어긋난다. 그러면 칸이 작게 잡혀 긴 제목의 끝 글자가 잘려 나갔다.
   // (안쪽 둘은 .autogrow 규칙의 font: inherit 로 이 크기를 그대로 물려받는다.)
   return (
-    <span className={`autogrow${className ? ` ${className}` : ""}`} data-value={value} style={style}>
+    <span
+      className={`autogrow${className ? ` ${className}` : ""}`}
+      // 재는 글자에 공백을 덧붙이면 그 한 칸 때문에 실제 글자보다 먼저 줄이 바뀐다.
+      // 같은 제목인데 폼만 두 줄이 되고 미리보기는 한 줄이던 것이 이 탓이다.
+      // 공백은 줄바꿈으로 끝날 때만 붙인다 — 그때만 마지막 빈 줄을 잡아 줘야 한다.
+      data-value={value.endsWith("\n") ? `${value} ` : value}
+      style={style}
+    >
       <textarea {...rest} value={value} rows={1} />
     </span>
   );

@@ -5526,7 +5526,10 @@ div:has(> table.admin-table),
 .jobpost-form .admin-form-label { color: #555; font-size: 14px; }
 /* 공고 헤더(회사명·제목) — 화면 폭에 따라 크기를 줄인다(인라인 style 대신 여기서 관리) */
 .jobpost-brand-input { font-size: 14px; }
-.jobpost-title-input { font-size: 19px; }
+/* 제목은 미리보기(.job-detail-title)와 글자 크기뿐 아니라 자간·줄바꿈 규칙까지
+   같아야 한다. 자간이 다르면 같은 제목이 한쪽에서만 줄이 바뀐다(실측: -0.5px
+   차이로 280px 폭에서 폼만 두 줄이 됐다). */
+.jobpost-title-input { font-size: 19px; letter-spacing: -0.5px; word-break: keep-all; }
 .jobpost-form .admin-form-body { padding: 2px 20px; gap: 0; }
 
 /* 라벨이 직접 자식인 행 → 라벨 좌 / 내용 우 + 하단 구분선 */
@@ -11959,6 +11962,7 @@ button,
   box-sizing: border-box;
   min-width: 0;
 }
-/* 끝에 공백을 붙여야 마지막 줄이 줄바꿈으로 끝나도 그 줄만큼 자리를 잡는다 */
-.autogrow::after { content: attr(data-value) " "; visibility: hidden; }
+/* 재는 글자는 실제 값 그대로. 예전엔 여기서 공백을 덧붙였는데, 그 한 칸 때문에
+   실제 글자보다 먼저 줄이 바뀌었다(줄바꿈으로 끝날 때만 값 쪽에서 붙인다). */
+.autogrow::after { content: attr(data-value); visibility: hidden; }
 .autogrow > textarea { resize: none; overflow: hidden; outline: none; width: 100%; }
