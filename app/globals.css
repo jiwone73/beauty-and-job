@@ -2267,7 +2267,6 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobpost-preview-foot > button { flex: 1; min-width: 0; padding-left: 8px; padding-right: 8px; font-size: 13px; white-space: nowrap; }
   /* 머리·바닥을 뺀 나머지를 본문이 다 쓴다(전엔 72vh 로 묶여 아래가 비었다). */
   .jobpost-preview-scope { max-height: none; flex: 1; }
-  .jobpost-preview-scope .job-detail-layout { padding: 14px 12px 20px; gap: 12px; }
   /* 기본정보를 두 칸으로 만들어 봤다가 되돌렸다. "경력무관·00명" 같은 짧은 값으로는
      들어가지만, 실제 값인 "헤어 디자이너" 가 오면 칸이 좁아 두 줄로 접힌다.
      구직자가 보는 실제 화면도 좁은 폭에서는 한 칸씩이라, 이쪽이 미리보기의 뜻에도 맞다. */
@@ -2308,13 +2307,18 @@ input[type="range"].career-slider::-moz-range-thumb {
   .job-detail-mobile-cta { display: flex; }
   /* 미리보기 모달도 같이 1열로. (.jobpost-preview-scope .job-detail-layout 이 2클래스라
      위 1클래스 규칙을 이겨서, 좁은 화면에서도 1fr 300px가 남아 본문이 한 글자 폭으로 찌그러졌다) */
-  .jobpost-preview-scope .job-detail-layout { grid-template-columns: minmax(0, 1fr); padding: 16px 14px 24px; gap: 16px; }
+  /* 좌우 여백은 0. 구직자가 보는 실제 화면이 그렇고(카드 안쪽 16px 만 남는다),
+     등록 폼의 19px 와도 거의 같다. 여기에 여백을 더 주면 카드가 안으로 밀려
+     폼·실제 화면 어느 쪽과도 다른 폭이 된다. */
+  .jobpost-preview-scope .job-detail-layout { grid-template-columns: minmax(0, 1fr); padding: 16px 0 24px; gap: 16px; }
   .jobpost-preview-scope .job-detail-aside { display: none; }
 }
 @media (max-width: 640px) {
   .job-detail-layout { padding: 16px 0 100px; }
   .job-detail-header-inner { padding: 0 16px; }
-  .job-detail-info-box { padding: 20px 16px; }
+  /* 좌우 19px — 등록 폼의 글 시작 위치와 같은 값. 폼·미리보기·구직자 화면
+     셋이 같은 자리에서 글이 시작해야 서로 견줘 볼 수 있다. */
+  .job-detail-info-box { padding: 20px 19px; }
   .job-detail-title { font-size: 17px; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere; }
   .job-detail-meta-grid { grid-template-columns: 1fr; }
 }
