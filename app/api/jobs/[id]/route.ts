@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, getAuth } from '@/lib/api'
+import { hideContactsIn } from "@/lib/hideContacts"
 
 export async function GET(
   req: NextRequest,
@@ -44,6 +45,10 @@ export async function GET(
   }
 
   const job = jobRes.rows[0]
+  // 외부에서 옮겨 온 공고인지 — 연락처·SNS 를 내려보낼지 가르는 기준
+  const isExternalJob = job.source === 'EXTERNAL' || job.is_member === false
+  // 회원 기업이 직접 올린 공고는 그대로 둔다 — 자기 연락처를 적을 자유가 있다.
+  const hide = <T,>(v: T): T => (isExternalJob ? (hideContactsIn(v as any) as T) : v)
 
   // 조회수 +1 (비동기로 처리, 응답 지연 안 시킴)
   pool.query(
@@ -75,9 +80,10 @@ export async function GET(
     id: job.id,
     title: job.title,
     job_type: job.job_type,
-    description: job.description,
-    requirements: job.requirements,
-    preferred_qualifications: job.preferred_qualifications,
+    // 외부 공고는 본문에 매장 번호가 그대로 적혀 있다. 내려보내기 전에 가린다.
+    description: hide(job.description),
+    requirements: hide(job.requirements),
+    preferred_qualifications: hide(job.preferred_qualifications),
     salary_min: job.salary_min,
     salary_max: job.salary_max,
     salary_type: job.salary_type,
@@ -96,12 +102,16 @@ export async function GET(
     categories: job.categories || [],
     detail_images: job.detail_images || [],
     hiring_process: job.hiring_process || [],
-    external_contact_name: job.external_contact_name || '',
-    external_contact_phone: job.external_contact_phone || '',
-    external_contact_email: job.external_contact_email || '',
+    // 비회원(외부에서 옮겨 온) 공고의 연락처는 구직자에게 내려보내지 않는다.
+    // 화면에서 가려도 이 JSON 을 그대로 열어 보면 번호가 다 보이기 때문이다.
+    // 지원은 뷰티워크를 거쳐야 매장에도 이력이 남고 우리도 성과를 안다.
+    // (관리자 화면은 /api/admin/jobs 를 따로 쓰므로 대조에는 지장이 없다.)
+    external_contact_name: isExternalJob ? '' : (job.external_contact_name || ''),
+    external_contact_phone: isExternalJob ? '' : (job.external_contact_phone || ''),
+    external_contact_email: isExternalJob ? '' : (job.external_contact_email || ''),
     contact_methods: job.contact_methods || [],
-    notes: job.notes || '',
-    responsibilities: job.responsibilities || '',
+    notes: hide(job.notes) || '',
+    responsibilities: hide(job.responsibilities) || '',
     work_days: job.work_days || '',
     work_time: job.work_time || '',
     work_period: job.work_period || '',
@@ -112,7 +122,7 @@ export async function GET(
     application_count: job.application_count,
     created_at: job.created_at,
     source: job.source,
-    is_external: job.source === 'EXTERNAL' || job.is_member === false,
+    is_external: isExternalJob,
     apply_method: job.apply_method,
     external_apply_url: job.external_apply_url,
     // 공고 전용 상단 이미지. null이면 기업정보의 커버를 쓴다(빈 배열은 '이 공고는 없음').
@@ -122,13 +132,15 @@ export async function GET(
       company_name: job.company_name,
       brand_name: job.brand_name,
       representative_name: job.representative_name,
-      company_phone: job.company_phone,
+      company_phone: isExternalJob ? null : job.company_phone,
       logo_url: job.logo_url,
       cover_images: job.company_cover_images || [],
       company_type: job.company_type,
       industry: job.company_industry,
       description: job.company_description,
-      website_url: job.website_url,
+      // 매장 SNS(인스타 등)도 마찬가지다. 들어가 보면 DM·프로필에 번호가 있어
+      // 연락처를 가린 뜻이 없어진다. 회원 기업의 홈페이지는 그대로 둔다.
+      website_url: isExternalJob ? null : job.website_url,
       address: job.company_address,
       region_sido: job.company_region_sido,
       region_sigungu: job.company_region_sigungu,

@@ -1,0 +1,42 @@
+// 공고 본문에 적힌 매장 연락처를 구직자에게 가린다.
+//
+// 카페·인스타에서 옮겨 온 공고에는 "문자 주세요 010-…" 이 본문에 그대로 있다.
+// 그대로 두면 구직자가 매장에 바로 연락해 버려 뷰티워크를 거칠 이유가 없어진다.
+// 지원은 우리 지원 버튼으로 받아야 매장에도 이력이 남고 우리도 성과를 안다.
+//
+// 화면에서만 가리면 API 응답(JSON)을 열어 볼 때 번호가 다 보인다. 그래서 서버가
+// 내려보내기 전에 지운다. 원문은 DB에 그대로 두므로 관리자는 등록 화면에서
+// 대조할 수 있고, 매장에 연락할 일도 있다.
+
+export const APPLY_ONLY = "뷰티워크 온라인 지원";
+
+export function hideContacts(t: string): string {
+  return String(t || "")
+    // 전화번호: 010-1234-5678 / 01012345678 / 02-123-4567 등 (구분자는 - . 공백)
+    .replace(/(0\d{1,2})[-.\s]?(\d{3,4})[-.\s]?(\d{4})/g, APPLY_ONLY)
+    .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, APPLY_ONLY)
+    .replace(/(카카오톡|카톡|오픈\s*채팅|카톡\s*아이디)\s*[:：]?\s*[A-Za-z0-9._-]{3,}/g, APPLY_ONLY)
+    // 매장 SNS. 들어가 보면 DM·프로필에 번호가 있어 전화번호를 가린 뜻이 없어진다.
+    .replace(/(https?:\/\/)?(www\.)?(instagram\.com|facebook\.com|band\.us|threads\.net|open\.kakao\.com|pf\.kakao\.com|blog\.naver\.com|cafe\.naver\.com|youtube\.com|youtu\.be|twitter\.com|x\.com)\/[^\s)\]]*/gi, APPLY_ONLY)
+    // 주소 없이 "인스타 @nail_shop" 처럼 계정만 적는 경우
+    .replace(/(인스타(?:그램)?|insta(?:gram)?|카톡|틱톡)\s*[:：]?\s*@?[A-Za-z0-9._]{3,}/gi, APPLY_ONLY)
+    // 번호를 지웠어도 "문자로 보내주세요" 가 남으면 여전히 매장에 연락하려 든다.
+    .replace(/지원\s*방법\s*[:：]\s*(?:문자|전화|이메일|메일|카톡|카카오톡|DM|디엠|인스타(?:그램)?)\s*(?:으로|로)?/gi, `지원방법: ${APPLY_ONLY} 시`)
+    .replace(/(?:문자|전화|톡|카톡|카카오톡|DM|디엠|이메일|메일|인스타(?:그램)?)\s*(?:으로|로)?\s*(?:만)?\s*(?:주세요|남겨\s*주세요|보내\s*주세요|연락\s*주세요|문의\s*주세요|지원\s*(?:해\s*)?주세요)/gi, "뷰티워크로 지원해 주세요")
+    .replace(/(?:문자|전화|카톡|카카오톡|DM|디엠|이메일|메일)\s*(?:으로|로)(?=\s|$)/gi, `${APPLY_ONLY}으로`)
+    // 바꾸고 나면 "위 번호로 뷰티워크로…" 처럼 앞뒤에 쓸모없는 말이 남는다. 문장이 읽히도록 걷어낸다.
+    .replace(/(?:위|아래)?\s*(?:번호|연락처|주소)\s*(?:으로|로)\s*(?=뷰티워크)/g, "")
+    .replace(/(?:인스타(?:그램)?|카톡|카카오톡|문자|전화|이메일|메일|DM|디엠)\s+(?=뷰티워크)/gi, "")
+    .replace(new RegExp(`${APPLY_ONLY}\\s*(?:으로|로)?\\s*(?:보내\\s*주세요|남겨\\s*주세요|주세요)`, "g"), APPLY_ONLY)
+    // 같은 안내가 잇달아 나오면 한 번만 남긴다.
+    .replace(new RegExp(`(${APPLY_ONLY})([\\s,·/]*\\1)+`, "g"), "$1")
+    .replace(/(뷰티워크로 지원해 주세요)([\s,·/]*\1)+/g, "$1")
+    .replace(/[ \t]{2,}/g, " ");
+}
+
+/** 배열·문자열 어느 쪽이 와도 같은 규칙으로 가린다. */
+export function hideContactsIn<T extends string | string[] | null | undefined>(v: T): T {
+  if (Array.isArray(v)) return v.map((x) => hideContacts(String(x))) as T;
+  if (typeof v === "string") return hideContacts(v) as T;
+  return v;
+}
