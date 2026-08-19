@@ -10,6 +10,7 @@ import { parseStructured } from "@/lib/external/parsers/structured";
 import { getAllJobItems, SEARCH_TAGS } from "@/lib/data/jobGroups";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
 import { rehostImages } from "@/lib/external/rehost";
+import { dropUnsupported } from "@/lib/external/evidence";
 
 function htmlToText(html: string): string {
   return html
@@ -946,6 +947,15 @@ export async function POST(req: NextRequest) {
   if (typeof out.career !== "string" || !CAREER_OPTIONS.includes(out.career)) out.career = "";
   if (typeof out.education !== "string" || !EDUCATION_OPTIONS.includes(out.education)) out.education = "";
   if (!["남성", "여성", "무관"].includes(String(out.gender_preference || ""))) out.gender_preference = "";
+  // 형식이 맞아도 원문에 근거가 없으면 지운다. 프롬프트에 "글에 없으면 빈 값"이라고
+  // 적어 뒀지만 작은 모델일수록 그럴듯한 값을 채워 넣는다. 지원자는 그걸 사실로 믿는다.
+  // 그림을 함께 읽힌 경우엔 근거가 그림에 있을 수 있으므로 건드리지 않는다.
+  if (!imageUrls.length) {
+    const src = [bodyText, pageText, out.description, out.requirements, out.extra_notes]
+      .map((v: any) => (Array.isArray(v) ? v.join(" ") : String(v || ""))).join(" ");
+    const dropped = dropUnsupported(out, src);
+    if (dropped.length) console.log("[parse 근거없음]", dropped.join(", "));
+  }
   // 모집분야(직군) 자동추측:
   //   · 어느 경로든 폼의 정식 직군 목록에 "정확히 일치"하는 값만 남긴다(오탈자·목록밖 값 제거).
   //   · 구조화 파서(헤어인잡 등)는 직종명을 우리 직군으로 정밀 매핑하므로 그대로 믿는다.
