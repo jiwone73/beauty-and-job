@@ -345,7 +345,6 @@ export default function JobPostForm({
   const [importMode, setImportMode] = useState<"url" | "paste" | "ocr">("url");
   const [pasteText, setPasteText] = useState("");
   const [importImages, setImportImages] = useState<string[]>([]); // 북마클릿이 넘긴 사진 주소
-  const [pasteFiles, setPasteFiles] = useState<File[]>([]); // 붙여넣기와 함께 읽힐 포스터 사진
   const [importingImgs, setImportingImgs] = useState(false);
   const [ocrFiles, setOcrFiles] = useState<File[]>([]); // OCR: 여러 장 캡처 누적
   // 캡처로 등록할 때의 원문 주소(인스타 게시물·카페 글 등).
@@ -1019,6 +1018,12 @@ export default function JobPostForm({
   // 늘 꺼진 채로 시작하고, 저장해 두지도 않는다(다음에 열어도 다시 꺼져 있다).
   const [ocrEnabled, setOcrEnabled] = useState(false);
   const readableImageUrls = ocrEnabled ? detailImages.filter((d) => d.readable).map((d) => d.url).slice(0, 8) : [];
+  // 그림을 모델에 보낼지는 '텍스트 인식' 토글 하나로만 정한다. 붙이는 것과 읽는 것은
+  // 다른 일이다 — 사진은 얼마든지 붙여 두되, 읽어서 요금을 물릴지는 사람이 고른다.
+  // (예전엔 북마클릿이 가져온 사진이 토글을 우회해 늘 읽혔다.)
+  const sendImageUrls = ocrEnabled ? [...importImages, ...readableImageUrls].slice(0, 8) : [];
+  // 그림 한 장이 대략 2,000토큰. 소넷 5 입력 $2/MTok 기준 장당 6원쯤 더 붙는다.
+  const imageCostWon = sendImageUrls.length * 6;
   const readFromDetailImages = async () => {
     if (!ocrEnabled) return;
     const urls = readableImageUrls;
@@ -1462,15 +1467,7 @@ export default function JobPostForm({
       //
       // 그 포스터는 구직자에게도 보여줘야 할 상세요강이다. 같은 파일을 두 번
       // 올리게 하지 않도록, 올린 김에 상세요강에도 걸어 둔다(빼려면 ×를 누르면 된다).
-      const imgs: string[] = [...importImages, ...readableImageUrls];
-      const posters: { url: string; name: string }[] = [];
-      for (const f of pasteFiles) {
-        const up = await uploadImage(await compressImage(f));
-        if (up.success && up.url) { imgs.push(up.url); posters.push({ url: up.url, name: up.name || f.name }); }
-      }
-      if (posters.length) {
-        setDetailImages((prev) => [...prev, ...posters.filter((p) => !prev.some((d) => d.url === p.url))].slice(0, 12));
-      }
+      const imgs: string[] = sendImageUrls;
       const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
       const res = await fetch("/api/admin/external-jobs/parse", {
         method: "POST",
@@ -1483,8 +1480,8 @@ export default function JobPostForm({
       const data = await res.json();
       if (!data.success) { setParseMsg(data.error?.message || "불러오지 못했어요."); return; }
       applyParsed(data.data);
-      setParseMsg(posters.length
-        ? `✓ 글과 사진 ${posters.length}장으로 채웠어요. 사진은 상세요강에도 넣었습니다.`
+      setParseMsg(imgs.length
+        ? `✓ 글과 사진 ${imgs.length}장으로 채웠어요. 값을 확인해 주세요.`
         : "✓ 붙여넣은 내용으로 채웠어요. 값을 확인해 주세요.");
     } catch {
       setParseMsg("네트워크 오류가 발생했어요.");
@@ -1518,13 +1515,13 @@ export default function JobPostForm({
         // 상세요강에 붙인 그림 중 '읽기 켬' 인 것을 함께 보낸다. 원문 페이지에 없는
         // 연락처·주소가 포스터 그림에만 있는 공고가 많다. 토글을 켰을 때만 보낸다.
         body: JSON.stringify(
-          readableImageUrls.length ? { url: useUrl, image_urls: readableImageUrls } : { url: useUrl }
+          sendImageUrls.length ? { url: useUrl, image_urls: sendImageUrls } : { url: useUrl }
         ),
       });
       const j = await res.json();
       if (!j.success) { setParseMsg(j.error?.message || "불러오기에 실패했어요."); return; }
       applyParsed(j.data);
-      if (readableImageUrls.length) setParseMsg(`✓ 원문과 그림 ${readableImageUrls.length}장으로 채웠어요.`);
+      if (sendImageUrls.length) setParseMsg(`✓ 원문과 그림 ${sendImageUrls.length}장으로 채웠어요.`);
       if (useUrl) { setParseUrl(useUrl); setUrlEditing(false); } // 불러오기 성공 → URL을 링크로 표시
     } catch { setParseMsg("오류가 발생했습니다."); }
     finally { setParsing(false); }
@@ -2317,6 +2314,12 @@ export default function JobPostForm({
                 style={{ flexShrink: 0, padding: "9px 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: (parsing || !pasteText.trim()) ? "default" : "pointer", opacity: parsing ? 0.6 : 1 }}>
                 {parsing ? "불러오는 중..." : "불러오기"}
               </button>
+            </div>
+            {/* 붙인 사진이 요금에 얼마나 얹히는지 눌러 보기 전에 알려준다. */}
+            <div style={{ marginTop: 6, fontSize: 12.5, color: "#8d84a0" }}>
+              {sendImageUrls.length
+                ? `글과 사진 ${sendImageUrls.length}장을 읽어요 · 사진값 약 ${imageCostWon}원이 더 붙어요`
+                : "글자만 읽어요 · 붙여 둔 사진은 요금이 붙지 않아요"}
             </div>
             {importImages.length > 0 && (
               <div style={{ marginTop: 8, padding: "10px 12px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
