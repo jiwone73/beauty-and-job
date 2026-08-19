@@ -1934,7 +1934,7 @@ export default function JobPostForm({
     intro: isOffice ? "기업 소개" : "매장 소개",
     name: isOffice ? "회사명" : "매장명",
     size: isOffice ? "사원수" : "직원수",
-    phone: isOffice ? "회사 대표번호" : "매장 전화번호",
+    phone: isOffice ? "대표번호" : "전화번호",
     // 매장은 홈페이지가 거의 없고 인스타가 사실상 포트폴리오다.
     site: isOffice ? "웹사이트" : "매장 SNS",
   };
@@ -2176,10 +2176,6 @@ export default function JobPostForm({
                 style={{ flexShrink: 0, padding: "9px 18px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, cursor: (parsing || !pasteText.trim()) ? "default" : "pointer", opacity: parsing ? 0.6 : 1 }}>
                 {parsing ? "불러오는 중..." : "불러오기"}
               </button>
-            </div>
-            <div style={{ fontSize: 12, color: "#9a92a6", marginTop: 6, lineHeight: 1.7 }}>
-              연락처·주소를 <b>포스터 그림에만</b> 넣은 공고가 많습니다. 그럴 땐 아래 <b>상세요강</b> 칸에
-              그 그림을 붙여넣으세요(<b>Ctrl+V</b>). 글자가 보이면 거기서 읽어 올 수 있습니다.
             </div>
             {importImages.length > 0 && (
               <div style={{ marginTop: 8, padding: "10px 12px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -2756,9 +2752,11 @@ export default function JobPostForm({
                 const subLbl: CSSProperties = { width: 34, flexShrink: 0, color: "#999", fontSize: 14 };
                 // 값이 없으면 연보라 블록, 채우면 글자만 — 폼의 다른 칸과 같은 규칙
                 // 빈 값은 폼의 다른 항목과 같은 규격(56px 연보라 블록), 채우면 남은 폭을 쓴다.
+                // 값은 라벨(제목)보다 커지지 않게 한다 — subLbl 이 14 이므로 값도 14.
+                // 값이 더 크면 라벨이 부제처럼 보여 어느 쪽이 항목 이름인지 헷갈린다.
                 const fld = (filled: boolean): CSSProperties => filled
-                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", borderRadius: 5, fontSize: 15, color: "#333", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
-                  : { flexShrink: 0, width: 56, height: 20, border: "none", background: PH_BG, borderRadius: 5, fontSize: 15, color: "#333", outline: "none", padding: 0, boxSizing: "border-box" };
+                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", borderRadius: 5, fontSize: 14, fontWeight: 400, color: "#333", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
+                  : { flexShrink: 0, width: 56, height: 20, border: "none", background: PH_BG, borderRadius: 5, fontSize: 14, fontWeight: 400, color: "#333", outline: "none", padding: 0, boxSizing: "border-box" };
                 const rowS: CSSProperties = { display: "flex", alignItems: "center", gap: 8, padding: "3px 0" };
                 return (
                   /* 좁은 화면에선 두 칸이 너무 좁아 세로로 쌓는다(.jobpost-form이 admin-form-row-2col을 1열로 덮어서 직접 지정) */
@@ -3003,7 +3001,7 @@ export default function JobPostForm({
                 const req: CSSProperties = { color: "#e9a3a3" };
                 // 모집요강과 동일: 빈 값이면 텍스트 없는 연보라 하이라이트 블록, 입력하면 확장(플레이스홀더 없음)
                 const inpHl = (filled: boolean): CSSProperties => filled
-                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, color: "#333", outline: "none", padding: "6px 2px", height: 32, lineHeight: "20px", boxSizing: "border-box" }
+                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, fontWeight: 400, color: "#333", outline: "none", padding: "6px 2px", height: 32, lineHeight: "20px", boxSizing: "border-box" }
                   : { flexShrink: 0, border: "none", background: PH_BG, borderRadius: 5, width: 56, height: 20, padding: 0, fontSize: 15, color: "#333", outline: "none", boxSizing: "border-box" };
                 const sel3 = (filled: boolean): CSSProperties => ({ ...inpHl(filled), appearance: "none", WebkitAppearance: "none", MozAppearance: "none", cursor: "pointer" });
                 const full: CSSProperties = { gridColumn: "1 / -1" };
