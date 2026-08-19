@@ -238,6 +238,13 @@ export default function JobPostForm({
           setNmDescription((v) => v || c.description || "");
           setNmAddress((v) => v || c.address || "");
           setNmAddressDetail((v) => v || c.address_detail || "");
+        } else {
+          // 수정 모드에서도 근무지역만은 비어 있으면 매장 주소로 채운다.
+          // 공고 상세의 '근무지역'은 매장 주소를 보여주는데, 폼 칸은 비어 있어
+          // "폼은 공란인데 미리보기엔 주소가 뜬다" 는 어긋남이 생겼다.
+          // 값이 있는 공고는 건드리지 않는다(빈 것만 채운다).
+          setNmAddress((v) => v || c.address || "");
+          setNmAddressDetail((v) => v || c.address_detail || "");
         }
       })
       .catch(() => {});
