@@ -110,12 +110,16 @@ const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 �
 // 안 보이게 겹쳐 그려(.autogrow::after) 브라우저가 높이를 직접 정하게 한다.
 // 글꼴·줄간격·여백·폭은 style 로 바깥에 주고, 안쪽 둘이 그대로 물려받는다.
 function AutoTextarea({
-  value, style, ...rest
+  value, style, className, ...rest
 }: { value: string; style?: CSSProperties } & Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>, "value" | "style" | "rows"
 >) {
+  // className 은 바깥(span)에 붙인다. 높이를 재는 것은 span 의 ::after 인데, 글자
+  // 크기를 정하는 클래스가 안쪽 textarea 에만 붙어 있으면 재는 크기와 그려지는
+  // 크기가 어긋난다. 그러면 칸이 작게 잡혀 긴 제목의 끝 글자가 잘려 나갔다.
+  // (안쪽 둘은 .autogrow 규칙의 font: inherit 로 이 크기를 그대로 물려받는다.)
   return (
-    <span className="autogrow" data-value={value} style={style}>
+    <span className={`autogrow${className ? ` ${className}` : ""}`} data-value={value} style={style}>
       <textarea {...rest} value={value} rows={1} />
     </span>
   );
@@ -1836,6 +1840,9 @@ export default function JobPostForm({
       salary_text: fiSalary.trim() || null, // 비회원 자유입력(예: "추후협의") — 있으면 표시 우선
       positions: positions.length ? positions : null, // 모집부문 표(분야별 경력·급여·인원)
       location: effRegions.join(", ") || null,
+      // 이 공고의 근무지 주소. 기본값은 매장 프로필 주소를 채워 두지만, 회원이 여기서
+      // 고치면 이 공고에만 적용된다 — 매장 프로필은 매장 설정에서만 바뀐다.
+      address: nmFullAddress.trim() || null,
       work_locations: extraLocations.filter((l) => l.address.trim()).length
         ? extraLocations.filter((l) => l.address.trim())
         : null,
@@ -2166,7 +2173,8 @@ export default function JobPostForm({
       latitude: null,
       longitude: null,
     },
-    companyAddress: isNm ? nmFullAddress : (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
+    // 근무지역은 이 공고의 주소를 먼저 쓰고, 비어 있을 때만 매장 프로필 주소로 물러선다.
+    companyAddress: nmFullAddress.trim() || (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
     workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의")),
     workPeriodText: fiWorkPeriod.trim() || workPeriod || "협의",
     workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의")),

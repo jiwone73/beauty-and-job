@@ -239,7 +239,10 @@ export default function JobDetailPage() {
               latitude: j.company?.latitude ?? null,
               longitude: j.company?.longitude ?? null,
             },
-            companyAddress: composeCompanyAddress(j.company?.region_sido, j.company?.region_sigungu, j.company?.address),
+            // 이 공고에 따로 적어 둔 근무지 주소가 있으면 그것을 쓴다. 지점이 여럿인
+            // 매장이 지점별로 다른 주소로 공고를 낼 수 있어야 한다. 없으면 매장 주소.
+            companyAddress: (j.address || "").trim()
+              || composeCompanyAddress(j.company?.region_sido, j.company?.region_sigungu, j.company?.address),
           });
           // 로그인한 기업이 이 공고의 주인인지 판별
           if (token) {
