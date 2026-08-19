@@ -154,25 +154,14 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </tbody>
         </table>
       </div>
-      {/* 근무기간·복리후생: 별도 '근무 조건' 제목 없이 모집부문 블록에 이어 붙임(표와 동일한 밀도) */}
-      {/* 복리후생은 값이 없어도 늘 보인다 — 매장마다 달라 표에 다 담기지 않으니
-          '상세요강 참조'만이라도 걸어 둔다. */}
-      {(
-        <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: 28, rowGap: 4 }}>
-          {job.workPeriodText && (
-            <div style={{ display: "flex", gap: 12, fontSize: 13.5, padding: "3px 0" }}>
-              <span style={{ color: "#7a6f8a", width: 60, flexShrink: 0 }}>근무기간</span>
-              <span style={{ color: "#555" }}>{job.workPeriodText}</span>
-            </div>
-          )}
-          {(
-            <div style={{ display: "flex", gap: 12, fontSize: 13.5, padding: "3px 0", alignItems: "flex-start" }}>
-              <span style={{ color: "#7a6f8a", width: 60, flexShrink: 0 }}>복리후생</span>
-              <span style={{ color: "#555", lineHeight: 1.5 }}>{withSeeDetail((job.benefits || []).join(", "))}</span>
-            </div>
-          )}
-        </div>
-      )}
+      {/* 복리후생: 별도 '근무 조건' 제목 없이 모집부문 블록에 이어 붙임(표와 동일한 밀도).
+          값이 없어도 늘 보인다 — 매장마다 달라 표에 다 담기지 않으니 '상세요강 참조'만이라도 걸어 둔다.
+          근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 거의 비어 있었고, 그 반열이
+          복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
+      <div style={{ marginTop: 12, display: "flex", gap: 12, fontSize: 13.5, padding: "3px 0", alignItems: "flex-start" }}>
+        <span style={{ color: "#7a6f8a", width: 60, flexShrink: 0 }}>복리후생</span>
+        <span style={{ color: "#555", lineHeight: 1.5 }}>{withSeeDetail((job.benefits || []).join(", "))}</span>
+      </div>
     </div>
   ) : null;
   // 모집부문 표가 있으면 근무기간·복리후생은 표 아래로 합쳐 넣으므로, 여기(근무 조건 제목 블록)는 텍스트형 공고에서만 노출.
@@ -184,12 +173,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">고용형태</span>
             <span>{job.employType}</span>
-          </div>
-        )}
-        {job.workPeriodText && (
-          <div className="job-detail-company-row">
-            <span className="job-detail-company-label">근무기간</span>
-            <span>{job.workPeriodText}</span>
           </div>
         )}
         {job.workDaysText && positions.length === 0 && (

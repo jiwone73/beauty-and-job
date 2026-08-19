@@ -2762,26 +2762,13 @@ export default function JobPostForm({
                 />
               </div>
 
-              {/* ── 근무기간·복리후생 (모집부문 안으로 통합, 별도 타이틀·구분선 없음) ── */}
+              {/* ── 복리후생 (모집부문 안으로 통합, 별도 타이틀·구분선 없음) ──
+                  근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 139건 중 1건만 채워져
+                  있었고, 그 반열이 복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
               <div style={{ marginTop: 4 }}>
                 <div className="job-detail-company-info">
-                  {/* 근무기간 — 매장 전용, 네이티브 풀다운 */}
-                  {jobGroupType === "매장" && (
-                    <div className="job-detail-company-row" style={{ position: "relative" }}>
-                      <span className="job-detail-company-label" style={{ fontSize: 15 }}>근무기간</span>
-                      {!fiWorkPeriod.trim() && (
-                      <select value={workPeriod} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("period"); return; } setFiWorkPeriod(""); setWorkPeriod(e.target.value); }}
-                        style={{ border: "none", fontSize: 15, color: "#333", cursor: "pointer", WebkitAppearance: "none", appearance: "none", padding: 0, ...emptySel(!!workPeriod) }}>
-                        <option value=""></option>
-                        {WORK_PERIODS.map((o) => <option key={o} value={o}>{o}</option>)}
-                        {nonMember && <option value="__fi__">직접입력…</option>}
-                      </select>
-                      )}
-                      {freeField("period", fiWorkPeriod, setFiWorkPeriod, "직접 입력…", false, () => setWorkPeriod(""))}
-                    </div>
-                  )}
-                  {/* 복리후생 — 근무시간과 같은 행(반열). 팝오버 선택, 값은 콤마 텍스트로 줄바꿈 표시 */}
-                  <div className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative" }}>
+                  {/* 복리후생 — 한 행을 다 쓴다. 태그가 여럿이라 좁으면 읽기 나쁘다. */}
+                  <div className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 15 }}>복리후생<span style={{ color: "#e9a3a3" }}> *</span></span>
                     {!fiBenefits.trim() && (
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
