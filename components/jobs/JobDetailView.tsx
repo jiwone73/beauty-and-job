@@ -493,9 +493,15 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         <div className="job-detail-aside-card">
           <div className="job-detail-aside-brand">{job.brand}</div>
           <h3 className="job-detail-aside-title">{job.title}</h3>
+          {/* 경력보다 무슨 자리인지가 먼저 궁금하다. 좁은 칸에 한 줄뿐이라 모집분야를 둔다
+              (경력은 아래 모집부문 표에 있다). 분야를 못 받은 옛 공고는 경력으로 물러선다. */}
           <div className="job-detail-aside-meta">
-            <span>{job.career}</span>
-            <span className="dot">·</span>
+            {(job.jobCategories?.length ? job.jobCategories.join(", ") : job.career) && (
+              <>
+                <span>{job.jobCategories?.length ? job.jobCategories.join(", ") : job.career}</span>
+                <span className="dot">·</span>
+              </>
+            )}
             <span>{shortRegion(job.region || "")}</span>
           </div>
           {job.salary && (
