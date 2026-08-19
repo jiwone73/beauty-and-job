@@ -34,7 +34,11 @@ const withSeeDetail = (v: string) => {
       .replace(/(0\d{1,2})[-.\s]?(\d{3,4})[-.\s]?(\d{4})/g, "$1-****-****")
       .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, "이메일 비공개")
       // "카톡 아이디 xxx" 처럼 아이디를 적어 두는 경우
-      .replace(/(카카오톡|카톡|오픈\s*채팅|카톡\s*아이디)\s*[:：]?\s*[A-Za-z0-9._-]{3,}/g, "$1 비공개");
+      .replace(/(카카오톡|카톡|오픈\s*채팅|카톡\s*아이디)\s*[:：]?\s*[A-Za-z0-9._-]{3,}/g, "$1 비공개")
+      // 매장 SNS. 들어가 보면 DM·프로필에 번호가 있어 전화번호를 가린 뜻이 없어진다.
+      .replace(/(https?:\/\/)?(www\.)?(instagram\.com|facebook\.com|band\.us|threads\.net|open\.kakao\.com|pf\.kakao\.com|blog\.naver\.com|cafe\.naver\.com|youtube\.com|youtu\.be|twitter\.com|x\.com)\/[^\s)\]]*/gi, "SNS 비공개")
+      // 주소 없이 "인스타 @nail_shop" 처럼 계정만 적는 경우
+      .replace(/(인스타(?:그램)?|insta(?:gram)?|카톡|틱톡)\s*[:：]?\s*@?[A-Za-z0-9._]{3,}/gi, "$1 비공개");
 
 // 공고 상단 이미지 갤러리. 표시 규칙(3:1 고정 · 한 장은 항상 1/3 폭)은 BannerStrip에 모아 두고,
 // 기업정보 설정·공고 등록 미리보기에서도 같은 컴포넌트를 써 어디서나 같은 모양으로 보이게 한다.
@@ -79,9 +83,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     if (ci.phone) companyRows.push(["대표번호", ci.phone]);
     if (ci.website) companyRows.push(["웹사이트", linkCell(ci.website)]);
     if (ci.location) companyRows.push(["주소", ci.location]);
-  } else if (ci.website) {
-    companyRows.push(["매장 SNS", linkCell(ci.website)]);
   }
+  // 매장 SNS(인스타 등)는 공개 화면에 걸지 않는다. 들어가면 DM·프로필에 번호가 있어
+  // 상세요강에서 전화번호를 가린 뜻이 없어진다. 관리자는 등록 화면에서 볼 수 있다.
   const companySectionTitle = isOfficeJob ? "기업정보" : "매장 소개";
   const hasCompanyInfo = job.brandDesc?.trim() || companyRows.length > 0;
   // 상세 이미지가 있으면 상세내용(텍스트) 섹션은 공개 화면에서 숨김(이미지로 대체). 데이터는 그대로 유지.
@@ -136,7 +140,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         </table>
       </div>
       {/* 근무기간·복리후생: 별도 '근무 조건' 제목 없이 모집부문 블록에 이어 붙임(표와 동일한 밀도) */}
-      {(job.workPeriodText || job.benefits?.length > 0) && (
+      {/* 복리후생은 값이 없어도 늘 보인다 — 매장마다 달라 표에 다 담기지 않으니
+          '상세요강 참조'만이라도 걸어 둔다. */}
+      {(
         <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: 28, rowGap: 4 }}>
           {job.workPeriodText && (
             <div style={{ display: "flex", gap: 12, fontSize: 13.5, padding: "3px 0" }}>
@@ -144,10 +150,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               <span style={{ color: "#555" }}>{job.workPeriodText}</span>
             </div>
           )}
-          {job.benefits?.length > 0 && (
+          {(
             <div style={{ display: "flex", gap: 12, fontSize: 13.5, padding: "3px 0", alignItems: "flex-start" }}>
               <span style={{ color: "#7a6f8a", width: 60, flexShrink: 0 }}>복리후생</span>
-              <span style={{ color: "#555", lineHeight: 1.5 }}>{withSeeDetail(job.benefits.join(", "))}</span>
+              <span style={{ color: "#555", lineHeight: 1.5 }}>{withSeeDetail((job.benefits || []).join(", "))}</span>
             </div>
           )}
         </div>
@@ -155,7 +161,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
   // 모집부문 표가 있으면 근무기간·복리후생은 표 아래로 합쳐 넣으므로, 여기(근무 조건 제목 블록)는 텍스트형 공고에서만 노출.
-  const workCondSection = (positions.length === 0 && (job.workPeriodText || job.benefits?.length > 0 || job.employType || job.workDaysText || job.workTimeText)) ? (
+  const workCondSection = positions.length === 0 ? (
     <div className="jd-subblock" key="workcond">
       <h2 className="job-detail-subtitle">근무 조건</h2>
       <div className="job-detail-company-info">
@@ -177,16 +183,16 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             <span>{job.workDaysText}</span>
           </div>
         )}
-        {job.workTimeText && positions.length === 0 && (
+        {positions.length === 0 && (
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">근무시간</span>
-            <span>{job.workTimeText}</span>
+            <span>{withNegotiable(job.workTimeText)}</span>
           </div>
         )}
-        {job.benefits?.length > 0 && (
+        {(
           <div className="job-detail-company-row" style={{ alignItems: "flex-start" }}>
             <span className="job-detail-company-label">복리후생</span>
-            <span>{withSeeDetail(job.benefits.join(", "))}</span>
+            <span>{withSeeDetail((job.benefits || []).join(", "))}</span>
           </div>
         )}
       </div>
