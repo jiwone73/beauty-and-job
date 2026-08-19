@@ -28,17 +28,20 @@ const withSeeDetail = (v: string) => {
   //
   // 원문은 DB에 그대로 둔다. 관리자는 등록 화면에서 값을 대조해야 하고, 매장에
   // 연락할 일도 있기 때문이다. 여기서는 보여줄 때만 가린다.
+  const APPLY_ONLY = "뷰티워크 온라인 지원";
   const hideContacts = (t: string) =>
     String(t || "")
       // 전화번호: 010-1234-5678 / 01012345678 / 02-123-4567 등 (구분자는 - . 공백)
-      .replace(/(0\d{1,2})[-.\s]?(\d{3,4})[-.\s]?(\d{4})/g, "$1-****-****")
-      .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, "이메일 비공개")
+      .replace(/(0\d{1,2})[-.\s]?(\d{3,4})[-.\s]?(\d{4})/g, APPLY_ONLY)
+      .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, APPLY_ONLY)
       // "카톡 아이디 xxx" 처럼 아이디를 적어 두는 경우
-      .replace(/(카카오톡|카톡|오픈\s*채팅|카톡\s*아이디)\s*[:：]?\s*[A-Za-z0-9._-]{3,}/g, "$1 비공개")
+      .replace(/(카카오톡|카톡|오픈\s*채팅|카톡\s*아이디)\s*[:：]?\s*[A-Za-z0-9._-]{3,}/g, APPLY_ONLY)
       // 매장 SNS. 들어가 보면 DM·프로필에 번호가 있어 전화번호를 가린 뜻이 없어진다.
-      .replace(/(https?:\/\/)?(www\.)?(instagram\.com|facebook\.com|band\.us|threads\.net|open\.kakao\.com|pf\.kakao\.com|blog\.naver\.com|cafe\.naver\.com|youtube\.com|youtu\.be|twitter\.com|x\.com)\/[^\s)\]]*/gi, "SNS 비공개")
+      .replace(/(https?:\/\/)?(www\.)?(instagram\.com|facebook\.com|band\.us|threads\.net|open\.kakao\.com|pf\.kakao\.com|blog\.naver\.com|cafe\.naver\.com|youtube\.com|youtu\.be|twitter\.com|x\.com)\/[^\s)\]]*/gi, APPLY_ONLY)
       // 주소 없이 "인스타 @nail_shop" 처럼 계정만 적는 경우
-      .replace(/(인스타(?:그램)?|insta(?:gram)?|카톡|틱톡)\s*[:：]?\s*@?[A-Za-z0-9._]{3,}/gi, "$1 비공개");
+      .replace(/(인스타(?:그램)?|insta(?:gram)?|카톡|틱톡)\s*[:：]?\s*@?[A-Za-z0-9._]{3,}/gi, APPLY_ONLY)
+      // 번호·계정이 줄줄이 적힌 곳에서 같은 안내가 반복되지 않게 한 번으로 줄인다.
+      .replace(new RegExp(`(${APPLY_ONLY})([\\s,·/]*\\1)+`, "g"), "$1");
 
 // 공고 상단 이미지 갤러리. 표시 규칙(3:1 고정 · 한 장은 항상 1/3 폭)은 BannerStrip에 모아 두고,
 // 기업정보 설정·공고 등록 미리보기에서도 같은 컴포넌트를 써 어디서나 같은 모양으로 보이게 한다.
@@ -113,7 +116,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <thead>
             <tr style={{ background: "#faf7fd" }}>
               {posCols.map((c) => (
-                <th key={c.key} style={{ textAlign: "left", padding: "8px 10px", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" }}>{c.label}</th>
+                <th key={c.key} style={{ textAlign: "left", padding: "10px 20px 10px 0", color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" }}>{c.label}</th>
               ))}
             </tr>
           </thead>
@@ -121,7 +124,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             {positions.map((p: any, i: number) => (
               <tr key={i}>
                 {posCols.map((c, j) => (
-                  <td key={c.key} style={{ padding: "8px 10px", borderBottom: "1px solid #f3f0f8", color: j === 0 ? "#333" : "#555", whiteSpace: "nowrap", lineHeight: 1.35 }}>
+                  <td key={c.key} style={{ padding: "12px 20px 12px 0", borderBottom: "1px solid #f3f0f8", color: j === 0 ? "#333" : "#555", whiteSpace: "nowrap", lineHeight: 1.6 }}>
                     {/* 근무요일/시간 열은 요일 1행·시간 2행으로 */}
                     {c.key === "shift"
                       ? ((p.workDays || p.workTime)
@@ -218,7 +221,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 비회원(관리자 대행) 공고는 뷰티워크 온라인지원만 받고, 기업 담당자 연락처를 구직자에게 노출하지 않는다.
   const hasContact = !job.isExternal && !!(job.contactPhone || job.contactEmail);
   const hasMethods = !!job.isExternal || !!(job.contactMethods?.length);
-  const hasProcess = !!(job.process?.length > 0 || job.notes?.trim());
+  const hasProcess = !!(job.process?.length > 0);
   // 지원 안내: 담당자 · 지원방법 · 채용 절차 (라벨 + 값 한 줄)
   const contactInner = hasContact ? (
     <div className="jd-guide-row">
@@ -240,14 +243,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         <div className="jd-guide-row">
           <span className="jd-guide-label">채용 절차</span>
           <span>{job.process.join("   →   ")}</span>
-        </div>
-      )}
-      {job.notes?.trim() && (
-        <div style={{
-          marginTop: "6px", padding: "12px 14px", background: "#faf8fc", borderRadius: "8px",
-          fontSize: "14px", color: "#555", lineHeight: 1.6, whiteSpace: "pre-line"
-        }}>
-          {hideContacts(job.notes)}
         </div>
       )}
     </div>
@@ -387,7 +382,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   ))}
                 </div>
                 {job.description?.trim() && (
-                  <p className="job-detail-desc" style={{ padding: "18px 24px 24px", margin: 0 }}>{hideContacts(job.description.trim())}</p>
+                  <p className="job-detail-desc" style={{ padding: "18px 24px 0", margin: 0 }}>{hideContacts(job.description.trim())}</p>
+                )}
+                {job.notes?.trim() && (
+                  <p className="job-detail-desc" style={{ padding: "14px 24px 24px", margin: 0 }}>{hideContacts(job.notes.trim())}</p>
                 )}
               </section>
             );
@@ -398,6 +396,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             <section className="job-detail-section">
               <h2 className="job-detail-section-title">상세요강</h2>
               <p className="job-detail-desc">{hideContacts(job.description.trim())}</p>
+              {/* 비고는 원래 같은 글에서 갈라져 나온 내용이라 상세요강 안에 이어 붙인다.
+                  따로 떼어 두면 근무조건이 두 군데로 흩어져 읽기 어렵다. */}
+              {job.notes?.trim() && (
+                <p className="job-detail-desc" style={{ marginTop: 14 }}>{hideContacts(job.notes.trim())}</p>
+              )}
             </section>
           )}
 
