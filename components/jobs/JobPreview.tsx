@@ -69,7 +69,7 @@ const JobPreview = forwardRef<HTMLDivElement, JobPreviewProps>(function JobPrevi
       )}
 
       {p.benefits && <Block title={p.jobGroupType === "매장" ? "근무조건·복지" : "복리후생"} text={p.benefits} />}
-      {p.description && <Block title="포지션 소개" text={p.description} />}
+      {p.description && <Block title="상세요강" text={p.description} />}
       {p.requirements && <Block title="자격요건" text={p.requirements} />}
       {p.preferred && <Block title="우대사항" text={p.preferred} />}
 

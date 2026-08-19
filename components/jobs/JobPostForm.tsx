@@ -1303,7 +1303,7 @@ export default function JobPostForm({
       {
         const SITE_NAMES = /뷰티잡매니저|뷰티잡|뷰티인잡|미용인잡|헤어인잡|알바몬|잡코리아|사람인|셀렉트?미|알바천국|인크루트|워크넷|beautyjob|hairinjob|albamon|jobkorea|saramin|selectme|incruit/i;
         const scan: Record<string, any> = {
-          "제목": d.title, "포지션 소개": d.description, "자격요건": d.requirements, "우대사항": d.preferred,
+          "제목": d.title, "상세요강": d.description, "자격요건": d.requirements, "우대사항": d.preferred,
           "복리후생": d.benefits, "담당업무": d.main_duties, "회사 소개": d.company_description, "기타": d.extra_notes,
         };
         const hits: string[] = [];
@@ -1612,7 +1612,7 @@ export default function JobPostForm({
         if (jobGroupType === "매장") {
           // 매장: 상세요강 이미지 또는 포지션 소개
           if (detailImages.length === 0 && !form.description?.trim()) {
-            alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개를 입력해주세요.");
+            alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 상세요강 글을 입력해주세요.");
             return;
           }
         } else {
@@ -1930,7 +1930,8 @@ export default function JobPostForm({
     benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
     responsibilities: { label: "담당업무", hint: "필수 · 주요 업무를 입력", placeholder: "담당 업무를 입력하세요" },
     description: {
-      label: "포지션 소개",
+      // 섹션 제목도 '상세요강'이라 그 안의 글 칸임을 드러낸다(위는 이미지 칸).
+      label: "상세요강 글",
       hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
       placeholder: "",
     },

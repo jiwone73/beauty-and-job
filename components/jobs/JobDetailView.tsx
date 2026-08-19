@@ -355,10 +355,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             );
           })()
         ) : (<>
-          {/* 포지션 소개 */}
+          {/* 상세요강 — 매장 공고는 원문을 통째로 담아서 "소개"가 아니라 요강 전체다. */}
           {job.description?.trim() && (
             <section className="job-detail-section">
-              <h2 className="job-detail-section-title">포지션 소개</h2>
+              <h2 className="job-detail-section-title">상세요강</h2>
               <p className="job-detail-desc">{job.description.trim()}</p>
             </section>
           )}
