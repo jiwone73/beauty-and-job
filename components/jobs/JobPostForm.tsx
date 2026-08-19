@@ -259,7 +259,13 @@ export default function JobPostForm({
   // 기업정보·개인 프로필과 같은 우편번호 검색으로 통일한다(팝업은 인앱 브라우저에서 닫히지 않아 레이어로 띄운다).
   const addrBoxRef = useRef<HTMLDivElement>(null);
   const [addrOpen, setAddrOpen] = useState(false);
-  const openAddressSearch = () => {
+  // 근무지가 여러 곳인 공고가 있다(지점을 함께 뽑는 브랜드 등).
+  // 대표 주소는 기업 정보에 두고, 여기에는 '추가' 근무지만 담는다.
+  const [extraLocations, setExtraLocations] = useState<{ address: string; detail: string }[]>([]);
+
+  // 주소 검색은 대표 주소 칸과 추가 근무지 칸이 같이 쓴다.
+  // onPick 을 넘기면 그 칸에 넣고, 안 넘기면 대표 주소에 넣는다.
+  const openAddressSearch = (onPick?: (addr: string) => void) => {
     setAddrOpen(true);
     const embed = () => {
       const el = addrBoxRef.current;
@@ -269,9 +275,12 @@ export default function JobPostForm({
         oncomplete: (data: any) => {
           const base = data.roadAddress || data.jibunAddress || "";
           const withBuilding = data.buildingName ? `${base} (${data.buildingName})` : base;
-          setNmAddress(withBuilding);
-          const r = deriveRegion(withBuilding);
-          if (r.length) setRegionList(r);
+          if (onPick) onPick(withBuilding);
+          else {
+            setNmAddress(withBuilding);
+            const r = deriveRegion(withBuilding);
+            if (r.length) setRegionList(r);
+          }
           setAddrOpen(false);
         },
         onclose: () => setAddrOpen(false),
@@ -511,7 +520,7 @@ export default function JobPostForm({
   const snapshot = () => ({
     v: 1,
     at: new Date().toISOString(),
-    form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType,
+    form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations,
     detailImages, bannerImages, hiringProcess, benefitTags,
     salaryNego, salaryType, salaryMax, salaryByCat,
     pasteText, ocrSourceUrl, parseUrl, importMode, findQuery,
@@ -530,7 +539,7 @@ export default function JobPostForm({
     }, 600);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType, detailImages, bannerImages,
+  }, [form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations, detailImages, bannerImages,
       hiringProcess, benefitTags, salaryNego, salaryType, salaryMax, salaryByCat, pasteText, ocrSourceUrl,
       parseUrl, importMode, findQuery, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
       nmAddressDetail, nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
@@ -546,11 +555,13 @@ export default function JobPostForm({
     try { d = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch { d = null; }
     if (!d || d.v !== 1) return;
     // 빈 껍데기는 되살릴 것이 없다.
-    const hasSomething = (d.pasteText || "").trim() || (d.form?.title || "").trim() || (d.newCompanyName || "").trim();
+    const hasSomething = (d.pasteText || "").trim() || (d.form?.title || "").trim() || (d.newCompanyName || "").trim()
+      || (d.detailImages || []).length || (d.bannerImages || []).length;
     if (!hasSomething) return;
     const set = <T,>(fn: (v: T) => void, v: T | undefined) => { if (v !== undefined && v !== null) fn(v); };
     set(setForm, d.form); set(setNotes, d.notes); set(setCategories, d.categories); set(setPosMeta, d.posMeta);
     set(setRegionList, d.regionList); set(setAlwaysOpen, d.alwaysOpen); set(setJobGroupType, d.jobGroupType);
+    set(setExtraLocations, d.extraLocations);
     set(setDetailImages, d.detailImages); set(setBannerImages, d.bannerImages);
     set(setHiringProcess, d.hiringProcess); set(setBenefitTags, d.benefitTags);
     set(setSalaryNego, d.salaryNego); set(setSalaryType, d.salaryType); set(setSalaryMax, d.salaryMax); set(setSalaryByCat, d.salaryByCat);
@@ -856,6 +867,7 @@ export default function JobPostForm({
       }
       setRegionList(j.location ? String(j.location).split(",").map((s: string) => s.trim()).filter(Boolean) : []);
       setDetailImages(j.detail_images || []);
+      setExtraLocations(Array.isArray(j.work_locations) ? j.work_locations : []);
       // 공고에 저장된 상단 이미지를 그대로 복원. 빈 배열이면 '없음'을 유지(기업 커버로 되살리지 않음).
       setBannerImages(((Array.isArray(j.cover_images) ? j.cover_images : (j.company?.cover_images || [])) as any[]).map((c: any) => ({ url: c?.url, name: "배너" })).filter((x: any) => x.url));
       setHiringProcess(j.hiring_process || []);
@@ -1668,7 +1680,9 @@ export default function JobPostForm({
     // 비회원(관리자 대행) 공고는 관리자가 자유롭게 대행 등록 → 필수 검증 없이 등록 허용.
     const isNmAdmin = mode === "admin" && nonMember;
     if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return; }
-    const effRegions = regionList.length ? regionList : deriveRegion(nmFullAddress);
+    // 추가 근무지의 지역도 함께 담아야 그 지역으로 찾는 사람에게도 보인다.
+    const extraRegions = extraLocations.flatMap((l) => deriveRegion([l.address, l.detail].filter(Boolean).join(" ")));
+    const effRegions = [...new Set([...(regionList.length ? regionList : deriveRegion(nmFullAddress)), ...extraRegions])];
     if (!isNmAdmin) {
       if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
       if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
@@ -1754,6 +1768,9 @@ export default function JobPostForm({
       salary_text: fiSalary.trim() || null, // 비회원 자유입력(예: "추후협의") — 있으면 표시 우선
       positions: positions.length ? positions : null, // 모집부문 표(분야별 경력·급여·인원)
       location: effRegions.join(", ") || null,
+      work_locations: extraLocations.filter((l) => l.address.trim()).length
+        ? extraLocations.filter((l) => l.address.trim())
+        : null,
       work_type: workType,
       // 자유입력(fi*)이 채워졌으면 그 값으로 override(비회원 원문 보존). 비어 있으면 기존 위젯 값.
       employment_type: p0.employment || null, // 모집부문 표 첫 행 기준(대표값)
@@ -2823,44 +2840,48 @@ export default function JobPostForm({
                   <MapPin size={16} style={{ color: "#5f0080", flexShrink: 0 }} />근무지역 <span style={{ color: "#e9a3a3" }}>*</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 12 }}>
-                  <input readOnly value={nmAddress} onClick={openAddressSearch}
+                  <input readOnly value={nmAddress} onClick={() => openAddressSearch()}
                     placeholder="주소 검색을 눌러주세요"
                     style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left", cursor: "pointer" }} />
                   <input value={nmAddressDetail} onChange={(e) => setNmAddressDetail(e.target.value)}
                     placeholder="상세주소 (동·호수 등)"
                     style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
                 </div>
-                {/* 지점이 여럿이거나 인근까지 함께 뽑는 공고가 있다. 주소에서 뽑아낸 지역에
-                    더 얹을 수 있게 한다 — 여기 담긴 지역으로 구직자 검색에 걸린다. */}
-                {(() => {
-                  const derived = deriveRegion(nmFullAddress);
-                  const shown = regionList.length ? regionList : derived;
-                  const 지우기 = (r: string) => setRegionList(shown.filter((x) => x !== r));
+                {nmFullAddress && <AddressMap address={nmFullAddress} name={newCompanyName.trim() || undefined} height={220} />}
+
+                {/* 근무지가 여러 곳인 공고 — 주소 칸을 하나씩 더 만들고, 각자 지도를 붙인다.
+                    여기 담긴 주소에서도 지역을 뽑아 검색에 걸리게 한다. */}
+                {extraLocations.map((loc, i) => {
+                  const full = [loc.address.trim(), loc.detail.trim()].filter(Boolean).join(" ");
+                  const 고치기 = (patch: Partial<{ address: string; detail: string }>) =>
+                    setExtraLocations((prev) => prev.map((x, k) => (k === i ? { ...x, ...patch } : x)));
                   return (
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
-                      {shown.map((r) => (
-                        <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 8px 4px 10px", borderRadius: 999, background: "#f3f0f7", color: "#4a4453", fontSize: 13 }}>
-                          {r}
-                          <button type="button" onClick={() => 지우기(r)} title="이 지역 빼기"
-                            style={{ border: "none", background: "none", padding: 0, color: "#9a92a6", cursor: "pointer", fontSize: 13, lineHeight: 1 }}>×</button>
-                        </span>
-                      ))}
-                      <button type="button"
-                        onClick={() => {
-                          // 주소에서 뽑아낸 지역을 먼저 담아 둬야, 추가한 뒤에도 그 지역이 안 사라진다.
-                          if (!regionList.length && derived.length) setRegionList(derived);
-                          setRegionModalOpen(true);
-                        }}
-                        style={{ padding: "4px 10px", borderRadius: 999, border: "1px dashed #c9b8de", background: "#fff", color: "#5f0080", fontSize: 13, cursor: "pointer" }}>
-                        ＋ 근무지역 추가
-                      </button>
-                      {shown.length === 0 && (
-                        <span style={{ fontSize: 12, color: "#b3adbd" }}>주소를 넣으면 지역이 자동으로 잡혀요</span>
-                      )}
+                    <div key={i} style={{ marginTop: 12, paddingTop: 12, borderTop: "1px dashed #efeaf5" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                        <span style={{ fontSize: 13, color: "#7a6f8a" }}>근무지 {i + 2}</span>
+                        <button type="button" onClick={() => setExtraLocations((prev) => prev.filter((_, k) => k !== i))}
+                          title="이 근무지 빼기"
+                          style={{ marginLeft: "auto", border: "none", background: "none", color: "#c0392b", fontSize: 12.5, cursor: "pointer" }}>
+                          빼기
+                        </button>
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? 8 : 12 }}>
+                        <input readOnly value={loc.address} onClick={() => openAddressSearch((addr) => 고치기({ address: addr }))}
+                          placeholder="주소 검색을 눌러주세요"
+                          style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left", cursor: "pointer" }} />
+                        <input value={loc.detail} onChange={(e) => 고치기({ detail: e.target.value })}
+                          placeholder="상세주소 (동·호수 등)"
+                          style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
+                      </div>
+                      {full && <AddressMap address={full} height={200} />}
                     </div>
                   );
-                })()}
-                {nmFullAddress && <AddressMap address={nmFullAddress} name={newCompanyName.trim() || undefined} height={220} />}
+                })}
+
+                <button type="button" onClick={() => setExtraLocations((prev) => [...prev, { address: "", detail: "" }])}
+                  style={{ marginTop: 10, padding: "7px 12px", borderRadius: 8, border: "1px dashed #c9b8de", background: "#fff", color: "#5f0080", fontSize: 13.5, cursor: "pointer" }}>
+                  ＋ 근무지역 추가
+                </button>
               </div>
 
               {/* 지원 안내 (채용 담당자 · 접수방법 · 채용 절차) */}
@@ -3156,7 +3177,7 @@ export default function JobPostForm({
                         value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>주소<span style={req}> *</span></span>
                       <input readOnly style={{ ...inpHl(!!nmAddress), cursor: "pointer" }} value={nmAddress}
-                        onClick={openAddressSearch} placeholder="주소 검색을 눌러주세요" />
+                        onClick={() => openAddressSearch()} placeholder="주소 검색을 눌러주세요" />
                     </div>
                     <div style={row}><span style={lbl2}>상세주소</span>
                       <input style={inpHl(!!nmAddressDetail)} value={nmAddressDetail}
