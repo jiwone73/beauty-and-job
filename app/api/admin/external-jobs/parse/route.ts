@@ -798,7 +798,14 @@ export async function POST(req: NextRequest) {
       // 없으니, 낮출 이유 없이 품질만 깎게 된다.
       const effort = process.env.PARSE_EFFORT as "low" | "medium" | "high" | undefined;
 
-      const ask = (cached: boolean) => anthropic.messages.create({
+      // 규칙서를 캐시에 얼마나 오래 얹어 둘지.
+      //  · "1h"  — 저장은 2배, 꺼내 쓰는 건 10분의 1. 한 시간 안에 두 번만 불러도 이득.
+      //  · "5m"  — 저장은 1.25배지만 5분이면 만료된다.
+      //  · null  — 캐시 없이.
+      // 공고 하나를 불러와 검토하고 등록하기까지 5분은 넘게 걸린다. 그래서 5분짜리는
+      // 다음 공고 차례에 이미 만료돼, 저장 요금만 내고 혜택은 못 받는 일이 잦다
+      // (한 시간에 열 건이면 캐시 없을 때 100원, 5분 캐시 120원, 1시간 캐시 29원).
+      const ask = (ttl: "1h" | "5m" | null) => anthropic.messages.create({
         // 매일 여러 건 누르는 버튼이라 건당 요금이 그대로 월 비용이 된다
         // (오퍼스 월 8만원 / 소넷 2만 7천원 / 하이쿠 1만 4천원).
         // 지어내는 실수는 아래 dropUnsupported 가 코드로 막고, 값은 사람이 어차피
@@ -810,21 +817,27 @@ export async function POST(req: NextRequest) {
         max_tokens: 16000,
         ...(effort ? { output_config: { effort } } : {}),
         // 이 8,600자 규칙서는 매번 글자 하나 안 바뀐다. 캐시에 올려 두면 두 번째
-        // 호출부터 이 부분이 10분의 1 값이 된다. 처음 한 번은 1.25배로 조금 더
-        // 내지만, 공고를 연달아 등록할 때는 두 번째부터 계속 이득이다.
-        // (캐시는 5분간 살아 있고, 부를 때마다 다시 5분이 연장된다.)
-        system: cached ? [{ type: "text", text: sys, cache_control: { type: "ephemeral" } }] : sys,
+        // 호출부터 이 부분이 10분의 1 값이 된다.
+        system: ttl ? [{ type: "text" as const, text: sys, cache_control: { type: "ephemeral" as const, ttl } }] : sys,
         messages: [{ role: "user", content: userContent }],
       });
       // 캐시를 거절당해도 불러오기 자체는 되어야 한다. 아껴 보려다 버튼이 죽으면
-      // 본말이 뒤집힌다. 다만 캐시 때문에 거절당한 경우에만 다시 묻는다 —
-      // 크레딧 부족이나 과부하까지 두 번씩 부르면 60초 안에 못 끝낸다.
-      const msg = await ask(true).catch((e: any) => {
-        const m = String(e?.message || "");
-        if (e?.status !== 400 || !/cache/i.test(m)) throw e;
-        console.error("[external parse] 캐시를 거절당해 캐시 없이 재시도:", m);
-        return ask(false);
-      });
+      // 본말이 뒤집힌다. 한 시간짜리를 안 받아 주면 5분짜리로, 그것도 안 되면
+      // 캐시 없이 — 한 단계씩 물러선다.
+      // 다만 캐시가 이유일 때만 물러선다. 크레딧 부족이나 과부하까지 여러 번
+      // 부르면 시간 안에 못 끝낸다.
+      const isCacheError = (e: any) => e?.status === 400 && /cache|ttl/i.test(String(e?.message || ""));
+      const msg = await ask("1h")
+        .catch((e: any) => {
+          if (!isCacheError(e)) throw e;
+          console.error("[external parse] 1시간 캐시 거절 → 5분으로:", e?.message);
+          return ask("5m");
+        })
+        .catch((e: any) => {
+          if (!isCacheError(e)) throw e;
+          console.error("[external parse] 캐시 거절 → 캐시 없이:", e?.message);
+          return ask(null);
+        });
 
       // 한 번 부를 때 실제로 얼마가 나가는지 남긴다. 토큰 수를 눈대중으로 잡으면
       // 요금 계산이 몇 배씩 틀어진다. 배포 로그에서 진짜 값을 보고 판단하려는 것이다.
@@ -838,7 +851,13 @@ export async function POST(req: NextRequest) {
           "claude-sonnet-5": [2, 10], "claude-opus-5": [5, 25], "claude-haiku-4-5": [1, 5],
         };
         const [ri, ro] = RATE[String(msg.model).replace(/-\d{8}$/, "")] || [2, 10];
-        const usd = (fresh * ri + write * ri * 1.25 + read * ri * 0.1 + outTok * ro) / 1e6;
+        // 저장 단가는 얼마짜리 캐시냐에 따라 다르다(5분 1.25배, 1시간 2배).
+        // 응답이 둘을 나눠 알려주면 그대로 쓰고, 아니면 우리가 먼저 시도한 1시간으로 친다.
+        const cc: any = u.cache_creation || {};
+        const w5 = cc.ephemeral_5m_input_tokens ?? 0;
+        const w1h = cc.ephemeral_1h_input_tokens ?? 0;
+        const writeCost = (w5 || w1h) ? (w5 * ri * 1.25 + w1h * ri * 2) : write * ri * 2;
+        const usd = (fresh * ri + writeCost + read * ri * 0.1 + outTok * ro) / 1e6;
         console.log(
           `[parse 요금] ${msg.model} 입력 ${fresh}(신규)+${write}(캐시저장)+${read}(캐시적중)` +
           ` 출력 ${outTok} → 약 ${Math.round(usd * 1400)}원`
