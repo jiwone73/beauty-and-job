@@ -146,6 +146,10 @@ export interface JobPostFormProps {
 }
 
 // 공고 상단 이미지(기업 커버) 표시 전용 배너 — 한 배너에 최대 3개 균등, 3개 초과 시 ▶로 회전
+// 이 문서(탭)에서 등록 화면이 이미 열린 적이 있는지. 메뉴를 눌러 화면만 갈아끼운
+// 경우를 새로고침과 구분하려고 둔다. 새로고침하면 문서가 새로 뜨므로 false 로 돌아간다.
+let 폼이열린적있음 = false;
+
 export default function JobPostForm({
   mode, editId = null, listHref, companyType = null, companies = [],
   uploadImage, onSubmit, loadEditData, listDrafts, initialFindQuery = "",
@@ -557,8 +561,25 @@ export default function JobPostForm({
   const clearAutosave = () => { try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ } setRestored(null); };
 
   // 화면이 뜰 때 남아 있던 내용을 되살린다.
+  //
+  // 되살리는 건 "같은 화면을 새로고침했을 때"뿐이다. 다른 데서 등록 화면으로
+  // 넘어온 것은 새 공고를 쓰겠다는 뜻이라, 지난 내용이 남아 있으면 지우고 시작해야
+  // 한다. 브라우저가 알려주는 이동 방식(reload / navigate)으로 가른다.
+  const 판단함 = useRef(false);
   useEffect(() => {
     if (editId || mode !== "admin") return;
+    if (판단함.current) return; // 개발 모드에서 효과가 두 번 도는 것 방지
+    판단함.current = true;
+
+    // 같은 문서 안에서 화면만 갈아끼운 경우(메뉴 클릭)도 '넘어온 것'이다.
+    const 화면전환 = 폼이열린적있음;
+    폼이열린적있음 = true;
+    const 이동방식 = (performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined)?.type;
+    if (화면전환 || 이동방식 !== "reload") {
+      try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ }
+      return;
+    }
+
     let d: any = null;
     try { d = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch { d = null; }
     if (!d || d.v !== 1) return;
