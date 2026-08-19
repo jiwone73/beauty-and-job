@@ -11,6 +11,7 @@ import { getAllJobItems, SEARCH_TAGS } from "@/lib/data/jobGroups";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
 import { rehostImages } from "@/lib/external/rehost";
 import { dropUnsupported } from "@/lib/external/evidence";
+import { stripTitleDecor } from "@/lib/titleDecor";
 import { PARSE_MODEL } from "@/lib/ai/models";
 
 function htmlToText(html: string): string {
@@ -958,6 +959,9 @@ export async function POST(req: NextRequest) {
       out.apply_method = "MANAGED";
     }
   }
+
+  // 제목의 장식은 프롬프트로도 시켰지만 그대로 실려 오는 일이 있어 코드로 한 번 더 건다.
+  if (typeof out.title === "string") out.title = stripTitleDecor(out.title);
 
   // ── 폼 선택지와 정확히 일치하는 값만 남기도록 검증(오타·off-list 방지) ──
   if (typeof out.career !== "string" || !CAREER_OPTIONS.includes(out.career)) out.career = "";
