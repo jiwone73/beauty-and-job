@@ -108,7 +108,9 @@ export async function GET(req: NextRequest) {
 ${recentTitles || "(없음)"}`;
 
     const msg = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      // 소넷 4는 은퇴해서 이 경로(앤트로픽 API 직접 호출)에서는 더 이상 부를 수 없다.
+      // 후속인 소넷 5는 값도 더 싸다($3/$15 → $2/$10 per MTok).
+      model: "claude-sonnet-5",
       max_tokens: 500,
       system: sys,
       messages: [{ role: "user", content: user }],
