@@ -5,6 +5,7 @@ import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeEditor from "@/components/profile/ResumeEditor";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
+import { compressPhoto, MAX_PHOTOS } from "@/lib/compressImage";
 
 type Step = "write" | "preview" | "edit";
 
@@ -40,8 +41,7 @@ export default function ApplyModal({
   // 기본 정보 (이력서 페이지와 동일하게 /api/users/me 에서)
   const [emailLocal, setEmailLocal] = useState(email);
   const [resumeType, setResumeType] = useState<"office" | "salon">("office");
-  const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
-  const [portfolioFilename, setPortfolioFilename] = useState<string | null>(null);
+  const [portfolioImages, setPortfolioImages] = useState<{ url: string; w?: number; h?: number }[]>([]);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [phoneLocal, setPhoneLocal] = useState("");
   const [addressDisplay, setAddressDisplay] = useState("");
@@ -72,8 +72,7 @@ export default function ApplyModal({
         if (res.success) {
           if (res.data.email) setEmailLocal(res.data.email);
           setResumeType(res.data.job_type === "STORE" ? "salon" : "office");
-          if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
-          if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
+          if (Array.isArray(res.data.portfolio_images)) setPortfolioImages(res.data.portfolio_images);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
           if (res.data.phone) setPhoneLocal(res.data.phone);
           setAddressDisplay(
@@ -100,35 +99,40 @@ export default function ApplyModal({
     ? `${birth.slice(0, 4)}년 (${new Date().getFullYear() - Number(birth.slice(0, 4))}세, ${gender === "남성" ? "남" : "여"})`
     : "";
 
-  // 포트폴리오 업로드/삭제 (수정 화면용)
-  const processFile = async (file: File) => {
-    if (file.type !== "application/pdf") { alert("PDF 파일만 업로드 가능합니다."); return; }
-    if (file.size > 5 * 1024 * 1024) { alert("파일 크기는 5MB 이하여야 합니다."); return; }
+  // 포트폴리오 사진 업로드/삭제 (수정 화면용) — 이력서 화면과 같은 규칙을 쓴다.
+  const processPhotos = async (files: File[]) => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
+    const 남은자리 = MAX_PHOTOS - portfolioImages.length;
+    if (남은자리 <= 0) { alert(`사진은 최대 ${MAX_PHOTOS}장까지예요.`); return; }
+    const 고른것 = files.filter((f) => /^image\//.test(f.type)).slice(0, 남은자리);
+    if (!고른것.length) { alert("사진 파일만 올릴 수 있어요."); return; }
     setIsUploading(true);
     try {
       const fd = new FormData();
-      fd.append("file", file);
+      for (const [i, f] of 고른것.entries()) {
+        const { file: 줄인것, width, height } = await compressPhoto(f);
+        fd.append("files", 줄인것);
+        fd.append(`w${i}`, String(width));
+        fd.append(`h${i}`, String(height));
+      }
       const res = await fetch("/api/users/me/portfolio", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
       const data = await res.json();
-      if (data.success) {
-        setPortfolioUrl(data.data.portfolio_url);
-        setPortfolioFilename(data.data.portfolio_filename);
-      } else {
-        alert(data.error?.message || "업로드 실패");
-      }
+      if (data.success) setPortfolioImages(data.data.portfolio_images || []);
+      else alert(data.error?.message || "업로드 실패");
     } finally {
       setIsUploading(false);
     }
   };
-  const handleDeletePortfolio = async () => {
-    if (!confirm("포트폴리오를 삭제하시겠어요?")) return;
+  const handleDeletePhoto = async (url: string) => {
+    if (!confirm("이 사진을 지울까요?")) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
-    const res = await fetch("/api/users/me/portfolio", { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(`/api/users/me/portfolio?url=${encodeURIComponent(url)}`, {
+      method: "DELETE", headers: { Authorization: `Bearer ${token}` },
+    });
     const data = await res.json();
-    if (data.success) { setPortfolioUrl(null); setPortfolioFilename(null); }
+    if (data.success) setPortfolioImages(data.data.portfolio_images || []);
   };
 
   // 첨부 이력서 파일 업로드
@@ -363,8 +367,7 @@ export default function ApplyModal({
                     languages,
                     experiences,
                     links,
-                    portfolioUrl,
-                    portfolioFilename,
+                    portfolioImages,
                     resumeFileName: null, // 첨부 이력서 숨김 처리(미리보기/전송 문서에서 제외)
                     avatarUrl,
                     resumeType,
@@ -419,11 +422,10 @@ export default function ApplyModal({
                   resumeType={resumeType}
                   emailLocal={emailLocal}
                   setEmailLocal={setEmailLocal}
-                  portfolioUrl={portfolioUrl}
-                  portfolioFilename={portfolioFilename}
+                  portfolioImages={portfolioImages}
                   isUploading={isUploading}
-                  onPortfolioFile={processFile}
-                  onPortfolioDelete={handleDeletePortfolio}
+                  onPortfolioFiles={processPhotos}
+                  onPortfolioDelete={handleDeletePhoto}
                   resumeFileName={resumeFileName}
                   resumeFileSize={resumeFileSize}
                   isResumeFileUploading={isResumeFileUploading}

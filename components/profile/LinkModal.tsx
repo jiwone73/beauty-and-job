@@ -7,13 +7,27 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   editTarget?: LinkEntry | null;
+  resumeType?: "salon" | "office";
 }
 
-const LINK_CATEGORIES = ["인스타그램", "유튜브", "포트폴리오", "기타"];
-// 미용은 작업물이 곧 경력이라 링크의 대부분이 인스타다. 기본값으로 두고 다른 걸 고를 때만 바꾸게 한다.
-const DEFAULT_CATEGORY = LINK_CATEGORIES[0];
+// 작업물을 어디에 두는지는 직군마다 다르다. 매장은 시술 사진을 인스타에 올리고,
+// 오피스는 노션·링크드인에 정리해 둔다. 한 목록으로 묶으면 어느 쪽에도 안 맞는다.
+// ('포트폴리오'는 구역 이름과 겹쳐 뺐다 — 무엇을 고르라는 건지 헷갈린다.)
+const SALON_CATEGORIES = ["인스타그램", "유튜브", "블로그", "기타"];
+const OFFICE_CATEGORIES = ["노션", "링크드인", "브런치", "개인 사이트", "기타"];
+const URL_HINT: Record<string, string> = {
+  인스타그램: "instagram.com/아이디",
+  유튜브: "youtube.com/@채널",
+  블로그: "blog.naver.com/아이디",
+  노션: "notion.site/...",
+  링크드인: "linkedin.com/in/아이디",
+  브런치: "brunch.co.kr/@아이디",
+};
 
-export default function LinkModal({ isOpen, onClose, editTarget }: Props) {
+export default function LinkModal({ isOpen, onClose, editTarget, resumeType = "salon" }: Props) {
+  const 분류목록 = resumeType === "office" ? OFFICE_CATEGORIES : SALON_CATEGORIES;
+  // 가장 흔한 것을 기본값으로 둔다 — 매장은 인스타, 오피스는 노션.
+  const 기본분류 = 분류목록[0];
   const { addLink, updateLink } = useProfileStore();
   const [category, setCategory] = useState("");
   const [url, setUrl] = useState("");
@@ -27,7 +41,7 @@ export default function LinkModal({ isOpen, onClose, editTarget }: Props) {
       setCategory(editTarget.category || "");
       setUrl(editTarget.url || "");
     } else {
-      setCategory(DEFAULT_CATEGORY);
+      setCategory(기본분류);
       setUrl("");
     }
     setShowCategory(false);
@@ -57,7 +71,9 @@ export default function LinkModal({ isOpen, onClose, editTarget }: Props) {
         </div>
         <div className="cv-body">
           <p className="cv-desc">
-            인스타그램, 유튜브, 포트폴리오 등 직접 만든 뷰티 콘텐츠나 운영 채널이 있다면 추가하고 내 강점을 더 드러내보세요.
+            {resumeType === "office"
+              ? "노션·링크드인·브런치처럼 작업물을 정리해 둔 곳이 있다면 추가해 강점을 더 드러내 보세요."
+              : "인스타그램·유튜브처럼 시술 사진이나 직접 만든 콘텐츠를 올리는 곳이 있다면 추가해 강점을 더 드러내 보세요."}
           </p>
           <label className="cv-field-label cv-required">카테고리</label>
           <button className="cv-select-btn" onClick={() => setShowCategory(!showCategory)}>
@@ -66,13 +82,13 @@ export default function LinkModal({ isOpen, onClose, editTarget }: Props) {
           </button>
           {showCategory && (
             <div className="cv-dropdown">
-              {LINK_CATEGORIES.map((cat) => (
+              {분류목록.map((cat) => (
                 <button key={cat} className="cv-dropdown-item" onClick={() => { setCategory(cat); setShowCategory(false); }}>{cat}</button>
               ))}
             </div>
           )}
           <label className="cv-field-label cv-required">URL</label>
-          <input className="cv-input" placeholder={category === "인스타그램" ? "instagram.com/아이디" : "https://"} value={url} onChange={(e) => setUrl(e.target.value)} />
+          <input className="cv-input" placeholder={URL_HINT[category] || "https://"} value={url} onChange={(e) => setUrl(e.target.value)} />
           <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
         </div>
       </div>

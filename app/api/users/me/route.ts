@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import pool from "@/lib/db";
 import { verifyAccessToken } from "@/lib/jwt";
+import { supabaseAdmin } from "@/lib/supabase";
 
 function ok(data: any) {
   return NextResponse.json({ success: true, data });
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
     const res = await client.query(
       `SELECT id, email, name, phone, gender, job_type, office_job_areas, status, created_at, avatar_url,
               birth_date, address_road, address_detail, region_sido, region_sigungu, preferred_regions,
-              portfolio_url, portfolio_filename, resume_file_url, resume_file_name, resume_file_size,
+              portfolio_url, portfolio_filename, portfolio_images, resume_file_url, resume_file_name, resume_file_size,
               (password_hash IS NOT NULL) AS has_password, (kakao_id IS NOT NULL) AS is_kakao
        FROM users WHERE id = $1`,
       [payload.sub]
@@ -195,10 +196,23 @@ export async function DELETE(req: NextRequest) {
       if (!valid) return err("AUTH_003", "비밀번호가 일치하지 않습니다.", 401);
     }
     const upd = await client.query(
-      `UPDATE users SET status = 'WITHDRAWN', withdrawn_at = NOW() WHERE id = $1 AND status = 'ACTIVE'`,
+      `UPDATE users SET status = 'WITHDRAWN', withdrawn_at = NOW(), portfolio_images = NULL
+        WHERE id = $1 AND status = 'ACTIVE'
+        RETURNING portfolio_images AS 지울것`,
       [payload.sub]
     );
     if (upd.rowCount === 0) return err("USER_004", "처리할 수 없는 계정입니다.", 400);
+
+    // 탈퇴해도 저장소의 사진은 남아 있었다. 그러면 쓰는 사람은 줄어도 용량은
+    // 늘기만 한다. 계정을 닫을 때 사진도 함께 지운다(실패해도 탈퇴는 진행한다 —
+    // 파일이 안 지워졌다고 계정을 못 닫게 할 일은 아니다).
+    try {
+      const { data } = await supabaseAdmin.storage.from("portfolios").list(payload.sub);
+      const paths = (data || []).map((f) => `${payload.sub}/${f.name}`);
+      if (paths.length) await supabaseAdmin.storage.from("portfolios").remove(paths);
+    } catch (e) {
+      console.error("[탈퇴 시 포트폴리오 정리]", e);
+    }
     return ok({ withdrawn: true });
   } finally {
     client.release();

@@ -11,8 +11,9 @@ import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
 import ResumeEditor from "@/components/profile/ResumeEditor";
 import { formatPhone } from "@/lib/phone";
+import { compressPhoto, MAX_PHOTOS } from "@/lib/compressImage";
 
-const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024; // 5MB
+// 사진은 브라우저에서 156만 픽셀로 줄여 올린다(lib/compressImage).
 
 function ResumePageContent() {
   const router = useRouter();
@@ -47,6 +48,7 @@ function ResumePageContent() {
   const previewRef = useRef<HTMLDivElement>(null);
 
   const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
+  const [portfolioImages, setPortfolioImages] = useState<{ url: string; w?: number; h?: number }[]>([]);
   const [addressDisplay, setAddressDisplay] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [officeAreas, setOfficeAreas] = useState<string[]>([]);
@@ -114,6 +116,7 @@ function ResumePageContent() {
           if (res.data.job_type === "STORE") setResumeType("salon");
           else setResumeType("office");
           if (res.data.portfolio_url) setPortfolioUrl(res.data.portfolio_url);
+          if (Array.isArray(res.data.portfolio_images)) setPortfolioImages(res.data.portfolio_images);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
           if (Array.isArray(res.data.office_job_areas)) setOfficeAreas(res.data.office_job_areas);
           if (res.data.portfolio_filename) setPortfolioFilename(res.data.portfolio_filename);
@@ -195,87 +198,52 @@ function ResumePageContent() {
     }
   };
 
-  const processFile = async (file: File) => {
-    if (file.type !== "application/pdf") {
-      alert("PDF 파일만 업로드 가능합니다.");
-      return;
-    }
-    if (file.size > MAX_PORTFOLIO_SIZE) {
-      alert("파일 크기는 5MB 이하여야 합니다.");
-      return;
-    }
-
+  // 사진 여러 장을 한 번에 올린다. 보내기 전에 브라우저에서 줄인다 —
+  // 폰 사진은 장당 3~5MB라 그대로 보내면 올리다 지치고 저장소도 금세 찬다.
+  const processPhotos = async (files: File[]) => {
     const token = localStorage.getItem("access_token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
+    if (!token) { alert("로그인이 필요합니다."); return; }
+    const 남은자리 = MAX_PHOTOS - portfolioImages.length;
+    if (남은자리 <= 0) { alert(`사진은 최대 ${MAX_PHOTOS}장까지예요.`); return; }
+    const 고른것 = files.filter((f) => /^image\//.test(f.type)).slice(0, 남은자리);
+    if (!고른것.length) { alert("사진 파일만 올릴 수 있어요."); return; }
+    if (files.length > 고른것.length) alert(`${MAX_PHOTOS}장까지만 올라가요. 앞의 ${고른것.length}장만 올립니다.`);
 
     setIsUploading(true);
     try {
       const formData = new FormData();
-      formData.append("file", file);
-
+      for (const [i, f] of 고른것.entries()) {
+        const { file: 줄인것, width, height } = await compressPhoto(f);
+        formData.append("files", 줄인것);
+        formData.append(`w${i}`, String(width));
+        formData.append(`h${i}`, String(height));
+      }
       const res = await fetch("/api/users/me/portfolio", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+        method: "POST", headers: { Authorization: `Bearer ${token}` }, body: formData,
       });
       const data = await res.json();
-      if (!data.success) {
-        alert(data.error?.message || "업로드에 실패했습니다.");
-        return;
-      }
-      setPortfolioUrl(data.data.portfolio_url);
-      setPortfolioFilename(data.data.portfolio_filename);
-      alert("포트폴리오가 업로드되었습니다.");
+      if (!data.success) { alert(data.error?.message || "업로드에 실패했어요."); return; }
+      setPortfolioImages(data.data.portfolio_images || []);
     } catch (e) {
       console.error(e);
-      alert("업로드 중 오류가 발생했습니다.");
+      alert("업로드 중 오류가 발생했어요.");
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) processFile(file);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) processFile(file);
-  };
-
-  const handleDeletePortfolio = async () => {
-    if (!confirm("포트폴리오를 삭제하시겠어요?")) return;
+  const handleDeletePhoto = async (url: string) => {
+    if (!confirm("이 사진을 지울까요?")) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
-
     try {
-      const res = await fetch("/api/users/me/portfolio", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await fetch(`/api/users/me/portfolio?url=${encodeURIComponent(url)}`, {
+        method: "DELETE", headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      if (!data.success) {
-        alert("삭제에 실패했습니다.");
-        return;
-      }
-      setPortfolioUrl(null);
-      setPortfolioFilename(null);
-      alert("포트폴리오가 삭제되었습니다.");
+      if (!data.success) { alert("삭제에 실패했어요."); return; }
+      setPortfolioImages(data.data.portfolio_images || []);
     } catch (e) {
       console.error(e);
     }
@@ -382,10 +350,14 @@ function ResumePageContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 포트폴리오는 링크와 파일을 한 칸으로 본다. 인스타만 걸어 둔 사람도, PDF 만
+  // 가진 사람도 "작업물을 보여줬다"는 점에서는 같다. 둘로 나눠 세면 한쪽만 채운
+  // 사람이 영영 미완성으로 남는다.
+  const 포트폴리오채움 = portfolioImages.length > 0 || links.length > 0;
   // 모바일 완성도 (사이드바와 동일 기준)
   const progressItems = resumeType === "office"
-    ? [true, careers.length > 0, educations.length > 0, skills.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0]
-    : [true, careers.length > 0, educations.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, !!portfolioUrl, links.length > 0];
+    ? [true, careers.length > 0, educations.length > 0, skills.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, 포트폴리오채움]
+    : [true, careers.length > 0, educations.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, 포트폴리오채움];
   const progressRate = Math.round((progressItems.filter(Boolean).length / progressItems.length) * 100);
 
   return (
@@ -439,8 +411,7 @@ function ResumePageContent() {
               { id: "language", label: "어학", done: languages.length > 0 },
               { id: "certificate", label: "자격증", done: certificates.length > 0 },
               { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              { id: "portfolio", label: "포트폴리오", done: !!portfolioUrl },
-              { id: "link", label: "링크", done: links.length > 0 },
+              { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
             ] : [
               { id: "basic", label: "기본 정보", done: true },
               { id: "career", label: "경력", done: careers.length > 0 },
@@ -448,8 +419,7 @@ function ResumePageContent() {
               { id: "language", label: "어학", done: languages.length > 0 },
               { id: "certificate", label: "자격증", done: certificates.length > 0 },
               { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              { id: "portfolio", label: "포트폴리오", done: !!portfolioUrl },
-              { id: "link", label: "링크", done: links.length > 0 },
+              { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
             ];
             const doneCount = sections.filter((s) => s.done).length;
             const rate = Math.round((doneCount / sections.length) * 100);
@@ -529,11 +499,10 @@ function ResumePageContent() {
             resumeType={resumeType}
             emailLocal={emailLocal}
             setEmailLocal={setEmailLocal}
-            portfolioUrl={portfolioUrl}
-            portfolioFilename={portfolioFilename}
+            portfolioImages={portfolioImages}
             isUploading={isUploading}
-            onPortfolioFile={processFile}
-            onPortfolioDelete={handleDeletePortfolio}
+            onPortfolioFiles={processPhotos}
+            onPortfolioDelete={handleDeletePhoto}
             resumeFileName={resumeFileName}
             resumeFileSize={resumeFileSize}
             isResumeFileUploading={isResumeFileUploading}
@@ -590,8 +559,7 @@ function ResumePageContent() {
                   languages,
                   experiences,
                   links,
-                  portfolioUrl,
-                  portfolioFilename,
+                  portfolioImages,
                   avatarUrl,
                   resumeType,
                   officeJobAreas: effectiveOfficeAreas,

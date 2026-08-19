@@ -9,6 +9,7 @@ import LanguageModal from "@/components/profile/LanguageModal";
 import ExperienceModal from "@/components/profile/ExperienceModal";
 import SkillModal from "@/components/profile/SkillModal";
 import CertificateModal from "@/components/profile/CertificateModal";
+import { MAX_PHOTOS } from "@/lib/compressImage";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024;
 
@@ -17,11 +18,10 @@ type Props = {
   emailLocal: string;
   setEmailLocal: (v: string) => void;
   // 포트폴리오 상태/핸들러 (페이지에서 관리, 주입)
-  portfolioUrl: string | null;
-  portfolioFilename: string | null;
+  portfolioImages: { url: string; w?: number; h?: number }[];
   isUploading: boolean;
-  onPortfolioFile: (file: File) => void;
-  onPortfolioDelete: () => void;
+  onPortfolioFiles: (files: File[]) => void;
+  onPortfolioDelete: (url: string) => void;
   // 첨부 이력서 상태/핸들러 (페이지에서 관리, 주입)
   resumeFileName: string | null;
   resumeFileSize: number | null;
@@ -36,10 +36,9 @@ export default function ResumeEditor({
   resumeType,
   emailLocal,
   setEmailLocal,
-  portfolioUrl,
-  portfolioFilename,
+  portfolioImages,
   isUploading,
-  onPortfolioFile,
+  onPortfolioFiles,
   onPortfolioDelete,
   resumeFileName,
   resumeFileSize,
@@ -133,16 +132,16 @@ export default function ResumeEditor({
   const totalCareer = calcTotalCareer();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) onPortfolioFile(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length) onPortfolioFiles(files);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragOver(true); };
   const handleDragLeave = (e: React.DragEvent) => { e.preventDefault(); setIsDragOver(false); };
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault(); setIsDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) onPortfolioFile(file);
+    const files = Array.from(e.dataTransfer.files || []);
+    if (files.length) onPortfolioFiles(files);
   };
 
   const handleResumeFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -436,38 +435,66 @@ export default function ResumeEditor({
       <section id="section-portfolio" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">포트폴리오</h2>
+          <button className="resume-icon-btn" aria-label="링크 추가" onClick={() => { setEditLink(null); setLinkModalOpen(true); }}>
+            <Plus size={18} />
+          </button>
         </div>
         <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
-          PDF 파일을 첨부해 주세요 (최대 5MB).
-          {resumeType === "salon" && " 시술 사진을 모은 PDF를 추천드려요."}
+          작업물을 보여줄 수 있는 것이면 무엇이든 좋아요.
+          {resumeType === "office"
+            ? " 노션·링크드인 같은 링크를 걸거나, 결과물 사진을 올리셔도 됩니다."
+            : " 시술 사진을 바로 올리거나, 인스타그램 링크를 걸어 두셔도 됩니다."}
         </p>
-        {portfolioUrl ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "12px" }}>
-            <FileText size={32} color="#5f0080" />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: "13px", fontWeight: 400, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {portfolioFilename || "포트폴리오.pdf"}
-              </p>
-              <a href={portfolioUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "12px", color: "#5f0080", textDecoration: "underline" }}>
-                파일 열기
-              </a>
-            </div>
-            <button onClick={() => fileInputRef.current?.click()} disabled={isUploading} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "13px", fontWeight: 600, cursor: isUploading ? "not-allowed" : "pointer" }}>
-              {isUploading ? "업로드 중..." : "교체"}
-            </button>
-            <button onClick={onPortfolioDelete} style={{ padding: "8px", borderRadius: "8px", border: "1px solid #e74c3c", background: "#fff", color: "#e74c3c", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} aria-label="삭제">
-              <Trash2 size={16} />
-            </button>
-          </div>
-        ) : (
-          <div onClick={() => !isUploading && fileInputRef.current?.click()} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
-            style={{ width: "100%", padding: "12px 16px", borderRadius: "12px", border: `2px dashed ${isDragOver ? "#5f0080" : "#d0c0e0"}`, background: isDragOver ? "#f3e5f5" : "#fafafa", color: "#5f0080", fontSize: "13px", fontWeight: 400, cursor: isUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", transition: "all 0.15s ease", textAlign: "center" }}>
-            <Upload size={26} />
-            <span>{isUploading ? "업로드 중..." : isDragOver ? "여기에 놓으세요" : "PDF를 끌어다 놓거나 클릭하여 업로드"}</span>
-            <span style={{ fontSize: "11px", color: "#888", fontWeight: 400 }}>PDF · 최대 5MB</span>
+        {/* 링크가 먼저 온다. 미용은 인스타에 시술 사진을 올리는 것이 흔해, 그쪽이
+            주된 포트폴리오다. PDF 는 인스타를 안 하는 사람을 위한 다른 길로 둔다. */}
+        {links.length > 0 && (
+          <div style={{ marginBottom: "12px" }}>
+            {links.map((link) => (
+              <div key={link.id} className="resume-link-item">
+                <span className="resume-link-category">{link.category}</span>
+                <a href={link.url} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
+                <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
+                  <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLink(link); setLinkModalOpen(true); }}>
+                    <Pencil size={15} />
+                  </button>
+                  <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 링크를 삭제할까요?")) removeLink(link.id); }}>
+                    <Trash2 size={15} />
+                  </button>
+                </span>
+              </div>
+            ))}
           </div>
         )}
-        <input ref={fileInputRef} type="file" accept="application/pdf" onChange={handleFileChange} style={{ display: "none" }} />
+        {portfolioImages.length > 0 && (
+          <div className="portfolio-grid">
+            {portfolioImages.map((img) => (
+              <div key={img.url} className="portfolio-cell">
+                {/* 목록은 4:3 로 잘라 보여준다 — 칸 높이가 들쭉날쭉하면 읽기 어렵다.
+                    자르는 것은 보여줄 때뿐이고, 저장된 사진은 원본 비율 그대로다. */}
+                <img src={img.url} alt="" loading="lazy" />
+                <button
+                  type="button"
+                  className="portfolio-del"
+                  aria-label="사진 삭제"
+                  onClick={() => onPortfolioDelete(img.url)}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        {portfolioImages.length < MAX_PHOTOS && (
+          <div onClick={() => !isUploading && fileInputRef.current?.click()} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
+            style={{ width: "100%", marginTop: portfolioImages.length ? "10px" : 0, padding: "12px 16px", borderRadius: "12px", border: `2px dashed ${isDragOver ? "#5f0080" : "#d0c0e0"}`, background: isDragOver ? "#f3e5f5" : "#fafafa", color: "#5f0080", fontSize: "13px", fontWeight: 400, cursor: isUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", transition: "all 0.15s ease", textAlign: "center" }}>
+            <Upload size={26} />
+            <span>{isUploading ? "올리는 중..." : isDragOver ? "여기에 놓으세요" : "사진을 끌어다 놓거나 눌러서 고르세요"}</span>
+            <span style={{ fontSize: "11px", color: "#888", fontWeight: 400 }}>
+              최대 {MAX_PHOTOS}장 · 지금 {portfolioImages.length}장 · 올릴 때 자동으로 줄여요
+            </span>
+          </div>
+        )}
+        <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileChange} style={{ display: "none" }} />
       </section>
 
       {/* 첨부 이력서 (본인이 작성한 이력서 파일) — 현재 숨김 처리(에디터·지원 모달 공통) */}
@@ -555,37 +582,10 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 링크 */}
-      <section id="section-link" className="resume-section">
-        <div className="resume-section-head">
-          <h2 className="resume-section-title">링크</h2>
-          <button className="resume-icon-btn" aria-label="링크 추가" onClick={() => { setEditLink(null); setLinkModalOpen(true); }}>
-            <Plus size={18} />
-          </button>
-        </div>
-        {links.length > 0 ? (
-          links.map((link) => (
-            <div key={link.id} className="resume-link-item">
-              <span className="resume-link-category">{link.category}</span>
-              <a href={link.url} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
-              <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLink(link); setLinkModalOpen(true); }}>
-                  <Pencil size={15} />
-                </button>
-                <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 링크를 삭제할까요?")) removeLink(link.id); }}>
-                  <Trash2 size={15} />
-                </button>
-              </span>
-            </div>
-          ))
-        ) : (
-          <p style={{ fontSize: "13px", color: "#aaa", margin: "8px 0 0" }}>뷰티 콘텐츠나 운영 채널이 있다면 + 로 추가하세요.</p>
-        )}
-      </section>
 
       {/* 하위 모달들 */}
       <CareerEditModal isOpen={careerModalOpen} onClose={() => { setCareerModalOpen(false); setEditCareer(null); }} editTarget={editCareer} resumeType={resumeType} />
-      <LinkModal isOpen={linkModalOpen} onClose={() => { setLinkModalOpen(false); setEditLink(null); }} editTarget={editLink} />
+      <LinkModal isOpen={linkModalOpen} onClose={() => { setLinkModalOpen(false); setEditLink(null); }} editTarget={editLink} resumeType={resumeType} />
       <EducationModal isOpen={eduModalOpen} onClose={() => { setEduModalOpen(false); setEditEdu(null); }} editTarget={editEdu} />
       <LanguageModal isOpen={langModalOpen} onClose={() => { setLangModalOpen(false); setEditLang(null); }} editTarget={editLang} />
       <ExperienceModal isOpen={expModalOpen} onClose={() => { setExpModalOpen(false); setEditExp(null); }} editTarget={editExp} />

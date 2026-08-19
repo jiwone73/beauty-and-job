@@ -4,128 +4,106 @@ import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
 import { verifyAccessToken } from "@/lib/jwt";
 import { supabaseAdmin } from "@/lib/supabase";
+import { MAX_PHOTOS } from "@/lib/compressImage";
 
 const BUCKET = "portfolios";
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+// 브라우저에서 이미 156만 픽셀로 줄여 올린다(장당 200KB 안팎). 여기 한도는 그게
+// 안 먹혔을 때를 막는 그물이지, 이만큼 올리라는 뜻이 아니다.
+const MAX_SIZE = 1.5 * 1024 * 1024;
 
-// 포트폴리오 업로드
-export async function POST(req: NextRequest) {
-  const auth = req.headers.get("authorization") || "";
-  const token = auth.replace("Bearer ", "").trim();
-  if (!token) return err("AUTH_001", "인증이 필요합니다.", 401);
 
-  let payload;
+type Photo = { url: string; w?: number; h?: number };
+
+function 인증(req: NextRequest): { userId: string } | { res: ReturnType<typeof err> } {
+  const token = (req.headers.get("authorization") || "").replace("Bearer ", "").trim();
+  if (!token) return { res: err("AUTH_001", "인증이 필요합니다.", 401) };
   try {
-    payload = verifyAccessToken(token);
+    const payload = verifyAccessToken(token);
+    if (payload.owner_type !== "user") return { res: err("AUTH_002", "사용자 권한이 필요합니다.", 403) };
+    return { userId: payload.sub };
   } catch {
-    return err("AUTH_001", "유효하지 않은 토큰입니다.", 401);
+    return { res: err("AUTH_001", "유효하지 않은 토큰입니다.", 401) };
   }
+}
 
-  if (payload.owner_type !== "user") {
-    return err("AUTH_002", "사용자 권한이 필요합니다.", 403);
-  }
+const 읽기 = (v: any): Photo[] => (Array.isArray(v) ? v.filter((x) => x && x.url) : []);
 
-  const userId = payload.sub;
+/** 사진 추가(여러 장 한 번에). 기존 것 뒤에 붙는다. */
+export async function POST(req: NextRequest) {
+  const a = 인증(req);
+  if ("res" in a) return a.res;
 
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as File | null;
-
-    if (!file) return err("FILE_001", "파일이 없습니다.");
-    if (file.type !== "application/pdf") return err("FILE_002", "PDF 파일만 업로드 가능합니다.");
-    if (file.size > MAX_SIZE) return err("FILE_003", "파일 크기는 5MB 이하여야 합니다.");
+    const files = formData.getAll("files").filter((f): f is File => f instanceof File);
+    if (!files.length) return err("FILE_001", "사진이 없습니다.");
+    for (const f of files) {
+      if (!/^image\/(jpeg|png|webp)$/i.test(f.type)) return err("FILE_002", "사진 파일만 올릴 수 있어요.");
+      if (f.size > MAX_SIZE) return err("FILE_003", "사진 한 장은 1.5MB 이하여야 해요.");
+    }
 
     const client = await pool.connect();
     try {
-      const existing = await client.query(
-        `SELECT portfolio_url FROM users WHERE id = $1`,
-        [userId]
-      );
-      const oldUrl = existing.rows[0]?.portfolio_url;
-      if (oldUrl) {
-        const oldPath = oldUrl.split(`/${BUCKET}/`)[1];
-        if (oldPath) {
-          await supabaseAdmin.storage.from(BUCKET).remove([oldPath]);
-        }
+      const before = 읽기((await client.query(`SELECT portfolio_images FROM users WHERE id = $1`, [a.userId])).rows[0]?.portfolio_images);
+      if (before.length + files.length > MAX_PHOTOS) {
+        return err("FILE_007", `사진은 최대 ${MAX_PHOTOS}장까지예요. (지금 ${before.length}장)`);
       }
 
-      const fileName = `${userId}/${Date.now()}.pdf`;
-      const arrayBuffer = await file.arrayBuffer();
-
-      const { error: uploadError } = await supabaseAdmin.storage
-        .from(BUCKET)
-        .upload(fileName, arrayBuffer, {
-          contentType: "application/pdf",
-          upsert: true,
+      const 새것: Photo[] = [];
+      for (const [i, f] of files.entries()) {
+        const path = `${a.userId}/${Date.now()}-${i}.jpg`;
+        const { error } = await supabaseAdmin.storage.from(BUCKET).upload(path, await f.arrayBuffer(), {
+          contentType: f.type, upsert: true,
         });
-
-      if (uploadError) {
-        console.error("[portfolio upload]", uploadError);
-        return err("FILE_004", "업로드에 실패했습니다.");
+        if (error) {
+          console.error("[portfolio upload]", error);
+          return err("FILE_004", "업로드에 실패했어요.");
+        }
+        새것.push({
+          url: supabaseAdmin.storage.from(BUCKET).getPublicUrl(path).data.publicUrl,
+          w: Number(formData.get(`w${i}`)) || undefined,
+          h: Number(formData.get(`h${i}`)) || undefined,
+        });
       }
 
-      const { data: urlData } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(fileName);
-      const publicUrl = urlData.publicUrl;
-
+      const 전체 = [...before, ...새것];
       await client.query(
-        `UPDATE users SET portfolio_url = $1, portfolio_filename = $2, portfolio_uploaded_at = NOW() WHERE id = $3`,
-        [publicUrl, file.name, userId]
+        `UPDATE users SET portfolio_images = $1::jsonb, portfolio_uploaded_at = NOW() WHERE id = $2`,
+        [JSON.stringify(전체), a.userId]
       );
-
-      return ok({
-        portfolio_url: publicUrl,
-        portfolio_filename: file.name,
-      });
+      return ok({ portfolio_images: 전체 });
     } finally {
       client.release();
     }
   } catch (e) {
     console.error("[portfolio upload]", e);
-    return err("FILE_005", "업로드 중 오류가 발생했습니다.", 500);
+    return err("FILE_005", "업로드 중 오류가 발생했어요.", 500);
   }
 }
 
-// 포트폴리오 삭제
+/** ?url= 한 장만 지운다. url 이 없으면 전부 지운다. */
 export async function DELETE(req: NextRequest) {
-  const auth = req.headers.get("authorization") || "";
-  const token = auth.replace("Bearer ", "").trim();
-  if (!token) return err("AUTH_001", "인증이 필요합니다.", 401);
+  const a = 인증(req);
+  if ("res" in a) return a.res;
 
-  let payload;
-  try {
-    payload = verifyAccessToken(token);
-  } catch {
-    return err("AUTH_001", "유효하지 않은 토큰입니다.", 401);
-  }
-
-  if (payload.owner_type !== "user") {
-    return err("AUTH_002", "사용자 권한이 필요합니다.", 403);
-  }
-
-  const userId = payload.sub;
+  const 지울주소 = new URL(req.url).searchParams.get("url");
   const client = await pool.connect();
   try {
-    const res = await client.query(
-      `SELECT portfolio_url FROM users WHERE id = $1`,
-      [userId]
-    );
-    const oldUrl = res.rows[0]?.portfolio_url;
-    if (oldUrl) {
-      const oldPath = oldUrl.split(`/${BUCKET}/`)[1];
-      if (oldPath) {
-        await supabaseAdmin.storage.from(BUCKET).remove([oldPath]);
-      }
-    }
+    const before = 읽기((await client.query(`SELECT portfolio_images FROM users WHERE id = $1`, [a.userId])).rows[0]?.portfolio_images);
+    const 지울것 = 지울주소 ? before.filter((p) => p.url === 지울주소) : before;
+    const 남길것 = 지울주소 ? before.filter((p) => p.url !== 지울주소) : [];
+
+    const paths = 지울것.map((p) => p.url.split(`/${BUCKET}/`)[1]).filter(Boolean) as string[];
+    if (paths.length) await supabaseAdmin.storage.from(BUCKET).remove(paths);
 
     await client.query(
-      `UPDATE users SET portfolio_url = NULL, portfolio_filename = NULL, portfolio_uploaded_at = NULL WHERE id = $1`,
-      [userId]
+      `UPDATE users SET portfolio_images = $1::jsonb WHERE id = $2`,
+      [남길것.length ? JSON.stringify(남길것) : null, a.userId]
     );
-
-    return ok({ deleted: true });
+    return ok({ portfolio_images: 남길것 });
   } catch (e) {
     console.error("[portfolio delete]", e);
-    return err("FILE_006", "삭제 중 오류가 발생했습니다.", 500);
+    return err("FILE_006", "삭제 중 오류가 발생했어요.", 500);
   } finally {
     client.release();
   }
