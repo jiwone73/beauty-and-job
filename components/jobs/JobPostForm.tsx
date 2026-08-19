@@ -345,6 +345,9 @@ export default function JobPostForm({
   const [importMode, setImportMode] = useState<"url" | "paste" | "ocr">("url");
   const [pasteText, setPasteText] = useState("");
   const [importImages, setImportImages] = useState<string[]>([]); // 북마클릿이 넘긴 사진 주소
+  // 상세요강 그림에서 글자를 읽을지. 켤 때만 그림이 모델로 가고 요금이 붙는다.
+  // (자동저장이 이 값을 읽으므로 선언이 그 위에 있어야 한다.)
+  const [ocrEnabled, setOcrEnabled] = useState(false);
   const [importingImgs, setImportingImgs] = useState(false);
   const [ocrFiles, setOcrFiles] = useState<File[]>([]); // OCR: 여러 장 캡처 누적
   // 캡처로 등록할 때의 원문 주소(인스타 게시물·카페 글 등).
@@ -526,6 +529,9 @@ export default function JobPostForm({
     detailImages, bannerImages, hiringProcess, benefitTags,
     salaryNego, salaryType, salaryMax, salaryByCat,
     pasteText, ocrSourceUrl, parseUrl, importMode, findQuery,
+    // 아직 배너에 안 넣은 '가져온 사진'과 텍스트 인식 토글도 같이 남긴다.
+    // 새로고침 한 번에 다시 가져오고 다시 켜야 하면 유지의 뜻이 없다.
+    importImages, ocrEnabled,
     nonMember, newCompanyName, newBrandName, nmDescription, nmAddress, nmAddressDetail,
     nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
     nmManagerName, nmManagerPhone, nmContactEmail, contactMethods,
@@ -543,7 +549,7 @@ export default function JobPostForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations, detailImages, bannerImages,
       hiringProcess, benefitTags, salaryNego, salaryType, salaryMax, salaryByCat, pasteText, ocrSourceUrl,
-      parseUrl, importMode, findQuery, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
+      parseUrl, importMode, findQuery, importImages, ocrEnabled, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
       nmAddressDetail, nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
       nmManagerName, nmManagerPhone, nmContactEmail, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
 
@@ -558,7 +564,7 @@ export default function JobPostForm({
     if (!d || d.v !== 1) return;
     // 빈 껍데기는 되살릴 것이 없다.
     const hasSomething = (d.pasteText || "").trim() || (d.form?.title || "").trim() || (d.newCompanyName || "").trim()
-      || (d.detailImages || []).length || (d.bannerImages || []).length;
+      || (d.detailImages || []).length || (d.bannerImages || []).length || (d.importImages || []).length;
     if (!hasSomething) return;
     const set = <T,>(fn: (v: T) => void, v: T | undefined) => { if (v !== undefined && v !== null) fn(v); };
     set(setForm, d.form); set(setNotes, d.notes); set(setCategories, d.categories); set(setPosMeta, d.posMeta);
@@ -569,6 +575,7 @@ export default function JobPostForm({
     set(setSalaryNego, d.salaryNego); set(setSalaryType, d.salaryType); set(setSalaryMax, d.salaryMax); set(setSalaryByCat, d.salaryByCat);
     set(setPasteText, d.pasteText); set(setOcrSourceUrl, d.ocrSourceUrl); set(setParseUrl, d.parseUrl);
     set(setImportMode, d.importMode); set(setFindQuery, d.findQuery);
+    set(setImportImages, d.importImages); set(setOcrEnabled, d.ocrEnabled);
     set(setNonMember, d.nonMember); set(setNewCompanyName, d.newCompanyName); set(setNewBrandName, d.newBrandName);
     set(setNmDescription, d.nmDescription); set(setNmAddress, d.nmAddress); set(setNmAddressDetail, d.nmAddressDetail);
     set(setNmIndustry, d.nmIndustry); set(setNmSize, d.nmSize); set(setNmFounded, d.nmFounded);
@@ -1016,7 +1023,6 @@ export default function JobPostForm({
   const [readingImgs, setReadingImgs] = useState(false);
   // 그림에서 글자를 읽는 건 요금이 든다. 켠 적이 없는데 돈이 나가는 일이 없도록
   // 늘 꺼진 채로 시작하고, 저장해 두지도 않는다(다음에 열어도 다시 꺼져 있다).
-  const [ocrEnabled, setOcrEnabled] = useState(false);
   const readableImageUrls = ocrEnabled ? detailImages.filter((d) => d.readable).map((d) => d.url).slice(0, 8) : [];
   // 그림을 모델에 보낼지는 '텍스트 인식' 토글 하나로만 정한다. 붙이는 것과 읽는 것은
   // 다른 일이다 — 사진은 얼마든지 붙여 두되, 읽어서 요금을 물릴지는 사람이 고른다.
