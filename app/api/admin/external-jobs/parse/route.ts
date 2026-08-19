@@ -796,7 +796,7 @@ export async function POST(req: NextRequest) {
       const effort = (process.env.PARSE_EFFORT as "low" | "medium" | "high" | undefined)
         || (typeof user === "string" && user.length > LONG_INPUT ? ("medium" as const) : undefined);
 
-      const msg = await anthropic.messages.create({
+      const ask = (cached: boolean) => anthropic.messages.create({
         // 값이 틀리면 지원자가 헛걸음하고 고치는 손이 더 든다. 그렇다고 이 한 버튼이
         // 요금의 대부분을 먹어서도 곤란하다(오퍼스로는 하루 20건에 월 8만원대).
         // 배포를 다시 하지 않고 바꿔 보려고 환경변수로 열어 뒀다.
@@ -813,21 +813,40 @@ export async function POST(req: NextRequest) {
         // ※ 이 선(1,200자)은 오퍼스가 1,863자에서 58.5초 걸리던 때 그은 것이다.
         //    소넷은 더 빠르니 선을 올리거나 아예 없애도 될 수 있다 — 재보고 정할 것.
         ...(effort ? { output_config: { effort } } : {}),
-        system: sys,
+        // 이 8,600자 규칙서는 매번 글자 하나 안 바뀐다. 캐시에 올려 두면 두 번째
+        // 호출부터 이 부분이 10분의 1 값이 된다. 처음 한 번은 1.25배로 조금 더
+        // 내지만, 공고를 연달아 등록할 때는 두 번째부터 계속 이득이다.
+        // (캐시는 5분간 살아 있고, 부를 때마다 다시 5분이 연장된다.)
+        system: cached ? [{ type: "text", text: sys, cache_control: { type: "ephemeral" } }] : sys,
         messages: [{ role: "user", content: userContent }],
       });
+      // 캐시를 거절당해도 불러오기 자체는 되어야 한다. 아껴 보려다 버튼이 죽으면
+      // 본말이 뒤집힌다. 다만 캐시 때문에 거절당한 경우에만 다시 묻는다 —
+      // 크레딧 부족이나 과부하까지 두 번씩 부르면 60초 안에 못 끝낸다.
+      const msg = await ask(true).catch((e: any) => {
+        const m = String(e?.message || "");
+        if (e?.status !== 400 || !/cache/i.test(m)) throw e;
+        console.error("[external parse] 캐시를 거절당해 캐시 없이 재시도:", m);
+        return ask(false);
+      });
+
       // 한 번 부를 때 실제로 얼마가 나가는지 남긴다. 토큰 수를 눈대중으로 잡으면
       // 요금 계산이 몇 배씩 틀어진다. 배포 로그에서 진짜 값을 보고 판단하려는 것이다.
       {
         const u: any = msg.usage || {};
-        const inTok = (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
+        const fresh = u.input_tokens || 0;          // 캐시 못 쓴 입력 — 제값
+        const write = u.cache_creation_input_tokens || 0; // 캐시에 올리는 값 — 1.25배
+        const read = u.cache_read_input_tokens || 0;      // 캐시에서 꺼낸 값 — 10분의 1
         const outTok = u.output_tokens || 0;
         const RATE: Record<string, [number, number]> = { // [입력, 출력] $ per MTok
           "claude-sonnet-5": [2, 10], "claude-opus-5": [5, 25], "claude-haiku-4-5": [1, 5],
         };
         const [ri, ro] = RATE[String(msg.model).replace(/-\d{8}$/, "")] || [2, 10];
-        const won = Math.round(((inTok * ri) / 1e6 + (outTok * ro) / 1e6) * 1400);
-        console.log(`[parse 요금] ${msg.model} 입력 ${inTok} 출력 ${outTok} → 약 ${won}원`);
+        const usd = (fresh * ri + write * ri * 1.25 + read * ri * 0.1 + outTok * ro) / 1e6;
+        console.log(
+          `[parse 요금] ${msg.model} 입력 ${fresh}(신규)+${write}(캐시저장)+${read}(캐시적중)` +
+          ` 출력 ${outTok} → 약 ${Math.round(usd * 1400)}원`
+        );
       }
       const raw = msg.content.map((c: any) => (c.type === "text" ? c.text : "")).join("").trim();
       const parsed = safeJsonParse(raw);
