@@ -816,6 +816,19 @@ export async function POST(req: NextRequest) {
         system: sys,
         messages: [{ role: "user", content: userContent }],
       });
+      // 한 번 부를 때 실제로 얼마가 나가는지 남긴다. 토큰 수를 눈대중으로 잡으면
+      // 요금 계산이 몇 배씩 틀어진다. 배포 로그에서 진짜 값을 보고 판단하려는 것이다.
+      {
+        const u: any = msg.usage || {};
+        const inTok = (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
+        const outTok = u.output_tokens || 0;
+        const RATE: Record<string, [number, number]> = { // [입력, 출력] $ per MTok
+          "claude-sonnet-5": [2, 10], "claude-opus-5": [5, 25], "claude-haiku-4-5": [1, 5],
+        };
+        const [ri, ro] = RATE[String(msg.model).replace(/-\d{8}$/, "")] || [2, 10];
+        const won = Math.round(((inTok * ri) / 1e6 + (outTok * ro) / 1e6) * 1400);
+        console.log(`[parse 요금] ${msg.model} 입력 ${inTok} 출력 ${outTok} → 약 ${won}원`);
+      }
       const raw = msg.content.map((c: any) => (c.type === "text" ? c.text : "")).join("").trim();
       const parsed = safeJsonParse(raw);
       if (parsed && typeof parsed === "object") {
