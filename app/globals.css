@@ -2260,6 +2260,11 @@ input[type="range"].career-slider::-moz-range-thumb {
   /* 머리·바닥을 뺀 나머지를 본문이 다 쓴다(전엔 72vh 로 묶여 아래가 비었다). */
   .jobpost-preview-scope { max-height: none; flex: 1; }
   .jobpost-preview-scope .job-detail-layout { padding: 14px 12px 20px; gap: 12px; }
+  /* 등록 폼은 좁은 화면에서도 "모집분야 | 마감일" 을 한 줄에 둔다. 미리보기가 이를
+     하나씩 끊어 보여주면 폼과 다른 화면이 되어, 무엇이 어떻게 보일지 확인할 수가 없다.
+     값이 짧아(경력무관·00명·상시채용) 375px 에서도 접히지 않는다 — 재보고 되돌린다.
+     근무조건은 2열로 두면 "09:30~19:00 (협의)" 가 두 줄로 접혀 한 줄로 남긴다. */
+  .jobpost-preview-scope .job-detail-meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 12px; }
 }
 .jobpost-preview-scope .job-detail-layout { grid-template-columns: minmax(0, 1fr) 300px; padding: 24px 20px 80px; gap: 20px; }
 .jobpost-preview-scope .job-detail-aside { top: 20px; }
