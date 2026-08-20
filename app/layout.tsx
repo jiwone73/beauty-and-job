@@ -48,6 +48,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
+        {/* 매니페스트는 직접 건다. app/manifest.ts 를 쓰면 Next 가 링크에
+            crossorigin="use-credentials" 를 붙이는데, 그 값이면 iOS 가
+            매니페스트를 건너뛰고 홈 화면 아이콘을 브라우저 모드로 만드는
+            일이 있다. 우리 매니페스트는 감출 것이 없으니 그냥 연다. */}
+        <link rel="manifest" href="/manifest.json" />
         {/* '로그인 유지'를 끈 사람 정리 — lib/auth/session.ts 참고.
             세션 쿠키가 사라졌다면 브라우저가 닫혔던 것이므로 토큰을 버린다.
             화면을 그리기 전에 끝내야 로그인된 헤더가 번쩍이지 않는다. */}
