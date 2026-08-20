@@ -25,6 +25,9 @@ export default function AccountSettingsPage() {
   const [openToOffers, setOpenToOffers] = useState<boolean | null>(null);
   const [offerSaving, setOfferSaving] = useState(false);
   const [blockOpen, setBlockOpen] = useState(false);
+  // 매장 회원인지 오피스 회원인지. 미용실 원장에게 "기업"이라고 하면 남
+  // 이야기처럼 들려 자기 설정으로 읽히지 않는다.
+  const [jobType, setJobType] = useState<"STORE" | "OFFICE" | null>(null);
   useEffect(() => {
     const t = localStorage.getItem("access_token");
     if (!t) return;
@@ -32,7 +35,15 @@ export default function AccountSettingsPage() {
       .then((r) => r.json())
       .then((res) => setOpenToOffers(isOpenToCompanies(res?.data?.profile?.job_search_status)))
       .catch(() => {});
+    // job_type 은 프로필 쪽 응답에 없어 따로 받아온다.
+    fetch("/api/users/me", { headers: { Authorization: `Bearer ${t}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res?.data?.job_type) setJobType(res.data.job_type); })
+      .catch(() => {});
   }, []);
+
+  // 아직 모를 때는 둘 다 적는다 — 한쪽으로 찍어 두었다가 바뀌면 잘못 읽힌다.
+  const 상대 = jobType === "STORE" ? "매장" : jobType === "OFFICE" ? "기업" : "매장·기업";
 
   const saveOpenToOffers = async (next: boolean) => {
     const before = openToOffers;
@@ -131,7 +142,7 @@ export default function AccountSettingsPage() {
           <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 4px" }}>프로필 공개</h2>
           <p style={{ fontSize: 13, color: "#999", margin: "0 0 14px" }}>언제든 바꿀 수 있어요.</p>
           {([
-            { on: true,  label: "공개",   desc: "매장 또는 기업으로부터 면접 제안을 받아볼게요." },
+            { on: true,  label: "공개",   desc: `${상대}으로부터 면접 제안을 받아볼게요.` },
             { on: false, label: "비공개", desc: "면접 제안 안 받을게요." },
           ]).map((o) => {
             const 골랐나 = openToOffers === o.on;
@@ -155,7 +166,7 @@ export default function AccountSettingsPage() {
           <button type="button" onClick={() => setBlockOpen(true)}
             style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}>
             <span style={{ textAlign: "left" }}>
-              <span style={{ display: "block", fontSize: 15, color: "#1a1a1a" }}>차단 매장·기업</span>
+              <span style={{ display: "block", fontSize: 15, color: "#1a1a1a" }}>차단 {상대}</span>
               <span style={{ display: "block", fontSize: 13, color: "#999", marginTop: 4, lineHeight: 1.5 }}>
                 지금 다니는 곳처럼 곤란한 곳은 골라서 막을 수 있어요.
               </span>
@@ -193,7 +204,7 @@ export default function AccountSettingsPage() {
         </section>
       </div>
 
-      <CompanyBlockModal open={blockOpen} onClose={() => setBlockOpen(false)} />
+      <CompanyBlockModal open={blockOpen} onClose={() => setBlockOpen(false)} noun={상대} />
 
       {/* 탈퇴 확인 모달 */}
       {showWithdraw && (

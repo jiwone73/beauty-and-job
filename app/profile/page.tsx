@@ -1069,7 +1069,7 @@ export default function ProfilePage() {
       </div>
 
       <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} onOpenBlockModal={() => setShowBlockModal(true)} />
-      <CompanyBlockModal open={showBlockModal} onClose={() => setShowBlockModal(false)} />
+      <CompanyBlockModal open={showBlockModal} onClose={() => setShowBlockModal(false)} noun={dbJobType === "STORE" ? "매장" : "기업"} />
 
       {showEmailModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: 16 }}>

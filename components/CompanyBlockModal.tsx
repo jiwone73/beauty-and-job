@@ -4,7 +4,16 @@ import { X, Search, Ban } from "lucide-react";
 
 type Company = { companyId: string; companyName: string; brandName?: string | null; logoUrl?: string | null };
 
-export default function CompanyBlockModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function CompanyBlockModal({
+  open, onClose, noun = "기업",
+}: {
+  open: boolean;
+  onClose: () => void;
+  /** 매장 회원에게는 "매장", 오피스 회원에게는 "기업"으로 부른다. 미용실을
+   *  "기업"이라 부르면 남 이야기처럼 들려 자기 설정으로 읽히지 않는다.
+   *  둘 다 받침으로 끝나 조사("으로부터"·"이")가 갈라지지 않는다. */
+  noun?: string;
+}) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Company[]>([]);
   const [blocked, setBlocked] = useState<Company[]>([]);
@@ -60,9 +69,9 @@ export default function CompanyBlockModal({ open, onClose }: { open: boolean; on
     <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
-          {/* 계정 설정의 '차단 매장·기업'에서 넘어오는 자리다. 부르는 이름과
-              같아야 같은 이야기의 연장으로 읽힌다. */}
-          <h2 className="cv-title">차단 매장·기업</h2>
+          {/* 계정 설정에서 넘어오는 자리다. 부르는 이름이 같아야 같은
+              이야기의 연장으로 읽힌다. */}
+          <h2 className="cv-title">차단 {noun}</h2>
           <button className="cv-close" onClick={onClose}><X size={20} /></button>
         </div>
         <div className="cv-body">
@@ -70,13 +79,13 @@ export default function CompanyBlockModal({ open, onClose }: { open: boolean; on
             여기 등록한 곳은 내 프로필을 볼 수 없어요.
           </p>
 
-          <label className="cv-field-label">기업 검색</label>
+          <label className="cv-field-label">{noun} 검색</label>
           <div style={{ position: "relative" }}>
             <Search size={16} style={{ position: "absolute", left: 12, top: 13, color: "#999" }} />
             <input
               className="cv-input"
               style={{ paddingLeft: 36, width: "100%" }}
-              placeholder="차단할 기업명을 검색하세요"
+              placeholder={`차단할 ${noun}명을 검색하세요`}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -103,9 +112,9 @@ export default function CompanyBlockModal({ open, onClose }: { open: boolean; on
             </div>
           )}
 
-          <label className="cv-field-label" style={{ marginTop: 20 }}>차단한 기업 ({blocked.length})</label>
+          <label className="cv-field-label" style={{ marginTop: 20 }}>차단한 {noun} ({blocked.length})</label>
           {blocked.length === 0 ? (
-            <p style={{ fontSize: 13, color: "#aaa", padding: "12px 0" }}>아직 차단한 기업이 없어요.</p>
+            <p style={{ fontSize: 13, color: "#aaa", padding: "12px 0" }}>아직 차단한 {noun}이 없어요.</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
               {blocked.map((b) => (
