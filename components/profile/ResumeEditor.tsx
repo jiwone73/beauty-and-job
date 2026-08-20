@@ -635,6 +635,7 @@ export default function ResumeEditor({
       <PortfolioModal
         isOpen={모달 !== null}
         mode={모달 ?? "all"}
+        resumeType={resumeType}
         onClose={() => set모달(null)}
         images={portfolioImages}
         links={links}
