@@ -159,7 +159,7 @@ function parseHairinjob(html: string): StructuredResult | null {
     if (/바버|barber/i.test(ck)) mappedCats = ["바버(Barber)"];
     else if (/웨딩|본식|업스타일|혼주/.test(ck)) mappedCats = ["웨딩 헤어디자이너"];
     else if (/디자이너|스타일리스트|원장|실장/.test(ck)) mappedCats = ["헤어 디자이너"];
-    else if (/스탭|스태프|스텝|인턴|어시|샴푸|막내|수습/.test(ck)) mappedCats = ["헤어 스태프(시니어·주니어)"];
+    else if (/스탭|스태프|스텝|인턴|어시|샴푸|막내|수습/.test(ck)) mappedCats = ["헤어스탭"];
   }
   const job_categories = mappedCats.length ? mappedCats : sug.job_categories;
 
@@ -349,7 +349,7 @@ function mapRole(text: string): { job_type: string; item: string } | null {
     [/피부미용|피부관리|피부관리사|피부테라|에스테티션|aesthetician|페이셜|경락|스킨케어|에스테틱|바디관리|체형관리/, "STORE", "피부관리사(일반·경락)"],
     [/스파테라|아로마테라|테라피스트/, "STORE", "스파 테라피스트"],
     [/점장|샵마스터|매장관리/, "STORE", "매장 점장·샵마스터"],
-    [/샴푸|헤어스탭|헤어스태프|미용스탭|미용스태프/, "STORE", "헤어 스태프(시니어·주니어)"],
+    [/샴푸|헤어스탭|헤어스태프|미용스탭|미용스태프/, "STORE", "헤어스탭"],
     [/헤어디자이너|헤어스타일리스트|스타일리스트|미용사|hairstylist/, "STORE", "헤어 디자이너"],
     // ── OFFICE(본사·기업) ──
     [/화장품연구|제형연구|연구원|r&d/, "OFFICE", "화장품 연구원(R&D)"],
@@ -840,7 +840,7 @@ function mapSelectmeCat(name: string): string {
   const n = (name || "").replace(/\s/g, "");
   if (/바버|barber/i.test(n)) return "바버(Barber)";
   if (/헤어디자이너|디자이너/.test(n)) return "헤어 디자이너";
-  if (/헤어스탭|헤어스텝|헤어스태프|스탭|스텝|인턴/.test(n)) return "헤어 스태프(시니어·주니어)";
+  if (/헤어스탭|헤어스텝|헤어스태프|스탭|스텝|인턴/.test(n)) return "헤어스탭";
   if (/메이크업/.test(n)) return "메이크업 아티스트";
   if (/네일/.test(n)) return "네일 아티스트";
   if (/속눈썹|래쉬|반영구/.test(n)) return "속눈썹·반영구 아티스트";
