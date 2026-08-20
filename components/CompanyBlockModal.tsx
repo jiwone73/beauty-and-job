@@ -60,9 +60,9 @@ export default function CompanyBlockModal({ open, onClose }: { open: boolean; on
     <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
-          {/* 프로필 공개 설정에서 넘어오는 자리다. 그쪽에서 부르는 이름과
+          {/* 계정 설정의 '차단 매장·기업'에서 넘어오는 자리다. 부르는 이름과
               같아야 같은 이야기의 연장으로 읽힌다. */}
-          <h2 className="cv-title">특정 매장에는 숨기기</h2>
+          <h2 className="cv-title">차단 매장·기업</h2>
           <button className="cv-close" onClick={onClose}><X size={20} /></button>
         </div>
         <div className="cv-body">

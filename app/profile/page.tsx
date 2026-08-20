@@ -18,15 +18,9 @@ import MyApplicationModal from "@/components/profile/MyApplicationModal";
 import JobSearchCertificateModal from "@/components/profile/JobSearchCertificateModal";
 import JobPostingCertificateModal from "@/components/profile/JobPostingCertificateModal";
 import { validateBirth } from "@/lib/validateBirth";
-import { isOpenToCompanies, 공개, 비공개 } from "@/lib/jobSearchStatus";
 
 
 type ModalType = "notification" | null;
-
-// 묻는 것은 "구직중인가"가 아니라 "기업이 내 이력서를 볼 수 있게 할까"다.
-// 실제로 이 값이 정하는 것이 그것뿐이었는데, 예전엔 구직 여부를 물어 놓고
-// 공개 여부를 정하고 있었다. 자세한 사정은 lib/jobSearchStatus.ts 에.
-type JobSearchStatus = "SEEKING" | "OPEN" | "CLOSED";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -80,10 +74,7 @@ export default function ProfilePage() {
   const [emailSending, setEmailSending] = useState(false);
   const [isKakao, setIsKakao] = useState(false);
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
-  // 인재검색 공개 여부. 기본은 공개.
-  const [jobSearchStatus, setJobSearchStatus] = useState<JobSearchStatus>("SEEKING");
-  const [jsModalOpen, setJsModalOpen] = useState(false);
-  // 얼굴은 경력보다 민감하다. 사진만 빼고 싶은 사람이 인재검색을 통째로 닫지
+  // 얼굴은 경력보다 민감하다. 사진만 빼고 싶은 사람이 프로필을 통째로 닫지
   // 않도록 따로 끌 수 있게 한다. 기본은 공개.
   const [avatarPublic, setAvatarPublic] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -194,12 +185,10 @@ export default function ProfilePage() {
 
     useProfileStore.getState().loadFromServer();
 
-    // 인재검색 공개 여부 불러오기
+    // 사진 공개 여부 불러오기 (아바타 메뉴의 '공개 프로필에서 감추기')
     fetch("/api/users/me/profile", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((res) => {
-        const st = res?.data?.profile?.job_search_status;
-        if (st === "SEEKING" || st === "OPEN" || st === "CLOSED") setJobSearchStatus(st);
         if (typeof res?.data?.avatar_public === "boolean") setAvatarPublic(res.data.avatar_public);
       })
       .catch(() => {});
@@ -428,27 +417,6 @@ export default function ProfilePage() {
     }).catch(() => setAvatarPublic(!next));
   };
 
-  const saveJobSearchStatus = async (next: JobSearchStatus) => {
-    setJobSearchStatus(next);
-    setJsModalOpen(false);
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    const s = useSignupStore.getState();
-    try {
-      await fetch("/api/users/me/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          skill_areas: s.skillAreas ?? [],
-          work_type_prefer: s.workTypePrefer ?? "",
-          region_prefer: s.regionPrefer ?? "",
-          office_job_areas: s.officeJobAreas ?? [],
-          job_search_status: next,
-          job_search_status_at: new Date().toISOString(),
-        }),
-      });
-    } catch (e) { console.error("[saveJobSearchStatus]", e); }
-  };
 
   const saveOfficeJobAreas = async (newAreas: string[]) => {
     const token = localStorage.getItem("access_token");
@@ -1059,91 +1027,18 @@ export default function ProfilePage() {
                   onClick={() => setJobAreaModal(dbJobType === "STORE" ? "STORE" : "OFFICE")}
                   required
                 />
+                {/* 프로필 공개는 계정 설정으로 옮겼다 — 한 값을 두 곳에서 고치면
+                    어느 쪽이 맞는지 헷갈린다. Header 의 '계정 설정'에 있다. */}
                 <InfoRow
                   label="희망 근무지역"
                   value={regionSummary}
                   isEmpty={preferredRegions.length === 0}
                   onClick={() => setPrefModalOpen(true)}
                   required
-                />
-                {/* 프로필 공개 — 켜면 구인 중인 매장이 먼저 제안할 수 있다. */}
-                <InfoRow
-                  label="프로필 공개"
-                  value={
-                    !isOpenToCompanies(jobSearchStatus) ? "비공개"
-                      : avatarPublic ? "공개" : "공개 (사진 감춤)"
-                  }
-                  isEmpty={false}
-                  onClick={() => setJsModalOpen(true)}
                   isLast
                 />
               </div>
             </section>
-
-            {/* 프로필 공개 선택 */}
-            {jsModalOpen && (
-              <div onClick={() => setJsModalOpen(false)}
-                style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-                <div onClick={(e) => e.stopPropagation()}
-                  style={{ background: "#fff", width: "100%", maxWidth: 480, borderRadius: "16px 16px 0 0", padding: 18, boxSizing: "border-box" }}>
-                  <div style={{ fontSize: 16, color: "#222", marginBottom: 4 }}>프로필 공개</div>
-                  <div style={{ fontSize: 12.5, color: "#999", marginBottom: 12 }}>구인 중인 매장에만 보여요. 언제든 바꿀 수 있어요.</div>
-                  {/* 길게 설명할수록 무서워 보인다. 무엇이 열리는지 한 줄로 적고,
-                      막을 수 있다는 사실을 같은 자리에서 보여 준다.
-
-                      '공개'와 '특정 매장에는 숨기기'는 나란한 선택지가 아니다.
-                      "공개하되 몇 곳만 뺀다"는 한 덩어리라, 숨기기는 공개 칸
-                      안에 딸려 들어간다. 밖에 나란히 두면 셋 중 하나를 고르는
-                      것처럼 읽힌다. */}
-                  <div style={{ marginBottom: 8, borderRadius: 10, overflow: "hidden",
-                    border: isOpenToCompanies(jobSearchStatus) ? "1.5px solid #5f0080" : "1.5px solid #eee",
-                    background: isOpenToCompanies(jobSearchStatus) ? "#faf5fc" : "#fff" }}>
-                    <button type="button" onClick={() => saveJobSearchStatus(공개)}
-                      style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px", border: "none", background: "transparent", cursor: "pointer" }}>
-                      <div style={{ fontSize: 15, color: isOpenToCompanies(jobSearchStatus) ? "#5f0080" : "#333" }}>공개</div>
-                      <div style={{ fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5 }}>
-                        구인 중인 매장이 보고 먼저 제안할 수 있어요.
-                      </div>
-                    </button>
-                    {/* 안심의 근거는 말이 아니라 이 버튼이다. 지금까지 이 기능은
-                        알림 설정 안에 묻혀 있어 있는 줄도 몰랐다. */}
-                    {isOpenToCompanies(jobSearchStatus) && (
-                      <>
-                        <div style={{ height: 1, background: "#ead9f2", margin: "0 14px" }} />
-                        <button type="button"
-                          onClick={() => { setJsModalOpen(false); setShowBlockModal(true); }}
-                          style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "11px 14px", border: "none", background: "transparent", cursor: "pointer" }}>
-                          <span style={{ textAlign: "left" }}>
-                            <span style={{ display: "block", fontSize: 13.5, color: "#5f0080" }}>단, 특정 매장에는 숨기기</span>
-                            <span style={{ display: "block", fontSize: 12, color: "#999", marginTop: 2, lineHeight: 1.5 }}>
-                              지금 다니는 곳처럼 곤란한 매장은 골라서 막을 수 있어요.
-                            </span>
-                          </span>
-                          <ChevronRight size={16} style={{ flexShrink: 0, color: "#b98fd0" }} />
-                        </button>
-                      </>
-                    )}
-                  </div>
-                  <button type="button" onClick={() => saveJobSearchStatus(비공개)}
-                    style={{ display: "block", width: "100%", textAlign: "left", marginBottom: 8, padding: "12px 14px", borderRadius: 10, cursor: "pointer",
-                      border: !isOpenToCompanies(jobSearchStatus) ? "1.5px solid #5f0080" : "1.5px solid #eee",
-                      background: !isOpenToCompanies(jobSearchStatus) ? "#faf5fc" : "#fff" }}>
-                    <div style={{ fontSize: 15, color: !isOpenToCompanies(jobSearchStatus) ? "#5f0080" : "#333" }}>비공개</div>
-                    <div style={{ fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5 }}>
-                      내가 지원한 매장만 볼 수 있어요.
-                    </div>
-                  </button>
-                  {/* 무엇이 보이는지는 남긴다 — 겁주지 않되 숨기지도 않는다. */}
-                  {isOpenToCompanies(jobSearchStatus) && (
-                    <div style={{ fontSize: 12, color: "#999", lineHeight: 1.55, margin: "2px 2px 14px" }}>
-                      매장에는 이력서와 연락처가 함께 보여요.
-                    </div>
-                  )}
-                  <button type="button" onClick={() => setJsModalOpen(false)}
-                    style={{ width: "100%", marginTop: 6, padding: 12, borderRadius: 10, border: "1px solid #eee", background: "#fff", color: "#888", fontSize: 14, cursor: "pointer" }}>닫기</button>
-                </div>
-              </div>
-            )}
 
             <RegionSelectModal
               open={prefModalOpen}
