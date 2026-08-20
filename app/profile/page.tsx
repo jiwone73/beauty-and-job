@@ -18,17 +18,15 @@ import MyApplicationModal from "@/components/profile/MyApplicationModal";
 import JobSearchCertificateModal from "@/components/profile/JobSearchCertificateModal";
 import JobPostingCertificateModal from "@/components/profile/JobPostingCertificateModal";
 import { validateBirth } from "@/lib/validateBirth";
+import { isOpenToCompanies, 공개, 비공개 } from "@/lib/jobSearchStatus";
 
 
 type ModalType = "notification" | null;
 
+// 묻는 것은 "구직중인가"가 아니라 "기업이 내 이력서를 볼 수 있게 할까"다.
+// 실제로 이 값이 정하는 것이 그것뿐이었는데, 예전엔 구직 여부를 물어 놓고
+// 공개 여부를 정하고 있었다. 자세한 사정은 lib/jobSearchStatus.ts 에.
 type JobSearchStatus = "SEEKING" | "OPEN" | "CLOSED";
-// 기본값은 SEEKING(구직중) — 이력서를 만들어 공개한 것 자체가 구직 의사다.
-const JOB_SEARCH_OPTIONS: { value: JobSearchStatus; label: string; desc: string }[] = [
-  { value: "SEEKING", label: "구직중", desc: "지금 일자리를 찾고 있어요" },
-  { value: "OPEN", label: "좋은 제안은 검토", desc: "재직 중이지만 조건이 맞으면 이직할 수 있어요" },
-  { value: "CLOSED", label: "구직 안 함", desc: "당분간 제안을 받지 않을래요" },
-];
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -82,9 +80,12 @@ export default function ProfilePage() {
   const [emailSending, setEmailSending] = useState(false);
   const [isKakao, setIsKakao] = useState(false);
   const [dbJobType, setDbJobType] = useState<"OFFICE" | "STORE" | null>(null);
-  // 구직상태 — 인재검색에서 기업이 보는 값. 기본은 '구직중'.
+  // 인재검색 공개 여부. 기본은 공개.
   const [jobSearchStatus, setJobSearchStatus] = useState<JobSearchStatus>("SEEKING");
   const [jsModalOpen, setJsModalOpen] = useState(false);
+  // 얼굴은 경력보다 민감하다. 사진만 빼고 싶은 사람이 인재검색을 통째로 닫지
+  // 않도록 따로 끌 수 있게 한다. 기본은 공개.
+  const [avatarPublic, setAvatarPublic] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarLoaded, setAvatarLoaded] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -193,12 +194,13 @@ export default function ProfilePage() {
 
     useProfileStore.getState().loadFromServer();
 
-    // 구직상태 불러오기
+    // 인재검색 공개 여부 불러오기
     fetch("/api/users/me/profile", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((res) => {
         const st = res?.data?.profile?.job_search_status;
         if (st === "SEEKING" || st === "OPEN" || st === "CLOSED") setJobSearchStatus(st);
+        if (typeof res?.data?.avatar_public === "boolean") setAvatarPublic(res.data.avatar_public);
       })
       .catch(() => {});
 
@@ -412,6 +414,18 @@ export default function ProfilePage() {
         }),
       });
     } catch (e) { console.error("[persistStoreProfile]", e); }
+  };
+
+  const saveAvatarPublic = async (next: boolean) => {
+    setAvatarPublic(next);
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    // 한 항목만 바꾸는 것이라 PATCH. PUT 은 이력서 전체를 갈아 끼우는 쪽이다.
+    await fetch("/api/users/me/profile", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ avatar_public: next }),
+    }).catch(() => setAvatarPublic(!next));
   };
 
   const saveJobSearchStatus = async (next: JobSearchStatus) => {
@@ -1033,10 +1047,13 @@ export default function ProfilePage() {
                   onClick={() => setPrefModalOpen(true)}
                   required
                 />
-                {/* 구직상태 — 기업 인재검색에 그대로 보인다. 기본값 '구직중' */}
+                {/* 인재검색 공개 — 켜면 매장이 먼저 제안할 수 있다. */}
                 <InfoRow
-                  label="구직상태"
-                  value={JOB_SEARCH_OPTIONS.find((o) => o.value === jobSearchStatus)?.label || "구직중"}
+                  label="인재검색 공개"
+                  value={
+                    !isOpenToCompanies(jobSearchStatus) ? "비공개"
+                      : avatarPublic ? "공개" : "공개 (사진 감춤)"
+                  }
                   isEmpty={false}
                   onClick={() => setJsModalOpen(true)}
                   isLast
@@ -1044,30 +1061,54 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* 구직상태 선택 */}
+            {/* 인재검색 공개 선택 */}
             {jsModalOpen && (
               <div onClick={() => setJsModalOpen(false)}
                 style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
                 <div onClick={(e) => e.stopPropagation()}
                   style={{ background: "#fff", width: "100%", maxWidth: 480, borderRadius: "16px 16px 0 0", padding: 18, boxSizing: "border-box" }}>
-                  <div style={{ fontSize: 16, color: "#222", marginBottom: 4 }}>구직상태</div>
-                  <div style={{ fontSize: 12.5, color: "#999", marginBottom: 10 }}>기업이 인재검색에서 이 상태를 봅니다. 언제든 바꿀 수 있어요.</div>
-                  {/* 공개 범위를 고르는 화면이 따로 없으므로, 실제로 무엇이 보이는지 여기서 분명히 알린다. */}
-                  <div style={{ fontSize: 12, color: "#8a6d00", background: "#fdf4de", borderRadius: 8, padding: "9px 11px", lineHeight: 1.55, marginBottom: 14 }}>
-                    <b style={{ fontWeight: 600 }}>구직중 · 좋은 제안은 검토</b> 상태에서는 기업회원이 내 이름·연락처(휴대폰·이메일)와 이력서 전체를 열람하고 직접 연락할 수 있어요.
-                    <br /><b style={{ fontWeight: 600 }}>구직 안 함</b>을 고르면 인재검색에 나오지 않습니다.
-                  </div>
-                  {JOB_SEARCH_OPTIONS.map((o) => {
-                    const on = jobSearchStatus === o.value;
+                  <div style={{ fontSize: 16, color: "#222", marginBottom: 4 }}>인재검색 공개</div>
+                  <div style={{ fontSize: 12.5, color: "#999", marginBottom: 12 }}>언제든 바꿀 수 있어요.</div>
+                  {/* 켜라고 떠미는 대신 무엇이 열리는지 알린다 — 지원하지 않아도 제안이 온다는 것이
+                      이 기능의 값어치다. 반대로 무엇이 보이는지도 같은 자리에 적는다. */}
+                  {[
+                    {
+                      value: 공개, label: "공개",
+                      desc: "매장이 내 이력서를 보고 먼저 제안할 수 있어요. 지원하지 않아도 스카웃 기회가 열립니다.",
+                    },
+                    {
+                      value: 비공개, label: "비공개",
+                      desc: "인재검색에 나오지 않아요. 내가 지원한 공고의 매장만 내 이력서를 봅니다.",
+                    },
+                  ].map((o) => {
+                    const on = (o.value === 공개) === isOpenToCompanies(jobSearchStatus);
                     return (
                       <button key={o.value} type="button" onClick={() => saveJobSearchStatus(o.value)}
                         style={{ display: "block", width: "100%", textAlign: "left", marginBottom: 8, padding: "12px 14px", borderRadius: 10, cursor: "pointer",
                           border: on ? "1.5px solid #5f0080" : "1.5px solid #eee", background: on ? "#faf5fc" : "#fff" }}>
                         <div style={{ fontSize: 15, color: on ? "#5f0080" : "#333" }}>{o.label}</div>
-                        <div style={{ fontSize: 12.5, color: "#999", marginTop: 2 }}>{o.desc}</div>
+                        <div style={{ fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5 }}>{o.desc}</div>
                       </button>
                     );
                   })}
+                  {/* 공개해 둔 사람에게만 뜻이 있는 설정이라 그때만 보여준다. */}
+                  {isOpenToCompanies(jobSearchStatus) && (
+                    <label style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", borderRadius: 10, border: "1.5px solid #eee", marginBottom: 8, cursor: "pointer" }}>
+                      <input type="checkbox" className="applied-check" style={{ marginTop: 2 }}
+                        checked={!avatarPublic}
+                        onChange={(e) => saveAvatarPublic(!e.target.checked)}
+                      />
+                      <span>
+                        <span style={{ display: "block", fontSize: 15, color: "#333" }}>프로필 사진은 감추기</span>
+                        <span style={{ display: "block", fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5 }}>
+                          경력과 이력서는 보이지만 얼굴 사진은 매장에게 보이지 않아요.
+                        </span>
+                      </span>
+                    </label>
+                  )}
+                  <div style={{ fontSize: 12, color: "#8a6d00", background: "#fdf4de", borderRadius: 8, padding: "9px 11px", lineHeight: 1.55, margin: "4px 0 14px" }}>
+                    공개하면 기업회원이 내 이름·연락처(휴대폰·이메일)와 이력서 전체를 열람하고 직접 연락할 수 있어요.
+                  </div>
                   <button type="button" onClick={() => setJsModalOpen(false)}
                     style={{ width: "100%", marginTop: 6, padding: 12, borderRadius: 10, border: "1px solid #eee", background: "#fff", color: "#888", fontSize: 14, cursor: "pointer" }}>닫기</button>
                 </div>

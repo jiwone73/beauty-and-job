@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   const client = await pool.connect();
   try {
     const res = await client.query(
-      `SELECT id, email, name, phone, gender, job_type, office_job_areas, status, created_at, avatar_url,
+      `SELECT id, email, name, phone, gender, job_type, office_job_areas, status, created_at, avatar_url, avatar_public,
               birth_date, address_road, address_detail, region_sido, region_sigungu, preferred_regions,
               portfolio_images, resume_file_url, resume_file_name, resume_file_size,
               (password_hash IS NOT NULL) AS has_password, (kakao_id IS NOT NULL) AS is_kakao

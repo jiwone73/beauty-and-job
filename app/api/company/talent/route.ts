@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
   const regions     = searchParams.get("regions") || null;        // 쉼표 구분 (매장직)
   const ageGroup    = searchParams.get("ageGroup") || null;       // 매장직
   const gender      = searchParams.get("gender") || null;         // 매장직
-  const jsFilter    = searchParams.get("jobSearchStatus") || null; // 구직중 | 제안검토 (미지정=둘 다)
   const page        = parseInt(searchParams.get("page") || "1");
   const limit       = parseInt(searchParams.get("limit") || "50");
   const offset      = (page - 1) * limit;
@@ -75,10 +74,9 @@ export async function GET(req: NextRequest) {
     params.push("MALE");
   }
 
-  // 구직상태: '구직 안 함'은 제안을 받지 않겠다는 뜻이라 검색 결과에서 항상 제외한다.
-  let jsClause = "AND up.job_search_status <> 'CLOSED'";
-  if (jsFilter === "구직중")        jsClause = "AND up.job_search_status = 'SEEKING'";
-  else if (jsFilter === "제안 검토") jsClause = "AND up.job_search_status = 'OPEN'";
+  // 인재검색에 나오는 사람은 '공개'로 둔 사람뿐이다. 비공개는 자기 이력서를
+  // 기업에게 보이지 않겠다는 뜻이라 어떤 조건으로도 검색되지 않는다.
+  const jsClause = "AND up.job_search_status <> 'CLOSED'";
 
   // 경력 (CTE 이후)
   let careerClause = "";
@@ -101,6 +99,7 @@ export async function GET(req: NextRequest) {
         u.email,
         u.phone,
         u.avatar_url,
+        u.avatar_public,
         u.portfolio_images,
         (
           SELECT ul.url FROM user_links ul
@@ -167,7 +166,7 @@ export async function GET(req: NextRequest) {
     SELECT *, COUNT(*) OVER()::int AS total_count
     FROM talent
     WHERE 1=1 ${careerClause} ${ageClause}
-    -- 구직중이 먼저, 그 다음 상태를 최근에 갱신한 순서 (오래된 '구직중'은 자연히 뒤로 밀린다)
+    -- 공개 설정을 최근에 손댄 사람이 먼저. 오래 방치된 이력서는 자연히 뒤로 밀린다
     ORDER BY (job_search_status = 'SEEKING') DESC, job_search_status_at DESC NULLS LAST, created_at DESC
     LIMIT $${idx++} OFFSET $${idx++}
   `;
@@ -181,7 +180,9 @@ export async function GET(req: NextRequest) {
       name: r.name,
       email: r.email || null,
       phone: r.phone || null,
-      avatarUrl: r.avatar_url,
+      // 사진만 감춘 사람은 아예 내려보내지 않는다. 화면에서 가리면 응답에 남아
+      // 개발자 도구로 볼 수 있다 — 가린 것이 가려진 것이 아니게 된다.
+      avatarUrl: r.avatar_public === false ? null : r.avatar_url,
       portfolioImages: r.portfolio_images || null,
       snsUrl: r.sns_url || null,
       gender: r.gender,

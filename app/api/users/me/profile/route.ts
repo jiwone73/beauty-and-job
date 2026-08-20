@@ -119,7 +119,7 @@ await client.query("BEGIN");
         profile.office_job_areas || [],
         profile.is_entry_level || false,
         profile.entry_experience || "",
-        // 구직상태: 값이 없으면 기본 '구직중'. 상태가 바뀐 시점을 함께 남겨 인재검색에서 신선도를 보여준다.
+        // 인재검색 공개 여부: 값이 없으면 공개. 바꾼 시점을 함께 남겨 신선도를 보여준다.
         ["SEEKING", "OPEN", "CLOSED"].includes(profile.job_search_status) ? profile.job_search_status : "SEEKING",
         profile.job_search_status_at || new Date(),
       ]
@@ -238,10 +238,16 @@ export async function PATCH(req: NextRequest) {
   if (typeof b.region_prefer === "string") fields.push(["region_prefer", b.region_prefer]);
   if (Array.isArray(b.office_job_areas)) fields.push(["office_job_areas", b.office_job_areas]);
   if (typeof b.entry_experience === "string") fields.push(["entry_experience", b.entry_experience]);
-  // 구직상태는 값을 바꾼 시점이 곧 신선도라, 상태와 갱신 시각을 항상 함께 저장한다.
+  // 공개 여부는 바꾼 시점이 곧 신선도라, 값과 갱신 시각을 항상 함께 저장한다.
   if (["SEEKING", "OPEN", "CLOSED"].includes(b.job_search_status)) {
     fields.push(["job_search_status", b.job_search_status]);
     fields.push(["job_search_status_at", new Date()]);
+  }
+
+  // 프로필 사진 공개 여부는 users 표에 있어(avatar_url 옆) 따로 저장한다.
+  if (typeof b.avatar_public === "boolean") {
+    await pool.query(`UPDATE users SET avatar_public = $1 WHERE id = $2`, [b.avatar_public, auth!.sub]);
+    if (fields.length === 0) return ok({ saved: true });
   }
 
   if (fields.length === 0) return ok({ saved: true });

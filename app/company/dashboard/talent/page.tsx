@@ -6,7 +6,7 @@ import {
   Download, Printer, MapPin, ChevronDown, SlidersHorizontal,
 } from "lucide-react";
 import { companyTalentApi, type TalentItem } from "@/lib/api/company";
-import { JS_LABEL, JS_FILTERS, statusAge } from "@/lib/jobSearchStatus";
+import { JS_LABEL, statusAge } from "@/lib/jobSearchStatus";
 import ResumePreview from "@/components/profile/ResumePreview";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
@@ -58,7 +58,6 @@ export default function TalentPage() {
 
   const [search, setSearch]                       = useState("");
   const [careerFilter, setCareerFilter]           = useState("전체");
-  const [jsFilter, setJsFilter]                   = useState("전체");   // 구직상태
   const [jobGroupOpen, setJobGroupOpen]           = useState(false);
   const [selectedJobGroups, setSelectedJobGroups] = useState<string[]>([]);
   const [regionOpen, setRegionOpen]               = useState(false);
@@ -88,7 +87,6 @@ export default function TalentPage() {
     setSelectedJobGroups([]);
     setSelectedRegions([]);
     setCareerFilter("전체");
-    setJsFilter("전체");
     setAgeFilter("전체");
     setGenderFilter("무관");
   };
@@ -198,7 +196,6 @@ export default function TalentPage() {
         search: search || undefined,
         jobGroups: selectedJobGroups.length > 0 ? selectedJobGroups.join(",") : undefined,
         careerFilter,
-        jobSearchStatus: jsFilter,
         page: 1,
         limit: 50,
       };
@@ -217,7 +214,7 @@ export default function TalentPage() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, search, selectedJobGroups, careerFilter, jsFilter, selectedRegions, ageFilter, genderFilter]);
+  }, [activeTab, search, selectedJobGroups, careerFilter, selectedRegions, ageFilter, genderFilter]);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -316,7 +313,6 @@ export default function TalentPage() {
     setSelectedJobGroups([]);
     setSelectedRegions([]);
     setCareerFilter("전체");
-    setJsFilter("전체");
     setAgeFilter("전체");
     setGenderFilter("무관");
   };
@@ -487,8 +483,6 @@ export default function TalentPage() {
           <FilterDropdown label="경력" value={careerFilter}
             options={CAREER_OPTIONS as unknown as string[]} onChange={setCareerFilter} />
 
-          <FilterDropdown label="구직상태" value={jsFilter}
-            options={JS_FILTERS as unknown as string[]} onChange={setJsFilter} />
 
           {activeTab === "STORE" && (
             <>
@@ -549,15 +543,6 @@ export default function TalentPage() {
                   {CAREER_OPTIONS.map((o) => (
                     <button key={o} className={`co-fseg-btn ${careerFilter === o ? "on" : ""}`}
                       onClick={() => setCareerFilter(o)}>{o}</button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="co-fseg-label">구직상태</div>
-                <div className="co-fseg-opts">
-                  {JS_FILTERS.map((o) => (
-                    <button key={o} className={`co-fseg-btn ${jsFilter === o ? "on" : ""}`}
-                      onClick={() => setJsFilter(o)}>{o}</button>
                   ))}
                 </div>
               </div>
@@ -665,17 +650,7 @@ export default function TalentPage() {
                             : <Bookmark size={19} style={{ color: "#c8c8c8" }} />}
                         </button>
                       </div>
-                      <div className="co-li-meta2">
-                        {(() => {
-                          const js = JS_LABEL[t.jobSearchStatus] || JS_LABEL.SEEKING;
-                          return (
-                            <span style={{ display: "inline-block", padding: "1px 7px", borderRadius: 10, fontSize: 11.5, fontWeight: 500, color: js.color, background: js.bg, marginRight: 6 }}>
-                              {js.text}
-                            </span>
-                          );
-                        })()}
-                        {meta2}
-                      </div>
+                      <div className="co-li-meta2">{meta2}</div>
                     </div>
                   </div>
                 </div>

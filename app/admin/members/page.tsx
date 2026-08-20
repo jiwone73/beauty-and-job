@@ -408,7 +408,7 @@ function AdminMembersPageInner() {
                 <th>지역</th>
                 <th style={{ textAlign: "center" }}>연락처</th>
                 <th>최근경력</th>
-                <th>구직상태</th>
+                <th>인재검색</th>
                 <th>가입</th>
                 <th>최종로그인</th>
                 <th>이력서</th>
@@ -506,7 +506,7 @@ function AdminMembersPageInner() {
                       )}
                     </td>
 
-                    {/* 구직상태 — 경력 종료일(퇴직)은 지난 일이고, 지금 제안을 받을지는 본인이 고른 값이다. */}
+                    {/* 인재검색 공개 여부 — 본인이 고른 값이다. 비공개면 기업 검색에 안 나온다. */}
                     <td className="admin-td-date">
                       {(() => {
                         const js = JS_LABEL[m.job_search_status || "SEEKING"] || JS_LABEL.SEEKING;

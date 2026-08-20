@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
       career_years: r.career_years,
       career_count: r.career_count,
       sns_url: r.sns_url || null,
-      // 스크랩 목록에선 '구직 안 함'도 그대로 보여준다 — 이미 담아 둔 사람이라 상태 변화가 곧 정보다.
+      // 스크랩 목록에선 비공개로 바꾼 사람도 보여준다 — 이미 담아 둔 사람이라 그 변화가 곧 정보다.
       job_search_status: r.job_search_status || "SEEKING",
       job_search_status_at: r.job_search_status_at || null,
       scrapped_at: r.scrapped_at,
