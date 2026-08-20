@@ -480,13 +480,17 @@ function ResumePageContent() {
             <h2 className="resume-section-title">기본 정보</h2>
             <div className="resume-basic-info" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
               <div className="resume-name-block" style={{ flex: 1, minWidth: 0 }}>
-                <h3 className="resume-name" style={{ fontSize: "15px", fontWeight: 400, marginTop: "16px" }}>{name || "이름"}</h3>
+                {/* 위쪽 여백을 따로 주지 않는다. 제목 아래 간격은 다른 구역과 같이
+                    .resume-section-title 이 맡고, 여기서 또 띄우면 이 칸만 벌어진다. */}
+                <h3 className="resume-name" style={{ fontSize: "15px", fontWeight: 400 }}>{name || "이름"}</h3>
                 <p className="resume-job-line">{birthDisplay} {birthDisplay && "·"} {jobDisplay}</p>
                 <p className="resume-contact">{formatPhone(phone || phoneLocal)} {(phone || phoneLocal) && emailLocal ? "·" : ""} {emailLocal}</p>
                 {addressDisplay && <p className="resume-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>}
               </div>
+              {/* 사진 위 테두리를 이름 첫 줄과 나란히 둔다. 예전엔 -22px 로 끌어올려
+                  제목 옆까지 올라가 있어, 이름과 높이가 맞지 않았다. */}
               {avatarUrl && (
-                <div style={{ flexShrink: 0, width: "100px", height: "128px", borderRadius: "4px", overflow: "hidden", border: "1px solid #e0e0e0", background: "#f5f5f5", marginTop: "-22px" }}>
+                <div style={{ flexShrink: 0, width: "100px", height: "128px", borderRadius: "4px", overflow: "hidden", border: "1px solid #e0e0e0", background: "#f5f5f5" }}>
                   <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
               )}

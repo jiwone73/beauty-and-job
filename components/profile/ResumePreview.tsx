@@ -95,6 +95,8 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
             <p className="rp-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>
           )}
         </div>
+        {/* 폼과 같은 자리 — 사진 위 테두리를 이름 첫 줄에 맞춘다. 미리보기가
+            폼과 한 픽셀이라도 다르면 그대로 뽑히는 줄 알았다가 놀란다. */}
         {avatarUrl && (
           <div style={{
             flexShrink: 0,
@@ -104,7 +106,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
             overflow: "hidden",
             border: "1px solid #e0e0e0",
             background: "#f5f5f5",
-            marginTop: "-30px",
           }}>
             <img src={avatarUrl} alt="프로필" style={{width: "100%", height: "100%", objectFit: "cover"}} />
           </div>
