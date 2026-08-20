@@ -12051,3 +12051,63 @@ button,
    실제 글자보다 먼저 줄이 바뀌었다(줄바꿈으로 끝날 때만 값 쪽에서 붙인다). */
 .autogrow::after { content: attr(data-value); visibility: hidden; }
 .autogrow > textarea { resize: none; overflow: hidden; outline: none; width: 100%; }
+
+/* ============================================
+   공고 배너 띠 (components/jobs/BannerStrip.tsx)
+   ============================================ */
+.bstrip { position: relative; width: 100%; }
+
+/* 손으로 밀면 한 쪽씩 딱 걸린다. 스크롤 막대는 감춘다 — 사진 위에 회색 막대가
+   걸리면 배너가 지저분해지고, 폰에서는 어차피 보이지 않는다. */
+.bstrip-track {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;   /* 끝에서 더 밀어도 뒤 화면이 따라 움직이지 않는다 */
+  scrollbar-width: none;
+}
+.bstrip-track::-webkit-scrollbar { display: none; }
+
+.bstrip-page {
+  position: relative;
+  flex: 0 0 100%;
+  display: flex;
+  justify-content: center;   /* 마지막 쪽에 한 장만 남으면 가운데 둔다 */
+  align-items: stretch;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;  /* 세게 밀어도 한 번에 한 쪽씩만 넘어간다 */
+}
+
+.bstrip-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 24px; height: 24px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.9); color: #333;
+  cursor: pointer; z-index: 3; box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  display: flex; align-items: center; justify-content: center;
+}
+.bstrip-arrow:disabled { opacity: 0.35; cursor: default; }
+.bstrip-prev { left: 6px; }
+.bstrip-next { right: 6px; }
+
+.bstrip-dots { display: none; }
+
+/* 폰 — 작은 화살표를 정확히 누르기 어렵다. 화살표를 걷고 점을 낸다. */
+@media (max-width: 640px) {
+  .bstrip-arrow { display: none; }
+  .bstrip-dots {
+    display: flex; justify-content: center; align-items: center;
+    gap: 6px; padding: 8px 0 2px;
+  }
+  /* 보이는 점은 6px 이지만 누르는 자리는 20px 로 넓힌다 — 점만 하면 안 눌린다. */
+  .bstrip-dot {
+    width: 20px; height: 20px; padding: 0; border: none; background: none;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .bstrip-dot::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: #d8d0e0; transition: background .15s, width .15s;
+  }
+  .bstrip-dot.on::before { width: 16px; border-radius: 3px; background: #5f0080; }
+}

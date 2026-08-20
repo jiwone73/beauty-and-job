@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { BannerImg } from "@/components/BannerImg";
 
@@ -7,12 +7,16 @@ import { BannerImg } from "@/components/BannerImg";
  * 공고 배너 띠 — 공고 상세·기업정보 설정·공고 등록 미리보기에서 같은 모양으로 쓴다.
  *
  * 규칙 두 가지만 지킨다.
- *  1. 한 화면에 두 장. 한 칸의 크기는 언제나 폭의 절반 × 3:2 로 고정이다.
+ *  1. 한 화면에 두 장. 한 칸의 크기는 언제나 폭의 절반 × 4:3 으로 고정이다.
  *     사진마다 칸이 달라지면 목록이 들쭉날쭉해진다.
  *  2. 사진은 자르지 않는다. 칸 안에 통째로 넣고(contain) 남는 자리는 사진 모서리
  *     색으로 채운다 — 가로로 긴 로고 배너도 잘리지 않고, 비율도 왜곡되지 않는다.
  *
- * 세 장부터는 좌우 화살표로 두 장씩 넘겨 본다.
+ * 넘기는 방법은 화면에 따라 다르다.
+ *  · 폰 — 손으로 밀면 한 쪽씩 딱 걸린다(scroll-snap). 아래 점이 몇 쪽 중 몇 번째인지
+ *    알려 준다. 폰에서 작은 화살표를 정확히 누르는 것은 어렵다.
+ *  · 마우스 — 밀 것이 없으니 좌우 화살표를 낸다.
+ * 어느 쪽이든 같은 띠를 움직이므로 보이는 것이 갈라지지 않는다.
  */
 export default function BannerStrip({
   images,
@@ -29,26 +33,25 @@ export default function BannerStrip({
   showIndex?: boolean;                               // 첫 장이 목록 카드 썸네일이 되므로 편집 화면에선 번호를 보여준다
   radius?: number;                                   // 기본은 각진 모서리(공고 배너는 화면 폭을 꽉 채운다)
 }) {
-  const [start, setStart] = useState(0);
   // 끌어 옮기는 출발 위치는 렌더와 무관하게 즉시 읽혀야 해서 ref로 둔다(상태면 같은 틱에 반영되지 않는다).
   const dragFrom = useRef<number | null>(null);
+  const 띠 = useRef<HTMLDivElement>(null);
+  const [쪽, set쪽] = useState(0);
   const [edge, setEdge] = useState<{ left: string; right: string } | null>(null);
   const n = images.length;
 
   const PER = 2;                     // 화면 크기와 무관하게 한 번에 두 장
-  const CELL_RATIO = "3 / 2";        // 한 장의 칸 비율(고정)
-  const cols = Math.min(n, PER);
-  const s = n ? ((start % n) + n) % n : 0;
-  const visible = Array.from({ length: cols }, (_, k) => images[(s + k) % n]);
+  const CELL_RATIO = "4 / 3";        // 한 장의 칸 비율(고정)
+  const 쪽수 = Math.ceil(n / PER);
+  // 마지막 쪽은 한 장만 남을 수 있다. 억지로 채우지 않고 가운데 두고 양옆을 사진 색으로 메운다.
+  const 쪽들 = Array.from({ length: 쪽수 }, (_, p) => images.slice(p * PER, p * PER + PER));
 
-  // 남는 좌우는 사진의 맨 왼쪽·오른쪽 테두리 색으로 채운다 — 사진과 여백의 경계가 보이지 않는다.
-  // 사진을 못 읽는 경우(CORS 등)에는 색을 비워 두고 뒤 배경이 그대로 비치게 한다.
-  const firstShown = visible[0];
-  const lastShown = visible[cols - 1];
+  // 한 장짜리 쪽의 좌우는 그 사진의 맨 왼쪽·오른쪽 테두리 색으로 채운다 — 사진과 여백의
+  // 경계가 보이지 않는다. 사진을 못 읽는 경우(CORS 등)에는 비워 두고 뒤 배경이 비치게 한다.
+  const 홀로 = n % PER === 1 ? images[n - 1] : null;
   useEffect(() => {
-    if (!firstShown || cols >= PER) { setEdge(null); return; }
+    if (!홀로) { setEdge(null); return; }
     let alive = true;
-    // 왼쪽 여백은 맨 앞 사진의 왼쪽 테두리, 오른쪽 여백은 맨 뒤 사진의 오른쪽 테두리에서 뽑는다.
     const edgeColor = (src: string, side: "left" | "right") =>
       new Promise<string | null>((resolve) => {
         const img = new Image();
@@ -71,69 +74,96 @@ export default function BannerStrip({
         };
         img.src = src;
       });
-    Promise.all([edgeColor(firstShown, "left"), edgeColor(lastShown, "right")]).then(([left, right]) => {
+    Promise.all([edgeColor(홀로, "left"), edgeColor(홀로, "right")]).then(([left, right]) => {
       if (alive && left && right) setEdge({ left, right });
     });
     return () => { alive = false; };
-  }, [firstShown, lastShown, cols]);
+  }, [홀로]);
+
+  // 사진이 줄어 쪽수가 준 뒤에도 옛 쪽 번호가 남아 점이 엉뚱한 곳을 가리키지 않게 한다.
+  useEffect(() => { if (쪽 > 쪽수 - 1) set쪽(Math.max(0, 쪽수 - 1)); }, [쪽수, 쪽]);
 
   if (!n) return null;
 
-  const arrow: CSSProperties = {
-    position: "absolute", top: "50%", transform: "translateY(-50%)",
-    width: 24, height: 24, borderRadius: "50%", border: "none",
-    background: "rgba(255,255,255,0.9)", color: "#333",
-    cursor: "pointer", zIndex: 3, boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
-    display: "flex", alignItems: "center", justifyContent: "center",
+  const 옮기기 = (p: number) => {
+    const el = 띠.current;
+    if (!el) return;
+    const 갈곳 = Math.min(Math.max(p, 0), 쪽수 - 1);
+    el.scrollTo({ left: 갈곳 * el.clientWidth, behavior: "smooth" });
+    set쪽(갈곳);
   };
 
   return (
-    <div style={{ position: "relative", width: "100%" }}>
-      <div style={{ position: "relative", width: "100%", borderRadius: radius, overflow: "hidden" }}>
-        {cols < PER && edge && (
-          <>
-            <div aria-hidden style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "50%", background: edge.left }} />
-            <div aria-hidden style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "50%", background: edge.right }} />
-          </>
-        )}
-        <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "stretch" }}>
-          {visible.map((src, k) => {
-            const idx = (s + k) % n;   // 화살표로 돌려 봐도 원본 배열의 자리를 가리킨다
-            return (
-              <div key={`${s}-${k}-${src}`}
-                draggable={!!onReorder}
-                onDragStart={onReorder ? () => { dragFrom.current = idx; } : undefined}
-                onDragOver={onReorder ? (e) => e.preventDefault() : undefined}
-                onDrop={onReorder ? (e) => {
-                  e.preventDefault(); e.stopPropagation();
-                  const from = dragFrom.current;
-                  if (from !== null && from !== idx) onReorder(from, idx);
-                  dragFrom.current = null;
-                } : undefined}
-                style={{ position: "relative", width: `${100 / PER}%`, aspectRatio: CELL_RATIO, flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
-                <BannerImg src={src} alt={alt} />
-                {showIndex && (
-                  <span style={{ position: "absolute", bottom: 5, left: 5, background: "rgba(0,0,0,0.55)", color: "#fff",
-                    fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "1px 5px" }}>{idx + 1}</span>
-                )}
-                {onDelete && (
-                  <button type="button" onClick={() => onDelete(src)} title="삭제"
-                    style={{ position: "absolute", top: 5, right: 5, width: 22, height: 22, borderRadius: "50%",
-                      background: "rgba(0,0,0,0.55)", color: "#fff", border: "none", cursor: "pointer",
-                      display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <X size={13} />
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
+    <div className="bstrip">
+      <div
+        ref={띠}
+        className="bstrip-track"
+        style={{ borderRadius: radius }}
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          if (!el.clientWidth) return;
+          set쪽(Math.round(el.scrollLeft / el.clientWidth));
+        }}
+      >
+        {쪽들.map((쪽사진, p) => (
+          <div key={p} className="bstrip-page">
+            {쪽사진.length < PER && edge && (
+              <>
+                <div aria-hidden style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "50%", background: edge.left }} />
+                <div aria-hidden style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "50%", background: edge.right }} />
+              </>
+            )}
+            {쪽사진.map((src, k) => {
+              const idx = p * PER + k;
+              return (
+                <div key={`${idx}-${src}`}
+                  draggable={!!onReorder}
+                  onDragStart={onReorder ? () => { dragFrom.current = idx; } : undefined}
+                  onDragOver={onReorder ? (e) => e.preventDefault() : undefined}
+                  onDrop={onReorder ? (e) => {
+                    e.preventDefault(); e.stopPropagation();
+                    const from = dragFrom.current;
+                    if (from !== null && from !== idx) onReorder(from, idx);
+                    dragFrom.current = null;
+                  } : undefined}
+                  style={{ position: "relative", width: `${100 / PER}%`, aspectRatio: CELL_RATIO, flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
+                  <BannerImg src={src} alt={alt} />
+                  {showIndex && (
+                    <span style={{ position: "absolute", bottom: 5, left: 5, background: "rgba(0,0,0,0.55)", color: "#fff",
+                      fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "1px 5px" }}>{idx + 1}</span>
+                  )}
+                  {onDelete && (
+                    <button type="button" onClick={() => onDelete(src)} title="삭제"
+                      style={{ position: "absolute", top: 5, right: 5, width: 22, height: 22, borderRadius: "50%",
+                        background: "rgba(0,0,0,0.55)", color: "#fff", border: "none", cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <X size={13} />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
-      {n > PER && (
+
+      {쪽수 > 1 && (
         <>
-          {/* 보이는 만큼(PER) 통째로 넘긴다 — 한 장씩 밀면 같은 사진이 자리만 옮겨 다녀 넘긴 티가 안 난다. */}
-          <button type="button" aria-label="이전 이미지" onClick={() => setStart(s - PER)} style={{ ...arrow, left: 6 }}><ChevronLeft size={15} /></button>
-          <button type="button" aria-label="다음 이미지" onClick={() => setStart(s + PER)} style={{ ...arrow, right: 6 }}><ChevronRight size={15} /></button>
+          {/* 마우스 화면에만 낸다 — 폰에서는 손으로 민다. */}
+          <button type="button" aria-label="이전 이미지" className="bstrip-arrow bstrip-prev"
+            onClick={() => 옮기기(쪽 - 1)} disabled={쪽 === 0}><ChevronLeft size={15} /></button>
+          <button type="button" aria-label="다음 이미지" className="bstrip-arrow bstrip-next"
+            onClick={() => 옮기기(쪽 + 1)} disabled={쪽 >= 쪽수 - 1}><ChevronRight size={15} /></button>
+
+          {/* 폰에만 낸다 — 몇 쪽 중 몇 번째인지 알려 준다. 눌러서도 옮길 수 있다. */}
+          <div className="bstrip-dots" role="tablist" aria-label="배너 쪽 넘기기">
+            {쪽들.map((_, p) => (
+              <button key={p} type="button" role="tab" aria-selected={p === 쪽}
+                aria-label={`${쪽수}쪽 중 ${p + 1}쪽`}
+                className={`bstrip-dot${p === 쪽 ? " on" : ""}`}
+                onClick={() => 옮기기(p)} />
+            ))}
+          </div>
         </>
       )}
     </div>

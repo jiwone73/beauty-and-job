@@ -34,7 +34,7 @@ const withSeeDetail = (v: string) => {
   // 등록 폼은 원문을 그대로 보여준다 — 관리자는 값을 대조해야 하기 때문이다.
   // 가리는 것은 구직자가 보는 화면(이 컴포넌트)과 공개 API 두 곳이다.
 
-// 공고 상단 이미지 갤러리. 표시 규칙(3:1 고정 · 한 장은 항상 1/3 폭)은 BannerStrip에 모아 두고,
+// 공고 상단 이미지 갤러리. 표시 규칙(한 칸 4:3 · 한 화면에 두 장)은 BannerStrip에 모아 두고,
 // 기업정보 설정·공고 등록 미리보기에서도 같은 컴포넌트를 써 어디서나 같은 모양으로 보이게 한다.
 export function ImageCarousel({ images, alt }: { images: string[]; alt?: string }) {
   return <BannerStrip images={images} alt={alt} />;
@@ -262,7 +262,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             (Array.isArray(job.cover_images) ? job.cover_images.map((c: any) => c?.url) : []).filter(Boolean)
           )] as string[];
           const hasDetail = Array.isArray(job.detailImages) && job.detailImages.some((d: any) => d?.url);
-          // 배너: 한 화면에 두 장, 세 장부터는 좌우 화살표로 회전(BannerStrip).
+          // 배너: 한 화면에 두 장. 폰은 손으로 밀고, 마우스 화면은 좌우 화살표(BannerStrip).
           if (coverUrls.length) {
             return (
               <div style={{ width: "100%", marginBottom: 4 }}>
