@@ -39,7 +39,7 @@ export default function PortfolioModal({
 
   return (
     <div onClick={onClose} className="cv-overlay">
-      <div onClick={(e) => e.stopPropagation()} className="cv-sheet">
+      <div onClick={(e) => e.stopPropagation()} className="cv-modal">
         <div className="cv-header">
           <button className="cv-back" onClick={onClose} aria-label="닫기"><ChevronLeft size={22} /></button>
           <h2 className="cv-title">포트폴리오</h2>
@@ -59,26 +59,32 @@ export default function PortfolioModal({
             </div>
           )}
           {사진남은자리 > 0 ? (
-            <div
-              onClick={() => !isUploading && fileRef.current?.click()}
-              onDragOver={(e) => { e.preventDefault(); set끌림(true); }}
-              onDragLeave={(e) => { e.preventDefault(); set끌림(false); }}
-              onDrop={(e) => { e.preventDefault(); set끌림(false); const f = Array.from(e.dataTransfer.files || []); if (f.length) onFiles(f); }}
-              style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `2px dashed ${끌림 ? "#5f0080" : "#d0c0e0"}`, background: 끌림 ? "#f3e5f5" : "#fafafa", color: "#5f0080", fontSize: 13, cursor: isUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, textAlign: "center" }}
-            >
-              <Upload size={24} />
-              {/* 끌어다 놓기는 어느 화면에서든 되지만, 안내는 마우스가 있는 화면에만 한다.
-                  폰에서 "끌어다 놓거나"가 먼저 나오면 정작 눌러야 한다는 말이 묻힌다. */}
-              <span>
-                {isUploading ? "올리는 중..." : 끌림 ? "여기에 놓으세요" : (
-                  <>
-                    <span className="pf-drop-pc">사진을 끌어다 놓거나 눌러서 고르세요</span>
-                    <span className="pf-drop-mobile">눌러서 사진 고르기</span>
-                  </>
-                )}
-              </span>
-              <span style={{ fontSize: 11, color: "#888" }}>최대 {MAX_PHOTOS}장 · 올릴 때 자동으로 줄여요</span>
-            </div>
+            <>
+              {/* 폰에는 끌어다 놓을 것이 없다. 점선 상자는 마우스가 있는 화면에서만
+                  뜻이 있고, 폰에서는 버튼 하나가 낫다. */}
+              <div
+                className="pf-drop-pc"
+                onClick={() => !isUploading && fileRef.current?.click()}
+                onDragOver={(e) => { e.preventDefault(); set끌림(true); }}
+                onDragLeave={(e) => { e.preventDefault(); set끌림(false); }}
+                onDrop={(e) => { e.preventDefault(); set끌림(false); const f = Array.from(e.dataTransfer.files || []); if (f.length) onFiles(f); }}
+                style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `2px dashed ${끌림 ? "#5f0080" : "#d0c0e0"}`, background: 끌림 ? "#f3e5f5" : "#fafafa", color: "#5f0080", fontSize: 13, cursor: isUploading ? "not-allowed" : "pointer", flexDirection: "column", alignItems: "center", gap: 8, textAlign: "center" }}
+              >
+                <Upload size={24} />
+                <span>{isUploading ? "올리는 중..." : 끌림 ? "여기에 놓으세요" : "사진을 끌어다 놓거나 눌러서 고르세요"}</span>
+                <span style={{ fontSize: 11, color: "#888" }}>최대 {MAX_PHOTOS}장 · 올릴 때 자동으로 줄여요</span>
+              </div>
+              <button
+                type="button"
+                className="pf-pick-mobile"
+                disabled={isUploading}
+                onClick={() => fileRef.current?.click()}
+              >
+                <Upload size={17} />
+                {isUploading ? "올리는 중..." : "사진 고르기"}
+              </button>
+              <p className="pf-pick-note">최대 {MAX_PHOTOS}장 · 올릴 때 자동으로 줄여요</p>
+            </>
           ) : (
             <p style={{ fontSize: 12.5, color: "#888", margin: "2px 0 0" }}>사진은 {MAX_PHOTOS}장까지 넣을 수 있어요.</p>
           )}
