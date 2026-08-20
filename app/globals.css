@@ -1725,6 +1725,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-exp-desc { font-size: 13px; color: var(--color-text-sub); margin-top: 4px; }
 /* SNS 한 줄 = 매체 이름 + 주소. SNS 줄의 아래 항목으로 읽히게 조금 들여 쓴다. */
 .resume-link-item { display: flex; align-items: baseline; gap: 6px; padding: 5px 0 5px 14px; }
+/* 이력서 화면에서는 SNS 제목 아래로 한 칸 들여 쓰지만, 모달 안에서는 들여쓸
+   윗줄이 없다. 혼자 오른쪽으로 밀려 다른 줄과 왼쪽이 안 맞았다. */
+.cv-modal .resume-link-item { padding-left: 0; }
 .resume-link-category { font-size: 12.5px; color: var(--color-text-mute); flex-shrink: 0; }
 .resume-link-url { font-size: 13px; color: var(--color-primary); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .resume-link-url:hover { text-decoration: underline; }

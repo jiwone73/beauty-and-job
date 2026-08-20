@@ -4,6 +4,21 @@ import { Check, ChevronLeft, Upload, X } from "lucide-react";
 import { MAX_PHOTOS } from "@/lib/compressImage";
 import { linkLabel, looksLikeUrl, normalizeUrl, MAX_LINKS } from "@/lib/linkLabel";
 
+// 한 줄 규격 — 이 모달의 글자는 모두 이 값을 쓴다. 곳마다 12.5/13/14 로
+// 달랐더니 같은 칸 안에서도 글씨가 들쭉날쭉했다.
+const 글 = { fontSize: 13, lineHeight: 1.6 } as const;
+const 흐린글 = { ...글, color: "#888" } as const;
+
+// 주소를 통째로 외워 적는 사람은 없다. 몇 글자만 치면 앞부분을 채워 주고
+// 아이디만 이어 적게 한다. 별칭은 한글·영문·줄임말을 모두 받는다.
+const 자동채움: { 이름: string; 앞부분: string; 별칭: string[] }[] = [
+  { 이름: "인스타그램",   앞부분: "instagram.com/",  별칭: ["insta", "instagram", "ig", "인스타", "인스타그램"] },
+  { 이름: "유튜브",       앞부분: "youtube.com/@",   별칭: ["yt", "youtube", "유튜브"] },
+  { 이름: "네이버 블로그", 앞부분: "blog.naver.com/", 별칭: ["blog", "naver", "블로그", "네이버"] },
+  { 이름: "틱톡",         앞부분: "tiktok.com/@",    별칭: ["tiktok", "틱톡"] },
+  { 이름: "스레드",       앞부분: "threads.net/@",   별칭: ["threads", "스레드"] },
+];
+
 // 포트폴리오 추가 모달 — 사진과 SNS 를 한 자리에서 넣는다.
 //
 // 이력서의 다른 구역(경력·학력)이 모두 ＋ → 모달이라, 여기만 화면에 바로 붙어
@@ -27,6 +42,7 @@ export default function PortfolioModal({
   onDeleteLink: (id: string) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const 주소칸 = useRef<HTMLInputElement>(null);
   const [주소, set주소] = useState("");
   const [오류, set오류] = useState("");
   const [끌림, set끌림] = useState(false);
@@ -56,6 +72,13 @@ export default function PortfolioModal({
 
   const 사진남은자리 = MAX_PHOTOS - images.length;
 
+  // 점이 찍혔으면 주소를 적고 있는 중이니 비켜 준다. 그전까지는 친 글자에
+  // 걸리는 것만 남긴다 — 아무것도 안 쳤으면 넷까지 보여 준다.
+  const 친것 = 주소.trim().toLowerCase();
+  const 골라줄것 = 친것.includes(".")
+    ? []
+    : 자동채움.filter((k) => !친것 || k.별칭.some((a) => a.startsWith(친것)) || k.이름.startsWith(친것)).slice(0, 4);
+
   return (
     <div onClick={onClose} className="cv-overlay">
       <div onClick={(e) => e.stopPropagation()} className="cv-modal">
@@ -65,7 +88,9 @@ export default function PortfolioModal({
           <div style={{ width: 36 }} />
         </div>
         <div className="cv-body">
-          <p className="cv-desc">작업물을 올리면 합격률이 올라갑니다.</p>
+          {/* .cv-desc 의 24px 은 칸이 하나뿐인 모달을 위한 값이다. 여기는 바로
+              아래에 같은 성격의 안내가 또 오므로 두 줄을 한 덩어리로 붙인다. */}
+          <p className="cv-desc" style={{ ...흐린글, marginBottom: 10 }}>작업물을 올리면 합격률이 올라갑니다.</p>
 
           {mode !== "sns" && (<>
           {mode === "all" && <label className="cv-field-label">사진</label>}
@@ -150,13 +175,13 @@ export default function PortfolioModal({
 
           {mode !== "photo" && (<>
           {mode === "all" && <label className="cv-field-label" style={{ marginTop: 22 }}>SNS</label>}
-          <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 8px" }}>
+          <p style={{ ...흐린글, margin: "0 0 10px" }}>
             인스타그램, 유튜브, 블로그 등 작업물을 올리는 곳을 적어주세요.
           </p>
           {links.map((l) => (
             <div key={l.id} className="resume-link-item">
-              <span className="resume-link-category">{linkLabel(l.url)}</span>
-              <a href={normalizeUrl(l.url)} target="_blank" rel="noopener noreferrer" className="resume-link-url">{l.url}</a>
+              <span className="resume-link-category" style={흐린글}>{linkLabel(l.url)}</span>
+              <a href={normalizeUrl(l.url)} target="_blank" rel="noopener noreferrer" className="resume-link-url" style={글}>{l.url}</a>
               {/* 사진과 달리 몇 개 안 되고 한 줄짜리라, 고르는 단계 없이 그 자리에서 뺀다.
                   아이콘은 사진 쪽과 같이 X 로 맞춘다. */}
               <button
@@ -169,12 +194,13 @@ export default function PortfolioModal({
               </button>
             </div>
           ))}
-          {links.length < MAX_LINKS && (
-            <div style={{ display: "flex", gap: 6, marginTop: links.length ? 8 : 0 }}>
+          {links.length < MAX_LINKS && (<>
+            <div style={{ display: "flex", gap: 6, marginTop: links.length ? 10 : 0 }}>
               <input
+                ref={주소칸}
                 className="cv-input"
-                style={{ flex: 1, minWidth: 0, marginTop: 0 }}
-                placeholder="http://"
+                style={{ flex: 1, minWidth: 0, marginTop: 0, fontSize: 13 }}
+                placeholder="주소를 붙여넣거나 아래에서 고르세요"
                 value={주소}
                 onChange={(e) => { set주소(e.target.value); if (오류) set오류(""); }}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); 담기(); } }}
@@ -182,8 +208,20 @@ export default function PortfolioModal({
               />
               <button type="button" className="profile-select-btn accent" style={{ flexShrink: 0 }} onClick={담기}>추가</button>
             </div>
-          )}
-          {오류 && <p style={{ fontSize: 12.5, color: "#c0392b", marginTop: 6 }}>{오류}</p>}
+            {/* 아직 주소 꼴이 아닐 때만 낸다 — 다 적고 나면 방해만 된다. */}
+            {골라줄것.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                {골라줄것.map((k) => (
+                  <button key={k.이름} type="button"
+                    onClick={() => { set주소(k.앞부분); set오류(""); 주소칸.current?.focus(); }}
+                    style={{ ...글, padding: "5px 10px", borderRadius: 999, border: "1px solid #e6d8f0", background: "#faf5fc", color: "#5f0080", cursor: "pointer" }}>
+                    {k.이름}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>)}
+          {오류 && <p style={{ ...글, color: "#c0392b", margin: "6px 0 0" }}>{오류}</p>}
           </>)}
 
           <button className="cv-btn-primary" style={{ marginTop: 24 }} onClick={onClose}>완료</button>
