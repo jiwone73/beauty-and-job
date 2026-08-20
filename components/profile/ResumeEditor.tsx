@@ -69,7 +69,21 @@ export default function ResumeEditor({
   }, [isEntryLevel, entryExperience]);
 
   const [확대, set확대] = useState<number | null>(null);
-  const [pfModalOpen, setPfModalOpen] = useState(false);
+  // 펼침은 기본으로 열어 둔다 — 접혀 있으면 무엇을 넣어야 하는지 보이지 않는다.
+  const [pf열림, setPf열림] = useState(true);
+  const togglePf = () => setPf열림((v) => !v);
+  const [모달, set모달] = useState<null | "photo" | "sns">(null);
+  const 사진전부지우기 = async () => {
+    if (!portfolioImages.length) return;
+    if (!confirm(`사진 ${portfolioImages.length}장을 모두 지울까요?`)) return;
+    await onPortfolioDelete(portfolioImages.map((i) => i.url));
+    고르기끝();
+  };
+  const 링크전부지우기 = () => {
+    if (!links.length) return;
+    if (!confirm(`SNS 주소 ${links.length}개를 모두 지울까요?`)) return;
+    links.forEach((l) => removeLink(l.id));
+  };
   // 사진 고르기 — 평소엔 목록만 보이고, '선택'을 눌렀을 때만 체크가 나온다.
   const [고름, set고름] = useState(false);
   const [고른사진, set고른사진] = useState<Set<string>>(new Set());
@@ -454,31 +468,45 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 포트폴리오 — 넣는 곳은 모달로 모으고 여기에는 넣은 결과만 보여준다.
-          이력서의 다른 구역이 모두 ＋ → 모달이라, 여기만 화면에 붙어 있으면 손이
-          다르게 간다. */}
+      {/* 포트폴리오 — 사진과 SNS 를 각각 한 줄로 둔다. 다른 항목(경력·학력)과 같은
+          모양이라 손이 같은 자리로 간다. 비어 있으면 ＋, 내용이 있으면 ✎·🗑. */}
       <section id="section-portfolio" className="resume-section">
-        <div className="resume-section-head">
+        <div className="resume-section-head" onClick={() => togglePf()} style={{ cursor: "pointer" }}>
           <h2 className="resume-section-title">포트폴리오</h2>
-          <button className="resume-icon-btn" aria-label="포트폴리오 추가" onClick={() => setPfModalOpen(true)}>
-            <Plus size={18} />
-          </button>
+          <ChevronDown size={18} style={{ color: "#bbb", transform: pf열림 ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
         </div>
-        {portfolioImages.length === 0 && links.length === 0 ? (
-          <p style={{ fontSize: "13px", color: "#aaa", margin: "8px 0 0" }}>
-            작업물을 올리면 합격률이 올라갑니다. ＋ 를 눌러 사진이나 SNS 주소를 넣어보세요.
-          </p>
-        ) : (
+        {pf열림 && (
           <>
+            {/* ── 사진 줄 ── */}
+            <div className="resume-career-head" style={{ display: "flex", alignItems: "center" }}>
+              <strong style={{ fontWeight: 400 }}>사진</strong>
+              {portfolioImages.length > 0 && (
+                <span style={{ marginLeft: 8, fontSize: 13, color: "#888" }}>{portfolioImages.length}장</span>
+              )}
+              <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
+                {portfolioImages.length === 0 ? (
+                  <button className="resume-icon-btn" aria-label="사진 추가" onClick={() => set모달("photo")}>
+                    <Plus size={18} />
+                  </button>
+                ) : (
+                  <>
+                    <button className="resume-icon-btn" aria-label="사진 편집" onClick={() => set모달("photo")}>
+                      <Pencil size={15} />
+                    </button>
+                    <button className="resume-icon-btn danger" aria-label="사진 전체 삭제" onClick={사진전부지우기}>
+                      <Trash2 size={15} />
+                    </button>
+                  </>
+                )}
+              </span>
+            </div>
             {portfolioImages.length > 0 && (
               <>
                 <div className="pf-subhead">
-                  <span className="pf-subtitle">이미지</span>
+                  <span className="pf-subtitle" style={{ color: "#aaa", fontSize: 12.5 }}>눌러서 크게 보기</span>
                   {고름 ? (
                     <span style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
                       <button type="button" className="profile-select-btn" onClick={고르기끝}>취소</button>
-                      {/* 삭제는 고른 것이 있을 때만 나온다. 아무것도 안 고른 채 눌러
-                          경고를 보는 일이 없다(지원현황·관심공고와 같은 방식). */}
                       {고른사진.size > 0 && (
                         <button type="button" className="profile-select-btn danger" onClick={고른사진지우기}>
                           삭제 {고른사진.size}
@@ -495,8 +523,6 @@ export default function ResumeEditor({
                     const 골랐나 = 고른사진.has(img.url);
                     return (
                       <div key={img.url} className="portfolio-cell">
-                        {/* 목록은 정사각으로 자른다 — 칸 높이가 들쭉날쭉하면 훑어보기 어렵다.
-                            평소엔 눌러서 크게 보고, 고르는 중에는 눌러서 체크한다. */}
                         <img src={img.url} alt="" loading="lazy"
                           onClick={() => (고름 ? 사진고르기(img.url) : set확대(idx))}
                           style={{ cursor: 고름 ? "pointer" : "zoom-in", opacity: 고름 && !골랐나 ? 0.55 : 1 }} />
@@ -513,14 +539,34 @@ export default function ResumeEditor({
                 </div>
               </>
             )}
+
+            {/* ── SNS 줄 ── */}
+            <div className="resume-career-head" style={{ display: "flex", alignItems: "center", marginTop: 14 }}>
+              <strong style={{ fontWeight: 400 }}>SNS</strong>
+              {links.length > 0 && (
+                <span style={{ marginLeft: 8, fontSize: 13, color: "#888" }}>{links.length}개</span>
+              )}
+              <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
+                {links.length === 0 ? (
+                  <button className="resume-icon-btn" aria-label="SNS 추가" onClick={() => set모달("sns")}>
+                    <Plus size={18} />
+                  </button>
+                ) : (
+                  <>
+                    <button className="resume-icon-btn" aria-label="SNS 편집" onClick={() => set모달("sns")}>
+                      <Pencil size={15} />
+                    </button>
+                    <button className="resume-icon-btn danger" aria-label="SNS 전체 삭제" onClick={링크전부지우기}>
+                      <Trash2 size={15} />
+                    </button>
+                  </>
+                )}
+              </span>
+            </div>
             {links.map((link) => (
-              <div key={link.id} className="resume-link-item" style={{ marginTop: 8 }}>
+              <div key={link.id} className="resume-link-item">
                 <span className="resume-link-category">{linkLabel(link.url)}</span>
                 <a href={normalizeUrl(link.url)} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
-                <button className="resume-icon-btn danger" aria-label="삭제" style={{ marginLeft: "auto" }}
-                  onClick={() => { if (confirm("이 링크를 지울까요?")) removeLink(link.id); }}>
-                  <X size={16} />
-                </button>
               </div>
             ))}
           </>
@@ -614,8 +660,9 @@ export default function ResumeEditor({
 
 
       <PortfolioModal
-        isOpen={pfModalOpen}
-        onClose={() => setPfModalOpen(false)}
+        isOpen={모달 !== null}
+        mode={모달 ?? "all"}
+        onClose={() => set모달(null)}
         images={portfolioImages}
         links={links}
         isUploading={isUploading}

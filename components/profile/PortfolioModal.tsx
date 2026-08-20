@@ -10,10 +10,13 @@ import { linkLabel, looksLikeUrl, normalizeUrl, MAX_LINKS } from "@/lib/linkLabe
 // 있으면 손이 다르게 간다. 넣는 곳은 모달로 모으고, 이력서 화면에는 넣은 결과만
 // 보여준다.
 export default function PortfolioModal({
-  isOpen, onClose, images, links, isUploading, onFiles, onAddLink,
+  isOpen, onClose, mode = "all", images, links, isUploading, onFiles, onAddLink,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  /** 사진 줄에서 열면 사진만, SNS 줄에서 열면 SNS 만 보여준다 — 누른 것과 열리는
+   *  것이 같아야 무엇을 하려던 것인지 잃지 않는다. */
+  mode?: "photo" | "sns" | "all";
   images: { url: string }[];
   links: { id: string; url: string }[];
   isUploading: boolean;
@@ -42,13 +45,14 @@ export default function PortfolioModal({
       <div onClick={(e) => e.stopPropagation()} className="cv-modal">
         <div className="cv-header">
           <button className="cv-back" onClick={onClose} aria-label="닫기"><ChevronLeft size={22} /></button>
-          <h2 className="cv-title">포트폴리오</h2>
+          <h2 className="cv-title">{mode === "sns" ? "SNS" : mode === "photo" ? "사진" : "포트폴리오"}</h2>
           <div style={{ width: 36 }} />
         </div>
         <div className="cv-body">
           <p className="cv-desc">작업물을 올리면 합격률이 올라갑니다.</p>
 
-          <label className="cv-field-label">사진</label>
+          {mode !== "sns" && (<>
+          {mode === "all" && <label className="cv-field-label">사진</label>}
           {images.length > 0 && (
             <div className="portfolio-grid" style={{ marginBottom: 10 }}>
               {images.map((img) => (
@@ -91,7 +95,10 @@ export default function PortfolioModal({
           <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: "none" }}
             onChange={(e) => { const f = Array.from(e.target.files || []); if (f.length) onFiles(f); if (fileRef.current) fileRef.current.value = ""; }} />
 
-          <label className="cv-field-label" style={{ marginTop: 22 }}>SNS</label>
+          </>)}
+
+          {mode !== "photo" && (<>
+          {mode === "all" && <label className="cv-field-label" style={{ marginTop: 22 }}>SNS</label>}
           <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 8px" }}>
             인스타그램, 유튜브, 블로그 등 작업물을 올리는 곳을 적어주세요.
           </p>
@@ -116,6 +123,7 @@ export default function PortfolioModal({
             </div>
           )}
           {오류 && <p style={{ fontSize: 12.5, color: "#c0392b", marginTop: 6 }}>{오류}</p>}
+          </>)}
 
           <button className="cv-btn-primary" style={{ marginTop: 24 }} onClick={onClose}>완료</button>
         </div>
