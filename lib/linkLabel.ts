@@ -16,6 +16,9 @@ const 아는곳: [RegExp, string][] = [
   [/(^|\.)tiktok\.com/i, "틱톡"],
   [/(^|\.)threads\.(net|com)/i, "스레드"],
   [/(^|\.)brunch\.co\.kr/i, "브런치"],
+  // 티스토리·브런치는 카카오 것이다. 주소를 붙여넣었을 때 도메인이 그대로
+  // 뜨지 않도록 이름을 알아본다.
+  [/(^|\.)tistory\.com/i, "티스토리"],
   [/(^|\.)notion\.(site|so)/i, "노션"],
   [/tv\.naver\.com|(^|\.)navertv\./i, "네이버TV"],
   [/(^|\.)cafe\.naver\.com/i, "네이버 카페"],
