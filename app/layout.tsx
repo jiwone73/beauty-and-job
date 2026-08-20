@@ -30,6 +30,9 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: "#5f0080",
+  // 밝은 화면만 있다고 머리말에도 적는다. CSS 가 닿기 전에 브라우저가
+  // 판단하는 것들이 있어 둘 다 둔다.
+  colorScheme: "light",
 };
 
 export default function RootLayout({

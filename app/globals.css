@@ -40,6 +40,10 @@
 
   html {
   scrollbar-gutter: stable;
+  /* 이 앱은 밝은 화면 하나로만 만들어져 있다. 그걸 알리지 않으면 폰이 어두운
+     모드일 때 브라우저가 스스로 그리는 것들(날짜 선택기, 입력칸, 스크롤바)을
+     검게 그린다. 페이지는 흰데 그 부분만 검어 따로 논다. */
+  color-scheme: light;
 }
   html, body {
   background: #fdfbff !important;
@@ -1446,6 +1450,11 @@ input[type="range"].career-slider::-moz-range-thumb {
   max-width: 600px;
   margin: 0 auto;
   padding: 24px 0 40px;
+}
+/* 좁은 화면에서는 좌우 0 이면 버튼이 화면 끝까지 붙는다. 이력서 저장 버튼
+   (.resume-bottom-save)과 같은 16px 을 준다 — 위 완성도 카드와도 같은 값이다. */
+@media (max-width: 768px) {
+  .profile-bottom-cta { padding: 24px 16px 40px; }
 }
 .profile-resume-btn {
   max-width: 600px;
