@@ -22,6 +22,11 @@ export const metadata: Metadata = {
     icon: "/icons/icon-192.png",
     apple: "/icons/icon-180.png",
   },
+  // apple- 붙은 쪽은 옛 이름이라 사파리가 "이제 이걸 쓰라"고 알린다.
+  // 새 이름도 함께 둔다 — 둘 중 하나만 보는 판이 있어 양쪽을 채운다.
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport: Viewport = {
