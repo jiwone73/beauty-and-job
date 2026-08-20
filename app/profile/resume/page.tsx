@@ -176,6 +176,16 @@ function ResumePageContent() {
   };
   const totalCareer = calcTotalCareer();
 
+  // 프로필 페이지를 거치지 않고 이 주소로 바로 들어오면(새 기기·캐시 지운 뒤,
+  // 북마크·알림 링크) 스토어가 비어 이력서가 통째로 빈 것처럼 보였다.
+  // 한 번도 받아온 적이 없을 때만 받아온다 — 이미 있는 것을 다시 받으면
+  // 저장하지 않은 편집분을 덮는다.
+  useEffect(() => {
+    if (!useProfileStore.getState().loaded) {
+      useProfileStore.getState().loadFromServer();
+    }
+  }, []);
+
   const handleSave = async () => {
     // 경력/신입은 필수 구분: 경력 1건 이상이거나 '신입' 체크 중 하나는 반드시.
     if (!introLocal.trim()) { alert("한줄소개를 입력해주세요."); return; }
@@ -189,8 +199,12 @@ function ResumePageContent() {
     try {
       await useProfileStore.getState().syncToDb();
       alert("저장되었습니다.");
-    } catch (e) {
-      alert("저장에 실패했습니다. 다시 시도해주세요.");
+    } catch (e: any) {
+      // 아직 못 받아온 상태면 그 이유를 그대로 알린다 — "다시 시도"만 권하면
+      // 같은 자리에서 계속 실패한다.
+      alert(e?.message?.includes("불러오지")
+        ? "이력서를 아직 불러오지 못했어요. 새로고침한 뒤 다시 저장해 주세요."
+        : "저장에 실패했습니다. 다시 시도해주세요.");
     }
   };
 

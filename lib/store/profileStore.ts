@@ -322,17 +322,24 @@ export const useProfileStore = create<ProfileState>()(
                 officeJobAreas: profile?.office_job_areas || [],
               });
             } else {
-              set({ loaded: true });
+              // 못 받아왔는데 '불러왔다'고 표시하면, 빈 화면이 사실인 양 굳는다.
+              // 그대로 두면 다음에 들어올 때 다시 받아온다.
+              console.error("[profile load] 응답에 데이터가 없음");
             }
           } catch (e) {
             console.error("[profile load]", e);
-            set({ loaded: true });
           }
         },
 
         syncToDb: async () => {
           const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
           if (!token) return;
+          // 이 PUT 은 이력서를 통째로 갈아 끼운다. 서버에서 한 번도 받아오지
+          // 않은 상태(새 기기·캐시 지운 뒤)라면 지금 손에 든 것은 빈 껍데기라,
+          // 그대로 보내면 경력·학력·어학이 한꺼번에 지워진다.
+          if (!get().loaded) {
+            throw new Error("이력서를 아직 불러오지 못했습니다.");
+          }
           const s = get();
           // signupStore에서 추가 데이터 가져오기
           const signupData = useSignupStore.getState();
