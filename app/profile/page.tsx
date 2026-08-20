@@ -13,7 +13,6 @@ import { useProfileStore } from "@/lib/store/profileStore";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import NotificationModal from "@/components/profile/NotificationModal";
-import CompanyBlockModal from "@/components/CompanyBlockModal";
 import MyApplicationModal from "@/components/profile/MyApplicationModal";
 import JobSearchCertificateModal from "@/components/profile/JobSearchCertificateModal";
 import JobPostingCertificateModal from "@/components/profile/JobPostingCertificateModal";
@@ -102,7 +101,6 @@ export default function ProfilePage() {
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unreadNotif, setUnreadNotif] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [showBlockModal, setShowBlockModal] = useState(false);
 
   const loadNotifs = () => {
     const token = localStorage.getItem("access_token");
@@ -1068,8 +1066,7 @@ export default function ProfilePage() {
         ) : null}
       </div>
 
-      <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} onOpenBlockModal={() => setShowBlockModal(true)} />
-      <CompanyBlockModal open={showBlockModal} onClose={() => setShowBlockModal(false)} noun={dbJobType === "STORE" ? "매장" : "기업"} />
+      <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} />
 
       {showEmailModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: 16 }}>
