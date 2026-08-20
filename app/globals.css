@@ -12111,3 +12111,13 @@ button,
   }
   .bstrip-dot.on::before { width: 16px; border-radius: 3px; background: #5f0080; }
 }
+
+/* 배너 사진 번호 — 편집 화면은 순서(1,2,3), 공개 화면은 "몇 장 중 몇 번째". */
+.bstrip-num {
+  position: absolute; bottom: 5px; left: 5px; z-index: 2;
+  background: rgba(0,0,0,0.55); color: #fff;
+  font-size: 10px; font-weight: 700; border-radius: 4px; padding: 1px 5px;
+  letter-spacing: 0.2px; pointer-events: none;
+}
+/* 폰에는 아래 점이 자리를 알려 주므로 사진 위에 또 적지 않는다. */
+@media (max-width: 640px) { .bstrip-num-pc { display: none; } }

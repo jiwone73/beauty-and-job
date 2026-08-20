@@ -128,10 +128,14 @@ export default function BannerStrip({
                   } : undefined}
                   style={{ position: "relative", width: `${100 / PER}%`, aspectRatio: CELL_RATIO, flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
                   <BannerImg src={src} alt={alt} />
-                  {showIndex && (
-                    <span style={{ position: "absolute", bottom: 5, left: 5, background: "rgba(0,0,0,0.55)", color: "#fff",
-                      fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "1px 5px" }}>{idx + 1}</span>
-                  )}
+                  {/* 편집 화면은 순서만 보면 되지만(첫 장이 목록 썸네일이 된다),
+                      공개 화면은 "몇 장 중 몇 번째"를 알아야 더 볼 것이 남았는지
+                      안다. 폰에는 아래 점이 그 일을 하므로 마우스 화면에만 낸다. */}
+                  {showIndex ? (
+                    <span className="bstrip-num">{idx + 1}</span>
+                  ) : n > 1 ? (
+                    <span className="bstrip-num bstrip-num-pc">{idx + 1} / {n}</span>
+                  ) : null}
                   {onDelete && (
                     <button type="button" onClick={() => onDelete(src)} title="삭제"
                       style={{ position: "absolute", top: 5, right: 5, width: 22, height: 22, borderRadius: "50%",
