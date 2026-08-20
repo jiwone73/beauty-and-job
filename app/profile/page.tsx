@@ -1089,36 +1089,50 @@ export default function ProfilePage() {
                   <div style={{ fontSize: 16, color: "#222", marginBottom: 4 }}>프로필 공개</div>
                   <div style={{ fontSize: 12.5, color: "#999", marginBottom: 12 }}>구인 중인 매장에만 보여요. 언제든 바꿀 수 있어요.</div>
                   {/* 길게 설명할수록 무서워 보인다. 무엇이 열리는지 한 줄로 적고,
-                      막을 수 있다는 사실을 같은 자리에서 보여 준다. */}
-                  {[
-                    { value: 공개, label: "공개", desc: "구인 중인 매장이 보고 먼저 제안할 수 있어요." },
-                    { value: 비공개, label: "비공개", desc: "내가 지원한 매장만 볼 수 있어요." },
-                  ].map((o) => {
-                    const on = (o.value === 공개) === isOpenToCompanies(jobSearchStatus);
-                    return (
-                      <button key={o.value} type="button" onClick={() => saveJobSearchStatus(o.value)}
-                        style={{ display: "block", width: "100%", textAlign: "left", marginBottom: 8, padding: "12px 14px", borderRadius: 10, cursor: "pointer",
-                          border: on ? "1.5px solid #5f0080" : "1.5px solid #eee", background: on ? "#faf5fc" : "#fff" }}>
-                        <div style={{ fontSize: 15, color: on ? "#5f0080" : "#333" }}>{o.label}</div>
-                        <div style={{ fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5 }}>{o.desc}</div>
-                      </button>
-                    );
-                  })}
-                  {/* 안심의 근거는 말이 아니라 이 버튼이다. 지금까지 이 기능은
-                      알림 설정 안에 묻혀 있어 있는 줄도 몰랐다. */}
-                  {isOpenToCompanies(jobSearchStatus) && (
-                    <button type="button"
-                      onClick={() => { setJsModalOpen(false); setShowBlockModal(true); }}
-                      style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "12px 14px", borderRadius: 10, border: "1.5px solid #eee", background: "#fff", cursor: "pointer", marginBottom: 8 }}>
-                      <span style={{ textAlign: "left" }}>
-                        <span style={{ display: "block", fontSize: 15, color: "#333" }}>특정 매장에는 숨기기</span>
-                        <span style={{ display: "block", fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5 }}>
-                          지금 다니는 곳처럼 보이면 곤란한 매장을 골라 막을 수 있어요.
-                        </span>
-                      </span>
-                      <ChevronRight size={18} style={{ flexShrink: 0, color: "#bbb" }} />
+                      막을 수 있다는 사실을 같은 자리에서 보여 준다.
+
+                      '공개'와 '특정 매장에는 숨기기'는 나란한 선택지가 아니다.
+                      "공개하되 몇 곳만 뺀다"는 한 덩어리라, 숨기기는 공개 칸
+                      안에 딸려 들어간다. 밖에 나란히 두면 셋 중 하나를 고르는
+                      것처럼 읽힌다. */}
+                  <div style={{ marginBottom: 8, borderRadius: 10, overflow: "hidden",
+                    border: isOpenToCompanies(jobSearchStatus) ? "1.5px solid #5f0080" : "1.5px solid #eee",
+                    background: isOpenToCompanies(jobSearchStatus) ? "#faf5fc" : "#fff" }}>
+                    <button type="button" onClick={() => saveJobSearchStatus(공개)}
+                      style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px", border: "none", background: "transparent", cursor: "pointer" }}>
+                      <div style={{ fontSize: 15, color: isOpenToCompanies(jobSearchStatus) ? "#5f0080" : "#333" }}>공개</div>
+                      <div style={{ fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5 }}>
+                        구인 중인 매장이 보고 먼저 제안할 수 있어요.
+                      </div>
                     </button>
-                  )}
+                    {/* 안심의 근거는 말이 아니라 이 버튼이다. 지금까지 이 기능은
+                        알림 설정 안에 묻혀 있어 있는 줄도 몰랐다. */}
+                    {isOpenToCompanies(jobSearchStatus) && (
+                      <>
+                        <div style={{ height: 1, background: "#ead9f2", margin: "0 14px" }} />
+                        <button type="button"
+                          onClick={() => { setJsModalOpen(false); setShowBlockModal(true); }}
+                          style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "11px 14px", border: "none", background: "transparent", cursor: "pointer" }}>
+                          <span style={{ textAlign: "left" }}>
+                            <span style={{ display: "block", fontSize: 13.5, color: "#5f0080" }}>단, 특정 매장에는 숨기기</span>
+                            <span style={{ display: "block", fontSize: 12, color: "#999", marginTop: 2, lineHeight: 1.5 }}>
+                              지금 다니는 곳처럼 곤란한 매장은 골라서 막을 수 있어요.
+                            </span>
+                          </span>
+                          <ChevronRight size={16} style={{ flexShrink: 0, color: "#b98fd0" }} />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  <button type="button" onClick={() => saveJobSearchStatus(비공개)}
+                    style={{ display: "block", width: "100%", textAlign: "left", marginBottom: 8, padding: "12px 14px", borderRadius: 10, cursor: "pointer",
+                      border: !isOpenToCompanies(jobSearchStatus) ? "1.5px solid #5f0080" : "1.5px solid #eee",
+                      background: !isOpenToCompanies(jobSearchStatus) ? "#faf5fc" : "#fff" }}>
+                    <div style={{ fontSize: 15, color: !isOpenToCompanies(jobSearchStatus) ? "#5f0080" : "#333" }}>비공개</div>
+                    <div style={{ fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5 }}>
+                      내가 지원한 매장만 볼 수 있어요.
+                    </div>
+                  </button>
                   {/* 무엇이 보이는지는 남긴다 — 겁주지 않되 숨기지도 않는다. */}
                   {isOpenToCompanies(jobSearchStatus) && (
                     <div style={{ fontSize: 12, color: "#999", lineHeight: 1.55, margin: "2px 2px 14px" }}>
