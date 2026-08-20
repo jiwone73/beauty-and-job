@@ -47,14 +47,6 @@ function formatDate(dateStr: string): string {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
-// 전형이 마지막으로 움직인 뒤 며칠 지났나. 날짜만 보면 사람이 세어야 해서 '며칠째'로 적어 준다.
-function elapsedDays(a: CompanyApplication): number | null {
-  const base = a.status_updated_at || a.applied_at;
-  if (!base) return null;
-  const d = Math.floor((Date.now() - new Date(base).getTime()) / 86400000);
-  return Number.isFinite(d) && d >= 0 ? d : null;
-}
-
 // 사람이 직접 고르는 상태만 버튼으로 둔다.
 // 미열람·열람은 이력서를 열면 자동으로 바뀌므로 손댈 이유가 없다.
 const STATUS_ACTIONS: [ApplicationStatus, string, string][] = [
@@ -609,9 +601,6 @@ function ApplicantsContent() {
                         <span className="co-li-meta2">{region}</span>
                         <span className="co-li-date">
                           <span className="lbl">지원일</span> {formatDate(a.applied_at).slice(5)}
-                          {(() => { const d = elapsedDays(a); return d === null ? null : (
-                            <> · <span style={{ color: d >= 7 ? "#e05252" : "#999" }}>{d === 0 ? "오늘" : `${d}일 경과`}</span></>
-                          ); })()}
                         </span>
                       </div>
                     </div>
@@ -696,9 +685,6 @@ function ApplicantsContent() {
                   </td>
                   <td className="company-td-sub">
                     {formatDate(a.applied_at)}
-                    {(() => { const d = elapsedDays(a); return d === null ? null : (
-                      <div style={{ fontSize: 12, marginTop: 2, color: d >= 7 ? "#e05252" : "#aaa" }}>{d === 0 ? "오늘" : `${d}일 경과`}</div>
-                    ); })()}
                   </td>
                   <td className="company-td-sub">
                     {shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" ")) || <span style={{ color: "#ccc" }}>—</span>}
