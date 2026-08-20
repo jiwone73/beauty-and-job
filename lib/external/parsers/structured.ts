@@ -102,6 +102,9 @@ function parseHairinjob(html: string): StructuredResult | null {
   let employment_type = "";
   if (/정규/.test(empRaw)) employment_type = "정규직";
   else if (/계약/.test(empRaw)) employment_type = "계약직";
+  // 스페어는 '스페아'로도 적는다. 파트타임에 묻어 버리면 주말 일급 자리가
+  // 평일 알바와 섞여 버려, 찾는 쪽도 내는 쪽도 못 알아본다.
+  else if (/스페어|스페아/.test(empRaw)) employment_type = "스페어";
   else if (/파트|아르바이트|알바/.test(empRaw)) employment_type = "파트타임";
 
   // 급여: "300만원이상"(접두어 없음)은 월급으로 간주
@@ -312,6 +315,7 @@ function mapEmploymentKo(s: string): string {
   if (/위촉/.test(t)) return "위촉직";
   if (/프리랜|자유직업|자유직/.test(t)) return "프리랜서";
   if (/인턴/.test(t)) return "인턴";
+  if (/스페어|스페아/.test(t)) return "스페어";
   if (/파트|아르바이트|알바|단기/.test(t)) return "아르바이트";
   if (/협의|추후|면접\s*후|내규/.test(t)) return "협의";
   return "";
@@ -681,6 +685,7 @@ function parseSaramin(html: string): StructuredResult | null {
   let employment_type = "";
   if (/정규직/.test(title)) employment_type = "정규직";
   else if (/계약직/.test(title)) employment_type = "계약직";
+  else if (/스페어|스페아/.test(title)) employment_type = "스페어";
   else if (/파트\s*타임|파트타임|아르바이트|알바/.test(title)) employment_type = "파트타임";
 
   const kw = decodeHtmlEntities((html.match(/<meta name="keywords" content="([^"]*)"/) || [])[1] || "");
