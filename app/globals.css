@@ -11237,11 +11237,15 @@ div:has(> table.admin-table),
   .profile-content {
     padding: 0 16px;
   }
+  /* 좁은 화면에서 바깥 16px 과 카드 안쪽 12px 이 겹쳐 글이 28px 에서 시작했다.
+     위쪽 완성도는 16px 에서 시작하니 한 화면에서 줄이 안 맞았다.
+     카드를 화면 끝까지 펴고 안쪽만 16px 로 둬 글 시작 위치를 완성도와 맞춘다. */
   .resume-editor {
-    padding: 12px 16px;
+    padding: 12px 0;
   }
   .resume-section {
-    padding: 16px 12px;
+    padding: 16px;
+    border-radius: 0;
   }
 }
 /* 모바일에서 이력서 미리보기 여백 축소 */
