@@ -15,7 +15,8 @@ export async function GET(req: NextRequest) {
 
   try {
     const { rows } = await pool.query(
-      `SELECT id, company_name, brand_name, logo_url
+      `SELECT id, company_name, brand_name, logo_url,
+              address, region_sido, region_sigungu
        FROM companies
        WHERE (company_name ILIKE $1 OR brand_name ILIKE $1)
          AND status = 'ACTIVE'
@@ -23,11 +24,15 @@ export async function GET(req: NextRequest) {
        LIMIT 10`,
       [`%${q}%`]
     );
+    // 같은 이름의 매장이 여럿이다(프랜차이즈 지점). 이름만으로는 어느 곳인지
+    // 알 수 없어 엉뚱한 곳을 막게 되므로 주소를 함께 준다. 도로명이 없으면
+    // 시·군·구까지라도 보여 준다.
     const data = rows.map((r) => ({
       companyId: r.id,
       companyName: r.company_name,
       brandName: r.brand_name,
       logoUrl: r.logo_url,
+      address: r.address || [r.region_sido, r.region_sigungu].filter(Boolean).join(" ") || null,
     }));
     return ok(data);
   } catch (e: any) {

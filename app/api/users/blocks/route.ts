@@ -12,7 +12,8 @@ export async function GET(req: NextRequest) {
   try {
     const { rows } = await pool.query(
       `SELECT b.company_id, b.company_name, b.created_at,
-              c.company_name AS current_name, c.brand_name, c.logo_url
+              c.company_name AS current_name, c.brand_name, c.logo_url,
+              c.address, c.region_sido, c.region_sigungu
        FROM user_company_blocks b
        LEFT JOIN companies c ON c.id = b.company_id
        WHERE b.user_id = $1
@@ -24,6 +25,8 @@ export async function GET(req: NextRequest) {
       companyName: r.current_name || r.company_name,
       brandName: r.brand_name,
       logoUrl: r.logo_url,
+      // 막아 둔 곳이 정말 그곳인지 나중에도 확인할 수 있어야 한다.
+      address: r.address || [r.region_sido, r.region_sigungu].filter(Boolean).join(" ") || null,
       createdAt: r.created_at,
     }));
     return ok(data);

@@ -2,7 +2,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, Search, Ban } from "lucide-react";
 
-type Company = { companyId: string; companyName: string; brandName?: string | null; logoUrl?: string | null };
+// 이름만으로는 지점을 가릴 수 없다(같은 상호의 지점이 여럿). 주소를 함께
+// 들고 다녀야 엉뚱한 곳을 막지 않는다.
+type Company = { companyId: string; companyName: string; brandName?: string | null; logoUrl?: string | null; address?: string | null };
 
 export default function CompanyBlockModal({
   open, onClose, noun = "기업",
@@ -106,12 +108,18 @@ export default function CompanyBlockModal({
               ) : (
                 results.map((c) => (
                   <div key={c.companyId}
-                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderBottom: "1px solid #f5f5f5", cursor: "pointer" }}
+                    style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "10px 14px", borderBottom: "1px solid #f5f5f5", cursor: "pointer" }}
                     onClick={() => addBlock(c)}>
-                    <span style={{ fontSize: 14, color: "#333" }}>
-                      {c.companyName}{c.brandName ? ` (${c.brandName})` : ""}
+                    <span style={{ minWidth: 0, marginRight: 10 }}>
+                      <span style={{ display: "block", fontSize: 14, color: "#333" }}>
+                        {c.companyName}{c.brandName ? ` (${c.brandName})` : ""}
+                      </span>
+                      {/* 주소가 있어야 '홍대점'이 여럿일 때 내 가게를 고른다. */}
+                      <span style={{ display: "block", fontSize: 12, color: "#999", marginTop: 2, lineHeight: 1.45, overflowWrap: "anywhere" }}>
+                        {c.address || "주소 미등록"}
+                      </span>
                     </span>
-                    <button className="cv-skill-add-btn" style={{ padding: "4px 12px", fontSize: 12 }}>차단</button>
+                    <button className="cv-skill-add-btn" style={{ padding: "4px 12px", fontSize: 12, flexShrink: 0 }}>차단</button>
                   </div>
                 ))
               )}
@@ -125,12 +133,18 @@ export default function CompanyBlockModal({
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
               {blocked.map((b) => (
                 <div key={b.companyId}
-                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "#faf5ff", borderRadius: 8 }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "#333" }}>
-                    <Ban size={14} color="#5f0080" /> {b.companyName}
+                  style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, padding: "10px 14px", background: "#faf5ff", borderRadius: 8 }}>
+                  <span style={{ minWidth: 0 }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#333" }}>
+                      <Ban size={14} color="#5f0080" style={{ flexShrink: 0 }} /> {b.companyName}
+                    </span>
+                    {/* 막아 둔 곳이 정말 그곳인지 나중에도 확인할 수 있어야 한다. */}
+                    <span style={{ display: "block", fontSize: 12, color: "#999", marginTop: 2, paddingLeft: 20, lineHeight: 1.45, overflowWrap: "anywhere" }}>
+                      {b.address || "주소 미등록"}
+                    </span>
                   </span>
                   <button onClick={() => removeBlock(b.companyId)}
-                    style={{ background: "none", border: "none", color: "#999", cursor: "pointer", fontSize: 13, textDecoration: "underline" }}>
+                    style={{ background: "none", border: "none", color: "#999", cursor: "pointer", fontSize: 13, textDecoration: "underline", flexShrink: 0 }}>
                     해제
                   </button>
                 </div>
