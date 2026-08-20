@@ -183,7 +183,7 @@ export default function ProfilePage() {
 
     useProfileStore.getState().loadFromServer();
 
-    // 사진 공개 여부 불러오기 (아바타 메뉴의 '공개 프로필에서 감추기')
+    // 사진 공개 여부 불러오기 (아바타 메뉴의 '사진 비공개')
     fetch("/api/users/me/profile", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((res) => {
@@ -703,7 +703,10 @@ export default function ProfilePage() {
                       onClick={(e) => { e.stopPropagation(); setAvatarMenu((v) => !v); }}
                       title="사진 변경/삭제"
                       style={{ width: "80px", height: "80px", borderRadius: "50%", background: avatarLoaded ? "#f0e8f8" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: avatarLoaded ? "1px solid #f2f2f2" : "1px solid transparent", cursor: "pointer" }}>
-                      {avatarUrl ? (
+                      {/* 사진을 비공개로 두면 이 자리도 기본 아바타로 바꾼다. 남에게
+                          안 보이는데 나에게만 보이면, 껐는지 켰는지 매번 메뉴를 열어
+                          확인해야 한다. 사진 자체는 지워지지 않고 그대로 있다. */}
+                      {avatarUrl && avatarPublic ? (
                         <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : avatarLoaded ? (
                         <span style={{ fontSize: "30px", color: "#a888c0" }}>👤</span>
@@ -740,11 +743,14 @@ export default function ProfilePage() {
                               <input type="checkbox" className="applied-check"
                                 checked={!avatarPublic}
                                 onChange={(e) => saveAvatarPublic(!e.target.checked)} />
-                              <span style={{ fontSize: "13px", color: "#333" }}>공개 프로필에서 감추기</span>
+                              <span style={{ fontSize: "13px", color: "#333" }}>사진 비공개</span>
                             </label>
-                            {/* avatar_public 은 인재검색 쪽만 막는다. 지원한 곳은 그대로 본다. */}
+                            {/* avatar_public 은 인재검색 쪽만 막는다. 지원한 곳은 그대로 본다.
+                                사진이 화면에서 사라지므로 지워진 것으로 오해하지 않게 적는다. */}
                             <div style={{ fontSize: "11px", color: "#aaa", padding: "0 10px 4px", lineHeight: 1.5 }}>
-                              내가 지원한 매장에는 그대로 보여요.
+                              {avatarPublic
+                                ? "내가 지원한 매장에는 그대로 보여요."
+                                : "사진은 지워지지 않아요. 내가 지원한 매장에는 그대로 보여요."}
                             </div>
                             <div style={{ height: 1, background: "#f0e8f8", margin: "1px 6px 5px" }} />
                           </>
