@@ -77,24 +77,11 @@ export default function ResumeEditor({
     if (!portfolioImages.length) return;
     if (!confirm(`사진 ${portfolioImages.length}장을 모두 지울까요?`)) return;
     await onPortfolioDelete(portfolioImages.map((i) => i.url));
-    고르기끝();
   };
   const 링크전부지우기 = () => {
     if (!links.length) return;
     if (!confirm(`SNS 주소 ${links.length}개를 모두 지울까요?`)) return;
     links.forEach((l) => removeLink(l.id));
-  };
-  // 사진 고르기 — 평소엔 목록만 보이고, '선택'을 눌렀을 때만 체크가 나온다.
-  const [고름, set고름] = useState(false);
-  const [고른사진, set고른사진] = useState<Set<string>>(new Set());
-  const 사진고르기 = (url: string) =>
-    set고른사진((prev) => { const n = new Set(prev); n.has(url) ? n.delete(url) : n.add(url); return n; });
-  const 고르기끝 = () => { set고름(false); set고른사진(new Set()); };
-  const 고른사진지우기 = async () => {
-    if (!고른사진.size) return;
-    if (!confirm(`고른 사진 ${고른사진.size}장을 지울까요?`)) return;
-    await onPortfolioDelete(Array.from(고른사진));
-    고르기끝();
   };
   // 모달이 문제를 물어보고 화면에 알리게 한다 — 편집기가 오류 문구까지 들고 있으면
   // 두 곳에서 같은 상태를 나눠 갖게 된다.
@@ -502,37 +489,12 @@ export default function ResumeEditor({
             </div>
             {portfolioImages.length > 0 && (
               <>
-                <div className="pf-subhead">
-                  <span className="pf-subtitle" style={{ color: "#aaa", fontSize: 12.5 }}>눌러서 크게 보기</span>
-                  {고름 ? (
-                    <span style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
-                      <button type="button" className="profile-select-btn" onClick={고르기끝}>취소</button>
-                      {고른사진.size > 0 && (
-                        <button type="button" className="profile-select-btn danger" onClick={고른사진지우기}>
-                          삭제 {고른사진.size}
-                        </button>
-                      )}
-                    </span>
-                  ) : (
-                    <button type="button" className="profile-select-btn" style={{ marginLeft: "auto" }}
-                      onClick={() => set고름(true)}>선택</button>
-                  )}
-                </div>
                 <div className="portfolio-grid">
                   {portfolioImages.map((img, idx) => {
-                    const 골랐나 = 고른사진.has(img.url);
                     return (
                       <div key={img.url} className="portfolio-cell">
                         <img src={img.url} alt="" loading="lazy"
-                          onClick={() => (고름 ? 사진고르기(img.url) : set확대(idx))}
-                          style={{ cursor: 고름 ? "pointer" : "zoom-in", opacity: 고름 && !골랐나 ? 0.55 : 1 }} />
-                        {고름 && (
-                          <button type="button" className={`pf-check${골랐나 ? " on" : ""}`}
-                            aria-label={골랐나 ? "선택 해제" : "선택"} aria-pressed={골랐나}
-                            onClick={(e) => { e.stopPropagation(); 사진고르기(img.url); }}>
-                            {골랐나 && <Check size={14} strokeWidth={3} />}
-                          </button>
-                        )}
+                          onClick={() => set확대(idx)} style={{ cursor: "zoom-in" }} />
                       </div>
                     );
                   })}
@@ -667,6 +629,7 @@ export default function ResumeEditor({
         links={links}
         isUploading={isUploading}
         onFiles={onPortfolioFiles}
+        onDeletePhotos={onPortfolioDelete}
         onAddLink={링크담기}
       />
 

@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import { ChevronLeft, Upload } from "lucide-react";
+import { Check, ChevronLeft, Upload } from "lucide-react";
 import { MAX_PHOTOS } from "@/lib/compressImage";
 import { linkLabel, looksLikeUrl, normalizeUrl, MAX_LINKS } from "@/lib/linkLabel";
 
@@ -10,7 +10,7 @@ import { linkLabel, looksLikeUrl, normalizeUrl, MAX_LINKS } from "@/lib/linkLabe
 // 있으면 손이 다르게 간다. 넣는 곳은 모달로 모으고, 이력서 화면에는 넣은 결과만
 // 보여준다.
 export default function PortfolioModal({
-  isOpen, onClose, mode = "all", images, links, isUploading, onFiles, onAddLink,
+  isOpen, onClose, mode = "all", images, links, isUploading, onFiles, onDeletePhotos, onAddLink,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -21,12 +21,26 @@ export default function PortfolioModal({
   links: { id: string; url: string }[];
   isUploading: boolean;
   onFiles: (files: File[]) => void;
+  onDeletePhotos: (urls: string[]) => Promise<void>;
   onAddLink: (url: string) => string | null;   // 문제가 있으면 알릴 말을 돌려준다
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [주소, set주소] = useState("");
   const [오류, set오류] = useState("");
   const [끌림, set끌림] = useState(false);
+  // 사진 고르기는 편집 자리(여기)에만 둔다. 이력서 화면에는 결과만 보이고,
+  // 고치는 일은 한 곳에서 한다 — 두 곳에 흩어져 있으면 어디서 지웠는지 헷갈린다.
+  const [고름, set고름] = useState(false);
+  const [고른것, set고른것] = useState<Set<string>>(new Set());
+  const 고르기 = (url: string) =>
+    set고른것((prev) => { const n = new Set(prev); n.has(url) ? n.delete(url) : n.add(url); return n; });
+  const 고르기끝 = () => { set고름(false); set고른것(new Set()); };
+  const 고른것지우기 = async () => {
+    if (!고른것.size) return;
+    if (!confirm(`고른 사진 ${고른것.size}장을 지울까요?`)) return;
+    await onDeletePhotos(Array.from(고른것));
+    고르기끝();
+  };
 
   if (!isOpen) return null;
 
@@ -54,13 +68,48 @@ export default function PortfolioModal({
           {mode !== "sns" && (<>
           {mode === "all" && <label className="cv-field-label">사진</label>}
           {images.length > 0 && (
-            <div className="portfolio-grid" style={{ marginBottom: 10 }}>
-              {images.map((img) => (
-                <div key={img.url} className="portfolio-cell">
-                  <img src={img.url} alt="" loading="lazy" />
-                </div>
-              ))}
-            </div>
+            <>
+              <div className="pf-subhead">
+                {고름 ? (
+                  <>
+                    <span className="pf-subtitle" style={{ fontSize: 12.5, color: "#888" }}>
+                      지울 사진을 고르세요{고른것.size ? ` (${고른것.size}장)` : ""}
+                    </span>
+                    <span style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+                      <button type="button" className="profile-select-btn" onClick={고르기끝}>취소</button>
+                      {/* 삭제는 고른 것이 있을 때만 나온다 */}
+                      {고른것.size > 0 && (
+                        <button type="button" className="profile-select-btn danger" onClick={고른것지우기}>
+                          삭제 {고른것.size}
+                        </button>
+                      )}
+                    </span>
+                  </>
+                ) : (
+                  <button type="button" className="profile-select-btn" style={{ marginLeft: "auto" }}
+                    onClick={() => set고름(true)}>선택</button>
+                )}
+              </div>
+              <div className="portfolio-grid" style={{ marginBottom: 10 }}>
+                {images.map((img) => {
+                  const 골랐나 = 고른것.has(img.url);
+                  return (
+                    <div key={img.url} className="portfolio-cell">
+                      <img src={img.url} alt="" loading="lazy"
+                        onClick={() => 고름 && 고르기(img.url)}
+                        style={{ cursor: 고름 ? "pointer" : "default", opacity: 고름 && !골랐나 ? 0.55 : 1 }} />
+                      {고름 && (
+                        <button type="button" className={`pf-check${골랐나 ? " on" : ""}`}
+                          aria-label={골랐나 ? "선택 해제" : "선택"} aria-pressed={골랐나}
+                          onClick={(e) => { e.stopPropagation(); 고르기(img.url); }}>
+                          {골랐나 && <Check size={14} strokeWidth={3} />}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
           {사진남은자리 > 0 ? (
             <>
