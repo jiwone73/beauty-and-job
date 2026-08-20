@@ -11750,7 +11750,10 @@ div:has(> table.admin-table),
 
 /* 로그인·가입 화면 상단 바 — 메인 헤더와 높이·로고 크기를 맞춘다.
    (헤더가 낮으면 같은 로고도 작아 보인다.) */
-.auth-header { height: 72px; display: flex; align-items: center; }
+/* 메인(.header)·프로필(.profile-header)과 같이 위에 붙여 둔다. 여기만 빠져
+   있어 로그인 화면에서는 밀어 올리면 로고가 화면 밖으로 사라졌다.
+   배경을 흰색으로 못박아야 밑에서 올라오는 글자가 비쳐 보이지 않는다. */
+.auth-header { height: 72px; display: flex; align-items: center; position: sticky; top: 0; z-index: 50; background: #fff; }
 .auth-logo { height: 32px !important; width: auto !important; }
 @media (max-width: 380px) {
   .auth-header { height: 56px; }
