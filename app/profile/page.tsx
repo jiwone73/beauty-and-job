@@ -730,7 +730,7 @@ export default function ProfilePage() {
           <>
             <section className="profile-section">
               <div className="profile-info-card">
-                <div style={{ padding: "11px 14px", borderBottom: "1px solid #e0d0f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
+                <div style={{ padding: "11px 16px", borderBottom: "1px solid #e0d0f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
                   <span className="profile-info-label">이름/사진<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", position: "relative" }}>
                     <div

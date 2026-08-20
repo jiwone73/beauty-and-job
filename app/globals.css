@@ -11234,9 +11234,12 @@ div:has(> table.admin-table),
 }
 /* 모바일에서 프로필/이력서 페이지 좌우 여백 축소 */
 @media (max-width: 768px) {
+  /* 이력서와 같은 이유 — 바깥 16px 과 카드 줄 안쪽 16px 이 겹쳐 글이 32px 에서
+     시작했다. 카드를 화면 끝까지 펴고 안쪽만 16px 로 둬 한 자리에서 시작하게 한다. */
   .profile-content {
-    padding: 0 16px;
+    padding: 0;
   }
+  .profile-info-card { border-radius: 0; }
   /* 좁은 화면에서 바깥 16px 과 카드 안쪽 12px 이 겹쳐 글이 28px 에서 시작했다.
      위쪽 완성도는 16px 에서 시작하니 한 화면에서 줄이 안 맞았다.
      카드를 화면 끝까지 펴고 안쪽만 16px 로 둬 글 시작 위치를 완성도와 맞춘다. */
