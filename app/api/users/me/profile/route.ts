@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     pool.query(`SELECT * FROM user_certificates WHERE user_id = $1 ORDER BY issued_ym DESC`, [userId]),
     // 이 둘은 users 표에 있다. 여기서 함께 주지 않으면 화면이 /api/users/me 를
     // 한 번 더 불러야 하고, 그동안 잘못된 값이 잠깐 스친다.
-    pool.query(`SELECT job_type, avatar_public FROM users WHERE id = $1`, [userId]),
+    pool.query(`SELECT job_type, avatar_public, email, (password_hash IS NOT NULL) AS has_password FROM users WHERE id = $1`, [userId]),
   ]);
 
   // profile이 없으면 빈 객체로
@@ -51,6 +51,9 @@ export async function GET(req: NextRequest) {
     job_type: me.rows[0]?.job_type ?? null,
     // 사진 공개 여부. 값이 없으면 공개로 본다.
     avatar_public: me.rows[0]?.avatar_public ?? true,
+    // 탈퇴 화면에서 "이 계정이 맞는지" 보여주고, 비밀번호 칸을 낼지 정한다.
+    email: me.rows[0]?.email ?? null,
+    has_password: me.rows[0]?.has_password ?? false,
     profile: profileData,
     careers: careers.rows,
     educations: educations.rows,

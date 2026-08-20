@@ -31,6 +31,12 @@ export default function AccountSettingsPage() {
   // 비밀번호 칸은 접어 둔다. 늘 펼쳐 두면 설정 화면의 절반을 차지하는데,
   // 정작 바꾸는 일은 몇 달에 한 번이다.
   const [pwOpen, setPwOpen] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
+  // 소셜 로그인 계정은 비밀번호가 없어 확인 절차를 건너뛴다(서버도 그렇게 한다).
+  const [hasPassword, setHasPassword] = useState(true);
+  // 탈퇴는 되돌릴 수 없다. 무엇이 사라지는지 읽고 스스로 두 번 확인하게 한다.
+  const [agreeLoss, setAgreeLoss] = useState(false);
+  const [agreeDelete, setAgreeDelete] = useState(false);
   useEffect(() => {
     const t = localStorage.getItem("access_token");
     if (!t) return;
@@ -39,6 +45,8 @@ export default function AccountSettingsPage() {
       .then((res) => {
         setOpenToOffers(isOpenToCompanies(res?.data?.profile?.job_search_status));
         if (res?.data?.job_type) setJobType(res.data.job_type);
+        setEmail(res?.data?.email ?? null);
+        setHasPassword(res?.data?.has_password !== false);
       })
       .catch(() => {});
   }, []);
@@ -137,42 +145,44 @@ export default function AccountSettingsPage() {
         <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>계정 설정</h1>
       </header>
 
-      <div style={{ maxWidth: 600, margin: "0 auto", padding: "20px 16px" }}>
+      <div style={{ maxWidth: 600, margin: "0 auto", padding: "12px 16px 24px" }}>
         {/* 프로필 공개 — 원티드처럼 계정 설정에 둔다. 프로필 화면에도 두면
             같은 값을 고치는 곳이 둘이 되어 어느 쪽이 맞는지 헷갈린다. */}
-        <section style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 16 }}>
+        <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
           <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 4px" }}>프로필 공개</h2>
-          <p style={{ fontSize: 13, color: "#999", margin: "0 0 14px" }}>언제든 바꿀 수 있어요.</p>
-          {([
-            { on: true,  label: "공개",   desc: 상대 ? `${상대}으로부터 면접 제안을 받아볼게요.` : "" },
-            { on: false, label: "비공개", desc: "면접 제안 안 받을게요." },
-          ]).map((o) => {
-            const 골랐나 = openToOffers === o.on;
-            return (
-              <label key={o.label}
-                style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 2px",
-                  cursor: offerSaving || openToOffers === null ? "default" : "pointer" }}>
-                <input type="radio" name="profile-visibility"
-                  checked={골랐나}
-                  disabled={offerSaving || openToOffers === null}
-                  onChange={() => saveOpenToOffers(o.on)}
-                  style={{ width: 18, height: 18, marginTop: 2, accentColor: "#5f0080", flexShrink: 0 }} />
-                <span>
-                  <span style={{ display: "block", fontSize: 15, color: 골랐나 ? "#5f0080" : "#333" }}>{o.label}</span>
-                  {/* 이름을 모르는 동안에도 줄 높이는 잡아 둔다 — 값이 늦게
-                      와도 아래 내용이 밀리지 않는다. */}
-                  <span style={{ display: "block", fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5, minHeight: 19 }}>
-                    {o.desc}
-                  </span>
-                </span>
-              </label>
-            );
-          })}
+          <p style={{ fontSize: 13, color: "#999", margin: 0 }}>언제든 바꿀 수 있어요.</p>
+          {/* 두 갈래뿐이라 한 행에 나란히 둔다. 카드 두 장으로 세우면 화면
+              절반을 먹는데, 정작 담긴 뜻은 켜냐 끄냐 하나다.
+              설명은 지금 고른 쪽 것만 아래에 한 줄로 적는다. */}
+          <div style={{ display: "flex", alignItems: "center", gap: 24, marginTop: 12 }}>
+            {([
+              { on: true,  label: "공개" },
+              { on: false, label: "비공개" },
+            ]).map((o) => {
+              const 골랐나 = openToOffers === o.on;
+              return (
+                <label key={o.label}
+                  style={{ display: "flex", alignItems: "center", gap: 7,
+                    cursor: offerSaving || openToOffers === null ? "default" : "pointer" }}>
+                  <input type="radio" name="profile-visibility"
+                    checked={골랐나}
+                    disabled={offerSaving || openToOffers === null}
+                    onChange={() => saveOpenToOffers(o.on)}
+                    style={{ width: 18, height: 18, accentColor: "#5f0080", flexShrink: 0, margin: 0 }} />
+                  <span style={{ fontSize: 15, color: 골랐나 ? "#5f0080" : "#333" }}>{o.label}</span>
+                </label>
+              );
+            })}
+          </div>
+          {/* 값이 오기 전에도 줄 높이는 잡아 둔다 — 늦게 와도 아래가 밀리지 않는다. */}
+          <p style={{ fontSize: 12.5, color: "#999", lineHeight: 1.5, minHeight: 19, margin: "8px 0 0" }}>
+            {openToOffers === null ? "" : openToOffers ? (상대 ? `${상대}으로부터 면접 제안을 받아볼게요.` : "") : "면접 제안 안 받을게요."}
+          </p>
         </section>
 
         {/* 차단 매장·기업 — 공개와 얽혀 있지만 고르는 값이 아니라 목록을
             관리하는 일이라, 나란한 선택지로 두지 않고 따로 뺀다. */}
-        <section style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 16 }}>
+        <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
           <button type="button" onClick={() => setBlockOpen(true)}
             style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}>
             <span style={{ textAlign: "left" }}>
@@ -187,7 +197,7 @@ export default function AccountSettingsPage() {
 
         {/* 비밀번호 변경 — 접어 둔다. 늘 펼쳐 두면 설정 화면의 절반을
             차지하는데, 정작 바꾸는 일은 몇 달에 한 번이다. */}
-        <section style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 16 }}>
+        <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
           <button type="button" onClick={() => setPwOpen((v) => !v)} aria-expanded={pwOpen}
             style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}>
             <span style={{ fontSize: 15, color: "#1a1a1a" }}>비밀번호 변경</span>
@@ -211,10 +221,12 @@ export default function AccountSettingsPage() {
         </section>
 
         {/* 회원 탈퇴 */}
-        <section style={{ background: "#fff", borderRadius: 12, padding: 20 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 8px" }}>회원 탈퇴</h2>
-          <p style={{ fontSize: 13, color: "#666", lineHeight: 1.6, margin: "0 0 16px" }}>
-            탈퇴 시 계정이 비활성화되며 로그인할 수 없습니다. 작성하신 이력서와 지원 내역은 관련 법령에 따라 일정 기간 보관 후 삭제됩니다.
+        <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px" }}>
+          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: 0 }}>회원 탈퇴</h2>
+          {/* 자세한 주의사항은 모달에서 읽힌다 — 여기서 다 늘어놓으면 정작
+              읽어야 할 때는 이미 지나친 글이 된다. */}
+          <p style={{ fontSize: 13, color: "#999", lineHeight: 1.6, margin: "4px 0 12px" }}>
+            계정이 닫히고 포트폴리오 사진은 되살릴 수 없습니다.
           </p>
           <button onClick={() => setShowWithdraw(true)}
             style={{ width: "100%", height: 48, borderRadius: 8, border: "1px solid #e74c3c", background: "#fff", color: "#e74c3c", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
@@ -225,26 +237,90 @@ export default function AccountSettingsPage() {
 
       <CompanyBlockModal open={blockOpen} onClose={() => setBlockOpen(false)} noun={상대 ?? "기업"} />
 
-      {/* 탈퇴 확인 모달 */}
+      {/* 탈퇴 확인 — 되돌릴 수 없는 일이라 무엇이 사라지는지 먼저 읽힌다.
+          문구는 실제 동작에 맞췄다. 계정은 닫히고(status=WITHDRAWN) 포트폴리오
+          사진은 저장소에서 그 자리에서 지워지지만, 이력서·지원 내역은 법령상
+          보관 기간이 있어 바로 사라지지 않는다. 지워진다고 적으면 거짓이 된다. */}
       {showWithdraw && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
           onClick={() => !withdrawing && setShowWithdraw(false)}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 360, width: "100%" }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 12px" }}>정말 탈퇴하시겠어요?</h3>
-            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: "0 0 20px" }}>
-              탈퇴하면 계정에 로그인할 수 없게 됩니다. 이 작업은 되돌릴 수 없습니다.
-            </p>
-            <input type="password" placeholder="비밀번호 (소셜 로그인은 비워두세요)"
-              value={withdrawPw} onChange={(e) => setWithdrawPw(e.target.value)}
-              style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 16, boxSizing: "border-box" }} />
-            <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => { setShowWithdraw(false); setWithdrawPw(""); }} disabled={withdrawing}
-                style={{ flex: 1, height: 48, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-                취소
-              </button>
-              <button onClick={handleWithdraw} disabled={withdrawing}
-                style={{ flex: 1, height: 48, borderRadius: 8, border: "none", background: "#e74c3c", color: "#fff", fontSize: 15, fontWeight: 600, cursor: withdrawing ? "not-allowed" : "pointer", opacity: withdrawing ? 0.7 : 1 }}>
-                {withdrawing ? "처리 중..." : "탈퇴하기"}
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ background: "#fff", borderRadius: 16, maxWidth: 420, width: "100%", maxHeight: "88dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0, padding: "18px 20px", textAlign: "center", borderBottom: "1px solid #f0f0f0" }}>
+              회원 탈퇴 시 주의사항
+            </h3>
+
+            <div style={{ overflowY: "auto", padding: "18px 20px", flex: 1, minHeight: 0 }}>
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: "#666", margin: "0 0 8px" }}>탈퇴하기 전에</h4>
+              <ul style={{ margin: "0 0 18px", padding: 0, listStyle: "none", fontSize: 13, color: "#444", lineHeight: 1.65 }}>
+                <li style={{ marginBottom: 6 }}>· 계정이 닫혀 <b>다시 로그인할 수 없고</b>, {상대 ?? "매장·기업"}이 인재검색에서 회원님을 더 이상 찾을 수 없습니다.</li>
+                <li>· 진행 중인 지원과 받은 면접 제안이 <b>모두 취소</b>됩니다.</li>
+              </ul>
+
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: "#666", margin: "0 0 8px" }}>미리 내려받기</h4>
+              <ul style={{ margin: "0 0 18px", padding: 0, listStyle: "none", fontSize: 13, color: "#444", lineHeight: 1.65 }}>
+                <li>· <b>포트폴리오 사진은 탈퇴와 동시에 지워지며 되살릴 수 없습니다.</b> 필요한 사진은 탈퇴 전에 내려받아 주세요.</li>
+              </ul>
+
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: "#666", margin: "0 0 8px" }}>미리 정리하기</h4>
+              <ul style={{ margin: "0 0 18px", padding: 0, listStyle: "none", fontSize: 13, color: "#444", lineHeight: 1.65 }}>
+                <li>· 이력서와 지원 내역은 관련 법령에 따라 <b>일정 기간 보관한 뒤 삭제</b>됩니다. 그동안에는 고치거나 지울 수 없으니, 정리할 것이 있으면 탈퇴 전에 해 주세요.</li>
+              </ul>
+
+              <div style={{ height: 1, background: "#f0f0f0", margin: "4px 0 16px" }} />
+
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: "#333", margin: "0 0 8px" }}>탈퇴하려는 계정</h4>
+              <div style={{ background: "#f7f8fa", borderRadius: 8, padding: "12px 14px", fontSize: 14, color: "#333", marginBottom: 18, overflowWrap: "anywhere" }}>
+                {email || "\u00a0"}
+              </div>
+
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: "#333", margin: "0 0 8px" }}>사라지는 것</h4>
+              <ul style={{ margin: "0 0 4px", padding: 0, listStyle: "none", fontSize: 13, color: "#444", lineHeight: 1.75 }}>
+                <li>· 프로필과 이력서</li>
+                <li>· 포트폴리오 사진 (바로 삭제)</li>
+                <li>· 지원 내역과 관심 공고</li>
+                <li>· 받은 면접 제안</li>
+              </ul>
+            </div>
+
+            <div style={{ borderTop: "1px solid #f0f0f0", padding: "14px 20px 18px" }}>
+              <label style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer", marginBottom: 8 }}>
+                <input type="checkbox" checked={agreeLoss} onChange={(e) => setAgreeLoss(e.target.checked)}
+                  style={{ width: 17, height: 17, marginTop: 1, accentColor: "#5f0080", flexShrink: 0 }} />
+                <span style={{ fontSize: 12.5, color: "#555", lineHeight: 1.5 }}>
+                  포트폴리오 사진이 바로 지워지며 되살릴 수 없음을 이해했습니다.
+                </span>
+              </label>
+              <label style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer", marginBottom: 14 }}>
+                <input type="checkbox" checked={agreeDelete} onChange={(e) => setAgreeDelete(e.target.checked)}
+                  style={{ width: 17, height: 17, marginTop: 1, accentColor: "#5f0080", flexShrink: 0 }} />
+                <span style={{ fontSize: 12.5, color: "#555", lineHeight: 1.5 }}>
+                  뷰티워크 계정을 닫고 등록한 정보를 삭제하는 데 동의합니다.
+                </span>
+              </label>
+
+              {/* 소셜 로그인 계정은 비밀번호가 없다. 낼 수 없는 것을 요구하지 않는다. */}
+              {hasPassword && (
+                <input type="password" placeholder="비밀번호" value={withdrawPw}
+                  onChange={(e) => setWithdrawPw(e.target.value)}
+                  style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 10, boxSizing: "border-box" }} />
+              )}
+
+              {(() => {
+                const 갈수있나 = agreeLoss && agreeDelete && (!hasPassword || withdrawPw.length > 0) && !withdrawing;
+                return (
+                  <button onClick={handleWithdraw} disabled={!갈수있나}
+                    style={{ width: "100%", height: 48, borderRadius: 8, border: "none",
+                      background: 갈수있나 ? "#e74c3c" : "#eee", color: 갈수있나 ? "#fff" : "#aaa",
+                      fontSize: 15, fontWeight: 600, cursor: 갈수있나 ? "pointer" : "not-allowed" }}>
+                    {withdrawing ? "처리 중..." : "회원 탈퇴"}
+                  </button>
+                );
+              })()}
+              <button onClick={() => { setShowWithdraw(false); setWithdrawPw(""); setAgreeLoss(false); setAgreeDelete(false); }}
+                disabled={withdrawing}
+                style={{ width: "100%", marginTop: 8, padding: "10px 0", border: "none", background: "transparent", color: "#888", fontSize: 13.5, cursor: "pointer" }}>
+                회원 탈퇴 취소
               </button>
             </div>
           </div>
