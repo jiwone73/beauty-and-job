@@ -1,6 +1,7 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
+import PhotoLightbox from "@/components/profile/PhotoLightbox";
 import { formatPhone } from "@/lib/memberFormat";
 import type {
   CareerEntry,
@@ -69,6 +70,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
   },
   ref
 ) {
+  const [확대, set확대] = useState<number | null>(null);
   return (
     <div ref={ref} className="rp-wrap">
       {intro && (
@@ -258,11 +260,13 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         <div className="rp-section">
           <h2 className="rp-section-title">포트폴리오</h2>
           {/* 읽는 화면에서도 목록은 4:3 — 편집 화면과 같은 모양으로 보여준다. */}
+          {/* 매장이 잘린 자리를 봐야 실력을 판단할 수 있다. 눌러서 크게 연다.
+              새 탭으로 원본을 띄우면 폰에서 앱을 벗어나 돌아오기 번거롭다. */}
           <div className="portfolio-grid">
-            {portfolioImages.map((img) => (
-              <a key={img.url} href={img.url} target="_blank" rel="noopener noreferrer" className="portfolio-cell">
+            {portfolioImages.map((img, idx) => (
+              <button type="button" key={img.url} className="portfolio-cell" onClick={() => set확대(idx)} style={{ border: "none", padding: 0, cursor: "zoom-in" }}>
                 <img src={img.url} alt="" loading="lazy" />
-              </a>
+              </button>
             ))}
           </div>
         </div>
@@ -287,6 +291,9 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
             </div>
           ))}
         </div>
+      )}
+      {확대 !== null && (
+        <PhotoLightbox images={portfolioImages} startAt={확대} onClose={() => set확대(null)} />
       )}
     </div>
   );

@@ -407,7 +407,7 @@ function ResumePageContent() {
               { id: "language", label: "어학", done: languages.length > 0 },
               { id: "certificate", label: "자격증", done: certificates.length > 0 },
               { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
+              { id: "portfolio", label: "사진·SNS", done: 포트폴리오채움 },
             ] : [
               { id: "basic", label: "기본 정보", done: true },
               { id: "career", label: "경력", done: careers.length > 0 },
@@ -415,7 +415,7 @@ function ResumePageContent() {
               { id: "language", label: "어학", done: languages.length > 0 },
               { id: "certificate", label: "자격증", done: certificates.length > 0 },
               { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
+              { id: "portfolio", label: "사진·SNS", done: 포트폴리오채움 },
             ];
             const doneCount = sections.filter((s) => s.done).length;
             const rate = Math.round((doneCount / sections.length) * 100);

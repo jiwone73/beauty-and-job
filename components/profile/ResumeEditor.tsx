@@ -10,6 +10,7 @@ import SkillModal from "@/components/profile/SkillModal";
 import CertificateModal from "@/components/profile/CertificateModal";
 import { MAX_PHOTOS } from "@/lib/compressImage";
 import { linkLabel, normalizeUrl, looksLikeUrl, MAX_LINKS } from "@/lib/linkLabel";
+import PhotoLightbox from "@/components/profile/PhotoLightbox";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024;
 
@@ -68,6 +69,8 @@ export default function ResumeEditor({
 
   const [careerModalOpen, setCareerModalOpen] = useState(false);
   const [editCareer, setEditCareer] = useState<any>(null);
+  const [확대, set확대] = useState<number | null>(null);
+  const [칸열림, set칸열림] = useState(false);
   const [링크입력, set링크입력] = useState("");
   const [링크오류, set링크오류] = useState("");
   const 링크담기 = () => {
@@ -83,7 +86,7 @@ export default function ResumeEditor({
     // 분류는 묻지 않고 주소에서 알아낸다. 저장은 사용자가 붙여넣은 그대로 두고,
     // 열 때만 https 를 채운다 — 화면에 보이는 값과 저장된 값이 같아야 헷갈리지 않는다.
     addLink({ id: genId(), category: linkLabel(t), url: t });
-    set링크입력(""); set링크오류("");
+    set링크입력(""); set링크오류(""); set칸열림(false);
   };
   const [eduModalOpen, setEduModalOpen] = useState(false);
   const [editEdu, setEditEdu] = useState<any>(null);
@@ -446,28 +449,28 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 포트폴리오 */}
+      {/* 포트폴리오 — 사진과 SNS 는 넣는 방법도 보는 방법도 달라 제목을 나눈다.
+          하나로 묶어 두면 무엇을 어떻게 넣으라는 것인지 한눈에 안 들어온다. */}
       <section id="section-portfolio" className="resume-section">
         <div className="resume-section-head">
-          <h2 className="resume-section-title">포트폴리오</h2>
+          <h2 className="resume-section-title">사진</h2>
         </div>
-        {/* 특정 서비스 이름은 안내문에서 뺐다. 남의 간판을 대신 달아 줄 일이 아니고,
-            무엇을 넣으라는 힌트는 아래 입력칸의 예시 글로 충분하다. */}
         <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
-          작업물을 보여줄 수 있는 것이면 무엇이든 좋아요. 매장이 가장 눈여겨보는 항목입니다.
+          작업물을 올리면 합격률이 올라갑니다.
         </p>
         {portfolioImages.length > 0 && (
           <div className="portfolio-grid">
-            {portfolioImages.map((img) => (
+            {portfolioImages.map((img, idx) => (
               <div key={img.url} className="portfolio-cell">
                 {/* 목록은 4:3 로 잘라 보여준다 — 칸 높이가 들쭉날쭉하면 읽기 어렵다.
-                    자르는 것은 보여줄 때뿐이고, 저장된 사진은 원본 비율 그대로다. */}
-                <img src={img.url} alt="" loading="lazy" />
+                    자르는 것은 보여줄 때뿐이고, 저장된 사진은 원본 비율 그대로다.
+                    잘린 자리를 보려면 눌러서 크게 연다. */}
+                <img src={img.url} alt="" loading="lazy" onClick={() => set확대(idx)} style={{ cursor: "zoom-in" }} />
                 <button
                   type="button"
                   className="portfolio-del"
                   aria-label="사진 삭제"
-                  onClick={() => onPortfolioDelete(img.url)}
+                  onClick={(e) => { e.stopPropagation(); onPortfolioDelete(img.url); }}
                 >
                   <Trash2 size={14} />
                 </button>
@@ -479,52 +482,53 @@ export default function ResumeEditor({
           <div onClick={() => !isUploading && fileInputRef.current?.click()} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
             style={{ width: "100%", marginTop: portfolioImages.length ? "10px" : 0, padding: "12px 16px", borderRadius: "12px", border: `2px dashed ${isDragOver ? "#5f0080" : "#d0c0e0"}`, background: isDragOver ? "#f3e5f5" : "#fafafa", color: "#5f0080", fontSize: "13px", fontWeight: 400, cursor: isUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", transition: "all 0.15s ease", textAlign: "center" }}>
             <Upload size={26} />
-            <span>{isUploading ? "올리는 중..." : isDragOver ? "여기에 놓으세요" : "사진을 끌어다 놓거나 눌러서 고르세요"}</span>
+            {/* 폰에서는 끌어다 놓을 일이 없다. 마우스가 있는 화면에서만 그 말을 한다. */}
+            <span>{isUploading ? "올리는 중..." : isDragOver ? "여기에 놓으세요" : "눌러서 사진 고르기"}</span>
             <span style={{ fontSize: "11px", color: "#888", fontWeight: 400 }}>
-              최대 {MAX_PHOTOS}장 · 지금 {portfolioImages.length}장 · 올릴 때 자동으로 줄여요
+              최대 {MAX_PHOTOS}장 · 올릴 때 자동으로 줄여요
             </span>
           </div>
         )}
         <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileChange} style={{ display: "none" }} />
+      </section>
 
-        {/* 작업물이 있는 곳 주소. 예전엔 ＋ → 모달 → 분류 고르기 → 주소 입력 → 저장으로
-            네 단계였다. 매장이 가장 눈여겨보는 항목인데 이력서에서 넣기가 가장 번거로웠다.
-            칸에 바로 붙여넣게 한다. 어디인지는 주소를 보고 알아내므로 고를 것이 없다. */}
-        <div style={{ marginTop: 14 }}>
-          {links.map((link) => (
-            <div key={link.id} className="resume-link-item">
-              <span className="resume-link-category">{linkLabel(link.url)}</span>
-              <a href={normalizeUrl(link.url)} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
-              <button className="resume-icon-btn danger" aria-label="삭제" style={{ marginLeft: "auto" }}
-                onClick={() => { if (confirm("이 링크를 지울까요?")) removeLink(link.id); }}>
-                <Trash2 size={15} />
-              </button>
-            </div>
-          ))}
+      {/* SNS — 작업물이 있는 곳 주소. 분류는 묻지 않고 주소에서 알아낸다. */}
+      <section id="section-sns" className="resume-section">
+        <div className="resume-section-head">
+          <h2 className="resume-section-title">SNS</h2>
           {links.length < MAX_LINKS && (
-            <>
-              {/* '추가' 버튼을 눈에 보이게 둔다. 칸이 조용히 다시 나타나는 것만으로는
-                  여러 개 넣을 수 있다는 걸 알아채기 어렵다. */}
-              <div style={{ display: "flex", gap: 6, marginTop: links.length ? 8 : 0 }}>
-                <input
-                  className="cv-input"
-                  style={{ flex: 1, minWidth: 0, marginTop: 0 }}
-                  placeholder="instagram.com/내아이디 · youtube.com/@내채널"
-                  value={링크입력}
-                  onChange={(e) => { set링크입력(e.target.value); if (링크오류) set링크오류(""); }}
-                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); 링크담기(); } }}
-                  inputMode="url"
-                />
-                <button type="button" className="profile-select-btn accent" style={{ flexShrink: 0 }} onClick={링크담기}>
-                  추가
-                </button>
-              </div>
-            </>
+            <button className="resume-icon-btn" aria-label="SNS 추가" onClick={() => set칸열림(true)}>
+              <Plus size={18} />
+            </button>
           )}
-          <p style={{ fontSize: 12, color: 링크오류 ? "#c0392b" : "#aaa", marginTop: 6 }}>
-            {링크오류 || `여러 개 넣을 수 있어요 · 최대 ${MAX_LINKS}개${links.length ? ` (지금 ${links.length}개)` : ""}`}
-          </p>
         </div>
+        <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
+          인스타그램, 유튜브, 블로그 등 작업물을 올리는 곳을 적어주세요.
+        </p>
+        {links.map((link) => (
+          <div key={link.id} className="resume-link-item">
+            <span className="resume-link-category">{linkLabel(link.url)}</span>
+            <a href={normalizeUrl(link.url)} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
+            <button className="resume-icon-btn danger" aria-label="삭제" style={{ marginLeft: "auto" }}
+              onClick={() => { if (confirm("이 링크를 지울까요?")) removeLink(link.id); }}>
+              <Trash2 size={15} />
+            </button>
+          </div>
+        ))}
+        {(칸열림 || links.length === 0) && links.length < MAX_LINKS && (
+          <input
+            className="cv-input"
+            style={{ marginTop: links.length ? 8 : 0 }}
+            placeholder="http://"
+            value={링크입력}
+            onChange={(e) => { set링크입력(e.target.value); if (링크오류) set링크오류(""); }}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); 링크담기(); } }}
+            onBlur={링크담기}
+            inputMode="url"
+            autoFocus={칸열림}
+          />
+        )}
+        {링크오류 && <p style={{ fontSize: 12.5, color: "#c0392b", marginTop: 6 }}>{링크오류}</p>}
       </section>
 
       {/* 첨부 이력서 (본인이 작성한 이력서 파일) — 현재 숨김 처리(에디터·지원 모달 공통) */}
@@ -612,6 +616,10 @@ export default function ResumeEditor({
         )}
       </section>
 
+
+      {확대 !== null && (
+        <PhotoLightbox images={portfolioImages} startAt={확대} onClose={() => set확대(null)} />
+      )}
 
       {/* 하위 모달들 */}
       <CareerEditModal isOpen={careerModalOpen} onClose={() => { setCareerModalOpen(false); setEditCareer(null); }} editTarget={editCareer} resumeType={resumeType} />
