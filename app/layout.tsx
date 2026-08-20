@@ -11,6 +11,17 @@ export const metadata: Metadata = {
   description:
     "전문가 채용부터 업계 트렌드까지, 뷰티 산업 종사자를 위한 채용 플랫폼 뷰티워크",
   keywords: ["뷰티 채용", "화장품 채용", "뷰티 커리어", "BeautyWork"],
+  // 홈 화면에 추가해 열면 사파리 주소창과 아래 도구모음 없이 뜬다.
+  // iOS 16.3 이하는 manifest 의 display 를 안 보고 이 값만 보므로 둘 다 둔다.
+  appleWebApp: {
+    capable: true,
+    title: "뷰티워크",
+    statusBarStyle: "default",
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/icon-180.png",
+  },
 };
 
 export const viewport: Viewport = {
