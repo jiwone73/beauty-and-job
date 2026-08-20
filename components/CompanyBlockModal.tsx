@@ -96,7 +96,13 @@ export default function CompanyBlockModal({
               {searching ? (
                 <div style={{ padding: 16, textAlign: "center", color: "#999", fontSize: 13 }}>검색 중...</div>
               ) : results.length === 0 ? (
-                <div style={{ padding: 16, textAlign: "center", color: "#999", fontSize: 13 }}>검색 결과가 없어요</div>
+                /* 차단은 상대의 계정에 걸린다. 뷰티워크에 없는 곳은 애초에
+                   내 프로필을 볼 수 없으니 막을 것도 없다 — 이름만 적어 두면
+                   막았다고 착각하게 되므로, 그 대신 사실을 알린다. */
+                <div style={{ padding: "14px 16px", color: "#888", fontSize: 12.5, lineHeight: 1.6 }}>
+                  검색되지 않는 곳은 아직 뷰티워크에 없어요.
+                  <br />없는 곳은 내 프로필을 볼 수 없으니 막지 않아도 괜찮아요.
+                </div>
               ) : (
                 results.map((c) => (
                   <div key={c.companyId}

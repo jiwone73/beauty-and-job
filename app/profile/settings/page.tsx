@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
 import { isOpenToCompanies, 공개, 비공개 } from "@/lib/jobSearchStatus";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -28,22 +28,24 @@ export default function AccountSettingsPage() {
   // 매장 회원인지 오피스 회원인지. 미용실 원장에게 "기업"이라고 하면 남
   // 이야기처럼 들려 자기 설정으로 읽히지 않는다.
   const [jobType, setJobType] = useState<"STORE" | "OFFICE" | null>(null);
+  // 비밀번호 칸은 접어 둔다. 늘 펼쳐 두면 설정 화면의 절반을 차지하는데,
+  // 정작 바꾸는 일은 몇 달에 한 번이다.
+  const [pwOpen, setPwOpen] = useState(false);
   useEffect(() => {
     const t = localStorage.getItem("access_token");
     if (!t) return;
     fetch("/api/users/me/profile", { headers: { Authorization: `Bearer ${t}` } })
       .then((r) => r.json())
-      .then((res) => setOpenToOffers(isOpenToCompanies(res?.data?.profile?.job_search_status)))
-      .catch(() => {});
-    // job_type 은 프로필 쪽 응답에 없어 따로 받아온다.
-    fetch("/api/users/me", { headers: { Authorization: `Bearer ${t}` } })
-      .then((r) => r.json())
-      .then((res) => { if (res?.data?.job_type) setJobType(res.data.job_type); })
+      .then((res) => {
+        setOpenToOffers(isOpenToCompanies(res?.data?.profile?.job_search_status));
+        if (res?.data?.job_type) setJobType(res.data.job_type);
+      })
       .catch(() => {});
   }, []);
 
-  // 아직 모를 때는 둘 다 적는다 — 한쪽으로 찍어 두었다가 바뀌면 잘못 읽힌다.
-  const 상대 = jobType === "STORE" ? "매장" : jobType === "OFFICE" ? "기업" : "매장·기업";
+  // 알기 전에는 아무 이름도 쓰지 않는다. 한쪽으로 찍어 두었다가 바뀌면
+  // 잘못된 말이 잠깐 스친다 — 자리만 비워 두고 값이 오면 채운다.
+  const 상대 = jobType === "STORE" ? "매장" : jobType === "OFFICE" ? "기업" : null;
 
   const saveOpenToOffers = async (next: boolean) => {
     const before = openToOffers;
@@ -142,20 +144,28 @@ export default function AccountSettingsPage() {
           <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 4px" }}>프로필 공개</h2>
           <p style={{ fontSize: 13, color: "#999", margin: "0 0 14px" }}>언제든 바꿀 수 있어요.</p>
           {([
-            { on: true,  label: "공개",   desc: `${상대}으로부터 면접 제안을 받아볼게요.` },
+            { on: true,  label: "공개",   desc: 상대 ? `${상대}으로부터 면접 제안을 받아볼게요.` : "" },
             { on: false, label: "비공개", desc: "면접 제안 안 받을게요." },
           ]).map((o) => {
             const 골랐나 = openToOffers === o.on;
             return (
-              <button key={o.label} type="button" disabled={offerSaving || openToOffers === null}
-                onClick={() => saveOpenToOffers(o.on)}
-                style={{ display: "block", width: "100%", textAlign: "left", marginBottom: 8, padding: "13px 14px", borderRadius: 10,
-                  cursor: offerSaving ? "wait" : "pointer",
-                  border: 골랐나 ? "1.5px solid #5f0080" : "1.5px solid #eee",
-                  background: 골랐나 ? "#faf5fc" : "#fff" }}>
-                <div style={{ fontSize: 15, color: 골랐나 ? "#5f0080" : "#333" }}>{o.label}</div>
-                <div style={{ fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5 }}>{o.desc}</div>
-              </button>
+              <label key={o.label}
+                style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 2px",
+                  cursor: offerSaving || openToOffers === null ? "default" : "pointer" }}>
+                <input type="radio" name="profile-visibility"
+                  checked={골랐나}
+                  disabled={offerSaving || openToOffers === null}
+                  onChange={() => saveOpenToOffers(o.on)}
+                  style={{ width: 18, height: 18, marginTop: 2, accentColor: "#5f0080", flexShrink: 0 }} />
+                <span>
+                  <span style={{ display: "block", fontSize: 15, color: 골랐나 ? "#5f0080" : "#333" }}>{o.label}</span>
+                  {/* 이름을 모르는 동안에도 줄 높이는 잡아 둔다 — 값이 늦게
+                      와도 아래 내용이 밀리지 않는다. */}
+                  <span style={{ display: "block", fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5, minHeight: 19 }}>
+                    {o.desc}
+                  </span>
+                </span>
+              </label>
             );
           })}
         </section>
@@ -166,7 +176,7 @@ export default function AccountSettingsPage() {
           <button type="button" onClick={() => setBlockOpen(true)}
             style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}>
             <span style={{ textAlign: "left" }}>
-              <span style={{ display: "block", fontSize: 15, color: "#1a1a1a" }}>차단 {상대}</span>
+              <span style={{ display: "block", fontSize: 15, color: "#1a1a1a", visibility: 상대 ? "visible" : "hidden" }}>차단 {상대 ?? "기업"}</span>
               <span style={{ display: "block", fontSize: 13, color: "#999", marginTop: 4, lineHeight: 1.5 }}>
                 지금 다니는 곳처럼 곤란한 곳은 골라서 막을 수 있어요.
               </span>
@@ -175,20 +185,29 @@ export default function AccountSettingsPage() {
           </button>
         </section>
 
-        {/* 비밀번호 변경 */}
+        {/* 비밀번호 변경 — 접어 둔다. 늘 펼쳐 두면 설정 화면의 절반을
+            차지하는데, 정작 바꾸는 일은 몇 달에 한 번이다. */}
         <section style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 16 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 16px" }}>비밀번호 변경</h2>
-          <input type="password" placeholder="현재 비밀번호" value={curPw} onChange={(e) => setCurPw(e.target.value)}
-            style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
-          <input type="password" placeholder="새 비밀번호 (8자 이상)" value={newPw} onChange={(e) => setNewPw(e.target.value)}
-            style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
-          <input type="password" placeholder="새 비밀번호 확인" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)}
-            style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 16, boxSizing: "border-box" }} />
-          <button onClick={handleChangePw} disabled={pwSaving}
-            style={{ width: "100%", height: 48, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
-            {pwSaving ? "변경 중..." : "비밀번호 변경"}
+          <button type="button" onClick={() => setPwOpen((v) => !v)} aria-expanded={pwOpen}
+            style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}>
+            <span style={{ fontSize: 15, color: "#1a1a1a" }}>비밀번호 변경</span>
+            <ChevronDown size={20} style={{ flexShrink: 0, color: "#bbb", transform: pwOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }} />
           </button>
-          <p style={{ fontSize: 12, color: "#999", margin: "10px 0 0" }}>카카오 등 소셜 로그인 계정은 비밀번호 변경이 불가능합니다.</p>
+          {pwOpen && (
+            <div style={{ marginTop: 16 }}>
+              <input type="password" placeholder="현재 비밀번호" value={curPw} onChange={(e) => setCurPw(e.target.value)}
+                style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
+              <input type="password" placeholder="새 비밀번호 (8자 이상)" value={newPw} onChange={(e) => setNewPw(e.target.value)}
+                style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
+              <input type="password" placeholder="새 비밀번호 확인" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)}
+                style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 16, boxSizing: "border-box" }} />
+              <button onClick={handleChangePw} disabled={pwSaving}
+                style={{ width: "100%", height: 48, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
+                {pwSaving ? "변경 중..." : "비밀번호 변경"}
+              </button>
+              <p style={{ fontSize: 12, color: "#999", margin: "10px 0 0" }}>카카오 등 소셜 로그인 계정은 비밀번호 변경이 불가능합니다.</p>
+            </div>
+          )}
         </section>
 
         {/* 회원 탈퇴 */}
@@ -204,7 +223,7 @@ export default function AccountSettingsPage() {
         </section>
       </div>
 
-      <CompanyBlockModal open={blockOpen} onClose={() => setBlockOpen(false)} noun={상대} />
+      <CompanyBlockModal open={blockOpen} onClose={() => setBlockOpen(false)} noun={상대 ?? "기업"} />
 
       {/* 탈퇴 확인 모달 */}
       {showWithdraw && (
