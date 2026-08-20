@@ -751,7 +751,7 @@ export default function ProfilePage() {
                     <p style={{ fontSize: "14px", fontWeight: 400, color: "#555", margin: 0 }}>{name || "회원"}</p>
                     {avatarMenu && (
                       <div onClick={(e) => e.stopPropagation()}
-                        style={{ position: "absolute", top: "100%", right: 0, marginTop: "6px", zIndex: 30, background: "#fff", border: "1px solid #e0d0f0", borderRadius: "10px", boxShadow: "0 6px 20px rgba(0,0,0,0.12)", padding: "6px", minWidth: "132px" }}>
+                        style={{ position: "absolute", top: "100%", right: 0, marginTop: "6px", zIndex: 30, background: "#fff", border: "1px solid #e0d0f0", borderRadius: "10px", boxShadow: "0 6px 20px rgba(0,0,0,0.12)", padding: "6px", minWidth: "196px" }}>
                         <button
                           onClick={() => { avatarFileRef.current?.click(); setAvatarMenu(false); }}
                           style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 10px", border: "none", background: "transparent", fontSize: "13px", color: "#333", cursor: "pointer", borderRadius: "6px" }}>
@@ -763,6 +763,25 @@ export default function ProfilePage() {
                             style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 10px", border: "none", background: "transparent", fontSize: "13px", color: "#e74c3c", cursor: "pointer", borderRadius: "6px" }}>
                             사진 삭제
                           </button>
+                        )}
+                        {/* 사진을 감추는 일은 사진을 만지는 자리에서 하는 게 맞다.
+                            예전엔 공개 설정 모달 안에 숨어 있어, 사진을 바꾸러 온
+                            사람은 그런 선택이 있는 줄도 몰랐다. */}
+                        {avatarUrl && (
+                          <>
+                            <div style={{ height: 1, background: "#f0e8f8", margin: "5px 6px" }} />
+                            <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", cursor: "pointer" }}>
+                              <input type="checkbox" className="applied-check"
+                                checked={!avatarPublic}
+                                onChange={(e) => saveAvatarPublic(!e.target.checked)} />
+                              <span style={{ fontSize: "13px", color: "#333" }}>공개 프로필에서 감추기</span>
+                            </label>
+                            {/* avatar_public 은 인재검색 쪽만 막는다. 지원한 곳은 그대로 본다. */}
+                            <div style={{ fontSize: "11px", color: "#aaa", padding: "0 10px 4px", lineHeight: 1.5 }}>
+                              내가 지원한 매장에는 그대로 보여요.
+                            </div>
+                            <div style={{ height: 1, background: "#f0e8f8", margin: "1px 6px 5px" }} />
+                          </>
                         )}
                         <div style={{ fontSize: "11px", color: "#aaa", padding: "4px 10px 2px" }}>JPG/PNG/WebP · 자동 최적화 (최대 3MB)</div>
                       </div>
@@ -1047,9 +1066,9 @@ export default function ProfilePage() {
                   onClick={() => setPrefModalOpen(true)}
                   required
                 />
-                {/* 인재검색 공개 — 켜면 매장이 먼저 제안할 수 있다. */}
+                {/* 프로필 공개 — 켜면 구인 중인 매장이 먼저 제안할 수 있다. */}
                 <InfoRow
-                  label="인재검색 공개"
+                  label="프로필 공개"
                   value={
                     !isOpenToCompanies(jobSearchStatus) ? "비공개"
                       : avatarPublic ? "공개" : "공개 (사진 감춤)"
@@ -1061,25 +1080,19 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* 인재검색 공개 선택 */}
+            {/* 프로필 공개 선택 */}
             {jsModalOpen && (
               <div onClick={() => setJsModalOpen(false)}
                 style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
                 <div onClick={(e) => e.stopPropagation()}
                   style={{ background: "#fff", width: "100%", maxWidth: 480, borderRadius: "16px 16px 0 0", padding: 18, boxSizing: "border-box" }}>
-                  <div style={{ fontSize: 16, color: "#222", marginBottom: 4 }}>인재검색 공개</div>
-                  <div style={{ fontSize: 12.5, color: "#999", marginBottom: 12 }}>언제든 바꿀 수 있어요.</div>
-                  {/* 켜라고 떠미는 대신 무엇이 열리는지 알린다 — 지원하지 않아도 제안이 온다는 것이
-                      이 기능의 값어치다. 반대로 무엇이 보이는지도 같은 자리에 적는다. */}
+                  <div style={{ fontSize: 16, color: "#222", marginBottom: 4 }}>프로필 공개</div>
+                  <div style={{ fontSize: 12.5, color: "#999", marginBottom: 12 }}>구인 중인 매장에만 보여요. 언제든 바꿀 수 있어요.</div>
+                  {/* 길게 설명할수록 무서워 보인다. 무엇이 열리는지 한 줄로 적고,
+                      막을 수 있다는 사실을 같은 자리에서 보여 준다. */}
                   {[
-                    {
-                      value: 공개, label: "공개",
-                      desc: "매장이 내 이력서를 보고 먼저 제안할 수 있어요. 지원하지 않아도 스카웃 기회가 열립니다.",
-                    },
-                    {
-                      value: 비공개, label: "비공개",
-                      desc: "인재검색에 나오지 않아요. 내가 지원한 공고의 매장만 내 이력서를 봅니다.",
-                    },
+                    { value: 공개, label: "공개", desc: "구인 중인 매장이 보고 먼저 제안할 수 있어요." },
+                    { value: 비공개, label: "비공개", desc: "내가 지원한 매장만 볼 수 있어요." },
                   ].map((o) => {
                     const on = (o.value === 공개) === isOpenToCompanies(jobSearchStatus);
                     return (
@@ -1091,24 +1104,27 @@ export default function ProfilePage() {
                       </button>
                     );
                   })}
-                  {/* 공개해 둔 사람에게만 뜻이 있는 설정이라 그때만 보여준다. */}
+                  {/* 안심의 근거는 말이 아니라 이 버튼이다. 지금까지 이 기능은
+                      알림 설정 안에 묻혀 있어 있는 줄도 몰랐다. */}
                   {isOpenToCompanies(jobSearchStatus) && (
-                    <label style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", borderRadius: 10, border: "1.5px solid #eee", marginBottom: 8, cursor: "pointer" }}>
-                      <input type="checkbox" className="applied-check" style={{ marginTop: 2 }}
-                        checked={!avatarPublic}
-                        onChange={(e) => saveAvatarPublic(!e.target.checked)}
-                      />
-                      <span>
-                        <span style={{ display: "block", fontSize: 15, color: "#333" }}>프로필 사진은 감추기</span>
+                    <button type="button"
+                      onClick={() => { setJsModalOpen(false); setShowBlockModal(true); }}
+                      style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "12px 14px", borderRadius: 10, border: "1.5px solid #eee", background: "#fff", cursor: "pointer", marginBottom: 8 }}>
+                      <span style={{ textAlign: "left" }}>
+                        <span style={{ display: "block", fontSize: 15, color: "#333" }}>특정 매장에는 숨기기</span>
                         <span style={{ display: "block", fontSize: 12.5, color: "#999", marginTop: 2, lineHeight: 1.5 }}>
-                          경력과 이력서는 보이지만 얼굴 사진은 매장에게 보이지 않아요.
+                          지금 다니는 곳처럼 보이면 곤란한 매장을 골라 막을 수 있어요.
                         </span>
                       </span>
-                    </label>
+                      <ChevronRight size={18} style={{ flexShrink: 0, color: "#bbb" }} />
+                    </button>
                   )}
-                  <div style={{ fontSize: 12, color: "#8a6d00", background: "#fdf4de", borderRadius: 8, padding: "9px 11px", lineHeight: 1.55, margin: "4px 0 14px" }}>
-                    공개하면 기업회원이 내 이름·연락처(휴대폰·이메일)와 이력서 전체를 열람하고 직접 연락할 수 있어요.
-                  </div>
+                  {/* 무엇이 보이는지는 남긴다 — 겁주지 않되 숨기지도 않는다. */}
+                  {isOpenToCompanies(jobSearchStatus) && (
+                    <div style={{ fontSize: 12, color: "#999", lineHeight: 1.55, margin: "2px 2px 14px" }}>
+                      매장에는 이력서와 연락처가 함께 보여요.
+                    </div>
+                  )}
                   <button type="button" onClick={() => setJsModalOpen(false)}
                     style={{ width: "100%", marginTop: 6, padding: 12, borderRadius: 10, border: "1px solid #eee", background: "#fff", color: "#888", fontSize: 14, cursor: "pointer" }}>닫기</button>
                 </div>

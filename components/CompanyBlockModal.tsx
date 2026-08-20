@@ -60,13 +60,14 @@ export default function CompanyBlockModal({ open, onClose }: { open: boolean; on
     <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
         <div className="cv-header">
-          <h2 className="cv-title">이력서 공개 설정</h2>
+          {/* 프로필 공개 설정에서 넘어오는 자리다. 그쪽에서 부르는 이름과
+              같아야 같은 이야기의 연장으로 읽힌다. */}
+          <h2 className="cv-title">특정 매장에는 숨기기</h2>
           <button className="cv-close" onClick={onClose}><X size={20} /></button>
         </div>
         <div className="cv-body">
           <p className="cv-desc">
-            차단한 기업은 인재검색에서 내 프로필과 이력서를 볼 수 없어요.
-            현재 다니는 회사 등 노출을 원치 않는 기업을 등록하세요.
+            여기 등록한 곳은 내 프로필을 볼 수 없어요.
           </p>
 
           <label className="cv-field-label">기업 검색</label>
