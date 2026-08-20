@@ -92,6 +92,12 @@ export default function ResumeEditor({
     addLink({ id: genId(), category: linkLabel(t), url: t });
     return null;
   };
+  const 링크지우기 = (id: string) => {
+    const 그것 = links.find((l) => l.id === id);
+    if (!그것) return;
+    if (!confirm(`${linkLabel(그것.url)} 주소를 지울까요?\n${그것.url}`)) return;
+    removeLink(id);
+  };
   const [careerModalOpen, setCareerModalOpen] = useState(false);
   const [editCareer, setEditCareer] = useState<any>(null);
   const [eduModalOpen, setEduModalOpen] = useState(false);
@@ -636,6 +642,7 @@ export default function ResumeEditor({
         onFiles={onPortfolioFiles}
         onDeletePhotos={onPortfolioDelete}
         onAddLink={링크담기}
+        onDeleteLink={링크지우기}
       />
 
       {확대 !== null && (

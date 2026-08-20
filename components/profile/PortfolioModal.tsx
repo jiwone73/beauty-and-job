@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import { Check, ChevronLeft, Upload } from "lucide-react";
+import { Check, ChevronLeft, Upload, X } from "lucide-react";
 import { MAX_PHOTOS } from "@/lib/compressImage";
 import { linkLabel, looksLikeUrl, normalizeUrl, MAX_LINKS } from "@/lib/linkLabel";
 
@@ -10,7 +10,7 @@ import { linkLabel, looksLikeUrl, normalizeUrl, MAX_LINKS } from "@/lib/linkLabe
 // 있으면 손이 다르게 간다. 넣는 곳은 모달로 모으고, 이력서 화면에는 넣은 결과만
 // 보여준다.
 export default function PortfolioModal({
-  isOpen, onClose, mode = "all", images, links, isUploading, onFiles, onDeletePhotos, onAddLink,
+  isOpen, onClose, mode = "all", images, links, isUploading, onFiles, onDeletePhotos, onAddLink, onDeleteLink,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -23,6 +23,8 @@ export default function PortfolioModal({
   onFiles: (files: File[]) => void;
   onDeletePhotos: (urls: string[]) => Promise<void>;
   onAddLink: (url: string) => string | null;   // 문제가 있으면 알릴 말을 돌려준다
+  /** 넣을 수만 있고 뺄 수는 없으면, 주소를 잘못 넣은 사람은 손쓸 방법이 없다. */
+  onDeleteLink: (id: string) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [주소, set주소] = useState("");
@@ -155,6 +157,16 @@ export default function PortfolioModal({
             <div key={l.id} className="resume-link-item">
               <span className="resume-link-category">{linkLabel(l.url)}</span>
               <a href={normalizeUrl(l.url)} target="_blank" rel="noopener noreferrer" className="resume-link-url">{l.url}</a>
+              {/* 사진과 달리 몇 개 안 되고 한 줄짜리라, 고르는 단계 없이 그 자리에서 뺀다.
+                  아이콘은 사진 쪽과 같이 X 로 맞춘다. */}
+              <button
+                type="button"
+                onClick={() => onDeleteLink(l.id)}
+                aria-label={`${linkLabel(l.url)} 주소 삭제`}
+                style={{ marginLeft: "auto", flexShrink: 0, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", border: "none", background: "transparent", color: "#bbb", cursor: "pointer", borderRadius: 6, alignSelf: "center" }}
+              >
+                <X size={15} />
+              </button>
             </div>
           ))}
           {links.length < MAX_LINKS && (
