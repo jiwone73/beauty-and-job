@@ -11754,15 +11754,33 @@ div:has(> table.admin-table),
   .bookmark-deadline { font-size: 14px; }
 }
 
+/* 포트폴리오 안 '이미지' 줄과 사진 고르기 체크 */
+.pf-subhead { display: flex; align-items: center; gap: 8px; margin: 4px 0 8px; }
+.pf-subtitle { font-size: 13.5px; color: #555; }
+/* 체크는 사진 오른쪽 위 — 예전에 X 가 있던 자리라 손이 가던 곳 그대로다. */
+.pf-check { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; padding: 0; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.35); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.pf-check.on { background: #5f0080; border-color: #fff; }
+
+/* 사진 올리는 자리 안내 — 마우스가 있는 화면에서만 끌어다 놓기를 알린다. */
+.pf-drop-pc { display: inline; }
+.pf-drop-mobile { display: none; }
+@media (max-width: 768px) {
+  .pf-drop-pc { display: none; }
+  .pf-drop-mobile { display: inline; }
+}
+
 /* === 포트폴리오 사진 격자 ===
    목록은 4:3 으로 잘라 보여준다. 칸 높이가 들쭉날쭉하면 훑어보기 어렵다.
    자르는 것은 보여줄 때뿐이고, 저장된 사진은 원본 비율 그대로다
    (공고 카드 썸네일과 같은 방식). */
-.portfolio-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.portfolio-cell { position: relative; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; background: #f4f0f8; }
+/* 3열 정사각. 아홉 장이 3×3 으로 딱 떨어진다. 정사각이라 세로·가로 사진이 섞여도
+   칸 높이가 고르고, 시술 사진을 올리는 인스타 격자와 모양이 같아 눈에 익다. */
+/* 사이를 띄우지 않는다. 한 줄에 셋이 꽉 들어차야 사진이 커 보이고, 3×3 이 한
+   덩어리로 읽힌다. 모서리는 칸마다 주면 안쪽에서 서로 물리므로 바깥에만 준다. */
+.portfolio-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-radius: 10px; overflow: hidden; }
+.portfolio-cell { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: #f4f0f8; }
 .portfolio-cell > img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .portfolio-del { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border: none; border-radius: 8px; background: rgba(0,0,0,0.5); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
-@media (max-width: 640px) { .portfolio-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* === 지원현황·관심공고 위쪽 '선택' 줄 === */
 .profile-select-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }

@@ -259,7 +259,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       {portfolioImages.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">포트폴리오</h2>
-          {/* 읽는 화면에서도 목록은 4:3 — 편집 화면과 같은 모양으로 보여준다. */}
+          {/* 읽는 화면도 편집 화면과 같은 정사각 격자로 보여준다. */}
           {/* 매장이 잘린 자리를 봐야 실력을 판단할 수 있다. 눌러서 크게 연다.
               새 탭으로 원본을 띄우면 폰에서 앱을 벗어나 돌아오기 번거롭다. */}
           <div className="portfolio-grid">

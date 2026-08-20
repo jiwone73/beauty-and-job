@@ -229,20 +229,24 @@ function ResumePageContent() {
     }
   };
 
-  const handleDeletePhoto = async (url: string) => {
-    if (!confirm("이 사진을 지울까요?")) return;
+  // 고른 것을 한 번에 지운다. 확인은 부른 쪽에서 이미 받았으므로 여기서 다시 묻지
+  // 않는다 — 아홉 장을 지우려는데 확인창이 아홉 번 뜨면 지우다 만다.
+  const handleDeletePhotos = async (urls: string[]) => {
     const token = localStorage.getItem("access_token");
-    if (!token) return;
-    try {
-      const res = await fetch(`/api/users/me/portfolio?url=${encodeURIComponent(url)}`, {
-        method: "DELETE", headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!data.success) { alert("삭제에 실패했어요."); return; }
-      setPortfolioImages(data.data.portfolio_images || []);
-    } catch (e) {
-      console.error(e);
+    if (!token || !urls.length) return;
+    let 마지막: { url: string }[] | null = null;
+    for (const url of urls) {
+      try {
+        const res = await fetch(`/api/users/me/portfolio?url=${encodeURIComponent(url)}`, {
+          method: "DELETE", headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.success) 마지막 = data.data.portfolio_images || [];
+      } catch (e) {
+        console.error(e);
+      }
     }
+    if (마지막) setPortfolioImages(마지막);
   };
 
   // 첨부 이력서 파일 업로드
@@ -407,7 +411,7 @@ function ResumePageContent() {
               { id: "language", label: "어학", done: languages.length > 0 },
               { id: "certificate", label: "자격증", done: certificates.length > 0 },
               { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              { id: "portfolio", label: "사진·SNS", done: 포트폴리오채움 },
+              { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
             ] : [
               { id: "basic", label: "기본 정보", done: true },
               { id: "career", label: "경력", done: careers.length > 0 },
@@ -415,7 +419,7 @@ function ResumePageContent() {
               { id: "language", label: "어학", done: languages.length > 0 },
               { id: "certificate", label: "자격증", done: certificates.length > 0 },
               { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              { id: "portfolio", label: "사진·SNS", done: 포트폴리오채움 },
+              { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
             ];
             const doneCount = sections.filter((s) => s.done).length;
             const rate = Math.round((doneCount / sections.length) * 100);
@@ -498,7 +502,7 @@ function ResumePageContent() {
             portfolioImages={portfolioImages}
             isUploading={isUploading}
             onPortfolioFiles={processPhotos}
-            onPortfolioDelete={handleDeletePhoto}
+            onPortfolioDelete={handleDeletePhotos}
             resumeFileName={resumeFileName}
             resumeFileSize={resumeFileSize}
             isResumeFileUploading={isResumeFileUploading}

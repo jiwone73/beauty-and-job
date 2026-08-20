@@ -124,15 +124,19 @@ export default function ApplyModal({
       setIsUploading(false);
     }
   };
-  const handleDeletePhoto = async (url: string) => {
-    if (!confirm("이 사진을 지울까요?")) return;
+  // 고른 것을 한 번에 지운다. 확인은 부른 쪽에서 이미 받았다.
+  const handleDeletePhotos = async (urls: string[]) => {
     const token = localStorage.getItem("access_token");
-    if (!token) return;
-    const res = await fetch(`/api/users/me/portfolio?url=${encodeURIComponent(url)}`, {
-      method: "DELETE", headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    if (data.success) setPortfolioImages(data.data.portfolio_images || []);
+    if (!token || !urls.length) return;
+    let 마지막: { url: string }[] | null = null;
+    for (const url of urls) {
+      const res = await fetch(`/api/users/me/portfolio?url=${encodeURIComponent(url)}`, {
+        method: "DELETE", headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) 마지막 = data.data.portfolio_images || [];
+    }
+    if (마지막) setPortfolioImages(마지막);
   };
 
   // 첨부 이력서 파일 업로드
@@ -425,7 +429,7 @@ export default function ApplyModal({
                   portfolioImages={portfolioImages}
                   isUploading={isUploading}
                   onPortfolioFiles={processPhotos}
-                  onPortfolioDelete={handleDeletePhoto}
+                  onPortfolioDelete={handleDeletePhotos}
                   resumeFileName={resumeFileName}
                   resumeFileSize={resumeFileSize}
                   isResumeFileUploading={isResumeFileUploading}
