@@ -1,15 +1,15 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, FileText, Pencil, Plus, Trash2, Upload } from "lucide-react";
-import { useProfileStore } from "@/lib/store/profileStore";
+import { useProfileStore, genId } from "@/lib/store/profileStore";
 import CareerEditModal from "@/components/profile/CareerEditModal";
-import LinkModal from "@/components/profile/LinkModal";
 import EducationModal from "@/components/profile/EducationModal";
 import LanguageModal from "@/components/profile/LanguageModal";
 import ExperienceModal from "@/components/profile/ExperienceModal";
 import SkillModal from "@/components/profile/SkillModal";
 import CertificateModal from "@/components/profile/CertificateModal";
 import { MAX_PHOTOS } from "@/lib/compressImage";
+import { linkLabel, normalizeUrl, looksLikeUrl, MAX_LINKS } from "@/lib/linkLabel";
 
 const MAX_PORTFOLIO_SIZE = 5 * 1024 * 1024;
 
@@ -50,7 +50,7 @@ export default function ResumeEditor({
 }: Props) {
   const {
     educations, careers, skills, languages, experiences, links,
-    setEmail, removeLink, removeLanguage, removeExperience,
+    setEmail, addLink, removeLink, removeLanguage, removeExperience,
     removeEducation, removeCareer, certificates, removeCertificate,
     isEntryLevel, setIsEntryLevel,
     entryExperience, setEntryExperience,
@@ -68,8 +68,23 @@ export default function ResumeEditor({
 
   const [careerModalOpen, setCareerModalOpen] = useState(false);
   const [editCareer, setEditCareer] = useState<any>(null);
-  const [linkModalOpen, setLinkModalOpen] = useState(false);
-  const [editLink, setEditLink] = useState<any>(null);
+  const [링크입력, set링크입력] = useState("");
+  const [링크오류, set링크오류] = useState("");
+  const 링크담기 = () => {
+    const t = 링크입력.trim();
+    if (!t) return;
+    if (!looksLikeUrl(t)) { set링크오류("주소가 맞는지 확인해 주세요. 예: instagram.com/내아이디"); return; }
+    // 같은 곳을 두 번 걸면 매장은 두 번 눌러 보고 같은 화면을 만난다.
+    // 앞에 https 가 붙었는지, 끝에 / 가 있는지 같은 차이는 같은 주소로 본다.
+    const 같은주소 = (u: string) => normalizeUrl(u).replace(/\/+$/, "").toLowerCase();
+    if (links.some((l) => 같은주소(l.url) === 같은주소(t))) {
+      set링크오류("이미 넣은 주소예요."); return;
+    }
+    // 분류는 묻지 않고 주소에서 알아낸다. 저장은 사용자가 붙여넣은 그대로 두고,
+    // 열 때만 https 를 채운다 — 화면에 보이는 값과 저장된 값이 같아야 헷갈리지 않는다.
+    addLink({ id: genId(), category: linkLabel(t), url: t });
+    set링크입력(""); set링크오류("");
+  };
   const [eduModalOpen, setEduModalOpen] = useState(false);
   const [editEdu, setEditEdu] = useState<any>(null);
   const [langModalOpen, setLangModalOpen] = useState(false);
@@ -435,36 +450,12 @@ export default function ResumeEditor({
       <section id="section-portfolio" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">포트폴리오</h2>
-          <button className="resume-icon-btn" aria-label="링크 추가" onClick={() => { setEditLink(null); setLinkModalOpen(true); }}>
-            <Plus size={18} />
-          </button>
         </div>
+        {/* 특정 서비스 이름은 안내문에서 뺐다. 남의 간판을 대신 달아 줄 일이 아니고,
+            무엇을 넣으라는 힌트는 아래 입력칸의 예시 글로 충분하다. */}
         <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
-          작업물을 보여줄 수 있는 것이면 무엇이든 좋아요.
-          {resumeType === "office"
-            ? " 노션·링크드인 같은 링크를 걸거나, 결과물 사진을 올리셔도 됩니다."
-            : " 시술 사진을 바로 올리거나, 인스타그램 링크를 걸어 두셔도 됩니다."}
+          작업물을 보여줄 수 있는 것이면 무엇이든 좋아요. 매장이 가장 눈여겨보는 항목입니다.
         </p>
-        {/* 링크가 먼저 온다. 미용은 인스타에 시술 사진을 올리는 것이 흔해, 그쪽이
-            주된 포트폴리오다. PDF 는 인스타를 안 하는 사람을 위한 다른 길로 둔다. */}
-        {links.length > 0 && (
-          <div style={{ marginBottom: "12px" }}>
-            {links.map((link) => (
-              <div key={link.id} className="resume-link-item">
-                <span className="resume-link-category">{link.category}</span>
-                <a href={link.url} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
-                <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                  <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLink(link); setLinkModalOpen(true); }}>
-                    <Pencil size={15} />
-                  </button>
-                  <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 링크를 삭제할까요?")) removeLink(link.id); }}>
-                    <Trash2 size={15} />
-                  </button>
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
         {portfolioImages.length > 0 && (
           <div className="portfolio-grid">
             {portfolioImages.map((img) => (
@@ -495,6 +486,45 @@ export default function ResumeEditor({
           </div>
         )}
         <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileChange} style={{ display: "none" }} />
+
+        {/* 작업물이 있는 곳 주소. 예전엔 ＋ → 모달 → 분류 고르기 → 주소 입력 → 저장으로
+            네 단계였다. 매장이 가장 눈여겨보는 항목인데 이력서에서 넣기가 가장 번거로웠다.
+            칸에 바로 붙여넣게 한다. 어디인지는 주소를 보고 알아내므로 고를 것이 없다. */}
+        <div style={{ marginTop: 14 }}>
+          {links.map((link) => (
+            <div key={link.id} className="resume-link-item">
+              <span className="resume-link-category">{linkLabel(link.url)}</span>
+              <a href={normalizeUrl(link.url)} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
+              <button className="resume-icon-btn danger" aria-label="삭제" style={{ marginLeft: "auto" }}
+                onClick={() => { if (confirm("이 링크를 지울까요?")) removeLink(link.id); }}>
+                <Trash2 size={15} />
+              </button>
+            </div>
+          ))}
+          {links.length < MAX_LINKS && (
+            <>
+              {/* '추가' 버튼을 눈에 보이게 둔다. 칸이 조용히 다시 나타나는 것만으로는
+                  여러 개 넣을 수 있다는 걸 알아채기 어렵다. */}
+              <div style={{ display: "flex", gap: 6, marginTop: links.length ? 8 : 0 }}>
+                <input
+                  className="cv-input"
+                  style={{ flex: 1, minWidth: 0, marginTop: 0 }}
+                  placeholder="instagram.com/내아이디 · youtube.com/@내채널"
+                  value={링크입력}
+                  onChange={(e) => { set링크입력(e.target.value); if (링크오류) set링크오류(""); }}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); 링크담기(); } }}
+                  inputMode="url"
+                />
+                <button type="button" className="profile-select-btn accent" style={{ flexShrink: 0 }} onClick={링크담기}>
+                  추가
+                </button>
+              </div>
+            </>
+          )}
+          <p style={{ fontSize: 12, color: 링크오류 ? "#c0392b" : "#aaa", marginTop: 6 }}>
+            {링크오류 || `여러 개 넣을 수 있어요 · 최대 ${MAX_LINKS}개${links.length ? ` (지금 ${links.length}개)` : ""}`}
+          </p>
+        </div>
       </section>
 
       {/* 첨부 이력서 (본인이 작성한 이력서 파일) — 현재 숨김 처리(에디터·지원 모달 공통) */}
@@ -585,7 +615,6 @@ export default function ResumeEditor({
 
       {/* 하위 모달들 */}
       <CareerEditModal isOpen={careerModalOpen} onClose={() => { setCareerModalOpen(false); setEditCareer(null); }} editTarget={editCareer} resumeType={resumeType} />
-      <LinkModal isOpen={linkModalOpen} onClose={() => { setLinkModalOpen(false); setEditLink(null); }} editTarget={editLink} resumeType={resumeType} />
       <EducationModal isOpen={eduModalOpen} onClose={() => { setEduModalOpen(false); setEditEdu(null); }} editTarget={editEdu} />
       <LanguageModal isOpen={langModalOpen} onClose={() => { setLangModalOpen(false); setEditLang(null); }} editTarget={editLang} />
       <ExperienceModal isOpen={expModalOpen} onClose={() => { setExpModalOpen(false); setEditExp(null); }} editTarget={editExp} />
