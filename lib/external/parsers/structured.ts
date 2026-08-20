@@ -337,7 +337,7 @@ function regionFromAddress(loc: any): string {
 function mapRole(text: string): { job_type: string; item: string } | null {
   const ns = (text || "").toLowerCase().replace(/\s/g, "");
   const R: [RegExp, string, string][] = [
-    [/네일(스탭|스태프|인턴|보조)/, "STORE", "네일 스태프·인턴"],
+    [/네일(스탭|스태프|인턴|보조)/, "STORE", "네일스탭·인턴"],
     [/네일|nail|젤네일/, "STORE", "네일 아티스트"],
     [/속눈썹|래쉬|eyelash|반영구|왁싱|제모|waxing/, "STORE", "속눈썹·반영구 아티스트"],
     [/(웨딩|본식|혼주)메이크업|웨딩헤어메이크업/, "STORE", "웨딩·혼주 메이크업"],
