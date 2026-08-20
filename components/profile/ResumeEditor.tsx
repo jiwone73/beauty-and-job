@@ -278,7 +278,12 @@ export default function ResumeEditor({
         <div className="resume-section-head">
           <h2 className="resume-section-title">
             학력
-            <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
+            {/* 매장 이력서에서는 학력을 묻지 않는다 — 미용실·네일숍이 보는 것은
+                학교가 아니라 경력과 작업물이고, 별표를 붙여 두면 채우지 못한
+                사람이 이력서를 미완성으로 여기고 만다. */}
+            {resumeType === "office" && (
+              <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
+            )}
           </h2>
           <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
             <Plus size={18} />
