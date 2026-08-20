@@ -367,10 +367,16 @@ export default function JobDetailPage() {
               <button className="job-detail-apply-btn" disabled style={{ opacity: 0.7, cursor: "default" }}>
                 지원서 작성하기
               </button>
-              <button className="job-detail-aside-bookmark" disabled style={{ opacity: 0.7, cursor: "default" }}>
-                <Bookmark size={16} />
-                스크랩
-              </button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button className="job-detail-aside-bookmark" disabled style={{ flex: 1, minWidth: 0, opacity: 0.7, cursor: "default" }}>
+                  <Bookmark size={16} />
+                  스크랩
+                </button>
+                <button className="job-detail-aside-bookmark" disabled style={{ flex: 1, minWidth: 0, opacity: 0.7, cursor: "default" }}>
+                  <Share2 size={16} />
+                  공유
+                </button>
+              </div>
               {/* 미리보기에서 잘못된 값을 발견하면 그 자리에서 고치러 갈 수 있어야 한다.
                   목록으로 되돌아가 다시 찾게 하면 고치다 말게 된다. */}
               <button
@@ -420,13 +426,27 @@ export default function JobDetailPage() {
               >
                 {alreadyApplied ? "✓ 지원완료" : isRedirect ? "기업 채용페이지에서 지원" : "지원서 작성하기"}
               </button>
-              <button
-                className={`job-detail-aside-bookmark ${bookmarked ? "active" : ""}`}
-                onClick={handleBookmark}
-              >
-                <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />
-                {bookmarked ? "스크랩 완료" : "스크랩"}
-              </button>
+              {/* 스크랩과 공유를 나란히 둔다. 위아래로 쌓으면 카드가 그만큼 길어져
+                  지원 버튼이 화면 밖으로 밀린다. 공유는 모바일 하단 바에만 있어서
+                  PC 로 보는 사람은 링크를 주소창에서 긁어야 했다. */}
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  className={`job-detail-aside-bookmark ${bookmarked ? "active" : ""}`}
+                  style={{ flex: 1, minWidth: 0 }}
+                  onClick={handleBookmark}
+                >
+                  <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />
+                  {bookmarked ? "스크랩 완료" : "스크랩"}
+                </button>
+                <button
+                  className="job-detail-aside-bookmark"
+                  style={{ flex: 1, minWidth: 0 }}
+                  onClick={handleShare}
+                >
+                  <Share2 size={16} />
+                  공유
+                </button>
+              </div>
             </>
           )
         }
