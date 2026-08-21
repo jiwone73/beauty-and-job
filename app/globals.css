@@ -8175,34 +8175,42 @@ div:has(> table.admin-table),
 }
 
 /* 메인 검색바 기업/매장 토글 */
+/* 매장·본사 고르는 자리.
+   짙은 보라를 통째로 칠하면 이 칸에서 가장 어두운 덩어리가 되어, 정작
+   그다음에 쳐야 할 검색창보다 먼저 눈에 든다. 고른 쪽을 흰 알약으로 띄우고
+   나머지는 바탕에 눕힌다 — 무엇을 골랐는지는 여전히 한눈에 보이면서,
+   무게는 검색창에 넘어간다. 아이콘은 currentColor 라 글자색을 따라온다. */
 .hero-type-toggle {
   display: inline-flex;
   align-items: center;
-  background: #f3eaff;
-  border-radius: 8px;
-  padding: 3px;
+  background: #f1ecf8;
+  border-radius: 11px;
+  padding: 4px;
   gap: 2px;
   flex-shrink: 0;
   width: fit-content;
 }
 .hero-type-btn {
-  padding: 6px 14px;
-  border-radius: 6px;
+  padding: 7px 15px;
+  border-radius: 8px;
   border: none;
   background: transparent;
-  color: #7a4a9a;
-  font-size: 13px;
+  color: #8b84a0;
+  font-size: 13.5px;
   font-weight: 600;
+  letter-spacing: -.2px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: color .15s, background .15s, box-shadow .15s;
   white-space: nowrap;
   font-family: inherit;
 }
+.hero-type-btn:hover { color: #6b6480; }
 .hero-type-btn.active {
-  background: #5f0080;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(95,0,128,0.25);
+  background: #fff;
+  color: var(--color-primary);
+  box-shadow: 0 1px 2px rgba(46, 20, 66, .10), 0 0 0 1px rgba(95, 0, 128, .07);
 }
+.hero-type-btn.active:hover { color: var(--color-primary); }
 
 /* jobs 페이지 기업/매장 탭 */
 .jobs-type-tabs {
