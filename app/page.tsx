@@ -158,44 +158,49 @@ function Hero() {
           <div className="mt-cols">
             <div className="mt-card">
               <form onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
-                <h2 className="mt-jobs-h">살롱·샵 현장직부터 브랜드 본사까지, <b>뷰티업계 일자리를 한곳에서</b></h2>
+                <h2 className="mt-jobs-h">살롱·샵 현장직부터 브랜드 본사까지,<br /><b>뷰티업계 일자리를 한곳에서</b></h2>
                 <p className="mt-ask">어떤 일자리를 찾으세요?</p>
-                <div className="hero-type-toggle">
-                  <button type="button" className={`hero-type-btn ${jobType === "전체" ? "active" : ""}`} onClick={() => setJobType("전체")}>전체</button>
-                  <button type="button" className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`} onClick={() => setJobType("매장")}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>
-                  </button>
-                  <button type="button" className={`hero-type-btn ${jobType === "본사" ? "active" : ""}`} onClick={() => setJobType("본사")}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span>
-                  </button>
-                </div>
-                {/* 매장의 반대쪽은 긍정형으로 정의된 범주가 아니라 '매장이
-                    아닌 곳'이라는 잔여 범주다. 그래서 라벨 한 단어로는 어느
-                    말을 골라도 무언가가 새어 나간다 — '기업'은 매장도 기업이라
-                    틀린 대립을 만들고(게다가 기업회원은 매장을 품는 윗 단계라
-                    한 화면에서 같은 말이 두 뜻이 된다), '오피스'는 제조 QC와
-                    아카데미 강사가 사무실에서 일하지 않아 정작 그들을 밀어낸다.
+                {/* 무엇을 찾을지 고르고(토글), 그게 뭔지 읽고(설명), 치는
+                    칸(검색바)까지가 한 동작이다. 사이가 벌어지면 셋이 따로
+                    노는 것처럼 보인다. 묶어서 붙여 둔다. */}
+                <div className="mt-search-set">
+                  <div className="hero-type-toggle">
+                    <button type="button" className={`hero-type-btn ${jobType === "전체" ? "active" : ""}`} onClick={() => setJobType("전체")}>전체</button>
+                    <button type="button" className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`} onClick={() => setJobType("매장")}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>
+                    </button>
+                    <button type="button" className={`hero-type-btn ${jobType === "본사" ? "active" : ""}`} onClick={() => setJobType("본사")}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span>
+                    </button>
+                  </div>
+                  {/* 매장의 반대쪽은 긍정형으로 정의된 범주가 아니라 '매장이
+                      아닌 곳'이라는 잔여 범주다. 그래서 라벨 한 단어로는 어느
+                      말을 골라도 무언가가 새어 나간다 — '기업'은 매장도 기업이라
+                      틀린 대립을 만들고(게다가 기업회원은 매장을 품는 윗 단계라
+                      한 화면에서 같은 말이 두 뜻이 된다), '오피스'는 제조 QC와
+                      아카데미 강사가 사무실에서 일하지 않아 정작 그들을 밀어낸다.
 
-                    그래서 라벨은 매장과 짝이 굳어진 '본사'로 두고, 못 담는
-                    나머지는 이 설명 줄이 맡는다. 고정 안내문은 읽히지 않으므로
-                    고른 쪽에 따라 바뀌게 해 고르는 순간에 알려 준다. 두 설명
-                    모두 '어디서 근무하는가' 한 축으로 갈라야 나란히 놓고 자기
-                    자리를 짚을 수 있다. */}
-                <p className="mt-type-desc">
-                  {jobType === "매장" ? "살롱·샵 등 매장에서 근무하는 직군이에요"
-                    : jobType === "본사" ? "브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳에서 근무하는 직군이에요"
-                    : "매장과 본사 공고를 함께 봅니다"}
-                </p>
-                <div className="hero-searchbar-v2">
-                  <button type="button" className={`hero-region-trigger ${selected.length ? "active" : ""}`} onClick={() => setModalOpen(true)}>
-                    <MapPin size={16} /><span>{regionLabel}</span><ChevronDown size={15} />
-                  </button>
-                  <span className="hero-searchbar-divider" />
-                  <input className="hero-search-input-v2" type="text"
-                    placeholder={jobType === "매장" ? "헤어 디자이너, 네일리스트, 실장…"
-                      : jobType === "본사" ? "마케터, MD, 뷰티 연구원…" : "지역, 직무, 매장명으로 검색"}
-                    value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                  <button type="submit" className="hero-search-btn-v2" aria-label="검색"><Search size={20} /></button>
+                      그래서 라벨은 매장과 짝이 굳어진 '본사'로 두고, 못 담는
+                      나머지는 이 설명 줄이 맡는다. 고정 안내문은 읽히지 않으므로
+                      고른 쪽에 따라 바뀌게 해 고르는 순간에 알려 준다. 두 설명
+                      모두 '어디서 근무하는가' 한 축으로 갈라야 나란히 놓고 자기
+                      자리를 짚을 수 있다. */}
+                  <p className="mt-type-desc">
+                    {jobType === "매장" ? "살롱·샵 등 매장에서 근무하는 직군이에요"
+                      : jobType === "본사" ? "브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳에서 근무하는 직군이에요"
+                      : "매장과 본사 공고를 함께 봅니다"}
+                  </p>
+                  <div className="hero-searchbar-v2">
+                    <button type="button" className={`hero-region-trigger ${selected.length ? "active" : ""}`} onClick={() => setModalOpen(true)}>
+                      <MapPin size={16} /><span>{regionLabel}</span><ChevronDown size={15} />
+                    </button>
+                    <span className="hero-searchbar-divider" />
+                    <input className="hero-search-input-v2" type="text"
+                      placeholder={jobType === "매장" ? "헤어 디자이너, 네일리스트, 실장…"
+                        : jobType === "본사" ? "마케터, MD, 뷰티 연구원…" : "지역, 직무, 매장명으로 검색"}
+                      value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                    <button type="submit" className="hero-search-btn-v2" aria-label="검색"><Search size={20} /></button>
+                  </div>
                 </div>
               </form>
               <RegionSelectModal open={modalOpen} initial={selected} onClose={() => setModalOpen(false)} onApply={setSelected} />

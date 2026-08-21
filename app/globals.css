@@ -12282,6 +12282,10 @@ button,
 .mt-cols > .mt-card:first-child > form {
   flex: 1; display: flex; flex-direction: column; justify-content: space-between;
 }
+/* 남는 자리는 머리글과 이 덩어리 사이로만 간다. 덩어리 안은 붙여 둔다. */
+.mt-search-set { display: flex; flex-direction: column; }
+.mt-search-set .mt-type-desc { margin: 8px 0 0; }
+.mt-search-set .hero-searchbar-v2 { margin-top: 10px; }
 .mt-right { display: flex; flex-direction: column; gap: 14px; }
 /* 공지는 제목 한 줄뿐이라 제 높이만 쓰고, 남는 자리는 이벤트가 채운다. */
 .mt-nc .mt-chead { margin-bottom: 10px; }
