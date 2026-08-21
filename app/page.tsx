@@ -21,8 +21,6 @@ import {
   Building2,
   Bookmark,
   Sparkles,
-  Mail,
-  CheckCircle,
   MapPin,
   ChevronDown, Rocket, ChevronRight, FileText, Briefcase, ArrowRight, Coffee, TrendingUp } from "lucide-react";
 import JobCard from "@/components/JobCard";
@@ -57,7 +55,6 @@ export default function HomePage() {
       {/* <SectionJobGroups /> 공고 충분히 쌓이면 노출 */}
       <SectionStories />
       {/* <SectionBeautyServices /> 숨김 */}
-      <SectionNewsletter />
       <Footer />
     </main>
   );
@@ -523,77 +520,6 @@ function SectionStories() {
 
 /* ============================================
    섹션: 뉴스레터
-   ============================================ */
-function SectionNewsletter() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim()) { setError("이메일 주소를 입력해주세요."); return; }
-    if (!emailRegex.test(email)) { setError("올바른 이메일 형식을 입력해주세요."); return; }
-    setError("");
-    try {
-      const res = await fetch("/api/newsletter/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      });
-      const data = await res.json();
-      if (!data.success) {
-        setError(data.error?.message || "구독 신청에 실패했습니다.");
-        return;
-      }
-      setSubmitted(true);
-    } catch {
-      setError("네트워크 오류가 발생했습니다.");
-    }
-  };
-  return (
-    <section className="section">
-      <div className="container">
-        <div className="newsletter-box">
-          {submitted ? (
-            <div className="newsletter-success">
-              <CheckCircle size={28} className="newsletter-success-icon" />
-              <h3 className="newsletter-success-title">구독 신청이 완료되었습니다! 🎉</h3>
-              <p className="newsletter-success-desc">
-                <strong>{email}</strong>으로 매주 월요일 뷰티 업계 소식을 보내드릴게요.<br />
-                스팸 폴더도 한 번 확인해주세요.
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="newsletter-text">
-                <h2 className="newsletter-title">
-                  <Mail size={22} className="newsletter-icon" />
-                  뷰티워크 뉴스레터 구독하기
-                </h2>
-                <p className="newsletter-sub">
-                  매주 월요일, 엄선된 뷰티 채용 소식과 업계 인사이트를 메일함에서 만나보세요
-                </p>
-              </div>
-              <form className="newsletter-form" onSubmit={handleSubmit}>
-                <div className="newsletter-input-wrap">
-                  <input
-                    type="email"
-                    placeholder="이메일 주소를 입력해주세요"
-                    value={email}
-                    onChange={(e) => { setEmail(e.target.value); setError(""); }}
-                    className={error ? "error" : ""}
-                  />
-                  {error && <p className="newsletter-error">{error}</p>}
-                </div>
-                <button type="submit">구독하기</button>
-              </form>
-            </>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ============================================
    푸터
