@@ -12535,15 +12535,21 @@ button,
 /* 히어로 */
 .cs-hero { position: relative; overflow: hidden; background: linear-gradient(120deg, #fff5f8 0%, #fde7ef 52%, #fbdbe8 100%); }
 .cs-hero-photo {
-  position: absolute; right: 0; top: 0; bottom: 0; width: 62%;
+  position: absolute; right: 0; top: 0; bottom: 0; width: 54%;
   /* 기업 서비스 전용 배너. 파일을 넣기 전에는 아래 분홍 바탕이 그대로 보여
      깨진 것처럼 보이지 않는다. */
   background-image: url("/images/company-hero.png");
-  background-size: cover; background-position: center;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 30%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 30%);
+  background-size: cover; background-position: 60% 32%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 24%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 24%);
 }
 .cs-hero-in { position: relative; max-width: 1160px; margin: 0 auto; padding: 68px 24px 56px; }
+/* 글은 사진 밑으로 흘러들지 않게 왼쪽 절반 안에 가둔다. 사진 위에 얹히면
+   흰 배경 위 글씨라 읽히지 않는다. */
+.cs-hero-t, .cs-hero-d, .cs-hero-btns { max-width: 600px; }
+/* 네 마디는 한 줄에 서야 한다. 접히면 넷 중 하나만 아래로 떨어져 어긋나
+   보인다. 사진 왼쪽은 마스크로 옅어져 있어 여기까지는 글이 읽힌다. */
+.cs-hero-pts { max-width: 740px; }
 .cs-hero-t { font-size: 40px; font-weight: 700; line-height: 1.32; letter-spacing: -1px; margin: 0 0 18px; word-break: keep-all; }
 /* 시안은 이 글자도 분홍이지만, 로고와 다른 색이면 같은 이름으로 안 읽힌다.
    브랜드 보라를 그대로 쓴다. */
@@ -12552,8 +12558,8 @@ button,
 .cs-hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
 /* 네 마디를 한 줄에 세우고 사이를 선으로만 가른다. 칸을 만들면 카드가 되어
    위의 제목·버튼과 무게를 다툰다. */
-.cs-hero-pts { list-style: none; display: flex; margin: 40px 0 0; padding: 0; flex-wrap: wrap; }
-.cs-hero-pts li { display: flex; align-items: center; gap: 10px; padding: 0 22px; }
+.cs-hero-pts { list-style: none; display: flex; margin: 40px 0 0; padding: 0; flex-wrap: nowrap; }
+.cs-hero-pts li { display: flex; align-items: center; gap: 9px; padding: 0 16px; flex-shrink: 0; }
 .cs-hero-pts li:first-child { padding-left: 0; }
 .cs-hero-pts li + li { border-left: 1px solid #f0cfdd; }
 .cs-hero-pts svg { color: var(--cs); flex-shrink: 0; }
@@ -12589,10 +12595,12 @@ button,
 
 /* 대시보드 그림 */
 .cs-shot { display: grid; grid-template-columns: 132px 1fr; background: #fff; border: 1px solid #ece2e8; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 34px rgba(120, 60, 90, .10); }
-.cs-shot-side { background: #241f2b; padding: 14px 10px; display: flex; flex-direction: column; gap: 3px; }
-.cs-shot-brand { color: #fff; font-size: 13px; font-weight: 700; padding: 4px 8px 12px; }
-.cs-shot-menu { font-size: 11.5px; color: #9b93a5; padding: 7px 8px; border-radius: 6px; }
-.cs-shot-menu.on { background: var(--cs); color: #fff; font-weight: 600; }
+/* 사이드바를 검게 칠하면 이 그림에서 가장 어두운 덩어리가 되어, 정작 보여
+   주려는 지표와 차트보다 먼저 눈에 든다. 흰 바탕에 선 하나로 가른다. */
+.cs-shot-side { background: #fff; border-right: 1px solid #f0e9f0; padding: 14px 10px; display: flex; flex-direction: column; gap: 3px; }
+.cs-shot-brand { color: #2b2b2b; font-size: 13px; font-weight: 700; padding: 4px 8px 12px; }
+.cs-shot-menu { font-size: 11.5px; color: #8a8087; padding: 7px 8px; border-radius: 6px; }
+.cs-shot-menu.on { background: var(--cs-soft); color: var(--cs); font-weight: 600; }
 .cs-shot-main { padding: 14px; background: #faf8fb; }
 .cs-shot-h { font-size: 13px; font-weight: 700; margin: 0 0 10px; }
 .cs-shot-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
@@ -12704,7 +12712,7 @@ button,
   .cs-steps, .cs-why-grid, .cs-ads { grid-template-columns: 1fr 1fr; }
   .cs-step-ar { display: none; }
   .cs-shot { grid-template-columns: 1fr; }
-  .cs-shot-side { flex-direction: row; overflow-x: auto; }
+  .cs-shot-side { flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid #f0e9f0; }
   .cs-shot-brand { display: none; }
   .cs-shot-stats { grid-template-columns: repeat(2, 1fr); }
   .cs-shot-row { grid-template-columns: 1fr; }
