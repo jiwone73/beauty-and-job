@@ -183,13 +183,6 @@ function Hero() {
                   <button type="submit" className="hero-search-btn-v2" aria-label="검색"><Search size={20} /></button>
                 </div>
                 <a href="/jobs/nearby" className="mt-near"><MapPin size={15} /> 내 주변 채용 보기 ›</a>
-                {/* 아래가 비어 있으면 이 칸만 흰 덩어리로 보인다. 누를 것을 채운다 —
-                    빈 검색창 앞에서 무엇을 칠지 막막한 사람에게도 실마리가 된다. */}
-                <div className="mt-chips">
-                  {["헤어 디자이너", "헤어스탭", "네일 아티스트", "피부관리사"].map((k) => (
-                    <Link key={k} href={`/jobs?q=${encodeURIComponent(k)}`} className="mt-chip">{k}</Link>
-                  ))}
-                </div>
               </form>
               <RegionSelectModal open={modalOpen} initial={selected} onClose={() => setModalOpen(false)} onApply={setSelected} />
             </div>

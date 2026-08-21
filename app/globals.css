@@ -12187,7 +12187,10 @@ button,
 .mt-jobs-h h2 b { color: var(--color-primary); font-weight: 700; }
 /* 왼쪽은 찾는 자리, 오른쪽은 소식 자리. 오른쪽 안에서 공지와 이벤트를
    위아래로 세운다. */
-.mt-cols { position: relative; display: grid; grid-template-columns: 1fr 1.28fr; gap: 14px; align-items: stretch; }
+.mt-cols { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
+/* 오른쪽이 두 카드라 왼쪽보다 길다. 검색 칸은 그 높이에 맞춰 늘어나는데,
+   내용을 위에 붙이면 아래가 그만큼 빈다. 가운데에 앉혀 위아래를 나눈다. */
+.mt-cols > .mt-card:first-child { display: flex; flex-direction: column; justify-content: center; }
 .mt-right { display: flex; flex-direction: column; gap: 14px; }
 /* 공지는 한 줄이라 제 높이만 쓰고, 남는 자리는 이벤트가 채운다. */
 .mt-right > .mt-evt { flex: 1; }
@@ -12198,17 +12201,12 @@ button,
 .mt-near { display: inline-flex; align-items: center; gap: 4px; margin-top: 14px;
   font-size: 14px; font-weight: 600; color: var(--color-primary); text-decoration: none; }
 
-/* 검색 칸 아래 자주 찾는 직군. 칸을 채우는 동시에 첫 클릭을 만든다. */
-.mt-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-.mt-chip { font-size: 13px; padding: 5px 11px; border-radius: 999px;
-  background: #f3eefb; color: #6d28d9; text-decoration: none; white-space: nowrap; }
-.mt-chip:hover { background: #eae2f8; }
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .mt-chead .t { font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
 .mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #7a5f9a; flex-shrink: 0; }
 .mt-more { font-size: 13px; color: #9a94a4; text-decoration: none; }
 .mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-decoration: none; color: inherit; }
-.mt-notice .nt { display: block; font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; }
+.mt-notice .nt { display: block; font-size: 16px; font-weight: 400; color: #222; line-height: 1.35; }
 .mt-notice .ns { display: block; font-size: 14px; color: #9a94a4; margin-top: 5px; }
 .mt-chev { color: #cdc6d8; flex-shrink: 0; }
 
