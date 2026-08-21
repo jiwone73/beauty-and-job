@@ -4285,7 +4285,6 @@ input[type="range"].career-slider::-moz-range-thumb {
   .jobs-filter-left .jobs-filter-btn { width: auto; justify-content: center; padding: 6px 2px; font-size: 13.5px; gap: 2px; border: none; background: transparent; overflow: hidden; white-space: nowrap; }
   .jobs-filter-left .jobs-filter-btn svg { width: 13px; height: 13px; }
   /* 모바일: 내 주변 아이콘 숨김(텍스트만) */
-  .jobs-nearby-btn svg { display: none; }
   .jobs-card-grid { grid-template-columns: 1fr; }
 
   /* 채용공고 상세 */

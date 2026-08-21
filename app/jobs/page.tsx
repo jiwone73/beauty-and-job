@@ -7,7 +7,7 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER, SALARY_STORE, SALARY_OFFICE } from "@/components/FilterSheet";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Bookmark, ChevronDown, ChevronRight, MapPin } from "lucide-react";
+import { Search, Bookmark, ChevronDown, ChevronRight } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { getJobSubGroups } from "@/lib/data/jobGroups";
@@ -269,12 +269,6 @@ function JobsPageInner() {
                 onApply={setSelectedRegions}
               />
             </div>
-
-            {/* 내 주변 (지역의 위치기반 대안) */}
-            <a href="/jobs/nearby" className="jobs-filter-btn jobs-nearby-btn"
-              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 4, textDecoration: "none", color: "#5f0080", fontWeight: 700, whiteSpace: "nowrap" }}>
-              <MapPin size={15} /> 내 주변 채용
-            </a>
 
             {/* 경력 (PC) */}
             <div className="jobs-dropdown-wrap jobs-pc-only">
