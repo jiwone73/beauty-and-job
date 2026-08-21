@@ -12182,14 +12182,18 @@ button,
   background-image: radial-gradient(circle, rgba(122, 95, 154, .07) 1px, transparent 1.4px);
   background-size: 22px 22px;
 }
-.mt-jobs-h { position: relative; margin-bottom: 18px; }
-.mt-jobs-h h2 { margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -.4px; color: #1a1a1a; }
-.mt-jobs-h h2 b { color: var(--color-primary); font-weight: 700; }
+/* 검색 칸의 머리글. 무엇을 찾는 자리인지 먼저 말하고 물음을 던진다. */
+/* 한국어는 글자 단위로 끊기므로 '한곳에서'가 '한곳에 / 서'로 갈라진다.
+   낱말째로 넘긴다. */
+.mt-jobs-h { margin: 0 0 10px; font-size: 19px; font-weight: 400; letter-spacing: -.4px;
+  color: #1a1a1a; line-height: 1.4; word-break: keep-all; }
+.mt-jobs-h b { color: var(--color-primary); font-weight: 700; }
 /* 왼쪽은 찾는 자리, 오른쪽은 소식 자리. 오른쪽 안에서 공지와 이벤트를
    위아래로 세운다. */
-.mt-cols { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: center; }
-/* 오른쪽이 두 카드라 왼쪽보다 길다. 검색 칸까지 그 높이로 늘리면 안이 텅 빈
-   흰 덩어리가 된다. 제 높이로 두고 칸 가운데에 앉힌다(align-items: center). */
+.mt-cols { position: relative; display: grid; grid-template-columns: .8fr 1.2fr; gap: 14px; align-items: stretch; }
+/* 두 칸의 위아래 끝을 맞춘다. 왼쪽은 내용이 적어 남는 자리가 생기므로
+   가운데에 앉혀 위아래 여백을 고르게 나눈다. */
+.mt-cols > .mt-card:first-child { display: flex; flex-direction: column; justify-content: center; }
 .mt-right { display: flex; flex-direction: column; gap: 14px; }
 /* 공지는 제목 한 줄뿐이라 제 높이만 쓰고, 남는 자리는 이벤트가 채운다. */
 .mt-nc .mt-chead { margin-bottom: 10px; }
@@ -12212,8 +12216,8 @@ button,
 /* 이달의 이벤트 — 개인회원·기업회원 몫을 나란히 둔다. 누가 받는 혜택인지가
    먼저 보여야 자기 것만 읽고 넘어갈 수 있다. */
 .mt-evt { display: flex; flex-direction: column; }
-.mt-evt-list { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
-.mt-evt-item + .mt-evt-item { border-top: 1px solid #f0ecf7; padding-top: 14px; }
+.mt-evt-list { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: center; }
+.mt-evt-item + .mt-evt-item { border-left: 1px solid #f0ecf7; padding-left: 18px; }
 /* 누가 받는 혜택인지와, 그 혜택을 받으러 가는 문을 한 줄에 둔다. */
 .mt-evt-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
 .mt-evt-who { font-size: 12px; font-weight: 600; color: var(--color-primary);
@@ -12224,10 +12228,10 @@ button,
   background: #fff; color: var(--color-primary); border: 1px solid #d9c8e6;
   transition: background .15s, border-color .15s; }
 .mt-evt-btn:hover { border-color: var(--color-primary); background: #faf6fd; }
-.mt-evt-row { display: flex; align-items: center; gap: 14px; }
+.mt-evt-row { display: flex; align-items: center; gap: 12px; }
 .mt-evt-txt { flex: 1; min-width: 0; }
 /* 내용 오른쪽 끝에 원문으로 가는 길. 버튼과 무게가 겹치지 않게 글자만 둔다. */
-.mt-evt-more { flex-shrink: 0; font-size: 13px; color: #9a94a4; text-decoration: none; white-space: nowrap; }
+.mt-evt-more { flex-shrink: 0; font-size: 12px; color: #9a94a4; text-decoration: none; white-space: nowrap; }
 .mt-evt-more:hover { color: var(--color-primary); }
 .mt-evt-ic { flex-shrink: 0; color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
 .mt-evt-l { display: block; font-size: 13px; color: #9a94a4; }
@@ -12252,7 +12256,10 @@ button,
 }
 @media (max-width: 640px) {
   .mainTop { padding: 10px 0 2px; }
-  /* 좁아지면 딱지와 버튼이 한 줄에 안 들어간다. 버튼을 아래로 내린다. */
+  /* 좁아지면 개인·기업을 위아래로 쌓고, 딱지 옆 버튼도 줄바꿈을 허용한다. */
+  .mt-evt-list { grid-template-columns: 1fr; gap: 14px; }
+  .mt-evt-item + .mt-evt-item { border-left: 0; padding-left: 0;
+    border-top: 1px solid #f0ecf7; padding-top: 14px; }
   .mt-evt-top { flex-wrap: wrap; }
   .mt-evt-more { display: none; }
   .mt-hero-in { padding: 22px 20px; }

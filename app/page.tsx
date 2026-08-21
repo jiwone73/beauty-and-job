@@ -155,13 +155,10 @@ function Hero() {
 
         {/* 2. 일자리 찾기 블록 */}
         <div className="mt-jobs">
-          <div className="mt-jobs-h">
-            <h2>살롱·샵 현장직부터 브랜드 본사까지, <b>뷰티업계 일자리를 한곳에서</b></h2>
-          </div>
-
           <div className="mt-cols">
             <div className="mt-card">
               <form onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
+                <h2 className="mt-jobs-h">살롱·샵 현장직부터 브랜드 본사까지, <b>뷰티업계 일자리를 한곳에서</b></h2>
                 <p className="mt-ask">어떤 일자리를 찾으세요?</p>
                 <div className="hero-type-toggle">
                   <button type="button" className={`hero-type-btn ${jobType === "전체" ? "active" : ""}`} onClick={() => setJobType("전체")}>전체</button>
@@ -189,7 +186,7 @@ function Hero() {
             </div>
 
             {/* 오른쪽은 한 줄로 세운다 — 위는 공지, 아래는 이벤트.
-                이벤트는 받는 사람이 갈리므로 개인회원·기업회원을 위아래로 나눈다. */}
+                이벤트는 받는 사람이 갈리므로 개인회원·기업회원을 나란히 둔다. */}
             <div className="mt-right">
               <div className="mt-card mt-nc">
                 <div className="mt-chead">
