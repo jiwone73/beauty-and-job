@@ -21,7 +21,7 @@ import {
   Bookmark,
   Sparkles,
   MapPin,
-  ChevronDown, Rocket, Coffee, TrendingUp } from "lucide-react";
+  ChevronDown, Rocket, Coffee, TrendingUp, Megaphone, Gift } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
@@ -206,7 +206,7 @@ function Hero() {
             <div className="mt-right">
               <div className="mt-card mt-nc">
                 <div className="mt-chead">
-                  <Link href="/notice" className="t"><span className="mt-dot" />공지사항</Link>
+                  <Link href="/notice" className="t"><Megaphone size={17} className="mt-ic" />공지사항</Link>
                 </div>
                 {/* 한 줄만 둔다. 제목이 곧 원문으로 가는 문이라 따로 '자세히'를
                     붙이지 않는다. */}
@@ -218,7 +218,7 @@ function Hero() {
 
               <div className="mt-card mt-evt">
                 <div className="mt-chead">
-                  <Link href="/event" className="t"><span className="mt-dot" />이달의 이벤트</Link>
+                  <Link href="/event" className="t"><Gift size={17} className="mt-ic" />이달의 이벤트</Link>
                 </div>
                 <div className="mt-evt-list">
                   <div className="mt-evt-item">

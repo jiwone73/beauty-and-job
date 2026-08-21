@@ -12247,15 +12247,21 @@ button,
 /* 왼쪽은 찾는 자리, 오른쪽은 소식 자리. 오른쪽 안에서 공지와 이벤트를
    위아래로 세운다. */
 .mt-cols { position: relative; display: grid; grid-template-columns: .8fr 1.2fr; gap: 14px; align-items: stretch; }
-/* 두 칸의 위아래 끝을 맞춘다. 왼쪽은 내용이 적어 남는 자리가 생기므로
-   가운데에 앉혀 위아래 여백을 고르게 나눈다. */
-.mt-cols > .mt-card:first-child { display: flex; flex-direction: column; justify-content: center; }
+/* 두 칸의 위아래 끝을 맞춘다.
+   왼쪽 내용을 가운데에 앉히면 남는 자리가 위아래로 반씩 갈려, 첫 줄과 끝
+   줄이 오른쪽 카드보다 안쪽으로 밀린다. 대신 남는 자리를 줄 사이로 흘려
+   보낸다(space-between) — 첫 줄은 '공지사항'과, 검색바 아래는 이벤트
+   마지막 줄과 나란해지고, 줄 사이도 그만큼 숨을 쉰다. */
+.mt-cols > .mt-card:first-child { display: flex; flex-direction: column; }
+.mt-cols > .mt-card:first-child > form {
+  flex: 1; display: flex; flex-direction: column; justify-content: space-between;
+}
 .mt-right { display: flex; flex-direction: column; gap: 14px; }
 /* 공지는 제목 한 줄뿐이라 제 높이만 쓰고, 남는 자리는 이벤트가 채운다. */
 .mt-nc .mt-chead { margin-bottom: 10px; }
 .mt-right > .mt-evt { flex: 1; }
 /* 카드 안쪽은 순백이 아니다 — 바탕의 보라기를 아주 옅게 머금어야 따로 놀지 않는다. */
-.mt-card { background: #fbfaff; border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
+.mt-card { background: #fbfaff; border-radius: 14px; padding: 22px 20px; text-decoration: none; color: inherit; display: block; }
 
 .mt-ask { font-size: 15px; color: #6b6b6b; margin: 0 0 12px; }
 /* 설명은 설명하는 대상 바로 아래에 붙어야 이어진다. 검색창 아래로 내리면
@@ -12264,6 +12270,8 @@ button,
 
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .mt-chead .t { font-size: 16px; text-decoration: none; font-weight: 600; color: #222; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
+/* 카드 제목 앞 아이콘. 점 하나보다 무엇에 관한 칸인지 먼저 말해 준다. */
+.mt-ic { color: var(--color-primary); flex-shrink: 0; }
 .mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #7a5f9a; flex-shrink: 0; }
 .mt-more { font-size: 13px; color: #9a94a4; text-decoration: none; }
 .mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-decoration: none; color: inherit; }
