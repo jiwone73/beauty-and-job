@@ -12185,13 +12185,13 @@ button,
 .mt-jobs-h { position: relative; margin-bottom: 18px; }
 .mt-jobs-h h2 { margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -.4px; color: #1a1a1a; }
 .mt-jobs-h h2 b { color: var(--color-primary); font-weight: 700; }
-.mt-cols { position: relative; display: grid; grid-template-columns: 1.02fr 1.02fr 1fr; gap: 14px; align-items: stretch; }
-/* 가운데 칸은 카드 둘(공지 + 등록)을 세로로 담는다. 위 카드를 늘려 칸을 채워야
-   오른쪽 이벤트 카드와 같은 무게로 보인다. 안 채우면 바탕이 더 비쳐 왼쪽만
-   하얗게 뜬 것처럼 읽힌다. */
-.mt-colmid { display: flex; flex-direction: column; }
-.mt-colmid > .mt-card { flex: 1; display: flex; flex-direction: column; }
-.mt-colmid > .mt-card > .mt-notice { flex: 1; align-items: center; }
+/* 공지는 한 줄, 이벤트는 두 덩이 + 버튼이다. 셋을 똑같이 나누면 공지 칸만
+   휑해진다. 담는 내용만큼씩 준다. */
+.mt-cols { position: relative; display: grid; grid-template-columns: 1.15fr .78fr 1.07fr; gap: 14px; align-items: stretch; }
+/* 공지는 한 줄뿐이라 그냥 두면 카드가 짧아지고, 그만큼 바탕이 비쳐 가운데만
+   비어 보인다. 칸 높이를 채우고 글은 가운데에 앉힌다. */
+.mt-nc { display: flex; flex-direction: column; }
+.mt-nc > .mt-notice { flex: 1; align-items: center; }
 /* 카드 안쪽은 순백이 아니다 — 바탕의 보라기를 아주 옅게 머금어야 따로 놀지 않는다. */
 .mt-card { background: #fbfaff; border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
 
@@ -12213,9 +12213,6 @@ button,
 .mt-notice .ns { display: block; font-size: 14px; color: #9a94a4; margin-top: 5px; }
 .mt-chev { color: #cdc6d8; flex-shrink: 0; }
 
-.mt-start { margin-top: 12px; }
-.mt-start .mt-chead { margin-bottom: 6px; }
-.mt-start-desc { font-size: 14px; color: #9a94a4; margin: 0 0 14px; }
 .mt-regs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 /* 등록은 버튼이다. 카드처럼 보이면 눌러도 되는 자리인지 한 번 더 생각하게 된다. */
 .mt-btn {
@@ -12227,18 +12224,19 @@ button,
    차분한 연보라 바탕 위에서 그 자리만 광고처럼 읽힌다. */
 .mt-btn { background: #fff; color: var(--color-primary); border: 1px solid #d9c8e6; }
 .mt-btn:hover { border-color: var(--color-primary); background: #faf6fd; }
+/* 이벤트 안에 들어가는 버튼은 한 단계 작게 — 카드 안의 카드가 아니라 그
+   혜택에 딸린 행동으로 읽혀야 한다. */
+.mt-btn.sm { height: 40px; font-size: 15px; border-radius: 9px; margin-top: 10px; }
 
 /* 이달의 이벤트 — 안내가 둘이라 왼쪽 칸(공지 + 등록 두 개)과 높이가 맞는다. */
 .mt-evt { display: flex; flex-direction: column; }
-.mt-evt-tag { font-size: 12px; letter-spacing: 1.4px; color: #9a94a4; font-weight: 600; }
-.mt-evt-list { display: flex; flex-direction: column; gap: 12px; }
+.mt-evt-list { display: flex; flex-direction: column; gap: 14px; }
+.mt-evt-item + .mt-evt-item { border-top: 1px solid #f0ecf7; padding-top: 14px; }
 .mt-evt-row { display: flex; align-items: center; gap: 14px; }
-.mt-evt-row + .mt-evt-row { border-top: 1px solid #f0ecf7; padding-top: 12px; }
 .mt-evt-ic { flex-shrink: 0; color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
 .mt-evt-l { display: block; font-size: 13px; color: #9a94a4; }
 .mt-evt-t { display: block; font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; margin-top: 3px; }
 .mt-evt-s { display: block; font-size: 13px; color: #9a94a4; margin-top: 4px; }
-.mt-evt-a { margin-left: auto; color: var(--color-primary); flex-shrink: 0; }
 
 .mt-ticker { margin-top: 14px; border: 1px solid #efeaf7; border-radius: 12px; height: 48px;
   display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #fbfaff; overflow: hidden; }

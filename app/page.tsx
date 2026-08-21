@@ -22,7 +22,7 @@ import {
   Bookmark,
   Sparkles,
   MapPin,
-  ChevronDown, Rocket, ChevronRight, ArrowRight, Coffee, TrendingUp } from "lucide-react";
+  ChevronDown, Rocket, ChevronRight, Coffee, TrendingUp } from "lucide-react";
 import JobCard from "@/components/JobCard";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
@@ -195,32 +195,53 @@ function Hero() {
               <RegionSelectModal open={modalOpen} initial={selected} onClose={() => setModalOpen(false)} onApply={setSelected} />
             </div>
 
-            <div className="mt-colmid">
-              <div className="mt-card">
-                <div className="mt-chead">
-                  <span className="t"><span className="mt-dot" />공지사항</span>
-                  <Link href="/notice" className="mt-more">더보기 →</Link>
-                </div>
-                <Link href={공지 ? `/notice/${공지.id}` : "/notice"} className="mt-notice">
-                  <span>
-                    <span className="nt">{공지?.title || "뷰티워크 서비스 무료 이용 안내"}</span>
-                    <span className="ns">{공지 ? "자세히 보기" : "등록된 공지가 없어요"}</span>
-                  </span>
-                  <ChevronRight size={16} className="mt-chev" />
-                </Link>
+            <div className="mt-card mt-nc">
+              <div className="mt-chead">
+                <span className="t"><span className="mt-dot" />공지사항</span>
+                <Link href="/notice" className="mt-more">더보기 →</Link>
               </div>
-              {/* 버튼만 떠 있으면 위 공지와 이어지지 않는다. 카드로 감싸고
-                  무엇을 하는 자리인지 한 줄로 적는다. */}
-              <div className="mt-card mt-start">
-                <div className="mt-chead">
-                  <span className="t"><span className="mt-dot" />무료로 시작하기</span>
+              <Link href={공지 ? `/notice/${공지.id}` : "/notice"} className="mt-notice">
+                <span>
+                  <span className="nt">{공지?.title || "뷰티워크 서비스 무료 이용 안내"}</span>
+                  <span className="ns">{공지 ? "자세히 보기" : "등록된 공지가 없어요"}</span>
+                </span>
+                <ChevronRight size={16} className="mt-chev" />
+              </Link>
+            </div>
+
+            {/* 혜택 바로 아래에 그 혜택을 받는 버튼을 둔다. "이력서를 등록하면
+                커피 쿠폰" 다음 줄이 [이력서 등록] 이어야 읽는 순서와 누르는
+                순서가 같아진다. 카드 전체를 링크로 감싸면 안쪽 버튼이 눌리지
+                않으므로, 링크는 제목 옆 '자세히'로 옮겼다. */}
+            <div className="mt-card mt-evt">
+              <div className="mt-chead">
+                <span className="t"><span className="mt-dot" />이달의 이벤트</span>
+                <Link href={이벤트 ? `/notice/${이벤트.id}` : "/notice"} className="mt-more">자세히 →</Link>
+              </div>
+              <div className="mt-evt-list">
+                <div className="mt-evt-item">
+                  <div className="mt-evt-row">
+                    <span className="mt-evt-ic"><Coffee size={19} /></span>
+                    <span>
+                      <span className="mt-evt-l">이력서를 등록하면</span>
+                      <span className="mt-evt-t">메가커피 아이스아메리카노</span>
+                      <span className="mt-evt-s">2,000원 쿠폰 · 10월 1일부터</span>
+                    </span>
+                  </div>
+                  <ResumeCta className="mt-btn sm">이력서 등록</ResumeCta>
                 </div>
-                <p className="mt-start-desc">등록비 없이 바로 올릴 수 있어요.</p>
-                <div className="mt-regs">
-                  <ResumeCta className="mt-btn">이력서 등록</ResumeCta>
+                <div className="mt-evt-item">
+                  <div className="mt-evt-row">
+                    <span className="mt-evt-ic"><TrendingUp size={19} /></span>
+                    <span>
+                      <span className="mt-evt-l">채용공고 등록하면</span>
+                      <span className="mt-evt-t">선착순 무료 상단 노출</span>
+                      <span className="mt-evt-s">먼저 올린 순서대로 · 10월 1일부터</span>
+                    </span>
+                  </div>
                   <button
                     type="button"
-                    className="mt-btn"
+                    className="mt-btn sm"
                     onClick={() => router.push(
                       isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
                     )}
@@ -230,32 +251,6 @@ function Hero() {
                 </div>
               </div>
             </div>
-
-            {/* 10월 1일 서비스 시작에 맞춘 두 가지. 안내가 둘이라 왼쪽 칸
-                (공지 + 등록 두 개)과 높이가 맞는다. */}
-            <Link href={이벤트 ? `/notice/${이벤트.id}` : "/notice"} className="mt-card mt-evt">
-              <div className="mt-chead"><span className="t"><span className="mt-dot" />이달의 이벤트</span><span className="mt-evt-tag">EVENT</span></div>
-              <div className="mt-evt-list">
-                <span className="mt-evt-row">
-                  <span className="mt-evt-ic"><Coffee size={19} /></span>
-                  <span>
-                    <span className="mt-evt-l">이력서를 등록하면</span>
-                    <span className="mt-evt-t">메가커피 아이스아메리카노</span>
-                    <span className="mt-evt-s">2,000원 쿠폰 · 10월 1일부터</span>
-                  </span>
-                  <ArrowRight size={17} className="mt-evt-a" />
-                </span>
-                <span className="mt-evt-row">
-                  <span className="mt-evt-ic"><TrendingUp size={19} /></span>
-                  <span>
-                    <span className="mt-evt-l">채용공고 등록하면</span>
-                    <span className="mt-evt-t">선착순 무료 상단 노출</span>
-                    <span className="mt-evt-s">먼저 올린 순서대로 · 10월 1일부터</span>
-                  </span>
-                  <ArrowRight size={17} className="mt-evt-a" />
-                </span>
-              </div>
-            </Link>
           </div>
         </div>
 
