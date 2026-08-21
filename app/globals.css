@@ -12194,12 +12194,17 @@ button,
 .mt-colmid > .mt-card { flex: 1; display: flex; flex-direction: column; }
 .mt-colmid > .mt-card > .mt-notice { flex: 1; align-items: center; }
 /* 카드 안쪽은 순백이 아니다 — 바탕의 보라기를 아주 옅게 머금어야 따로 놀지 않는다. */
-.mt-card { background: #fdfcff; border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
+.mt-card { background: #fbfaff; border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
 
 .mt-ask { font-size: 15px; color: #6b6b6b; margin: 0 0 12px; }
 .mt-near { display: inline-flex; align-items: center; gap: 4px; margin-top: 14px;
   font-size: 14px; font-weight: 600; color: var(--color-primary); text-decoration: none; }
 
+/* 검색 칸 아래 자주 찾는 직군. 칸을 채우는 동시에 첫 클릭을 만든다. */
+.mt-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.mt-chip { font-size: 13px; padding: 5px 11px; border-radius: 999px;
+  background: #f3eefb; color: #6d28d9; text-decoration: none; white-space: nowrap; }
+.mt-chip:hover { background: #eae2f8; }
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .mt-chead .t { font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
 .mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #7a5f9a; flex-shrink: 0; }
@@ -12209,14 +12214,17 @@ button,
 .mt-notice .ns { display: block; font-size: 14px; color: #9a94a4; margin-top: 5px; }
 .mt-chev { color: #cdc6d8; flex-shrink: 0; }
 
-.mt-regs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-.mt-reg { background: #fdfcff; border-radius: 14px; padding: 14px 15px; display: flex; align-items: center; gap: 11px;
-  text-decoration: none; color: inherit; border: none; cursor: pointer; font-family: inherit; text-align: left; width: 100%; }
-/* 아이콘에 칩(바탕)을 씌우지 않는다 — 아이콘만으로 충분하고, 칩이 붙으면 버튼처럼 보인다. */
-.mt-reg-i { color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.mt-reg-l { display: block; font-size: 13px; color: #9a94a4; }
-.mt-reg-t { display: block; font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; margin-top: 3px; white-space: nowrap; }
-.mt-reg-a { margin-left: auto; color: var(--color-primary); flex-shrink: 0; }
+.mt-regs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+/* 등록은 버튼이다. 카드처럼 보이면 눌러도 되는 자리인지 한 번 더 생각하게 된다. */
+.mt-btn {
+  height: 52px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-family: inherit; font-size: 16px; font-weight: 600; letter-spacing: -.2px;
+  cursor: pointer; text-decoration: none; width: 100%; transition: background .15s, border-color .15s;
+}
+.mt-btn.fill { background: var(--color-primary); color: #fff; border: 1px solid var(--color-primary); }
+.mt-btn.fill:hover { background: #4d0068; }
+.mt-btn.line { background: #fff; color: var(--color-primary); border: 1px solid #d9c8e6; }
+.mt-btn.line:hover { border-color: var(--color-primary); background: #faf6fd; }
 
 /* 이달의 이벤트 — 안내가 둘이라 왼쪽 칸(공지 + 등록 두 개)과 높이가 맞는다. */
 .mt-evt { display: flex; flex-direction: column; }
@@ -12231,7 +12239,7 @@ button,
 .mt-evt-a { margin-left: auto; color: var(--color-primary); flex-shrink: 0; }
 
 .mt-ticker { margin-top: 14px; border: 1px solid #efeaf7; border-radius: 12px; height: 48px;
-  display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #fdfcff; overflow: hidden; }
+  display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #fbfaff; overflow: hidden; }
 .mt-tk-l { font-size: 16px; font-weight: 600; color: #222; display: flex; align-items: center; gap: 7px;
   white-space: nowrap; flex-shrink: 0; padding-right: 20px; border-right: 1px solid #efeaf7; }
 .mt-tk-view { flex: 1; min-width: 0; overflow: hidden; }

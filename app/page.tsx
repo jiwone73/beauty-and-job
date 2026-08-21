@@ -22,7 +22,7 @@ import {
   Bookmark,
   Sparkles,
   MapPin,
-  ChevronDown, Rocket, ChevronRight, FileText, Briefcase, ArrowRight, Coffee, TrendingUp } from "lucide-react";
+  ChevronDown, Rocket, ChevronRight, ArrowRight, Coffee, TrendingUp } from "lucide-react";
 import JobCard from "@/components/JobCard";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
@@ -184,6 +184,13 @@ function Hero() {
                   <button type="submit" className="hero-search-btn-v2" aria-label="검색"><Search size={20} /></button>
                 </div>
                 <a href="/jobs/nearby" className="mt-near"><MapPin size={15} /> 내 주변 채용 보기 ›</a>
+                {/* 아래가 비어 있으면 이 칸만 흰 덩어리로 보인다. 누를 것을 채운다 —
+                    빈 검색창 앞에서 무엇을 칠지 막막한 사람에게도 실마리가 된다. */}
+                <div className="mt-chips">
+                  {["헤어 디자이너", "헤어스탭", "네일 아티스트", "피부관리사"].map((k) => (
+                    <Link key={k} href={`/jobs?q=${encodeURIComponent(k)}`} className="mt-chip">{k}</Link>
+                  ))}
+                </div>
               </form>
               <RegionSelectModal open={modalOpen} initial={selected} onClose={() => setModalOpen(false)} onApply={setSelected} />
             </div>
@@ -203,16 +210,18 @@ function Hero() {
                 </Link>
               </div>
               <div className="mt-regs">
-                <ResumeCta className="mt-reg">
-                  <span className="mt-reg-i"><FileText size={15} /></span>
-                  <span><span className="mt-reg-l">구직자</span><span className="mt-reg-t">이력서 등록</span></span>
-                  <ArrowRight size={15} className="mt-reg-a" />
-                </ResumeCta>
-                <Link href="/company" className="mt-reg">
-                  <span className="mt-reg-i"><Briefcase size={15} /></span>
-                  <span><span className="mt-reg-l">매장·기업</span><span className="mt-reg-t">채용공고 등록</span></span>
-                  <ArrowRight size={15} className="mt-reg-a" />
-                </Link>
+                {/* 카드가 아니라 버튼이다 — 누르는 자리라는 것이 모양으로 보여야 한다.
+                    이력서는 채운 버튼, 공고는 테두리 버튼으로 무게를 나눈다. */}
+                <ResumeCta className="mt-btn fill">이력서 등록</ResumeCta>
+                <button
+                  type="button"
+                  className="mt-btn line"
+                  onClick={() => router.push(
+                    isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
+                  )}
+                >
+                  채용공고 등록
+                </button>
               </div>
             </div>
 
