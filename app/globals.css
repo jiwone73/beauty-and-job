@@ -8555,6 +8555,7 @@ div:has(> table.admin-table),
   justify-content: center;
   flex-shrink: 0;
 }
+.mt-type-desc + .hero-searchbar-v2 { margin-top: 12px; }
 .hero-searchbar-v2 {
   display: flex;
   align-items: center;
@@ -12202,6 +12203,9 @@ button,
 .mt-card { background: #fbfaff; border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
 
 .mt-ask { font-size: 15px; color: #6b6b6b; margin: 0 0 12px; }
+/* 설명은 설명하는 대상 바로 아래에 붙어야 이어진다. 검색창 아래로 내리면
+   무엇에 대한 말인지 한 번 더 생각해야 한다. */
+.mt-type-desc { font-size: 13px; color: #9a94a4; margin: 9px 0 0; line-height: 1.45; word-break: keep-all; }
 .mt-near { display: inline-flex; align-items: center; gap: 4px; margin-top: 14px;
   font-size: 14px; font-weight: 600; color: var(--color-primary); text-decoration: none; }
 

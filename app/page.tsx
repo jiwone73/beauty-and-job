@@ -169,6 +169,16 @@ function Hero() {
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>
                   </button>
                 </div>
+                {/* '오피스'는 뷰티에서 흔한 말이 아니다. 뜻을 모르면 '전체'만
+                    쓰게 되고 토글이 있으나 마나가 된다. 고정 안내문은 읽히지
+                    않으므로 고른 쪽에 따라 바뀌게 해, 고르는 순간에 알려 준다.
+                    두 설명 모두 '어디서 근무하는가' 한 축으로 갈라야 나란히
+                    놓고 자기 자리를 짚을 수 있다. */}
+                <p className="mt-type-desc">
+                  {jobType === "매장" ? "살롱·샵 등 매장에서 근무하는 직군이에요"
+                    : jobType === "오피스" ? "브랜드·제조·유통·교육·협력사 등에서 근무하는 직군이에요"
+                    : "매장과 오피스 공고를 함께 봅니다"}
+                </p>
                 <div className="hero-searchbar-v2">
                   <button type="button" className={`hero-region-trigger ${selected.length ? "active" : ""}`} onClick={() => setModalOpen(true)}>
                     <MapPin size={16} /><span>{regionLabel}</span><ChevronDown size={15} />
