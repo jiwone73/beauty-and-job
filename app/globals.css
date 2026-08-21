@@ -12327,3 +12327,30 @@ button,
   .mt-jobs-h h2 { font-size: 18px; }
   .mt-ticker { padding-left: 14px; gap: 12px; }
 }
+
+
+/* ── 공지·이벤트 목록 (아코디언) ────────────────────────────────
+   글 하나가 대개 한두 문단이다. 그걸 보자고 화면을 통째로 갈아 끼우고 다시
+   뒤로 오는 것은 무겁다. 누른 자리에서 펼친다. */
+.nb-board { list-style: none; margin: 0; padding: 0; border-top: 1px solid #eee; }
+.nb-board > li { border-bottom: 1px solid #eee; }
+.nb-board > li > button { display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 18px 4px; background: none; border: none; cursor: pointer; text-align: left;
+  font-family: inherit; }
+.nb-board > li > button:hover .nb-board-t { color: var(--color-primary); }
+.nb-board-pin { flex-shrink: 0; font-size: 11px; font-weight: 700; color: var(--color-primary);
+  border: 1px solid var(--color-primary); border-radius: 4px; padding: 1px 5px; }
+.nb-board-t { flex: 1; min-width: 0; font-size: 15px; font-weight: 500; color: #2b2b2b;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb-board-d { flex-shrink: 0; font-size: 13px; color: #aaa; }
+.nb-board-ar { flex-shrink: 0; color: #bbb; transition: transform .15s; }
+.nb-board > li.on .nb-board-ar { transform: rotate(180deg); color: var(--color-primary); }
+.nb-board > li.on .nb-board-t { color: var(--color-primary); font-weight: 600; }
+.nb-board-body { font-size: 15px; line-height: 1.8; color: #333; white-space: pre-wrap;
+  padding: 4px 4px 24px; word-break: keep-all; }
+.nb-board-msg { color: #999; text-align: center; padding: 60px 0; }
+
+/* 이벤트 페이지 — 고객센터 계열이 아니라 일반 헤더를 단다. */
+.ev-page { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
+.ev-title { font-size: 26px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px; }
+.ev-sub { font-size: 14px; color: #8e8896; margin: 0 0 24px; word-break: keep-all; }

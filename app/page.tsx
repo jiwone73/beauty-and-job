@@ -143,7 +143,7 @@ function Hero() {
       <div className="container">
 
         {/* 1. 사진 배너 — 1320x190. 문구는 공지에서 받아 관리자가 고칠 수 있다. */}
-        <Link href={이벤트 ? `/notice/${이벤트.id}` : "/company"} className="mt-hero">
+        <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/company"} className="mt-hero">
           <span className="mt-hero-photo" />
           <span className="mt-hero-in">
             <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
@@ -206,11 +206,11 @@ function Hero() {
             <div className="mt-right">
               <div className="mt-card mt-nc">
                 <div className="mt-chead">
-                  <span className="t"><span className="mt-dot" />공지사항</span>
+                  <Link href="/notice" className="t"><span className="mt-dot" />공지사항</Link>
                 </div>
                 {/* 한 줄만 둔다. 제목이 곧 원문으로 가는 문이라 따로 '자세히'를
                     붙이지 않는다. */}
-                <Link href={공지 ? `/notice/${공지.id}` : "/notice"} className="mt-notice">
+                <Link href={공지 ? `/notice?open=${공지.id}` : "/notice"} className="mt-notice">
                   <span className="nt">{공지?.title || "뷰티워크 서비스 무료 이용 안내"}</span>
                   <ChevronRight size={16} className="mt-chev" />
                 </Link>
@@ -218,7 +218,7 @@ function Hero() {
 
               <div className="mt-card mt-evt">
                 <div className="mt-chead">
-                  <Link href="/notice" className="t"><span className="mt-dot" />이달의 이벤트</Link>
+                  <Link href="/event" className="t"><span className="mt-dot" />이달의 이벤트</Link>
                 </div>
                 <div className="mt-evt-list">
                   <div className="mt-evt-item">
@@ -233,7 +233,7 @@ function Hero() {
                         <span className="mt-evt-t">메가커피 아이스아메리카노</span>
                         <span className="mt-evt-s">2,000원 쿠폰 · 10월 1일부터</span>
                       </span>
-                      <Link href={이벤트 ? `/notice/${이벤트.id}` : "/notice"} className="mt-evt-more">자세히 보기 →</Link>
+                      <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/event"} className="mt-evt-more">자세히 보기 →</Link>
                     </div>
                   </div>
                   <div className="mt-evt-item">
@@ -256,7 +256,7 @@ function Hero() {
                         <span className="mt-evt-t">선착순 무료 상단 노출</span>
                         <span className="mt-evt-s">먼저 올린 순서대로 · 10월 1일부터</span>
                       </span>
-                      <Link href={이벤트 ? `/notice/${이벤트.id}` : "/notice"} className="mt-evt-more">자세히 보기 →</Link>
+                      <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/event"} className="mt-evt-more">자세히 보기 →</Link>
                     </div>
                   </div>
                 </div>
@@ -585,7 +585,6 @@ function Footer() {
           <span style={{ fontSize: 13, color: "#9a9aa3" }}>© {new Date().getFullYear()} 하이어스. All rights reserved.</span>
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
             <Link href="/support" style={{ fontSize: 13, color: "#666", textDecoration: "none", whiteSpace: "nowrap" }}>고객센터</Link>
-            <Link href="/notice" style={{ fontSize: 13, color: "#666", textDecoration: "none", whiteSpace: "nowrap" }}>공지사항</Link>
             <Link href="/support/terms" style={{ fontSize: 13, color: "#666", textDecoration: "none", whiteSpace: "nowrap" }}>이용약관</Link>
             <Link href="/support/privacy" style={{ fontSize: 13, color: "#5f0080", textDecoration: "none", fontWeight: 600, whiteSpace: "nowrap" }}>개인정보 처리방침</Link>
           </div>
