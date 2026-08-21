@@ -12308,8 +12308,27 @@ button,
 
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .mt-chead .t { font-size: 16px; text-decoration: none; font-weight: 600; color: #222; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
-.mt-evt-when { font-size: 12px; font-weight: 600; color: var(--color-primary);
-  background: #f3ecfa; border-radius: 5px; padding: 3px 8px; white-space: nowrap; }
+/* 딱지의 바탕을 걷고 글자만 남긴다. 옆의 '이달의 이벤트'와 나란히 서는
+   자리라, 색 블록이 하나 더 있으면 제목보다 딱지가 먼저 읽힌다. 대신 빛을
+   흘려 눈에 걸리게 한다 — 헤더의 '내 주변 공고'와 같은 방식이다.
+   글자에 그라데이션을 입히려면 색을 비워야 하므로(background-clip: text)
+   평소 보라를 그라데이션의 바탕색으로 둔다. */
+.mt-evt-when {
+  font-size: 13px; font-weight: 600; white-space: nowrap; padding: 0;
+  background-image: linear-gradient(100deg,
+    #5f0080 0%, #5f0080 40%,
+    #9a4fc4 48%, #c58ae0 52%, #9a4fc4 56%,
+    #5f0080 64%, #5f0080 100%);
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gnbShine 3.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mt-evt-when { animation: none; background: none; color: var(--color-primary); }
+}
 
 /* 카드 제목 앞 아이콘. 점 하나보다 무엇에 관한 칸인지 먼저 말해 준다. */
 .mt-ic { color: var(--color-primary); flex-shrink: 0; }
