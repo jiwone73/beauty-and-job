@@ -12400,3 +12400,76 @@ button,
 .ev-page { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
 .ev-title { font-size: 26px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px; }
 .ev-sub { font-size: 14px; color: #8e8896; margin: 0 0 24px; word-break: keep-all; }
+
+/* ── 고르는 자리는 어디서나 같은 모양 ─────────────────────────────
+   메인 히어로에서 정한 흰 알약을 사이트 전체의 표준으로 삼는다. 페이지마다
+   알약·밑줄·짙은 채움이 섞여 있으면 같은 동작(고르기)인데 매번 다시 배워야
+   한다. 짙은 색으로 통째로 칠하지 않는 것이 요점이다 — 고른 쪽을 띄우면
+   무엇을 골랐는지는 그대로 보이면서 무게는 본문에 남는다. */
+.seg,
+.jobs-type-tabs,
+.profile-tabs,
+.salary-tabs,
+.salary-sort-group,
+.jobs-sort-group {
+  display: inline-flex;
+  align-items: center;
+  background: #f1ecf8;
+  border: none;
+  border-radius: 11px;
+  padding: 4px;
+  gap: 2px;
+  width: fit-content;
+  flex-wrap: nowrap;
+}
+.seg-btn,
+.jobs-type-tab,
+.profile-tab,
+.salary-tab,
+.salary-sort-btn,
+.jobs-sort-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #8b84a0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -.2px;
+  line-height: 1.4;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: color .15s, background .15s, box-shadow .15s;
+}
+.seg-btn:hover,
+.jobs-type-tab:hover,
+.profile-tab:hover,
+.salary-tab:hover,
+.salary-sort-btn:hover,
+.jobs-sort-btn:hover { color: #6b6480; border-color: transparent; background: transparent; }
+.seg-btn.active, .seg-btn.on,
+.jobs-type-tab.active,
+.profile-tab.active,
+.salary-tab.active,
+.salary-sort-btn.active,
+.jobs-sort-btn.active {
+  background: #fff;
+  color: var(--color-primary);
+  border-color: transparent;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(46, 20, 66, .10), 0 0 0 1px rgba(95, 0, 128, .07);
+}
+
+/* 정렬 묶음은 곁가지라 한 치수 작게 — 목록보다 앞에 나서면 안 된다. */
+.salary-sort-btn, .jobs-sort-btn { padding: 6px 13px; font-size: 13px; }
+
+/* 판이 붙으면서 필요 없어진 것들을 되돌린다 — 밑줄, 바깥 여백. */
+/* inline-flex 는 margin:auto 로 가운데에 오지 않는다. 블록으로 두고 폭을
+   내용에 맞춘 뒤 좌우 여백을 자동으로 나눈다. */
+.profile-tabs { display: flex; width: fit-content; max-width: 600px; margin: 20px auto 4px; }
+.salary-tabs { margin-bottom: 20px; }
+.jobs-type-tabs { margin: 20px auto 0; }
+@media (max-width: 1400px) {
+  .jobs-type-tabs { margin-left: 32px; }
+}

@@ -109,13 +109,7 @@ export default function StoriesPage() {
         <div className="stories-cat-tabs">
           {CATEGORIES.map((c) => (
             <button key={c} onClick={() => setCat(c)}
-              className="stories-cat-btn"
-              style={{
-                border: cat === c ? "1.5px solid #5f0080" : "1px solid #e0e0e0",
-                background: cat === c ? "#5f0080" : "#fff",
-                color: cat === c ? "#fff" : "#666",
-                fontWeight: cat === c ? 600 : 400,
-              }}>
+              className={`stories-cat-btn${cat === c ? " on" : ""}`}>
               {c}
             </button>
           ))}
@@ -135,15 +129,33 @@ export default function StoriesPage() {
         }
         .stories-cat-tabs {
           display: flex;
-          gap: 6px;
+          align-items: center;
+          gap: 2px;
+          background: #f1ecf8;
+          border-radius: 11px;
+          padding: 4px;
+          width: fit-content;
         }
         .stories-cat-btn {
           flex: 1;
-          padding: 8px 4px;
-          border-radius: 100px;
-          font-size: 13px;
+          padding: 7px 14px;
+          border: none;
+          border-radius: 8px;
+          background: transparent;
+          color: #8b84a0;
+          font-size: 14px;
+          font-weight: 600;
+          letter-spacing: -.2px;
           white-space: nowrap;
           cursor: pointer;
+          font-family: inherit;
+          transition: color .15s, background .15s, box-shadow .15s;
+        }
+        .stories-cat-btn:hover { color: #6b6480; }
+        .stories-cat-btn.on {
+          background: #fff;
+          color: #5f0080;
+          box-shadow: 0 1px 2px rgba(46,20,66,.10), 0 0 0 1px rgba(95,0,128,.07);
         }
         @media (min-width: 768px) {
           .stories-filter-bar {

@@ -428,22 +428,26 @@ export default function NearbyJobsPage() {
 
       {/* 반경 · 유형 컨트롤 */}
       <div style={{ padding: "12px 16px", borderBottom: "1px solid #f0f0f0" }}>
-        <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+        <div className="seg" style={{ display: "flex", marginBottom: 10 }}>
           {TYPES.map((t) => (
             <button key={t.key} onClick={() => setType(t.key)}
-              style={{ flex: 1, padding: "8px 0", borderRadius: 8, border: type === t.key ? "1.5px solid #5f0080" : "1px solid #e5e5e5", background: type === t.key ? "#faf5ff" : "#fff", color: type === t.key ? "#5f0080" : "#666", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+              className={`seg-btn ${type === t.key ? "active" : ""}`}
+              style={{ flex: 1 }}>
               {t.label}
             </button>
           ))}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontSize: 13, color: "#666" }}>반경</span>
-          {RADII.map((r) => (
-            <button key={r} onClick={() => setRadius(r)}
-              style={{ padding: "6px 14px", borderRadius: 20, border: radius === r ? "1.5px solid #5f0080" : "1px solid #e5e5e5", background: radius === r ? "#5f0080" : "#fff", color: radius === r ? "#fff" : "#666", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-              {r}km
-            </button>
-          ))}
+          <div className="seg">
+            {RADII.map((r) => (
+              <button key={r} onClick={() => setRadius(r)}
+                className={`seg-btn ${radius === r ? "active" : ""}`}
+                style={{ padding: "6px 13px", fontSize: 13 }}>
+                {r}km
+              </button>
+            ))}
+          </div>
         </div>
         {/* 이 화면이 어떻게 도는지 한 줄로 말해 둔다. 지도는 조작법을 스스로
             설명하지 못해서, 처음 온 사람은 끌어 볼 생각을 못 한다. */}

@@ -474,15 +474,10 @@ function SectionJobGroups() {
             <p className="section-sub">찾는 직무를 눌러 바로 확인해보세요</p>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+        <div className="seg">
           {(["매장", "본사"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
-              style={{
-                padding: "8px 18px", borderRadius: 100, fontSize: 14, fontWeight: 600, cursor: "pointer",
-                border: tab === t ? "1.5px solid #5f0080" : "1px solid #ddd",
-                background: tab === t ? "#5f0080" : "#fff",
-                color: tab === t ? "#fff" : "#666",
-              }}>
+              className={`seg-btn ${tab === t ? "active" : ""}`}>
               {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />본사</span>}
             </button>
           ))}
