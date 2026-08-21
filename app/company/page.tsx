@@ -9,6 +9,7 @@ import {
   UserPlus, FileText, Users, CircleCheck,
   Megaphone, Star, TrendingUp, Gift,
   ShieldCheck, Zap, Wallet, RefreshCw, Headphones,
+  UserRoundCheck, Crosshair,
 } from "lucide-react";
 
 /**
@@ -31,6 +32,14 @@ const 직군 = [
   { Icon: FlaskConical, name: "제조·OEM/ODM", sub: "연구개발, 품질, 생산" },
   { Icon: ShoppingCart, name: "유통·이커머스", sub: "유통, 물류, CS" },
   { Icon: GraduationCap, name: "교육기관", sub: "강사, 교육 운영" },
+];
+
+// 히어로 아래 띠. 무엇을 믿고 맡기라는 것인지 네 마디로 먼저 못 박는다.
+const 히어로강점 = [
+  { Icon: UserRoundCheck, name: "뷰티 전문 인재 풀", sub: "검증된 인재 DB 보유" },
+  { Icon: Crosshair, name: "맞춤형 인재추천", sub: "직군·지역 기반 추천 매칭" },
+  { Icon: ShieldCheck, name: "합리적인 비용", sub: "효율적인 채용 프로세스" },
+  { Icon: TrendingUp, name: "지속적인 업그레이드", sub: "서비스 기능 지속 강화" },
 ];
 
 const 대시보드혜택 = [
@@ -114,6 +123,15 @@ export default function CompanyServicePage() {
               본사 채용 시작하기 <ArrowRight size={16} />
             </Link>
           </div>
+
+          <ul className="cs-hero-pts">
+            {히어로강점.map(({ Icon, name, sub }) => (
+              <li key={name}>
+                <Icon size={22} strokeWidth={1.7} />
+                <span><b>{name}</b>{sub}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

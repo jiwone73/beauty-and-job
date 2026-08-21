@@ -12535,18 +12535,30 @@ button,
 /* 히어로 */
 .cs-hero { position: relative; overflow: hidden; background: linear-gradient(120deg, #fff5f8 0%, #fde7ef 52%, #fbdbe8 100%); }
 .cs-hero-photo {
-  position: absolute; right: 0; top: 0; bottom: 0; width: 52%;
-  background-image: url("/images/hero-banner.png");
+  position: absolute; right: 0; top: 0; bottom: 0; width: 62%;
+  /* 기업 서비스 전용 배너. 파일을 넣기 전에는 아래 분홍 바탕이 그대로 보여
+     깨진 것처럼 보이지 않는다. */
+  background-image: url("/images/company-hero.png");
   background-size: cover; background-position: center;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 26%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 26%);
-  opacity: .92;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 30%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 30%);
 }
-.cs-hero-in { position: relative; max-width: 1160px; margin: 0 auto; padding: 74px 24px 82px; }
+.cs-hero-in { position: relative; max-width: 1160px; margin: 0 auto; padding: 68px 24px 56px; }
 .cs-hero-t { font-size: 40px; font-weight: 700; line-height: 1.32; letter-spacing: -1px; margin: 0 0 18px; word-break: keep-all; }
-.cs-hero-t b { color: var(--cs); font-weight: 700; }
+/* 시안은 이 글자도 분홍이지만, 로고와 다른 색이면 같은 이름으로 안 읽힌다.
+   브랜드 보라를 그대로 쓴다. */
+.cs-hero-t b { color: #5f0080; font-weight: 700; }
 .cs-hero-d { font-size: 15.5px; line-height: 1.75; color: #5a5157; margin: 0 0 30px; word-break: keep-all; }
 .cs-hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+/* 네 마디를 한 줄에 세우고 사이를 선으로만 가른다. 칸을 만들면 카드가 되어
+   위의 제목·버튼과 무게를 다툰다. */
+.cs-hero-pts { list-style: none; display: flex; margin: 40px 0 0; padding: 0; flex-wrap: wrap; }
+.cs-hero-pts li { display: flex; align-items: center; gap: 10px; padding: 0 22px; }
+.cs-hero-pts li:first-child { padding-left: 0; }
+.cs-hero-pts li + li { border-left: 1px solid #f0cfdd; }
+.cs-hero-pts svg { color: var(--cs); flex-shrink: 0; }
+.cs-hero-pts span { font-size: 12.5px; color: #7a7076; line-height: 1.5; word-break: keep-all; }
+.cs-hero-pts b { display: block; font-size: 14px; font-weight: 700; color: #2b2b2b; }
 
 /* 공통 틀 */
 .cs-wrap { max-width: 1160px; margin: 0 auto; padding: 62px 24px; }
@@ -12678,8 +12690,11 @@ button,
   .cs-ads { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
-  .cs-hero-in { padding: 44px 20px 50px; }
+  .cs-hero-in { padding: 44px 20px 40px; }
   .cs-hero-t { font-size: 28px; }
+  .cs-hero-pts { margin-top: 28px; gap: 12px 0; }
+  .cs-hero-pts li { width: 50%; padding: 0 12px 0 0; }
+  .cs-hero-pts li + li { border-left: none; }
   .cs-wrap { padding: 44px 20px; }
   .cs-h2 { font-size: 22px; }
   .cs-jobs { grid-template-columns: repeat(2, 1fr); }
