@@ -121,9 +121,11 @@ export default function Header({ onSearchClick }: HeaderProps) {
                 수단(지도)이 아니라 이득(가까움)을 말한다 — 구직자가 원하는 건
                 지도가 아니라 다닐 만한 거리의 일자리다. 무엇으로 보여주는지는
                 핀 아이콘이 대신 말한다. */}
-            <Link href="/jobs/nearby" className={`gnb-with-tag ${pathname === "/jobs/nearby" ? "gnb-active" : ""}`}>
-              <MapPin size={15} style={{ flexShrink: 0 }} />내 주변 공고
-              <span className="tag tag-new">NEW</span>
+            <Link href="/jobs/nearby" className={`gnb-with-tag gnb-shine ${pathname === "/jobs/nearby" ? "gnb-active" : ""}`}>
+              <MapPin size={15} style={{ flexShrink: 0 }} />
+              {/* 새 기능이라 눈에 걸려야 한다. 딱지를 달면 메뉴 줄이 길어지고
+                  글자보다 딱지가 먼저 읽히므로, 글자 자체에 빛을 흘린다. */}
+              <span className="gnb-shine-t">내 주변 공고</span>
             </Link>
             {/* '이력서 등록'은 메뉴에서 뺐다. 메인 첫 화면의 등록 칸과 우측 상단
                 아이콘에 같은 길이 있어, 메뉴에까지 두면 같은 말을 세 번 한다. */}

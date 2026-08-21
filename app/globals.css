@@ -101,6 +101,32 @@
 .gnb-active { color: var(--color-primary) !important; font-weight: 700; border-bottom: 2px solid var(--color-primary); padding-bottom: 2px; }
 .gnb-with-tag { gap: 6px; }
 
+/* 새로 연 메뉴에 빛이 한 번씩 지나간다. 딱지 대신 글자 자체를 반짝이게 해
+   메뉴 줄을 늘리지 않는다. 글자에 그라데이션을 입히려면 글자색을 비워야
+   하므로(background-clip: text), 평소 색을 그라데이션의 바탕색으로 둔다. */
+.gnb-shine .gnb-shine-t {
+  background-image: linear-gradient(100deg,
+    #2b2b2b 0%, #2b2b2b 40%,
+    var(--color-primary) 48%, #c58ae0 52%, var(--color-primary) 56%,
+    #2b2b2b 64%, #2b2b2b 100%);
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gnbShine 3.4s ease-in-out infinite;
+}
+/* 현재 보고 있는 메뉴에서는 빛을 끈다. 이미 와 있는 곳을 부를 이유가 없다. */
+.gnb-shine.gnb-active .gnb-shine-t { animation: none; background: none; color: inherit; }
+@keyframes gnbShine {
+  0%   { background-position: 100% 0; }
+  55%  { background-position: 0% 0; }
+  100% { background-position: 0% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gnb-shine .gnb-shine-t { animation: none; background: none; color: inherit; }
+}
+
 .tag {
   font-size: 10px;
   font-weight: 700;
