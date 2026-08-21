@@ -159,7 +159,6 @@ function Hero() {
         {/* 2. 일자리 찾기 블록 */}
         <div className="mt-jobs">
           <div className="mt-jobs-h">
-            <span className="mt-eyebrow">BEAUTYWORK JOBS</span>
             <h2>살롱·샵 현장직부터 브랜드 본사까지, <b>뷰티업계 일자리를 한곳에서</b></h2>
           </div>
 
