@@ -151,7 +151,9 @@ export default function NearbyJobsPage() {
     loadKakao(() => setSdkReady(true));
   }, []);
 
-  // 초기 중심(거주지→현재위치 실패 시 서울) 설정 + 지도 생성 + idle 리스너
+  // 초기 중심 = 지금 있는 자리. 이 화면의 이름이 '내 주변'이니 현재 위치가
+  // 기본이어야 한다. 위치를 못 얻을 때에만(권한 거부·미지원·시간초과) 저장된
+  // 거주지로, 그것도 없으면 서울로 떨어진다.
   useEffect(() => {
     if (!sdkReady || !mapEl.current || mapObj.current) return;
     geocoder.current = new window.kakao.maps.services.Geocoder();
@@ -166,30 +168,43 @@ export default function NearbyJobsPage() {
       searchHere(); // 첫 검색
     };
 
-    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-    if (!token) {
-      setNotice("로그인하면 거주지에서 시작해요. 지도를 움직이면 그 위치 주변이 자동 검색됩니다.");
-      createMap(SEOUL.lat, SEOUL.lng);
+    // 위치를 못 쓸 때의 차선. 저장된 거주지 → 없으면 서울.
+    const 지정한자리에서열기 = (안내: string) => {
+      setNotice(안내);
+      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+      if (!token) { createMap(SEOUL.lat, SEOUL.lng); return; }
+      fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((res) => {
+          if (!res.success) throw new Error();
+          const d = res.data;
+          const addr =
+            [d.address_road, d.address_detail].filter(Boolean).join(" ") ||
+            [d.region_sido, d.region_sigungu].filter(Boolean).join(" ");
+          if (!addr) { createMap(SEOUL.lat, SEOUL.lng); return; }
+          geocoder.current.addressSearch(addr, (result: any[], status: string) => {
+            if (status === window.kakao.maps.services.Status.OK && result[0]) {
+              createMap(parseFloat(result[0].y), parseFloat(result[0].x));
+            } else {
+              createMap(SEOUL.lat, SEOUL.lng);
+            }
+          });
+        })
+        .catch(() => createMap(SEOUL.lat, SEOUL.lng));
+    };
+
+    if (!navigator.geolocation) {
+      지정한자리에서열기("이 브라우저는 위치를 알 수 없어요. 지도를 옮기면 그 자리 주변을 찾아드려요.");
       return;
     }
-    fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((res) => {
-        if (!res.success) throw new Error();
-        const d = res.data;
-        const addr =
-          [d.address_road, d.address_detail].filter(Boolean).join(" ") ||
-          [d.region_sido, d.region_sigungu].filter(Boolean).join(" ");
-        if (!addr) { createMap(SEOUL.lat, SEOUL.lng); return; }
-        geocoder.current.addressSearch(addr, (result: any[], status: string) => {
-          if (status === window.kakao.maps.services.Status.OK && result[0]) {
-            createMap(parseFloat(result[0].y), parseFloat(result[0].x));
-          } else {
-            createMap(SEOUL.lat, SEOUL.lng);
-          }
-        });
-      })
-      .catch(() => createMap(SEOUL.lat, SEOUL.lng));
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setNotice("");
+        createMap(pos.coords.latitude, pos.coords.longitude);
+      },
+      () => 지정한자리에서열기("위치를 쓸 수 없어 저장된 주소에서 열었어요. 지도를 옮기면 그 자리 주변을 찾아드려요."),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sdkReady]);
 
