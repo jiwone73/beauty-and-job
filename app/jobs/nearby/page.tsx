@@ -3,7 +3,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { jobCompanyName } from "@/lib/companyName";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Crosshair, Search } from "lucide-react";
+import Header from "@/components/Header";
+import { Crosshair, Search } from "lucide-react";
 
 declare global {
   interface Window { kakao: any }
@@ -354,20 +355,16 @@ export default function NearbyJobsPage() {
   }, []);
 
   return (
-    <div className="nb-page">
-      {/* 헤더 */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "14px 16px", borderBottom: "1px solid #eee", position: "sticky", top: 0, background: "#fff", zIndex: 20 }}>
-        <button onClick={() => {
-          const cameFromSite = typeof document !== "undefined" && !!document.referrer
-            && document.referrer.startsWith(window.location.origin);
-          if (cameFromSite && window.history.length > 1) router.back();
-          else router.push("/jobs");
-        }} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", color: "#555" }}>
-          <ChevronLeft size={22} />
-        </button>
-        <h1 style={{ fontSize: 17, fontWeight: 700, margin: 0 }}>내 주변 채용</h1>
-        {areaLabel && <span style={{ marginLeft: "auto", fontSize: 12.5, color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "45%" }}>📍 {areaLabel}</span>}
-      </div>
+    <>
+      {/* 메뉴에서 바로 들어오는 자리라 사이트 헤더를 그대로 이고 간다. 헤더가
+          없으면 다른 화면으로 갈 길이 뒤로가기뿐이라 갇힌 것처럼 된다. 같은
+          이유로 안쪽 뒤로가기 화살표는 뺀다 — 파고든 화면이 아니다. */}
+      <Header />
+      <div className="nb-page">
+        <div className="nb-head">
+          <h1>내 주변 공고</h1>
+          {areaLabel && <span className="nb-area">📍 {areaLabel}</span>}
+        </div>
 
       {/* 지도 + 중앙 고정 핀 */}
       <div className="nearby-map-wrap" style={{ position: "relative", width: "100%" }}>
@@ -486,7 +483,8 @@ export default function NearbyJobsPage() {
             </Link>
           ))
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

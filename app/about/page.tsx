@@ -37,7 +37,7 @@ export default function AboutPage() {
             </div>
             <div className="info-value-card">
               <span className="info-value-icon">📍</span>
-              <h3>내 주변 채용</h3>
+              <h3>내 주변 공고</h3>
               <p>지도로 통근 가능한 거리의 채용을 바로 찾아요.</p>
             </div>
             <div className="info-value-card">
