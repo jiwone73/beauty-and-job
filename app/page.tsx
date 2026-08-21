@@ -287,11 +287,19 @@ function SectionActiveHiring() {
 function SectionPick() {
   const [tab, setTab] = useState<"전체" | "매장" | "오피스">("전체");
   const [jobs, setJobs] = useState<any[]>([]);
+  // 이력서를 근거로 점수를 매길 수 있었는지. 근거가 없으면 '추천'이라 부르지 않는다 —
+  // 최신순을 추천이라 내놓으면 한 번 보고 다시 안 본다.
+  const [맞춤, set맞춤] = useState(false);
   useEffect(() => {
-    const q = tab === "매장" ? "?job_type=STORE&limit=4" : tab === "오피스" ? "?job_type=OFFICE&limit=4" : "?limit=4";
-    fetch(`/api/jobs${q}`)
+    const jt = tab === "매장" ? "&job_type=STORE" : tab === "오피스" ? "&job_type=OFFICE" : "";
+    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    fetch(`/api/jobs/recommended?limit=4${jt}`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
       .then((r) => r.json())
-      .then((res) => { if (res.success && Array.isArray(res.data)) setJobs(res.data); else setJobs([]); })
+      .then((res) => {
+        const d = res?.data;
+        if (res.success && Array.isArray(d?.items)) { setJobs(d.items); set맞춤(!!d.personalized); }
+        else { setJobs([]); set맞춤(false); }
+      })
       .catch(console.error);
   }, [tab]);
   const mappedJobs = jobs.map(mapJob);
@@ -304,9 +312,13 @@ function SectionPick() {
           <div>
             <h2 className="section-title">
               <Sparkles size={24} className="title-icon" />
-              뷰티워크 추천 공고
+              {맞춤 ? "뷰티워크 추천 공고" : "최신 채용공고"}
             </h2>
-            <p className="section-sub">직군과 최신 등록을 반영해, 지금 보면 좋은 공고를 골랐어요</p>
+            <p className="section-sub">
+              {맞춤
+                ? "내 직군·지역·경력과 스크랩한 곳을 함께 보고 골랐어요"
+                : "이력서를 등록하면 나에게 맞는 공고를 골라드려요"}
+            </p>
           </div>
           <Link href={seeAll} className="see-all">전체보기</Link>
         </div>
@@ -330,8 +342,18 @@ function SectionPick() {
           <p className="empty-state">등록된 공고가 없습니다.</p>
         ) : (
           <div className="card-grid card-grid-4">
-            {mappedJobs.map((job: any) => (
-              <JobCard key={job.id} data={job} variant="grid" />
+            {mappedJobs.map((job: any, i: number) => (
+              <div key={job.id}>
+                <JobCard data={job} variant="grid" />
+                {/* 왜 이게 떴는지 밝힌다. 규칙으로 매긴 점수라 근거를 그대로 말할 수 있다. */}
+                {맞춤 && jobs[i]?.reasons?.length > 0 && (
+                  <div className="pick-why">
+                    {jobs[i].reasons.map((r: string) => (
+                      <span key={r} className="pick-why-tag">{r}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         )}

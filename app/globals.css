@@ -12131,3 +12131,11 @@ button,
 }
 /* 폰에는 아래 점이 자리를 알려 주므로 사진 위에 또 적지 않는다. */
 @media (max-width: 640px) { .bstrip-num-pc { display: none; } }
+
+/* 추천 이유 — 카드 아래 한 줄. 왜 떴는지 모르면 추천은 광고로 읽힌다. */
+.pick-why { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; padding: 0 2px; }
+.pick-why-tag {
+  font-size: 11px; padding: 3px 8px; border-radius: 999px;
+  background: var(--color-primary-pale, #f5f0fa); color: var(--color-primary, #5f0080);
+  white-space: nowrap;
+}
