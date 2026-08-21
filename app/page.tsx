@@ -227,7 +227,7 @@ function Hero() {
                 <span className="mt-evt-row">
                   <span className="mt-evt-ic"><Coffee size={19} /></span>
                   <span>
-                    <span className="mt-evt-l">10월, 회원 모두에게</span>
+                    <span className="mt-evt-l">이력서를 등록하면</span>
                     <span className="mt-evt-t">메가커피 아이스아메리카노</span>
                     <span className="mt-evt-s">2,000원 쿠폰 · 10월 1일부터</span>
                   </span>
@@ -237,7 +237,7 @@ function Hero() {
                   <span className="mt-evt-ic"><TrendingUp size={19} /></span>
                   <span>
                     <span className="mt-evt-l">채용공고 등록하면</span>
-                    <span className="mt-evt-t">선착순 상단 노출</span>
+                    <span className="mt-evt-t">선착순 무료 상단 노출</span>
                     <span className="mt-evt-s">먼저 올린 순서대로 · 10월 1일부터</span>
                   </span>
                   <ArrowRight size={17} className="mt-evt-a" />
