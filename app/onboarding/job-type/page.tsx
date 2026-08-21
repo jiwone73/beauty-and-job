@@ -111,7 +111,7 @@ export default function OnboardingJobTypePage() {
               <StoreIcon size={20} style={{ color: "#5f0080" }} /> 매장
             </p>
             <p className="text-[13px] text-[#6b6b6b]">
-              뷰티 살롱, 네일샵, 피부관리실 등 현장 근무
+              살롱·샵 등 매장에서 근무하는 직군이에요
             </p>
           </button>
 
@@ -123,10 +123,10 @@ export default function OnboardingJobTypePage() {
                 : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
-              <OfficeIcon size={20} style={{ color: "#5f0080" }} /> 오피스
+              <OfficeIcon size={20} style={{ color: "#5f0080" }} /> 본사
             </p>
             <p className="text-[13px] text-[#6b6b6b]">
-              뷰티 브랜드, MD, 마케팅, 기획 등 사무 근무
+              브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳에서 근무하는 직군이에요
             </p>
           </button>
         </div>

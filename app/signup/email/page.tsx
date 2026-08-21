@@ -257,7 +257,7 @@ function SignupEmailContent() {
                 <span className="jt-text flex flex-col min-w-0">
                   <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#1a1a1a]">매장</span>
                   <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">
-                    헤어 · 네일 · 피부관리
+                    살롱 · 샵 등 매장
                   </span>
                 </span>
                 {jobType === "STORE" && (
@@ -280,9 +280,9 @@ function SignupEmailContent() {
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
                 <OfficeIcon size={28} className="jt-icon" style={{ color: "#5f0080", flexShrink: 0 }} />
                 <span className="jt-text flex flex-col min-w-0">
-                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#1a1a1a]">오피스</span>
+                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#1a1a1a]">본사</span>
                   <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">
-                    브랜드 · MD · 영업
+                    브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳
                   </span>
                 </span>
                 {jobType === "OFFICE" && (

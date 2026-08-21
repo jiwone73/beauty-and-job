@@ -11,13 +11,13 @@ const 흐린글 = { ...글, color: "#888" } as const;
 
 // 주소를 통째로 외워 적는 사람은 없다. 몇 글자만 치면 앞부분을 채워 주고
 // 아이디만 이어 적게 한다. 별칭은 한글·영문·줄임말을 모두 받는다.
-// 작업물을 올리는 곳. 같은 뷰티라도 매장과 오피스가 쓰는 판이 다르다.
+// 작업물을 올리는 곳. 같은 뷰티라도 매장과 본사가 쓰는 판이 다르다.
 //
 // 매장(헤어·네일·에스테틱) — 시술 사진과 영상이 곧 이력이다.
 //   인스타그램 시술 전후 사진, 사실상 표준 / 유튜브 튜토리얼, 강사·원장급 /
 //   틱톡 변신 영상 / 네이버 블로그 검색으로 들어오는 후기·홍보
 //
-// 오피스(화장품 회사 마케터·MD·디자이너) — 기획서와 결과물이 이력이다.
+// 본사(화장품 회사 마케터·MD·디자이너) — 기획서와 결과물이 이력이다.
 //   노션 포트폴리오 페이지, 요즘 표준 / 인스타그램 브랜드 계정 운영 실적 /
 //   비핸스 디자이너 / 브런치 글 쓰는 직군
 type 채움 = { 이름: string; 앞부분: string; 별칭: string[] };
@@ -29,7 +29,7 @@ const 매장칩: 채움[] = [
   { 이름: "네이버 블로그", 앞부분: "blog.naver.com/", 별칭: ["blog", "naver", "블로그", "네이버"] },
 ];
 
-const 오피스칩: 채움[] = [
+const 본사칩: 채움[] = [
   { 이름: "노션",       앞부분: "notion.so/",     별칭: ["notion", "노션"] },
   { 이름: "인스타그램", 앞부분: "instagram.com/", 별칭: ["insta", "instagram", "ig", "인스타", "인스타그램"] },
   { 이름: "비핸스",     앞부분: "behance.net/",   별칭: ["behance", "비핸스"] },
@@ -41,7 +41,7 @@ const 오피스칩: 채움[] = [
 // 이유가 없다. 칩에 없는 곳도 붙여넣으면 이름은 알아본다(lib/linkLabel.ts).
 const 모든칩: 채움[] = (() => {
   const 본것 = new Set<string>();
-  return [...매장칩, ...오피스칩].filter((k) => (본것.has(k.이름) ? false : (본것.add(k.이름), true)));
+  return [...매장칩, ...본사칩].filter((k) => (본것.has(k.이름) ? false : (본것.add(k.이름), true)));
 })();
 
 // 포트폴리오 추가 모달 — 사진과 SNS 를 한 자리에서 넣는다.
@@ -57,7 +57,7 @@ export default function PortfolioModal({
   /** 사진 줄에서 열면 사진만, SNS 줄에서 열면 SNS 만 보여준다 — 누른 것과 열리는
    *  것이 같아야 무엇을 하려던 것인지 잃지 않는다. */
   mode?: "photo" | "sns" | "all";
-  /** 매장이냐 오피스냐 — 먼저 보여줄 칩이 갈린다. */
+  /** 매장이냐 본사냐 — 먼저 보여줄 칩이 갈린다. */
   resumeType?: "office" | "salon";
   images: { url: string }[];
   links: { id: string; url: string }[];
@@ -106,7 +106,7 @@ export default function PortfolioModal({
     ? []
     : (친것
         ? 모든칩.filter((k) => k.별칭.some((a) => a.startsWith(친것)) || k.이름.startsWith(친것))
-        : (resumeType === "office" ? 오피스칩 : 매장칩)
+        : (resumeType === "office" ? 본사칩 : 매장칩)
       ).slice(0, 4);
 
   return (

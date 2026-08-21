@@ -17,7 +17,7 @@ export default function CompanySettingsPage() {
   const [activeTab, setActiveTab] = useState<"brand" | "account">("brand");
   const [info, setInfo] = useState<CompanyInfo | null>(null);
   // 매장 회원은 '회사'가 아니라 '매장' 기준 용어를 쓴다.
-  const isStore = info?.company_type !== "OFFICE"; // 매장·매장+오피스는 매장 기준 용어를 쓴다
+  const isStore = info?.company_type !== "OFFICE"; // 매장·매장+본사는 매장 기준 용어를 쓴다
   const L = {
     name: isStore ? "매장명" : "기업명",
     size: isStore ? "직원수" : "사원수",
@@ -492,7 +492,7 @@ export default function CompanySettingsPage() {
           <div className="company-card">
             <div className="admin-form-body settings-compact">
               {/* 회사 로고 — 매장은 상호가 곧 브랜드라 쓸 만한 로고 파일이 없는 경우가 많고,
-                  목록 썸네일·공고 상단은 배너 이미지가 이미 채운다. 그래서 오피스에만 둔다. */}
+                  목록 썸네일·공고 상단은 배너 이미지가 이미 채운다. 그래서 본사에만 둔다. */}
               {!isStore && (
               <div className="admin-form-row">
                 <div>
@@ -615,7 +615,7 @@ export default function CompanySettingsPage() {
               </div>
 
               {/* 매장은 상호가 곧 브랜드라 이름 칸이 하나면 된다(브랜드명·대표자·설립연도·매장 전화번호 없음).
-                  오피스는 근로계약이 법인 기준이라 기업명과 브랜드명을 따로 받는다. */}
+                  본사(매장이 아닌 곳)는 근로계약이 법인 기준이라 기업명과 브랜드명을 따로 받는다. */}
               {isStore ? (
                 <div className="admin-form-row-2col">
                   <div className="admin-form-row">

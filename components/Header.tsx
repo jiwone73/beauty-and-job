@@ -16,7 +16,7 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const [open, setOpen] = useState(false);
 
   // 헤더에서도 자기 얼굴을 본다. 개인은 프로필 사진, 기업은 대표 사진
-  // (매장=공고 배너 첫 장, 오피스=로고). 로그인 후 한 번만 읽어 스토어에 담아 둔다.
+  // (매장=공고 배너 첫 장, 본사=로고). 로그인 후 한 번만 읽어 스토어에 담아 둔다.
   useEffect(() => {
     if (!isLoggedIn || !ownerType) return;
     const token = localStorage.getItem("access_token");

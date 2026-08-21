@@ -61,7 +61,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const hasMap = (ci.latitude && ci.longitude) || job.companyAddress?.trim();
   // 매장 공고는 법인 정보(회사명·대표자·설립·규모)가 지원 판단에 쓸모가 없고, 주소는 근무지역과,
   // 브랜드명은 상단 제목과 그대로 겹친다. 그래서 매장은 소개글과 SNS만 남긴다.
-  const isOfficeJob = job.jobType === "오피스";
+  const isOfficeJob = job.jobType === "본사";
   const linkCell = (url: string) => (
     <a key="w" href={/^https?:\/\//.test(url) ? url : `https://${url}`}
       target="_blank" rel="noreferrer" style={{ color: "#5f0080", wordBreak: "break-all" }}>{url}</a>
@@ -475,7 +475,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         {/* 관련 공고 */}
         {related.length > 0 && (
           <section className="job-detail-section">
-            <Link href={`/jobs?type=${job.jobType === "오피스" ? "오피스" : "매장"}`} className="job-detail-more-link">
+            <Link href={`/jobs?type=${job.jobType === "본사" ? "본사" : "매장"}`} className="job-detail-more-link">
               <span>관련 채용공고<span className="job-detail-more-sub">비슷한 포지션 더보기</span></span>
               <ChevronRight size={20} />
             </Link>

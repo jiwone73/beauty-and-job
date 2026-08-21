@@ -13,13 +13,13 @@ interface Term {
   is_required: boolean;
 }
 
-// 업체 성격은 매장/오피스 둘 중 하나. 매장을 여럿 둔 직영 체인도 '매장'이고,
-// 본사 인력을 뽑을 땐 공고를 만들 때 유형(job_type)을 오피스로 고르면 된다.
+// 업체 성격은 매장/본사 둘 중 하나. 매장을 여럿 둔 직영 체인도 '매장'이고,
+// 본사 인력을 뽑을 땐 공고를 만들 때 유형(job_type)을 본사로 고르면 된다.
 // (예전 'BOTH'는 공고 유형과 중복이라 선택지에서 뺐다 — 기존 데이터는 매장으로 취급)
 const COMPANY_TYPES = [
   // 설명은 개인회원 가입과 같은 어휘로 — '현장직/사무직'보다 무엇을 뽑는 곳인지가 바로 읽힌다.
-  { value: "STORE", label: "매장", Icon: StoreIcon, desc: "헤어 · 네일 · 피부관리" },
-  { value: "OFFICE", label: "오피스", Icon: OfficeIcon, desc: "브랜드 · MD · 영업" },
+  { value: "STORE", label: "매장", Icon: StoreIcon, desc: "살롱·샵 등 매장에서 근무하는 직군을 뽑아요" },
+  { value: "OFFICE", label: "본사", Icon: OfficeIcon, desc: "브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳에서 근무하는 직군을 뽑아요" },
 ];
 
 export default function CompanySignupPage() {

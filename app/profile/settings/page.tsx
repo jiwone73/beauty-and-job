@@ -16,7 +16,7 @@ export default function AccountSettingsPage() {
   const [openToOffers, setOpenToOffers] = useState<boolean | null>(null);
   const [offerSaving, setOfferSaving] = useState(false);
   const [blockOpen, setBlockOpen] = useState(false);
-  // 매장 회원인지 오피스 회원인지. 미용실 원장에게 "기업"이라고 하면 남
+  // 매장 회원인지 본사 회원인지. 미용실 원장에게 "기업"이라고 하면 남
   // 이야기처럼 들려 자기 설정으로 읽히지 않는다.
   const [jobType, setJobType] = useState<"STORE" | "OFFICE" | null>(null);
   // 비밀번호 칸은 접어 둔다. 늘 펼쳐 두면 설정 화면의 절반을 차지하는데,

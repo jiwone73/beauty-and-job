@@ -104,7 +104,7 @@ function CompanyJobsContent() {
 
   const filtered = jobs.filter(j => {
     const matchGroup = jobGroupFilter === "전체" ||
-      (jobGroupFilter === "오피스" && j.job_type === "OFFICE") ||
+      (jobGroupFilter === "본사" && j.job_type === "OFFICE") ||
       (jobGroupFilter === "매장" && j.job_type === "STORE");
     const matchSearch = !search || j.title.includes(search);
     const dl = daysLeft(j.deadline);
@@ -194,11 +194,11 @@ function CompanyJobsContent() {
     전체: jobs.length,
     진행중: jobs.filter(j => !isJobClosed(j)).length,
     마감: jobs.filter(j => isJobClosed(j)).length,
-    오피스: jobs.filter(j => j.job_type === "OFFICE").length,
+    본사: jobs.filter(j => j.job_type === "OFFICE").length,
     매장: jobs.filter(j => j.job_type === "STORE").length,
   };
-  // 업체 유형(BOTH)이 아니라 실제 공고 구성으로 판단 — 매장 회원이 오피스 공고를 낸 경우도 필터가 살아있다.
-  const isBoth = counts.오피스 > 0 && counts.매장 > 0;
+  // 업체 유형(BOTH)이 아니라 실제 공고 구성으로 판단 — 매장 회원이 본사 공고를 낸 경우도 필터가 살아있다.
+  const isBoth = counts.본사 > 0 && counts.매장 > 0;
 
   // 카운터가 곧 진행상태 필터다(드롭다운과 같은 값을 두 번 두지 않는다).
   // 총 지원자는 공고 상태가 아니라 사람 수라 이 줄에 섞지 않는다 — 지원자 관리의 '전체'가 같은 값을 센다.
@@ -252,7 +252,7 @@ function CompanyJobsContent() {
           </div>
           {isBoth && (
             <FilterDropdown label="채용유형" value={jobGroupFilter}
-              options={["전체", "매장", "오피스"]} onChange={setJobGroupFilter} />
+              options={["전체", "매장", "본사"]} onChange={setJobGroupFilter} />
           )}
           <FilterDropdown label="정렬" value={sortBy}
             options={["등록일순", "마감일순"]} onChange={setSortBy} />
@@ -538,7 +538,7 @@ function CompanyJobsContent() {
             <div className="admin-modal-header">
               <div>
                 <span className={`jobs-type-badge ${selected.job_type === "STORE" ? "store" : "corp"}`}>
-                  {selected.job_type === "STORE" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>}
+                  {selected.job_type === "STORE" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span>}
                 </span>
                 <h2 className="admin-modal-title">{selected.title}</h2>
               </div>

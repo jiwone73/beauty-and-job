@@ -80,7 +80,7 @@ function Hero() {
   const [selected, setSelected] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [jobType, setJobType] = useState<"전체" | "오피스" | "매장">("전체");
+  const [jobType, setJobType] = useState<"전체" | "본사" | "매장">("전체");
   const shortSido = (s: string) => s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "");
 
   // 로그인(개인회원) 시 프로필의 직군·희망지역을 검색바 기본값으로 자동 채움
@@ -92,7 +92,7 @@ function Hero() {
       .then((r) => r.json())
       .then((res) => {
         const u = res.data || res;
-        if (u?.job_type === "OFFICE") setJobType("오피스");
+        if (u?.job_type === "OFFICE") setJobType("본사");
         else if (u?.job_type === "STORE") setJobType("매장");
         if (Array.isArray(u?.preferred_regions)) {
           const regions = u.preferred_regions
@@ -165,25 +165,26 @@ function Hero() {
                   <button type="button" className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`} onClick={() => setJobType("매장")}>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>
                   </button>
-                  <button type="button" className={`hero-type-btn ${jobType === "오피스" ? "active" : ""}`} onClick={() => setJobType("오피스")}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>
+                  <button type="button" className={`hero-type-btn ${jobType === "본사" ? "active" : ""}`} onClick={() => setJobType("본사")}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span>
                   </button>
                 </div>
-                {/* '오피스'는 뷰티에서 흔한 말이 아니다. 뜻을 모르면 '전체'만
-                    쓰게 되고 토글이 있으나 마나가 된다. 고정 안내문은 읽히지
-                    않으므로 고른 쪽에 따라 바뀌게 해, 고르는 순간에 알려 준다.
-                    두 설명 모두 '어디서 근무하는가' 한 축으로 갈라야 나란히
-                    놓고 자기 자리를 짚을 수 있다.
+                {/* 매장의 반대쪽은 긍정형으로 정의된 범주가 아니라 '매장이
+                    아닌 곳'이라는 잔여 범주다. 그래서 라벨 한 단어로는 어느
+                    말을 골라도 무언가가 새어 나간다 — '기업'은 매장도 기업이라
+                    틀린 대립을 만들고(게다가 기업회원은 매장을 품는 윗 단계라
+                    한 화면에서 같은 말이 두 뜻이 된다), '오피스'는 제조 QC와
+                    아카데미 강사가 사무실에서 일하지 않아 정작 그들을 밀어낸다.
 
-                    이쪽은 긍정형으로 정의된 범주가 아니라 '매장이 아닌 곳'이라는
-                    잔여 범주다. 그래서 라벨 한 단어로는 어느 쪽을 골라도 무언가가
-                    새어 나간다(기업 — 매장도 기업이다 / 오피스 — 제조 QC와
-                    아카데미 강사는 사무실에서 일하지 않는다). 정확함은 이 줄이
-                    맡고 라벨은 익숙하기만 하면 된다. */}
+                    그래서 라벨은 매장과 짝이 굳어진 '본사'로 두고, 못 담는
+                    나머지는 이 설명 줄이 맡는다. 고정 안내문은 읽히지 않으므로
+                    고른 쪽에 따라 바뀌게 해 고르는 순간에 알려 준다. 두 설명
+                    모두 '어디서 근무하는가' 한 축으로 갈라야 나란히 놓고 자기
+                    자리를 짚을 수 있다. */}
                 <p className="mt-type-desc">
                   {jobType === "매장" ? "살롱·샵 등 매장에서 근무하는 직군이에요"
-                    : jobType === "오피스" ? "브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳에서 근무하는 직군이에요"
-                    : "매장과 오피스 공고를 함께 봅니다"}
+                    : jobType === "본사" ? "브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳에서 근무하는 직군이에요"
+                    : "매장과 본사 공고를 함께 봅니다"}
                 </p>
                 <div className="hero-searchbar-v2">
                   <button type="button" className={`hero-region-trigger ${selected.length ? "active" : ""}`} onClick={() => setModalOpen(true)}>
@@ -192,7 +193,7 @@ function Hero() {
                   <span className="hero-searchbar-divider" />
                   <input className="hero-search-input-v2" type="text"
                     placeholder={jobType === "매장" ? "헤어 디자이너, 네일리스트, 실장…"
-                      : jobType === "오피스" ? "마케터, MD, 뷰티 연구원…" : "지역, 직무, 매장명으로 검색"}
+                      : jobType === "본사" ? "마케터, MD, 뷰티 연구원…" : "지역, 직무, 매장명으로 검색"}
                     value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                   <button type="submit" className="hero-search-btn-v2" aria-label="검색"><Search size={20} /></button>
                 </div>
@@ -323,13 +324,13 @@ function SectionActiveHiring() {
 }
 
 function SectionPick() {
-  const [tab, setTab] = useState<"전체" | "매장" | "오피스">("전체");
+  const [tab, setTab] = useState<"전체" | "매장" | "본사">("전체");
   const [jobs, setJobs] = useState<any[]>([]);
   // 이력서를 근거로 점수를 매길 수 있었는지. 근거가 없으면 '추천'이라 부르지 않는다 —
   // 최신순을 추천이라 내놓으면 한 번 보고 다시 안 본다.
   const [맞춤, set맞춤] = useState(false);
   useEffect(() => {
-    const jt = tab === "매장" ? "&job_type=STORE" : tab === "오피스" ? "&job_type=OFFICE" : "";
+    const jt = tab === "매장" ? "&job_type=STORE" : tab === "본사" ? "&job_type=OFFICE" : "";
     const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
     fetch(`/api/jobs/recommended?limit=4${jt}`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
       .then((r) => r.json())
@@ -341,7 +342,7 @@ function SectionPick() {
       .catch(console.error);
   }, [tab]);
   const mappedJobs = jobs.map(mapJob);
-  const seeAll = tab === "매장" ? "/jobs?type=매장" : tab === "오피스" ? "/jobs?type=오피스" : "/jobs";
+  const seeAll = tab === "매장" ? "/jobs?type=매장" : tab === "본사" ? "/jobs?type=본사" : "/jobs";
   return (
     <section className="section section-divider">
       <div className="container">
@@ -363,14 +364,14 @@ function SectionPick() {
 
         <div style={{ marginBottom: 24 }}>
           <div className="hero-type-toggle">
-            {(["전체", "매장", "오피스"] as const).map((t) => (
+            {(["전체", "매장", "본사"] as const).map((t) => (
               <button
                 key={t}
                 type="button"
                 className={`hero-type-btn ${tab === t ? "active" : ""}`}
                 onClick={() => setTab(t)}
               >
-                {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span> : t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span> : t}
+                {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span> : t === "본사" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span> : t}
               </button>
             ))}
           </div>
@@ -455,7 +456,7 @@ function fmtStoryDate(d: string) {
    섹션: 직무별 채용 바로가기
    ============================================ */
 function SectionJobGroups() {
-  const [tab, setTab] = useState<"매장" | "오피스">("매장");
+  const [tab, setTab] = useState<"매장" | "본사">("매장");
   const groups = tab === "매장" ? STORE_JOB_GROUPS : OFFICE_JOB_GROUPS;
   return (
     <section className="section section-divider">
@@ -468,7 +469,7 @@ function SectionJobGroups() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-          {(["매장", "오피스"] as const).map((t) => (
+          {(["매장", "본사"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
               style={{
                 padding: "8px 18px", borderRadius: 100, fontSize: 14, fontWeight: 600, cursor: "pointer",
@@ -476,7 +477,7 @@ function SectionJobGroups() {
                 background: tab === t ? "#5f0080" : "#fff",
                 color: tab === t ? "#fff" : "#666",
               }}>
-              {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span>}
+              {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />본사</span>}
             </button>
           ))}
         </div>

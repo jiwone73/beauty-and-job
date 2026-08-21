@@ -94,7 +94,7 @@ function JobsPageInner() {
             categories: j.categories || [],
             career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
             region: j.location || '국내',
-            type: j.company_type === 'OFFICE' ? '오피스' : j.company_type === 'STORE' ? '매장' : '오피스',
+            type: j.company_type === 'OFFICE' ? '본사' : j.company_type === 'STORE' ? '매장' : '본사',
             thumbnail: (Array.isArray(j.cover_images) && j.cover_images[0]?.url) || j.logo_url || (Array.isArray(j.detail_images) && j.detail_images[0]?.url),
             color: '#e8f0fe',
             deadline: formatDeadline(j.deadline),
@@ -126,7 +126,7 @@ function JobsPageInner() {
     // 검색어·브랜드 등 명시적 검색 시엔 프로필 직군 자동필터를 걸지 않음
     if (urlQuery) { seededFilter.current = true; return; }
     if (!urlJob && !urlType && userJobType) {
-      setJobTypeFilter(userJobType === "OFFICE" ? "오피스" : "매장");
+      setJobTypeFilter(userJobType === "OFFICE" ? "본사" : "매장");
       if (userJobAreas && userJobAreas.length > 0) {
         setSelectedJobs(userJobAreas);
       }
@@ -145,10 +145,10 @@ function JobsPageInner() {
   };
 
   const salaryOpts = jobTypeFilter === "매장" ? SALARY_STORE : SALARY_OFFICE;
-  // 복리후생 어휘 자체가 매장·오피스에서 다르다(기숙사 제공은 매장, 재택근무는 오피스).
+  // 복리후생 어휘 자체가 매장·본사에서 다르다(기숙사 제공은 매장, 재택근무는 본사).
   // 탭을 바꾸면 그 업태의 태그만 다시 받아 온다.
   useEffect(() => {
-    const jt = jobTypeFilter === "매장" ? "STORE" : jobTypeFilter === "오피스" ? "OFFICE" : "";
+    const jt = jobTypeFilter === "매장" ? "STORE" : jobTypeFilter === "본사" ? "OFFICE" : "";
     fetch(`/api/benefit-tags?curated=1${jt ? `&job_type=${jt}` : ""}`)
       .then((r) => r.json())
       .then((res) => {
@@ -158,7 +158,7 @@ function JobsPageInner() {
       .catch(() => { /* 못 받아도 기본 목록으로 돈다 */ });
   }, [jobTypeFilter]);
 
-  // 복리후생 후보는 그 업태의 어휘 전체를 보여 준다(매장 21 · 오피스 27 · 전체 35).
+  // 복리후생 후보는 그 업태의 어휘 전체를 보여 준다(매장 21 · 본사 27 · 전체 35).
   // 지금 공고에 달린 것만 남기면 목록이 서너 개로 쪼그라들어, 무엇으로 거를 수 있는지조차 알 수 없다.
   const benefitOptions = curatedBenefits;
   const filteredJobs = (apiJobs || []).filter((j: any) => {
@@ -215,11 +215,11 @@ function JobsPageInner() {
       <div className="jobs-container">
         {/* ===== 필터 탭 ===== */}
         <div className="jobs-type-tabs">
-          {["전체", "매장", "오피스"].map((t) => (
+          {["전체", "매장", "본사"].map((t) => (
             <button key={t}
               className={`jobs-type-tab ${jobTypeFilter === t ? "active" : ""}`}
               onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); }}>
-              {t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span> : t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : "전체"}
+              {t === "본사" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />본사</span> : t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : "전체"}
             </button>
           ))}
         </div>

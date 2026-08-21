@@ -25,8 +25,8 @@ export default function CompanyLayout({ children, activePage }: {
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  // 매장 회원이면 '매장정보', 오피스(기업) 회원이면 '기업정보'로 부른다.
-  const infoLabel = (t: string) => (t === "OFFICE" ? "기업정보" : "매장정보"); // 매장·매장+오피스는 매장으로 분류
+  // 매장 회원이면 '매장정보', 본사(기업) 회원이면 '기업정보'로 부른다.
+  const infoLabel = (t: string) => (t === "OFFICE" ? "기업정보" : "매장정보"); // 매장·매장+본사는 매장으로 분류
   const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "", thumb: "" });
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifs, setNotifs] = useState<any[]>([]);
@@ -44,7 +44,7 @@ export default function CompanyLayout({ children, activePage }: {
         if (res.success && res.data) {
           setCompanyInfo({
             name: res.data.company_name || "",
-            category: res.data.company_type === "OFFICE" ? "오피스" : res.data.company_type === "STORE" ? "매장" : "매장·오피스",
+            category: res.data.company_type === "OFFICE" ? "본사" : res.data.company_type === "STORE" ? "매장" : "매장·본사",
             logo: res.data.logo_url || "",
             type: res.data.company_type || "",
             cover: (Array.isArray(res.data.cover_images) && res.data.cover_images[0]?.url) ? res.data.cover_images[0].url : "",

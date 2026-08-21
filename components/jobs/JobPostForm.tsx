@@ -663,7 +663,7 @@ export default function JobPostForm({
     if (!jobGroupType) return; // 미선택이면 급여유형 자동설정 보류(선택 시 설정)
     if (importSalaryRef.current) { importSalaryRef.current = false; return; }
     setSalaryType(jobGroupType === "매장" ? "MONTHLY" : "ANNUAL");
-    // 오피스(기업)는 급여가 대부분 회사내규/면접 후 협의 → 협의를 기본값으로
+    // 본사(기업)는 급여가 대부분 회사내규/면접 후 협의 → 협의를 기본값으로
     setSalaryNego(jobGroupType === "기업");
   }, [jobGroupType, editId]);
   useEffect(() => {
@@ -1759,7 +1759,7 @@ export default function JobPostForm({
     const extraRegions = extraLocations.flatMap((l) => deriveRegion([l.address, l.detail].filter(Boolean).join(" ")));
     const effRegions = [...new Set([...(regionList.length ? regionList : deriveRegion(nmFullAddress)), ...extraRegions])];
     if (!isNmAdmin) {
-      if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
+      if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/본사)을 선택해주세요."); return; }
       if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
       if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
       // 주소를 붙여넣거나 임시저장에서 복원하면 입력 onChange가 안 타 regionList가 비어 있을 수 있다.
@@ -1780,7 +1780,7 @@ export default function JobPostForm({
             return;
           }
         } else {
-          // 오피스: 담당업무는 상세 이미지가 없을 때만 필수(경력·학력은 모집부문 표에서)
+          // 본사: 담당업무는 상세 이미지가 없을 때만 필수(경력·학력은 모집부문 표에서)
           if (detailImages.length === 0 && !form.responsibilities?.trim()) {
             alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return;
           }
@@ -2125,7 +2125,7 @@ export default function JobPostForm({
     requirements: { label: "자격요건", placeholder: "" },
     preferred: { label: "우대사항", placeholder: "" },
   };
-  // 오피스는 담당업무(JD) 중심, 매장은 포지션 소개 중심
+  // 본사는 담당업무(JD) 중심, 매장은 포지션 소개 중심
   const textFields: TextKey[] = isOffice
     ? ["responsibilities", "requirements", "preferred"]
     : ["description", "requirements", "preferred"];
@@ -2171,7 +2171,7 @@ export default function JobPostForm({
       brandName: isNm ? newBrandName : (cp?.brand_name || ""),
       industry: isNm ? (fiIndustry.trim() || nmIndustry) : "",
       representative: isNm ? nmRepresentative : (cp?.representative_name || ""),
-      companyType: jobGroupType === "매장" ? "매장" : "오피스",
+      companyType: jobGroupType === "매장" ? "매장" : "본사",
       size: isNm ? nmSize : (cp?.company_size || ""),
       founded: isNm ? (nmFounded ? `${nmFounded}년` : "") : (cp?.founded_year || ""),
       phone: isNm ? nmPhone : (cp?.company_phone || ""),
@@ -2290,14 +2290,14 @@ export default function JobPostForm({
       )}
 
 
-      {/* 채용유형(매장/오피스) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
+      {/* 채용유형(매장/본사) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
       {showTypeToggle && (
         <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 12px`, boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#5f0080", fontSize: 16, fontWeight: 400 }}>
             <Settings size={16} /> 채용유형
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            {([["매장", "매장"], ["기업", "오피스"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
+            {([["매장", "매장"], ["기업", "본사"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
               const on = jobGroupType === val;
               return (
                 <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: on ? "#1a1a1a" : "#666" }}>
@@ -2984,7 +2984,7 @@ export default function JobPostForm({
                   뷰티워크 온라인지원만 고르면 담당자 칸은 생기지 않는다(연락처가 필요 없는 방법이라).
                   비회원 공고의 담당자 연락처는 상세화면에서 구직자에게 노출되지 않는다(JobDetailView). */}
               {(() => {
-                // 매장 공고는 자체 채용 홈페이지가 없는 경우가 대부분이라 '회사 홈페이지 지원'을 빼고, 오피스에서만 쓴다.
+                // 매장 공고는 자체 채용 홈페이지가 없는 경우가 대부분이라 '회사 홈페이지 지원'을 빼고, 본사에서만 쓴다.
                 const methodOptions = CONTACT_METHOD_OPTIONS.filter((m) => m !== "회사 홈페이지 지원" || isOffice);
                 const canPhone = contactMethods.includes("문자") || contactMethods.includes("전화");
                 const canEmail = contactMethods.includes("이메일");
@@ -3078,7 +3078,7 @@ export default function JobPostForm({
                 );
               })()}
 
-              {/* 채용 절차 — 오피스(기업) 공고에서만 노출 */}
+              {/* 채용 절차 — 본사(기업) 공고에서만 노출 */}
               {jobGroupType === "기업" && (
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
                   <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차</span>
@@ -3209,7 +3209,7 @@ export default function JobPostForm({
               {textFields.map((k) => {
                 const meta = textFieldMeta[k];
                 const content = ((form as any)[k] || "") as string;
-                // 상세 이미지가 없을 때만 본문(오피스=담당업무 / 매장=포지션 소개)을 필수로 표시.
+                // 상세 이미지가 없을 때만 본문(본사=담당업무 / 매장=포지션 소개)을 필수로 표시.
                 //   자격요건은 선택 — 조건 없이 뽑는 공고도 있다.
                 const isReq = detailImages.length === 0 && k === (isOffice ? "responsibilities" : "description");
                 return (
