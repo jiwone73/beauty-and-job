@@ -12168,21 +12168,27 @@ button,
 .mt-arrow { width: 26px; height: 26px; border-radius: 50%; background: var(--color-primary); color: #fff;
   display: flex; align-items: center; justify-content: center; font-size: 13px; }
 
-/* 바탕에 옅은 무늬를 깐다 — 단색 그라데이션만 두면 평평해 보인다. */
+/* 바탕.
+   · 페이지 바탕(#fdfbff)과 아주 살짝만 다르게 둔다. 세게 칠하면 박스가
+     화면에서 떠 보이고, 같게 두면 경계가 사라진다.
+   · 무늬는 그라데이션이 아니라 점 격자로 깐다. 그라데이션은 아무리 겹쳐도
+     "색이 조금 다르다"로만 읽히고 무늬로 보이지 않았다.
+   · 한쪽만 희거나 보라해지지 않게, 큰 원 대신 고른 톤 위에 무늬만 얹는다. */
 .mt-jobs {
   position: relative; margin-top: 14px; border-radius: 16px; padding: 26px 30px 30px; overflow: hidden;
-  background:
-    radial-gradient(680px 300px at 8% 0%, rgba(255,255,255,.9), transparent 62%),
-    radial-gradient(520px 380px at 78% 112%, rgba(206,190,232,.38), transparent 66%),
-    radial-gradient(360px 260px at 98% 4%, rgba(226,216,244,.5), transparent 70%),
-    linear-gradient(135deg, #fdfcff 0%, #f6f2fc 48%, #eee8f8 100%);
+  background-color: #f8f5fd;
+  background-image:
+    radial-gradient(circle, rgba(122, 95, 154, .07) 1px, transparent 1.4px),
+    linear-gradient(135deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 55%, rgba(226,216,244,.28) 100%);
+  background-size: 22px 22px, 100% 100%;
+  background-position: 0 0, 0 0;
 }
 .mt-jobs-h { position: relative; margin-bottom: 18px; }
 .mt-jobs-h h2 { margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -.4px; color: #1a1a1a; }
 .mt-jobs-h h2 b { color: var(--color-primary); font-weight: 700; }
 .mt-cols { position: relative; display: grid; grid-template-columns: 1.02fr 1.02fr 1fr; gap: 14px; align-items: stretch; }
 /* 카드 안쪽은 순백이 아니다 — 바탕의 보라기를 아주 옅게 머금어야 따로 놀지 않는다. */
-.mt-card { background: #fdfcfe; border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
+.mt-card { background: #fdfcff; border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
 
 .mt-ask { font-size: 15px; color: #6b6b6b; margin: 0 0 12px; }
 .mt-near { display: inline-flex; align-items: center; gap: 4px; margin-top: 14px;
@@ -12198,7 +12204,7 @@ button,
 .mt-chev { color: #cdc6d8; flex-shrink: 0; }
 
 .mt-regs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-.mt-reg { background: #fdfcfe; border-radius: 14px; padding: 14px 15px; display: flex; align-items: center; gap: 11px;
+.mt-reg { background: #fdfcff; border-radius: 14px; padding: 14px 15px; display: flex; align-items: center; gap: 11px;
   text-decoration: none; color: inherit; border: none; cursor: pointer; font-family: inherit; text-align: left; width: 100%; }
 /* 아이콘에 칩(바탕)을 씌우지 않는다 — 아이콘만으로 충분하고, 칩이 붙으면 버튼처럼 보인다. */
 .mt-reg-i { color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -12219,7 +12225,7 @@ button,
 .mt-evt-a { margin-left: auto; color: var(--color-primary); flex-shrink: 0; }
 
 .mt-ticker { margin-top: 14px; border: 1px solid #efeaf7; border-radius: 12px; height: 48px;
-  display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #fdfcfe; overflow: hidden; }
+  display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #fdfcff; overflow: hidden; }
 .mt-tk-l { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 7px;
   white-space: nowrap; flex-shrink: 0; padding-right: 20px; border-right: 1px solid #efeaf7; }
 .mt-tk-view { flex: 1; min-width: 0; overflow: hidden; }
