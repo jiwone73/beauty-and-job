@@ -117,17 +117,8 @@ export default function Header({ onSearchClick }: HeaderProps) {
           </Link>
           <nav className="gnb">
             <Link href="/jobs" className={`gnb-with-tag ${pathname === "/jobs" ? "gnb-active" : ""}`}>채용공고</Link>
-            {/* 기업 계정에는 '이력서 등록'이 할 일이 없어 메뉴에서 뺀다. 돌아갈 길은 우측 상단
-                '대시보드로' 버튼 하나로 충분하다. */}
-            {!isCompany && (
-              <button
-                type="button"
-                className="gnb-with-tag"
-                style={{ background: "none", border: "none", cursor: "pointer" }}
-                onClick={() => router.push(isLoggedIn ? "/profile/resume" : "/login")}>
-                이력서 등록
-              </button>
-            )}
+            {/* '이력서 등록'은 메뉴에서 뺐다. 메인 첫 화면의 등록 칸과 우측 상단
+                아이콘에 같은 길이 있어, 메뉴에까지 두면 같은 말을 세 번 한다. */}
             <Link href="/stories" className="gnb-with-tag">
               현장이야기
             </Link>

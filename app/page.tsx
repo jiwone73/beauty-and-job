@@ -24,7 +24,7 @@ import {
   Mail,
   CheckCircle,
   MapPin,
-  ChevronDown, Rocket } from "lucide-react";
+  ChevronDown, Rocket, ChevronRight, FileText, Briefcase, ArrowRight } from "lucide-react";
 import JobCard from "@/components/JobCard";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
@@ -112,6 +112,26 @@ function Hero() {
         const first = selected[0].split(" ").map((p, i) => i === 0 ? shortSido(p) : p).join(" ");
         return selected.length === 1 ? first : `${first} 외 ${selected.length - 1}`;
       })();
+  // 배너·공지·속보는 모두 서버에서 받아온다. 코드에 문구를 박아 두면
+  // 바꿀 때마다 배포해야 하고, PC·모바일이 따로 놀기 시작한다.
+  const [이벤트, set이벤트] = useState<any>(null);
+  const [공지, set공지] = useState<any>(null);
+  const [속보, set속보] = useState<any[]>([]);
+  useEffect(() => {
+    fetch("/api/notices")
+      .then((r) => r.json())
+      .then((res) => {
+        const list = Array.isArray(res?.data) ? res.data : [];
+        set이벤트(list.find((n: any) => n.type === "event") || null);
+        set공지(list.find((n: any) => n.type !== "event") || null);
+      })
+      .catch(() => {});
+    fetch("/api/jobs?limit=8")
+      .then((r) => r.json())
+      .then((res) => { if (Array.isArray(res?.data)) set속보(res.data); })
+      .catch(() => {});
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
@@ -122,126 +142,114 @@ function Hero() {
   };
 
   return (
-    <section className="hero">
-      <div className="hero-wrap">
-        <div className="hero-banner-top-inner">
-          <span className="hero-banner-badge"><Rocket size={18} /></span>
-          <p className="hero-banner-title">뷰티워크 오픈 준비 중 · 지금은 완전 무료</p>
-          <p className="hero-banner-sub">런칭 기간 동안 등록·상단노출·인재 연락처 열람까지 0원</p>
-        </div>
-        <div className="hero-inner">
-          <div className="hero-text">
-            <h1 className="hero-title">
-              뷰티 커리어의 시작,<br />
-              <span className="hero-title-point">뷰티워크</span>
-            </h1>
-            <p className="hero-sub">
-              살롱·샵 현장직부터 브랜드 본사까지<br />뷰티업계 일자리를 한곳에서
-            </p>
-            <form className="hero-search-bar-v2" onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
-              <p className="hero-search-guide">어떤 일자리를 찾으세요?</p>
-              <div className="hero-type-toggle">
-                <button type="button"
-                  className={`hero-type-btn ${jobType === "전체" ? "active" : ""}`}
-                  onClick={() => setJobType("전체")}>
-                  전체
-                </button>
-                <button type="button"
-                  className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`}
-                  onClick={() => setJobType("매장")}>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>
-                </button>
-                <button type="button"
-                  className={`hero-type-btn ${jobType === "오피스" ? "active" : ""}`}
-                  onClick={() => setJobType("오피스")}>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>
-                </button>
-              </div>
-              <div className="hero-searchbar-v2">
-                <button type="button"
-                  className={`hero-region-trigger ${selected.length ? "active" : ""}`}
-                  onClick={() => setModalOpen(true)}>
-                  <MapPin size={16} />
-                  <span>{regionLabel}</span>
-                  <ChevronDown size={15} />
-                </button>
-                <span className="hero-searchbar-divider" />
-                <input className="hero-search-input-v2" type="text"
-                  placeholder={jobType === "매장"
-                    ? "헤어 디자이너, 네일리스트, 실장…"
-                    : jobType === "오피스"
-                    ? "마케터, MD, 뷰티 연구원…"
-                    : "지역, 직무, 회사명으로 검색"}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)} />
-                <button type="submit" className="hero-search-btn-v2" aria-label="검색">
-                  <Search size={20} />
-                </button>
-              </div>
-              <a href="/jobs/nearby"
-                style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 14, fontSize: 16, fontWeight: 700, color: "#5f0080", textDecoration: "none" }}>
-                <MapPin size={16} /> 내 주변 채용 보기 ›
-              </a>
-            </form>
-            <RegionSelectModal
-              open={modalOpen}
-              initial={selected}
-              onClose={() => setModalOpen(false)}
-              onApply={setSelected}
-            />
+    <section className="mainTop">
+      <div className="container">
+
+        {/* 1. 사진 배너 — 1320x190. 문구는 공지에서 받아 관리자가 고칠 수 있다. */}
+        <Link href={이벤트 ? `/notice/${이벤트.id}` : "/company"} className="mt-hero">
+          <span className="mt-hero-photo" />
+          <span className="mt-hero-in">
+            <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
+            <span className="mt-hero-h">뷰티 커리어의 시작,<br /><b>뷰티워크</b></span>
+            <span className="mt-hero-sub">{이벤트?.title || "런칭 기간 동안 채용공고와 이력서 등록을 무료로 이용하세요."}</span>
+            <span className="mt-hero-cta"><span className="t">오픈 혜택 보기</span><span className="mt-arrow">→</span></span>
+          </span>
+        </Link>
+
+        {/* 2. 일자리 찾기 블록 */}
+        <div className="mt-jobs">
+          <div className="mt-jobs-h">
+            <span className="mt-eyebrow">BEAUTYWORK JOBS</span>
+            <h2>살롱·샵 현장직부터 브랜드 본사까지, <b>뷰티업계 일자리를 한곳에서</b></h2>
           </div>
 
-          <div className="hero-right">
-            <div className="hero-right-header">
-              <span className="hero-ai-icon">🔥</span>
-              <span className="hero-right-title">뷰티워크 런칭 이벤트 · 지금은 완전 무료 (~12/31)</span>
+          <div className="mt-cols">
+            <div className="mt-card">
+              <form onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
+                <p className="mt-ask">어떤 일자리를 찾으세요?</p>
+                <div className="hero-type-toggle">
+                  <button type="button" className={`hero-type-btn ${jobType === "전체" ? "active" : ""}`} onClick={() => setJobType("전체")}>전체</button>
+                  <button type="button" className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`} onClick={() => setJobType("매장")}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>
+                  </button>
+                  <button type="button" className={`hero-type-btn ${jobType === "오피스" ? "active" : ""}`} onClick={() => setJobType("오피스")}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>
+                  </button>
+                </div>
+                <div className="hero-searchbar-v2">
+                  <button type="button" className={`hero-region-trigger ${selected.length ? "active" : ""}`} onClick={() => setModalOpen(true)}>
+                    <MapPin size={16} /><span>{regionLabel}</span><ChevronDown size={15} />
+                  </button>
+                  <span className="hero-searchbar-divider" />
+                  <input className="hero-search-input-v2" type="text"
+                    placeholder={jobType === "매장" ? "헤어 디자이너, 네일리스트, 실장…"
+                      : jobType === "오피스" ? "마케터, MD, 뷰티 연구원…" : "지역, 직무, 매장명으로 검색"}
+                    value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                  <button type="submit" className="hero-search-btn-v2" aria-label="검색"><Search size={20} /></button>
+                </div>
+                <a href="/jobs/nearby" className="mt-near"><MapPin size={15} /> 내 주변 채용 보기 ›</a>
+              </form>
+              <RegionSelectModal open={modalOpen} initial={selected} onClose={() => setModalOpen(false)} onApply={setSelected} />
             </div>
-            <div className="hero-right-cards">
-              <div className="hero-right-card">
-                <div className="hero-right-card-head">
-                <div className="hero-right-card-visual card1">
-                  <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                    <rect x="15" y="10" width="42" height="52" rx="6" fill="#e8d5f5" />
-                    <rect x="15" y="10" width="42" height="52" rx="6" fill="white" opacity="0.6"/>
-                    <rect x="22" y="22" width="12" height="12" rx="6" fill="#c4a0d8" />
-                    <rect x="22" y="38" width="28" height="3" rx="1.5" fill="#dcc8ec" />
-                    <rect x="22" y="44" width="22" height="3" rx="1.5" fill="#dcc8ec" />
-                    <rect x="22" y="50" width="25" height="3" rx="1.5" fill="#dcc8ec" />
-                    <circle cx="52" cy="52" r="12" fill="#5f0080" />
-                    <path d="M46 52l4 4 8-8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+
+            <div>
+              <div className="mt-card">
+                <div className="mt-chead">
+                  <span className="t"><span className="mt-dot" />공지사항</span>
+                  <Link href="/notice" className="mt-more">더보기 →</Link>
                 </div>
-                <h3 className="hero-right-card-title">이력서를 등록하면<br />제안을 받을 수 있어요</h3>
-                </div>
-                <p className="hero-right-card-desc">뷰티기업·샵 인재 검색에 노출되고, 조건에 맞는 공고 매칭 메일도 보내드려요</p>
-                <ResumeCta className="hero-right-card-btn">
-                  무료 이력서 등록하기 ›
-                </ResumeCta>
+                <Link href={공지 ? `/notice/${공지.id}` : "/notice"} className="mt-notice">
+                  <span>
+                    <span className="nt">{공지?.title || "공지사항"}</span>
+                    <span className="ns">{공지 ? "자세히 보기" : "등록된 공지가 없어요"}</span>
+                  </span>
+                  <ChevronRight size={16} className="mt-chev" />
+                </Link>
               </div>
-              <div className="hero-right-card">
-                <div className="hero-right-card-head">
-                <div className="hero-right-card-visual card2">
-                  <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                    <rect x="20" y="15" width="35" height="45" rx="5" fill="#fce4f0" />
-                    <rect x="20" y="15" width="35" height="45" rx="5" fill="white" opacity="0.5"/>
-                    <rect x="27" y="32" width="6" height="16" rx="2" fill="#e8a0c0" />
-                    <rect x="36" y="26" width="6" height="22" rx="2" fill="#d060a0" />
-                    <rect x="45" y="22" width="6" height="26" rx="2" fill="#b03080" />
-                    <circle cx="57" cy="52" r="10" fill="#ff80b0" opacity="0.9"/>
-                    <path d="M53 52l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M27 28 L48 18" stroke="#e8a0c0" strokeWidth="1.5" strokeDasharray="2 2"/>
-                  </svg>
-                </div>
-                <h3 className="hero-right-card-title">공고를 등록하면<br />인재에게 노출돼요</h3>
-                </div>
-                <p className="hero-right-card-desc">채용공고 등록·상단 노출·인재 연락처 열람도 런칭 기간 무료예요</p>
-                <Link href="/company" className="hero-right-card-btn">
-                  무료 채용공고 등록하기 ›
+              <div className="mt-regs">
+                <ResumeCta className="mt-reg">
+                  <span className="mt-reg-i"><FileText size={15} /></span>
+                  <span><span className="mt-reg-l">구직자</span><span className="mt-reg-t">이력서 등록</span></span>
+                  <ArrowRight size={15} className="mt-reg-a" />
+                </ResumeCta>
+                <Link href="/company" className="mt-reg">
+                  <span className="mt-reg-i"><Briefcase size={15} /></span>
+                  <span><span className="mt-reg-l">매장·기업</span><span className="mt-reg-t">채용공고 등록</span></span>
+                  <ArrowRight size={15} className="mt-reg-a" />
                 </Link>
               </div>
             </div>
+
+            <Link href={이벤트 ? `/notice/${이벤트.id}` : "/notice"} className="mt-card mt-evt">
+              <div className="mt-chead"><span className="t"><span className="mt-dot" />이달의 이벤트</span><span className="mt-evt-tag">EVENT</span></div>
+              <div className="mt-evt-row">
+                <span className="mt-evt-ic" />
+                <span>
+                  <span className="mt-evt-l">이력서 등록하면</span>
+                  <span className="mt-evt-t">나에게 맞는 공고 추천</span>
+                  <span className="mt-evt-s">직군·지역·경력을 보고 골라드려요</span>
+                </span>
+                <ArrowRight size={17} className="mt-evt-a" />
+              </div>
+            </Link>
           </div>
         </div>
+
+        {/* 3. 채용속보 — 공고명이 왼쪽으로 흐른다. 긴 제목도 자르지 않는다. */}
+        {속보.length > 0 && (
+          <div className="mt-ticker">
+            <span className="mt-tk-l"><span className="mt-dot" />채용속보</span>
+            <span className="mt-tk-view">
+              <span className="mt-tk-track">
+                {[...속보, ...속보].map((j, i) => (
+                  <Link key={`${j.id}-${i}`} href={`/jobs/${j.id}`} className="mt-tk-item">
+                    <i>NEW</i>{j.company_name ? `${j.company_name} · ` : ""}{j.title}
+                  </Link>
+                ))}
+              </span>
+            </span>
+          </div>
+        )}
       </div>
     </section>
   );
