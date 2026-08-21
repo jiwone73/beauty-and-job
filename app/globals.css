@@ -12210,8 +12210,6 @@ button,
 /* 설명은 설명하는 대상 바로 아래에 붙어야 이어진다. 검색창 아래로 내리면
    무엇에 대한 말인지 한 번 더 생각해야 한다. */
 .mt-type-desc { font-size: 13px; color: #9a94a4; margin: 9px 0 0; line-height: 1.45; word-break: keep-all; }
-.mt-near { display: inline-flex; align-items: center; gap: 4px; margin-top: 14px;
-  font-size: 14px; font-weight: 600; color: var(--color-primary); text-decoration: none; }
 
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .mt-chead .t { font-size: 16px; text-decoration: none; font-weight: 600; color: #222; line-height: 1.35; display: flex; align-items: center; gap: 7px; }

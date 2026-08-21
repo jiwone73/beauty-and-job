@@ -197,7 +197,6 @@ function Hero() {
                     value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                   <button type="submit" className="hero-search-btn-v2" aria-label="검색"><Search size={20} /></button>
                 </div>
-                <a href="/jobs/nearby" className="mt-near"><MapPin size={15} /> 내 주변 채용 보기 ›</a>
               </form>
               <RegionSelectModal open={modalOpen} initial={selected} onClose={() => setModalOpen(false)} onApply={setSelected} />
             </div>
