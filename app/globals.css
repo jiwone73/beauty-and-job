@@ -12223,8 +12223,6 @@ button,
 .mt-hero-sub { font-size: 15px; color: #6f6577; margin-top: 11px; }
 .mt-hero-cta { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
 .mt-hero-cta .t { font-size: 15px; font-weight: 600; }
-.mt-arrow { width: 26px; height: 26px; border-radius: 50%; background: var(--color-primary); color: #fff;
-  display: flex; align-items: center; justify-content: center; font-size: 13px; }
 
 /* 바탕.
    · 페이지 바탕(#fdfbff)과 아주 살짝만 다르게 둔다. 세게 칠하면 박스가
@@ -12268,9 +12266,8 @@ button,
 .mt-chead .t { font-size: 16px; text-decoration: none; font-weight: 600; color: #222; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
 .mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #7a5f9a; flex-shrink: 0; }
 .mt-more { font-size: 13px; color: #9a94a4; text-decoration: none; }
-.mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-decoration: none; color: inherit; }
+.mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-decoration: none; color: inherit; }
 .mt-notice .nt { display: block; font-size: 16px; font-weight: 400; color: #222; line-height: 1.35; }
-.mt-chev { color: #cdc6d8; flex-shrink: 0; }
 
 /* 이달의 이벤트 — 개인회원·기업회원 몫을 나란히 둔다. 누가 받는 혜택인지가
    먼저 보여야 자기 것만 읽고 넘어갈 수 있다. */
