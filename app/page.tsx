@@ -24,7 +24,7 @@ import {
   Mail,
   CheckCircle,
   MapPin,
-  ChevronDown, Rocket, ChevronRight, FileText, Briefcase, ArrowRight } from "lucide-react";
+  ChevronDown, Rocket, ChevronRight, FileText, Briefcase, ArrowRight, Coffee, TrendingUp } from "lucide-react";
 import JobCard from "@/components/JobCard";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
@@ -151,7 +151,7 @@ function Hero() {
           <span className="mt-hero-in">
             <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
             <span className="mt-hero-h">뷰티 커리어의 시작,<br /><b>뷰티워크</b></span>
-            <span className="mt-hero-sub">{이벤트?.title || "런칭 기간 동안 채용공고와 이력서 등록을 무료로 이용하세요."}</span>
+            <span className="mt-hero-sub">{이벤트?.title || "10월 1일 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요."}</span>
             <span className="mt-hero-cta"><span className="t">오픈 혜택 보기</span><span className="mt-arrow">→</span></span>
           </span>
         </Link>
@@ -200,7 +200,7 @@ function Hero() {
                 </div>
                 <Link href={공지 ? `/notice/${공지.id}` : "/notice"} className="mt-notice">
                   <span>
-                    <span className="nt">{공지?.title || "공지사항"}</span>
+                    <span className="nt">{공지?.title || "뷰티워크 서비스 무료 이용 안내"}</span>
                     <span className="ns">{공지 ? "자세히 보기" : "등록된 공지가 없어요"}</span>
                   </span>
                   <ChevronRight size={16} className="mt-chev" />
@@ -220,16 +220,29 @@ function Hero() {
               </div>
             </div>
 
+            {/* 10월 1일 서비스 시작에 맞춘 두 가지. 안내가 둘이라 왼쪽 칸
+                (공지 + 등록 두 개)과 높이가 맞는다. */}
             <Link href={이벤트 ? `/notice/${이벤트.id}` : "/notice"} className="mt-card mt-evt">
               <div className="mt-chead"><span className="t"><span className="mt-dot" />이달의 이벤트</span><span className="mt-evt-tag">EVENT</span></div>
-              <div className="mt-evt-row">
-                <span className="mt-evt-ic" />
-                <span>
-                  <span className="mt-evt-l">이력서 등록하면</span>
-                  <span className="mt-evt-t">나에게 맞는 공고 추천</span>
-                  <span className="mt-evt-s">직군·지역·경력을 보고 골라드려요</span>
+              <div className="mt-evt-list">
+                <span className="mt-evt-row">
+                  <span className="mt-evt-ic"><Coffee size={19} /></span>
+                  <span>
+                    <span className="mt-evt-l">10월, 회원 모두에게</span>
+                    <span className="mt-evt-t">메가커피 아이스아메리카노</span>
+                    <span className="mt-evt-s">2,000원 쿠폰 · 10월 1일부터</span>
+                  </span>
+                  <ArrowRight size={17} className="mt-evt-a" />
                 </span>
-                <ArrowRight size={17} className="mt-evt-a" />
+                <span className="mt-evt-row">
+                  <span className="mt-evt-ic"><TrendingUp size={19} /></span>
+                  <span>
+                    <span className="mt-evt-l">채용공고 등록하면</span>
+                    <span className="mt-evt-t">선착순 상단 노출</span>
+                    <span className="mt-evt-s">먼저 올린 순서대로 · 10월 1일부터</span>
+                  </span>
+                  <ArrowRight size={17} className="mt-evt-a" />
+                </span>
               </div>
             </Link>
           </div>

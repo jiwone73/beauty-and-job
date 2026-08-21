@@ -12145,13 +12145,15 @@ button,
    색은 배너 사진에서 뽑았다(왼쪽 #fcf4f4 · 가운데 #eee4e7 · 오른쪽 끝 #905d79).
    차가운 보라를 쓰면 사진의 따뜻한 모브와 따로 논다.
    ============================================ */
+/* 폰트를 못 박는다. button·input 은 상속받지 않아 여기만 다른 글꼴로 보였다. */
+.mainTop, .mainTop button, .mainTop input, .mainTop a { font-family: var(--font-sans); }
 .mainTop { padding: 16px 0 4px; }
 .mainTop .container { max-width: 1384px; }
-.mt-eyebrow { font-size: 11px; letter-spacing: 2.2px; color: #905d79; font-weight: 600; }
+.mt-eyebrow { font-size: 12px; letter-spacing: 2.2px; color: #905d79; font-weight: 600; }
 
 .mt-hero {
   position: relative; display: block; height: 190px; border-radius: 16px;
-  overflow: hidden; background: #fdf8f9; text-decoration: none; color: inherit;
+  overflow: hidden; background: #faf7fe; text-decoration: none; color: inherit;
 }
 .mt-hero-photo {
   position: absolute; inset: 0;
@@ -12159,64 +12161,75 @@ button,
   background-size: cover; background-position: center;
 }
 .mt-hero-in { position: relative; height: 100%; padding: 0 44px; display: flex; flex-direction: column; justify-content: center; }
-.mt-hero-h { font-size: 28px; line-height: 1.34; letter-spacing: -.6px; margin-top: 9px; color: #1a1a1a; }
+.mt-hero-h { font-size: 29px; line-height: 1.34; letter-spacing: -.6px; margin-top: 9px; color: #1a1a1a; }
 .mt-hero-h b { color: var(--color-primary); font-weight: 700; }
-.mt-hero-sub { font-size: 13px; color: #7a6c72; margin-top: 11px; }
+.mt-hero-sub { font-size: 14px; color: #7a6c72; margin-top: 11px; }
 .mt-hero-cta { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
-.mt-hero-cta .t { font-size: 13px; font-weight: 600; }
+.mt-hero-cta .t { font-size: 14px; font-weight: 600; }
 .mt-arrow { width: 26px; height: 26px; border-radius: 50%; background: var(--color-primary); color: #fff;
   display: flex; align-items: center; justify-content: center; font-size: 13px; }
 
-.mt-jobs { margin-top: 14px; border-radius: 16px; padding: 26px 30px 30px;
-  background: linear-gradient(135deg, #fdf8f9 0%, #f7ecf1 48%, #f1e3ea 100%); }
-.mt-jobs-h { display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px; }
-.mt-jobs-h h2 { margin: 0; font-size: 19px; font-weight: 400; letter-spacing: -.4px; color: #1a1a1a; }
+/* 블록 바탕에 옅은 무늬를 깐다 — 단색 그라데이션만 두면 평평해 보인다. */
+.mt-jobs {
+  position: relative; margin-top: 14px; border-radius: 16px; padding: 26px 30px 30px; overflow: hidden;
+  background:
+    radial-gradient(680px 300px at 8% 0%, rgba(255,255,255,.85), transparent 62%),
+    radial-gradient(520px 380px at 78% 112%, rgba(226,196,214,.42), transparent 66%),
+    radial-gradient(360px 260px at 98% 4%, rgba(240,222,235,.55), transparent 70%),
+    linear-gradient(135deg, #fdf8f9 0%, #f7ecf1 48%, #f1e3ea 100%);
+}
+.mt-jobs-h { position: relative; display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px; }
+.mt-jobs-h h2 { margin: 0; font-size: 20px; font-weight: 400; letter-spacing: -.4px; color: #1a1a1a; }
 .mt-jobs-h h2 b { color: var(--color-primary); font-weight: 700; }
-.mt-cols { display: grid; grid-template-columns: 1.02fr 1.02fr 1fr; gap: 14px; align-items: start; }
-.mt-card { background: #fff; border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
+.mt-cols { position: relative; display: grid; grid-template-columns: 1.02fr 1.02fr 1fr; gap: 14px; align-items: stretch; }
+/* 카드 안쪽은 순백이 아니다 — 바탕의 분홍기를 아주 옅게 머금어야 따로 놀지 않는다. */
+.mt-card { background: #fefcfd; border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
 
-.mt-ask { font-size: 13px; color: #6b6b6b; margin: 0 0 12px; }
+.mt-ask { font-size: 14px; color: #6b6b6b; margin: 0 0 12px; }
 .mt-near { display: inline-flex; align-items: center; gap: 4px; margin-top: 14px;
-  font-size: 12px; font-weight: 600; color: var(--color-primary); text-decoration: none; }
+  font-size: 13px; font-weight: 600; color: var(--color-primary); text-decoration: none; }
 
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.mt-chead .t { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.mt-chead .t { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
 .mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #905d79; flex-shrink: 0; }
-.mt-more { font-size: 11px; color: #a09499; text-decoration: none; }
+.mt-more { font-size: 12px; color: #a09499; text-decoration: none; }
 .mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-decoration: none; color: inherit; }
-.mt-notice .nt { display: block; font-size: 13px; font-weight: 600; }
-.mt-notice .ns { display: block; font-size: 12px; color: #a09499; margin-top: 5px; }
+.mt-notice .nt { display: block; font-size: 14px; font-weight: 600; }
+.mt-notice .ns { display: block; font-size: 13px; color: #a09499; margin-top: 5px; }
 .mt-chev { color: #d5c8ce; flex-shrink: 0; }
 
 .mt-regs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-.mt-reg { background: #fff; border-radius: 14px; padding: 14px 15px; display: flex; align-items: center; gap: 11px;
+.mt-reg { background: #fefcfd; border-radius: 14px; padding: 14px 15px; display: flex; align-items: center; gap: 11px;
   text-decoration: none; color: inherit; border: none; cursor: pointer; font-family: inherit; text-align: left; width: 100%; }
 .mt-reg-i { width: 30px; height: 30px; border-radius: 8px; background: #f7ecf1; color: var(--color-primary);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.mt-reg-l { display: block; font-size: 11px; color: #a09499; }
-.mt-reg-t { display: block; font-size: 13px; font-weight: 700; margin-top: 3px; }
+.mt-reg-l { display: block; font-size: 12px; color: #a09499; }
+.mt-reg-t { display: block; font-size: 14px; font-weight: 700; margin-top: 3px; white-space: nowrap; }
 .mt-reg-a { margin-left: auto; color: var(--color-primary); flex-shrink: 0; }
 
-.mt-evt { position: relative; min-height: 150px; }
-.mt-evt-tag { font-size: 10px; letter-spacing: 1.4px; color: #a09499; font-weight: 600; }
-.mt-evt-row { display: flex; align-items: center; gap: 14px; margin-top: 22px; }
-.mt-evt-ic { width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
-  background: linear-gradient(135deg, #f7ecf1, #f1e3ea); }
-.mt-evt-l { display: block; font-size: 11px; color: #a09499; }
-.mt-evt-t { display: block; font-size: 15px; font-weight: 700; margin-top: 4px; letter-spacing: -.3px; }
-.mt-evt-s { display: block; font-size: 11px; color: #a09499; margin-top: 5px; }
+/* 이달의 이벤트 — 안내가 둘이라 왼쪽 칸(공지 + 등록 두 개)과 높이가 맞는다. */
+.mt-evt { display: flex; flex-direction: column; }
+.mt-evt-tag { font-size: 11px; letter-spacing: 1.4px; color: #a09499; font-weight: 600; }
+.mt-evt-list { display: flex; flex-direction: column; gap: 12px; }
+.mt-evt-row { display: flex; align-items: center; gap: 13px; }
+.mt-evt-row + .mt-evt-row { border-top: 1px solid #f5ebef; padding-top: 12px; }
+.mt-evt-ic { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; color: var(--color-primary);
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #f9f0f4, #f1e3ea); }
+.mt-evt-l { display: block; font-size: 12px; color: #a09499; }
+.mt-evt-t { display: block; font-size: 15px; font-weight: 700; margin-top: 3px; letter-spacing: -.3px; }
+.mt-evt-s { display: block; font-size: 12px; color: #a09499; margin-top: 4px; }
 .mt-evt-a { margin-left: auto; color: var(--color-primary); flex-shrink: 0; }
 
-.mt-ticker { margin-top: 14px; border: 1px solid #f0e6ea; border-radius: 12px; height: 44px;
-  display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #fff; overflow: hidden; }
-.mt-tk-l { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 7px;
+.mt-ticker { margin-top: 14px; border: 1px solid #f0e6ea; border-radius: 12px; height: 46px;
+  display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #fefcfd; overflow: hidden; }
+.mt-tk-l { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 7px;
   white-space: nowrap; flex-shrink: 0; padding-right: 20px; border-right: 1px solid #f0e6ea; }
 .mt-tk-view { flex: 1; min-width: 0; overflow: hidden; }
 .mt-tk-track { display: inline-flex; align-items: center; gap: 36px; white-space: nowrap; animation: mtRoll 32s linear infinite; }
-.mt-tk-item { font-size: 12px; color: #6b6b6b; text-decoration: none; }
-.mt-tk-item i { font-style: normal; font-weight: 700; color: #905d79; margin-right: 7px; font-size: 10px; letter-spacing: .5px; }
+.mt-tk-item { font-size: 13px; color: #6b6b6b; text-decoration: none; }
+.mt-tk-item i { font-style: normal; font-weight: 700; color: #905d79; margin-right: 7px; font-size: 11px; letter-spacing: .5px; }
 @keyframes mtRoll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-/* 움직임을 싫어하는 설정이면 멈춘다 */
 @media (prefers-reduced-motion: reduce) { .mt-tk-track { animation: none; } }
 
 @media (max-width: 1024px) {
@@ -12227,9 +12240,9 @@ button,
 @media (max-width: 640px) {
   .mainTop { padding: 10px 0 2px; }
   .mt-hero-in { padding: 22px 20px; }
-  .mt-hero-h { font-size: 22px; }
+  .mt-hero-h { font-size: 23px; }
   .mt-jobs { padding: 18px 16px 20px; border-radius: 14px; }
   .mt-jobs-h { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .mt-jobs-h h2 { font-size: 16px; }
+  .mt-jobs-h h2 { font-size: 17px; }
   .mt-ticker { padding-left: 14px; gap: 12px; }
 }
