@@ -387,18 +387,8 @@ function SectionPick() {
           <p className="empty-state">등록된 공고가 없습니다.</p>
         ) : (
           <div className="card-grid card-grid-4">
-            {mappedJobs.map((job: any, i: number) => (
-              <div key={job.id}>
-                <JobCard data={job} variant="grid" />
-                {/* 왜 이게 떴는지 밝힌다. 규칙으로 매긴 점수라 근거를 그대로 말할 수 있다. */}
-                {맞춤 && jobs[i]?.reasons?.length > 0 && (
-                  <div className="pick-why">
-                    {jobs[i].reasons.map((r: string) => (
-                      <span key={r} className="pick-why-tag">{r}</span>
-                    ))}
-                  </div>
-                )}
-              </div>
+            {mappedJobs.map((job: any) => (
+              <JobCard key={job.id} data={job} variant="grid" />
             ))}
           </div>
         )}
