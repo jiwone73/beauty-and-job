@@ -12187,6 +12187,12 @@ button,
 .mt-jobs-h h2 { margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -.4px; color: #1a1a1a; }
 .mt-jobs-h h2 b { color: var(--color-primary); font-weight: 700; }
 .mt-cols { position: relative; display: grid; grid-template-columns: 1.02fr 1.02fr 1fr; gap: 14px; align-items: stretch; }
+/* 가운데 칸은 카드 둘(공지 + 등록)을 세로로 담는다. 위 카드를 늘려 칸을 채워야
+   오른쪽 이벤트 카드와 같은 무게로 보인다. 안 채우면 바탕이 더 비쳐 왼쪽만
+   하얗게 뜬 것처럼 읽힌다. */
+.mt-colmid { display: flex; flex-direction: column; }
+.mt-colmid > .mt-card { flex: 1; display: flex; flex-direction: column; }
+.mt-colmid > .mt-card > .mt-notice { flex: 1; align-items: center; }
 /* 카드 안쪽은 순백이 아니다 — 바탕의 보라기를 아주 옅게 머금어야 따로 놀지 않는다. */
 .mt-card { background: #fdfcff; border-radius: 14px; padding: 18px 20px; text-decoration: none; color: inherit; display: block; }
 
@@ -12195,11 +12201,11 @@ button,
   font-size: 14px; font-weight: 600; color: var(--color-primary); text-decoration: none; }
 
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.mt-chead .t { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.mt-chead .t { font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
 .mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #7a5f9a; flex-shrink: 0; }
 .mt-more { font-size: 13px; color: #9a94a4; text-decoration: none; }
 .mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-decoration: none; color: inherit; }
-.mt-notice .nt { display: block; font-size: 15px; font-weight: 600; }
+.mt-notice .nt { display: block; font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; }
 .mt-notice .ns { display: block; font-size: 14px; color: #9a94a4; margin-top: 5px; }
 .mt-chev { color: #cdc6d8; flex-shrink: 0; }
 
@@ -12209,7 +12215,7 @@ button,
 /* 아이콘에 칩(바탕)을 씌우지 않는다 — 아이콘만으로 충분하고, 칩이 붙으면 버튼처럼 보인다. */
 .mt-reg-i { color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .mt-reg-l { display: block; font-size: 13px; color: #9a94a4; }
-.mt-reg-t { display: block; font-size: 15px; font-weight: 700; margin-top: 3px; white-space: nowrap; }
+.mt-reg-t { display: block; font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; margin-top: 3px; white-space: nowrap; }
 .mt-reg-a { margin-left: auto; color: var(--color-primary); flex-shrink: 0; }
 
 /* 이달의 이벤트 — 안내가 둘이라 왼쪽 칸(공지 + 등록 두 개)과 높이가 맞는다. */
@@ -12220,13 +12226,13 @@ button,
 .mt-evt-row + .mt-evt-row { border-top: 1px solid #f0ecf7; padding-top: 12px; }
 .mt-evt-ic { flex-shrink: 0; color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
 .mt-evt-l { display: block; font-size: 13px; color: #9a94a4; }
-.mt-evt-t { display: block; font-size: 16px; font-weight: 700; margin-top: 3px; letter-spacing: -.3px; }
+.mt-evt-t { display: block; font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; margin-top: 3px; }
 .mt-evt-s { display: block; font-size: 13px; color: #9a94a4; margin-top: 4px; }
 .mt-evt-a { margin-left: auto; color: var(--color-primary); flex-shrink: 0; }
 
 .mt-ticker { margin-top: 14px; border: 1px solid #efeaf7; border-radius: 12px; height: 48px;
   display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #fdfcff; overflow: hidden; }
-.mt-tk-l { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 7px;
+.mt-tk-l { font-size: 16px; font-weight: 600; color: #222; display: flex; align-items: center; gap: 7px;
   white-space: nowrap; flex-shrink: 0; padding-right: 20px; border-right: 1px solid #efeaf7; }
 .mt-tk-view { flex: 1; min-width: 0; overflow: hidden; }
 .mt-tk-track { display: inline-flex; align-items: center; gap: 36px; white-space: nowrap; animation: mtRoll 32s linear infinite; }

@@ -188,7 +188,7 @@ function Hero() {
               <RegionSelectModal open={modalOpen} initial={selected} onClose={() => setModalOpen(false)} onApply={setSelected} />
             </div>
 
-            <div>
+            <div className="mt-colmid">
               <div className="mt-card">
                 <div className="mt-chead">
                   <span className="t"><span className="mt-dot" />공지사항</span>
