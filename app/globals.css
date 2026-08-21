@@ -12221,10 +12221,10 @@ button,
   font-family: inherit; font-size: 16px; font-weight: 600; letter-spacing: -.2px;
   cursor: pointer; text-decoration: none; width: 100%; transition: background .15s, border-color .15s;
 }
-.mt-btn.fill { background: var(--color-primary); color: #fff; border: 1px solid var(--color-primary); }
-.mt-btn.fill:hover { background: #4d0068; }
-.mt-btn.line { background: #fff; color: var(--color-primary); border: 1px solid #d9c8e6; }
-.mt-btn.line:hover { border-color: var(--color-primary); background: #faf6fd; }
+/* 둘 다 테두리 버튼으로 둔다. 한쪽만 채우면 색이 앞으로 튀어나와,
+   차분한 연보라 바탕 위에서 그 자리만 광고처럼 읽힌다. */
+.mt-btn { background: #fff; color: var(--color-primary); border: 1px solid #d9c8e6; }
+.mt-btn:hover { border-color: var(--color-primary); background: #faf6fd; }
 
 /* 이달의 이벤트 — 안내가 둘이라 왼쪽 칸(공지 + 등록 두 개)과 높이가 맞는다. */
 .mt-evt { display: flex; flex-direction: column; }

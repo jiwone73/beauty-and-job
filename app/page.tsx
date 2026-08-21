@@ -210,12 +210,11 @@ function Hero() {
                 </Link>
               </div>
               <div className="mt-regs">
-                {/* 카드가 아니라 버튼이다 — 누르는 자리라는 것이 모양으로 보여야 한다.
-                    이력서는 채운 버튼, 공고는 테두리 버튼으로 무게를 나눈다. */}
-                <ResumeCta className="mt-btn fill">이력서 등록</ResumeCta>
+                {/* 카드가 아니라 버튼이다 — 누르는 자리라는 것이 모양으로 보여야 한다. */}
+                <ResumeCta className="mt-btn">이력서 등록</ResumeCta>
                 <button
                   type="button"
-                  className="mt-btn line"
+                  className="mt-btn"
                   onClick={() => router.push(
                     isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
                   )}
