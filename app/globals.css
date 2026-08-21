@@ -12176,12 +12176,11 @@ button,
    · 한쪽만 희거나 보라해지지 않게, 큰 원 대신 고른 톤 위에 무늬만 얹는다. */
 .mt-jobs {
   position: relative; margin-top: 14px; border-radius: 16px; padding: 26px 30px 30px; overflow: hidden;
-  background-color: #f8f5fd;
-  background-image:
-    radial-gradient(circle, rgba(122, 95, 154, .07) 1px, transparent 1.4px),
-    linear-gradient(135deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 55%, rgba(226,216,244,.28) 100%);
-  background-size: 22px 22px, 100% 100%;
-  background-position: 0 0, 0 0;
+  /* 고른 색 + 점 무늬만. 대각선 그라데이션을 얹으면 왼쪽 끝이 흰색 55% 로
+     덮이고 오른쪽 끝이 보라로 짙어져, 같은 색 카드가 자리마다 다르게 보였다. */
+  background-color: #f6f3fc;
+  background-image: radial-gradient(circle, rgba(122, 95, 154, .07) 1px, transparent 1.4px);
+  background-size: 22px 22px;
 }
 .mt-jobs-h { position: relative; margin-bottom: 18px; }
 .mt-jobs-h h2 { margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -.4px; color: #1a1a1a; }
@@ -12214,7 +12213,10 @@ button,
 .mt-notice .ns { display: block; font-size: 14px; color: #9a94a4; margin-top: 5px; }
 .mt-chev { color: #cdc6d8; flex-shrink: 0; }
 
-.mt-regs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.mt-start { margin-top: 12px; }
+.mt-start .mt-chead { margin-bottom: 6px; }
+.mt-start-desc { font-size: 14px; color: #9a94a4; margin: 0 0 14px; }
+.mt-regs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 /* 등록은 버튼이다. 카드처럼 보이면 눌러도 되는 자리인지 한 번 더 생각하게 된다. */
 .mt-btn {
   height: 52px; border-radius: 10px; display: flex; align-items: center; justify-content: center;

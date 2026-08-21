@@ -209,18 +209,25 @@ function Hero() {
                   <ChevronRight size={16} className="mt-chev" />
                 </Link>
               </div>
-              <div className="mt-regs">
-                {/* 카드가 아니라 버튼이다 — 누르는 자리라는 것이 모양으로 보여야 한다. */}
-                <ResumeCta className="mt-btn">이력서 등록</ResumeCta>
-                <button
-                  type="button"
-                  className="mt-btn"
-                  onClick={() => router.push(
-                    isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
-                  )}
-                >
-                  채용공고 등록
-                </button>
+              {/* 버튼만 떠 있으면 위 공지와 이어지지 않는다. 카드로 감싸고
+                  무엇을 하는 자리인지 한 줄로 적는다. */}
+              <div className="mt-card mt-start">
+                <div className="mt-chead">
+                  <span className="t"><span className="mt-dot" />무료로 시작하기</span>
+                </div>
+                <p className="mt-start-desc">등록비 없이 바로 올릴 수 있어요.</p>
+                <div className="mt-regs">
+                  <ResumeCta className="mt-btn">이력서 등록</ResumeCta>
+                  <button
+                    type="button"
+                    className="mt-btn"
+                    onClick={() => router.push(
+                      isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
+                    )}
+                  >
+                    채용공고 등록
+                  </button>
+                </div>
               </div>
             </div>
 
