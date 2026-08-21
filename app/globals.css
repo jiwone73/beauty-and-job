@@ -11623,11 +11623,64 @@ div:has(> table.admin-table),
   font-weight: 500;
 }
 
-/* 내 주변 채용 지도 높이 (모바일 320 / PC 560 — 더 정사각형에 가깝게) */
+/* ── 내 주변 채용 ──────────────────────────────────────────────
+   지도가 이 화면의 본체다. 폰에서는 화면 폭을 다 쓰고, 마우스 화면에서는
+   목록보다 지도에 자리를 더 준다 — 어디에 몰려 있는지가 한눈에 보여야
+   "여기서 찾아볼까"가 시작된다. */
+.nb-page { max-width: 640px; margin: 0 auto; padding-bottom: 40px; }
 .nearby-map-wrap { height: 320px; }
 @media (min-width: 768px) {
-  .nearby-map-wrap { height: 480px; }
+  .nb-page { max-width: 1080px; }
+  .nearby-map-wrap { height: 560px; }
+  /* 지도가 넓어지면 목록도 그만큼 넓어져 한 줄이 휑해진다. 두 줄로 나눈다. */
+  .nb-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 8px; }
+  .nb-list > p { grid-column: 1 / -1; }
 }
+.nb-list { padding: 8px 0; }
+
+/* 지도 위에 얹는 것들. 지도를 가리지 않도록 왼쪽 위 한 귀퉁이만 쓴다. */
+.nb-find { position: absolute; top: 10px; left: 10px; z-index: 7; width: min(300px, calc(100% - 20px)); }
+.nb-find-box { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 11px;
+  background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.16); color: #8a8a8a; }
+.nb-find-box input { flex: 1; min-width: 0; border: none; outline: none; background: none;
+  font-family: inherit; font-size: 14px; color: #1a1a1a; }
+.nb-find-box input::placeholder { color: #a5a0ad; }
+.nb-find-box button { border: none; background: none; cursor: pointer; color: #999;
+  font-size: 17px; line-height: 1; padding: 0; }
+.nb-find-list { list-style: none; margin: 6px 0 0; padding: 4px; background: #fff;
+  border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.16); max-height: 264px; overflow-y: auto; }
+.nb-find-list button { display: block; width: 100%; text-align: left; border: none; background: none;
+  cursor: pointer; padding: 8px 9px; border-radius: 7px; font-family: inherit; }
+.nb-find-list button:hover { background: #f6f2fb; }
+.nb-find-list b { display: block; font-size: 14px; font-weight: 600; color: #1a1a1a; }
+.nb-find-list span { display: block; font-size: 12px; color: #999; margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb-find-none { padding: 10px 9px; font-size: 13px; color: #999; }
+
+.nb-how { font-size: 12.5px; color: #8e8896; margin: 10px 0 0; line-height: 1.5; word-break: keep-all; }
+.nb-how b { color: #6b6474; font-weight: 600; }
+
+/* 매장 표시. 핀 하나에 이름과 공고 수를 함께 실어, 지도만 보고도 어디가
+   사람을 구하는지 읽히게 한다. */
+.nb-pin { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px;
+  background: #fff; border: 1px solid #e3d8ef; border-radius: 999px; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.14); white-space: nowrap; transform: translateX(-50%); }
+.nb-pin:hover { border-color: var(--color-primary); }
+.nb-pin-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-primary); flex-shrink: 0; }
+.nb-pin-t { font-size: 12.5px; font-weight: 600; color: #1a1a1a; max-width: 130px;
+  overflow: hidden; text-overflow: ellipsis; }
+.nb-pin-n { font-size: 11px; font-weight: 700; color: #fff; background: var(--color-primary);
+  border-radius: 999px; padding: 1px 6px; }
+.nb-iw { padding: 9px 11px; max-width: 230px; }
+.nb-iw b { display: block; font-size: 12.5px; color: #666; font-weight: 600; margin-bottom: 6px; }
+.nb-iw a { display: block; font-size: 13.5px; font-weight: 600; color: #1a1a1a;
+  text-decoration: none; padding: 4px 0; border-top: 1px solid #f2f2f2; }
+.nb-iw a:hover { color: var(--color-primary); }
+
+/* 지도 조작법 안내. 검색창과 겹치지 않게 아래쪽에 둔다. */
+.nb-hint { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); z-index: 6;
+  padding: 5px 12px; background: rgba(0,0,0,.55); color: #fff; border-radius: 16px;
+  font-size: 12px; font-weight: 500; white-space: nowrap; pointer-events: none; }
 
 /* 모바일: 채용 카드 스크랩(북마크) 버튼 축소 (썸네일 가림 최소화) */
 @media (max-width: 768px) {

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { jobCompanyName } from "@/lib/companyName";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Crosshair } from "lucide-react";
+import { ChevronLeft, Crosshair, Search } from "lucide-react";
 
 declare global {
   interface Window { kakao: any }
@@ -86,6 +86,11 @@ export default function NearbyJobsPage() {
   const [loading, setLoading] = useState(false);
   const [areaLabel, setAreaLabel] = useState("");
   const [notice, setNotice] = useState("");
+  // 지도 위 주소 찾기. 타이핑하는 동안 후보가 따라 나오고, 고르면 지도가 그리로 간다.
+  const [주소글, set주소글] = useState("");
+  const [후보, set후보] = useState<{ name: string; sub: string; lat: number; lng: number }[]>([]);
+  const [후보열림, set후보열림] = useState(false);
+  const 찾기지연 = useRef<any>(null);
 
   const radiusRef = useRef(radius);
   const typeRef = useRef(type);
@@ -222,29 +227,122 @@ export default function NearbyJobsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radius]);
 
-  // 실제 회사·매장 위치에 마커 표시
+  // 매장 위치를 지도에 세운다.
+  //
+  // 기본 핀으로는 두 가지가 안 됐다. 한 매장에 공고가 여럿이면 좌표가 같아
+  // 마커가 그대로 포개져 일곱 개가 하나로 보였고, 이름은 마우스를 올려야
+  // 나와서 폰에서는 아예 볼 수 없었다.
+  //
+  // 그래서 매장 단위로 묶어 하나만 세우고, 이름과 공고 수를 늘 보이게 한다.
+  // 지도만 보고도 "이 동네에 어디가 사람을 구하는지"를 읽을 수 있어야 한다.
   useEffect(() => {
     if (!mapObj.current) return;
     markersRef.current.forEach((m) => m.setMap(null));
     markersRef.current = [];
     const map = mapObj.current;
+
+    const 매장별 = new Map<string, Job[]>();
     jobs.forEach((j) => {
-      const lat = Number(j.latitude);
-      const lng = Number(j.longitude);
-      if (!lat || !lng) return;
-      const marker = new window.kakao.maps.Marker({
-        position: new window.kakao.maps.LatLng(lat, lng),
-        map,
+      if (!Number(j.latitude) || !Number(j.longitude)) return;
+      const 목록 = 매장별.get(j.company_id);
+      if (목록) 목록.push(j);
+      else 매장별.set(j.company_id, [j]);
+    });
+
+    매장별.forEach((목록) => {
+      const j = 목록[0];
+      const pos = new window.kakao.maps.LatLng(Number(j.latitude), Number(j.longitude));
+      const 이름 = jobCompanyName(j.job_type, j.company_name, j.brand_name) || "매장";
+
+      // 매장 이름은 남이 적은 글이다. innerHTML 로 붙이면 그대로 실행되므로
+      // textContent 로만 넣는다.
+      const el = document.createElement("div");
+      el.className = "nb-pin";
+      const dot = document.createElement("span"); dot.className = "nb-pin-dot";
+      const t = document.createElement("span"); t.className = "nb-pin-t"; t.textContent = 이름;
+      el.append(dot, t);
+      if (목록.length > 1) {
+        const n = document.createElement("span"); n.className = "nb-pin-n";
+        n.textContent = String(목록.length);
+        el.append(n);
+      }
+
+      const overlay = new window.kakao.maps.CustomOverlay({
+        position: pos, content: el, yAnchor: 1.1, clickable: true,
       });
-      const iw = new window.kakao.maps.InfoWindow({
-        content: `<div style="padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis">${jobCompanyName(j.job_type, j.company_name, j.brand_name)} · ${fmtDist(j.distance_km)}</div>`,
+      overlay.setMap(map);
+
+      // 공고가 하나면 바로 그 공고로. 여럿이면 무엇이 있는지 먼저 보여 준다.
+      const iw = new window.kakao.maps.InfoWindow({ position: pos, removable: true });
+      el.addEventListener("click", () => {
+        if (목록.length === 1) { router.push(`/jobs/${j.id}`); return; }
+        const box = document.createElement("div");
+        box.className = "nb-iw";
+        const h = document.createElement("b"); h.textContent = `${이름} · ${목록.length}건`;
+        box.append(h);
+        목록.forEach((it) => {
+          const a = document.createElement("a");
+          a.href = `/jobs/${it.id}`;
+          a.textContent = it.title;
+          a.addEventListener("click", (ev) => { ev.preventDefault(); router.push(`/jobs/${it.id}`); });
+          box.append(a);
+        });
+        iw.setContent(box);
+        iw.open(map);
       });
-      window.kakao.maps.event.addListener(marker, "click", () => router.push(`/jobs/${j.id}`));
-      window.kakao.maps.event.addListener(marker, "mouseover", () => iw.open(map, marker));
-      window.kakao.maps.event.addListener(marker, "mouseout", () => iw.close());
-      markersRef.current.push(marker);
+
+      markersRef.current.push(overlay);
     });
   }, [jobs, router]);
+
+  // 주소로 먼저 묻고, 없으면 장소로 묻는다.
+  //
+  // 순서가 중요하다. 장소 검색을 먼저 하면 "서초동"에 서초약수터·푸드트럭존이
+  // 앞에 나온다 — 동네를 찾는 사람에게는 쓸모없는 답이다. 주소 검색은 같은
+  // 말에 "서울 서초구 서초동"을 정확히 준다.
+  //
+  // 반대로 "강남역", "롯데백화점"은 주소가 아니라서 주소 검색이 비운다.
+  // 그때 장소 검색이 받는다.
+  const 후보찾기 = useCallback((말: string) => {
+    const w = window as any;
+    if (!말.trim() || !w.kakao?.maps?.services) { set후보([]); return; }
+    const 담기 = (목록: any[]) => {
+      set후보(목록.slice(0, 6).map((x) => ({
+        name: x.place_name || x.address_name,
+        sub: x.road_address_name || x.address_name || "",
+        lat: parseFloat(x.y), lng: parseFloat(x.x),
+      })));
+      set후보열림(true);
+    };
+    const 장소로 = () => {
+      const ps = new w.kakao.maps.services.Places();
+      ps.keywordSearch(말, (res: any[], st: string) => {
+        if (st === w.kakao.maps.services.Status.OK && res.length) 담기(res);
+        else { set후보([]); set후보열림(true); }
+      });
+    };
+    if (!geocoder.current) { 장소로(); return; }
+    geocoder.current.addressSearch(말, (res: any[], st: string) => {
+      if (st === w.kakao.maps.services.Status.OK && res.length) 담기(res);
+      else 장소로();
+    });
+  }, []);
+
+  const 주소바뀜 = (v: string) => {
+    set주소글(v);
+    if (찾기지연.current) clearTimeout(찾기지연.current);
+    if (!v.trim()) { set후보([]); set후보열림(false); return; }
+    // 한 글자 칠 때마다 물으면 후보가 깜빡인다. 손이 멈추면 묻는다.
+    찾기지연.current = setTimeout(() => 후보찾기(v), 300);
+  };
+
+  const 후보로이동 = (c: { name: string; lat: number; lng: number }) => {
+    set주소글(c.name);
+    set후보열림(false);
+    if (mapObj.current) {
+      mapObj.current.setCenter(new (window as any).kakao.maps.LatLng(c.lat, c.lng));
+    }
+  };
 
   const goCurrentLocation = useCallback(() => {
     if (!navigator.geolocation || !mapObj.current) return;
@@ -256,7 +354,7 @@ export default function NearbyJobsPage() {
   }, []);
 
   return (
-    <div style={{ maxWidth: 640, margin: "0 auto", paddingBottom: 40 }}>
+    <div className="nb-page">
       {/* 헤더 */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "14px 16px", borderBottom: "1px solid #eee", position: "sticky", top: 0, background: "#fff", zIndex: 20 }}>
         <button onClick={() => {
@@ -285,9 +383,47 @@ export default function NearbyJobsPage() {
           <Crosshair size={20} color="#5f0080" />
         </button>
         {/* 안내 */}
-        <div style={{ position: "absolute", top: 10, left: "50%", transform: "translateX(-50%)", zIndex: 6, padding: "5px 12px", background: "rgba(0,0,0,0.55)", color: "#fff", borderRadius: 16, fontSize: 12, fontWeight: 500, whiteSpace: "nowrap", pointerEvents: "none" }}>
-          지도를 움직이면 그 위치로 검색돼요
+        {/* 지도 위 주소 찾기. 지금 자리가 아닌 데를 보고 싶을 때 — 이사 갈
+            동네, 학원 근처 — 지도를 끌어서 찾아가는 것보다 이름을 치는 편이
+            빠르다. 지도 위에 얹어야 '이 지도를 옮기는 것'으로 읽힌다. */}
+        <div className="nb-find">
+          <div className="nb-find-box">
+            <Search size={16} />
+            <input
+              value={주소글}
+              onChange={(e) => 주소바뀜(e.target.value)}
+              onFocus={() => { if (후보.length) set후보열림(true); }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") { e.preventDefault(); if (후보[0]) 후보로이동(후보[0]); }
+                if (e.key === "Escape") set후보열림(false);
+              }}
+              placeholder="동네·역·건물 이름으로 옮기기"
+              aria-label="지도를 옮길 곳"
+            />
+            {주소글 && (
+              <button type="button" aria-label="지우기"
+                onClick={() => { set주소글(""); set후보([]); set후보열림(false); }}>×</button>
+            )}
+          </div>
+          {후보열림 && (
+            <ul className="nb-find-list">
+              {후보.length === 0 ? (
+                <li className="nb-find-none">그런 곳을 못 찾았어요</li>
+              ) : (
+                후보.map((c, i) => (
+                  <li key={`${c.name}-${i}`}>
+                    <button type="button" onClick={() => 후보로이동(c)}>
+                      <b>{c.name}</b>
+                      {c.sub && <span>{c.sub}</span>}
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
         </div>
+
+        <div className="nb-hint">지도를 움직이면 그 위치로 검색돼요</div>
       </div>
 
       {/* 반경 · 유형 컨트롤 */}
@@ -309,6 +445,11 @@ export default function NearbyJobsPage() {
             </button>
           ))}
         </div>
+        {/* 이 화면이 어떻게 도는지 한 줄로 말해 둔다. 지도는 조작법을 스스로
+            설명하지 못해서, 처음 온 사람은 끌어 볼 생각을 못 한다. */}
+        <p className="nb-how">
+          지금 있는 자리에서 열려요. 지도를 끌거나 <b>위쪽 칸에 동네·역 이름을 넣으면</b> 그 자리 주변 공고를 바로 찾아드려요.
+        </p>
       </div>
 
       {notice && (
@@ -316,7 +457,7 @@ export default function NearbyJobsPage() {
       )}
 
       {/* 리스트 */}
-      <div style={{ padding: "8px 0" }}>
+      <div className="nb-list">
         {loading ? (
           <p style={{ textAlign: "center", color: "#888", padding: "32px 0", fontSize: 14 }}>불러오는 중…</p>
         ) : jobs.length === 0 ? (
