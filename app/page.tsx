@@ -149,7 +149,6 @@ function Hero() {
             <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
             <span className="mt-hero-h">뷰티 커리어의 시작,<br /><b>뷰티워크</b></span>
             <span className="mt-hero-sub">{이벤트?.title || "10월 1일 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요."}</span>
-            <span className="mt-hero-cta"><span className="t">오픈 혜택 보기</span></span>
           </span>
         </Link>
 
@@ -224,6 +223,9 @@ function Hero() {
               <div className="mt-card mt-evt">
                 <div className="mt-chead">
                   <Link href="/event" className="t"><Gift size={17} className="mt-ic" />이달의 이벤트</Link>
+                  {/* 언제 왜 주는지는 두 혜택에 공통이다. 줄마다 되풀이하지 않고
+                      제목 옆에 한 번만 둔다. */}
+                  <span className="mt-evt-when">10월 오픈 기념</span>
                 </div>
                 <div className="mt-evt-list">
                   <div className="mt-evt-item">
@@ -235,7 +237,7 @@ function Hero() {
                       <span className="mt-evt-ic"><Coffee size={19} /></span>
                       <span className="mt-evt-txt">
                         <span className="mt-evt-l">이력서를 등록하면</span>
-                        <span className="mt-evt-t">아이스 아메리카노가 공짜</span>
+                        <span className="mt-evt-t">무료 메가MGC 커피</span>
                         <span className="mt-evt-s">2,000원 쿠폰 지급</span>
                       </span>
                       <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/event"} className="mt-evt-more">자세히 보기 ›</Link>
@@ -258,7 +260,7 @@ function Hero() {
                       <span className="mt-evt-ic"><TrendingUp size={19} /></span>
                       <span className="mt-evt-txt">
                         <span className="mt-evt-l">채용공고를 등록하면</span>
-                        <span className="mt-evt-t">선착순 무료 상단 노출</span>
+                        <span className="mt-evt-t">무료 상단 노출</span>
                         <span className="mt-evt-s">먼저 올린 순서대로 · 10월 1일부터</span>
                       </span>
                       <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/event"} className="mt-evt-more">자세히 보기 ›</Link>

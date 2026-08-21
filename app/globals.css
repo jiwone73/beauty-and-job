@@ -12249,8 +12249,6 @@ button,
 .mt-hero-h { font-size: 30px; line-height: 1.34; letter-spacing: -.6px; margin-top: 9px; color: #1a1a1a; }
 .mt-hero-h b { color: var(--color-primary); font-weight: 700; }
 .mt-hero-sub { font-size: 15px; color: #6f6577; margin-top: 11px; }
-.mt-hero-cta { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
-.mt-hero-cta .t { font-size: 15px; font-weight: 600; }
 
 /* 바탕.
    · 페이지 바탕(#fdfbff)과 아주 살짝만 다르게 둔다. 세게 칠하면 박스가
@@ -12302,6 +12300,9 @@ button,
 
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .mt-chead .t { font-size: 16px; text-decoration: none; font-weight: 600; color: #222; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
+.mt-evt-when { font-size: 12px; font-weight: 600; color: var(--color-primary);
+  background: #f3ecfa; border-radius: 5px; padding: 3px 8px; white-space: nowrap; }
+
 /* 카드 제목 앞 아이콘. 점 하나보다 무엇에 관한 칸인지 먼저 말해 준다. */
 .mt-ic { color: var(--color-primary); flex-shrink: 0; }
 .mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #7a5f9a; flex-shrink: 0; }
