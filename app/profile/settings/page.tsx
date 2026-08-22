@@ -101,7 +101,7 @@ export default function AccountSettingsPage() {
         <button type="button" onClick={() => router.back()} aria-label="뒤로">
           <ChevronLeft size={22} />
         </button>
-        <h1>계정 설정</h1>
+        <h1>설정</h1>
       </div>
 
       <div className="pf-set-body">

@@ -554,7 +554,7 @@ export default function ProfilePage() {
     <ProfileShell>
       <div className="profile-content">
             <section className="profile-section">
-              <div className="profile-info-card">
+              <div className="profile-info-card pf-grid">
                 <div style={{ padding: "11px 16px", borderBottom: "1px solid #efeff1", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
                   <span className="profile-info-label">이름/사진<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", position: "relative" }}>
@@ -882,7 +882,7 @@ export default function ProfilePage() {
 
             {/* 직무·희망 조건 — 기본 정보에 이어 한 줄씩 */}
             <section className="profile-section" style={{ marginTop: 0 }}>
-              <div className="profile-info-card">
+              <div className="profile-info-card pf-grid">
                 <InfoRow
                   label="직군"
                   value={jobAreaSummary([...skillAreas, ...officeJobAreas])}

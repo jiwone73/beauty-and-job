@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Settings, Bell, X } from "lucide-react";
+import Header from "@/components/Header";
+import { Bell, X } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -93,14 +94,27 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
 
   return (
     <main className="profile-page">
-    <header className="profile-header">
-      <div className="profile-header-inner">
-        <Link href="/" className="profile-logo">
-          <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
-        </Link>
+      {/* 프로필만 다른 머리줄을 쓸 이유가 없다. 톱니는 사이드에 '설정'이
+          있으니 없앴고, 알림은 사이드 위로 옮겼다. */}
+      <Header />
 
-        <Link href="/jobs" className="profile-header-nav">채용공고</Link>
-        <div style={{ position: "relative", display: "inline-flex", marginLeft: "auto" }}>
+      {/* 폰 — 위쪽 탭 줄. 계정 설정은 여기 없다(톱니바퀴로 간다). 그 화면에서는
+          켤 탭이 없으니 줄 자체를 접는다. */}
+      {메뉴.some((m) => m.href === pathname) && (
+      <div className="profile-tabs pf-mob">
+        {메뉴.map((m) => (
+          <button key={m.href} className={`profile-tab ${pathname === m.href ? "active" : ""}`}
+            onClick={() => router.push(m.href)}>{m.글}</button>
+        ))}
+      </div>
+      )}
+
+      <div className="pf-body">
+        {/* PC — 왼쪽 사이드 메뉴. 계정 설정과 로그아웃은 선 아래에 둔다.
+            보는 화면을 고르는 일과 계정을 다루는 일은 성격이 다르다. */}
+        <nav className="pf-side">
+          {/* 머리줄에서 내려온 알림. */}
+          <div className="pf-side-notif">        <div style={{ position: "relative", display: "inline-flex", marginLeft: "auto" }}>
           <button
             className="profile-settings-btn"
             onClick={() => setNotifOpen((v) => !v)}
@@ -142,39 +156,12 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
             </>
           )}
         </div>
-        {/* 톱니는 계정 설정으로 간다. 알림 설정만 열던 자리였는데, 톱니를
-            보고 기대하는 것은 알림 하나가 아니라 계정 전반이다.
-            알림 설정은 그 페이지 안으로 옮겼다. */}
-        <Link
-          href="/profile/settings"
-          className="profile-settings-btn"
-          aria-label="계정 설정"
-        >
-          <Settings size={22} />
-        </Link>
-      </div>
-    </header>
-
-      {/* 폰 — 위쪽 탭 줄. 계정 설정은 여기 없다(톱니바퀴로 간다). 그 화면에서는
-          켤 탭이 없으니 줄 자체를 접는다. */}
-      {메뉴.some((m) => m.href === pathname) && (
-      <div className="profile-tabs pf-mob">
-        {메뉴.map((m) => (
-          <button key={m.href} className={`profile-tab ${pathname === m.href ? "active" : ""}`}
-            onClick={() => router.push(m.href)}>{m.글}</button>
-        ))}
-      </div>
-      )}
-
-      <div className="pf-body">
-        {/* PC — 왼쪽 사이드 메뉴. 계정 설정과 로그아웃은 선 아래에 둔다.
-            보는 화면을 고르는 일과 계정을 다루는 일은 성격이 다르다. */}
-        <nav className="pf-side">
+          </div>
           {메뉴.map((m) => (
             <Link key={m.href} href={m.href} className={pathname === m.href ? "on" : undefined}>{m.글}</Link>
           ))}
           <span className="pf-side-sep" />
-          <Link href="/profile/settings" className={pathname === "/profile/settings" ? "on" : undefined}>계정 설정</Link>
+          <Link href="/profile/settings" className={pathname === "/profile/settings" ? "on" : undefined}>설정</Link>
           <button type="button" className="pf-side-out" onClick={() => {
             useSignupStore.getState().reset();
             useProfileStore.getState().reset();

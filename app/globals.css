@@ -13065,3 +13065,44 @@ button,
 }
 .career-rank-chip:hover { border-color: #b9b9be; color: #3d3d3d; }
 .career-rank-chip.on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+
+/* ── 프로필 PC — 2열, 이름이 값 바로 위 ──────────────────────────
+   한 줄에 이름은 왼쪽 끝, 값은 오른쪽 끝으로 밀려 있어 넓은 화면에서는
+   둘이 한 뼘씩 떨어져 있었다. 이름을 값 위에 올려 붙이고 두 열로 나눈다. */
+@media (min-width: 900px) {
+  /* 격자로 세우는 것은 항목 줄이 든 카드뿐이다. 주소처럼 자체 짜임이 있는
+     카드까지 격자로 만들면 안쪽이 좌우로 쪼개진다. */
+  .pf-main .profile-info-card.pf-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden;
+  }
+  /* 이름·사진과 주소는 좌우로 넓어야 한다. */
+  .pf-main .profile-info-card.pf-grid > :first-child,
+  .pf-main .profile-info-card.pf-grid > .pf-wide { grid-column: 1 / -1; }
+
+  .pf-main .pf-grid .profile-info-row {
+    flex-direction: column; align-items: flex-start; gap: 3px;
+    padding: 13px 16px; position: relative;
+    border-right: 1px solid var(--color-border);
+  }
+  .pf-main .pf-grid .profile-info-row:nth-child(2n) { border-right: none; }
+  .pf-main .pf-grid .profile-info-label { width: auto; font-size: 12.5px; color: #8a8a8f; }
+  .pf-main .pf-grid .profile-info-value {
+    text-align: left; padding-right: 22px; font-size: 14.5px; color: #2b2b2b; width: 100%;
+  }
+  .pf-main .pf-grid .profile-info-chevron { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
+  .pf-main .profile-bottom-cta { max-width: none; }
+}
+/* 사이드 위 알림 */
+.pf-side-notif { position: relative; display: none; }
+@media (min-width: 900px) {
+  .pf-side-notif { display: block; margin-bottom: 6px; }
+  .pf-side-notif .profile-settings-btn {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    background: none; border: none; cursor: pointer; padding: 9px 10px; border-radius: 8px;
+    font-family: inherit; font-size: 15px; color: #6b6570;
+  }
+  .pf-side-notif .profile-settings-btn:hover { background: #efeff1; color: #2b2b2b; }
+  .pf-side-notif .profile-settings-btn::after { content: "알림"; }
+  .pf-side-notif .company-notif-dropdown { left: 0; right: auto; top: 40px; }
+}
