@@ -5,12 +5,12 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER, SALARY_STORE, SALARY_OFFICE } from "@/components/FilterSheet";
-import { SIDO_LIST } from "@/lib/data/regions";
+import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import { shortSido } from "@/lib/regionShort";
 import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS } from "@/lib/data/jobGroups";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Bookmark, ChevronDown, ChevronRight, RotateCcw } from "lucide-react";
+import { Search, Bookmark, ChevronDown, ChevronRight, RotateCcw, X } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { getJobSubGroups } from "@/lib/data/jobGroups";
@@ -18,6 +18,47 @@ import JobCard from "@/components/JobCard";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline } from "@/lib/jobFormat";
 
+
+
+/**
+ * 사이드바 항목 옆에 붙는 팝오버.
+ *
+ * 시군구는 250개가 넘고 복리후생도 스무 개가 넘는다. 사이드바에 다 펼치면
+ * 화면을 통째로 잡아먹으므로, 누른 자리 옆에 그때만 띄운다.
+ * 바깥을 누르거나 Esc 를 누르면 닫힌다 — 열어 놓고 다른 데를 눌렀는데
+ * 그대로 떠 있으면 무엇이 열려 있는지 잊는다.
+ */
+function Pop({ title, onClose, 좌, 상, children }: { title: string; onClose: () => void; 좌: number; 상: number; children: React.ReactNode }) {
+  const 상자 = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const 바깥 = (e: MouseEvent) => {
+      if (상자.current && !상자.current.contains(e.target as Node)) onClose();
+    };
+    const 키 = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    // 여는 클릭이 그대로 '바깥 클릭'으로 잡히지 않도록 한 틱 뒤에 건다.
+    const t = setTimeout(() => document.addEventListener("mousedown", 바깥), 0);
+    document.addEventListener("keydown", 키);
+    return () => { clearTimeout(t); document.removeEventListener("mousedown", 바깥); document.removeEventListener("keydown", 키); };
+  }, [onClose]);
+  return (
+    <div className="jobs-pop" ref={상자} role="dialog" aria-label={title} style={{ left: 좌, top: 상 }}>
+      <div className="jobs-pop-h">
+        <b>{title}</b>
+        <button type="button" onClick={onClose} aria-label="닫기"><X size={14} /></button>
+      </div>
+      <div className="jobs-pop-body">{children}</div>
+    </div>
+  );
+}
+
+function PopItem({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button type="button" className={`jobs-pop-item${on ? " on" : ""}`} onClick={onClick}>
+      <span className={`jobs-checkbox ${on ? "on" : ""}`}>{on ? "✓" : ""}</span>
+      {children}
+    </button>
+  );
+}
 
 function JobsPageInner() {
   const { userJobType, userJobAreas } = useAuthStore();
@@ -68,7 +109,28 @@ function JobsPageInner() {
   const [showRegionDrop, setShowRegionDrop] = useState(false);
   // 사이드바에서 펼쳐 둔 직군 대분류. 한 번에 하나만 연다 — 여럿 펼치면
   // 사이드바가 길어져 아래 근무조건이 화면 밖으로 밀린다.
-  const [펼친대분류, set펼친대분류] = useState<string | null>(null);
+  // 지금 열려 있는 팝오버. 한 번에 하나만 연다.
+  const [열린팝오버, set열린팝오버] =
+    useState<{ 종류: "지역" | "직군" | "고용형태" | "경력" | "복리후생"; 키?: string; 좌: number; 상: number } | null>(null);
+  const 사이드바 = useRef<HTMLElement>(null);
+  // 팝오버는 사이드바 오른쪽 바깥에 띄운다. 안쪽 칸에 붙이면 옆 항목을 덮어
+  // 무엇을 누른 것인지 가려진다. 위치는 열 때 한 번 잰다.
+  const 팝열기 = (e: React.MouseEvent, 종류: any, 키?: string) => {
+    const 옆 = 사이드바.current?.getBoundingClientRect();
+    const 줄 = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    set열린팝오버({ 종류, 키, 좌: (옆?.right ?? 0) + 10, 상: Math.max(78, 줄.top - 8) });
+  };
+
+  // 시도 전체를 고르면 그 안의 시군구 선택은 지운다 — 둘이 함께 걸려 있으면
+  // 무엇으로 걸러졌는지 알 수 없다.
+  const 지역토글 = (값: string, 시도전체: boolean) => {
+    setSelectedRegions((prev) => {
+      if (prev.includes(값)) return prev.filter((x) => x !== 값);
+      if (시도전체) return [...prev.filter((x) => !x.startsWith(값 + " ")), 값];
+      const 시도 = 값.split(" ")[0];
+      return [...prev.filter((x) => x !== 시도), 값];
+    });
+  };
   const [showBrandDrop, setShowBrandDrop] = useState(false);
   
   const [searchQuery, setSearchQuery] = useState(initSearch);
@@ -178,12 +240,35 @@ function JobsPageInner() {
   const 걸린조건 = selectedRegions.length + selectedJobs.length + selectedBenefits.length
     + (selectedEmployment !== "고용형태 전체" ? 1 : 0)
     + (selectedCareer !== "경력 전체" ? 1 : 0);
+  // 결과 위에 늘어놓을 '고른 값'. 하나씩 뺄 수 있어야 처음부터 다시 고르지
+  // 않는다. 사이드바에서 고른 순서가 아니라 종류별로 묶어 보여 준다.
+  const 고른값: { id: string; 글: string; 빼기: () => void }[] = [
+    ...selectedRegions.map((r) => ({
+      id: `r:${r}`,
+      글: r.includes(" ") ? `${shortSido(r.split(" ")[0])} ${r.split(" ").slice(1).join(" ")}` : `${shortSido(r)} 전체`,
+      빼기: () => setSelectedRegions(selectedRegions.filter((x) => x !== r)),
+    })),
+    ...selectedJobs.map((j) => ({
+      id: `j:${j}`, 글: j,
+      빼기: () => setSelectedJobs(selectedJobs.filter((x) => x !== j)),
+    })),
+    ...(selectedEmployment !== "고용형태 전체"
+      ? [{ id: "e", 글: selectedEmployment, 빼기: () => setSelectedEmployment("고용형태 전체") }] : []),
+    ...(selectedCareer !== "경력 전체"
+      ? [{ id: "c", 글: CAREER_OPTS.find((o) => o.value === selectedCareer)?.label || selectedCareer,
+           빼기: () => setSelectedCareer("경력 전체") }] : []),
+    ...selectedBenefits.map((b) => ({
+      id: `b:${b}`, 글: b,
+      빼기: () => setSelectedBenefits(selectedBenefits.filter((x) => x !== b)),
+    })),
+  ];
+
   // 초기화는 사이드바 아래와 상단 필터 두 곳에 있다. 하는 일이 다르면
   // 어느 쪽을 눌러야 할지 매번 생각해야 하므로, 같은 함수를 나눠 쓴다.
   const 조건모두풀기 = () => {
     setSelectedRegions([]); setSelectedJobs([]);
     setSelectedEmployment("고용형태 전체"); setSelectedCareer("경력 전체");
-    setSelectedBenefits([]); set펼친대분류(null);
+    setSelectedBenefits([]); set열린팝오버(null);
   };
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = j.type === jobTypeFilter || j.type === "both";
@@ -241,110 +326,125 @@ function JobsPageInner() {
             드롭다운은 무엇이 있는지 모르면 못 고른다. 뷰티는 직군 이름이 특히
             다양해서(헤어스탭·스페어·두피관리사·뷰티 어드바이저) 펼쳐 놔야
             "이런 것도 있네" 하고 눌러 본다. */}
-        <aside className="jobs-side">
+        <aside className="jobs-side" ref={사이드바}>
           <div className="seg jobs-side-type">
             {(["매장", "본사"] as const).map((t) => (
               <button key={t} type="button"
                 className={`seg-btn ${jobTypeFilter === t ? "active" : ""}`}
-                onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); }}>
+                onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); set열린팝오버(null); }}>
                 {t === "매장" ? <StoreIcon size={14} /> : <OfficeIcon size={14} />}{t}
               </button>
             ))}
           </div>
 
+          {/* 지역 — 시도를 누르면 그 시도의 시군구가 옆에 뜬다. 시군구까지
+              사이드바에 펼치면 250개가 넘어 화면을 다 잡아먹는다. */}
           <div className="jobs-side-box">
             <p className="jobs-side-t">지역</p>
             <div className="jobs-side-grid c3">
               {SIDO_LIST.map((sd) => {
-                const on = selectedRegions.includes(sd);
+                const 고른수 = selectedRegions.filter((r) => r === sd || r.startsWith(sd + " ")).length;
+                const 열림 = 열린팝오버?.종류 === "지역" && 열린팝오버.키 === sd;
                 return (
-                  <button key={sd} type="button" className={on ? "on" : undefined}
-                    onClick={() => setSelectedRegions(on ? selectedRegions.filter((x) => x !== sd) : [...selectedRegions, sd])}>
-                    {shortSido(sd)}
-                  </button>
+                  <span key={sd} className="jobs-pop-wrap">
+                    <button type="button" className={고른수 ? "on" : undefined}
+                      onClick={(e) => 열림 ? set열린팝오버(null) : 팝열기(e, "지역", sd)}>
+                      {shortSido(sd)}{고른수 > 0 && <em>{고른수}</em>}
+                    </button>
+                    {열림 && (
+                      <Pop onClose={() => set열린팝오버(null)} title={sd} 좌={열린팝오버.좌} 상={열린팝오버.상}>
+                        <PopItem on={selectedRegions.includes(sd)}
+                          onClick={() => 지역토글(sd, true)}>{shortSido(sd)} 전체</PopItem>
+                        {getSigunguList(sd).map((gu) => {
+                          const v = `${sd} ${gu}`;
+                          return <PopItem key={gu} on={selectedRegions.includes(v)} onClick={() => 지역토글(v, false)}>{gu}</PopItem>;
+                        })}
+                      </Pop>
+                    )}
+                  </span>
                 );
               })}
             </div>
           </div>
 
+          {/* 직군 — 대분류를 누르면 소분류가 옆에 뜬다. */}
           <div className="jobs-side-box">
             <p className="jobs-side-t">직군</p>
-            {/* 이름을 누르면 그 대분류를 통째로 고르고, 오른쪽 화살표를 누르면
-                소분류가 펼쳐진다. 한 줄에 두 가지 일을 붙이되 누르는 자리를
-                갈라 놓아 헷갈리지 않게 한다. */}
             <div className="jobs-side-list">
               {대분류목록.map((g) => {
                 const 소 = getJobSubGroups(jobTypeFilter === "매장" ? "STORE" : "OFFICE", g.group);
                 const 고른수 = 소.filter((x) => selectedJobs.includes(x)).length;
-                const 전부 = 소.length > 0 && 고른수 === 소.length;
-                const 열림 = 펼친대분류 === g.group;
+                const 열림 = 열린팝오버?.종류 === "직군" && 열린팝오버.키 === g.group;
                 return (
-                  <div key={g.group} className="jobs-side-grp">
-                    <div className={`jobs-side-grp-h${전부 || 고른수 ? " on" : ""}`}>
-                      <button type="button"
-                        onClick={() => setSelectedJobs(전부 ? selectedJobs.filter((x) => !소.includes(x)) : Array.from(new Set([...selectedJobs, ...소])))}>
-                        {g.group}
-                        {고른수 > 0 && !전부 && <em>{고른수}</em>}
-                      </button>
-                      <button type="button" className="jobs-side-open" aria-label={`${g.group} 소분류`}
-                        aria-expanded={열림}
-                        onClick={() => set펼친대분류(열림 ? null : g.group)}>
-                        <ChevronDown size={14} style={{ transform: 열림 ? "rotate(180deg)" : undefined }} />
-                      </button>
-                    </div>
+                  <span key={g.group} className="jobs-pop-wrap block">
+                    <button type="button" className={고른수 ? "on" : undefined}
+                      onClick={(e) => 열림 ? set열린팝오버(null) : 팝열기(e, "직군", g.group)}>
+                      <span>{g.group}</span>
+                      {고른수 > 0 && <em>{고른수}</em>}
+                      <ChevronRight size={13} className="jobs-side-arr" />
+                    </button>
                     {열림 && (
-                      <div className="jobs-side-sub-list">
-                        {소.map((x) => {
-                          const 켬 = selectedJobs.includes(x);
-                          return (
-                            <button key={x} type="button" className={켬 ? "on" : undefined}
-                              onClick={() => setSelectedJobs(켬 ? selectedJobs.filter((y) => y !== x) : [...selectedJobs, x])}>
-                              {x}
-                            </button>
-                          );
-                        })}
-                      </div>
+                      <Pop onClose={() => set열린팝오버(null)} title={g.group} 좌={열린팝오버.좌} 상={열린팝오버.상}>
+                        <PopItem on={소.length > 0 && 소.every((x) => selectedJobs.includes(x))}
+                          onClick={() => {
+                            const 전부 = 소.every((x) => selectedJobs.includes(x));
+                            setSelectedJobs(전부 ? selectedJobs.filter((x) => !소.includes(x))
+                                                : Array.from(new Set([...selectedJobs, ...소])));
+                          }}>전체</PopItem>
+                        {소.map((x) => (
+                          <PopItem key={x} on={selectedJobs.includes(x)}
+                            onClick={() => setSelectedJobs(selectedJobs.includes(x) ? selectedJobs.filter((y) => y !== x) : [...selectedJobs, x])}>{x}</PopItem>
+                        ))}
+                      </Pop>
                     )}
-                  </div>
+                  </span>
                 );
               })}
             </div>
           </div>
 
+          {/* 근무조건 — 셋 다 누르면 옆에 뜬다. */}
           <div className="jobs-side-box">
             <p className="jobs-side-t">근무조건</p>
-            <p className="jobs-side-sub">고용형태</p>
-            <div className="jobs-side-grid">
-              {EMPLOYMENT_OPTS.filter((o) => o.value !== "고용형태 전체").map((o) => {
-                const on = selectedEmployment === o.value;
+            <div className="jobs-side-list">
+              {([
+                { 키: "고용형태", 값: selectedEmployment !== "고용형태 전체" ? 1 : 0 },
+                { 키: "경력", 값: selectedCareer !== "경력 전체" ? 1 : 0 },
+                { 키: "복리후생", 값: selectedBenefits.length },
+              ] as const).map(({ 키, 값 }) => {
+                const 열림 = 열린팝오버?.종류 === 키;
                 return (
-                  <button key={o.value} type="button" className={on ? "on" : undefined}
-                    onClick={() => setSelectedEmployment(on ? "고용형태 전체" : o.value)}>
-                    {o.label}
-                  </button>
-                );
-              })}
-            </div>
-            <p className="jobs-side-sub">경력</p>
-            <div className="jobs-side-grid">
-              {CAREER_OPTS.filter((o) => o.value !== "경력 전체").map((o) => {
-                const on = selectedCareer === o.value;
-                return (
-                  <button key={o.value} type="button" className={on ? "on" : undefined}
-                    onClick={() => setSelectedCareer(on ? "경력 전체" : o.value)}>
-                    {o.label}
-                  </button>
+                  <span key={키} className="jobs-pop-wrap block">
+                    <button type="button" className={값 ? "on" : undefined}
+                      onClick={(e) => 열림 ? set열린팝오버(null) : 팝열기(e, 키)}>
+                      <span>{키}</span>
+                      {값 > 0 && <em>{값}</em>}
+                      <ChevronRight size={13} className="jobs-side-arr" />
+                    </button>
+                    {열림 && (
+                      <Pop onClose={() => set열린팝오버(null)} title={키} 좌={열린팝오버.좌} 상={열린팝오버.상}>
+                        {키 === "고용형태" && EMPLOYMENT_OPTS.filter((o) => o.value !== "고용형태 전체").map((o) => (
+                          <PopItem key={o.value} on={selectedEmployment === o.value}
+                            onClick={() => setSelectedEmployment(selectedEmployment === o.value ? "고용형태 전체" : o.value)}>{o.label}</PopItem>
+                        ))}
+                        {키 === "경력" && CAREER_OPTS.filter((o) => o.value !== "경력 전체").map((o) => (
+                          <PopItem key={o.value} on={selectedCareer === o.value}
+                            onClick={() => setSelectedCareer(selectedCareer === o.value ? "경력 전체" : o.value)}>{o.label}</PopItem>
+                        ))}
+                        {키 === "복리후생" && benefitOptions.map((b) => (
+                          <PopItem key={b} on={selectedBenefits.includes(b)}
+                            onClick={() => setSelectedBenefits(selectedBenefits.includes(b) ? selectedBenefits.filter((x) => x !== b) : [...selectedBenefits, b])}>{b}</PopItem>
+                        ))}
+                      </Pop>
+                    )}
+                  </span>
                 );
               })}
             </div>
           </div>
 
-          {/* 걸어 놓은 것을 한 번에 푼다. 하나씩 되돌리려면 어디를 눌렀는지
-              기억해야 하는데, 사이드바가 길어서 위로 되짚기 어렵다.
-              걸린 것이 없으면 누를 이유도 없으므로 눌리지 않게 둔다. */}
           <button type="button" className="jobs-side-reset"
-            disabled={걸린조건 === 0}
-            onClick={조건모두풀기}>
+            disabled={걸린조건 === 0} onClick={조건모두풀기}>
             <RotateCcw size={14} />
             초기화{걸린조건 > 0 && <em>{걸린조건}</em>}
           </button>
@@ -356,94 +456,40 @@ function JobsPageInner() {
           <span>{filteredJobs.length}건</span>
         </div>
 
-        {/* ===== 필터 바 ===== */}
-        <div className="jobs-filter-bar">
-          <div className="jobs-filter-left">
-            {/* 직군 선택 (모달) */}
-            <div className="jobs-dropdown-wrap">
-              <button
-                className={`jobs-filter-btn ${selectedJobs.length > 0 ? "active" : ""}`}
-                onClick={() => { setShowJobDrop(true); }}
-              >
-                {selectedJobs.length === 0
-                  ? "직군"
-                  : selectedJobs.length === 1
-                  ? selectedJobs[0]
-                  : `${selectedJobs[0]} 외 ${selectedJobs.length - 1}`}
-                <ChevronDown size={16} />
+        {/* ===== 고른 값 =====
+            여기는 무엇으로 걸렀는지 보여 주기만 한다. 거는 일은 왼쪽
+            사이드바가 맡는다 — 같은 조건을 두 곳에서 걸 수 있으면 두 값이
+            어긋났을 때 어느 쪽이 걸린 것인지 알 수 없다. */}
+        {고른값.length > 0 && (
+          <div className="jobs-picked">
+            {고른값.map((c) => (
+              <button key={c.id} type="button" className="jobs-picked-chip" onClick={c.빼기}>
+                {c.글} <X size={13} />
               </button>
-              <JobGroupSelectModal
-                open={showJobDrop}
-                jobType={jobTypeFilter === "매장" ? "STORE" : "OFFICE"}
-                selected={selectedJobs}
-                onChange={setSelectedJobs}
-                onClose={() => setShowJobDrop(false)}
-                title="직군 선택"
-              />
-            </div>
-
-            {/* 지역·경력·고용형태는 왼쪽 사이드바에 펼쳐 두었다. 여기에 또 두면
-                같은 것을 두 곳에서 물어보게 되고, 두 값이 어긋나면 어느 쪽이
-                걸린 것인지 알 수 없다. */}
-
-            {/* 복리후생 (PC) */}
-            <div className="jobs-dropdown-wrap jobs-pc-only">
-              <button
-                className={`jobs-filter-btn ${selectedBenefits.length > 0 ? "active" : ""}`}
-                onClick={() => { setShowBenefitDrop(!showBenefitDrop); setShowJobDrop(false); setShowCareerDrop(false); setShowEmploymentDrop(false); setShowSalaryDrop(false); }}
-              >
-                {selectedBenefits.length > 0 ? `복리후생 · ${selectedBenefits.length}` : "복리후생"}
-                <ChevronDown size={16} />
-              </button>
-              {showBenefitDrop && (
-                <div className="jobs-dropdown jobs-dropdown-benefit">
-                  {benefitOptions.map((b) => (
-                    <button key={b} type="button"
-                      className={`jobs-dropdown-item jobs-dropdown-multi ${selectedBenefits.includes(b) ? "active" : ""}`}
-                      onClick={() => setSelectedBenefits(selectedBenefits.includes(b) ? selectedBenefits.filter((x) => x !== b) : [...selectedBenefits, b])}>
-                      <span className={`jobs-checkbox ${selectedBenefits.includes(b) ? "on" : ""}`}>{selectedBenefits.includes(b) ? "✓" : ""}</span>
-                      {b}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 급여 필터는 두지 않는다. 같은 공고 안에서도 신입·경력에 따라
-                값이 갈리고, 실제 데이터가 '협의'·'월 216만원 이상'·'월급 350만원'
-                처럼 제각각이라 걸러도 고르는 데 도움이 안 된다. */}
-
-            {/* 상세 필터 (모바일) */}
-            <div className="jobs-dropdown-wrap jobs-mobile-only">
-              <button
-                className={`jobs-filter-btn ${(selectedCareer !== "경력 전체" || selectedEmployment !== "고용형태 전체" || selectedBenefits.length > 0 || selectedSalary > 0) ? "active" : ""}`}
-                onClick={() => setShowFilterSheet(true)}
-              >
-                {(() => {
-                  const n = (selectedCareer !== "경력 전체" ? 1 : 0) + (selectedEmployment !== "고용형태 전체" ? 1 : 0) + selectedBenefits.length + (selectedSalary > 0 ? 1 : 0);
-                  return n > 0 ? `상세 필터 · ${n}` : "상세 필터";
-                })()}
-                <ChevronDown size={16} />
-              </button>
-              <FilterSheet
-                open={showFilterSheet}
-                jobType={jobTypeFilter}
-                initial={{ career: selectedCareer, employment: selectedEmployment, benefits: selectedBenefits, salary: selectedSalary }}
-                benefitOptions={benefitOptions}
-                onClose={() => setShowFilterSheet(false)}
-                onApply={(f) => { setSelectedCareer(f.career); setSelectedEmployment(f.employment); setSelectedBenefits(f.benefits); setSelectedSalary(f.salary); }}
-              />
-            </div>
-
-            {/* 사이드바 초기화는 근무조건 아래라 한참 내려가야 보인다. 상단에서
-                조건을 걸었으면 상단에서 풀 수 있어야 한다. 하는 일은 같다. */}
-            {걸린조건 > 0 && (
-              <button type="button" className="jobs-filter-reset" onClick={조건모두풀기}>
-                <RotateCcw size={14} />
-                초기화 <em>{걸린조건}</em>
-              </button>
-            )}
+            ))}
+            <button type="button" className="jobs-filter-reset" onClick={조건모두풀기}>
+              <RotateCcw size={13} />초기화
+            </button>
           </div>
+        )}
+
+        {/* 폰에는 사이드바가 없다. 거기서는 이 시트가 유일한 필터다. */}
+        <div className="jobs-mobile-only" style={{ padding: "10px 0 0" }}>
+          <button
+            className={`jobs-filter-btn ${걸린조건 > 0 ? "active" : ""}`}
+            onClick={() => setShowFilterSheet(true)}
+          >
+            {걸린조건 > 0 ? `상세 필터 · ${걸린조건}` : "상세 필터"}
+            <ChevronDown size={16} />
+          </button>
+          <FilterSheet
+            open={showFilterSheet}
+            jobType={jobTypeFilter}
+            initial={{ career: selectedCareer, employment: selectedEmployment, benefits: selectedBenefits, salary: selectedSalary }}
+            benefitOptions={benefitOptions}
+            onClose={() => setShowFilterSheet(false)}
+            onApply={(f) => { setSelectedCareer(f.career); setSelectedEmployment(f.employment); setSelectedBenefits(f.benefits); setSelectedSalary(f.salary); }}
+          />
         </div>
 
         {/* ===== 채용공고 그리드 ===== */}

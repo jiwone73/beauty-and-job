@@ -12759,7 +12759,9 @@ button,
 .jobs-layout { display: grid; grid-template-columns: 190px 1fr; gap: 22px; align-items: start; }
 /* 토글 윗머리를 오른쪽 '매장 채용공고' 제목과 수평으로 맞춘다 — 두 칸의
    첫 줄이 어긋나면 사이드바가 위로 삐져나온 것처럼 보인다. */
-.jobs-side { position: sticky; top: 78px; margin-top: 20px; }
+/* sticky 는 그 자체로 쌓임 맥락을 만든다. z-index 를 주지 않으면 안에서
+   띄운 팝오버가 오른쪽 카드 뒤로 깔린다. */
+.jobs-side { position: sticky; top: 78px; margin-top: 20px; z-index: 20; }
 .jobs-side-type { display: flex; width: 100%; margin-bottom: 10px; }
 .jobs-side-type .seg-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 0; }
 
@@ -12873,3 +12875,41 @@ button,
   white-space: nowrap; transition: color .15s; }
 .jobs-filter-reset:hover { color: #4a0066; }
 .jobs-filter-reset em { font-style: normal; font-weight: 700; color: #4a0066; }
+
+/* ── 사이드바 팝오버 ─────────────────────────────────────────────
+   시군구는 250개가 넘고 복리후생도 스무 개가 넘는다. 사이드바에 다 펼치면
+   화면을 통째로 잡아먹으므로 누른 자리 옆에 그때만 띄운다. */
+.jobs-pop-wrap { position: relative; display: inline-block; }
+.jobs-pop-wrap.block { display: block; }
+.jobs-pop {
+  position: fixed; z-index: 200;
+  width: 244px; max-height: 330px; display: flex; flex-direction: column;
+  background: #fff; border: 1px solid #e8e0f0; border-radius: 11px;
+  box-shadow: 0 10px 30px rgba(60, 30, 80, .14);
+}
+.jobs-pop-h { display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 12px 9px; border-bottom: 1px solid #f4eff8; }
+.jobs-pop-h b { font-size: 13.5px; font-weight: 700; color: #222; white-space: nowrap; }
+.jobs-pop-h button { background: none; border: none; cursor: pointer; color: #b7b0bf; padding: 2px; display: flex; }
+.jobs-pop-body { overflow-y: auto; padding: 5px; }
+.jobs-pop-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+  background: none; border: none; cursor: pointer; font-family: inherit; font-size: 13.5px;
+  color: #5b5563; padding: 7px 8px; border-radius: 7px; }
+.jobs-pop-item:hover { background: #f8f5fb; }
+.jobs-pop-item.on { color: #4a0066 !important; font-weight: 700 !important; background: #f6f1fb; }
+/* 오른쪽 화살표는 '옆으로 열린다'는 뜻이다. 아래로 펼치는 ⌄ 와 다르다. */
+.jobs-side-arr { margin-left: auto; flex: 0 0 auto; color: #cdc6d6; }
+
+/* ── 고른 값 (결과 위) ───────────────────────────────────────────
+   무엇으로 걸렀는지 보여 주기만 한다. 하나씩 뺄 수 있어야 처음부터 다시
+   고르지 않는다. */
+.jobs-picked { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 12px 0 2px; }
+.jobs-picked-chip { display: inline-flex; align-items: center; gap: 6px;
+  background: #f4f0f9; border: none; border-radius: 999px; padding: 6px 11px 6px 13px;
+  cursor: pointer; font-family: inherit; font-size: 13.5px; color: #4a0066;
+  transition: background .15s; }
+.jobs-picked-chip:hover { background: #e9e0f4; }
+.jobs-picked-chip svg { color: #a58bc0; }
+
+/* 사이드바 항목 안의 개수 뱃지 */
+.jobs-side-list button > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
