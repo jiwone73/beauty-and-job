@@ -12893,7 +12893,10 @@ button,
 }
 .jobs-pop-h { display: flex; align-items: center; justify-content: space-between;
   padding: 11px 12px 9px; border-bottom: 1px solid #f4eff8; }
-.jobs-pop-h b { font-size: 13.5px; font-weight: 700; color: #222; white-space: nowrap; }
+/* 팝오버 제목은 평체 + 진보라. 굵게 두면 아래 항목들과 무게를 다투는데,
+   여기는 무엇을 고르는 창인지 알려 줄 뿐 읽을 거리가 아니다. 색으로만 짚는다.
+   다섯 팝오버(지역·직군·고용형태·경력·복리후생)가 이 한 규칙을 같이 쓴다. */
+.jobs-pop-title { font-size: 13.5px; font-weight: 400; color: #4a0066; white-space: nowrap; }
 .jobs-pop-h button { background: none; border: none; cursor: pointer; color: #b7b0bf; padding: 2px; display: flex; }
 .jobs-pop-body { overflow-y: auto; padding: 5px; }
 .jobs-pop-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;

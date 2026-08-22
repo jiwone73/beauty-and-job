@@ -43,7 +43,7 @@ function Pop({ title, onClose, 좌, 상, children }: { title: string; onClose: (
   return (
     <div className="jobs-pop" ref={상자} role="dialog" aria-label={title} style={{ left: 좌, top: 상 }}>
       <div className="jobs-pop-h">
-        <b>{title}</b>
+        <span className="jobs-pop-title">{title}</span>
         <button type="button" onClick={onClose} aria-label="닫기"><X size={14} /></button>
       </div>
       <div className="jobs-pop-body">{children}</div>
