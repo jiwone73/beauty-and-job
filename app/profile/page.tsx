@@ -8,6 +8,7 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
+import { useApplicationStore } from "@/lib/store/applicationStore";
 import { shortRegion } from "@/lib/regionShort";
 import { useProfileStore } from "@/lib/store/profileStore";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
@@ -29,7 +30,7 @@ export default function ProfilePage() {
   } = useSignupStore();
 
   const [officeJobAreas, setOfficeJobAreas] = useState<string[]>([]);
-  const { userName, userPhone } = useAuthStore();
+  const { userName, userPhone, logout } = useAuthStore();
   const name = userName || signupName || "";
 
   const { setCareerVerified } = useProfileStore();
@@ -1066,6 +1067,25 @@ export default function ProfilePage() {
             <div className="profile-bottom-cta">
               <button className="resume-save-btn-full" onClick={goToResume}>
                 현재 프로필로 이력서 만들기
+              </button>
+            </div>
+
+            {/* 아바타 메뉴를 없애면서 계정 설정과 로그아웃이 갈 곳이 없어졌다.
+                내 것을 다루는 자리는 여기이므로 여기에 둔다. */}
+            <div className="profile-account">
+              <Link href="/profile/settings" className="profile-account-row">
+                계정 설정
+                <ChevronRight size={17} />
+              </Link>
+              <button type="button" className="profile-account-row logout" onClick={() => {
+                useSignupStore.getState().reset();
+                useProfileStore.getState().reset();
+                useBookmarkStore.getState().reset();
+                useApplicationStore.getState().reset();
+                logout();
+                router.push("/");
+              }}>
+                로그아웃
               </button>
             </div>
           </>

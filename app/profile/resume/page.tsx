@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, Download, Eye, FileText, Pencil, Plus, Printer, Trash2, Upload, X } from "lucide-react";
+import { ChevronDown, Download, Eye, FileText, Pencil, Plus, Printer, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -404,6 +404,17 @@ function ResumePageContent() {
         <button className="profile-tab" onClick={() => router.push("/profile?tab=applied")}>지원현황</button>
         <button className="profile-tab" onClick={() => router.push("/profile?tab=bookmarks")}>관심공고</button>
       </div>
+
+      {/* 메뉴로 바로 들어왔는데 프로필이 비어 있으면 빈 이력서가 열린다.
+          처음 온 사람의 순서(프로필 → 이력서)를 여기서 다시 잡아 준다. */}
+      {!name && (
+        <div className="resume-need-profile">
+          <span>이름·연락처가 아직 없어요. 프로필을 먼저 채우면 이력서에 그대로 들어옵니다.</span>
+          <button type="button" onClick={() => router.push("/profile")}>
+            프로필 먼저 채우기 <ChevronRight size={15} />
+          </button>
+        </div>
+      )}
 
       <div className="resume-layout">
         <aside className="resume-sidebar">

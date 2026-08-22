@@ -12920,3 +12920,29 @@ button,
 
 /* 사이드바 항목 안의 개수 뱃지 */
 .jobs-side-list button > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 이력서를 메뉴로 바로 열었는데 프로필이 비어 있을 때. 막지 않고 길만
+   알려 준다 — 이력서부터 쓰겠다는 사람을 되돌려 보낼 이유는 없다. */
+.resume-need-profile {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  max-width: 1100px; margin: 12px auto 0; padding: 12px 16px;
+  background: #fcf8e3; border-radius: 10px;
+  font-size: 13.5px; color: #8a6d3b; line-height: 1.5;
+}
+.resume-need-profile button {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 3px;
+  background: #fff; border: 1px solid #e6d9a8; border-radius: 8px;
+  padding: 7px 12px; cursor: pointer; font-family: inherit;
+  font-size: 13.5px; font-weight: 600 !important; color: #8a6d3b; white-space: nowrap;
+}
+.resume-need-profile button:hover { border-color: #c9a94a; }
+
+/* 프로필 맨 아래 — 계정 설정과 로그아웃. */
+.profile-account { max-width: 600px; margin: 22px auto 40px; padding: 0 16px;
+  display: flex; flex-direction: column; gap: 1px; }
+.profile-account-row { display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 15px 4px; background: none; border: none; border-top: 1px solid #f0eef2;
+  cursor: pointer; font-family: inherit; font-size: 15px; color: #2b2b2b; text-decoration: none; }
+.profile-account-row svg { color: #c9c3ce; }
+.profile-account-row.logout { color: #9a94a4; }
+.profile-account-row:hover { color: var(--color-primary); }

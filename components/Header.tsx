@@ -12,8 +12,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 
 function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const router = useRouter();
-  const { isLoggedIn, ownerType, userName, avatarUrl, setAvatar, logout } = useAuthStore();
-  const [open, setOpen] = useState(false);
+  const { isLoggedIn, ownerType, userName, avatarUrl, setAvatar } = useAuthStore();
 
   // 헤더에서도 자기 얼굴을 본다. 개인은 프로필 사진, 기업은 대표 사진
   // (매장=공고 배너 첫 장, 본사=로고). 로그인 후 한 번만 읽어 스토어에 담아 둔다.
@@ -36,8 +35,12 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   if (isLoggedIn) {
     return (
       <>
+        {/* 아바타를 누르면 바로 간다. 메뉴에 담긴 것이 '내 프로필·계정 설정'
+            둘뿐이었는데, 그 둘을 보자고 한 번 더 누르게 하는 것은 낭비다.
+            계정 설정과 로그아웃은 프로필 페이지 안으로 옮겼다. */}
         <div className="auth-user-wrap">
-          <button className="auth-user-btn" onClick={() => setOpen(!open)}>
+          <button className="auth-user-btn" aria-label={ownerType === "company" ? "기업 대시보드" : "내 프로필"}
+            onClick={() => router.push(ownerType === "company" ? "/company/dashboard" : "/profile")}>
             {avatarUrl ? (
               <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
                 style={{ width: 32, height: 32, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block", background: "#f3e5f5" }} />
@@ -49,28 +52,6 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
               </svg>
             )}
           </button>
-          {open && (
-            <div className="auth-dropdown auth-dropdown-right">
-              {ownerType === "user" && (
-                <>
-                  <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile"); }}>내 프로필</button>
-                  <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/profile/settings"); }}>계정 설정</button>
-                </>
-              )}
-              {ownerType === "company" && (
-                <button className="auth-dropdown-item" onClick={() => { setOpen(false); router.push("/company/dashboard"); }}>대시보드</button>
-              )}
-              <div className="auth-dropdown-divider" />
-              <button className="auth-dropdown-item auth-logout" onClick={() => {
-                useSignupStore.getState().reset();
-                useProfileStore.getState().reset();
-                useBookmarkStore.getState().reset();
-                useApplicationStore.getState().reset();
-                logout();
-                setOpen(false);
-              }}>로그아웃</button>
-            </div>
-          )}
         </div>
         {/* 이미 로그인한 기업에게 '기업 서비스' 소개 페이지는 의미가 없다. 돌아갈 자리로 바꾼다. */}
         {ownerType === "company" ? (
@@ -127,8 +108,13 @@ export default function Header({ onSearchClick }: HeaderProps) {
                   글자보다 딱지가 먼저 읽히므로, 글자 자체에 빛을 흘린다. */}
               <span className="gnb-shine-t">내 주변 공고</span>
             </Link>
-            {/* '이력서 등록'은 메뉴에서 뺐다. 메인 첫 화면의 등록 칸과 우측 상단
-                아이콘에 같은 길이 있어, 메뉴에까지 두면 같은 말을 세 번 한다. */}
+            {/* 이력서는 구직자가 가장 자주 손대는 것인데 프로필 안 두 단계에
+                있었다. 메뉴로 올려 지름길을 낸다. 프로필에서 '현재 프로필로
+                이력서 만들기'로 넘어가는 길은 그대로 두어, 처음 온 사람의
+                순서(프로필 → 이력서)는 흐트러지지 않는다. */}
+            <Link href="/profile/resume" className={`gnb-with-tag ${pathname === "/profile/resume" ? "gnb-active" : ""}`}>
+              이력서
+            </Link>
             <Link href="/stories" className="gnb-with-tag">
               현장이야기
             </Link>
