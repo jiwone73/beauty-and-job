@@ -82,7 +82,7 @@ function JobsPageInner() {
     const sd = searchParams.get("sido");
     const sg = searchParams.get("sigungu");
     const kw = searchParams.get("q");
-    if (t && t !== "전체") qs.set("type", t);
+    if (t) qs.set("type", t);
     if (selectedRegions.length) qs.set("regions", selectedRegions.join(","));
     if (sd) qs.set("sido", sd);
     if (sg) qs.set("sigungu", sg);
@@ -172,7 +172,7 @@ function JobsPageInner() {
   // 사이드바 직군 목록은 매장/본사에 따라 통째로 갈린다(매장 8 · 본사 5).
   const 대분류목록 = jobTypeFilter === "본사" ? OFFICE_JOB_GROUPS : STORE_JOB_GROUPS;
   const filteredJobs = (apiJobs || []).filter((j: any) => {
-    const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
+    const matchType = j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
     // '경력무관' 공고는 신입에게도 경력자에게도 열려 있으니 양쪽 필터에 모두 걸린다.
     // (신입·경력을 함께 뽑는 공고가 ANY 로 저장되는데, 예전에는 신입 필터에서 사라졌다.)

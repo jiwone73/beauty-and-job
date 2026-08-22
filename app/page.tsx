@@ -82,7 +82,10 @@ function Hero() {
   const [selected, setSelected] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [jobType, setJobType] = useState<"전체" | "본사" | "매장">("전체");
+  // 이 토글은 눌러서 채용공고 화면으로 넘어가는 자리다. 그쪽에 '전체'가
+  // 없으므로 여기서도 두지 않는다 — 고를 수 있게 해 놓고 넘어가면 다른 것이
+  // 걸려 있는 것은 약속을 어기는 셈이다. 건수가 많은 매장을 기본으로 둔다.
+  const [jobType, setJobType] = useState<"본사" | "매장">("매장");
   const shortSido = (s: string) => s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "");
 
   // 로그인(개인회원) 시 프로필의 직군·희망지역을 검색바 기본값으로 자동 채움
@@ -94,8 +97,7 @@ function Hero() {
       .then((r) => r.json())
       .then((res) => {
         const u = res.data || res;
-        if (u?.job_type === "OFFICE") setJobType("본사");
-        else if (u?.job_type === "STORE") setJobType("매장");
+        setJobType(u?.job_type === "OFFICE" ? "본사" : "매장");
         if (Array.isArray(u?.preferred_regions)) {
           const regions = u.preferred_regions
             .filter((r: any) => r.sido && r.sido !== "지역 무관")
@@ -134,7 +136,7 @@ function Hero() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (jobType !== "전체") params.set("type", jobType);
+    params.set("type", jobType);
     if (selected.length) params.set("regions", selected.join(","));
     if (searchQuery.trim()) params.set("q", searchQuery.trim());
     router.push(`/jobs${params.toString() ? "?" + params.toString() : ""}`);
@@ -166,8 +168,7 @@ function Hero() {
                     노는 것처럼 보인다. 묶어서 붙여 둔다. */}
                 <div className="mt-search-set">
                   <div className="hero-type-toggle">
-                    <button type="button" className={`hero-type-btn ${jobType === "전체" ? "active" : ""}`} onClick={() => setJobType("전체")}>전체</button>
-                    <button type="button" className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`} onClick={() => setJobType("매장")}>
+                      <button type="button" className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`} onClick={() => setJobType("매장")}>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>
                     </button>
                     <button type="button" className={`hero-type-btn ${jobType === "본사" ? "active" : ""}`} onClick={() => setJobType("본사")}>
@@ -334,7 +335,9 @@ function SectionActiveHiring() {
 }
 
 function SectionPick() {
-  const [tab, setTab] = useState<"전체" | "매장" | "본사">("전체");
+  // 사이트 어디서나 매장/본사 두 갈래만 쓴다. '전체'를 한 곳에만 남기면
+  // 같은 토글이 화면마다 다르게 생긴 셈이 된다.
+  const [tab, setTab] = useState<"매장" | "본사">("매장");
   const [jobs, setJobs] = useState<any[]>([]);
   // 이력서를 근거로 점수를 매길 수 있었는지. 근거가 없으면 '추천'이라 부르지 않는다 —
   // 최신순을 추천이라 내놓으면 한 번 보고 다시 안 본다.
@@ -374,7 +377,7 @@ function SectionPick() {
 
         <div style={{ marginBottom: 24 }}>
           <div className="hero-type-toggle">
-            {(["전체", "매장", "본사"] as const).map((t) => (
+            {(["매장", "본사"] as const).map((t) => (
               <button
                 key={t}
                 type="button"
