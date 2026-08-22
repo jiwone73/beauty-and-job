@@ -844,7 +844,7 @@ export default function ProfilePage() {
             <section className="profile-section" style={{ marginTop: 0 }}>
               <div className="profile-info-card" style={{ padding: "16px" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                  <label style={{ fontSize: "14px", color: "#555" }}>거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="profile-info-label">거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   {addressRoad && (
                     <button type="button" onClick={handleClearAddress}
                       style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", padding: "2px 4px", textDecoration: "underline" }}>
