@@ -7,6 +7,8 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   editTarget?: LanguageEntry | null;
+  /** 참이면 덮개 없이 칸 안에서 그대로 펼친다. 큰 화면에서 쓴다. */
+  inline?: boolean;
 }
 
 const LANGUAGES = ["영어", "일본어", "중국어", "한국어", "스페인어", "프랑스어", "독일어", "기타"];
@@ -17,7 +19,7 @@ const LEVELS = [
   { tier: "하", value: "간단한 표현", desc: "짧은 인사·단어" },
 ];
 
-export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
+export default function LanguageModal({ isOpen, onClose, editTarget, inline }: Props) {
   const { addLanguage, updateLanguage } = useProfileStore();
   const [lang, setLang] = useState("");
   const [level, setLevel] = useState("");
@@ -51,6 +53,52 @@ export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
     onClose();
   };
 
+  // 칸 안에서 그대로 펼치는 모양. 어학 한 줄을 넣자고 화면을 덮으면
+  // 방금까지 채우던 이력서가 사라진다.
+  const 몸통 = (
+      <div className={inline ? "cv-body cv-body-inline" : "cv-body"}>
+        <label className="cv-field-label cv-required">언어</label>
+        <button className="cv-select-btn" onClick={() => setShowLang(!showLang)}>
+          <span className={lang ? "" : "cv-placeholder"}>{lang || "언어를 선택해 주세요."}</span>
+          <ChevronLeft size={16} style={{ transform: "rotate(-90deg)" }} />
+        </button>
+        {showLang && (
+          <div className="cv-dropdown">
+            {LANGUAGES.map((l) => (
+              <button key={l} className="cv-dropdown-item" onClick={() => { setLang(l); setShowLang(false); }}>{l}</button>
+            ))}
+          </div>
+        )}
+        <label className="cv-field-label cv-required">수준</label>
+        <div style={{ display: "flex", gap: 10, marginBottom: 4 }}>
+          {LEVELS.map((lv) => {
+            const on = level === lv.value;
+            return (
+              <button key={lv.tier} type="button" onClick={() => setLevel(lv.value)}
+                style={{
+                  flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                  padding: "16px 8px", borderRadius: 12, cursor: "pointer", background: "#fff",
+                  border: on ? "1.5px solid #582681" : "1px solid #e6e6e6",
+                  boxShadow: on ? "0 0 0 3px rgba(95,0,128,0.08)" : "none",
+                }}>
+                <span style={{
+                  width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 17, fontWeight: 700,
+                  border: on ? "2px solid #582681" : "2px solid #dcdcdc",
+                  color: on ? "#582681" : "#bbb",
+                }}>{lv.tier}</span>
+                <span style={{ fontSize: 13, fontWeight: on ? 700 : 400, color: on ? "#582681" : "#666" }}>{lv.value}</span>
+                <span style={{ fontSize: 11.5, color: on ? "#582681" : "#aaa" }}>{lv.desc}</span>
+              </button>
+            );
+          })}
+        </div>
+        <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
+  </div>
+  );
+
+  if (inline) return <div className="cv-inline">{몸통}</div>;
+
   return (
     <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
@@ -59,45 +107,7 @@ export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
           <h2 className="cv-title">{isEdit ? "어학 수정" : "어학"}</h2>
           <div style={{ width: 36 }} />
         </div>
-        <div className="cv-body">
-          <label className="cv-field-label cv-required">언어</label>
-          <button className="cv-select-btn" onClick={() => setShowLang(!showLang)}>
-            <span className={lang ? "" : "cv-placeholder"}>{lang || "언어를 선택해 주세요."}</span>
-            <ChevronLeft size={16} style={{ transform: "rotate(-90deg)" }} />
-          </button>
-          {showLang && (
-            <div className="cv-dropdown">
-              {LANGUAGES.map((l) => (
-                <button key={l} className="cv-dropdown-item" onClick={() => { setLang(l); setShowLang(false); }}>{l}</button>
-              ))}
-            </div>
-          )}
-          <label className="cv-field-label cv-required">수준</label>
-          <div style={{ display: "flex", gap: 10, marginBottom: 4 }}>
-            {LEVELS.map((lv) => {
-              const on = level === lv.value;
-              return (
-                <button key={lv.tier} type="button" onClick={() => setLevel(lv.value)}
-                  style={{
-                    flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-                    padding: "16px 8px", borderRadius: 12, cursor: "pointer", background: "#fff",
-                    border: on ? "1.5px solid #582681" : "1px solid #e6e6e6",
-                    boxShadow: on ? "0 0 0 3px rgba(95,0,128,0.08)" : "none",
-                  }}>
-                  <span style={{
-                    width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 17, fontWeight: 700,
-                    border: on ? "2px solid #582681" : "2px solid #dcdcdc",
-                    color: on ? "#582681" : "#bbb",
-                  }}>{lv.tier}</span>
-                  <span style={{ fontSize: 13, fontWeight: on ? 700 : 400, color: on ? "#582681" : "#666" }}>{lv.value}</span>
-                  <span style={{ fontSize: 11.5, color: on ? "#582681" : "#aaa" }}>{lv.desc}</span>
-                </button>
-              );
-            })}
-          </div>
-          <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
-        </div>
+        {몸통}
       </div>
     </div>
   );

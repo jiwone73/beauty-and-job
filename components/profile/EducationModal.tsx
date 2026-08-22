@@ -12,8 +12,9 @@ interface Props {
 
 const STATUS_OPTIONS = ["졸업", "재학", "휴학", "중퇴", "수료"];
 const LEVEL_OPTIONS = ["중학교", "고등학교", "대학(2,3년제)", "대학(4년제)", "대학원"];
-// 전공 입력이 필요한(=대학 이상) 구분
-const MAJOR_LEVELS = ["대학(2,3년제)", "대학(4년제)", "대학원"];
+// 전공을 묻는 구분. 고등학교를 넣은 것은 미용고 미용과처럼 실습으로 배우는
+// 전공이 살롱에서 실제로 쓰이기 때문이다. 중학교는 전공이 없다.
+const MAJOR_LEVELS = ["고등학교", "대학(2,3년제)", "대학(4년제)", "대학원"];
 
 // "2020.04" → ["2020", "04"]
 function splitYM(d: string): [string, string] {
@@ -62,7 +63,7 @@ export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
 
   if (!isOpen) return null;
 
-  const isValid = !!level && school.trim() && !!status && startY && startM && (needsMajor ? major.trim() : true);
+  const isValid = !!level && school.trim() && !!status && startY && startM;
 
   const handleSubmit = () => {
     if (!isValid) return;
@@ -129,8 +130,8 @@ export default function EducationModal({ isOpen, onClose, editTarget }: Props) {
           )}
 
           {needsMajor && (<>
-            <label className="cv-field-label cv-required">전공</label>
-            <input className="cv-input" placeholder="전공을 입력해 주세요." value={major} onChange={(e) => setMajor(e.target.value)} />
+            <label className="cv-field-label">전공</label>
+            <input className="cv-input" placeholder="예: 미용과, 뷰티디자인과" value={major} onChange={(e) => setMajor(e.target.value)} />
           </>)}
 
           <label className="cv-field-label">설명</label>

@@ -13036,3 +13036,23 @@ button,
   .resume-side-download:hover { background: #f7f7f8; }
   .resume-side-download:disabled { color: #a8a8ad; cursor: default; }
 }
+
+/* 이력서 빈 칸 — 열지 않아도 무엇을 넣는지 보인다. */
+.resume-blank {
+  display: block; width: 100%; text-align: left; background: transparent;
+  border: 1px dashed #dcdce0; border-radius: 8px; padding: 12px 13px;
+  cursor: pointer; font-family: inherit; transition: border-color .15s, background .15s;
+}
+.resume-blank:hover { border-color: var(--color-primary); background: #f7f7f8; }
+.resume-blank-fields { display: block; font-size: 13.5px; color: #a8a8ad; }
+.resume-blank-fields i { font-style: normal; color: #e24b4a; margin-left: 1px; }
+/* 칸 안에서 그대로 펼치는 편집 폼 */
+.cv-inline { border-top: 1px solid var(--color-border); margin-top: 10px; }
+.cv-body-inline { padding: 14px 0 2px; max-height: none; overflow: visible; }
+/* 접어 둔 칸을 여는 줄 */
+.resume-more-open {
+  width: 100%; background: #fff; border: 1px dashed #dcdce0; border-radius: 12px;
+  padding: 15px; font-family: inherit; font-size: 13.5px; color: #6f6f75; cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.resume-more-open:hover { border-color: var(--color-primary); color: var(--color-primary); }

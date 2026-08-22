@@ -370,7 +370,10 @@ function ResumePageContent() {
   // 사람이 영영 미완성으로 남는다.
   const 포트폴리오채움 = portfolioImages.length > 0 || links.length > 0;
   // 모바일 완성도 (사이드바와 동일 기준)
-  const progressItems = [true, careers.length > 0, educations.length > 0, skills.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, 포트폴리오채움];
+  // 모바일 완성도 — 사이드 목록과 같은 기준. 접어 둔 칸은 값이 있을 때만 센다.
+  const 접힘셈 = resumeType === "office" || educations.length > 0 || experiences.length > 0;
+  const progressItems = [true, careers.length > 0, skills.length > 0, certificates.length > 0, languages.length > 0, 포트폴리오채움,
+    ...(접힘셈 ? [educations.length > 0, experiences.length > 0] : [])];
   const progressRate = Math.round((progressItems.filter(Boolean).length / progressItems.length) * 100);
 
   return (
@@ -402,16 +405,21 @@ function ResumePageContent() {
             <ChevronDown size={18} style={{ color: "#888", transform: sectionsOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }} />
           </button>
           {(() => {
-            // 매장·본사가 같은 목록을 쓴다. 스킬은 매장 쪽이 오히려 더 중요하다.
+            // 살롱 채용에서 실제로 보는 순서. 학력·활동수상은 뒤로 접어 두므로
+            // 매장 이력서에서는 값이 있을 때만 목록에 세운다 — 안 쓸 칸이
+            // 완성도를 깎으면 아무리 채워도 100%가 안 된다.
+            const 접힘보임 = resumeType === "office" || educations.length > 0 || experiences.length > 0;
             const sections = [
               { id: "basic", label: "기본 정보", done: true },
               { id: "career", label: "경력", done: careers.length > 0 },
-              { id: "education", label: "학력", done: educations.length > 0 },
-              { id: "skill", label: "스킬", done: skills.length > 0 },
-              { id: "language", label: "어학", done: languages.length > 0 },
+              { id: "skill", label: "시술 스킬", done: skills.length > 0 },
               { id: "certificate", label: "자격증", done: certificates.length > 0 },
-              { id: "experience", label: "활동/수상", done: experiences.length > 0 },
+              { id: "language", label: "어학", done: languages.length > 0 },
               { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
+              ...(접힘보임 ? [
+                { id: "education", label: "학력", done: educations.length > 0 },
+                { id: "experience", label: "활동/수상", done: experiences.length > 0 },
+              ] : []),
             ];
             const doneCount = sections.filter((s) => s.done).length;
             const rate = Math.round((doneCount / sections.length) * 100);

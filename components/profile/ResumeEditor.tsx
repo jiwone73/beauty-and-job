@@ -102,7 +102,8 @@ export default function ResumeEditor({
   const [editCareer, setEditCareer] = useState<any>(null);
   const [eduModalOpen, setEduModalOpen] = useState(false);
   const [editEdu, setEditEdu] = useState<any>(null);
-  const [langModalOpen, setLangModalOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const [더적기, set더적기] = useState(false);
   const [editLang, setEditLang] = useState<any>(null);
   const [expModalOpen, setExpModalOpen] = useState(false);
   const [editExp, setEditExp] = useState<any>(null);
@@ -279,67 +280,14 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 학력 */}
-      <section id="section-education" className="resume-section">
-        <div className="resume-section-head">
-          <h2 className="resume-section-title">
-            학력
-            {/* 매장 이력서에서는 학력을 묻지 않는다 — 미용실·네일숍이 보는 것은
-                학교가 아니라 경력과 작업물이고, 별표를 붙여 두면 채우지 못한
-                사람이 이력서를 미완성으로 여기고 만다. */}
-            {resumeType === "office" && (
-              <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
-            )}
-          </h2>
-          <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
-            <Plus size={18} />
-          </button>
-        </div>
-        {educations.length === 0 ? (
-          null
-        ) : (
-          educations.map((edu) => {
-            const key = `edu-${edu.id}`;
-            const open = !collapsed.has(key);
-            return (
-              <div key={edu.id} className="resume-edu-item">
-                <div className="resume-career-head" onClick={() => toggleExpand(key)} style={{ cursor: "pointer" }}>
-                  <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
-                  <strong>{edu.school}</strong>
-                  {!open && (
-                    <span style={{ marginLeft: "8px", fontSize: "13px", fontWeight: 400, color: "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {edu.startDate} - {edu.endDate}
-                    </span>
-                  )}
-                  <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                    <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditEdu(edu); setEduModalOpen(true); }}>
-                      <Pencil size={15} />
-                    </button>
-                    <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(edu.id); }}>
-                      <Trash2 size={15} />
-                    </button>
-                  </span>
-                </div>
-                {open && (
-                  <>
-                    <span className="resume-edu-info">{edu.major} · {edu.status}</span>
-                    <span className="resume-edu-period">{edu.startDate} - {edu.endDate}</span>
-                  </>
-                )}
-              </div>
-            );
-          })
-        )}
-      </section>
-
       {/* 스킬 — 매장도 쓴다. 커트·펌·염색 같은 시술 스킬이 곧 실력이라
           오히려 매장 쪽이 더 중요하다. SkillModal 이 매장직 시술 사전을
           이미 갖고 있는데 이 칸만 본사에 잠겨 있었다. */}
       {true && (
         <section id="section-skill" className="resume-section">
           <div className="resume-section-head">
-            <h2 className="resume-section-title">스킬</h2>
-            <button className="resume-icon-btn" aria-label="스킬 추가" onClick={() => setSkillModalOpen(true)}>
+            <h2 className="resume-section-title">시술 스킬</h2>
+            <button className="resume-icon-btn" aria-label="시술 스킬 추가" onClick={() => setSkillModalOpen(true)}>
               <Plus size={18} />
             </button>
           </div>
@@ -352,39 +300,6 @@ export default function ResumeEditor({
           )}
         </section>
       )}
-
-      {/* 어학 */}
-      <section id="section-language" className="resume-section">
-        <div className="resume-section-head">
-          <h2 className="resume-section-title">어학</h2>
-          <button className="resume-icon-btn" aria-label="어학 추가" onClick={() => { setEditLang(null); setLangModalOpen(true); }}>
-            <Plus size={18} />
-          </button>
-        </div>
-        {languages.length > 0 ? (
-          <div className="resume-list">
-            {languages.map((lang) => (
-              <div key={lang.id} className="resume-list-item">
-                <p className="resume-item-text" style={{ fontWeight: 400, marginBottom: "4px", display: "flex", alignItems: "center" }}>
-                  <span style={{ whiteSpace: "nowrap" }}>{lang.language}</span>
-                  <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
-                  <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                    <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLang(lang); setLangModalOpen(true); }}>
-                      <Pencil size={15} />
-                    </button>
-                    <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 어학을 삭제할까요?")) removeLanguage(lang.id); }}>
-                      <Trash2 size={15} />
-                    </button>
-                  </span>
-                </p>
-                {lang.test && <p className="resume-item-text" style={{ color: "#888" }}>{lang.test}</p>}
-              </div>
-            ))}
-          </div>
-        ) : (
-          null
-        )}
-      </section>
 
       {/* 자격증 */}
       <section id="section-certificate" className="resume-section">
@@ -428,43 +343,46 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 활동/수상 */}
-      <section id="section-experience" className="resume-section">
+      {/* 어학 — 살롱에서 실제로 보는 칸이다. 외국인 손님 응대가 되는 사람을
+          찾는 매장이 많다. 대신 시험명·점수는 받지 않는다. 손님 앞에서 말이
+          되느냐가 전부라 상·중·하면 충분하다. */}
+      <section id="section-language" className="resume-section">
         <div className="resume-section-head">
-          <h2 className="resume-section-title">활동/수상</h2>
-          <button className="resume-icon-btn" aria-label="활동 추가" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
-            <Plus size={18} />
-          </button>
+          <h2 className="resume-section-title">어학</h2>
+          {languages.length > 0 && !langOpen && (
+            <button className="resume-icon-btn" aria-label="어학 추가" onClick={() => { setEditLang(null); setLangOpen(true); }}>
+              <Plus size={18} />
+            </button>
+          )}
         </div>
-        {experiences.length > 0 ? (
+        {languages.length > 0 && (
           <div className="resume-list">
-            {experiences.map((x) => {
-              const key = `exp-${x.id}`;
-              const open = !collapsed.has(key);
-              return (
-                <div key={x.id} className="resume-list-item">
-                  <p className="resume-item-text" onClick={() => toggleExpand(key)} style={{ fontWeight: 400, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
-                    <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
-                    {x.category && <span style={{ color: "#582681", marginRight: "8px" }}>[{x.category}]</span>}
-                    {x.title}
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                      <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditExp(x); setExpModalOpen(true); }}>
-                        <Pencil size={15} />
-                      </button>
-                      <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
-                        <Trash2 size={15} />
-                      </button>
-                    </span>
-                  </p>
-                  {open && x.description && (
-                    <p className="resume-item-text" style={{ color: "#666", paddingLeft: "22px" }}>{x.description}</p>
-                  )}
-                </div>
-              );
-            })}
+            {languages.map((lang) => (
+              <div key={lang.id} className="resume-list-item">
+                <p className="resume-item-text" style={{ fontWeight: 400, marginBottom: "4px", display: "flex", alignItems: "center" }}>
+                  <span style={{ whiteSpace: "nowrap" }}>{lang.language}</span>
+                  <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
+                  <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
+                    <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditLang(lang); setLangOpen(true); }}>
+                      <Pencil size={15} />
+                    </button>
+                    <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 어학을 삭제할까요?")) removeLanguage(lang.id); }}>
+                      <Trash2 size={15} />
+                    </button>
+                  </span>
+                </p>
+              </div>
+            ))}
           </div>
-        ) : (
-          null
+        )}
+        {/* 열지 않아도 무엇을 넣는 칸인지 보이게 빈 자리를 그려 둔다. */}
+        {!langOpen && languages.length === 0 && (
+          <button type="button" className="resume-blank" onClick={() => { setEditLang(null); setLangOpen(true); }}>
+            <span className="resume-blank-fields">언어 <i>*</i> │ 수준 <i>*</i></span>
+          </button>
+        )}
+        {langOpen && (
+          <LanguageModal inline isOpen={langOpen} onClose={() => { setLangOpen(false); setEditLang(null); }} editTarget={editLang} />
         )}
       </section>
 
@@ -548,90 +466,112 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 첨부 이력서 (본인이 작성한 이력서 파일) — 현재 숨김 처리(에디터·지원 모달 공통) */}
-      <section id="section-resume-file" className="resume-section" style={{ display: "none" }}>
-        <div className="resume-section-head" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <h2 className="resume-section-title" style={{ color: "#999" }}>첨부 이력서</h2>
-          {!resumeFileReadOnly && (
-          <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#999", cursor: "pointer" }}>
-            <input
-              type="checkbox"
-              checked={showResumeFile}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setShowResumeFile(true);
-                } else if (resumeFileName) {
-                  onResumeFileDelete();
-                } else {
-                  setShowResumeFile(false);
-                }
-              }}
-              style={{ accentColor: "#582681", width: "15px", height: "15px" }}
-            />
-            <span>사용</span>
-          </label>
-          )}
+      {/* 학력·활동수상은 접어 둔다. 살롱 채용에서 이 둘을 보는 곳은 드문데
+          칸이 늘면 쓰다 마는 사람이 생긴다. 이미 채운 사람과 본사 이력서에는
+          그대로 펼쳐 둔다. 어학은 접지 않는다 — 외국인 손님 응대 때문에
+          실제로 보는 칸이다. */}
+      {!더적기 && resumeType !== "office" && educations.length === 0 && experiences.length === 0 ? (
+        <button type="button" className="resume-more-open" onClick={() => set더적기(true)}>
+          학력 · 활동/수상 더 적기
+        </button>
+      ) : (
+        <>
+
+      {/* 학력 */}
+      <section id="section-education" className="resume-section">
+        <div className="resume-section-head">
+          <h2 className="resume-section-title">
+            학력
+            {/* 매장 이력서에서는 학력을 묻지 않는다 — 미용실·네일숍이 보는 것은
+                학교가 아니라 경력과 작업물이고, 별표를 붙여 두면 채우지 못한
+                사람이 이력서를 미완성으로 여기고 만다. */}
+            {resumeType === "office" && (
+              <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
+            )}
+          </h2>
+          <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
+            <Plus size={18} />
+          </button>
         </div>
-        {resumeFileReadOnly ? (
-          /* 지원 화면: 프로필에 저장된 파일 읽기 전용 표시 */
-          resumeFileName ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #efeff1", borderRadius: "12px" }}>
-              <FileText size={32} color="#582681" />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: "13px", fontWeight: 400, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {resumeFileName}
-                </p>
-                <button
-                  onClick={onResumeFileOpen}
-                  style={{ fontSize: "12px", color: "#582681", textDecoration: "underline", background: "none", border: "none", padding: 0, cursor: "pointer" }}
-                >
-                  파일 열기{resumeFileSize ? ` · ${formatFileSize(resumeFileSize)}` : ""}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p style={{ fontSize: "13px", color: "#aaa", padding: "12px 0" }}>
-              첨부한 이력서 파일이 없어요. 프로필 &gt; 이력서에서 등록하면 지원 시 함께 전달돼요.
-            </p>
-          )
-        ) : showResumeFile && (
-          <>
-        <p style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
-          본인이 직접 작성한 이력서 파일을 첨부할 수 있어요 (선택, 최대 5MB). 지원 시 함께 전달돼요.
-        </p>
-        {resumeFileName ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #efeff1", borderRadius: "12px" }}>
-            <FileText size={32} color="#582681" />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: "13px", fontWeight: 400, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {resumeFileName}
-              </p>
-              <button
-                onClick={onResumeFileOpen}
-                style={{ fontSize: "12px", color: "#582681", textDecoration: "underline", background: "none", border: "none", padding: 0, cursor: "pointer" }}
-              >
-                파일 열기{resumeFileSize ? ` · ${formatFileSize(resumeFileSize)}` : ""}
-              </button>
-            </div>
-            <button onClick={() => resumeFileInputRef.current?.click()} disabled={isResumeFileUploading} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #efeff1", background: "#fff", color: "#333", fontSize: "13px", fontWeight: 600, cursor: isResumeFileUploading ? "not-allowed" : "pointer" }}>
-              {isResumeFileUploading ? "업로드 중..." : "교체"}
-            </button>
-            <button onClick={onResumeFileDelete} style={{ padding: "8px", borderRadius: "8px", border: "1px solid #e74c3c", background: "#fff", color: "#e74c3c", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} aria-label="삭제">
-              <Trash2 size={16} />
-            </button>
-          </div>
+        {educations.length === 0 ? (
+          null
         ) : (
-          <div onClick={() => !isResumeFileUploading && resumeFileInputRef.current?.click()} onDragOver={handleResumeDragOver} onDragLeave={handleResumeDragLeave} onDrop={handleResumeDrop}
-            style={{ width: "100%", padding: "12px 16px", borderRadius: "12px", border: `2px dashed ${isResumeDragOver ? "#582681" : "#e3e3e6"}`, background: isResumeDragOver ? "#f7f7f8" : "#fafafa", color: "#582681", fontSize: "13px", fontWeight: 400, cursor: isResumeFileUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", transition: "all 0.15s ease", textAlign: "center" }}>
-            <Upload size={26} />
-            <span>{isResumeFileUploading ? "업로드 중..." : isResumeDragOver ? "여기에 놓으세요" : "PDF·DOC·DOCX를 끌어다 놓거나 클릭하여 업로드"}</span>
-            <span style={{ fontSize: "11px", color: "#888", fontWeight: 400 }}>PDF, DOC, DOCX · 최대 5MB</span>
-          </div>
-        )}
-        <input ref={resumeFileInputRef} type="file" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleResumeFileChange} style={{ display: "none" }} />
-          </>
+          educations.map((edu) => {
+            const key = `edu-${edu.id}`;
+            const open = !collapsed.has(key);
+            return (
+              <div key={edu.id} className="resume-edu-item">
+                <div className="resume-career-head" onClick={() => toggleExpand(key)} style={{ cursor: "pointer" }}>
+                  <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+                  <strong>{edu.school}</strong>
+                  {!open && (
+                    <span style={{ marginLeft: "8px", fontSize: "13px", fontWeight: 400, color: "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {edu.startDate} - {edu.endDate}
+                    </span>
+                  )}
+                  <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                    <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditEdu(edu); setEduModalOpen(true); }}>
+                      <Pencil size={15} />
+                    </button>
+                    <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(edu.id); }}>
+                      <Trash2 size={15} />
+                    </button>
+                  </span>
+                </div>
+                {open && (
+                  <>
+                    <span className="resume-edu-info">{edu.major} · {edu.status}</span>
+                    <span className="resume-edu-period">{edu.startDate} - {edu.endDate}</span>
+                  </>
+                )}
+              </div>
+            );
+          })
         )}
       </section>
+
+      {/* 활동/수상 */}
+      <section id="section-experience" className="resume-section">
+        <div className="resume-section-head">
+          <h2 className="resume-section-title">활동/수상</h2>
+          <button className="resume-icon-btn" aria-label="활동 추가" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
+            <Plus size={18} />
+          </button>
+        </div>
+        {experiences.length > 0 ? (
+          <div className="resume-list">
+            {experiences.map((x) => {
+              const key = `exp-${x.id}`;
+              const open = !collapsed.has(key);
+              return (
+                <div key={x.id} className="resume-list-item">
+                  <p className="resume-item-text" onClick={() => toggleExpand(key)} style={{ fontWeight: 400, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
+                    <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+                    {x.category && <span style={{ color: "#582681", marginRight: "8px" }}>[{x.category}]</span>}
+                    {x.title}
+                    <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                      <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditExp(x); setExpModalOpen(true); }}>
+                        <Pencil size={15} />
+                      </button>
+                      <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
+                        <Trash2 size={15} />
+                      </button>
+                    </span>
+                  </p>
+                  {open && x.description && (
+                    <p className="resume-item-text" style={{ color: "#666", paddingLeft: "22px" }}>{x.description}</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          null
+        )}
+      </section>
+
+        </>
+      )}
 
 
       <PortfolioModal
@@ -655,7 +595,6 @@ export default function ResumeEditor({
       {/* 하위 모달들 */}
       <CareerEditModal isOpen={careerModalOpen} onClose={() => { setCareerModalOpen(false); setEditCareer(null); }} editTarget={editCareer} resumeType={resumeType} />
       <EducationModal isOpen={eduModalOpen} onClose={() => { setEduModalOpen(false); setEditEdu(null); }} editTarget={editEdu} />
-      <LanguageModal isOpen={langModalOpen} onClose={() => { setLangModalOpen(false); setEditLang(null); }} editTarget={editLang} />
       <ExperienceModal isOpen={expModalOpen} onClose={() => { setExpModalOpen(false); setEditExp(null); }} editTarget={editExp} />
       <SkillModal isOpen={skillModalOpen} onClose={() => setSkillModalOpen(false)} />
       <CertificateModal isOpen={certModalOpen} onClose={() => { setCertModalOpen(false); setEditCert(null); }} editTarget={editCert} />
