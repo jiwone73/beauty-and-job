@@ -13129,3 +13129,15 @@ button,
   transition: border-color .12s, color .12s;
 }
 .cv-inline-cancel:hover { border-color: #b9b9be; color: #3d3d3d; }
+/* 추천 스킬 더 보기 */
+.cv-skill-more {
+  border: 1px dashed #dcdce0; background: #fff; border-radius: 999px;
+  padding: 7px 13px; font-size: 13px; color: #6f6f75; cursor: pointer; font-family: inherit;
+}
+.cv-skill-more:hover { border-color: var(--color-primary); color: var(--color-primary); }
+/* 추천 스킬 더 보기 */
+.cv-skill-more {
+  border: 1px dashed #dcdce0; background: #fff; border-radius: 999px;
+  padding: 7px 13px; font-size: 13px; color: #6f6f75; cursor: pointer; font-family: inherit;
+}
+.cv-skill-more:hover { border-color: var(--color-primary); color: var(--color-primary); }

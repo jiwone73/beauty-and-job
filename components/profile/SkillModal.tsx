@@ -211,15 +211,28 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
   const { officeJobAreas, skillAreas } = useSignupStore();
   const { userJobType } = useAuthStore();
   const [input, setInput] = useState("");
+  // 추천을 다 펼치면 칸이 900px 씩 길어져 옆 칸과 키가 안 맞는다.
+  const [다펼침, set다펼침] = useState(false);
   if (!isOpen) return null;
 
   // 구직 트랙(빈 입력창 추천용): authStore 값 우선, 없으면 선택 분야로 추정
   const isStoreTrack = userJobType === "STORE" || (!userJobType && Array.isArray(skillAreas) && skillAreas.length > 0);
 
+  // 시술이 먼저 온다. 살롱 이력서에서 '스킬'은 곧 커트·펌·염색이고,
+  // 고객 응대나 재고 관리는 그다음이다. 예전에는 고른 분야가 없으면 곧장
+  // 매장운영 마흔 몇 개로 떨어져, 시술 스킬 칸에 포스기·발주가 깔렸다.
   const recommended = (() => {
     const merged = new Set<string>();
     if (isStoreTrack) {
-      (skillAreas || []).forEach((area) => (STORE_RECOMMENDATIONS[area] || []).forEach((s) => merged.add(s)));
+      // 저장된 값은 '헤어 디자이너', '네일리스트' 같은 직군 이름인데 사전 열쇠는
+      // '헤어', '네일' 처럼 짧다. 열쇠가 이름 안에 들어 있으면 그 분야로 본다.
+      // 그래서 '헤어 디자이너'는 커트·펌·염색을, '샵 매니저·실장'은 어느 열쇠도
+      // 걸리지 않아 매장운영을 받는다 — 실장에게는 그쪽이 맞다.
+      const 열쇠 = Object.keys(STORE_RECOMMENDATIONS).filter((k) => k !== "매장운영");
+      const 걸린 = new Set<string>();
+      (skillAreas || []).forEach((이름) =>
+        열쇠.forEach((k) => { if (String(이름).includes(k)) 걸린.add(k); }));
+      걸린.forEach((k) => STORE_RECOMMENDATIONS[k].forEach((s) => merged.add(s)));
       STORE_RECOMMENDATIONS["매장운영"].forEach((s) => merged.add(s));
     } else if (officeJobAreas && officeJobAreas.length > 0) {
       officeJobAreas.forEach((area) => (SKILL_RECOMMENDATIONS[area] || []).forEach((s) => merged.add(s)));
@@ -295,18 +308,32 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
         {!query && (
           <div className="cv-recommend-section">
             <h4 className="cv-recommend-title">추천 스킬</h4>
-            <p className="cv-recommend-desc">직무에 맞게 추천된 스킬을 간편하게 추가해 보세요.</p>
+            <p className="cv-recommend-desc">눌러서 담고, 없는 것은 위에 쳐서 넣으세요.</p>
             <div className="cv-skill-chips">
-              {recommended.filter((r) => !skills.includes(r)).map((skill) => (
-                <button key={skill} className="cv-skill-chip" onClick={() => addSkill(skill)}>
-                  {skill}
-                </button>
-              ))}
+              {(() => {
+                const 남은 = recommended.filter((r) => !skills.includes(r));
+                const 보일 = 다펼침 ? 남은 : 남은.slice(0, 12);
+                return (<>
+                  {보일.map((skill) => (
+                    <button key={skill} className="cv-skill-chip" onClick={() => addSkill(skill)}>
+                      {skill}
+                    </button>
+                  ))}
+                  {!다펼침 && 남은.length > 12 && (
+                    <button type="button" className="cv-skill-more" onClick={() => set다펼침(true)}>
+                      + {남은.length - 12}개 더
+                    </button>
+                  )}
+                </>);
+              })()}
             </div>
           </div>
         )}
 
-        <button className="cv-btn-primary" onClick={onClose}>완료</button>
+        <div className={inline ? "cv-actions" : undefined}>
+          {inline && <button type="button" className="cv-inline-cancel" onClick={onClose}>닫기</button>}
+          <button className="cv-btn-primary" onClick={onClose}>완료</button>
+        </div>
       </div>
   );
 
