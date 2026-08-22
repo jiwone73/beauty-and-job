@@ -347,8 +347,8 @@ function ApplicantsContent() {
 
       {!isMobile && jobFilter && (
         <div style={{
-          background: "#faf5ff",
-          border: "1px solid #ede0f8",
+          background: "#f7f7f8",
+          border: "1px solid #f7f7f8",
           borderRadius: "10px",
           padding: "12px 16px",
           marginBottom: "16px",
@@ -442,8 +442,8 @@ function ApplicantsContent() {
             .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
             .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 14px; font-weight: 400; cursor: pointer; }
-            .co-fseg-btn.on { border-color: #d9b8ec; background: #f5eaff; color: #582681; font-weight: 400; }
-            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f5eaff; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
+            .co-fseg-btn.on { border-color: #efeff1; background: #f7f7f8; color: #582681; font-weight: 400; }
+            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f7f7f8; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
@@ -454,7 +454,7 @@ function ApplicantsContent() {
             .co-jobopt { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; width: 100%; padding: 13px 14px; border: none; background: none; border-radius: 10px; color: #333; cursor: pointer; }
             .co-jobopt .jt { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
             .co-jobopt .jmeta { font-size: 12px; color: #999; }
-            .co-jobopt.on { background: #f5eaff; }
+            .co-jobopt.on { background: #f7f7f8; }
             .co-jobopt.on .jt { color: #582681; font-weight: 600; }
           `}</style>
           <div className="co-mbar">
@@ -636,7 +636,7 @@ function ApplicantsContent() {
             </thead>
             <tbody>
               {filtered.map((a) => (
-                <tr key={a.id} style={{ background: checked.includes(a.id) ? "#faf5ff" : "" }}>
+                <tr key={a.id} style={{ background: checked.includes(a.id) ? "#f7f7f8" : "" }}>
                   <td style={{ textAlign: "center" }}>
                     <input type="checkbox"
                       checked={checked.includes(a.id)}
@@ -787,7 +787,7 @@ function ApplicantsContent() {
                 </div>
                 {/* 첨부 이력서 파일 배너: 화면에서만(클릭 다운로드), PDF/인쇄 캡처에는 제외. SHOW_RESUME_FILE_BANNER로 노출 제어 */}
                 {SHOW_RESUME_FILE_BANNER && resumeFileInfo.url && (
-                  <div style={{ marginTop: "20px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
+                  <div style={{ marginTop: "20px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #efeff1", borderRadius: "10px" }}>
                     <FileText size={22} color="#582681" />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>

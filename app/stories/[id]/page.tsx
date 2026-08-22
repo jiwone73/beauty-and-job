@@ -5,10 +5,10 @@ import Link from "next/link";
 import { ThumbsUp } from "lucide-react";
 
 const CAT_STYLE: Record<string, { bg: string; color: string }> = {
-  공감: { bg: "#f3e5f5", color: "#582681" },
+  공감: { bg: "#f7f7f8", color: "#582681" },
   꿀팁: { bg: "#e8f5e9", color: "#2e7d32" },
   질문: { bg: "#fff3e0", color: "#e65100" },
-  정보: { bg: "#e3f2fd", color: "#1565c0" },
+  정보: { bg: "#f7f7f8", color: "#1565c0" },
 };
 
 export default function StoryDetailPage() {
@@ -131,7 +131,7 @@ export default function StoryDetailPage() {
         <Link href="/stories" style={{ fontSize: 15, fontWeight: 600, color: "#582681", textDecoration: "none" }}>현장이야기</Link>
       </header>
 
-      <article style={{ paddingBottom: 24, borderBottom: "8px solid #f7f3fb", marginBottom: 20 }}>
+      <article style={{ paddingBottom: 24, borderBottom: "8px solid #f7f7f8", marginBottom: 20 }}>
         <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 100, fontSize: 12, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 12 }}>{post.category}</span>
         {post.title && <h1 style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a", marginBottom: 10, lineHeight: 1.4 }}>{post.title}</h1>}
         <p style={{ fontSize: 16, color: "#333", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{post.body}</p>

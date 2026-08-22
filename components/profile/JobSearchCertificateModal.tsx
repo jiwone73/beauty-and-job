@@ -74,7 +74,7 @@ export default function JobSearchCertificateModal({
     }
   };
 
-  const th: CSSProperties = { border: "1px solid #ccc", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f5f0fa", color: "#1a1a1a", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const th: CSSProperties = { border: "1px solid #ccc", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f7f7f8", color: "#1a1a1a", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
   const td: CSSProperties = { border: "1px solid #ddd", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, color: "#333", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
 
   return (

@@ -133,7 +133,7 @@ export default function CompanyBlockModal({
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
               {blocked.map((b) => (
                 <div key={b.companyId}
-                  style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, padding: "10px 14px", background: "#faf5ff", borderRadius: 8 }}>
+                  style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, padding: "10px 14px", background: "#f7f7f8", borderRadius: 8 }}>
                   <span style={{ minWidth: 0 }}>
                     <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#333" }}>
                       <Ban size={14} color="#582681" style={{ flexShrink: 0 }} /> {b.companyName}

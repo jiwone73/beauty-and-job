@@ -523,7 +523,7 @@ export default function CompanySettingsPage() {
                         </button>
                       </>
                     ) : (
-                      <span style={{fontSize:"20px", fontWeight:700, color:"#c4b5d4"}}>{form.company_name?.[0] || "?"}</span>
+                      <span style={{fontSize:"20px", fontWeight:700, color:"#e3e3e6"}}>{form.company_name?.[0] || "?"}</span>
                     )}
                   </div>
                   <p style={{flex:1, minWidth:0, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.5}}>공고에 자동으로 노출되는 대표 로고예요.</p>
@@ -555,7 +555,7 @@ export default function CompanySettingsPage() {
                 </div>
                 {coverImages.length === 0 ? (
                   <div style={{minHeight:110, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, padding:12,
-                    background:"#f7f4fb", border:"1px dashed #d9c9ec", borderRadius:10, color:"#b0a0c0", fontSize:13, textAlign:"center", lineHeight:1.5}}>
+                    background:"#f7f4fb", border:"1px dashed #efeff1", borderRadius:10, color:"#b0a0c0", fontSize:13, textAlign:"center", lineHeight:1.5}}>
                     아직 등록한 이미지가 없어요.<br />
                     사진이 없다면 <b style={{color:"#8a72a8"}}>샘플 배너</b>로 문구만 넣어 만들어 보세요.
                   </div>
@@ -564,20 +564,20 @@ export default function CompanySettingsPage() {
                   <BannerStrip images={coverImages.map((c) => c.url)} onDelete={handleCoverDeleteOne} />
                 )}
                 {sampleOpen && (
-                  <div style={{marginTop:10, padding:12, border:"1px solid #e5e2ea", borderRadius:10, background:"#faf9fc"}}>
+                  <div style={{marginTop:10, padding:12, border:"1px solid #efeff1", borderRadius:10, background:"#faf9fc"}}>
                     <div style={{fontSize:13, color:"#582681", fontWeight:600, marginBottom:8}}>
                       샘플 배너 만들기 <span style={{fontWeight:400, color:"#999"}}>· 가운데 문구만 넣어요(줄바꿈 가능)</span>
                     </div>
                     <textarea value={sampleText} onChange={(e) => setSampleText(e.target.value)} rows={2}
                       placeholder={`${form.company_name || "리안헤어 광명점"}\n함께 일할 디자이너를 찾습니다 (자유 입력)`}
-                      style={{width:"100%", boxSizing:"border-box", border:"1px solid #e0d8ec", borderRadius:8, padding:"8px 10px", fontSize:14, resize:"vertical", outline:"none"}} />
+                      style={{width:"100%", boxSizing:"border-box", border:"1px solid #efeff1", borderRadius:8, padding:"8px 10px", fontSize:14, resize:"vertical", outline:"none"}} />
                     <div style={{display:"flex", gap:8, marginTop:10}}>
                       <button type="button" onClick={addSampleBanner} disabled={sampleBusy || !sampleText.trim()}
                         className="company-primary-btn" style={{padding:"8px 16px", fontSize:13, opacity:(sampleBusy || !sampleText.trim()) ? 0.6 : 1}}>
                         {sampleBusy ? "만드는 중…" : "배너로 추가"}
                       </button>
                       <button type="button" onClick={() => setSampleOpen(false)}
-                        style={{border:"1px solid #e0d8ec", background:"#fff", borderRadius:8, padding:"8px 14px", fontSize:13, cursor:"pointer", color:"#666"}}>취소</button>
+                        style={{border:"1px solid #efeff1", background:"#fff", borderRadius:8, padding:"8px 14px", fontSize:13, cursor:"pointer", color:"#666"}}>취소</button>
                     </div>
                   </div>
                 )}

@@ -39,7 +39,7 @@ function mapJob(j: any): Job {
 
 function typeBadge(type: string) {
   return type === "매장"
-    ? { color: "#185fa5", bg: "#e6f1fb" }
+    ? { color: "#185fa5", bg: "#f7f7f8" }
     : { color: "#0f6e56", bg: "#e1f5ee" };
 }
 
@@ -257,11 +257,11 @@ function SearchInner() {
         .srch-rec-title { font-size: 14px; color: #555; margin: 0 0 12px; font-weight: 600; }
         .srch-chips { display: flex; flex-wrap: wrap; gap: 8px; }
         .srch-chip { border: 1px solid #eee; background: #faf7fc; color: #582681; border-radius: 20px; padding: 8px 16px; font-size: 14px; cursor: pointer; }
-        .srch-chip:hover { background: #f3e8fb; }
-        .srch-tabs { display: inline-flex; align-items: center; gap: 2px; background: #f4f0f9; border-radius: 11px; padding: 4px; width: fit-content; margin: 24px 0 20px; }
+        .srch-chip:hover { background: #f7f7f8; }
+        .srch-tabs { display: inline-flex; align-items: center; gap: 2px; background: #f7f7f8; border-radius: 11px; padding: 4px; width: fit-content; margin: 24px 0 20px; }
         .srch-tab { background: transparent; border: none; padding: 7px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: -.2px; color: #8b84a0; cursor: pointer; font-family: inherit; white-space: nowrap; transition: color .15s, background .15s, box-shadow .15s; }
         .srch-tab:hover { color: #6b6480; }
-        .srch-tab.on { background: #e3d4f0; color: #431a63; }
+        .srch-tab.on { background: #efeff1; color: #431a63; }
         .srch-tab-n { color: ${PURPLE}; margin-left: 2px; }
         .srch-section { margin-bottom: 32px; }
         .srch-sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
@@ -271,14 +271,14 @@ function SearchInner() {
         .srch-row { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 12px 14px; text-decoration: none; }
         .srch-row:hover { border-color: #ddd; }
         .srch-logo { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
-        .srch-logo-circle { background: #f3e8fb; color: ${PURPLE}; border-radius: 50%; }
+        .srch-logo-circle { background: #f7f7f8; color: ${PURPLE}; border-radius: 50%; }
         .srch-row-body { flex: 1; min-width: 0; }
         .srch-row-title { font-size: 15px; font-weight: 500; color: #222; margin: 0; }
         .srch-row-sub { margin: 3px 0 0; font-size: 13px; color: #888; }
         .srch-badge { flex-shrink: 0; font-size: 12px; padding: 4px 10px; border-radius: 8px; }
         .srch-loading, .srch-noresult { text-align: center; padding: 60px 20px; color: #888; }
         .srch-noresult-icon { font-size: 36px; margin-bottom: 12px; }
-        .srch-bottom-more { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; margin-top: 14px; padding: 12px; background: #faf7fc; border: 1px solid #f0e6f7; border-radius: 10px; color: ${PURPLE}; font-size: 14px; cursor: pointer; text-decoration: none; }
+        .srch-bottom-more { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; margin-top: 14px; padding: 12px; background: #faf7fc; border: 1px solid #f7f7f8; border-radius: 10px; color: ${PURPLE}; font-size: 14px; cursor: pointer; text-decoration: none; }
       `}</style>
     </div>
   );

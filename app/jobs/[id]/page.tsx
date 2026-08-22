@@ -93,7 +93,7 @@ export default function JobDetailPage() {
             salary: j.salary_text || (((j.salary_max && j.salary_max > j.salary_min)
               ? `${formatSalaryWon(j.salary_min, j.salary_type)} ~ ${formatSalaryWon(j.salary_max, j.salary_type).replace(/^[^0-9]*/, '')}`
               : formatSalaryWon(j.salary_min, j.salary_type)) || '면접 후 협의'),
-            color: '#e8f0fe',
+            color: '#f7f7f8',
             description: j.description || '',
             requirements: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],
             preferreds: j.preferred_qualifications ? j.preferred_qualifications.split('\n').filter(Boolean) : [],
@@ -285,7 +285,7 @@ export default function JobDetailPage() {
           ) : isOwnerCompany ? (
             <>
               <div style={{
-                background: "#f5f3ff", color: "#582681", borderRadius: "10px",
+                background: "#f7f7f8", color: "#582681", borderRadius: "10px",
                 padding: "12px 14px", fontSize: "13px", lineHeight: 1.5,
                 textAlign: "center", marginBottom: "12px"
               }}>

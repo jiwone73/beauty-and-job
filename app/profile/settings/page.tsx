@@ -191,7 +191,7 @@ export default function AccountSettingsPage() {
                 어떤 알림을 받을지 고릅니다.
               </span>
             </span>
-            <ChevronRight size={18} style={{ color: "#c9c3ce", flexShrink: 0 }} />
+            <ChevronRight size={18} style={{ color: "#e3e3e6", flexShrink: 0 }} />
           </button>
         </section>
 

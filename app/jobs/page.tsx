@@ -169,7 +169,7 @@ function JobsPageInner() {
             region: j.location || '국내',
             type: j.company_type === 'OFFICE' ? '본사' : j.company_type === 'STORE' ? '매장' : '본사',
             thumbnail: (Array.isArray(j.cover_images) && j.cover_images[0]?.url) || j.logo_url || (Array.isArray(j.detail_images) && j.detail_images[0]?.url),
-            color: '#e8f0fe',
+            color: '#f7f7f8',
             deadline: formatDeadline(j.deadline),
             employment: j.employment_type || null,
             // 상세 필터(경력·고용형태·복리후생·급여)가 읽는 원본 값. 카드 표시용으로 가공한

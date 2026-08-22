@@ -74,10 +74,10 @@ function shortLocation(loc: string | null) {
 }
 function productBadge(type: string | null) {
   const t = type || "FREE";
-  if (t === "TOP") return { label: "상단노출", bg: "#f3e8ff", color: "#582681" };
+  if (t === "TOP") return { label: "상단노출", bg: "#f7f7f8", color: "#582681" };
   if (t === "PREMIUM") return { label: "프리미엄", bg: "#582681", color: "#fff" };
   if (t === "FREE") return { label: "무료", bg: "#f0f0f0", color: "#999" };
-  return { label: t, bg: "#f3e8ff", color: "#582681" };
+  return { label: t, bg: "#f7f7f8", color: "#582681" };
 }
 function AdminJobsPageInner() {
   const searchParams = useSearchParams();
@@ -333,7 +333,7 @@ function AdminJobsPageInner() {
                         />
                       ) : (
                         <div style={{
-                          width: 26, height: 26, borderRadius: 6, background: "#f3e8ff",
+                          width: 26, height: 26, borderRadius: 6, background: "#f7f7f8",
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontSize: 12, color: "#7c3aed", flexShrink: 0
                         }}>
@@ -416,7 +416,7 @@ function AdminJobsPageInner() {
                   {/* 관리: 수정 */}
                   <td>
                     <Link href={`/admin/jobs/new?id=${job.id}`}
-                      style={{ display: "inline-block", padding: "4px 12px", borderRadius: 6, border: "1px solid #d9c8ec", color: "#582681", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", textDecoration: "none" }}>
+                      style={{ display: "inline-block", padding: "4px 12px", borderRadius: 6, border: "1px solid #efeff1", color: "#582681", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", textDecoration: "none" }}>
                       수정
                     </Link>
                   </td>

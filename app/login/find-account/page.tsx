@@ -113,7 +113,7 @@ export default function FindAccountPage() {
 
           {/* 결과: 매칭됨 */}
           {result?.found && (
-            <div className="mt-6 p-5 bg-[#faf5ff] border border-[#e9d5ff] rounded-lg text-center">
+            <div className="mt-6 p-5 bg-[#f7f7f8] border border-[#f7f7f8] rounded-lg text-center">
               <p className="text-[13px] md:text-[14px] text-[#6b6b6b] mb-1">가입하신 이메일이에요</p>
               <p className="text-[18px] font-normal text-[#582681] mb-4">{result.email}</p>
               <Link href="/login/email">

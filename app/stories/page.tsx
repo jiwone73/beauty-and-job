@@ -8,10 +8,10 @@ import { ThumbsUp } from "lucide-react";
 const CATEGORIES = ["전체", "공감", "꿀팁", "질문", "정보"];
 
 const CAT_STYLE: Record<string, { bg: string; color: string; emoji: string }> = {
-  공감: { bg: "#f3e5f5", color: "#582681", emoji: "💬" },
+  공감: { bg: "#f7f7f8", color: "#582681", emoji: "💬" },
   꿀팁: { bg: "#e8f5e9", color: "#2e7d32", emoji: "💡" },
   질문: { bg: "#fff3e0", color: "#e65100", emoji: "❓" },
-  정보: { bg: "#e3f2fd", color: "#1565c0", emoji: "📌" },
+  정보: { bg: "#f7f7f8", color: "#1565c0", emoji: "📌" },
 };
 
 export default function StoriesPage() {
@@ -49,7 +49,7 @@ export default function StoriesPage() {
 
       {/* 인트로 배너 */}
       <div style={{
-        background: "#f3edfa", borderRadius: 16, padding: "22px 24px", marginBottom: 20,
+        background: "#f7f7f8", borderRadius: 16, padding: "22px 24px", marginBottom: 20,
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
       }}>
         <div>
@@ -64,13 +64,13 @@ export default function StoriesPage() {
           <rect x="67" y="17" width="52" height="60" rx="5" fill="#faf7fd" />
           <circle cx="76" cy="30" r="5" fill="#2e7d32" />
           <path d="M73.5 30 l2 2 l3.5 -3.5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          <rect x="85" y="28" width="26" height="4" rx="2" fill="#d8c4ec" />
+          <rect x="85" y="28" width="26" height="4" rx="2" fill="#efeff1" />
           <circle cx="76" cy="45" r="5" fill="#2e7d32" />
           <path d="M73.5 45 l2 2 l3.5 -3.5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          <rect x="85" y="43" width="22" height="4" rx="2" fill="#d8c4ec" />
+          <rect x="85" y="43" width="22" height="4" rx="2" fill="#efeff1" />
           <circle cx="76" cy="60" r="5" fill="#2e7d32" />
           <path d="M73.5 60 l2 2 l3.5 -3.5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          <rect x="85" y="58" width="28" height="4" rx="2" fill="#d8c4ec" />
+          <rect x="85" y="58" width="28" height="4" rx="2" fill="#efeff1" />
           <ellipse cx="30" cy="22" rx="18" ry="10" fill="#fff" />
           <path d="M22 30 L19 37 L31 31 Z" fill="#fff" />
           <circle cx="22" cy="22" r="2" fill="#b794d4" />
@@ -81,7 +81,7 @@ export default function StoriesPage() {
           <circle cx="33" cy="66" r="1.8" fill="#4a3a3a" />
           <circle cx="44" cy="66" r="1.8" fill="#4a3a3a" />
           <path d="M34 73 Q38 77 43 73" stroke="#4a3a3a" strokeWidth="1.6" strokeLinecap="round" fill="none" />
-          <rect x="18" y="90" width="40" height="6" rx="3" fill="#d8c4ec" />
+          <rect x="18" y="90" width="40" height="6" rx="3" fill="#efeff1" />
         </svg>
       </div>
 
@@ -95,14 +95,14 @@ export default function StoriesPage() {
             placeholder="제목·내용 검색"
             style={{
               width: "100%", padding: "11px 40px 11px 16px", borderRadius: 100,
-              border: "1px solid #e0d4f0", fontSize: 14, boxSizing: "border-box",
+              border: "1px solid #efeff1", fontSize: 14, boxSizing: "border-box",
               outline: "none", background: "#fff",
             }}
           />
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
             style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-            <circle cx="11" cy="11" r="7" stroke="#b9a3d6" strokeWidth="2" />
-            <path d="M21 21l-4.3-4.3" stroke="#b9a3d6" strokeWidth="2" strokeLinecap="round" />
+            <circle cx="11" cy="11" r="7" stroke="#e3e3e6" strokeWidth="2" />
+            <path d="M21 21l-4.3-4.3" stroke="#e3e3e6" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </div>
 
@@ -131,7 +131,7 @@ export default function StoriesPage() {
           display: flex;
           align-items: center;
           gap: 2px;
-          background: #f4f0f9;
+          background: #f7f7f8;
           border-radius: 11px;
           padding: 4px;
           width: fit-content;
@@ -153,7 +153,7 @@ export default function StoriesPage() {
         }
         .stories-cat-btn:hover { color: #6b6480; }
         .stories-cat-btn.on {
-          background: #e3d4f0;
+          background: #efeff1;
           color: #431a63;
         }
         @media (min-width: 768px) {
@@ -196,7 +196,7 @@ export default function StoriesPage() {
             return (
               <Link key={p.id} href={`/stories/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                 <div style={{
-                  background: "#fff", border: "1px solid #f0e8f8", borderRadius: 14,
+                  background: "#fff", border: "1px solid #f7f7f8", borderRadius: 14,
                   padding: 18, cursor: "pointer",
                 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>

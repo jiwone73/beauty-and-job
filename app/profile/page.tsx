@@ -555,13 +555,13 @@ export default function ProfilePage() {
       <div className="profile-content">
             <section className="profile-section">
               <div className="profile-info-card">
-                <div style={{ padding: "11px 16px", borderBottom: "1px solid #e0d0f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
+                <div style={{ padding: "11px 16px", borderBottom: "1px solid #efeff1", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
                   <span className="profile-info-label">이름/사진<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", position: "relative" }}>
                     <div
                       onClick={(e) => { e.stopPropagation(); setAvatarMenu((v) => !v); }}
                       title="사진 변경/삭제"
-                      style={{ width: "80px", height: "80px", borderRadius: "50%", background: avatarLoaded ? "#f0e8f8" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: avatarLoaded ? "1px solid #f2f2f2" : "1px solid transparent", cursor: "pointer" }}>
+                      style={{ width: "80px", height: "80px", borderRadius: "50%", background: avatarLoaded ? "#f7f7f8" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: avatarLoaded ? "1px solid #f2f2f2" : "1px solid transparent", cursor: "pointer" }}>
                       {/* 사진을 비공개로 두면 이 자리도 기본 아바타로 바꾼다. 남에게
                           안 보이는데 나에게만 보이면, 껐는지 켰는지 매번 메뉴를 열어
                           확인해야 한다. 사진 자체는 지워지지 않고 그대로 있다. */}
@@ -579,7 +579,7 @@ export default function ProfilePage() {
                     <p style={{ fontSize: "14px", fontWeight: 400, color: "#555", margin: 0 }}>{name || "회원"}</p>
                     {avatarMenu && (
                       <div onClick={(e) => e.stopPropagation()}
-                        style={{ position: "absolute", top: "100%", right: 0, marginTop: "6px", zIndex: 30, background: "#fff", border: "1px solid #e0d0f0", borderRadius: "10px", boxShadow: "0 6px 20px rgba(0,0,0,0.12)", padding: "6px", minWidth: "196px" }}>
+                        style={{ position: "absolute", top: "100%", right: 0, marginTop: "6px", zIndex: 30, background: "#fff", border: "1px solid #efeff1", borderRadius: "10px", boxShadow: "0 6px 20px rgba(0,0,0,0.12)", padding: "6px", minWidth: "196px" }}>
                         <button
                           onClick={() => { avatarFileRef.current?.click(); setAvatarMenu(false); }}
                           style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 10px", border: "none", background: "transparent", fontSize: "13px", color: "#333", cursor: "pointer", borderRadius: "6px" }}>
@@ -597,7 +597,7 @@ export default function ProfilePage() {
                             사람은 그런 선택이 있는 줄도 몰랐다. */}
                         {avatarUrl && (
                           <>
-                            <div style={{ height: 1, background: "#f0e8f8", margin: "5px 6px" }} />
+                            <div style={{ height: 1, background: "#f7f7f8", margin: "5px 6px" }} />
                             <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", cursor: "pointer" }}>
                               <input type="checkbox" className="applied-check"
                                 checked={!avatarPublic}
@@ -611,7 +611,7 @@ export default function ProfilePage() {
                                 ? "내가 지원한 매장에는 그대로 보여요."
                                 : "사진은 지워지지 않아요. 내가 지원한 매장에는 그대로 보여요."}
                             </div>
-                            <div style={{ height: 1, background: "#f0e8f8", margin: "1px 6px 5px" }} />
+                            <div style={{ height: 1, background: "#f7f7f8", margin: "1px 6px 5px" }} />
                           </>
                         )}
                         <div style={{ fontSize: "11px", color: "#aaa", padding: "4px 10px 2px" }}>JPG/PNG/WebP · 자동 최적화 (최대 3MB)</div>
@@ -649,7 +649,7 @@ export default function ProfilePage() {
                           저장
                         </button>
                         <button onClick={() => { setEditField(null); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); }}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                       </span>
                     </div>
                     <div style={{ display: "flex", gap: "8px" }}>
@@ -658,7 +658,7 @@ export default function ProfilePage() {
                         value={formatPhone(phoneInput)}
                         disabled={phoneVerified}
                         onChange={(e) => { setPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 11)); setPhoneVerified(false); setPhoneCodeSent(false); }}
-                        style={{ flex: 1, minWidth: 0, padding: "8px 10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", background: phoneVerified ? "#f5f5f5" : "#fff" }}
+                        style={{ flex: 1, minWidth: 0, padding: "8px 10px", border: "1px solid #efeff1", borderRadius: "8px", fontSize: "14px", background: phoneVerified ? "#f5f5f5" : "#fff" }}
                       />
                       <button
                         disabled={phoneSending || phoneVerified || phoneInput.replace(/\D/g, "").length < 10}
@@ -688,7 +688,7 @@ export default function ProfilePage() {
                           type="tel" inputMode="numeric" placeholder="인증번호 6자리" maxLength={6}
                           value={phoneCode}
                           onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                          style={{ flex: 1, minWidth: 0, padding: "8px 10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px" }}
+                          style={{ flex: 1, minWidth: 0, padding: "8px 10px", border: "1px solid #efeff1", borderRadius: "8px", fontSize: "14px" }}
                         />
                         <button
                           disabled={phoneVerifying || phoneCode.length < 6}
@@ -747,14 +747,14 @@ export default function ProfilePage() {
                           저장
                         </button>
                         <button onClick={() => setEditField(null)}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                       </span>
                     </div>
                     <input
                       type="text" placeholder="YYYYMMDD (예: 19900115)" maxLength={8}
                       value={birthInput}
                       onChange={(e) => setBirthInput(e.target.value.replace(/\D/g, ""))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px" }}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #efeff1", borderRadius: "8px", fontSize: "14px" }}
                     />
                   </div>
                 ) : (
@@ -766,14 +766,14 @@ export default function ProfilePage() {
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <span className="profile-info-label">성별<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <button onClick={() => setEditField(null)}
-                        style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", cursor: "pointer" }}>
+                        style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>
                         취소
                       </button>
                     </div>
                     <div style={{ display: "flex", gap: "8px" }}>
                       {["남성", "여성"].map((g) => (
                         <button key={g}
-                          style={{ flex: 1, padding: "10px", borderRadius: "8px", fontSize: "14px", cursor: "pointer", border: gender === g ? "1.5px solid #582681" : "1px solid #e0d0f0", background: gender === g ? "#582681" : "#fff", color: gender === g ? "#fff" : "#333", fontWeight: gender === g ? 600 : 400 }}
+                          style={{ flex: 1, padding: "10px", borderRadius: "8px", fontSize: "14px", cursor: "pointer", border: gender === g ? "1.5px solid #582681" : "1px solid #efeff1", background: gender === g ? "#582681" : "#fff", color: gender === g ? "#fff" : "#333", fontWeight: gender === g ? 600 : 400 }}
                           onClick={async () => {
                             try {
                               const token = localStorage.getItem("access_token");
@@ -823,14 +823,14 @@ export default function ProfilePage() {
                           저장
                         </button>
                         <button onClick={() => setEditField(null)}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                       </span>
                     </div>
                     <input
                       type="email" placeholder="example@email.com"
                       value={emailEditInput}
                       onChange={(e) => setEmailEditInput(e.target.value)}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px" }}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #efeff1", borderRadius: "8px", fontSize: "14px" }}
                     />
                   </div>
                 ) : (
@@ -855,7 +855,7 @@ export default function ProfilePage() {
                 <div style={{ marginBottom: "8px" }}>
                   <input readOnly value={addressRoad} placeholder="터치하여 주소를 검색해주세요"
                     onClick={openPostcode}
-                    style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", color: "#555", background: "#fafafa", cursor: "pointer" }} />
+                    style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", border: "1px solid #efeff1", borderRadius: "8px", fontSize: "14px", color: "#555", background: "#fafafa", cursor: "pointer" }} />
                 </div>
                 {postcodeOpen && (
                   <div className="postcode-modal-overlay">
@@ -875,7 +875,7 @@ export default function ProfilePage() {
                   <input value={addressDetail} placeholder="상세주소 (동·호수 등)"
                     onChange={(e) => setAddressDetail(e.target.value)}
                     onBlur={() => patchUser({ address_detail: addressDetail })}
-                    style={{ width: "100%", padding: "12px 14px", border: "1px solid #e0d0f0", borderRadius: "8px", fontSize: "14px", color: "#555", background: "#fafafa", boxSizing: "border-box" }} />
+                    style={{ width: "100%", padding: "12px 14px", border: "1px solid #efeff1", borderRadius: "8px", fontSize: "14px", color: "#555", background: "#fafafa", boxSizing: "border-box" }} />
                 )}
               </div>
             </section>

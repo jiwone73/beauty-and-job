@@ -573,7 +573,7 @@ export default function ResumeEditor({
         {resumeFileReadOnly ? (
           /* 지원 화면: 프로필에 저장된 파일 읽기 전용 표시 */
           resumeFileName ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #efeff1", borderRadius: "12px" }}>
               <FileText size={32} color="#582681" />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontSize: "13px", fontWeight: 400, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -598,7 +598,7 @@ export default function ResumeEditor({
           본인이 직접 작성한 이력서 파일을 첨부할 수 있어요 (선택, 최대 5MB). 지원 시 함께 전달돼요.
         </p>
         {resumeFileName ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #efeff1", borderRadius: "12px" }}>
             <FileText size={32} color="#582681" />
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ fontSize: "13px", fontWeight: 400, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -611,7 +611,7 @@ export default function ResumeEditor({
                 파일 열기{resumeFileSize ? ` · ${formatFileSize(resumeFileSize)}` : ""}
               </button>
             </div>
-            <button onClick={() => resumeFileInputRef.current?.click()} disabled={isResumeFileUploading} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #e0d0f0", background: "#fff", color: "#333", fontSize: "13px", fontWeight: 600, cursor: isResumeFileUploading ? "not-allowed" : "pointer" }}>
+            <button onClick={() => resumeFileInputRef.current?.click()} disabled={isResumeFileUploading} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #efeff1", background: "#fff", color: "#333", fontSize: "13px", fontWeight: 600, cursor: isResumeFileUploading ? "not-allowed" : "pointer" }}>
               {isResumeFileUploading ? "업로드 중..." : "교체"}
             </button>
             <button onClick={onResumeFileDelete} style={{ padding: "8px", borderRadius: "8px", border: "1px solid #e74c3c", background: "#fff", color: "#e74c3c", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} aria-label="삭제">
@@ -620,7 +620,7 @@ export default function ResumeEditor({
           </div>
         ) : (
           <div onClick={() => !isResumeFileUploading && resumeFileInputRef.current?.click()} onDragOver={handleResumeDragOver} onDragLeave={handleResumeDragLeave} onDrop={handleResumeDrop}
-            style={{ width: "100%", padding: "12px 16px", borderRadius: "12px", border: `2px dashed ${isResumeDragOver ? "#582681" : "#d0c0e0"}`, background: isResumeDragOver ? "#f3e5f5" : "#fafafa", color: "#582681", fontSize: "13px", fontWeight: 400, cursor: isResumeFileUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", transition: "all 0.15s ease", textAlign: "center" }}>
+            style={{ width: "100%", padding: "12px 16px", borderRadius: "12px", border: `2px dashed ${isResumeDragOver ? "#582681" : "#e3e3e6"}`, background: isResumeDragOver ? "#f7f7f8" : "#fafafa", color: "#582681", fontSize: "13px", fontWeight: 400, cursor: isResumeFileUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", transition: "all 0.15s ease", textAlign: "center" }}>
             <Upload size={26} />
             <span>{isResumeFileUploading ? "업로드 중..." : isResumeDragOver ? "여기에 놓으세요" : "PDF·DOC·DOCX를 끌어다 놓거나 클릭하여 업로드"}</span>
             <span style={{ fontSize: "11px", color: "#888", fontWeight: 400 }}>PDF, DOC, DOCX · 최대 5MB</span>

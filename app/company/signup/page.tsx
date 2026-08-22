@@ -294,7 +294,7 @@ export default function CompanySignupPage() {
         </header>
         <div className="flex-1 flex items-center justify-center px-5 py-8">
           <div className="w-full max-w-[420px] text-center">
-            <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-[#f5ebfa] flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-[#f7f7f8] flex items-center justify-center">
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
                 <path d="M5 13l4 4L19 7" stroke="#582681" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -352,7 +352,7 @@ export default function CompanySignupPage() {
                   onClick={() => update("company_type", t.value)}
                   className={`jt-card relative flex items-center gap-3 px-2 py-2.5 border-2 rounded-xl text-left transition ${
                     form.company_type === t.value
-                      ? "border-[#582681] bg-[#f5ebfa] text-[#582681]"
+                      ? "border-[#582681] bg-[#f7f7f8] text-[#582681]"
                       : "border-[#e0e0e0] text-[#6b6b6b] hover:border-[#c0c0c0]"
                   }`}
                 >
@@ -421,7 +421,7 @@ export default function CompanySignupPage() {
 
           <div className="mb-4">
             <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록증 <span className="text-[#e74c3c]">*</span></label>
-            <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#c9b3e0] rounded-lg text-[13px] md:text-[15px] text-[#582681] bg-[#faf7fd] cursor-pointer hover:bg-[#f3ebfb] transition text-center">
+            <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#e3e3e6] rounded-lg text-[13px] md:text-[15px] text-[#582681] bg-[#faf7fd] cursor-pointer hover:bg-[#f7f7f8] transition text-center">
               <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={handleLicenseUpload} className="hidden" />
               {licenseUploading ? "업로드 중…" : licenseName ? `첨부됨: ${licenseName}` : "사업자등록증 첨부 (JPG·PNG·WebP·PDF · 최대 5MB)"}
             </label>
@@ -443,7 +443,7 @@ export default function CompanySignupPage() {
                   className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681] disabled:bg-[#f5f5f5]" />
                 <button type="button" onClick={handleSendCode}
                   disabled={sending || phoneVerified || form.phone.replace(/\D/g, "").length < 10}
-                  className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition">
+                  className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f7f7f8] transition">
                   {phoneVerified ? "인증완료" : codeSent ? "재전송" : sending ? "전송중" : "인증번호 받기"}
                 </button>
               </div>
@@ -476,7 +476,7 @@ export default function CompanySignupPage() {
                   className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681] disabled:bg-[#f5f5f5]" />
                 <button type="button" onClick={handleSendEmailCode}
                   disabled={emailSending || emailVerified || emailStatus === "taken" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)}
-                  className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition">
+                  className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f7f7f8] transition">
                   {emailVerified ? "인증완료" : emailCodeSent ? "재전송" : emailSending ? "전송중" : "인증코드 받기"}
                 </button>
               </div>

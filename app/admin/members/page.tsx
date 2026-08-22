@@ -430,7 +430,7 @@ function AdminMembersPageInner() {
                   : (m.career_type === "NEWCOMER" || m.career_type === "NEW") ? "신입" : null;
 
                 return (
-                  <tr key={m.id} style={{ background: checked.includes(m.id) ? "#faf5ff" : "" }}>
+                  <tr key={m.id} style={{ background: checked.includes(m.id) ? "#f7f7f8" : "" }}>
                     <td style={{ textAlign: "center" }}>
                       <input type="checkbox" checked={checked.includes(m.id)} onChange={() => toggleCheck(m.id)} />
                     </td>

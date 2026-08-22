@@ -104,7 +104,7 @@ export default function OnboardingJobTypePage() {
             onClick={() => setSelected("STORE")}
             className={"w-full rounded-xl border-2 p-5 text-left transition-all " +
               (selected === "STORE"
-                ? "border-[#582681] bg-[#f5ebfa]"
+                ? "border-[#582681] bg-[#f7f7f8]"
                 : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
@@ -119,7 +119,7 @@ export default function OnboardingJobTypePage() {
             onClick={() => setSelected("OFFICE")}
             className={"w-full rounded-xl border-2 p-5 text-left transition-all " +
               (selected === "OFFICE"
-                ? "border-[#582681] bg-[#f5ebfa]"
+                ? "border-[#582681] bg-[#f7f7f8]"
                 : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
@@ -149,7 +149,7 @@ export default function OnboardingJobTypePage() {
               />
               <button type="button" onClick={sendCode}
                 disabled={phoneBusy || phoneVerified || phone.replace(/\D/g, "").length < 10}
-                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition">
+                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f7f7f8] transition">
                 {phoneVerified ? "인증완료" : codeSent ? "재전송" : phoneBusy ? "전송중" : "인증번호 받기"}
               </button>
             </div>

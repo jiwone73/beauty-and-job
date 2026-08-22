@@ -316,7 +316,7 @@ export default function AdminOutreachPage() {
   const clamp2: React.CSSProperties = { display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis" };
   const chip = (active: boolean): React.CSSProperties => ({
     padding: "6px 12px", borderRadius: 999, fontSize: 14, fontWeight: 400, cursor: "pointer",
-    border: active ? `1px solid ${PURPLE}` : "1px solid #e3dcec",
+    border: active ? `1px solid ${PURPLE}` : "1px solid #efeff1",
     background: active ? PURPLE : "#fff", color: active ? "#fff" : "#6b6473",
   });
   // 갱신할 때 처음 본 공고에 그 날짜를 찍어 둔다. 사흘 안쪽이면 새 공고로 표시한다.
@@ -370,7 +370,7 @@ export default function AdminOutreachPage() {
                 <span key={s}><b style={{ color: "#2b2533", fontWeight: 600 }}>{label(s)}</b> {bySite[s].toLocaleString()}</span>
               ))}
               {(storeCnt > 0 || officeCnt > 0) && (
-                <span style={{ marginLeft: 4, paddingLeft: 12, borderLeft: "1px solid #e3dcec" }} title="공고 제목 기반 추정(정확한 매장/오피스는 불러오기 시 분류됨)">
+                <span style={{ marginLeft: 4, paddingLeft: 12, borderLeft: "1px solid #efeff1" }} title="공고 제목 기반 추정(정확한 매장/오피스는 불러오기 시 분류됨)">
                   <b style={{ color: "#582681", fontWeight: 600 }}>매장</b> {storeCnt.toLocaleString()} · <b style={{ color: "#582681", fontWeight: 600 }}>오피스</b> {officeCnt.toLocaleString()} <span style={{ color: "#b7b0c0" }}>(추정)</span>
                 </span>
               )}
@@ -432,7 +432,7 @@ export default function AdminOutreachPage() {
           ) : (
             <button type="button" disabled
               title="조회된 활성 공고 목록에서 라디오로 공고를 선택하면 활성화돼요"
-              style={{ ...chip(false), opacity: 0.5, cursor: "default", borderColor: "#e0d5ee", color: "#b7b0c0" }}>
+              style={{ ...chip(false), opacity: 0.5, cursor: "default", borderColor: "#efeff1", color: "#b7b0c0" }}>
               선택 공고 등록
             </button>
           )}
@@ -479,7 +479,7 @@ export default function AdminOutreachPage() {
                 const subtitle = [row.category, row.scale].filter(Boolean).join(" · ");
                 return (
                   <Fragment key={row.id}>
-                    <tr style={{ background: selected.has(row.id) ? "#f6f0fb" : "#fff" }}>
+                    <tr style={{ background: selected.has(row.id) ? "#f7f7f8" : "#fff" }}>
                       <td style={td}><input type="checkbox" checked={selected.has(row.id)} onChange={() => toggleSel(row.id)} /></td>
                       <td style={{ ...td, color: "#9a92a6" }}>{rowIdx + 1}</td>
                       {/* 브랜드명 = 홈페이지 링크, ✎로 URL 편집 */}
@@ -520,10 +520,10 @@ export default function AdminOutreachPage() {
                                 @{insta} <span style={{ fontSize: 11 }}>↗</span>
                               </a>
                             ) : (
-                              <span style={{ fontSize: 12.5, color: "#c9c3d1" }}>인스타 없음</span>
+                              <span style={{ fontSize: 12.5, color: "#e3e3e6" }}>인스타 없음</span>
                             )}
                             <button onClick={() => setEditInstaId(row.id)} title={insta ? "인스타 수정" : "인스타 계정 추가"}
-                              style={{ border: "none", background: "none", cursor: "pointer", color: "#d3cdda", fontSize: 12, padding: 0 }}>✎</button>
+                              style={{ border: "none", background: "none", cursor: "pointer", color: "#e3e3e6", fontSize: 12, padding: 0 }}>✎</button>
                           </div>
                         )}
                       </td>

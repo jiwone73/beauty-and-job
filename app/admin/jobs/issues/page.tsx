@@ -88,7 +88,7 @@ export default function JobIssuesPage() {
         {loading ? (
           <div style={{ color: "#9a92a6", padding: 30 }}>불러오는 중…</div>
         ) : filtered.length === 0 ? (
-          <div style={{ color: "#9a92a6", padding: 30, border: "1px dashed #e5e0eb", borderRadius: 10, textAlign: "center" }}>
+          <div style={{ color: "#9a92a6", padding: 30, border: "1px dashed #efeff1", borderRadius: 10, textAlign: "center" }}>
             {list.length ? "검색 결과가 없어요." : "기록된 이슈가 없어요."}
           </div>
         ) : (
@@ -137,7 +137,7 @@ export default function JobIssuesPage() {
                       onChange={(e) => setDraft((prev) => ({ ...prev, [p.url]: e.target.value }))}
                       onKeyDown={(e) => { if (e.key === "Enter") addReply(p.url); }}
                       placeholder="수정한 내용이나 코멘트를 남겨주세요"
-                      style={{ flex: 1, minWidth: 0, height: 34, padding: "0 10px", border: "1px solid #e6dfe9", borderRadius: 6, fontSize: 13, background: "#fff" }}
+                      style={{ flex: 1, minWidth: 0, height: 34, padding: "0 10px", border: "1px solid #efeff1", borderRadius: 6, fontSize: 13, background: "#fff" }}
                     />
                     <button onClick={() => addReply(p.url)} disabled={saving === p.url || !(draft[p.url] || "").trim()}
                       style={{ flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 6, border: "none", background: "#582681", color: "#fff", fontSize: 13, cursor: "pointer", opacity: saving === p.url || !(draft[p.url] || "").trim() ? 0.45 : 1 }}>

@@ -360,7 +360,7 @@ export default function ExternalCompaniesPanel() {
                         const filled = n <= stage, cur = n === stage;
                         return (
                           <div key={label} style={{ flex: 1 }}>
-                            <div style={{ height: 12, borderRadius: 6, background: cur ? "#582681" : filled ? "#c9b3e6" : "#eee" }} />
+                            <div style={{ height: 12, borderRadius: 6, background: cur ? "#582681" : filled ? "#efeff1" : "#eee" }} />
                             <div style={{ marginTop: 8, fontSize: 14, textAlign: "center", lineHeight: 1.3, color: cur ? "#582681" : "#999", fontWeight: cur ? 700 : 400 }}>{n}. {label}</div>
                           </div>
                         );
@@ -428,7 +428,7 @@ export default function ExternalCompaniesPanel() {
                   const j0 = c.jobs && c.jobs[0];
                   const jobUrl = j0?.source_url || j0?.external_apply_url || null;
                   return (
-                    <tr key={c.id} style={{ background: selected ? "#faf5ff" : undefined }}>
+                    <tr key={c.id} style={{ background: selected ? "#f7f7f8" : undefined }}>
                       <td style={{ textAlign: "center" }}>
                         <input type="checkbox" checked={selected} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
                       </td>
@@ -488,7 +488,7 @@ export default function ExternalCompaniesPanel() {
                         )}
                       </td>
                       <td className="admin-td-date">
-                        <span style={{ background: "#f3edfa", color: "#582681", borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>
+                        <span style={{ background: "#f7f7f8", color: "#582681", borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>
                           {STAGES[stage - 1]}
                         </span>
                       </td>

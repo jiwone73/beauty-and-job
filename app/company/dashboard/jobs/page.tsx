@@ -327,8 +327,8 @@ function CompanyJobsContent() {
             .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
             .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 14px; font-weight: 400; cursor: pointer; }
-            .co-fseg-btn.on { border-color: #d9b8ec; background: #f5eaff; color: #582681; font-weight: 400; }
-            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f5eaff; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
+            .co-fseg-btn.on { border-color: #efeff1; background: #f7f7f8; color: #582681; font-weight: 400; }
+            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f7f7f8; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
@@ -482,7 +482,7 @@ function CompanyJobsContent() {
             </thead>
             <tbody>
               {filtered.map((job) => (
-                <tr key={job.id} style={{background: checked.includes(job.id) ? "#faf5ff" : ""}}>
+                <tr key={job.id} style={{background: checked.includes(job.id) ? "#f7f7f8" : ""}}>
                   <td>
                     <input type="checkbox"
                       checked={checked.includes(job.id)}

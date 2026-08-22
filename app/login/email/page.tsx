@@ -168,7 +168,7 @@ export default function LoginEmailPage() {
 
           {/* 왜 안 됐는지 — 비밀번호가 아니라 계정 종류가 문제인 경우 */}
           {notice && (
-            <div className="mb-3 rounded-lg bg-[#faf7fc] border border-[#eee4f5] p-3">
+            <div className="mb-3 rounded-lg bg-[#faf7fc] border border-[#f7f7f8] p-3">
               <p className="text-[13px] md:text-[14px] text-[#582681] mb-2">{notice.text}</p>
               {notice.providers.includes("kakao") && (
                 <button

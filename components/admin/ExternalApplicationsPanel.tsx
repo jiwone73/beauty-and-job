@@ -103,7 +103,7 @@ export default function ExternalApplicationsPanel() {
         {TABS.map(([val, label, cnt]) => (
           <button key={val} onClick={() => setTab(val)}
             style={{ fontSize: 13.5, fontWeight: 700, padding: "7px 15px", borderRadius: 20, cursor: "pointer",
-              border: `1px solid ${tab === val ? "#582681" : "#e0dce9"}`, background: tab === val ? "#582681" : "#fff", color: tab === val ? "#fff" : "#777" }}>
+              border: `1px solid ${tab === val ? "#582681" : "#efeff1"}`, background: tab === val ? "#582681" : "#fff", color: tab === val ? "#fff" : "#777" }}>
             {label} <span style={{ opacity: 0.8, marginLeft: 4 }}>{cnt}</span>
           </button>
         ))}

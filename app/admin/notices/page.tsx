@@ -11,7 +11,7 @@ type Notice = {
 const TYPE_LABELS: Record<string, string> = { notice: "공지", event: "이벤트" };
 const TARGET_LABELS: Record<string, string> = { all: "전체", user: "개인", company: "기업" };
 const targetStyle = (t: string) => {
-  if (t === "user") return { background: "#e6f0fb", color: "#1565c0" };
+  if (t === "user") return { background: "#f7f7f8", color: "#1565c0" };
   if (t === "company") return { background: "#e1f5ee", color: "#0f6e56" };
   return { background: "#f1f1f1", color: "#666" };
 };
@@ -157,7 +157,7 @@ export default function AdminNoticesPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
-                    background: n.type === "event" ? "#fdeef5" : "#f3eafa", color: n.type === "event" ? "#c2185b" : "#582681" }}>
+                    background: n.type === "event" ? "#fdeef5" : "#f7f7f8", color: n.type === "event" ? "#c2185b" : "#582681" }}>
                     {TYPE_LABELS[n.type]}
                   </span>
                   {n.is_pinned && <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color: "#582681", border: "1px solid #582681", borderRadius: 4, padding: "1px 5px" }}>고정</span>}

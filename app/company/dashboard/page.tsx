@@ -54,7 +54,7 @@ function CompanyRangeToggle({ range, onChange }: { range: string; onChange: (r: 
           onClick={() => onChange(val)}
           style={{
             padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600,
-            cursor: "pointer", border: "1px solid #e5e0eb",
+            cursor: "pointer", border: "1px solid #efeff1",
             background: range === val ? "#582681" : "#fff",
             color: range === val ? "#fff" : "#582681",
             transition: "all 0.15s",

@@ -88,7 +88,7 @@ export default function SmsModal({
           </div>
 
           {result && (
-            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: "#f3eafa", fontSize: 13, color: "#582681", textAlign: "center" }}>
+            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: "#f7f7f8", fontSize: 13, color: "#582681", textAlign: "center" }}>
               {result}
             </div>
           )}

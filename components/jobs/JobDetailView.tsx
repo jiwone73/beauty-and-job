@@ -119,7 +119,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문</h2>
       {/* 표를 테두리로 감싼다. 칸 밑줄만 있으면 바로 아래 복리후생 줄까지 표의 한
           부분처럼 읽혀, 어디까지가 자리별 조건인지 알 수 없다. */}
-      <div style={{ overflowX: "auto", border: "1px solid #ece7f2", borderRadius: 10 }}>
+      <div style={{ overflowX: "auto", border: "1px solid #efeff1", borderRadius: 10 }}>
         <table style={{ minWidth: Math.min(640, posCols.length * 96), borderCollapse: "collapse", fontSize: 13.5 }}>
           <thead>
             <tr style={{ background: "#faf7fd" }}>

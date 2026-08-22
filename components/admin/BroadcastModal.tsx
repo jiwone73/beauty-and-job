@@ -76,7 +76,7 @@ export default function BroadcastModal({
   const tabBtn = (on: boolean): React.CSSProperties => ({
     flex: 1, padding: "8px 0", borderRadius: 8, cursor: "pointer",
     fontSize: 14, fontWeight: 400,
-    background: on ? "#ede9fe" : "#fff",
+    background: on ? "#f7f7f8" : "#fff",
     color: on ? "#582681" : "#aaa",
     border: on ? "none" : "1px solid #eee",
   });
@@ -129,13 +129,13 @@ export default function BroadcastModal({
           )}
 
           {result && (
-            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: "#f3eafa", fontSize: 13, color: "#582681", textAlign: "center" }}>
+            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: "#f7f7f8", fontSize: 13, color: "#582681", textAlign: "center" }}>
               {result}
             </div>
           )}
 
           <button onClick={send} disabled={sending}
-            style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#f3eefc" : "#ede9fe", color: "#582681", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 400, cursor: sending ? "default" : "pointer" }}>
+            style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#f7f7f8" : "#f7f7f8", color: "#582681", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 400, cursor: sending ? "default" : "pointer" }}>
             {sending ? "발송 중..." : `${valid.length}명에게 ${channel === "email" ? "이메일" : "문자"} 발송`}
           </button>
           <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 8 }}>

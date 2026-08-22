@@ -43,7 +43,7 @@ function fmtTrendDay(d: string | null, range: string) {
 
 function ModeToggle({ mode, onChange }: { mode: string; onChange: (m: "new" | "cumulative") => void }) {
   return (
-    <div style={{ display: "inline-flex", background: "#eee9f3", borderRadius: 999, padding: 3, gap: 2 }}>
+    <div style={{ display: "inline-flex", background: "#efeff1", borderRadius: 999, padding: 3, gap: 2 }}>
       {([["new", "신규"], ["cumulative", "누적"]] as const).map(([val, label]) => (
         <button key={val} onClick={() => onChange(val)}
           style={{
@@ -67,7 +67,7 @@ function RangeToggle({ range, onChange }: { range: string; onChange: (r: "7d" | 
         <button key={val} onClick={() => onChange(val)}
           style={{
             padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600,
-            cursor: "pointer", border: "1px solid #e5e0eb",
+            cursor: "pointer", border: "1px solid #efeff1",
             background: range === val ? "#7c3aed" : "#fff",
             color: range === val ? "#fff" : "#7c3aed",
           }}>
@@ -239,7 +239,7 @@ export default function AdminDashboard() {
   const tabBtn = (active: boolean) => ({
     padding: "4px 12px", borderRadius: 6, fontSize: 13, fontWeight: 600,
     cursor: "pointer", border: "none",
-    background: active ? "#582681" : "#f0e9f5",
+    background: active ? "#582681" : "#f7f7f8",
     color: active ? "#fff" : "#582681",
   } as React.CSSProperties);
 
@@ -492,7 +492,7 @@ export default function AdminDashboard() {
                   formatter={(v) => <span style={{ fontSize: 13 }}>{v}</span>} />
                 <Bar dataKey="남성" stackId="a" fill="#0ea5e9" maxBarSize={48} />
                 <Bar dataKey="여성" stackId="a" fill="#ec4899" maxBarSize={48} />
-                <Bar dataKey="미입력" stackId="a" fill="#cbd5e1" radius={[6, 6, 0, 0]} maxBarSize={48} />
+                <Bar dataKey="미입력" stackId="a" fill="#e3e3e6" radius={[6, 6, 0, 0]} maxBarSize={48} />
               </BarChart>
             </ResponsiveContainer>
           </div>

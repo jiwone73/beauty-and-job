@@ -33,7 +33,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
   const lbl: React.CSSProperties = { color: "#888" };
   const modalBtn: React.CSSProperties = {
     display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600,
-    padding: "6px 10px", borderRadius: 6, border: "1px solid #e3dceb", background: "#fff",
+    padding: "6px 10px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff",
     color: "#582681", cursor: "pointer",
   };
 
@@ -126,7 +126,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
             <div style={{ padding: "18px 22px 0" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a" }}>{company.company_name}</span>
-                <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: "#f3e8ff", color: "#582681" }}>{TYPE_LABEL[company.company_type] || company.company_type}</span>
+                <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: "#f7f7f8", color: "#582681" }}>{TYPE_LABEL[company.company_type] || company.company_type}</span>
                 <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: chip.bg, color: chip.color }}>{STATUS_TO_LABEL[company.status] || company.status}</span>
               </div>
               {company.brand_name && <p style={{ fontSize: 13, color: "#888", margin: "4px 0 0" }}>{company.brand_name}</p>}
@@ -162,7 +162,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
                   {company.jobs.map((j: any, i: number) => {
                     const closed = j.status === "CLOSED" || j.status === "EXPIRED" || j.status === "HIDDEN";
                     const row = (
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", background: closed ? "#f5f5f5" : "#f3e8ff", borderRadius: 6, cursor: j.id ? "pointer" : "default" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", background: closed ? "#f5f5f5" : "#f7f7f8", borderRadius: 6, cursor: j.id ? "pointer" : "default" }}>
                         <span style={{ fontSize: 13, color: closed ? "#888" : "#1a1a1a" }}>{j.title}</span>
                         <span style={{ fontSize: 11, color: closed ? "#aaa" : "#582681", flexShrink: 0, marginLeft: 8 }}>{JOB_STATUS_LABEL[j.status] || j.status} · {fmtDate(j.created_at)}</span>
                       </div>

@@ -305,7 +305,7 @@ export default function AdminStoriesPage() {
               style={{
                 display: "flex", alignItems: "center", gap: 6, marginLeft: "auto",
                 padding: "7px 14px", borderRadius: 8,
-                border: `1px solid ${checked.length ? "#e0d0f0" : "#eee"}`, background: "#fff",
+                border: `1px solid ${checked.length ? "#efeff1" : "#eee"}`, background: "#fff",
                 color: checked.length ? "#582681" : "#bbb",
                 fontSize: 14, fontWeight: 600,
                 cursor: checked.length ? "pointer" : "default",
@@ -357,7 +357,7 @@ export default function AdminStoriesPage() {
             <tbody>
               {visiblePosts.map((p) => (
                 <Fragment key={p.id}>
-                <tr style={{ background: checked.includes(p.id) ? "#faf5ff" : p.status === "hidden" ? "#fff5f5" : p.status === "pending" ? "#fffdf5" : "#fff" }}>
+                <tr style={{ background: checked.includes(p.id) ? "#f7f7f8" : p.status === "hidden" ? "#fff5f5" : p.status === "pending" ? "#fffdf5" : "#fff" }}>
                   <td style={td}>
                     <input type="checkbox" checked={checked.includes(p.id)} onChange={() => toggleCheck(p.id)} />
                   </td>

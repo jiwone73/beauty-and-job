@@ -352,7 +352,7 @@ function SignupEmailContent() {
                 type="button"
                 onClick={handleSendCode}
                 disabled={sending || phoneVerified || phone.replace(/\D/g, "").length < 10}
-                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition"
+                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f7f7f8] transition"
               >
                 {phoneVerified ? "인증완료" : codeSent ? "재전송" : sending ? "전송중" : "인증번호 받기"}
               </button>

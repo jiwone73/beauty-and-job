@@ -221,7 +221,7 @@ function AdminApplicationsPageInner() {
                           />
                         ) : (
                           <div style={{
-                            width: 32, height: 32, borderRadius: "50%", background: "#f3e8ff",
+                            width: 32, height: 32, borderRadius: "50%", background: "#f7f7f8",
                             display: "flex", alignItems: "center", justifyContent: "center",
                             fontSize: 14, fontWeight: 700, color: "#7c3aed", flexShrink: 0
                           }}>

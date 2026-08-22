@@ -240,10 +240,10 @@ export default function JobGroupSelectModal({
         }
         .jgm-chip {
           display: inline-flex; align-items: center; gap: 4px;
-          background: #f3e5f5; color: #582681;
+          background: #f7f7f8; color: #582681;
           border-radius: 16px; padding: 5px 10px; font-size: 13px; font-weight: 400;
         }
-        .jgm-chip.office { background: #e7f0ff; color: #1f5fbf; }
+        .jgm-chip.office { background: #f7f7f8; color: #1f5fbf; }
         .jgm-chip.office button { color: #1f5fbf; }
         .jgm-chip button {
           background: none; border: none; color: #582681;
@@ -284,7 +284,7 @@ export default function JobGroupSelectModal({
         .jgm-dd-left .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .jgm-dd-left .chk { color: #582681; font-size: 12px; flex-shrink: 0; }
         .jgm-dd-left .allbadge {
-          font-size: 11px; color: #582681; background: #f3e5f5;
+          font-size: 11px; color: #582681; background: #f7f7f8;
           border-radius: 6px; padding: 1px 6px; flex-shrink: 0;
         }
         .jgm-dd-item .path { color: #999; font-size: 11.5px; flex-shrink: 0; white-space: nowrap; }
@@ -325,12 +325,12 @@ export default function JobGroupSelectModal({
         }
         .jgm-item.selected .jgm-check { background: #582681; border-color: #582681; }
         /* 기타(직접 입력) 칩 · 입력 UI */
-        .jgm-chip.custom { background:#faf5ff; color:#7c3aed; border:1px dashed #cbb6ea; }
+        .jgm-chip.custom { background:#f7f7f8; color:#7c3aed; border:1px dashed #efeff1; }
         .jgm-chip.custom button { color:#7c3aed; }
-        .jgm-chip-tag { font-size:10px; background:#ece3fb; color:#7c3aed; border-radius:5px; padding:0 5px; }
+        .jgm-chip-tag { font-size:10px; background:#f7f7f8; color:#7c3aed; border-radius:5px; padding:0 5px; }
         .jgm-other-lead { font-size:13px; color:#999; line-height:1.6; margin-bottom:12px; }
         .jgm-other-add { display:flex; gap:8px; margin-bottom:14px; }
-        .jgm-other-add input { flex:1; min-width:0; height:40px; border:1.5px solid #d9cdec; border-radius:9px; padding:0 12px; font-size:14px; outline:none; }
+        .jgm-other-add input { flex:1; min-width:0; height:40px; border:1.5px solid #efeff1; border-radius:9px; padding:0 12px; font-size:14px; outline:none; }
         .jgm-other-add input:focus { border-color:#582681; }
         .jgm-other-add input::placeholder { color:#bbb; }
         .jgm-other-add button { padding:0 16px; height:40px; border-radius:9px; border:1.5px solid #582681; background:#fff; color:#582681; font-size:14px; cursor:pointer; white-space:nowrap; }
@@ -347,9 +347,9 @@ export default function JobGroupSelectModal({
         }
         .jgm-apply {
           flex: 2; padding: 13px; border-radius: 10px; border: none;
-          background: #ede9fe; color: #582681; font-size: 15px; font-weight: 400; cursor: pointer;
+          background: #f7f7f8; color: #582681; font-size: 15px; font-weight: 400; cursor: pointer;
         }
-        .jgm-apply:hover { background: #e3ddfb; }
+        .jgm-apply:hover { background: #f7f7f8; }
         @keyframes jgmFade { from { opacity: 0; } to { opacity: 1; } }
         @keyframes jgmPop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
         @keyframes jgmUp { from { transform: translateY(100%); } to { transform: translateY(0); } }

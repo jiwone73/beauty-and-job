@@ -208,12 +208,12 @@ export default function AdminAdsPage() {
             </thead>
             <tbody>
               {items.map((item) => (
-                <tr key={item.id} onClick={() => openDetail(item)} style={{ cursor: "pointer", background: checked.includes(item.id) ? "#faf5ff" : undefined }}>
+                <tr key={item.id} onClick={() => openDetail(item)} style={{ cursor: "pointer", background: checked.includes(item.id) ? "#f7f7f8" : undefined }}>
                   <td style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
                     <input type="checkbox" checked={checked.includes(item.id)} onChange={() => toggleCheck(item.id)} style={{ cursor: "pointer" }} />
                   </td>
                   <td className="admin-td-type">
-                    <span style={{ fontSize: 13, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f3eafa", color: "#582681", whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f7f7f8", color: "#582681", whiteSpace: "nowrap" }}>
                       {item.type || "광고"}
                     </span>
                   </td>

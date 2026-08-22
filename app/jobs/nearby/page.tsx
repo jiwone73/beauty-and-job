@@ -469,7 +469,7 @@ export default function NearbyJobsPage() {
           jobs.map((j) => (
             <Link key={j.id} href={`/jobs/${j.id}`}
               style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderBottom: "1px solid #f2f2f2", textDecoration: "none", color: "inherit" }}>
-              <div style={{ flexShrink: 0, width: 48, height: 48, borderRadius: 10, background: "#f3e5f5", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ flexShrink: 0, width: 48, height: 48, borderRadius: 10, background: "#f7f7f8", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {j.logo_url ? <img src={j.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#582681", fontWeight: 700 }}>{(jobCompanyName(j.job_type, j.company_name, j.brand_name) || "?")[0]}</span>}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>

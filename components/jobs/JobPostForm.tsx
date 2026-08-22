@@ -1970,12 +1970,12 @@ export default function JobPostForm({
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 모집부문 표 셀 스타일
-  const thc: React.CSSProperties = { textAlign: "left", padding: "9px 4px", fontSize: 12.5, color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #ece7f2", whiteSpace: "nowrap" };
+  const thc: React.CSSProperties = { textAlign: "left", padding: "9px 4px", fontSize: 12.5, color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #efeff1", whiteSpace: "nowrap" };
   const reqStar = <span style={{ color: "#e9a3a3" }}> *</span>; // 필수 열 표시(모집분야만)
-  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f3f0f8", verticalAlign: "middle" };
+  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f7f7f8", verticalAlign: "middle" };
   // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
   const firstCol: React.CSSProperties = { paddingLeft: 0 };
-  const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
+  const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
   // 근무시간 숫자 입력: 타이핑 중에는 숫자·콜론만 남기고, 칸을 벗어날 때 HH:MM으로 정리한다.
   //   "9"→09:00, "930"→09:30, "0930"→09:30, "2000"→20:00 (24시 넘거나 60분 넘으면 잘라 맞춤)
   const cleanTime = (v: string) => v.replace(/[^\d:]/g, "").slice(0, 5);
@@ -2031,7 +2031,7 @@ export default function JobPostForm({
                 {options.map((o) => (
                   <button key={o} type="button" onClick={() => { setPos(cat, field, o); setCellOpen(null); }}
                     style={{ display: "block", width: "100%", textAlign: "left", border: "none", borderRadius: 5, padding: "6px 8px", fontSize: 12.5, lineHeight: 1.2, cursor: "pointer",
-                      background: o === v ? "#f7f1fd" : "transparent", color: o === v ? "#582681" : "#333" }}>{o}</button>
+                      background: o === v ? "#f7f7f8" : "transparent", color: o === v ? "#582681" : "#333" }}>{o}</button>
                 ))}
                 {v && (
                   <button type="button" onClick={() => { setPos(cat, field, ""); setCellOpen(null); }}
@@ -2052,11 +2052,11 @@ export default function JobPostForm({
                       return (
                         <button key={u.label} type="button"
                           onClick={() => { setPos(cat, field, withSalaryUnit(v, u.prefix)); cellInputRef.current?.focus({ preventScroll: true }); }}
-                          style={{ border: `1px solid ${on ? "#582681" : "#e0d8ec"}`, background: on ? "#f7f1fd" : "#fff", color: on ? "#582681" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>{u.label}</button>
+                          style={{ border: `1px solid ${on ? "#582681" : "#efeff1"}`, background: on ? "#f7f7f8" : "#fff", color: on ? "#582681" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>{u.label}</button>
                       );
                     })}
                     <button type="button" onClick={() => { setPos(cat, field, "협의"); setCellOpen(null); }}
-                      style={{ border: `1px solid ${v.trim() === "협의" ? "#582681" : "#e0d8ec"}`, background: v.trim() === "협의" ? "#f7f1fd" : "#fff", color: v.trim() === "협의" ? "#582681" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>협의</button>
+                      style={{ border: `1px solid ${v.trim() === "협의" ? "#582681" : "#efeff1"}`, background: v.trim() === "협의" ? "#f7f7f8" : "#fff", color: v.trim() === "협의" ? "#582681" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>협의</button>
                   </div>
                 )}
                 <input ref={cellInputRef} type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph}
@@ -2155,7 +2155,7 @@ export default function JobPostForm({
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
     positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
-    color: "#e8f0fe",
+    color: "#f7f7f8",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
     preferreds: form.preferred ? form.preferred.split("\n").filter(Boolean) : [],
@@ -2231,7 +2231,7 @@ export default function JobPostForm({
                       return (
                         <button key={d.id} type="button"
                           onClick={() => { setDraftMenuOpen(false); if (!on) router.push(`${pathname}?id=${d.id}`); }}
-                          style={{ display: "flex", alignItems: "center", gap: 8, textAlign: "left", width: "100%", padding: "8px 10px", borderRadius: 8, border: on ? "1.5px solid #582681" : "1px solid #eee", background: on ? "#f3ecfb" : "#fff", cursor: on ? "default" : "pointer", font: "inherit" }}>
+                          style={{ display: "flex", alignItems: "center", gap: 8, textAlign: "left", width: "100%", padding: "8px 10px", borderRadius: 8, border: on ? "1.5px solid #582681" : "1px solid #eee", background: on ? "#f7f7f8" : "#fff", cursor: on ? "default" : "pointer", font: "inherit" }}>
                           <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, color: "#2b2533" }}>
                             {d.title || "(제목 없음)"}
                             {d.company_name && <span style={{ color: "#9a92a6", marginLeft: 6, fontSize: 13 }}>· {d.company_name}</span>}
@@ -2318,13 +2318,13 @@ export default function JobPostForm({
       {restored && (
         <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 12px`, boxSizing: "border-box",
           display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
-          padding: "10px 14px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 10 }}>
+          padding: "10px 14px", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 10 }}>
           <span style={{ fontSize: 13.5, color: "#4a4453" }}>
             쓰던 내용을 되살렸어요{restored ? ` (${new Date(restored).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })} 기준)` : ""}.
           </span>
           <button type="button"
             onClick={() => { if (confirm("쓰던 내용을 지우고 빈 화면에서 새로 쓸까요?")) { clearAutosave(); location.reload(); } }}
-            style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: 8, border: "1px solid #d9cfe8", background: "#fff", color: "#582681", fontSize: 13, cursor: "pointer" }}>
+            style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", color: "#582681", fontSize: 13, cursor: "pointer" }}>
             새로 쓰기
           </button>
         </div>
@@ -2357,7 +2357,7 @@ export default function JobPostForm({
               </div>
             )}
           </div>
-          <div style={{ background: "#f6f3fb", border: "1px solid #e5e0eb", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
+          <div style={{ background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
 
           {importMode === "paste" ? (
           /* 글 붙여넣기: 카페·블로그 글은 드래그 복사가 된다. 캡처보다 싸고 정확하다. */
@@ -2366,7 +2366,7 @@ export default function JobPostForm({
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
               placeholder={"공고 글을 통째로 복사해 붙여넣으세요.\n(제목·모집분야·급여·근무시간·연락처가 다 들어가면 좋아요)"}
-              style={{ width: "100%", minHeight: 160, padding: 12, border: "1.5px solid #c9b8de", borderRadius: 8, fontSize: 13.5, lineHeight: 1.6, resize: "vertical", background: "#fff" }}
+              style={{ width: "100%", minHeight: 160, padding: 12, border: "1.5px solid #e3e3e6", borderRadius: 8, fontSize: 13.5, lineHeight: 1.6, resize: "vertical", background: "#fff" }}
             />
             <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
               <input
@@ -2388,11 +2388,11 @@ export default function JobPostForm({
                 : "글자만 읽어요 · 붙여 둔 사진은 요금이 붙지 않아요"}
             </div>
             {importImages.length > 0 && (
-              <div style={{ marginTop: 8, padding: "10px 12px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <div style={{ marginTop: 8, padding: "10px 12px", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 13, color: "#582681" }}>가져온 사진 {importImages.length}장</span>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {importImages.slice(0, 6).map((u, i) => (
-                    <img key={i} src={u} alt="" style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 6, border: "1px solid #e0d5ee" }} />
+                    <img key={i} src={u} alt="" style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 6, border: "1px solid #efeff1" }} />
                   ))}
                 </div>
                 <button type="button" onClick={attachImportedImages} disabled={importingImgs}
@@ -2411,7 +2411,7 @@ export default function JobPostForm({
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runImport(); } }} />
               {picked && (
                 <a href={picked.url} target="_blank" rel="noopener noreferrer" title="선택한 공고 원문을 새 탭으로 열기"
-                  style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", padding: "0 12px", borderRadius: 8, border: "1px solid #e5e0eb", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, textDecoration: "none", whiteSpace: "nowrap" }}>원문 ↗</a>
+                  style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", padding: "0 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, textDecoration: "none", whiteSpace: "nowrap" }}>원문 ↗</a>
               )}
               <button type="button" onClick={runImport} disabled={finding || parsing}
                 style={{ flexShrink: 0, padding: "0 18px", borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: (finding || parsing) ? 0.6 : 1, whiteSpace: "nowrap" }}>
@@ -2420,17 +2420,17 @@ export default function JobPostForm({
             <div style={{ fontSize: 12, color: "#999", marginTop: 6 }}>회사명을 넣으면 공고 목록을 보여줘요. 목록에서 공고를 선택한 뒤 <b>불러오기</b>를 누르면 값을 가져와요. (URL을 넣으면 바로 불러와요.)</div>
             {findMsg && <div style={{ fontSize: 12.5, marginTop: 6, color: findResults.length ? "#10b981" : "#c0392b" }}>{findMsg}</div>}
             {findResults.length > 0 && (
-              <div style={{ marginTop: 8, maxHeight: 220, overflowY: "auto", border: "1px solid #e5e0eb", borderRadius: 8, background: "#fff" }}>
+              <div style={{ marginTop: 8, maxHeight: 220, overflowY: "auto", border: "1px solid #efeff1", borderRadius: 8, background: "#fff" }}>
                 {findResults.map((r) => { const on = picked?.url === r.url; return (
                   <div key={r.idx}
                     onClick={() => selectFoundJob(r)}
                     title="선택하면 위 검색칸에 표시돼요. ↗로 원문을 새 탭에서 볼 수 있어요."
-                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f2eef8", cursor: "pointer", background: on ? "#faf7fe" : "transparent", transition: "background 0.12s" }}>
+                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f7f7f8", cursor: "pointer", background: on ? "#faf7fe" : "transparent", transition: "background 0.12s" }}>
                     {/* 라디오(선택) */}
                     <span style={{ flexShrink: 0, width: 16, height: 16, borderRadius: "50%", border: on ? "1.5px solid #582681" : "1.5px solid #cfcfcf", display: "inline-flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
                       {on && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#582681" }} />}
                     </span>
-                    <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "#582681", background: "#f3e5f5", border: "1px solid #e4d3f2", borderRadius: 5, padding: "1px 6px" }}>{r.source}</span>
+                    <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "#582681", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 5, padding: "1px 6px" }}>{r.source}</span>
                     <span style={{ flex: 1, fontSize: 13, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.title}>{r.title}</span>
                     <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} title="원문 공고 새 탭으로 열기"
                       style={{ flexShrink: 0, color: "#bbb", fontSize: 13, textDecoration: "none", padding: "0 2px" }}>↗</a>
@@ -2445,7 +2445,7 @@ export default function JobPostForm({
             <div
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => { e.preventDefault(); const fs = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/")); if (fs.length) setOcrFiles((prev) => [...prev, ...fs]); }}
-              style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", padding: 12, borderRadius: 8, border: "1.5px dashed #c9b8de", background: "#fff" }}>
+              style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", padding: 12, borderRadius: 8, border: "1.5px dashed #e3e3e6", background: "#fff" }}>
               {ocrFiles.map((f, idx) => (
                 <div key={idx} style={{ position: "relative", width: 72 }}>
                   <img src={URL.createObjectURL(f)} alt="" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 6, border: "1px solid #eee" }} />
@@ -2454,7 +2454,7 @@ export default function JobPostForm({
                     style={{ position: "absolute", top: 2, right: 2, width: 18, height: 18, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 11, lineHeight: 1 }}>×</button>
                 </div>
               ))}
-              <label style={{ width: 72, height: 72, flexShrink: 0, border: "1.5px dashed #c4b5d4", borderRadius: 6, background: "#faf7fe", color: "#582681", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: "pointer" }}>
+              <label style={{ width: 72, height: 72, flexShrink: 0, border: "1.5px dashed #e3e3e6", borderRadius: 6, background: "#faf7fe", color: "#582681", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: "pointer" }}>
                 <span style={{ fontSize: 20, lineHeight: 1 }}>+</span>
                 <span style={{ fontSize: 10 }}>추가</span>
                 <input type="file" accept="image/*" multiple hidden onChange={(e) => { const fs = Array.from(e.target.files || []); if (fs.length) setOcrFiles((prev) => [...prev, ...fs]); e.currentTarget.value = ""; }} />
@@ -2563,7 +2563,7 @@ export default function JobPostForm({
               )}
               {coverImages.length > 0 && bannerImages.length === 0 && (
                 <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
-                  style={{ flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
+                  style={{ flexShrink: 0, border: "1px solid #efeff1", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
               )}
             </div>
             {bannerHint}
@@ -2600,7 +2600,7 @@ export default function JobPostForm({
                   onDragLeave={() => setDragOver(false)}
                   onDrop={(e) => { e.preventDefault(); setDragOver(false); if (imgDragRef.current) { dropToBanner(null); return; } const f = e.dataTransfer.files; if (f && f.length && !nmCoverUploading) addBannerFiles(f); }}
                   onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!nmCoverUploading) addBannerFiles(fs); } }}
-                  style={{ padding: bannerImages.length ? 6 : 10, borderRadius: 10, border: `1.5px dashed ${dragOver || pasteZone === "banner" ? "#582681" : "#e0d5ee"}`, background: dragOver || pasteZone === "banner" ? "#f7f1fd" : "#fbf9ff", outline: "none" }}>
+                  style={{ padding: bannerImages.length ? 6 : 10, borderRadius: 10, border: `1.5px dashed ${dragOver || pasteZone === "banner" ? "#582681" : "#efeff1"}`, background: dragOver || pasteZone === "banner" ? "#f7f7f8" : "#fbf9ff", outline: "none" }}>
                   {bannerImages.length > 0 ? (
                     /* 공고에 실제로 찍히는 모양(3:1 · 한 장은 1/3 폭) 그대로 보여준다. 끌어서 순서를 바꿀 수 있다. */
                     <BannerStrip images={bannerImages.map((b) => b.url)} showIndex
@@ -2620,17 +2620,17 @@ export default function JobPostForm({
                 {bannerHint}
                 {/* 샘플 배너 생성 패널 */}
                 {bannerGenOpen && (
-                  <div style={{ marginTop: 10, padding: 12, border: "1px solid #e5e2ea", borderRadius: 10, background: "#faf9fc" }}>
+                  <div style={{ marginTop: 10, padding: 12, border: "1px solid #efeff1", borderRadius: 10, background: "#faf9fc" }}>
                     <div style={{ fontSize: 13, color: "#582681", fontWeight: 600, marginBottom: 8 }}>샘플 배너 만들기 <span style={{ fontWeight: 400, color: "#999" }}>· 가운데 제목만 넣어요(줄바꿈 가능)</span></div>
                     <textarea value={bannerGenTitle} onChange={(e) => setBannerGenTitle(e.target.value)} rows={2}
                       placeholder={"예: 부 원장 급 여자 선생님\n(중국어 가능자 우대)"}
-                      style={{ width: "100%", boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, padding: "8px 10px", fontSize: 14, resize: "vertical", outline: "none" }} />
+                      style={{ width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8, padding: "8px 10px", fontSize: 14, resize: "vertical", outline: "none" }} />
                     {/* 배경 미리보기(프리셋이 하나일 땐 선택 없이 배경만 보여줌) */}
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "10px 0" }}>
                       {BANNER_PRESETS.map((p, i) => (
                         <button key={p.key} type="button" onClick={() => setBannerGenPreset(i)}
                           style={{ width: 168, height: 62, borderRadius: 8, cursor: BANNER_PRESETS.length > 1 ? "pointer" : "default", overflow: "hidden",
-                            border: BANNER_PRESETS.length > 1 && bannerGenPreset === i ? "2px solid #582681" : "1.5px solid #e0d8ec",
+                            border: BANNER_PRESETS.length > 1 && bannerGenPreset === i ? "2px solid #582681" : "1.5px solid #efeff1",
                             backgroundImage: `url(${p.img})`, backgroundSize: "cover", backgroundPosition: "center",
                             color: p.text, fontSize: 11, fontWeight: 700 }}>
                           {p.label}
@@ -2642,7 +2642,7 @@ export default function JobPostForm({
                         className="company-primary-btn" style={{ padding: "8px 16px", fontSize: 13, opacity: (bannerGenBusy || !bannerGenTitle.trim()) ? 0.6 : 1 }}>
                         {bannerGenBusy ? "만드는 중…" : "배너로 추가"}
                       </button>
-                      <button type="button" onClick={() => setBannerGenOpen(false)} style={{ border: "1px solid #e0d8ec", background: "#fff", borderRadius: 8, padding: "8px 14px", fontSize: 13, cursor: "pointer", color: "#666" }}>취소</button>
+                      <button type="button" onClick={() => setBannerGenOpen(false)} style={{ border: "1px solid #efeff1", background: "#fff", borderRadius: 8, padding: "8px 14px", fontSize: 13, cursor: "pointer", color: "#666" }}>취소</button>
                     </div>
                   </div>
                 )}
@@ -2684,7 +2684,7 @@ export default function JobPostForm({
               </div>
 
               {/* ── 모집부문 제목(모집분야 위, '지원 안내'와 동일 스타일) ── */}
-              <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", paddingTop: 14, borderTop: "1px solid #f0edf5", fontWeight: 400, color: "#333" }}>
+              <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", paddingTop: 14, borderTop: "1px solid #f7f7f8", fontWeight: 400, color: "#333" }}>
                 <Briefcase size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문
               </div>
               {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
@@ -2694,7 +2694,7 @@ export default function JobPostForm({
                   {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                       고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
                   <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0, borderRadius: 7, border: "1px solid #e0d8ec", background: "#fff", color: typeLocked ? "#ddd" : "#999", fontSize: 15, lineHeight: 1, padding: "4px 8px", cursor: typeLocked ? "default" : "pointer" }}>＋</button>
+                    style={{ display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0, borderRadius: 7, border: "1px solid #efeff1", background: "#fff", color: typeLocked ? "#ddd" : "#999", fontSize: 15, lineHeight: 1, padding: "4px 8px", cursor: typeLocked ? "default" : "pointer" }}>＋</button>
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
@@ -2880,23 +2880,23 @@ export default function JobPostForm({
                         <input autoFocus value={benefitSearch} onChange={(e) => setBenefitSearch(e.target.value)}
                           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (canAdd) addNewBenefit(benefitSearch); } }}
                           placeholder="복리후생 검색 또는 직접 추가 후 Enter"
-                          style={{ width: "100%", boxSizing: "border-box", padding: "8px 10px", borderRadius: 8, border: "1px solid #e0d5ee", fontSize: 14, marginBottom: 10, outline: "none" }} />
+                          style={{ width: "100%", boxSizing: "border-box", padding: "8px 10px", borderRadius: 8, border: "1px solid #efeff1", fontSize: 14, marginBottom: 10, outline: "none" }} />
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxHeight: 200, overflowY: "auto" }}>
                           {visible.map((o) => { const on = benefitTags.includes(o.name); return (
                             <button key={o.name} type="button" onClick={() => toggleBenefit(o.name)}
-                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #e5e2ea", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
                               {o.name}
-                              {!o.is_curated && <span style={{ fontSize: 10, color: on ? "#e6d5f0" : "#b9a9cc" }}>추가됨</span>}
+                              {!o.is_curated && <span style={{ fontSize: 10, color: on ? "#efeff1" : "#b9a9cc" }}>추가됨</span>}
                               {!o.is_curated && (
                                 <span role="button" title="목록에서 지우기" aria-label={`${o.name} 지우기`}
                                   onClick={(e) => { e.stopPropagation(); removeNewBenefit(o.name); }}
-                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: on ? "#e6d5f0" : "#b9a9cc" }}>×</span>
+                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: on ? "#efeff1" : "#b9a9cc" }}>×</span>
                               )}
                             </button>
                           ); })}
                           {canAdd && (
                             <button type="button" onClick={() => addNewBenefit(benefitSearch)}
-                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: "1.5px dashed #582681", background: "#faf7ff", color: "#582681", fontWeight: 600 }}>
+                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: "1.5px dashed #582681", background: "#f7f7f8", color: "#582681", fontWeight: 600 }}>
                               + &quot;{benefitSearch.trim()}&quot; 추가
                             </button>
                           )}
@@ -2912,17 +2912,17 @@ export default function JobPostForm({
                 </div>
 
               {/* 근무지역: 별도 섹션(제목+아이콘, 지원 안내와 동일 스타일). 전체 주소 → 필터용 시·군·구 자동 추출 + 지도 */}
-              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+              <div style={{ paddingTop: 14, borderTop: "1px solid #f7f7f8", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}>
                   <MapPin size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역 <span style={{ color: "#e9a3a3" }}>*</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 12 }}>
                   <input readOnly value={nmAddress} onClick={() => openAddressSearch()}
                     placeholder="주소 검색을 눌러주세요"
-                    style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left", cursor: "pointer" }} />
+                    style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left", cursor: "pointer" }} />
                   <input value={nmAddressDetail} onChange={(e) => setNmAddressDetail(e.target.value)}
                     placeholder="상세주소 (동·호수 등)"
-                    style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
+                    style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
                 </div>
                 {/* 주소 없이 지점명만 있으면 지도를 그리지 않는다. 카카오는 주소를 못 찾으면
                     낱말로 장소를 검색해 첫 결과를 찍는데, "천안청당점" 으로는 엉뚱한 가게가
@@ -2940,7 +2940,7 @@ export default function JobPostForm({
                   const 고치기 = (patch: Partial<{ address: string; detail: string }>) =>
                     setExtraLocations((prev) => prev.map((x, k) => (k === i ? { ...x, ...patch } : x)));
                   return (
-                    <div key={i} style={{ marginTop: 12, paddingTop: 12, borderTop: "1px dashed #efeaf5" }}>
+                    <div key={i} style={{ marginTop: 12, paddingTop: 12, borderTop: "1px dashed #f7f7f8" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                         <span style={{ fontSize: 13, color: "#7a6f8a" }}>근무지 {i + 2}</span>
                         <button type="button" onClick={() => setExtraLocations((prev) => prev.filter((_, k) => k !== i))}
@@ -2952,10 +2952,10 @@ export default function JobPostForm({
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? 8 : 12 }}>
                         <input readOnly value={loc.address} onClick={() => openAddressSearch((addr) => 고치기({ address: addr }))}
                           placeholder="주소 검색을 눌러주세요"
-                          style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left", cursor: "pointer" }} />
+                          style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left", cursor: "pointer" }} />
                         <input value={loc.detail} onChange={(e) => 고치기({ detail: e.target.value })}
                           placeholder="상세주소 (동·호수 등)"
-                          style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #e0d8ec", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
+                          style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
                       </div>
                       {/* 이름표는 지점명(상세 칸)을 쓴다. 그게 곧 그 자리의 이름이다.
                           다만 주소 없이 지점명만으로는 지도를 그리지 않는다(위와 같은 이유). */}
@@ -2969,13 +2969,13 @@ export default function JobPostForm({
                 })}
 
                 <button type="button" onClick={() => setExtraLocations((prev) => [...prev, { address: "", detail: "" }])}
-                  style={{ marginTop: 10, padding: "7px 12px", borderRadius: 8, border: "1px dashed #c9b8de", background: "#fff", color: "#582681", fontSize: 13.5, cursor: "pointer" }}>
+                  style={{ marginTop: 10, padding: "7px 12px", borderRadius: 8, border: "1px dashed #e3e3e6", background: "#fff", color: "#582681", fontSize: 13.5, cursor: "pointer" }}>
                   ＋ 근무지역 추가
                 </button>
               </div>
 
               {/* 지원 안내 (채용 담당자 · 접수방법 · 채용 절차) */}
-              <div style={{ paddingTop: 14, borderTop: "1px solid #f0edf5", marginTop: 6 }}>
+              <div style={{ paddingTop: 14, borderTop: "1px solid #f7f7f8", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}><Send size={16} style={{ color: "#582681", flexShrink: 0 }} />지원 안내</div>
 
               {/* 지원방법(좌) · 담당자(우) 2열 — 기업회원·비회원 공용.
@@ -3023,7 +3023,7 @@ export default function JobPostForm({
                               return (
                                 <button key={m} type="button"
                                   onClick={() => setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]))}
-                                  style={{ padding: "5px 11px", borderRadius: 999, fontSize: 13, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #e5e2ea", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666" }}>{m}</button>
+                                  style={{ padding: "5px 11px", borderRadius: 999, fontSize: 13, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666" }}>{m}</button>
                               );
                             })}
                           </div>
@@ -3043,7 +3043,7 @@ export default function JobPostForm({
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0", minWidth: 0 }}>
                         <span style={{ ...lblS, ...(canName ? null : { width: 88 }) }}>
                           {canName ? "담당자" : "홈페이지 URL"}
-                          {isNmAdminJob && canName && <><br /><span style={{ fontSize: 10, color: "#c9a3d6" }}>관리자용</span></>}
+                          {isNmAdminJob && canName && <><br /><span style={{ fontSize: 10, color: "#e3e3e6" }}>관리자용</span></>}
                         </span>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           {canUrl && !urlOnLeft && (
@@ -3112,7 +3112,7 @@ export default function JobPostForm({
             <h2 className="jobpost-section-title" style={{ margin: 0 }}>상세요강</h2>
             {isMobile && (
               <label title="상세요강 이미지 추가"
-                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0, border: "1px solid #e0d8ec", background: "#fff", color: uploading ? "#bbb" : "#582681", borderRadius: 7, fontSize: 13, lineHeight: 1, cursor: uploading ? "wait" : "pointer" }}>
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0, border: "1px solid #efeff1", background: "#fff", color: uploading ? "#bbb" : "#582681", borderRadius: 7, fontSize: 13, lineHeight: 1, cursor: uploading ? "wait" : "pointer" }}>
                 {uploading ? "…" : "＋"}
                 <input type="file" accept="image/*" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
               </label>
@@ -3132,8 +3132,8 @@ export default function JobPostForm({
                       <span style={{ fontSize: 12, color: "#999" }}>갖고 계신 상세요강 이미지가 있다면 첨부해 주세요.</span>
                       <button type="button" role="switch" aria-checked={ocrEnabled} onClick={() => setOcrEnabled((v) => !v)}
                         title="글자가 든 포스터에서 연락처·주소·모집분야를 읽어 옵니다. 읽을 때마다 요금이 듭니다."
-                        style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 7, padding: "4px 10px 4px 6px", borderRadius: 999, border: `1px solid ${ocrEnabled ? "#582681" : "#e0d8ec"}`, background: ocrEnabled ? "#f7f1fd" : "#fff", cursor: "pointer" }}>
-                        <span style={{ width: 30, height: 17, borderRadius: 999, background: ocrEnabled ? "#582681" : "#d6d0e0", position: "relative", transition: "background .15s" }}>
+                        style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 7, padding: "4px 10px 4px 6px", borderRadius: 999, border: `1px solid ${ocrEnabled ? "#582681" : "#efeff1"}`, background: ocrEnabled ? "#f7f7f8" : "#fff", cursor: "pointer" }}>
+                        <span style={{ width: 30, height: 17, borderRadius: 999, background: ocrEnabled ? "#582681" : "#e3e3e6", position: "relative", transition: "background .15s" }}>
                           <span style={{ position: "absolute", top: 2, left: ocrEnabled ? 15 : 2, width: 13, height: 13, borderRadius: "50%", background: "#fff", transition: "left .15s" }} />
                         </span>
                         <span style={{ fontSize: 12.5, color: ocrEnabled ? "#582681" : "#8d84a0" }}>
@@ -3144,7 +3144,7 @@ export default function JobPostForm({
                     </div>
                   )}
                 {ocrEnabled && detailImages.some((d) => d.readable) && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", margin: "0 0 10px", padding: "10px 12px", background: "#f7f1fd", border: "1px solid #e0d5ee", borderRadius: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", margin: "0 0 10px", padding: "10px 12px", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 8 }}>
                     <span style={{ fontSize: 13, color: "#4a4453" }}>
                       글자가 든 그림이 <b>{detailImages.filter((d) => d.readable).length}장</b> 있어요.
                       연락처·주소·모집분야를 여기서 읽어 올까요?
@@ -3169,7 +3169,7 @@ export default function JobPostForm({
                   onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) processFiles(fs); } }}
                   style={isMobile
                     ? { display: "flex", flexWrap: "wrap", gap: "8px 4px", alignItems: "center", outline: "none" }
-                    : { display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#582681" : "#e0d5ee"}`, background: pasteZone === "body" ? "#f7f1fd" : "#fbf9ff", outline: "none" }}>
+                    : { display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#582681" : "#efeff1"}`, background: pasteZone === "body" ? "#f7f7f8" : "#fbf9ff", outline: "none" }}>
                   {detailImages.map((d, idx) => (
                     <div key={d.url + idx} draggable
                       onDragStart={() => { imgDragRef.current = { zone: "body", idx }; }}
@@ -3193,7 +3193,7 @@ export default function JobPostForm({
                   {/* PC 드래그 박스 안의 추가 타일·안내(모바일은 제목 옆 ＋로 대체) */}
                   {!isMobile && (
                     <label title="이미지 추가"
-                      style={{ width: 84, height: 84, flexShrink: 0, border: "1.5px dashed #c4b5d4", borderRadius: 8, background: "#fff", color: "#582681", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: uploading ? "wait" : "pointer" }}>
+                      style={{ width: 84, height: 84, flexShrink: 0, border: "1.5px dashed #e3e3e6", borderRadius: 8, background: "#fff", color: "#582681", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: uploading ? "wait" : "pointer" }}>
                       <span style={{ fontSize: 22, lineHeight: 1 }}>{uploading ? "…" : "+"}</span>
                       <span style={{ fontSize: 10 }}>추가</span>
                       <input type="file" accept="image/*" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />

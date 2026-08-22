@@ -427,10 +427,10 @@ export default function TalentPage() {
             .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
             .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 14px; font-weight: 400; cursor: pointer; }
-            .co-fseg-btn.on { border-color: #d9b8ec; background: #f5eaff; color: #582681; font-weight: 400; }
+            .co-fseg-btn.on { border-color: #efeff1; background: #f7f7f8; color: #582681; font-weight: 400; }
             .co-fsel-btn { display: flex; align-items: center; gap: 6px; width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e2e6; background: #fff; color: #333; font-size: 14px; font-weight: 400; cursor: pointer; text-align: left; }
             .co-fsel-btn .ph { color: #aaa; }
-            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f5eaff; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
+            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f7f7f8; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
             .co-selbar-act { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; color: #582681; font-size: 14px; font-weight: 600; padding: 6px; }
@@ -577,13 +577,13 @@ export default function TalentPage() {
       {(selectedJobGroups.length > 0 || selectedRegions.length > 0) && (
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
           {selectedJobGroups.map((g) => (
-            <span key={g} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#f3e8ff", color: "#582681", borderRadius: 20, fontSize: 13 }}>
+            <span key={g} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#f7f7f8", color: "#582681", borderRadius: 20, fontSize: 13 }}>
               {g}
               <button onClick={() => setSelectedJobGroups((p) => p.filter((x) => x !== g))} style={{ background: "none", border: "none", cursor: "pointer", color: "#582681", padding: 0, lineHeight: 1 }}>×</button>
             </span>
           ))}
           {selectedRegions.map((r) => (
-            <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#e8f4ff", color: "#1a6fb5", borderRadius: 20, fontSize: 13 }}>
+            <span key={r} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#f7f7f8", color: "#1a6fb5", borderRadius: 20, fontSize: 13 }}>
               {r}
               <button onClick={() => setSelectedRegions((p) => p.filter((x) => x !== r))} style={{ background: "none", border: "none", cursor: "pointer", color: "#1a6fb5", padding: 0, lineHeight: 1 }}>×</button>
             </span>

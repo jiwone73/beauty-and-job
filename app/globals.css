@@ -11,7 +11,7 @@
 :root {
   --color-primary: #582681;
   --color-primary-hover: #431a63;
-  --color-primary-soft: #efe9f5;
+  --color-primary-soft: #f7f7f8;
   --color-primary-light: #a78cc2;
   --color-primary-pale: #f8f5fb;
   --color-text: #1a1a1a;
@@ -190,7 +190,7 @@
   gap: 48px;
   align-items: start;
   background: #ffffff;
-  border: 1px solid #f0e8f8;
+  border: 1px solid #f7f7f8;
   border-radius: 24px;
   box-shadow: 0 4px 24px rgba(95,0,128,0.06);
 }
@@ -1560,8 +1560,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   .cv-date-input { width: auto; flex: 1; min-width: 0; padding-left: 4px; padding-right: 4px; }
   .cv-date-sep { flex-shrink: 0; }
 }
-.cv-btn-primary { width: 100%; height: 52px; background: #faf5ff; color: #582681; border: none; border-radius: 8px; font-size: 15px; font-weight: 400; cursor: pointer; margin-top: 24px; transition: background 0.15s; font-family: inherit; }
-.cv-btn-primary:hover { background: #f1e8fb; }
+.cv-btn-primary { width: 100%; height: 52px; background: var(--color-primary); color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 400; cursor: pointer; margin-top: 24px; transition: background 0.15s; font-family: inherit; }
+.cv-btn-primary:hover { background: var(--color-primary-hover); }
 .cv-btn-primary.disabled { background: var(--color-border); color: var(--color-text-mute); cursor: not-allowed; }
 .cv-btn-primary.disabled:hover { background: var(--color-border); }
 .cv-btn-text-add { background: transparent; border: none; color: var(--color-text-mute); font-size: 14px; padding: 12px 0; cursor: pointer; display: block; width: 100%; text-align: center; font-family: inherit; transition: color 0.15s; }
@@ -2236,7 +2236,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-section-title { font-size: 17px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; letter-spacing: -0.3px; }
 
 /* 기본정보 카드 안의 서브블록(근무조건·근무지역·복리후생·채용담당자·채용절차) */
-.jd-subblock { padding-top: 16px; margin-top: 16px; border-top: 1px solid #f0edf5; }
+.jd-subblock { padding-top: 16px; margin-top: 16px; border-top: 1px solid #f7f7f8; }
 .job-detail-subtitle { font-size: 16px; color: var(--color-text); margin: 0 0 12px; letter-spacing: -0.3px; }
 .jd-sublabel { font-size: 15px; color: var(--color-text-mute); margin: 0 0 8px; }
 /* 지원 안내: 라벨 + 값 한 줄 */
@@ -2305,7 +2305,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 모집부문 표. 좁은 화면에서는 칸 사이 여백이 20px 씩 붙어 일곱 열이 화면을 넘어가고,
    가로로 밀어야 급여가 보였다. 여백만 줄여 한눈에 들어오게 한다. */
 /* 표를 테두리로 감싸므로 첫 칸에도 왼쪽 여백을 준다(전엔 0이라 글이 선에 붙었다). */
-.jd-pos-th { text-align: left; padding: 10px 20px 10px 12px; color: #7a6f8a; font-weight: 600; border-bottom: 1px solid #ece7f2; white-space: nowrap; }
+.jd-pos-th { text-align: left; padding: 10px 20px 10px 12px; color: #7a6f8a; font-weight: 600; border-bottom: 1px solid #efeff1; white-space: nowrap; }
 .jd-pos-td { padding: 12px 20px 12px 12px; border-bottom: none; white-space: nowrap; line-height: 1.6; }
 @media (max-width: 640px) {
   .jd-pos-th, .jd-pos-td { padding-right: 10px; padding-left: 10px; }
@@ -2754,7 +2754,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-section-desc { font-size: 16px; color: var(--color-text-sub); line-height: 1.7; }
 
 /* 히어로 */
-.company-hero { background: linear-gradient(135deg, #f9f0ff 0%, #fce4ec 50%, #fff3e0 100%); padding: 80px 0 60px; }
+.company-hero { background: linear-gradient(135deg, #f7f7f8 0%, #fce4ec 50%, #fff3e0 100%); padding: 80px 0 60px; }
 .company-hero-inner { max-width: 1360px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: 1fr 480px; gap: 64px; align-items: center; }
 .company-hero-badge { display: inline-block; background: var(--color-primary); color: white; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 100px; margin-bottom: 20px; }
 .company-hero-title { font-size: 40px; font-weight: 900; color: var(--color-text); line-height: 1.25; letter-spacing: -1px; margin-bottom: 20px; }
@@ -3063,7 +3063,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .salary-avg { font-weight: 700; color: var(--color-text); }
 .salary-yoy { display: inline-flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
 .salary-yoy.up { color: #e53935; background: #ffeaea; }
-.salary-yoy.down { color: #1976d2; background: #e3f2fd; }
+.salary-yoy.down { color: #1976d2; background: #f7f7f8; }
 .salary-yoy.stable { color: #757575; background: #f5f5f5; }
 .salary-disclaimer { font-size: 12px; color: var(--color-text-mute); margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--color-border); }
 
@@ -3431,7 +3431,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-size: 11px;
   font-weight: 600;
   color: #582681;
-  background: #f5eaff;
+  background: #f7f7f8;
   border-radius: 4px;
   margin-right: 6px;
 }
@@ -3589,7 +3589,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .login-phone-btn:hover {
   border-color: #582681;
-  background: #fdf5ff;
+  background: #f7f7f8;
 }
 
 /* 회원가입 안내 */
@@ -3691,7 +3691,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .login-submit-btn:hover:not(:disabled) { background: #431a63; }
 .login-submit-btn:disabled {
-  background: #d4b8e0;
+  background: #e3e3e6;
   cursor: not-allowed;
 }
 
@@ -3853,11 +3853,11 @@ input[type="range"].career-slider::-moz-range-thumb {
   transition: background 0.12s;
   white-space: nowrap;
 }
-.search-dropdown-item:hover { background: #f9f5ff; }
+.search-dropdown-item:hover { background: #f7f7f8; }
 .search-dropdown-item.selected {
   color: #582681;
   font-weight: 600;
-  background: #f5eaff;
+  background: #f7f7f8;
 }
 
 /* ============================================
@@ -3942,7 +3942,7 @@ input[type="range"].career-slider::-moz-range-thumb {
    고급경력직 채용관 - 밝은 배경으로 변경
    ============================================ */
 .section-premium-bg {
-  background: #faf5ff;
+  background: #f7f7f8;
 }
 .section-premium-bg .section-title,
 .section-premium-bg .section-sub,
@@ -3952,7 +3952,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .premium-card {
   background: #fff !important;
-  border: 1.5px solid #e8d5f5 !important;
+  border: 1.5px solid #f7f7f8 !important;
   color: #1a1a1a !important;
 }
 .premium-card:hover {
@@ -4111,14 +4111,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 8px 20px;
   font-size: 13px;
   font-weight: 600;
-  color: #582681;
-  background: #f5eaff;
+  color: #fff;
+  background: var(--color-primary);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
 }
-.support-card-btn:hover { background: #582681; color: #fff; }
+.support-card-btn:hover { background: var(--color-primary-hover); color: #fff; }
 
 /* FAQ */
 .faq-list { display: flex; flex-direction: column; gap: 8px; }
@@ -4450,7 +4450,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin: 0 0 24px;
 }
 .apply-modal-info {
-  background: #f9f5ff;
+  background: #f7f7f8;
   border-radius: 10px;
   padding: 16px;
   margin-bottom: 24px;
@@ -4551,7 +4551,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   transition: all 0.15s;
 }
 .job-select-item:hover { border-color: #582681; color: #582681; }
-.job-select-item.selected { background: #f5eaff; border-color: #582681; color: #582681; font-weight: 700; }
+.job-select-item.selected { background: #f7f7f8; border-color: #582681; color: #582681; font-weight: 700; }
 .job-select-confirm {
   width: 100%;
   height: 50px;
@@ -4654,7 +4654,7 @@ input[type="range"].career-slider::-moz-range-thumb {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    background: #f9f5ff;
+    background: #f7f7f8;
     border-radius: 10px;
     padding: 14px 16px;
   }
@@ -4754,7 +4754,7 @@ input[type="range"].career-slider::-moz-range-thumb {
     justify-content: space-between !important;
     padding: 14px 16px !important;
     border-bottom: 1px solid #f5f5f5;
-    background: #faf5ff;
+    background: #f7f7f8;
     text-align: left !important;
   }
   .footer-new-cta-text {
@@ -4924,9 +4924,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   flex-shrink: 0;
 }
 .applied-status-review { background: #fff3cd; color: #856404; }
-.applied-status-pass { background: #ede9fe; color: #4c1d95; }
+.applied-status-pass { background: #f7f7f8; color: #4c1d95; }
 .applied-status-fail { background: #fee2e2; color: #991b1b; }
-.applied-status-interview { background: #dbeafe; color: #1e40af; }
+.applied-status-interview { background: #f7f7f8; color: #1e40af; }
 
 /* 관심공고 */
 .bookmark-list { display: flex; flex-direction: column; gap: 12px; }
@@ -4979,7 +4979,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .brand-follow-logo {
   width: 44px;
   height: 44px;
-  background: #f5eaff;
+  background: #f7f7f8;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -5100,8 +5100,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   width: 100%;
   white-space: nowrap;
 }
-.admin-nav-item:hover { background: #f5f0ff; color: #582681; }
-.admin-nav-item.active { background: #f5eaff; color: #582681; font-weight: 700; }
+.admin-nav-item:hover { background: #f7f7f8; color: #582681; }
+.admin-nav-item.active { background: #f7f7f8; color: #582681; font-weight: 700; }
 
 .admin-sidebar-bottom {
   padding: 12px 8px;
@@ -5379,10 +5379,10 @@ div:has(> table.admin-table),
   font-weight: 600;
   white-space: nowrap;
 }
-.admin-badge-success { background: #ede9fe; color: #4c1d95; }
+.admin-badge-success { background: #f7f7f8; color: #4c1d95; }
 .admin-badge-warning { background: #fef3c7; color: #4c1d95; }
 .admin-badge-danger { background: #fee2e2; color: #991b1b; }
-.admin-badge-info { background: #dbeafe; color: #1e40af; }
+.admin-badge-info { background: #f7f7f8; color: #1e40af; }
 .admin-badge-neutral { background: #f3f4f6; color: #374151; }
 
 /* 액션 버튼 */
@@ -5396,8 +5396,8 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: all 0.15s;
 }
-.admin-action-btn.approve { background: #ede9fe; color: #4c1d95; }
-.admin-action-btn.approve:hover { background: #582681; color: #fff; }
+.admin-action-btn.approve { background: var(--color-primary); color: #fff; }
+.admin-action-btn.approve:hover { background: var(--color-primary-hover); color: #fff; }
 .admin-action-btn.reject { background: #fee2e2; color: #991b1b; }
 .admin-action-btn.reject:hover { background: #ef4444; color: #fff; }
 .admin-action-icon {
@@ -5461,11 +5461,11 @@ div:has(> table.admin-table),
 .admin-filter-select:focus { outline: none; border-color: #582681; }
 /* 라벨+값 필터 드롭다운 */
 .filter-dd-btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid #e0e0e0; border-radius: 8px; background: #fff; font-size: 14px; color: #333; cursor: pointer; white-space: nowrap; font-family: var(--font-sans); }
-.filter-dd-btn:hover { border-color: #c9b3d6; }
+.filter-dd-btn:hover { border-color: #e3e3e6; }
 .filter-dd-menu { position: absolute; top: calc(100% + 4px); left: 0; z-index: 60; min-width: 100%; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 4px; }
 .filter-dd-item { display: block; width: 100%; text-align: left; padding: 8px 14px; border: none; background: none; font-size: 14px; color: #444; cursor: pointer; border-radius: 6px; white-space: nowrap; font-family: var(--font-sans); }
-.filter-dd-item:hover { background: #f5f0fa; }
-.filter-dd-item.active { color: #582681; background: #f5f0fa; }
+.filter-dd-item:hover { background: #f7f7f8; }
+.filter-dd-item.active { color: #582681; background: #f7f7f8; }
 .admin-filter-tab {
   display: flex;
   align-items: center;
@@ -6074,7 +6074,7 @@ div:has(> table.admin-table),
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #f5eaff;
+  background: #f7f7f8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6110,7 +6110,7 @@ div:has(> table.admin-table),
 .admin-resume-tags { display: flex; gap: 4px; flex-wrap: wrap; }
 .admin-resume-tag {
   padding: 2px 6px;
-  background: #f5eaff;
+  background: #f7f7f8;
   color: #582681;
   font-size: 11px;
   border-radius: 4px;
@@ -6121,7 +6121,7 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 16px;
   padding: 16px;
-  background: #f9f5ff;
+  background: #f7f7f8;
   border-radius: 10px;
   margin-bottom: 20px;
 }
@@ -6150,7 +6150,7 @@ div:has(> table.admin-table),
 }
 .admin-resume-stat-card.main {
   background: #f9f6fd;
-  border-color: #e8d5f5;
+  border-color: #f7f7f8;
 }
 .admin-rsc-label {
   font-size: 12px;
@@ -6176,8 +6176,8 @@ div:has(> table.admin-table),
   padding: 3px 8px;
   border-radius: 20px;
 }
-.admin-rsc-sub.green { background: #ede9fe; color: #4c1d95; }
-.admin-rsc-sub.blue { background: #dbeafe; color: #1e40af; }
+.admin-rsc-sub.green { background: #f7f7f8; color: #4c1d95; }
+.admin-rsc-sub.blue { background: #f7f7f8; color: #1e40af; }
 
 /* 분할 통계 */
 .admin-rsc-split {
@@ -6241,7 +6241,7 @@ div:has(> table.admin-table),
   white-space: nowrap;
   transition: background 0.12s;
 }
-.admin-sort-btn:hover { background: #f5eaff; }
+.admin-sort-btn:hover { background: #f7f7f8; }
 .admin-sort-drop {
   position: absolute;
   top: calc(100% + 4px);
@@ -6266,8 +6266,8 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: background 0.12s;
 }
-.admin-sort-drop-item:hover { background: #f9f5ff; }
-.admin-sort-drop-item.active { color: #582681; font-weight: 700; background: #f5eaff; }
+.admin-sort-drop-item:hover { background: #f7f7f8; }
+.admin-sort-drop-item.active { color: #582681; font-weight: 700; background: #f7f7f8; }
 
 /* ============================================
    이력서 통계 카드
@@ -6289,7 +6289,7 @@ div:has(> table.admin-table),
 }
 .admin-resume-stat-card.main {
   background: #f9f6fd;
-  border-color: #e8d5f5;
+  border-color: #f7f7f8;
 }
 .admin-rsc-label {
   font-size: 12px;
@@ -6315,8 +6315,8 @@ div:has(> table.admin-table),
   padding: 3px 8px;
   border-radius: 20px;
 }
-.admin-rsc-sub.green { background: #ede9fe; color: #4c1d95; }
-.admin-rsc-sub.blue { background: #dbeafe; color: #1e40af; }
+.admin-rsc-sub.green { background: #f7f7f8; color: #4c1d95; }
+.admin-rsc-sub.blue { background: #f7f7f8; color: #1e40af; }
 
 /* 분할 통계 */
 .admin-rsc-split {
@@ -6515,14 +6515,14 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 14px;
   padding: 12px;
-  background: #faf5ff;
+  background: #f7f7f8;
   border-radius: 10px;
 }
 .admin-brand-logo {
   width: 48px;
   height: 48px;
-  background: #f5eaff;
-  border: 1px solid #e8d5f5;
+  background: #f7f7f8;
+  border: 1px solid #f7f7f8;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -6543,7 +6543,7 @@ div:has(> table.admin-table),
 .admin-editor-wrap:focus-within { border-color: #582681; }
 .admin-editor-toolbar-mini { display: flex; gap: 2px; padding: 8px 10px; background: #fafafa; border-bottom: 1px solid #f0f0f0; flex-wrap: wrap; }
 .admin-editor-tool { padding: 4px 10px; font-size: 12px; font-weight: 500; color: #555; background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; cursor: pointer; transition: all 0.12s; }
-.admin-editor-tool:hover { background: #f5eaff; border-color: #582681; color: #582681; }
+.admin-editor-tool:hover { background: #f7f7f8; border-color: #582681; color: #582681; }
 .admin-editor-textarea { padding: 16px; font-size: 14px; color: #1a1a1a; background: #fff; border: none; outline: none; min-height: 480px; resize: none; font-family: inherit; line-height: 1.8; width: 100%; box-sizing: border-box; }
 .admin-editor-count { padding: 6px 12px; font-size: 11px; color: #aaa; text-align: right; background: #fafafa; border-top: 1px solid #f0f0f0; }
 .admin-radio-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; font-size: 14px; color: #444; cursor: pointer; border-bottom: 1px solid #f9f9f9; }
@@ -6573,7 +6573,7 @@ div:has(> table.admin-table),
 }
 .admin-status-select:hover { border-color: rgba(0,0,0,0.15); }
 .admin-status-success {
-  background-color: #ede9fe;
+  background-color: #f7f7f8;
   color: #4c1d95;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23065f46'/%3E%3C/svg%3E");
 }
@@ -6616,8 +6616,8 @@ div:has(> table.admin-table),
   transition: all 0.15s;
   text-align: center;
 }
-.admin-job-type-tab:hover { border-color: #582681; color: #582681; background: #f5eaff; }
-.admin-job-type-tab.active { background: #f5eaff; border-color: #582681; color: #582681; }
+.admin-job-type-tab:hover { border-color: #582681; color: #582681; background: #f7f7f8; }
+.admin-job-type-tab.active { background: #f7f7f8; border-color: #582681; color: #582681; }
 
 /* ============================================
    사이드바 서브메뉴
@@ -6639,12 +6639,12 @@ div:has(> table.admin-table),
   transition: all 0.15s;
   border-left: 2px solid transparent;
 }
-.admin-sub-nav-item:hover { color: #582681; background: #f5f0ff; }
+.admin-sub-nav-item:hover { color: #582681; background: #f7f7f8; }
 .admin-sub-nav-item.active {
   color: #582681;
   font-weight: 700;
   border-left-color: #582681;
-  background: #f5eaff;
+  background: #f7f7f8;
 }
 
 /* 업로드 페이지 */
@@ -6672,7 +6672,7 @@ div:has(> table.admin-table),
   text-align: center;
 }
 .admin-upload-drop:hover,
-.admin-upload-drop.dragging { border-color: #582681; background: #faf5ff; }
+.admin-upload-drop.dragging { border-color: #582681; background: #f7f7f8; }
 .admin-upload-drop-text { font-size: 15px; font-weight: 600; color: #444; margin: 0; }
 .admin-upload-drop-sub { font-size: 13px; color: #aaa; margin: 0; }
 .admin-upload-done {
@@ -6680,7 +6680,7 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: #faf5ff;
+  background: #f7f7f8;
   border-radius: 10px;
   margin-bottom: 12px;
 }
@@ -6849,8 +6849,8 @@ div:has(> table.admin-table),
   cursor: pointer;
   width: 100%;
 }
-.company-nav-item:hover { background: #f5f0ff; color: #582681; }
-.company-nav-item.active { background: #f5eaff; color: #582681; font-weight: 700; }
+.company-nav-item:hover { background: #f7f7f8; color: #582681; }
+.company-nav-item.active { background: #f7f7f8; color: #582681; font-weight: 700; }
 .company-sidebar-bottom { padding: 12px 8px; border-top: 1px solid #f0f0f0; }
 .company-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .company-header {
@@ -6969,7 +6969,7 @@ div:has(> table.admin-table),
   font-family: inherit;
 }
 .company-notif-item:hover { background: #faf7fc; }
-.company-notif-item.unread { background: #faf2fc; }
+.company-notif-item.unread { background: #f7f7f8; }
 .company-notif-title { font-size: 13px; font-weight: 700; color: #1a1a1a; }
 .company-notif-msg { font-size: 12px; color: #666; line-height: 1.4; }
 .company-notif-time { font-size: 11px; color: #aaa; margin-top: 2px; }
@@ -7181,14 +7181,14 @@ div:has(> table.admin-table),
   font-size: 11px;
   font-weight: 600;
 }
-.company-badge.active { background: #ede9fe; color: #4c1d95; }
+.company-badge.active { background: #f7f7f8; color: #4c1d95; }
 .company-badge.closed { background: #f3f4f6; color: #374151; }
 .company-badge.new { background: #fee2e2; color: #991b1b; }
 .company-badge.viewed { background: #f3f4f6; color: #374151; }
 .company-badge-warning { background: #fef3c7; color: #4c1d95; }
-.company-badge-info { background: #dbeafe; color: #1e40af; }
-.company-badge-purple { background: #ede9fe; color: #5b21b6; }
-.company-badge-success { background: #ede9fe; color: #4c1d95; }
+.company-badge-info { background: #f7f7f8; color: #1e40af; }
+.company-badge-purple { background: #f7f7f8; color: #5b21b6; }
+.company-badge-success { background: #f7f7f8; color: #4c1d95; }
 .company-badge-danger { background: #fee2e2; color: #991b1b; }
 
 /* 버튼 */
@@ -7214,14 +7214,14 @@ div:has(> table.admin-table),
   padding: 5px 10px;
   font-size: 12px; font-weight: 500;
   color: #582681;
-  background: #f5eaff;
+  background: #f7f7f8;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s;
   text-decoration: none;
 }
-.company-action-btn:hover { background: #ead5ff; }
+.company-action-btn:hover { background: #f7f7f8; }
 .company-action-btn.secondary { color: #666; background: #f5f5f5; }
 .company-action-btn.secondary:hover { background: #e5e5e5; }
 .company-action-btn.scrapped { color: #f59e0b; background: #fef3c7; }
@@ -7245,8 +7245,8 @@ div:has(> table.admin-table),
 .company-logo-preview {
   width: 80px;
   height: 80px;
-  background: #f5eaff;
-  border: 2px solid #e8d5f5;
+  background: #f7f7f8;
+  border: 2px solid #f7f7f8;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -7268,8 +7268,8 @@ div:has(> table.admin-table),
 .company-brand-preview-logo {
   width: 48px;
   height: 48px;
-  background: #f5eaff;
-  border: 1px solid #e8d5f5;
+  background: #f7f7f8;
+  border: 1px solid #f7f7f8;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -7303,7 +7303,7 @@ div:has(> table.admin-table),
   border-radius: 6px;
   transition: all 0.15s;
 }
-.resume-icon-btn:hover { background: #f3e9fb; color: #582681; }
+.resume-icon-btn:hover { background: #f7f7f8; color: #582681; }
 .resume-icon-btn.danger:hover { background: #fdecea; color: #e74c3c; }
 
 .resume-type-tabs {
@@ -7321,7 +7321,7 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: all 0.15s;
 }
-.resume-type-tab:hover { border-color: #582681; color: #582681; background: #f5eaff; }
+.resume-type-tab:hover { border-color: #582681; color: #582681; background: #f7f7f8; }
 .resume-type-tab.active { background: #582681; border-color: #582681; color: #fff; }
 
 /* 희망 근무 조건 태그 */
@@ -7336,7 +7336,7 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: all 0.15s;
 }
-.resume-tag-chip:hover { border-color: #582681; color: #582681; background: #f5eaff; }
+.resume-tag-chip:hover { border-color: #582681; color: #582681; background: #f7f7f8; }
 .resume-tag-chip.active { background: #582681; border-color: #582681; color: #fff; }
 
 /* 기업 사이드바 토글 */
@@ -7389,7 +7389,7 @@ div:has(> table.admin-table),
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #f5eaff;
+  background: #f7f7f8;
   color: #582681;
   font-size: 18px;
   font-weight: 700;
@@ -7414,7 +7414,7 @@ div:has(> table.admin-table),
   transition: all 0.15s;
   flex-shrink: 0;
 }
-.talent-scrap-btn:hover { color: #582681; background: #f5eaff; }
+.talent-scrap-btn:hover { color: #582681; background: #f7f7f8; }
 .talent-scrap-btn.scrapped { color: #582681; }
 .talent-title {
   font-size: 14px;
@@ -7428,7 +7428,7 @@ div:has(> table.admin-table),
 .talent-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .talent-tag {
   padding: 3px 8px;
-  background: #f5eaff;
+  background: #f7f7f8;
   color: #582681;
   font-size: 11px;
   font-weight: 500;
@@ -7513,8 +7513,8 @@ div:has(> table.admin-table),
   font-weight: 700;
   white-space: nowrap;
 }
-.login-test-badge.individual { background: #f5eaff; color: #582681; }
-.login-test-badge.company { background: #dbeafe; color: #1e40af; }
+.login-test-badge.individual { background: #f7f7f8; color: #582681; }
+.login-test-badge.company { background: #f7f7f8; color: #1e40af; }
 .login-test-badge.admin { background: #fee2e2; color: #991b1b; }
 
 /* ============================================
@@ -7728,8 +7728,8 @@ div:has(> table.admin-table),
   border-radius: 8px;
   transition: background 0.12s;
 }
-.hero-region-item:hover { background: #f5eaff; color: #582681; }
-.hero-region-item.selected { color: #582681; font-weight: 700; background: #f5eaff; }
+.hero-region-item:hover { background: #f7f7f8; color: #582681; }
+.hero-region-item.selected { color: #582681; font-weight: 700; background: #f7f7f8; }
 .hero-search-divider {
   width: 1px;
   height: 20px;
@@ -7840,7 +7840,7 @@ div:has(> table.admin-table),
   border-radius: 20px;
   padding: 24px;
   box-shadow: 0 8px 32px rgba(95,0,128,0.1);
-  border: 1px solid #f0e0f8;
+  border: 1px solid #f7f7f8;
   min-width: 300px;
   max-width: 340px;
   flex-shrink: 0;
@@ -7851,7 +7851,7 @@ div:has(> table.admin-table),
   gap: 8px;
   margin-bottom: 16px;
   padding-bottom: 14px;
-  border-bottom: 1px solid #f5eaff;
+  border-bottom: 1px solid #f7f7f8;
 }
 .hero-ai-icon { font-size: 20px; }
 .hero-ai-title {
@@ -7873,7 +7873,7 @@ div:has(> table.admin-table),
   text-decoration: none;
   transition: background 0.15s;
 }
-.hero-ai-item:hover { background: #faf5ff; }
+.hero-ai-item:hover { background: #f7f7f8; }
 .hero-ai-item-icon { font-size: 20px; flex-shrink: 0; }
 .hero-ai-item-text { flex: 1; }
 .hero-ai-item-title {
@@ -7889,7 +7889,7 @@ div:has(> table.admin-table),
 }
 .hero-ai-item-badge {
   padding: 3px 8px;
-  background: #f5eaff;
+  background: #f7f7f8;
   color: #582681;
   font-size: 11px;
   font-weight: 700;
@@ -7909,7 +7909,7 @@ div:has(> table.admin-table),
   font-size: 13px;
   color: #555;
   padding: 10px 12px;
-  background: #faf5ff;
+  background: #f7f7f8;
   border-radius: 10px;
 }
 .hero-ai-cta {
@@ -7959,7 +7959,7 @@ div:has(> table.admin-table),
   line-height: 1.7;
   margin: 0 0 14px;
   padding: 14px;
-  background: #f5eaff;
+  background: #f7f7f8;
   border-radius: 10px;
 }
 .hero-ai-guest-copy strong { color: #582681; }
@@ -7970,14 +7970,14 @@ div:has(> table.admin-table),
   flex-direction: column;
   gap: 10px;
   padding: 16px;
-  background: linear-gradient(135deg, #f5eaff 0%, #ede0f5 100%);
+  background: linear-gradient(135deg, #f7f7f8 0%, #f7f7f8 100%);
   border-radius: 14px;
   text-decoration: none;
   margin-bottom: 12px;
-  border: 1px solid #e8d5f5;
+  border: 1px solid #f7f7f8;
   transition: all 0.15s;
 }
-.hero-ai-visual-card:hover { background: linear-gradient(135deg, #ede0f5 0%, #e0ccf0 100%); }
+.hero-ai-visual-card:hover { background: linear-gradient(135deg, #f7f7f8 0%, #efeff1 100%); }
 .hero-ai-visual-icons { display: flex; gap: 8px; font-size: 24px; }
 .hero-ai-visual-title {
   font-size: 14px;
@@ -7998,13 +7998,13 @@ div:has(> table.admin-table),
   font-size: 13px;
   color: #444;
   padding: 11px 14px;
-  background: #faf5ff;
+  background: #f7f7f8;
   border-radius: 10px;
   text-decoration: none;
   transition: all 0.15s;
   border: 1px solid transparent;
 }
-.hero-ai-guest-item:hover { background: #f0e5ff; border-color: #e0ccf0; color: #582681; }
+.hero-ai-guest-item:hover { background: #f7f7f8; border-color: #efeff1; color: #582681; }
 .hero-ai-guest-arrow { margin-left: auto; color: #ccc; font-size: 14px; }
 .hero-ai-guest-item:hover .hero-ai-guest-arrow { color: #582681; }
 
@@ -8020,23 +8020,23 @@ div:has(> table.admin-table),
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 4px 20px rgba(95,0,128,0.08);
-  border: 1px solid #f0e0f8;
+  border: 1px solid #f7f7f8;
 }
 .hero-ai-items { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
 
 /* 취업 전략 카드 */
 .hero-strategy-card {
-  background: linear-gradient(135deg, #f5eaff 0%, #e8d5f5 100%);
+  background: linear-gradient(135deg, #f7f7f8 0%, #f7f7f8 100%);
   border-radius: 16px;
   padding: 20px;
   text-decoration: none;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border: 1px solid #e0ccf0;
+  border: 1px solid #efeff1;
   transition: all 0.15s;
 }
-.hero-strategy-card:hover { background: linear-gradient(135deg, #ede0f5 0%, #ddc8f0 100%); }
+.hero-strategy-card:hover { background: linear-gradient(135deg, #f7f7f8 0%, #efeff1 100%); }
 .hero-strategy-visual {
   display: flex;
   gap: 6px;
@@ -8085,7 +8085,7 @@ div:has(> table.admin-table),
   border-radius: 24px;
   padding: 28px;
   box-shadow: 0 8px 40px rgba(95,0,128,0.08);
-  border: 1px solid #f0e0f8;
+  border: 1px solid #f7f7f8;
   align-self: center;
 }
 .hero-right-header {
@@ -8106,13 +8106,13 @@ div:has(> table.admin-table),
   align-items: stretch;
 }
 .hero-right-card {
-  background: #faf5ff;
+  background: #f7f7f8;
   border-radius: 16px;
   padding: 22px 18px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  border: 1px solid #ede0f8;
+  border: 1px solid #f7f7f8;
 }
 .hero-right-card.card-link {
   text-decoration: none;
@@ -8120,7 +8120,7 @@ div:has(> table.admin-table),
   cursor: pointer;
 }
 .hero-right-card.card-link:hover {
-  background: #f0e5ff;
+  background: #f7f7f8;
   border-color: #d4b0f0;
   transform: translateY(-2px);
 }
@@ -8184,7 +8184,7 @@ div:has(> table.admin-table),
 .hero-type-toggle {
   display: inline-flex;
   align-items: center;
-  background: #f4f0f9;
+  background: #f7f7f8;
   border-radius: 11px;
   padding: 4px;
   gap: 2px;
@@ -8206,14 +8206,14 @@ div:has(> table.admin-table),
   font-family: inherit;
 }
 .hero-type-btn:hover { color: #6b6480; }
-/* 고른 쪽을 연보라로 채운다 — 사이트 어디서나 연보라는 '고른 것' 하나만
-   뜻해야 한다. 사이드바 목록의 선택 표시와 뜻이 어긋나면 안 된다. */
+/* 고른 쪽은 로고 보라로 채운다. 연보라는 로고에 없는 색이라 쓰지 않는다 —
+   옅게 칠하면 고른 것인지 아닌지가 흐려지기도 한다. */
 .hero-type-btn.active {
-  background: #e3d4f0;
-  color: #431a63;
+  background: var(--color-primary);
+  color: #fff;
   box-shadow: none;
 }
-.hero-type-btn.active:hover { color: var(--color-primary); }
+.hero-type-btn.active:hover { color: #fff; background: var(--color-primary-hover); }
 
 /* jobs 페이지 기업/매장 탭 */
 .jobs-type-tabs {
@@ -8226,7 +8226,7 @@ div:has(> table.admin-table),
 .jobs-type-tab {
   padding: 8px 22px;
   border-radius: 20px;
-  border: 1.5px solid #e0d0f0;
+  border: 1.5px solid #efeff1;
   background: #fff;
   color: #666;
   font-size: 14px;
@@ -8357,7 +8357,7 @@ div:has(> table.admin-table),
   white-space: nowrap;
 }
 .jobs-type-badge.corp {
-  background: #f0e8ff;
+  background: #f7f7f8;
   color: #582681;
 }
 .jobs-type-badge.store {
@@ -8508,7 +8508,7 @@ div:has(> table.admin-table),
   flex: 1;
   height: 40px;
   border-radius: 10px;
-  border: 1.5px solid #e0d0f0;
+  border: 1.5px solid #efeff1;
   background: #fff;
   color: #888;
   font-size: 14px;
@@ -8537,7 +8537,7 @@ div:has(> table.admin-table),
   align-items: center;
   height: 48px;
   background: #fff;
-  border: 1.5px solid #e0d0f0;
+  border: 1.5px solid #efeff1;
   border-radius: 12px;
   padding: 0 4px 0 10px;
 }
@@ -8565,7 +8565,7 @@ div:has(> table.admin-table),
   flex-shrink: 0;
   width: 1px;
   height: 20px;
-  background: #e0d0f0;
+  background: #efeff1;
   margin: 0 8px;
 }
 .hero-m-input {
@@ -8597,7 +8597,7 @@ div:has(> table.admin-table),
   display: flex;
   align-items: center;
   background: #fff;
-  border: 1.5px solid #e0d0f0;
+  border: 1.5px solid #efeff1;
   border-radius: 12px;
   padding: 5px 5px 5px 14px;
   gap: 0;
@@ -8621,7 +8621,7 @@ div:has(> table.admin-table),
   flex-shrink: 0;
   width: 1px;
   height: 24px;
-  background: #e0d0f0;
+  background: #efeff1;
   margin: 0 12px;
 }
 /* 지역 선택 모달 */
@@ -8832,8 +8832,8 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 4px;
   padding: 5px 8px 5px 10px;
-  background: #f4ecf8;
-  border: 1px solid #e0d0f0;
+  background: #f7f7f8;
+  border: 1px solid #efeff1;
   border-radius: 16px;
   font-size: 13px;
   color: #582681;
@@ -8859,15 +8859,15 @@ div:has(> table.admin-table),
   width: 100%;
   height: 50px;
   border-radius: 12px;
-  background: #ede9fe;
-  color: #582681;
+  background: var(--color-primary);
+  color: #fff;
   border: none;
   font-size: 16px;
   font-weight: 400;
   font-family: inherit;
   cursor: pointer;
 }
-.region-apply-btn:hover { background: #e3ddfb; }
+.region-apply-btn:hover { background: var(--color-primary-hover); }
 
 /* AI 추천 카드 */
 .hero-m-ai-wrap { padding: 20px 20px 0; }
@@ -8893,7 +8893,7 @@ div:has(> table.admin-table),
   flex-shrink: 0;
   scroll-snap-align: start;
   background: #fff;
-  border: 1px solid #ede0f8;
+  border: 1px solid #f7f7f8;
   border-radius: 16px;
   padding: 16px;
   display: flex;
@@ -8983,7 +8983,7 @@ div:has(> table.admin-table),
   font-size: 15px;
   transition: background 0.1s;
 }
-.mob-menu-item:hover { background: #faf5ff; }
+.mob-menu-item:hover { background: #f7f7f8; }
 .mob-menu-item-label { flex: 1; font-weight: 500; }
 .mob-menu-badge {
   font-size: 11px;
@@ -8992,7 +8992,7 @@ div:has(> table.admin-table),
   border-radius: 10px;
 }
 .mob-menu-badge.gray { background: #f0f0f0; color: #666; }
-.mob-menu-badge.purple { background: #f0e8ff; color: #582681; }
+.mob-menu-badge.purple { background: #f7f7f8; color: #582681; }
 .mob-menu-divider { height: 1px; background: #f0f0f0; margin: 8px 0; }
 
 /* 햄버거 버튼 항상 맨 오른쪽 */
@@ -9352,7 +9352,7 @@ div:has(> table.admin-table),
 .lm-phone-input:disabled { background: #f5f5f5; }
 .lm-send-btn {
   flex-shrink: 0; width: 72px; height: 52px;
-  background: #f0e8ff; border: none; border-radius: 8px;
+  background: #f7f7f8; border: none; border-radius: 8px;
   font-size: 14px; font-weight: 700; color: #582681;
   cursor: pointer; font-family: inherit;
 }
@@ -9377,7 +9377,7 @@ div:has(> table.admin-table),
   font-weight: 600;
   padding: 2px 7px;
   border-radius: 4px;
-  background: #e8eaf6;
+  background: #f7f7f8;
   color: #283593;
   margin-left: 8px;
   vertical-align: middle;
@@ -9386,7 +9386,7 @@ div:has(> table.admin-table),
 /* ── 추천 뷰티 서비스 카드 ── */
 .service-card {
   background: #fff;
-  border: 1px solid #f0e8f8;
+  border: 1px solid #f7f7f8;
   border-radius: 16px;
   padding: 20px 16px;
   display: flex;
@@ -9403,7 +9403,7 @@ div:has(> table.admin-table),
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 4px;
-  background: #f0e8ff;
+  background: #f7f7f8;
   color: #582681;
   width: fit-content;
 }
@@ -9417,7 +9417,7 @@ div:has(> table.admin-table),
 /* ── 인사이트 새 카드 ── */
 .insight-card-new {
   background: #fff;
-  border: 1px solid #f0e8f8;
+  border: 1px solid #f7f7f8;
   border-radius: 16px;
   padding: 16px;
   display: flex;
@@ -9535,7 +9535,7 @@ div:has(> table.admin-table),
 }
 .company-wizard-phone-box.active {
   border-color: #582681;
-  background: #faf5ff;
+  background: #f7f7f8;
 }
 
 /* 카드 태그 (무료 공고 등록 / 프리미엄 서비스) */
@@ -9546,7 +9546,7 @@ div:has(> table.admin-table),
   font-style: normal;
   font-weight: 600;
   color: #582681;
-  background: #f3e8ff;
+  background: #f7f7f8;
   padding: 2px 8px;
   border-radius: 20px;
 }
@@ -9581,7 +9581,7 @@ div:has(> table.admin-table),
 }
 .company-wizard-service-item:hover {
   border-color: #582681;
-  background: #faf5ff;
+  background: #f7f7f8;
 }
 .company-wizard-service-item.primary {
   border-color: #582681;
@@ -9661,7 +9661,7 @@ div:has(> table.admin-table),
 }
 .company-wizard-phone-box.active {
   border-color: #582681;
-  background: #faf5ff;
+  background: #f7f7f8;
 }
 
 .company-wizard-card-tag {
@@ -9671,7 +9671,7 @@ div:has(> table.admin-table),
   font-style: normal;
   font-weight: 600;
   color: #582681;
-  background: #f3e8ff;
+  background: #f7f7f8;
   padding: 2px 8px;
   border-radius: 20px;
 }
@@ -9704,7 +9704,7 @@ div:has(> table.admin-table),
 }
 .company-wizard-service-item:hover {
   border-color: #582681;
-  background: #faf5ff;
+  background: #f7f7f8;
 }
 .company-wizard-service-item.primary {
   border-color: #582681;
@@ -9827,7 +9827,7 @@ div:has(> table.admin-table),
   text-decoration: none;
   transition: background 0.15s;
 }
-.co-btn-outline:hover { background: #faf5ff; }
+.co-btn-outline:hover { background: #f7f7f8; }
 
 .co-btn-white {
   display: inline-flex;
@@ -9935,7 +9935,7 @@ div:has(> table.admin-table),
   background: transparent;
   transition: background 0.15s;
 }
-.co-type-btn:hover { background: #faf5ff; }
+.co-type-btn:hover { background: #f7f7f8; }
 .co-type-btn.primary { background: #582681; color: #fff; }
 .co-type-btn.primary:hover { background: #6d28d9; }
 
@@ -9964,7 +9964,7 @@ div:has(> table.admin-table),
   font-size: 10px;
   font-weight: 700;
   color: #582681;
-  background: #f3e8ff;
+  background: #f7f7f8;
   padding: 2px 8px;
   border-radius: 20px;
   width: fit-content;
@@ -9998,8 +9998,8 @@ div:has(> table.admin-table),
   font-weight: 600;
   color: #555;
 }
-.co-split-visual.store { background: #faf5ff; }
-.co-split-visual.corp  { background: #ede9fe; }
+.co-split-visual.store { background: #f7f7f8; }
+.co-split-visual.corp  { background: #f7f7f8; }
 .co-split-emoji { font-size: 56px; }
 
 .co-label-tag {
@@ -10013,7 +10013,7 @@ div:has(> table.admin-table),
   margin-bottom: 12px;
   letter-spacing: 0.03em;
 }
-.co-label-tag.purple { background: #f3e8ff; color: #582681; }
+.co-label-tag.purple { background: #f7f7f8; color: #582681; }
 .co-split-title {
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 800;
@@ -10032,7 +10032,7 @@ div:has(> table.admin-table),
   padding: 5px 12px;
   border-radius: 20px;
 }
-.co-job-tag.purple { background: #f3e8ff; color: #582681; }
+.co-job-tag.purple { background: #f7f7f8; color: #582681; }
 
 /* ── 광고 상품 ── */
 .co-ad-grid {
@@ -10085,7 +10085,7 @@ div:has(> table.admin-table),
 .co-step-num {
   font-size: 28px;
   font-weight: 900;
-  color: #ede9fe;
+  color: #f7f7f8;
   line-height: 1;
 }
 .co-step-title { font-size: 15px; font-weight: 700; color: #111; }
@@ -10111,7 +10111,7 @@ div:has(> table.admin-table),
 }
 .co-pricing-card.highlight {
   border-color: #582681;
-  background: #faf5ff;
+  background: #f7f7f8;
 }
 .co-pricing-label { font-size: 13px; color: #666; margin-bottom: 8px; }
 .co-pricing-price { font-size: 18px; font-weight: 800; }
@@ -10257,7 +10257,7 @@ div:has(> table.admin-table),
   text-decoration: none;
   transition: background 0.15s;
 }
-.co-btn-outline:hover { background: #faf5ff; }
+.co-btn-outline:hover { background: #f7f7f8; }
 
 .co-btn-white {
   display: inline-flex;
@@ -10365,7 +10365,7 @@ div:has(> table.admin-table),
   background: transparent;
   transition: background 0.15s;
 }
-.co-type-btn:hover { background: #faf5ff; }
+.co-type-btn:hover { background: #f7f7f8; }
 .co-type-btn.primary { background: #582681; color: #fff; }
 .co-type-btn.primary:hover { background: #6d28d9; }
 
@@ -10394,7 +10394,7 @@ div:has(> table.admin-table),
   font-size: 10px;
   font-weight: 700;
   color: #582681;
-  background: #f3e8ff;
+  background: #f7f7f8;
   padding: 2px 8px;
   border-radius: 20px;
   width: fit-content;
@@ -10428,8 +10428,8 @@ div:has(> table.admin-table),
   font-weight: 600;
   color: #555;
 }
-.co-split-visual.store { background: #faf5ff; }
-.co-split-visual.corp  { background: #ede9fe; }
+.co-split-visual.store { background: #f7f7f8; }
+.co-split-visual.corp  { background: #f7f7f8; }
 .co-split-emoji { font-size: 56px; }
 
 .co-label-tag {
@@ -10443,7 +10443,7 @@ div:has(> table.admin-table),
   margin-bottom: 12px;
   letter-spacing: 0.03em;
 }
-.co-label-tag.purple { background: #f3e8ff; color: #582681; }
+.co-label-tag.purple { background: #f7f7f8; color: #582681; }
 .co-split-title {
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 800;
@@ -10462,7 +10462,7 @@ div:has(> table.admin-table),
   padding: 5px 12px;
   border-radius: 20px;
 }
-.co-job-tag.purple { background: #f3e8ff; color: #582681; }
+.co-job-tag.purple { background: #f7f7f8; color: #582681; }
 
 /* ── 광고 상품 ── */
 .co-ad-grid {
@@ -10515,7 +10515,7 @@ div:has(> table.admin-table),
 .co-step-num {
   font-size: 28px;
   font-weight: 900;
-  color: #ede9fe;
+  color: #f7f7f8;
   line-height: 1;
 }
 .co-step-title { font-size: 15px; font-weight: 700; color: #111; }
@@ -10541,7 +10541,7 @@ div:has(> table.admin-table),
 }
 .co-pricing-card.highlight {
   border-color: #582681;
-  background: #faf5ff;
+  background: #f7f7f8;
 }
 .co-pricing-label { font-size: 13px; color: #666; margin-bottom: 8px; }
 .co-pricing-price { font-size: 18px; font-weight: 800; }
@@ -10620,7 +10620,7 @@ div:has(> table.admin-table),
 .cid-account-btn {
   font-size: 12px;
   color: #582681;
-  background: #f3e8ff;
+  background: #f7f7f8;
   border: none;
   padding: 4px 10px;
   border-radius: 20px;
@@ -10645,7 +10645,7 @@ div:has(> table.admin-table),
   width: 60px;
   height: 60px;
   border-radius: 14px;
-  background: #f3e8ff;
+  background: #f7f7f8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10697,7 +10697,7 @@ div:has(> table.admin-table),
   color: #222;
   transition: border-color 0.15s, background 0.15s;
 }
-.cid-menu-card:hover { border-color: #a78bfa; background: #faf5ff; }
+.cid-menu-card:hover { border-color: #a78bfa; background: #f7f7f8; }
 .cid-menu-icon { color: #582681; flex-shrink: 0; }
 .cid-menu-info { display: flex; flex-direction: column; gap: 2px; }
 .cid-menu-info strong { font-size: 14px; font-weight: 600; }
@@ -10800,7 +10800,7 @@ div:has(> table.admin-table),
   border: none; cursor: pointer; text-align: left;
   transition: background 0.15s;
 }
-.ads-product-header:hover { background: #faf5ff; }
+.ads-product-header:hover { background: #f7f7f8; }
 .ads-product-header-left { display: flex; align-items: flex-start; gap: 14px; flex: 1; }
 .ads-product-emoji { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
 .ads-product-name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
@@ -10813,7 +10813,7 @@ div:has(> table.admin-table),
 
 /* 상세 내용 */
 .ads-product-detail {
-  padding: 0 22px 22px; border-top: 1px solid #f0f0f0; background: #faf5ff;
+  padding: 0 22px 22px; border-top: 1px solid #f0f0f0; background: #f7f7f8;
 }
 .ads-product-desc { font-size: 13px; color: #555; line-height: 1.7; padding: 16px 0 12px; }
 
@@ -10836,11 +10836,11 @@ div:has(> table.admin-table),
   display: flex; align-items: center; gap: 8px; padding: 8px 10px;
   border-radius: 8px; background: #f9fafb;
 }
-.ads-pricing-row.highlight { background: #f3e8ff; }
+.ads-pricing-row.highlight { background: #f7f7f8; }
 .ads-pricing-label { font-size: 13px; color: #555; flex: 1; }
 .ads-pricing-badge {
   font-size: 10px; font-weight: 700; color: #582681;
-  background: #ede9fe; padding: 2px 7px; border-radius: 20px;
+  background: #f7f7f8; padding: 2px 7px; border-radius: 20px;
 }
 .ads-pricing-price { font-size: 14px; font-weight: 700; color: #111; }
 .ads-pricing-note { font-size: 11px; color: #999; margin-top: 10px; line-height: 1.6; }
@@ -10931,7 +10931,7 @@ div:has(> table.admin-table),
   background: #f9fafb;
 }
 .mat-compare-table th:first-child { text-align: left; }
-.mat-col-highlight { background: #f5f0ff !important; color: #582681 !important; }
+.mat-col-highlight { background: #f7f7f8 !important; color: #582681 !important; }
 .mat-compare-label { padding: 14px 16px; font-size: 13px; color: #444; font-weight: 500; border-bottom: 1px solid #f0f0f0; }
 .mat-compare-val {
   padding: 14px 16px; text-align: center; font-size: 13px;
@@ -10959,11 +10959,11 @@ div:has(> table.admin-table),
 .mat-process-icon {
   font-size: 36px; display: block;
   width: 60px; height: 60px; line-height: 60px;
-  background: #f5f0ff; border-radius: 50%; text-align: center;
+  background: #f7f7f8; border-radius: 50%; text-align: center;
   flex-shrink: 0;
 }
 .mat-process-line {
-  flex: 1; height: 2px; background: #ede9fe;
+  flex: 1; height: 2px; background: #f7f7f8;
   position: absolute; left: calc(50% + 36px);
   width: calc(100% - 72px);
 }
@@ -10989,18 +10989,18 @@ div:has(> table.admin-table),
 .mat-fee-type { font-size: 17px; font-weight: 800; color: #111; }
 .mat-fee-desc { font-size: 13px; color: #666; line-height: 1.6; }
 .mat-fee-amount {
-  background: #f5f0ff; border-radius: 10px; padding: 14px 16px;
+  background: #f7f7f8; border-radius: 10px; padding: 14px 16px;
   display: flex; flex-direction: column; gap: 4px;
 }
 .mat-fee-amount strong { font-size: 24px; font-weight: 900; color: #582681; }
 .mat-fee-amount span  { font-size: 12px; color: #6b7280; }
 .mat-fee-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .mat-fee-tag {
-  font-size: 11px; color: #582681; background: #f5f0ff;
+  font-size: 11px; color: #582681; background: #f7f7f8;
   padding: 3px 10px; border-radius: 20px;
 }
 .mat-fee-note {
-  background: #f5f0ff; border: 1px solid #c4b5fd;
+  background: #f7f7f8; border: 1px solid #c4b5fd;
   border-radius: 10px; padding: 14px 18px;
   font-size: 13px; color: #4c1d95; line-height: 1.6;
 }
@@ -11105,7 +11105,7 @@ div:has(> table.admin-table),
   white-space: nowrap;
   transition: background 0.15s;
 }
-.co-type-btn:hover { background: #faf5ff; }
+.co-type-btn:hover { background: #f7f7f8; }
 .co-type-btn.primary { background: #582681; color: #fff; }
 .co-type-btn.primary:hover { background: #6d28d9; }
 
@@ -11117,7 +11117,7 @@ div:has(> table.admin-table),
 }
 .co-step-v-num {
   width: 36px; height: 36px; border-radius: 50%;
-  background: #f3e8ff; color: #582681;
+  background: #f7f7f8; color: #582681;
   font-size: 12px; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -11172,7 +11172,7 @@ div:has(> table.admin-table),
   background: none; border: none; cursor: pointer;
   padding: 6px 8px; border-radius: 8px; transition: background 0.15s;
 }
-.company-profile-btn:hover { background: #f5f0ff; }
+.company-profile-btn:hover { background: #f7f7f8; }
 .company-profile-dropdown {
   position: absolute; top: calc(100% + 6px); right: 0;
   background: white; border: 1px solid #ececec; border-radius: 12px;
@@ -11202,7 +11202,7 @@ div:has(> table.admin-table),
 .legal-title { font-size: 22px; font-weight: 700; color: #2b2b2b; margin-bottom: 24px; text-align: center; }
 .legal-toc {
   display: flex; flex-direction: column; gap: 8px;
-  padding: 24px; background: #faf7fc; border: 1px solid #f0e8f8;
+  padding: 24px; background: #faf7fc; border: 1px solid #f7f7f8;
   border-radius: 12px; margin-bottom: 40px;
 }
 .legal-toc-item { font-size: 14px; color: #582681; text-decoration: none; font-weight: 500; }
@@ -11264,8 +11264,8 @@ div:has(> table.admin-table),
 /* 이력서 편집 사이드 완성도 */
 .resume-completion {
   padding: 14px;
-  background: #faf5ff;
-  border: 1px solid #f0e8f8;
+  background: #f7f7f8;
+  border: 1px solid #f7f7f8;
   border-radius: 10px;
   margin-bottom: 16px;
 }
@@ -11287,7 +11287,7 @@ div:has(> table.admin-table),
 }
 .resume-completion-bar {
   height: 8px;
-  background: #f3e5f5;
+  background: #f7f7f8;
   border-radius: 5px;
   overflow: hidden;
 }
@@ -11372,7 +11372,7 @@ div:has(> table.admin-table),
 .hero-region-select {
   flex-shrink: 0;
   padding: 11px 10px;
-  border: 1px solid #e0d4ed;
+  border: 1px solid #efeff1;
   border-radius: 10px;
   background: #fff;
   color: #582681;
@@ -11455,8 +11455,8 @@ div:has(> table.admin-table),
 }
 /* 복리후생 체크박스 (공고 등록폼) */
 .benefit-chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-.benefit-chip { padding: 7px 13px; border: none; border-radius: 100px; background: #f2eef7; font-size: 13px; color: #555; cursor: pointer; transition: all 0.15s; font-family: inherit; }
-.benefit-chip:hover { background: #e7dff2; }
+.benefit-chip { padding: 7px 13px; border: none; border-radius: 100px; background: #f7f7f8; font-size: 13px; color: #555; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.benefit-chip:hover { background: #efeff1; }
 .benefit-chip.on { background: var(--color-primary); color: #fff; }
 .jobs-dropdown-benefit { min-width: 200px; max-height: 320px; overflow-y: auto; }
 .jobs-dropdown-multi { display: flex; align-items: center; gap: 8px; }
@@ -11491,7 +11491,7 @@ div:has(> table.admin-table),
 /* ===== 공용 JobCard (메인·채용공고 통일) — 정사각형 60/40 ===== */
 .jobcard { display: flex; flex-direction: column; background: #fff; border: 1px solid #eee; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .18s, box-shadow .18s; }
 .jobcard:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
-.jobcard-cover { position: relative; flex: none; overflow: hidden; background: #f5f1fa; }
+.jobcard-cover { position: relative; flex: none; overflow: hidden; background: #f7f7f8; }
 .jobcard-cover-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .jobcard-cover-empty { aspect-ratio: 3 / 2; }   /* 사진이 없어도 칸 크기는 같다 */
 .jobcard-cover-initial { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 800; color: rgba(95,0,128,.18); }
@@ -11698,7 +11698,7 @@ div:has(> table.admin-table),
   border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.16); max-height: 264px; overflow-y: auto; }
 .nb-find-list button { display: block; width: 100%; text-align: left; border: none; background: none;
   cursor: pointer; padding: 8px 9px; border-radius: 7px; font-family: inherit; }
-.nb-find-list button:hover { background: #f6f2fb; }
+.nb-find-list button:hover { background: #f7f7f8; }
 .nb-find-list b { display: block; font-size: 14px; font-weight: 600; color: #1a1a1a; }
 .nb-find-list span { display: block; font-size: 12px; color: #999; margin-top: 2px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -11710,7 +11710,7 @@ div:has(> table.admin-table),
 /* 매장 표시. 핀 하나에 이름과 공고 수를 함께 실어, 지도만 보고도 어디가
    사람을 구하는지 읽히게 한다. */
 .nb-pin { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px;
-  background: #fff; border: 1px solid #e3d8ef; border-radius: 999px; cursor: pointer;
+  background: #fff; border: 1px solid #efeff1; border-radius: 999px; cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,.14); white-space: nowrap; transform: translateX(-50%); }
 .nb-pin:hover { border-color: var(--color-primary); }
 .nb-pin-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-primary); flex-shrink: 0; }
@@ -11920,7 +11920,7 @@ div:has(> table.admin-table),
 .pf-pick-note { display: none; }
 @media (max-width: 768px) {
   .pf-drop-pc { display: none; }
-  .pf-pick-mobile { display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 13px; border-radius: 10px; border: 1.5px solid #e0d0f0; background: #fff; color: #582681; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .pf-pick-mobile { display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 13px; border-radius: 10px; border: 1.5px solid #efeff1; background: #fff; color: #582681; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
   .pf-pick-mobile:disabled { opacity: 0.6; cursor: default; }
   .pf-pick-note { display: block; font-size: 11.5px; color: #888; text-align: center; margin: 7px 0 0; }
 }
@@ -11934,7 +11934,7 @@ div:has(> table.admin-table),
 /* 사이를 띄우지 않는다. 한 줄에 셋이 꽉 들어차야 사진이 커 보이고, 3×3 이 한
    덩어리로 읽힌다. 모서리는 칸마다 주면 안쪽에서 서로 물리므로 바깥에만 준다. */
 .portfolio-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-radius: 10px; overflow: hidden; }
-.portfolio-cell { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: #f4f0f8; }
+.portfolio-cell { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: #f7f7f8; }
 .portfolio-cell > img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .portfolio-del { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border: none; border-radius: 8px; background: rgba(0,0,0,0.5); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
 
@@ -11942,7 +11942,7 @@ div:has(> table.admin-table),
 .profile-select-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 .profile-select-all { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: #555; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
 .profile-select-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid #e0e0e0; background: #fff; color: #666; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: inherit; }
-.profile-select-btn.accent { border-color: #e0d0f0; color: #582681; }
+.profile-select-btn.accent { border-color: #efeff1; color: #582681; }
 .profile-select-btn.danger { border-color: #f0d0d0; color: #c0392b; }
 /* 고르는 중에는 체크박스가 첫 줄(제목)과 눈높이를 맞춰야 한다.
    카드가 가운데 정렬이라 그냥 두면 제목과 매장명 사이에 끼어 보인다. */
@@ -11977,7 +11977,7 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-.applied-menu-btn:hover { background: #f4eefc; color: #582681; }
+.applied-menu-btn:hover { background: #f7f7f8; color: #582681; }
 .applied-menu {
   position: absolute;
   top: 34px;
@@ -12004,7 +12004,7 @@ div:has(> table.admin-table),
   font-family: inherit;
   white-space: nowrap;
 }
-.applied-menu-item:hover { background: #f7f3fb; }
+.applied-menu-item:hover { background: #f7f7f8; }
 .applied-menu-item.danger { color: #d9534f; }
 .applied-menu-item.disabled { color: #ccc; cursor: default; }
 .applied-menu-item.disabled:hover { background: none; }
@@ -12222,7 +12222,7 @@ button,
   }
   .bstrip-dot::before {
     content: ""; width: 6px; height: 6px; border-radius: 50%;
-    background: #d8d0e0; transition: background .15s, width .15s;
+    background: #e3e3e6; transition: background .15s, width .15s;
   }
   .bstrip-dot.on::before { width: 16px; border-radius: 3px; background: #582681; }
 }
@@ -12273,7 +12273,7 @@ button,
   position: relative; margin-top: 14px; border-radius: 16px; padding: 26px 30px 30px; overflow: hidden;
   /* 고른 색 + 점 무늬만. 대각선 그라데이션을 얹으면 왼쪽 끝이 흰색 55% 로
      덮이고 오른쪽 끝이 보라로 짙어져, 같은 색 카드가 자리마다 다르게 보였다. */
-  background-color: #f6f3fc;
+  background-color: #f7f7f8;
   background-image: radial-gradient(circle, rgba(122, 95, 154, .07) 1px, transparent 1.4px);
   background-size: 22px 22px;
 }
@@ -12355,15 +12355,15 @@ button,
    먼저 보여야 자기 것만 읽고 넘어갈 수 있다. */
 .mt-evt { display: flex; flex-direction: column; }
 .mt-evt-list { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: center; }
-.mt-evt-item + .mt-evt-item { border-left: 1px solid #f0ecf7; padding-left: 18px; }
+.mt-evt-item + .mt-evt-item { border-left: 1px solid #f7f7f8; padding-left: 18px; }
 /* 누가 받는 혜택인지와, 그 혜택을 받으러 가는 문을 한 줄에 둔다. */
 .mt-evt-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
 .mt-evt-who { font-size: 12px; font-weight: 600; color: var(--color-primary);
-  background: #f3ecfa; border-radius: 5px; padding: 3px 8px; }
+  background: #f7f7f8; border-radius: 5px; padding: 3px 8px; }
 .mt-evt-btn { font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: -.2px;
   height: 30px; padding: 0 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;
   display: inline-flex; align-items: center; text-decoration: none;
-  background: #fff; color: var(--color-primary); border: 1px solid #d9c8e6;
+  background: #fff; color: var(--color-primary); border: 1px solid #efeff1;
   transition: background .15s, border-color .15s; }
 .mt-evt-btn:hover { border-color: var(--color-primary); background: #faf6fd; }
 .mt-evt-row { display: flex; align-items: center; gap: 12px; }
@@ -12376,10 +12376,10 @@ button,
 .mt-evt-t { display: block; font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; margin-top: 3px; }
 .mt-evt-s { display: block; font-size: 13px; color: #9a94a4; margin-top: 4px; }
 
-.mt-ticker { margin-top: 14px; border: 1px solid #efeaf7; border-radius: 12px; height: 48px;
+.mt-ticker { margin-top: 14px; border: 1px solid #f7f7f8; border-radius: 12px; height: 48px;
   display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #fbfaff; overflow: hidden; }
 .mt-tk-l { font-size: 16px; font-weight: 600; color: #222; display: flex; align-items: center; gap: 7px;
-  white-space: nowrap; flex-shrink: 0; padding-right: 20px; border-right: 1px solid #efeaf7; }
+  white-space: nowrap; flex-shrink: 0; padding-right: 20px; border-right: 1px solid #f7f7f8; }
 .mt-tk-view { flex: 1; min-width: 0; overflow: hidden; }
 .mt-tk-track { display: inline-flex; align-items: center; gap: 36px; white-space: nowrap; animation: mtRoll 32s linear infinite; }
 .mt-tk-item { font-size: 14px; color: #6b6b6b; text-decoration: none; }
@@ -12397,7 +12397,7 @@ button,
   /* 좁아지면 개인·기업을 위아래로 쌓고, 딱지 옆 버튼도 줄바꿈을 허용한다. */
   .mt-evt-list { grid-template-columns: 1fr; gap: 14px; }
   .mt-evt-item + .mt-evt-item { border-left: 0; padding-left: 0;
-    border-top: 1px solid #f0ecf7; padding-top: 14px; }
+    border-top: 1px solid #f7f7f8; padding-top: 14px; }
   .mt-evt-top { flex-wrap: wrap; }
   .mt-evt-more { display: none; }
   .mt-hero-in { padding: 22px 20px; }
@@ -12446,7 +12446,7 @@ button,
 .jobs-sort-group {
   display: inline-flex;
   align-items: center;
-  background: #f4f0f9;
+  background: #f7f7f8;
   border: none;
   border-radius: 11px;
   padding: 4px;
@@ -12478,18 +12478,15 @@ button,
 .salary-tab:hover,
 .salary-sort-btn:hover,
 .jobs-sort-btn:hover { color: #6b6480; border-color: transparent; background: transparent; }
-/* 고른 쪽을 연보라로 채운다.
-   흰 알약으로 띄웠더니 같은 화면에서 연보라가 두 뜻이 됐다 — 토글에서는
-   '안 고른 바탕'인데 사이드바 목록에서는 '고른 것'이었다. 목록 쪽 표시를
-   바꾸는 대신 토글을 뒤집어, 어디서나 연보라가 '고른 것' 하나만 뜻하게 한다.
-   판은 한 단계 옅게 내려 채운 쪽과 갈라 놓는다. */
+/* 고른 쪽은 로고 보라로 채운다. 판은 무채색이라 채운 쪽만 색을 갖고,
+   무엇을 골랐는지가 한눈에 들어온다. */
 .seg-btn.active, .seg-btn.on,
 .jobs-type-tab.active,
 .salary-tab.active,
 .salary-sort-btn.active,
 .jobs-sort-btn.active {
-  background: #e3d4f0;
-  color: #431a63;
+  background: var(--color-primary);
+  color: #fff;
   border-color: transparent;
   font-weight: 600;
   box-shadow: none;
@@ -12514,14 +12511,14 @@ button,
 .cs-page {
   --cs: #582681;
   --cs-deep: #431a63;
-  --cs-soft: #efe9f5;
+  --cs-soft: #f7f7f8;
   width: 100%; background: #fff; color: #1a1a1a;
   font-family: var(--font-sans);
 }
 .cs-page b, .cs-page strong { font-weight: 700; }
 
 /* 머리 */
-.cs-header { border-bottom: 1px solid #ebe6f2; background: #fff; position: sticky; top: 0; z-index: 30; }
+.cs-header { border-bottom: 1px solid #efeff1; background: #fff; position: sticky; top: 0; z-index: 30; }
 .cs-header-in { max-width: 1160px; margin: 0 auto; padding: 0 24px; height: 68px; display: flex; align-items: center; gap: 28px; }
 .cs-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
 .cs-nav { display: flex; gap: 26px; margin: 0 auto; }
@@ -12539,10 +12536,10 @@ button,
 }
 .cs-btn-fill { background: var(--cs); color: #fff; border: 1px solid var(--cs); }
 .cs-btn-fill:hover { background: var(--cs-deep); border-color: var(--cs-deep); }
-.cs-btn-line { background: #fff; color: var(--cs); border: 1px solid #cfc0e0; }
+.cs-btn-line { background: #fff; color: var(--cs); border: 1px solid #e3e3e6; }
 .cs-btn-line:hover { border-color: var(--cs); }
-.cs-btn-ghost { background: #fff; color: #4a4a4a; border: 1px solid #e4e0e8; }
-.cs-btn-ghost:hover { border-color: #c8c2ce; }
+.cs-btn-ghost { background: #fff; color: #4a4a4a; border: 1px solid #efeff1; }
+.cs-btn-ghost:hover { border-color: #e3e3e6; }
 .cs-btn-fill.lg, .cs-btn-line.lg { height: 48px; padding: 0 22px; font-size: 15.5px; border-radius: 9px; }
 
 /* 히어로 */
@@ -12574,7 +12571,7 @@ button,
 .cs-hero-pts { list-style: none; display: flex; margin: 40px 0 0; padding: 0; flex-wrap: nowrap; }
 .cs-hero-pts li { display: flex; align-items: center; gap: 9px; padding: 0 16px; flex-shrink: 0; }
 .cs-hero-pts li:first-child { padding-left: 0; }
-.cs-hero-pts li + li { border-left: 1px solid #ddd3e8; }
+.cs-hero-pts li + li { border-left: 1px solid #efeff1; }
 .cs-hero-pts svg { color: var(--cs); flex-shrink: 0; }
 .cs-hero-pts span { font-size: 12.5px; color: #7a7076; line-height: 1.5; word-break: keep-all; }
 .cs-hero-pts b { display: block; font-size: 14px; font-weight: 700; color: #2b2b2b; }
@@ -12591,10 +12588,10 @@ button,
 /* 다루는 직군 — 여덟을 한 판에 담아 "여기까지 다 된다"를 한눈에 말한다. */
 .cs-jobs {
   display: grid; grid-template-columns: repeat(8, 1fr);
-  background: #fff; border: 1px solid #ebe6f2; border-radius: 16px; overflow: hidden;
+  background: #fff; border: 1px solid #efeff1; border-radius: 16px; overflow: hidden;
 }
 .cs-job { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 26px 10px; text-align: center; }
-.cs-job + .cs-job { border-left: 1px solid #f1edf6; }
+.cs-job + .cs-job { border-left: 1px solid #f7f7f8; }
 .cs-job svg { color: var(--cs); }
 .cs-job b { font-size: 14.5px; font-weight: 700; }
 .cs-job span { font-size: 12px; color: #8a8087; line-height: 1.5; word-break: keep-all; }
@@ -12607,33 +12604,33 @@ button,
 .cs-note { grid-column: 1 / -1; font-size: 12px; color: #a49aa1; margin: 14px 0 0; text-align: right; }
 
 /* 대시보드 그림 */
-.cs-shot { display: grid; grid-template-columns: 132px 1fr; background: #fff; border: 1px solid #e8e2f0; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 34px rgba(70, 45, 100, .10); }
+.cs-shot { display: grid; grid-template-columns: 132px 1fr; background: #fff; border: 1px solid #efeff1; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 34px rgba(70, 45, 100, .10); }
 /* 사이드바를 검게 칠하면 이 그림에서 가장 어두운 덩어리가 되어, 정작 보여
    주려는 지표와 차트보다 먼저 눈에 든다. 흰 바탕에 선 하나로 가른다. */
-.cs-shot-side { background: #fff; border-right: 1px solid #eae5f1; padding: 14px 10px; display: flex; flex-direction: column; gap: 3px; }
+.cs-shot-side { background: #fff; border-right: 1px solid #efeff1; padding: 14px 10px; display: flex; flex-direction: column; gap: 3px; }
 .cs-shot-brand { color: #2b2b2b; font-size: 13px; font-weight: 700; padding: 4px 8px 12px; }
 .cs-shot-menu { font-size: 11.5px; color: #8a8087; padding: 7px 8px; border-radius: 6px; }
 .cs-shot-menu.on { background: var(--cs-soft); color: var(--cs); font-weight: 600; }
 .cs-shot-main { padding: 14px; background: #faf8fc; }
 .cs-shot-h { font-size: 13px; font-weight: 700; margin: 0 0 10px; }
 .cs-shot-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
-.cs-shot-stat { background: #fff; border: 1px solid #eae5f1; border-radius: 8px; padding: 9px 10px; }
+.cs-shot-stat { background: #fff; border: 1px solid #efeff1; border-radius: 8px; padding: 9px 10px; }
 .cs-shot-stat span { display: block; font-size: 10.5px; color: #8a8087; }
 .cs-shot-stat b { font-size: 17px; font-weight: 700; }
 .cs-shot-stat i { font-size: 10.5px; font-style: normal; font-weight: 500; color: #8a8087; margin-left: 2px; }
 .cs-shot-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin-bottom: 10px; }
-.cs-shot-card { background: #fff; border: 1px solid #eae5f1; border-radius: 8px; padding: 10px; }
+.cs-shot-card { background: #fff; border: 1px solid #efeff1; border-radius: 8px; padding: 10px; }
 .cs-shot-card p { font-size: 11px; font-weight: 600; margin: 0 0 8px; color: #4a444c; }
 .cs-shot-line { width: 100%; height: 62px; }
 .cs-shot-line polyline { fill: none; stroke: #582681; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .cs-shot-donut { position: relative; display: flex; align-items: center; justify-content: center; height: 62px; }
 .cs-shot-donut svg { width: 62px; height: 62px; transform: rotate(-90deg); }
-.cs-shot-donut .bg { fill: none; stroke: #ece6f2; stroke-width: 5; }
+.cs-shot-donut .bg { fill: none; stroke: #efeff1; stroke-width: 5; }
 .cs-shot-donut .fg { fill: none; stroke: var(--cs); stroke-width: 5; stroke-dasharray: 73 27; stroke-linecap: round; }
 .cs-shot-donut span { position: absolute; font-size: 13px; font-weight: 700; }
 .cs-shot-donut i { font-size: 9px; font-style: normal; }
 .cs-shot-appl { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
-.cs-shot-appl + .cs-shot-appl { border-top: 1px solid #f2eef6; }
+.cs-shot-appl + .cs-shot-appl { border-top: 1px solid #f7f7f8; }
 .cs-shot-av { width: 20px; height: 20px; border-radius: 50%; background: var(--cs-soft); flex-shrink: 0; }
 .cs-shot-n { flex: 1; min-width: 0; font-size: 11px; font-weight: 600; }
 .cs-shot-n i { font-style: normal; font-weight: 400; color: #8a8087; margin-left: 6px; }
@@ -12647,11 +12644,11 @@ button,
 .cs-step-no { font-size: 12px; font-weight: 700; color: var(--cs); }
 .cs-step b { font-size: 15.5px; font-weight: 700; }
 .cs-step-s { font-size: 13px; color: #857b83; line-height: 1.55; word-break: keep-all; }
-.cs-step-ar { position: absolute; top: 30px; right: -16px; color: #ded4e6; }
+.cs-step-ar { position: absolute; top: 30px; right: -16px; color: #efeff1; }
 
 /* 광고 상품 */
 .cs-ads { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.cs-ad { background: #fff; border: 1px solid #ece5f2; border-radius: 12px; padding: 24px 18px;
+.cs-ad { background: #fff; border: 1px solid #efeff1; border-radius: 12px; padding: 24px 18px;
   display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center; }
 .cs-ad svg { color: var(--cs); }
 .cs-ad b { font-size: 15.5px; font-weight: 700; }
@@ -12661,7 +12658,7 @@ button,
 /* 선택 이유 */
 .cs-why { display: grid; grid-template-columns: 1fr 268px; gap: 16px; margin-top: 34px; align-items: stretch; }
 .cs-why-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-.cs-why-c { background: #fff; border: 1px solid #ebe4f0; border-radius: 12px; padding: 20px 14px;
+.cs-why-c { background: #fff; border: 1px solid #efeff1; border-radius: 12px; padding: 20px 14px;
   display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center; }
 .cs-why-c svg { color: var(--cs); }
 .cs-why-c b { font-size: 14px; font-weight: 700; word-break: keep-all; }
@@ -12669,13 +12666,13 @@ button,
 .cs-why-up { position: relative; background: var(--cs-soft); border-radius: 12px; padding: 22px 20px; }
 .cs-why-up b { display: block; font-size: 15.5px; font-weight: 700; color: var(--cs-deep); margin-bottom: 9px; word-break: keep-all; }
 .cs-why-up p { font-size: 13px; line-height: 1.7; color: #6d6169; margin: 0; word-break: keep-all; }
-.cs-why-up svg { position: absolute; right: 16px; bottom: 14px; color: #b79ad0; }
+.cs-why-up svg { position: absolute; right: 16px; bottom: 14px; color: #e3e3e6; }
 
 /* 자주 묻는 질문 */
 .cs-faq-wrap { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
 .cs-faq { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
-.cs-faq li { border: 1px solid #e9e2f0; border-radius: 9px; background: #fff; overflow: hidden; }
-.cs-faq li.on { border-color: #d3c1e2; }
+.cs-faq li { border: 1px solid #efeff1; border-radius: 9px; background: #fff; overflow: hidden; }
+.cs-faq li.on { border-color: #e3e3e6; }
 .cs-faq button { display: flex; align-items: center; gap: 9px; width: 100%; padding: 15px 16px;
   background: none; border: none; cursor: pointer; text-align: left; font-family: inherit; }
 .cs-faq i { font-style: normal; font-size: 13.5px; font-weight: 700; color: var(--cs); flex-shrink: 0; }
@@ -12765,7 +12762,7 @@ button,
 .jobs-side-type { display: flex; width: 100%; margin-bottom: 10px; }
 .jobs-side-type .seg-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 0; }
 
-.jobs-side-box { background: #fff; border: 1px solid #efeaf4; border-radius: 10px; padding: 12px 12px 13px; margin-bottom: 8px; }
+.jobs-side-box { background: #fff; border: 1px solid #f7f7f8; border-radius: 10px; padding: 12px 12px 13px; margin-bottom: 8px; }
 .jobs-side-t { display: flex; align-items: baseline; gap: 6px; font-size: 15px; font-weight: 700; color: #222; margin: 0 0 9px; }
 .jobs-side-t i { font-style: normal; font-size: 12px; font-weight: 500; color: #b7b0bf; }
 .jobs-side-sub { font-size: 12.5px; color: #a9a2b2; margin: 12px 0 5px; }
@@ -12788,7 +12785,7 @@ button,
 .jobs-side-grid button.on, .jobs-side-list button.on { color: var(--color-primary); font-weight: 700; }
 /* 값이 있는 공고 수. 눌러서 적게 나오는 것이 필터 탓이 아니라 데이터 탓임을 드러낸다. */
 .jobs-side-grid button i { font-style: normal; font-size: 11.5px; color: #c3bcca; }
-.jobs-side-grid button.on i { color: #c9a3e0; }
+.jobs-side-grid button.on i { color: #9b9ba0; }
 
 .jobs-main { min-width: 0; }
 .jobs-head { display: flex; align-items: baseline; gap: 8px; padding: 20px 0 2px; }
@@ -12820,7 +12817,7 @@ button,
   background: none; border: none; cursor: pointer; color: #c3bcca; padding: 5px 0; }
 .jobs-side-open svg { transition: transform .15s; }
 .jobs-side-sub-list { display: flex; flex-direction: column; gap: 1px; padding: 2px 0 5px 10px;
-  margin-left: 3px; border-left: 1px solid #efeaf4; }
+  margin-left: 3px; border-left: 1px solid #f7f7f8; }
 .jobs-side-sub-list button { display: block; width: 100%; text-align: left; background: none; border: none;
   cursor: pointer; font-family: inherit; font-size: 13px; color: #8b8492; padding: 4px 6px;
   border-radius: 5px; transition: color .12s, background .12s; }
@@ -12829,7 +12826,7 @@ button,
 
 /* 걸어 놓은 것을 한 번에 푼다. 걸린 것이 없으면 누를 이유가 없어 흐려 둔다. */
 .jobs-side-reset { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
-  height: 38px; border: 1px solid #e6dff0; border-radius: 9px; background: #fff; cursor: pointer;
+  height: 38px; border: 1px solid #efeff1; border-radius: 9px; background: #fff; cursor: pointer;
   font-family: inherit; font-size: 13.5px; font-weight: 600; color: #6b6570; transition: all .15s; }
 .jobs-side-reset:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
 .jobs-side-reset:disabled { opacity: .45; cursor: default; }
@@ -12846,9 +12843,9 @@ button,
   color: #431a63 !important;
   font-weight: 700 !important;
 }
-.jobs-side-grid button.on { background: #f6f1fb; }
-.jobs-side-grp-h.on { background: #f6f1fb; }
-.jobs-side-sub-list button.on { background: #f6f1fb; }
+.jobs-side-grid button.on { background: #f7f7f8; }
+.jobs-side-grp-h.on { background: #f7f7f8; }
+.jobs-side-sub-list button.on { background: #f7f7f8; }
 .jobs-side-reset { font-weight: 600 !important; }
 .jobs-side-reset:hover:not(:disabled) { color: #431a63 !important; }
 
@@ -12888,11 +12885,11 @@ button,
 .jobs-pop {
   position: fixed; z-index: 200;
   width: 244px; max-height: 330px; display: flex; flex-direction: column;
-  background: #fff; border: 1px solid #e8e0f0; border-radius: 11px;
+  background: #fff; border: 1px solid #efeff1; border-radius: 11px;
   box-shadow: 0 10px 30px rgba(60, 30, 80, .14);
 }
 .jobs-pop-h { display: flex; align-items: center; justify-content: space-between;
-  padding: 11px 12px 9px; border-bottom: 1px solid #f4eff8; }
+  padding: 11px 12px 9px; border-bottom: 1px solid #f7f7f8; }
 /* 팝오버 제목은 평체 + 진보라. 굵게 두면 아래 항목들과 무게를 다투는데,
    여기는 무엇을 고르는 창인지 알려 줄 뿐 읽을 거리가 아니다. 색으로만 짚는다.
    다섯 팝오버(지역·직군·고용형태·경력·복리후생)가 이 한 규칙을 같이 쓴다. */
@@ -12903,20 +12900,20 @@ button,
   background: none; border: none; cursor: pointer; font-family: inherit; font-size: 13.5px;
   color: #5b5563; padding: 7px 8px; border-radius: 7px; }
 .jobs-pop-item:hover { background: #f8f5fb; }
-.jobs-pop-item.on { color: #431a63 !important; font-weight: 700 !important; background: #f6f1fb; }
+.jobs-pop-item.on { color: #431a63 !important; font-weight: 700 !important; background: #f7f7f8; }
 /* 오른쪽 화살표는 '옆으로 열린다'는 뜻이다. 아래로 펼치는 ⌄ 와 다르다. */
-.jobs-side-arr { margin-left: auto; flex: 0 0 auto; color: #cdc6d6; }
+.jobs-side-arr { margin-left: auto; flex: 0 0 auto; color: #e3e3e6; }
 
 /* ── 고른 값 (결과 위) ───────────────────────────────────────────
    무엇으로 걸렀는지 보여 주기만 한다. 하나씩 뺄 수 있어야 처음부터 다시
    고르지 않는다. */
 .jobs-picked { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 12px 0 2px; }
 .jobs-picked-chip { display: inline-flex; align-items: center; gap: 6px;
-  background: #f4f0f9; border: none; border-radius: 999px; padding: 6px 11px 6px 13px;
+  background: #f7f7f8; border: none; border-radius: 999px; padding: 6px 11px 6px 13px;
   cursor: pointer; font-family: inherit; font-size: 13.5px; color: #431a63;
   transition: background .15s; }
-.jobs-picked-chip:hover { background: #e9e0f4; }
-.jobs-picked-chip svg { color: #a58bc0; }
+.jobs-picked-chip:hover { background: #f7f7f8; }
+.jobs-picked-chip svg { color: #9b9ba0; }
 
 /* 사이드바 항목 안의 개수 뱃지 */
 .jobs-side-list button > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -12943,7 +12940,7 @@ button,
 .profile-account-row { display: flex; align-items: center; justify-content: space-between;
   width: 100%; padding: 15px 4px; background: none; border: none; border-top: 1px solid #f0eef2;
   cursor: pointer; font-family: inherit; font-size: 15px; color: #2b2b2b; text-decoration: none; }
-.profile-account-row svg { color: #c9c3ce; }
+.profile-account-row svg { color: #e3e3e6; }
 .profile-account-row.logout { color: #9a94a4; }
 .profile-account-row:hover { color: var(--color-primary); }
 
@@ -12963,7 +12960,7 @@ button,
     font-size: 15px; color: #6b6570; text-decoration: none; transition: color .12s, background .12s;
   }
   .pf-side a:hover, .pf-side .pf-side-out:hover { color: #2b2b2b; background: #f8f5fb; }
-  .pf-side a.on { color: #431a63 !important; font-weight: 700 !important; background: #f4f0f9; }
+  .pf-side a.on { color: #431a63 !important; font-weight: 700 !important; background: #f7f7f8; }
   /* 보는 화면을 고르는 일과 계정을 다루는 일은 성격이 다르다. 선으로 가른다. */
   .pf-side-sep { display: block; height: 1px; background: #eee; margin: 10px 10px; }
   .pf-side .pf-side-out { color: #a9a2b2; }

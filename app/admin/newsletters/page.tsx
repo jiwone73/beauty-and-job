@@ -200,7 +200,7 @@ export default function AdminNewslettersPage() {
             </thead>
             <tbody>
               {list.map((n) => (
-                <tr key={n.id} style={{ background: checked.includes(n.id) ? "#faf5ff" : n.status === "sent" ? "#f6fbf6" : "#fff" }}>
+                <tr key={n.id} style={{ background: checked.includes(n.id) ? "#f7f7f8" : n.status === "sent" ? "#f6fbf6" : "#fff" }}>
                   <td style={td}>
                     <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   </td>

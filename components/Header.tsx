@@ -43,10 +43,10 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
             onClick={() => router.push(ownerType === "company" ? "/company/dashboard" : "/profile")}>
             {avatarUrl ? (
               <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
-                style={{ width: 32, height: 32, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block", background: "#f3e5f5" }} />
+                style={{ width: 32, height: 32, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block", background: "#f7f7f8" }} />
             ) : (
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="16" r="16" fill="#f3e5f5"/>
+                <circle cx="16" cy="16" r="16" fill="#f7f7f8"/>
                 <circle cx="16" cy="13" r="5" fill="#582681"/>
                 <path d="M6 28c0-5.5 4.5-9 10-9s10 3.5 10 9" fill="#582681"/>
               </svg>
