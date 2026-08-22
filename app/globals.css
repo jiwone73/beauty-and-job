@@ -12772,7 +12772,11 @@ button,
 .jobs-side-sub:first-of-type { margin-top: 0; }
 
 .jobs-side-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px; }
-.jobs-side-grid.c3 { grid-template-columns: repeat(3, 1fr); }
+.jobs-side-grid.c3 { grid-template-columns: repeat(3, 1fr); gap: 2px 3px; }
+/* 지역 칸은 좁다. 화살표 자리를 만들려고 좌우 여백을 줄이고, 이름이 밀리지
+   않게 화살표는 한 치수 작게 둔다. */
+.jobs-side-grid.c3 button { padding: 4px 1px 4px 3px; gap: 2px; }
+.jobs-side-grid.c3 button > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .jobs-side-list { display: flex; flex-direction: column; gap: 1px; }
 .jobs-side-grid button, .jobs-side-list button {
   display: flex; align-items: baseline; gap: 4px; width: 100%;

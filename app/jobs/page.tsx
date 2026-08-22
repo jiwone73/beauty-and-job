@@ -349,7 +349,9 @@ function JobsPageInner() {
                   <span key={sd} className="jobs-pop-wrap">
                     <button type="button" className={고른수 ? "on" : undefined}
                       onClick={(e) => 열림 ? set열린팝오버(null) : 팝열기(e, "지역", sd)}>
-                      {shortSido(sd)}{고른수 > 0 && <em>{고른수}</em>}
+                      <span>{shortSido(sd)}</span>
+                      {고른수 > 0 && <em>{고른수}</em>}
+                      <ChevronRight size={12} className="jobs-side-arr" />
                     </button>
                     {열림 && (
                       <Pop onClose={() => set열린팝오버(null)} title={sd} 좌={열린팝오버.좌} 상={열린팝오버.상}>
@@ -443,11 +445,6 @@ function JobsPageInner() {
             </div>
           </div>
 
-          <button type="button" className="jobs-side-reset"
-            disabled={걸린조건 === 0} onClick={조건모두풀기}>
-            <RotateCcw size={14} />
-            초기화{걸린조건 > 0 && <em>{걸린조건}</em>}
-          </button>
         </aside>
 
         <div className="jobs-main">
