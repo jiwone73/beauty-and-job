@@ -12267,11 +12267,18 @@ button,
    · 한쪽만 희거나 보라해지지 않게, 큰 원 대신 고른 톤 위에 무늬만 얹는다. */
 .mt-jobs {
   position: relative; margin-top: 14px; border-radius: 16px; padding: 26px 30px 30px; overflow: hidden;
-  /* 고른 색 + 점 무늬만. 대각선 그라데이션을 얹으면 왼쪽 끝이 흰색 55% 로
-     덮이고 오른쪽 끝이 보라로 짙어져, 같은 색 카드가 자리마다 다르게 보였다. */
-  background-color: #f6f3fc;
-  background-image: radial-gradient(circle, rgba(122, 95, 154, .07) 1px, transparent 1.4px);
-  background-size: 22px 22px;
+  /* 시안의 바탕을 픽셀에서 재어 옮겼다. 네 모서리가 각각
+       좌상 #fefefe · 우상 #f2e4f3 · 좌하 #fcf5f4 · 우하 #d2c3df
+     로, 왼쪽 위 흰색에서 오른쪽 아래 연보라로 흐르되 왼쪽에 분홍기가 돈다.
+     대각선 하나로는 그 분홍기가 안 나와, 보라 대각선 위에 분홍을 왼쪽에서만
+     얹는다.
+
+     반복 무늬는 없다. 시안 여백의 국소 편차가 0.68/255 로 압축 잡음 수준이라,
+     무늬처럼 보이던 것은 이 그라데이션 자체였다. */
+  background-color: #fefefe;
+  background-image:
+    linear-gradient(100deg, rgba(255, 238, 240, .85) 0%, rgba(255, 238, 240, .35) 34%, rgba(255, 238, 240, 0) 62%),
+    linear-gradient(135deg, #ffffff 0%, #fbf3f6 34%, #ecdcee 70%, #d2c3df 100%);
 }
 /* 검색 칸의 머리글. 무엇을 찾는 자리인지 먼저 말하고 물음을 던진다. */
 /* 한국어는 글자 단위로 끊기므로 '한곳에서'가 '한곳에 / 서'로 갈라진다.
