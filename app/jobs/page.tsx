@@ -351,7 +351,7 @@ function JobsPageInner() {
                       onClick={(e) => 열림 ? set열린팝오버(null) : 팝열기(e, "지역", sd)}>
                       <span>{shortSido(sd)}</span>
                       {고른수 > 0 && <em>{고른수}</em>}
-                      <ChevronRight size={12} className="jobs-side-arr" />
+                      <ChevronRight size={13} className="jobs-side-arr" />
                     </button>
                     {열림 && (
                       <Pop onClose={() => set열린팝오버(null)} title={sd} 좌={열린팝오버.좌} 상={열린팝오버.상}>
