@@ -67,7 +67,19 @@ function LoginStartContent() {
           <p className="mb-5 text-center text-[13px] md:text-[14px] text-[#e74c3c]">{socialError}</p>
         )}
 
-        {/* 개인 로그인만 앞에 둔다 — 들어오는 사람 대부분이 구직자다.
+        {/* 아래 '채용하시나요?'와 짝을 이루는 물음. 이게 없으면 위 세 버튼이
+            누구 것인지 말해 주는 데가 없어, 아래까지 읽고 나서야 되짚게 된다.
+
+            '개인회원'이라 쓰지 않는다. 사람들은 자기를 회원 종류로 생각하지
+            않고 '일자리를 찾는 사람'으로 생각한다. 물음으로 걸어야 자기
+            얘기로 읽힌다. */}
+        <div className="mb-5 flex items-center gap-3">
+          <span className="h-px flex-1 bg-[#ececec]" />
+          <span className="text-[12px] md:text-[13px] text-[#9a9a9a]">일자리를 찾으시나요?</span>
+          <span className="h-px flex-1 bg-[#ececec]" />
+        </div>
+
+        {/* 개인 로그인을 앞에 둔다 — 들어오는 사람 대부분이 구직자다.
             기업은 아래 링크로 보내고, 탭으로 먼저 고르게 하지 않는다. */}
         <button
           onClick={handleKakao}
