@@ -3,6 +3,7 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import Header from "@/components/Header";
 import { ChevronDown, Download, Eye, FileText, Pencil, Plus, Printer, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -369,35 +370,15 @@ function ResumePageContent() {
   // 사람이 영영 미완성으로 남는다.
   const 포트폴리오채움 = portfolioImages.length > 0 || links.length > 0;
   // 모바일 완성도 (사이드바와 동일 기준)
-  const progressItems = resumeType === "office"
-    ? [true, careers.length > 0, educations.length > 0, skills.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, 포트폴리오채움]
-    : [true, careers.length > 0, educations.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, 포트폴리오채움];
+  const progressItems = [true, careers.length > 0, educations.length > 0, skills.length > 0, languages.length > 0, certificates.length > 0, experiences.length > 0, 포트폴리오채움];
   const progressRate = Math.round((progressItems.filter(Boolean).length / progressItems.length) * 100);
 
   return (
     <div className="resume-page">
-      <header className="profile-header">
-        <div className="profile-header-inner">
-          <Link href="/" className="profile-logo">
-            <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
-          </Link>
-          <Link href="/jobs" className="profile-header-nav">채용공고</Link>
-          <div className="resume-header-actions" style={{ marginLeft: "auto" }}>
-            
-            <button className="resume-action-btn" onClick={() => setShowPreview(true)}>
-              <Eye size={16} /><span>미리보기</span>
-            </button>
-            <button
-              className="resume-action-btn"
-              onClick={handleDownload}
-              disabled={isDownloading}
-            >
-              <Download size={16} />
-              <span>{isDownloading ? "저장 중..." : "다운로드"}</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* 이력서만 다른 머리줄을 쓸 이유가 없다. 헤더 메뉴로 들어오는 화면이니
+          들어온 자리의 머리줄이 그대로 있어야 길을 잃지 않는다.
+          여기 있던 미리보기·다운로드는 왼쪽 사이드 아래로 내렸다. */}
+      <Header />
       {/* 메뉴로 바로 들어왔는데 프로필이 비어 있으면 빈 이력서가 열린다.
           처음 온 사람의 순서(프로필 → 이력서)를 여기서 다시 잡아 준다. */}
       {!name && (
@@ -421,19 +402,12 @@ function ResumePageContent() {
             <ChevronDown size={18} style={{ color: "#888", transform: sectionsOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }} />
           </button>
           {(() => {
-            const sections = resumeType === "office" ? [
+            // 매장·본사가 같은 목록을 쓴다. 스킬은 매장 쪽이 오히려 더 중요하다.
+            const sections = [
               { id: "basic", label: "기본 정보", done: true },
               { id: "career", label: "경력", done: careers.length > 0 },
               { id: "education", label: "학력", done: educations.length > 0 },
               { id: "skill", label: "스킬", done: skills.length > 0 },
-              { id: "language", label: "어학", done: languages.length > 0 },
-              { id: "certificate", label: "자격증", done: certificates.length > 0 },
-              { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
-            ] : [
-              { id: "basic", label: "기본 정보", done: true },
-              { id: "career", label: "경력", done: careers.length > 0 },
-              { id: "education", label: "학력", done: educations.length > 0 },
               { id: "language", label: "어학", done: languages.length > 0 },
               { id: "certificate", label: "자격증", done: certificates.length > 0 },
               { id: "experience", label: "활동/수상", done: experiences.length > 0 },
@@ -470,6 +444,16 @@ function ResumePageContent() {
               </>
             );
           })()}
+          {/* 머리줄에서 내려온 두 버튼. 다 채운 뒤에 누르는 것이라 목록 아래가 맞다. */}
+          <div className="resume-side-actions">
+            <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
+              <Eye size={15} /><span>미리보기</span>
+            </button>
+            <button className="resume-side-download" onClick={handleDownload} disabled={isDownloading}>
+              <Download size={15} />
+              <span>{isDownloading ? "저장 중..." : "다운로드"}</span>
+            </button>
+          </div>
         </aside>
 
         <main className="resume-editor">

@@ -332,8 +332,10 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 스킬 (office 전용) */}
-      {resumeType === "office" && (
+      {/* 스킬 — 매장도 쓴다. 커트·펌·염색 같은 시술 스킬이 곧 실력이라
+          오히려 매장 쪽이 더 중요하다. SkillModal 이 매장직 시술 사전을
+          이미 갖고 있는데 이 칸만 본사에 잠겨 있었다. */}
+      {true && (
         <section id="section-skill" className="resume-section">
           <div className="resume-section-head">
             <h2 className="resume-section-title">스킬</h2>
