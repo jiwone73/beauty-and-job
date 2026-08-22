@@ -52,17 +52,14 @@ export default function ExperienceModal({ isOpen, onClose, editTarget, inline}: 
         <label className="cv-field-label">설명</label>
         <textarea className="cv-textarea" placeholder="경험에 대해 설명해 주세요." maxLength={1000} value={desc} onChange={(e) => setDesc(e.target.value)} />
 
-        <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
+        <div className={inline ? "cv-actions" : undefined}>
+          {inline && <button type="button" className="cv-inline-cancel" onClick={onClose}>취소</button>}
+          <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
+        </div>
       </div>
   );
 
-  // 인라인에는 덮개도 뒤로가기도 없다. 닫을 길을 여기서 준다.
-  if (inline) return (
-    <div className="cv-inline">
-      {몸통}
-      <button type="button" className="cv-inline-cancel" onClick={onClose}>취소</button>
-    </div>
-  );
+  if (inline) return <div className="cv-inline">{몸통}</div>;
 
   return (
     <div className="cv-overlay">

@@ -93,17 +93,14 @@ export default function LanguageModal({ isOpen, onClose, editTarget, inline }: P
             );
           })}
         </div>
-        <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
+        <div className={inline ? "cv-actions" : undefined}>
+          {inline && <button type="button" className="cv-inline-cancel" onClick={onClose}>취소</button>}
+          <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
+        </div>
   </div>
   );
 
-  // 인라인에는 덮개도 뒤로가기도 없다. 닫을 길을 여기서 준다.
-  if (inline) return (
-    <div className="cv-inline">
-      {몸통}
-      <button type="button" className="cv-inline-cancel" onClick={onClose}>취소</button>
-    </div>
-  );
+  if (inline) return <div className="cv-inline">{몸통}</div>;
 
   return (
     <div className="cv-overlay">
