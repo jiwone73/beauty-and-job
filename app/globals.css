@@ -11600,7 +11600,7 @@ div:has(> table.admin-table),
   .jobcard-deadline { font-size: 14px; }
   /* PC뷰 필터 텍스트 한 단계 크게 */
   .jobs-type-tab { font-size: 15px; }
-  .jobs-filter-btn { font-size: 15px; }
+  .jobs-filter-btn { font-size: 14px; }   /* 사이드바 항목과 같은 크기 */
 }
 /* jobseeker 히어로 — 모바일 자동 조절 */
 .js-hero-title { font-size: clamp(22px, 6vw, 32px); }
@@ -12750,14 +12750,16 @@ button,
    가장 위 가지인 매장/본사가 사이드바 꼭대기에 있다 — 고르는 순간 아래
    직군 목록이 통째로 갈리므로, 컨트롤이 자기가 바꾸는 것 위에 있어야 한다. */
 .jobs-layout { display: grid; grid-template-columns: 190px 1fr; gap: 22px; align-items: start; }
-.jobs-side { position: sticky; top: 78px; }
+/* 토글 윗머리를 오른쪽 '매장 채용공고' 제목과 수평으로 맞춘다 — 두 칸의
+   첫 줄이 어긋나면 사이드바가 위로 삐져나온 것처럼 보인다. */
+.jobs-side { position: sticky; top: 78px; margin-top: 20px; }
 .jobs-side-type { display: flex; width: 100%; margin-bottom: 10px; }
 .jobs-side-type .seg-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 0; }
 
 .jobs-side-box { background: #fff; border: 1px solid #efeaf4; border-radius: 10px; padding: 12px 12px 13px; margin-bottom: 8px; }
-.jobs-side-t { display: flex; align-items: baseline; gap: 6px; font-size: 13.5px; font-weight: 700; color: #222; margin: 0 0 9px; }
-.jobs-side-t i { font-style: normal; font-size: 11.5px; font-weight: 500; color: #b7b0bf; }
-.jobs-side-sub { font-size: 11.5px; color: #a9a2b2; margin: 11px 0 5px; }
+.jobs-side-t { display: flex; align-items: baseline; gap: 6px; font-size: 15px; font-weight: 700; color: #222; margin: 0 0 9px; }
+.jobs-side-t i { font-style: normal; font-size: 12px; font-weight: 500; color: #b7b0bf; }
+.jobs-side-sub { font-size: 12.5px; color: #a9a2b2; margin: 12px 0 5px; }
 .jobs-side-sub:first-of-type { margin-top: 0; }
 
 .jobs-side-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px; }
@@ -12766,13 +12768,13 @@ button,
 .jobs-side-grid button, .jobs-side-list button {
   display: flex; align-items: baseline; gap: 4px; width: 100%;
   background: none; border: none; padding: 4px 2px; cursor: pointer; text-align: left;
-  font-family: inherit; font-size: 12.5px; color: #6b6570; border-radius: 5px;
+  font-family: inherit; font-size: 14px; color: #6b6570; border-radius: 5px;
   transition: color .12s, background .12s;
 }
 .jobs-side-grid button:hover, .jobs-side-list button:hover { color: #2b2b2b; background: #f8f5fb; }
 .jobs-side-grid button.on, .jobs-side-list button.on { color: var(--color-primary); font-weight: 700; }
 /* 값이 있는 공고 수. 눌러서 적게 나오는 것이 필터 탓이 아니라 데이터 탓임을 드러낸다. */
-.jobs-side-grid button i { font-style: normal; font-size: 10.5px; color: #c3bcca; }
+.jobs-side-grid button i { font-style: normal; font-size: 11.5px; color: #c3bcca; }
 .jobs-side-grid button.on i { color: #c9a3e0; }
 
 .jobs-main { min-width: 0; }
