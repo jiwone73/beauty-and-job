@@ -12724,3 +12724,16 @@ button,
 @media (max-width: 480px) {
   .insight-card-new-title { font-size: 14px; }
 }
+
+/* 현장이야기 목록의 글 제목도 공고명과 같은 글자로. 메인 카드(.insight-card-new-title)
+   와 값은 같지만 여기서는 한 줄로 자르지 않는다 — 목록은 제목을 다 읽고 고르는
+   자리라, 뒤를 잘라 내면 무슨 글인지 알 수 없다. */
+.story-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  line-height: 1.35;
+  margin-bottom: 5px;
+}
+@media (min-width: 769px) { .story-item-title { font-size: 16px; } }
+@media (max-width: 480px) { .story-item-title { font-size: 14px; } }
