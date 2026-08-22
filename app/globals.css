@@ -8184,7 +8184,7 @@ div:has(> table.admin-table),
 .hero-type-toggle {
   display: inline-flex;
   align-items: center;
-  background: #f1ecf8;
+  background: #f4f0f9;
   border-radius: 11px;
   padding: 4px;
   gap: 2px;
@@ -8206,10 +8206,12 @@ div:has(> table.admin-table),
   font-family: inherit;
 }
 .hero-type-btn:hover { color: #6b6480; }
+/* 고른 쪽을 연보라로 채운다 — 사이트 어디서나 연보라는 '고른 것' 하나만
+   뜻해야 한다. 사이드바 목록의 선택 표시와 뜻이 어긋나면 안 된다. */
 .hero-type-btn.active {
-  background: #fff;
-  color: var(--color-primary);
-  box-shadow: 0 1px 2px rgba(46, 20, 66, .10), 0 0 0 1px rgba(95, 0, 128, .07);
+  background: #e3d4f0;
+  color: #4a0066;
+  box-shadow: none;
 }
 .hero-type-btn.active:hover { color: var(--color-primary); }
 
@@ -12444,7 +12446,7 @@ button,
 .jobs-sort-group {
   display: inline-flex;
   align-items: center;
-  background: #f1ecf8;
+  background: #f4f0f9;
   border: none;
   border-radius: 11px;
   padding: 4px;
@@ -12476,16 +12478,21 @@ button,
 .salary-tab:hover,
 .salary-sort-btn:hover,
 .jobs-sort-btn:hover { color: #6b6480; border-color: transparent; background: transparent; }
+/* 고른 쪽을 연보라로 채운다.
+   흰 알약으로 띄웠더니 같은 화면에서 연보라가 두 뜻이 됐다 — 토글에서는
+   '안 고른 바탕'인데 사이드바 목록에서는 '고른 것'이었다. 목록 쪽 표시를
+   바꾸는 대신 토글을 뒤집어, 어디서나 연보라가 '고른 것' 하나만 뜻하게 한다.
+   판은 한 단계 옅게 내려 채운 쪽과 갈라 놓는다. */
 .seg-btn.active, .seg-btn.on,
 .jobs-type-tab.active,
 .salary-tab.active,
 .salary-sort-btn.active,
 .jobs-sort-btn.active {
-  background: #fff;
-  color: var(--color-primary);
+  background: #e3d4f0;
+  color: #4a0066;
   border-color: transparent;
   font-weight: 600;
-  box-shadow: 0 1px 2px rgba(46, 20, 66, .10), 0 0 0 1px rgba(95, 0, 128, .07);
+  box-shadow: none;
 }
 
 /* 정렬 묶음은 곁가지라 한 치수 작게 — 목록보다 앞에 나서면 안 된다. */

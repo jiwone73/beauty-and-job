@@ -131,7 +131,7 @@ export default function StoriesPage() {
           display: flex;
           align-items: center;
           gap: 2px;
-          background: #f1ecf8;
+          background: #f4f0f9;
           border-radius: 11px;
           padding: 4px;
           width: fit-content;
@@ -153,9 +153,8 @@ export default function StoriesPage() {
         }
         .stories-cat-btn:hover { color: #6b6480; }
         .stories-cat-btn.on {
-          background: #fff;
-          color: #5f0080;
-          box-shadow: 0 1px 2px rgba(46,20,66,.10), 0 0 0 1px rgba(95,0,128,.07);
+          background: #e3d4f0;
+          color: #4a0066;
         }
         @media (min-width: 768px) {
           .stories-filter-bar {

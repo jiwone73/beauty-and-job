@@ -258,10 +258,10 @@ function SearchInner() {
         .srch-chips { display: flex; flex-wrap: wrap; gap: 8px; }
         .srch-chip { border: 1px solid #eee; background: #faf7fc; color: #5f0080; border-radius: 20px; padding: 8px 16px; font-size: 14px; cursor: pointer; }
         .srch-chip:hover { background: #f3e8fb; }
-        .srch-tabs { display: inline-flex; align-items: center; gap: 2px; background: #f1ecf8; border-radius: 11px; padding: 4px; width: fit-content; margin: 24px 0 20px; }
+        .srch-tabs { display: inline-flex; align-items: center; gap: 2px; background: #f4f0f9; border-radius: 11px; padding: 4px; width: fit-content; margin: 24px 0 20px; }
         .srch-tab { background: transparent; border: none; padding: 7px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: -.2px; color: #8b84a0; cursor: pointer; font-family: inherit; white-space: nowrap; transition: color .15s, background .15s, box-shadow .15s; }
         .srch-tab:hover { color: #6b6480; }
-        .srch-tab.on { background: #fff; color: ${PURPLE}; box-shadow: 0 1px 2px rgba(46,20,66,.10), 0 0 0 1px rgba(95,0,128,.07); }
+        .srch-tab.on { background: #e3d4f0; color: #4a0066; }
         .srch-tab-n { color: ${PURPLE}; margin-left: 2px; }
         .srch-section { margin-bottom: 32px; }
         .srch-sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
