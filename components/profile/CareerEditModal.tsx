@@ -9,6 +9,8 @@ interface Props {
   onClose: () => void;
   editTarget?: CareerEntry | null;
   resumeType?: "office" | "salon";
+  /** 참이면 덮개 없이 칸 안에서 그대로 펼친다. */
+  inline?: boolean;
 }
 // "2024.05" → ["2024", "05"] / "재직 중"·빈값 → ["", ""]
 function splitYM(d: string): [string, string] {
@@ -18,7 +20,7 @@ function splitYM(d: string): [string, string] {
   return [m[1], m[2].padStart(2, "0")];
 }
 
-export default function CareerEditModal({ isOpen, onClose, editTarget, resumeType = "office" }: Props) {
+export default function CareerEditModal({ isOpen, onClose, editTarget, resumeType = "office", inline }: Props) {
   const { addCareer, updateCareer } = useProfileStore();
   const [company, setCompany] = useState("");
   const [department, setDepartment] = useState("");
@@ -87,6 +89,127 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
     onClose();
   };
 
+  // 칸 안에서 그대로 펼칠 때 쓰는 몸통. 경력은 바닥에 저장 단추가 따로 있어
+  // 몸통에 함께 넣는다.
+  const 몸통 = (
+    <>
+      <div
+        className={inline ? "cv-body cv-body-inline" : "cv-body"}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          flex: 1,
+          minHeight: 0,
+        }}
+      >
+        <div>
+          <label className="cv-field-label">{companyLabel} <span style={{ color: "#e74c3c" }}>*</span></label>
+          <input
+            className="cv-input"
+            placeholder={isSalon ? "예: 준오헤어 강남점, 아우라네일" : "예: 올리브영, 아모레퍼시픽"}
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+          />
+        </div>
+        {resumeType === "office" && (
+          <div>
+            <label className="cv-field-label">부서 / 팀</label>
+            <input
+              className="cv-input"
+              placeholder="예: 마케팅팀, MD팀"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+            />
+          </div>
+        )}
+        <div>
+          <label className="cv-field-label">직책 / 직무</label>
+          <input
+            className="cv-input"
+            placeholder={resumeType === "office" ? "예: 대리, 매니저, 팀장" : "예: 헤어 디자이너, 네일 아티스트"}
+            value={position}
+            onChange={(e) => setPosition(e.target.value)}
+          />
+        </div>
+
+        {/* 근무기간: 제목 + 현재재직중(우측정렬) 같은 행 / 학력 재학기간과 동일 레이아웃 */}
+        <div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+            <label className="cv-field-label" style={{ margin: 0 }}>
+              근무기간 <span style={{ color: "#e74c3c" }}>*</span>
+            </label>
+            <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#333", cursor: "pointer", margin: 0 }}>
+              <input
+                type="checkbox"
+                checked={isCurrent}
+                onChange={(e) => {
+                  setIsCurrent(e.target.checked);
+                  if (e.target.checked) { setEndY(""); setEndM(""); }
+                }}
+                style={{ accentColor: "#582681", width: "16px", height: "16px" }}
+              />
+              <span>현재 재직 중</span>
+            </label>
+          </div>
+          <div className="cv-date-row" style={{ marginBottom: 0 }}>
+            <input
+              className="cv-input cv-date-input"
+              placeholder="YYYY"
+              maxLength={4}
+              value={startY}
+              onChange={(e) => setStartY(e.target.value.replace(/\D/g, ""))}
+            />
+            <input
+              className="cv-input cv-date-input"
+              placeholder="MM"
+              maxLength={2}
+              value={startM}
+              onChange={(e) => setStartM(e.target.value.replace(/\D/g, ""))}
+            />
+            <span className="cv-date-sep">-</span>
+            <input
+              className="cv-input cv-date-input"
+              placeholder="YYYY"
+              maxLength={4}
+              value={endY}
+              onChange={(e) => setEndY(e.target.value.replace(/\D/g, ""))}
+              disabled={isCurrent}
+              style={{ background: isCurrent ? "#f5f5f5" : "#fff" }}
+            />
+            <input
+              className="cv-input cv-date-input"
+              placeholder="MM"
+              maxLength={2}
+              value={endM}
+              onChange={(e) => setEndM(e.target.value.replace(/\D/g, ""))}
+              disabled={isCurrent}
+              style={{ background: isCurrent ? "#f5f5f5" : "#fff" }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+          <label className="cv-field-label">주요 업무 및 성과</label>
+          <textarea
+            className="cv-input"
+            placeholder="담당했던 업무와 성과를 자유롭게 작성해주세요."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            style={{ resize: "vertical", lineHeight: 1.5, fontFamily: "inherit", flex: 1, minHeight: "160px" }}
+          />
+        </div>
+      </div>
+      <div className="cv-footer">
+        <button className="cv-btn-primary" onClick={handleSave}>
+          저장
+        </button>
+      </div>
+    </>
+  );
+
+  if (inline) return <div className="cv-inline">{몸통}</div>;
+
   return (
     <div className="cv-overlay">
       <div
@@ -98,118 +221,7 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
           <h2 className="cv-title">{isEdit ? "경력 수정" : "경력 추가"}</h2>
           <button className="cv-close" onClick={onClose}><X size={20} /></button>
         </div>
-        <div
-          className="cv-body"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-            flex: 1,
-            minHeight: 0,
-          }}
-        >
-          <div>
-            <label className="cv-field-label">{companyLabel} <span style={{ color: "#e74c3c" }}>*</span></label>
-            <input
-              className="cv-input"
-              placeholder={isSalon ? "예: 준오헤어 강남점, 아우라네일" : "예: 올리브영, 아모레퍼시픽"}
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-            />
-          </div>
-          {resumeType === "office" && (
-            <div>
-              <label className="cv-field-label">부서 / 팀</label>
-              <input
-                className="cv-input"
-                placeholder="예: 마케팅팀, MD팀"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-              />
-            </div>
-          )}
-          <div>
-            <label className="cv-field-label">직책 / 직무</label>
-            <input
-              className="cv-input"
-              placeholder={resumeType === "office" ? "예: 대리, 매니저, 팀장" : "예: 헤어 디자이너, 네일 아티스트"}
-              value={position}
-              onChange={(e) => setPosition(e.target.value)}
-            />
-          </div>
-
-          {/* 근무기간: 제목 + 현재재직중(우측정렬) 같은 행 / 학력 재학기간과 동일 레이아웃 */}
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-              <label className="cv-field-label" style={{ margin: 0 }}>
-                근무기간 <span style={{ color: "#e74c3c" }}>*</span>
-              </label>
-              <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#333", cursor: "pointer", margin: 0 }}>
-                <input
-                  type="checkbox"
-                  checked={isCurrent}
-                  onChange={(e) => {
-                    setIsCurrent(e.target.checked);
-                    if (e.target.checked) { setEndY(""); setEndM(""); }
-                  }}
-                  style={{ accentColor: "#582681", width: "16px", height: "16px" }}
-                />
-                <span>현재 재직 중</span>
-              </label>
-            </div>
-            <div className="cv-date-row" style={{ marginBottom: 0 }}>
-              <input
-                className="cv-input cv-date-input"
-                placeholder="YYYY"
-                maxLength={4}
-                value={startY}
-                onChange={(e) => setStartY(e.target.value.replace(/\D/g, ""))}
-              />
-              <input
-                className="cv-input cv-date-input"
-                placeholder="MM"
-                maxLength={2}
-                value={startM}
-                onChange={(e) => setStartM(e.target.value.replace(/\D/g, ""))}
-              />
-              <span className="cv-date-sep">-</span>
-              <input
-                className="cv-input cv-date-input"
-                placeholder="YYYY"
-                maxLength={4}
-                value={endY}
-                onChange={(e) => setEndY(e.target.value.replace(/\D/g, ""))}
-                disabled={isCurrent}
-                style={{ background: isCurrent ? "#f5f5f5" : "#fff" }}
-              />
-              <input
-                className="cv-input cv-date-input"
-                placeholder="MM"
-                maxLength={2}
-                value={endM}
-                onChange={(e) => setEndM(e.target.value.replace(/\D/g, ""))}
-                disabled={isCurrent}
-                style={{ background: isCurrent ? "#f5f5f5" : "#fff" }}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
-            <label className="cv-field-label">주요 업무 및 성과</label>
-            <textarea
-              className="cv-input"
-              placeholder="담당했던 업무와 성과를 자유롭게 작성해주세요."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              style={{ resize: "vertical", lineHeight: 1.5, fontFamily: "inherit", flex: 1, minHeight: "160px" }}
-            />
-          </div>
-        </div>
-        <div className="cv-footer">
-          <button className="cv-btn-primary" onClick={handleSave}>
-            저장
-          </button>
-        </div>
+        {몸통}
       </div>
     </div>
   );

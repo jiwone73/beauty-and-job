@@ -278,6 +278,14 @@ export default function ResumeEditor({
             );
           })
         )}
+        {careerModalOpen && (
+          <CareerEditModal inline isOpen={careerModalOpen} onClose={() => { setCareerModalOpen(false); setEditCareer(null); }} editTarget={editCareer} resumeType={resumeType} />
+        )}
+        {!careerModalOpen && careers.length === 0 && !isEntryLevel && (
+          <button type="button" className="resume-blank" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
+            <span className="resume-blank-fields">매장명 <i>*</i> │ 근무 기간 <i>*</i> │ 직책</span>
+          </button>
+        )}
       </section>
 
       {/* 스킬 — 매장도 쓴다. 커트·펌·염색 같은 시술 스킬이 곧 실력이라
@@ -297,6 +305,14 @@ export default function ResumeEditor({
             </div>
           ) : (
             null
+          )}
+          {skillModalOpen && (
+            <SkillModal inline isOpen={skillModalOpen} onClose={() => setSkillModalOpen(false)} />
+          )}
+          {!skillModalOpen && skills.length === 0 && (
+            <button type="button" className="resume-blank" onClick={() => { setSkillModalOpen(true); }}>
+              <span className="resume-blank-fields">커트 · 펌 · 염색 · 클리닉 …</span>
+            </button>
           )}
         </section>
       )}
@@ -340,6 +356,14 @@ export default function ResumeEditor({
           </div>
         ) : (
           null
+        )}
+        {certModalOpen && (
+          <CertificateModal inline isOpen={certModalOpen} onClose={() => { setCertModalOpen(false); setEditCert(null); }} editTarget={editCert} />
+        )}
+        {!certModalOpen && certificates.length === 0 && (
+          <button type="button" className="resume-blank" onClick={() => { setEditCert(null); setCertModalOpen(true); }}>
+            <span className="resume-blank-fields">자격증명 <i>*</i> │ 취득 년월 <i>*</i></span>
+          </button>
         )}
       </section>
 
@@ -464,6 +488,11 @@ export default function ResumeEditor({
             ))}
           </>
         )}
+        {모달 !== null && (
+          <PortfolioModal inline isOpen mode={모달} resumeType={resumeType}
+            onClose={() => set모달(null)} images={portfolioImages} links={links} isUploading={isUploading}
+            onFiles={onPortfolioFiles} onDeletePhotos={onPortfolioDelete} onAddLink={링크담기} onDeleteLink={링크지우기} />
+        )}
       </section>
 
       {/* 학력·활동수상은 접어 둔다. 살롱 채용에서 이 둘을 보는 곳은 드문데
@@ -528,6 +557,14 @@ export default function ResumeEditor({
             );
           })
         )}
+        {eduModalOpen && (
+          <EducationModal inline isOpen={eduModalOpen} onClose={() => { setEduModalOpen(false); setEditEdu(null); }} editTarget={editEdu} />
+        )}
+        {!eduModalOpen && educations.length === 0 && (
+          <button type="button" className="resume-blank" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
+            <span className="resume-blank-fields">학교명 <i>*</i> │ 전공 │ 졸업 상태 <i>*</i></span>
+          </button>
+        )}
       </section>
 
       {/* 활동/수상 */}
@@ -568,36 +605,24 @@ export default function ResumeEditor({
         ) : (
           null
         )}
+        {expModalOpen && (
+          <ExperienceModal inline isOpen={expModalOpen} onClose={() => { setExpModalOpen(false); setEditExp(null); }} editTarget={editExp} />
+        )}
+        {!expModalOpen && experiences.length === 0 && (
+          <button type="button" className="resume-blank" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
+            <span className="resume-blank-fields">활동·수상명 <i>*</i> │ 시기</span>
+          </button>
+        )}
       </section>
 
         </>
       )}
 
 
-      <PortfolioModal
-        isOpen={모달 !== null}
-        mode={모달 ?? "all"}
-        resumeType={resumeType}
-        onClose={() => set모달(null)}
-        images={portfolioImages}
-        links={links}
-        isUploading={isUploading}
-        onFiles={onPortfolioFiles}
-        onDeletePhotos={onPortfolioDelete}
-        onAddLink={링크담기}
-        onDeleteLink={링크지우기}
-      />
-
       {확대 !== null && (
         <PhotoLightbox images={portfolioImages} startAt={확대} onClose={() => set확대(null)} />
       )}
 
-      {/* 하위 모달들 */}
-      <CareerEditModal isOpen={careerModalOpen} onClose={() => { setCareerModalOpen(false); setEditCareer(null); }} editTarget={editCareer} resumeType={resumeType} />
-      <EducationModal isOpen={eduModalOpen} onClose={() => { setEduModalOpen(false); setEditEdu(null); }} editTarget={editEdu} />
-      <ExperienceModal isOpen={expModalOpen} onClose={() => { setExpModalOpen(false); setEditExp(null); }} editTarget={editExp} />
-      <SkillModal isOpen={skillModalOpen} onClose={() => setSkillModalOpen(false)} />
-      <CertificateModal isOpen={certModalOpen} onClose={() => { setCertModalOpen(false); setEditCert(null); }} editTarget={editCert} />
 
       {/* 신입 전환 확인 모달 */}
       {entryConfirmOpen && (

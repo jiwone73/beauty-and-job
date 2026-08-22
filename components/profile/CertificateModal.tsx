@@ -7,9 +7,11 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   editTarget?: CertificateEntry | null;
+  /** 참이면 덮개 없이 칸 안에서 그대로 펼친다. */
+  inline?: boolean;
 }
 
-export default function CertificateModal({ isOpen, onClose, editTarget }: Props) {
+export default function CertificateModal({ isOpen, onClose, editTarget, inline}: Props) {
   const { addCertificate, updateCertificate } = useProfileStore();
   const [name, setName] = useState("");
   const [issuer, setIssuer] = useState("");
@@ -55,6 +57,45 @@ export default function CertificateModal({ isOpen, onClose, editTarget }: Props)
     onClose();
   };
 
+  // 칸 안에서 그대로 펼칠 때 쓰는 몸통.
+  const 몸통 = (
+      <div className={inline ? "cv-body cv-body-inline" : "cv-body"}>
+        <label className="cv-field-label cv-required">자격증명</label>
+        <input
+          className="cv-input"
+          placeholder="예) 미용사(일반), TOEIC 등"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          maxLength={50}
+        />
+        <label className="cv-field-label">발급기관</label>
+        <input
+          className="cv-input"
+          placeholder="예) 한국산업인력공단"
+          value={issuer}
+          onChange={(e) => setIssuer(e.target.value)}
+          maxLength={50}
+        />
+        <label className="cv-field-label cv-required">취득 년월</label>
+        <input
+          className="cv-input"
+          type="month"
+          value={issuedYm}
+          onChange={(e) => setIssuedYm(e.target.value)}
+          max={new Date().toISOString().slice(0, 7)}
+        />
+        <button
+          className={`cv-btn-primary ${isValid ? "" : "disabled"}`}
+          disabled={!isValid}
+          onClick={handleSubmit}
+        >
+          {isEdit ? "수정" : "저장"}
+        </button>
+      </div>
+  );
+
+  if (inline) return <div className="cv-inline">{몸통}</div>;
+
   return (
     <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
@@ -65,39 +106,8 @@ export default function CertificateModal({ isOpen, onClose, editTarget }: Props)
           <h2 className="cv-title">{isEdit ? "자격증 수정" : "자격증"}</h2>
           <div style={{ width: 36 }} />
         </div>
-        <div className="cv-body">
-          <label className="cv-field-label cv-required">자격증명</label>
-          <input
-            className="cv-input"
-            placeholder="예) 미용사(일반), TOEIC 등"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            maxLength={50}
-          />
-          <label className="cv-field-label">발급기관</label>
-          <input
-            className="cv-input"
-            placeholder="예) 한국산업인력공단"
-            value={issuer}
-            onChange={(e) => setIssuer(e.target.value)}
-            maxLength={50}
-          />
-          <label className="cv-field-label cv-required">취득 년월</label>
-          <input
-            className="cv-input"
-            type="month"
-            value={issuedYm}
-            onChange={(e) => setIssuedYm(e.target.value)}
-            max={new Date().toISOString().slice(0, 7)}
-          />
-          <button
-            className={`cv-btn-primary ${isValid ? "" : "disabled"}`}
-            disabled={!isValid}
-            onClick={handleSubmit}
-          >
-            {isEdit ? "수정" : "저장"}
-          </button>
-        </div>
+        {몸통}
+
       </div>
     </div>
   );

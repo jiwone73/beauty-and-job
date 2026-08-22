@@ -50,10 +50,12 @@ const 모든칩: 채움[] = (() => {
 // 있으면 손이 다르게 간다. 넣는 곳은 모달로 모으고, 이력서 화면에는 넣은 결과만
 // 보여준다.
 export default function PortfolioModal({
-  isOpen, onClose, mode = "all", resumeType = "salon", images, links, isUploading, onFiles, onDeletePhotos, onAddLink, onDeleteLink,
+  isOpen, onClose, mode = "all", resumeType = "salon", images, links, isUploading, onFiles, onDeletePhotos, onAddLink, onDeleteLink, inline,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  /** 참이면 덮개 없이 칸 안에서 그대로 펼친다. */
+  inline?: boolean;
   /** 사진 줄에서 열면 사진만, SNS 줄에서 열면 SNS 만 보여준다 — 누른 것과 열리는
    *  것이 같아야 무엇을 하려던 것인지 잃지 않는다. */
   mode?: "photo" | "sns" | "all";
@@ -109,6 +111,151 @@ export default function PortfolioModal({
         : (resumeType === "office" ? 본사칩 : 매장칩)
       ).slice(0, 4);
 
+  // 칸 안에서 그대로 펼칠 때 쓰는 몸통.
+  const 몸통 = (
+      <div className={inline ? "cv-body cv-body-inline" : "cv-body"}>
+        {/* .cv-desc 의 24px 은 칸이 하나뿐인 모달을 위한 값이다. 여기는 바로
+            아래에 같은 성격의 안내가 또 오므로 두 줄을 한 덩어리로 붙인다. */}
+        <p className="cv-desc" style={{ ...흐린글, marginBottom: 10 }}>작업물을 올리면 합격률이 올라갑니다.</p>
+
+        {mode !== "sns" && (<>
+        {mode === "all" && <label className="cv-field-label">사진</label>}
+        {images.length > 0 && (
+          <>
+            <div className="pf-subhead">
+              {고름 ? (
+                <>
+                  <span className="pf-subtitle" style={{ fontSize: 12.5, color: "#888" }}>
+                    지울 사진을 고르세요{고른것.size ? ` (${고른것.size}장)` : ""}
+                  </span>
+                  <span style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+                    <button type="button" className="profile-select-btn" onClick={고르기끝}>취소</button>
+                    {/* 삭제는 고른 것이 있을 때만 나온다 */}
+                    {고른것.size > 0 && (
+                      <button type="button" className="profile-select-btn danger" onClick={고른것지우기}>
+                        삭제 {고른것.size}
+                      </button>
+                    )}
+                  </span>
+                </>
+              ) : (
+                <button type="button" className="profile-select-btn" style={{ marginLeft: "auto" }}
+                  onClick={() => set고름(true)}>선택</button>
+              )}
+            </div>
+            <div className="portfolio-grid" style={{ marginBottom: 10 }}>
+              {images.map((img) => {
+                const 골랐나 = 고른것.has(img.url);
+                return (
+                  <div key={img.url} className="portfolio-cell">
+                    <img src={img.url} alt="" loading="lazy"
+                      onClick={() => 고름 && 고르기(img.url)}
+                      style={{ cursor: 고름 ? "pointer" : "default", opacity: 고름 && !골랐나 ? 0.55 : 1 }} />
+                    {고름 && (
+                      <button type="button" className={`pf-check${골랐나 ? " on" : ""}`}
+                        aria-label={골랐나 ? "선택 해제" : "선택"} aria-pressed={골랐나}
+                        onClick={(e) => { e.stopPropagation(); 고르기(img.url); }}>
+                        {골랐나 && <Check size={14} strokeWidth={3} />}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+        {사진남은자리 > 0 ? (
+          <>
+            {/* 폰에는 끌어다 놓을 것이 없다. 점선 상자는 마우스가 있는 화면에서만
+                뜻이 있고, 폰에서는 버튼 하나가 낫다. */}
+            <div
+              className="pf-drop-pc"
+              onClick={() => !isUploading && fileRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); set끌림(true); }}
+              onDragLeave={(e) => { e.preventDefault(); set끌림(false); }}
+              onDrop={(e) => { e.preventDefault(); set끌림(false); const f = Array.from(e.dataTransfer.files || []); if (f.length) onFiles(f); }}
+              style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `2px dashed ${끌림 ? "#582681" : "#e3e3e6"}`, background: 끌림 ? "#f7f7f8" : "#fafafa", color: "#582681", fontSize: 13, cursor: isUploading ? "not-allowed" : "pointer", flexDirection: "column", alignItems: "center", gap: 8, textAlign: "center" }}
+            >
+              <Upload size={24} />
+              <span>{isUploading ? "올리는 중..." : 끌림 ? "여기에 놓으세요" : "사진을 끌어다 놓거나 눌러서 고르세요"}</span>
+              <span style={{ fontSize: 11, color: "#888" }}>최대 {MAX_PHOTOS}장 · 올릴 때 자동으로 줄여요</span>
+            </div>
+            <button
+              type="button"
+              className="pf-pick-mobile"
+              disabled={isUploading}
+              onClick={() => fileRef.current?.click()}
+            >
+              <Upload size={17} />
+              {isUploading ? "올리는 중..." : "사진 고르기"}
+            </button>
+            <p className="pf-pick-note">최대 {MAX_PHOTOS}장 · 올릴 때 자동으로 줄여요</p>
+          </>
+        ) : (
+          <p style={{ fontSize: 12.5, color: "#888", margin: "2px 0 0" }}>사진은 {MAX_PHOTOS}장까지 넣을 수 있어요.</p>
+        )}
+        <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: "none" }}
+          onChange={(e) => { const f = Array.from(e.target.files || []); if (f.length) onFiles(f); if (fileRef.current) fileRef.current.value = ""; }} />
+
+        </>)}
+
+        {mode !== "photo" && (<>
+        {mode === "all" && <label className="cv-field-label" style={{ marginTop: 22 }}>SNS</label>}
+        <p style={{ ...흐린글, margin: "0 0 10px" }}>
+          인스타그램, 유튜브, 블로그 등 작업물을 올리는 곳을 적어주세요.
+        </p>
+        {links.map((l) => (
+          <div key={l.id} className="resume-link-item">
+            <span className="resume-link-category" style={흐린글}>{linkLabel(l.url)}</span>
+            <a href={normalizeUrl(l.url)} target="_blank" rel="noopener noreferrer" className="resume-link-url" style={글}>{l.url}</a>
+            {/* 사진과 달리 몇 개 안 되고 한 줄짜리라, 고르는 단계 없이 그 자리에서 뺀다.
+                아이콘은 사진 쪽과 같이 X 로 맞춘다. */}
+            <button
+              type="button"
+              onClick={() => onDeleteLink(l.id)}
+              aria-label={`${linkLabel(l.url)} 주소 삭제`}
+              style={{ marginLeft: "auto", flexShrink: 0, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", border: "none", background: "transparent", color: "#bbb", cursor: "pointer", borderRadius: 6, alignSelf: "center" }}
+            >
+              <X size={15} />
+            </button>
+          </div>
+        ))}
+        {links.length < MAX_LINKS && (<>
+          <div style={{ display: "flex", gap: 6, marginTop: links.length ? 10 : 0 }}>
+            <input
+              ref={주소칸}
+              className="cv-input"
+              style={{ flex: 1, minWidth: 0, marginTop: 0, fontSize: 13 }}
+              placeholder="주소를 붙여넣거나 아래에서 고르세요"
+              value={주소}
+              onChange={(e) => { set주소(e.target.value); if (오류) set오류(""); }}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); 담기(); } }}
+              inputMode="url"
+            />
+            <button type="button" className="profile-select-btn accent" style={{ flexShrink: 0 }} onClick={담기}>추가</button>
+          </div>
+          {/* 아직 주소 꼴이 아닐 때만 낸다 — 다 적고 나면 방해만 된다. */}
+          {골라줄것.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+              {골라줄것.map((k) => (
+                <button key={k.이름} type="button"
+                  onClick={() => { set주소(k.앞부분); set오류(""); 주소칸.current?.focus(); }}
+                  style={{ ...글, padding: "5px 10px", borderRadius: 999, border: "1px solid #efeff1", background: "#f8f5fb", color: "#582681", cursor: "pointer" }}>
+                  {k.이름}
+                </button>
+              ))}
+            </div>
+          )}
+        </>)}
+        {오류 && <p style={{ ...글, color: "#c0392b", margin: "6px 0 0" }}>{오류}</p>}
+        </>)}
+
+        <button className="cv-btn-primary" style={{ marginTop: 24 }} onClick={onClose}>완료</button>
+      </div>
+  );
+
+  if (inline) return <div className="cv-inline">{몸통}</div>;
+
   return (
     <div onClick={onClose} className="cv-overlay">
       <div onClick={(e) => e.stopPropagation()} className="cv-modal">
@@ -117,145 +264,8 @@ export default function PortfolioModal({
           <h2 className="cv-title">{mode === "sns" ? "SNS" : mode === "photo" ? "사진" : "포트폴리오"}</h2>
           <div style={{ width: 36 }} />
         </div>
-        <div className="cv-body">
-          {/* .cv-desc 의 24px 은 칸이 하나뿐인 모달을 위한 값이다. 여기는 바로
-              아래에 같은 성격의 안내가 또 오므로 두 줄을 한 덩어리로 붙인다. */}
-          <p className="cv-desc" style={{ ...흐린글, marginBottom: 10 }}>작업물을 올리면 합격률이 올라갑니다.</p>
+        {몸통}
 
-          {mode !== "sns" && (<>
-          {mode === "all" && <label className="cv-field-label">사진</label>}
-          {images.length > 0 && (
-            <>
-              <div className="pf-subhead">
-                {고름 ? (
-                  <>
-                    <span className="pf-subtitle" style={{ fontSize: 12.5, color: "#888" }}>
-                      지울 사진을 고르세요{고른것.size ? ` (${고른것.size}장)` : ""}
-                    </span>
-                    <span style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
-                      <button type="button" className="profile-select-btn" onClick={고르기끝}>취소</button>
-                      {/* 삭제는 고른 것이 있을 때만 나온다 */}
-                      {고른것.size > 0 && (
-                        <button type="button" className="profile-select-btn danger" onClick={고른것지우기}>
-                          삭제 {고른것.size}
-                        </button>
-                      )}
-                    </span>
-                  </>
-                ) : (
-                  <button type="button" className="profile-select-btn" style={{ marginLeft: "auto" }}
-                    onClick={() => set고름(true)}>선택</button>
-                )}
-              </div>
-              <div className="portfolio-grid" style={{ marginBottom: 10 }}>
-                {images.map((img) => {
-                  const 골랐나 = 고른것.has(img.url);
-                  return (
-                    <div key={img.url} className="portfolio-cell">
-                      <img src={img.url} alt="" loading="lazy"
-                        onClick={() => 고름 && 고르기(img.url)}
-                        style={{ cursor: 고름 ? "pointer" : "default", opacity: 고름 && !골랐나 ? 0.55 : 1 }} />
-                      {고름 && (
-                        <button type="button" className={`pf-check${골랐나 ? " on" : ""}`}
-                          aria-label={골랐나 ? "선택 해제" : "선택"} aria-pressed={골랐나}
-                          onClick={(e) => { e.stopPropagation(); 고르기(img.url); }}>
-                          {골랐나 && <Check size={14} strokeWidth={3} />}
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
-          {사진남은자리 > 0 ? (
-            <>
-              {/* 폰에는 끌어다 놓을 것이 없다. 점선 상자는 마우스가 있는 화면에서만
-                  뜻이 있고, 폰에서는 버튼 하나가 낫다. */}
-              <div
-                className="pf-drop-pc"
-                onClick={() => !isUploading && fileRef.current?.click()}
-                onDragOver={(e) => { e.preventDefault(); set끌림(true); }}
-                onDragLeave={(e) => { e.preventDefault(); set끌림(false); }}
-                onDrop={(e) => { e.preventDefault(); set끌림(false); const f = Array.from(e.dataTransfer.files || []); if (f.length) onFiles(f); }}
-                style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `2px dashed ${끌림 ? "#582681" : "#e3e3e6"}`, background: 끌림 ? "#f7f7f8" : "#fafafa", color: "#582681", fontSize: 13, cursor: isUploading ? "not-allowed" : "pointer", flexDirection: "column", alignItems: "center", gap: 8, textAlign: "center" }}
-              >
-                <Upload size={24} />
-                <span>{isUploading ? "올리는 중..." : 끌림 ? "여기에 놓으세요" : "사진을 끌어다 놓거나 눌러서 고르세요"}</span>
-                <span style={{ fontSize: 11, color: "#888" }}>최대 {MAX_PHOTOS}장 · 올릴 때 자동으로 줄여요</span>
-              </div>
-              <button
-                type="button"
-                className="pf-pick-mobile"
-                disabled={isUploading}
-                onClick={() => fileRef.current?.click()}
-              >
-                <Upload size={17} />
-                {isUploading ? "올리는 중..." : "사진 고르기"}
-              </button>
-              <p className="pf-pick-note">최대 {MAX_PHOTOS}장 · 올릴 때 자동으로 줄여요</p>
-            </>
-          ) : (
-            <p style={{ fontSize: 12.5, color: "#888", margin: "2px 0 0" }}>사진은 {MAX_PHOTOS}장까지 넣을 수 있어요.</p>
-          )}
-          <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: "none" }}
-            onChange={(e) => { const f = Array.from(e.target.files || []); if (f.length) onFiles(f); if (fileRef.current) fileRef.current.value = ""; }} />
-
-          </>)}
-
-          {mode !== "photo" && (<>
-          {mode === "all" && <label className="cv-field-label" style={{ marginTop: 22 }}>SNS</label>}
-          <p style={{ ...흐린글, margin: "0 0 10px" }}>
-            인스타그램, 유튜브, 블로그 등 작업물을 올리는 곳을 적어주세요.
-          </p>
-          {links.map((l) => (
-            <div key={l.id} className="resume-link-item">
-              <span className="resume-link-category" style={흐린글}>{linkLabel(l.url)}</span>
-              <a href={normalizeUrl(l.url)} target="_blank" rel="noopener noreferrer" className="resume-link-url" style={글}>{l.url}</a>
-              {/* 사진과 달리 몇 개 안 되고 한 줄짜리라, 고르는 단계 없이 그 자리에서 뺀다.
-                  아이콘은 사진 쪽과 같이 X 로 맞춘다. */}
-              <button
-                type="button"
-                onClick={() => onDeleteLink(l.id)}
-                aria-label={`${linkLabel(l.url)} 주소 삭제`}
-                style={{ marginLeft: "auto", flexShrink: 0, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", border: "none", background: "transparent", color: "#bbb", cursor: "pointer", borderRadius: 6, alignSelf: "center" }}
-              >
-                <X size={15} />
-              </button>
-            </div>
-          ))}
-          {links.length < MAX_LINKS && (<>
-            <div style={{ display: "flex", gap: 6, marginTop: links.length ? 10 : 0 }}>
-              <input
-                ref={주소칸}
-                className="cv-input"
-                style={{ flex: 1, minWidth: 0, marginTop: 0, fontSize: 13 }}
-                placeholder="주소를 붙여넣거나 아래에서 고르세요"
-                value={주소}
-                onChange={(e) => { set주소(e.target.value); if (오류) set오류(""); }}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); 담기(); } }}
-                inputMode="url"
-              />
-              <button type="button" className="profile-select-btn accent" style={{ flexShrink: 0 }} onClick={담기}>추가</button>
-            </div>
-            {/* 아직 주소 꼴이 아닐 때만 낸다 — 다 적고 나면 방해만 된다. */}
-            {골라줄것.length > 0 && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
-                {골라줄것.map((k) => (
-                  <button key={k.이름} type="button"
-                    onClick={() => { set주소(k.앞부분); set오류(""); 주소칸.current?.focus(); }}
-                    style={{ ...글, padding: "5px 10px", borderRadius: 999, border: "1px solid #efeff1", background: "#f8f5fb", color: "#582681", cursor: "pointer" }}>
-                    {k.이름}
-                  </button>
-                ))}
-              </div>
-            )}
-          </>)}
-          {오류 && <p style={{ ...글, color: "#c0392b", margin: "6px 0 0" }}>{오류}</p>}
-          </>)}
-
-          <button className="cv-btn-primary" style={{ marginTop: 24 }} onClick={onClose}>완료</button>
-        </div>
       </div>
     </div>
   );

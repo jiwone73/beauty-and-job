@@ -8,9 +8,11 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   editTarget?: ExperienceEntry | null;
+  /** 참이면 덮개 없이 칸 안에서 그대로 펼친다. */
+  inline?: boolean;
 }
 
-export default function ExperienceModal({ isOpen, onClose, editTarget }: Props) {
+export default function ExperienceModal({ isOpen, onClose, editTarget, inline}: Props) {
   const { addExperience, updateExperience } = useProfileStore();
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -42,6 +44,20 @@ export default function ExperienceModal({ isOpen, onClose, editTarget }: Props) 
     onClose();
   };
 
+  // 칸 안에서 그대로 펼칠 때 쓰는 몸통.
+  const 몸통 = (
+      <div className={inline ? "cv-body cv-body-inline" : "cv-body"}>
+        <label className="cv-field-label cv-required">제목</label>
+        <input className="cv-input" placeholder="예) 헤어쇼 대상, OO 공모전 입선, 대외활동" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <label className="cv-field-label">설명</label>
+        <textarea className="cv-textarea" placeholder="경험에 대해 설명해 주세요." maxLength={1000} value={desc} onChange={(e) => setDesc(e.target.value)} />
+
+        <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
+      </div>
+  );
+
+  if (inline) return <div className="cv-inline">{몸통}</div>;
+
   return (
     <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
@@ -50,14 +66,8 @@ export default function ExperienceModal({ isOpen, onClose, editTarget }: Props) 
           <h2 className="cv-title">{isEdit ? "활동/수상 수정" : "활동/수상 추가"}</h2>
           <div style={{ width: 36 }} />
         </div>
-        <div className="cv-body">
-          <label className="cv-field-label cv-required">제목</label>
-          <input className="cv-input" placeholder="예) 헤어쇼 대상, OO 공모전 입선, 대외활동" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <label className="cv-field-label">설명</label>
-          <textarea className="cv-textarea" placeholder="경험에 대해 설명해 주세요." maxLength={1000} value={desc} onChange={(e) => setDesc(e.target.value)} />
+        {몸통}
 
-          <button className={`cv-btn-primary ${isValid ? "" : "disabled"}`} disabled={!isValid} onClick={handleSubmit}>저장</button>
-        </div>
       </div>
     </div>
   );

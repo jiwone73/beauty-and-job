@@ -9,6 +9,8 @@ import { useAuthStore } from "@/lib/store/authStore";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  /** 참이면 덮개 없이 칸 안에서 그대로 펼친다. */
+  inline?: boolean;
 }
 
 const SKILL_RECOMMENDATIONS: Record<string, string[]> = {
@@ -204,7 +206,7 @@ const KEYWORD_GROUPS: Record<string, string[]> = {
   "영상": ["영상 편집", "모션그래픽", "Premiere", "After Effects"],
 };
 
-export default function SkillModal({ isOpen, onClose }: Props) {
+export default function SkillModal({ isOpen, onClose, inline}: Props) {
   const { skills, addSkill, removeSkill } = useProfileStore();
   const { officeJobAreas, skillAreas } = useSignupStore();
   const { userJobType } = useAuthStore();
@@ -246,6 +248,70 @@ export default function SkillModal({ isOpen, onClose }: Props) {
     return Array.from(hit).filter((s) => !skills.includes(s)).slice(0, 30);
   })();
 
+  // 칸 안에서 그대로 펼칠 때 쓰는 몸통.
+  const 몸통 = (
+      <div className={inline ? "cv-body cv-body-inline" : "cv-body"}>
+        <p className="cv-desc">내 직무 기반 스킬을 마음껏 추가해 보세요.</p>
+
+        <div className="cv-skill-input-row">
+          <input
+            className="cv-input"
+            placeholder="스킬을 검색해 추가해 주세요."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+          />
+          <button className="cv-skill-add-btn" onClick={() => handleAdd()}>추가하기</button>
+        </div>
+
+        {query && (
+          <div className="cv-recommend-section">
+            <h4 className="cv-recommend-title">검색 결과</h4>
+            {matches.length > 0 ? (
+              <div className="cv-skill-chips">
+                {matches.map((skill) => (
+                  <button key={skill} className="cv-skill-chip" onClick={() => handleAdd(skill)}>
+                    {skill}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="cv-recommend-desc">일치하는 추천 스킬이 없어요. ‘추가하기’로 직접 등록할 수 있어요.</p>
+            )}
+          </div>
+        )}
+
+        {skills.length > 0 && (
+          <div className="cv-skill-chips">
+            {skills.map((skill) => (
+              <span key={skill} className="cv-skill-chip active">
+                {skill}
+                <button onClick={() => removeSkill(skill)}><X size={12} /></button>
+              </span>
+            ))}
+          </div>
+        )}
+
+        {!query && (
+          <div className="cv-recommend-section">
+            <h4 className="cv-recommend-title">추천 스킬</h4>
+            <p className="cv-recommend-desc">직무에 맞게 추천된 스킬을 간편하게 추가해 보세요.</p>
+            <div className="cv-skill-chips">
+              {recommended.filter((r) => !skills.includes(r)).map((skill) => (
+                <button key={skill} className="cv-skill-chip" onClick={() => addSkill(skill)}>
+                  {skill}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <button className="cv-btn-primary" onClick={onClose}>완료</button>
+      </div>
+  );
+
+  if (inline) return <div className="cv-inline">{몸통}</div>;
+
   return (
     <div className="cv-overlay">
       <div className="cv-modal" onClick={(e) => e.stopPropagation()}>
@@ -254,64 +320,8 @@ export default function SkillModal({ isOpen, onClose }: Props) {
           <h2 className="cv-title">스킬</h2>
           <div style={{ width: 36 }} />
         </div>
-        <div className="cv-body">
-          <p className="cv-desc">내 직무 기반 스킬을 마음껏 추가해 보세요.</p>
+        {몸통}
 
-          <div className="cv-skill-input-row">
-            <input
-              className="cv-input"
-              placeholder="스킬을 검색해 추가해 주세요."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            />
-            <button className="cv-skill-add-btn" onClick={() => handleAdd()}>추가하기</button>
-          </div>
-
-          {query && (
-            <div className="cv-recommend-section">
-              <h4 className="cv-recommend-title">검색 결과</h4>
-              {matches.length > 0 ? (
-                <div className="cv-skill-chips">
-                  {matches.map((skill) => (
-                    <button key={skill} className="cv-skill-chip" onClick={() => handleAdd(skill)}>
-                      {skill}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="cv-recommend-desc">일치하는 추천 스킬이 없어요. ‘추가하기’로 직접 등록할 수 있어요.</p>
-              )}
-            </div>
-          )}
-
-          {skills.length > 0 && (
-            <div className="cv-skill-chips">
-              {skills.map((skill) => (
-                <span key={skill} className="cv-skill-chip active">
-                  {skill}
-                  <button onClick={() => removeSkill(skill)}><X size={12} /></button>
-                </span>
-              ))}
-            </div>
-          )}
-
-          {!query && (
-            <div className="cv-recommend-section">
-              <h4 className="cv-recommend-title">추천 스킬</h4>
-              <p className="cv-recommend-desc">직무에 맞게 추천된 스킬을 간편하게 추가해 보세요.</p>
-              <div className="cv-skill-chips">
-                {recommended.filter((r) => !skills.includes(r)).map((skill) => (
-                  <button key={skill} className="cv-skill-chip" onClick={() => addSkill(skill)}>
-                    {skill}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <button className="cv-btn-primary" onClick={onClose}>완료</button>
-        </div>
       </div>
     </div>
   );
