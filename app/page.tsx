@@ -208,12 +208,14 @@ function Hero() {
             {/* 오른쪽은 한 줄로 세운다 — 위는 공지, 아래는 이벤트.
                 이벤트는 받는 사람이 갈리므로 개인회원·기업회원을 나란히 둔다. */}
             <div className="mt-right">
+              {/* 공지가 한 줄인데 카드에 두 줄 자리를 주면 제목 뒤로 450px 가
+                  빈다. 내용이 없어서가 아니라 자리를 크게 잡아서다. 딱지를
+                  제목 앞에 붙여 한 줄로 눕히고, 남는 높이는 담을 것이 많은
+                  아래 이벤트 카드가 가져간다. */}
               <div className="mt-card mt-nc">
-                <div className="mt-chead">
-                  <Link href="/notice" className="t"><Megaphone size={17} className="mt-ic" />공지사항</Link>
-                </div>
-                {/* 한 줄만 둔다. 제목이 곧 원문으로 가는 문이라 따로 '자세히'를
-                    붙이지 않는다. */}
+                <Link href="/notice" className="mt-nc-tag">
+                  <Megaphone size={16} className="mt-ic" />공지
+                </Link>
                 <Link href={공지 ? `/notice?open=${공지.id}` : "/notice"} className="mt-notice">
                   <span className="nt">{공지?.title || "뷰티워크 서비스 무료 이용 안내"}</span>
                   <span className="mt-evt-more">자세히 보기 ›</span>

@@ -12297,10 +12297,17 @@ button,
 .mt-search-set .hero-searchbar-v2 { margin-top: 10px; }
 .mt-right { display: flex; flex-direction: column; gap: 14px; }
 /* 공지는 제목 한 줄뿐이라 제 높이만 쓰고, 남는 자리는 이벤트가 채운다. */
-.mt-nc .mt-chead { margin-bottom: 10px; }
 .mt-right > .mt-evt { flex: 1; }
 /* 카드 안쪽은 순백이 아니다 — 바탕의 보라기를 아주 옅게 머금어야 따로 놀지 않는다. */
 .mt-card { background: #fbfaff; border-radius: 14px; padding: 22px 20px; text-decoration: none; color: inherit; display: block; }
+
+/* 한 줄짜리 카드. 세로 여백을 조여 제 높이만 쓰게 한다. */
+.mt-nc { display: flex; align-items: center; gap: 11px; padding: 13px 20px; }
+.mt-nc-tag { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+  font-size: 13.5px; font-weight: 600; color: #8b84a0; text-decoration: none; }
+.mt-nc-tag:hover { color: var(--color-primary); }
+.mt-nc .mt-notice { flex: 1; min-width: 0; }
+.mt-nc .nt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .mt-ask { font-size: 15px; color: #6b6b6b; margin: 0 0 12px; }
 /* 설명은 설명하는 대상 바로 아래에 붙어야 이어진다. 검색창 아래로 내리면
