@@ -9428,11 +9428,13 @@ div:has(> table.admin-table),
   font-size: 28px;
   margin-bottom: 4px;
 }
+/* 현장이야기 제목은 채용공고 카드의 공고명과 같은 글자를 쓴다. 한 화면에
+   나란히 놓이는 두 카드가 제목 무게부터 다르면 한쪽이 더 중요해 보인다. */
 .insight-card-new-title {
   font-size: 13px;
-  font-weight: 700;
-  color: #1a1a1a;
-  line-height: 1.4;
+  font-weight: 600;
+  color: #222;
+  line-height: 1.35;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -11849,7 +11851,7 @@ div:has(> table.admin-table),
   .service-desc { font-size: 13px; }
   .service-company { font-size: 12px; }
   .service-tag { font-size: 13px; }
-  .insight-card-new-title { font-size: 16.5px; }
+  .insight-card-new-title { font-size: 16px; }   /* 공고명과 같은 값 */
   .insight-card-new-desc { font-size: 12.5px; }
   .insight-category { font-size: 11px; }
   .insight-card-new-date { font-size: 12.5px; }
@@ -12716,4 +12718,9 @@ button,
   .cs-shot-brand { display: none; }
   .cs-shot-stats { grid-template-columns: repeat(2, 1fr); }
   .cs-shot-row { grid-template-columns: 1fr; }
+}
+
+/* 좁은 화면에서도 공고명과 크기를 맞춘다 — 공고명이 여기서만 14px 로 커진다. */
+@media (max-width: 480px) {
+  .insight-card-new-title { font-size: 14px; }
 }
