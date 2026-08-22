@@ -43,7 +43,7 @@ export default function NoticeDetailPage() {
         <>
           <div style={{ margin: "24px 0 10px" }}>
             <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 9px", borderRadius: 6,
-              background: notice.type === "event" ? "#fdeef5" : "#f7f7f8", color: notice.type === "event" ? "#c2185b" : "#582681" }}>
+              background: notice.type === "event" ? "#f7f7f8" : "#f7f7f8", color: notice.type === "event" ? "#c2185b" : "#582681" }}>
               {notice.type === "event" ? "이벤트" : "공지"}
             </span>
           </div>

@@ -142,7 +142,7 @@ export default function CompanyLoginPage() {
           </div>
 
           <Link href="/company/signup">
-            <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#582681] rounded-lg font-normal text-[15px] hover:border-[#582681] hover:bg-[#faf7fc] transition">
+            <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#582681] rounded-lg font-normal text-[15px] hover:border-[#582681] hover:bg-[#f7f7f8] transition">
               기업회원으로 가입하기
             </button>
           </Link>

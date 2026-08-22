@@ -151,7 +151,7 @@ export default function CompanyLayout({ children, activePage }: {
     return (
       <div className="co-m">
         <style>{`
-          .co-m { min-height: 100vh; background: #f6f5f8; padding-bottom: 68px; }
+          .co-m { min-height: 100vh; background: #f7f7f8; padding-bottom: 68px; }
           .co-m-header { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 14px; background: #fff; border-bottom: 1px solid #eee; }
           .co-m-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a1a; min-width: 0; }
           .co-m-logo { width: 32px; height: 32px; border-radius: 8px; background: #f2f2f2; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #582681; flex-shrink: 0; }
@@ -162,7 +162,7 @@ export default function CompanyLayout({ children, activePage }: {
           .co-m-logobtn { background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; }
           .co-m-logomenu { position: absolute; top: 54px; left: 14px; z-index: 61; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 8px 22px rgba(0,0,0,0.14); overflow: hidden; min-width: 132px; }
           .co-m-logomenu button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; background: none; border: none; font-size: 14px; color: #333; cursor: pointer; }
-          .co-m-logomenu button:active { background: #f8f5fb; }
+          .co-m-logomenu button:active { background: #f7f7f8; }
           .co-m-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
           .co-m-ibtn { position: relative; background: none; border: none; padding: 8px; color: #555; cursor: pointer; }
           .co-m-badge { position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff; font-size: 9px; line-height: 1.4; border-radius: 8px; padding: 0 4px; }
@@ -175,7 +175,7 @@ export default function CompanyLayout({ children, activePage }: {
           .co-m-notif { position: fixed; left: 0; right: 0; top: 55px; z-index: 61; background: #fff; border-bottom: 1px solid #eee; max-height: 62vh; overflow-y: auto; box-shadow: 0 10px 24px rgba(0,0,0,0.1); }
           .co-m-notif-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f2f2f2; font-size: 14px; font-weight: 600; }
           .co-m-notif-item { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; padding: 12px 16px; border: none; border-bottom: 1px solid #f5f5f5; background: none; cursor: pointer; }
-          .co-m-notif-item.unread { background: #f8f5fb; }
+          .co-m-notif-item.unread { background: #f7f7f8; }
           .co-m-notif-empty { padding: 28px; text-align: center; color: #aaa; font-size: 13px; }
         `}</style>
 

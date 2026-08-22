@@ -115,7 +115,7 @@ function LoginStartContent() {
         </div>
 
         <Link href="/company/login">
-          <button className="w-full h-[52px] bg-white border border-[#efeff1] text-[#582681] rounded-lg font-normal text-[15px] hover:border-[#582681] hover:bg-[#faf7fc] transition flex items-center justify-center gap-2">
+          <button className="w-full h-[52px] bg-white border border-[#efeff1] text-[#582681] rounded-lg font-normal text-[15px] hover:border-[#582681] hover:bg-[#f7f7f8] transition flex items-center justify-center gap-2">
             <Building2 size={18} />
             {/* 위 세 버튼과 같은 '계속하기' — 다른 건 무엇을 하느냐가 아니라 누구냐다.
                 그 구분은 위의 선이 이미 하고 있다. '시작하기'는 신규만 부르는데,

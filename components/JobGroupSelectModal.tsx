@@ -229,7 +229,7 @@ export default function JobGroupSelectModal({
         }
         .jgm-toggle { display: flex; gap: 8px; padding: 12px 20px 2px; flex-shrink: 0; }
         .jgm-toggle button {
-          flex: 1; padding: 9px; border-radius: 9px; border: 1px solid #e2e0e6;
+          flex: 1; padding: 9px; border-radius: 9px; border: 1px solid #efeff1;
           background: #fff; color: #888; font-size: 14px; font-weight: 400; cursor: pointer;
         }
         .jgm-toggle button.on { background: #582681; color: #fff; border-color: #582681; }
@@ -253,7 +253,7 @@ export default function JobGroupSelectModal({
         .jgm-search { position: relative; padding: 12px 20px 4px; flex-shrink: 0; }
         .jgm-search-box {
           display: flex; align-items: center; gap: 8px;
-          border: 1.5px solid #e2e0e6; border-radius: 10px; padding: 9px 12px;
+          border: 1.5px solid #efeff1; border-radius: 10px; padding: 9px 12px;
           transition: border-color 0.15s;
         }
         .jgm-search-box:focus-within { border-color: #582681; }
@@ -279,7 +279,7 @@ export default function JobGroupSelectModal({
           font-size: 13.5px; color: #333;
         }
         .jgm-dd-item:first-child { border-top: none; }
-        .jgm-dd-item:hover, .jgm-dd-item.active { background: #f8f5fb; }
+        .jgm-dd-item:hover, .jgm-dd-item.active { background: #f7f7f8; }
         .jgm-dd-left { display: flex; align-items: center; gap: 7px; min-width: 0; }
         .jgm-dd-left .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .jgm-dd-left .chk { color: #582681; font-size: 12px; flex-shrink: 0; }
@@ -316,7 +316,7 @@ export default function JobGroupSelectModal({
           background: none; border: none; cursor: pointer;
           font-size: 14px; color: #444; border-radius: 8px;
         }
-        .jgm-item:hover { background: #f8f5fb; }
+        .jgm-item:hover { background: #f7f7f8; }
         .jgm-item.selected { color: #582681; font-weight: 400; }
         .jgm-check {
           width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0;

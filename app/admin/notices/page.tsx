@@ -157,7 +157,7 @@ export default function AdminNoticesPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
-                    background: n.type === "event" ? "#fdeef5" : "#f7f7f8", color: n.type === "event" ? "#c2185b" : "#582681" }}>
+                    background: n.type === "event" ? "#f7f7f8" : "#f7f7f8", color: n.type === "event" ? "#c2185b" : "#582681" }}>
                     {TYPE_LABELS[n.type]}
                   </span>
                   {n.is_pinned && <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color: "#582681", border: "1px solid #582681", borderRadius: 4, padding: "1px 5px" }}>고정</span>}
@@ -169,7 +169,7 @@ export default function AdminNoticesPage() {
                 </div>
 
                 {expandedId === n.id && (
-                  <div style={{ marginTop: 12, padding: 16, background: "#faf7fd", borderRadius: 10 }}>
+                  <div style={{ marginTop: 12, padding: 16, background: "#f7f7f8", borderRadius: 10 }}>
                     <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
                       <select value={edit.type} onChange={(e) => setEdit({ ...edit, type: e.target.value })} style={{ ...selStyle, padding: "8px 10px", fontSize: 14 }}>
                         <option value="notice">공지(필수)</option>

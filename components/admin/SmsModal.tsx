@@ -70,7 +70,7 @@ export default function SmsModal({
               수신 대상 <strong style={{ color: "#582681" }}>{valid.length}명</strong>
               {noPhone > 0 && <span style={{ color: "#e74c3c" }}> · 번호 없음 {noPhone}명 제외</span>}
             </div>
-            <div style={{ maxHeight: 120, overflowY: "auto", background: "#faf7fc", borderRadius: 10, padding: "10px 14px", fontSize: 13, lineHeight: 1.9 }}>
+            <div style={{ maxHeight: 120, overflowY: "auto", background: "#f7f7f8", borderRadius: 10, padding: "10px 14px", fontSize: 13, lineHeight: 1.9 }}>
               {targets.map((t) => (
                 <div key={t.id} style={{ color: t.phone ? "#333" : "#bbb" }}>
                   {t.name} · {t.phone || "번호 없음"}

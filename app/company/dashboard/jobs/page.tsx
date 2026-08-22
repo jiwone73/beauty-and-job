@@ -231,7 +231,7 @@ function CompanyJobsContent() {
               onClick={() => setStatusFilter(s.status)}
               style={{ cursor: "pointer", textAlign: "left", font: "inherit",
                 border: statusFilter === s.status ? `1px solid ${s.color}` : undefined,
-                background: statusFilter === s.status ? "#faf7fd" : undefined }}>
+                background: statusFilter === s.status ? "#f7f7f8" : undefined }}>
               <div className="company-stat-value" style={{color: s.color}}>
                 {s.value}<span className="company-stat-unit">{s.unit}</span>
               </div>
@@ -313,7 +313,7 @@ function CompanyJobsContent() {
             .co-mbar-count strong { color: #582681; }
             .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
-            .co-mbar-btn.on { border-color: #582681; color: #582681; background: #f8f5fb; }
+            .co-mbar-btn.on { border-color: #582681; color: #582681; background: #f7f7f8; }
             .co-mbar-btn.primary { border: none; background: #582681; color: #fff; }
             .co-mbar-btn:disabled { opacity: 0.4; cursor: not-allowed; }
             .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
@@ -345,7 +345,7 @@ function CompanyJobsContent() {
                 <button key={s.label} type="button"
                   className={`co-stat ${statusFilter === s.status ? "on" : ""}`}
                   onClick={() => setStatusFilter(s.status)}
-                  style={statusFilter === s.status ? { borderColor: s.color, background: "#faf7fd" } : undefined}>
+                  style={statusFilter === s.status ? { borderColor: s.color, background: "#f7f7f8" } : undefined}>
                   <span className="n" style={{ color: s.color }}>{s.value}</span>
                   <span className="l">{s.label}</span>
                 </button>
@@ -399,7 +399,7 @@ function CompanyJobsContent() {
             .co-row { display: flex; align-items: center; gap: 10px; }
             .co-row-check { width: 20px; height: 20px; accent-color: #582681; flex-shrink: 0; margin: 0; }
             .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
-            .co-li.on { border-color: #582681; background: #f8f5fb; }
+            .co-li.on { border-color: #582681; background: #f7f7f8; }
             .co-li-r1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
             .co-li-title { font-size: 15.5px; color: #582681; line-height: 1.35; word-break: break-all; min-width: 0; }
             .co-li-r1r { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }

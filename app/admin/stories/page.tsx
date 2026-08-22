@@ -248,7 +248,7 @@ export default function AdminStoriesPage() {
         </div>
 
         {tab === "posts" && writing && (
-          <div style={{ background: "#faf8fc", border: "1px solid #eee", borderRadius: 12, padding: 18, marginBottom: 20 }}>
+          <div style={{ background: "#f7f7f8", border: "1px solid #eee", borderRadius: 12, padding: 18, marginBottom: 20 }}>
             <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
               {CATEGORIES.map((c) => (
                 <button key={c} onClick={() => setForm((f) => ({ ...f, category: c }))}
@@ -390,7 +390,7 @@ export default function AdminStoriesPage() {
                   )}
                 </tr>
                 {expandedId === p.id && (
-                  <tr style={{ background: "#faf8fc" }}>
+                  <tr style={{ background: "#f7f7f8" }}>
                     <td colSpan={tab === "pending" ? 6 : 8} style={{ padding: "16px 12px" }}>
                       <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                         {CATEGORIES.map((c) => (

@@ -61,7 +61,7 @@ export default function StoriesPage() {
         </div>
         <svg width="140" height="108" viewBox="0 0 140 108" fill="none" style={{ flexShrink: 0 }}>
           <rect x="62" y="12" width="62" height="70" rx="8" fill="#fff" />
-          <rect x="67" y="17" width="52" height="60" rx="5" fill="#faf7fd" />
+          <rect x="67" y="17" width="52" height="60" rx="5" fill="#f7f7f8" />
           <circle cx="76" cy="30" r="5" fill="#2e7d32" />
           <path d="M73.5 30 l2 2 l3.5 -3.5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
           <rect x="85" y="28" width="26" height="4" rx="2" fill="#efeff1" />

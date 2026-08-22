@@ -168,7 +168,7 @@ export default function LoginEmailPage() {
 
           {/* 왜 안 됐는지 — 비밀번호가 아니라 계정 종류가 문제인 경우 */}
           {notice && (
-            <div className="mb-3 rounded-lg bg-[#faf7fc] border border-[#f7f7f8] p-3">
+            <div className="mb-3 rounded-lg bg-[#f7f7f8] border border-[#f7f7f8] p-3">
               <p className="text-[13px] md:text-[14px] text-[#582681] mb-2">{notice.text}</p>
               {notice.providers.includes("kakao") && (
                 <button
@@ -213,7 +213,7 @@ export default function LoginEmailPage() {
           </div>
 
           <Link href={email.trim() ? `/signup/email?email=${encodeURIComponent(email.trim())}` : "/signup/email"}>
-            <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#582681] rounded-lg font-normal text-[15px] hover:border-[#582681] hover:bg-[#faf7fc] transition">
+            <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#582681] rounded-lg font-normal text-[15px] hover:border-[#582681] hover:bg-[#f7f7f8] transition">
               이메일로 가입하기
             </button>
           </Link>

@@ -13,7 +13,7 @@
   --color-primary-hover: #431a63;
   --color-primary-soft: #f7f7f8;
   --color-primary-light: #a8a8ad;
-  --color-primary-pale: #f8f5fb;
+  --color-primary-pale: #f7f7f8;
   --color-text: #1a1a1a;
   --color-text-sub: #6b6b6b;
   --color-text-mute: #9a9a9a;
@@ -46,7 +46,7 @@
   color-scheme: light;
 }
   html, body {
-  background: #fdfbff !important;
+  background: #f7f7f8 !important;
   color: var(--color-text);
   font-family: var(--font-sans);
 }
@@ -2310,7 +2310,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 640px) {
   .jd-pos-th, .jd-pos-td { padding-right: 10px; padding-left: 10px; }
 }
-.jobpost-preview-scope { padding: 0; max-height: 72vh; overflow-y: auto; overflow-x: hidden; background: #faf7fc; }
+.jobpost-preview-scope { padding: 0; max-height: 72vh; overflow-y: auto; overflow-x: hidden; background: #f7f7f8; }
 @media (max-width: 640px) {
   /* 화면을 꽉 채운다. 덧문 여백과 둥근 모서리는 좁은 화면에서 자리만 먹는다. */
   .jobpost-preview-overlay { padding: 0; align-items: stretch; }
@@ -5662,7 +5662,7 @@ div:has(> table.admin-table),
 .settings-compact .admin-form-label { color: #999; font-weight: 400; }
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:placeholder-shown,
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select[data-empty="true"] {
-  background: #f8f6fd !important;
+  background: #f7f7f8 !important;
   border-radius: 5px;
   width: 56px;
   margin-left: auto;
@@ -5674,7 +5674,7 @@ div:has(> table.admin-table),
 }
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:focus::placeholder { color: #ccc; }
 /* 기업 소개(textarea)는 여러 줄이라 블록 대신 옅은 배경만 */
-.settings-compact .admin-form-textarea { background: #f8f6fd; border: none; border-radius: 8px; }
+.settings-compact .admin-form-textarea { background: #f7f7f8; border: none; border-radius: 8px; }
 .settings-compact .admin-form-row:has(> .admin-form-label) > *:not(.admin-form-label) {
   grid-column: 2; min-width: 0;
   /* 값은 오른쪽에 맞춘다 — 입력칸(text-align:right)과 계정 탭의 글자 값이 같은 선에 선다. */
@@ -6149,7 +6149,7 @@ div:has(> table.admin-table),
   gap: 10px;
 }
 .admin-resume-stat-card.main {
-  background: #f9f6fd;
+  background: #f7f7f8;
   border-color: #f7f7f8;
 }
 .admin-rsc-label {
@@ -6288,7 +6288,7 @@ div:has(> table.admin-table),
   gap: 10px;
 }
 .admin-resume-stat-card.main {
-  background: #f9f6fd;
+  background: #f7f7f8;
   border-color: #f7f7f8;
 }
 .admin-rsc-label {
@@ -6968,7 +6968,7 @@ div:has(> table.admin-table),
   cursor: pointer;
   font-family: inherit;
 }
-.company-notif-item:hover { background: #faf7fc; }
+.company-notif-item:hover { background: #f7f7f8; }
 .company-notif-item.unread { background: #f7f7f8; }
 .company-notif-title { font-size: 13px; font-weight: 700; color: #1a1a1a; }
 .company-notif-msg { font-size: 12px; color: #666; line-height: 1.4; }
@@ -8449,7 +8449,7 @@ div:has(> table.admin-table),
    히어로 모바일 전용 컴포넌트
    ════════════════════════════════ */
 .hero-m {
-  background: #f8f5fb;
+  background: #f7f7f8;
   padding-bottom: 24px;
 }
 
@@ -8722,7 +8722,7 @@ div:has(> table.admin-table),
 .region-sido-col {
   width: 38%;
   border-right: 0.5px solid #eee;
-  background: #faf7fc;
+  background: #f7f7f8;
   overflow-y: auto;
 }
 .region-sido-item {
@@ -9740,7 +9740,7 @@ div:has(> table.admin-table),
 
 /* ── 히어로 ── */
 .co-hero {
-  background: #f7f4fa;
+  background: #f7f7f8;
   padding: 80px 20px 72px;
   text-align: center;
 }
@@ -10170,7 +10170,7 @@ div:has(> table.admin-table),
 
 /* ── 히어로 ── */
 .co-hero {
-  background: #f7f4fa;
+  background: #f7f7f8;
   padding: 80px 20px 72px;
   text-align: center;
 }
@@ -10752,7 +10752,7 @@ div:has(> table.admin-table),
 
 /* 히어로 */
 .ads-hero {
-  background: #f7f4fa;
+  background: #f7f7f8;
   padding: 64px 20px 56px; text-align: center;
 }
 .ads-hero-badge {
@@ -10878,7 +10878,7 @@ div:has(> table.admin-table),
 
 /* 히어로 */
 .mat-hero {
-  background: #f7f4fa;
+  background: #f7f7f8;
   padding: 64px 20px 56px; text-align: center;
 }
 .mat-badge {
@@ -11202,7 +11202,7 @@ div:has(> table.admin-table),
 .legal-title { font-size: 22px; font-weight: 700; color: #2b2b2b; margin-bottom: 24px; text-align: center; }
 .legal-toc {
   display: flex; flex-direction: column; gap: 8px;
-  padding: 24px; background: #faf7fc; border: 1px solid #f7f7f8;
+  padding: 24px; background: #f7f7f8; border: 1px solid #f7f7f8;
   border-radius: 12px; margin-bottom: 40px;
 }
 .legal-toc-item { font-size: 14px; color: #582681; text-decoration: none; font-weight: 500; }
@@ -11517,7 +11517,7 @@ div:has(> table.admin-table),
 .hero-banner-top-inner .hero-banner-link { text-shadow: 0 1px 3px rgba(0,0,0,.25); }
 .newsletter-title, .newsletter-sub { text-shadow: 0 1px 2px rgba(0,0,0,.12); }
 /* === 최상단 배너 — 연보라 D + 로켓 + sheen 반짝 === */
-.hero-banner-top-inner{ background:#faf7fd!important; border:1px solid rgba(124,58,237,.10); overflow:hidden; }
+.hero-banner-top-inner{ background:#f7f7f8!important; border:1px solid rgba(124,58,237,.10); overflow:hidden; }
 .hero-banner-top-inner::before{ content:""; position:absolute; top:0; left:0; width:24%; height:100%; background:linear-gradient(90deg,transparent,rgba(196,160,247,.55),transparent); animation:heroSheen 3.4s ease-in-out infinite; pointer-events:none; z-index:0; }
 .hero-banner-top-inner>*{ position:relative; z-index:1; }
 @keyframes heroSheen{ 0%{transform:translateX(-170%) skewX(-18deg)} 55%,100%{transform:translateX(560%) skewX(-18deg)} }
@@ -11542,7 +11542,7 @@ div:has(> table.admin-table),
 .profile-header-nav { margin-left: 24px; }
 
 /* === 모바일 상단 배너 — 연보라 D + 로켓 + sheen (데스크탑과 통일) === */
-.hero-m-banner{ position:relative; overflow:hidden; background:#faf7fd!important; border:1px solid rgba(124,58,237,.10); }
+.hero-m-banner{ position:relative; overflow:hidden; background:#f7f7f8!important; border:1px solid rgba(124,58,237,.10); }
 .hero-m-banner::before{ content:""; position:absolute; top:0; left:0; width:28%; height:100%; background:linear-gradient(90deg,transparent,rgba(196,160,247,.55),transparent); animation:heroSheen 3.4s ease-in-out infinite; pointer-events:none; z-index:0; }
 .hero-m-banner>*{ position:relative; z-index:1; }
 .hero-m-banner-ad{ width:28px!important; height:28px!important; padding:0!important; border-radius:50%!important; background:#582681!important; color:#fff!important; display:inline-flex!important; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(124,58,237,.3); flex-shrink:0; }
@@ -12028,7 +12028,7 @@ button,
 .legal-table-wrap { overflow-x: auto; margin: 12px 0 18px; }
 .legal-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 520px; }
 .legal-table th, .legal-table td { border: 1px solid #ececec; padding: 8px 10px; text-align: left; vertical-align: top; line-height: 1.6; color: #555; }
-.legal-table th { background: #f7f4fb; font-weight: 400; color: #333; white-space: nowrap; }
+.legal-table th { background: #f7f7f8; font-weight: 400; color: #333; white-space: nowrap; }
 
 /* 회원가입 페이지 로고 — 메인 헤더와 동일 크기(PC 36px, 기본 32px, ≤380 100px폭) */
 @media (min-width: 769px) { .auth-logo img { height: 36px !important; width: auto !important; } }
@@ -12119,7 +12119,7 @@ button,
   padding: 9px 10px; border: none; background: none; border-radius: 8px;
   font-size: 14px; color: #333; cursor: pointer;
 }
-.company-profile-menu button:hover { background: #faf7fc; color: #582681; }
+.company-profile-menu button:hover { background: #f7f7f8; color: #582681; }
 
 /* 가입 화면 매장·오피스 카드 아이콘 — 좁은 화면에서는 한 줄 설명을 살리려고 조금 줄인다. */
 @media (max-width: 767px) {
@@ -12253,7 +12253,7 @@ button,
 
 .mt-hero {
   position: relative; display: block; height: 190px; border-radius: 16px;
-  overflow: hidden; background: #faf7fe; text-decoration: none; color: inherit;
+  overflow: hidden; background: #f7f7f8; text-decoration: none; color: inherit;
 }
 .mt-hero-photo {
   position: absolute; inset: 0;
@@ -12266,7 +12266,7 @@ button,
 .mt-hero-sub { font-size: 15px; color: #7a7878; margin-top: 11px; }
 
 /* 바탕.
-   · 페이지 바탕(#fdfbff)과 아주 살짝만 다르게 둔다. 세게 칠하면 박스가
+   · 페이지 바탕(#f7f7f8)과 아주 살짝만 다르게 둔다. 세게 칠하면 박스가
      화면에서 떠 보이고, 같게 두면 경계가 사라진다.
    · 무늬는 그라데이션이 아니라 점 격자로 깐다. 그라데이션은 아무리 겹쳐도
      "색이 조금 다르다"로만 읽히고 무늬로 보이지 않았다.
@@ -12305,7 +12305,7 @@ button,
 /* 공지는 제목 한 줄뿐이라 제 높이만 쓰고, 남는 자리는 이벤트가 채운다. */
 .mt-right > .mt-evt { flex: 1; }
 /* 카드 안쪽은 순백이 아니다 — 바탕의 보라기를 아주 옅게 머금어야 따로 놀지 않는다. */
-.mt-card { background: #fbfaff; border-radius: 14px; padding: 22px 20px; text-decoration: none; color: inherit; display: block; }
+.mt-card { background: #f7f7f8; border-radius: 14px; padding: 22px 20px; text-decoration: none; color: inherit; display: block; }
 
 /* 한 줄짜리 카드. 세로 여백을 조여 제 높이만 쓰게 한다. */
 .mt-nc { display: flex; align-items: center; gap: 11px; padding: 13px 20px; }
@@ -12366,8 +12366,10 @@ button,
   height: 30px; padding: 0 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;
   display: inline-flex; align-items: center; text-decoration: none;
   background: #fff; color: var(--color-primary); border: 1px solid #efeff1;
-  transition: background .15s, border-color .15s; }
-.mt-evt-btn:hover { border-color: var(--color-primary); background: #faf6fd; }
+  transition: background .15s, border-color .15s, color .15s; }
+/* 손을 올리면 로고 보라로 채운다. 옅게 물들이면 눌리는 것인지 아닌지가
+   모호하고, 그 옅은 색이 곧 연보라가 된다. */
+.mt-evt-btn:hover { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
 .mt-evt-row { display: flex; align-items: center; gap: 12px; }
 .mt-evt-txt { flex: 1; min-width: 0; }
 /* 내용 오른쪽 끝에 원문으로 가는 길. 버튼과 무게가 겹치지 않게 글자만 둔다. */
@@ -12379,7 +12381,7 @@ button,
 .mt-evt-s { display: block; font-size: 13px; color: #9a94a4; margin-top: 4px; }
 
 .mt-ticker { margin-top: 14px; border: 1px solid #f7f7f8; border-radius: 12px; height: 48px;
-  display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #fbfaff; overflow: hidden; }
+  display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #f7f7f8; overflow: hidden; }
 .mt-tk-l { font-size: 16px; font-weight: 600; color: #222; display: flex; align-items: center; gap: 7px;
   white-space: nowrap; flex-shrink: 0; padding-right: 20px; border-right: 1px solid #f7f7f8; }
 .mt-tk-view { flex: 1; min-width: 0; overflow: hidden; }
@@ -12545,7 +12547,7 @@ button,
 .cs-btn-fill.lg, .cs-btn-line.lg { height: 48px; padding: 0 22px; font-size: 15.5px; border-radius: 9px; }
 
 /* 히어로 */
-.cs-hero { position: relative; overflow: hidden; background: #f7f4fa; }
+.cs-hero { position: relative; overflow: hidden; background: #f7f7f8; }
 .cs-hero-photo {
   position: absolute; right: 0; top: 0; bottom: 0; width: 54%;
   /* 기업 서비스 전용 배너. 파일을 넣기 전에는 아래 분홍 바탕이 그대로 보여
@@ -12585,7 +12587,7 @@ button,
 .cs-sub { font-size: 15px; color: #7a7076; text-align: center; margin: 0 0 34px; word-break: keep-all; }
 .cs-sub.left { text-align: left; line-height: 1.75; margin-bottom: 24px; }
 .cs-center { display: flex; justify-content: center; margin-top: 30px; }
-.cs-band { background: #f9f7fc; }
+.cs-band { background: #f7f7f8; }
 
 /* 다루는 직군 — 여덟을 한 판에 담아 "여기까지 다 된다"를 한눈에 말한다. */
 .cs-jobs {
@@ -12613,7 +12615,7 @@ button,
 .cs-shot-brand { color: #2b2b2b; font-size: 13px; font-weight: 700; padding: 4px 8px 12px; }
 .cs-shot-menu { font-size: 11.5px; color: #8a8087; padding: 7px 8px; border-radius: 6px; }
 .cs-shot-menu.on { background: var(--cs-soft); color: var(--cs); font-weight: 600; }
-.cs-shot-main { padding: 14px; background: #faf8fc; }
+.cs-shot-main { padding: 14px; background: #f7f7f8; }
 .cs-shot-h { font-size: 13px; font-weight: 700; margin: 0 0 10px; }
 .cs-shot-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
 .cs-shot-stat { background: #fff; border: 1px solid #efeff1; border-radius: 8px; padding: 9px 10px; }
@@ -12694,7 +12696,7 @@ button,
 .cs-cta-in p { margin: 6px 0 0; font-size: 14.5px; opacity: .92; }
 .cs-cta-btns { display: flex; gap: 10px; flex-wrap: wrap; }
 .cs-btn-white { height: 46px; padding: 0 20px; background: #fff; color: var(--cs); border: 1px solid #fff; font-size: 15px; }
-.cs-btn-white:hover { background: #f7f4fa; }
+.cs-btn-white:hover { background: #f7f7f8; }
 .cs-btn-white.line { background: transparent; color: #fff; }
 .cs-btn-white.line:hover { background: rgba(255, 255, 255, .14); }
 
@@ -12703,7 +12705,7 @@ button,
   .cs-hero-photo { opacity: .35; width: 100%; -webkit-mask-image: none; mask-image: none; }
   .cs-jobs { grid-template-columns: repeat(4, 1fr); }
   .cs-job:nth-child(4n+1) { border-left: none; }
-  .cs-job:nth-child(n+5) { border-top: 1px solid #f6eef2; }
+  .cs-job:nth-child(n+5) { border-top: 1px solid #f7f7f8; }
   .cs-dash, .cs-faq-wrap { grid-template-columns: 1fr; }
   .cs-why { grid-template-columns: 1fr; }
   .cs-why-grid { grid-template-columns: repeat(3, 1fr); }
@@ -12718,13 +12720,13 @@ button,
   .cs-wrap { padding: 44px 20px; }
   .cs-h2 { font-size: 22px; }
   .cs-jobs { grid-template-columns: repeat(2, 1fr); }
-  .cs-job:nth-child(n) { border-left: none; border-top: 1px solid #f6eef2; }
+  .cs-job:nth-child(n) { border-left: none; border-top: 1px solid #f7f7f8; }
   .cs-job:nth-child(-n+2) { border-top: none; }
-  .cs-job:nth-child(even) { border-left: 1px solid #f6eef2; }
+  .cs-job:nth-child(even) { border-left: 1px solid #f7f7f8; }
   .cs-steps, .cs-why-grid, .cs-ads { grid-template-columns: 1fr 1fr; }
   .cs-step-ar { display: none; }
   .cs-shot { grid-template-columns: 1fr; }
-  .cs-shot-side { flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid #f0e9f0; }
+  .cs-shot-side { flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid #efeff1; }
   .cs-shot-brand { display: none; }
   .cs-shot-stats { grid-template-columns: repeat(2, 1fr); }
   .cs-shot-row { grid-template-columns: 1fr; }
@@ -12783,7 +12785,7 @@ button,
   font-family: inherit; font-size: 14px; color: #6b6570; border-radius: 5px;
   transition: color .12s, background .12s;
 }
-.jobs-side-grid button:hover, .jobs-side-list button:hover { color: #2b2b2b; background: #f8f5fb; }
+.jobs-side-grid button:hover, .jobs-side-list button:hover { color: #2b2b2b; background: #f7f7f8; }
 .jobs-side-grid button.on, .jobs-side-list button.on { color: var(--color-primary); font-weight: 700; }
 /* 값이 있는 공고 수. 눌러서 적게 나오는 것이 필터 탓이 아니라 데이터 탓임을 드러낸다. */
 .jobs-side-grid button i { font-style: normal; font-size: 11.5px; color: #c3bcca; }
@@ -12811,7 +12813,7 @@ button,
    열린다. 한 줄에 두 가지 일이 붙지만 누르는 자리를 갈라 놓았다. */
 .jobs-side-grp + .jobs-side-grp { margin-top: 1px; }
 .jobs-side-grp-h { display: flex; align-items: center; border-radius: 5px; }
-.jobs-side-grp-h:hover { background: #f8f5fb; }
+.jobs-side-grp-h:hover { background: #f7f7f8; }
 .jobs-side-grp-h > button:first-child { flex: 1; min-width: 0; }
 .jobs-side-grp-h.on > button:first-child { color: var(--color-primary); font-weight: 700; }
 .jobs-side-grp-h em { font-style: normal; font-size: 11.5px; font-weight: 500; color: #a8a8ad; margin-left: 5px; }
@@ -12823,7 +12825,7 @@ button,
 .jobs-side-sub-list button { display: block; width: 100%; text-align: left; background: none; border: none;
   cursor: pointer; font-family: inherit; font-size: 13px; color: #8b8492; padding: 4px 6px;
   border-radius: 5px; transition: color .12s, background .12s; }
-.jobs-side-sub-list button:hover { color: #2b2b2b; background: #f8f5fb; }
+.jobs-side-sub-list button:hover { color: #2b2b2b; background: #f7f7f8; }
 .jobs-side-sub-list button.on { color: var(--color-primary); font-weight: 700; }
 
 /* 걸어 놓은 것을 한 번에 푼다. 걸린 것이 없으면 누를 이유가 없어 흐려 둔다. */
@@ -12901,7 +12903,7 @@ button,
 .jobs-pop-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
   background: none; border: none; cursor: pointer; font-family: inherit; font-size: 13.5px;
   color: #5b5563; padding: 7px 8px; border-radius: 7px; }
-.jobs-pop-item:hover { background: #f8f5fb; }
+.jobs-pop-item:hover { background: #f7f7f8; }
 .jobs-pop-item.on { color: #431a63 !important; font-weight: 700 !important; background: #f7f7f8; }
 /* 오른쪽 화살표는 '옆으로 열린다'는 뜻이다. 아래로 펼치는 ⌄ 와 다르다. */
 .jobs-side-arr { margin-left: auto; flex: 0 0 auto; color: #e3e3e6; }
@@ -12940,7 +12942,7 @@ button,
 .profile-account { max-width: 600px; margin: 22px auto 40px; padding: 0 16px;
   display: flex; flex-direction: column; gap: 1px; }
 .profile-account-row { display: flex; align-items: center; justify-content: space-between;
-  width: 100%; padding: 15px 4px; background: none; border: none; border-top: 1px solid #f0eef2;
+  width: 100%; padding: 15px 4px; background: none; border: none; border-top: 1px solid #efeff1;
   cursor: pointer; font-family: inherit; font-size: 15px; color: #2b2b2b; text-decoration: none; }
 .profile-account-row svg { color: #e3e3e6; }
 .profile-account-row.logout { color: #9a94a4; }
@@ -12961,7 +12963,7 @@ button,
     background: none; border: none; cursor: pointer; font-family: inherit;
     font-size: 15px; color: #6b6570; text-decoration: none; transition: color .12s, background .12s;
   }
-  .pf-side a:hover, .pf-side .pf-side-out:hover { color: #2b2b2b; background: #f8f5fb; }
+  .pf-side a:hover, .pf-side .pf-side-out:hover { color: #2b2b2b; background: #f7f7f8; }
   .pf-side a.on { color: #431a63 !important; font-weight: 700 !important; background: #f7f7f8; }
   /* 보는 화면을 고르는 일과 계정을 다루는 일은 성격이 다르다. 선으로 가른다. */
   .pf-side-sep { display: block; height: 1px; background: #eee; margin: 10px 10px; }

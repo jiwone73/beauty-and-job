@@ -1278,7 +1278,7 @@ export default function JobPostForm({
   // 빈 값 자리엔 흐린 회색 플레이스홀더 텍스트(칩·배경 없음). 채워지면 평체 텍스트로 노출.
   // 기업정보처럼 목록에서 고르는 항목은 '선택'(기본), 값을 직접 적는 항목은 '입력'.
   // 빈 값 자리엔 텍스트 없이 화이트톤 연보라 하이라이트 블록으로 통일(4글자 폭·텍스트 높이, 고정 px).
-  const PH_BG = "#f8f6fd"; // 거의 화이트에 가까운 아주 연한 연보라
+  const PH_BG = "#f7f7f8"; // 거의 화이트에 가까운 아주 연한 연보라
   const pick = (_label?: string) => (
     <span style={{ display: "inline-block", width: 56, height: 20, padding: 0, borderRadius: 5, background: PH_BG, verticalAlign: "middle" }} />
   );
@@ -2425,7 +2425,7 @@ export default function JobPostForm({
                   <div key={r.idx}
                     onClick={() => selectFoundJob(r)}
                     title="선택하면 위 검색칸에 표시돼요. ↗로 원문을 새 탭에서 볼 수 있어요."
-                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f7f7f8", cursor: "pointer", background: on ? "#faf7fe" : "transparent", transition: "background 0.12s" }}>
+                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f7f7f8", cursor: "pointer", background: on ? "#f7f7f8" : "transparent", transition: "background 0.12s" }}>
                     {/* 라디오(선택) */}
                     <span style={{ flexShrink: 0, width: 16, height: 16, borderRadius: "50%", border: on ? "1.5px solid #582681" : "1.5px solid #cfcfcf", display: "inline-flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
                       {on && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#582681" }} />}
@@ -2454,7 +2454,7 @@ export default function JobPostForm({
                     style={{ position: "absolute", top: 2, right: 2, width: 18, height: 18, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 11, lineHeight: 1 }}>×</button>
                 </div>
               ))}
-              <label style={{ width: 72, height: 72, flexShrink: 0, border: "1.5px dashed #e3e3e6", borderRadius: 6, background: "#faf7fe", color: "#582681", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: "pointer" }}>
+              <label style={{ width: 72, height: 72, flexShrink: 0, border: "1.5px dashed #e3e3e6", borderRadius: 6, background: "#f7f7f8", color: "#582681", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: "pointer" }}>
                 <span style={{ fontSize: 20, lineHeight: 1 }}>+</span>
                 <span style={{ fontSize: 10 }}>추가</span>
                 <input type="file" accept="image/*" multiple hidden onChange={(e) => { const fs = Array.from(e.target.files || []); if (fs.length) setOcrFiles((prev) => [...prev, ...fs]); e.currentTarget.value = ""; }} />
@@ -2600,7 +2600,7 @@ export default function JobPostForm({
                   onDragLeave={() => setDragOver(false)}
                   onDrop={(e) => { e.preventDefault(); setDragOver(false); if (imgDragRef.current) { dropToBanner(null); return; } const f = e.dataTransfer.files; if (f && f.length && !nmCoverUploading) addBannerFiles(f); }}
                   onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!nmCoverUploading) addBannerFiles(fs); } }}
-                  style={{ padding: bannerImages.length ? 6 : 10, borderRadius: 10, border: `1.5px dashed ${dragOver || pasteZone === "banner" ? "#582681" : "#efeff1"}`, background: dragOver || pasteZone === "banner" ? "#f7f7f8" : "#fbf9ff", outline: "none" }}>
+                  style={{ padding: bannerImages.length ? 6 : 10, borderRadius: 10, border: `1.5px dashed ${dragOver || pasteZone === "banner" ? "#582681" : "#efeff1"}`, background: dragOver || pasteZone === "banner" ? "#f7f7f8" : "#f7f7f8", outline: "none" }}>
                   {bannerImages.length > 0 ? (
                     /* 공고에 실제로 찍히는 모양(3:1 · 한 장은 1/3 폭) 그대로 보여준다. 끌어서 순서를 바꿀 수 있다. */
                     <BannerStrip images={bannerImages.map((b) => b.url)} showIndex
@@ -2620,7 +2620,7 @@ export default function JobPostForm({
                 {bannerHint}
                 {/* 샘플 배너 생성 패널 */}
                 {bannerGenOpen && (
-                  <div style={{ marginTop: 10, padding: 12, border: "1px solid #efeff1", borderRadius: 10, background: "#faf9fc" }}>
+                  <div style={{ marginTop: 10, padding: 12, border: "1px solid #efeff1", borderRadius: 10, background: "#f7f7f8" }}>
                     <div style={{ fontSize: 13, color: "#582681", fontWeight: 600, marginBottom: 8 }}>샘플 배너 만들기 <span style={{ fontWeight: 400, color: "#999" }}>· 가운데 제목만 넣어요(줄바꿈 가능)</span></div>
                     <textarea value={bannerGenTitle} onChange={(e) => setBannerGenTitle(e.target.value)} rows={2}
                       placeholder={"예: 부 원장 급 여자 선생님\n(중국어 가능자 우대)"}
@@ -3169,7 +3169,7 @@ export default function JobPostForm({
                   onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) processFiles(fs); } }}
                   style={isMobile
                     ? { display: "flex", flexWrap: "wrap", gap: "8px 4px", alignItems: "center", outline: "none" }
-                    : { display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#582681" : "#efeff1"}`, background: pasteZone === "body" ? "#f7f7f8" : "#fbf9ff", outline: "none" }}>
+                    : { display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#582681" : "#efeff1"}`, background: pasteZone === "body" ? "#f7f7f8" : "#f7f7f8", outline: "none" }}>
                   {detailImages.map((d, idx) => (
                     <div key={d.url + idx} draggable
                       onDragStart={() => { imgDragRef.current = { zone: "body", idx }; }}

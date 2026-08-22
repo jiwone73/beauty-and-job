@@ -555,7 +555,7 @@ export default function CompanySettingsPage() {
                 </div>
                 {coverImages.length === 0 ? (
                   <div style={{minHeight:110, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, padding:12,
-                    background:"#f7f4fb", border:"1px dashed #efeff1", borderRadius:10, color:"#a8a8ad", fontSize:13, textAlign:"center", lineHeight:1.5}}>
+                    background:"#f7f7f8", border:"1px dashed #efeff1", borderRadius:10, color:"#a8a8ad", fontSize:13, textAlign:"center", lineHeight:1.5}}>
                     아직 등록한 이미지가 없어요.<br />
                     사진이 없다면 <b style={{color:"#582681"}}>샘플 배너</b>로 문구만 넣어 만들어 보세요.
                   </div>
@@ -564,7 +564,7 @@ export default function CompanySettingsPage() {
                   <BannerStrip images={coverImages.map((c) => c.url)} onDelete={handleCoverDeleteOne} />
                 )}
                 {sampleOpen && (
-                  <div style={{marginTop:10, padding:12, border:"1px solid #efeff1", borderRadius:10, background:"#faf9fc"}}>
+                  <div style={{marginTop:10, padding:12, border:"1px solid #efeff1", borderRadius:10, background:"#f7f7f8"}}>
                     <div style={{fontSize:13, color:"#582681", fontWeight:600, marginBottom:8}}>
                       샘플 배너 만들기 <span style={{fontWeight:400, color:"#999"}}>· 가운데 문구만 넣어요(줄바꿈 가능)</span>
                     </div>

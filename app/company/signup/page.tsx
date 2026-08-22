@@ -421,7 +421,7 @@ export default function CompanySignupPage() {
 
           <div className="mb-4">
             <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록증 <span className="text-[#e74c3c]">*</span></label>
-            <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#e3e3e6] rounded-lg text-[13px] md:text-[15px] text-[#582681] bg-[#faf7fd] cursor-pointer hover:bg-[#f7f7f8] transition text-center">
+            <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#e3e3e6] rounded-lg text-[13px] md:text-[15px] text-[#582681] bg-[#f7f7f8] cursor-pointer hover:bg-[#f7f7f8] transition text-center">
               <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={handleLicenseUpload} className="hidden" />
               {licenseUploading ? "업로드 중…" : licenseName ? `첨부됨: ${licenseName}` : "사업자등록증 첨부 (JPG·PNG·WebP·PDF · 최대 5MB)"}
             </label>

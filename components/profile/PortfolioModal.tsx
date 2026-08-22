@@ -240,7 +240,7 @@ export default function PortfolioModal({
               {골라줄것.map((k) => (
                 <button key={k.이름} type="button"
                   onClick={() => { set주소(k.앞부분); set오류(""); 주소칸.current?.focus(); }}
-                  style={{ ...글, padding: "5px 10px", borderRadius: 999, border: "1px solid #efeff1", background: "#f8f5fb", color: "#582681", cursor: "pointer" }}>
+                  style={{ ...글, padding: "5px 10px", borderRadius: 999, border: "1px solid #efeff1", background: "#f7f7f8", color: "#582681", cursor: "pointer" }}>
                   {k.이름}
                 </button>
               ))}

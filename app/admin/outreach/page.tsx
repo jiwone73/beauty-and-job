@@ -310,8 +310,8 @@ export default function AdminOutreachPage() {
     setSelected(allVisibleSelected ? new Set() : new Set(items.map((r) => r.id)));
 
   // 스타일
-  const th: React.CSSProperties = { padding: "8px 8px", fontSize: 13, color: "#6b6473", fontWeight: 400, textAlign: "left", whiteSpace: "nowrap", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 2, background: "#faf8fc" };
-  const td: React.CSSProperties = { padding: "6px 8px", fontSize: 14, verticalAlign: "top", borderBottom: "1px solid #f3f0f7" };
+  const th: React.CSSProperties = { padding: "8px 8px", fontSize: 13, color: "#6b6473", fontWeight: 400, textAlign: "left", whiteSpace: "nowrap", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 2, background: "#f7f7f8" };
+  const td: React.CSSProperties = { padding: "6px 8px", fontSize: 14, verticalAlign: "top", borderBottom: "1px solid #f7f7f8" };
   const inp: React.CSSProperties = { width: "100%", minWidth: 90, padding: "5px 7px", border: "1px solid #ddd", borderRadius: 6, fontSize: 13.5, boxSizing: "border-box" };
   const clamp2: React.CSSProperties = { display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis" };
   const chip = (active: boolean): React.CSSProperties => ({
@@ -451,7 +451,7 @@ export default function AdminOutreachPage() {
         <div style={{ overflow: "auto", maxHeight: "calc(100vh - 250px)", border: "1px solid #eee", borderRadius: 10, background: "#fff" }}>
           <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0, minWidth: 1220 }}>
             <thead>
-              <tr style={{ background: "#faf8fc" }}>
+              <tr style={{ background: "#f7f7f8" }}>
                 <th style={{ ...th, width: 32 }}>
                   <input type="checkbox" checked={allVisibleSelected} onChange={toggleAll} />
                 </th>
@@ -604,7 +604,7 @@ export default function AdminOutreachPage() {
                       const shown = activeTab ? row.found_jobs.filter((jb) => jb.source === activeTab) : row.found_jobs;
                       return (
                       <tr>
-                        <td style={{ ...td, background: "#faf8fc" }} colSpan={9}>
+                        <td style={{ ...td, background: "#f7f7f8" }} colSpan={9}>
                           <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 6 }}>
                             조회된 활성 공고 <span style={{ color: "#9a92a6" }}>· 라디오 선택 후 상단 &quot;선택 공고 등록&quot;</span>
                           </div>

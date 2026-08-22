@@ -388,7 +388,7 @@ export default function TalentPage() {
       {!isMobile && (
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
           <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
-          <div style={{ display: "inline-flex", background: "#f0eef3", borderRadius: 10, padding: 3 }}>
+          <div style={{ display: "inline-flex", background: "#efeff1", borderRadius: 10, padding: 3 }}>
             {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
               <button key={tab} onClick={() => handleTabSwitch(tab)}
                 style={{
@@ -415,7 +415,7 @@ export default function TalentPage() {
             .co-mbar-count strong { color: #1a1a1a; }
             .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; }
-            .co-mbar-btn.on { border-color: #582681; color: #582681; background: #f8f5fb; }
+            .co-mbar-btn.on { border-color: #582681; color: #582681; background: #f7f7f8; }
             .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
             .co-sheet { width: 100%; background: #fff; border-radius: 18px 18px 0 0; padding: 0 18px calc(20px + env(safe-area-inset-bottom)); max-height: 84vh; overflow-y: auto; animation: co-sheet-up .22s ease; }
             @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -609,7 +609,7 @@ export default function TalentPage() {
             .co-row { display: flex; align-items: center; gap: 10px; }
             .co-row-check { width: 20px; height: 20px; accent-color: #582681; flex-shrink: 0; margin: 0; }
             .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
-            .co-li.on { border-color: #582681; background: #f8f5fb; }
+            .co-li.on { border-color: #582681; background: #f7f7f8; }
             .co-li-r1 { display: flex; align-items: center; gap: 10px; }
             .co-li-namerow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
             .co-li-scrap { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; flex-shrink: 0; }

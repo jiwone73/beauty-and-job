@@ -460,7 +460,7 @@ export default function ExternalCompaniesPanel() {
                       <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
                         {j0 ? (
                           <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 999,
-                            background: isAlba(j0) ? "#eef7f0" : "#f3f0f7",
+                            background: isAlba(j0) ? "#eef7f0" : "#f7f7f8",
                             color: isAlba(j0) ? "#0a7d34" : "#7b7387" }}>
                             {isAlba(j0) ? "알바" : "관리자"}
                           </span>

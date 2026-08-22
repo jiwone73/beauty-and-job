@@ -122,7 +122,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       <div style={{ overflowX: "auto", border: "1px solid #efeff1", borderRadius: 10 }}>
         <table style={{ minWidth: Math.min(640, posCols.length * 96), borderCollapse: "collapse", fontSize: 13.5 }}>
           <thead>
-            <tr style={{ background: "#faf7fd" }}>
+            <tr style={{ background: "#f7f7f8" }}>
               {posCols.map((c) => (
                 <th key={c.key} className="jd-pos-th">{c.label}</th>
               ))}

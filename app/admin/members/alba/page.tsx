@@ -189,7 +189,7 @@ export default function AlbaPage() {
             {data.weeks.map((w) => {
               const done = w.minutes >= weeklyTargetMin;
               return (
-                <tr key={w.index} style={{ borderTop: "1px solid #f2f2f2", background: w.isCurrent ? "#faf7fc" : undefined }}>
+                <tr key={w.index} style={{ borderTop: "1px solid #f2f2f2", background: w.isCurrent ? "#f7f7f8" : undefined }}>
                   <td style={{ padding: "10px 14px", whiteSpace: "nowrap" }}>
                     {w.index}주차{w.isCurrent && <span style={{ marginLeft: 6, fontSize: 11, color: "#582681" }}>이번 주</span>}
                   </td>
