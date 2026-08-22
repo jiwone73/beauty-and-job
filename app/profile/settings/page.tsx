@@ -2,11 +2,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import NotificationModal from "@/components/profile/NotificationModal";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
 import { isOpenToCompanies, 공개, 비공개 } from "@/lib/jobSearchStatus";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
+  const [notifOpen, setNotifOpen] = useState(false);
   const [curPw, setCurPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
@@ -174,6 +176,22 @@ export default function AccountSettingsPage() {
           )}
         </section>
 
+        {/* 알림 설정 — 프로필 톱니가 열던 자리였다. 톱니가 계정 설정으로
+            바뀌면서 갈 곳이 없어져 여기로 들인다. 알림도 계정 설정의 하나다. */}
+        <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px" }}>
+          <button type="button" onClick={() => setNotifOpen(true)}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%",
+              background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ textAlign: "left" }}>
+              <span style={{ display: "block", fontSize: 15, color: "#1a1a1a" }}>알림 설정</span>
+              <span style={{ display: "block", fontSize: 13, color: "#999", marginTop: 4 }}>
+                어떤 알림을 받을지 고릅니다.
+              </span>
+            </span>
+            <ChevronRight size={18} style={{ color: "#c9c3ce", flexShrink: 0 }} />
+          </button>
+        </section>
+
         {/* 회원 탈퇴 */}
         <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px" }}>
           <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: 0 }}>회원 탈퇴</h2>
@@ -192,6 +210,7 @@ export default function AccountSettingsPage() {
       </div>
 
       <CompanyBlockModal open={blockOpen} onClose={() => setBlockOpen(false)} noun={상대 ?? "기업"} />
+      <NotificationModal isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
 
 
     </div>

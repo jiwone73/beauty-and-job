@@ -671,13 +671,16 @@ export default function ProfilePage() {
               </>
             )}
           </div>
-          <button
+          {/* 톱니는 계정 설정으로 간다. 알림 설정만 열던 자리였는데, 톱니를
+              보고 기대하는 것은 알림 하나가 아니라 계정 전반이다.
+              알림 설정은 그 페이지 안으로 옮겼다. */}
+          <Link
+            href="/profile/settings"
             className="profile-settings-btn"
-            onClick={() => setOpenModal("notification")}
-            aria-label="알림 설정"
+            aria-label="계정 설정"
           >
             <Settings size={22} />
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -1073,10 +1076,8 @@ export default function ProfilePage() {
             {/* 아바타 메뉴를 없애면서 계정 설정과 로그아웃이 갈 곳이 없어졌다.
                 내 것을 다루는 자리는 여기이므로 여기에 둔다. */}
             <div className="profile-account">
-              <Link href="/profile/settings" className="profile-account-row">
-                계정 설정
-                <ChevronRight size={17} />
-              </Link>
+              {/* 계정 설정은 위 톱니가 맡는다. 여기 또 두면 같은 곳으로 가는
+                  길이 한 화면에 둘이 된다. */}
               <button type="button" className="profile-account-row logout" onClick={() => {
                 useSignupStore.getState().reset();
                 useProfileStore.getState().reset();
