@@ -283,7 +283,7 @@ export async function sendApplicationCompleteEmail(
                   <p style="font-size:14px;color:#5f5e5a;line-height:1.7;margin:22px 0 24px;">기업이 이력서를 검토한 뒤 개별적으로 연락드려요. 지원 현황은 마이페이지에서 언제든 확인할 수 있어요.</p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
                     <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
-                      <a href="${SITE_URL}/profile?tab=applied" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">지원 현황 보기</a>
+                      <a href="${SITE_URL}/profile/applied" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">지원 현황 보기</a>
                     </td></tr>
                   </table>
                 </td>
@@ -395,7 +395,7 @@ export async function sendResumeViewedEmail(
                   <p style="font-size:14px;color:#5f5e5a;line-height:1.7;margin:22px 0 24px;">지금 서류 검토가 진행되고 있어요. 결과는 기업이 개별적으로 연락드려요. 비슷한 다른 공고에도 함께 지원해보세요.</p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
                     <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
-                      <a href="${SITE_URL}/profile?tab=applied" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">지원 현황 보기</a>
+                      <a href="${SITE_URL}/profile/applied" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">지원 현황 보기</a>
                     </td></tr>
                   </table>
                 </td>

@@ -14,6 +14,7 @@ import { useProfileStore } from "@/lib/store/profileStore";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import NotificationModal from "@/components/profile/NotificationModal";
+import ProfileShell from "@/components/profile/ProfileShell";
 import MyApplicationModal from "@/components/profile/MyApplicationModal";
 import JobSearchCertificateModal from "@/components/profile/JobSearchCertificateModal";
 import JobPostingCertificateModal from "@/components/profile/JobPostingCertificateModal";
@@ -35,16 +36,6 @@ export default function ProfilePage() {
 
   const { setCareerVerified } = useProfileStore();
 
-  const [activeTab, setActiveTab] = useState<"profile" | "resume" | "applied" | "bookmarks">("profile");
-  // URL ?tab= 으로 진입 시 해당 탭 활성화 (이력서 → 지원현황/관심공고 이동용)
-  useEffect(() => {
-    const t = new URLSearchParams(window.location.search).get("tab");
-    if (t === "applied" || t === "bookmarks" || t === "profile") setActiveTab(t);
-  }, []);
-  useEffect(() => {
-    const tab = new URLSearchParams(window.location.search).get("tab");
-    if (tab === "applied" || tab === "bookmarks" || tab === "profile") setActiveTab(tab as any);
-  }, []);
   const [openModal, setOpenModal] = useState<ModalType>(null);
   const [editField, setEditField] = useState<string | null>(null);
   const [birthInput, setBirthInput] = useState("");
@@ -99,24 +90,6 @@ export default function ProfilePage() {
   const [prefSigungu, setPrefSigungu] = useState("");
   const [prefModalOpen, setPrefModalOpen] = useState(false);
   const [jobAreaModal, setJobAreaModal] = useState<null | "OFFICE" | "STORE">(null);
-  const [notifs, setNotifs] = useState<any[]>([]);
-  const [unreadNotif, setUnreadNotif] = useState(0);
-  const [notifOpen, setNotifOpen] = useState(false);
-
-  const loadNotifs = () => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    fetch("/api/users/me/notifications", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((res) => {
-        if (res.success && res.data) {
-          setNotifs(res.data.notifications || []);
-          setUnreadNotif(res.data.unread || 0);
-        }
-      })
-      .catch((e) => console.error("[notifs]", e));
-  };
-  useEffect(() => { loadNotifs(); }, []);
 
   // 카카오 재인증 이메일 변경 결과 처리
   useEffect(() => {
@@ -135,48 +108,6 @@ export default function ProfilePage() {
     }
   }, []);
 
-  const handleNotifClick = async (n: any) => {
-    const token = localStorage.getItem("access_token");
-    if (!n.is_read && token) {
-      await fetch(`/api/users/me/notifications/${n.id}`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      }).catch(() => {});
-    }
-    setNotifOpen(false);
-    loadNotifs();
-    if (n.related_type === "application") setActiveTab("applied");
-  };
-
-  const markAllReadNotif = async () => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    await fetch("/api/users/me/notifications", {
-      method: "PATCH",
-      headers: { Authorization: `Bearer ${token}` },
-    }).catch(() => {});
-    loadNotifs();
-  };
-  const deleteNotif = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    await fetch(`/api/users/me/notifications/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    }).catch(() => {});
-    loadNotifs();
-  };
-  const deleteAllNotif = async () => {
-    if (!confirm("모든 알림을 삭제할까요?")) return;
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    await fetch("/api/users/me/notifications", {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    }).catch(() => {});
-    loadNotifs();
-  };
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -613,7 +544,6 @@ export default function ProfilePage() {
       alert(
         `이력서를 작성하려면 프로필 필수항목을 먼저 완성해 주세요.\n\n[미입력 항목]\n· ${missingRequired.join("\n· ")}`
       );
-      setActiveTab("profile");
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
@@ -621,83 +551,8 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="profile-page">
-      <header className="profile-header">
-        <div className="profile-header-inner">
-          <Link href="/" className="profile-logo">
-            <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
-          </Link>
-
-          <Link href="/jobs" className="profile-header-nav">채용공고</Link>
-          <div style={{ position: "relative", display: "inline-flex", marginLeft: "auto" }}>
-            <button
-              className="profile-settings-btn"
-              onClick={() => setNotifOpen((v) => !v)}
-              aria-label="알림"
-            >
-              <Bell size={22} />
-              {unreadNotif > 0 && <span className="company-notif-badge">{unreadNotif > 9 ? "9+" : unreadNotif}</span>}
-            </button>
-            {notifOpen && (
-              <>
-                <div style={{ position: "fixed", inset: 0, zIndex: 90 }} onClick={() => setNotifOpen(false)} />
-                <div className="company-notif-dropdown" style={{ left: "auto", right: 0 }}>
-                  <div className="company-notif-head">
-                    <span>알림</span>
-                    <span style={{ display: "flex", gap: 10 }}>
-                      {unreadNotif > 0 && <button onClick={markAllReadNotif} className="company-notif-readall">모두 읽음</button>}
-                      {notifs.length > 0 && <button onClick={deleteAllNotif} className="company-notif-readall" style={{ color: "#999" }}>전체 삭제</button>}
-                    </span>
-                  </div>
-                  <div className="company-notif-list">
-                    {notifs.length === 0 ? (
-                      <p className="company-notif-empty">새 알림이 없어요</p>
-                    ) : (
-                      notifs.map((n) => (
-                        <div key={n.id} className={`company-notif-item ${n.is_read ? "" : "unread"}`}
-                          onClick={() => handleNotifClick(n)} style={{ position: "relative" }}>
-                          <span className="company-notif-title">{n.title}</span>
-                          <span className="company-notif-msg">{n.message}</span>
-                          <span className="company-notif-time">{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
-                          <button onClick={(e) => deleteNotif(n.id, e)} aria-label="삭제"
-                            style={{ position: "absolute", top: 10, right: 10, border: "none", background: "transparent", color: "#bbb", cursor: "pointer", padding: 2, lineHeight: 0 }}>
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-          {/* 톱니는 계정 설정으로 간다. 알림 설정만 열던 자리였는데, 톱니를
-              보고 기대하는 것은 알림 하나가 아니라 계정 전반이다.
-              알림 설정은 그 페이지 안으로 옮겼다. */}
-          <Link
-            href="/profile/settings"
-            className="profile-settings-btn"
-            aria-label="계정 설정"
-          >
-            <Settings size={22} />
-          </Link>
-        </div>
-      </header>
-
-      <div className="profile-tabs">
-        <button className={`profile-tab ${activeTab === "profile" ? "active" : ""}`} onClick={() => setActiveTab("profile")}>프로필</button>
-        <button className="profile-tab" onClick={goToResume}>이력서</button>
-        <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>지원현황</button>
-        <button className={`profile-tab ${activeTab === "bookmarks" ? "active" : ""}`} onClick={() => setActiveTab("bookmarks")}>관심공고</button>
-      </div>
-
+    <ProfileShell>
       <div className="profile-content">
-        {activeTab === "applied" ? (
-          <AppliedTab userName={name} />
-        ) : activeTab === "bookmarks" ? (
-          <BookmarksTab />
-        ) : activeTab === "profile" ? (
-          <>
             <section className="profile-section">
               <div className="profile-info-card">
                 <div style={{ padding: "11px 16px", borderBottom: "1px solid #e0d0f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
@@ -1073,9 +928,9 @@ export default function ProfilePage() {
               </button>
             </div>
 
-            {/* 아바타 메뉴를 없애면서 계정 설정과 로그아웃이 갈 곳이 없어졌다.
-                내 것을 다루는 자리는 여기이므로 여기에 둔다. */}
-            <div className="profile-account">
+            {/* 폰에는 사이드 메뉴가 없어 로그아웃이 갈 곳이 여기뿐이다.
+                PC 는 사이드에 있으므로 이 칸을 접는다. */}
+            <div className="profile-account pf-mob">
               {/* 계정 설정은 위 톱니가 맡는다. 여기 또 두면 같은 곳으로 가는
                   길이 한 화면에 둘이 된다. */}
               <button type="button" className="profile-account-row logout" onClick={() => {
@@ -1089,8 +944,6 @@ export default function ProfilePage() {
                 로그아웃
               </button>
             </div>
-          </>
-        ) : null}
       </div>
 
       <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} />
@@ -1135,7 +988,7 @@ export default function ProfilePage() {
         </div>
       )}
 
-    </main>
+    </ProfileShell>
   );
 }
 function InfoRow({ label, value, isEmpty, isLast, onClick, required }: {
@@ -1147,362 +1000,5 @@ function InfoRow({ label, value, isEmpty, isLast, onClick, required }: {
       <span className={`profile-info-value ${isEmpty ? "is-empty" : ""}`}>{value}</span>
       <ChevronRight size={16} className="profile-info-chevron" />
     </button>
-  );
-}
-
-function AppliedTab({ userName }: { userName: string }) {
-  const router = useRouter();
-  const [apps, setApps] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [viewAppId, setViewAppId] = useState<string | null>(null);
-  const [showCert, setShowCert] = useState(false);
-  const [certApp, setCertApp] = useState<any | null>(null);
-  const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
-  // 평소엔 체크박스를 감춰 목록을 읽기 좋게 두고, '선택'을 눌렀을 때만 고르는 화면이 된다.
-  const [selectMode, setSelectMode] = useState(false);
-  const 선택끝내기 = () => { setSelectMode(false); setSelectedApps(new Set()); };
-  const [menuAppId, setMenuAppId] = useState<string | null>(null);
-  const toggleSelect = (id: string) =>
-    setSelectedApps((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  useEffect(() => {
-    if (!menuAppId) return;
-    const close = () => setMenuAppId(null);
-    window.addEventListener("click", close);
-    return () => window.removeEventListener("click", close);
-  }, [menuAppId]);
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) { setLoading(false); return; }
-    let cancelled = false;
-    const load = async (attempt = 0): Promise<void> => {
-      try {
-        const r = await fetch("/api/users/me/applications", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const res = await r.json();
-        if (cancelled) return;
-        if (res.success) {
-          setApps(res.data || []);
-          setError(false);
-          setLoading(false);
-        } else {
-          throw new Error(res.error?.message || "응답 실패");
-        }
-      } catch (e) {
-        if (cancelled) return;
-        if (attempt < 2) {
-          setTimeout(() => load(attempt + 1), 600); // 콜드스타트/일시 실패 시 재시도 (최대 3회)
-        } else {
-          console.error("[applications]", e);
-          setError(true);
-          setLoading(false);
-        }
-      }
-    };
-    load();
-    return () => { cancelled = true; };
-  }, []);
-
-  const handleCancel = async (appId: string) => {
-    if (!confirm("이 지원을 취소하시겠어요? 취소하면 되돌릴 수 없어요.")) return;
-    const token = localStorage.getItem("access_token");
-    try {
-      const res = await fetch(`/api/users/me/applications/${appId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (data.success) {
-        setApps((prev) => prev.map((a) => a.id === appId ? { ...a, status: "WITHDRAWN" } : a));
-      } else {
-        alert(data.error?.message || "지원 취소에 실패했어요.");
-      }
-    } catch {
-      alert("지원 취소 중 오류가 발생했어요.");
-    }
-  };
-
-  // 종료된 지원 건을 목록에서만 숨김 (기업에는 영향 없음)
-  const handleHide = async (appId: string) => {
-    if (!confirm("이 지원 내역을 목록에서 삭제할까요?\n(기업에는 영향을 주지 않으며, 되돌릴 수 없어요.)")) return;
-    const token = localStorage.getItem("access_token");
-    try {
-      const res = await fetch(`/api/users/me/applications/${appId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ hidden: true }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setApps((prev) => prev.filter((a) => a.id !== appId));
-      } else {
-        alert(data.error?.message || "삭제에 실패했어요.");
-      }
-    } catch {
-      alert("삭제 중 오류가 발생했어요.");
-    }
-  };
-
-  const handleBulkHide = async () => {
-    if (selectedApps.size === 0) { alert("삭제할 지원 내역을 선택해주세요."); return; }
-    if (!confirm(`선택한 ${selectedApps.size}건을 목록에서 삭제할까요?\n(기업에는 영향을 주지 않으며, 되돌릴 수 없어요.)`)) return;
-    const token = localStorage.getItem("access_token");
-    const ids = Array.from(selectedApps);
-    for (const id of ids) {
-      try {
-        await fetch(`/api/users/me/applications/${id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ hidden: true }),
-        });
-      } catch {}
-    }
-    setApps((prev) => prev.filter((a) => !selectedApps.has(a.id)));
-    setSelectedApps(new Set());
-  };
-
-  // 면접·합격·불합격은 매장이 스스로 정리하려고 누르는 값이지 지원자에게 보내는 통보가 아니다.
-  // 그대로 노출하면 매장이 목록을 정리한 것뿐인데 '불합격 통보'처럼 읽힌다.
-  // 합격은 어차피 매장이 직접 연락하고, 떨어진 경우는 공고가 마감되면 알게 된다.
-  // 지원자에게는 '접수됐는지 / 열어봤는지'까지만 보여준다.
-  const statusTextColor: Record<string, string> = {
-    APPLIED: "#5f0080", REVIEWING: "#5f0080", VIEWED: "#5f0080",
-    INTERVIEW: "#5f0080", PASSED: "#5f0080", REJECTED: "#5f0080", WITHDRAWN: "#999",
-  };
-  const statusLabel: Record<string, string> = {
-    APPLIED: "지원완료", REVIEWING: "열람됨", VIEWED: "열람됨",
-    INTERVIEW: "열람됨", PASSED: "열람됨", REJECTED: "열람됨", WITHDRAWN: "지원취소",
-  };
-  const statusStyle: Record<string, string> = {
-    APPLIED: "applied-status-review", REVIEWING: "applied-status-review", VIEWED: "applied-status-review",
-    INTERVIEW: "applied-status-review", PASSED: "applied-status-review",
-    REJECTED: "applied-status-review", WITHDRAWN: "applied-status-fail",
-  };
-
-  if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;
-  if (error) return (
-    <div className="profile-empty-tab">
-      <div className="profile-empty-icon">⚠️</div>
-      <p>지원 내역을 불러오지 못했어요.<br />잠시 후 새로고침해 주세요.</p>
-    </div>
-  );
-  if (apps.length === 0) return (
-    <div className="profile-empty-tab">
-      <div className="profile-empty-icon">📋</div>
-      <p>아직 지원한 공고가 없어요</p>
-      <a href="/jobs" className="profile-empty-btn">채용공고 보러가기</a>
-    </div>
-  );
-
-  return (
-    <div className="profile-tab-content">
-      <div className="profile-select-bar">
-        {selectMode ? (
-          <>
-            <label className="profile-select-all">
-              <input type="checkbox" className="applied-check"
-                checked={apps.length > 0 && selectedApps.size === apps.length}
-                onChange={(e) => setSelectedApps(e.target.checked ? new Set(apps.map((a) => a.id)) : new Set())}
-              />
-              전체{selectedApps.size > 0 ? ` (${selectedApps.size})` : ""}
-            </label>
-            <button className="profile-select-btn" style={{ marginLeft: "auto" }} onClick={선택끝내기}>취소</button>
-            {/* 삭제는 고른 것이 있을 때만 나타난다. 아무것도 안 고른 채 눌러 경고를 보는 일이 없다. */}
-            {selectedApps.size > 0 && (
-              <button className="profile-select-btn danger" onClick={async () => { await handleBulkHide(); setSelectMode(false); }}>
-                삭제 {selectedApps.size}
-              </button>
-            )}
-          </>
-        ) : (
-          <>
-            <button className="profile-select-btn" onClick={() => setSelectMode(true)}>선택</button>
-            <button
-              className="profile-select-btn accent"
-              style={{ marginLeft: "auto" }}
-              onClick={() => { setSelectMode(true); alert("증명서에 넣을 지원 내역을 골라 주세요."); }}
-            >
-              📄 취업활동 증명서
-            </button>
-          </>
-        )}
-      </div>
-      {selectMode && selectedApps.size > 0 && (
-        <button
-          className="profile-select-btn accent"
-          style={{ width: "100%", marginBottom: 12 }}
-          onClick={() => setShowCert(true)}
-        >
-          📄 고른 {selectedApps.size}건으로 취업활동 증명서
-        </button>
-      )}
-      <div className="applied-list">
-        {apps.map((app) => {
-          const date = new Date(app.applied_at);
-          const dateStr = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
-          return (
-            <div key={app.id} className="applied-item">
-              {selectMode && (
-                <input type="checkbox" className="applied-check"
-                  checked={selectedApps.has(app.id)}
-                  onChange={() => toggleSelect(app.id)}
-                />
-              )}
-              <div
-                className="applied-body"
-                onClick={() => (selectMode ? toggleSelect(app.id) : app.job_id && router.push(`/jobs/${app.job_id}`))}
-              >
-                <h3 className="applied-position">{app.job_title}</h3>
-                <span className="applied-company">{app.brand_name || app.company_name}</span>
-                <span className="applied-date">지원일 {dateStr}</span>
-              </div>
-              <div className="applied-right">
-                <div className="applied-menu-wrap">
-                  <button
-                    className="applied-menu-btn"
-                    aria-label="더보기"
-                    onClick={(e) => { e.stopPropagation(); setMenuAppId(menuAppId === app.id ? null : app.id); }}
-                  >
-                    <MoreHorizontal size={18} />
-                  </button>
-                  {menuAppId === app.id && (
-                    <div className="applied-menu" onClick={(e) => e.stopPropagation()}>
-                      <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setViewAppId(app.id); }}>내 지원서 보기</button>
-                      <button className="applied-menu-item" onClick={() => { setMenuAppId(null); setCertApp(app); }}>공고 증명서</button>
-                      {(app.status === "APPLIED" || app.status === "VIEWED") ? (
-                        <button className="applied-menu-item danger" onClick={() => { setMenuAppId(null); handleCancel(app.id); }}>지원 취소</button>
-                      ) : (
-                        <button className="applied-menu-item disabled" disabled>지원 취소</button>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <span className="applied-status-text" style={{ color: statusTextColor[app.status] || "#5f0080" }}>
-                  {statusLabel[app.status] || app.status}
-                </span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      {viewAppId && (
-        <MyApplicationModal applicationId={viewAppId} onClose={() => setViewAppId(null)} />
-      )}
-      {showCert && (
-        <JobSearchCertificateModal name={userName} apps={apps.filter((a) => selectedApps.has(a.id))} onClose={() => setShowCert(false)} />
-      )}
-      {certApp && (
-        <JobPostingCertificateModal name={userName} app={certApp} onClose={() => setCertApp(null)} />
-      )}
-    </div>
-  );
-}
-
-function BookmarksTab() {
-  const [bookmarkedJobs, setBookmarkedJobs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  // 지원현황과 같은 방식 — 평소엔 목록만 보이고, '선택'을 눌렀을 때만 고르는 화면이 된다.
-  const [selectMode, setSelectMode] = useState(false);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const toggle = (id: string) =>
-    setSelected((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const 선택끝내기 = () => { setSelectMode(false); setSelected(new Set()); };
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) { setLoading(false); return; }
-    fetch("/api/users/me/bookmarks", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((res) => { if (res.success) setBookmarkedJobs(res.data || []); })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
-
-  const formatDeadline = (deadline: string | null) => {
-    if (!deadline) return "상시";
-    const today = new Date();
-    const dl = new Date(deadline);
-    const dDay = Math.ceil((dl.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    if (dDay < 0) return "마감";
-    if (dDay === 0) return "오늘 마감";
-    return `D-${dDay}`;
-  };
-
-
-  const 고른것삭제 = async () => {
-    if (selected.size === 0) return;
-    if (!confirm(`고른 ${selected.size}건을 관심목록에서 지울까요?`)) return;
-    const token = localStorage.getItem("access_token");
-    for (const id of Array.from(selected)) {
-      try {
-        await fetch(`/api/users/me/bookmarks?job_posting_id=${id}`, {
-          method: "DELETE", headers: { Authorization: `Bearer ${token}` },
-        });
-      } catch { /* 한 건 실패해도 나머지는 계속 지운다 */ }
-    }
-    setBookmarkedJobs((prev) => prev.filter((j) => !selected.has(j.job_posting_id)));
-    선택끝내기();
-  };
-
-  if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;
-  if (bookmarkedJobs.length === 0) return (
-    <div className="profile-empty-tab">
-      <div className="profile-empty-icon">🔖</div>
-      <p>저장한 공고가 없어요<br />관심있는 공고를 스크랩해보세요</p>
-      <a href="/jobs" className="profile-empty-btn">채용공고 보러가기</a>
-    </div>
-  );
-
-  return (
-    <div className="profile-tab-content">
-      <div className="profile-select-bar">
-        {selectMode ? (
-          <>
-            <label className="profile-select-all">
-              <input type="checkbox" className="applied-check"
-                checked={bookmarkedJobs.length > 0 && selected.size === bookmarkedJobs.length}
-                onChange={(e) => setSelected(e.target.checked ? new Set(bookmarkedJobs.map((j) => j.job_posting_id)) : new Set())}
-              />
-              전체{selected.size > 0 ? ` (${selected.size})` : ""}
-            </label>
-            <button className="profile-select-btn" style={{ marginLeft: "auto" }} onClick={선택끝내기}>취소</button>
-            {selected.size > 0 && (
-              <button className="profile-select-btn danger" onClick={고른것삭제}>삭제 {selected.size}</button>
-            )}
-          </>
-        ) : (
-          <button className="profile-select-btn" onClick={() => setSelectMode(true)}>선택</button>
-        )}
-      </div>
-      <div className="bookmark-list">
-        {bookmarkedJobs.map((job) => {
-          const 안쪽 = (
-            <>
-              {selectMode && (
-                <input type="checkbox" className="applied-check"
-                  checked={selected.has(job.job_posting_id)}
-                  onChange={() => toggle(job.job_posting_id)}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              )}
-              <div className="bookmark-item-left">
-                <h3 className="bookmark-title">{job.title}</h3>
-                <span className="bookmark-brand">{job.brand_name || job.company_name}</span>
-                <span className="bookmark-location">📍 {job.location ? shortRegion(job.location) : "협의"}</span>
-              </div>
-              <span className="bookmark-deadline">{formatDeadline(job.deadline)}</span>
-            </>
-          );
-          // 고르는 중에는 공고로 넘어가면 안 되므로 링크가 아니라 눌러서 체크하는 칸이 된다.
-          return selectMode ? (
-            <div key={job.id} className="bookmark-item" onClick={() => toggle(job.job_posting_id)} style={{ cursor: "pointer" }}>
-              {안쪽}
-            </div>
-          ) : (
-            <a key={job.id} href={`/jobs/${job.job_posting_id}`} className="bookmark-item">{안쪽}</a>
-          );
-        })}
-      </div>
-    </div>
   );
 }

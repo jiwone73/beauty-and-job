@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import NotificationModal from "@/components/profile/NotificationModal";
+import ProfileShell from "@/components/profile/ProfileShell";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
 import { isOpenToCompanies, 공개, 비공개 } from "@/lib/jobSearchStatus";
 
@@ -93,15 +94,17 @@ export default function AccountSettingsPage() {
 
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f7f7f8" }}>
-      <header style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px", background: "#fff", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 10 }}>
-        <button onClick={() => router.back()} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
-          <ChevronLeft size={24} />
+    <ProfileShell>
+      {/* 폰에는 탭 줄이 접혀 이 화면이 무엇인지 알려 줄 것도, 빠져나갈 길도
+          없다. 제목과 뒤로가기를 함께 둔다. PC 는 사이드 메뉴가 둘 다 맡는다. */}
+      <div className="pf-set-title">
+        <button type="button" onClick={() => router.back()} aria-label="뒤로">
+          <ChevronLeft size={22} />
         </button>
-        <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>계정 설정</h1>
-      </header>
+        <h1>계정 설정</h1>
+      </div>
 
-      <div style={{ maxWidth: 600, margin: "0 auto", padding: "12px 16px 24px" }}>
+      <div className="pf-set-body">
         {/* 프로필 공개 — 원티드처럼 계정 설정에 둔다. 프로필 화면에도 두면
             같은 값을 고치는 곳이 둘이 되어 어느 쪽이 맞는지 헷갈린다. */}
         <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
@@ -211,8 +214,6 @@ export default function AccountSettingsPage() {
 
       <CompanyBlockModal open={blockOpen} onClose={() => setBlockOpen(false)} noun={상대 ?? "기업"} />
       <NotificationModal isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
-
-
-    </div>
+    </ProfileShell>
   );
 }

@@ -398,13 +398,6 @@ function ResumePageContent() {
           </div>
         </div>
       </header>
-      <div className="profile-tabs">
-        <button className="profile-tab" onClick={() => router.push("/profile")}>프로필</button>
-        <button className="profile-tab active" onClick={() => router.push("/profile/resume")}>이력서</button>
-        <button className="profile-tab" onClick={() => router.push("/profile?tab=applied")}>지원현황</button>
-        <button className="profile-tab" onClick={() => router.push("/profile?tab=bookmarks")}>관심공고</button>
-      </div>
-
       {/* 메뉴로 바로 들어왔는데 프로필이 비어 있으면 빈 이력서가 열린다.
           처음 온 사람의 순서(프로필 → 이력서)를 여기서 다시 잡아 준다. */}
       {!name && (
