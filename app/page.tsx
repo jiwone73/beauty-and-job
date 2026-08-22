@@ -214,7 +214,7 @@ function Hero() {
                   아래 이벤트 카드가 가져간다. */}
               <div className="mt-card mt-nc">
                 <Link href="/notice" className="mt-nc-tag">
-                  <Megaphone size={16} className="mt-ic" />공지
+                  <Megaphone size={17} className="mt-ic" />공지
                 </Link>
                 <Link href={공지 ? `/notice?open=${공지.id}` : "/notice"} className="mt-notice">
                   <span className="nt">{공지?.title || "뷰티워크 서비스 무료 이용 안내"}</span>

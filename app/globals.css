@@ -12305,8 +12305,10 @@ button,
 
 /* 한 줄짜리 카드. 세로 여백을 조여 제 높이만 쓰게 한다. */
 .mt-nc { display: flex; align-items: center; gap: 11px; padding: 13px 20px; }
-.mt-nc-tag { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
-  font-size: 13.5px; font-weight: 600; color: #8b84a0; text-decoration: none; }
+/* '이달의 이벤트' 제목과 같은 글자. 두 카드가 위아래로 붙어 있으니 머리글
+   무게가 같아야 한 짝으로 읽힌다. */
+.mt-nc-tag { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
+  font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; text-decoration: none; }
 .mt-nc-tag:hover { color: var(--color-primary); }
 .mt-nc .mt-notice { flex: 1; min-width: 0; }
 .mt-nc .nt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -12345,7 +12347,7 @@ button,
 .mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #7a5f9a; flex-shrink: 0; }
 .mt-more { font-size: 13px; color: #9a94a4; text-decoration: none; }
 .mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-decoration: none; color: inherit; }
-.mt-notice .nt { display: block; font-size: 16px; font-weight: 400; color: #222; line-height: 1.35; }
+.mt-notice .nt { display: block; font-size: 15px; font-weight: 400; color: #222; line-height: 1.35; }
 
 /* 이달의 이벤트 — 개인회원·기업회원 몫을 나란히 둔다. 누가 받는 혜택인지가
    먼저 보여야 자기 것만 읽고 넘어갈 수 있다. */
