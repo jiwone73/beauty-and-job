@@ -12,7 +12,7 @@
   --color-primary: #582681;
   --color-primary-hover: #431a63;
   --color-primary-soft: #f7f7f8;
-  --color-primary-light: #a78cc2;
+  --color-primary-light: #a8a8ad;
   --color-primary-pale: #f8f5fb;
   --color-text: #1a1a1a;
   --color-text-sub: #6b6b6b;
@@ -107,7 +107,7 @@
 .gnb-shine .gnb-shine-t {
   background-image: linear-gradient(100deg,
     #2b2b2b 0%, #2b2b2b 26%,
-    #b0389c 40%, #ff6fb5 50%, #b0389c 60%,
+    #582681 40%, #9b6fc4 50%, #582681 60%,
     #2b2b2b 74%, #2b2b2b 100%);
   background-size: 300% 100%;
   background-position: 100% 0;
@@ -137,7 +137,7 @@
   letter-spacing: 0.3px;
 }
 .tag-gray { background: #f0f0f2; color: #777; }
-.tag-new { background: #1f2024; color: #c896d8; }
+.tag-new { background: #1f2024; color: #a8a8ad; }
 
 .header-right {
   display: flex;
@@ -526,7 +526,7 @@
    섹션 3: 뉴스레터
    =========================================== */
 .newsletter-box {
-  background: linear-gradient(120deg, #9b5de5 0%, #f15bb5 100%);
+  background: linear-gradient(120deg, #582681 0%, #f15bb5 100%);
   border-radius: 16px;
   padding: 28px 48px;
   display: grid;
@@ -617,7 +617,7 @@
   font-weight: 800;
   padding: 4px 8px;
   border-radius: 4px;
-  background: #a78cc2;
+  background: #a8a8ad;
   color: #1f2024;
   letter-spacing: 1px;
   margin-bottom: 16px;
@@ -626,7 +626,7 @@
 
 .premium-brand {
   font-size: 13px;
-  color: #c896d8;
+  color: #a8a8ad;
   font-weight: 600;
   margin-bottom: 8px;
 }
@@ -659,7 +659,7 @@
 .premium-salary-value {
   font-size: 14px;
   font-weight: 700;
-  color: #c896d8;
+  color: #a8a8ad;
 }
 
 /* ===========================================
@@ -1802,7 +1802,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobs-gnb-badge { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; }
 .jobs-gnb-badge.green { background: #e8f5e9; color: #2e7d32; }
 .jobs-gnb-badge.purple { background: var(--color-primary-soft); color: var(--color-primary); }
-.jobs-gnb-badge.dark { background: #1f2024; color: #c896d8; }
+.jobs-gnb-badge.dark { background: #1f2024; color: #a8a8ad; }
 .jobs-header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .jobs-search-icon { background: transparent; border: none; cursor: pointer; padding: 8px; color: #333; display: flex; align-items: center; border-radius: 8px; transition: background 0.15s; }
 .jobs-search-icon:hover { background: transparent; }
@@ -2305,7 +2305,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 모집부문 표. 좁은 화면에서는 칸 사이 여백이 20px 씩 붙어 일곱 열이 화면을 넘어가고,
    가로로 밀어야 급여가 보였다. 여백만 줄여 한눈에 들어오게 한다. */
 /* 표를 테두리로 감싸므로 첫 칸에도 왼쪽 여백을 준다(전엔 0이라 글이 선에 붙었다). */
-.jd-pos-th { text-align: left; padding: 10px 20px 10px 12px; color: #7a6f8a; font-weight: 600; border-bottom: 1px solid #efeff1; white-space: nowrap; }
+.jd-pos-th { text-align: left; padding: 10px 20px 10px 12px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; white-space: nowrap; }
 .jd-pos-td { padding: 12px 20px 12px 12px; border-bottom: none; white-space: nowrap; line-height: 1.6; }
 @media (max-width: 640px) {
   .jd-pos-th, .jd-pos-td { padding-right: 10px; padding-left: 10px; }
@@ -4924,7 +4924,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   flex-shrink: 0;
 }
 .applied-status-review { background: #fff3cd; color: #856404; }
-.applied-status-pass { background: #f7f7f8; color: #4c1d95; }
+.applied-status-pass { background: #f7f7f8; color: #582681; }
 .applied-status-fail { background: #fee2e2; color: #991b1b; }
 .applied-status-interview { background: #f7f7f8; color: #1e40af; }
 
@@ -5379,8 +5379,8 @@ div:has(> table.admin-table),
   font-weight: 600;
   white-space: nowrap;
 }
-.admin-badge-success { background: #f7f7f8; color: #4c1d95; }
-.admin-badge-warning { background: #fef3c7; color: #4c1d95; }
+.admin-badge-success { background: #f7f7f8; color: #582681; }
+.admin-badge-warning { background: #fef3c7; color: #582681; }
 .admin-badge-danger { background: #fee2e2; color: #991b1b; }
 .admin-badge-info { background: #f7f7f8; color: #1e40af; }
 .admin-badge-neutral { background: #f3f4f6; color: #374151; }
@@ -5738,7 +5738,7 @@ div:has(> table.admin-table),
 .jobpost-form textarea::placeholder { color: #d3d3d3; }
 /* 원티드식 인라인 편집 카드: 편집 중이면 보라 테두리 강조 */
 .jobpost-form .company-card { transition: border-color .15s, box-shadow .15s; }
-.jobpost-form .company-card:focus-within { border-color: #b389d4; box-shadow: 0 0 0 3px rgba(95,0,128,0.06); }
+.jobpost-form .company-card:focus-within { border-color: #a8a8ad; box-shadow: 0 0 0 3px rgba(95,0,128,0.06); }
 /* number 스피너(위/아래 화살표) 제거 — 숫자 잘림 방지 */
 .jobpost-form input[type="number"]::-webkit-outer-spin-button,
 .jobpost-form input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -6176,7 +6176,7 @@ div:has(> table.admin-table),
   padding: 3px 8px;
   border-radius: 20px;
 }
-.admin-rsc-sub.green { background: #f7f7f8; color: #4c1d95; }
+.admin-rsc-sub.green { background: #f7f7f8; color: #582681; }
 .admin-rsc-sub.blue { background: #f7f7f8; color: #1e40af; }
 
 /* 분할 통계 */
@@ -6315,7 +6315,7 @@ div:has(> table.admin-table),
   padding: 3px 8px;
   border-radius: 20px;
 }
-.admin-rsc-sub.green { background: #f7f7f8; color: #4c1d95; }
+.admin-rsc-sub.green { background: #f7f7f8; color: #582681; }
 .admin-rsc-sub.blue { background: #f7f7f8; color: #1e40af; }
 
 /* 분할 통계 */
@@ -6574,12 +6574,12 @@ div:has(> table.admin-table),
 .admin-status-select:hover { border-color: rgba(0,0,0,0.15); }
 .admin-status-success {
   background-color: #f7f7f8;
-  color: #4c1d95;
+  color: #582681;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23065f46'/%3E%3C/svg%3E");
 }
 .admin-status-warning {
   background-color: #fef3c7;
-  color: #4c1d95;
+  color: #582681;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2392400e'/%3E%3C/svg%3E");
 }
 .admin-status-danger {
@@ -6684,7 +6684,7 @@ div:has(> table.admin-table),
   border-radius: 10px;
   margin-bottom: 12px;
 }
-.admin-upload-done-title { font-size: 15px; font-weight: 700; color: #4c1d95; margin: 0 0 4px; }
+.admin-upload-done-title { font-size: 15px; font-weight: 700; color: #582681; margin: 0 0 4px; }
 .admin-upload-done-file { font-size: 13px; color: #888; margin: 0; }
 
 /* 대시보드 가입자 서브 통계 */
@@ -7181,14 +7181,14 @@ div:has(> table.admin-table),
   font-size: 11px;
   font-weight: 600;
 }
-.company-badge.active { background: #f7f7f8; color: #4c1d95; }
+.company-badge.active { background: #f7f7f8; color: #582681; }
 .company-badge.closed { background: #f3f4f6; color: #374151; }
 .company-badge.new { background: #fee2e2; color: #991b1b; }
 .company-badge.viewed { background: #f3f4f6; color: #374151; }
-.company-badge-warning { background: #fef3c7; color: #4c1d95; }
+.company-badge-warning { background: #fef3c7; color: #582681; }
 .company-badge-info { background: #f7f7f8; color: #1e40af; }
-.company-badge-purple { background: #f7f7f8; color: #5b21b6; }
-.company-badge-success { background: #f7f7f8; color: #4c1d95; }
+.company-badge-purple { background: #f7f7f8; color: #582681; }
+.company-badge-success { background: #f7f7f8; color: #582681; }
 .company-badge-danger { background: #fee2e2; color: #991b1b; }
 
 /* 버튼 */
@@ -8196,7 +8196,7 @@ div:has(> table.admin-table),
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: #8b84a0;
+  color: #6f6f75;
   font-size: 13.5px;
   font-weight: 600;
   letter-spacing: -.2px;
@@ -8205,7 +8205,7 @@ div:has(> table.admin-table),
   white-space: nowrap;
   font-family: inherit;
 }
-.hero-type-btn:hover { color: #6b6480; }
+.hero-type-btn:hover { color: #6f6f75; }
 /* 고른 쪽은 로고 보라로 채운다. 연보라는 로고에 없는 색이라 쓰지 않는다 —
    옅게 칠하면 고른 것인지 아닌지가 흐려지기도 한다. */
 .hero-type-btn.active {
@@ -8242,7 +8242,7 @@ div:has(> table.admin-table),
   box-shadow: 0 2px 8px rgba(95,0,128,0.2);
 }
 .jobs-type-tab:hover:not(.active) {
-  border-color: #8560a5;
+  border-color: #582681;
   color: #582681;
 }
 
@@ -8844,7 +8844,7 @@ div:has(> table.admin-table),
   display: flex;
   background: none;
   border: none;
-  color: #9a7bb0;
+  color: #6f6f75;
   cursor: pointer;
   padding: 0;
 }
@@ -9589,7 +9589,7 @@ div:has(> table.admin-table),
   color: #fff;
 }
 .company-wizard-service-item.primary:hover {
-  background: #6d28d9;
+  background: #582681;
 }
 .company-wizard-service-icon {
   font-size: 22px;
@@ -9712,7 +9712,7 @@ div:has(> table.admin-table),
   color: #fff;
 }
 .company-wizard-service-item.primary:hover {
-  background: #6d28d9;
+  background: #582681;
 }
 .company-wizard-service-icon {
   font-size: 22px;
@@ -9793,9 +9793,9 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: background 0.15s;
 }
-.co-btn-primary:hover { background: #6d28d9; }
-.co-btn-primary.purple { background: #5b21b6; }
-.co-btn-primary.purple:hover { background: #4c1d95; }
+.co-btn-primary:hover { background: #582681; }
+.co-btn-primary.purple { background: #582681; }
+.co-btn-primary.purple:hover { background: #582681; }
 .co-btn-primary.large { font-size: 15px; padding: 15px 28px; }
 
 .co-btn-outline-dark {
@@ -9937,7 +9937,7 @@ div:has(> table.admin-table),
 }
 .co-type-btn:hover { background: #f7f7f8; }
 .co-type-btn.primary { background: #582681; color: #fff; }
-.co-type-btn.primary:hover { background: #6d28d9; }
+.co-type-btn.primary:hover { background: #582681; }
 
 /* ── 주요 서비스 4종 ── */
 .co-service-grid {
@@ -10223,9 +10223,9 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: background 0.15s;
 }
-.co-btn-primary:hover { background: #6d28d9; }
-.co-btn-primary.purple { background: #5b21b6; }
-.co-btn-primary.purple:hover { background: #4c1d95; }
+.co-btn-primary:hover { background: #582681; }
+.co-btn-primary.purple { background: #582681; }
+.co-btn-primary.purple:hover { background: #582681; }
 .co-btn-primary.large { font-size: 15px; padding: 15px 28px; }
 
 .co-btn-outline-dark {
@@ -10367,7 +10367,7 @@ div:has(> table.admin-table),
 }
 .co-type-btn:hover { background: #f7f7f8; }
 .co-type-btn.primary { background: #582681; color: #fff; }
-.co-type-btn.primary:hover { background: #6d28d9; }
+.co-type-btn.primary:hover { background: #582681; }
 
 /* ── 주요 서비스 4종 ── */
 .co-service-grid {
@@ -10670,7 +10670,7 @@ div:has(> table.admin-table),
   white-space: nowrap;
   flex-shrink: 0;
 }
-.cid-post-btn:hover { background: #6d28d9; }
+.cid-post-btn:hover { background: #582681; }
 
 /* 메뉴 */
 .cid-menu-title {
@@ -10897,7 +10897,7 @@ div:has(> table.admin-table),
   justify-content: center; margin-bottom: 28px;
 }
 .mat-hero-chips span {
-  font-size: 13px; font-weight: 500; color: #4c1d95;
+  font-size: 13px; font-weight: 500; color: #582681;
   background: #fff; border: 1px solid #c4b5fd;
   padding: 6px 14px; border-radius: 20px;
 }
@@ -10908,7 +10908,7 @@ div:has(> table.admin-table),
   padding: 14px 28px; border-radius: 12px;
   text-decoration: none; transition: background 0.15s;
 }
-.mat-hero-btn:hover { background: #6d28d9; }
+.mat-hero-btn:hover { background: #582681; }
 
 /* 섹션 공통 */
 .mat-section { padding: 56px 20px; }
@@ -11002,7 +11002,7 @@ div:has(> table.admin-table),
 .mat-fee-note {
   background: #f7f7f8; border: 1px solid #c4b5fd;
   border-radius: 10px; padding: 14px 18px;
-  font-size: 13px; color: #4c1d95; line-height: 1.6;
+  font-size: 13px; color: #582681; line-height: 1.6;
 }
 
 /* 하단 CTA */
@@ -11107,7 +11107,7 @@ div:has(> table.admin-table),
 }
 .co-type-btn:hover { background: #f7f7f8; }
 .co-type-btn.primary { background: #582681; color: #fff; }
-.co-type-btn.primary:hover { background: #6d28d9; }
+.co-type-btn.primary:hover { background: #582681; }
 
 /* 이용절차 세로 */
 .co-steps-vertical { display: flex; flex-direction: column; gap: 0; }
@@ -12247,7 +12247,7 @@ button,
 .mainTop, .mainTop button, .mainTop input, .mainTop a { font-family: var(--font-sans); }
 .mainTop { padding: 16px 0 4px; }
 .mainTop .container { max-width: 1384px; }
-.mt-eyebrow { font-size: 13px; letter-spacing: 2.2px; color: #7a5f9a; font-weight: 600; }
+.mt-eyebrow { font-size: 13px; letter-spacing: 2.2px; color: #582681; font-weight: 600; }
 
 .mt-hero {
   position: relative; display: block; height: 190px; border-radius: 16px;
@@ -12331,7 +12331,7 @@ button,
   font-size: 13px; font-weight: 700; white-space: nowrap; padding: 0;
   background-image: linear-gradient(100deg,
     #582681 0%, #582681 26%,
-    #b0389c 40%, #ff6fb5 50%, #b0389c 60%,
+    #582681 40%, #9b6fc4 50%, #582681 60%,
     #582681 74%, #582681 100%);
   background-size: 300% 100%;
   background-position: 100% 0;
@@ -12346,7 +12346,7 @@ button,
 
 /* 카드 제목 앞 아이콘. 점 하나보다 무엇에 관한 칸인지 먼저 말해 준다. */
 .mt-ic { color: var(--color-primary); flex-shrink: 0; }
-.mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #7a5f9a; flex-shrink: 0; }
+.mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #582681; flex-shrink: 0; }
 .mt-more { font-size: 13px; color: #9a94a4; text-decoration: none; }
 .mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-decoration: none; color: inherit; }
 .mt-notice .nt { display: block; font-size: 15px; font-weight: 400; color: #222; line-height: 1.35; }
@@ -12383,7 +12383,7 @@ button,
 .mt-tk-view { flex: 1; min-width: 0; overflow: hidden; }
 .mt-tk-track { display: inline-flex; align-items: center; gap: 36px; white-space: nowrap; animation: mtRoll 32s linear infinite; }
 .mt-tk-item { font-size: 14px; color: #6b6b6b; text-decoration: none; }
-.mt-tk-item i { font-style: normal; font-weight: 700; color: #7a5f9a; margin-right: 7px; font-size: 12px; letter-spacing: .5px; }
+.mt-tk-item i { font-style: normal; font-weight: 700; color: #582681; margin-right: 7px; font-size: 12px; letter-spacing: .5px; }
 @keyframes mtRoll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .mt-tk-track { animation: none; } }
 
@@ -12463,7 +12463,7 @@ button,
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: #8b84a0;
+  color: #6f6f75;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -.2px;
@@ -12477,7 +12477,7 @@ button,
 .jobs-type-tab:hover,
 .salary-tab:hover,
 .salary-sort-btn:hover,
-.jobs-sort-btn:hover { color: #6b6480; border-color: transparent; background: transparent; }
+.jobs-sort-btn:hover { color: #6f6f75; border-color: transparent; background: transparent; }
 /* 고른 쪽은 로고 보라로 채운다. 판은 무채색이라 채운 쪽만 색을 갖고,
    무엇을 골랐는지가 한눈에 들어온다. */
 .seg-btn.active, .seg-btn.on,
@@ -12812,7 +12812,7 @@ button,
 .jobs-side-grp-h:hover { background: #f8f5fb; }
 .jobs-side-grp-h > button:first-child { flex: 1; min-width: 0; }
 .jobs-side-grp-h.on > button:first-child { color: var(--color-primary); font-weight: 700; }
-.jobs-side-grp-h em { font-style: normal; font-size: 11.5px; font-weight: 500; color: #c9a3e0; margin-left: 5px; }
+.jobs-side-grp-h em { font-style: normal; font-size: 11.5px; font-weight: 500; color: #a8a8ad; margin-left: 5px; }
 .jobs-side-open { flex: 0 0 auto; width: 26px; display: flex; align-items: center; justify-content: center;
   background: none; border: none; cursor: pointer; color: #c3bcca; padding: 5px 0; }
 .jobs-side-open svg { transition: transform .15s; }

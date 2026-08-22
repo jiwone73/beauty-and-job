@@ -259,8 +259,8 @@ function SearchInner() {
         .srch-chip { border: 1px solid #eee; background: #faf7fc; color: #582681; border-radius: 20px; padding: 8px 16px; font-size: 14px; cursor: pointer; }
         .srch-chip:hover { background: #f7f7f8; }
         .srch-tabs { display: inline-flex; align-items: center; gap: 2px; background: #f7f7f8; border-radius: 11px; padding: 4px; width: fit-content; margin: 24px 0 20px; }
-        .srch-tab { background: transparent; border: none; padding: 7px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: -.2px; color: #8b84a0; cursor: pointer; font-family: inherit; white-space: nowrap; transition: color .15s, background .15s, box-shadow .15s; }
-        .srch-tab:hover { color: #6b6480; }
+        .srch-tab { background: transparent; border: none; padding: 7px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: -.2px; color: #6f6f75; cursor: pointer; font-family: inherit; white-space: nowrap; transition: color .15s, background .15s, box-shadow .15s; }
+        .srch-tab:hover { color: #6f6f75; }
         .srch-tab.on { background: #efeff1; color: #431a63; }
         .srch-tab-n { color: ${PURPLE}; margin-left: 2px; }
         .srch-section { margin-bottom: 32px; }

@@ -54,7 +54,7 @@ export default function StoriesPage() {
       }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: "#582681", marginBottom: 8, whiteSpace: "nowrap" }}>현장이야기</h1>
-          <p style={{ fontSize: 14, color: "#8a6aa8", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 14, color: "#6f6f75", lineHeight: 1.6 }}>
             진상 손님부터 독립 고민까지,<br />
             공감·꿀팁·정보가 모이는 뷰티 현장 이야기.
           </p>
@@ -73,9 +73,9 @@ export default function StoriesPage() {
           <rect x="85" y="58" width="28" height="4" rx="2" fill="#efeff1" />
           <ellipse cx="30" cy="22" rx="18" ry="10" fill="#fff" />
           <path d="M22 30 L19 37 L31 31 Z" fill="#fff" />
-          <circle cx="22" cy="22" r="2" fill="#b794d4" />
-          <circle cx="30" cy="22" r="2" fill="#b794d4" />
-          <circle cx="38" cy="22" r="2" fill="#b794d4" />
+          <circle cx="22" cy="22" r="2" fill="#a8a8ad" />
+          <circle cx="30" cy="22" r="2" fill="#a8a8ad" />
+          <circle cx="38" cy="22" r="2" fill="#a8a8ad" />
           <circle cx="38" cy="66" r="18" fill="#f7d9bf" />
           <path d="M21 64 Q38 42 55 64 Q51 52 38 51 Q25 52 21 64 Z" fill="#582681" />
           <circle cx="33" cy="66" r="1.8" fill="#4a3a3a" />
@@ -142,7 +142,7 @@ export default function StoriesPage() {
           border: none;
           border-radius: 8px;
           background: transparent;
-          color: #8b84a0;
+          color: #6f6f75;
           font-size: 14px;
           font-weight: 600;
           letter-spacing: -.2px;
@@ -151,7 +151,7 @@ export default function StoriesPage() {
           font-family: inherit;
           transition: color .15s, background .15s, box-shadow .15s;
         }
-        .stories-cat-btn:hover { color: #6b6480; }
+        .stories-cat-btn:hover { color: #6f6f75; }
         .stories-cat-btn.on {
           background: #efeff1;
           color: #431a63;

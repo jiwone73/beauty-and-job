@@ -1970,7 +1970,7 @@ export default function JobPostForm({
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 모집부문 표 셀 스타일
-  const thc: React.CSSProperties = { textAlign: "left", padding: "9px 4px", fontSize: 12.5, color: "#7a6f8a", fontWeight: 600, borderBottom: "1px solid #efeff1", whiteSpace: "nowrap" };
+  const thc: React.CSSProperties = { textAlign: "left", padding: "9px 4px", fontSize: 12.5, color: "#6f6f75", fontWeight: 600, borderBottom: "1px solid #efeff1", whiteSpace: "nowrap" };
   const reqStar = <span style={{ color: "#e9a3a3" }}> *</span>; // 필수 열 표시(모집분야만)
   const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f7f7f8", verticalAlign: "middle" };
   // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
@@ -2382,7 +2382,7 @@ export default function JobPostForm({
               </button>
             </div>
             {/* 붙인 사진이 요금에 얼마나 얹히는지 눌러 보기 전에 알려준다. */}
-            <div style={{ marginTop: 6, fontSize: 12.5, color: "#8d84a0" }}>
+            <div style={{ marginTop: 6, fontSize: 12.5, color: "#6f6f75" }}>
               {sendImageUrls.length
                 ? `글과 사진 ${sendImageUrls.length}장을 읽어요 · 사진값 약 ${imageCostWon}원이 더 붙어요`
                 : "글자만 읽어요 · 붙여 둔 사진은 요금이 붙지 않아요"}
@@ -2670,7 +2670,7 @@ export default function JobPostForm({
                     onChange={(e) => setNewCompanyName(e.target.value)}
                     placeholder="회사명 (예: 리안헤어 광명점)"
                     className="jobpost-brand-input"
-                    style={{ fontWeight: 700, color: "#8a7fa0", border: "none", outline: "none", background: "transparent", padding: 0, width: "100%" }}
+                    style={{ fontWeight: 700, color: "#6f6f75", border: "none", outline: "none", background: "transparent", padding: 0, width: "100%" }}
                   />
                 </div>
                 <AutoTextarea
@@ -2886,11 +2886,11 @@ export default function JobPostForm({
                             <button key={o.name} type="button" onClick={() => toggleBenefit(o.name)}
                               style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
                               {o.name}
-                              {!o.is_curated && <span style={{ fontSize: 10, color: on ? "#efeff1" : "#b9a9cc" }}>추가됨</span>}
+                              {!o.is_curated && <span style={{ fontSize: 10, color: on ? "#efeff1" : "#a8a8ad" }}>추가됨</span>}
                               {!o.is_curated && (
                                 <span role="button" title="목록에서 지우기" aria-label={`${o.name} 지우기`}
                                   onClick={(e) => { e.stopPropagation(); removeNewBenefit(o.name); }}
-                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: on ? "#efeff1" : "#b9a9cc" }}>×</span>
+                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: on ? "#efeff1" : "#a8a8ad" }}>×</span>
                               )}
                             </button>
                           ); })}
@@ -2942,7 +2942,7 @@ export default function JobPostForm({
                   return (
                     <div key={i} style={{ marginTop: 12, paddingTop: 12, borderTop: "1px dashed #f7f7f8" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                        <span style={{ fontSize: 13, color: "#7a6f8a" }}>근무지 {i + 2}</span>
+                        <span style={{ fontSize: 13, color: "#6f6f75" }}>근무지 {i + 2}</span>
                         <button type="button" onClick={() => setExtraLocations((prev) => prev.filter((_, k) => k !== i))}
                           title="이 근무지 빼기"
                           style={{ marginLeft: "auto", border: "none", background: "none", color: "#c0392b", fontSize: 12.5, cursor: "pointer" }}>
@@ -3069,7 +3069,7 @@ export default function JobPostForm({
                             </div>
                           )}
                           {isNmAdminJob && canName && (
-                            <div style={{ fontSize: 11, color: "#b58fc7", marginTop: 3 }}>구직자에게는 노출되지 않아요 · 회원가입 유도용 내부 연락처</div>
+                            <div style={{ fontSize: 11, color: "#a8a8ad", marginTop: 3 }}>구직자에게는 노출되지 않아요 · 회원가입 유도용 내부 연락처</div>
                           )}
                         </div>
                       </div>
@@ -3136,7 +3136,7 @@ export default function JobPostForm({
                         <span style={{ width: 30, height: 17, borderRadius: 999, background: ocrEnabled ? "#582681" : "#e3e3e6", position: "relative", transition: "background .15s" }}>
                           <span style={{ position: "absolute", top: 2, left: ocrEnabled ? 15 : 2, width: 13, height: 13, borderRadius: "50%", background: "#fff", transition: "left .15s" }} />
                         </span>
-                        <span style={{ fontSize: 12.5, color: ocrEnabled ? "#582681" : "#8d84a0" }}>
+                        <span style={{ fontSize: 12.5, color: ocrEnabled ? "#582681" : "#6f6f75" }}>
                           텍스트 인식 {ocrEnabled ? "켬" : "끔"}
                           {ocrEnabled && <span style={{ color: "#b9866b" }}> (유료)</span>}
                         </span>
@@ -3153,7 +3153,7 @@ export default function JobPostForm({
                       style={{ marginLeft: "auto", padding: "7px 14px", borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 13, fontWeight: 500, cursor: readingImgs ? "default" : "pointer", opacity: readingImgs ? 0.6 : 1 }}>
                       {readingImgs ? "읽는 중…" : "그림에서 읽기 (유료)"}
                     </button>
-                    <span style={{ width: "100%", fontSize: 12, color: "#8d84a0", lineHeight: 1.7 }}>
+                    <span style={{ width: "100%", fontSize: 12, color: "#6f6f75", lineHeight: 1.7 }}>
                       그림 한 장을 읽을 때마다 요금이 듭니다(장당 5원 안팎). 매장 사진처럼 글자가 없는 그림은
                       아래 썸네일의 <b>읽기</b>를 꺼 두세요. 글을 붙여넣으셨다면 글에 있는 값은 글을 그대로 씁니다.
                     </span>

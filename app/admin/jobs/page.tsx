@@ -405,7 +405,7 @@ function AdminJobsPageInner() {
                     {(() => { const lb = labelOf(job); return (
                     <span style={{ fontWeight: 500, color:
                       lb === "진행중" ? "#10b981" :
-                      lb === "임시저장" ? "#8a7fa0" :
+                      lb === "임시저장" ? "#6f6f75" :
                       lb === "승인대기" ? "#f59e0b" :
                       lb === "반려" ? "#e74c3c" : "#999"
                     }}>

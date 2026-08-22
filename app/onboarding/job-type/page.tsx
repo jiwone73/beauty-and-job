@@ -105,7 +105,7 @@ export default function OnboardingJobTypePage() {
             className={"w-full rounded-xl border-2 p-5 text-left transition-all " +
               (selected === "STORE"
                 ? "border-[#582681] bg-[#f7f7f8]"
-                : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
+                : "border-[#e5e5e5] bg-white hover:border-[#a8a8ad]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
               <StoreIcon size={20} style={{ color: "#582681" }} /> 매장
@@ -120,7 +120,7 @@ export default function OnboardingJobTypePage() {
             className={"w-full rounded-xl border-2 p-5 text-left transition-all " +
               (selected === "OFFICE"
                 ? "border-[#582681] bg-[#f7f7f8]"
-                : "border-[#e5e5e5] bg-white hover:border-[#c9a3e0]")}
+                : "border-[#e5e5e5] bg-white hover:border-[#a8a8ad]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
               <OfficeIcon size={20} style={{ color: "#582681" }} /> 본사

@@ -568,7 +568,7 @@ export default function ProfilePage() {
                       {avatarUrl && avatarPublic ? (
                         <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : avatarLoaded ? (
-                        <span style={{ fontSize: "30px", color: "#a888c0" }}>👤</span>
+                        <span style={{ fontSize: "30px", color: "#a8a8ad" }}>👤</span>
                       ) : null}
                       {avatarUploading && (
                         <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#582681", fontWeight: 600 }}>

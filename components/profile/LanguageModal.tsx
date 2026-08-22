@@ -91,7 +91,7 @@ export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
                     color: on ? "#582681" : "#bbb",
                   }}>{lv.tier}</span>
                   <span style={{ fontSize: 13, fontWeight: on ? 700 : 400, color: on ? "#582681" : "#666" }}>{lv.value}</span>
-                  <span style={{ fontSize: 11.5, color: on ? "#9b6bb3" : "#aaa" }}>{lv.desc}</span>
+                  <span style={{ fontSize: 11.5, color: on ? "#582681" : "#aaa" }}>{lv.desc}</span>
                 </button>
               );
             })}

@@ -155,7 +155,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 거의 비어 있었고, 그 반열이
           복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
       <div style={{ marginTop: 12, display: "flex", gap: 12, fontSize: 13.5, padding: "3px 0", alignItems: "flex-start" }}>
-        <span style={{ color: "#7a6f8a", width: 60, flexShrink: 0 }}>복리후생</span>
+        <span style={{ color: "#6f6f75", width: 60, flexShrink: 0 }}>복리후생</span>
         <span style={{ color: "#555", lineHeight: 1.5 }}>{withSeeDetail((job.benefits || []).join(", "))}</span>
       </div>
     </div>

@@ -555,9 +555,9 @@ export default function CompanySettingsPage() {
                 </div>
                 {coverImages.length === 0 ? (
                   <div style={{minHeight:110, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, padding:12,
-                    background:"#f7f4fb", border:"1px dashed #efeff1", borderRadius:10, color:"#b0a0c0", fontSize:13, textAlign:"center", lineHeight:1.5}}>
+                    background:"#f7f4fb", border:"1px dashed #efeff1", borderRadius:10, color:"#a8a8ad", fontSize:13, textAlign:"center", lineHeight:1.5}}>
                     아직 등록한 이미지가 없어요.<br />
-                    사진이 없다면 <b style={{color:"#8a72a8"}}>샘플 배너</b>로 문구만 넣어 만들어 보세요.
+                    사진이 없다면 <b style={{color:"#582681"}}>샘플 배너</b>로 문구만 넣어 만들어 보세요.
                   </div>
                 ) : (
                   /* 공고 상세와 같은 컴포넌트 — 여기서 보이는 모양이 실제 공고 배너와 같다. */

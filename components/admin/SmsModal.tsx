@@ -94,7 +94,7 @@ export default function SmsModal({
           )}
 
           <button onClick={handleSend} disabled={sending}
-            style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#b98fd0" : "#582681", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: sending ? "default" : "pointer" }}>
+            style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#a8a8ad" : "#582681", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: sending ? "default" : "pointer" }}>
             {sending ? "발송 중..." : `${valid.length}명에게 발송`}
           </button>
           <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 8 }}>
