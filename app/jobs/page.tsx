@@ -10,7 +10,7 @@ import { shortSido } from "@/lib/regionShort";
 import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS } from "@/lib/data/jobGroups";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, Bookmark, ChevronDown, ChevronRight } from "lucide-react";
+import { Search, Bookmark, ChevronDown, ChevronRight, RotateCcw } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { getJobSubGroups } from "@/lib/data/jobGroups";
@@ -66,6 +66,9 @@ function JobsPageInner() {
   const [showSalaryDrop, setShowSalaryDrop] = useState(false);
   useEffect(() => { setSelectedSalary(0); }, [jobTypeFilter]);
   const [showRegionDrop, setShowRegionDrop] = useState(false);
+  // 사이드바에서 펼쳐 둔 직군 대분류. 한 번에 하나만 연다 — 여럿 펼치면
+  // 사이드바가 길어져 아래 근무조건이 화면 밖으로 밀린다.
+  const [펼친대분류, set펼친대분류] = useState<string | null>(null);
   const [showBrandDrop, setShowBrandDrop] = useState(false);
   
   const [searchQuery, setSearchQuery] = useState(initSearch);
@@ -171,6 +174,10 @@ function JobsPageInner() {
   const benefitOptions = curatedBenefits;
   // 사이드바 직군 목록은 매장/본사에 따라 통째로 갈린다(매장 8 · 본사 5).
   const 대분류목록 = jobTypeFilter === "본사" ? OFFICE_JOB_GROUPS : STORE_JOB_GROUPS;
+  // 지금 몇 가지가 걸려 있는지. 0 이면 초기화 버튼을 눌러도 바뀔 것이 없다.
+  const 걸린조건 = selectedRegions.length + selectedJobs.length + selectedBenefits.length
+    + (selectedEmployment !== "고용형태 전체" ? 1 : 0)
+    + (selectedCareer !== "경력 전체" ? 1 : 0);
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
@@ -254,18 +261,44 @@ function JobsPageInner() {
           </div>
 
           <div className="jobs-side-box">
-            <p className="jobs-side-t">
-              직군 <i>{jobTypeFilter} {대분류목록.length}</i>
-            </p>
+            <p className="jobs-side-t">직군</p>
+            {/* 이름을 누르면 그 대분류를 통째로 고르고, 오른쪽 화살표를 누르면
+                소분류가 펼쳐진다. 한 줄에 두 가지 일을 붙이되 누르는 자리를
+                갈라 놓아 헷갈리지 않게 한다. */}
             <div className="jobs-side-list">
               {대분류목록.map((g) => {
                 const 소 = getJobSubGroups(jobTypeFilter === "매장" ? "STORE" : "OFFICE", g.group);
-                const on = 소.length > 0 && 소.every((x) => selectedJobs.includes(x));
+                const 고른수 = 소.filter((x) => selectedJobs.includes(x)).length;
+                const 전부 = 소.length > 0 && 고른수 === 소.length;
+                const 열림 = 펼친대분류 === g.group;
                 return (
-                  <button key={g.group} type="button" className={on ? "on" : undefined}
-                    onClick={() => setSelectedJobs(on ? selectedJobs.filter((x) => !소.includes(x)) : Array.from(new Set([...selectedJobs, ...소])))}>
-                    {g.group}
-                  </button>
+                  <div key={g.group} className="jobs-side-grp">
+                    <div className={`jobs-side-grp-h${전부 || 고른수 ? " on" : ""}`}>
+                      <button type="button"
+                        onClick={() => setSelectedJobs(전부 ? selectedJobs.filter((x) => !소.includes(x)) : Array.from(new Set([...selectedJobs, ...소])))}>
+                        {g.group}
+                        {고른수 > 0 && !전부 && <em>{고른수}</em>}
+                      </button>
+                      <button type="button" className="jobs-side-open" aria-label={`${g.group} 소분류`}
+                        aria-expanded={열림}
+                        onClick={() => set펼친대분류(열림 ? null : g.group)}>
+                        <ChevronDown size={14} style={{ transform: 열림 ? "rotate(180deg)" : undefined }} />
+                      </button>
+                    </div>
+                    {열림 && (
+                      <div className="jobs-side-sub-list">
+                        {소.map((x) => {
+                          const 켬 = selectedJobs.includes(x);
+                          return (
+                            <button key={x} type="button" className={켬 ? "on" : undefined}
+                              onClick={() => setSelectedJobs(켬 ? selectedJobs.filter((y) => y !== x) : [...selectedJobs, x])}>
+                              {x}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -273,18 +306,14 @@ function JobsPageInner() {
 
           <div className="jobs-side-box">
             <p className="jobs-side-t">근무조건</p>
-            {/* 고용형태는 지금 140건 중 99건이 비어 있다(외부 크롤이 안 담아 온다).
-                옆에 건수를 적어 두면, 눌러서 적게 나오는 것이 필터 탓이 아니라
-                데이터 탓임이 드러난다. */}
             <p className="jobs-side-sub">고용형태</p>
             <div className="jobs-side-grid">
               {EMPLOYMENT_OPTS.filter((o) => o.value !== "고용형태 전체").map((o) => {
-                const n = (apiJobs || []).filter((j: any) => j.employment_type === o.value).length;
                 const on = selectedEmployment === o.value;
                 return (
                   <button key={o.value} type="button" className={on ? "on" : undefined}
                     onClick={() => setSelectedEmployment(on ? "고용형태 전체" : o.value)}>
-                    {o.label}<i>{n}</i>
+                    {o.label}
                   </button>
                 );
               })}
@@ -302,6 +331,20 @@ function JobsPageInner() {
               })}
             </div>
           </div>
+
+          {/* 걸어 놓은 것을 한 번에 푼다. 하나씩 되돌리려면 어디를 눌렀는지
+              기억해야 하는데, 사이드바가 길어서 위로 되짚기 어렵다.
+              걸린 것이 없으면 누를 이유도 없으므로 눌리지 않게 둔다. */}
+          <button type="button" className="jobs-side-reset"
+            disabled={걸린조건 === 0}
+            onClick={() => {
+              setSelectedRegions([]); setSelectedJobs([]);
+              setSelectedEmployment("고용형태 전체"); setSelectedCareer("경력 전체");
+              setSelectedBenefits([]); set펼친대분류(null);
+            }}>
+            <RotateCcw size={14} />
+            초기화{걸린조건 > 0 && <em>{걸린조건}</em>}
+          </button>
         </aside>
 
         <div className="jobs-main">

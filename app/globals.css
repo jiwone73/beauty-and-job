@@ -12793,3 +12793,67 @@ button,
   .jobs-head { padding: 14px 0 0; }
   .jobs-layout .jobs-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* 사이드바 직군 — 대분류 아래에 소분류를 펼친다.
+   이름을 누르면 그 대분류를 통째로 고르고, 오른쪽 화살표를 누르면 소분류가
+   열린다. 한 줄에 두 가지 일이 붙지만 누르는 자리를 갈라 놓았다. */
+.jobs-side-grp + .jobs-side-grp { margin-top: 1px; }
+.jobs-side-grp-h { display: flex; align-items: center; border-radius: 5px; }
+.jobs-side-grp-h:hover { background: #f8f5fb; }
+.jobs-side-grp-h > button:first-child { flex: 1; min-width: 0; }
+.jobs-side-grp-h.on > button:first-child { color: var(--color-primary); font-weight: 700; }
+.jobs-side-grp-h em { font-style: normal; font-size: 11.5px; font-weight: 500; color: #c9a3e0; margin-left: 5px; }
+.jobs-side-open { flex: 0 0 auto; width: 26px; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer; color: #c3bcca; padding: 5px 0; }
+.jobs-side-open svg { transition: transform .15s; }
+.jobs-side-sub-list { display: flex; flex-direction: column; gap: 1px; padding: 2px 0 5px 10px;
+  margin-left: 3px; border-left: 1px solid #efeaf4; }
+.jobs-side-sub-list button { display: block; width: 100%; text-align: left; background: none; border: none;
+  cursor: pointer; font-family: inherit; font-size: 13px; color: #8b8492; padding: 4px 6px;
+  border-radius: 5px; transition: color .12s, background .12s; }
+.jobs-side-sub-list button:hover { color: #2b2b2b; background: #f8f5fb; }
+.jobs-side-sub-list button.on { color: var(--color-primary); font-weight: 700; }
+
+/* 걸어 놓은 것을 한 번에 푼다. 걸린 것이 없으면 누를 이유가 없어 흐려 둔다. */
+.jobs-side-reset { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
+  height: 38px; border: 1px solid #e6dff0; border-radius: 9px; background: #fff; cursor: pointer;
+  font-family: inherit; font-size: 13.5px; font-weight: 600; color: #6b6570; transition: all .15s; }
+.jobs-side-reset:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+.jobs-side-reset:disabled { opacity: .45; cursor: default; }
+.jobs-side-reset em { font-style: normal; font-size: 12px; color: var(--color-primary); }
+
+/* 사이드바 선택 표시.
+   사이트 전체에 button { font-weight: 400 !important } 이 걸려 있어, 고른
+   항목을 굵게 해도 눌려 버렸다. 굵기로는 표시가 안 되니 !important 로 되받고,
+   색도 한 단계 더 진한 보라로 내려 안 고른 회색과 확실히 갈라 놓는다. */
+.jobs-side-grid button.on,
+.jobs-side-list button.on,
+.jobs-side-grp-h.on > button:first-child,
+.jobs-side-sub-list button.on {
+  color: #4a0066 !important;
+  font-weight: 700 !important;
+}
+.jobs-side-grid button.on { background: #f6f1fb; }
+.jobs-side-grp-h.on { background: #f6f1fb; }
+.jobs-side-sub-list button.on { background: #f6f1fb; }
+.jobs-side-reset { font-weight: 600 !important; }
+.jobs-side-reset:hover:not(:disabled) { color: #4a0066 !important; }
+
+/* 위 규칙에서 굵기는 먹는데 색만 안 먹는 일이 있어, 선택자를 한 단계 더
+   좁혀 다시 못 박는다. 고른 항목이 회색으로 남으면 무엇을 골랐는지 알 수 없다. */
+.jobs-side .jobs-side-grid button.on,
+.jobs-side .jobs-side-list button.on,
+.jobs-side .jobs-side-grp-h.on > button:first-child,
+.jobs-side .jobs-side-sub-list button.on {
+  color: #4a0066 !important;
+  -webkit-text-fill-color: #4a0066;
+}
+
+/* 화살표는 26px 자리만 쓴다.
+   앞서 .jobs-side-list button { width: 100% } 를 걸어 뒀는데 그 선택자가
+   더 좁아서(0,1,1) 화살표의 width:26px(0,1,0)을 눌렀고, 화살표가 줄 전체를
+   차지해 이름이 한 글자씩 세로로 접혔다. */
+.jobs-side-list .jobs-side-open { flex: 0 0 26px; width: 26px; }
+.jobs-side-grp-h > button:first-child {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
