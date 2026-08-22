@@ -1,4 +1,7 @@
 export const dynamic = "force-dynamic";
+// 이미지를 여덟 장까지 내려받아 줄여서 다시 올린다. 배포 환경 기본값(짧다)
+// 으로는 끊긴다.
+export const maxDuration = 60;
 
 import { NextRequest } from "next/server";
 import { ok, err, requireAuth } from "@/lib/api";

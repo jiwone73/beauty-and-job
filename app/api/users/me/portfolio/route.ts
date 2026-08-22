@@ -4,6 +4,7 @@ import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
 import { verifyAccessToken } from "@/lib/jwt";
 import { supabaseAdmin } from "@/lib/supabase";
+import { shrinkImage } from "@/lib/imageShrink";
 import { MAX_PHOTOS } from "@/lib/compressImage";
 
 const BUCKET = "portfolios";
@@ -51,9 +52,11 @@ export async function POST(req: NextRequest) {
 
       const 새것: Photo[] = [];
       for (const [i, f] of files.entries()) {
-        const path = `${a.userId}/${Date.now()}-${i}.jpg`;
-        const { error } = await supabaseAdmin.storage.from(BUCKET).upload(path, await f.arrayBuffer(), {
-          contentType: f.type, upsert: true,
+        // 원본 그대로 넣으면 저장소가 빨리 찬다. 표시 크기(가로 1600px)로 줄인다.
+        const 줄인 = await shrinkImage(Buffer.from(await f.arrayBuffer()), f.type);
+        const path = `${a.userId}/${Date.now()}-${i}.${줄인.ext}`;
+        const { error } = await supabaseAdmin.storage.from(BUCKET).upload(path, 줄인.buf, {
+          contentType: 줄인.contentType, upsert: true,
         });
         if (error) {
           console.error("[portfolio upload]", error);

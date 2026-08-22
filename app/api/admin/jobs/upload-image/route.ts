@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import { ok, err, requireAuth } from "@/lib/api";
 import { supabaseAdmin } from "@/lib/supabase";
+import { shrinkImage } from "@/lib/imageShrink";
 
 const BUCKET = "job-images";
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -23,13 +24,13 @@ export async function POST(req: NextRequest) {
       return err("FILE_003", "파일 크기는 5MB 이하여야 합니다.");
     }
 
-    const ext = file.type.split("/")[1] === "jpeg" ? "jpg" : file.type.split("/")[1];
-    const fileName = `admin/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const arrayBuffer = await file.arrayBuffer();
+    // 원본 그대로 넣으면 저장소가 빨리 찬다. 표시 크기(가로 1600px)로 줄인다.
+    const 줄인 = await shrinkImage(Buffer.from(await file.arrayBuffer()), file.type);
+    const fileName = `admin/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${줄인.ext}`;
 
     const { error: uploadError } = await supabaseAdmin.storage
       .from(BUCKET)
-      .upload(fileName, arrayBuffer, { contentType: file.type, upsert: true });
+      .upload(fileName, 줄인.buf, { contentType: 줄인.contentType, upsert: true });
 
     if (uploadError) {
       console.error("[admin job image upload]", uploadError);

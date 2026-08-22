@@ -6,6 +6,7 @@ import { ok, err } from "@/lib/api";
 import Anthropic from "@anthropic-ai/sdk";
 import { refreshSampleData } from "@/lib/sampleDataRefresh"; // ⚠️ 상용화 시 삭제
 import { GET as sendRecommendations } from "@/app/api/admin/recommendations/send/route";
+import { GET as cleanupOrphanImages } from "@/app/api/cron/cleanup-orphan-images/route";
 import { WRITING_MODEL } from "@/lib/ai/models";
 
 const CATEGORIES = ["공감", "꿀팁", "질문", "정보"];
@@ -61,6 +62,16 @@ export async function GET(req: NextRequest) {
     }
   } catch (e) {
     console.error("[cron 추천메일]", e);
+  }
+
+  // 버려진 공고 이미지 청소. 자기 크론을 따로 두지 못하는 것은 무료 요금제가
+  // 프로젝트당 두 개까지만 허용하는데 그 둘을 이미 쓰고 있어서다. 할 일이
+  // 없으면 조회 한 번으로 끝나므로 여기 얹어도 부담이 없다.
+  try {
+    const r = await cleanupOrphanImages(req);
+    console.log("[cron] 고아 이미지 청소", r.status);
+  } catch (e) {
+    console.error("[cron 고아 이미지]", e);
   }
 
   // ⚠️ 샘플 데이터 자동 갱신 (인증 통과 후 항상 실행, 상용화 시 이 블록 삭제)

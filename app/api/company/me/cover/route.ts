@@ -4,6 +4,7 @@ import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
 import { verifyAccessToken } from "@/lib/jwt";
 import { supabaseAdmin } from "@/lib/supabase";
+import { shrinkImage } from "@/lib/imageShrink";
 
 const BUCKET = "company-logos"; // 기존 버킷 재사용 (cover/ 경로로 구분)
 const MAX_SIZE = 2 * 1024 * 1024; // 2MB
@@ -47,14 +48,14 @@ export async function POST(req: NextRequest) {
       const prevCovers = existing.rows[0]?.cover_images;
       const prevArr: any[] = Array.isArray(prevCovers) ? prevCovers : [];
 
-      const ext = file.type.split("/")[1] === "jpeg" ? "jpg" : file.type.split("/")[1];
-      const fileName = `cover/${companyId}/${Date.now()}.${ext}`;
-      const arrayBuffer = await file.arrayBuffer();
+      // 원본 그대로 넣으면 저장소가 빨리 찬다. 표시 크기(가로 1600px)로 줄인다.
+      const 줄인 = await shrinkImage(Buffer.from(await file.arrayBuffer()), file.type);
+      const fileName = `cover/${companyId}/${Date.now()}.${줄인.ext}`;
 
       const { error: uploadError } = await supabaseAdmin.storage
         .from(BUCKET)
-        .upload(fileName, arrayBuffer, {
-          contentType: file.type,
+        .upload(fileName, 줄인.buf, {
+          contentType: 줄인.contentType,
           upsert: true,
         });
 

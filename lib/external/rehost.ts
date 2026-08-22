@@ -5,6 +5,7 @@
 //   · 서버 fetch는 Referer를 원본 도메인으로 세팅해 차단을 우회한다.
 
 import { supabaseAdmin } from "@/lib/supabase";
+import { shrinkImage } from "@/lib/imageShrink";
 
 const BUCKET = "job-images";
 const UA =
@@ -43,12 +44,14 @@ export async function rehostImages(
         buf = Buffer.from(await res.arrayBuffer());
       }
       if (buf.byteLength < 1000 || buf.byteLength > 15 * 1024 * 1024) continue; // 아이콘/과대 제외(뷰티잡 등 세로로 긴 포스터 대응)
-      // EXIF Orientation은 그대로 보존한다. 원본 픽셀이 옆으로 저장되고 태그로 세우는 사진(휴대폰 촬영)이 많아
-      // 태그를 지우면 오히려 옆으로 눕는다. 브라우저 기본(EXIF 적용)으로 표시하면 원 사이트와 동일하게 똑바로 나온다.
-      const fileName = `external/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extOf(ct)}`;
+      // 원본을 그대로 넣으면 한 장에 7MB 씩 쌓인다. 표시 크기에 맞춰 줄인다.
+      // EXIF Orientation 은 shrinkImage 가 픽셀에 적용해 세워 준다 — 태그만
+      // 지우면 휴대폰으로 찍은 사진이 옆으로 눕는다.
+      const 줄인 = await shrinkImage(buf, ct);
+      const fileName = `external/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${줄인.ext || extOf(ct)}`;
       const { error } = await supabaseAdmin.storage
         .from(BUCKET)
-        .upload(fileName, buf, { contentType: ct, upsert: true });
+        .upload(fileName, 줄인.buf, { contentType: 줄인.contentType, upsert: true });
       if (error) continue;
       const { data } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(fileName);
       if (data?.publicUrl) out.push(data.publicUrl);
