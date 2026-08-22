@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Building2, FilePlus, LayoutDashboard, ChevronDown, MapPin } from "lucide-react";
+import { Building2, FilePlus, LayoutDashboard, ChevronDown, MapPin } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
@@ -77,18 +77,11 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   );
 }
 
-interface HeaderProps {
-  onSearchClick?: () => void;
-}
-
-export default function Header({ onSearchClick }: HeaderProps) {
+export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { isLoggedIn, ownerType } = useAuthStore();
   const isCompany = isLoggedIn && ownerType === "company";
-  const handleSearch = () => {
-    router.push("/search");
-  };
   return (
     <>
       <header className="header">
@@ -120,9 +113,6 @@ export default function Header({ onSearchClick }: HeaderProps) {
             </Link>
           </nav>
           <div className="header-right">
-            <button className="icon-btn" aria-label="검색" onClick={handleSearch}>
-              <Search size={20} />
-            </button>
             <AuthButtons onLoginClick={() => router.push("/login")} />
             <button className="icon-btn mob-hamburger" aria-label={isCompany ? "기업 대시보드" : "이력서 등록"}
               onClick={() => router.push(isCompany ? "/company/dashboard" : isLoggedIn ? "/profile/resume" : "/login")}>

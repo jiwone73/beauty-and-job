@@ -286,7 +286,7 @@ function JobsPageInner() {
 
   return (
     <div className="jobs-page">
-      <Header onSearchClick={() => { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 100); }} />
+      <Header />
 
       {/* ===== 검색 모달 ===== */}
       {showSearch && (
