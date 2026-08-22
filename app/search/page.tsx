@@ -20,6 +20,7 @@ type Job = {
   career: string;
   employment: string | null;
   deadline: string;
+  categories?: string[];
 };
 
 function mapJob(j: any): Job {
@@ -28,6 +29,7 @@ function mapJob(j: any): Job {
     brand: jobCompanyName(j.company_type || j.job_type, j.company_name, j.brand_name),
     title: j.title,
     region: j.location || "국내",
+    categories: j.categories || [],
     type: j.company_type === "OFFICE" ? "본사" : j.company_type === "STORE" ? "매장" : "본사",
     career: expLevelLabel(j.experience_level),
     employment: j.employment_type || null,
@@ -69,7 +71,9 @@ function SectionHead({ label, count, onMore }: { label: string; count: number; o
 }
 
 function toCard(j: Job) {
-  return { id: j.id, title: j.title, company: j.brand, region: j.region, career: j.career, employment: j.employment, deadline: j.deadline };
+  return { id: j.id, title: j.title, company: j.brand, region: j.region, career: j.career,
+           employment: j.employment, deadline: j.deadline,
+           categories: j.categories, jobType: j.type === "본사" ? "OFFICE" : "STORE" };
 }
 
 function SearchInner() {

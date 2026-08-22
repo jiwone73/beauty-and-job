@@ -16,7 +16,31 @@ export type JobCardData = {
   employment: string | null;
   deadline: string;
   image?: string | null;
+  /** 모집분야. 매장 공고는 회사명 대신 이걸 보여 준다. */
+  categories?: string[] | null;
+  /** STORE | OFFICE — 둘째 줄에 무엇을 놓을지 가른다. */
+  jobType?: string | null;
 };
+
+/**
+ * 카드 둘째 줄에 무엇을 놓을지.
+ *
+ * 매장 공고는 제목에 지점명이 대부분 들어 있다("준오헤어 홍대1호점과 함께…").
+ * 그 아래 회사명을 또 놓으면 같은 말을 두 번 하는 셈이라, 정작 궁금한
+ * '무슨 자리를 뽑는지'가 안 보인다. 그래서 모집분야를 놓는다.
+ *
+ * 본사 공고는 반대다. 제목이 직군으로 시작해서("브랜드 마케터") 어느 회사인지가
+ * 빠진다. 그쪽은 회사명을 그대로 둔다.
+ *
+ * 모집분야가 없으면(옛 공고 등) 회사명으로 되돌아간다 — 빈 줄을 남기지 않는다.
+ */
+function 둘째줄(data: JobCardData): string {
+  if (data.jobType === "OFFICE") return data.company;
+  const c = (data.categories || []).filter(Boolean);
+  if (!c.length) return data.company;
+  // 칸이 한 줄뿐이라 다 늘어놓으면 뒤가 잘려 몇 개인지도 모르게 된다.
+  return c.length > 2 ? `${c[0]} · ${c[1]} 외 ${c.length - 2}` : c.join(" · ");
+}
 
 function deadlineColor(d: string) {
   if (d === "마감") return "#bbb";
@@ -71,7 +95,7 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
       </div>
       <div className="jobcard-body">
         <p className="jobcard-title">{data.title}</p>
-        <p className="jobcard-company">{data.company}</p>
+        <p className="jobcard-company">{둘째줄(data)}</p>
         <div className="jobcard-metarow">
           <p className="jobcard-meta">{meta}</p>
           <span className="jobcard-deadline" style={{ color: deadlineColor(deadlineLabel) }}>{deadlineLabel}</span>

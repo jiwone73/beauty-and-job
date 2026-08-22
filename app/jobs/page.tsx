@@ -398,6 +398,8 @@ function JobsPageInner() {
                 employment: job.employment,
                 deadline: job.deadline,
                 image: job.thumbnail,
+                categories: job.categories,
+                jobType: job.type === '본사' ? 'OFFICE' : 'STORE',
               }} variant="grid" />
             ))}
           </div>
