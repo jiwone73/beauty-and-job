@@ -12864,3 +12864,12 @@ button,
 .jobs-side-grp-h > button:first-child {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+
+/* 상단 필터 줄의 초기화. 사이드바 것과 같은 일을 하지만, 여기서 조건을
+   걸었으면 여기서 풀 수 있어야 한다. 필터 버튼처럼 보이면 또 하나의 조건으로
+   읽히므로 테두리를 두지 않고 글자만 둔다. */
+.jobs-filter-reset { display: inline-flex; align-items: center; gap: 5px; background: none; border: none;
+  cursor: pointer; font-family: inherit; font-size: 14px; color: #8b8492; padding: 6px 4px;
+  white-space: nowrap; transition: color .15s; }
+.jobs-filter-reset:hover { color: #4a0066; }
+.jobs-filter-reset em { font-style: normal; font-weight: 700; color: #4a0066; }

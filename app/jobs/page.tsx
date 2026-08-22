@@ -178,6 +178,13 @@ function JobsPageInner() {
   const 걸린조건 = selectedRegions.length + selectedJobs.length + selectedBenefits.length
     + (selectedEmployment !== "고용형태 전체" ? 1 : 0)
     + (selectedCareer !== "경력 전체" ? 1 : 0);
+  // 초기화는 사이드바 아래와 상단 필터 두 곳에 있다. 하는 일이 다르면
+  // 어느 쪽을 눌러야 할지 매번 생각해야 하므로, 같은 함수를 나눠 쓴다.
+  const 조건모두풀기 = () => {
+    setSelectedRegions([]); setSelectedJobs([]);
+    setSelectedEmployment("고용형태 전체"); setSelectedCareer("경력 전체");
+    setSelectedBenefits([]); set펼친대분류(null);
+  };
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
@@ -337,11 +344,7 @@ function JobsPageInner() {
               걸린 것이 없으면 누를 이유도 없으므로 눌리지 않게 둔다. */}
           <button type="button" className="jobs-side-reset"
             disabled={걸린조건 === 0}
-            onClick={() => {
-              setSelectedRegions([]); setSelectedJobs([]);
-              setSelectedEmployment("고용형태 전체"); setSelectedCareer("경력 전체");
-              setSelectedBenefits([]); set펼친대분류(null);
-            }}>
+            onClick={조건모두풀기}>
             <RotateCcw size={14} />
             초기화{걸린조건 > 0 && <em>{걸린조건}</em>}
           </button>
@@ -431,6 +434,15 @@ function JobsPageInner() {
                 onApply={(f) => { setSelectedCareer(f.career); setSelectedEmployment(f.employment); setSelectedBenefits(f.benefits); setSelectedSalary(f.salary); }}
               />
             </div>
+
+            {/* 사이드바 초기화는 근무조건 아래라 한참 내려가야 보인다. 상단에서
+                조건을 걸었으면 상단에서 풀 수 있어야 한다. 하는 일은 같다. */}
+            {걸린조건 > 0 && (
+              <button type="button" className="jobs-filter-reset" onClick={조건모두풀기}>
+                <RotateCcw size={14} />
+                초기화 <em>{걸린조건}</em>
+              </button>
+            )}
           </div>
         </div>
 
