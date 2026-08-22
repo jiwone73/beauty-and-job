@@ -36,6 +36,9 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
   // 매장직(salon)이면 "매장명", 사무직(office)이면 "회사명"
   const isSalon = resumeType === "salon";
   const companyLabel = isSalon ? "매장명" : "회사명";
+  // 살롱 직급은 어차피 정해져 있다. 적게 하는 대신 고르게 하면 빠르고,
+  // 표기가 통일돼 나중에 공고와 맞춰 보기도 쉽다.
+  const 살롱직급 = ["인턴", "스탭", "디자이너", "아티스트", "실장", "원장"];
 
   // 수정 모드: 모달 열릴 때 기존 값 채우기 / 추가 모드: 비우기
   useEffect(() => {
@@ -124,13 +127,23 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
           </div>
         )}
         <div>
-          <label className="cv-field-label">직책 / 직무</label>
-          <input
-            className="cv-input"
-            placeholder={resumeType === "office" ? "예: 대리, 매니저, 팀장" : "예: 헤어 디자이너, 네일 아티스트"}
-            value={position}
-            onChange={(e) => setPosition(e.target.value)}
-          />
+          <label className="cv-field-label">{isSalon ? "직급" : "직책 / 직무"}</label>
+          {isSalon ? (
+            <div className="career-rank">
+              {살롱직급.map((r) => (
+                <button key={r} type="button"
+                  className={`career-rank-chip ${position === r ? "on" : ""}`}
+                  onClick={() => setPosition(position === r ? "" : r)}>{r}</button>
+              ))}
+            </div>
+          ) : (
+            <input
+              className="cv-input"
+              placeholder="예: 대리, 매니저, 팀장"
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+            />
+          )}
         </div>
 
         {/* 근무기간: 제목 + 현재재직중(우측정렬) 같은 행 / 학력 재학기간과 동일 레이아웃 */}
@@ -189,7 +202,10 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
+        {/* 주요 업무·성과는 본사에만 묻는다. 살롱에서 성과를 글로 적는 사람은
+            드물고, 큰 빈 칸은 채우지 못했다는 느낌만 남긴다. 매장에서 그 몫은
+            시술 스킬과 포트폴리오 사진이 한다. */}
+        <div style={{ display: isSalon ? "none" : "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
           <label className="cv-field-label">주요 업무 및 성과</label>
           <textarea
             className="cv-input"

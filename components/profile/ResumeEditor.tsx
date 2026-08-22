@@ -283,7 +283,7 @@ export default function ResumeEditor({
         )}
         {!careerModalOpen && careers.length === 0 && !isEntryLevel && (
           <button type="button" className="resume-blank" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
-            <span className="resume-blank-fields">매장명 <i>*</i> │ 근무 기간 <i>*</i> │ 직책</span>
+            <span className="resume-blank-fields">매장명 <i>*</i> │ 근무 기간 <i>*</i> │ 직급</span>
           </button>
         )}
       </section>

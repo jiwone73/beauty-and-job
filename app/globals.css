@@ -13056,3 +13056,12 @@ button,
   transition: border-color .15s, color .15s;
 }
 .resume-more-open:hover { border-color: var(--color-primary); color: var(--color-primary); }
+/* 경력 — 살롱 직급 고르기 */
+.career-rank { display: flex; flex-wrap: wrap; gap: 7px; }
+.career-rank-chip {
+  border: 1px solid #dcdce0; background: #fff; border-radius: 999px;
+  padding: 7px 14px; font-size: 13.5px; color: #6f6f75; cursor: pointer; font-family: inherit;
+  transition: border-color .12s, color .12s, background .12s;
+}
+.career-rank-chip:hover { border-color: #b9b9be; color: #3d3d3d; }
+.career-rank-chip.on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
