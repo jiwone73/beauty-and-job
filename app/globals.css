@@ -12439,7 +12439,6 @@ button,
    무엇을 골랐는지는 그대로 보이면서 무게는 본문에 남는다. */
 .seg,
 .jobs-type-tabs,
-.profile-tabs,
 .salary-tabs,
 .salary-sort-group,
 .jobs-sort-group {
@@ -12455,7 +12454,6 @@ button,
 }
 .seg-btn,
 .jobs-type-tab,
-.profile-tab,
 .salary-tab,
 .salary-sort-btn,
 .jobs-sort-btn {
@@ -12475,13 +12473,11 @@ button,
 }
 .seg-btn:hover,
 .jobs-type-tab:hover,
-.profile-tab:hover,
 .salary-tab:hover,
 .salary-sort-btn:hover,
 .jobs-sort-btn:hover { color: #6b6480; border-color: transparent; background: transparent; }
 .seg-btn.active, .seg-btn.on,
 .jobs-type-tab.active,
-.profile-tab.active,
 .salary-tab.active,
 .salary-sort-btn.active,
 .jobs-sort-btn.active {
@@ -12496,9 +12492,6 @@ button,
 .salary-sort-btn, .jobs-sort-btn { padding: 6px 13px; font-size: 13px; }
 
 /* 판이 붙으면서 필요 없어진 것들을 되돌린다 — 밑줄, 바깥 여백. */
-/* inline-flex 는 margin:auto 로 가운데에 오지 않는다. 블록으로 두고 폭을
-   내용에 맞춘 뒤 좌우 여백을 자동으로 나눈다. */
-.profile-tabs { display: flex; width: fit-content; max-width: 600px; margin: 20px auto 4px; }
 .salary-tabs { margin-bottom: 20px; }
 .jobs-type-tabs { margin: 20px auto 0; }
 @media (max-width: 1400px) {
