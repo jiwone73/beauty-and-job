@@ -12741,3 +12741,53 @@ button,
 }
 @media (min-width: 769px) { .story-item-title { font-size: 16px; } }
 @media (max-width: 480px) { .story-item-title { font-size: 14px; } }
+
+/* ══ 채용공고 — 왼쪽 사이드바 ══════════════════════════════════════
+   드롭다운에 접어 두면 무엇이 있는지 모르는 사람은 못 고른다. 뷰티는 직군
+   이름이 특히 다양해서(헤어스탭·스페어·두피관리사·뷰티 어드바이저) 펼쳐
+   놔야 "이런 것도 있네" 하고 눌러 본다.
+
+   가장 위 가지인 매장/본사가 사이드바 꼭대기에 있다 — 고르는 순간 아래
+   직군 목록이 통째로 갈리므로, 컨트롤이 자기가 바꾸는 것 위에 있어야 한다. */
+.jobs-layout { display: grid; grid-template-columns: 190px 1fr; gap: 22px; align-items: start; }
+.jobs-side { position: sticky; top: 78px; }
+.jobs-side-type { display: flex; width: 100%; margin-bottom: 10px; }
+.jobs-side-type .seg-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 0; }
+
+.jobs-side-box { background: #fff; border: 1px solid #efeaf4; border-radius: 10px; padding: 12px 12px 13px; margin-bottom: 8px; }
+.jobs-side-t { display: flex; align-items: baseline; gap: 6px; font-size: 13.5px; font-weight: 700; color: #222; margin: 0 0 9px; }
+.jobs-side-t i { font-style: normal; font-size: 11.5px; font-weight: 500; color: #b7b0bf; }
+.jobs-side-sub { font-size: 11.5px; color: #a9a2b2; margin: 11px 0 5px; }
+.jobs-side-sub:first-of-type { margin-top: 0; }
+
+.jobs-side-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px; }
+.jobs-side-grid.c3 { grid-template-columns: repeat(3, 1fr); }
+.jobs-side-list { display: flex; flex-direction: column; gap: 1px; }
+.jobs-side-grid button, .jobs-side-list button {
+  display: flex; align-items: baseline; gap: 4px; width: 100%;
+  background: none; border: none; padding: 4px 2px; cursor: pointer; text-align: left;
+  font-family: inherit; font-size: 12.5px; color: #6b6570; border-radius: 5px;
+  transition: color .12s, background .12s;
+}
+.jobs-side-grid button:hover, .jobs-side-list button:hover { color: #2b2b2b; background: #f8f5fb; }
+.jobs-side-grid button.on, .jobs-side-list button.on { color: var(--color-primary); font-weight: 700; }
+/* 값이 있는 공고 수. 눌러서 적게 나오는 것이 필터 탓이 아니라 데이터 탓임을 드러낸다. */
+.jobs-side-grid button i { font-style: normal; font-size: 10.5px; color: #c3bcca; }
+.jobs-side-grid button.on i { color: #c9a3e0; }
+
+.jobs-main { min-width: 0; }
+.jobs-head { display: flex; align-items: baseline; gap: 8px; padding: 20px 0 2px; }
+.jobs-head b { font-size: 19px; font-weight: 700; color: #1a1a1a; letter-spacing: -.4px; }
+.jobs-head span { font-size: 13.5px; color: #9a94a4; }
+
+/* 사이드바가 들어온 만큼 카드는 다섯 줄에서 네 줄로. */
+.jobs-layout .jobs-grid { grid-template-columns: repeat(4, 1fr); }
+.jobs-layout .jobs-filter-bar { padding-top: 12px; }
+
+@media (max-width: 1024px) {
+  /* 폰에는 사이드바를 놓을 자리가 없다. 원래 쓰던 드롭다운으로 되돌린다. */
+  .jobs-layout { display: block; }
+  .jobs-side { display: none; }
+  .jobs-head { padding: 14px 0 0; }
+  .jobs-layout .jobs-grid { grid-template-columns: repeat(2, 1fr); }
+}

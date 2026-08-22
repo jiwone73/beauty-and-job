@@ -5,6 +5,9 @@ import { useState, useRef, useEffect, Suspense } from "react";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER, SALARY_STORE, SALARY_OFFICE } from "@/components/FilterSheet";
+import { SIDO_LIST } from "@/lib/data/regions";
+import { shortSido } from "@/lib/regionShort";
+import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS } from "@/lib/data/jobGroups";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Bookmark, ChevronDown, ChevronRight } from "lucide-react";
@@ -20,7 +23,12 @@ function JobsPageInner() {
   const { userJobType, userJobAreas } = useAuthStore();
   const searchParams = useSearchParams();
 
-  const initType = searchParams.get("type") || "전체";
+  // 매장/본사는 이 화면에서 가장 위 가지다 — 고르는 순간 사이드바의 직군 목록도,
+  // 소분류도, 급여/연봉 어휘도 바뀐다. '전체'는 두지 않는다. 성격이 다른 두
+  // 시장을 섞어 두면 직군이 13개로 늘어나 사이드바만 복잡해진다.
+  // 메인에서 '전체'로 검색해 넘어오면 건수가 많은 매장으로 연다(114 대 26).
+  const 넘어온유형 = searchParams.get("type");
+  const initType = 넘어온유형 === "본사" ? "본사" : "매장";
   const initCareer = searchParams.get("career") || "경력 전체";
   const initRegion = searchParams.get("region") || "";
   const initBrand = searchParams.get("brand") || "";
@@ -161,6 +169,8 @@ function JobsPageInner() {
   // 복리후생 후보는 그 업태의 어휘 전체를 보여 준다(매장 21 · 본사 27 · 전체 35).
   // 지금 공고에 달린 것만 남기면 목록이 서너 개로 쪼그라들어, 무엇으로 거를 수 있는지조차 알 수 없다.
   const benefitOptions = curatedBenefits;
+  // 사이드바 직군 목록은 매장/본사에 따라 통째로 갈린다(매장 8 · 본사 5).
+  const 대분류목록 = jobTypeFilter === "본사" ? OFFICE_JOB_GROUPS : STORE_JOB_GROUPS;
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = jobTypeFilter === "전체" || j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
@@ -212,16 +222,92 @@ function JobsPageInner() {
 
       
 
-      <div className="jobs-container">
-        {/* ===== 필터 탭 ===== */}
-        <div className="jobs-type-tabs">
-          {["전체", "매장", "본사"].map((t) => (
-            <button key={t}
-              className={`jobs-type-tab ${jobTypeFilter === t ? "active" : ""}`}
-              onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); }}>
-              {t === "본사" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />본사</span> : t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : "전체"}
-            </button>
-          ))}
+      <div className="jobs-container jobs-layout">
+        {/* ===== 왼쪽 사이드바 — 대분류는 펼쳐 둔다 =====
+            드롭다운은 무엇이 있는지 모르면 못 고른다. 뷰티는 직군 이름이 특히
+            다양해서(헤어스탭·스페어·두피관리사·뷰티 어드바이저) 펼쳐 놔야
+            "이런 것도 있네" 하고 눌러 본다. */}
+        <aside className="jobs-side">
+          <div className="seg jobs-side-type">
+            {(["매장", "본사"] as const).map((t) => (
+              <button key={t} type="button"
+                className={`seg-btn ${jobTypeFilter === t ? "active" : ""}`}
+                onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); }}>
+                {t === "매장" ? <StoreIcon size={14} /> : <OfficeIcon size={14} />}{t}
+              </button>
+            ))}
+          </div>
+
+          <div className="jobs-side-box">
+            <p className="jobs-side-t">지역</p>
+            <div className="jobs-side-grid c3">
+              {SIDO_LIST.map((sd) => {
+                const on = selectedRegions.includes(sd);
+                return (
+                  <button key={sd} type="button" className={on ? "on" : undefined}
+                    onClick={() => setSelectedRegions(on ? selectedRegions.filter((x) => x !== sd) : [...selectedRegions, sd])}>
+                    {shortSido(sd)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="jobs-side-box">
+            <p className="jobs-side-t">
+              직군 <i>{jobTypeFilter} {대분류목록.length}</i>
+            </p>
+            <div className="jobs-side-list">
+              {대분류목록.map((g) => {
+                const 소 = getJobSubGroups(jobTypeFilter === "매장" ? "STORE" : "OFFICE", g.group);
+                const on = 소.length > 0 && 소.every((x) => selectedJobs.includes(x));
+                return (
+                  <button key={g.group} type="button" className={on ? "on" : undefined}
+                    onClick={() => setSelectedJobs(on ? selectedJobs.filter((x) => !소.includes(x)) : Array.from(new Set([...selectedJobs, ...소])))}>
+                    {g.group}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="jobs-side-box">
+            <p className="jobs-side-t">근무조건</p>
+            {/* 고용형태는 지금 140건 중 99건이 비어 있다(외부 크롤이 안 담아 온다).
+                옆에 건수를 적어 두면, 눌러서 적게 나오는 것이 필터 탓이 아니라
+                데이터 탓임이 드러난다. */}
+            <p className="jobs-side-sub">고용형태</p>
+            <div className="jobs-side-grid">
+              {EMPLOYMENT_OPTS.filter((o) => o.value !== "고용형태 전체").map((o) => {
+                const n = (apiJobs || []).filter((j: any) => j.employment_type === o.value).length;
+                const on = selectedEmployment === o.value;
+                return (
+                  <button key={o.value} type="button" className={on ? "on" : undefined}
+                    onClick={() => setSelectedEmployment(on ? "고용형태 전체" : o.value)}>
+                    {o.label}<i>{n}</i>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="jobs-side-sub">경력</p>
+            <div className="jobs-side-grid">
+              {CAREER_OPTS.filter((o) => o.value !== "경력 전체").map((o) => {
+                const on = selectedCareer === o.value;
+                return (
+                  <button key={o.value} type="button" className={on ? "on" : undefined}
+                    onClick={() => setSelectedCareer(on ? "경력 전체" : o.value)}>
+                    {o.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </aside>
+
+        <div className="jobs-main">
+        <div className="jobs-head">
+          <b>{jobTypeFilter} 채용공고</b>
+          <span>{filteredJobs.length}건</span>
         </div>
 
         {/* ===== 필터 바 ===== */}
@@ -250,69 +336,9 @@ function JobsPageInner() {
               />
             </div>
 
-            {/* 지역 선택 (모달) */}
-            <div className="jobs-dropdown-wrap">
-              <button
-                className={`jobs-filter-btn ${selectedRegions.length > 0 ? "active" : ""}`}
-                onClick={() => setShowRegionModal(true)}>
-                {selectedRegions.length === 0
-                  ? "지역"
-                  : selectedRegions.length === 1
-                  ? selectedRegions[0]
-                  : `${selectedRegions[0]} 외 ${selectedRegions.length - 1}`}
-                <ChevronDown size={16} />
-              </button>
-              <RegionSelectModal
-                open={showRegionModal}
-                initial={selectedRegions}
-                onClose={() => setShowRegionModal(false)}
-                onApply={setSelectedRegions}
-              />
-            </div>
-
-            {/* 경력 (PC) */}
-            <div className="jobs-dropdown-wrap jobs-pc-only">
-              <button
-                className={`jobs-filter-btn ${selectedCareer !== "경력 전체" ? "active" : ""}`}
-                onClick={() => { setShowCareerDrop(!showCareerDrop); setShowJobDrop(false); setShowEmploymentDrop(false); setShowBenefitDrop(false); setShowSalaryDrop(false); }}
-              >
-                {CAREER_OPTS.find((o) => o.value === selectedCareer && o.value !== "경력 전체")?.label || "경력"}
-                <ChevronDown size={16} />
-              </button>
-              {showCareerDrop && (
-                <div className="jobs-dropdown">
-                  {CAREER_OPTS.map((o) => (
-                    <button key={o.value}
-                      className={`jobs-dropdown-item ${selectedCareer === o.value ? "active" : ""}`}
-                      onClick={() => { setSelectedCareer(o.value); setShowCareerDrop(false); }}>
-                      {o.value === "경력 전체" ? "경력 전체" : o.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 고용형태 (PC) */}
-            <div className="jobs-dropdown-wrap jobs-pc-only">
-              <button
-                className={`jobs-filter-btn ${selectedEmployment !== "고용형태 전체" ? "active" : ""}`}
-                onClick={() => { setShowEmploymentDrop(!showEmploymentDrop); setShowJobDrop(false); setShowCareerDrop(false); setShowBenefitDrop(false); setShowSalaryDrop(false); }}
-              >
-                {selectedEmployment !== "고용형태 전체" ? selectedEmployment : "고용형태"}
-                <ChevronDown size={16} />
-              </button>
-              {showEmploymentDrop && (
-                <div className="jobs-dropdown">
-                  {EMPLOYMENT_OPTS.map((o) => (
-                    <button key={o.value}
-                      className={`jobs-dropdown-item ${selectedEmployment === o.value ? "active" : ""}`}
-                      onClick={() => { setSelectedEmployment(o.value); setShowEmploymentDrop(false); }}>
-                      {o.value === "고용형태 전체" ? "고용형태 전체" : o.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* 지역·경력·고용형태는 왼쪽 사이드바에 펼쳐 두었다. 여기에 또 두면
+                같은 것을 두 곳에서 물어보게 되고, 두 값이 어긋나면 어느 쪽이
+                걸린 것인지 알 수 없다. */}
 
             {/* 복리후생 (PC) */}
             <div className="jobs-dropdown-wrap jobs-pc-only">
@@ -337,29 +363,9 @@ function JobsPageInner() {
               )}
             </div>
 
-            {/* 급여 (PC) */}
-            {jobTypeFilter !== "전체" && (
-              <div className="jobs-dropdown-wrap jobs-pc-only">
-                <button
-                  className={`jobs-filter-btn ${selectedSalary > 0 ? "active" : ""}`}
-                  onClick={() => { setShowSalaryDrop(!showSalaryDrop); setShowJobDrop(false); setShowCareerDrop(false); setShowEmploymentDrop(false); setShowBenefitDrop(false); }}
-                >
-                  {selectedSalary > 0 ? (salaryOpts.find((o) => o.value === selectedSalary)?.label || (jobTypeFilter === "매장" ? "급여" : "연봉")) : (jobTypeFilter === "매장" ? "급여" : "연봉")}
-                  <ChevronDown size={16} />
-                </button>
-                {showSalaryDrop && (
-                  <div className="jobs-dropdown">
-                    {salaryOpts.map((o) => (
-                      <button key={o.value} type="button"
-                        className={`jobs-dropdown-item ${selectedSalary === o.value ? "active" : ""}`}
-                        onClick={() => { setSelectedSalary(o.value); setShowSalaryDrop(false); }}>
-                        {o.value === 0 ? (jobTypeFilter === "매장" ? "급여 전체" : "연봉 전체") : o.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+            {/* 급여 필터는 두지 않는다. 같은 공고 안에서도 신입·경력에 따라
+                값이 갈리고, 실제 데이터가 '협의'·'월 216만원 이상'·'월급 350만원'
+                처럼 제각각이라 걸러도 고르는 데 도움이 안 된다. */}
 
             {/* 상세 필터 (모바일) */}
             <div className="jobs-dropdown-wrap jobs-mobile-only">
@@ -412,6 +418,7 @@ function JobsPageInner() {
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
