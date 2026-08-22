@@ -160,7 +160,7 @@ export default function AdminAdsPage() {
   };
 
   const badge = (status: string) => (
-    <span style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", color: status === "done" ? "#888" : "#5f0080" }}>
+    <span style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", color: status === "done" ? "#888" : "#582681" }}>
       {status === "done" ? "회신완료" : "신규"}
     </span>
   );
@@ -213,7 +213,7 @@ export default function AdminAdsPage() {
                     <input type="checkbox" checked={checked.includes(item.id)} onChange={() => toggleCheck(item.id)} style={{ cursor: "pointer" }} />
                   </td>
                   <td className="admin-td-type">
-                    <span style={{ fontSize: 13, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f3eafa", color: "#5f0080", whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f3eafa", color: "#582681", whiteSpace: "nowrap" }}>
                       {item.type || "광고"}
                     </span>
                   </td>
@@ -243,7 +243,7 @@ export default function AdminAdsPage() {
                 {/* 왼쪽: 문의 정보 + 내용 */}
                 <div style={{ flex: "1 1 300px", minWidth: 0 }}>
               <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", rowGap: 12, columnGap: 12, fontSize: 15, marginBottom: 18 }}>
-                <span style={{ color: "#888" }}>유형</span><span style={{ fontWeight: 600, color: "#5f0080" }}>{selected.type || "광고"}</span>
+                <span style={{ color: "#888" }}>유형</span><span style={{ fontWeight: 600, color: "#582681" }}>{selected.type || "광고"}</span>
                 <span style={{ color: "#888" }}>회사명</span><span>{selected.company_name || "-"}</span>
                 <span style={{ color: "#888" }}>담당자</span><span>{selected.contact_name}</span>
                 <span style={{ color: "#888" }}>전화번호</span><span>{selected.phone ? formatPhone(selected.phone) : "-"}</span>
@@ -277,7 +277,7 @@ export default function AdminAdsPage() {
                     )}
                   </div>
                   <button onClick={sendReply}
-                    style={{ width: "100%", marginTop: 14, padding: "12px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                    style={{ width: "100%", marginTop: 14, padding: "12px", background: "#582681", color: "#fff", border: "none", borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                     답변 메일 보내기
                   </button>
                   <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
@@ -289,7 +289,7 @@ export default function AdminAdsPage() {
                   이메일 주소가 없어 답변 메일을 보낼 수 없습니다. 전화로 연락해주세요.
                   {selected.status !== "done" && (
                     <button onClick={() => markDone(selected.id)}
-                      style={{ display: "block", width: "100%", marginTop: 12, padding: "10px", background: "#fff", color: "#5f0080", border: "1.5px solid #5f0080", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                      style={{ display: "block", width: "100%", marginTop: 12, padding: "10px", background: "#fff", color: "#582681", border: "1.5px solid #582681", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
                       완료로 표시
                     </button>
                   )}

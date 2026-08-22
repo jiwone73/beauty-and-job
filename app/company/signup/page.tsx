@@ -296,7 +296,7 @@ export default function CompanySignupPage() {
           <div className="w-full max-w-[420px] text-center">
             <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-[#f5ebfa] flex items-center justify-center">
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                <path d="M5 13l4 4L19 7" stroke="#5f0080" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M5 13l4 4L19 7" stroke="#582681" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
             <h1 className="text-[16px] font-normal text-[#1a1a1a] mb-3">회원가입 신청이 완료되었습니다</h1>
@@ -306,7 +306,7 @@ export default function CompanySignupPage() {
               <span className="text-[13px] md:text-[15px] text-[#9a9a9a]">보통 1영업일 이내에 처리됩니다.</span>
             </p>
             <Link href="/login"
-              className="block w-full h-[52px] leading-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] hover:opacity-90 transition">
+              className="block w-full h-[52px] leading-[52px] bg-[#582681] text-white rounded-lg font-normal text-[15px] hover:opacity-90 transition">
               로그인 페이지로
             </Link>
             <Link href="/"
@@ -352,18 +352,18 @@ export default function CompanySignupPage() {
                   onClick={() => update("company_type", t.value)}
                   className={`jt-card relative flex items-center gap-3 px-2 py-2.5 border-2 rounded-xl text-left transition ${
                     form.company_type === t.value
-                      ? "border-[#5f0080] bg-[#f5ebfa] text-[#5f0080]"
+                      ? "border-[#582681] bg-[#f5ebfa] text-[#582681]"
                       : "border-[#e0e0e0] text-[#6b6b6b] hover:border-[#c0c0c0]"
                   }`}
                 >
                   {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
-                  <t.Icon size={30} className="jt-icon" style={{ color: "#5f0080", flexShrink: 0 }} />
+                  <t.Icon size={30} className="jt-icon" style={{ color: "#582681", flexShrink: 0 }} />
                   <span className="jt-text flex flex-col min-w-0">
                     <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#1a1a1a]">{t.label}</span>
                     <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">{t.desc}</span>
                   </span>
                   {form.company_type === t.value && (
-                    <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#5f0080] rounded-full flex items-center justify-center">
+                    <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#582681] rounded-full flex items-center justify-center">
                       <svg width="8" height="8" viewBox="0 0 10 8" fill="none">
                         <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
@@ -380,7 +380,7 @@ export default function CompanySignupPage() {
             <input type="text" value={form.company_name}
               onChange={(e) => update("company_name", e.target.value)}
               placeholder="예) 올리브영"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
           </div>
 
           <div className="mb-3">
@@ -388,7 +388,7 @@ export default function CompanySignupPage() {
             <input type="text" value={form.brand_name}
               onChange={(e) => update("brand_name", e.target.value)}
               placeholder="대표 브랜드명"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
           </div>
 
           <div className="mb-4">
@@ -407,7 +407,7 @@ export default function CompanySignupPage() {
                   else { setBizStatus("invalid"); setBizMsg("올바른 사업자등록번호를 입력해주세요."); }
                 }}
                 placeholder="000-00-00000"
-                className={`w-full h-[48px] px-4 ${form.business_number ? "pr-10" : ""} border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${bizStatus === "invalid" ? "border-[#e74c3c] focus:border-[#e74c3c]" : "border-[#e0e0e0] focus:border-[#5f0080]"}`} />
+                className={`w-full h-[48px] px-4 ${form.business_number ? "pr-10" : ""} border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${bizStatus === "invalid" ? "border-[#e74c3c] focus:border-[#e74c3c]" : "border-[#e0e0e0] focus:border-[#582681]"}`} />
               {form.business_number && (
                 <button type="button" tabIndex={-1}
                   onClick={() => { update("business_number", ""); setBizStatus("idle"); setBizMsg(""); }}
@@ -421,7 +421,7 @@ export default function CompanySignupPage() {
 
           <div className="mb-4">
             <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록증 <span className="text-[#e74c3c]">*</span></label>
-            <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#c9b3e0] rounded-lg text-[13px] md:text-[15px] text-[#5f0080] bg-[#faf7fd] cursor-pointer hover:bg-[#f3ebfb] transition text-center">
+            <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#c9b3e0] rounded-lg text-[13px] md:text-[15px] text-[#582681] bg-[#faf7fd] cursor-pointer hover:bg-[#f3ebfb] transition text-center">
               <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={handleLicenseUpload} className="hidden" />
               {licenseUploading ? "업로드 중…" : licenseName ? `첨부됨: ${licenseName}` : "사업자등록증 첨부 (JPG·PNG·WebP·PDF · 최대 5MB)"}
             </label>
@@ -440,10 +440,10 @@ export default function CompanySignupPage() {
                   onChange={(e) => { update("phone", formatPhone(e.target.value)); setPhoneVerified(false); setCodeSent(false); }}
                   placeholder="010-1234-5678"
                   disabled={phoneVerified}
-                  className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080] disabled:bg-[#f5f5f5]" />
+                  className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681] disabled:bg-[#f5f5f5]" />
                 <button type="button" onClick={handleSendCode}
                   disabled={sending || phoneVerified || form.phone.replace(/\D/g, "").length < 10}
-                  className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#5f0080] text-[#5f0080] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition">
+                  className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition">
                   {phoneVerified ? "인증완료" : codeSent ? "재전송" : sending ? "전송중" : "인증번호 받기"}
                 </button>
               </div>
@@ -452,10 +452,10 @@ export default function CompanySignupPage() {
                   <input type="text" inputMode="numeric" value={phoneCode}
                     onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     placeholder="인증번호 6자리"
-                    className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
+                    className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
                   <button type="button" onClick={handleVerifyCode}
                     disabled={verifying || phoneCode.length < 6}
-                    className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal bg-[#5f0080] text-white disabled:opacity-40 hover:opacity-90 transition">
+                    className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal bg-[#582681] text-white disabled:opacity-40 hover:opacity-90 transition">
                     {verifying ? "확인중" : "확인"}
                   </button>
                 </div>
@@ -473,10 +473,10 @@ export default function CompanySignupPage() {
                   onBlur={checkEmailDup}
                   placeholder="hr@company.com"
                   disabled={emailVerified}
-                  className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080] disabled:bg-[#f5f5f5]" />
+                  className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681] disabled:bg-[#f5f5f5]" />
                 <button type="button" onClick={handleSendEmailCode}
                   disabled={emailSending || emailVerified || emailStatus === "taken" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)}
-                  className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#5f0080] text-[#5f0080] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition">
+                  className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition">
                   {emailVerified ? "인증완료" : emailCodeSent ? "재전송" : emailSending ? "전송중" : "인증코드 받기"}
                 </button>
               </div>
@@ -488,10 +488,10 @@ export default function CompanySignupPage() {
                   <input type="text" inputMode="numeric" value={emailCode}
                     onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     placeholder="인증코드 6자리"
-                    className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
+                    className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
                   <button type="button" onClick={handleVerifyEmailCode}
                     disabled={emailVerifying || emailCode.length < 6}
-                    className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal bg-[#5f0080] text-white disabled:opacity-40 hover:opacity-90 transition">
+                    className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal bg-[#582681] text-white disabled:opacity-40 hover:opacity-90 transition">
                     {emailVerifying ? "확인중" : "확인"}
                   </button>
                 </div>
@@ -505,7 +505,7 @@ export default function CompanySignupPage() {
                 <input type={showPw ? "text" : "password"} value={form.password}
                   onChange={(e) => update("password", e.target.value)}
                   placeholder="비밀번호 입력"
-                  className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
+                  className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
                 <button type="button" onClick={() => setShowPw(!showPw)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a9a9a]">
                   {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -514,7 +514,7 @@ export default function CompanySignupPage() {
               <input type={showPw ? "text" : "password"} value={form.passwordConfirm}
                 onChange={(e) => update("passwordConfirm", e.target.value)}
                 placeholder="비밀번호 다시 입력"
-                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]" />
+                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
               <p className={`text-[12px] md:text-[14px] mt-1.5 ${form.password && !isPasswordValid(form.password) ? "text-[#e74c3c]" : "text-[#9a9a9a]"}`}>
                 영문·숫자·특수문자 중 3가지 이상으로 조합해 8~16자
               </p>
@@ -528,7 +528,7 @@ export default function CompanySignupPage() {
           <div className="mt-6 pt-6 border-t border-[#ececec]">
             <label className="flex items-center gap-2 mb-3 cursor-pointer">
               <input type="checkbox" checked={allAgreed} onChange={toggleAll}
-                className="w-4 h-4 accent-[#5f0080]" />
+                className="w-4 h-4 accent-[#582681]" />
               <span className="font-normal text-[14px] md:text-[16px]">전체 동의</span>
             </label>
             <div className="space-y-2 ml-1">
@@ -536,9 +536,9 @@ export default function CompanySignupPage() {
                 <label key={term.id} className="flex items-center gap-2 cursor-pointer text-[13px] md:text-[15px] text-[#3a3a3a]">
                   <input type="checkbox" checked={!!agreed[term.id]}
                     onChange={(e) => setAgreed({ ...agreed, [term.id]: e.target.checked })}
-                    className="w-4 h-4 accent-[#5f0080]" />
+                    className="w-4 h-4 accent-[#582681]" />
                   <span>
-                    <span className={`font-normal ${term.is_required ? "text-[#5f0080]" : "text-[#9a9a9a]"}`}>
+                    <span className={`font-normal ${term.is_required ? "text-[#582681]" : "text-[#9a9a9a]"}`}>
                       [{term.is_required ? "필수" : "선택"}]
                     </span>{" "}
                     {term.title}
@@ -551,7 +551,7 @@ export default function CompanySignupPage() {
           {error && <p className="text-[13px] md:text-[15px] text-[#e74c3c] mt-4 text-center">{error}</p>}
 
           <button onClick={handleSubmit} disabled={!isFormValid || loading}
-            className="w-full h-[52px] mt-6 bg-[#5f0080] text-white rounded-lg font-normal text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition">
+            className="w-full h-[52px] mt-6 bg-[#582681] text-white rounded-lg font-normal text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition">
             {loading ? "회원가입 중..." : "기업회원 가입"}
           </button>
 

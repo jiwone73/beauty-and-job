@@ -126,7 +126,7 @@ export default function LoginEmailPage() {
               onKeyDown={(e) => e.key === "Enter" && canSubmit && handleLogin()}
               placeholder="이메일을 입력해주세요"
               autoFocus
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
             />
           </div>
 
@@ -141,7 +141,7 @@ export default function LoginEmailPage() {
                 onChange={(e) => { setPassword(e.target.value); setError(""); setNotice(null); }}
                 onKeyDown={(e) => e.key === "Enter" && canSubmit && handleLogin()}
                 placeholder="비밀번호를 입력해주세요"
-                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
               />
               <button
                 type="button"
@@ -158,7 +158,7 @@ export default function LoginEmailPage() {
                 type="checkbox"
                 checked={keepLogin}
                 onChange={(e) => setKeepLogin(e.target.checked)}
-                className="w-4 h-4 accent-[#5f0080]"
+                className="w-4 h-4 accent-[#582681]"
               />
               로그인 저장하기
             </label>
@@ -169,7 +169,7 @@ export default function LoginEmailPage() {
           {/* 왜 안 됐는지 — 비밀번호가 아니라 계정 종류가 문제인 경우 */}
           {notice && (
             <div className="mb-3 rounded-lg bg-[#faf7fc] border border-[#eee4f5] p-3">
-              <p className="text-[13px] md:text-[14px] text-[#5f0080] mb-2">{notice.text}</p>
+              <p className="text-[13px] md:text-[14px] text-[#582681] mb-2">{notice.text}</p>
               {notice.providers.includes("kakao") && (
                 <button
                   onClick={() => { window.location.href = "/api/auth/kakao"; }}
@@ -188,7 +188,7 @@ export default function LoginEmailPage() {
               )}
               {notice.company && (
                 <Link href="/company/login">
-                  <button className="w-full h-[44px] border border-[#5f0080] text-[#5f0080] rounded-lg text-[14px]">
+                  <button className="w-full h-[44px] border border-[#582681] text-[#582681] rounded-lg text-[14px]">
                     기업 로그인으로 이동
                   </button>
                 </Link>
@@ -199,7 +199,7 @@ export default function LoginEmailPage() {
           <button
             onClick={handleLogin}
             disabled={!canSubmit}
-            className="w-full h-[52px] rounded-lg font-normal text-[15px] mt-7 transition bg-[#5f0080] text-white hover:opacity-90 disabled:bg-[#f2f2f2] disabled:text-[#b0b0b0] disabled:hover:opacity-100"
+            className="w-full h-[52px] rounded-lg font-normal text-[15px] mt-7 transition bg-[#582681] text-white hover:opacity-90 disabled:bg-[#f2f2f2] disabled:text-[#b0b0b0] disabled:hover:opacity-100"
           >
             {loading ? "로그인 중..." : "로그인"}
           </button>
@@ -213,17 +213,17 @@ export default function LoginEmailPage() {
           </div>
 
           <Link href={email.trim() ? `/signup/email?email=${encodeURIComponent(email.trim())}` : "/signup/email"}>
-            <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#5f0080] rounded-lg font-normal text-[15px] hover:border-[#5f0080] hover:bg-[#faf7fc] transition">
+            <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#582681] rounded-lg font-normal text-[15px] hover:border-[#582681] hover:bg-[#faf7fc] transition">
               이메일로 가입하기
             </button>
           </Link>
 
           <div className="mt-8 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
-            <Link href="/login/password-reset" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+            <Link href="/login/password-reset" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#582681] hover:underline">
               <KeyRound size={14} /> 비밀번호 재설정
             </Link>
             <span className="text-[#d0d0d0]">·</span>
-            <Link href="/login/find-account" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+            <Link href="/login/find-account" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#582681] hover:underline">
               <UserSearch size={14} /> 계정 찾기
             </Link>
           </div>

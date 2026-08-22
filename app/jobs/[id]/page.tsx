@@ -285,7 +285,7 @@ export default function JobDetailPage() {
           ) : isOwnerCompany ? (
             <>
               <div style={{
-                background: "#f5f3ff", color: "#5f0080", borderRadius: "10px",
+                background: "#f5f3ff", color: "#582681", borderRadius: "10px",
                 padding: "12px 14px", fontSize: "13px", lineHeight: 1.5,
                 textAlign: "center", marginBottom: "12px"
               }}>

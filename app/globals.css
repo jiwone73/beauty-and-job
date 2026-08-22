@@ -9,11 +9,11 @@
    루트 변수 (회원가입 + 메인 공통)
    =========================================== */
 :root {
-  --color-primary: #5f0080;
-  --color-primary-hover: #4a0066;
-  --color-primary-soft: #f3e8f7;
-  --color-primary-light: #b48dc7;
-  --color-primary-pale: #faf5fc;
+  --color-primary: #582681;
+  --color-primary-hover: #431a63;
+  --color-primary-soft: #efe9f5;
+  --color-primary-light: #a78cc2;
+  --color-primary-pale: #f8f5fb;
   --color-text: #1a1a1a;
   --color-text-sub: #6b6b6b;
   --color-text-mute: #9a9a9a;
@@ -474,7 +474,7 @@
 
 .insight-image {
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, var(--color-primary-soft), var(--color-primary-pale));
+  background: var(--color-primary-soft);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -617,7 +617,7 @@
   font-weight: 800;
   padding: 4px 8px;
   border-radius: 4px;
-  background: linear-gradient(90deg, #c896d8, #b48dc7);
+  background: #a78cc2;
   color: #1f2024;
   letter-spacing: 1px;
   margin-bottom: 16px;
@@ -1560,7 +1560,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   .cv-date-input { width: auto; flex: 1; min-width: 0; padding-left: 4px; padding-right: 4px; }
   .cv-date-sep { flex-shrink: 0; }
 }
-.cv-btn-primary { width: 100%; height: 52px; background: #faf5ff; color: #5f0080; border: none; border-radius: 8px; font-size: 15px; font-weight: 400; cursor: pointer; margin-top: 24px; transition: background 0.15s; font-family: inherit; }
+.cv-btn-primary { width: 100%; height: 52px; background: #faf5ff; color: #582681; border: none; border-radius: 8px; font-size: 15px; font-weight: 400; cursor: pointer; margin-top: 24px; transition: background 0.15s; font-family: inherit; }
 .cv-btn-primary:hover { background: #f1e8fb; }
 .cv-btn-primary.disabled { background: var(--color-border); color: var(--color-text-mute); cursor: not-allowed; }
 .cv-btn-primary.disabled:hover { background: var(--color-border); }
@@ -1690,7 +1690,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) { .resume-layout { padding: 0; } }
 .resume-section { background: white; border-radius: 12px; padding: 18px; margin-bottom: 12px; }
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.resume-section-title { font-size: 16px; font-weight: 400; color: #5f0080; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
+.resume-section-title { font-size: 16px; font-weight: 400; color: #582681; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
 .apply-resume-wrap .resume-section { padding: 16px 0; background: transparent; margin-bottom: 0; }
 .apply-cover-block { padding: 20px 0 0; }
 @media (max-width: 640px) { .apply-cover-block { padding: 18px 0 0; } }
@@ -2352,7 +2352,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 지원 모달 */
 .apply-modal-job { background: transparent; border-radius: 8px; padding: 0 0 14px; margin-bottom: 16px; }
 .apply-modal-job strong { display: block; font-size: 13px; font-weight: 400; color: #7c3aed; margin-bottom: 4px; }
-.apply-modal-job p { font-size: 15px; font-weight: 400; color: #5f0080; }
+.apply-modal-job p { font-size: 15px; font-weight: 400; color: #582681; }
 .apply-modal-profile-btn { display: block; text-align: center; background: transparent; border: 1.5px solid var(--color-primary); color: var(--color-primary); border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 8px; transition: all 0.15s; }
 .apply-modal-profile-btn:hover { background: var(--color-primary-soft); }
 
@@ -2387,7 +2387,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 히어로 배너 */
 .insights-hero {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #7a1fa0 100%);
+  background: var(--color-primary);
   border-radius: 20px;
   margin: 32px 0 28px;
   padding: 40px 48px;
@@ -2677,7 +2677,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   overflow: hidden;
 }
 .insight-aside-banner {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #7a1fa0 100%);
+  background: var(--color-primary);
   border-radius: 14px; padding: 24px;
 }
 .insight-aside-banner-text {
@@ -2833,7 +2833,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-product-note { text-align: center; font-size: 14px; color: var(--color-text-sub); background: white; border-radius: 10px; padding: 14px 20px; border: 1px solid var(--color-border); }
 
 /* 무료 매칭 */
-.company-matching-box { background: linear-gradient(135deg, var(--color-primary) 0%, #7a1fa0 100%); border-radius: 24px; padding: 56px 48px; display: grid; grid-template-columns: 1fr 320px; gap: 48px; align-items: start; color: white; }
+.company-matching-box { background: var(--color-primary); border-radius: 24px; padding: 56px 48px; display: grid; grid-template-columns: 1fr 320px; gap: 48px; align-items: start; color: white; }
 .company-matching-title { font-size: 32px; font-weight: 800; line-height: 1.3; letter-spacing: -0.5px; margin: 12px 0 16px; }
 .company-matching-desc { font-size: 15px; opacity: 0.9; line-height: 1.8; margin-bottom: 24px; }
 .company-matching-fee { background: rgba(255,255,255,0.15); border-radius: 12px; overflow: hidden; margin-bottom: 28px; }
@@ -2874,7 +2874,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .company-faq-a { padding: 0 20px 18px; font-size: 14px; color: var(--color-text-sub); line-height: 1.7; border-top: 1px solid var(--color-border); padding-top: 14px; }
 
 /* 최종 CTA */
-.company-final-cta { background: linear-gradient(135deg, var(--color-primary) 0%, #7a1fa0 100%); padding: 80px 0; text-align: center; }
+.company-final-cta { background: var(--color-primary); padding: 80px 0; text-align: center; }
 .company-final-title { font-size: 36px; font-weight: 800; color: white; margin-bottom: 14px; letter-spacing: -0.5px; }
 .company-final-desc { font-size: 16px; color: rgba(255,255,255,0.85); margin-bottom: 36px; }
 .company-final-buttons { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
@@ -3067,7 +3067,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .salary-yoy.stable { color: #757575; background: #f5f5f5; }
 .salary-disclaimer { font-size: 12px; color: var(--color-text-mute); margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--color-border); }
 
-.salary-cta-box { background: linear-gradient(135deg, var(--color-primary) 0%, #7a1fa0 100%); border-radius: 16px; padding: 36px 40px; display: flex; justify-content: space-between; align-items: center; gap: 24px; color: white; }
+.salary-cta-box { background: var(--color-primary); border-radius: 16px; padding: 36px 40px; display: flex; justify-content: space-between; align-items: center; gap: 24px; color: white; }
 .salary-cta-left h3 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
 .salary-cta-left p { font-size: 14px; opacity: 0.85; }
 .salary-cta-right { display: flex; gap: 10px; flex-shrink: 0; }
@@ -3138,7 +3138,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   white-space: nowrap;
 }
 .resume-gnb-item:hover {
-  color: #5f0080;
+  color: #582681;
 }
 .resume-header-actions {
   display: flex;
@@ -3188,14 +3188,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-size: 13px;
   font-weight: 600;
   color: #fff;
-  background: #5f0080;
+  background: #582681;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.15s;
 }
 .resume-save-btn:hover {
-  background: #4a0066;
+  background: #431a63;
 }
 
 /* 서브 헤더 */
@@ -3367,7 +3367,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .rp-section-title {
   font-size: 15px;
   font-weight: 400;
-  color: #5f0080;
+  color: #582681;
   text-transform: none;
   letter-spacing: normal;
   margin: 0 0 12px;
@@ -3430,7 +3430,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 2px 8px;
   font-size: 11px;
   font-weight: 600;
-  color: #5f0080;
+  color: #582681;
   background: #f5eaff;
   border-radius: 4px;
   margin-right: 6px;
@@ -3455,7 +3455,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 링크 */
 .rp-link {
   font-size: 13px;
-  color: #5f0080;
+  color: #582681;
   text-decoration: none;
   word-break: break-all;
 }
@@ -3588,7 +3588,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   transition: border-color 0.15s, background 0.15s;
 }
 .login-phone-btn:hover {
-  border-color: #5f0080;
+  border-color: #582681;
   background: #fdf5ff;
 }
 
@@ -3600,7 +3600,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin: 4px 0 0;
 }
 .login-signup-link {
-  color: #5f0080;
+  color: #582681;
   font-weight: 600;
   text-decoration: none;
 }
@@ -3654,7 +3654,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   box-sizing: border-box;
 }
 .login-input:focus {
-  border-color: #5f0080;
+  border-color: #582681;
   background: #fff;
 }
 .login-input.error { border-color: #e53e3e; }
@@ -3680,7 +3680,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   width: 100%;
   height: 52px;
   margin-top: 8px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 16px;
   font-weight: 700;
@@ -3689,7 +3689,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   cursor: pointer;
   transition: background 0.15s;
 }
-.login-submit-btn:hover:not(:disabled) { background: #4a0066; }
+.login-submit-btn:hover:not(:disabled) { background: #431a63; }
 .login-submit-btn:disabled {
   background: #d4b8e0;
   cursor: not-allowed;
@@ -3705,7 +3705,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   text-decoration: underline;
   padding: 4px 0;
 }
-.login-resend-btn:hover { color: #5f0080; }
+.login-resend-btn:hover { color: #582681; }
 
 .login-notice {
   font-size: 12px;
@@ -3750,7 +3750,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .auth-avatar {
   width: 26px;
   height: 26px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 12px;
   font-weight: 700;
@@ -3826,7 +3826,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .search-select.active,
 .search-select:hover {
-  border-color: #5f0080;
+  border-color: #582681;
 }
 .search-dropdown {
   position: absolute;
@@ -3855,7 +3855,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .search-dropdown-item:hover { background: #f9f5ff; }
 .search-dropdown-item.selected {
-  color: #5f0080;
+  color: #582681;
   font-weight: 600;
   background: #f5eaff;
 }
@@ -3890,7 +3890,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .newsletter-input-wrap input::placeholder {
   color: #999;
 }
-.newsletter-input-wrap input:focus { border-color: #5f0080; }
+.newsletter-input-wrap input:focus { border-color: #582681; }
 .newsletter-input-wrap input.error { border-color: #e53e3e; }
 .newsletter-error {
   font-size: 12px;
@@ -3926,15 +3926,15 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin-top: 4px;
   padding: 8px 20px;
   font-size: 13px;
-  color: #5f0080;
+  color: #582681;
   background: none;
-  border: 1.5px solid #5f0080;
+  border: 1.5px solid #582681;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
 }
 .newsletter-reset-btn:hover {
-  background: #5f0080;
+  background: #582681;
   color: #fff;
 }
 
@@ -3956,17 +3956,17 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #1a1a1a !important;
 }
 .premium-card:hover {
-  border-color: #5f0080 !important;
+  border-color: #582681 !important;
   box-shadow: 0 4px 16px rgba(95,0,128,0.1) !important;
 }
 .premium-badge {
-  background: #5f0080 !important;
+  background: #582681 !important;
   color: #fff !important;
 }
-.premium-brand { color: #5f0080 !important; }
+.premium-brand { color: #582681 !important; }
 .premium-title { color: #1a1a1a !important; }
 .premium-meta { color: #666 !important; }
-.premium-salary-value { color: #5f0080 !important; }
+.premium-salary-value { color: #582681 !important; }
 
 /* ============================================
    회사/고객지원 공통 레이아웃
@@ -4018,11 +4018,11 @@ input[type="range"].career-slider::-moz-range-thumb {
   white-space: nowrap;
   transition: all 0.15s;
 }
-.info-nav-item:hover { color: #5f0080; }
+.info-nav-item:hover { color: #582681; }
 .info-nav-item.active {
-  color: #5f0080;
+  color: #582681;
   font-weight: 700;
-  border-bottom-color: #5f0080;
+  border-bottom-color: #582681;
 }
 .info-main {
   max-width: 860px;
@@ -4048,7 +4048,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin: 0 0 14px;
   text-align: center;
 }
-.info-hero-title span { color: #5f0080; }
+.info-hero-title span { color: #582681; }
 .info-hero-desc {
   font-size: 16px;
   color: #666;
@@ -4111,14 +4111,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   padding: 8px 20px;
   font-size: 13px;
   font-weight: 600;
-  color: #5f0080;
+  color: #582681;
   background: #f5eaff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
 }
-.support-card-btn:hover { background: #5f0080; color: #fff; }
+.support-card-btn:hover { background: #582681; color: #fff; }
 
 /* FAQ */
 .faq-list { display: flex; flex-direction: column; gap: 8px; }
@@ -4188,7 +4188,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .contact-form-row input:focus,
 .contact-form-row select:focus,
-.contact-form-row textarea:focus { border-color: #5f0080; background: #fff; }
+.contact-form-row textarea:focus { border-color: #582681; background: #fff; }
 .contact-form-row textarea { min-height: 280px; resize: vertical; }
 .contact-submit-btn {
   align-self: flex-end;
@@ -4196,13 +4196,13 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-size: 15px;
   font-weight: 700;
   color: #fff;
-  background: #5f0080;
+  background: #582681;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s;
 }
-.contact-submit-btn:hover { background: #4a0066; }
+.contact-submit-btn:hover { background: #431a63; }
 
 /* 이용약관/개인정보 */
 .terms-content {
@@ -4481,7 +4481,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .apply-modal-submit {
   flex: 2;
   height: 48px;
-  background: #5f0080;
+  background: #582681;
   border: none;
   border-radius: 10px;
   font-size: 15px;
@@ -4490,7 +4490,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   cursor: pointer;
   transition: background 0.15s;
 }
-.apply-modal-submit:hover { background: #4a0066; }
+.apply-modal-submit:hover { background: #431a63; }
 .apply-modal-done {
   text-align: center;
   padding: 16px 0;
@@ -4550,12 +4550,12 @@ input[type="range"].career-slider::-moz-range-thumb {
   text-align: center;
   transition: all 0.15s;
 }
-.job-select-item:hover { border-color: #5f0080; color: #5f0080; }
-.job-select-item.selected { background: #f5eaff; border-color: #5f0080; color: #5f0080; font-weight: 700; }
+.job-select-item:hover { border-color: #582681; color: #582681; }
+.job-select-item.selected { background: #f5eaff; border-color: #582681; color: #582681; font-weight: 700; }
 .job-select-confirm {
   width: 100%;
   height: 50px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 16px;
   font-weight: 700;
@@ -4564,7 +4564,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   cursor: pointer;
   transition: background 0.15s;
 }
-.job-select-confirm:hover { background: #4a0066; }
+.job-select-confirm:hover { background: #431a63; }
 
 /* ============================================
    모바일 카드 가로 스크롤
@@ -4744,7 +4744,7 @@ input[type="range"].career-slider::-moz-range-thumb {
     margin-bottom: 8px;
     line-height: 1.4;
   }
-  .footer-new-col a:hover { color: #5f0080; }
+  .footer-new-col a:hover { color: #582681; }
 
   /* 기업회원 CTA */
   .footer-new-cta {
@@ -4842,7 +4842,7 @@ input[type="range"].career-slider::-moz-range-thumb {
     transition: color 0.15s;
   }
   .bottom-tab-item.active {
-    color: #5f0080;
+    color: #582681;
   }
   .bottom-tab-item span {
     font-size: 10px;
@@ -4882,7 +4882,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .profile-empty-btn {
   display: inline-block;
   padding: 10px 24px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 14px;
   font-weight: 600;
@@ -4890,7 +4890,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   text-decoration: none;
   transition: background 0.15s;
 }
-.profile-empty-btn:hover { background: #4a0066; }
+.profile-empty-btn:hover { background: #431a63; }
 
 /* 지원현황 */
 .applied-list { display: flex; flex-direction: column; gap: 12px; }
@@ -4942,7 +4942,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   text-decoration: none;
   transition: border-color 0.15s;
 }
-.bookmark-item:hover { border-color: #5f0080; }
+.bookmark-item:hover { border-color: #582681; }
 .bookmark-item-left { flex: 1; min-width: 0; }
 .bookmark-brand { font-size: 14px; color: #555; display: block; margin-bottom: 4px; }
 .bookmark-title {
@@ -4958,7 +4958,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .bookmark-deadline {
   font-size: 14px;
   font-weight: 700;
-  color: #5f0080;
+  color: #582681;
   flex-shrink: 0;
 }
 
@@ -4975,7 +4975,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   text-decoration: none;
   transition: border-color 0.15s;
 }
-.brand-follow-item:hover { border-color: #5f0080; }
+.brand-follow-item:hover { border-color: #582681; }
 .brand-follow-logo {
   width: 44px;
   height: 44px;
@@ -4986,7 +4986,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   justify-content: center;
   font-size: 14px;
   font-weight: 700;
-  color: #5f0080;
+  color: #582681;
   flex-shrink: 0;
 }
 .brand-follow-info {
@@ -5000,7 +5000,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .brand-follow-jobs {
   font-size: 12px;
   font-weight: 600;
-  color: #5f0080;
+  color: #582681;
   flex-shrink: 0;
 }
 
@@ -5048,7 +5048,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-logo-icon {
   width: 32px;
   height: 32px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 16px;
   font-weight: 900;
@@ -5100,8 +5100,8 @@ input[type="range"].career-slider::-moz-range-thumb {
   width: 100%;
   white-space: nowrap;
 }
-.admin-nav-item:hover { background: #f5f0ff; color: #5f0080; }
-.admin-nav-item.active { background: #f5eaff; color: #5f0080; font-weight: 700; }
+.admin-nav-item:hover { background: #f5f0ff; color: #582681; }
+.admin-nav-item.active { background: #f5eaff; color: #582681; font-weight: 700; }
 
 .admin-sidebar-bottom {
   padding: 12px 8px;
@@ -5177,7 +5177,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .admin-avatar {
   width: 32px;
   height: 32px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 14px;
   font-weight: 700;
@@ -5246,7 +5246,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-size: 12px;
   font-weight: 600;
 }
-.admin-stat-trend.up { color: #5f0080; }
+.admin-stat-trend.up { color: #582681; }
 .admin-stat-trend.down { color: #ef4444; }
 .admin-stat-trend.neutral { color: #aaa; }
 .admin-stat-value {
@@ -5315,7 +5315,7 @@ div:has(> table.admin-table),
 }
 .admin-card-more {
   font-size: 13px;
-  color: #5f0080;
+  color: #582681;
   text-decoration: none;
   font-weight: 500;
 }
@@ -5397,7 +5397,7 @@ div:has(> table.admin-table),
   transition: all 0.15s;
 }
 .admin-action-btn.approve { background: #ede9fe; color: #4c1d95; }
-.admin-action-btn.approve:hover { background: #5f0080; color: #fff; }
+.admin-action-btn.approve:hover { background: #582681; color: #fff; }
 .admin-action-btn.reject { background: #fee2e2; color: #991b1b; }
 .admin-action-btn.reject:hover { background: #ef4444; color: #fff; }
 .admin-action-icon {
@@ -5443,7 +5443,7 @@ div:has(> table.admin-table),
   width: 240px;
   transition: border-color 0.15s;
 }
-.admin-search-input:focus { border-color: #5f0080; }
+.admin-search-input:focus { border-color: #582681; }
 .admin-filter-tabs { display: flex; gap: 4px; }
 .admin-filter-select {
   height: 36px;
@@ -5458,14 +5458,14 @@ div:has(> table.admin-table),
   -webkit-appearance: none;
   font-family: var(--font-sans);
 }
-.admin-filter-select:focus { outline: none; border-color: #5f0080; }
+.admin-filter-select:focus { outline: none; border-color: #582681; }
 /* 라벨+값 필터 드롭다운 */
 .filter-dd-btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid #e0e0e0; border-radius: 8px; background: #fff; font-size: 14px; color: #333; cursor: pointer; white-space: nowrap; font-family: var(--font-sans); }
 .filter-dd-btn:hover { border-color: #c9b3d6; }
 .filter-dd-menu { position: absolute; top: calc(100% + 4px); left: 0; z-index: 60; min-width: 100%; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 4px; }
 .filter-dd-item { display: block; width: 100%; text-align: left; padding: 8px 14px; border: none; background: none; font-size: 14px; color: #444; cursor: pointer; border-radius: 6px; white-space: nowrap; font-family: var(--font-sans); }
 .filter-dd-item:hover { background: #f5f0fa; }
-.filter-dd-item.active { color: #5f0080; background: #f5f0fa; }
+.filter-dd-item.active { color: #582681; background: #f5f0fa; }
 .admin-filter-tab {
   display: flex;
   align-items: center;
@@ -5481,11 +5481,11 @@ div:has(> table.admin-table),
   transition: all 0.15s;
   white-space: nowrap;
 }
-.admin-filter-tab:hover { border-color: #5f0080; color: #5f0080; }
-.admin-filter-tab.active { background: #5f0080; border-color: #5f0080; color: #fff; }
+.admin-filter-tab:hover { border-color: #582681; color: #582681; }
+.admin-filter-tab.active { background: #582681; border-color: #582681; color: #fff; }
 .admin-filter-count {
   background: #fff;
-  color: #5f0080;
+  color: #582681;
   font-size: 11px;
   font-weight: 700;
   padding: 1px 5px;
@@ -5502,7 +5502,7 @@ div:has(> table.admin-table),
   font-size: 14px;
   font-weight: 600;
   color: #fff;
-  background: #5f0080;
+  background: #582681;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -5510,7 +5510,7 @@ div:has(> table.admin-table),
   transition: background 0.15s;
   white-space: nowrap;
 }
-.admin-primary-btn:hover { background: #4a0066; }
+.admin-primary-btn:hover { background: #431a63; }
 .admin-secondary-btn {
   display: inline-flex;
   align-items: center;
@@ -5525,7 +5525,7 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: all 0.15s;
 }
-.admin-secondary-btn:hover { border-color: #5f0080; color: #5f0080; }
+.admin-secondary-btn:hover { border-color: #582681; color: #582681; }
 
 /* 폼 */
 .admin-form-header {
@@ -5546,9 +5546,9 @@ div:has(> table.admin-table),
   padding: 8px 0;
   transition: color 0.15s;
 }
-.admin-back-btn:hover { color: #5f0080; }
+.admin-back-btn:hover { color: #582681; }
 .admin-form-actions { display: flex; gap: 8px; }
-.jobpost-mobile-submit { width: 100%; height: 52px; margin: 18px 0 8px; border: none; border-radius: 12px; background: #5f0080; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; }
+.jobpost-mobile-submit { width: 100%; height: 52px; margin: 18px 0 8px; border: none; border-radius: 12px; background: #582681; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; }
 @media (max-width: 767px) {
   .admin-form-header { gap: 8px; flex-wrap: nowrap; align-items: center; }
   .admin-back-btn { white-space: nowrap; flex-shrink: 0; font-size: 13px; padding: 6px 0; }
@@ -5776,7 +5776,7 @@ div:has(> table.admin-table),
   font-family: var(--font-sans);
 }
 .admin-form-input:focus,
-.admin-form-select:focus { border-color: #5f0080; background-color: #fff; }
+.admin-form-select:focus { border-color: #582681; background-color: #fff; }
 
 /* 셀렉트 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 캐럿 */
 .admin-form-select {
@@ -5806,7 +5806,7 @@ div:has(> table.admin-table),
   font-family: inherit;
   line-height: 1.6;
 }
-.admin-form-textarea:focus { border-color: #5f0080; background: #fff; }
+.admin-form-textarea:focus { border-color: #582681; background: #fff; }
 
 /* 빈 상태 */
 .admin-empty {
@@ -5874,8 +5874,8 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: all 0.15s;
 }
-.admin-page-btn:hover:not(:disabled) { border-color: #5f0080; color: #5f0080; }
-.admin-page-btn.active { background: #5f0080; border-color: #5f0080; color: #fff; }
+.admin-page-btn:hover:not(:disabled) { border-color: #582681; color: #582681; }
+.admin-page-btn.active { background: #582681; border-color: #582681; color: #fff; }
 .admin-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* 모달 */
@@ -5983,8 +5983,8 @@ div:has(> table.admin-table),
   margin-bottom: -2px;
   transition: all 0.15s;
 }
-.admin-subtab:hover { color: #5f0080; }
-.admin-subtab.active { color: #5f0080; border-bottom-color: #5f0080; }
+.admin-subtab:hover { color: #582681; }
+.admin-subtab.active { color: #582681; border-bottom-color: #582681; }
 
 /* ============================================
    관리자 회원관리 2단 탭
@@ -6009,8 +6009,8 @@ div:has(> table.admin-table),
   margin-bottom: -2px;
   transition: all 0.15s;
 }
-.admin-tab1:hover { color: #5f0080; }
-.admin-tab1.active { color: #5f0080; border-bottom-color: #5f0080; }
+.admin-tab1:hover { color: #582681; }
+.admin-tab1.active { color: #582681; border-bottom-color: #582681; }
 
 .admin-tab-row2 {
   display: flex;
@@ -6030,9 +6030,9 @@ div:has(> table.admin-table),
   border-bottom: none;
   transition: all 0.15s;
 }
-.admin-tab2:hover { color: #5f0080; background: #fff; }
+.admin-tab2:hover { color: #582681; background: #fff; }
 .admin-tab2.active {
-  color: #5f0080;
+  color: #582681;
   font-weight: 700;
   background: #fff;
   border-color: #f0f0f0;
@@ -6080,7 +6080,7 @@ div:has(> table.admin-table),
   justify-content: center;
   font-size: 16px;
   font-weight: 700;
-  color: #5f0080;
+  color: #582681;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -6111,7 +6111,7 @@ div:has(> table.admin-table),
 .admin-resume-tag {
   padding: 2px 6px;
   background: #f5eaff;
-  color: #5f0080;
+  color: #582681;
   font-size: 11px;
   border-radius: 4px;
 }
@@ -6149,7 +6149,7 @@ div:has(> table.admin-table),
   gap: 10px;
 }
 .admin-resume-stat-card.main {
-  background: linear-gradient(135deg, #f9f5ff 0%, #fff 100%);
+  background: #f9f6fd;
   border-color: #e8d5f5;
 }
 .admin-rsc-label {
@@ -6205,10 +6205,10 @@ div:has(> table.admin-table),
   font-weight: 800;
   line-height: 1;
 }
-.admin-rsc-split-value.green { color: #5f0080; }
+.admin-rsc-split-value.green { color: #582681; }
 .admin-rsc-split-value.orange { color: #f59e0b; }
 .admin-rsc-split-value.blue { color: #0ea5e9; }
-.admin-rsc-split-value.purple { color: #5f0080; }
+.admin-rsc-split-value.purple { color: #582681; }
 .admin-rsc-split-value.gray { color: #94a3b8; }
 
 /* 비율 바 */
@@ -6223,9 +6223,9 @@ div:has(> table.admin-table),
   border-radius: 2px;
   transition: width 0.3s;
 }
-.admin-rsc-bar-fill.green { background: #5f0080; }
+.admin-rsc-bar-fill.green { background: #582681; }
 .admin-rsc-bar-fill.blue { background: #0ea5e9; }
-.admin-rsc-bar-fill.purple { background: #5f0080; }
+.admin-rsc-bar-fill.purple { background: #582681; }
 
 /* 테이블 소팅 드롭다운 */
 .admin-sort-wrap { position: relative; }
@@ -6234,7 +6234,7 @@ div:has(> table.admin-table),
   border: none;
   font-size: 12px;
   font-weight: 600;
-  color: #5f0080;
+  color: #582681;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
@@ -6267,7 +6267,7 @@ div:has(> table.admin-table),
   transition: background 0.12s;
 }
 .admin-sort-drop-item:hover { background: #f9f5ff; }
-.admin-sort-drop-item.active { color: #5f0080; font-weight: 700; background: #f5eaff; }
+.admin-sort-drop-item.active { color: #582681; font-weight: 700; background: #f5eaff; }
 
 /* ============================================
    이력서 통계 카드
@@ -6288,7 +6288,7 @@ div:has(> table.admin-table),
   gap: 10px;
 }
 .admin-resume-stat-card.main {
-  background: linear-gradient(135deg, #f9f5ff 0%, #fff 100%);
+  background: #f9f6fd;
   border-color: #e8d5f5;
 }
 .admin-rsc-label {
@@ -6344,10 +6344,10 @@ div:has(> table.admin-table),
   font-weight: 800;
   line-height: 1;
 }
-.admin-rsc-split-value.green { color: #5f0080; }
+.admin-rsc-split-value.green { color: #582681; }
 .admin-rsc-split-value.orange { color: #f59e0b; }
 .admin-rsc-split-value.blue { color: #0ea5e9; }
-.admin-rsc-split-value.purple { color: #5f0080; }
+.admin-rsc-split-value.purple { color: #582681; }
 .admin-rsc-split-value.gray { color: #94a3b8; }
 
 /* 비율 바 */
@@ -6362,9 +6362,9 @@ div:has(> table.admin-table),
   border-radius: 2px;
   transition: width 0.3s;
 }
-.admin-rsc-bar-fill.green { background: #5f0080; }
+.admin-rsc-bar-fill.green { background: #582681; }
 .admin-rsc-bar-fill.blue { background: #0ea5e9; }
-.admin-rsc-bar-fill.purple { background: #5f0080; }
+.admin-rsc-bar-fill.purple { background: #582681; }
 
 /* 날짜 멀티 표시 */
 .admin-date-cell {
@@ -6387,7 +6387,7 @@ div:has(> table.admin-table),
 }
 .admin-date-val { color: #555; }
 /* 정렬 기준 강조 */
-.admin-date-row.active .admin-date-label { color: #5f0080; }
+.admin-date-row.active .admin-date-label { color: #582681; }
 .admin-date-row.active .admin-date-val { color: #1a1a1a; font-weight: 600; }
 
 /* ============================================
@@ -6475,7 +6475,7 @@ div:has(> table.admin-table),
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 .admin-toggle input:checked + .admin-toggle-slider {
-  background: #5f0080;
+  background: #582681;
 }
 .admin-toggle input:checked + .admin-toggle-slider::before {
   transform: translateX(20px);
@@ -6484,7 +6484,7 @@ div:has(> table.admin-table),
   font-size: 13px;
   font-weight: 600;
 }
-.admin-toggle-label.on { color: #5f0080; }
+.admin-toggle-label.on { color: #582681; }
 .admin-toggle-label.off { color: #f59e0b; }
 
 /* 기업회원 상세 모달 탭 */
@@ -6506,8 +6506,8 @@ div:has(> table.admin-table),
   transition: all 0.15s;
   margin-bottom: -1px;
 }
-.admin-modal-tab:hover { color: #5f0080; }
-.admin-modal-tab.active { color: #5f0080; font-weight: 700; border-bottom-color: #5f0080; }
+.admin-modal-tab:hover { color: #582681; }
+.admin-modal-tab.active { color: #582681; font-weight: 700; border-bottom-color: #582681; }
 
 /* 브랜드 로고 */
 .admin-brand-logo-row {
@@ -6529,7 +6529,7 @@ div:has(> table.admin-table),
   justify-content: center;
   font-size: 14px;
   font-weight: 700;
-  color: #5f0080;
+  color: #582681;
   flex-shrink: 0;
 }
 
@@ -6540,17 +6540,17 @@ div:has(> table.admin-table),
 .admin-editor-grid { display: grid; grid-template-columns: 1fr 280px; gap: 16px; align-items: start; }
 .admin-title-input { font-size: 18px !important; font-weight: 600 !important; height: 56px !important; }
 .admin-editor-wrap { display: flex; flex-direction: column; border: 1.5px solid #e5e5e5; border-radius: 8px; overflow: hidden; transition: border-color 0.15s; }
-.admin-editor-wrap:focus-within { border-color: #5f0080; }
+.admin-editor-wrap:focus-within { border-color: #582681; }
 .admin-editor-toolbar-mini { display: flex; gap: 2px; padding: 8px 10px; background: #fafafa; border-bottom: 1px solid #f0f0f0; flex-wrap: wrap; }
 .admin-editor-tool { padding: 4px 10px; font-size: 12px; font-weight: 500; color: #555; background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; cursor: pointer; transition: all 0.12s; }
-.admin-editor-tool:hover { background: #f5eaff; border-color: #5f0080; color: #5f0080; }
+.admin-editor-tool:hover { background: #f5eaff; border-color: #582681; color: #582681; }
 .admin-editor-textarea { padding: 16px; font-size: 14px; color: #1a1a1a; background: #fff; border: none; outline: none; min-height: 480px; resize: none; font-family: inherit; line-height: 1.8; width: 100%; box-sizing: border-box; }
 .admin-editor-count { padding: 6px 12px; font-size: 11px; color: #aaa; text-align: right; background: #fafafa; border-top: 1px solid #f0f0f0; }
 .admin-radio-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; font-size: 14px; color: #444; cursor: pointer; border-bottom: 1px solid #f9f9f9; }
 .admin-radio-row:last-child { border-bottom: none; }
-.admin-radio-row input { accent-color: #5f0080; }
+.admin-radio-row input { accent-color: #582681; }
 .admin-preview { padding: 40px 48px !important; max-width: 760px; margin: 0 auto; }
-.admin-preview-header { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #5f0080; }
+.admin-preview-header { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #582681; }
 .admin-preview-title { font-size: 28px; font-weight: 800; color: #1a1a1a; margin: 12px 0 16px; line-height: 1.4; }
 .admin-preview-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; color: #888; }
 .admin-preview-body { line-height: 1.9; }
@@ -6616,8 +6616,8 @@ div:has(> table.admin-table),
   transition: all 0.15s;
   text-align: center;
 }
-.admin-job-type-tab:hover { border-color: #5f0080; color: #5f0080; background: #f5eaff; }
-.admin-job-type-tab.active { background: #f5eaff; border-color: #5f0080; color: #5f0080; }
+.admin-job-type-tab:hover { border-color: #582681; color: #582681; background: #f5eaff; }
+.admin-job-type-tab.active { background: #f5eaff; border-color: #582681; color: #582681; }
 
 /* ============================================
    사이드바 서브메뉴
@@ -6639,11 +6639,11 @@ div:has(> table.admin-table),
   transition: all 0.15s;
   border-left: 2px solid transparent;
 }
-.admin-sub-nav-item:hover { color: #5f0080; background: #f5f0ff; }
+.admin-sub-nav-item:hover { color: #582681; background: #f5f0ff; }
 .admin-sub-nav-item.active {
-  color: #5f0080;
+  color: #582681;
   font-weight: 700;
-  border-left-color: #5f0080;
+  border-left-color: #582681;
   background: #f5eaff;
 }
 
@@ -6652,7 +6652,7 @@ div:has(> table.admin-table),
 .admin-upload-step { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #444; }
 .admin-upload-step-num {
   width: 24px; height: 24px;
-  background: #5f0080; color: #fff;
+  background: #582681; color: #fff;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; font-weight: 700;
@@ -6672,7 +6672,7 @@ div:has(> table.admin-table),
   text-align: center;
 }
 .admin-upload-drop:hover,
-.admin-upload-drop.dragging { border-color: #5f0080; background: #faf5ff; }
+.admin-upload-drop.dragging { border-color: #582681; background: #faf5ff; }
 .admin-upload-drop-text { font-size: 15px; font-weight: 600; color: #444; margin: 0; }
 .admin-upload-drop-sub { font-size: 13px; color: #aaa; margin: 0; }
 .admin-upload-done {
@@ -6730,9 +6730,9 @@ div:has(> table.admin-table),
   margin: 0;
 }
 .admin-section-icon { flex-shrink: 0; }
-.admin-section-icon.individual { color: #5f0080; }
+.admin-section-icon.individual { color: #582681; }
 .admin-section-icon.company { color: #0ea5e9; }
-.admin-section-icon.jobs { color: #5f0080; }
+.admin-section-icon.jobs { color: #582681; }
 
 /* 미니 통계 행 */
 .admin-mini-stat-row {
@@ -6804,7 +6804,7 @@ div:has(> table.admin-table),
 .company-logo-avatar {
   width: 36px;
   height: 36px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 16px;
   font-weight: 700;
@@ -6817,7 +6817,7 @@ div:has(> table.admin-table),
 .company-logo-mark {
   width: 36px;
   height: 36px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 16px;
   font-weight: 700;
@@ -6849,8 +6849,8 @@ div:has(> table.admin-table),
   cursor: pointer;
   width: 100%;
 }
-.company-nav-item:hover { background: #f5f0ff; color: #5f0080; }
-.company-nav-item.active { background: #f5eaff; color: #5f0080; font-weight: 700; }
+.company-nav-item:hover { background: #f5f0ff; color: #582681; }
+.company-nav-item.active { background: #f5eaff; color: #582681; font-weight: 700; }
 .company-sidebar-bottom { padding: 12px 8px; border-top: 1px solid #f0f0f0; }
 .company-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .company-header {
@@ -6939,7 +6939,7 @@ div:has(> table.admin-table),
 .company-notif-readall {
   background: none;
   border: none;
-  color: #5f0080;
+  color: #582681;
   font-size: 12px;
   cursor: pointer;
   font-weight: 600;
@@ -6976,7 +6976,7 @@ div:has(> table.admin-table),
 .company-profile { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .company-avatar {
   width: 32px; height: 32px;
-  background: #5f0080; color: #fff;
+  background: #582681; color: #fff;
   font-size: 14px; font-weight: 700;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -7061,7 +7061,7 @@ div:has(> table.admin-table),
   border-bottom: 1px solid #f5f5f5;
 }
 .company-card-title { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 0; }
-.company-card-more { font-size: 13px; color: #5f0080; text-decoration: none; font-weight: 500; }
+.company-card-more { font-size: 13px; color: #582681; text-decoration: none; font-weight: 500; }
 
 /* 테이블 — 관리자와 동일하게 내용 기준 너비(반응형) */
 .company-table { width: auto; max-width: 100%; border-collapse: collapse; }
@@ -7113,7 +7113,7 @@ div:has(> table.admin-table),
 
 /* 표에서 이름 클릭 → 이력서 열기 어포던스 */
 .tbl-name-btn { cursor: pointer; }
-.tbl-name-btn:hover .tbl-name-txt { color: #5f0080; text-decoration: underline; }
+.tbl-name-btn:hover .tbl-name-txt { color: #582681; text-decoration: underline; }
 
 /* 관리자/기업 표 셀 내용 폭 표준 — 내용이 꽉 찼을 때 열 최대폭을 일관되게 통일.
    2줄까지 감싸고 넘치면 말줄임(…), 전체는 title 툴팁. margin auto로 가운데 정렬 셀과 호환. */
@@ -7199,21 +7199,21 @@ div:has(> table.admin-table),
   padding: 8px 16px;
   font-size: 13px; font-weight: 600;
   color: #fff;
-  background: #5f0080;
+  background: #582681;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
   transition: background 0.15s;
 }
-.company-primary-btn:hover { background: #4a0066; }
+.company-primary-btn:hover { background: #431a63; }
 .company-action-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 5px 10px;
   font-size: 12px; font-weight: 500;
-  color: #5f0080;
+  color: #582681;
   background: #f5eaff;
   border: none;
   border-radius: 6px;
@@ -7276,7 +7276,7 @@ div:has(> table.admin-table),
   justify-content: center;
   font-size: 18px;
   font-weight: 800;
-  color: #5f0080;
+  color: #582681;
   flex-shrink: 0;
 }
 
@@ -7303,7 +7303,7 @@ div:has(> table.admin-table),
   border-radius: 6px;
   transition: all 0.15s;
 }
-.resume-icon-btn:hover { background: #f3e9fb; color: #5f0080; }
+.resume-icon-btn:hover { background: #f3e9fb; color: #582681; }
 .resume-icon-btn.danger:hover { background: #fdecea; color: #e74c3c; }
 
 .resume-type-tabs {
@@ -7321,8 +7321,8 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: all 0.15s;
 }
-.resume-type-tab:hover { border-color: #5f0080; color: #5f0080; background: #f5eaff; }
-.resume-type-tab.active { background: #5f0080; border-color: #5f0080; color: #fff; }
+.resume-type-tab:hover { border-color: #582681; color: #582681; background: #f5eaff; }
+.resume-type-tab.active { background: #582681; border-color: #582681; color: #fff; }
 
 /* 희망 근무 조건 태그 */
 .resume-tag-chip {
@@ -7336,8 +7336,8 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: all 0.15s;
 }
-.resume-tag-chip:hover { border-color: #5f0080; color: #5f0080; background: #f5eaff; }
-.resume-tag-chip.active { background: #5f0080; border-color: #5f0080; color: #fff; }
+.resume-tag-chip:hover { border-color: #582681; color: #582681; background: #f5eaff; }
+.resume-tag-chip.active { background: #582681; border-color: #582681; color: #fff; }
 
 /* 기업 사이드바 토글 */
 .company-sidebar-closed {
@@ -7359,7 +7359,7 @@ div:has(> table.admin-table),
   align-items: center;
   margin-left: auto;
 }
-.company-sidebar-toggle:hover { color: #5f0080; }
+.company-sidebar-toggle:hover { color: #582681; }
 
 /* ============================================
    인재 검색 카드
@@ -7390,7 +7390,7 @@ div:has(> table.admin-table),
   height: 44px;
   border-radius: 50%;
   background: #f5eaff;
-  color: #5f0080;
+  color: #582681;
   font-size: 18px;
   font-weight: 700;
   display: flex;
@@ -7414,12 +7414,12 @@ div:has(> table.admin-table),
   transition: all 0.15s;
   flex-shrink: 0;
 }
-.talent-scrap-btn:hover { color: #5f0080; background: #f5eaff; }
-.talent-scrap-btn.scrapped { color: #5f0080; }
+.talent-scrap-btn:hover { color: #582681; background: #f5eaff; }
+.talent-scrap-btn.scrapped { color: #582681; }
 .talent-title {
   font-size: 14px;
   font-weight: 600;
-  color: #5f0080;
+  color: #582681;
   cursor: pointer;
   margin: 0;
   line-height: 1.4;
@@ -7429,7 +7429,7 @@ div:has(> table.admin-table),
 .talent-tag {
   padding: 3px 8px;
   background: #f5eaff;
-  color: #5f0080;
+  color: #582681;
   font-size: 11px;
   font-weight: 500;
   border-radius: 4px;
@@ -7476,7 +7476,7 @@ div:has(> table.admin-table),
 }
 .login-type-tab.active {
   background: #fff;
-  color: #5f0080;
+  color: #582681;
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
@@ -7513,7 +7513,7 @@ div:has(> table.admin-table),
   font-weight: 700;
   white-space: nowrap;
 }
-.login-test-badge.individual { background: #f5eaff; color: #5f0080; }
+.login-test-badge.individual { background: #f5eaff; color: #582681; }
 .login-test-badge.company { background: #dbeafe; color: #1e40af; }
 .login-test-badge.admin { background: #fee2e2; color: #991b1b; }
 
@@ -7544,7 +7544,7 @@ div:has(> table.admin-table),
 }
 .admin-login-badge {
   padding: 3px 10px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 12px;
   font-weight: 700;
@@ -7593,7 +7593,7 @@ div:has(> table.admin-table),
   font-family: inherit;
   box-sizing: border-box;
 }
-.admin-login-input:focus { border-color: #5f0080; }
+.admin-login-input:focus { border-color: #582681; }
 .admin-login-input.error { border-color: #ef4444; }
 .admin-login-pw-toggle {
   position: absolute;
@@ -7606,7 +7606,7 @@ div:has(> table.admin-table),
   align-items: center;
   padding: 4px;
 }
-.admin-login-pw-toggle:hover { color: #5f0080; }
+.admin-login-pw-toggle:hover { color: #582681; }
 .admin-login-error {
   font-size: 13px;
   color: #ef4444;
@@ -7618,7 +7618,7 @@ div:has(> table.admin-table),
   font-size: 15px;
   font-weight: 700;
   color: #fff;
-  background: #5f0080;
+  background: #582681;
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -7626,7 +7626,7 @@ div:has(> table.admin-table),
   font-family: inherit;
   margin-bottom: 20px;
 }
-.admin-login-btn:hover { background: #4a0066; }
+.admin-login-btn:hover { background: #431a63; }
 .admin-login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .admin-login-test {
   padding: 14px;
@@ -7647,7 +7647,7 @@ div:has(> table.admin-table),
   font-size: 12px;
   color: #666;
 }
-.admin-login-test-item strong { color: #5f0080; }
+.admin-login-test-item strong { color: #582681; }
 .admin-login-footer { text-align: center; }
 .admin-login-back-link {
   font-size: 13px;
@@ -7655,7 +7655,7 @@ div:has(> table.admin-table),
   text-decoration: none;
   transition: color 0.15s;
 }
-.admin-login-back-link:hover { color: #5f0080; }
+.admin-login-back-link:hover { color: #582681; }
 
 /* 지원완료 버튼 */
 .job-detail-apply-btn.applied {
@@ -7694,13 +7694,13 @@ div:has(> table.admin-table),
   border: none;
   font-size: 14px;
   font-weight: 600;
-  color: #5f0080;
+  color: #582681;
   cursor: pointer;
   white-space: nowrap;
 }
 .hero-region-btn .caret {
   border: 4px solid transparent;
-  border-top-color: #5f0080;
+  border-top-color: #582681;
   margin-top: 3px;
 }
 .hero-region-drop {
@@ -7728,8 +7728,8 @@ div:has(> table.admin-table),
   border-radius: 8px;
   transition: background 0.12s;
 }
-.hero-region-item:hover { background: #f5eaff; color: #5f0080; }
-.hero-region-item.selected { color: #5f0080; font-weight: 700; background: #f5eaff; }
+.hero-region-item:hover { background: #f5eaff; color: #582681; }
+.hero-region-item.selected { color: #582681; font-weight: 700; background: #f5eaff; }
 .hero-search-divider {
   width: 1px;
   height: 20px;
@@ -7751,7 +7751,7 @@ div:has(> table.admin-table),
 .hero-search-btn {
   width: 44px;
   height: 44px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -7762,7 +7762,7 @@ div:has(> table.admin-table),
   flex-shrink: 0;
   transition: background 0.15s;
 }
-.hero-search-btn:hover { background: #4a0066; }
+.hero-search-btn:hover { background: #431a63; }
 
 @media (max-width: 640px) {
   .hero-search-bar { max-width: 100%; flex-wrap: wrap; gap: 8px; }
@@ -7890,7 +7890,7 @@ div:has(> table.admin-table),
 .hero-ai-item-badge {
   padding: 3px 8px;
   background: #f5eaff;
-  color: #5f0080;
+  color: #582681;
   font-size: 11px;
   font-weight: 700;
   border-radius: 20px;
@@ -7916,7 +7916,7 @@ div:has(> table.admin-table),
   display: block;
   text-align: center;
   padding: 13px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 14px;
   font-weight: 700;
@@ -7925,7 +7925,7 @@ div:has(> table.admin-table),
   margin-top: 8px;
   transition: background 0.15s;
 }
-.hero-ai-cta:hover { background: #4a0066; }
+.hero-ai-cta:hover { background: #431a63; }
 
 @media (max-width: 768px) {
   .hero-ai-card { min-width: unset; max-width: 100%; }
@@ -7962,7 +7962,7 @@ div:has(> table.admin-table),
   background: #f5eaff;
   border-radius: 10px;
 }
-.hero-ai-guest-copy strong { color: #5f0080; }
+.hero-ai-guest-copy strong { color: #582681; }
 
 /* AI 카드 비주얼 */
 .hero-ai-visual-card {
@@ -8004,9 +8004,9 @@ div:has(> table.admin-table),
   transition: all 0.15s;
   border: 1px solid transparent;
 }
-.hero-ai-guest-item:hover { background: #f0e5ff; border-color: #e0ccf0; color: #5f0080; }
+.hero-ai-guest-item:hover { background: #f0e5ff; border-color: #e0ccf0; color: #582681; }
 .hero-ai-guest-arrow { margin-left: auto; color: #ccc; font-size: 14px; }
-.hero-ai-guest-item:hover .hero-ai-guest-arrow { color: #5f0080; }
+.hero-ai-guest-item:hover .hero-ai-guest-arrow { color: #582681; }
 
 /* 히어로 카드 2개 레이아웃 */
 .hero-cards-wrap {
@@ -8061,7 +8061,7 @@ div:has(> table.admin-table),
   margin-top: 6px;
   font-size: 13px;
   font-weight: 700;
-  color: #5f0080;
+  color: #582681;
 }
 
 /* hero-inner grid 수정 */
@@ -8142,7 +8142,7 @@ div:has(> table.admin-table),
   margin: 0;
   white-space: nowrap;
 }
-.hero-right-card-title.accent { color: #5f0080; }
+.hero-right-card-title.accent { color: #582681; }
 .hero-right-card-desc {
   font-size: 14px;
   color: #555;
@@ -8155,7 +8155,7 @@ div:has(> table.admin-table),
   align-items: center;
   justify-content: center;
   padding: 10px 16px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -8164,7 +8164,7 @@ div:has(> table.admin-table),
   margin-top: 10px;
   transition: background 0.15s;
 }
-.hero-right-card-btn:hover { background: #4a0066; }
+.hero-right-card-btn:hover { background: #431a63; }
 
 @media (max-width: 900px) {
   .hero-inner { grid-template-columns: 1fr; gap: 32px; }
@@ -8210,7 +8210,7 @@ div:has(> table.admin-table),
    뜻해야 한다. 사이드바 목록의 선택 표시와 뜻이 어긋나면 안 된다. */
 .hero-type-btn.active {
   background: #e3d4f0;
-  color: #4a0066;
+  color: #431a63;
   box-shadow: none;
 }
 .hero-type-btn.active:hover { color: var(--color-primary); }
@@ -8236,14 +8236,14 @@ div:has(> table.admin-table),
   font-family: inherit;
 }
 .jobs-type-tab.active {
-  background: #5f0080;
+  background: #582681;
   color: #fff;
-  border-color: #5f0080;
+  border-color: #582681;
   box-shadow: 0 2px 8px rgba(95,0,128,0.2);
 }
 .jobs-type-tab:hover:not(.active) {
-  border-color: #9b59b6;
-  color: #5f0080;
+  border-color: #8560a5;
+  color: #582681;
 }
 
 .baj-login-save {
@@ -8335,7 +8335,7 @@ div:has(> table.admin-table),
   font-family: inherit; margin-bottom: 24px;
   transition: background 0.15s;
 }
-.baj-login-btn:hover { background: #4a0066; }
+.baj-login-btn:hover { background: #431a63; }
 .baj-login-btn:disabled { background: #bbb; cursor: not-allowed; }
 .baj-login-links {
   display: flex; align-items: center;
@@ -8358,7 +8358,7 @@ div:has(> table.admin-table),
 }
 .jobs-type-badge.corp {
   background: #f0e8ff;
-  color: #5f0080;
+  color: #582681;
 }
 .jobs-type-badge.store {
   background: #fce4f3;
@@ -8449,13 +8449,13 @@ div:has(> table.admin-table),
    히어로 모바일 전용 컴포넌트
    ════════════════════════════════ */
 .hero-m {
-  background: linear-gradient(180deg, #faf5fc 0%, #fff 100%);
+  background: #f8f5fb;
   padding-bottom: 24px;
 }
 
 /* 배너 */
 .hero-m-banner {
-  background: linear-gradient(135deg, #5f0080, #9b59b6);
+  background: #582681;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -8496,7 +8496,7 @@ div:has(> table.admin-table),
   color: #1a1a1a;
   letter-spacing: -0.5px;
 }
-.hero-m-title-point { color: #5f0080; }
+.hero-m-title-point { color: #582681; }
 
 /* 토글 */
 .hero-m-toggle {
@@ -8518,9 +8518,9 @@ div:has(> table.admin-table),
   transition: all 0.15s;
 }
 .hero-m-toggle-btn.active {
-  background: #5f0080;
+  background: #582681;
   color: #fff;
-  border-color: #5f0080;
+  border-color: #582681;
 }
 
 /* 검색바 */
@@ -8549,7 +8549,7 @@ div:has(> table.admin-table),
   background: none;
   border: none;
   font-size: 13px;
-  color: #5f0080;
+  color: #582681;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -8583,7 +8583,7 @@ div:has(> table.admin-table),
   width: 38px;
   height: 38px;
   border-radius: 9px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   border: none;
   cursor: pointer;
@@ -8610,7 +8610,7 @@ div:has(> table.admin-table),
   border: none;
   padding: 0 8px 0 0;
   font-size: 15px;
-  color: #5f0080;
+  color: #582681;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -8743,9 +8743,9 @@ div:has(> table.admin-table),
 }
 .region-sido-item.active {
   background: #fff;
-  color: #5f0080;
+  color: #582681;
   font-weight: 400;
-  border-left-color: #5f0080;
+  border-left-color: #582681;
 }
 .region-sido-badge {
   flex-shrink: 0;
@@ -8753,7 +8753,7 @@ div:has(> table.admin-table),
   height: 18px;
   padding: 0 5px;
   border-radius: 9px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 11px;
   font-weight: 400;
@@ -8792,8 +8792,8 @@ div:has(> table.admin-table),
   color: #fff;
 }
 .region-check.on {
-  background: #5f0080;
-  border-color: #5f0080;
+  background: #582681;
+  border-color: #582681;
 }
 .region-selected-bar {
   border-top: 0.5px solid #eee;
@@ -8836,7 +8836,7 @@ div:has(> table.admin-table),
   border: 1px solid #e0d0f0;
   border-radius: 16px;
   font-size: 13px;
-  color: #5f0080;
+  color: #582681;
   font-weight: 400;
   white-space: nowrap;
 }
@@ -8860,7 +8860,7 @@ div:has(> table.admin-table),
   height: 50px;
   border-radius: 12px;
   background: #ede9fe;
-  color: #5f0080;
+  color: #582681;
   border: none;
   font-size: 16px;
   font-weight: 400;
@@ -8910,7 +8910,7 @@ div:has(> table.admin-table),
   display: inline-block;
   margin-top: 8px;
   padding: 8px 12px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -8992,7 +8992,7 @@ div:has(> table.admin-table),
   border-radius: 10px;
 }
 .mob-menu-badge.gray { background: #f0f0f0; color: #666; }
-.mob-menu-badge.purple { background: #f0e8ff; color: #5f0080; }
+.mob-menu-badge.purple { background: #f0e8ff; color: #582681; }
 .mob-menu-divider { height: 1px; background: #f0f0f0; margin: 8px 0; }
 
 /* 햄버거 버튼 항상 맨 오른쪽 */
@@ -9096,7 +9096,7 @@ div:has(> table.admin-table),
   transition: border-color 0.15s;
   font-family: inherit;
 }
-.btn-outline-auth:hover { border-color: #5f0080; color: #5f0080; }
+.btn-outline-auth:hover { border-color: #582681; color: #582681; }
 
 .btn-outline-biz {
   display: inline-flex;
@@ -9114,7 +9114,7 @@ div:has(> table.admin-table),
   transition: border-color 0.15s;
   font-family: inherit;
 }
-.btn-outline-biz:hover { border-color: #5f0080; color: #5f0080; }
+.btn-outline-biz:hover { border-color: #582681; color: #582681; }
 
 @media (max-width: 768px) {
   .btn-outline-auth {
@@ -9180,7 +9180,7 @@ div:has(> table.admin-table),
   font-family: inherit;
   transition: border-color 0.15s;
 }
-.baj-phone-btn:hover { border-color: #5f0080; color: #5f0080; }
+.baj-phone-btn:hover { border-color: #582681; color: #582681; }
 
 /* 돌아가기 버튼 */
 .baj-back-btn {
@@ -9285,7 +9285,7 @@ div:has(> table.admin-table),
   font-family: inherit;
   transition: border-color 0.15s;
 }
-.lm-phone-btn:hover { border-color: #5f0080; color: #5f0080; }
+.lm-phone-btn:hover { border-color: #582681; color: #582681; }
 /* 이제 버튼이 아니라 링크라 가운데 정렬을 직접 준다(아이콘과 글자를 함께 담는다). */
 .lm-phone-btn { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; box-sizing: border-box; }
 .lm-naver-btn {
@@ -9303,7 +9303,7 @@ div:has(> table.admin-table),
   margin-bottom: 20px;
   padding: 8px 0;
 }
-.lm-biz-link:hover { color: #5f0080; }
+.lm-biz-link:hover { color: #582681; }
 .lm-footer {
   display: flex;
   align-items: center;
@@ -9348,17 +9348,17 @@ div:has(> table.admin-table),
   outline: none; font-family: inherit; box-sizing: border-box;
   width: 100%;
 }
-.lm-phone-input:focus { border-color: #5f0080; }
+.lm-phone-input:focus { border-color: #582681; }
 .lm-phone-input:disabled { background: #f5f5f5; }
 .lm-send-btn {
   flex-shrink: 0; width: 72px; height: 52px;
   background: #f0e8ff; border: none; border-radius: 8px;
-  font-size: 14px; font-weight: 700; color: #5f0080;
+  font-size: 14px; font-weight: 700; color: #582681;
   cursor: pointer; font-family: inherit;
 }
 .lm-send-btn:disabled { background: #f0f0f0; color: #aaa; cursor: default; }
 .lm-confirm-btn {
-  width: 100%; height: 52px; background: #5f0080;
+  width: 100%; height: 52px; background: #582681;
   color: #fff; border: none; border-radius: 8px;
   font-size: 16px; font-weight: 700; cursor: pointer;
   font-family: inherit; margin-top: 8px;
@@ -9404,7 +9404,7 @@ div:has(> table.admin-table),
   padding: 2px 8px;
   border-radius: 4px;
   background: #f0e8ff;
-  color: #5f0080;
+  color: #582681;
   width: fit-content;
 }
 .service-name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
@@ -9504,7 +9504,7 @@ div:has(> table.admin-table),
 }
 .company-wizard-kakao-btn:hover { opacity: 0.88; }
 .company-wizard-kakao-btn.active {
-  outline: 2px solid #5f0080;
+  outline: 2px solid #582681;
   outline-offset: 2px;
 }
 
@@ -9534,7 +9534,7 @@ div:has(> table.admin-table),
   transition: border-color 0.15s;
 }
 .company-wizard-phone-box.active {
-  border-color: #5f0080;
+  border-color: #582681;
   background: #faf5ff;
 }
 
@@ -9545,7 +9545,7 @@ div:has(> table.admin-table),
   font-size: 11px;
   font-style: normal;
   font-weight: 600;
-  color: #5f0080;
+  color: #582681;
   background: #f3e8ff;
   padding: 2px 8px;
   border-radius: 20px;
@@ -9580,12 +9580,12 @@ div:has(> table.admin-table),
   transition: border-color 0.15s, background 0.15s;
 }
 .company-wizard-service-item:hover {
-  border-color: #5f0080;
+  border-color: #582681;
   background: #faf5ff;
 }
 .company-wizard-service-item.primary {
-  border-color: #5f0080;
-  background: #5f0080;
+  border-color: #582681;
+  background: #582681;
   color: #fff;
 }
 .company-wizard-service-item.primary:hover {
@@ -9632,7 +9632,7 @@ div:has(> table.admin-table),
 }
 .company-wizard-kakao-btn:hover { opacity: 0.88; }
 .company-wizard-kakao-btn.active {
-  outline: 2px solid #5f0080;
+  outline: 2px solid #582681;
   outline-offset: 2px;
 }
 
@@ -9660,7 +9660,7 @@ div:has(> table.admin-table),
   transition: border-color 0.15s;
 }
 .company-wizard-phone-box.active {
-  border-color: #5f0080;
+  border-color: #582681;
   background: #faf5ff;
 }
 
@@ -9670,7 +9670,7 @@ div:has(> table.admin-table),
   font-size: 11px;
   font-style: normal;
   font-weight: 600;
-  color: #5f0080;
+  color: #582681;
   background: #f3e8ff;
   padding: 2px 8px;
   border-radius: 20px;
@@ -9703,12 +9703,12 @@ div:has(> table.admin-table),
   transition: border-color 0.15s, background 0.15s;
 }
 .company-wizard-service-item:hover {
-  border-color: #5f0080;
+  border-color: #582681;
   background: #faf5ff;
 }
 .company-wizard-service-item.primary {
-  border-color: #5f0080;
-  background: #5f0080;
+  border-color: #582681;
+  background: #582681;
   color: #fff;
 }
 .company-wizard-service-item.primary:hover {
@@ -9740,14 +9740,14 @@ div:has(> table.admin-table),
 
 /* ── 히어로 ── */
 .co-hero {
-  background: linear-gradient(135deg, #f5f0ff 0%, #ede9fe 50%, #faf5ff 100%);
+  background: #f7f4fa;
   padding: 80px 20px 72px;
   text-align: center;
 }
 .co-hero-inner { max-width: 680px; margin: 0 auto; }
 .co-hero-badge {
   display: inline-block;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 12px;
   font-weight: 600;
@@ -9763,7 +9763,7 @@ div:has(> table.admin-table),
   color: #111;
   margin-bottom: 18px;
 }
-.co-hero-point { color: #5f0080; }
+.co-hero-point { color: #582681; }
 .co-hero-desc {
   font-size: 15px;
   color: #555;
@@ -9782,7 +9782,7 @@ div:has(> table.admin-table),
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 14px;
   font-weight: 600;
@@ -9811,19 +9811,19 @@ div:has(> table.admin-table),
   text-decoration: none;
   transition: border-color 0.15s, color 0.15s;
 }
-.co-btn-outline-dark:hover { border-color: #5f0080; color: #5f0080; }
+.co-btn-outline-dark:hover { border-color: #582681; color: #582681; }
 
 .co-btn-outline {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   background: transparent;
-  color: #5f0080;
+  color: #582681;
   font-size: 14px;
   font-weight: 600;
   padding: 13px 24px;
   border-radius: 10px;
-  border: 1.5px solid #5f0080;
+  border: 1.5px solid #582681;
   text-decoration: none;
   transition: background 0.15s;
 }
@@ -9834,7 +9834,7 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 6px;
   background: #fff;
-  color: #5f0080;
+  color: #582681;
   font-size: 15px;
   font-weight: 600;
   padding: 15px 28px;
@@ -9886,13 +9886,13 @@ div:has(> table.admin-table),
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .co-type-card:hover { border-color: #a78bfa; box-shadow: 0 4px 20px rgba(124,58,237,0.08); }
-.co-type-card.featured { border-color: #5f0080; box-shadow: 0 4px 24px rgba(124,58,237,0.12); }
+.co-type-card.featured { border-color: #582681; box-shadow: 0 4px 24px rgba(124,58,237,0.12); }
 .co-type-featured-badge {
   position: absolute;
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -9900,7 +9900,7 @@ div:has(> table.admin-table),
   border-radius: 20px;
   white-space: nowrap;
 }
-.co-type-icon { color: #5f0080; margin-bottom: 4px; }
+.co-type-icon { color: #582681; margin-bottom: 4px; }
 .co-type-name { font-size: 18px; font-weight: 700; color: #111; }
 .co-type-desc { font-size: 13px; color: #666; line-height: 1.7; }
 .co-type-list {
@@ -9918,7 +9918,7 @@ div:has(> table.admin-table),
   font-size: 13px;
   color: #555;
 }
-.co-type-list li svg { color: #5f0080; flex-shrink: 0; }
+.co-type-list li svg { color: #582681; flex-shrink: 0; }
 .co-type-btn {
   display: inline-flex;
   align-items: center;
@@ -9930,13 +9930,13 @@ div:has(> table.admin-table),
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  border: 1.5px solid #5f0080;
-  color: #5f0080;
+  border: 1.5px solid #582681;
+  color: #582681;
   background: transparent;
   transition: background 0.15s;
 }
 .co-type-btn:hover { background: #faf5ff; }
-.co-type-btn.primary { background: #5f0080; color: #fff; }
+.co-type-btn.primary { background: #582681; color: #fff; }
 .co-type-btn.primary:hover { background: #6d28d9; }
 
 /* ── 주요 서비스 4종 ── */
@@ -9959,11 +9959,11 @@ div:has(> table.admin-table),
   transition: box-shadow 0.15s;
 }
 .co-service-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
-.co-service-icon { color: #5f0080; }
+.co-service-icon { color: #582681; }
 .co-service-tag {
   font-size: 10px;
   font-weight: 700;
-  color: #5f0080;
+  color: #582681;
   background: #f3e8ff;
   padding: 2px 8px;
   border-radius: 20px;
@@ -10013,7 +10013,7 @@ div:has(> table.admin-table),
   margin-bottom: 12px;
   letter-spacing: 0.03em;
 }
-.co-label-tag.purple { background: #f3e8ff; color: #5f0080; }
+.co-label-tag.purple { background: #f3e8ff; color: #582681; }
 .co-split-title {
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 800;
@@ -10032,7 +10032,7 @@ div:has(> table.admin-table),
   padding: 5px 12px;
   border-radius: 20px;
 }
-.co-job-tag.purple { background: #f3e8ff; color: #5f0080; }
+.co-job-tag.purple { background: #f3e8ff; color: #582681; }
 
 /* ── 광고 상품 ── */
 .co-ad-grid {
@@ -10060,7 +10060,7 @@ div:has(> table.admin-table),
 .co-ad-price {
   font-size: 13px;
   font-weight: 700;
-  color: #5f0080;
+  color: #582681;
   margin-top: 8px;
 }
 
@@ -10110,7 +10110,7 @@ div:has(> table.admin-table),
   transition: border-color 0.15s;
 }
 .co-pricing-card.highlight {
-  border-color: #5f0080;
+  border-color: #582681;
   background: #faf5ff;
 }
 .co-pricing-label { font-size: 13px; color: #666; margin-bottom: 8px; }
@@ -10132,7 +10132,7 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: border-color 0.15s;
 }
-.co-faq-item.open { border-color: #5f0080; }
+.co-faq-item.open { border-color: #582681; }
 .co-faq-q {
   display: flex;
   justify-content: space-between;
@@ -10142,7 +10142,7 @@ div:has(> table.admin-table),
   color: #222;
   gap: 12px;
 }
-.co-faq-q svg { flex-shrink: 0; color: #5f0080; }
+.co-faq-q svg { flex-shrink: 0; color: #582681; }
 .co-faq-a {
   margin-top: 12px;
   font-size: 13px;
@@ -10154,7 +10154,7 @@ div:has(> table.admin-table),
 
 /* ── 하단 CTA ── */
 .co-cta {
-  background: linear-gradient(135deg, #5f0080 0%, #5b21b6 100%);
+  background: #582681;
   padding: 72px 20px;
   text-align: center;
 }
@@ -10170,14 +10170,14 @@ div:has(> table.admin-table),
 
 /* ── 히어로 ── */
 .co-hero {
-  background: linear-gradient(135deg, #f5f0ff 0%, #ede9fe 50%, #faf5ff 100%);
+  background: #f7f4fa;
   padding: 80px 20px 72px;
   text-align: center;
 }
 .co-hero-inner { max-width: 680px; margin: 0 auto; }
 .co-hero-badge {
   display: inline-block;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 12px;
   font-weight: 600;
@@ -10193,7 +10193,7 @@ div:has(> table.admin-table),
   color: #111;
   margin-bottom: 18px;
 }
-.co-hero-point { color: #5f0080; }
+.co-hero-point { color: #582681; }
 .co-hero-desc {
   font-size: 15px;
   color: #555;
@@ -10212,7 +10212,7 @@ div:has(> table.admin-table),
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 14px;
   font-weight: 600;
@@ -10241,19 +10241,19 @@ div:has(> table.admin-table),
   text-decoration: none;
   transition: border-color 0.15s, color 0.15s;
 }
-.co-btn-outline-dark:hover { border-color: #5f0080; color: #5f0080; }
+.co-btn-outline-dark:hover { border-color: #582681; color: #582681; }
 
 .co-btn-outline {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   background: transparent;
-  color: #5f0080;
+  color: #582681;
   font-size: 14px;
   font-weight: 600;
   padding: 13px 24px;
   border-radius: 10px;
-  border: 1.5px solid #5f0080;
+  border: 1.5px solid #582681;
   text-decoration: none;
   transition: background 0.15s;
 }
@@ -10264,7 +10264,7 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 6px;
   background: #fff;
-  color: #5f0080;
+  color: #582681;
   font-size: 15px;
   font-weight: 600;
   padding: 15px 28px;
@@ -10316,13 +10316,13 @@ div:has(> table.admin-table),
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .co-type-card:hover { border-color: #a78bfa; box-shadow: 0 4px 20px rgba(124,58,237,0.08); }
-.co-type-card.featured { border-color: #5f0080; box-shadow: 0 4px 24px rgba(124,58,237,0.12); }
+.co-type-card.featured { border-color: #582681; box-shadow: 0 4px 24px rgba(124,58,237,0.12); }
 .co-type-featured-badge {
   position: absolute;
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -10330,7 +10330,7 @@ div:has(> table.admin-table),
   border-radius: 20px;
   white-space: nowrap;
 }
-.co-type-icon { color: #5f0080; margin-bottom: 4px; }
+.co-type-icon { color: #582681; margin-bottom: 4px; }
 .co-type-name { font-size: 18px; font-weight: 700; color: #111; }
 .co-type-desc { font-size: 13px; color: #666; line-height: 1.7; }
 .co-type-list {
@@ -10348,7 +10348,7 @@ div:has(> table.admin-table),
   font-size: 13px;
   color: #555;
 }
-.co-type-list li svg { color: #5f0080; flex-shrink: 0; }
+.co-type-list li svg { color: #582681; flex-shrink: 0; }
 .co-type-btn {
   display: inline-flex;
   align-items: center;
@@ -10360,13 +10360,13 @@ div:has(> table.admin-table),
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  border: 1.5px solid #5f0080;
-  color: #5f0080;
+  border: 1.5px solid #582681;
+  color: #582681;
   background: transparent;
   transition: background 0.15s;
 }
 .co-type-btn:hover { background: #faf5ff; }
-.co-type-btn.primary { background: #5f0080; color: #fff; }
+.co-type-btn.primary { background: #582681; color: #fff; }
 .co-type-btn.primary:hover { background: #6d28d9; }
 
 /* ── 주요 서비스 4종 ── */
@@ -10389,11 +10389,11 @@ div:has(> table.admin-table),
   transition: box-shadow 0.15s;
 }
 .co-service-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
-.co-service-icon { color: #5f0080; }
+.co-service-icon { color: #582681; }
 .co-service-tag {
   font-size: 10px;
   font-weight: 700;
-  color: #5f0080;
+  color: #582681;
   background: #f3e8ff;
   padding: 2px 8px;
   border-radius: 20px;
@@ -10443,7 +10443,7 @@ div:has(> table.admin-table),
   margin-bottom: 12px;
   letter-spacing: 0.03em;
 }
-.co-label-tag.purple { background: #f3e8ff; color: #5f0080; }
+.co-label-tag.purple { background: #f3e8ff; color: #582681; }
 .co-split-title {
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 800;
@@ -10462,7 +10462,7 @@ div:has(> table.admin-table),
   padding: 5px 12px;
   border-radius: 20px;
 }
-.co-job-tag.purple { background: #f3e8ff; color: #5f0080; }
+.co-job-tag.purple { background: #f3e8ff; color: #582681; }
 
 /* ── 광고 상품 ── */
 .co-ad-grid {
@@ -10490,7 +10490,7 @@ div:has(> table.admin-table),
 .co-ad-price {
   font-size: 13px;
   font-weight: 700;
-  color: #5f0080;
+  color: #582681;
   margin-top: 8px;
 }
 
@@ -10540,7 +10540,7 @@ div:has(> table.admin-table),
   transition: border-color 0.15s;
 }
 .co-pricing-card.highlight {
-  border-color: #5f0080;
+  border-color: #582681;
   background: #faf5ff;
 }
 .co-pricing-label { font-size: 13px; color: #666; margin-bottom: 8px; }
@@ -10562,7 +10562,7 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: border-color 0.15s;
 }
-.co-faq-item.open { border-color: #5f0080; }
+.co-faq-item.open { border-color: #582681; }
 .co-faq-q {
   display: flex;
   justify-content: space-between;
@@ -10572,7 +10572,7 @@ div:has(> table.admin-table),
   color: #222;
   gap: 12px;
 }
-.co-faq-q svg { flex-shrink: 0; color: #5f0080; }
+.co-faq-q svg { flex-shrink: 0; color: #582681; }
 .co-faq-a {
   margin-top: 12px;
   font-size: 13px;
@@ -10584,7 +10584,7 @@ div:has(> table.admin-table),
 
 /* ── 하단 CTA ── */
 .co-cta {
-  background: linear-gradient(135deg, #5f0080 0%, #5b21b6 100%);
+  background: #582681;
   padding: 72px 20px;
   text-align: center;
 }
@@ -10614,12 +10614,12 @@ div:has(> table.admin-table),
   align-items: center;
   justify-content: space-between;
 }
-.cid-logo { font-size: 16px; font-weight: 800; color: #5f0080; text-decoration: none; }
+.cid-logo { font-size: 16px; font-weight: 800; color: #582681; text-decoration: none; }
 .cid-account { display: flex; align-items: center; gap: 10px; }
 .cid-account-id { font-size: 13px; color: #888; }
 .cid-account-btn {
   font-size: 12px;
-  color: #5f0080;
+  color: #582681;
   background: #f3e8ff;
   border: none;
   padding: 4px 10px;
@@ -10649,7 +10649,7 @@ div:has(> table.admin-table),
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #5f0080;
+  color: #582681;
   flex-shrink: 0;
 }
 .cid-profile-info { flex: 1; }
@@ -10659,7 +10659,7 @@ div:has(> table.admin-table),
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #5f0080;
+  background: #582681;
   color: #fff;
   border: none;
   padding: 10px 14px;
@@ -10698,14 +10698,14 @@ div:has(> table.admin-table),
   transition: border-color 0.15s, background 0.15s;
 }
 .cid-menu-card:hover { border-color: #a78bfa; background: #faf5ff; }
-.cid-menu-icon { color: #5f0080; flex-shrink: 0; }
+.cid-menu-icon { color: #582681; flex-shrink: 0; }
 .cid-menu-info { display: flex; flex-direction: column; gap: 2px; }
 .cid-menu-info strong { font-size: 14px; font-weight: 600; }
 .cid-menu-info span   { font-size: 12px; color: #888; }
 
 /* 안내 배너 */
 .cid-banner {
-  background: linear-gradient(135deg, #5f0080, #5b21b6);
+  background: #582681;
   border-radius: 14px;
   padding: 20px 22px;
   display: flex;
@@ -10718,7 +10718,7 @@ div:has(> table.admin-table),
 .cid-banner-desc  { font-size: 12px; color: rgba(255,255,255,0.75); }
 .cid-banner-btn {
   background: #fff;
-  color: #5f0080;
+  color: #582681;
   font-size: 13px;
   font-weight: 700;
   padding: 9px 16px;
@@ -10748,15 +10748,15 @@ div:has(> table.admin-table),
   font-size: 13px; color: #666; text-decoration: none;
   width: auto; white-space: nowrap;
 }
-.ads-back:hover { color: #5f0080; }
+.ads-back:hover { color: #582681; }
 
 /* 히어로 */
 .ads-hero {
-  background: linear-gradient(135deg, #f5f0ff 0%, #ede9fe 60%, #faf5ff 100%);
+  background: #f7f4fa;
   padding: 64px 20px 56px; text-align: center;
 }
 .ads-hero-badge {
-  display: inline-block; background: #5f0080; color: #fff;
+  display: inline-block; background: #582681; color: #fff;
   font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 20px;
   margin-bottom: 18px;
 }
@@ -10764,7 +10764,7 @@ div:has(> table.admin-table),
   font-size: clamp(24px, 4vw, 36px); font-weight: 800; color: #111;
   line-height: 1.35; margin-bottom: 14px;
 }
-.ads-hero-point { color: #5f0080; }
+.ads-hero-point { color: #582681; }
 .ads-hero-desc { font-size: 14px; color: #666; line-height: 1.7; margin-bottom: 32px; }
 
 .ads-hero-stats {
@@ -10772,7 +10772,7 @@ div:has(> table.admin-table),
   gap: 28px; flex-wrap: wrap;
 }
 .ads-stat { text-align: center; }
-.ads-stat strong { display: block; font-size: 22px; font-weight: 800; color: #5f0080; }
+.ads-stat strong { display: block; font-size: 22px; font-weight: 800; color: #582681; }
 .ads-stat span   { font-size: 12px; color: #888; }
 .ads-stat-divider { width: 1px; height: 32px; background: #ddd; }
 
@@ -10792,7 +10792,7 @@ div:has(> table.admin-table),
   border: 1.5px solid #e5e7eb; border-radius: 14px;
   overflow: hidden; transition: border-color 0.15s;
 }
-.ads-product-card.open { border-color: #5f0080; }
+.ads-product-card.open { border-color: #582681; }
 
 .ads-product-header {
   width: 100%; display: flex; align-items: center; justify-content: space-between;
@@ -10839,7 +10839,7 @@ div:has(> table.admin-table),
 .ads-pricing-row.highlight { background: #f3e8ff; }
 .ads-pricing-label { font-size: 13px; color: #555; flex: 1; }
 .ads-pricing-badge {
-  font-size: 10px; font-weight: 700; color: #5f0080;
+  font-size: 10px; font-weight: 700; color: #582681;
   background: #ede9fe; padding: 2px 7px; border-radius: 20px;
 }
 .ads-pricing-price { font-size: 14px; font-weight: 700; color: #111; }
@@ -10851,20 +10851,20 @@ div:has(> table.admin-table),
   background: #fff; border: 1.5px solid #e5e7eb; border-radius: 12px;
   padding: 16px 18px; cursor: pointer; transition: border-color 0.15s;
 }
-.ads-faq-item.open { border-color: #5f0080; }
+.ads-faq-item.open { border-color: #582681; }
 .ads-faq-q {
   display: flex; justify-content: space-between; align-items: center;
   font-size: 14px; font-weight: 600; color: #222; gap: 12px;
 }
-.ads-faq-q svg { flex-shrink: 0; color: #5f0080; }
+.ads-faq-q svg { flex-shrink: 0; color: #582681; }
 .ads-faq-a { margin-top: 10px; font-size: 13px; color: #666; line-height: 1.7; border-top: 1px solid #f0f0f0; padding-top: 10px; }
 
 /* 하단 CTA */
-.ads-cta { padding: 64px 20px; background: linear-gradient(135deg, #5f0080, #5b21b6); }
+.ads-cta { padding: 64px 20px; background: #582681; }
 .ads-cta-title { font-size: clamp(20px, 3vw, 28px); font-weight: 800; color: #fff; margin-bottom: 10px; }
 .ads-cta-desc { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.7; margin-bottom: 28px; }
 .ads-cta-btn {
-  display: inline-block; background: #5f0080; color: #fff;
+  display: inline-block; background: #582681; color: #fff;
   font-size: clamp(14px, 2.1vw, 18px); font-weight: 800; padding: 13px 28px;
   border-radius: 10px; text-decoration: none; transition: opacity 0.15s;
 }
@@ -10878,11 +10878,11 @@ div:has(> table.admin-table),
 
 /* 히어로 */
 .mat-hero {
-  background: linear-gradient(135deg, #f5f0ff 0%, #ede9fe 50%, #faf5ff 100%);
+  background: #f7f4fa;
   padding: 64px 20px 56px; text-align: center;
 }
 .mat-badge {
-  display: inline-block; background: #5f0080; color: #fff;
+  display: inline-block; background: #582681; color: #fff;
   font-size: 12px; font-weight: 600; padding: 4px 14px;
   border-radius: 20px; margin-bottom: 18px;
 }
@@ -10890,7 +10890,7 @@ div:has(> table.admin-table),
   font-size: clamp(26px, 5vw, 40px); font-weight: 800;
   color: #111; line-height: 1.3; margin-bottom: 16px;
 }
-.mat-hero-point { color: #5f0080; }
+.mat-hero-point { color: #582681; }
 .mat-hero-desc { font-size: 15px; color: #555; line-height: 1.7; margin-bottom: 24px; }
 .mat-hero-chips {
   display: flex; flex-wrap: wrap; gap: 8px;
@@ -10903,7 +10903,7 @@ div:has(> table.admin-table),
 }
 .mat-hero-btn {
   display: inline-flex; align-items: center; gap: 8px;
-  background: #5f0080; color: #fff;
+  background: #582681; color: #fff;
   font-size: 15px; font-weight: 700;
   padding: 14px 28px; border-radius: 12px;
   text-decoration: none; transition: background 0.15s;
@@ -10931,14 +10931,14 @@ div:has(> table.admin-table),
   background: #f9fafb;
 }
 .mat-compare-table th:first-child { text-align: left; }
-.mat-col-highlight { background: #f5f0ff !important; color: #5f0080 !important; }
+.mat-col-highlight { background: #f5f0ff !important; color: #582681 !important; }
 .mat-compare-label { padding: 14px 16px; font-size: 13px; color: #444; font-weight: 500; border-bottom: 1px solid #f0f0f0; }
 .mat-compare-val {
   padding: 14px 16px; text-align: center; font-size: 13px;
   color: #666; border-bottom: 1px solid #f0f0f0;
 }
-.mat-compare-val strong { color: #5f0080; font-weight: 700; }
-.mat-icon-yes { color: #5f0080; margin: 0 auto; display: block; }
+.mat-compare-val strong { color: #582681; font-weight: 700; }
+.mat-icon-yes { color: #582681; margin: 0 auto; display: block; }
 .mat-icon-no  { color: #d1d5db; margin: 0 auto; display: block; }
 
 /* 프로세스 */
@@ -10954,7 +10954,7 @@ div:has(> table.admin-table),
 }
 .mat-process-num {
   position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
-  font-size: 10px; font-weight: 800; color: #5f0080;
+  font-size: 10px; font-weight: 800; color: #582681;
 }
 .mat-process-icon {
   font-size: 36px; display: block;
@@ -10983,7 +10983,7 @@ div:has(> table.admin-table),
   flex-direction: column; gap: 12px;
   transition: border-color 0.15s;
 }
-.mat-fee-card:hover { border-color: #5f0080; }
+.mat-fee-card:hover { border-color: #582681; }
 .mat-fee-header { display: flex; align-items: center; gap: 10px; }
 .mat-fee-icon { font-size: 28px; }
 .mat-fee-type { font-size: 17px; font-weight: 800; color: #111; }
@@ -10992,11 +10992,11 @@ div:has(> table.admin-table),
   background: #f5f0ff; border-radius: 10px; padding: 14px 16px;
   display: flex; flex-direction: column; gap: 4px;
 }
-.mat-fee-amount strong { font-size: 24px; font-weight: 900; color: #5f0080; }
+.mat-fee-amount strong { font-size: 24px; font-weight: 900; color: #582681; }
 .mat-fee-amount span  { font-size: 12px; color: #6b7280; }
 .mat-fee-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .mat-fee-tag {
-  font-size: 11px; color: #5f0080; background: #f5f0ff;
+  font-size: 11px; color: #582681; background: #f5f0ff;
   padding: 3px 10px; border-radius: 20px;
 }
 .mat-fee-note {
@@ -11008,7 +11008,7 @@ div:has(> table.admin-table),
 /* 하단 CTA */
 .mat-cta {
   padding: 64px 20px;
-  background: linear-gradient(135deg, #5f0080, #6d28d9);
+  background: #582681;
 }
 .mat-cta-title { font-size: clamp(20px, 3vw, 28px); font-weight: 800; color: #fff; margin-bottom: 10px; }
 .mat-cta-desc { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.7; margin-bottom: 28px; }
@@ -11018,7 +11018,7 @@ div:has(> table.admin-table),
   font-size: 14px; font-weight: 700; padding: 13px 24px;
   border-radius: 12px; text-decoration: none; transition: opacity 0.15s;
 }
-.mat-cta-btn.primary { background: #fff; color: #5f0080; }
+.mat-cta-btn.primary { background: #fff; color: #582681; }
 .mat-cta-btn.outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.6); }
 .mat-cta-btn:hover { opacity: 0.88; }
 .mat-cta-email { font-size: 12px; color: rgba(255,255,255,0.55); }
@@ -11077,9 +11077,9 @@ div:has(> table.admin-table),
   transition: border-color 0.15s;
 }
 .co-type-card:hover { border-color: #a78bfa; }
-.co-type-card:hover { border-color: #5f0080; }
+.co-type-card:hover { border-color: #582681; }
 .co-type-featured-badge { display: none; }
-.co-type-icon { color: #5f0080; flex-shrink: 0; }
+.co-type-icon { color: #582681; flex-shrink: 0; }
 .co-type-body { flex: 1; min-width: 0; }
 .co-type-name { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 3px; }
 .co-type-desc { font-size: 12px; color: #777; line-height: 1.5; margin-bottom: 6px; }
@@ -11091,7 +11091,7 @@ div:has(> table.admin-table),
   display: flex; align-items: center; gap: 5px;
   font-size: 11px; color: #666;
 }
-.co-type-list li svg { color: #5f0080; flex-shrink: 0; }
+.co-type-list li svg { color: #582681; flex-shrink: 0; }
 .co-type-btn {
   display: inline-flex; align-items: center; gap: 4px;
   flex-shrink: 0;
@@ -11099,14 +11099,14 @@ div:has(> table.admin-table),
   border-radius: 8px;
   font-size: 12px; font-weight: 600;
   text-decoration: none;
-  border: 1.5px solid #5f0080;
-  color: #5f0080;
+  border: 1.5px solid #582681;
+  color: #582681;
   background: transparent;
   white-space: nowrap;
   transition: background 0.15s;
 }
 .co-type-btn:hover { background: #faf5ff; }
-.co-type-btn.primary { background: #5f0080; color: #fff; }
+.co-type-btn.primary { background: #582681; color: #fff; }
 .co-type-btn.primary:hover { background: #6d28d9; }
 
 /* 이용절차 세로 */
@@ -11117,7 +11117,7 @@ div:has(> table.admin-table),
 }
 .co-step-v-num {
   width: 36px; height: 36px; border-radius: 50%;
-  background: #f3e8ff; color: #5f0080;
+  background: #f3e8ff; color: #582681;
   font-size: 12px; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -11145,20 +11145,20 @@ div:has(> table.admin-table),
 }
 .co-cta-product-btn:hover { opacity: 0.85; }
 .co-cta-product-btn.purple {
-  background: #5f0080;
+  background: #582681;
   color: #fff;
-  border-color: #5f0080;
+  border-color: #582681;
 }
 .co-cta-product-btn.green {
   background: transparent;
-  color: #5f0080;
-  border-color: #5f0080;
+  color: #582681;
+  border-color: #582681;
 }
 
 .company-text-link {
   font-size: 14px;
   font-weight: 600;
-  color: #5f0080;
+  color: #582681;
   text-decoration: none;
   transition: opacity 0.15s;
 }
@@ -11205,7 +11205,7 @@ div:has(> table.admin-table),
   padding: 24px; background: #faf7fc; border: 1px solid #f0e8f8;
   border-radius: 12px; margin-bottom: 40px;
 }
-.legal-toc-item { font-size: 14px; color: #5f0080; text-decoration: none; font-weight: 500; }
+.legal-toc-item { font-size: 14px; color: #582681; text-decoration: none; font-weight: 500; }
 .legal-toc-item:hover { text-decoration: underline; }
 .legal-intro { font-size: 15px; color: #555; line-height: 1.7; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #eee; }
 .legal-section { margin-bottom: 28px; scroll-margin-top: 80px; }
@@ -11283,7 +11283,7 @@ div:has(> table.admin-table),
 .resume-completion-head strong {
   font-size: 18px;
   font-weight: 700;
-  color: #5f0080;
+  color: #582681;
 }
 .resume-completion-bar {
   height: 8px;
@@ -11293,7 +11293,7 @@ div:has(> table.admin-table),
 }
 .resume-completion-fill {
   height: 100%;
-  background: linear-gradient(90deg, #5f0080, #9c27b0);
+  background: #582681;
   border-radius: 5px;
   transition: width 0.4s ease;
 }
@@ -11306,7 +11306,7 @@ div:has(> table.admin-table),
   display: inline-block;
   width: 16px;
   margin-right: 6px;
-  color: #5f0080;
+  color: #582681;
   font-weight: 700;
 }
 /* 모바일에서 프로필/이력서 페이지 좌우 여백 축소 */
@@ -11375,7 +11375,7 @@ div:has(> table.admin-table),
   border: 1px solid #e0d4ed;
   border-radius: 10px;
   background: #fff;
-  color: #5f0080;
+  color: #582681;
   font-size: 13px;
   font-weight: 600;
   font-family: inherit;
@@ -11408,7 +11408,7 @@ div:has(> table.admin-table),
   width: 44px;
   height: 44px;
   background: none;
-  color: #5f0080;
+  color: #582681;
   border: none;
   display: flex;
   align-items: center;
@@ -11418,7 +11418,7 @@ div:has(> table.admin-table),
   margin-left: 4px;
   transition: color 0.15s;
 }
-.hero-search-btn-v2:hover { color: #4a0066; }
+.hero-search-btn-v2:hover { color: #431a63; }
 
 @media (max-width: 768px) {
   .hero-search-bar-v2 { max-width: 100%; padding: 12px; }
@@ -11471,7 +11471,7 @@ div:has(> table.admin-table),
 /* 프로필 헤더: 로고는 왼쪽, 종+설정은 오른쪽으로 묶기 */
 .profile-header-inner { justify-content: flex-start; gap: 8px; }
 .profile-header-nav { font-size: 15px; font-weight: 600; color: #2b2b2b; text-decoration: none; white-space: nowrap; }
-.profile-header-nav:hover { color: #5f0080; }
+.profile-header-nav:hover { color: #582681; }
 /* 섹션구성 접기/펴기 */
 .resume-sidebar-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 0; margin: 0; cursor: pointer; font: inherit; }
 .resume-sidebar-toggle .resume-sidebar-title { width: auto; margin: 0; }
@@ -11487,11 +11487,11 @@ div:has(> table.admin-table),
   .resume-sidebar-item { width: auto; white-space: nowrap; }
 }
 .resume-header-nav { margin-right: auto; font-size: 15px; font-weight: 600; color: #2b2b2b; text-decoration: none; white-space: nowrap; }
-.resume-header-nav:hover { color: #5f0080; }
+.resume-header-nav:hover { color: #582681; }
 /* ===== 공용 JobCard (메인·채용공고 통일) — 정사각형 60/40 ===== */
 .jobcard { display: flex; flex-direction: column; background: #fff; border: 1px solid #eee; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .18s, box-shadow .18s; }
 .jobcard:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
-.jobcard-cover { position: relative; flex: none; overflow: hidden; background: linear-gradient(135deg,#f3eefb,#faf7fe); }
+.jobcard-cover { position: relative; flex: none; overflow: hidden; background: #f5f1fa; }
 .jobcard-cover-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .jobcard-cover-empty { aspect-ratio: 3 / 2; }   /* 사진이 없어도 칸 크기는 같다 */
 .jobcard-cover-initial { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 800; color: rgba(95,0,128,.18); }
@@ -11517,14 +11517,14 @@ div:has(> table.admin-table),
 .hero-banner-top-inner .hero-banner-link { text-shadow: 0 1px 3px rgba(0,0,0,.25); }
 .newsletter-title, .newsletter-sub { text-shadow: 0 1px 2px rgba(0,0,0,.12); }
 /* === 최상단 배너 — 연보라 D + 로켓 + sheen 반짝 === */
-.hero-banner-top-inner{ background:linear-gradient(120deg,#fdfbff 0%,#f7f1fd 100%)!important; border:1px solid rgba(124,58,237,.10); overflow:hidden; }
+.hero-banner-top-inner{ background:#faf7fd!important; border:1px solid rgba(124,58,237,.10); overflow:hidden; }
 .hero-banner-top-inner::before{ content:""; position:absolute; top:0; left:0; width:24%; height:100%; background:linear-gradient(90deg,transparent,rgba(196,160,247,.55),transparent); animation:heroSheen 3.4s ease-in-out infinite; pointer-events:none; z-index:0; }
 .hero-banner-top-inner>*{ position:relative; z-index:1; }
 @keyframes heroSheen{ 0%{transform:translateX(-170%) skewX(-18deg)} 55%,100%{transform:translateX(560%) skewX(-18deg)} }
-.hero-banner-badge{ width:34px!important; height:34px!important; padding:0!important; border-radius:50%!important; background:linear-gradient(135deg,#5f0080,#ec4899)!important; color:#fff!important; display:inline-flex!important; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(124,58,237,.3); flex-shrink:0; }
+.hero-banner-badge{ width:34px!important; height:34px!important; padding:0!important; border-radius:50%!important; background:#582681!important; color:#fff!important; display:inline-flex!important; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(124,58,237,.3); flex-shrink:0; }
 .hero-banner-title{ color:#1f1f1f!important; text-shadow:none!important; }
 .hero-banner-sub{ color:#5a5a6a!important; text-shadow:none!important; }
-.hero-banner-link{ color:#5f0080!important; text-shadow:none!important; }
+.hero-banner-link{ color:#582681!important; text-shadow:none!important; }
 
 /* 채용공고 카드 — 모바일 (안 깨지게: 이미지 4:3 + 본문 자동높이) */
 @media (max-width: 480px) {
@@ -11542,12 +11542,12 @@ div:has(> table.admin-table),
 .profile-header-nav { margin-left: 24px; }
 
 /* === 모바일 상단 배너 — 연보라 D + 로켓 + sheen (데스크탑과 통일) === */
-.hero-m-banner{ position:relative; overflow:hidden; background:linear-gradient(120deg,#fdfbff 0%,#f7f1fd 100%)!important; border:1px solid rgba(124,58,237,.10); }
+.hero-m-banner{ position:relative; overflow:hidden; background:#faf7fd!important; border:1px solid rgba(124,58,237,.10); }
 .hero-m-banner::before{ content:""; position:absolute; top:0; left:0; width:28%; height:100%; background:linear-gradient(90deg,transparent,rgba(196,160,247,.55),transparent); animation:heroSheen 3.4s ease-in-out infinite; pointer-events:none; z-index:0; }
 .hero-m-banner>*{ position:relative; z-index:1; }
-.hero-m-banner-ad{ width:28px!important; height:28px!important; padding:0!important; border-radius:50%!important; background:linear-gradient(135deg,#5f0080,#ec4899)!important; color:#fff!important; display:inline-flex!important; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(124,58,237,.3); flex-shrink:0; }
+.hero-m-banner-ad{ width:28px!important; height:28px!important; padding:0!important; border-radius:50%!important; background:#582681!important; color:#fff!important; display:inline-flex!important; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(124,58,237,.3); flex-shrink:0; }
 .hero-m-banner-text{ color:#1f1f1f!important; text-shadow:none!important; }
-.hero-m-banner-link{ color:#5f0080!important; text-shadow:none!important; }
+.hero-m-banner-link{ color:#582681!important; text-shadow:none!important; }
 
 /* 프로필 4탭 균등 배치 (모바일) */
 @media (max-width: 768px) {
@@ -11626,7 +11626,7 @@ div:has(> table.admin-table),
   line-height: 1.7;
   margin: 0;
 }
-.co-hero-point { color: #5f0080; }
+.co-hero-point { color: #582681; }
 
 /* 모바일에선 강제 줄바꿈 해제 */
 @media (max-width: 600px) {
@@ -11641,7 +11641,7 @@ div:has(> table.admin-table),
   color: #1a1a1a !important;
   margin: 0 0 16px !important;
 }
-.co-hero-point { color: #5f0080 !important; }
+.co-hero-point { color: #582681 !important; }
 .co-hero-desc, .js-hero-sub {
   font-size: clamp(15px, 3.6vw, 17px) !important;
   color: #666 !important;
@@ -11911,7 +11911,7 @@ div:has(> table.admin-table),
 .pf-subtitle { font-size: 13.5px; color: #555; }
 /* 체크는 사진 오른쪽 위 — 예전에 X 가 있던 자리라 손이 가던 곳 그대로다. */
 .pf-check { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; padding: 0; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.35); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-.pf-check.on { background: #5f0080; border-color: #fff; }
+.pf-check.on { background: #582681; border-color: #fff; }
 
 /* 사진 올리는 자리 안내 — 마우스가 있는 화면에서만 끌어다 놓기를 알린다. */
 /* 사진 올리는 자리 — 폰에는 끌어다 놓을 것이 없어 버튼 하나만 둔다. */
@@ -11920,7 +11920,7 @@ div:has(> table.admin-table),
 .pf-pick-note { display: none; }
 @media (max-width: 768px) {
   .pf-drop-pc { display: none; }
-  .pf-pick-mobile { display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 13px; border-radius: 10px; border: 1.5px solid #e0d0f0; background: #fff; color: #5f0080; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .pf-pick-mobile { display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 13px; border-radius: 10px; border: 1.5px solid #e0d0f0; background: #fff; color: #582681; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
   .pf-pick-mobile:disabled { opacity: 0.6; cursor: default; }
   .pf-pick-note { display: block; font-size: 11.5px; color: #888; text-align: center; margin: 7px 0 0; }
 }
@@ -11942,7 +11942,7 @@ div:has(> table.admin-table),
 .profile-select-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 .profile-select-all { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: #555; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
 .profile-select-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid #e0e0e0; background: #fff; color: #666; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: inherit; }
-.profile-select-btn.accent { border-color: #e0d0f0; color: #5f0080; }
+.profile-select-btn.accent { border-color: #e0d0f0; color: #582681; }
 .profile-select-btn.danger { border-color: #f0d0d0; color: #c0392b; }
 /* 고르는 중에는 체크박스가 첫 줄(제목)과 눈높이를 맞춰야 한다.
    카드가 가운데 정렬이라 그냥 두면 제목과 매장명 사이에 끼어 보인다. */
@@ -11954,7 +11954,7 @@ div:has(> table.admin-table),
 .applied-check {
   width: 18px; height: 18px;
   flex-shrink: 0;
-  accent-color: #5f0080;
+  accent-color: #582681;
   cursor: pointer;
 }
 .applied-right {
@@ -11977,7 +11977,7 @@ div:has(> table.admin-table),
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-.applied-menu-btn:hover { background: #f4eefc; color: #5f0080; }
+.applied-menu-btn:hover { background: #f4eefc; color: #582681; }
 .applied-menu {
   position: absolute;
   top: 34px;
@@ -12119,7 +12119,7 @@ button,
   padding: 9px 10px; border: none; background: none; border-radius: 8px;
   font-size: 14px; color: #333; cursor: pointer;
 }
-.company-profile-menu button:hover { background: #faf7fc; color: #5f0080; }
+.company-profile-menu button:hover { background: #faf7fc; color: #582681; }
 
 /* 가입 화면 매장·오피스 카드 아이콘 — 좁은 화면에서는 한 줄 설명을 살리려고 조금 줄인다. */
 @media (max-width: 767px) {
@@ -12224,7 +12224,7 @@ button,
     content: ""; width: 6px; height: 6px; border-radius: 50%;
     background: #d8d0e0; transition: background .15s, width .15s;
   }
-  .bstrip-dot.on::before { width: 16px; border-radius: 3px; background: #5f0080; }
+  .bstrip-dot.on::before { width: 16px; border-radius: 3px; background: #582681; }
 }
 
 /* 배너 사진 번호 — 편집 화면은 순서(1,2,3), 공개 화면은 "몇 장 중 몇 번째". */
@@ -12330,9 +12330,9 @@ button,
 .mt-evt-when {
   font-size: 13px; font-weight: 700; white-space: nowrap; padding: 0;
   background-image: linear-gradient(100deg,
-    #5f0080 0%, #5f0080 26%,
+    #582681 0%, #582681 26%,
     #b0389c 40%, #ff6fb5 50%, #b0389c 60%,
-    #5f0080 74%, #5f0080 100%);
+    #582681 74%, #582681 100%);
   background-size: 300% 100%;
   background-position: 100% 0;
   -webkit-background-clip: text;
@@ -12489,7 +12489,7 @@ button,
 .salary-sort-btn.active,
 .jobs-sort-btn.active {
   background: #e3d4f0;
-  color: #4a0066;
+  color: #431a63;
   border-color: transparent;
   font-weight: 600;
   box-shadow: none;
@@ -12509,19 +12509,19 @@ button,
    구직자 화면과 달리 여기 오는 사람은 "쓸지 말지"를 정하러 온다. 무엇을
    주는지를 위에서 아래로 한 번에 훑을 수 있게 세운다.
 
-   강조색은 이 한 줄에만 있다. 사이트 보라(#5f0080)로 돌리려면 --cs 세 개만
+   강조색은 이 한 줄에만 있다. 사이트 보라(#582681)로 돌리려면 --cs 세 개만
    바꾸면 페이지 전체가 따라온다. */
 .cs-page {
-  --cs: #e8447f;
-  --cs-deep: #c92a63;
-  --cs-soft: #fdeef4;
+  --cs: #582681;
+  --cs-deep: #431a63;
+  --cs-soft: #efe9f5;
   width: 100%; background: #fff; color: #1a1a1a;
   font-family: var(--font-sans);
 }
 .cs-page b, .cs-page strong { font-weight: 700; }
 
 /* 머리 */
-.cs-header { border-bottom: 1px solid #f1e6ec; background: #fff; position: sticky; top: 0; z-index: 30; }
+.cs-header { border-bottom: 1px solid #ebe6f2; background: #fff; position: sticky; top: 0; z-index: 30; }
 .cs-header-in { max-width: 1160px; margin: 0 auto; padding: 0 24px; height: 68px; display: flex; align-items: center; gap: 28px; }
 .cs-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
 .cs-nav { display: flex; gap: 26px; margin: 0 auto; }
@@ -12539,14 +12539,14 @@ button,
 }
 .cs-btn-fill { background: var(--cs); color: #fff; border: 1px solid var(--cs); }
 .cs-btn-fill:hover { background: var(--cs-deep); border-color: var(--cs-deep); }
-.cs-btn-line { background: #fff; color: var(--cs); border: 1px solid #f0b9cd; }
+.cs-btn-line { background: #fff; color: var(--cs); border: 1px solid #cfc0e0; }
 .cs-btn-line:hover { border-color: var(--cs); }
-.cs-btn-ghost { background: #fff; color: #4a4a4a; border: 1px solid #e6e0e3; }
-.cs-btn-ghost:hover { border-color: #cfc7cb; }
+.cs-btn-ghost { background: #fff; color: #4a4a4a; border: 1px solid #e4e0e8; }
+.cs-btn-ghost:hover { border-color: #c8c2ce; }
 .cs-btn-fill.lg, .cs-btn-line.lg { height: 48px; padding: 0 22px; font-size: 15.5px; border-radius: 9px; }
 
 /* 히어로 */
-.cs-hero { position: relative; overflow: hidden; background: linear-gradient(120deg, #fff5f8 0%, #fde7ef 52%, #fbdbe8 100%); }
+.cs-hero { position: relative; overflow: hidden; background: #f7f4fa; }
 .cs-hero-photo {
   position: absolute; right: 0; top: 0; bottom: 0; width: 54%;
   /* 기업 서비스 전용 배너. 파일을 넣기 전에는 아래 분홍 바탕이 그대로 보여
@@ -12566,7 +12566,7 @@ button,
 .cs-hero-t { font-size: 40px; font-weight: 700; line-height: 1.32; letter-spacing: -1px; margin: 0 0 18px; word-break: keep-all; }
 /* 시안은 이 글자도 분홍이지만, 로고와 다른 색이면 같은 이름으로 안 읽힌다.
    브랜드 보라를 그대로 쓴다. */
-.cs-hero-t b { color: #5f0080; font-weight: 700; }
+.cs-hero-t b { color: #582681; font-weight: 700; }
 .cs-hero-d { font-size: 15.5px; line-height: 1.75; color: #5a5157; margin: 0 0 30px; word-break: keep-all; }
 .cs-hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
 /* 네 마디를 한 줄에 세우고 사이를 선으로만 가른다. 칸을 만들면 카드가 되어
@@ -12574,7 +12574,7 @@ button,
 .cs-hero-pts { list-style: none; display: flex; margin: 40px 0 0; padding: 0; flex-wrap: nowrap; }
 .cs-hero-pts li { display: flex; align-items: center; gap: 9px; padding: 0 16px; flex-shrink: 0; }
 .cs-hero-pts li:first-child { padding-left: 0; }
-.cs-hero-pts li + li { border-left: 1px solid #f0cfdd; }
+.cs-hero-pts li + li { border-left: 1px solid #ddd3e8; }
 .cs-hero-pts svg { color: var(--cs); flex-shrink: 0; }
 .cs-hero-pts span { font-size: 12.5px; color: #7a7076; line-height: 1.5; word-break: keep-all; }
 .cs-hero-pts b { display: block; font-size: 14px; font-weight: 700; color: #2b2b2b; }
@@ -12586,15 +12586,15 @@ button,
 .cs-sub { font-size: 15px; color: #7a7076; text-align: center; margin: 0 0 34px; word-break: keep-all; }
 .cs-sub.left { text-align: left; line-height: 1.75; margin-bottom: 24px; }
 .cs-center { display: flex; justify-content: center; margin-top: 30px; }
-.cs-band { background: #fdf6f9; }
+.cs-band { background: #f9f7fc; }
 
 /* 다루는 직군 — 여덟을 한 판에 담아 "여기까지 다 된다"를 한눈에 말한다. */
 .cs-jobs {
   display: grid; grid-template-columns: repeat(8, 1fr);
-  background: #fff; border: 1px solid #f2e6ec; border-radius: 16px; overflow: hidden;
+  background: #fff; border: 1px solid #ebe6f2; border-radius: 16px; overflow: hidden;
 }
 .cs-job { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 26px 10px; text-align: center; }
-.cs-job + .cs-job { border-left: 1px solid #f6eef2; }
+.cs-job + .cs-job { border-left: 1px solid #f1edf6; }
 .cs-job svg { color: var(--cs); }
 .cs-job b { font-size: 14.5px; font-weight: 700; }
 .cs-job span { font-size: 12px; color: #8a8087; line-height: 1.5; word-break: keep-all; }
@@ -12607,33 +12607,33 @@ button,
 .cs-note { grid-column: 1 / -1; font-size: 12px; color: #a49aa1; margin: 14px 0 0; text-align: right; }
 
 /* 대시보드 그림 */
-.cs-shot { display: grid; grid-template-columns: 132px 1fr; background: #fff; border: 1px solid #ece2e8; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 34px rgba(120, 60, 90, .10); }
+.cs-shot { display: grid; grid-template-columns: 132px 1fr; background: #fff; border: 1px solid #e8e2f0; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 34px rgba(70, 45, 100, .10); }
 /* 사이드바를 검게 칠하면 이 그림에서 가장 어두운 덩어리가 되어, 정작 보여
    주려는 지표와 차트보다 먼저 눈에 든다. 흰 바탕에 선 하나로 가른다. */
-.cs-shot-side { background: #fff; border-right: 1px solid #f0e9f0; padding: 14px 10px; display: flex; flex-direction: column; gap: 3px; }
+.cs-shot-side { background: #fff; border-right: 1px solid #eae5f1; padding: 14px 10px; display: flex; flex-direction: column; gap: 3px; }
 .cs-shot-brand { color: #2b2b2b; font-size: 13px; font-weight: 700; padding: 4px 8px 12px; }
 .cs-shot-menu { font-size: 11.5px; color: #8a8087; padding: 7px 8px; border-radius: 6px; }
 .cs-shot-menu.on { background: var(--cs-soft); color: var(--cs); font-weight: 600; }
-.cs-shot-main { padding: 14px; background: #faf8fb; }
+.cs-shot-main { padding: 14px; background: #faf8fc; }
 .cs-shot-h { font-size: 13px; font-weight: 700; margin: 0 0 10px; }
 .cs-shot-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
-.cs-shot-stat { background: #fff; border: 1px solid #f0e9f0; border-radius: 8px; padding: 9px 10px; }
+.cs-shot-stat { background: #fff; border: 1px solid #eae5f1; border-radius: 8px; padding: 9px 10px; }
 .cs-shot-stat span { display: block; font-size: 10.5px; color: #8a8087; }
 .cs-shot-stat b { font-size: 17px; font-weight: 700; }
 .cs-shot-stat i { font-size: 10.5px; font-style: normal; font-weight: 500; color: #8a8087; margin-left: 2px; }
 .cs-shot-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin-bottom: 10px; }
-.cs-shot-card { background: #fff; border: 1px solid #f0e9f0; border-radius: 8px; padding: 10px; }
+.cs-shot-card { background: #fff; border: 1px solid #eae5f1; border-radius: 8px; padding: 10px; }
 .cs-shot-card p { font-size: 11px; font-weight: 600; margin: 0 0 8px; color: #4a444c; }
 .cs-shot-line { width: 100%; height: 62px; }
-.cs-shot-line polyline { fill: none; stroke: #7b6cf6; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.cs-shot-line polyline { fill: none; stroke: #582681; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .cs-shot-donut { position: relative; display: flex; align-items: center; justify-content: center; height: 62px; }
 .cs-shot-donut svg { width: 62px; height: 62px; transform: rotate(-90deg); }
-.cs-shot-donut .bg { fill: none; stroke: #f0eaf3; stroke-width: 5; }
+.cs-shot-donut .bg { fill: none; stroke: #ece6f2; stroke-width: 5; }
 .cs-shot-donut .fg { fill: none; stroke: var(--cs); stroke-width: 5; stroke-dasharray: 73 27; stroke-linecap: round; }
 .cs-shot-donut span { position: absolute; font-size: 13px; font-weight: 700; }
 .cs-shot-donut i { font-size: 9px; font-style: normal; }
 .cs-shot-appl { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
-.cs-shot-appl + .cs-shot-appl { border-top: 1px solid #f6f1f6; }
+.cs-shot-appl + .cs-shot-appl { border-top: 1px solid #f2eef6; }
 .cs-shot-av { width: 20px; height: 20px; border-radius: 50%; background: var(--cs-soft); flex-shrink: 0; }
 .cs-shot-n { flex: 1; min-width: 0; font-size: 11px; font-weight: 600; }
 .cs-shot-n i { font-style: normal; font-weight: 400; color: #8a8087; margin-left: 6px; }
@@ -12647,11 +12647,11 @@ button,
 .cs-step-no { font-size: 12px; font-weight: 700; color: var(--cs); }
 .cs-step b { font-size: 15.5px; font-weight: 700; }
 .cs-step-s { font-size: 13px; color: #857b83; line-height: 1.55; word-break: keep-all; }
-.cs-step-ar { position: absolute; top: 30px; right: -16px; color: #e3d4dc; }
+.cs-step-ar { position: absolute; top: 30px; right: -16px; color: #ded4e6; }
 
 /* 광고 상품 */
 .cs-ads { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.cs-ad { background: #fff; border: 1px solid #f4e3ea; border-radius: 12px; padding: 24px 18px;
+.cs-ad { background: #fff; border: 1px solid #ece5f2; border-radius: 12px; padding: 24px 18px;
   display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center; }
 .cs-ad svg { color: var(--cs); }
 .cs-ad b { font-size: 15.5px; font-weight: 700; }
@@ -12661,7 +12661,7 @@ button,
 /* 선택 이유 */
 .cs-why { display: grid; grid-template-columns: 1fr 268px; gap: 16px; margin-top: 34px; align-items: stretch; }
 .cs-why-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-.cs-why-c { background: #fff; border: 1px solid #f0e6ea; border-radius: 12px; padding: 20px 14px;
+.cs-why-c { background: #fff; border: 1px solid #ebe4f0; border-radius: 12px; padding: 20px 14px;
   display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center; }
 .cs-why-c svg { color: var(--cs); }
 .cs-why-c b { font-size: 14px; font-weight: 700; word-break: keep-all; }
@@ -12669,13 +12669,13 @@ button,
 .cs-why-up { position: relative; background: var(--cs-soft); border-radius: 12px; padding: 22px 20px; }
 .cs-why-up b { display: block; font-size: 15.5px; font-weight: 700; color: var(--cs-deep); margin-bottom: 9px; word-break: keep-all; }
 .cs-why-up p { font-size: 13px; line-height: 1.7; color: #6d6169; margin: 0; word-break: keep-all; }
-.cs-why-up svg { position: absolute; right: 16px; bottom: 14px; color: #f3aec9; }
+.cs-why-up svg { position: absolute; right: 16px; bottom: 14px; color: #b79ad0; }
 
 /* 자주 묻는 질문 */
 .cs-faq-wrap { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
 .cs-faq { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
-.cs-faq li { border: 1px solid #eee2e8; border-radius: 9px; background: #fff; overflow: hidden; }
-.cs-faq li.on { border-color: #f0c3d4; }
+.cs-faq li { border: 1px solid #e9e2f0; border-radius: 9px; background: #fff; overflow: hidden; }
+.cs-faq li.on { border-color: #d3c1e2; }
 .cs-faq button { display: flex; align-items: center; gap: 9px; width: 100%; padding: 15px 16px;
   background: none; border: none; cursor: pointer; text-align: left; font-family: inherit; }
 .cs-faq i { font-style: normal; font-size: 13.5px; font-weight: 700; color: var(--cs); flex-shrink: 0; }
@@ -12688,14 +12688,14 @@ button,
 .cs-help p { font-size: 13.5px; line-height: 1.7; color: #6d6169; margin: 0 0 16px; }
 
 /* 마지막 부르기 */
-.cs-cta { background: linear-gradient(100deg, var(--cs) 0%, #f2649a 100%); color: #fff; }
+.cs-cta { background: var(--cs); color: #fff; }
 .cs-cta-in { max-width: 1160px; margin: 0 auto; padding: 34px 24px; display: flex; align-items: center;
   justify-content: space-between; gap: 20px; flex-wrap: wrap; }
 .cs-cta-in b { display: block; font-size: 22px; font-weight: 700; letter-spacing: -.5px; }
 .cs-cta-in p { margin: 6px 0 0; font-size: 14.5px; opacity: .92; }
 .cs-cta-btns { display: flex; gap: 10px; flex-wrap: wrap; }
 .cs-btn-white { height: 46px; padding: 0 20px; background: #fff; color: var(--cs); border: 1px solid #fff; font-size: 15px; }
-.cs-btn-white:hover { background: #fff3f7; }
+.cs-btn-white:hover { background: #f7f4fa; }
 .cs-btn-white.line { background: transparent; color: #fff; }
 .cs-btn-white.line:hover { background: rgba(255, 255, 255, .14); }
 
@@ -12843,14 +12843,14 @@ button,
 .jobs-side-list button.on,
 .jobs-side-grp-h.on > button:first-child,
 .jobs-side-sub-list button.on {
-  color: #4a0066 !important;
+  color: #431a63 !important;
   font-weight: 700 !important;
 }
 .jobs-side-grid button.on { background: #f6f1fb; }
 .jobs-side-grp-h.on { background: #f6f1fb; }
 .jobs-side-sub-list button.on { background: #f6f1fb; }
 .jobs-side-reset { font-weight: 600 !important; }
-.jobs-side-reset:hover:not(:disabled) { color: #4a0066 !important; }
+.jobs-side-reset:hover:not(:disabled) { color: #431a63 !important; }
 
 /* 위 규칙에서 굵기는 먹는데 색만 안 먹는 일이 있어, 선택자를 한 단계 더
    좁혀 다시 못 박는다. 고른 항목이 회색으로 남으면 무엇을 골랐는지 알 수 없다. */
@@ -12858,8 +12858,8 @@ button,
 .jobs-side .jobs-side-list button.on,
 .jobs-side .jobs-side-grp-h.on > button:first-child,
 .jobs-side .jobs-side-sub-list button.on {
-  color: #4a0066 !important;
-  -webkit-text-fill-color: #4a0066;
+  color: #431a63 !important;
+  -webkit-text-fill-color: #431a63;
 }
 
 /* 화살표는 26px 자리만 쓴다.
@@ -12877,8 +12877,8 @@ button,
 .jobs-filter-reset { display: inline-flex; align-items: center; gap: 5px; background: none; border: none;
   cursor: pointer; font-family: inherit; font-size: 14px; color: #8b8492; padding: 6px 4px;
   white-space: nowrap; transition: color .15s; }
-.jobs-filter-reset:hover { color: #4a0066; }
-.jobs-filter-reset em { font-style: normal; font-weight: 700; color: #4a0066; }
+.jobs-filter-reset:hover { color: #431a63; }
+.jobs-filter-reset em { font-style: normal; font-weight: 700; color: #431a63; }
 
 /* ── 사이드바 팝오버 ─────────────────────────────────────────────
    시군구는 250개가 넘고 복리후생도 스무 개가 넘는다. 사이드바에 다 펼치면
@@ -12896,14 +12896,14 @@ button,
 /* 팝오버 제목은 평체 + 진보라. 굵게 두면 아래 항목들과 무게를 다투는데,
    여기는 무엇을 고르는 창인지 알려 줄 뿐 읽을 거리가 아니다. 색으로만 짚는다.
    다섯 팝오버(지역·직군·고용형태·경력·복리후생)가 이 한 규칙을 같이 쓴다. */
-.jobs-pop-title { font-size: 13.5px; font-weight: 400; color: #4a0066; white-space: nowrap; }
+.jobs-pop-title { font-size: 13.5px; font-weight: 400; color: #431a63; white-space: nowrap; }
 .jobs-pop-h button { background: none; border: none; cursor: pointer; color: #b7b0bf; padding: 2px; display: flex; }
 .jobs-pop-body { overflow-y: auto; padding: 5px; }
 .jobs-pop-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
   background: none; border: none; cursor: pointer; font-family: inherit; font-size: 13.5px;
   color: #5b5563; padding: 7px 8px; border-radius: 7px; }
 .jobs-pop-item:hover { background: #f8f5fb; }
-.jobs-pop-item.on { color: #4a0066 !important; font-weight: 700 !important; background: #f6f1fb; }
+.jobs-pop-item.on { color: #431a63 !important; font-weight: 700 !important; background: #f6f1fb; }
 /* 오른쪽 화살표는 '옆으로 열린다'는 뜻이다. 아래로 펼치는 ⌄ 와 다르다. */
 .jobs-side-arr { margin-left: auto; flex: 0 0 auto; color: #cdc6d6; }
 
@@ -12913,7 +12913,7 @@ button,
 .jobs-picked { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 12px 0 2px; }
 .jobs-picked-chip { display: inline-flex; align-items: center; gap: 6px;
   background: #f4f0f9; border: none; border-radius: 999px; padding: 6px 11px 6px 13px;
-  cursor: pointer; font-family: inherit; font-size: 13.5px; color: #4a0066;
+  cursor: pointer; font-family: inherit; font-size: 13.5px; color: #431a63;
   transition: background .15s; }
 .jobs-picked-chip:hover { background: #e9e0f4; }
 .jobs-picked-chip svg { color: #a58bc0; }
@@ -12963,7 +12963,7 @@ button,
     font-size: 15px; color: #6b6570; text-decoration: none; transition: color .12s, background .12s;
   }
   .pf-side a:hover, .pf-side .pf-side-out:hover { color: #2b2b2b; background: #f8f5fb; }
-  .pf-side a.on { color: #4a0066 !important; font-weight: 700 !important; background: #f4f0f9; }
+  .pf-side a.on { color: #431a63 !important; font-weight: 700 !important; background: #f4f0f9; }
   /* 보는 화면을 고르는 일과 계정을 다루는 일은 성격이 다르다. 선으로 가른다. */
   .pf-side-sep { display: block; height: 1px; background: #eee; margin: 10px 10px; }
   .pf-side .pf-side-out { color: #a9a2b2; }

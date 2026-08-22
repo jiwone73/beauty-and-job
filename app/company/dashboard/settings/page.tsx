@@ -167,7 +167,7 @@ export default function CompanySettingsPage() {
   const bannerBtn = (on: boolean): React.CSSProperties => isMobile
     ? { display: "inline-flex", alignItems: "center", justifyContent: "center", height: 18, padding: "0 6px",
         borderRadius: 5, border: "1px solid #dcdce0", background: on ? "#f4f4f6" : "#fff",
-        color: on ? "#5f0080" : "#777", fontSize: 11.5, lineHeight: 1, fontWeight: 500,
+        color: on ? "#582681" : "#777", fontSize: 11.5, lineHeight: 1, fontWeight: 500,
         cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }
     : { display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 11px", borderRadius: 9,
         border: "1px solid #e2e2e6", background: on ? "#f4f4f6" : "#fff", color: "#666",
@@ -500,7 +500,7 @@ export default function CompanySettingsPage() {
                   <label className="admin-form-label" style={{margin:0}}>회사 로고</label>
                   <label title={logoUrl ? "로고 변경" : "로고 등록"}
                     style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:38, height:38, flexShrink:0,
-                      borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#5f0080",
+                      borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#582681",
                       cursor: logoUploading ? "wait" : "pointer"}}>
                     {logoUploading ? "…" : <Camera size={18} />}
                     <input type="file" accept="image/jpeg,image/png,image/webp"
@@ -565,7 +565,7 @@ export default function CompanySettingsPage() {
                 )}
                 {sampleOpen && (
                   <div style={{marginTop:10, padding:12, border:"1px solid #e5e2ea", borderRadius:10, background:"#faf9fc"}}>
-                    <div style={{fontSize:13, color:"#5f0080", fontWeight:600, marginBottom:8}}>
+                    <div style={{fontSize:13, color:"#582681", fontWeight:600, marginBottom:8}}>
                       샘플 배너 만들기 <span style={{fontWeight:400, color:"#999"}}>· 가운데 문구만 넣어요(줄바꿈 가능)</span>
                     </div>
                     <textarea value={sampleText} onChange={(e) => setSampleText(e.target.value)} rows={2}
@@ -764,7 +764,7 @@ export default function CompanySettingsPage() {
                 onClick={() => setShowPwModal(true)}
                 style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}>
                 <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>비밀번호</label>
-                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#5f0080", fontSize: "14px" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#582681", fontSize: "14px" }}>
                   변경 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
                 </span>
               </div>
@@ -796,7 +796,7 @@ export default function CompanySettingsPage() {
               <input className="admin-form-input" placeholder="인증코드 6자리" inputMode="numeric" maxLength={6}
                 value={emailCode} onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))} style={{ marginBottom: 4 }} />
             )}
-            {emailMsg && <p style={{ fontSize: 13, color: "#5f0080", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
+            {emailMsg && <p style={{ fontSize: 13, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => setShowEmailModal(false)} disabled={emailBusy}
                 style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
@@ -804,12 +804,12 @@ export default function CompanySettingsPage() {
               </button>
               {emailStep === 1 ? (
                 <button onClick={handleSendEmailCode} disabled={emailBusy}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 16, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
                   {emailBusy ? "발송 중..." : "인증코드 받기"}
                 </button>
               ) : (
                 <button onClick={handleVerifyEmailCode} disabled={emailBusy}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 16, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
                   {emailBusy ? "확인 중..." : "변경하기"}
                 </button>
               )}
@@ -833,7 +833,7 @@ export default function CompanySettingsPage() {
               <input className="admin-form-input" placeholder="인증번호 6자리" inputMode="numeric" maxLength={6}
                 value={phoneCode} onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))} style={{ marginBottom: 4 }} />
             )}
-            {phoneMsg && <p style={{ fontSize: 13, color: "#5f0080", margin: "6px 0 0", lineHeight: 1.5 }}>{phoneMsg}</p>}
+            {phoneMsg && <p style={{ fontSize: 13, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{phoneMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => setShowPhoneModal(false)} disabled={phoneSending || phoneVerifying}
                 style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
@@ -841,12 +841,12 @@ export default function CompanySettingsPage() {
               </button>
               {!phoneCodeSent ? (
                 <button onClick={handleSendPhoneCode} disabled={phoneSending || newPhone.replace(/\D/g, "").length < 10}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 16, fontWeight: 600, cursor: "pointer", opacity: (phoneSending || newPhone.replace(/\D/g, "").length < 10) ? 0.6 : 1 }}>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: "pointer", opacity: (phoneSending || newPhone.replace(/\D/g, "").length < 10) ? 0.6 : 1 }}>
                   {phoneSending ? "발송 중..." : "인증번호 받기"}
                 </button>
               ) : (
                 <button onClick={handleVerifyPhoneCode} disabled={phoneVerifying || phoneCode.length < 6}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 16, fontWeight: 600, cursor: "pointer", opacity: (phoneVerifying || phoneCode.length < 6) ? 0.6 : 1 }}>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: "pointer", opacity: (phoneVerifying || phoneCode.length < 6) ? 0.6 : 1 }}>
                   {phoneVerifying ? "확인 중..." : "변경하기"}
                 </button>
               )}
@@ -886,7 +886,7 @@ export default function CompanySettingsPage() {
                 취소
               </button>
               <button onClick={handleChangePassword} disabled={pwSaving}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 16, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
                 {pwSaving ? "변경 중..." : "변경하기"}
               </button>
             </div>

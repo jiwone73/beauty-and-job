@@ -35,7 +35,7 @@ const SITE_ORDER = ["헤어인잡", "알바몬", "잡코리아", "사람인", "�
 const HIRING = ["채용중", "없음"];
 const REG = ["미등록", "등록완료"];
 
-const PURPLE = "#5f0080";
+const PURPLE = "#582681";
 
 // 중복 판정용 '지점' 시그니처: 제목에서 지점 토큰(○○역/○○동/○○점/○○센터)을 뽑아 정규화.
 //   같은 업체(=브랜드)에서 지점이 같으면 중복으로 본다. 사이트마다 형식이 달라(강남역점/강남역 등)
@@ -371,7 +371,7 @@ export default function AdminOutreachPage() {
               ))}
               {(storeCnt > 0 || officeCnt > 0) && (
                 <span style={{ marginLeft: 4, paddingLeft: 12, borderLeft: "1px solid #e3dcec" }} title="공고 제목 기반 추정(정확한 매장/오피스는 불러오기 시 분류됨)">
-                  <b style={{ color: "#5f0080", fontWeight: 600 }}>매장</b> {storeCnt.toLocaleString()} · <b style={{ color: "#5f0080", fontWeight: 600 }}>오피스</b> {officeCnt.toLocaleString()} <span style={{ color: "#b7b0c0" }}>(추정)</span>
+                  <b style={{ color: "#582681", fontWeight: 600 }}>매장</b> {storeCnt.toLocaleString()} · <b style={{ color: "#582681", fontWeight: 600 }}>오피스</b> {officeCnt.toLocaleString()} <span style={{ color: "#b7b0c0" }}>(추정)</span>
                 </span>
               )}
             </div>

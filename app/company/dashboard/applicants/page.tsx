@@ -357,15 +357,15 @@ function ApplicantsContent() {
           alignItems: "center",
           gap: 10,
         }}>
-          <span style={{ fontSize: "14px", color: "#5f0080", fontWeight: 600, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <span style={{ fontSize: "14px", color: "#582681", fontWeight: 600, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {jobFilterTitle ? `'${jobFilterTitle}' 지원자` : "특정 공고의 지원자만 표시 중"}
           </span>
           <button
             onClick={() => setJobFilter("")}
             style={{
-              border: "1px solid #5f0080",
+              border: "1px solid #582681",
               background: "#fff",
-              color: "#5f0080",
+              color: "#582681",
               padding: "4px 12px",
               borderRadius: "6px",
               fontSize: "13px",
@@ -430,7 +430,7 @@ function ApplicantsContent() {
             .co-mbar-count strong { color: #1a1a1a; }
             .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; }
-            .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
+            .co-mbar-btn.on { border-color: #582681; color: #582681; background: #f8f5fb; }
             .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
             .co-sheet { width: 100%; background: #fff; border-radius: 18px 18px 0 0; padding: 0 18px calc(20px + env(safe-area-inset-bottom)); max-height: 82vh; overflow-y: auto; animation: co-sheet-up .22s ease; }
             @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -442,8 +442,8 @@ function ApplicantsContent() {
             .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
             .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 14px; font-weight: 400; cursor: pointer; }
-            .co-fseg-btn.on { border-color: #d9b8ec; background: #f5eaff; color: #5f0080; font-weight: 400; }
-            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f5eaff; color: #5f0080; font-size: 16px; font-weight: 400; cursor: pointer; }
+            .co-fseg-btn.on { border-color: #d9b8ec; background: #f5eaff; color: #582681; font-weight: 400; }
+            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f5eaff; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
@@ -455,7 +455,7 @@ function ApplicantsContent() {
             .co-jobopt .jt { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
             .co-jobopt .jmeta { font-size: 12px; color: #999; }
             .co-jobopt.on { background: #f5eaff; }
-            .co-jobopt.on .jt { color: #5f0080; font-weight: 600; }
+            .co-jobopt.on .jt { color: #582681; font-weight: 600; }
           `}</style>
           <div className="co-mbar">
             <span className="co-mbar-count">총 <strong>{filtered.length}</strong>명</span>
@@ -524,22 +524,22 @@ function ApplicantsContent() {
           <style>{`
             .co-list { display: flex; flex-direction: column; gap: 10px; }
             .co-list-meta { font-size: 12.5px; color: #888; padding: 2px 2px 4px; }
-            .co-list-meta strong { color: #5f0080; }
+            .co-list-meta strong { color: #582681; }
             .co-row { display: flex; align-items: center; gap: 10px; }
-            .co-row-check { width: 20px; height: 20px; accent-color: #5f0080; flex-shrink: 0; margin: 0; }
+            .co-row-check { width: 20px; height: 20px; accent-color: #582681; flex-shrink: 0; margin: 0; }
             .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
-            .co-li.on { border-color: #5f0080; background: #faf5fc; }
+            .co-li.on { border-color: #582681; background: #f8f5fb; }
             .co-li-r1 { display: flex; align-items: center; gap: 10px; }
             .co-li-namerow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
             .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
             .co-li-status { font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
-            .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #5f0080; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+            .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #582681; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
-            .co-li-job { flex: 1; font-size: 15.5px; color: #5f0080; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+            .co-li-job { flex: 1; font-size: 15.5px; color: #582681; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
             .co-li-metarow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 2px; }
             .co-li-date { font-size: 12px; color: #999; flex-shrink: 0; white-space: nowrap; }
             .co-li-date .lbl { color: #999; margin-right: 3px; }
@@ -560,7 +560,7 @@ function ApplicantsContent() {
                 onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}
                 style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
                 {(a as any).scrapped
-                                ? <BookmarkCheck size={15} style={{ color: "#5f0080" }} />
+                                ? <BookmarkCheck size={15} style={{ color: "#582681" }} />
                                 : <Bookmark size={15} style={{ color: "#c8c8c8" }} />}
               </button>
             );
@@ -646,7 +646,7 @@ function ApplicantsContent() {
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(a)}
                         style={{ display: "flex", alignItems: "center", gap: 10, width: 160, flexShrink: 0 }}>
-                      <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         {(a as any).user_avatar_url
                           ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           : (a.user_name || "?").slice(0, 1)}
@@ -661,7 +661,7 @@ function ApplicantsContent() {
                             onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}
                             style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
                             {(a as any).scrapped
-                                ? <BookmarkCheck size={15} style={{ color: "#5f0080" }} />
+                                ? <BookmarkCheck size={15} style={{ color: "#582681" }} />
                                 : <Bookmark size={15} style={{ color: "#c8c8c8" }} />}
                           </button>
                         </div>
@@ -706,7 +706,7 @@ function ApplicantsContent() {
                     <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <button onClick={() => setSelected(a)} title="이력서 보기"
-                          style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: 0 }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: 0 }}>
                           <FileText size={16} /><span>이력서</span>
                         </button>
                       </div>
@@ -746,11 +746,11 @@ function ApplicantsContent() {
                 {resumeData && (
                   <>
                     <button onClick={handleDownloadPdf} disabled={isDownloading} title="PDF 다운로드"
-                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#5f0080", cursor: isDownloading ? "not-allowed" : "pointer", opacity: isDownloading ? 0.5 : 1 }}>
+                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#582681", cursor: isDownloading ? "not-allowed" : "pointer", opacity: isDownloading ? 0.5 : 1 }}>
                       <Download size={20} />
                     </button>
                     <button onClick={handlePrint} title="인쇄"
-                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#5f0080", cursor: "pointer" }}>
+                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#582681", cursor: "pointer" }}>
                       <Printer size={20} />
                     </button>
                   </>
@@ -788,7 +788,7 @@ function ApplicantsContent() {
                 {/* 첨부 이력서 파일 배너: 화면에서만(클릭 다운로드), PDF/인쇄 캡처에는 제외. SHOW_RESUME_FILE_BANNER로 노출 제어 */}
                 {SHOW_RESUME_FILE_BANNER && resumeFileInfo.url && (
                   <div style={{ marginTop: "20px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "10px" }}>
-                    <FileText size={22} color="#5f0080" />
+                    <FileText size={22} color="#582681" />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {resumeFileInfo.name || "첨부 이력서"}
@@ -796,7 +796,7 @@ function ApplicantsContent() {
                       <p style={{ fontSize: "13px", color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
                     </div>
                     <a href={resumeFileInfo.url} target="_blank" rel="noopener noreferrer"
-                      style={{ padding: "8px 14px", borderRadius: "8px", background: "#5f0080", color: "#fff", fontSize: "14px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
+                      style={{ padding: "8px 14px", borderRadius: "8px", background: "#582681", color: "#fff", fontSize: "14px", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
                       다운로드
                     </a>
                   </div>

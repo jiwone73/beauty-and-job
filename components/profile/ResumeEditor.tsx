@@ -207,7 +207,7 @@ export default function ResumeEditor({
             )}
           </h2>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: isEntryLevel ? "#5f0080" : "#555", fontWeight: isEntryLevel ? 600 : 400, cursor: "pointer", whiteSpace: "nowrap", border: "none", background: "transparent" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: isEntryLevel ? "#582681" : "#555", fontWeight: isEntryLevel ? 600 : 400, cursor: "pointer", whiteSpace: "nowrap", border: "none", background: "transparent" }}>
               <input type="checkbox" checked={isEntryLevel}
                 onChange={(e) => {
                   if (e.target.checked) {
@@ -218,7 +218,7 @@ export default function ResumeEditor({
                     setIsEntryLevel(false);
                   }
                 }}
-                style={{ accentColor: "#5f0080", width: 15, height: 15 }} />
+                style={{ accentColor: "#582681", width: 15, height: 15 }} />
               신입
             </label>
             <button className="resume-icon-btn" aria-label="경력 추가" disabled={isEntryLevel}
@@ -443,7 +443,7 @@ export default function ResumeEditor({
                 <div key={x.id} className="resume-list-item">
                   <p className="resume-item-text" onClick={() => toggleExpand(key)} style={{ fontWeight: 400, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
                     <ChevronDown size={16} style={{ flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
-                    {x.category && <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>}
+                    {x.category && <span style={{ color: "#582681", marginRight: "8px" }}>[{x.category}]</span>}
                     {x.title}
                     <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
                       <button className="resume-icon-btn" aria-label="수정" onClick={() => { setEditExp(x); setExpModalOpen(true); }}>
@@ -564,7 +564,7 @@ export default function ResumeEditor({
                   setShowResumeFile(false);
                 }
               }}
-              style={{ accentColor: "#5f0080", width: "15px", height: "15px" }}
+              style={{ accentColor: "#582681", width: "15px", height: "15px" }}
             />
             <span>사용</span>
           </label>
@@ -574,14 +574,14 @@ export default function ResumeEditor({
           /* 지원 화면: 프로필에 저장된 파일 읽기 전용 표시 */
           resumeFileName ? (
             <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "12px" }}>
-              <FileText size={32} color="#5f0080" />
+              <FileText size={32} color="#582681" />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontSize: "13px", fontWeight: 400, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {resumeFileName}
                 </p>
                 <button
                   onClick={onResumeFileOpen}
-                  style={{ fontSize: "12px", color: "#5f0080", textDecoration: "underline", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                  style={{ fontSize: "12px", color: "#582681", textDecoration: "underline", background: "none", border: "none", padding: 0, cursor: "pointer" }}
                 >
                   파일 열기{resumeFileSize ? ` · ${formatFileSize(resumeFileSize)}` : ""}
                 </button>
@@ -599,14 +599,14 @@ export default function ResumeEditor({
         </p>
         {resumeFileName ? (
           <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f9f5fc", border: "1.5px solid #e0d0f0", borderRadius: "12px" }}>
-            <FileText size={32} color="#5f0080" />
+            <FileText size={32} color="#582681" />
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ fontSize: "13px", fontWeight: 400, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {resumeFileName}
               </p>
               <button
                 onClick={onResumeFileOpen}
-                style={{ fontSize: "12px", color: "#5f0080", textDecoration: "underline", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                style={{ fontSize: "12px", color: "#582681", textDecoration: "underline", background: "none", border: "none", padding: 0, cursor: "pointer" }}
               >
                 파일 열기{resumeFileSize ? ` · ${formatFileSize(resumeFileSize)}` : ""}
               </button>
@@ -620,7 +620,7 @@ export default function ResumeEditor({
           </div>
         ) : (
           <div onClick={() => !isResumeFileUploading && resumeFileInputRef.current?.click()} onDragOver={handleResumeDragOver} onDragLeave={handleResumeDragLeave} onDrop={handleResumeDrop}
-            style={{ width: "100%", padding: "12px 16px", borderRadius: "12px", border: `2px dashed ${isResumeDragOver ? "#5f0080" : "#d0c0e0"}`, background: isResumeDragOver ? "#f3e5f5" : "#fafafa", color: "#5f0080", fontSize: "13px", fontWeight: 400, cursor: isResumeFileUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", transition: "all 0.15s ease", textAlign: "center" }}>
+            style={{ width: "100%", padding: "12px 16px", borderRadius: "12px", border: `2px dashed ${isResumeDragOver ? "#582681" : "#d0c0e0"}`, background: isResumeDragOver ? "#f3e5f5" : "#fafafa", color: "#582681", fontSize: "13px", fontWeight: 400, cursor: isResumeFileUploading ? "not-allowed" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", transition: "all 0.15s ease", textAlign: "center" }}>
             <Upload size={26} />
             <span>{isResumeFileUploading ? "업로드 중..." : isResumeDragOver ? "여기에 놓으세요" : "PDF·DOC·DOCX를 끌어다 놓거나 클릭하여 업로드"}</span>
             <span style={{ fontSize: "11px", color: "#888", fontWeight: 400 }}>PDF, DOC, DOCX · 최대 5MB</span>
@@ -683,7 +683,7 @@ export default function ResumeEditor({
               </button>
               <button
                 onClick={() => { setIsEntryLevel(true); setEntryConfirmOpen(false); }}
-                style={{ flex: 1, padding: "13px 0", borderRadius: 12, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}
+                style={{ flex: 1, padding: "13px 0", borderRadius: 12, border: "none", background: "#582681", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}
               >
                 확인
               </button>

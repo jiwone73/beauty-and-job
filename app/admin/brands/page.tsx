@@ -151,7 +151,7 @@ export default function AdminBrandsPage() {
                     {b.business_license_url ? (
                       <button
                         onClick={() => window.open(b.business_license_url!, "_blank")}
-                        style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                        style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                         등록증 보기
                       </button>
                     ) : (

@@ -84,7 +84,7 @@ export default function CompanyFindAccountPage() {
               value={bizNum}
               onChange={(e) => setBizNum(e.target.value)}
               placeholder="10자리 숫자 (- 없이 입력)"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
             />
           </div>
 
@@ -97,7 +97,7 @@ export default function CompanyFindAccountPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="가입 시 설정한 비밀번호"
-                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
                 onKeyDown={(e) => e.key === "Enter" && handleFind()}
               />
               <button
@@ -117,7 +117,7 @@ export default function CompanyFindAccountPage() {
           <button
             onClick={handleFind}
             disabled={loading}
-            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-7 disabled:opacity-50 hover:opacity-90 transition"
+            className="w-full h-[52px] bg-[#582681] text-white rounded-lg font-normal text-[15px] mt-7 disabled:opacity-50 hover:opacity-90 transition"
           >
             {loading ? "조회 중..." : "이메일 찾기"}
           </button>
@@ -126,9 +126,9 @@ export default function CompanyFindAccountPage() {
           {result?.found && (
             <div className="mt-6 p-5 bg-[#faf5ff] border border-[#e9d5ff] rounded-lg text-center">
               <p className="text-[13px] md:text-[14px] text-[#6b6b6b] mb-1">가입하신 이메일이에요</p>
-              <p className="text-[18px] font-normal text-[#5f0080] mb-4 break-all">{result.email}</p>
+              <p className="text-[18px] font-normal text-[#582681] mb-4 break-all">{result.email}</p>
               <Link href="/company/login">
-                <button className="w-full h-[46px] bg-[#5f0080] text-white rounded-lg font-normal text-[14px] md:text-[15px] hover:opacity-90 transition">
+                <button className="w-full h-[46px] bg-[#582681] text-white rounded-lg font-normal text-[14px] md:text-[15px] hover:opacity-90 transition">
                   로그인하러 가기
                 </button>
               </Link>
@@ -143,7 +143,7 @@ export default function CompanyFindAccountPage() {
                 사업자등록번호 또는 비밀번호를 다시 확인해주세요.<br />
                 비밀번호도 기억나지 않으시면 고객센터로 문의해주세요.
               </p>
-              <Link href="/about/contact" className="text-[13px] md:text-[14px] text-[#5f0080] font-normal hover:underline">
+              <Link href="/about/contact" className="text-[13px] md:text-[14px] text-[#582681] font-normal hover:underline">
                 고객센터 문의하기
               </Link>
             </div>
@@ -151,11 +151,11 @@ export default function CompanyFindAccountPage() {
 
           {/* 하단 링크 — 기업 로그인과 같은 아이콘·크기를 쓴다 */}
           <div className="mt-8 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
-            <Link href="/company/login" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+            <Link href="/company/login" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#582681] hover:underline">
               <LogIn size={14} /> 로그인
             </Link>
             <span className="text-[#d0d0d0]">·</span>
-            <Link href="/company/signup" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+            <Link href="/company/signup" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#582681] hover:underline">
               <Building2 size={14} /> 기업회원 가입
             </Link>
           </div>

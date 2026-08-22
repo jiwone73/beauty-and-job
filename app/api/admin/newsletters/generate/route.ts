@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
                 </table>
                 <p style="font-size:13px;color:#666666;text-align:center;margin:18px 0 14px;line-height:1.6;">오늘 소식이 흥미로웠다면, 뷰티워크에서 더 많은 이야기와 채용 정보를 만나보세요.</p>
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 28px;">
-                  <tr><td align="center" bgcolor="#5f0080" style="border-radius:8px;">
+                  <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
                     <a href="${SITE_URL}" style="display:inline-block;padding:13px 34px;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;">뷰티워크 둘러보기</a>
                   </td></tr>
                 </table>

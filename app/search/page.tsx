@@ -8,7 +8,7 @@ import { Search, X, ArrowRight } from "lucide-react";
 import JobCard from "@/components/JobCard";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
 
-const PURPLE = "#5f0080";
+const PURPLE = "#582681";
 const RECOMMEND = ["네일", "헤어", "피부관리", "속눈썹", "메이크업", "마케팅", "MD", "상품기획", "디자인", "영업"];
 
 type Job = {
@@ -256,12 +256,12 @@ function SearchInner() {
         .srch-guide { color: #888; font-size: 15px; margin: 0 0 28px; }
         .srch-rec-title { font-size: 14px; color: #555; margin: 0 0 12px; font-weight: 600; }
         .srch-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-        .srch-chip { border: 1px solid #eee; background: #faf7fc; color: #5f0080; border-radius: 20px; padding: 8px 16px; font-size: 14px; cursor: pointer; }
+        .srch-chip { border: 1px solid #eee; background: #faf7fc; color: #582681; border-radius: 20px; padding: 8px 16px; font-size: 14px; cursor: pointer; }
         .srch-chip:hover { background: #f3e8fb; }
         .srch-tabs { display: inline-flex; align-items: center; gap: 2px; background: #f4f0f9; border-radius: 11px; padding: 4px; width: fit-content; margin: 24px 0 20px; }
         .srch-tab { background: transparent; border: none; padding: 7px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: -.2px; color: #8b84a0; cursor: pointer; font-family: inherit; white-space: nowrap; transition: color .15s, background .15s, box-shadow .15s; }
         .srch-tab:hover { color: #6b6480; }
-        .srch-tab.on { background: #e3d4f0; color: #4a0066; }
+        .srch-tab.on { background: #e3d4f0; color: #431a63; }
         .srch-tab-n { color: ${PURPLE}; margin-left: 2px; }
         .srch-section { margin-bottom: 32px; }
         .srch-sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }

@@ -16,7 +16,7 @@ export default function NotFound() {
       <div style={{
         fontSize: "120px",
         fontWeight: 800,
-        color: "#5f0080",
+        color: "#582681",
         lineHeight: 1,
         marginBottom: "16px",
       }}>
@@ -53,7 +53,7 @@ export default function NotFound() {
           alignItems: "center",
           gap: "6px",
           padding: "12px 24px",
-          background: "#5f0080",
+          background: "#582681",
           color: "#fff",
           borderRadius: "10px",
           fontSize: "14px",
@@ -69,8 +69,8 @@ export default function NotFound() {
           gap: "6px",
           padding: "12px 24px",
           background: "#fff",
-          color: "#5f0080",
-          border: "1.5px solid #5f0080",
+          color: "#582681",
+          border: "1.5px solid #582681",
           borderRadius: "10px",
           fontSize: "14px",
           fontWeight: 600,

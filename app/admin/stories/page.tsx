@@ -229,17 +229,17 @@ export default function AdminStoriesPage() {
                 title="현장이야기 매일 자동 생성+게시 on/off"
                 style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 14, fontWeight: 600, color: "#555", cursor: "pointer" }}>
                 자동 게시
-                <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#5f0080" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
+                <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#582681" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
                   <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
                 </span>
               </button>
               <button onClick={generateAI} disabled={generating}
-                style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                 {generating ? "생성 중..." : "✨ AI 글 생성"}
               </button>
               {tab === "posts" && (
                 <button onClick={() => setWriting((v) => !v)}
-                  style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                  style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                   {writing ? "닫기" : "+ 발제 글 작성"}
                 </button>
               )}
@@ -253,8 +253,8 @@ export default function AdminStoriesPage() {
               {CATEGORIES.map((c) => (
                 <button key={c} onClick={() => setForm((f) => ({ ...f, category: c }))}
                   style={{ padding: "6px 14px", borderRadius: 100, fontSize: 14, cursor: "pointer",
-                    border: form.category === c ? "1.5px solid #5f0080" : "1px solid #ddd",
-                    background: form.category === c ? "#5f0080" : "#fff",
+                    border: form.category === c ? "1.5px solid #582681" : "1px solid #ddd",
+                    background: form.category === c ? "#582681" : "#fff",
                     color: form.category === c ? "#fff" : "#666" }}>
                   {c}
                 </button>
@@ -269,7 +269,7 @@ export default function AdminStoriesPage() {
               rows={4}
               style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
             <button onClick={submitPost} disabled={busy}
-              style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: busy ? "#ccc" : "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+              style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: busy ? "#ccc" : "#582681", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
               게시하기
             </button>
           </div>
@@ -306,7 +306,7 @@ export default function AdminStoriesPage() {
                 display: "flex", alignItems: "center", gap: 6, marginLeft: "auto",
                 padding: "7px 14px", borderRadius: 8,
                 border: `1px solid ${checked.length ? "#e0d0f0" : "#eee"}`, background: "#fff",
-                color: checked.length ? "#5f0080" : "#bbb",
+                color: checked.length ? "#582681" : "#bbb",
                 fontSize: 14, fontWeight: 600,
                 cursor: checked.length ? "pointer" : "default",
               }}
@@ -396,8 +396,8 @@ export default function AdminStoriesPage() {
                         {CATEGORIES.map((c) => (
                           <button key={c} onClick={() => setEdit((e) => ({ ...e, category: c }))}
                             style={{ padding: "5px 13px", borderRadius: 100, fontSize: 13.5, cursor: "pointer",
-                              border: edit.category === c ? "1.5px solid #5f0080" : "1px solid #ddd",
-                              background: edit.category === c ? "#5f0080" : "#fff",
+                              border: edit.category === c ? "1.5px solid #582681" : "1px solid #ddd",
+                              background: edit.category === c ? "#582681" : "#fff",
                               color: edit.category === c ? "#fff" : "#666" }}>
                             {c}
                           </button>
@@ -412,7 +412,7 @@ export default function AdminStoriesPage() {
                         style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, lineHeight: 1.7, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
                       <div style={{ display: "flex", gap: 8 }}>
                         <button onClick={() => saveEdit(p.id)} disabled={busy}
-                          style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 14.5, fontWeight: 600, cursor: "pointer" }}>
+                          style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #582681", background: "#fff", color: "#582681", fontSize: 14.5, fontWeight: 600, cursor: "pointer" }}>
                           저장
                         </button>
                         {tab === "pending" && (
@@ -451,8 +451,8 @@ const td: React.CSSProperties = {};
 function tabStyle(active: boolean): React.CSSProperties {
   return {
     padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontWeight: 600,
-    border: active ? "1.5px solid #5f0080" : "1px solid #ddd",
-    background: active ? "#5f0080" : "#fff",
+    border: active ? "1.5px solid #582681" : "1px solid #ddd",
+    background: active ? "#582681" : "#fff",
     color: active ? "#fff" : "#666",
   };
 }

@@ -130,7 +130,7 @@ export default function AdminNoticesPage() {
             spellCheck lang="ko"
             placeholder="내용" rows={12} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 420, lineHeight: 1.6 }} />
           <button onClick={create} disabled={busy}
-            style={{ padding: "10px 20px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+            style={{ padding: "10px 20px", background: "#582681", color: "#fff", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
             {busy ? "처리 중..." : "작성"}
           </button>
         </div>
@@ -157,10 +157,10 @@ export default function AdminNoticesPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
-                    background: n.type === "event" ? "#fdeef5" : "#f3eafa", color: n.type === "event" ? "#c2185b" : "#5f0080" }}>
+                    background: n.type === "event" ? "#fdeef5" : "#f3eafa", color: n.type === "event" ? "#c2185b" : "#582681" }}>
                     {TYPE_LABELS[n.type]}
                   </span>
-                  {n.is_pinned && <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color: "#5f0080", border: "1px solid #5f0080", borderRadius: 4, padding: "1px 5px" }}>고정</span>}
+                  {n.is_pinned && <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color: "#582681", border: "1px solid #582681", borderRadius: 4, padding: "1px 5px" }}>고정</span>}
                   {n.status === "draft" && <span style={{ flexShrink: 0, fontSize: 12, color: "#999", border: "1px solid #ddd", borderRadius: 4, padding: "1px 5px" }}>임시</span>}
                   <span onClick={() => openExpand(n)} style={{ flex: 1, minWidth: 0, fontSize: 14, fontWeight: 500, cursor: "pointer", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {n.title}
@@ -191,7 +191,7 @@ export default function AdminNoticesPage() {
                       rows={10} style={{ ...inputStyle, resize: "vertical", marginBottom: 12, minHeight: 240, lineHeight: 1.6 }} />
                     <div style={{ display: "flex", gap: 8 }}>
                       <button onClick={() => saveEdit(n.id)} disabled={busy}
-                        style={{ padding: "8px 18px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>저장</button>
+                        style={{ padding: "8px 18px", background: "#582681", color: "#fff", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>저장</button>
                       <button onClick={() => setExpandedId(null)}
                         style={{ padding: "8px 14px", background: "#fff", color: "#999", border: "1px solid #ddd", borderRadius: 8, fontSize: 15, cursor: "pointer" }}>취소</button>
                     </div>

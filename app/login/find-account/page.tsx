@@ -81,7 +81,7 @@ export default function FindAccountPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="이름을 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
             />
           </div>
 
@@ -94,7 +94,7 @@ export default function FindAccountPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="숫자만 입력 (- 없이)"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
               onKeyDown={(e) => e.key === "Enter" && handleFind()}
             />
           </div>
@@ -106,7 +106,7 @@ export default function FindAccountPage() {
           <button
             onClick={handleFind}
             disabled={loading}
-            className="w-full h-[52px] bg-[#5f0080] text-white rounded-lg font-normal text-[15px] mt-7 disabled:opacity-50 hover:opacity-90 transition"
+            className="w-full h-[52px] bg-[#582681] text-white rounded-lg font-normal text-[15px] mt-7 disabled:opacity-50 hover:opacity-90 transition"
           >
             {loading ? "조회 중..." : "이메일 찾기"}
           </button>
@@ -115,9 +115,9 @@ export default function FindAccountPage() {
           {result?.found && (
             <div className="mt-6 p-5 bg-[#faf5ff] border border-[#e9d5ff] rounded-lg text-center">
               <p className="text-[13px] md:text-[14px] text-[#6b6b6b] mb-1">가입하신 이메일이에요</p>
-              <p className="text-[18px] font-normal text-[#5f0080] mb-4">{result.email}</p>
+              <p className="text-[18px] font-normal text-[#582681] mb-4">{result.email}</p>
               <Link href="/login/email">
-                <button className="w-full h-[46px] bg-[#5f0080] text-white rounded-lg font-normal text-[14px] md:text-[15px] hover:opacity-90 transition">
+                <button className="w-full h-[46px] bg-[#582681] text-white rounded-lg font-normal text-[14px] md:text-[15px] hover:opacity-90 transition">
                   로그인하러 가기
                 </button>
               </Link>
@@ -131,7 +131,7 @@ export default function FindAccountPage() {
               <p className="text-[13px] md:text-[14px] text-[#6b6b6b] mb-4">
                 입력하신 정보로 가입된 계정을 찾을 수 없습니다.
               </p>
-              <Link href="/login" className="text-[13px] md:text-[14px] text-[#5f0080] font-normal hover:underline">
+              <Link href="/login" className="text-[13px] md:text-[14px] text-[#582681] font-normal hover:underline">
                 회원가입 하러 가기
               </Link>
             </div>
@@ -139,11 +139,11 @@ export default function FindAccountPage() {
 
           {/* 하단 링크 — 로그인 화면과 같은 아이콘·크기를 쓴다 */}
           <div className="mt-8 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
-            <Link href="/login/email" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+            <Link href="/login/email" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#582681] hover:underline">
               <LogIn size={14} /> 로그인
             </Link>
             <span className="text-[#d0d0d0]">·</span>
-            <Link href="/login/password-reset" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+            <Link href="/login/password-reset" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#582681] hover:underline">
               <KeyRound size={14} /> 비밀번호 재설정
             </Link>
           </div>

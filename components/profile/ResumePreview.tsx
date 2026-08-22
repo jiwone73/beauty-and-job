@@ -245,7 +245,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               <div className="rp-item-head">
                 <strong>
                   {x.category && (
-                    <span style={{ color: "#5f0080", marginRight: "8px" }}>[{x.category}]</span>
+                    <span style={{ color: "#582681", marginRight: "8px" }}>[{x.category}]</span>
                   )}
                   {x.title}
                 </strong>

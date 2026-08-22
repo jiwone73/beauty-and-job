@@ -25,7 +25,7 @@ export default function LinkCell({
       target="_blank"
       rel="noopener noreferrer"
       onClick={(e) => e.stopPropagation()}
-      style={{ ...base, color: "#5f0080", textDecoration: "none", fontWeight: 500 }}
+      style={{ ...base, color: "#582681", textDecoration: "none", fontWeight: 500 }}
     >
       {icon}<span>{label}</span>
     </a>

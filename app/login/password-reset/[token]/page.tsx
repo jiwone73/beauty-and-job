@@ -62,7 +62,7 @@ export default function PasswordResetTokenPage() {
           <div className="w-full max-w-[400px] text-center">
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 bg-[#f5ebfa] rounded-full flex items-center justify-center">
-                <CheckCircle size={32} className="text-[#5f0080]" />
+                <CheckCircle size={32} className="text-[#582681]" />
               </div>
             </div>
             <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] mb-3">
@@ -72,7 +72,7 @@ export default function PasswordResetTokenPage() {
               새 비밀번호로 다시 로그인해주세요
             </p>
             <Link href="/login/email">
-              <button className="w-full h-[48px] bg-[#5f0080] text-white rounded-lg font-normal text-[14px] md:text-[15px] hover:opacity-90 transition">
+              <button className="w-full h-[48px] bg-[#582681] text-white rounded-lg font-normal text-[14px] md:text-[15px] hover:opacity-90 transition">
                 로그인하기
               </button>
             </Link>
@@ -119,7 +119,7 @@ export default function PasswordResetTokenPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호를 입력해주세요"
-                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
               />
               <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a9a9a]">
                 {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -130,7 +130,7 @@ export default function PasswordResetTokenPage() {
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
               placeholder="비밀번호 다시 입력"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
             />
             <p className="text-[12px] md:text-[13px] text-[#9a9a9a] mt-1.5">
               영문 대소문자, 숫자, 특수문자를 3가지 이상으로 조합해 8~16자
@@ -140,7 +140,7 @@ export default function PasswordResetTokenPage() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full h-[52px] mt-4 bg-[#5f0080] text-white rounded-lg font-normal text-[15px] disabled:opacity-50 hover:opacity-90 transition"
+            className="w-full h-[52px] mt-4 bg-[#582681] text-white rounded-lg font-normal text-[15px] disabled:opacity-50 hover:opacity-90 transition"
           >
             {loading ? "변경 중..." : "비밀번호 변경"}
           </button>

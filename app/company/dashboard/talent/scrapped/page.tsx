@@ -201,7 +201,7 @@ export default function ScrappedTalentPage() {
                       <td>
                         <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(t)}
                           style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-                          <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                             {t.avatar_url
                               ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                               : (t.name || "?").slice(0, 1)}
@@ -214,7 +214,7 @@ export default function ScrappedTalentPage() {
                               <button type="button" title="스크랩 해제"
                                 onClick={(e) => { e.stopPropagation(); handleUnscrap(t.user_id); }}
                                 style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
-                                <BookmarkCheck size={15} style={{ color: "#5f0080" }} />
+                                <BookmarkCheck size={15} style={{ color: "#582681" }} />
                               </button>
                             </div>
                             <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
@@ -263,7 +263,7 @@ export default function ScrappedTalentPage() {
                       <td>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <button style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
+                            <button style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
                               onClick={(e) => { e.stopPropagation(); setSelected(t); }}>
                               <FileText size={14} /><span>이력서</span>
                             </button>
@@ -294,11 +294,11 @@ export default function ScrappedTalentPage() {
               <h2 style={{ fontSize: 18, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected.name}</h2>
               <div className="rp-modal-actions">
                 <button onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading} title="PDF 다운로드"
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#5f0080", cursor: (isDownloading || resumeLoading) ? "not-allowed" : "pointer", opacity: (isDownloading || resumeLoading) ? 0.5 : 1 }}>
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#582681", cursor: (isDownloading || resumeLoading) ? "not-allowed" : "pointer", opacity: (isDownloading || resumeLoading) ? 0.5 : 1 }}>
                   <Download size={20} />
                 </button>
                 <button onClick={handlePrint} title="인쇄"
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#5f0080", cursor: "pointer" }}>
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#582681", cursor: "pointer" }}>
                   <Printer size={20} />
                 </button>
                 <button onClick={() => setSelected(null)} title="닫기"

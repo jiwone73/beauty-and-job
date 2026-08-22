@@ -304,7 +304,7 @@ export default function ExternalCompaniesPanel() {
           return (
             <div key={label} className="admin-mini-stat"
               onClick={() => setStageFilter(active ? null : n)}
-              style={{ cursor: "pointer", ...(active ? { outline: "2px solid #5f0080", outlineOffset: "-2px" } : {}) }}>
+              style={{ cursor: "pointer", ...(active ? { outline: "2px solid #582681", outlineOffset: "-2px" } : {}) }}>
               <span className="admin-mini-stat-label">{n}. {label}</span>
               <span className="admin-mini-stat-value">{stageCounts[i]}<span className="admin-mini-unit">개사</span></span>
             </div>
@@ -360,8 +360,8 @@ export default function ExternalCompaniesPanel() {
                         const filled = n <= stage, cur = n === stage;
                         return (
                           <div key={label} style={{ flex: 1 }}>
-                            <div style={{ height: 12, borderRadius: 6, background: cur ? "#5f0080" : filled ? "#c9b3e6" : "#eee" }} />
-                            <div style={{ marginTop: 8, fontSize: 14, textAlign: "center", lineHeight: 1.3, color: cur ? "#5f0080" : "#999", fontWeight: cur ? 700 : 400 }}>{n}. {label}</div>
+                            <div style={{ height: 12, borderRadius: 6, background: cur ? "#582681" : filled ? "#c9b3e6" : "#eee" }} />
+                            <div style={{ marginTop: 8, fontSize: 14, textAlign: "center", lineHeight: 1.3, color: cur ? "#582681" : "#999", fontWeight: cur ? 700 : 400 }}>{n}. {label}</div>
                           </div>
                         );
                       })}
@@ -375,14 +375,14 @@ export default function ExternalCompaniesPanel() {
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>총 <strong>{filtered.length}</strong>개사 · 체크박스를 선택하면 진행 단계가 표시돼요</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button onClick={() => { if (canEmail) { setBroadcastChannel("email"); setBroadcastOpen(true); } }} disabled={!canEmail} title={!canEmail && selectedIds.length ? "선택한 기업 중 이메일이 있는 곳이 없어요" : undefined} style={btn(canEmail, "#5f0080")}>
+            <button onClick={() => { if (canEmail) { setBroadcastChannel("email"); setBroadcastOpen(true); } }} disabled={!canEmail} title={!canEmail && selectedIds.length ? "선택한 기업 중 이메일이 있는 곳이 없어요" : undefined} style={btn(canEmail, "#582681")}>
               이메일 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
             <button onClick={() => { if (canSms) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }} disabled={!canSms}
               title={!canSms && selectedIds.length
                 ? `문자는 휴대폰(010)으로만 보낼 수 있어요. 휴대폰이 아닌 곳 ${smsBad.length}곳: ${smsBad.slice(0, 3).map((c) => `${c.company_name}(${contactPhone(c) || "번호 없음"})`).join(", ")}${smsBad.length > 3 ? " 외" : ""}`
                 : undefined}
-              style={btn(canSms, "#5f0080")}>
+              style={btn(canSms, "#582681")}>
               SMS 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
             <button onClick={openLink} disabled={!canLink}
@@ -440,7 +440,7 @@ export default function ExternalCompaniesPanel() {
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>
                             {j0?.id ? (
                               <a href={`/jobs/${j0.id}`} target="_blank" rel="noopener noreferrer" title={`뷰티워크 공고 보기 · ${jobTitle}`}
-                                style={{ color: "#5f0080", textDecoration: "none" }}>
+                                style={{ color: "#582681", textDecoration: "none" }}>
                                 {jobTitle}
                               </a>
                             ) : jobTitle}
@@ -480,7 +480,7 @@ export default function ExternalCompaniesPanel() {
                         {cApps.length > 0 ? (
                           <a href={`/admin/resumes/applications?search=${encodeURIComponent(c.company_name)}`}
                             title={`${c.company_name} 입사지원 보기`}
-                            style={{ color: "#5f0080", fontWeight: 600, textDecoration: "none" }}>
+                            style={{ color: "#582681", fontWeight: 600, textDecoration: "none" }}>
                             {cApps.length}
                           </a>
                         ) : (
@@ -488,7 +488,7 @@ export default function ExternalCompaniesPanel() {
                         )}
                       </td>
                       <td className="admin-td-date">
-                        <span style={{ background: "#f3edfa", color: "#5f0080", borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>
+                        <span style={{ background: "#f3edfa", color: "#582681", borderRadius: 6, padding: "2px 8px", fontSize: 12, whiteSpace: "nowrap" }}>
                           {STAGES[stage - 1]}
                         </span>
                       </td>
@@ -522,7 +522,7 @@ export default function ExternalCompaniesPanel() {
               </label>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 4 }}>
                 <button className="admin-page-btn" onClick={() => setEditTarget(null)} disabled={busy}>취소</button>
-                <button className="admin-page-btn" style={{ background: "#5f0080", color: "#fff", borderColor: "#5f0080" }} onClick={saveEdit} disabled={busy}>{busy ? "저장 중..." : "저장"}</button>
+                <button className="admin-page-btn" style={{ background: "#582681", color: "#fff", borderColor: "#582681" }} onClick={saveEdit} disabled={busy}>{busy ? "저장 중..." : "저장"}</button>
               </div>
             </div>
           </div>
@@ -557,7 +557,7 @@ export default function ExternalCompaniesPanel() {
                         <div style={{ fontWeight: 600, fontSize: 13.5 }}>{m.company_name}{m.brand_name ? <span style={{ color: "#999", fontWeight: 400 }}> · {m.brand_name}</span> : null}</div>
                         <div style={{ fontSize: 11.5, color: "#999" }}>{m.business_number || "사업자번호 없음"} · {m.status === "ACTIVE" ? "승인완료" : m.status}</div>
                       </div>
-                      <button className="admin-page-btn" style={{ background: "#5f0080", color: "#fff", borderColor: "#5f0080" }} disabled={busy} onClick={() => doLink(m.id, m.company_name)}>연결</button>
+                      <button className="admin-page-btn" style={{ background: "#582681", color: "#fff", borderColor: "#582681" }} disabled={busy} onClick={() => doLink(m.id, m.company_name)}>연결</button>
                     </div>
                   ))
                 )}

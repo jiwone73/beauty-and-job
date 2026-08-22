@@ -107,7 +107,7 @@ export default function AlbaPage() {
     <AdminLayout activeMenu="members-alba">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <p style={{ margin: 0, fontSize: 13, color: "#777" }}>
-          아이디 <b style={{ color: "#5f0080" }}>{data.adminId}</b> · {data.startDate} 시작 ·
+          아이디 <b style={{ color: "#582681" }}>{data.adminId}</b> · {data.startDate} 시작 ·
           {" "}매주 월~일 기준 주 {data.weeklyTargetHours}시간, 합계 {data.totalTargetHours}시간
           {data.running && (
             <span style={{ marginLeft: 8, color: "#0f6e56" }}>● 지금 근무 중</span>
@@ -124,7 +124,7 @@ export default function AlbaPage() {
           <p style={label}>누적 근무</p>
           <p style={big}>{formatMinutes(data.totalMinutes)}</p>
           <div style={{ height: 6, background: "#f1f1f1", borderRadius: 999, marginTop: 10, overflow: "hidden" }}>
-            <div style={{ width: `${pct}%`, height: "100%", background: "#5f0080" }} />
+            <div style={{ width: `${pct}%`, height: "100%", background: "#582681" }} />
           </div>
           <p style={{ fontSize: 12, color: "#888", marginTop: 6 }}>
             {data.adjustedTargetHours}시간 중 {pct}%
@@ -142,7 +142,7 @@ export default function AlbaPage() {
             {formatMinutes(cw?.minutes || 0)}
           </p>
           <div style={{ height: 6, background: "#f1f1f1", borderRadius: 999, marginTop: 10, overflow: "hidden" }}>
-            <div style={{ width: `${cwPct}%`, height: "100%", background: cwPct >= 100 ? "#0f6e56" : "#5f0080" }} />
+            <div style={{ width: `${cwPct}%`, height: "100%", background: cwPct >= 100 ? "#0f6e56" : "#582681" }} />
           </div>
           <p style={{ fontSize: 12, color: "#888", marginTop: 6 }}>
             최소 {data.weeklyTargetHours}시간 · {cw && cw.minutes >= weeklyTargetMin
@@ -191,7 +191,7 @@ export default function AlbaPage() {
               return (
                 <tr key={w.index} style={{ borderTop: "1px solid #f2f2f2", background: w.isCurrent ? "#faf7fc" : undefined }}>
                   <td style={{ padding: "10px 14px", whiteSpace: "nowrap" }}>
-                    {w.index}주차{w.isCurrent && <span style={{ marginLeft: 6, fontSize: 11, color: "#5f0080" }}>이번 주</span>}
+                    {w.index}주차{w.isCurrent && <span style={{ marginLeft: 6, fontSize: 11, color: "#582681" }}>이번 주</span>}
                   </td>
                   <td style={{ padding: "10px 14px", color: "#666", whiteSpace: "nowrap" }}>{fmtDate(w.start)} ~ {fmtDate(w.end)}</td>
                   <td style={{ padding: "10px 14px", textAlign: "right" }}>{w.minutes ? formatMinutes(w.minutes) : "—"}</td>
@@ -199,7 +199,7 @@ export default function AlbaPage() {
                   <td style={{ padding: "10px 14px", whiteSpace: "nowrap" }}>
                     {w.isFuture ? <span style={{ color: "#bbb" }}>예정</span>
                       : done ? <span style={{ color: "#0f6e56" }}>달성</span>
-                      : w.isCurrent ? <span style={{ color: "#5f0080" }}>{formatMinutes(weeklyTargetMin - w.minutes)} 남음</span>
+                      : w.isCurrent ? <span style={{ color: "#582681" }}>{formatMinutes(weeklyTargetMin - w.minutes)} 남음</span>
                       : <span style={{ color: "#e74c3c" }}>
                           미달 {formatMinutes(weeklyTargetMin - w.minutes)} · 목표 +{data.penaltyPerShortfallHours}시간
                         </span>}
@@ -239,7 +239,7 @@ export default function AlbaPage() {
             style={{ height: 36, padding: "0 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }} />
           <input type="text" placeholder="사유 (선택)" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })}
             style={{ flex: 1, minWidth: 140, height: 36, padding: "0 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }} />
-          <button onClick={addSession} style={{ height: 36, padding: "0 16px", background: "#5f0080", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, cursor: "pointer" }}>추가</button>
+          <button onClick={addSession} style={{ height: 36, padding: "0 16px", background: "#582681", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, cursor: "pointer" }}>추가</button>
         </div>
       )}
 
@@ -304,7 +304,7 @@ export default function AlbaPage() {
                 <td style={{ padding: "10px 14px", color: "#666", whiteSpace: "nowrap" }}>{p.week}주차</td>
                 <td style={{ padding: "10px 14px" }}>
                   <Link href={`/jobs/${p.id}`} target="_blank"
-                    style={{ color: "#5f0080", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    style={{ color: "#582681", display: "inline-flex", alignItems: "center", gap: 4 }}>
                     {p.title} <ExternalLink size={12} />
                   </Link>
                 </td>

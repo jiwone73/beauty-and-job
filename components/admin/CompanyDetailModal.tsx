@@ -34,7 +34,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
   const modalBtn: React.CSSProperties = {
     display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600,
     padding: "6px 10px", borderRadius: 6, border: "1px solid #e3dceb", background: "#fff",
-    color: "#5f0080", cursor: "pointer",
+    color: "#582681", cursor: "pointer",
   };
 
   const handlePdf = async () => {
@@ -126,7 +126,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
             <div style={{ padding: "18px 22px 0" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a" }}>{company.company_name}</span>
-                <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: "#f3e8ff", color: "#5f0080" }}>{TYPE_LABEL[company.company_type] || company.company_type}</span>
+                <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: "#f3e8ff", color: "#582681" }}>{TYPE_LABEL[company.company_type] || company.company_type}</span>
                 <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: chip.bg, color: chip.color }}>{STATUS_TO_LABEL[company.status] || company.status}</span>
               </div>
               {company.brand_name && <p style={{ fontSize: 13, color: "#888", margin: "4px 0 0" }}>{company.brand_name}</p>}
@@ -138,25 +138,25 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
                 <span style={lbl}>설립연도</span><span>{company.founded_year ? `${company.founded_year}년` : "-"}</span>
                 <span style={lbl}>사원수</span><span>{company.company_size || "-"}</span>
                 <span style={lbl}>가입일</span><span>{fmtDate(company.created_at)}</span>
-                <span style={lbl}>이메일</span><span style={{ color: "#5f0080", wordBreak: "break-all" }}>{company.email || "-"}</span>
+                <span style={lbl}>이메일</span><span style={{ color: "#582681", wordBreak: "break-all" }}>{company.email || "-"}</span>
                 <span style={lbl}>연락처</span><span>{company.phone || "-"}</span>
                 <span style={{ ...lbl, alignSelf: "start" }}>주소</span><span style={{ gridColumn: "span 3" }}>{company.address || "-"}</span>
                 <span style={lbl}>웹사이트</span>
                 <span style={{ gridColumn: "span 3", wordBreak: "break-all" }}>{company.website_url
-                  ? <a href={company.website_url} target="_blank" rel="noreferrer" style={{ color: "#5f0080" }}>{company.website_url}</a>
+                  ? <a href={company.website_url} target="_blank" rel="noreferrer" style={{ color: "#582681" }}>{company.website_url}</a>
                   : "-"}</span>
               </div>
             </div>
 
             {company.description && (
               <div style={{ padding: "20px 22px 0" }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: "#5f0080", marginBottom: 7 }}>기업 소개</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#582681", marginBottom: 7 }}>기업 소개</div>
                 <p style={{ fontSize: 13, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{company.description}</p>
               </div>
             )}
 
             <div style={{ padding: "20px 22px 24px" }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#5f0080", marginBottom: 8 }}>등록 공고 ({company.job_count}건)</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#582681", marginBottom: 8 }}>등록 공고 ({company.job_count}건)</div>
               {company.jobs && company.jobs.length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {company.jobs.map((j: any, i: number) => {
@@ -164,7 +164,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
                     const row = (
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", background: closed ? "#f5f5f5" : "#f3e8ff", borderRadius: 6, cursor: j.id ? "pointer" : "default" }}>
                         <span style={{ fontSize: 13, color: closed ? "#888" : "#1a1a1a" }}>{j.title}</span>
-                        <span style={{ fontSize: 11, color: closed ? "#aaa" : "#5f0080", flexShrink: 0, marginLeft: 8 }}>{JOB_STATUS_LABEL[j.status] || j.status} · {fmtDate(j.created_at)}</span>
+                        <span style={{ fontSize: 11, color: closed ? "#aaa" : "#582681", flexShrink: 0, marginLeft: 8 }}>{JOB_STATUS_LABEL[j.status] || j.status} · {fmtDate(j.created_at)}</span>
                       </div>
                     );
                     return j.id
@@ -195,7 +195,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
               )}
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end", padding: "12px 16px", borderTop: "1px solid #ececec" }}>
-              <a href={previewUrl} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "#5f0080", fontWeight: 600 }}>
+              <a href={previewUrl} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "#582681", fontWeight: 600 }}>
                 새 탭에서 열기 ↗
               </a>
             </div>

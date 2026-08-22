@@ -358,10 +358,10 @@ export default function TalentPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 12 }}>
           <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
           {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
-            <label key={tab} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: activeTab === tab ? "#5f0080" : "#555" }}>
+            <label key={tab} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: activeTab === tab ? "#582681" : "#555" }}>
               <input type="radio" name="talentTrackM" checked={activeTab === tab}
                 onChange={() => handleTabSwitch(tab)}
-                style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
+                style={{ accentColor: "#582681", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
               {tab === "STORE" ? "매장" : "본사"}
             </label>
           ))}
@@ -394,7 +394,7 @@ export default function TalentPage() {
                 style={{
                   padding: "7px 18px", borderRadius: 8, fontSize: 14, cursor: "pointer", border: "none",
                   background: activeTab === tab ? "#fff" : "transparent",
-                  color: activeTab === tab ? "#5f0080" : "#888",
+                  color: activeTab === tab ? "#582681" : "#888",
                   boxShadow: activeTab === tab ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
                   transition: "all .15s",
                 }}>
@@ -415,7 +415,7 @@ export default function TalentPage() {
             .co-mbar-count strong { color: #1a1a1a; }
             .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; }
-            .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
+            .co-mbar-btn.on { border-color: #582681; color: #582681; background: #f8f5fb; }
             .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
             .co-sheet { width: 100%; background: #fff; border-radius: 18px 18px 0 0; padding: 0 18px calc(20px + env(safe-area-inset-bottom)); max-height: 84vh; overflow-y: auto; animation: co-sheet-up .22s ease; }
             @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -427,13 +427,13 @@ export default function TalentPage() {
             .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
             .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 14px; font-weight: 400; cursor: pointer; }
-            .co-fseg-btn.on { border-color: #d9b8ec; background: #f5eaff; color: #5f0080; font-weight: 400; }
+            .co-fseg-btn.on { border-color: #d9b8ec; background: #f5eaff; color: #582681; font-weight: 400; }
             .co-fsel-btn { display: flex; align-items: center; gap: 6px; width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e2e6; background: #fff; color: #333; font-size: 14px; font-weight: 400; cursor: pointer; text-align: left; }
             .co-fsel-btn .ph { color: #aaa; }
-            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f5eaff; color: #5f0080; font-size: 16px; font-weight: 400; cursor: pointer; }
+            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f5eaff; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
-            .co-selbar-act { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; color: #5f0080; font-size: 14px; font-weight: 600; padding: 6px; }
+            .co-selbar-act { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; color: #582681; font-size: 14px; font-weight: 600; padding: 6px; }
           `}</style>
           <div className="co-mbar">
             <span className="co-mbar-count">
@@ -577,9 +577,9 @@ export default function TalentPage() {
       {(selectedJobGroups.length > 0 || selectedRegions.length > 0) && (
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
           {selectedJobGroups.map((g) => (
-            <span key={g} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#f3e8ff", color: "#5f0080", borderRadius: 20, fontSize: 13 }}>
+            <span key={g} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#f3e8ff", color: "#582681", borderRadius: 20, fontSize: 13 }}>
               {g}
-              <button onClick={() => setSelectedJobGroups((p) => p.filter((x) => x !== g))} style={{ background: "none", border: "none", cursor: "pointer", color: "#5f0080", padding: 0, lineHeight: 1 }}>×</button>
+              <button onClick={() => setSelectedJobGroups((p) => p.filter((x) => x !== g))} style={{ background: "none", border: "none", cursor: "pointer", color: "#582681", padding: 0, lineHeight: 1 }}>×</button>
             </span>
           ))}
           {selectedRegions.map((r) => (
@@ -607,19 +607,19 @@ export default function TalentPage() {
           <style>{`
             .co-list { display: flex; flex-direction: column; gap: 10px; }
             .co-row { display: flex; align-items: center; gap: 10px; }
-            .co-row-check { width: 20px; height: 20px; accent-color: #5f0080; flex-shrink: 0; margin: 0; }
+            .co-row-check { width: 20px; height: 20px; accent-color: #582681; flex-shrink: 0; margin: 0; }
             .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
-            .co-li.on { border-color: #5f0080; background: #faf5fc; }
+            .co-li.on { border-color: #582681; background: #f8f5fb; }
             .co-li-r1 { display: flex; align-items: center; gap: 10px; }
             .co-li-namerow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
             .co-li-scrap { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; flex-shrink: 0; }
-            .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #5f0080; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+            .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #582681; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
-            .co-li-job { font-size: 15.5px; color: #5f0080; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .co-li-job { font-size: 15.5px; color: #582681; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
           `}</style>
           {talents.map((t) => {
             const gl = genderLabel(t.gender);
@@ -646,7 +646,7 @@ export default function TalentPage() {
                         <button className="co-li-scrap" title={t.scrapped ? "스크랩됨" : "스크랩"}
                           onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
                           {t.scrapped
-                            ? <BookmarkCheck size={19} style={{ color: "#5f0080" }} />
+                            ? <BookmarkCheck size={19} style={{ color: "#582681" }} />
                             : <Bookmark size={19} style={{ color: "#c8c8c8" }} />}
                         </button>
                       </div>
@@ -681,7 +681,7 @@ export default function TalentPage() {
                     <td>
                       <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(t)}
                         style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-                        <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           {t.avatarUrl
                             ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                             : <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{t.name?.slice(0, 1) || "?"}</span>}
@@ -695,7 +695,7 @@ export default function TalentPage() {
                               onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}
                               style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
                               {t.scrapped
-                                ? <BookmarkCheck size={15} style={{ color: "#5f0080" }} />
+                                ? <BookmarkCheck size={15} style={{ color: "#582681" }} />
                                 : <Bookmark size={15} style={{ color: "#c8c8c8" }} />}
                             </button>
                           </div>
@@ -748,7 +748,7 @@ export default function TalentPage() {
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <button
-                            style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
+                            style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
                             onClick={(e) => { e.stopPropagation(); setSelected(t); }}
                           >
                             <FileText size={14} />
@@ -799,11 +799,11 @@ export default function TalentPage() {
               <h2 style={{ fontSize: 18, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected.name}</h2>
               <div className="rp-modal-actions">
                 <button onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading} title="PDF 다운로드"
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#5f0080", cursor: (isDownloading || resumeLoading) ? "not-allowed" : "pointer", opacity: (isDownloading || resumeLoading) ? 0.5 : 1 }}>
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#582681", cursor: (isDownloading || resumeLoading) ? "not-allowed" : "pointer", opacity: (isDownloading || resumeLoading) ? 0.5 : 1 }}>
                   <Download size={20} />
                 </button>
                 <button onClick={handlePrint} title="인쇄"
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#5f0080", cursor: "pointer" }}>
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#582681", cursor: "pointer" }}>
                   <Printer size={20} />
                 </button>
                 <button onClick={() => setSelected(null)} title="닫기"

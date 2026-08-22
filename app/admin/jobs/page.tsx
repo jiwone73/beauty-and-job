@@ -74,10 +74,10 @@ function shortLocation(loc: string | null) {
 }
 function productBadge(type: string | null) {
   const t = type || "FREE";
-  if (t === "TOP") return { label: "상단노출", bg: "#f3e8ff", color: "#5f0080" };
-  if (t === "PREMIUM") return { label: "프리미엄", bg: "#5f0080", color: "#fff" };
+  if (t === "TOP") return { label: "상단노출", bg: "#f3e8ff", color: "#582681" };
+  if (t === "PREMIUM") return { label: "프리미엄", bg: "#582681", color: "#fff" };
   if (t === "FREE") return { label: "무료", bg: "#f0f0f0", color: "#999" };
-  return { label: t, bg: "#f3e8ff", color: "#5f0080" };
+  return { label: t, bg: "#f3e8ff", color: "#582681" };
 }
 function AdminJobsPageInner() {
   const searchParams = useSearchParams();
@@ -214,7 +214,7 @@ function AdminJobsPageInner() {
         {Object.entries(counts).map(([label, count]) => (
           <div key={label} className="admin-mini-stat"
             onClick={() => setStatusFilter(label)}
-            style={{ cursor: "pointer", ...(statusFilter === label ? { outline: "2px solid #5f0080", outlineOffset: "-2px" } : {}) }}>
+            style={{ cursor: "pointer", ...(statusFilter === label ? { outline: "2px solid #582681", outlineOffset: "-2px" } : {}) }}>
             <span className="admin-mini-stat-label">{label}</span>
             <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">건</span></span>
           </div>
@@ -225,10 +225,10 @@ function AdminJobsPageInner() {
       <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
         <span style={{ fontSize: 14, color: "#777" }}>공고 구분</span>
         {(["전체", "매장", "오피스"] as const).map((opt) => (
-          <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobGroupFilter === opt ? "#5f0080" : "#555" }}>
+          <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobGroupFilter === opt ? "#582681" : "#555" }}>
             <input type="radio" name="jobTrack" checked={jobGroupFilter === opt}
               onChange={() => setJobGroupFilter(opt)}
-              style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
+              style={{ accentColor: "#582681", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
             {opt}
           </label>
         ))}
@@ -392,7 +392,7 @@ function AdminJobsPageInner() {
                       const isAlways = label === "상시";
                       return (
                         <span style={{
-                          color: isClosed ? "#bbb" : isAlways ? "#888" : "#5f0080",
+                          color: isClosed ? "#bbb" : isAlways ? "#888" : "#582681",
                           fontWeight: isClosed || isAlways ? 400 : 600,
                         }}>{label}</span>
                       );
@@ -416,7 +416,7 @@ function AdminJobsPageInner() {
                   {/* 관리: 수정 */}
                   <td>
                     <Link href={`/admin/jobs/new?id=${job.id}`}
-                      style={{ display: "inline-block", padding: "4px 12px", borderRadius: 6, border: "1px solid #d9c8ec", color: "#5f0080", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", textDecoration: "none" }}>
+                      style={{ display: "inline-block", padding: "4px 12px", borderRadius: 6, border: "1px solid #d9c8ec", color: "#582681", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", textDecoration: "none" }}>
                       수정
                     </Link>
                   </td>

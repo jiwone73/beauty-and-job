@@ -55,8 +55,8 @@ function CompanyRangeToggle({ range, onChange }: { range: string; onChange: (r: 
           style={{
             padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600,
             cursor: "pointer", border: "1px solid #e5e0eb",
-            background: range === val ? "#5f0080" : "#fff",
-            color: range === val ? "#fff" : "#5f0080",
+            background: range === val ? "#582681" : "#fff",
+            color: range === val ? "#fff" : "#582681",
             transition: "all 0.15s",
           }}
         >
@@ -130,7 +130,7 @@ export default function CompanyDashboard() {
 
   // 통계 카드 데이터
   const statCards = [
-    { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#5f0080", icon: FileText, href: "/company/dashboard/jobs" },
+    { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#582681", icon: FileText, href: "/company/dashboard/jobs" },
     { label: "총 지원자", value: stats?.total_applications ?? 0, unit: "명", color: "#0ea5e9", icon: Users, href: "/company/dashboard/applicants" },
     { label: "오늘 지원", value: stats?.today_applications ?? 0, unit: "명", color: "#10b981", icon: TrendingUp, href: "/company/dashboard/applicants" },
     // 오늘 안에 손쓰지 않으면 내려가는 공고. 목록으로 넘어가면 같은 조건이 걸린 채로 보인다.

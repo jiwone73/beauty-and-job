@@ -69,7 +69,7 @@ function PasswordResetRequestForm() {
           <div className="w-full max-w-[400px] text-center">
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 bg-[#f5ebfa] rounded-full flex items-center justify-center">
-                <CheckCircle size={32} className="text-[#5f0080]" />
+                <CheckCircle size={32} className="text-[#582681]" />
               </div>
             </div>
             <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] mb-3">
@@ -84,7 +84,7 @@ function PasswordResetRequestForm() {
               링크는 30분간 유효합니다
             </p>
             <Link href={loginPath}>
-              <button className="w-full h-[48px] bg-[#5f0080] text-white rounded-lg font-normal text-[14px] md:text-[15px] hover:opacity-90 transition">
+              <button className="w-full h-[48px] bg-[#582681] text-white rounded-lg font-normal text-[14px] md:text-[15px] hover:opacity-90 transition">
                 로그인으로 돌아가기
               </button>
             </Link>
@@ -132,19 +132,19 @@ function PasswordResetRequestForm() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="이메일을 입력해주세요"
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
             />
           </div>
           {error && <p className="text-[13px] md:text-[14px] text-[#e74c3c] mb-3">{error}</p>}
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full h-[52px] mt-2 bg-[#5f0080] text-white rounded-lg font-normal text-[15px] disabled:opacity-50 hover:opacity-90 transition"
+            className="w-full h-[52px] mt-2 bg-[#582681] text-white rounded-lg font-normal text-[15px] disabled:opacity-50 hover:opacity-90 transition"
           >
             {loading ? "발송 중..." : "재설정 메일 보내기"}
           </button>
           <div className="mt-6 text-center">
-            <Link href={loginPath} className="text-[13px] md:text-[14px] text-[#6b6b6b] hover:text-[#5f0080] hover:underline">
+            <Link href={loginPath} className="text-[13px] md:text-[14px] text-[#6b6b6b] hover:text-[#582681] hover:underline">
               로그인으로 돌아가기
             </Link>
           </div>

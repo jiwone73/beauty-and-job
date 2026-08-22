@@ -27,7 +27,7 @@ type Row = {
 const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
 const METHOD: Record<string, { t: string; c: string }> = {
   EMAIL: { t: "이메일 중계", c: "#0ea5e9" },
-  MANAGED: { t: "관리자 대행", c: "#5f0080" },
+  MANAGED: { t: "관리자 대행", c: "#582681" },
 };
 const fmt = (d: string | null) => d ? new Date(d).toLocaleDateString("ko-KR", { month: "2-digit", day: "2-digit" }) : "-";
 
@@ -103,7 +103,7 @@ export default function ExternalApplicationsPanel() {
         {TABS.map(([val, label, cnt]) => (
           <button key={val} onClick={() => setTab(val)}
             style={{ fontSize: 13.5, fontWeight: 700, padding: "7px 15px", borderRadius: 20, cursor: "pointer",
-              border: `1px solid ${tab === val ? "#5f0080" : "#e0dce9"}`, background: tab === val ? "#5f0080" : "#fff", color: tab === val ? "#fff" : "#777" }}>
+              border: `1px solid ${tab === val ? "#582681" : "#e0dce9"}`, background: tab === val ? "#582681" : "#fff", color: tab === val ? "#fff" : "#777" }}>
             {label} <span style={{ opacity: 0.8, marginLeft: 4 }}>{cnt}</span>
           </button>
         ))}
@@ -168,7 +168,7 @@ export default function ExternalApplicationsPanel() {
                             style={{ fontSize: 12.5, fontWeight: 700, borderRadius: 7, padding: "6px 11px", cursor: "pointer", border: "1px solid #ddd", background: "#fff", color: "#666" }}>재전송</button>
                         ) : (
                           <button onClick={() => forward(r)} disabled={busy === r.id || !r.third_party_consent}
-                            style={{ fontSize: 12.5, fontWeight: 700, borderRadius: 7, padding: "6px 12px", cursor: "pointer", border: "none", background: r.third_party_consent ? "#5f0080" : "#ccc", color: "#fff" }}>
+                            style={{ fontSize: 12.5, fontWeight: 700, borderRadius: 7, padding: "6px 12px", cursor: "pointer", border: "none", background: r.third_party_consent ? "#582681" : "#ccc", color: "#fff" }}>
                             {busy === r.id ? "처리 중..." : (r.external_contact_email || r.ec_contact_email) ? "기업에 전달" : "수동 전달함"}
                           </button>
                         )}

@@ -97,11 +97,11 @@ export default function JobIssuesPage() {
               <div key={p.url} style={{ border: "1px solid #f0e0dd", background: "#fff8f6", borderRadius: 12, padding: "12px 14px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                   <span style={{ fontSize: 15, fontWeight: 600, color: "#2b2533", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{p.title || "(제목 없음)"}</span>
-                  <a href={p.url} target="_blank" rel="noreferrer" style={{ flexShrink: 0, fontSize: 13, color: "#5f0080", textDecoration: "none" }}>원문 ↗</a>
+                  <a href={p.url} target="_blank" rel="noreferrer" style={{ flexShrink: 0, fontSize: 13, color: "#582681", textDecoration: "none" }}>원문 ↗</a>
                   {p.updated_at && <span style={{ flexShrink: 0, fontSize: 12, color: "#b3adbd" }}>{fmtDate(p.updated_at)}</span>}
                   <span style={{ marginLeft: "auto", flexShrink: 0, display: "flex", gap: 6 }}>
                     <Link href={`/admin/jobs/new?url=${encodeURIComponent(p.url)}`}
-                      style={{ padding: "6px 12px", borderRadius: 6, background: "#5f0080", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>불러와 수정</Link>
+                      style={{ padding: "6px 12px", borderRadius: 6, background: "#582681", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>불러와 수정</Link>
                     <button onClick={() => remove(p.url)}
                       style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #e6cfca", background: "#fff", color: "#c0392b", fontSize: 13, cursor: "pointer" }}>삭제</button>
                   </span>
@@ -140,7 +140,7 @@ export default function JobIssuesPage() {
                       style={{ flex: 1, minWidth: 0, height: 34, padding: "0 10px", border: "1px solid #e6dfe9", borderRadius: 6, fontSize: 13, background: "#fff" }}
                     />
                     <button onClick={() => addReply(p.url)} disabled={saving === p.url || !(draft[p.url] || "").trim()}
-                      style={{ flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 6, border: "none", background: "#5f0080", color: "#fff", fontSize: 13, cursor: "pointer", opacity: saving === p.url || !(draft[p.url] || "").trim() ? 0.45 : 1 }}>
+                      style={{ flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 6, border: "none", background: "#582681", color: "#fff", fontSize: 13, cursor: "pointer", opacity: saving === p.url || !(draft[p.url] || "").trim() ? 0.45 : 1 }}>
                       {saving === p.url ? "등록 중…" : "등록"}
                     </button>
                   </div>

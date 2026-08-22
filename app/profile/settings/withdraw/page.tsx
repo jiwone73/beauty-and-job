@@ -112,7 +112,7 @@ export default function WithdrawPage() {
         <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
           <div style={{ marginBottom: 14 }}>
             <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1a1a1a", marginBottom: 6 }}>
-              탈퇴하려는 계정 <span style={{ color: "#5f0080", fontWeight: 400 }}>(필수)</span>
+              탈퇴하려는 계정 <span style={{ color: "#582681", fontWeight: 400 }}>(필수)</span>
             </label>
             {/* 값이 오기 전에도 칸 높이는 잡아 둔다 */}
             <div style={{ background: "#f7f8fa", borderRadius: 8, padding: "12px 14px", fontSize: 14, color: "#333", minHeight: 20, overflowWrap: "anywhere" }}>
@@ -124,7 +124,7 @@ export default function WithdrawPage() {
           {hasPassword && (
             <div>
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1a1a1a", marginBottom: 6 }}>
-                비밀번호 확인 <span style={{ color: "#5f0080", fontWeight: 400 }}>(필수)</span>
+                비밀번호 확인 <span style={{ color: "#582681", fontWeight: 400 }}>(필수)</span>
               </label>
               <input type="password" placeholder="비밀번호 입력" value={pw}
                 onChange={(e) => setPw(e.target.value)}
@@ -135,7 +135,7 @@ export default function WithdrawPage() {
 
         <label style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer", padding: "2px 4px 14px" }}>
           <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)}
-            style={{ width: 17, height: 17, marginTop: 1, accentColor: "#5f0080", flexShrink: 0 }} />
+            style={{ width: 17, height: 17, marginTop: 1, accentColor: "#582681", flexShrink: 0 }} />
           <span style={{ fontSize: 13, color: "#555", lineHeight: 1.5 }}>
             유의사항을 모두 확인했으며, 이에 동의합니다.
           </span>

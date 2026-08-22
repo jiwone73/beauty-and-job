@@ -163,12 +163,12 @@ export default function AdminNewslettersPage() {
                 title="매주 월요일 뉴스레터 자동 생성+발송 on/off"
                 style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 14, fontWeight: 400, color: "#555", cursor: "pointer" }}>
                 자동 발송
-                <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#5f0080" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
+                <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#582681" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
                   <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
                 </span>
               </button>
               <button onClick={generate} disabled={generating}
-                style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 400, cursor: "pointer" }}>
+                style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 14, fontWeight: 400, cursor: "pointer" }}>
                 {generating ? "생성 중..." : "뉴스레터 생성"}
               </button>
             </div>
@@ -252,5 +252,5 @@ export default function AdminNewslettersPage() {
 const th: React.CSSProperties = {};
 const td: React.CSSProperties = {};
 const btnGray: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1px solid #ddd", background: "#fff", color: "#666", fontSize: 13.5, cursor: "pointer" };
-const btnPurpleOutline: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1.5px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13.5, cursor: "pointer" };
-const btnPurple: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#5f0080", color: "#fff", fontSize: 13.5, cursor: "pointer" };
+const btnPurpleOutline: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1.5px solid #582681", background: "#fff", color: "#582681", fontSize: 13.5, cursor: "pointer" };
+const btnPurple: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#582681", color: "#fff", fontSize: 13.5, cursor: "pointer" };

@@ -86,7 +86,7 @@ export default function CompanyLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="이메일을 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
               onKeyDown={(e) => e.key === "Enter" && canSubmit && handleLogin()}
             />
           </div>
@@ -99,7 +99,7 @@ export default function CompanyLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호를 입력해주세요"
-                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#5f0080]"
+                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
                 onKeyDown={(e) => e.key === "Enter" && canSubmit && handleLogin()}
               />
               <button
@@ -116,7 +116,7 @@ export default function CompanyLoginPage() {
                 type="checkbox"
                 checked={keepLogin}
                 onChange={(e) => setKeepLogin(e.target.checked)}
-                className="w-4 h-4 accent-[#5f0080]"
+                className="w-4 h-4 accent-[#582681]"
               />
               로그인 저장하기
             </label>
@@ -129,7 +129,7 @@ export default function CompanyLoginPage() {
           <button
             onClick={handleLogin}
             disabled={!canSubmit}
-            className="w-full h-[52px] rounded-lg font-normal text-[15px] mt-7 transition bg-[#5f0080] text-white hover:opacity-90 disabled:bg-[#f2f2f2] disabled:text-[#b0b0b0] disabled:hover:opacity-100"
+            className="w-full h-[52px] rounded-lg font-normal text-[15px] mt-7 transition bg-[#582681] text-white hover:opacity-90 disabled:bg-[#f2f2f2] disabled:text-[#b0b0b0] disabled:hover:opacity-100"
           >
             {loading ? "로그인 중..." : "로그인"}
           </button>
@@ -142,18 +142,18 @@ export default function CompanyLoginPage() {
           </div>
 
           <Link href="/company/signup">
-            <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#5f0080] rounded-lg font-normal text-[15px] hover:border-[#5f0080] hover:bg-[#faf7fc] transition">
+            <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#582681] rounded-lg font-normal text-[15px] hover:border-[#582681] hover:bg-[#faf7fc] transition">
               기업회원으로 가입하기
             </button>
           </Link>
 
           {/* 하단 링크 — 아이콘은 14px, 글자와의 사이는 좁게 */}
           <div className="mt-8 flex flex-nowrap items-center justify-center gap-2 text-[12px] md:text-[13px] text-[#6b6b6b]">
-            <Link href="/login/password-reset?type=company" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+            <Link href="/login/password-reset?type=company" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#582681] hover:underline">
               <KeyRound size={14} /> 비밀번호 재설정
             </Link>
             <span className="text-[#d0d0d0]">·</span>
-            <Link href="/company/login/find-account" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#5f0080] hover:underline">
+            <Link href="/company/login/find-account" className="inline-flex items-center gap-1 whitespace-nowrap hover:text-[#582681] hover:underline">
               <UserSearch size={14} /> 계정 찾기
             </Link>
           </div>

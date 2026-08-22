@@ -154,7 +154,7 @@ export default function CompanyLayout({ children, activePage }: {
           .co-m { min-height: 100vh; background: #f6f5f8; padding-bottom: 68px; }
           .co-m-header { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 14px; background: #fff; border-bottom: 1px solid #eee; }
           .co-m-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a1a; min-width: 0; }
-          .co-m-logo { width: 32px; height: 32px; border-radius: 8px; background: #f2f2f2; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #5f0080; flex-shrink: 0; }
+          .co-m-logo { width: 32px; height: 32px; border-radius: 8px; background: #f2f2f2; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #582681; flex-shrink: 0; }
           .co-m-logo img { width: 100%; height: 100%; object-fit: cover; }
           .co-m-nametype { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
           .co-m-name { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -162,7 +162,7 @@ export default function CompanyLayout({ children, activePage }: {
           .co-m-logobtn { background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; }
           .co-m-logomenu { position: absolute; top: 54px; left: 14px; z-index: 61; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 8px 22px rgba(0,0,0,0.14); overflow: hidden; min-width: 132px; }
           .co-m-logomenu button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; background: none; border: none; font-size: 14px; color: #333; cursor: pointer; }
-          .co-m-logomenu button:active { background: #faf5fc; }
+          .co-m-logomenu button:active { background: #f8f5fb; }
           .co-m-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
           .co-m-ibtn { position: relative; background: none; border: none; padding: 8px; color: #555; cursor: pointer; }
           .co-m-badge { position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff; font-size: 9px; line-height: 1.4; border-radius: 8px; padding: 0 4px; }
@@ -171,11 +171,11 @@ export default function CompanyLayout({ children, activePage }: {
           .co-m-content .company-content { padding: 0 !important; }
           .co-m-tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; background: #fff; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }
           .co-m-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 2px; text-decoration: none; color: #9a9a9a; font-size: 11px; }
-          .co-m-tab.on { color: #5f0080; }
+          .co-m-tab.on { color: #582681; }
           .co-m-notif { position: fixed; left: 0; right: 0; top: 55px; z-index: 61; background: #fff; border-bottom: 1px solid #eee; max-height: 62vh; overflow-y: auto; box-shadow: 0 10px 24px rgba(0,0,0,0.1); }
           .co-m-notif-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f2f2f2; font-size: 14px; font-weight: 600; }
           .co-m-notif-item { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; padding: 12px 16px; border: none; border-bottom: 1px solid #f5f5f5; background: none; cursor: pointer; }
-          .co-m-notif-item.unread { background: #faf5fc; }
+          .co-m-notif-item.unread { background: #f8f5fb; }
           .co-m-notif-empty { padding: 28px; text-align: center; color: #aaa; font-size: 13px; }
         `}</style>
 
@@ -216,7 +216,7 @@ export default function CompanyLayout({ children, activePage }: {
             <div className="co-m-notif">
               <div className="co-m-notif-head">
                 <span>알림</span>
-                {unread > 0 && <button onClick={markAllRead} style={{ background: "none", border: "none", color: "#5f0080", fontSize: 13, cursor: "pointer" }}>모두 읽음</button>}
+                {unread > 0 && <button onClick={markAllRead} style={{ background: "none", border: "none", color: "#582681", fontSize: 13, cursor: "pointer" }}>모두 읽음</button>}
               </div>
               {notifs.length === 0 ? (
                 <p className="co-m-notif-empty">새 알림이 없어요</p>

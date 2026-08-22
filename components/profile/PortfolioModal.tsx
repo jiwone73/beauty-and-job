@@ -178,7 +178,7 @@ export default function PortfolioModal({
                 onDragOver={(e) => { e.preventDefault(); set끌림(true); }}
                 onDragLeave={(e) => { e.preventDefault(); set끌림(false); }}
                 onDrop={(e) => { e.preventDefault(); set끌림(false); const f = Array.from(e.dataTransfer.files || []); if (f.length) onFiles(f); }}
-                style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `2px dashed ${끌림 ? "#5f0080" : "#d0c0e0"}`, background: 끌림 ? "#f3e5f5" : "#fafafa", color: "#5f0080", fontSize: 13, cursor: isUploading ? "not-allowed" : "pointer", flexDirection: "column", alignItems: "center", gap: 8, textAlign: "center" }}
+                style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `2px dashed ${끌림 ? "#582681" : "#d0c0e0"}`, background: 끌림 ? "#f3e5f5" : "#fafafa", color: "#582681", fontSize: 13, cursor: isUploading ? "not-allowed" : "pointer", flexDirection: "column", alignItems: "center", gap: 8, textAlign: "center" }}
               >
                 <Upload size={24} />
                 <span>{isUploading ? "올리는 중..." : 끌림 ? "여기에 놓으세요" : "사진을 끌어다 놓거나 눌러서 고르세요"}</span>
@@ -244,7 +244,7 @@ export default function PortfolioModal({
                 {골라줄것.map((k) => (
                   <button key={k.이름} type="button"
                     onClick={() => { set주소(k.앞부분); set오류(""); 주소칸.current?.focus(); }}
-                    style={{ ...글, padding: "5px 10px", borderRadius: 999, border: "1px solid #e6d8f0", background: "#faf5fc", color: "#5f0080", cursor: "pointer" }}>
+                    style={{ ...글, padding: "5px 10px", borderRadius: 999, border: "1px solid #e6d8f0", background: "#f8f5fb", color: "#582681", cursor: "pointer" }}>
                     {k.이름}
                   </button>
                 ))}

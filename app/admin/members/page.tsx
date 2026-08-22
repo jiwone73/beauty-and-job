@@ -273,7 +273,7 @@ function AdminMembersPageInner() {
         {Object.entries(counts).map(([label, count]) => (
           <div key={label} className="admin-mini-stat"
             onClick={() => { setStatusFilter(label); setPage(1); }}
-            style={{ cursor: "pointer", ...(statusFilter === label ? { outline: "2px solid #5f0080", outlineOffset: "-2px" } : {}) }}>
+            style={{ cursor: "pointer", ...(statusFilter === label ? { outline: "2px solid #582681", outlineOffset: "-2px" } : {}) }}>
             <span className="admin-mini-stat-label">{label}</span>
             <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">명</span></span>
           </div>
@@ -286,10 +286,10 @@ function AdminMembersPageInner() {
         {(["전체", "매장", "오피스"] as const).map((opt) => {
           const active = (jobTypeFilter === "전체" && opt === "전체") || (jobTypeFilter === "매장기술직" && opt === "매장") || (jobTypeFilter === "기업사무직" && opt === "오피스");
           return (
-            <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: active ? "#5f0080" : "#555" }}>
+            <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: active ? "#582681" : "#555" }}>
               <input type="radio" name="memberTrack" checked={active}
                 onChange={() => { setJobTypeFilter(opt === "매장" ? "매장기술직" : opt === "오피스" ? "기업사무직" : "전체"); setPage(1); }}
-                style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
+                style={{ accentColor: "#582681", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
               {opt}
             </label>
           );
@@ -356,7 +356,7 @@ function AdminMembersPageInner() {
             style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "6px 14px", borderRadius: 6, border: "none",
-              background: checked.length ? "#5f0080" : "#ededed",
+              background: checked.length ? "#582681" : "#ededed",
               color: checked.length ? "#fff" : "#aaa",
               fontSize: 14, fontWeight: 600,
               cursor: checked.length ? "pointer" : "default",
@@ -368,14 +368,14 @@ function AdminMembersPageInner() {
           <button
             onClick={() => { if (checked.length) { setBroadcastChannel("email"); setBroadcastOpen(true); } }}
             disabled={checked.length === 0}
-            style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: checked.length ? "#5f0080" : "#ededed", color: checked.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 400, cursor: checked.length ? "pointer" : "default" }}
+            style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: checked.length ? "#582681" : "#ededed", color: checked.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 400, cursor: checked.length ? "pointer" : "default" }}
           >
             이메일 발송{checked.length ? ` (${checked.length})` : ""}
           </button>
           <button
             onClick={() => { if (checked.length) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }}
             disabled={checked.length === 0}
-            style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: checked.length ? "#5f0080" : "#ededed", color: checked.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 400, cursor: checked.length ? "pointer" : "default" }}
+            style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: checked.length ? "#582681" : "#ededed", color: checked.length ? "#fff" : "#aaa", fontSize: 14, fontWeight: 400, cursor: checked.length ? "pointer" : "default" }}
           >
             SMS 발송{checked.length ? ` (${checked.length})` : ""}
           </button>
@@ -438,7 +438,7 @@ function AdminMembersPageInner() {
                     {/* 이름: 아바타 + 이름·성별(1행) / 나이·경력(2행) */}
                     <td className="admin-td-brand">
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#5f0080", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                           {m.avatar_url ? (
                             <img src={m.avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           ) : (
@@ -543,7 +543,7 @@ function AdminMembersPageInner() {
                     <td>
                       <div style={{ display: "flex", justifyContent: "center" }}>
                         {m.resume_id ? (
-                          <button onClick={() => setSelected(m)} title="이력서 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: 0 }}>
+                          <button onClick={() => setSelected(m)} title="이력서 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: 0 }}>
                             <FileText size={15} /><span>이력서</span>
                           </button>
                         ) : (

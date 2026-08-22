@@ -20,9 +20,9 @@ function page(title: string, message: string) {
      <meta name="viewport" content="width=device-width,initial-scale=1"/><title>${title}</title></head>
      <body style="margin:0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#f7f6f9;">
        <div style="max-width:420px;margin:80px auto;background:#fff;border-radius:12px;padding:36px 28px;text-align:center;">
-         <p style="font-size:20px;font-weight:700;color:#5f0080;margin:0 0 12px;">${title}</p>
+         <p style="font-size:20px;font-weight:700;color:#582681;margin:0 0 12px;">${title}</p>
          <p style="font-size:14px;color:#555;line-height:1.7;margin:0 0 24px;">${message}</p>
-         <a href="${SITE_URL}" style="display:inline-block;padding:12px 26px;background:#5f0080;color:#fff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">뷰티워크로</a>
+         <a href="${SITE_URL}" style="display:inline-block;padding:12px 26px;background:#582681;color:#fff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">뷰티워크로</a>
        </div></body></html>`,
     { headers: { "content-type": "text/html; charset=utf-8" } }
   );

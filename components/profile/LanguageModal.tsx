@@ -81,16 +81,16 @@ export default function LanguageModal({ isOpen, onClose, editTarget }: Props) {
                   style={{
                     flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
                     padding: "16px 8px", borderRadius: 12, cursor: "pointer", background: "#fff",
-                    border: on ? "1.5px solid #5f0080" : "1px solid #e6e6e6",
+                    border: on ? "1.5px solid #582681" : "1px solid #e6e6e6",
                     boxShadow: on ? "0 0 0 3px rgba(95,0,128,0.08)" : "none",
                   }}>
                   <span style={{
                     width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 17, fontWeight: 700,
-                    border: on ? "2px solid #5f0080" : "2px solid #dcdcdc",
-                    color: on ? "#5f0080" : "#bbb",
+                    border: on ? "2px solid #582681" : "2px solid #dcdcdc",
+                    color: on ? "#582681" : "#bbb",
                   }}>{lv.tier}</span>
-                  <span style={{ fontSize: 13, fontWeight: on ? 700 : 400, color: on ? "#5f0080" : "#666" }}>{lv.value}</span>
+                  <span style={{ fontSize: 13, fontWeight: on ? 700 : 400, color: on ? "#582681" : "#666" }}>{lv.value}</span>
                   <span style={{ fontSize: 11.5, color: on ? "#9b6bb3" : "#aaa" }}>{lv.desc}</span>
                 </button>
               );

@@ -77,7 +77,7 @@ export default function BroadcastModal({
     flex: 1, padding: "8px 0", borderRadius: 8, cursor: "pointer",
     fontSize: 14, fontWeight: 400,
     background: on ? "#ede9fe" : "#fff",
-    color: on ? "#5f0080" : "#aaa",
+    color: on ? "#582681" : "#aaa",
     border: on ? "none" : "1px solid #eee",
   });
 
@@ -96,7 +96,7 @@ export default function BroadcastModal({
           </div>
 
           <div style={{ color: "#888", fontSize: 13, marginBottom: 6 }}>
-            수신 대상 <span style={{ color: "#5f0080" }}>{valid.length}명</span>
+            수신 대상 <span style={{ color: "#582681" }}>{valid.length}명</span>
             {missing > 0 && <span style={{ color: "#e74c3c" }}> · {channel === "email" ? "이메일" : "번호"} 없음 {missing}명 제외</span>}
           </div>
 
@@ -129,13 +129,13 @@ export default function BroadcastModal({
           )}
 
           {result && (
-            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: "#f3eafa", fontSize: 13, color: "#5f0080", textAlign: "center" }}>
+            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: "#f3eafa", fontSize: 13, color: "#582681", textAlign: "center" }}>
               {result}
             </div>
           )}
 
           <button onClick={send} disabled={sending}
-            style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#f3eefc" : "#ede9fe", color: "#5f0080", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 400, cursor: sending ? "default" : "pointer" }}>
+            style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#f3eefc" : "#ede9fe", color: "#582681", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 400, cursor: sending ? "default" : "pointer" }}>
             {sending ? "발송 중..." : `${valid.length}명에게 ${channel === "email" ? "이메일" : "문자"} 발송`}
           </button>
           <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 8 }}>

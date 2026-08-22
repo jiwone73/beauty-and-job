@@ -298,7 +298,7 @@ function Hero() {
 }
 
 /* ============================================
-   섹션 1: 뷰티워크 추천 공고<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#5f0080", background: "#f3eafa", verticalAlign: "middle" }}>📊 직군 맞춤 선별</span>
+   섹션 1: 뷰티워크 추천 공고<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#582681", background: "#f3eafa", verticalAlign: "middle" }}>📊 직군 맞춤 선별</span>
    ============================================ */
 /* ============================================
    섹션: 지금 적극 채용 중
@@ -319,7 +319,7 @@ function SectionActiveHiring() {
         <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
         <div className="section-head">
           <div>
-            <h2 className="section-title">🔥 지금 적극 채용 중<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#5f0080", background: "#f3eafa", verticalAlign: "middle" }}>📊 데이터 기반 선별</span></h2>
+            <h2 className="section-title">🔥 지금 적극 채용 중<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#582681", background: "#f3eafa", verticalAlign: "middle" }}>📊 데이터 기반 선별</span></h2>
             <p className="section-sub">여러 채용 지표를 분석해, 지금 가장 적극적으로 채용 중인 곳만 엄선했어요</p>
           </div>
           
@@ -485,7 +485,7 @@ function SectionJobGroups() {
               href={`/jobs?type=${tab}&group=${encodeURIComponent(g.group)}`}
               style={{
                 padding: "10px 18px", borderRadius: 10, fontSize: 14, fontWeight: 500,
-                border: "1px solid #eadcf3", background: "#faf5ff", color: "#5f0080",
+                border: "1px solid #eadcf3", background: "#faf5ff", color: "#582681",
                 textDecoration: "none",
               }}>
               {g.group}
@@ -585,7 +585,7 @@ function Footer() {
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
             <Link href="/support" style={{ fontSize: 13, color: "#666", textDecoration: "none", whiteSpace: "nowrap" }}>고객센터</Link>
             <Link href="/support/terms" style={{ fontSize: 13, color: "#666", textDecoration: "none", whiteSpace: "nowrap" }}>이용약관</Link>
-            <Link href="/support/privacy" style={{ fontSize: 13, color: "#5f0080", textDecoration: "none", fontWeight: 600, whiteSpace: "nowrap" }}>개인정보 처리방침</Link>
+            <Link href="/support/privacy" style={{ fontSize: 13, color: "#582681", textDecoration: "none", fontWeight: 600, whiteSpace: "nowrap" }}>개인정보 처리방침</Link>
           </div>
         </div>
       </div>

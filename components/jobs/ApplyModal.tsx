@@ -275,10 +275,10 @@ export default function ApplyModal({
                       width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
                       display: "inline-flex", alignItems: "center", justifyContent: "center",
                       fontSize: 12, fontWeight: 400,
-                      background: active ? "#5f0080" : "#eee",
+                      background: active ? "#582681" : "#eee",
                       color: active ? "#fff" : "#aaa",
                     }}>{i + 1}</span>
-                    <span style={{ fontSize: 13, fontWeight: 400, color: active ? "#5f0080" : "#aaa" }}>{label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: active ? "#582681" : "#aaa" }}>{label}</span>
                   </div>
                   {i < 2 && <span style={{ width: 20, height: 1, background: "#ddd", flexShrink: 0 }} />}
                 </Fragment>
@@ -303,28 +303,28 @@ export default function ApplyModal({
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     <button type="button" className="cv-chip"
                       onClick={() => setCoverLetter((prev) => prev + `${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 포지션"} 채용 공고를 보고 지원하게 된 ${userName || ""}입니다.\n`)}
-                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#582681", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
                       <span className="cv-chip-full">{`${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 포지션"} 채용 공고를 보고 지원하게 된 ${userName || ""}입니다.`}</span>
                       <span className="cv-chip-short">✏️ 첫인사</span>
                     </button>
                     {coreCompetencies && coreCompetencies.trim() && (
                       <button type="button" className="cv-chip"
                         onClick={() => setCoverLetter((prev) => prev + `저의 핵심 역량인 ${coreCompetencies.trim()}을(를) 바탕으로 ${jobTitle || "해당"} 직무에서 기여하고 싶습니다.\n`)}
-                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#582681", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
                         <span className="cv-chip-full">{`저의 핵심 역량인 ${coreCompetencies.trim()}을(를) 바탕으로 ${jobTitle || "해당"} 직무에서 기여하고 싶습니다.`}</span>
                         <span className="cv-chip-short">⭐ 핵심역량</span>
                       </button>
                     )}
                     <button type="button" className="cv-chip"
                       onClick={() => setCoverLetter((prev) => prev + `면접에서 제 경험과 역량을 더 구체적으로 말씀드릴 기회를 주시면 감사하겠습니다.\n`)}
-                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#582681", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
                       <span className="cv-chip-full">면접에서 제 경험과 역량을 더 구체적으로 말씀드릴 기회를 주시면 감사하겠습니다.</span>
                       <span className="cv-chip-short">🙌 맺음말</span>
                     </button>
                     {lastCoverLetter && (
                       <button type="button"
                         onClick={() => setCoverLetter(lastCoverLetter)}
-                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#5f0080", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
+                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#faf5ff", color: "#582681", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
                         📋 이전 자소서 불러오기
                       </button>
                     )}
@@ -390,7 +390,7 @@ export default function ApplyModal({
               <div style={{ display: "flex", gap: 8 }}>
                 <button
                   onClick={() => setStep("edit")}
-                  style={{ flex: "0 0 auto", padding: "13px 18px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
+                  style={{ flex: "0 0 auto", padding: "13px 18px", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
                 >
                   수정하기
                 </button>
@@ -444,7 +444,7 @@ export default function ApplyModal({
                 <button
                   onClick={handleSaveResume}
                   disabled={saving}
-                  style={{ flex: 1, padding: "13px 0", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
+                  style={{ flex: 1, padding: "13px 0", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
                 >
                   {saving ? "저장 중..." : "저장하기"}
                 </button>

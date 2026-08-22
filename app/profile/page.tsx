@@ -571,7 +571,7 @@ export default function ProfilePage() {
                         <span style={{ fontSize: "30px", color: "#a888c0" }}>👤</span>
                       ) : null}
                       {avatarUploading && (
-                        <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#5f0080", fontWeight: 600 }}>
+                        <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#582681", fontWeight: 600 }}>
                           업로드중
                         </div>
                       )}
@@ -627,7 +627,7 @@ export default function ProfilePage() {
                       <span className="profile-info-label">휴대전화<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button
-                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: phoneVerified ? "#5f0080" : "#e0e0e0", color: phoneVerified ? "#fff" : "#9a9a9a", cursor: phoneVerified ? "pointer" : "not-allowed" }}
+                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: phoneVerified ? "#582681" : "#e0e0e0", color: phoneVerified ? "#fff" : "#9a9a9a", cursor: phoneVerified ? "pointer" : "not-allowed" }}
                           disabled={!phoneVerified}
                           onClick={async () => {
                             const d = phoneInput.replace(/\D/g, "");
@@ -678,7 +678,7 @@ export default function ProfilePage() {
                           } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); }
                           finally { setPhoneSending(false); }
                         }}
-                        style={{ padding: "0 14px", height: "38px", whiteSpace: "nowrap", borderRadius: "8px", fontSize: "13px", fontWeight: 600, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", cursor: "pointer", opacity: (phoneVerified || phoneInput.replace(/\D/g, "").length < 10) ? 0.4 : 1 }}>
+                        style={{ padding: "0 14px", height: "38px", whiteSpace: "nowrap", borderRadius: "8px", fontSize: "13px", fontWeight: 600, border: "1px solid #582681", background: "#fff", color: "#582681", cursor: "pointer", opacity: (phoneVerified || phoneInput.replace(/\D/g, "").length < 10) ? 0.4 : 1 }}>
                         {phoneVerified ? "인증완료" : phoneCodeSent ? "재전송" : phoneSending ? "전송중" : "인증번호 받기"}
                       </button>
                     </div>
@@ -708,7 +708,7 @@ export default function ProfilePage() {
                             } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); }
                             finally { setPhoneVerifying(false); }
                           }}
-                          style={{ padding: "0 14px", height: "38px", whiteSpace: "nowrap", borderRadius: "8px", fontSize: "13px", fontWeight: 600, border: "none", background: "#5f0080", color: "#fff", cursor: "pointer", opacity: phoneCode.length < 6 ? 0.4 : 1 }}>
+                          style={{ padding: "0 14px", height: "38px", whiteSpace: "nowrap", borderRadius: "8px", fontSize: "13px", fontWeight: 600, border: "none", background: "#582681", color: "#fff", cursor: "pointer", opacity: phoneCode.length < 6 ? 0.4 : 1 }}>
                           확인
                         </button>
                       </div>
@@ -727,7 +727,7 @@ export default function ProfilePage() {
                       <span className="profile-info-label">생년월일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button
-                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
+                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#582681", color: "#fff", cursor: "pointer" }}
                           onClick={async () => {
                             const birthCheck = validateBirth(birthInput);
                             if (!birthCheck.ok) { alert(birthCheck.message); return; }
@@ -773,7 +773,7 @@ export default function ProfilePage() {
                     <div style={{ display: "flex", gap: "8px" }}>
                       {["남성", "여성"].map((g) => (
                         <button key={g}
-                          style={{ flex: 1, padding: "10px", borderRadius: "8px", fontSize: "14px", cursor: "pointer", border: gender === g ? "1.5px solid #5f0080" : "1px solid #e0d0f0", background: gender === g ? "#5f0080" : "#fff", color: gender === g ? "#fff" : "#333", fontWeight: gender === g ? 600 : 400 }}
+                          style={{ flex: 1, padding: "10px", borderRadius: "8px", fontSize: "14px", cursor: "pointer", border: gender === g ? "1.5px solid #582681" : "1px solid #e0d0f0", background: gender === g ? "#582681" : "#fff", color: gender === g ? "#fff" : "#333", fontWeight: gender === g ? 600 : 400 }}
                           onClick={async () => {
                             try {
                               const token = localStorage.getItem("access_token");
@@ -803,7 +803,7 @@ export default function ProfilePage() {
                       <span className="profile-info-label">이메일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button
-                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#5f0080", color: "#fff", cursor: "pointer" }}
+                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#582681", color: "#fff", cursor: "pointer" }}
                           onClick={async () => {
                             const val = emailEditInput.trim();
                             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { alert("올바른 이메일 형식을 입력해주세요."); return; }
@@ -961,7 +961,7 @@ export default function ProfilePage() {
                     onChange={(e) => { setNewEmailInput(e.target.value); setEmailCodeSent(false); setEmailCode(""); }}
                     style={{ flex: 1, minWidth: 0, height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box" }} />
                   <button onClick={sendEmailCode} disabled={emailSending || !newEmailInput.trim()}
-                    style={{ flexShrink: 0, height: 44, padding: "0 14px", borderRadius: 8, border: "1px solid #5f0080", background: "#fff", color: "#5f0080", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", cursor: emailSending ? "not-allowed" : "pointer", opacity: emailSending ? 0.6 : 1 }}>
+                    style={{ flexShrink: 0, height: 44, padding: "0 14px", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", cursor: emailSending ? "not-allowed" : "pointer", opacity: emailSending ? 0.6 : 1 }}>
                     {emailSending ? "전송중" : emailCodeSent ? "재전송" : "인증번호 받기"}
                   </button>
                 </div>
@@ -972,7 +972,7 @@ export default function ProfilePage() {
                 )}
               </>
             )}
-            {emailMsg && <p style={{ fontSize: 12, color: "#5f0080", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
+            {emailMsg && <p style={{ fontSize: 12, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => { setShowEmailModal(false); setEmailCode(""); setEmailCodeSent(false); setEmailMsg(""); }} disabled={emailBusy}
                 style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>취소</button>
@@ -981,7 +981,7 @@ export default function ProfilePage() {
                   style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#FEE500", color: "#191600", fontSize: 15, fontWeight: 700, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>{emailBusy ? "이동 중..." : "카카오로 동기화"}</button>
               ) : (
                 <button onClick={changeEmail} disabled={emailBusy || !emailCodeSent || !emailCode.trim()}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: (emailBusy || !emailCodeSent || !emailCode.trim()) ? "not-allowed" : "pointer", opacity: (emailBusy || !emailCodeSent || !emailCode.trim()) ? 0.5 : 1 }}>{emailBusy ? "변경 중..." : "변경하기"}</button>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 15, fontWeight: 600, cursor: (emailBusy || !emailCodeSent || !emailCode.trim()) ? "not-allowed" : "pointer", opacity: (emailBusy || !emailCodeSent || !emailCode.trim()) ? 0.5 : 1 }}>{emailBusy ? "변경 중..." : "변경하기"}</button>
               )}
             </div>
           </div>

@@ -5,7 +5,7 @@ import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { shortRegion } from "@/lib/regionShort";
 import { BannerImg } from "@/components/BannerImg";
 
-const PURPLE = "#5f0080";
+const PURPLE = "#582681";
 
 export type JobCardData = {
   id: string | number;

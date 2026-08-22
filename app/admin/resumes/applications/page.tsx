@@ -149,10 +149,10 @@ function AdminApplicationsPageInner() {
       <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
         <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
         {(["전체", "매장", "오피스"] as const).map((opt) => (
-          <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobTypeFilter === opt ? "#5f0080" : "#555" }}>
+          <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobTypeFilter === opt ? "#582681" : "#555" }}>
             <input type="radio" name="applicantTrack" checked={jobTypeFilter === opt}
               onChange={() => setJobTypeFilter(opt)}
-              style={{ accentColor: "#5f0080", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
+              style={{ accentColor: "#582681", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
             {opt}
           </label>
         ))}
@@ -278,7 +278,7 @@ function AdminApplicationsPageInner() {
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                         {hasResume ? (
                           <button onClick={() => setSelected(a)} title="이력서 보기"
-                            style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#5f0080", fontSize: 14, fontWeight: 500, padding: 0 }}>
+                            style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: 0 }}>
                             <FileText size={15} /><span>이력서</span>
                           </button>
                         ) : (
@@ -288,7 +288,7 @@ function AdminApplicationsPageInner() {
                         )}
                         {a.portfolio_images?.length ? (
                           <a href={a.portfolio_images[0].url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기"
-                            style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#5f0080", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
+                            style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#582681", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
                             <Paperclip size={13} /><span>포트폴리오</span>
                           </a>
                         ) : (
@@ -300,7 +300,7 @@ function AdminApplicationsPageInner() {
                     </td>
                     {/* 상태 (읽기 전용) */}
                     <td>
-                      <span style={{ fontWeight: 500, color: "#5f0080" }}>
+                      <span style={{ fontWeight: 500, color: "#582681" }}>
                         {STATUS_TO_LABEL[a.status] || a.status}
                       </span>
                     </td>

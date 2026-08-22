@@ -127,8 +127,8 @@ export default function AccountSettingsPage() {
                     checked={골랐나}
                     disabled={offerSaving || openToOffers === null}
                     onChange={() => saveOpenToOffers(o.on)}
-                    style={{ width: 18, height: 18, accentColor: "#5f0080", flexShrink: 0, margin: 0 }} />
-                  <span style={{ fontSize: 15, color: 골랐나 ? "#5f0080" : "#333" }}>{o.label}</span>
+                    style={{ width: 18, height: 18, accentColor: "#582681", flexShrink: 0, margin: 0 }} />
+                  <span style={{ fontSize: 15, color: 골랐나 ? "#582681" : "#333" }}>{o.label}</span>
                 </label>
               );
             })}
@@ -171,7 +171,7 @@ export default function AccountSettingsPage() {
               <input type="password" placeholder="새 비밀번호 확인" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)}
                 style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 16, boxSizing: "border-box" }} />
               <button onClick={handleChangePw} disabled={pwSaving}
-                style={{ width: "100%", height: 48, borderRadius: 8, border: "none", background: "#5f0080", color: "#fff", fontSize: 15, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
+                style={{ width: "100%", height: 48, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 15, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
                 {pwSaving ? "변경 중..." : "비밀번호 변경"}
               </button>
               <p style={{ fontSize: 12, color: "#999", margin: "10px 0 0" }}>카카오 등 소셜 로그인 계정은 비밀번호 변경이 불가능합니다.</p>

@@ -14,8 +14,8 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
     subject: "[뷰티워크] 비밀번호 재설정 안내",
     html: `
       <div style="max-width:480px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
-        <div style="padding:24px 0;border-bottom:2px solid #5f0080;">
-          <span style="font-size:20px;font-weight:700;color:#5f0080;">뷰티워크</span>
+        <div style="padding:24px 0;border-bottom:2px solid #582681;">
+          <span style="font-size:20px;font-weight:700;color:#582681;">뷰티워크</span>
         </div>
         <div style="padding:32px 0;">
           <h1 style="font-size:18px;margin:0 0 16px;">비밀번호 재설정</h1>
@@ -24,13 +24,13 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
             이 링크는 <strong>30분간</strong> 유효합니다.
           </p>
           <a href="${resetUrl}"
-             style="display:inline-block;padding:13px 28px;background:#5f0080;color:#fff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">
+             style="display:inline-block;padding:13px 28px;background:#582681;color:#fff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">
             비밀번호 재설정하기
           </a>
           <p style="font-size:12px;color:#999;line-height:1.7;margin:24px 0 0;">
             본인이 요청하지 않았다면 이 메일을 무시하셔도 됩니다.<br/>
             버튼이 작동하지 않으면 아래 주소를 복사해 접속하세요:<br/>
-            <span style="color:#5f0080;word-break:break-all;">${resetUrl}</span>
+            <span style="color:#582681;word-break:break-all;">${resetUrl}</span>
           </p>
         </div>
         <div style="padding:16px 0;border-top:1px solid #eee;font-size:11px;color:#aaa;">
@@ -48,15 +48,15 @@ export async function sendEmailChangeCodeEmail(to: string, code: string) {
     subject: "[뷰티워크] 이메일 변경 인증코드",
     html: `
       <div style="max-width:480px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
-        <div style="padding:24px 0;border-bottom:2px solid #5f0080;">
-          <span style="font-size:20px;font-weight:700;color:#5f0080;">뷰티워크</span>
+        <div style="padding:24px 0;border-bottom:2px solid #582681;">
+          <span style="font-size:20px;font-weight:700;color:#582681;">뷰티워크</span>
         </div>
         <div style="padding:32px 0;">
           <h1 style="font-size:18px;margin:0 0 16px;">이메일 변경 인증</h1>
           <p style="font-size:14px;line-height:1.7;color:#444;margin:0 0 20px;">
             아래 인증코드를 입력하면 이메일 변경이 완료됩니다. 코드는 <strong>5분간</strong> 유효합니다.
           </p>
-          <div style="font-size:30px;font-weight:800;letter-spacing:8px;color:#5f0080;background:#faf5ff;border-radius:10px;padding:18px;text-align:center;">
+          <div style="font-size:30px;font-weight:800;letter-spacing:8px;color:#582681;background:#faf5ff;border-radius:10px;padding:18px;text-align:center;">
             ${code}
           </div>
           <p style="font-size:12px;color:#999;line-height:1.7;margin:24px 0 0;">
@@ -78,15 +78,15 @@ export async function sendSignupEmailVerifyCode(to: string, code: string) {
     subject: "[뷰티워크] 회원가입 이메일 인증코드",
     html: `
       <div style="max-width:480px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
-        <div style="padding:24px 0;border-bottom:2px solid #5f0080;">
-          <span style="font-size:20px;font-weight:700;color:#5f0080;">뷰티워크</span>
+        <div style="padding:24px 0;border-bottom:2px solid #582681;">
+          <span style="font-size:20px;font-weight:700;color:#582681;">뷰티워크</span>
         </div>
         <div style="padding:32px 0;">
           <h1 style="font-size:18px;margin:0 0 16px;">회원가입 이메일 인증</h1>
           <p style="font-size:14px;line-height:1.7;color:#444;margin:0 0 20px;">
             아래 인증코드를 입력하면 이메일 인증이 완료됩니다. 코드는 <strong>5분간</strong> 유효합니다.
           </p>
-          <div style="font-size:30px;font-weight:800;letter-spacing:8px;color:#5f0080;background:#faf5ff;border-radius:10px;padding:18px;text-align:center;">
+          <div style="font-size:30px;font-weight:800;letter-spacing:8px;color:#582681;background:#faf5ff;border-radius:10px;padding:18px;text-align:center;">
             ${code}
           </div>
           <p style="font-size:12px;color:#999;line-height:1.7;margin:24px 0 0;">
@@ -483,7 +483,7 @@ export async function sendJobRecommendationEmail(
                     ${cardsHtml}
                   </table>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:16px auto 28px;">
-                    <tr><td align="center" bgcolor="#5f0080" style="border-radius:8px;">
+                    <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
                       <a href="${SITE_URL}/jobs" style="display:inline-block;padding:13px 34px;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;">공고 더 보러 가기</a>
                     </td></tr>
                   </table>
@@ -521,8 +521,8 @@ export async function sendAnnouncementEmails(recipients: string[], subject: stri
   const bodyHtml = esc.replace(/\n/g, "<br/>");
   const html = `
     <div style="max-width:560px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
-      <div style="padding:20px 0;border-bottom:2px solid #5f0080;">
-        <span style="font-size:20px;font-weight:700;color:#5f0080;">뷰티워크</span>
+      <div style="padding:20px 0;border-bottom:2px solid #582681;">
+        <span style="font-size:20px;font-weight:700;color:#582681;">뷰티워크</span>
       </div>
       <div style="padding:28px 4px;font-size:14px;line-height:1.8;color:#333;">
         ${bodyHtml}
@@ -562,8 +562,8 @@ export async function sendInquiryReplyEmail(
     attachments: attach.length ? attach : undefined,
     html: `
       <div style="max-width:560px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
-        <div style="padding:20px 0;border-bottom:2px solid #5f0080;">
-          <span style="font-size:20px;font-weight:700;color:#5f0080;">뷰티워크</span>
+        <div style="padding:20px 0;border-bottom:2px solid #582681;">
+          <span style="font-size:20px;font-weight:700;color:#582681;">뷰티워크</span>
         </div>
         <div style="padding:28px 4px;font-size:14px;line-height:1.8;color:#333;">
           ${bodyHtml}

@@ -67,7 +67,7 @@ export default function SmsModal({
 
           <div style={{ marginBottom: 16 }}>
             <div style={{ color: "#888", fontSize: 13, marginBottom: 8 }}>
-              수신 대상 <strong style={{ color: "#5f0080" }}>{valid.length}명</strong>
+              수신 대상 <strong style={{ color: "#582681" }}>{valid.length}명</strong>
               {noPhone > 0 && <span style={{ color: "#e74c3c" }}> · 번호 없음 {noPhone}명 제외</span>}
             </div>
             <div style={{ maxHeight: 120, overflowY: "auto", background: "#faf7fc", borderRadius: 10, padding: "10px 14px", fontSize: 13, lineHeight: 1.9 }}>
@@ -88,13 +88,13 @@ export default function SmsModal({
           </div>
 
           {result && (
-            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: "#f3eafa", fontSize: 13, color: "#5f0080", textAlign: "center" }}>
+            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: "#f3eafa", fontSize: 13, color: "#582681", textAlign: "center" }}>
               {result}
             </div>
           )}
 
           <button onClick={handleSend} disabled={sending}
-            style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#b98fd0" : "#5f0080", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: sending ? "default" : "pointer" }}>
+            style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#b98fd0" : "#582681", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: sending ? "default" : "pointer" }}>
             {sending ? "발송 중..." : `${valid.length}명에게 발송`}
           </button>
           <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 8 }}>

@@ -162,7 +162,7 @@ export default function MatchingPage() {
             {FEES.map((f, i) => (
               <div key={i} className="mat-fee-card">
                 <div className="mat-fee-header">
-                  <span className="mat-fee-icon" style={{ color: "#5f0080", display: "inline-flex" }}><f.Icon size={30} /></span>
+                  <span className="mat-fee-icon" style={{ color: "#582681", display: "inline-flex" }}><f.Icon size={30} /></span>
                   <h3 className="mat-fee-type">{f.type}</h3>
                 </div>
                 <p className="mat-fee-desc">{f.desc}</p>

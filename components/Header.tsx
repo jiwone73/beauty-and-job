@@ -47,8 +47,8 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
             ) : (
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <circle cx="16" cy="16" r="16" fill="#f3e5f5"/>
-                <circle cx="16" cy="13" r="5" fill="#5f0080"/>
-                <path d="M6 28c0-5.5 4.5-9 10-9s10 3.5 10 9" fill="#5f0080"/>
+                <circle cx="16" cy="13" r="5" fill="#582681"/>
+                <path d="M6 28c0-5.5 4.5-9 10-9s10 3.5 10 9" fill="#582681"/>
               </svg>
             )}
           </button>

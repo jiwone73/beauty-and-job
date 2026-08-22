@@ -112,8 +112,8 @@ export default function NearbyJobsPage() {
     if (!circleRef.current) {
       circleRef.current = new window.kakao.maps.Circle({
         center: pos, radius: radiusRef.current * 1000,
-        strokeWeight: 2, strokeColor: "#5f0080", strokeOpacity: 0.8, strokeStyle: "dashed",
-        fillColor: "#5f0080", fillOpacity: 0.05,
+        strokeWeight: 2, strokeColor: "#582681", strokeOpacity: 0.8, strokeStyle: "dashed",
+        fillColor: "#582681", fillOpacity: 0.05,
       });
       circleRef.current.setMap(mapObj.current);
     } else {
@@ -377,7 +377,7 @@ export default function NearbyJobsPage() {
         <button onClick={goCurrentLocation}
           style={{ position: "absolute", bottom: 12, right: 12, zIndex: 6, width: 42, height: 42, borderRadius: "50%", background: "#fff", border: "1px solid #ddd", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,.2)" }}
           aria-label="현재위치로 이동">
-          <Crosshair size={20} color="#5f0080" />
+          <Crosshair size={20} color="#582681" />
         </button>
         {/* 안내 */}
         {/* 지도 위 주소 찾기. 지금 자리가 아닌 데를 보고 싶을 때 — 이사 갈
@@ -470,13 +470,13 @@ export default function NearbyJobsPage() {
             <Link key={j.id} href={`/jobs/${j.id}`}
               style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderBottom: "1px solid #f2f2f2", textDecoration: "none", color: "inherit" }}>
               <div style={{ flexShrink: 0, width: 48, height: 48, borderRadius: 10, background: "#f3e5f5", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {j.logo_url ? <img src={j.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#5f0080", fontWeight: 700 }}>{(jobCompanyName(j.job_type, j.company_name, j.brand_name) || "?")[0]}</span>}
+                {j.logo_url ? <img src={j.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#582681", fontWeight: 700 }}>{(jobCompanyName(j.job_type, j.company_name, j.brand_name) || "?")[0]}</span>}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontSize: 12.5, color: "#888", margin: 0 }}>{jobCompanyName(j.job_type, j.company_name, j.brand_name)}</p>
                 <p style={{ fontSize: 14.5, fontWeight: 600, margin: "2px 0", color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.title}</p>
                 <p style={{ fontSize: 12.5, color: "#666", margin: 0 }}>
-                  <span style={{ color: "#5f0080", fontWeight: 700 }}>{fmtDist(j.distance_km)}</span>
+                  <span style={{ color: "#582681", fontWeight: 700 }}>{fmtDist(j.distance_km)}</span>
                   {" · "}{fmtExp(j.experience_level)}{" · "}{fmtSalary(j.salary_min)}
                 </p>
               </div>

@@ -136,7 +136,7 @@ export default function CompanyBlockModal({
                   style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, padding: "10px 14px", background: "#faf5ff", borderRadius: 8 }}>
                   <span style={{ minWidth: 0 }}>
                     <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#333" }}>
-                      <Ban size={14} color="#5f0080" style={{ flexShrink: 0 }} /> {b.companyName}
+                      <Ban size={14} color="#582681" style={{ flexShrink: 0 }} /> {b.companyName}
                     </span>
                     {/* 막아 둔 곳이 정말 그곳인지 나중에도 확인할 수 있어야 한다. */}
                     <span style={{ display: "block", fontSize: 12, color: "#999", marginTop: 2, paddingLeft: 20, lineHeight: 1.45, overflowWrap: "anywhere" }}>

@@ -152,7 +152,7 @@ export default function CareerEditModal({ isOpen, onClose, editTarget, resumeTyp
                     setIsCurrent(e.target.checked);
                     if (e.target.checked) { setEndY(""); setEndM(""); }
                   }}
-                  style={{ accentColor: "#5f0080", width: "16px", height: "16px" }}
+                  style={{ accentColor: "#582681", width: "16px", height: "16px" }}
                 />
                 <span>현재 재직 중</span>
               </label>

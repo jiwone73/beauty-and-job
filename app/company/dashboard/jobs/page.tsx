@@ -204,7 +204,7 @@ function CompanyJobsContent() {
   // 총 지원자는 공고 상태가 아니라 사람 수라 이 줄에 섞지 않는다 — 지원자 관리의 '전체'가 같은 값을 센다.
   const cntToday = jobs.filter(j => !isJobClosed(j) && daysLeft(j.deadline) === 0).length;
   const statCardsData = [
-    { label: "전체 공고", value: String(counts.전체), unit: "건", color: "#5f0080", status: "전체" },
+    { label: "전체 공고", value: String(counts.전체), unit: "건", color: "#582681", status: "전체" },
     { label: "진행중", value: String(counts.진행중), unit: "건", color: "#10b981", status: "진행중" },
     { label: "오늘 마감", value: String(cntToday), unit: "건", color: "#e05252", status: "오늘 마감" },
     { label: "마감", value: String(counts.마감), unit: "건", color: "#888", status: "마감" },
@@ -214,7 +214,7 @@ function CompanyJobsContent() {
   const cntImminent = jobs.filter(j => !isJobClosed(j) && (() => { const d = daysLeft(j.deadline); return d !== null && d <= 7; })()).length;
   const cntRelaxed = jobs.filter(j => !isJobClosed(j) && (() => { const d = daysLeft(j.deadline); return d === null || d > 7; })()).length;
   const statusCards = [
-    { label: "전체", value: String(counts.전체), color: "#5f0080", status: "전체" },
+    { label: "전체", value: String(counts.전체), color: "#582681", status: "전체" },
     { label: "≤D-7", value: String(cntImminent), color: "#e74c3c", status: "<D-7" },
     { label: ">D-7", value: String(cntRelaxed), color: "#10b981", status: ">D-7" },
     { label: "마감", value: String(counts.마감), color: "#888", status: "마감" },
@@ -302,7 +302,7 @@ function CompanyJobsContent() {
             .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
             .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
             .co-topbar { display: flex; align-items: stretch; gap: 7px; margin-bottom: 10px; }
-            .co-addbtn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; height: 46px; padding: 0 15px; flex-shrink: 0; border-radius: 9px; border: none; background: #5f0080; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
+            .co-addbtn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; height: 46px; padding: 0 15px; flex-shrink: 0; border-radius: 9px; border: none; background: #582681; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
             .co-statrow { display: flex; gap: 6px; flex: 1; min-width: 0; }
             .co-stat { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 46px; padding: 0 3px; border: 1px solid #eee; border-radius: 9px; background: #fff; cursor: pointer; font: inherit; transition: border-color .15s, background .15s; }
             .co-stat .n { font-size: 16px; font-weight: 600 !important; line-height: 1; }
@@ -310,11 +310,11 @@ function CompanyJobsContent() {
             .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
             .co-mbar-left { display: flex; align-items: center; gap: 11px; }
             .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }
-            .co-mbar-count strong { color: #5f0080; }
+            .co-mbar-count strong { color: #582681; }
             .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
-            .co-mbar-btn.on { border-color: #5f0080; color: #5f0080; background: #faf5fc; }
-            .co-mbar-btn.primary { border: none; background: #5f0080; color: #fff; }
+            .co-mbar-btn.on { border-color: #582681; color: #582681; background: #f8f5fb; }
+            .co-mbar-btn.primary { border: none; background: #582681; color: #fff; }
             .co-mbar-btn:disabled { opacity: 0.4; cursor: not-allowed; }
             .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
             .co-sheet { width: 100%; background: #fff; border-radius: 18px 18px 0 0; padding: 0 18px calc(20px + env(safe-area-inset-bottom)); max-height: 82vh; overflow-y: auto; animation: co-sheet-up .22s ease; }
@@ -327,8 +327,8 @@ function CompanyJobsContent() {
             .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
             .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 14px; font-weight: 400; cursor: pointer; }
-            .co-fseg-btn.on { border-color: #d9b8ec; background: #f5eaff; color: #5f0080; font-weight: 400; }
-            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f5eaff; color: #5f0080; font-size: 16px; font-weight: 400; cursor: pointer; }
+            .co-fseg-btn.on { border-color: #d9b8ec; background: #f5eaff; color: #582681; font-weight: 400; }
+            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f5eaff; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
@@ -395,16 +395,16 @@ function CompanyJobsContent() {
           <style>{`
             .co-list { display: flex; flex-direction: column; gap: 10px; }
             .co-list-meta { font-size: 12.5px; color: #888; padding: 2px 2px 4px; }
-            .co-list-meta strong { color: #5f0080; }
+            .co-list-meta strong { color: #582681; }
             .co-row { display: flex; align-items: center; gap: 10px; }
-            .co-row-check { width: 20px; height: 20px; accent-color: #5f0080; flex-shrink: 0; margin: 0; }
+            .co-row-check { width: 20px; height: 20px; accent-color: #582681; flex-shrink: 0; margin: 0; }
             .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
-            .co-li.on { border-color: #5f0080; background: #faf5fc; }
+            .co-li.on { border-color: #582681; background: #f8f5fb; }
             .co-li-r1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
-            .co-li-title { font-size: 15.5px; color: #5f0080; line-height: 1.35; word-break: break-all; min-width: 0; }
+            .co-li-title { font-size: 15.5px; color: #582681; line-height: 1.35; word-break: break-all; min-width: 0; }
             .co-li-r1r { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
             .co-li-status { font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
-            .co-rebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #5f0080; background: #fff; color: #5f0080; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
+            .co-rebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #582681; background: #fff; color: #582681; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
             .co-closebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #ddd; background: #fff; color: #666; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
             .co-li-r2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #777; }
             .co-li-r2 b { color: #444; font-weight: 500; }
@@ -436,9 +436,9 @@ function CompanyJobsContent() {
                       return job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`;
                     })()}</span>
                     {job.application_count > 0 ? (
-                      <span style={{ color: "#5f0080" }}
+                      <span style={{ color: "#582681" }}
                         onClick={(e) => { if (!selectMode) { e.stopPropagation(); router.push(`/company/dashboard/applicants?job_id=${job.id}`); } }}>
-                        지원자 <b style={{ color: "#5f0080" }}>{job.application_count}</b>
+                        지원자 <b style={{ color: "#582681" }}>{job.application_count}</b>
                       </span>
                     ) : (
                       <span>지원자 <b>{job.application_count}</b></span>
@@ -459,7 +459,7 @@ function CompanyJobsContent() {
           <div className="admin-table-meta">
             총 <strong>{filtered.length}</strong>건
             {checked.length > 0 && (
-              <span style={{ marginLeft: 8, color: "#5f0080" }}><strong>{checked.length}</strong>건 선택</span>
+              <span style={{ marginLeft: 8, color: "#582681" }}><strong>{checked.length}</strong>건 선택</span>
             )}
           </div>
           {/* 폭이 모자라면 칸을 눌러 글자를 쪼개지 말고 가로로 넘긴다 — 공고명만 두 줄까지 감싼다. */}

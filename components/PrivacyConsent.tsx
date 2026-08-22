@@ -33,7 +33,7 @@ export default function PrivacyConsent({ agreed, onChange, items = "회사명, �
           type="checkbox"
           checked={agreed}
           onChange={(e) => onChange(e.target.checked)}
-          style={{ width: 16, height: 16, accentColor: "#5f0080", cursor: "pointer" }}
+          style={{ width: 16, height: 16, accentColor: "#582681", cursor: "pointer" }}
         />
         <span>개인정보 수집 및 이용에 동의합니다. <span style={{ color: "#e74c3c" }}>(필수)</span></span>
       </label>

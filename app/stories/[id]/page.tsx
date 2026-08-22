@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ThumbsUp } from "lucide-react";
 
 const CAT_STYLE: Record<string, { bg: string; color: string }> = {
-  공감: { bg: "#f3e5f5", color: "#5f0080" },
+  공감: { bg: "#f3e5f5", color: "#582681" },
   꿀팁: { bg: "#e8f5e9", color: "#2e7d32" },
   질문: { bg: "#fff3e0", color: "#e65100" },
   정보: { bg: "#e3f2fd", color: "#1565c0" },
@@ -116,7 +116,7 @@ export default function StoryDetailPage() {
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px" }}>
         <p style={{ textAlign: "center", padding: "80px 0", color: "#888" }}>글을 찾을 수 없어요.</p>
         <p style={{ textAlign: "center" }}>
-          <Link href="/stories" style={{ color: "#5f0080" }}>이야기 목록으로</Link>
+          <Link href="/stories" style={{ color: "#582681" }}>이야기 목록으로</Link>
         </p>
       </main>
     );
@@ -128,7 +128,7 @@ export default function StoryDetailPage() {
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 40px" }}>
       <header style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 0" }}>
         <button onClick={() => router.back()} style={{ background: "none", border: "none", fontSize: 24, cursor: "pointer", color: "#333", lineHeight: 1 }}>‹</button>
-        <Link href="/stories" style={{ fontSize: 15, fontWeight: 600, color: "#5f0080", textDecoration: "none" }}>현장이야기</Link>
+        <Link href="/stories" style={{ fontSize: 15, fontWeight: 600, color: "#582681", textDecoration: "none" }}>현장이야기</Link>
       </header>
 
       <article style={{ paddingBottom: 24, borderBottom: "8px solid #f7f3fb", marginBottom: 20 }}>
@@ -140,9 +140,9 @@ export default function StoryDetailPage() {
             style={{
               display: "flex", alignItems: "center", gap: 6, background: "none", border: "none",
               cursor: "pointer", fontSize: 14, fontWeight: 500, padding: 0,
-              color: liked ? "#5f0080" : "#888",
+              color: liked ? "#582681" : "#888",
             }}>
-            <ThumbsUp size={18} strokeWidth={2} fill={liked ? "#5f0080" : "none"} />
+            <ThumbsUp size={18} strokeWidth={2} fill={liked ? "#582681" : "none"} />
             공감 {likeCount}
           </button>
           <span style={{ fontSize: 13, color: "#bbb" }}>조회 {post.view_count ?? 0}</span>
@@ -162,7 +162,7 @@ export default function StoryDetailPage() {
             style={{ flex: 1, padding: "12px 14px", borderRadius: 24, border: "1px solid #ddd", fontSize: 14, outline: "none" }}
           />
           <button onClick={handleComment} disabled={submitting || !commentInput.trim()}
-            style={{ padding: "0 20px", borderRadius: 24, border: "none", background: submitting || !commentInput.trim() ? "#ccc" : "#5f0080", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+            style={{ padding: "0 20px", borderRadius: 24, border: "none", background: submitting || !commentInput.trim() ? "#ccc" : "#582681", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
             등록
           </button>
         </div>
@@ -174,7 +174,7 @@ export default function StoryDetailPage() {
             {comments.map((c) => (
               <div key={c.id} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#5f0080" }}>{c.anon_label || "익명"}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#582681" }}>{c.anon_label || "익명"}</span>
                 </div>
                 <p style={{ fontSize: 14, color: "#333", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{c.body}</p>
                 <span style={{ fontSize: 12, color: "#bbb" }}>{fmtDate(c.created_at)}</span>

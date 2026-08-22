@@ -253,7 +253,7 @@ function SignupEmailContent() {
                 }`}
               >
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
-                <StoreIcon size={28} className="jt-icon" style={{ color: "#5f0080", flexShrink: 0 }} />
+                <StoreIcon size={28} className="jt-icon" style={{ color: "#582681", flexShrink: 0 }} />
                 <span className="jt-text flex flex-col min-w-0">
                   <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#1a1a1a]">매장</span>
                   <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">
@@ -278,7 +278,7 @@ function SignupEmailContent() {
                 }`}
               >
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
-                <OfficeIcon size={28} className="jt-icon" style={{ color: "#5f0080", flexShrink: 0 }} />
+                <OfficeIcon size={28} className="jt-icon" style={{ color: "#582681", flexShrink: 0 }} />
                 <span className="jt-text flex flex-col min-w-0">
                   <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#1a1a1a]">본사</span>
                   <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">
@@ -317,7 +317,7 @@ function SignupEmailContent() {
               className={`w-full h-[48px] px-4 border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${
                 emailStatus === "invalid" || emailStatus === "taken"
                   ? "border-[#e74c3c] focus:border-[#e74c3c]"
-                  : "border-[#e0e0e0] focus:border-[#5f0080]"
+                  : "border-[#e0e0e0] focus:border-[#582681]"
               }`}
             />
             {emailStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">확인 중이에요.</p>}
@@ -333,7 +333,7 @@ function SignupEmailContent() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="이름을 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
             />
           </div>
           {/* 휴대폰 번호 + 인증 */}
@@ -346,13 +346,13 @@ function SignupEmailContent() {
                 onChange={(e) => { setPhone(formatPhone(e.target.value)); setPhoneVerified(false); setCodeSent(false); }}
                 placeholder="(예시) 010-1234-5678"
                 disabled={phoneVerified}
-                className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080] disabled:bg-[#f5f5f5]"
+                className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681] disabled:bg-[#f5f5f5]"
               />
               <button
                 type="button"
                 onClick={handleSendCode}
                 disabled={sending || phoneVerified || phone.replace(/\D/g, "").length < 10}
-                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#5f0080] text-[#5f0080] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition"
+                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f5ebfa] transition"
               >
                 {phoneVerified ? "인증완료" : codeSent ? "재전송" : sending ? "전송중" : "인증번호 받기"}
               </button>
@@ -366,13 +366,13 @@ function SignupEmailContent() {
                   value={phoneCode}
                   onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   placeholder="인증번호 6자리"
-                  className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]"
+                  className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
                 />
                 <button
                   type="button"
                   onClick={handleVerifyCode}
                   disabled={verifying || phoneCode.length < 6}
-                  className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal bg-[#5f0080] text-white disabled:opacity-40 hover:opacity-90 transition"
+                  className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal bg-[#582681] text-white disabled:opacity-40 hover:opacity-90 transition"
                 >
                   {verifying ? "확인중" : "확인"}
                 </button>
@@ -394,7 +394,7 @@ function SignupEmailContent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호를 입력해주세요"
-                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]"
+                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
               />
               <button
                 type="button"
@@ -409,7 +409,7 @@ function SignupEmailContent() {
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
               placeholder="비밀번호를 다시 한번 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#5f0080]"
+              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
             />
             <p className={`text-[12px] md:text-[14px] mt-1.5 leading-relaxed ${password && !isPasswordValid(password) ? "text-[#e74c3c]" : "text-[#9a9a9a]"}`}>
               영문·숫자·특수문자 중 3가지 이상으로 조합해 8자 이상 16자 이하로 입력해주세요.
@@ -425,7 +425,7 @@ function SignupEmailContent() {
                 type="checkbox"
                 checked={allAgreed}
                 onChange={toggleAll}
-                className="w-4 h-4 accent-[#5f0080]"
+                className="w-4 h-4 accent-[#582681]"
               />
               <span className="font-normal text-[14px] md:text-[16px]">전체 동의</span>
             </label>
@@ -439,12 +439,12 @@ function SignupEmailContent() {
                       onChange={(e) =>
                         setAgreed({ ...agreed, [term.id]: e.target.checked })
                       }
-                      className="w-4 h-4 accent-[#5f0080]"
+                      className="w-4 h-4 accent-[#582681]"
                     />
                     <span>
                       <span
                         className={`font-normal ${
-                          term.is_required ? "text-[#5f0080]" : "text-[#9a9a9a]"
+                          term.is_required ? "text-[#582681]" : "text-[#9a9a9a]"
                         }`}
                       >
                         [{term.is_required ? "필수" : "선택"}]
@@ -470,7 +470,7 @@ function SignupEmailContent() {
           <button
             onClick={handleSubmit}
             disabled={!isFormValid || loading}
-            className="w-full h-[52px] mt-6 bg-[#5f0080] text-white rounded-lg font-normal text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition"
+            className="w-full h-[52px] mt-6 bg-[#582681] text-white rounded-lg font-normal text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition"
           >
             {loading ? "회원가입 중..." : "회원가입하기"}
           </button>

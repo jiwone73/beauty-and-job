@@ -14,7 +14,7 @@ import {
 } from "recharts";
 import { getGroupOfItem } from "@/lib/data/jobGroups";
 
-const PIE_COLORS = ["#5f0080", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
+const PIE_COLORS = ["#582681", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 // 차트 좌상단 단위 라벨 (recharts Y축 라벨 대신 — 항상 안정적으로 보임)
 const unitLabelStyle: React.CSSProperties = {
@@ -50,7 +50,7 @@ function ModeToggle({ mode, onChange }: { mode: string; onChange: (m: "new" | "c
             padding: "3px 12px", borderRadius: 999, fontSize: 12, fontWeight: 600,
             cursor: "pointer", border: "none",
             background: mode === val ? "#fff" : "transparent",
-            color: mode === val ? "#5f0080" : "#9a92a6",
+            color: mode === val ? "#582681" : "#9a92a6",
             boxShadow: mode === val ? "0 1px 2px rgba(0,0,0,0.12)" : "none",
             transition: "all 0.15s",
           }}>
@@ -239,8 +239,8 @@ export default function AdminDashboard() {
   const tabBtn = (active: boolean) => ({
     padding: "4px 12px", borderRadius: 6, fontSize: 13, fontWeight: 600,
     cursor: "pointer", border: "none",
-    background: active ? "#5f0080" : "#f0e9f5",
-    color: active ? "#fff" : "#5f0080",
+    background: active ? "#582681" : "#f0e9f5",
+    color: active ? "#fff" : "#582681",
   } as React.CSSProperties);
 
   return (
@@ -255,7 +255,7 @@ export default function AdminDashboard() {
             value: fmt(c ? Number(c.total_users) + Number(c.total_companies) : null),
             unit: "명",
             sub: `개인 ${fmt(c?.total_users)} · 기업 ${fmt(c?.total_companies)}`,
-            icon: Users, color: "#5f0080",
+            icon: Users, color: "#582681",
             href: "/admin/members",
           },
           {
@@ -398,8 +398,8 @@ export default function AdminDashboard() {
                 <XAxis dataKey="day" tick={{ fontSize: 13 }} />
                 <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
                 <Tooltip formatter={(v) => [`${v}명`, "신규 가입"]} />
-                <Line type="monotone" dataKey="개인" stroke="#5f0080" strokeWidth={2.5}
-                  dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+                <Line type="monotone" dataKey="개인" stroke="#582681" strokeWidth={2.5}
+                  dot={{ fill: "#582681", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           );
@@ -440,8 +440,8 @@ export default function AdminDashboard() {
               <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="프로필" stroke="#5f0080" strokeWidth={2.5}
-                dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+              <Line type="monotone" dataKey="프로필" stroke="#582681" strokeWidth={2.5}
+                dot={{ fill: "#582681", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
               <Line type="monotone" dataKey="이력서" stroke="#f59e0b" strokeWidth={2.5}
                 dot={{ fill: "#f59e0b", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
             </LineChart>
@@ -463,8 +463,8 @@ export default function AdminDashboard() {
               <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="전체방문자" stroke="#5f0080" strokeWidth={2.5}
-                dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+              <Line type="monotone" dataKey="전체방문자" stroke="#582681" strokeWidth={2.5}
+                dot={{ fill: "#582681", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
               <Line type="monotone" dataKey="로그인회원" stroke="#10b981" strokeWidth={2.5}
                 dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
             </LineChart>
@@ -651,8 +651,8 @@ export default function AdminDashboard() {
                 <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="전체방문자" stroke="#5f0080" strokeWidth={2.5}
-                  dot={{ fill: "#5f0080", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
+                <Line type="monotone" dataKey="전체방문자" stroke="#582681" strokeWidth={2.5}
+                  dot={{ fill: "#582681", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
                 <Line type="monotone" dataKey="로그인회원" stroke="#10b981" strokeWidth={2.5}
                   dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 6 }} isAnimationActive={false} />
               </LineChart>

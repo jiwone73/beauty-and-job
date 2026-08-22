@@ -64,7 +64,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const isOfficeJob = job.jobType === "본사";
   const linkCell = (url: string) => (
     <a key="w" href={/^https?:\/\//.test(url) ? url : `https://${url}`}
-      target="_blank" rel="noreferrer" style={{ color: "#5f0080", wordBreak: "break-all" }}>{url}</a>
+      target="_blank" rel="noreferrer" style={{ color: "#582681", wordBreak: "break-all" }}>{url}</a>
   );
   const companyRows: [string, ReactNode][] = [];
   if (isOfficeJob) {
@@ -116,7 +116,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const posCols = posColDefs.filter((c) => ALWAYS.has(c.key) || positions.some((p: any) => (c.get(p) || "").toString().trim()));
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#5f0080", flexShrink: 0 }} />모집부문</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문</h2>
       {/* 표를 테두리로 감싼다. 칸 밑줄만 있으면 바로 아래 복리후생 줄까지 표의 한
           부분처럼 읽혀, 어디까지가 자리별 조건인지 알 수 없다. */}
       <div style={{ overflowX: "auto", border: "1px solid #ece7f2", borderRadius: 10 }}>
@@ -195,7 +195,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   const locationSection = hasMap ? (
     <div className="jd-subblock" key="location">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={16} style={{ color: "#5f0080", flexShrink: 0 }} />근무지역</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역</h2>
       {job.companyAddress?.trim() && (
         <p className="job-detail-desc" style={{ marginBottom: "12px" }}>{job.companyAddress}</p>
       )}
@@ -241,7 +241,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   const applyGuideBlock = (hasContact || hasMethods || hasProcess) ? (
     <div className="jd-subblock" key="apply-guide">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Send size={16} style={{ color: "#5f0080", flexShrink: 0 }} />지원 안내</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Send size={16} style={{ color: "#582681", flexShrink: 0 }} />지원 안내</h2>
       {(hasContact || hasMethods) && (
         <div className="jd-2col">
           <div>{methodsInner}</div>
@@ -281,7 +281,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 {job.logo_url ? (
                   <img src={job.logo_url} alt={`${job.brand} 로고`} />
                 ) : (
-                  <span style={{ fontSize: 22, fontWeight: 800, color: "#5f0080" }}>
+                  <span style={{ fontSize: 22, fontWeight: 800, color: "#582681" }}>
                     {job.brand?.[0] || "·"}
                   </span>
                 )}

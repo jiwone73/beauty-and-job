@@ -126,8 +126,8 @@ export default function AppliedList({ userName }: { userName: string }) {
   // 합격은 어차피 매장이 직접 연락하고, 떨어진 경우는 공고가 마감되면 알게 된다.
   // 지원자에게는 '접수됐는지 / 열어봤는지'까지만 보여준다.
   const statusTextColor: Record<string, string> = {
-    APPLIED: "#5f0080", REVIEWING: "#5f0080", VIEWED: "#5f0080",
-    INTERVIEW: "#5f0080", PASSED: "#5f0080", REJECTED: "#5f0080", WITHDRAWN: "#999",
+    APPLIED: "#582681", REVIEWING: "#582681", VIEWED: "#582681",
+    INTERVIEW: "#582681", PASSED: "#582681", REJECTED: "#582681", WITHDRAWN: "#999",
   };
   const statusLabel: Record<string, string> = {
     APPLIED: "지원완료", REVIEWING: "열람됨", VIEWED: "열람됨",
@@ -237,7 +237,7 @@ export default function AppliedList({ userName }: { userName: string }) {
                     </div>
                   )}
                 </div>
-                <span className="applied-status-text" style={{ color: statusTextColor[app.status] || "#5f0080" }}>
+                <span className="applied-status-text" style={{ color: statusTextColor[app.status] || "#582681" }}>
                   {statusLabel[app.status] || app.status}
                 </span>
               </div>

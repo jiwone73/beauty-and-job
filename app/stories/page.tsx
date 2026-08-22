@@ -8,7 +8,7 @@ import { ThumbsUp } from "lucide-react";
 const CATEGORIES = ["전체", "공감", "꿀팁", "질문", "정보"];
 
 const CAT_STYLE: Record<string, { bg: string; color: string; emoji: string }> = {
-  공감: { bg: "#f3e5f5", color: "#5f0080", emoji: "💬" },
+  공감: { bg: "#f3e5f5", color: "#582681", emoji: "💬" },
   꿀팁: { bg: "#e8f5e9", color: "#2e7d32", emoji: "💡" },
   질문: { bg: "#fff3e0", color: "#e65100", emoji: "❓" },
   정보: { bg: "#e3f2fd", color: "#1565c0", emoji: "📌" },
@@ -53,7 +53,7 @@ export default function StoriesPage() {
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#5f0080", marginBottom: 8, whiteSpace: "nowrap" }}>현장이야기</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#582681", marginBottom: 8, whiteSpace: "nowrap" }}>현장이야기</h1>
           <p style={{ fontSize: 14, color: "#8a6aa8", lineHeight: 1.6 }}>
             진상 손님부터 독립 고민까지,<br />
             공감·꿀팁·정보가 모이는 뷰티 현장 이야기.
@@ -77,7 +77,7 @@ export default function StoriesPage() {
           <circle cx="30" cy="22" r="2" fill="#b794d4" />
           <circle cx="38" cy="22" r="2" fill="#b794d4" />
           <circle cx="38" cy="66" r="18" fill="#f7d9bf" />
-          <path d="M21 64 Q38 42 55 64 Q51 52 38 51 Q25 52 21 64 Z" fill="#5f0080" />
+          <path d="M21 64 Q38 42 55 64 Q51 52 38 51 Q25 52 21 64 Z" fill="#582681" />
           <circle cx="33" cy="66" r="1.8" fill="#4a3a3a" />
           <circle cx="44" cy="66" r="1.8" fill="#4a3a3a" />
           <path d="M34 73 Q38 77 43 73" stroke="#4a3a3a" strokeWidth="1.6" strokeLinecap="round" fill="none" />
@@ -154,7 +154,7 @@ export default function StoriesPage() {
         .stories-cat-btn:hover { color: #6b6480; }
         .stories-cat-btn.on {
           background: #e3d4f0;
-          color: #4a0066;
+          color: #431a63;
         }
         @media (min-width: 768px) {
           .stories-filter-bar {
