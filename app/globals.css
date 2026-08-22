@@ -12247,6 +12247,8 @@ button,
 .mainTop, .mainTop button, .mainTop input, .mainTop a { font-family: var(--font-sans); }
 .mainTop { padding: 16px 0 4px; }
 .mainTop .container { max-width: 1384px; }
+/* 배너 글자는 로고 두 색만 쓴다 — 나비의 보라 #582681, 글자의 차콜 #504F4F.
+   로고가 바로 위에 있는데 배너가 다른 색을 쓰면 둘이 따로 논다. */
 .mt-eyebrow { font-size: 13px; letter-spacing: 2.2px; color: #582681; font-weight: 600; }
 
 .mt-hero {
@@ -12259,9 +12261,9 @@ button,
   background-size: cover; background-position: center;
 }
 .mt-hero-in { position: relative; height: 100%; padding: 0 44px; display: flex; flex-direction: column; justify-content: center; }
-.mt-hero-h { font-size: 30px; line-height: 1.34; letter-spacing: -.6px; margin-top: 9px; color: #1a1a1a; }
-.mt-hero-h b { color: var(--color-primary); font-weight: 700; }
-.mt-hero-sub { font-size: 15px; color: #6f6577; margin-top: 11px; }
+.mt-hero-h { font-size: 30px; line-height: 1.34; letter-spacing: -.6px; margin-top: 9px; color: #504f4f; }
+.mt-hero-h b { color: #582681; font-weight: 700; }
+.mt-hero-sub { font-size: 15px; color: #7a7878; margin-top: 11px; }
 
 /* 바탕.
    · 페이지 바탕(#fdfbff)과 아주 살짝만 다르게 둔다. 세게 칠하면 박스가
