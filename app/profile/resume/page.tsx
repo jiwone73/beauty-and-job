@@ -493,9 +493,14 @@ function ResumePageContent() {
                 {/* 위쪽 여백을 따로 주지 않는다. 제목 아래 간격은 다른 구역과 같이
                     .resume-section-title 이 맡고, 여기서 또 띄우면 이 칸만 벌어진다. */}
                 <h3 className="resume-name" style={{ fontSize: "15px", fontWeight: 400 }}>{name || "이름"}</h3>
-                <p className="resume-job-line">{birthDisplay} {birthDisplay && "·"} {jobDisplay}</p>
-                <p className="resume-contact">{formatPhone(phone || phoneLocal)} {(phone || phoneLocal) && emailLocal ? "·" : ""} {emailLocal}</p>
-                {addressDisplay && <p className="resume-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>}
+                {/* 한 줄에 둘씩 붙여 놓으면 넉 줄이라 86px, 옆 사진은 128px 이라
+                    글 아래가 비어 보였다. 직군과 이메일을 각자 줄로 내리면 여섯 줄
+                    23 + 21x5 = 128px 로 사진과 아래끝이 맞는다. */}
+                <p className="resume-job-line">{birthDisplay}</p>
+                {jobDisplay && <p className="resume-job-line">{jobDisplay}</p>}
+                <p className="resume-contact">{formatPhone(phone || phoneLocal)}</p>
+                {emailLocal && <p className="resume-contact">{emailLocal}</p>}
+                {addressDisplay && <p className="resume-contact">{addressDisplay}</p>}
               </div>
               {/* 사진 위 테두리를 이름 첫 줄과 나란히 둔다. 예전엔 -22px 로 끌어올려
                   제목 옆까지 올라가 있어, 이름과 높이가 맞지 않았다. */}

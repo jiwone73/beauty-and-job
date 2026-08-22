@@ -94,7 +94,13 @@ export default function CertificateModal({ isOpen, onClose, editTarget, inline}:
       </div>
   );
 
-  if (inline) return <div className="cv-inline">{몸통}</div>;
+  // 인라인에는 덮개도 뒤로가기도 없다. 닫을 길을 여기서 준다.
+  if (inline) return (
+    <div className="cv-inline">
+      {몸통}
+      <button type="button" className="cv-inline-cancel" onClick={onClose}>취소</button>
+    </div>
+  );
 
   return (
     <div className="cv-overlay">
