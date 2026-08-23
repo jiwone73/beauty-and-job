@@ -201,9 +201,22 @@ function ResumePageContent() {
     // 비운 채로 넘어가므로 여기서 막는다. 살롱은 시술 스킬과 사진이 그 몫을
     // 하므로 묻지 않는다.
     if (resumeType === "office") {
+      // 본사는 학력이 곧 지원 자격인 자리가 많다.
+      if (educations.length === 0) { alert("학력을 채워 주세요."); return; }
       const 성과빈것 = careers.filter((c) => c.company.trim() && !c.description.trim());
       if (성과빈것.length > 0) {
         alert(`주요 성과를 적어 주세요.\n\n· ${성과빈것.map((c) => c.company).join("\n· ")}`);
+        return;
+      }
+    }
+    // 매장은 시술 스킬과 손님 응대 언어가 곧 채용 조건이다. 별표만 붙여
+    // 두면 비운 채로 넘어가므로 여기서 막는다.
+    if (resumeType === "salon") {
+      const 빈칸: string[] = [];
+      if (skills.length === 0) 빈칸.push("스킬");
+      if (languages.length === 0) 빈칸.push("어학");
+      if (빈칸.length > 0) {
+        alert(`${빈칸.join("·")}을(를) 채워 주세요.`);
         return;
       }
     }

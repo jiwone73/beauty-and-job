@@ -37,7 +37,9 @@ const 살롱직급 = ["인턴", "스탭", "디자이너", "아티스트", "실�
 const 졸업상태 = ["졸업", "재학", "휴학", "중퇴", "수료"];
 // 원티드 본사 경력은 재직 형태를 필수로 묻는다. 살롱은 직급이 그 자리다.
 const 재직형태 = ["정규직", "계약직", "인턴", "프리랜서", "파견직", "아르바이트"];
-const 언어들 = ["영어", "일본어", "중국어", "베트남어", "러시아어", "태국어", "스페인어", "프랑스어", "기타"];
+// 한국어를 맨 앞에 둔다. 살롱에는 외국 국적 종사자가 적지 않고, 그들에게는
+// 한국어 수준이 곧 채용 조건이다. 정작 목록에 없어 적을 자리가 없었다.
+const 언어들 = ["한국어", "영어", "중국어", "일본어", "베트남어", "태국어", "러시아어", "몽골어", "우즈베크어", "스페인어", "프랑스어"];
 const 수준들 = ["능숙하게 소통", "일상 회화 가능", "간단한 표현"];
 const 활동종류 = ["수상", "교육", "봉사", "동아리", "기타"];
 
@@ -116,10 +118,8 @@ export default function ResumeEditor({
   const [editCareer, setEditCareer] = useState<any>(null);
   const [eduModalOpen, setEduModalOpen] = useState(false);
   const [editEdu, setEditEdu] = useState<any>(null);
-  const [langOpen, setLangOpen] = useState(false);
   const 본사냐 = resumeType === "office";
   const [더적기, set더적기] = useState(false);
-  const [editLang, setEditLang] = useState<any>(null);
   const [expModalOpen, setExpModalOpen] = useState(false);
   const [editExp, setEditExp] = useState<any>(null);
   const [skillModalOpen, setSkillModalOpen] = useState(false);
@@ -371,7 +371,7 @@ export default function ResumeEditor({
       {true && (
         <section id="section-skill" className="resume-section">
           <div className="resume-section-head">
-            <h2 className="resume-section-title">스킬</h2>
+            <h2 className="resume-section-title">스킬{!본사냐 && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}</h2>
             <button className="resume-icon-btn" aria-label="스킬 추가" onClick={() => setSkillModalOpen(true)}>
               <Plus size={18} />
             </button>
@@ -467,8 +467,8 @@ export default function ResumeEditor({
 
       <section id="section-language" className="resume-section">
         <div className="resume-section-head">
-          <h2 className="resume-section-title">어학</h2>
-          {languages.length > 0 && !langOpen && (
+          <h2 className="resume-section-title">어학{!본사냐 && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}</h2>
+          {(
             <button className="resume-icon-btn" aria-label="어학 추가" onClick={() => addLanguage({ id: genId(), language: "", level: "", test: "" })}>
               <Plus size={18} />
             </button>
