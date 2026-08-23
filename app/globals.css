@@ -13192,7 +13192,9 @@ button,
 .if-row-plain .if-line { flex-wrap: nowrap; }
 .if-row-plain .if-wrap { min-width: 0; flex: 1 1 auto; }
 /* 테두리 상자 없이 커서만 뜨게 — 폭은 친 글자만큼(InlineField 의 칸폭). */
-.if-row-plain .if-input { min-width: 0; border-color: transparent; padding: 2px 0; background: transparent; }
+/* 자리글 버튼(.if-slot)과 여백·크기를 똑같이 둔다. 다르면 눌렀을 때 글자가 옆으로 튄다. */
+.if-row-plain .if-input { min-width: 0; border-color: transparent; background: transparent;
+  padding: 2px 4px; box-sizing: border-box; }
 .if-row-plain .if-slot { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .if-row-icon { width: 30px; height: 30px; border-radius: 8px; background: #f2f2f4;
   display: flex; align-items: center; justify-content: center; color: #a8a8ad; }

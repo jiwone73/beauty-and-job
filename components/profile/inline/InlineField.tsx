@@ -20,9 +20,12 @@ function 별표(필수?: boolean) {
  * 칸이 줄을 다 차지해 옆 칸이 아래로 밀린다(원티드는 글자만큼만 늘어난다).
  * 한글은 라틴 글자의 두 배 폭으로 센다.
  */
-function 칸폭(글: string, 자리글: string) {
+function 칸폭(글: string, 자리글: string, 처음폭: number | null) {
   const 셈 = (t: string) => [...t].reduce((a, c) => a + (/[\u3131-\u318E\uAC00-\uD7A3]/.test(c) ? 2 : 1), 0);
-  return `${Math.max(8, Math.max(셈(글), 셈(자리글)) + 2)}ch`;
+  const 글폭 = `${Math.max(2, Math.max(셈(글), 셈(자리글)))}ch`;
+  // 누르기 전 자리글 버튼이 차지하던 폭에서 시작한다. 그보다 좁게 열면 옆 칸이 당겨지고,
+  // 넓게 열면 밀린다 — 눌러도 아무것도 안 움직이는 것이 원티드의 느낌이다.
+  return 처음폭 ? `max(${Math.round(처음폭)}px, ${글폭})` : 글폭;
 }
 
 /** 눌러서 그 자리에서 치는 칸. */
@@ -38,6 +41,9 @@ export function InlineText({
   const [고치는중, set고치는중] = useState(false);
   const [초안, set초안] = useState(value);
   const 칸 = useRef<HTMLInputElement>(null);
+  const 자리 = useRef<HTMLButtonElement>(null);
+  const [처음폭, set처음폭] = useState<number | null>(null);
+  const 열기 = () => { set처음폭(자리.current?.getBoundingClientRect().width ?? null); set고치는중(true); };
 
   useEffect(() => { set초안(value); }, [value]);
   useEffect(() => { if (고치는중) 칸.current?.focus(); }, [고치는중]);
@@ -47,7 +53,7 @@ export function InlineText({
   if (고치는중) {
     return (
       <input ref={칸} className={`if-input ${wide ? "if-wide" : ""}`} value={초안}
-        style={wide ? undefined : { width: 칸폭(초안, placeholder) }}
+        style={wide ? undefined : { width: 칸폭(초안, placeholder, 처음폭) }}
         placeholder={placeholder}
         onChange={(e) => set초안(e.target.value)}
         onBlur={마치기}
@@ -58,7 +64,7 @@ export function InlineText({
     );
   }
   return (
-    <button type="button" className={`if-slot ${value ? "on" : ""}`} onClick={() => set고치는중(true)}>
+    <button ref={자리} type="button" className={`if-slot ${value ? "on" : ""}`} onClick={열기}>
       {value || placeholder}{!value && 별표(required)}
     </button>
   );
@@ -84,6 +90,9 @@ export function InlineSuggest<T extends { 이름: string }>({
   const [고치는중, set고치는중] = useState(false);
   const [초안, set초안] = useState(value);
   const 칸 = useRef<HTMLInputElement>(null);
+  const 자리 = useRef<HTMLButtonElement>(null);
+  const [처음폭, set처음폭] = useState<number | null>(null);
+  const 열기 = () => { set처음폭(자리.current?.getBoundingClientRect().width ?? null); set고치는중(true); };
   const 감싸개 = useRef<HTMLSpanElement>(null);
 
   useEffect(() => { set초안(value); }, [value]);
@@ -101,7 +110,7 @@ export function InlineSuggest<T extends { 이름: string }>({
 
   if (!고치는중) {
     return (
-      <button type="button" className={`if-slot ${value ? "on" : ""}`} onClick={() => set고치는중(true)}>
+      <button ref={자리} type="button" className={`if-slot ${value ? "on" : ""}`} onClick={열기}>
         {value || placeholder}{!value && required && <i className="if-req">*</i>}
       </button>
     );
@@ -109,7 +118,7 @@ export function InlineSuggest<T extends { 이름: string }>({
   return (
     <span className="if-wrap" ref={감싸개} style={wide ? { width: "100%" } : undefined}>
       <input ref={칸} className={`if-input ${wide ? "if-wide" : ""}`} value={초안}
-        style={wide ? undefined : { width: 칸폭(초안, placeholder) }}
+        style={wide ? undefined : { width: 칸폭(초안, placeholder, 처음폭) }}
         placeholder={placeholder} autoComplete="off"
         onChange={(e) => set초안(e.target.value)}
         onKeyDown={(e) => {
