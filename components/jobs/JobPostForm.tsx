@@ -2949,7 +2949,8 @@ export default function JobPostForm({
                   {/* 근무지가 여럿일 때 칸을 더한다. 모집분야와 같은 자리·같은 모양. */}
                   <button type="button" onClick={() => setExtraLocations((prev) => [...prev, { address: "", detail: "" }])}
                     title="근무지역을 하나 더 넣어요"
-                    style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: "#582681", fontSize: 22, lineHeight: 1, padding: 0, cursor: "pointer" }}>＋</button>
+                    style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0, border: "none", background: "none", color: "#582681", fontSize: 13.5, lineHeight: 1, padding: 0, cursor: "pointer" }}>
+                    <span style={{ fontSize: 17, lineHeight: 1 }}>＋</span>추가</button>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 12 }}>
                   <input readOnly value={nmAddress} onClick={() => openAddressSearch()}
@@ -2979,9 +2980,9 @@ export default function JobPostForm({
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                         <span style={{ fontSize: 13, color: "#6f6f75" }}>근무지 {i + 2}</span>
                         <button type="button" onClick={() => setExtraLocations((prev) => prev.filter((_, k) => k !== i))}
-                          title="이 근무지 빼기"
-                          style={{ marginLeft: "auto", border: "none", background: "none", color: "#c0392b", fontSize: 12.5, cursor: "pointer" }}>
-                          빼기
+                          title="이 근무지 빼기" aria-label={`근무지 ${i + 2} 빼기`}
+                          style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", border: "none", background: "none", color: "#c4c4c9", padding: 0, cursor: "pointer" }}>
+                          <Trash2 size={15} />
                         </button>
                       </div>
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? 8 : 12 }}>
