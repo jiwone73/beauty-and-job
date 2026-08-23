@@ -109,7 +109,7 @@ export default function CompanySettingsPage() {
         const raw = (res.data as any).links;
         const 온것 = Array.isArray(raw) ? raw.filter((l: any) => l?.url) : [];
         const 첫줄 = res.data.website_url ? [{ category: "", url: res.data.website_url }] : [];
-        setLinks((온것.length ? 온것 : 첫줄).map((l: any) => ({
+        setLinks((온것.length ? 온것 : 첫줄).slice(0, 1).map((l: any) => ({
           id: `l${Math.random().toString(36).slice(2, 8)}`, category: l.category || "", url: l.url || "",
         })));
         setForm({
@@ -454,31 +454,29 @@ export default function CompanySettingsPage() {
   // SNS·홈페이지 — 개인회원 프로필과 같은 부품. 2열 한 칸에 들어가는 크기다.
   //   ＋ 는 두지 않는다. 맨 아래에 늘 빈 줄이 하나 서 있어, 채우면 그 아래로
   //   빈 줄이 또 따라 붙는다(누를 것 없이 계속 넣을 수 있다).
+  // SNS·홈페이지 — 한 줄만 받는다. 매장이 여러 곳을 쓰더라도 공고에 내보내는 것은
+  //   대표 한 곳이면 충분하다(저장은 links 배열에 한 칸, 첫 링크가 website_url 이 된다).
+  const 링크한줄 = links[0] || { id: "__빈", category: "", url: "" };
   const 링크목록 = (
     <div className="admin-form-row">
       <label className="admin-form-label">{isStore ? "SNS" : "웹사이트"}</label>
-      <div style={{ minWidth: 0 }}>
-        {[...links, { id: "__빈", category: "", url: "" }].map((l) => (
-          <div key={l.id} className="if-row if-row-plain">
-            <div className="if-row-body">
-              <div className="if-line">
-                <InlineSuggest value={l.category} placeholder="SNS명"
-                  찾기={SNS찾기}
-                  onPick={(k) => 링크고치기(l.id, { category: k.이름, url: l.url || k.앞부분 })}
-                  onSave={(v) => 링크고치기(l.id, { category: v })} />
-                <span className="if-sep">|</span>
-                <InlineText value={l.url} placeholder="https://" required
-                  onSave={(v) => 링크고치기(l.id, { url: v })} />
-              </div>
-            </div>
-            {l.id !== "__빈" && (
-              <button className="if-row-del" aria-label="삭제"
-                onClick={() => setLinks((ls) => ls.filter((x) => x.id !== l.id))}>
-                <Trash2 size={15} />
-              </button>
-            )}
+      <div className="if-row if-row-plain" style={{ borderBottom: "none", padding: 0, minWidth: 0 }}>
+        <div className="if-row-body">
+          <div className="if-line">
+            <InlineSuggest value={링크한줄.category} placeholder="SNS명"
+              찾기={SNS찾기}
+              onPick={(k) => 링크고치기(링크한줄.id, { category: k.이름, url: 링크한줄.url || k.앞부분 })}
+              onSave={(v) => 링크고치기(링크한줄.id, { category: v })} />
+            <span className="if-sep">|</span>
+            <InlineText value={링크한줄.url} placeholder="https://" required
+              onSave={(v) => 링크고치기(링크한줄.id, { url: v })} />
           </div>
-        ))}
+        </div>
+        {links.length > 0 && (
+          <button className="if-row-del" aria-label="지우기" onClick={() => setLinks([])}>
+            <Trash2 size={15} />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -511,7 +509,7 @@ export default function CompanySettingsPage() {
     setSaving(true);
     try {
       // 빈 줄은 버린다. 첫 링크는 website_url 에도 넣어 기존 화면들이 그대로 돌게 한다.
-      const 낼링크 = links.filter((l) => l.url.trim())
+      const 낼링크 = links.filter((l) => l.url.trim()).slice(0, 1)
         .map((l) => ({ category: l.category.trim(), url: l.url.trim() }));
       const res = await companyMeApi.update({ ...form, links: 낼링크, website_url: 낼링크[0]?.url || "" } as any);
       setInfo(res.data);
