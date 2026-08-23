@@ -5650,7 +5650,9 @@ div:has(> table.admin-table),
 .settings-compact .admin-form-row:last-child { border-bottom: none; }
 .settings-compact .admin-form-row:has(> .admin-form-label) {
   display: grid;
-  grid-template-columns: 96px 1fr;
+  /* 라벨 칸을 96px 로 묶어 두니 'SNS' 처럼 짧은 이름 뒤가 넓게 비었다.
+     글자 폭만 쓰게 두면 값이 바로 뒤에 붙는다. */
+  grid-template-columns: auto minmax(0, 1fr);
   column-gap: 12px;
   align-items: center;
 }

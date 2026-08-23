@@ -775,7 +775,7 @@ export default function CompanySettingsPage() {
                 <div className="admin-form-row">
                   <label className="admin-form-label">담당자 휴대폰<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <button type="button" onClick={openPhoneModal}
-                    style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6, width: "100%", background: "none", border: "none", padding: 0, cursor: "pointer", color: form.phone ? "#333" : "#bbb", fontSize: 14, fontFamily: "inherit" }}>
+                    style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 6, width: "100%", background: "none", border: "none", padding: 0, cursor: "pointer", color: form.phone ? "#333" : "#cfcfcf", fontSize: 14, fontFamily: "inherit" }}>
                     <span>{form.phone ? formatPhone(form.phone) : "010-XXXX-XXXX"}</span>
                     <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
                   </button>
