@@ -2664,7 +2664,7 @@ export default function JobPostForm({
                   <span className="jp-add-wrap">
                     <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
                       className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: 0, cursor: typeLocked ? "default" : "pointer" }}>＋</button>
-                    <span className="jp-add-note">눌러서 표에 모집분야를 더합니다</span>
+                    <span className="jp-add-note">눌러 모집할 분야를 담아주세요</span>
                   </span>
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
@@ -2693,9 +2693,7 @@ export default function JobPostForm({
 
               {/* ── 모집부문 표: 분야별 고용형태·성별·경력/직책·학력·근무·급여 ── */}
               <div style={{ margin: "10px 0 22px" }}>
-                {categories.length === 0 ? (
-                  <div style={{ fontSize: 13, color: "#bbb", padding: "6px 0 2px" }}>위 <b>모집분야 ＋</b>를 눌러 모집할 분야를 담아주세요.</div>
-                ) : (
+                {categories.length === 0 ? null : (
                   <div style={{ overflowX: "auto" }}>
                     <table style={{ minWidth: 566, borderCollapse: "collapse" }}>
                       {/* 표 머리줄은 걷었다. 칸마다 제 이름이 자리글로 들어 있어,
