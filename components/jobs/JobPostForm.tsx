@@ -1910,8 +1910,8 @@ export default function JobPostForm({
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 모집부문 표 셀 스타일
-  const thc: React.CSSProperties = { textAlign: "left", padding: "0 4px 5px", fontSize: 11.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap" };
-  const reqStar = <span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span>; // 필수 열 표시(모집분야만)
+  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 12.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap" };
+  const reqStar = <span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span>; // 필수 열 표시(모집분야만)
   const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f7f7f8", verticalAlign: "middle" };
   // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
   const firstCol: React.CSSProperties = { paddingLeft: 0 };
@@ -2541,8 +2541,9 @@ export default function JobPostForm({
         return (
           <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
             {/* 제목 옆에 ＋(이미지 추가)·샘플 배너 — 드래그 박스 안을 버튼으로 채우지 않는다. */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
-              <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고 배너 이미지</h2>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 4px" }}>
+              {/* 제목은 왼쪽, 단추는 오른쪽 끝으로 밀어 붙인다. */}
+              <h2 className="jobpost-section-title" style={{ margin: 0, marginRight: "auto" }}>공고 배너 이미지</h2>
               <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
                 {!isMobile && <ImagePlus size={17} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
                 <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
@@ -2658,7 +2659,7 @@ export default function JobPostForm({
               {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "0 0 12px", alignItems: "center" }}>
                 <div className="job-detail-meta-item">
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                   {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                       고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
                   <span className="jp-add-wrap">
@@ -2668,7 +2669,7 @@ export default function JobPostForm({
                   </span>
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                   <button type="button"
                     onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
                     style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
@@ -2834,51 +2835,67 @@ export default function JobPostForm({
                 <div className="job-detail-company-info">
                   {/* 복리후생 — 한 행을 다 쓴다. 태그가 여럿이라 좁으면 읽기 나쁘다. */}
                   <div className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1" }}>
-                    <span className="job-detail-company-label" style={{ fontSize: 15 }}>복리후생<span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span></span>
+                    <span className="job-detail-company-label" style={{ fontSize: 15 }}>복리후생<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                     {!fiBenefits.trim() && (
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
-                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : pick())}
+                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "제공하는 혜택을 눌러 담아 주세요")}
                     </button>
                     )}
                     {freeField("benefits", fiBenefits, setFiBenefits, "예: 4대보험, 인센티브", false, () => setBenefitTags([]))}
                     {welfareOpen && !typeLocked && (() => {
                       const qq = benefitSearch.trim().toLowerCase();
-                      const match = (n: string) => !qq || n.toLowerCase().includes(qq);
-                      // 선택됐지만 마스터에 없는 커스텀 태그를 먼저, 그다음 마스터 옵션
+                      // 치기 전에는 아무것도 깔지 않는다. 마흔 개가 먼저 보이면 "다 고르라"는 말처럼
+                      // 읽히는데, 정작 담을 것은 그 매장이 실제로 주는 몇 가지다(이력서 스킬과 같은 결).
+                      const match = (n: string) => n.toLowerCase().includes(qq);
                       const customSel = benefitTags.filter((t) => !benefitTagOptions.some((o) => o.name === t) && match(t)).map((t) => ({ name: t, is_curated: false }));
-                      const visible = [...customSel, ...benefitTagOptions.filter((o) => match(o.name))];
+                      const visible = qq ? [...customSel, ...benefitTagOptions.filter((o) => match(o.name))] : [];
                       const exact = benefitTagOptions.some((o) => o.name === benefitSearch.trim()) || benefitTags.includes(benefitSearch.trim());
                       const canAdd = benefitSearch.trim().length > 0 && !exact;
                       return (
                       <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 6, zIndex: 50, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 360, maxWidth: "80vw" }}>
-                        <input autoFocus value={benefitSearch} onChange={(e) => setBenefitSearch(e.target.value)}
-                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (canAdd) addNewBenefit(benefitSearch); } }}
-                          placeholder="복리후생 검색 또는 직접 추가 후 Enter"
-                          style={{ width: "100%", boxSizing: "border-box", padding: "8px 10px", borderRadius: 8, border: "1px solid #efeff1", fontSize: 14, marginBottom: 10, outline: "none" }} />
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxHeight: 200, overflowY: "auto" }}>
-                          {visible.map((o) => { const on = benefitTags.includes(o.name); return (
-                            <button key={o.name} type="button" onClick={() => toggleBenefit(o.name)}
-                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                              {o.name}
-                              {!o.is_curated && <span style={{ fontSize: 10, color: on ? "#efeff1" : "#a8a8ad" }}>추가됨</span>}
-                              {!o.is_curated && (
-                                <span role="button" title="목록에서 지우기" aria-label={`${o.name} 지우기`}
-                                  onClick={(e) => { e.stopPropagation(); removeNewBenefit(o.name); }}
-                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: on ? "#efeff1" : "#a8a8ad" }}>×</span>
-                              )}
-                            </button>
-                          ); })}
-                          {canAdd && (
-                            <button type="button" onClick={() => addNewBenefit(benefitSearch)}
-                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: "1.5px dashed #582681", background: "#f7f7f8", color: "#582681", fontWeight: 600 }}>
-                              + &quot;{benefitSearch.trim()}&quot; 추가
-                            </button>
-                          )}
-                          {visible.length === 0 && !canAdd && <span style={{ fontSize: 13, color: "#bbb" }}>검색 결과가 없어요.</span>}
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <input autoFocus value={benefitSearch} onChange={(e) => setBenefitSearch(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (canAdd) addNewBenefit(benefitSearch); } }}
+                            placeholder="찾는 혜택을 쳐 보세요"
+                            style={{ flex: 1, minWidth: 0, boxSizing: "border-box", padding: "8px 10px", borderRadius: 8, border: "1px solid #efeff1", fontSize: 14, outline: "none" }} />
+                          <button type="button" onClick={() => { if (canAdd) addNewBenefit(benefitSearch); }} disabled={!canAdd}
+                            style={{ flexShrink: 0, padding: "0 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", fontSize: 13, whiteSpace: "nowrap",
+                              color: canAdd ? "#582681" : "#c4c4c9", cursor: canAdd ? "pointer" : "default" }}>직접입력</button>
                         </div>
+
+                        {qq && (
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxHeight: 200, overflowY: "auto", marginTop: 10 }}>
+                            {visible.map((o) => { const on = benefitTags.includes(o.name); return (
+                              <button key={o.name} type="button" onClick={() => toggleBenefit(o.name)}
+                                style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                {o.name}
+                                {!o.is_curated && (
+                                  <span role="button" title="목록에서 지우기" aria-label={`${o.name} 지우기`}
+                                    onClick={(e) => { e.stopPropagation(); removeNewBenefit(o.name); }}
+                                    style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: on ? "#efeff1" : "#a8a8ad" }}>×</span>
+                                )}
+                              </button>
+                            ); })}
+                            {visible.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>맞는 것이 없어요. ‘직접입력’으로 넣을 수 있어요.</span>}
+                          </div>
+                        )}
+
+                        {/* 담은 것 — 칩을 감춰 두니 여기서라도 보이고 지울 수 있어야 한다. */}
+                        {benefitTags.length > 0 && (
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10, paddingTop: 10, borderTop: "1px solid #f4f4f5" }}>
+                            {benefitTags.map((t) => (
+                              <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "7px 13px", borderRadius: 999, fontSize: 14, background: "#582681", color: "#fff" }}>
+                                {t}
+                                <button type="button" aria-label={`${t} 빼기`} onClick={() => toggleBenefit(t)}
+                                  style={{ border: "none", background: "none", color: "#efeff1", padding: 0, fontSize: 13, lineHeight: 1, cursor: "pointer" }}>×</button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
                         {nonMember && <button type="button" onClick={() => { setWelfareOpen(false); setFiOpen("benefits"); }}
-                          style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#582681", cursor: "pointer" }}>✎ 직접입력…</button>}
+                          style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#582681", cursor: "pointer" }}>✎ 한 줄로 직접 쓰기</button>}
                       </div>
                       );
                     })()}
@@ -2889,7 +2906,7 @@ export default function JobPostForm({
               {/* 근무지역: 별도 섹션(제목+아이콘, 지원 안내와 동일 스타일). 전체 주소 → 필터용 시·군·구 자동 추출 + 지도 */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f7f7f8", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}>
-                  <MapPin size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역 <span style={{ color: "var(--color-primary)" }}>*</span>
+                  <MapPin size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역 <span style={{ color: "#e74c3c" }}>*</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 12 }}>
                   <input readOnly value={nmAddress} onClick={() => openAddressSearch()}
@@ -3156,7 +3173,7 @@ export default function JobPostForm({
                   <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
                     <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block" }}>
                       {meta.label}
-                      {isReq && <span style={{ color: "#dc2626", marginLeft: "3px" }}>*</span>}
+                      {isReq && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}
                       {meta.hint && <span style={{ fontSize: 11, fontWeight: 400, color: "#bbb", marginLeft: 6 }}>{meta.hint}</span>}
                     </label>
                     <AutoTextarea
