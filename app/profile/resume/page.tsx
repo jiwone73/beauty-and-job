@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
+import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
+import { AlertCircle } from "lucide-react";
 import { ChevronDown, Download, Eye, FileText, Pencil, Plus, Printer, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -40,6 +42,9 @@ function ResumePageContent() {
   const [resumeType, setResumeType] = useState<"office" | "salon">("office");
   // 프로필에서 아직 안 채운 필수 항목. 하나라도 있으면 이력서를 쓸 수 없다.
   const [못채운것, set못채운것] = useState<string[]>([]);
+  // 작성 완료를 누른 뒤 아직 못 채운 곳. 각 칸 위에 붙는다.
+  const [흠, set흠] = useState<흠[]>([]);
+  const 칸흠 = (어디: string) => 흠.filter((h) => h.어디 === 어디 && !h.누구).map((h) => h.말);
   const [introLocal, setIntroLocal] = useState(intro);
   const [coreLocal, setCoreLocal] = useState(coreCompetencies);
   // 서버/스토어에서 한줄소개가 뒤늦게 로드되면 입력값이 비어있을 때만 채움(작성 중이면 덮지 않음)
@@ -194,34 +199,18 @@ function ResumePageContent() {
 
   // 손을 멈추면 1.5초 뒤 알아서 저장된다(profileStore 의 autoSync). 이 단추가
   // 하는 일은 저장이 아니라 필수 칸을 다 채웠는지 확인하는 것이다.
+  //
+  // 결과는 알림창이 아니라 그 칸 위에 붙인다. 창은 무엇이 비었는지 말하고
+  // 사라지는데, 칸이 아홉이면 닫는 순간 어디였는지 잊는다.
   const handleSave = async () => {
-    // 경력/신입은 필수 구분: 경력 1건 이상이거나 '신입' 체크 중 하나는 반드시.
-    if (!introLocal.trim()) { alert("한줄소개를 입력해주세요."); return; }
-    // 본사 지원서는 성과를 적는 자리가 곧 심사 대상이다. 별표만 붙여 두면
-    // 비운 채로 넘어가므로 여기서 막는다. 살롱은 시술 스킬과 사진이 그 몫을
-    // 하므로 묻지 않는다.
-    if (resumeType === "office") {
-      // 본사는 학력이 곧 지원 자격인 자리가 많다.
-      if (educations.length === 0) { alert("학력을 채워 주세요."); return; }
-      const 성과빈것 = careers.filter((c) => c.company.trim() && !c.description.trim());
-      if (성과빈것.length > 0) {
-        alert(`주요 성과를 적어 주세요.\n\n· ${성과빈것.map((c) => c.company).join("\n· ")}`);
-        return;
-      }
-    }
-    // 매장은 시술 스킬과 손님 응대 언어가 곧 채용 조건이다. 별표만 붙여
-    // 두면 비운 채로 넘어가므로 여기서 막는다.
-    if (resumeType === "salon") {
-      const 빈칸: string[] = [];
-      if (skills.length === 0) 빈칸.push("스킬");
-      if (languages.length === 0) 빈칸.push("어학");
-      if (빈칸.length > 0) {
-        alert(`${빈칸.join("·")}을(를) 채워 주세요.`);
-        return;
-      }
-    }
-    if (careers.length === 0 && !isEntryLevel) {
-      alert("경력자/신입 여부를 선택해주세요.\n경력이 있으면 '경력'을 추가하고, 없으면 '신입'을 체크해 주세요.");
+    const 흠들 = 이력서흠찾기({
+      본사냐: resumeType === "office",
+      intro: introLocal, isEntryLevel, careers, educations, languages, skills,
+    });
+    set흠(흠들);
+    if (흠들.length > 0) {
+      const 첫 = document.getElementById(`section-${흠들[0].어디}`);
+      첫?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     setIntro(introLocal);
@@ -398,11 +387,20 @@ function ResumePageContent() {
   // 포트폴리오는 링크와 파일을 한 칸으로 본다. 인스타만 걸어 둔 사람도, PDF 만
   // 가진 사람도 "작업물을 보여줬다"는 점에서는 같다. 둘로 나눠 세면 한쪽만 채운
   // 사람이 영영 미완성으로 남는다.
-  const 포트폴리오채움 = portfolioImages.length > 0 || links.length > 0;
+  // 더하기만 누르고 비워 둔 항목은 채운 것으로 세지 않는다. 예전에는 배열
+  // 길이만 봐서, 빈 줄 하나만 있어도 그 칸이 완료로 잡히고 완성도가 100%가
+  // 됐다. 정작 자격증명도 수준도 비어 있는데 다 채운 것처럼 보였다.
+  const 있음 = (v?: string) => !!String(v ?? "").trim();
+  const 채운경력 = careers.some((c) => 있음(c.company)) || isEntryLevel;
+  const 채운학력 = educations.some((e) => 있음(e.school));
+  const 채운자격 = certificates.some((c) => 있음(c.name));
+  const 채운활동 = experiences.some((x) => 있음(x.title));
+  const 채운어학 = languages.some((l) => 있음(l.language) && 있음(l.level));
+  const 포트폴리오채움 = portfolioImages.length > 0 || links.some((l) => 있음(l.url));
   // 모바일 완성도 (사이드바와 동일 기준)
   // 모바일 완성도 — 사이드 목록과 같은 기준. 접어 둔 칸은 값이 있을 때만 센다.
-  const progressItems = [true, careers.length > 0, educations.length > 0, skills.length > 0,
-    certificates.length > 0, experiences.length > 0, languages.length > 0, 포트폴리오채움];
+  const progressItems = [true, 채운경력, 채운학력, skills.length > 0,
+    채운자격, 채운활동, 채운어학, 포트폴리오채움];
   const progressRate = Math.round((progressItems.filter(Boolean).length / progressItems.length) * 100);
 
   return (
@@ -448,12 +446,12 @@ function ResumePageContent() {
             // 서로 다른 차례로 서 있으면 같은 이력서를 세 번 새로 읽게 된다.
             const sections = [
               { id: "basic", label: "기본 정보", done: true },
-              { id: "career", label: "경력", done: careers.length > 0 },
-              { id: "education", label: "학력", done: educations.length > 0 },
+              { id: "career", label: "경력", done: 채운경력 },
+              { id: "education", label: "학력", done: 채운학력 },
               { id: "skill", label: "스킬", done: skills.length > 0 },
-              { id: "certificate", label: "자격증", done: certificates.length > 0 },
-              { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              { id: "language", label: "어학", done: languages.length > 0 },
+              { id: "certificate", label: "자격증", done: 채운자격 },
+              { id: "experience", label: "활동/수상", done: 채운활동 },
+              { id: "language", label: "어학", done: 채운어학 },
               { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
             ];
             const doneCount = sections.filter((s) => s.done).length;
@@ -488,15 +486,6 @@ function ResumePageContent() {
             );
           })()}
           {/* 머리줄에서 내려온 두 버튼. 다 채운 뒤에 누르는 것이라 목록 아래가 맞다. */}
-          <div className="resume-side-actions">
-            <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
-              <Eye size={15} /><span>미리보기</span>
-            </button>
-            <button className="resume-side-download" onClick={handleDownload} disabled={isDownloading}>
-              <Download size={15} />
-              <span>{isDownloading ? "저장 중..." : "다운로드"}</span>
-            </button>
-          </div>
         </aside>
 
         <main className="resume-editor">
@@ -510,12 +499,33 @@ function ResumePageContent() {
             </div>
           </div>
 
+          {/* 다 채운 뒤에 누르는 것이라 본문 오른쪽 위에 둔다. 사이드는 어디까지
+              채웠는지 보는 자리라 성격이 다르다. */}
+          <div className="resume-top-actions">
+            <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
+              <Eye size={15} /><span>미리보기</span>
+            </button>
+            <button className="resume-side-download" onClick={handleDownload} disabled={isDownloading}>
+              <Download size={15} />
+              <span>{isDownloading ? "저장 중..." : "다운로드"}</span>
+            </button>
+          </div>
           <section id="section-headline" className="resume-section">
             <h2 className="resume-section-title">한줄소개<span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span></h2>
+            <흠줄 말들={칸흠("headline")} />
+            {/* 채용 담당자가 가장 먼저 읽는 한 줄이다. 무엇을 얼마나 했는지가
+                들어가야 다음 줄로 눈이 간다. 예시를 매장·본사로 갈라 준다. */}
+            <p className="resume-headline-guide">
+              {resumeType === "office"
+                ? "무슨 일을 몇 년 했는지, 무엇을 잘하는지 한 줄로 적어 주세요."
+                : "어떤 시술을 몇 년 했는지 한 줄로 적어 주세요."}
+            </p>
             <input
               value={introLocal}
               onChange={(e) => setIntroLocal(e.target.value)}
-              placeholder="예: 5년차 네일 아티스트 · 젤·아트 전문"
+              placeholder={resumeType === "office"
+                ? "예: 7년차 뷰티 MD · 신제품 기획과 온라인 채널 운영"
+                : "예: 5년차 네일 아티스트 · 젤·아트 전문"}
               maxLength={60}
               style={{ width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "10px 12px", fontSize: "14px", color: "#333", marginTop: "6px" }}
             />
@@ -551,6 +561,7 @@ function ResumePageContent() {
 
           <ResumeEditor
             resumeType={resumeType}
+            흠={흠}
             emailLocal={emailLocal}
             setEmailLocal={setEmailLocal}
             portfolioImages={portfolioImages}
@@ -634,6 +645,11 @@ function ResumePageContent() {
     </div>
   );
 }
+function 흠줄({ 말들 }: { 말들: string[] }) {
+  if (!말들.length) return null;
+  return (<>{말들.map((m) => (<p key={m} className="if-alert"><AlertCircle size={14} />{m}</p>))}</>);
+}
+
 export default function ResumePage() {
   return (
     <Suspense fallback={<div style={{ padding: 40 }}>로딩 중...</div>}>

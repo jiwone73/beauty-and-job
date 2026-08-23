@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Award, Building2, Link as LinkIcon, Check, ChevronDown, FileText, Globe, GraduationCap, Pencil, Plus, Trash2, Trophy, Upload, X } from "lucide-react";
+import { AlertCircle, Award, Building2, Link as LinkIcon, Check, ChevronDown, FileText, Globe, GraduationCap, Pencil, Plus, Trash2, Trophy, Upload, X } from "lucide-react";
 import { useProfileStore, genId } from "@/lib/store/profileStore";
 import { InlineText, InlinePick, InlineYM, InlineSuggest } from "@/components/profile/inline/InlineField";
 import { SNS찾기 } from "@/lib/snsPresets";
@@ -30,6 +30,8 @@ type Props = {
   onResumeFileDelete: () => void;
   onResumeFileOpen: () => void;
   resumeFileReadOnly?: boolean;
+  /** 작성 완료를 누른 뒤 아직 못 채운 곳. 해당 칸·항목 위에 붙는다. */
+  흠?: { 어디: string; 누구?: string; 말: string }[];
 };
 
 // 고를 것이 정해진 칸들. 적게 하는 대신 고르게 하면 빠르고 표기가 통일된다.
@@ -42,6 +44,18 @@ const 재직형태 = ["정규직", "계약직", "인턴", "프리랜서", "파�
 const 언어들 = ["한국어", "영어", "중국어", "일본어", "베트남어", "태국어", "러시아어", "몽골어", "우즈베크어", "스페인어", "프랑스어"];
 const 수준들 = ["능숙하게 소통", "일상 회화 가능", "간단한 표현"];
 const 활동종류 = ["수상", "교육", "봉사", "동아리", "기타"];
+
+// 못 채운 곳을 그 자리에 적는다. 알림창처럼 사라지지 않아 고치는 동안 계속 보인다.
+function 흠줄({ 말들 }: { 말들: string[] }) {
+  if (!말들.length) return null;
+  return (
+    <>
+      {말들.map((m) => (
+        <p key={m} className="if-alert"><AlertCircle size={14} />{m}</p>
+      ))}
+    </>
+  );
+}
 
 export default function ResumeEditor({
   resumeType,
@@ -58,6 +72,7 @@ export default function ResumeEditor({
   onResumeFileDelete,
   onResumeFileOpen,
   resumeFileReadOnly = false,
+  흠 = [],
 }: Props) {
   const {
     educations, careers, skills, languages, experiences, links,
@@ -119,6 +134,9 @@ export default function ResumeEditor({
   const [eduModalOpen, setEduModalOpen] = useState(false);
   const [editEdu, setEditEdu] = useState<any>(null);
   const 본사냐 = resumeType === "office";
+  // 칸 전체에 붙는 흠(항목 없음)과 항목 하나에 붙는 흠을 갈라 뽑는다.
+  const 칸흠 = (어디: string) => 흠.filter((h) => h.어디 === 어디 && !h.누구).map((h) => h.말);
+  const 항목흠 = (어디: string, 누구: string) => 흠.filter((h) => h.어디 === 어디 && h.누구 === 누구).map((h) => h.말);
   const [더적기, set더적기] = useState(false);
   const [expModalOpen, setExpModalOpen] = useState(false);
   const [editExp, setEditExp] = useState<any>(null);
@@ -246,6 +264,7 @@ export default function ResumeEditor({
               <Plus size={18} />
             </button>
           </div>
+        <흠줄 말들={칸흠("career")} />
         </div>
         {isEntryLevel && (
           <textarea
@@ -268,6 +287,7 @@ export default function ResumeEditor({
           <div key={c.id} className="if-row">
             <span className="if-row-icon"><Building2 size={17} /></span>
             <div className="if-row-body">
+              <흠줄 말들={항목흠("career", c.id)} />
               <div className="if-line if-line-head">
                 <InlineText value={c.company} placeholder={본사냐 ? "회사명" : "매장명"} required wide
                   onSave={(v) => updateCareer(c.id, { ...c, company: v })} />
@@ -283,10 +303,10 @@ export default function ResumeEditor({
                     달라 적게 둔다. */}
                 {본사냐 ? (
                   <>
-                    <InlinePick value={c.department} placeholder="재직 형태" required options={재직형태}
+                    <InlinePick value={c.department} placeholder="근무 형태" required options={재직형태}
                       onSave={(v) => updateCareer(c.id, { ...c, department: v })} />
                     <span className="if-bar">│</span>
-                    <InlineText value={c.position} placeholder="직무 · 직책"
+                    <InlineText value={c.position} placeholder="맡은 일 · 직책"
                       onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
                   </>
                 ) : (
@@ -298,7 +318,7 @@ export default function ResumeEditor({
                 {/* 본사 지원서는 성과를 적는 자리가 곧 심사 대상이라 필수다.
                     살롱은 시술 스킬과 사진이 그 몫을 해서 선택으로 둔다. */}
                 <InlineText value={c.description} wide required={본사냐}
-                  placeholder={본사냐 ? "주요 성과" : "맡았던 시술과 역할을 적어 보세요"}
+                  placeholder={본사냐 ? "무엇을 해냈는지 한 줄로" : "어떤 시술을 맡았는지 적어 보세요"}
                   onSave={(v) => updateCareer(c.id, { ...c, description: v })} />
               </div>
             </div>
@@ -335,10 +355,12 @@ export default function ResumeEditor({
             <Plus size={18} />
           </button>
         </div>
+        <흠줄 말들={칸흠("education")} />
         {educations.map((e) => (
           <div key={e.id} className="if-row">
             <span className="if-row-icon"><GraduationCap size={17} /></span>
             <div className="if-row-body">
+              <흠줄 말들={항목흠("education", e.id)} />
               <div className="if-line if-line-head">
                 <InlineText value={e.school} placeholder="학교명" required wide
                   onSave={(v) => updateEducation(e.id, { ...e, school: v })} />
@@ -351,7 +373,7 @@ export default function ResumeEditor({
                 <InlinePick value={e.status} placeholder="졸업 상태" required options={졸업상태}
                   onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
                 <span className="if-bar">│</span>
-                <InlineText value={e.major} placeholder={본사냐 ? "전공 및 학위" : "전공"} required={본사냐}
+                <InlineText value={e.major} placeholder={본사냐 ? "전공 · 학위" : "전공"} required={본사냐}
                   onSave={(v) => updateEducation(e.id, { ...e, major: v })} />
               </div>
             </div>
@@ -376,6 +398,7 @@ export default function ResumeEditor({
               <Plus size={18} />
             </button>
           </div>
+        <흠줄 말들={칸흠("skill")} />
           {/* 폼을 열면 그 안에도 담은 스킬이 (지우기와 함께) 서 있다. 둘 다
               두면 같은 것이 한 화면에 두 번 나온다. */}
           {skills.length > 0 && !skillModalOpen && (
@@ -441,14 +464,14 @@ export default function ResumeEditor({
             <span className="if-row-icon"><Trophy size={17} /></span>
             <div className="if-row-body">
               <div className="if-line if-line-head">
-                <InlineText value={x.title} placeholder="활동·수상명" required wide
+                <InlineText value={x.title} placeholder="무엇을 했는지" required wide
                   onSave={(v) => updateExperience(x.id, { ...x, title: v })} />
               </div>
               <div className="if-line">
                 <InlinePick value={x.category} placeholder="종류" options={활동종류}
                   onSave={(v) => updateExperience(x.id, { ...x, category: v })} />
                 <span className="if-bar">│</span>
-                <InlineText value={x.description} placeholder="어떤 활동이었는지 적어 보세요" wide
+                <InlineText value={x.description} placeholder="어디서 무엇을 얻었는지" wide
                   onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
               </div>
             </div>
@@ -474,6 +497,7 @@ export default function ResumeEditor({
             </button>
           )}
         </div>
+        <흠줄 말들={칸흠("language")} />
         {languages.map((l) => {
           const t = 시험읽기(l.test);
           const 담기 = (v: Partial<typeof t>) => updateLanguage(l.id, { ...l, test: 시험쓰기({ ...t, ...v }) });
@@ -481,6 +505,7 @@ export default function ResumeEditor({
             <div key={l.id} className="if-row">
               <span className="if-row-icon"><Globe size={17} /></span>
               <div className="if-row-body">
+                <흠줄 말들={항목흠("language", l.id)} />
                 <div className="if-line">
                   <InlinePick value={l.language} placeholder="언어" required options={언어들}
                     onSave={(v) => updateLanguage(l.id, { ...l, language: v })} />
@@ -602,13 +627,13 @@ export default function ResumeEditor({
                   <div className="if-line">
                     {/* 이름을 고르면 주소 앞부분까지 채워 준다 — 유튜브를 고르면
                         아래 칸이 https://youtube.com/@ 로 시작한 채 기다린다. */}
-                    <InlineSuggest value={l.category} placeholder="링크명을 입력해 주세요." wide
+                    <InlineSuggest value={l.category} placeholder="어떤 곳인지 (예: 작업 인스타)" wide
                       찾기={SNS찾기}
                       onPick={(k) => updateLink(l.id, { ...l, category: k.이름, url: l.url || k.앞부분 })}
                       onSave={(v) => updateLink(l.id, { ...l, category: v })} />
                   </div>
                   <div className="if-line">
-                    <InlineText value={l.url} placeholder="https://(필수)" required wide
+                    <InlineText value={l.url} placeholder="https:// 로 시작하는 주소" required wide
                       onSave={(v) => updateLink(l.id, { ...l, url: v, category: l.category || (v ? linkLabel(v) : "") })} />
                   </div>
                 </div>

@@ -13036,13 +13036,17 @@ button,
   .resume-mobile-progress { display: none; }
 }
 
-/* 사이드 아래 미리보기·다운로드 */
-.resume-side-actions { display: none; }
+/* 미리보기·다운로드 — 본문 오른쪽 위. 다 채운 뒤에 누르는 것이라 어디까지
+   채웠는지 보는 사이드와는 자리가 다르다. */
+.resume-top-actions { display: none; }
 @media (min-width: 1024px) {
-  .resume-side-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-border); }
-  .resume-side-actions button {
+  .resume-top-actions {
+    display: flex; justify-content: flex-end; gap: 8px;
+    column-span: all; -webkit-column-span: all; margin: 0 0 12px;
+  }
+  .resume-top-actions button {
     display: flex; align-items: center; justify-content: center; gap: 6px;
-    height: 38px; border-radius: 8px; font-size: 13.5px; font-family: inherit; cursor: pointer;
+    height: 36px; padding: 0 14px; border-radius: 8px; font-size: 13.5px; font-family: inherit; cursor: pointer;
   }
   .resume-side-preview { background: var(--color-primary); color: #fff; border: none; }
   .resume-side-preview:hover { background: var(--color-primary-hover); }
@@ -13254,3 +13258,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .if-line-head .if-slot:not(.on) { color: #96969c; }
 /* 칸 제목 옆에 덧붙이는 흐린 한마디 */
 .resume-title-note { margin-left: 6px; font-size: 12.5px; font-weight: 400; color: #b4b4b9; }
+
+/* 아직 못 채운 곳 — 그 자리에 적는다. 알림창처럼 사라지지 않는다. */
+.if-alert {
+  display: flex; align-items: center; gap: 5px;
+  margin: 0 0 6px; font-size: 12.5px; color: #e24b4a; line-height: 1.5;
+}
+.if-alert svg { flex-shrink: 0; }
+/* 한줄소개 위 안내 한 줄 */
+.resume-headline-guide { font-size: 12.5px; color: #b4b4b9; margin: 0 0 8px; line-height: 1.5; word-break: keep-all; }
