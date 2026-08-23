@@ -557,7 +557,7 @@ function AdminMembersPageInner() {
                     {/* 포트폴리오 · SNS — 기업회원 인재검색과 같은 구성 */}
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                        <LinkCell url={m.portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="포트폴리오" />
+                        <LinkCell url={m.portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="사진" />
                         <LinkCell url={m.sns_url} icon={<Instagram size={13} />} label="SNS" />
                       </div>
                     </td>
