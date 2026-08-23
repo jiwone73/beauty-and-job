@@ -25,6 +25,8 @@ type Row = {
   note: string | null;
   found_jobs: { idx: number; title: string; url: string; source: string; date?: string; email?: string; first_seen?: string }[];
   found_count: number;
+  /** 활성공고 URL → "y"(연락처 있음) | "n"(없음). 알바가 원문을 열어 보고 표시한다. */
+  job_phone_flags: Record<string, string> | null;
   last_checked_at: string | null;
   updated_at: string | null;
 };
@@ -239,6 +241,14 @@ export default function AdminOutreachPage() {
       headers: { "Content-Type": "application/json", ...authH },
       body: JSON.stringify({ id: row.id, ...patch }),
     }).catch(() => {});
+  };
+
+  // 활성공고 줄별 연락처 표시. 같은 값을 다시 누르면 지운다(체크 해제).
+  const phFlag = (row: Row, url: string) => (row.job_phone_flags || {})[url] || "";
+  const setPhFlag = (row: Row, url: string, v: "y" | "n") => {
+    const next = { ...(row.job_phone_flags || {}) };
+    if (next[url] === v) delete next[url]; else next[url] = v;
+    quickPatch(row, { job_phone_flags: next });
   };
 
   const checkHiring = async (ids: string[]): Promise<number> => {
@@ -621,7 +631,8 @@ export default function AdminOutreachPage() {
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             {shown.map((jb, i) => (
-                              <label key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13.5, cursor: "pointer" }}>
+                              <div key={i} onClick={() => setPickedJobUrl(jb.url)}
+                                style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13.5, cursor: "pointer" }}>
                                 <input type="radio" name="pickedFoundJob" checked={pickedJobUrl === jb.url} onChange={() => setPickedJobUrl(jb.url)} style={{ width: 14, height: 14, flexShrink: 0 }} />
                                 <span style={badge(PURPLE)}>{jb.source}</span>
                                 {isNewJob(jb.first_seen) && (
@@ -642,7 +653,22 @@ export default function AdminOutreachPage() {
                                   </button>
                                 )}
                                 <a href={normUrl(jb.url)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: PURPLE, textDecoration: "none" }}>원문 ↗</a>
-                              </label>
+                                {/* 연락처 유무 — 원문을 열어 보고 그 자리에서 표시한다.
+                                    줄 고르기(위 라디오)와 섞이지 않게 클릭을 여기서 멈춘다. */}
+                                {(() => {
+                                  const 없음 = phFlag(row, jb.url) === "n";
+                                  return (
+                                    <label onClick={(e) => e.stopPropagation()}
+                                      title="원문에 연락처가 안 적혀 있으면 체크해 주세요"
+                                      style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0, paddingLeft: 10,
+                                        cursor: "pointer", fontSize: 12.5, color: 없음 ? "#c2410c" : "#b7b0c0" }}>
+                                      <input type="checkbox" checked={없음} onChange={() => setPhFlag(row, jb.url, "n")}
+                                        style={{ width: 13, height: 13, accentColor: "#c2410c" }} />
+                                      연락처 없음
+                                    </label>
+                                  );
+                                })()}
+                              </div>
                             ))}
                           </div>
                         </td>

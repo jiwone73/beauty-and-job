@@ -11,6 +11,7 @@ const EDITABLE = new Set([
   "brand_name", "group_name", "category", "homepage", "instagram",
   "is_hiring", "is_registered", "phone", "email",
   "scale", "features", "note",
+  "job_phone_flags",   // { "<공고 URL>": "y" | "n" } — 활성공고 줄별 연락처 유무 표시
 ]);
 const HIRING_VALUES = new Set(["채용중", "없음", "확인필요", "미확인"]);
 const REG_VALUES = new Set(["미등록", "등록완료", "보류"]);
@@ -56,7 +57,7 @@ export async function GET(req: NextRequest) {
     const result = await client.query(
       `SELECT id, group_name, seq, brand_name, category, homepage, instagram,
               is_hiring, is_registered, phone, email, scale, features, note,
-              found_jobs, found_count, last_checked_at, linked_company_id,
+              found_jobs, found_count, job_phone_flags, last_checked_at, linked_company_id,
               created_at, updated_at
          FROM target_companies
          ${whereSql}
@@ -102,6 +103,12 @@ export async function PATCH(req: NextRequest) {
     if (k === "id" || !EDITABLE.has(k)) continue;
     if (k === "is_hiring" && v && !HIRING_VALUES.has(String(v))) continue;
     if (k === "is_registered" && v && !REG_VALUES.has(String(v))) continue;
+    // jsonb 칸은 문자열로 넘겨 캐스팅한다(객체를 그대로 넘기면 pg 가 못 다룬다).
+    if (k === "job_phone_flags") {
+      params.push(JSON.stringify(v && typeof v === "object" ? v : {}));
+      sets.push(`${k} = $${params.length}::jsonb`);
+      continue;
+    }
     const val = typeof v === "string" ? v.trim() : v;
     params.push(val === "" ? null : val);
     sets.push(`${k} = $${params.length}`);
