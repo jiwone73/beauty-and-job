@@ -3003,15 +3003,13 @@ export default function JobPostForm({
                 const urlOnLeft = canUrl && canName;
                 const isNmAdminJob = mode === "admin" && nonMember;
                 const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 4 };
-                const subLbl: CSSProperties = { width: 34, flexShrink: 0, color: "#999", fontSize: 14 };
                 // 값이 없으면 연보라 블록, 채우면 글자만 — 폼의 다른 칸과 같은 규칙
                 // 빈 값은 폼의 다른 항목과 같은 규격(56px 연보라 블록), 채우면 남은 폭을 쓴다.
-                // 값은 라벨(제목)보다 커지지 않게 한다 — subLbl 이 14 이므로 값도 14.
+                // 값은 라벨(제목)보다 커지지 않게 한다 — 라벨이 15 이므로 값은 14.
                 // 값이 더 크면 라벨이 부제처럼 보여 어느 쪽이 항목 이름인지 헷갈린다.
                 const fld = (filled: boolean): CSSProperties => filled
                   ? { flex: 1, minWidth: 0, border: "none", background: "transparent", borderRadius: 5, fontSize: 14, fontWeight: 400, color: "#333", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
                   : { flexShrink: 0, width: 56, height: 20, border: "none", background: PH_BG, borderRadius: 5, fontSize: 14, fontWeight: 400, color: "#333", outline: "none", padding: 0, boxSizing: "border-box" };
-                const rowS: CSSProperties = { display: "flex", alignItems: "center", gap: 8, padding: "3px 0" };
                 return (
                   /* 좁은 화면에선 두 칸이 너무 좁아 세로로 쌓는다(.jobpost-form이 admin-form-row-2col을 1열로 덮어서 직접 지정) */
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
@@ -3061,24 +3059,29 @@ export default function JobPostForm({
                             <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
                               placeholder="https://example.com/recruit" inputMode="url" style={fld(!!externalApplyUrl)} />
                           )}
-                          {canName && (
-                            <div style={rowS}>
-                              <span style={subLbl}>이름</span>
-                              <input value={nmManagerName} onChange={(e) => setNmManagerName(e.target.value)} style={fld(!!nmManagerName)} />
-                            </div>
-                          )}
-                          {canPhone && (
-                            <div style={rowS}>
-                              <span style={subLbl}>전화</span>
-                              <input value={nmManagerPhone} inputMode="numeric" onChange={(e) => setNmManagerPhone(e.target.value)} style={fld(!!nmManagerPhone)} />
-                            </div>
-                          )}
-                          {canEmail && (
-                            <div style={rowS}>
-                              <span style={subLbl}>메일</span>
-                              <input value={nmContactEmail} inputMode="email" onChange={(e) => setNmContactEmail(e.target.value)} style={fld(!!nmContactEmail)} />
-                            </div>
-                          )}
+                          {/* 이름·전화·메일을 한 줄에 세로바로 나눈다. 칸 이름은 자리글로 들어가
+                              제목 세 줄이 사라진다. 고른 방법에 따라 나오는 칸만 사이에 바를 넣는다. */}
+                          {canName && (() => {
+                            const 칸 = [
+                              { k: "name", ph: "이름", v: nmManagerName, set: setNmManagerName, im: undefined as ("numeric" | "email" | undefined) },
+                              canPhone ? { k: "phone", ph: "전화", v: nmManagerPhone, set: setNmManagerPhone, im: "numeric" as const } : null,
+                              canEmail ? { k: "mail", ph: "메일", v: nmContactEmail, set: setNmContactEmail, im: "email" as const } : null,
+                            ].filter(Boolean) as { k: string; ph: string; v: string; set: (v: string) => void; im?: "numeric" | "email" }[];
+                            return (
+                              <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, padding: "3px 0" }}>
+                                {칸.map((f, i) => (
+                                  <span key={f.k} style={{ display: "inline-flex", alignItems: "center", gap: 6, minWidth: 0, flex: f.v ? "1 1 90px" : "0 0 auto" }}>
+                                    <input value={f.v} placeholder={f.ph} inputMode={f.im}
+                                      onChange={(e) => f.set(e.target.value)}
+                                      style={f.v
+                                        ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 14, color: "#333", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
+                                        : { width: 72, height: 22, border: "none", background: PH_BG, borderRadius: 5, fontSize: 14, color: "#333", outline: "none", padding: "0 8px", boxSizing: "border-box" }} />
+                                    {i < 칸.length - 1 && <span style={{ color: "#dcdce0", flexShrink: 0 }}>|</span>}
+                                  </span>
+                                ))}
+                              </div>
+                            );
+                          })()}
                           {isNmAdminJob && canName && (
                             <div style={{ fontSize: 11, color: "#a8a8ad", marginTop: 3 }}>구직자에게는 노출되지 않아요 · 회원가입 유도용 내부 연락처</div>
                           )}
