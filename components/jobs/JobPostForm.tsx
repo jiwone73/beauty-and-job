@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
-import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, MessageSquare, Mail, Phone } from "lucide-react";
+import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -3011,12 +3011,9 @@ export default function JobPostForm({
                         <button type="button"
                           onClick={(e) => { if (contactMethodsOpen) { setContactMethodsOpen(false); return; } openPopAt(e.currentTarget, 232, 150); setContactMethodsOpen(true); }}
                           style={{ ...fld(contactMethods.length > 0), textAlign: "left", cursor: "pointer", lineHeight: 1.5,
-                            ...(contactMethods.length ? null : { width: "auto", height: "auto", minHeight: 24, background: "none", padding: 0, display: "inline-flex", alignItems: "center", gap: 5, color: "#cfcfcf" }) }}>
-                          {/* 고를 수 있는 창구를 아이콘으로 미리 보여준다 — 문자·이메일·전화·온라인지원. */}
-                          {contactMethods.length ? contactMethods.join(", ") : (<>
-                            <MessageSquare size={14} /><Mail size={14} /><Phone size={14} /><Send size={14} />
-                            <span style={{ marginLeft: 2 }}>접수방법</span>
-                          </>)}
+                            ...(contactMethods.length ? null : { width: "auto", height: "auto", minHeight: 24, background: "none", padding: 0, color: "#cfcfcf" }) }}>
+                          {/* 복리후생의 '검색하기'와 짝. 왼쪽 라벨이 이미 무슨 칸인지 말한다. */}
+                          {contactMethods.length ? contactMethods.join(", ") : "선택하기"}
                         </button>
                         {contactMethodsOpen && popAt && (
                           <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
