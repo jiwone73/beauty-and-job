@@ -3063,19 +3063,24 @@ export default function JobPostForm({
                               제목 세 줄이 사라진다. 고른 방법에 따라 나오는 칸만 사이에 바를 넣는다. */}
                           {canName && (() => {
                             const 칸 = [
-                              { k: "name", ph: "이름", v: nmManagerName, set: setNmManagerName, im: undefined as ("numeric" | "email" | undefined) },
-                              canPhone ? { k: "phone", ph: "전화", v: nmManagerPhone, set: setNmManagerPhone, im: "numeric" as const } : null,
-                              canEmail ? { k: "mail", ph: "메일", v: nmContactEmail, set: setNmContactEmail, im: "email" as const } : null,
-                            ].filter(Boolean) as { k: string; ph: string; v: string; set: (v: string) => void; im?: "numeric" | "email" }[];
+                              { k: "name", ph: "이름", v: nmManagerName, set: setNmManagerName, im: undefined as ("numeric" | "email" | undefined), 몫: 1 },
+                              canPhone ? { k: "phone", ph: "전화", v: nmManagerPhone, set: setNmManagerPhone, im: "numeric" as const, 몫: 1.4 } : null,
+                              canEmail ? { k: "mail", ph: "메일", v: nmContactEmail, set: setNmContactEmail, im: "email" as const, 몫: 1.8 } : null,
+                            ].filter(Boolean) as { k: string; ph: string; v: string; set: (v: string) => void; im?: "numeric" | "email"; 몫: number }[];
                             return (
-                              <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, padding: "3px 0" }}>
+                              // 칸마다 제 몫을 미리 잡아 둔다. 채운 칸만 늘리면 자리가 들썩이고
+                              // 옆에 빈 띠가 남는다. 몫은 들어갈 글자 길이대로 — 이름<전화<메일.
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "3px 0", minWidth: 0 }}>
                                 {칸.map((f, i) => (
-                                  <span key={f.k} style={{ display: "inline-flex", alignItems: "center", gap: 6, minWidth: 0, flex: f.v ? "1 1 90px" : "0 0 auto" }}>
+                                  <span key={f.k} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0, flex: `${f.몫} 1 0` }}>
+                                    {/* 크롬은 autoComplete="off" 를 무시하고 이름·전화 칸으로 넘겨짚어
+                                        연락처 아이콘과 저장된 이름 목록을 띄운다. 모르는 토큰을 주면
+                                        그 넘겨짚기가 꺼진다. */}
                                     <input value={f.v} placeholder={f.ph} inputMode={f.im}
+                                      autoComplete={`nope-${f.k}`} name={`nope-${f.k}`} data-lpignore="true" data-1p-ignore
                                       onChange={(e) => f.set(e.target.value)}
-                                      style={f.v
-                                        ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 14, color: "#333", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
-                                        : { width: 72, height: 22, border: "none", background: PH_BG, borderRadius: 5, fontSize: 14, color: "#333", outline: "none", padding: "0 8px", boxSizing: "border-box" }} />
+                                      style={{ flex: 1, minWidth: 0, height: 22, border: "none", borderRadius: 5, fontSize: 14, color: "#333", outline: "none",
+                                        background: f.v ? "transparent" : PH_BG, padding: f.v ? "0 2px" : "0 8px", boxSizing: "border-box" }} />
                                     {i < 칸.length - 1 && <span style={{ color: "#dcdce0", flexShrink: 0 }}>|</span>}
                                   </span>
                                 ))}
