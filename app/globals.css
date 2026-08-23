@@ -13196,6 +13196,9 @@ button,
 .if-row-plain .if-input { min-width: 0; border-color: transparent; background: transparent;
   padding: 2px 4px; box-sizing: border-box; }
 .if-row-plain .if-slot { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 세로바 양옆을 한 칸씩 좁힌다(4px → 1px). 칸 자체도 좌우 4px 을 두르고 있어
+   그대로 두면 바 하나에 10px 씩 벌어졌다. */
+.if-row-plain .if-sep { padding: 0 1px; }
 .if-row-icon { width: 30px; height: 30px; border-radius: 8px; background: #f2f2f4;
   display: flex; align-items: center; justify-content: center; color: #a8a8ad; }
 .if-row-body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
