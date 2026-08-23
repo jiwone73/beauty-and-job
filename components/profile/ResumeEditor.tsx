@@ -2,7 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Award, Building2, Link as LinkIcon, Check, ChevronDown, FileText, Globe, GraduationCap, Pencil, Plus, Trash2, Trophy, Upload, X } from "lucide-react";
 import { useProfileStore, genId } from "@/lib/store/profileStore";
-import { InlineText, InlinePick, InlineYM } from "@/components/profile/inline/InlineField";
+import { InlineText, InlinePick, InlineYM, InlineSuggest } from "@/components/profile/inline/InlineField";
+import { SNS찾기 } from "@/lib/snsPresets";
 import { 시험읽기, 시험쓰기 } from "@/lib/languageTest";
 import SkillModal from "@/components/profile/SkillModal";
 import { MAX_PHOTOS } from "@/lib/compressImage";
@@ -581,7 +582,11 @@ export default function ResumeEditor({
                 <span className="if-row-icon"><LinkIcon size={16} /></span>
                 <div className="if-row-body">
                   <div className="if-line">
-                    <InlineText value={l.category} placeholder="링크명을 입력해 주세요." wide
+                    {/* 이름을 고르면 주소 앞부분까지 채워 준다 — 유튜브를 고르면
+                        아래 칸이 https://youtube.com/@ 로 시작한 채 기다린다. */}
+                    <InlineSuggest value={l.category} placeholder="링크명을 입력해 주세요." wide
+                      찾기={SNS찾기}
+                      onPick={(k) => updateLink(l.id, { ...l, category: k.이름, url: l.url || k.앞부분 })}
                       onSave={(v) => updateLink(l.id, { ...l, category: v })} />
                   </div>
                   <div className="if-line">

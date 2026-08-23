@@ -53,6 +53,71 @@ export function InlineText({
   );
 }
 
+/**
+ * 치면서 후보를 고르는 칸. 고르면 그 항목 전체를 넘겨 준다 — SNS 는 이름을
+ * 고르면 주소 앞부분까지 같이 채워야 해서, 값 하나만으로는 모자란다.
+ * 브라우저 자동완성은 꺼 둔다. 우리 목록과 겹쳐 뜨면 어느 쪽을 고른 것인지
+ * 알 수 없다.
+ */
+export function InlineSuggest<T extends { 이름: string }>({
+  value, placeholder, required, wide, 찾기, onPick, onSave,
+}: {
+  value: string;
+  placeholder: string;
+  required?: boolean;
+  wide?: boolean;
+  찾기: (q: string) => T[];
+  onPick: (고른것: T) => void;
+  onSave: (v: string) => void;
+}) {
+  const [고치는중, set고치는중] = useState(false);
+  const [초안, set초안] = useState(value);
+  const 칸 = useRef<HTMLInputElement>(null);
+  const 감싸개 = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => { set초안(value); }, [value]);
+  useEffect(() => { if (고치는중) 칸.current?.focus(); }, [고치는중]);
+
+  const 후보 = 고치는중 ? 찾기(초안) : [];
+  const 마치기 = () => { set고치는중(false); if (초안.trim() !== value) onSave(초안.trim()); };
+
+  useEffect(() => {
+    if (!고치는중) return;
+    const 밖 = (e: MouseEvent) => { if (!감싸개.current?.contains(e.target as Node)) 마치기(); };
+    document.addEventListener("mousedown", 밖);
+    return () => document.removeEventListener("mousedown", 밖);
+  });
+
+  if (!고치는중) {
+    return (
+      <button type="button" className={`if-slot ${value ? "on" : ""}`} onClick={() => set고치는중(true)}>
+        {value || placeholder}{!value && required && <i className="if-req">*</i>}
+      </button>
+    );
+  }
+  return (
+    <span className="if-wrap" ref={감싸개} style={wide ? { width: "100%" } : undefined}>
+      <input ref={칸} className={`if-input ${wide ? "if-wide" : ""}`} value={초안}
+        placeholder={placeholder} autoComplete="off"
+        onChange={(e) => set초안(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") { if (후보[0]) { onPick(후보[0]); set고치는중(false); } else 마치기(); }
+          if (e.key === "Escape") { set초안(value); set고치는중(false); }
+        }} />
+      {후보.length > 0 && (
+        <span className="if-pop" style={{ top: "calc(100% + 4px)" }}>
+          {후보.map((k) => (
+            <button key={k.이름} type="button" className="if-pop-item"
+              onMouseDown={(e) => { e.preventDefault(); onPick(k); set고치는중(false); }}>
+              {k.이름}
+            </button>
+          ))}
+        </span>
+      )}
+    </span>
+  );
+}
+
 /** 눌러서 목록에서 고르는 칸. 고를 것이 정해져 있으면 치는 것보다 빠르다. */
 export function InlinePick({
   value, placeholder, required, options, onSave,
