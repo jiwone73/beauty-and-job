@@ -496,7 +496,14 @@ export default function ResumeEditor({
 
       <section id="section-portfolio" className="resume-section">
         <div className="resume-section-head" onClick={() => togglePf()} style={{ cursor: "pointer" }}>
-          <h2 className="resume-section-title">포트폴리오</h2>
+          <h2 className="resume-section-title">
+            포트폴리오
+            {/* 살롱은 시술 사진이 곧 실력 증명이라 채운 사람과 안 채운 사람의
+                차이가 크다. 본사 지원에는 그만한 무게가 없어 붙이지 않는다. */}
+            {resumeType === "salon" && (
+              <span className="resume-title-note">(작성하시면 합격률이 올라가요)</span>
+            )}
+          </h2>
           <ChevronDown size={18} style={{ color: "#bbb", transform: pf열림 ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
         </div>
         {pf열림 && (

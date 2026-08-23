@@ -13252,3 +13252,5 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 항목의 첫 줄은 그 항목의 이름이다(매장명·학교명·자격증명). 여기까지
    흐려지면 무엇에 관한 줄인지가 먼저 사라진다. 한 단계 진하게 둔다. */
 .if-line-head .if-slot:not(.on) { color: #96969c; }
+/* 칸 제목 옆에 덧붙이는 흐린 한마디 */
+.resume-title-note { margin-left: 6px; font-size: 12.5px; font-weight: 400; color: #b4b4b9; }
