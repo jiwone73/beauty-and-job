@@ -1716,7 +1716,7 @@ export default function JobPostForm({
         if (jobGroupType === "매장") {
           // 매장: 상세요강 이미지 또는 포지션 소개
           if (detailImages.length === 0 && !form.description?.trim()) {
-            alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 상세요강 글을 입력해주세요.");
+            alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개를 입력해주세요.");
             return;
           }
         } else {
@@ -2055,20 +2055,17 @@ export default function JobPostForm({
   };
   const textFieldMeta: Record<TextKey, { label: string; hint?: string; placeholder: string }> = {
     benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
-    responsibilities: { label: "담당업무", hint: "필수 · 주요 업무를 입력", placeholder: "담당 업무를 입력하세요" },
+    responsibilities: { label: "담당업무", hint: "필수 · 주요 업무를 입력", placeholder: "예) 신제품 기획 · 협력사 관리 · 매출 분석" },
     description: {
-      // 섹션 제목도 '상세요강'이라 그 안의 글 칸임을 드러낸다(위는 이미지 칸).
-      label: "상세요강 글",
+      // 매장 공고에만 선다(textFields 참조 — 본사는 담당업무가 그 자리다).
+      // '상세요강 글'이라 부르면 담당업무·자격요건과 뭐가 다른 칸인지 알 수 없다.
+      // 여기서 부르는 것은 조건이 아니라 그 자리가 어떤 자리인지다.
+      label: "포지션 소개",
       hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
-      // 이 칸의 성격은 상세 이미지가 있느냐에 따라 달라진다 — 있으면 '보충', 없으면 '본문 전부'.
-      // hint 와 같은 조건으로 가른다. 본사·매장이 전할 것도 서로 다르다.
+      // 이미지가 있으면 보태는 자리, 없으면 이 칸이 상세요강 본문 노릇을 한다.
       placeholder: detailImages.length > 0
-        ? (isOffice
-            ? "이미지에 없는 이야기만 더해 주세요 — 팀 구성, 일하는 방식처럼"
-            : "이미지에 없는 이야기만 더해 주세요 — 매장 분위기, 고객층, 하루 일과처럼")
-        : (isOffice
-            ? "자유롭게 적어 주세요 — 맡을 일, 팀 구성, 일하는 방식처럼"
-            : "자유롭게 적어 주세요 — 하는 일, 매장 분위기, 고객층, 근무 조건처럼"),
+        ? "이미지에 없는 이야기만 더해 주세요 — 매장 분위기, 고객층, 성장 지원처럼"
+        : "어떤 자리인지 소개해 주세요 — 하는 일, 매장 분위기, 고객층, 성장 지원처럼",
     },
     requirements: { label: "자격요건",
       placeholder: isOffice ? "예) 관련 경력 3년 이상 · 엑셀 능숙" : "예) 미용사 면허 소지 · 디자이너 2년 이상" },
