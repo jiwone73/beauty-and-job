@@ -43,8 +43,11 @@ export default function CompanySettingsPage() {
   //   website_url 은 열다섯 곳에서 읽고 있어 그대로 두고, 첫 링크를 늘 거기에 맞춘다.
   const [links, setLinks] = useState<{ id: string; category: string; url: string }[]>([]);
   const 새id = () => `l${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
+  // 화면에만 세워 둔 빈 줄("__빈")을 고치면 그때 진짜 목록에 담는다.
   const 링크고치기 = (id: string, patch: Partial<{ category: string; url: string }>) =>
-    setLinks((ls) => ls.map((l) => (l.id === id ? { ...l, ...patch } : l)));
+    setLinks((ls) => (ls.some((l) => l.id === id)
+      ? ls.map((l) => (l.id === id ? { ...l, ...patch } : l))
+      : [...ls, { id: 새id(), category: "", url: "", ...patch }]));
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -445,46 +448,42 @@ export default function CompanySettingsPage() {
   };
 
   // SNS·홈페이지 목록 — 매장과 본사가 같은 것을 쓴다(개인회원 프로필과 같은 부품).
+  // SNS·홈페이지 목록 — 매장과 본사가 같은 것을 쓴다(개인회원 프로필과 같은 부품).
+  //   라벨 옆에 바로 칸이 붙어 한 줄로 읽힌다. 빈 줄 하나는 늘 세워 둔다 —
+  //   "넣어 보세요" 같은 안내 단추 없이도 무엇을 적는 자리인지 자리글이 말해 준다.
   const 링크목록 = (
-                  <div className="admin-form-row" style={{ gridColumn: "1 / -1" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                        <label className="admin-form-label" style={{ margin: 0 }}>{L.site}</label>
-                        {links.length > 0 && <span style={{ fontSize: 12.5, color: "#999" }}>{links.length}개</span>}
-                        <button type="button" aria-label={`${L.site} 추가`} title="하나 더 넣어요"
-                          onClick={() => setLinks((ls) => [...ls, { id: 새id(), category: "", url: "" }])}
-                          style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", border: "none", background: "none", color: "#582681", padding: 0, cursor: "pointer" }}>
-                          <Plus size={18} />
-                        </button>
-                      </div>
-                      {/* 개인회원 프로필과 같은 방식 — 이름을 고르면 주소 앞부분까지 채워 준다. */}
-                      {links.map((l) => (
-                        <div key={l.id} className="if-row if-row-plain">
-                          {/* 한 줄에 이름과 주소를 나란히. 아이콘은 뺀다 — 줄마다 같은 그림이라
-                              알려 주는 것 없이 왼쪽 자리만 먹었다. */}
-                          <div className="if-row-body">
-                            <div className="if-line">
-                              <InlineSuggest value={l.category} placeholder="SNS명"
-                                찾기={SNS찾기}
-                                onPick={(k) => 링크고치기(l.id, { category: k.이름, url: l.url || k.앞부분 })}
-                                onSave={(v) => 링크고치기(l.id, { category: v })} />
-                              <span className="if-sep">|</span>
-                              <InlineText value={l.url} placeholder="https://" required
-                                onSave={(v) => 링크고치기(l.id, { url: v })} />
-                            </div>
-                          </div>
-                          <button className="if-row-del" aria-label="삭제"
-                            onClick={() => { if (confirm("이 주소를 지울까요?")) setLinks((ls) => ls.filter((x) => x.id !== l.id)); }}>
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
-                      ))}
-                      {links.length === 0 && (
-                        <button type="button" className="if-empty"
-                          onClick={() => setLinks([{ id: 새id(), category: "", url: "" }])}>
-                          {isStore ? "매장 인스타·네이버 예약 주소를 넣어 보세요" : "홈페이지·채용 페이지 주소를 넣어 보세요"}
-                        </button>
-                      )}
-                    </div>
+    <div className="admin-form-row" style={{ gridColumn: "1 / -1" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+        {/* .if-row 의 위 여백(12px)에 맞춰 라벨을 내려 첫 줄과 가운데를 맞춘다. */}
+        <label className="admin-form-label" style={{ margin: 0, flexShrink: 0, paddingTop: 21, lineHeight: "24px" }}>{L.site}</label>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {(links.length ? links : [{ id: "__빈", category: "", url: "" }]).map((l) => (
+            <div key={l.id} className="if-row if-row-plain">
+              <div className="if-row-body">
+                <div className="if-line">
+                  <InlineSuggest value={l.category} placeholder="SNS명"
+                    찾기={SNS찾기}
+                    onPick={(k) => 링크고치기(l.id, { category: k.이름, url: l.url || k.앞부분 })}
+                    onSave={(v) => 링크고치기(l.id, { category: v })} />
+                  <span className="if-sep">|</span>
+                  <InlineText value={l.url} placeholder="https://" required
+                    onSave={(v) => 링크고치기(l.id, { url: v })} />
+                </div>
+              </div>
+              <button className="if-row-del" aria-label="삭제"
+                onClick={() => setLinks((ls) => ls.filter((x) => x.id !== l.id))}>
+                <Trash2 size={15} />
+              </button>
+            </div>
+          ))}
+        </div>
+        <button type="button" aria-label={`${L.site} 추가`} title="하나 더 넣어요"
+          onClick={() => setLinks((ls) => [...(ls.length ? ls : [{ id: 새id(), category: "", url: "" }]), { id: 새id(), category: "", url: "" }])}
+          style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", border: "none", background: "none", color: "#582681", padding: "12px 0 0", cursor: "pointer" }}>
+          <Plus size={18} />
+        </button>
+      </div>
+    </div>
   );
 
   const handleSave = async () => {
