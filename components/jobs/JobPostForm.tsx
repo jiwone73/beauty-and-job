@@ -1910,7 +1910,7 @@ export default function JobPostForm({
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 모집부문 표 셀 스타일
-  const thc: React.CSSProperties = { textAlign: "left", padding: "9px 4px", fontSize: 12.5, color: "#6f6f75", fontWeight: 600, borderBottom: "1px solid #efeff1", whiteSpace: "nowrap" };
+  const thc: React.CSSProperties = { textAlign: "left", padding: "0 4px 5px", fontSize: 11.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap" };
   const reqStar = <span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span>; // 필수 열 표시(모집분야만)
   const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f7f7f8", verticalAlign: "middle" };
   // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
@@ -2696,8 +2696,23 @@ export default function JobPostForm({
                 {categories.length === 0 ? null : (
                   <div style={{ overflowX: "auto" }}>
                     <table style={{ minWidth: 566, borderCollapse: "collapse" }}>
-                      {/* 표 머리줄은 걷었다. 칸마다 제 이름이 자리글로 들어 있어,
-                          채우기 전에도 무슨 칸인지 보이고 채우면 값으로 바뀐다. */}
+                      {/* 빈 칸의 자리글은 비워 뒀다. 머리줄이 이미 칸 이름을 대고 있어
+                          같은 말이 위아래로 두 번 나오기 때문. 빈 칸은 회색 바탕(PH_BG)만으로
+                          아직 안 채운 자리임을 알린다.
+                          머리줄을 걷었더니 채운 뒤에 칸을 구별할 수 없었다("무관"이 셋 나란히).
+                          자리글은 채우면 사라지니 이름을 붙들어 줄 것이 필요하다.
+                          대신 자리글과 같은 흐린 회색·가는 글씨로 눌러 캡션처럼 읽히게 했다. */}
+                      <thead>
+                        <tr>
+                          <th style={{ ...thc, ...firstCol, minWidth: 92 }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
+                          <th style={{ ...thc, minWidth: 66 }}>고용형태</th>
+                          <th style={{ ...thc, minWidth: 56 }}>성별우대</th>
+                          <th style={{ ...thc, minWidth: 72 }}>경력/직책</th>
+                          <th style={{ ...thc, minWidth: 52 }}>학력</th>
+                          <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>
+                          <th style={{ ...thc, minWidth: 82 }}>급여</th>
+                        </tr>
+                      </thead>
                       <tbody>
                         {categories.map((cat) => {
                           const row = posMeta[cat] || emptyPos;
@@ -2710,10 +2725,10 @@ export default function JobPostForm({
                                     style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0 }}>×</button>
                                 </div>
                               </td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "고용형태")}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "성별우대", false)}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "경력/직책", false)}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "학력", false)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "")}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "", false)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
                                 <button type="button" onClick={(e) => { if (posShiftOpen === cat) { setPosShiftOpen(null); return; } openPopAt(e.currentTarget, 244, 250); setPosShiftOpen(cat); }}
                                   style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "left", border: "none", borderRadius: 5, padding: "3px 6px", fontSize: 12.5, lineHeight: 1.35, cursor: "pointer", color: "#333", ...cellFill(!!(row.workDays || row.workTime)) }}>
@@ -2726,7 +2741,7 @@ export default function JobPostForm({
                                       {row.workTime && <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workTime}</div>}
                                     </>
                                     )
-                                  ) : <span style={{ color: "#b4b4b9" }}>근무요일 / 시간</span>}
+                                  ) : ""}
                                 </button>
                                 {posShiftOpen === cat && (() => {
                                   const days = (row.workDays && row.workDays !== "협의") ? row.workDays.split(/[·,]/).map((s) => s.trim()).filter((d) => WORK_DAY_OPTIONS.includes(d)) : [];
@@ -2793,7 +2808,7 @@ export default function JobPostForm({
                                   );
                                 })()}
                               </td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "급여", true, SALARY_UNITS)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "", true, SALARY_UNITS)}</td>
                             </tr>
                           );
                         })}
