@@ -9,7 +9,7 @@ import BannerStrip from "@/components/jobs/BannerStrip";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { SNS찾기 } from "@/lib/snsPresets";
 import { InlineSuggest, InlineText } from "@/components/profile/inline/InlineField";
-import { Link as LinkIcon, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import type { CompanyInfo } from "@/lib/types/company";
 
 declare global {
@@ -458,17 +458,17 @@ export default function CompanySettingsPage() {
                       </div>
                       {/* 개인회원 프로필과 같은 방식 — 이름을 고르면 주소 앞부분까지 채워 준다. */}
                       {links.map((l) => (
-                        <div key={l.id} className="if-row">
-                          <span className="if-row-icon"><LinkIcon size={16} /></span>
+                        <div key={l.id} className="if-row if-row-plain">
+                          {/* 한 줄에 이름과 주소를 나란히. 아이콘은 뺀다 — 줄마다 같은 그림이라
+                              알려 주는 것 없이 왼쪽 자리만 먹었다. */}
                           <div className="if-row-body">
                             <div className="if-line">
-                              <InlineSuggest value={l.category} placeholder="어떤 곳인지 (예: 매장 인스타)" wide
+                              <InlineSuggest value={l.category} placeholder="SNS명"
                                 찾기={SNS찾기}
                                 onPick={(k) => 링크고치기(l.id, { category: k.이름, url: l.url || k.앞부분 })}
                                 onSave={(v) => 링크고치기(l.id, { category: v })} />
-                            </div>
-                            <div className="if-line">
-                              <InlineText value={l.url} placeholder="https:// 로 시작하는 주소" required wide
+                              <span className="if-sep">|</span>
+                              <InlineText value={l.url} placeholder="https://" required
                                 onSave={(v) => 링크고치기(l.id, { url: v })} />
                             </div>
                           </div>
