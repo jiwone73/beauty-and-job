@@ -781,26 +781,27 @@ export default function CompanySettingsPage() {
                   </button>
                 </div>
               </div>
-              <div className="admin-form-row">
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <label className="admin-form-label" style={{ margin: 0 }}>주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+              {/* 주소도 다른 칸과 같은 결로 — 큰 테두리 상자 둘 대신 라벨 옆 한 줄.
+                  주소는 검색으로만 넣으므로 눌러서 여는 자리글, 상세주소는 그 자리에서 친다. */}
+              <div className="admin-form-row" style={{ gridColumn: "1 / -1" }}>
+                <label className="admin-form-label">주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                <div className="if-row if-row-plain" style={{ borderBottom: "none", padding: 0 }}>
+                  <div className="if-row-body">
+                    <div className="if-line">
+                      <button type="button" className={`if-slot ${form.address ? "on" : ""}`} onClick={handleAddressSearch}>
+                        {form.address || "주소 검색"}{!form.address && <i className="if-req">*</i>}
+                      </button>
+                      <span className="if-sep">|</span>
+                      <InlineText value={form.address_detail} placeholder="동·호수"
+                        onSave={(v) => setForm({ ...form, address_detail: v })} />
+                    </div>
+                  </div>
                   {form.address && (
-                    <button type="button" onClick={handleClearAddress}
-                      style={{ fontSize: "13px", color: "#999", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: "2px 4px" }}>
-                      초기화
+                    <button className="if-row-del" aria-label="주소 초기화" title="주소 초기화"
+                      onClick={handleClearAddress}>
+                      <Trash2 size={15} />
                     </button>
                   )}
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "8px" : "12px" }}>
-                  <input className="admin-form-input" readOnly value={form.address}
-                    onClick={handleAddressSearch}
-                    placeholder="주소 검색을 눌러주세요"
-                    style={{ minWidth: 0, cursor: "pointer" }} />
-                  <input className="admin-form-input"
-                    placeholder="상세주소 (동·호수 등)"
-                    style={{ minWidth: 0 }}
-                    value={form.address_detail}
-                    onChange={(e) => setForm({ ...form, address_detail: e.target.value })} />
                 </div>
               </div>
 

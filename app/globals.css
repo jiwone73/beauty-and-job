@@ -13184,6 +13184,12 @@ button,
 .if-row:last-of-type { border-bottom: none; }
 /* 아이콘 없는 줄. 첫 칸(30px)은 아이콘 자리라, 안 쓰면 본문이 거기로 밀려 들어간다. */
 .if-row-plain { grid-template-columns: minmax(0, 1fr) 26px; }
+/* 좁은 칸(2열 한 칸)에 서는 줄. 고칠 때 입력칸이 최소 120px 을 요구해 줄이 접히고
+   옆 칸이 아래로 떨어졌다. 접지 않고 그 자리에서 커서만 뜨게 한다. */
+.if-row-plain .if-line { flex-wrap: nowrap; }
+.if-row-plain .if-wrap { min-width: 0; flex: 1 1 auto; }
+.if-row-plain .if-input { min-width: 0; width: 100%; }
+.if-row-plain .if-slot { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .if-row-icon { width: 30px; height: 30px; border-radius: 8px; background: #f2f2f4;
   display: flex; align-items: center; justify-content: center; color: #a8a8ad; }
 .if-row-body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
