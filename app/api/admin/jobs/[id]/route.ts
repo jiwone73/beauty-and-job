@@ -80,7 +80,7 @@ export async function PATCH(
     "responsibilities", "headcount", "education", "source_url",
     "salary_text", "headcount_text", "gender_preference", "positions", "work_locations",
     "apply_method", "external_apply_url",
-    "external_contact_name", "external_contact_phone", "external_contact_email", "contact_public",
+    "external_contact_name", "external_contact_phone", "external_contact_email",
     "contact_methods",
   ];
 

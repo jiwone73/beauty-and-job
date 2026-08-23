@@ -42,8 +42,8 @@ export async function PATCH(
     "work_days", "work_time", "work_time_slots", "work_period",
     "headcount", "contact_methods", "responsibilities", "education", "gender_preference", "positions",
     "cover_images",
-    // 접수담당자와 그 공개 여부
-    "external_contact_name", "external_contact_phone", "external_contact_email", "contact_public",
+    // 접수담당자
+    "external_contact_name", "external_contact_phone", "external_contact_email",
   ];
 
   const updates: string[] = [];

@@ -352,8 +352,6 @@ export default function JobPostForm({
   const [bannerGenPreset, setBannerGenPreset] = useState(0);
   const [bannerGenBusy, setBannerGenBusy] = useState(false);
   const [nmManagerName, setNmManagerName] = useState("");
-  // 접수담당자를 구직자에게 보일지. 기본은 공개(여태 동작 그대로).
-  const [contactPublic, setContactPublic] = useState(true);
   const [nmManagerPhone, setNmManagerPhone] = useState("");
   const [contactMethods, setContactMethods] = useState<string[]>([]); // 지원방법: 문자·이메일·전화·뷰티워크 온라인지원(복수)
   const toggleContactMethod = (m: string) =>
@@ -557,7 +555,7 @@ export default function JobPostForm({
     importImages,
     nonMember, newCompanyName, newBrandName, nmDescription, nmAddress, nmAddressDetail,
     nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
-    nmManagerName, nmManagerPhone, nmContactEmail, contactPublic, contactMethods,
+    nmManagerName, nmManagerPhone, nmContactEmail, contactMethods,
     applyMethod, externalApplyUrl,
   });
 
@@ -574,7 +572,7 @@ export default function JobPostForm({
       hiringProcess, benefitTags, salaryNego, salaryType, salaryMax, salaryByCat, pasteText, ocrSourceUrl,
       parseUrl, importMode, findQuery, importImages, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
       nmAddressDetail, nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
-      nmManagerName, nmManagerPhone, nmContactEmail, contactPublic, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
+      nmManagerName, nmManagerPhone, nmContactEmail, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
 
   const [restored, setRestored] = useState<string | null>(null);
   const clearAutosave = () => { try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ } setRestored(null); };
@@ -617,7 +615,7 @@ export default function JobPostForm({
       "pasteText", "ocrSourceUrl", "parseUrl", "findQuery",
       "newCompanyName", "newBrandName", "nmDescription", "nmAddress", "nmAddressDetail",
       "nmIndustry", "nmSize", "nmFounded", "nmRepresentative", "nmPhone", "nmHomepage",
-      "nmManagerName", "nmManagerPhone", "nmContactEmail", "contactPublic", "contactMethods", "externalApplyUrl"];
+      "nmManagerName", "nmManagerPhone", "nmContactEmail", "contactMethods", "externalApplyUrl"];
     if (!살펴볼것.some((k) => 뭔가있음(d[k]))) return;
     const set = <T,>(fn: (v: T) => void, v: T | undefined) => { if (v !== undefined && v !== null) fn(v); };
     set(setForm, d.form); set(setNotes, d.notes); set(setCategories, d.categories); set(setPosMeta, d.posMeta);
@@ -634,7 +632,6 @@ export default function JobPostForm({
     set(setNmIndustry, d.nmIndustry); set(setNmSize, d.nmSize); set(setNmFounded, d.nmFounded);
     set(setNmRepresentative, d.nmRepresentative); set(setNmPhone, d.nmPhone); set(setNmHomepage, d.nmHomepage);
     set(setNmManagerName, d.nmManagerName); set(setNmManagerPhone, d.nmManagerPhone); set(setNmContactEmail, d.nmContactEmail);
-    if (typeof d.contactPublic === "boolean") setContactPublic(d.contactPublic);
     set(setContactMethods, d.contactMethods); set(setApplyMethod, d.applyMethod); set(setExternalApplyUrl, d.externalApplyUrl);
     setRestored(d.at || "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -983,7 +980,6 @@ export default function JobPostForm({
           setNmPhone(j.company.company_phone || "");
         }
         setNmManagerName(j.external_contact_name || "");
-        setContactPublic(j.contact_public !== false);
         setNmManagerPhone(j.external_contact_phone || "");
         setNmContactEmail(j.external_contact_email || "");
         setContactMethods(Array.isArray(j.contact_methods) ? j.contact_methods : []);
@@ -1821,7 +1817,6 @@ export default function JobPostForm({
       external_contact_email: nmContactEmail.trim() || null,
       external_contact_name: nmManagerName.trim() || null,
       external_contact_phone: nmManagerPhone.replace(/\D/g, "") || null,
-      contact_public: contactPublic,
       contact_methods: contactMethods,
       // 불러온 원문 URL 저장 → 이후 파서 개선 시 일괄 재파싱·백필 가능(picked.url 우선)
       source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
@@ -3086,17 +3081,6 @@ export default function JobPostForm({
                         <span style={{ ...lblS, ...(canName ? null : { width: 88 }) }}>
                           {canName ? "담당자" : "홈페이지 URL"}
                           {isNmAdminJob && canName && <><br /><span style={{ fontSize: 10, color: "#e3e3e6" }}>관리자용</span></>}
-                          {/* 비회원 대행 공고는 어차피 늘 가리므로 고를 것이 없다. */}
-                          {canName && !isNmAdminJob && (
-                            <><br />
-                              <button type="button" onClick={() => setContactPublic((v) => !v)}
-                                title={contactPublic ? "구직자에게 보입니다 — 눌러서 감춰요" : "구직자에게 보이지 않습니다 — 눌러서 보여요"}
-                                style={{ border: "none", background: "none", padding: 0, marginTop: 1, fontSize: 11, lineHeight: 1.2,
-                                  cursor: "pointer", color: contactPublic ? "#582681" : "#a8a8ad" }}>
-                                {contactPublic ? "공개" : "비공개"}
-                              </button>
-                            </>
-                          )}
                         </span>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           {canUrl && !urlOnLeft && (
@@ -3133,9 +3117,6 @@ export default function JobPostForm({
                           })()}
                           {isNmAdminJob && canName && (
                             <div style={{ fontSize: 11, color: "#a8a8ad", marginTop: 3 }}>구직자에게는 노출되지 않아요 · 회원가입 유도용 내부 연락처</div>
-                          )}
-                          {canName && !isNmAdminJob && !contactPublic && (
-                            <div style={{ fontSize: 11, color: "#a8a8ad", marginTop: 3 }}>구직자에게는 보이지 않아요 · 지원은 위 접수방법으로 받습니다</div>
                           )}
                         </div>
                       </div>
