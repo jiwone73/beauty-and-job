@@ -227,7 +227,10 @@ export default function ResumeEditor({
               신입
             </label>
             <button className="resume-icon-btn" aria-label="경력 추가" disabled={isEntryLevel}
-              onClick={() => { if (isEntryLevel) return; setEditCareer(null); setCareerModalOpen(true); }}
+              onClick={() => { if (isEntryLevel) return; addCareer({
+                  id: genId(), company: "", department: "", position: "",
+                  startDate: "", endDate: "", isVerified: false, description: "",
+                }); }}
               style={{ opacity: isEntryLevel ? 0.4 : 1, cursor: isEntryLevel ? "not-allowed" : "pointer" }}>
               <Plus size={18} />
             </button>
@@ -279,12 +282,13 @@ export default function ResumeEditor({
             </button>
           </div>
         ))}
-        {!isEntryLevel && (
-          <button type="button" className="if-add" onClick={() => addCareer({
-            id: genId(), company: "", department: "", position: "",
-            startDate: "", endDate: "", isVerified: false, description: "",
-          })}>
-            <Plus size={16} /> 경력 추가
+        {/* 항목이 하나도 없을 때만 안내 한 줄. 더하기는 머리줄 + 가 맡는다. */}
+        {!isEntryLevel && careers.length === 0 && (
+          <button type="button" className="if-empty" onClick={() => addCareer({
+                  id: genId(), company: "", department: "", position: "",
+                  startDate: "", endDate: "", isVerified: false, description: "",
+                })}>
+            매장명 · 근무 기간 · 직급을 적어 주세요
           </button>
         )}
       </section>

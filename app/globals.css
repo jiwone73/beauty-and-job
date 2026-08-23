@@ -13201,3 +13201,7 @@ button,
   font-family: inherit; font-size: 13.5px; color: #6f6f75; cursor: pointer;
   transition: border-color .12s, color .12s; }
 .if-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
+/* 항목이 하나도 없는 칸의 안내 한 줄 */
+.if-empty { width: 100%; text-align: left; background: none; border: none; padding: 12px 4px;
+  font-family: inherit; font-size: 13.5px; color: #a8a8ad; cursor: pointer; border-radius: 8px; }
+.if-empty:hover { background: #f7f7f8; color: #6f6f75; }
