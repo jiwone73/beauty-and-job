@@ -2631,8 +2631,15 @@ export default function JobPostForm({
                         return next;
                       })} />
                   ) : (
-                    <div style={{ minHeight: 76, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12.5, color: "#999", lineHeight: 1.5, textAlign: "center" }}>
-                      이미지를 <b style={{ margin: "0 3px" }}>드래그</b>하거나 <b style={{ margin: "0 3px" }}>Ctrl+V</b>로 붙여넣어 주세요.
+                    /* 어떤 사진을 올리는 칸인지 먼저 말한다. '이미지'만으로는 로고를 올리거나
+                       공고 포스터를 올려 배너가 글자로 뒤덮인다. 넣는 법은 그 아래 작게. */
+                    <div style={{ minHeight: 76, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, lineHeight: 1.5, textAlign: "center" }}>
+                      <div style={{ fontSize: 13.5, color: "#8a8a8f" }}>
+                        {isOffice ? "회사·사무실 홍보 사진" : "매장 내·외관 홍보 사진"}
+                      </div>
+                      <div style={{ fontSize: 12, color: "#b4b4b9" }}>
+                        <b style={{ margin: "0 2px", fontWeight: 600 }}>드래그</b>하거나 <b style={{ margin: "0 2px", fontWeight: 600 }}>Ctrl+V</b>로 붙여넣어 주세요
+                      </div>
                     </div>
                   )}
                 </div>
