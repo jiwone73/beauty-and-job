@@ -13129,8 +13129,8 @@ button,
     display: grid; grid-template-columns: 1fr 1fr;
     border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden;
   }
-  /* 이름·사진과 주소는 좌우로 넓어야 한다. */
-  .pf-main .profile-info-card.pf-grid > :first-child,
+  /* 통줄을 쓰는 칸은 .pf-wide 로만 정한다. :first-child 로 잡아 두니 직군이
+     첫 자식이라는 이유만으로 통줄을 먹고 희망 근무지역이 혼자 남았다. */
   .pf-main .profile-info-card.pf-grid > .pf-wide { grid-column: 1 / -1; }
 
   .pf-main .pf-grid .profile-info-row {
