@@ -1727,6 +1727,8 @@ export default function JobPostForm({
             if (!form.responsibilities?.trim()) { alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
             if (!form.requirements?.trim()) { alert("자격요건을 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
           }
+          // 본사 공고는 전형이 여러 단계라, 구직자가 지원 전에 무엇을 거치는지 알아야 한다.
+          if (hiringProcess.length === 0) { alert("채용 절차를 1단계 이상 선택해주세요."); return; }
         }
         if (benefitTags.length === 0 && !fiBenefits.trim()) { alert("복리후생을 1개 이상 선택해주세요."); return; }
       }
@@ -2173,7 +2175,12 @@ export default function JobPostForm({
     { id: "deadline", label: "마감일", done: !!form.deadline || alwaysOpen },
     { id: "region", label: "근무지역", done: regionList.length > 0 },
     { id: "benefit", label: "복리후생", done: benefitTags.length > 0 },
-    { id: "detail", label: "상세요강", done: !!String(form.description || "").trim() },
+    // 상세요강: 이미지가 있으면 됐고, 없으면 본사는 담당업무·자격요건, 매장은 상세요강 글.
+    //   전엔 description 만 봐서 본사 공고는 아무리 채워도 안 채운 것으로 셌다.
+    { id: "detail", label: "상세요강", done: detailImages.length > 0 || (isOffice
+        ? (!!String(form.responsibilities || "").trim() && !!String(form.requirements || "").trim())
+        : !!String(form.description || "").trim()) },
+    ...(isOffice ? [{ id: "process", label: "전형절차", done: hiringProcess.length > 0 }] : []),
   ];
   const 채운칸 = 할칸.filter((c) => c.done).length;
   const 작성률 = Math.round((채운칸 / 할칸.length) * 100);
@@ -3123,8 +3130,8 @@ export default function JobPostForm({
 
               {/* 채용 절차 — 본사(기업) 공고에서만 노출 */}
               {jobGroupType === "기업" && (
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
-                  <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차</span>
+                <div id="jp-process" style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
+                  <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", flex: 1 }}>
                     {PRESET_PROCESS.기업.map((p) => {
                       const on = hiringProcess.includes(p);
