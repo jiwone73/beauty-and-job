@@ -101,7 +101,7 @@ const SOURCE_CAFES: { name: string; url: string }[] = [
 ];
 
 const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "모집분야", "근무지역", "상세요강 이미지", "기타"];
-const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "직접방문", "뷰티워크 온라인지원", "회사 홈페이지 지원"]; // 지원방법(복수)
+const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "직접방문", "뷰티워크 온라인지원", "회사 홈페이지 지원", "상세요강 참조"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
 
 // 내용에 맞춰 늘어나는 textarea.
