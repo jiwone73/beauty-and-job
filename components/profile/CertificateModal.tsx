@@ -14,6 +14,7 @@ interface Props {
 export default function CertificateModal({ isOpen, onClose, editTarget, inline}: Props) {
   const { addCertificate, updateCertificate } = useProfileStore();
   const [name, setName] = useState("");
+  // 발급기관은 화면에서 걷었다. 이미 저장된 값은 그대로 실어 보낸다.
   const [issuer, setIssuer] = useState("");
   const [issuedYm, setIssuedYm] = useState("");
 
@@ -32,7 +33,7 @@ export default function CertificateModal({ isOpen, onClose, editTarget, inline}:
   }, [editTarget, isOpen]);
 
   if (!isOpen) return null;
-  const isValid = !!name.trim() && !!issuedYm;
+  const isValid = !!name.trim();
 
   const handleSubmit = () => {
     if (!isValid) return;
@@ -68,15 +69,7 @@ export default function CertificateModal({ isOpen, onClose, editTarget, inline}:
           onChange={(e) => setName(e.target.value)}
           maxLength={50}
         />
-        <label className="cv-field-label">발급기관</label>
-        <input
-          className="cv-input"
-          placeholder="예) 한국산업인력공단"
-          value={issuer}
-          onChange={(e) => setIssuer(e.target.value)}
-          maxLength={50}
-        />
-        <label className="cv-field-label cv-required">취득 년월</label>
+        <label className="cv-field-label">취득 년월</label>
         <input
           className="cv-input"
           type="month"

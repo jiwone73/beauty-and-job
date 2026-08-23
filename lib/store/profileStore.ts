@@ -108,11 +108,30 @@ export const useProfileStore = create<ProfileState>()(
   persist(
     (set, get) => {
       let autoSyncTimer: any = null;
-      // 헬퍼: 액션 후 자동 DB 동기화
+      // 마지막으로 서버에 보낸 본문. 같으면 다시 보내지 않는다.
+      let 마지막보낸것 = "";
+      // 보내는 중이면 겹쳐 보내지 않고, 그 사이 또 바뀌었으면 끝난 뒤 한 번 더.
+      let 보내는중 = false;
+      let 또보낼것 = false;
+
+      // 액션 뒤 자동 저장. 타자를 치는 동안에는 미뤘다가 손을 멈추면 한 번에
+      // 묶어 보낸다. 칸마다 즉시 보내면 이력서 하나에 마흔 번 넘게 나간다.
       const autoSync = () => {
         if (autoSyncTimer) clearTimeout(autoSyncTimer);
-        autoSyncTimer = setTimeout(() => get().syncToDb(), 2000);
+        autoSyncTimer = setTimeout(() => { autoSyncTimer = null; get().syncToDb(); }, 1500);
       };
+
+      // 대기 중인 저장을 지금 흘려보낸다. 화면을 덮거나 떠날 때 부른다 —
+      // 1.5초를 기다리다가 그냥 나가면 마지막 손질이 사라진다.
+      const 지금보내기 = () => {
+        if (!autoSyncTimer) return;
+        clearTimeout(autoSyncTimer); autoSyncTimer = null;
+        get().syncToDb();
+      };
+      if (typeof window !== "undefined") {
+        document.addEventListener("visibilitychange", () => { if (document.hidden) 지금보내기(); });
+        window.addEventListener("pagehide", 지금보내기);
+      }
 
       return {
         isCareerVerified: false,
@@ -354,14 +373,7 @@ export const useProfileStore = create<ProfileState>()(
           const 보낼어학 = s.languages.filter((l) => 알맹이(l.language));
           const 보낼링크 = s.links.filter((l) => 알맹이(l.url));
           const 보낼자격 = s.certificates.filter((c) => 알맹이(c.name));
-          try {
-            await fetch("/api/users/me/profile", {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
+          const 본문 = JSON.stringify({
                 profile: {
                   intro: s.intro,
                   core_competencies: s.coreCompetencies,
@@ -382,10 +394,31 @@ export const useProfileStore = create<ProfileState>()(
                 languages: 보낼어학,
                 links: 보낼링크,
                 certificates: 보낼자격,
-              }),
+          });
+
+          // 바뀐 것이 없으면 보내지 않는다. 예전에는 어느 칸을 건드리든 이력서
+          // 전체를 매번 밀어 넣었다.
+          if (본문 === 마지막보낸것) return;
+          // 보내는 중이면 줄을 세운다. 두 번이 겹치면 나중 것이 앞 것을 덮어
+          // 어느 쪽이 남을지 알 수 없다.
+          if (보내는중) { 또보낼것 = true; return; }
+
+          보내는중 = true;
+          try {
+            const res = await fetch("/api/users/me/profile", {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: 본문,
             });
+            if (res.ok) 마지막보낸것 = 본문;
           } catch (e) {
             console.error("[profile sync]", e);
+          } finally {
+            보내는중 = false;
+            if (또보낼것) { 또보낼것 = false; get().syncToDb(); }
           }
         },
       };

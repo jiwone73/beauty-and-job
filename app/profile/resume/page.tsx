@@ -187,6 +187,8 @@ function ResumePageContent() {
     }
   }, []);
 
+  // 손을 멈추면 1.5초 뒤 알아서 저장된다(profileStore 의 autoSync). 이 단추가
+  // 하는 일은 저장이 아니라 필수 칸을 다 채웠는지 확인하는 것이다.
   const handleSave = async () => {
     // 경력/신입은 필수 구분: 경력 1건 이상이거나 '신입' 체크 중 하나는 반드시.
     if (!introLocal.trim()) { alert("한줄소개를 입력해주세요."); return; }
@@ -199,7 +201,7 @@ function ResumePageContent() {
     setEmail(emailLocal);
     try {
       await useProfileStore.getState().syncToDb();
-      alert("저장되었습니다.");
+      alert("이력서 작성을 마쳤습니다.");
     } catch (e: any) {
       // 아직 못 받아온 상태면 그 이유를 그대로 알린다 — "다시 시도"만 권하면
       // 같은 자리에서 계속 실패한다.
@@ -531,7 +533,7 @@ function ResumePageContent() {
           />
 
           <div className="resume-bottom-save">
-            <button className="resume-save-btn-full" onClick={handleSave}>저장하기</button>
+            <button className="resume-save-btn-full" onClick={handleSave}>작성 완료</button>
           </div>
         </main>
       </div>

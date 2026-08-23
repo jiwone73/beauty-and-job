@@ -240,6 +240,10 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
     return merged.size > 0 ? Array.from(merged) : SKILL_RECOMMENDATIONS["default"];
   })();
 
+  // 검색어가 바뀌면 다시 접는다. 앞 검색에서 펼친 상태가 이어지면
+  // 새 검색어의 먼 것까지 한꺼번에 보인다.
+  const 검색바꾸기 = (v: string) => { setInput(v); set다펼침(false); };
+
   const handleAdd = (value?: string) => {
     const v = (value ?? input).trim();
     if (!v) return;
@@ -249,16 +253,37 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
 
   // 입력한 단어와 관련된 스킬 자동완성 (사전 글자검색 + 분야 키워드 매핑)
   const query = input.trim().toLowerCase();
+  // 가까운 것부터 세운다. 예전에는 걸린 순서대로 서른 개가 쏟아져,
+  // '매장'을 치면 '매장 운영'과 '시술 전후 사진 촬영'이 나란히 나왔다.
+  //
+  //  1. 검색어로 시작하는 것   — '매장' → '매장 운영'
+  //  2. 검색어가 안에 든 것     — '매장' → '우리 매장 SNS'
+  //  3. 분야가 겹쳐 딸려온 것   — '매장' → 매장운영 그룹 전체
+  //
+  // 같은 등급 안에서는 짧은 것을 앞에 둔다. 포괄적인 스킬일수록 이름이
+  // 짧다 — '매장 운영'이 '매장 SNS 운영'보다 넓은 말이다.
   const matches = (() => {
-    if (!query) return [];
-    const hit = new Set<string>();
-    // 1) 스킬명에 글자가 포함되는 것
-    ALL_SKILLS.forEach((s) => { if (s.toLowerCase().includes(query)) hit.add(s); });
-    // 2) 분야 키워드가 서로 포함되면 그 그룹 스킬 추가 (예: "미용" → 뷰티 스킬)
-    Object.entries(KEYWORD_GROUPS).forEach(([kw, list]) => {
-      if (kw.includes(query) || query.includes(kw)) list.forEach((s) => hit.add(s));
+    if (!query) return { 가까운: [] as string[], 전부: [] as string[] };
+    const 등급 = new Map<string, number>();
+    const 담기 = (s: string, g: number) => {
+      const 이전 = 등급.get(s);
+      if (이전 === undefined || g < 이전) 등급.set(s, g);
+    };
+    ALL_SKILLS.forEach((s) => {
+      const l = s.toLowerCase();
+      if (l.startsWith(query)) 담기(s, 0);
+      else if (l.includes(query)) 담기(s, 1);
     });
-    return Array.from(hit).filter((s) => !skills.includes(s)).slice(0, 30);
+    Object.entries(KEYWORD_GROUPS).forEach(([kw, list]) => {
+      if (kw.includes(query) || query.includes(kw)) list.forEach((s) => 담기(s, 2));
+    });
+    const 줄세운 = Array.from(등급.entries())
+      .filter(([s]) => !skills.includes(s))
+      .sort((a, b) => (a[1] - b[1]) || (a[0].length - b[0].length) || a[0].localeCompare(b[0]));
+    // 이름에 검색어가 든 것(0·1등급)까지가 '가까운 것'이다. 분야가 겹쳐
+    // 딸려온 것(2등급)은 '매장'을 쳤을 때 '업셀링'이 나오는 쪽이라 접어 둔다.
+    const 가까운 = 줄세운.filter(([, g]) => g < 2).map(([s]) => s);
+    return { 가까운, 전부: 줄세운.map(([s]) => s) };
   })();
 
   // 칸 안에서 그대로 펼칠 때 쓰는 몸통.
@@ -271,7 +296,7 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
             className="cv-input"
             placeholder="스킬을 검색해 추가해 주세요."
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => 검색바꾸기(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
           />
           <button className="cv-skill-add-btn" onClick={() => handleAdd()}>추가하기</button>
@@ -280,13 +305,18 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
         {query && (
           <div className="cv-recommend-section">
             <h4 className="cv-recommend-title">검색 결과</h4>
-            {matches.length > 0 ? (
+            {matches.전부.length > 0 ? (
               <div className="cv-skill-chips">
-                {matches.map((skill) => (
+                {(다펼침 ? matches.전부 : matches.가까운.slice(0, 8)).map((skill) => (
                   <button key={skill} className="cv-skill-chip" onClick={() => handleAdd(skill)}>
                     {skill}
                   </button>
                 ))}
+                {!다펼침 && matches.전부.length > matches.가까운.slice(0, 8).length && (
+                  <button type="button" className="cv-skill-more" onClick={() => set다펼침(true)}>
+                    + {matches.전부.length - matches.가까운.slice(0, 8).length}개 더
+                  </button>
+                )}
               </div>
             ) : (
               <p className="cv-recommend-desc">일치하는 추천 스킬이 없어요. ‘추가하기’로 직접 등록할 수 있어요.</p>

@@ -364,7 +364,7 @@ export default function ResumeEditor({
         )}
         {!certModalOpen && certificates.length === 0 && (
           <button type="button" className="resume-blank" onClick={() => { setEditCert(null); setCertModalOpen(true); }}>
-            <span className="resume-blank-fields">자격증명 <i>*</i> │ 취득 년월 <i>*</i></span>
+            <span className="resume-blank-fields">자격증명 <i>*</i> │ 취득 년월</span>
           </button>
         )}
       </section>
