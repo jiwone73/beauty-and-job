@@ -1714,15 +1714,18 @@ export default function JobPostForm({
       if (status === "publish") {
         // 자격요건은 선택 — 조건 없이 뽑는 공고도 있어 필수로 두지 않는다.
         if (jobGroupType === "매장") {
-          // 매장: 상세요강 이미지 또는 포지션 소개
+          // 매장: 상세요강 이미지 또는 상세요강 글
           if (detailImages.length === 0 && !form.description?.trim()) {
-            alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 포지션 소개를 입력해주세요.");
+            alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 상세요강 글을 입력해주세요.");
             return;
           }
         } else {
-          // 본사: 담당업무는 상세 이미지가 없을 때만 필수(경력·학력은 모집부문 표에서)
-          if (detailImages.length === 0 && !form.responsibilities?.trim()) {
-            alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return;
+          // 본사: 상세 이미지가 없으면 이 글이 곧 상세요강이다. 본사 공고에서 구직자가
+          //   먼저 보는 것은 무슨 일을 하고 무엇을 갖춰야 하는가라, 둘 다 있어야 한다.
+          //   (경력·학력은 모집부문 표에서)
+          if (detailImages.length === 0) {
+            if (!form.responsibilities?.trim()) { alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
+            if (!form.requirements?.trim()) { alert("자격요건을 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
           }
         }
         if (benefitTags.length === 0 && !fiBenefits.trim()) { alert("복리후생을 1개 이상 선택해주세요."); return; }
@@ -2055,12 +2058,15 @@ export default function JobPostForm({
   };
   const textFieldMeta: Record<TextKey, { label: string; hint?: string; placeholder: string }> = {
     benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
-    responsibilities: { label: "담당업무", hint: "필수 · 주요 업무를 입력", placeholder: "예) 신제품 기획 · 협력사 관리 · 매출 분석" },
+    responsibilities: { label: "담당업무",
+      hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
+      placeholder: detailImages.length > 0
+        ? "이미지에 없는 업무만 더해 주세요"
+        : "맡을 일을 적어 주세요 — 예) 신제품 기획 · 협력사 관리 · 매출 분석" },
     description: {
       // 매장 공고에만 선다(textFields 참조 — 본사는 담당업무가 그 자리다).
-      // '상세요강 글'이라 부르면 담당업무·자격요건과 뭐가 다른 칸인지 알 수 없다.
-      // 여기서 부르는 것은 조건이 아니라 그 자리가 어떤 자리인지다.
-      label: "포지션 소개",
+      // 섹션 제목도 '상세요강'이라 그 안의 글 칸임을 드러낸다(위는 이미지 칸).
+      label: "상세요강 글",
       hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
       // 이미지가 있으면 보태는 자리, 없으면 이 칸이 상세요강 본문 노릇을 한다.
       placeholder: detailImages.length > 0
@@ -2068,11 +2074,24 @@ export default function JobPostForm({
         : "어떤 자리인지 소개해 주세요 — 하는 일, 매장 분위기, 고객층, 성장 지원처럼",
     },
     requirements: { label: "자격요건",
-      placeholder: isOffice ? "예) 관련 경력 3년 이상 · 엑셀 능숙" : "예) 미용사 면허 소지 · 디자이너 2년 이상" },
-    preferred: { label: "우대사항",
-      placeholder: isOffice ? "예) 뷰티 업계 경험 · 해외 거래처 경험" : "예) 중국어 가능 · 인근 거주 · 장기 근무 가능" },
+      // 본사는 이미지가 없으면 이 칸이 필수다(담당업무와 함께 상세요강 노릇을 한다).
+      hint: isOffice ? (detailImages.length > 0 ? "선택" : "필수 (이미지 없을 시)") : undefined,
+      placeholder: detailImages.length > 0
+        ? "이미지에 없는 조건만 더해 주세요"
+        : (isOffice
+            ? "갖춰야 할 것을 적어 주세요 — 예) 관련 경력 3년 이상 · 엑셀 능숙"
+            : "예) 미용사 면허 소지 · 디자이너 2년 이상"),
+    },
+    preferred: { label: "우대사항", hint: "선택",
+      // 이미지가 없으면 여기가 마지막 칸이다. 앞 칸에 안 들어간 것을 여기서 부른다.
+      placeholder: detailImages.length > 0
+        ? (isOffice ? "예) 뷰티 업계 경험 · 해외 거래처 경험" : "예) 중국어 가능 · 인근 거주 · 장기 근무 가능")
+        : (isOffice
+            ? "예) 뷰티 업계 경험 · 해외 거래처 경험 — 더 알릴 것이 있으면 여기에"
+            : "예) 중국어 가능 · 인근 거주 · 장기 근무 가능 — 더 알릴 것이 있으면 여기에"),
+    },
   };
-  // 본사는 담당업무(JD) 중심, 매장은 포지션 소개 중심
+  // 본사는 담당업무(JD) 중심, 매장은 상세요강 글 중심
   const textFields: TextKey[] = isOffice
     ? ["responsibilities", "requirements", "preferred"]
     : ["description", "requirements", "preferred"];
@@ -2720,7 +2739,7 @@ export default function JobPostForm({
                           <th style={{ ...thc, minWidth: 56 }}>성별우대</th>
                           <th style={{ ...thc, minWidth: 72 }}>경력/직책</th>
                           <th style={{ ...thc, minWidth: 52 }}>학력</th>
-                          <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>
+                          {!isOffice && <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>}
                           <th style={{ ...thc, minWidth: 82 }}>급여</th>
                         </tr>
                       </thead>
@@ -2740,6 +2759,8 @@ export default function JobPostForm({
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "", false)}</td>
+                              {/* 본사는 근무요일·시간을 공고에 적지 않는다 — 매장에서만 세운다. */}
+                              {!isOffice && (
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
                                 <button type="button" onClick={(e) => { if (posShiftOpen === cat) { setPosShiftOpen(null); return; } openPopAt(e.currentTarget, 244, 250); setPosShiftOpen(cat); }}
                                   style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "left", border: "none", borderRadius: 5, padding: "3px 6px", fontSize: 12.5, lineHeight: 1.35, cursor: "pointer", color: "#333", ...cellFill(!!(row.workDays || row.workTime)) }}>
@@ -2819,6 +2840,7 @@ export default function JobPostForm({
                                   );
                                 })()}
                               </td>
+                              )}
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "", true, SALARY_UNITS)}</td>
                             </tr>
                           );
@@ -3195,9 +3217,11 @@ export default function JobPostForm({
               {textFields.map((k) => {
                 const meta = textFieldMeta[k];
                 const content = ((form as any)[k] || "") as string;
-                // 상세 이미지가 없을 때만 본문(본사=담당업무 / 매장=포지션 소개)을 필수로 표시.
+                // 상세 이미지가 없을 때만 본문(본사=담당업무 / 매장=상세요강 글)을 필수로 표시.
                 //   자격요건은 선택 — 조건 없이 뽑는 공고도 있다.
-                const isReq = detailImages.length === 0 && k === (isOffice ? "responsibilities" : "description");
+                const isReq = detailImages.length === 0 && (isOffice
+                  ? (k === "responsibilities" || k === "requirements")
+                  : k === "description");
                 return (
                   <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
                     <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block" }}>
