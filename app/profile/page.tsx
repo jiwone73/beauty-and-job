@@ -838,16 +838,9 @@ export default function ProfilePage() {
                 ) : (
                   <InfoRow label="이메일" value={emailInput || "name@example.com"} isEmpty={!emailInput} onClick={() => { setNewEmailInput(""); setEmailPw(""); setEmailMsg(""); setShowEmailModal(true); }} isLast required />
                 )}
-              </div>
-            </section>
-
-
-            {/* 거주지 (기본정보 하위) */}
-            <section className="profile-section" style={{ marginTop: 0 }}>
-              <div className="profile-info-card" style={{ padding: "13px 16px" }}>
-                {/* 기업정보와 같은 결 — 큰 상자 둘 대신 라벨 옆 한 줄.
-                    주소는 검색으로만 넣으니 눌러서 여는 자리글, 상세주소는 그 자리에서 친다. */}
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                {/* 거주지 — 기업정보와 같은 결로 라벨 옆 한 줄. 카드를 따로 두지 않는다:
+                    셋으로 갈라 두니 한 페이지가 아니라 세 덩어리로 읽혔다. */}
+                <div className="pf-wide" style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", borderTop: "1px solid #efeff1" }}>
                   <label className="profile-info-label" style={{ flexShrink: 0 }}>거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: 0 }}>
                     <div className="if-row-body">
@@ -881,12 +874,6 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 )}
-              </div>
-            </section>
-
-            {/* 직무·희망 조건 — 기본 정보에 이어 한 줄씩 */}
-            <section className="profile-section" style={{ marginTop: 0 }}>
-              <div className="profile-info-card pf-grid">
                 <InfoRow
                   label="직군"
                   value={jobAreaSummary([...skillAreas, ...officeJobAreas])}

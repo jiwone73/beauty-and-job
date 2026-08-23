@@ -12965,12 +12965,13 @@ button,
 @media (min-width: 900px) {
   .pf-body { display: grid; grid-template-columns: 150px 1fr; gap: 34px; align-items: start; padding-top: 26px; }
   .pf-mob { display: none; }
-  /* 바탕도 여백도 없이 떠 있어 본문 카드와 따로 놀았다. 같은 카드로 두르고
-     본문 카드와 윗변을 맞춘다(공고 등록폼 사이드와 같은 규칙). */
+  /* 사이드는 카드로 두르지 않는다. 카드가 되면 본문 카드와 나란히 놓인 '또 하나의
+     상자'로 읽혀 한 페이지가 여러 덩어리로 갈린다. 기업 대시보드 사이드처럼
+     바탕만 흰색으로 두고 오른쪽에 선 하나로 본문과 가른다. */
   .pf-side {
     display: flex; flex-direction: column; position: sticky; top: 112px;
-    background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; padding: 14px 10px;
-    margin-top: 24px;   /* 본문 첫 카드와 윗변을 맞춘다 */
+    padding: 2px 16px 2px 0; border-right: 1px solid #f0f0f0;
+    margin-top: 24px; min-height: 320px;
   }
   .pf-side a, .pf-side .pf-side-out {
     display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
