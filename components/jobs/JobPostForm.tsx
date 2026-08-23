@@ -101,7 +101,7 @@ const SOURCE_CAFES: { name: string; url: string }[] = [
 ];
 
 const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "모집분야", "근무지역", "상세요강 이미지", "기타"];
-const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "뷰티워크 온라인지원", "회사 홈페이지 지원"]; // 지원방법(복수)
+const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "직접방문", "뷰티워크 온라인지원", "회사 홈페이지 지원"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
 
 // 내용에 맞춰 늘어나는 textarea.
@@ -2060,10 +2060,15 @@ export default function JobPostForm({
       // 섹션 제목도 '상세요강'이라 그 안의 글 칸임을 드러낸다(위는 이미지 칸).
       label: "상세요강 글",
       hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
-      placeholder: "",
+      // 표로는 못 담는 이야기를 부른다. 본사·매장이 전할 것이 서로 다르다.
+      placeholder: isOffice
+        ? "팀 구성, 일하는 방식처럼 표에 못 담은 이야기를 적어 주세요"
+        : "매장 분위기, 고객층, 하루 일과처럼 표에 못 담은 이야기를 적어 주세요",
     },
-    requirements: { label: "자격요건", placeholder: "" },
-    preferred: { label: "우대사항", placeholder: "" },
+    requirements: { label: "자격요건",
+      placeholder: isOffice ? "예) 관련 경력 3년 이상 · 엑셀 능숙" : "예) 미용사 면허 소지 · 디자이너 2년 이상" },
+    preferred: { label: "우대사항",
+      placeholder: isOffice ? "예) 뷰티 업계 경험 · 해외 거래처 경험" : "예) 중국어 가능 · 인근 거주 · 장기 근무 가능" },
   };
   // 본사는 담당업무(JD) 중심, 매장은 포지션 소개 중심
   const textFields: TextKey[] = isOffice
@@ -2982,7 +2987,10 @@ export default function JobPostForm({
                   비회원 공고의 담당자 연락처는 상세화면에서 구직자에게 노출되지 않는다(JobDetailView). */}
               {(() => {
                 // 매장 공고는 자체 채용 홈페이지가 없는 경우가 대부분이라 '회사 홈페이지 지원'을 빼고, 본사에서만 쓴다.
-                const methodOptions = CONTACT_METHOD_OPTIONS.filter((m) => m !== "회사 홈페이지 지원" || isOffice);
+                // 매장은 '직접방문'(워크인)이 흔하고, 본사는 그런 접수를 받지 않는다. 서로 반대로 가른다.
+                const methodOptions = CONTACT_METHOD_OPTIONS
+                  .filter((m) => m !== "회사 홈페이지 지원" || isOffice)
+                  .filter((m) => m !== "직접방문" || !isOffice);
                 const canPhone = contactMethods.includes("문자") || contactMethods.includes("전화");
                 const canEmail = contactMethods.includes("이메일");
                 const canName = canPhone || canEmail;
@@ -3184,7 +3192,7 @@ export default function JobPostForm({
                       {meta.hint && <span style={{ fontSize: 11, fontWeight: 400, color: "#bbb", marginLeft: 6 }}>{meta.hint}</span>}
                     </label>
                     <AutoTextarea
-                      placeholder=""
+                      placeholder={meta.placeholder}
                       value={content}
                       onChange={(e) => setForm({ ...form, [k]: e.target.value })}
                       style={{ width: "100%", fontSize: 14, color: "#333", lineHeight: 1.5, fontFamily: "inherit" }} />
