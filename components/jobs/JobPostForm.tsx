@@ -369,7 +369,6 @@ export default function JobPostForm({
   const [importImages, setImportImages] = useState<string[]>([]); // 북마클릿이 넘긴 사진 주소
   // 상세요강 그림에서 글자를 읽을지. 켤 때만 그림이 모델로 가고 요금이 붙는다.
   // (자동저장이 이 값을 읽으므로 선언이 그 위에 있어야 한다.)
-  const [ocrEnabled, setOcrEnabled] = useState(false);
   const [importingImgs, setImportingImgs] = useState(false);
   const [ocrFiles, setOcrFiles] = useState<File[]>([]); // OCR: 여러 장 캡처 누적
   // 캡처로 등록할 때의 원문 주소(인스타 게시물·카페 글 등).
@@ -553,7 +552,7 @@ export default function JobPostForm({
     pasteText, ocrSourceUrl, parseUrl, importMode, findQuery,
     // 아직 배너에 안 넣은 '가져온 사진'과 텍스트 인식 토글도 같이 남긴다.
     // 새로고침 한 번에 다시 가져오고 다시 켜야 하면 유지의 뜻이 없다.
-    importImages, ocrEnabled,
+    importImages,
     nonMember, newCompanyName, newBrandName, nmDescription, nmAddress, nmAddressDetail,
     nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
     nmManagerName, nmManagerPhone, nmContactEmail, contactMethods,
@@ -571,7 +570,7 @@ export default function JobPostForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations, detailImages, bannerImages,
       hiringProcess, benefitTags, salaryNego, salaryType, salaryMax, salaryByCat, pasteText, ocrSourceUrl,
-      parseUrl, importMode, findQuery, importImages, ocrEnabled, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
+      parseUrl, importMode, findQuery, importImages, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
       nmAddressDetail, nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
       nmManagerName, nmManagerPhone, nmContactEmail, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
 
@@ -627,7 +626,7 @@ export default function JobPostForm({
     set(setSalaryNego, d.salaryNego); set(setSalaryType, d.salaryType); set(setSalaryMax, d.salaryMax); set(setSalaryByCat, d.salaryByCat);
     set(setPasteText, d.pasteText); set(setOcrSourceUrl, d.ocrSourceUrl); set(setParseUrl, d.parseUrl);
     set(setImportMode, d.importMode); set(setFindQuery, d.findQuery);
-    set(setImportImages, d.importImages); set(setOcrEnabled, d.ocrEnabled);
+    set(setImportImages, d.importImages);
     set(setNonMember, d.nonMember); set(setNewCompanyName, d.newCompanyName); set(setNewBrandName, d.newBrandName);
     set(setNmDescription, d.nmDescription); set(setNmAddress, d.nmAddress); set(setNmAddressDetail, d.nmAddressDetail);
     set(setNmIndustry, d.nmIndustry); set(setNmSize, d.nmSize); set(setNmFounded, d.nmFounded);
@@ -1036,73 +1035,15 @@ export default function JobPostForm({
   // 그림에 글자가 있는지 대충 가려낸다. 포스터는 흰 바탕에 검은 글씨라 밝기가
   // 양극단에 몰리고 가로줄마다 밝기가 급하게 오르내린다. 매장 사진은 그 반대다.
   // 정확한 판별이 아니라 "읽어 볼까요?" 를 먼저 권할지 정하는 용도다 — 사람이 끄고 켤 수 있다.
-  const looksLikeText = (file: File): Promise<boolean> =>
-    new Promise((resolve) => {
-      const img = new Image();
-      const url = URL.createObjectURL(file);
-      img.onload = () => {
-        try {
-          const W = 160, H = Math.max(1, Math.round((img.height / img.width) * W));
-          const cv = document.createElement("canvas");
-          cv.width = W; cv.height = H;
-          const cx = cv.getContext("2d");
-          if (!cx) return resolve(false);
-          cx.drawImage(img, 0, 0, W, H);
-          const px = cx.getImageData(0, 0, W, H).data;
-          const gray = new Float32Array(W * H);
-          let extreme = 0;
-          for (let i = 0; i < W * H; i++) {
-            const g = (px[i * 4] * 0.299 + px[i * 4 + 1] * 0.587 + px[i * 4 + 2] * 0.114) / 255;
-            gray[i] = g;
-            if (g < 0.2 || g > 0.85) extreme++;
-          }
-          let edges = 0;
-          for (let y = 0; y < H; y++) {
-            for (let x = 1; x < W; x++) {
-              if (Math.abs(gray[y * W + x] - gray[y * W + x - 1]) > 0.35) edges++;
-            }
-          }
-          resolve(extreme / (W * H) > 0.7 && edges / (W * H) > 0.02);
-        } catch { resolve(false); }
-        finally { URL.revokeObjectURL(url); }
-      };
-      img.onerror = () => { URL.revokeObjectURL(url); resolve(false); };
-      img.src = url;
-    });
 
   // 상세요강에 붙인 그림(글자 있는 것)에서 값을 읽어 온다. 글을 붙여넣었으면 함께 보내
   // 글에 있는 값은 글을 그대로 쓰게 한다 — 그림에서 읽은 전화번호는 한 자리씩 틀린다.
-  const [readingImgs, setReadingImgs] = useState(false);
-  // 그림에서 글자를 읽는 건 요금이 든다. 켠 적이 없는데 돈이 나가는 일이 없도록
-  // 늘 꺼진 채로 시작하고, 저장해 두지도 않는다(다음에 열어도 다시 꺼져 있다).
-  const readableImageUrls = ocrEnabled ? detailImages.filter((d) => d.readable).map((d) => d.url).slice(0, 8) : [];
-  // 그림을 모델에 보낼지는 '텍스트 인식' 토글 하나로만 정한다. 붙이는 것과 읽는 것은
-  // 다른 일이다 — 사진은 얼마든지 붙여 두되, 읽어서 요금을 물릴지는 사람이 고른다.
-  // (예전엔 북마클릿이 가져온 사진이 토글을 우회해 늘 읽혔다.)
-  const sendImageUrls = ocrEnabled ? [...importImages, ...readableImageUrls].slice(0, 8) : [];
+  // 상세요강 그림에서 글자를 읽던 기능은 걷었다. 요금이 드는 데다, 읽어 온
+   // 값이 맞는지 사람이 다시 다 봐야 해서 손이 줄지 않았다. 사진은 사진대로
+   // 붙이고 글은 글로 적는다.
+  const sendImageUrls: string[] = [];
   // 그림 한 장이 대략 2,000토큰. 소넷 5 입력 $2/MTok 기준 장당 6원쯤 더 붙는다.
   const imageCostWon = sendImageUrls.length * 6;
-  const readFromDetailImages = async () => {
-    if (!ocrEnabled) return;
-    const urls = readableImageUrls;
-    if (!urls.length) return;
-    if (mode === "admin") { setNonMember(true); setCompanyId(null); }
-    setReadingImgs(true); setParseMsg("");
-    try {
-      const token = mode === "admin" ? localStorage.getItem("admin_token") : localStorage.getItem("access_token");
-      const text = pasteText.trim();
-      const res = await fetch("/api/admin/external-jobs/parse", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(text ? { text, image_urls: urls.slice(0, 8) } : { image_urls: urls.slice(0, 8) }),
-      });
-      const j = await res.json();
-      if (!j.success) { setParseMsg(j.error?.message || "그림에서 읽지 못했어요."); return; }
-      applyParsed(j.data);
-      setParseMsg(`✓ 그림 ${urls.length}장에서 읽어 채웠어요. 값을 확인해 주세요.`);
-    } catch { setParseMsg("네트워크 오류가 발생했어요."); }
-    finally { setReadingImgs(false); }
-  };
 
   const processFiles = async (fileList: FileList | File[]) => {
     const files = Array.from(fileList);
@@ -1113,10 +1054,9 @@ export default function JobPostForm({
     setUploading(true);
     try {
       for (const file of files) {
-        const hasText = await looksLikeText(file);
         const r = await uploadImage(await compressImage(file));
         if (r.success && r.url) {
-          setDetailImages((prev) => [...prev, { url: r.url!, name: r.name || file.name, readable: hasText }]);
+          setDetailImages((prev) => [...prev, { url: r.url!, name: r.name || file.name }]);
         } else {
           alert(r.error || "이미지 업로드에 실패했습니다.");
         }
@@ -1971,7 +1911,7 @@ export default function JobPostForm({
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 모집부문 표 셀 스타일
   const thc: React.CSSProperties = { textAlign: "left", padding: "9px 4px", fontSize: 12.5, color: "#6f6f75", fontWeight: 600, borderBottom: "1px solid #efeff1", whiteSpace: "nowrap" };
-  const reqStar = <span style={{ color: "#e9a3a3" }}> *</span>; // 필수 열 표시(모집분야만)
+  const reqStar = <span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span>; // 필수 열 표시(모집분야만)
   const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f7f7f8", verticalAlign: "middle" };
   // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
   const firstCol: React.CSSProperties = { paddingLeft: 0 };
@@ -2323,7 +2263,7 @@ export default function JobPostForm({
               );
             })}
           </div>
-          {!jobGroupType && <span style={{ fontSize: 12, color: "#e9a3a3" }}>선택하면 급여·복지 등 항목이 열립니다.</span>}
+          {!jobGroupType && <span style={{ fontSize: 12, color: "var(--color-primary)" }}>선택하면 급여·복지 등 항목이 열립니다.</span>}
         </div>
       )}
 
@@ -2394,11 +2334,8 @@ export default function JobPostForm({
                 {parsing ? "불러오는 중..." : "불러오기"}
               </button>
             </div>
-            {/* 붙인 사진이 요금에 얼마나 얹히는지 눌러 보기 전에 알려준다. */}
             <div style={{ marginTop: 6, fontSize: 12.5, color: "#6f6f75" }}>
-              {sendImageUrls.length
-                ? `글과 사진 ${sendImageUrls.length}장을 읽어요 · 사진값 약 ${imageCostWon}원이 더 붙어요`
-                : "글자만 읽어요 · 붙여 둔 사진은 요금이 붙지 않아요"}
+              글자만 읽어요 · 붙여 둔 사진은 요금이 붙지 않아요
             </div>
             {importImages.length > 0 && (
               <div style={{ marginTop: 8, padding: "10px 12px", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -2721,14 +2658,14 @@ export default function JobPostForm({
               {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "0 0 12px", alignItems: "center" }}>
                 <div className="job-detail-meta-item">
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>모집분야<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span></span>
                   {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                       고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
                   <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
                     className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: "2px 6px", cursor: typeLocked ? "default" : "pointer" }}>＋</button>
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
+                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span></span>
                   <button type="button"
                     onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
                     style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
@@ -2890,7 +2827,7 @@ export default function JobPostForm({
                 <div className="job-detail-company-info">
                   {/* 복리후생 — 한 행을 다 쓴다. 태그가 여럿이라 좁으면 읽기 나쁘다. */}
                   <div className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1" }}>
-                    <span className="job-detail-company-label" style={{ fontSize: 15 }}>복리후생<span style={{ color: "#e9a3a3" }}> *</span></span>
+                    <span className="job-detail-company-label" style={{ fontSize: 15 }}>복리후생<span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span></span>
                     {!fiBenefits.trim() && (
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
                       style={{ flex: 1, textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
@@ -2945,7 +2882,7 @@ export default function JobPostForm({
               {/* 근무지역: 별도 섹션(제목+아이콘, 지원 안내와 동일 스타일). 전체 주소 → 필터용 시·군·구 자동 추출 + 지도 */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f7f7f8", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}>
-                  <MapPin size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역 <span style={{ color: "#e9a3a3" }}>*</span>
+                  <MapPin size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역 <span style={{ color: "var(--color-primary)" }}>*</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 12 }}>
                   <input readOnly value={nmAddress} onClick={() => openAddressSearch()}
@@ -3161,35 +3098,8 @@ export default function JobPostForm({
                   : (
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
                       <span style={{ fontSize: 12, color: "#999" }}>갖고 계신 상세요강 이미지가 있다면 첨부해 주세요.</span>
-                      <button type="button" role="switch" aria-checked={ocrEnabled} onClick={() => setOcrEnabled((v) => !v)}
-                        title="글자가 든 포스터에서 연락처·주소·모집분야를 읽어 옵니다. 읽을 때마다 요금이 듭니다."
-                        style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 7, padding: "4px 10px 4px 6px", borderRadius: 999, border: `1px solid ${ocrEnabled ? "#582681" : "#efeff1"}`, background: ocrEnabled ? "#f7f7f8" : "#fff", cursor: "pointer" }}>
-                        <span style={{ width: 30, height: 17, borderRadius: 999, background: ocrEnabled ? "#582681" : "#e3e3e6", position: "relative", transition: "background .15s" }}>
-                          <span style={{ position: "absolute", top: 2, left: ocrEnabled ? 15 : 2, width: 13, height: 13, borderRadius: "50%", background: "#fff", transition: "left .15s" }} />
-                        </span>
-                        <span style={{ fontSize: 12.5, color: ocrEnabled ? "#582681" : "#6f6f75" }}>
-                          텍스트 인식 {ocrEnabled ? "켬" : "끔"}
-                          {ocrEnabled && <span style={{ color: "#b9866b" }}> (유료)</span>}
-                        </span>
-                      </button>
                     </div>
                   )}
-                {ocrEnabled && detailImages.some((d) => d.readable) && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", margin: "0 0 10px", padding: "10px 12px", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 8 }}>
-                    <span style={{ fontSize: 13, color: "#4a4453" }}>
-                      글자가 든 그림이 <b>{detailImages.filter((d) => d.readable).length}장</b> 있어요.
-                      연락처·주소·모집분야를 여기서 읽어 올까요?
-                    </span>
-                    <button type="button" onClick={readFromDetailImages} disabled={readingImgs}
-                      style={{ marginLeft: "auto", padding: "7px 14px", borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 13, fontWeight: 500, cursor: readingImgs ? "default" : "pointer", opacity: readingImgs ? 0.6 : 1 }}>
-                      {readingImgs ? "읽는 중…" : "그림에서 읽기 (유료)"}
-                    </button>
-                    <span style={{ width: "100%", fontSize: 12, color: "#6f6f75", lineHeight: 1.7 }}>
-                      그림 한 장을 읽을 때마다 요금이 듭니다(장당 5원 안팎). 매장 사진처럼 글자가 없는 그림은
-                      아래 썸네일의 <b>읽기</b>를 꺼 두세요. 글을 붙여넣으셨다면 글에 있는 값은 글을 그대로 씁니다.
-                    </span>
-                  </div>
-                )}
                 {/* PC는 원래의 점선 드래그·붙여넣기 박스, 모바일은 테두리 없이 썸네일만(좌우 간격 절반). */}
                 <div
                   tabIndex={isMobile ? -1 : 0}
@@ -3211,14 +3121,6 @@ export default function JobPostForm({
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
                       <button type="button" onClick={() => removeImage(idx)} title="삭제"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
-                      {ocrEnabled && (
-                      <button type="button"
-                        onClick={() => setDetailImages((prev) => prev.map((x, i) => (i === idx ? { ...x, readable: !x.readable } : x)))}
-                        title={d.readable ? "이 그림의 글자를 읽습니다. 눌러서 끄기" : "읽지 않습니다. 눌러서 켜기"}
-                        style={{ position: "absolute", bottom: 3, right: 3, padding: "1px 6px", borderRadius: 4, border: "none", cursor: "pointer", fontSize: 10, fontWeight: 700, lineHeight: 1.6, background: d.readable ? "#582681" : "rgba(0,0,0,0.45)", color: "#fff" }}>
-                        읽기 {d.readable ? "켬" : "끔"}
-                      </button>
-                      )}
                     </div>
                   ))}
                   {/* PC 드래그 박스 안의 추가 타일·안내(모바일은 제목 옆 ＋로 대체) */}
@@ -3276,7 +3178,7 @@ export default function JobPostForm({
               {(() => {
                 const row: CSSProperties = { display: "flex", alignItems: "center", gap: 12, padding: "7px 0" };
                 const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#999", fontSize: 15 };
-                const req: CSSProperties = { color: "#e9a3a3" };
+                const req: CSSProperties = { color: "var(--color-primary)" };
                 // 모집요강과 동일: 빈 값이면 텍스트 없는 연보라 하이라이트 블록, 입력하면 확장(플레이스홀더 없음)
                 const inpHl = (filled: boolean): CSSProperties => filled
                   ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, fontWeight: 400, color: "#333", outline: "none", padding: "6px 2px", height: 32, lineHeight: "20px", boxSizing: "border-box" }
