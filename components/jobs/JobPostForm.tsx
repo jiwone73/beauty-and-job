@@ -2195,6 +2195,19 @@ export default function JobPostForm({
 
   // 본문 콘텐츠(760px) 가로 정렬: 관리자 직접등록은 목록과 맞춰 왼쪽 정렬, 기업회원 폼은 기존대로 가운데 정렬.
   const mx = mode === "admin" ? "0" : "auto";
+  // 기업이 쓰는 화면인지. 관리자 화면은 지금 짜임을 그대로 둔다.
+  const 기업폼 = mode !== "admin";
+  // 왼쪽 사이드에 세울 칸 목록. 아래로 내려가지 않아도 무엇이 남았는지 보인다.
+  const 할칸 = [
+    { id: "banner", label: "배너", done: bannerImages.length > 0 },
+    { id: "positions", label: "모집분야", done: categories.length > 0 },
+    { id: "deadline", label: "마감일", done: !!form.deadline || alwaysOpen },
+    { id: "region", label: "근무지역", done: regionList.length > 0 },
+    { id: "benefit", label: "복리후생", done: benefitTags.length > 0 },
+    { id: "detail", label: "상세요강", done: !!String(form.description || "").trim() },
+  ];
+  const 채운칸 = 할칸.filter((c) => c.done).length;
+  const 작성률 = Math.round((채운칸 / 할칸.length) * 100);
 
   return (
     <>
@@ -2529,6 +2542,24 @@ export default function JobPostForm({
 
       {/* 비회원 기업 정보 입력은 폼 맨 하단으로 이동(프로필 양식과 동일 구성) */}
 
+      {/* 기업이 쓰는 화면만 사이드와 두 열로 세운다. 관리자는 외부 공고를
+          붙여넣고 위에서 아래로 훑어 내리는 작업이라 한 줄이 맞다 — 그쪽은
+          클래스를 비워 두어 이 감싸개가 아무 일도 하지 않는다. */}
+      <div className={기업폼 ? "jp-shell" : undefined}>
+        {기업폼 && (
+          <aside className="jp-side">
+            <p className="jp-side-title">작성 현황</p>
+            <div className="jp-side-bar"><span style={{ width: `${작성률}%` }} /></div>
+            <p className="jp-side-count">{채운칸}/{할칸.length} 완료</p>
+            {할칸.map((c) => (
+              <button key={c.id} type="button" className={`jp-side-item ${c.done ? "on" : ""}`}
+                onClick={() => document.getElementById(`jp-${c.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}>
+                <span>{c.done ? "✓" : "○"}</span>{c.label}
+              </button>
+            ))}
+          </aside>
+        )}
+        <div className={기업폼 ? "jp-body" : undefined}>
       {/* 공고 상단 이미지 */}
       {mode === "company" && isMobile ? (
         <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
@@ -3230,6 +3261,8 @@ export default function JobPostForm({
             </div>
           </div>
 
+        </div>
+      </div>
         </div>
       </div>
 
