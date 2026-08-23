@@ -1971,9 +1971,17 @@ export default function JobPostForm({
     const height = freeInput ? (units ? 126 : 88) : Math.min(options.length + (allowFi && nonMember ? 1 : 0), 7) * 30 + 14;
     return (
       <span className="poscell-pop" style={{ position: "relative", display: "block" }}>
+        {/* 빈 칸은 옅은 밑줄과 ▾ 로 "누르면 목록이 뜬다"만 알린다. 회색 덩어리는
+            비었다는 말만 할 뿐 누를 수 있다는 말을 못 했고, 칸마다 '선택하기' 를
+            적으면 머리줄과 같은 말이 위아래로 겹친다. 채우면 둘 다 사라지고 값만 남는다. */}
         <button type="button"
           onClick={(e) => { if (open) { setCellOpen(null); return; } setCellFree(false); openPopAt(e.currentTarget, width, height); setCellOpen(key); }}
-          style={{ ...cellSelect, ...cellFill(!!v), textAlign: "left", color: v ? "#333" : "#b4b4b9", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || ph}</button>
+          style={{ ...cellSelect, background: "transparent", textAlign: "left", color: v ? "#333" : "#b4b4b9",
+            display: "flex", alignItems: "center", gap: 4,
+            borderBottom: v ? "1px solid transparent" : "1px solid #e3e3e6", borderRadius: 0 }}>
+          <span style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || ph}</span>
+          {!v && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9" }} />}
+        </button>
         {open && popAt && (
           <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, boxSizing: "border-box",
             // 목록은 항목 길이에 맞춰 좁게(오른쪽 빈 공간 제거), 자유입력·급여는 입력칸이 있어 고정 폭
@@ -2810,7 +2818,11 @@ export default function JobPostForm({
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
                                 <button type="button" onClick={(e) => { if (posShiftOpen === cat) { setPosShiftOpen(null); return; } openPopAt(e.currentTarget, 244, 250); setPosShiftOpen(cat); }}
-                                  style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "left", border: "none", borderRadius: 5, padding: "3px 6px", fontSize: 12.5, lineHeight: 1.35, cursor: "pointer", color: "#333", ...cellFill(!!(row.workDays || row.workTime)) }}>
+                                  /* 다른 칸과 같은 규칙 — 비면 밑줄과 ▾, 채우면 값만. */
+                                  style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "left", border: "none",
+                                    borderBottom: (row.workDays || row.workTime) ? "1px solid transparent" : "1px solid #e3e3e6",
+                                    borderRadius: 0, padding: "3px 6px", fontSize: 12.5, lineHeight: 1.35, cursor: "pointer", color: "#333",
+                                    background: "transparent", display: "flex", alignItems: "center", gap: 4 }}>
                                   {(row.workDays || row.workTime) ? (
                                     (row.workDays === "협의" && row.workTime === "협의") ? (
                                       <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>협의</div>
@@ -2820,7 +2832,7 @@ export default function JobPostForm({
                                       {row.workTime && <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workTime}</div>}
                                     </>
                                     )
-                                  ) : ""}
+                                  ) : <ChevronDown size={12} style={{ marginLeft: "auto", flexShrink: 0, color: "#c4c4c9" }} />}
                                 </button>
                                 {posShiftOpen === cat && (() => {
                                   const days = (row.workDays && row.workDays !== "협의") ? row.workDays.split(/[·,]/).map((s) => s.trim()).filter((d) => WORK_DAY_OPTIONS.includes(d)) : [];
