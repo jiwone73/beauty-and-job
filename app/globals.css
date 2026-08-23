@@ -13315,3 +13315,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   .jp-body > div > div { max-width: none !important; }
   .jp-body { min-width: 0; }
 }
+/* 모집분야 ＋ — 이 화면에서 가장 먼저 누르는 것이라 제목보다 크게 세운다.
+   .job-detail-meta-item * 가 15px 을 !important 로 박고 있어 같은 무게로 되받는다. */
+.jobpost-form .job-detail-meta-item .jp-add-cat { font-size: 22px !important; }

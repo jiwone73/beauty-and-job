@@ -2725,7 +2725,7 @@ export default function JobPostForm({
                   {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                       고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
                   <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0, borderRadius: 7, border: "1px solid #efeff1", background: "#fff", color: typeLocked ? "#ddd" : "#999", fontSize: 15, lineHeight: 1, padding: "4px 8px", cursor: typeLocked ? "default" : "pointer" }}>＋</button>
+                    className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: "2px 6px", cursor: typeLocked ? "default" : "pointer" }}>＋</button>
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e9a3a3" }}> *</span></span>
