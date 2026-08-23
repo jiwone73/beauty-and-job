@@ -845,8 +845,9 @@ export default function CompanySettingsPage() {
                 onClick={() => setShowPwModal(true)}
                 style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}>
                 <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>비밀번호</label>
-                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#582681", fontSize: "14px" }}>
-                  변경 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
+                {/* 눌러야 할 것을 말로 적되, 자리글 색으로 둔다 — 채운 값이 아니라 할 일이다. */}
+                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#cfcfcf", fontSize: "14px" }}>
+                  변경하기 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
                 </span>
               </div>
 
@@ -854,8 +855,8 @@ export default function CompanySettingsPage() {
                 onClick={() => setShowWithdraw(true)}
                 style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", cursor: "pointer" }}>
                 <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>회원 탈퇴</label>
-                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#e74c3c", fontSize: "14px" }}>
-                  탈퇴 <span style={{ color: "#e6a6a0", fontSize: "16px" }}>›</span>
+                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#cfcfcf", fontSize: "14px" }}>
+                  탈퇴하기 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
                 </span>
               </div>
             </div>
