@@ -513,19 +513,15 @@ function ResumePageContent() {
           <section id="section-headline" className="resume-section">
             <h2 className="resume-section-title">한줄소개<span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span></h2>
             <흠줄 말들={칸흠("headline")} />
-            {/* 채용 담당자가 가장 먼저 읽는 한 줄이다. 무엇을 얼마나 했는지가
-                들어가야 다음 줄로 눈이 간다. 예시를 매장·본사로 갈라 준다. */}
-            <p className="resume-headline-guide">
-              {resumeType === "office"
-                ? "무슨 일을 몇 년 했는지, 무엇을 잘하는지 한 줄로 적어 주세요."
-                : "어떤 시술을 몇 년 했는지 한 줄로 적어 주세요."}
-            </p>
+            {/* 안내는 칸 안에 둔다. 밖에 한 줄을 더 세우면 적기도 전에 읽을
+                것이 둘이 되고, 다 적고 나면 그 줄만 남아 자리를 먹는다.
+                채용 담당자가 가장 먼저 읽는 줄이라 예시는 매장·본사로 가른다. */}
             <input
               value={introLocal}
               onChange={(e) => setIntroLocal(e.target.value)}
               placeholder={resumeType === "office"
-                ? "예: 7년차 뷰티 MD · 신제품 기획과 온라인 채널 운영"
-                : "예: 5년차 네일 아티스트 · 젤·아트 전문"}
+                ? "몇 년차에 무엇을 잘하는지 (예: 7년차 뷰티 MD · 신제품 기획)"
+                : "몇 년차에 어떤 시술을 하는지 (예: 5년차 네일 아티스트 · 젤·아트)"}
               maxLength={60}
               style={{ width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "10px 12px", fontSize: "14px", color: "#333", marginTop: "6px" }}
             />
