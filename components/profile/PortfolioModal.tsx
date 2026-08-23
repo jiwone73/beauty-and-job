@@ -121,7 +121,11 @@ export default function PortfolioModal({
 
         {mode !== "sns" && (<>
         {mode === "all" && <label className="cv-field-label">사진</label>}
-        {images.length > 0 && (
+        {/* 칸 안에서 펼칠 때는 사진 목록을 그리지 않는다. 바로 위 칸에 이미
+            같은 사진들이 서 있고, 지우기도 거기서 된다. 한 화면에 같은 사진이
+            두 줄로 나오던 것을 걷었다. */}
+        {!inline && images.length > 0 && (
+
           <>
             <div className="pf-subhead">
               {고름 ? (
@@ -182,11 +186,10 @@ export default function PortfolioModal({
               onDragOver={(e) => { e.preventDefault(); set끌림(true); }}
               onDragLeave={(e) => { e.preventDefault(); set끌림(false); }}
               onDrop={(e) => { e.preventDefault(); set끌림(false); const f = Array.from(e.dataTransfer.files || []); if (f.length) onFiles(f); }}
-              style={{ width: "100%", padding: "14px 16px", borderRadius: 12, border: `2px dashed ${끌림 ? "#582681" : "#e3e3e6"}`, background: 끌림 ? "#f7f7f8" : "#fafafa", color: "#582681", fontSize: 13, cursor: isUploading ? "not-allowed" : "pointer", flexDirection: "column", alignItems: "center", gap: 8, textAlign: "center" }}
+              style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: `1px dashed ${끌림 ? "#582681" : "#dcdce0"}`, background: 끌림 ? "#f7f7f8" : "#fff", color: "#582681", fontSize: 13, cursor: isUploading ? "not-allowed" : "pointer", alignItems: "center", justifyContent: "center", gap: 8, textAlign: "center" }}
             >
-              <Upload size={24} />
-              <span>{isUploading ? "올리는 중..." : 끌림 ? "여기에 놓으세요" : "사진을 끌어다 놓거나 눌러서 고르세요"}</span>
-              <span style={{ fontSize: 11, color: "#888" }}>최대 {MAX_PHOTOS}장 · 올릴 때 자동으로 줄여요</span>
+              <Upload size={17} />
+              <span>{isUploading ? "올리는 중..." : 끌림 ? "여기에 놓으세요" : `최대 ${MAX_PHOTOS}장`}</span>
             </div>
             <button
               type="button"
@@ -195,9 +198,8 @@ export default function PortfolioModal({
               onClick={() => fileRef.current?.click()}
             >
               <Upload size={17} />
-              {isUploading ? "올리는 중..." : "사진 고르기"}
+              {isUploading ? "올리는 중..." : `최대 ${MAX_PHOTOS}장`}
             </button>
-            <p className="pf-pick-note">최대 {MAX_PHOTOS}장 · 올릴 때 자동으로 줄여요</p>
           </>
         ) : (
           <p style={{ fontSize: 12.5, color: "#888", margin: "2px 0 0" }}>사진은 {MAX_PHOTOS}장까지 넣을 수 있어요.</p>

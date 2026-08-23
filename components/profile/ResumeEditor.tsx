@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Award, Building2, Check, ChevronDown, FileText, Globe, GraduationCap, Pencil, Plus, Trash2, Trophy, Upload, X } from "lucide-react";
+import { Award, Building2, Link as LinkIcon, Check, ChevronDown, FileText, Globe, GraduationCap, Pencil, Plus, Trash2, Trophy, Upload, X } from "lucide-react";
 import { useProfileStore, genId } from "@/lib/store/profileStore";
 import { InlineText, InlinePick, InlineYM } from "@/components/profile/inline/InlineField";
 import { 시험읽기, 시험쓰기 } from "@/lib/languageTest";
@@ -63,6 +63,7 @@ export default function ResumeEditor({
     addLanguage, updateLanguage,
     addExperience, updateExperience,
     addCertificate, updateCertificate,
+    updateLink,
     isEntryLevel, setIsEntryLevel,
     entryExperience, setEntryExperience,
   } = useProfileStore();
@@ -513,9 +514,11 @@ export default function ResumeEditor({
                   </button>
                 ) : (
                   <>
-                    <button className="resume-icon-btn" aria-label="사진 편집" onClick={() => set모달((v) => (v === "photo" ? null : "photo"))}>
-                      <Pencil size={15} />
-                    </button>
+                    {portfolioImages.length < 9 && (
+                      <button className="resume-icon-btn" aria-label="사진 추가" onClick={() => set모달((v) => (v === "photo" ? null : "photo"))}>
+                        <Plus size={18} />
+                      </button>
+                    )}
                     <button className="resume-icon-btn danger" aria-label="사진 전체 삭제" onClick={사진전부지우기}>
                       <Trash2 size={15} />
                     </button>
@@ -531,6 +534,12 @@ export default function ResumeEditor({
                       <div key={img.url} className="portfolio-cell">
                         <img src={img.url} alt="" loading="lazy"
                           onClick={() => set확대(idx)} style={{ cursor: "zoom-in" }} />
+                        {/* 한 장 빼는 일은 사진 위에서 끝난다. 쓰레기통은 전부
+                            지우는 것이라 뜻이 다르다. */}
+                        <button type="button" className="pf-del-one" aria-label="이 사진 삭제"
+                          onClick={(e) => { e.stopPropagation(); onPortfolioDelete([img.url]); }}>
+                          <X size={13} strokeWidth={2.6} />
+                        </button>
                       </div>
                     );
                   })}
@@ -552,34 +561,34 @@ export default function ResumeEditor({
                 <span style={{ marginLeft: 8, fontSize: 13, color: "#888" }}>{links.length}개</span>
               )}
               <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
-                {links.length === 0 ? (
-                  <button className="resume-icon-btn" aria-label="SNS 추가" onClick={() => set모달((v) => (v === "sns" ? null : "sns"))}>
-                    <Plus size={18} />
-                  </button>
-                ) : (
-                  <>
-                    <button className="resume-icon-btn" aria-label="SNS 편집" onClick={() => set모달((v) => (v === "sns" ? null : "sns"))}>
-                      <Pencil size={15} />
-                    </button>
-                    <button className="resume-icon-btn danger" aria-label="SNS 전체 삭제" onClick={링크전부지우기}>
-                      <Trash2 size={15} />
-                    </button>
-                  </>
-                )}
+                <button className="resume-icon-btn" aria-label="SNS 추가"
+                  onClick={() => addLink({ id: genId(), category: "", url: "" })}>
+                  <Plus size={18} />
+                </button>
               </span>
             </div>
-            {links.map((link) => (
-              <div key={link.id} className="resume-link-item">
-                <span className="resume-link-category">{linkLabel(link.url)}</span>
-                <a href={normalizeUrl(link.url)} target="_blank" rel="noopener noreferrer" className="resume-link-url">{link.url}</a>
+            {/* 항목이 곧 입력칸이다. 링크명과 주소를 그 자리에서 친다 —
+                주소만 넣으면 이름은 주소에서 알아낸다(instagram.com → 인스타그램). */}
+            {links.map((l) => (
+              <div key={l.id} className="if-row">
+                <span className="if-row-icon"><LinkIcon size={16} /></span>
+                <div className="if-row-body">
+                  <div className="if-line">
+                    <InlineText value={l.category} placeholder="링크명을 입력해 주세요." wide
+                      onSave={(v) => updateLink(l.id, { ...l, category: v })} />
+                  </div>
+                  <div className="if-line">
+                    <InlineText value={l.url} placeholder="https://(필수)" required wide
+                      onSave={(v) => updateLink(l.id, { ...l, url: v, category: l.category || (v ? linkLabel(v) : "") })} />
+                  </div>
+                </div>
+                <button className="if-row-del" aria-label="삭제"
+                  onClick={() => { if (confirm("이 링크를 삭제할까요?")) removeLink(l.id); }}>
+                  <Trash2 size={15} />
+                </button>
               </div>
             ))}
           </>
-        )}
-        {모달 === "sns" && (
-          <PortfolioModal inline isOpen mode="sns" resumeType={resumeType}
-            onClose={() => set모달(null)} images={portfolioImages} links={links} isUploading={isUploading}
-            onFiles={onPortfolioFiles} onDeletePhotos={onPortfolioDelete} onAddLink={링크담기} onDeleteLink={링크지우기} />
         )}
       </section>
 
