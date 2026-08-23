@@ -13313,7 +13313,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
     gap: 26px; margin: 0; align-items: start;   /* 왼쪽 정렬 · 폭 제한 없음 — 오른쪽에 빈 띠를 남기지 않는다 */
   }
   .jp-side {
-    display: flex; flex-direction: column; position: sticky; top: 84px;
+    /* 바탕도 여백도 없이 떠 있어 본문 카드와 따로 놀았다. 이력서 사이드처럼
+       흰 바탕에 여백을 두르고, 본문 첫 카드와 윗변을 맞춘다. */
+    display: flex; flex-direction: column; position: sticky; top: 96px;
+    background: #fff; border: 1px solid #f0f0f0; border-radius: 12px;
+    padding: 16px 14px; margin-top: 42px;   /* 본문 첫 카드와 윗변을 맞춘다 */
   }
   .jp-side-title { font-size: 12px; color: #6f6f75; margin: 0 0 7px; }
   .jp-side-bar { height: 4px; background: #e3e3e6; border-radius: 2px; overflow: hidden; }
