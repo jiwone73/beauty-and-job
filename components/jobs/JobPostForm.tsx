@@ -1727,8 +1727,6 @@ export default function JobPostForm({
             if (!form.responsibilities?.trim()) { alert("담당업무를 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
             if (!form.requirements?.trim()) { alert("자격요건을 입력하거나 상세요강 이미지를 첨부해주세요."); return; }
           }
-          // 본사 공고는 전형이 여러 단계라, 구직자가 지원 전에 무엇을 거치는지 알아야 한다.
-          if (hiringProcess.length === 0) { alert("채용 절차를 1단계 이상 선택해주세요."); return; }
         }
         if (benefitTags.length === 0 && !fiBenefits.trim()) { alert("복리후생을 1개 이상 선택해주세요."); return; }
       }
@@ -3131,7 +3129,7 @@ export default function JobPostForm({
               {/* 채용 절차 — 본사(기업) 공고에서만 노출 */}
               {jobGroupType === "기업" && (
                 <div id="jp-process" style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
-                  <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
+                  <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차</span>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", flex: 1 }}>
                     {PRESET_PROCESS.기업.map((p) => {
                       const on = hiringProcess.includes(p);
