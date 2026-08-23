@@ -320,8 +320,8 @@ export default function ResumeEditor({
             <SkillModal inline isOpen={skillModalOpen} onClose={() => setSkillModalOpen(false)} />
           )}
           {!skillModalOpen && skills.length === 0 && (
-            <button type="button" className="resume-blank" onClick={() => { setSkillModalOpen(true); }}>
-              <span className="resume-blank-fields">커트 · 펌 · 염색 · 클리닉 …</span>
+            <button type="button" className="if-empty" onClick={() => setSkillModalOpen(true)}>
+              내 직무 기반 스킬을 추가해보세요
             </button>
           )}
         </section>

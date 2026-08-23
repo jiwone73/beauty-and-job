@@ -289,12 +289,12 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
   // 칸 안에서 그대로 펼칠 때 쓰는 몸통.
   const 몸통 = (
       <div className={inline ? "cv-body cv-body-inline" : "cv-body"}>
-        <p className="cv-desc">내 직무 기반 스킬을 마음껏 추가해 보세요.</p>
+        {!inline && <p className="cv-desc">내 직무 기반 스킬을 마음껏 추가해 보세요.</p>}
 
         <div className="cv-skill-input-row">
           <input
             className="cv-input"
-            placeholder="스킬을 검색해 추가해 주세요."
+            placeholder="내 직무 기반 스킬을 추가해보세요"
             value={input}
             onChange={(e) => 검색바꾸기(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
@@ -335,7 +335,10 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
           </div>
         )}
 
-        {!query && (
+        {/* 아무것도 안 쳤을 때 추천을 깔지 않는다. 마흔 개가 먼저 보이면
+            고르라는 말처럼 읽히는데, 정작 담을 것은 자기 시술 몇 가지다.
+            칸 안에서 펼치는 자리에서는 특히 그 목록이 화면을 다 먹는다. */}
+        {!query && !inline && (
           <div className="cv-recommend-section">
             <h4 className="cv-recommend-title">추천 스킬</h4>
             <p className="cv-recommend-desc">눌러서 담고, 없는 것은 위에 쳐서 넣으세요.</p>
