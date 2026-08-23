@@ -665,7 +665,10 @@ export default function AdminOutreachPage() {
                                       style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0,
                                         position: "sticky", right: 0, zIndex: 1, background: "#f7f7f8",
                                         padding: "2px 2px 2px 12px", boxShadow: "-8px 0 8px -6px #f7f7f8",
-                                        cursor: "pointer", fontSize: 12.5, color: 없음 ? "#c2410c" : "#b7b0c0" }}>
+                                        cursor: "pointer", fontSize: 12.5, color: 없음 ? "#c2410c" : "#b7b0c0",
+                                        /* 고른 줄은 굵게 — 오른쪽 끝에 붙어 있어 왼쪽 라디오가 화면 밖일 때도
+                                           지금 어느 줄을 고른 것인지 여기서 알 수 있다. */
+                                        fontWeight: pickedJobUrl === jb.url ? 700 : 400 }}>
                                       <input type="checkbox" checked={없음} onChange={() => setPhFlag(row, jb.url, "n")}
                                         style={{ width: 13, height: 13, accentColor: "#c2410c" }} />
                                       연락처 없음
