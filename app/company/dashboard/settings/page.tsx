@@ -554,10 +554,20 @@ export default function CompanySettingsPage() {
                   </button>
                 </div>
                 {coverImages.length === 0 ? (
-                  <div style={{minHeight:110, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, padding:12,
-                    background:"#f7f7f8", border:"1px dashed #efeff1", borderRadius:10, color:"#a8a8ad", fontSize:13, textAlign:"center", lineHeight:1.5}}>
-                    아직 등록한 이미지가 없어요.<br />
-                    사진이 없다면 <b style={{color:"#582681"}}>샘플 배너</b>로 문구만 넣어 만들어 보세요.
+                  /* 무슨 사진을 받는 칸인지 먼저 말한다. '이미지'라고만 하면 로고나
+                     공고 포스터가 올라와 배너가 글자로 뒤덮인다. 여기 올린 사진은
+                     공고를 쓸 때 '불러오기'로 가져다 쓴다. */
+                  <div style={{minHeight:110, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:5, padding:12,
+                    background:"#f7f7f8", border:"1px dashed #efeff1", borderRadius:10, textAlign:"center", lineHeight:1.5}}>
+                    <div style={{fontSize:13.5, color:"#8a8a8f"}}>
+                      {isStore ? "매장 내·외관 홍보 사진" : "회사·사무실 홍보 사진"}
+                    </div>
+                    <div style={{fontSize:12, color:"#b4b4b9"}}>
+                      여기 올려 두면 공고를 쓸 때 그대로 불러와요
+                    </div>
+                    <div style={{fontSize:12, color:"#b4b4b9"}}>
+                      쓸 만한 사진이 없다면 <b style={{color:"#582681", fontWeight:600}}>샘플 배너</b>로 문구만 넣어 만들어 보세요
+                    </div>
                   </div>
                 ) : (
                   /* 공고 상세와 같은 컴포넌트 — 여기서 보이는 모양이 실제 공고 배너와 같다. */

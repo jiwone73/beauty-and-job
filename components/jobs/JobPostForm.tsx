@@ -2581,7 +2581,7 @@ export default function JobPostForm({
               )}
               {coverImages.length > 0 && bannerImages.length === 0 && (
                 <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
-                  style={{ flexShrink: 0, border: "1px solid #efeff1", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: "pointer" }}>기업 이미지 불러오기</button>
+                  style={{ flexShrink: 0, border: "1px solid #efeff1", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: "pointer" }}>{L.section} 사진 불러오기</button>
               )}
             </div>
             {bannerHint}
@@ -2604,7 +2604,7 @@ export default function JobPostForm({
               </button>
               {mode === "company" && coverImages.length > 0 && bannerImages.length === 0 && (
                 <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
-                  style={{ ...bannerBtn(false), color: "#666" }}>기업 이미지 불러오기</button>
+                  style={{ ...bannerBtn(false), color: "#666" }}>{L.section} 사진 불러오기</button>
               )}
             </div>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
@@ -2632,14 +2632,21 @@ export default function JobPostForm({
                       })} />
                   ) : (
                     /* 어떤 사진을 올리는 칸인지 먼저 말한다. '이미지'만으로는 로고를 올리거나
-                       공고 포스터를 올려 배너가 글자로 뒤덮인다. 넣는 법은 그 아래 작게. */
-                    <div style={{ minHeight: 76, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, lineHeight: 1.5, textAlign: "center" }}>
+                       공고 포스터를 올려 배너가 글자로 뒤덮인다. 넣는 법은 그 아래 작게.
+                       매장정보에 이미 사진이 있으면 그걸 그대로 쓰는 길도 알려 준다 —
+                       비워 두면 배너 없이 나가지, 매장정보 사진으로 대신 채워지지 않는다. */
+                    <div style={{ minHeight: 76, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, lineHeight: 1.5, textAlign: "center", padding: "0 8px" }}>
                       <div style={{ fontSize: 13.5, color: "#8a8a8f" }}>
                         {isOffice ? "회사·사무실 홍보 사진" : "매장 내·외관 홍보 사진"}
                       </div>
                       <div style={{ fontSize: 12, color: "#b4b4b9" }}>
                         <b style={{ margin: "0 2px", fontWeight: 600 }}>드래그</b>하거나 <b style={{ margin: "0 2px", fontWeight: 600 }}>Ctrl+V</b>로 붙여넣어 주세요
                       </div>
+                      {mode === "company" && coverImages.length > 0 && (
+                        <div style={{ fontSize: 12, color: "#b4b4b9" }}>
+                          {L.section}에 올린 사진을 그대로 쓰려면 위 <b style={{ fontWeight: 600 }}>{L.section} 사진 불러오기</b>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
