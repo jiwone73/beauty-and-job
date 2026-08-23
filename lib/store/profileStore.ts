@@ -343,6 +343,17 @@ export const useProfileStore = create<ProfileState>()(
           const s = get();
           // signupStore에서 추가 데이터 가져오기
           const signupData = useSignupStore.getState();
+          // 더하기만 누르고 아무것도 안 적은 항목은 보내지 않는다. 화면에는
+          // 남겨 둔다 — 채우려고 만든 것일 수 있으니 지우는 것은 사람 몫이고,
+          // 저장될 때만 걸러 낸다. 빈 줄이 서버에 쌓이면 남의 화면(지원서·
+          // 미리보기)에도 빈 줄로 나온다.
+          const 알맹이 = (v: unknown) => String(v ?? "").trim().length > 0;
+          const 보낼경력 = s.careers.filter((c) => 알맹이(c.company));
+          const 보낼학력 = s.educations.filter((e) => 알맹이(e.school));
+          const 보낼활동 = s.experiences.filter((x) => 알맹이(x.title));
+          const 보낼어학 = s.languages.filter((l) => 알맹이(l.language));
+          const 보낼링크 = s.links.filter((l) => 알맹이(l.url));
+          const 보낼자격 = s.certificates.filter((c) => 알맹이(c.name));
           try {
             await fetch("/api/users/me/profile", {
               method: "PUT",
@@ -365,12 +376,12 @@ export const useProfileStore = create<ProfileState>()(
                   region_prefer: signupData.regionPrefer || "",
                   office_job_areas: signupData.officeJobAreas || [],
                 },
-                careers: s.careers,
-                educations: s.educations,
-                experiences: s.experiences,
-                languages: s.languages,
-                links: s.links,
-                certificates: s.certificates,
+                careers: 보낼경력,
+                educations: 보낼학력,
+                experiences: 보낼활동,
+                languages: 보낼어학,
+                links: 보낼링크,
+                certificates: 보낼자격,
               }),
             });
           } catch (e) {
