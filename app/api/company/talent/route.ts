@@ -20,12 +20,20 @@ export async function GET(req: NextRequest) {
   const limit       = parseInt(searchParams.get("limit") || "50");
   const offset      = (page - 1) * limit;
 
+  // 매장은 매장 인재만, 본사는 본사 인재만 본다. 화면에서 고르개를 감추는 것만으로는
+  //   이 API 를 직접 부르면 그대로 넘어온다 — 회원 유형으로 여기서 강제한다.
+  //   겸업(BOTH) 회원만 넘어온 값을 그대로 쓴다.
+  const 내유형 = (await pool.query(
+    `SELECT company_type FROM companies WHERE id = $1`, [auth!.sub]
+  )).rows[0]?.company_type as "STORE" | "OFFICE" | "BOTH" | undefined;
+  const 볼유형 = 내유형 === "BOTH" || !내유형 ? jobType : 내유형;
+
   const params: any[] = [auth!.sub]; // $1 = company_id
   let idx = 2;
 
   // job_type
   const jobTypeClause = `AND u.job_type = $${idx++}`;
-  params.push(jobType);
+  params.push(볼유형);
 
   // 직군 (다중 IN)
   let jobGroupClause = "";

@@ -51,7 +51,9 @@ function genderLabel(gender: string | null): string | null {
 
 export default function TalentPage() {
   const [activeTab, setActiveTab]     = useState<JobTab>("STORE");
-  const [, setCompanyType] = useState<"OFFICE" | "STORE" | null>(null);
+  // 매장은 매장 인재만, 본사는 본사 인재만 본다. 서로의 인재풀을 볼 일이 없고,
+  //   열어 두면 남의 이메일·전화만 넓게 보이는 셈이다. 겸업(BOTH) 회원만 고를 수 있다.
+  const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH" | null>(null);
   const [talents, setTalents]         = useState<TalentItem[]>([]);
   const [loading, setLoading]         = useState(true);
   const [total, setTotal]             = useState(0);
@@ -221,7 +223,7 @@ export default function TalentPage() {
     fetch("/api/company/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((res) => {
-        const ct = res?.data?.company_type as "OFFICE" | "STORE" | undefined;
+        const ct = res?.data?.company_type as "OFFICE" | "STORE" | "BOTH" | undefined;
         if (ct) {
           setCompanyType(ct);
           if (ct === "OFFICE") setActiveTab("OFFICE");
@@ -353,8 +355,8 @@ export default function TalentPage() {
   return (
     <CompanyLayout activePage="talent">
 
-      {/* 인재 구분 — 매장/본사 라디오 (모바일, 검색창 위) */}
-      {isMobile && view === "search" && (
+      {/* 인재 구분 — 겸업(BOTH) 회원만 고른다. 매장·본사는 제 유형으로 묶인다. */}
+      {companyType === "BOTH" && isMobile && view === "search" && (
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 12 }}>
           <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
           {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
@@ -384,8 +386,8 @@ export default function TalentPage() {
         </div>
       )}
 
-      {/* 인재 구분 — 매장/본사 세그먼트 (데스크톱) */}
-      {!isMobile && (
+      {/* 인재 구분 — 겸업(BOTH) 회원만 고른다. */}
+      {companyType === "BOTH" && !isMobile && (
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
           <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
           <div style={{ display: "inline-flex", background: "#efeff1", borderRadius: 10, padding: 3 }}>

@@ -28,7 +28,6 @@ export default function CompanyLayout({ children, activePage }: {
   // 매장 회원이면 '매장정보', 본사(기업) 회원이면 '기업정보'로 부른다.
   const infoLabel = (t: string) => (t === "OFFICE" ? "기업정보" : "매장정보"); // 매장·매장+본사는 매장으로 분류
   const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "", thumb: "" });
-  const [profileOpen, setProfileOpen] = useState(false);
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unread, setUnread] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -252,10 +251,9 @@ export default function CompanyLayout({ children, activePage }: {
     <div className="company-layout">
       <aside className={`company-sidebar ${sidebarOpen ? "" : "company-sidebar-closed"}`}>
         <div className="company-sidebar-logo">
-          {/* 로고를 누르면 로그아웃 (모바일 헤더와 같은 방식) — 사이드바 맨 아래에 따로 두지 않는다. */}
+          {/* 로고는 이제 아무것도 열지 않는다 — 로그아웃은 메뉴 맨 아래에 있다. */}
           <div style={{ position: "relative" }}>
-            <button type="button" className="company-logo-link" onClick={() => setProfileOpen((v) => !v)}
-              style={{ background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit", textAlign: "left" }}>
+            <div className="company-logo-link" style={{ textAlign: "left" }}>
               <div className="company-logo-mark">
                 {(() => {
                   const img = companyInfo.thumb || companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
@@ -270,22 +268,7 @@ export default function CompanyLayout({ children, activePage }: {
                 <span className="company-logo-name">{companyInfo.name}</span>
                 <span className="company-logo-category">{companyInfo.category}</span>
               </div>
-            </button>
-            {profileOpen && (
-              <>
-                <div style={{ position: "fixed", inset: 0, zIndex: 90 }} onClick={() => setProfileOpen(false)} />
-                <div className="company-profile-menu">
-                  <button onClick={() => {
-                    setProfileOpen(false);
-                    localStorage.removeItem("access_token");
-                    useAuthStore.getState().logout();
-                    router.push("/company/login");
-                  }}>
-                    <LogOut size={16} /> 로그아웃
-                  </button>
-                </div>
-              </>
-            )}
+            </div>
           </div>
           <div style={{ marginLeft: "auto", position: "relative" }}>
             <button className="company-header-btn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">
@@ -333,6 +316,16 @@ export default function CompanyLayout({ children, activePage }: {
           <button className="company-nav-item" onClick={() => router.push("/")}>
             <ExternalLink size={20} />
             <span>사이트로 이동</span>
+          </button>
+          {/* 로그아웃은 메뉴 맨 아래. 로고를 눌러야 나오는 자리에 숨겨 두니
+              찾지 못하고 탭을 닫아 버리는 일이 생겼다. */}
+          <button className="company-nav-item" onClick={() => {
+            localStorage.removeItem("access_token");
+            useAuthStore.getState().logout();
+            router.push("/company/login");
+          }}>
+            <LogOut size={20} />
+            <span>로그아웃</span>
           </button>
         </nav>
       </aside>
