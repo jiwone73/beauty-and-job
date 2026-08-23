@@ -3115,10 +3115,12 @@ export default function JobPostForm({
                             ].filter(Boolean) as { k: string; ph: string; v: string; set: (v: string) => void; im?: "numeric" | "email"; 폭: number }[];
                             return (
                               // 칸 폭은 들어갈 글자 길이에 맞춘다 — 이름 3자, 전화 010-1234-5678,
-                              // 메일 주소. 좁으면 눌러 담지 말고 다음 줄로 넘긴다(자리는 안 들썩인다).
+                              // 메일 주소. 이름·전화는 제 폭만 쓰고, 남는 자리는 메일이 다 가져간다
+                              // (셋이 똑같이 늘면 가장 긴 메일이 제일 좁아진다).
                               <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, padding: "3px 0", minWidth: 0 }}>
                                 {칸.map((f, i) => (
-                                  <span key={f.k} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0, flex: `1 1 ${f.폭}px` }}>
+                                  <span key={f.k} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0,
+                                    flex: f.k === "mail" ? `1 1 ${f.폭}px` : `0 1 ${f.폭}px` }}>
                                     {/* 크롬은 name·autocomplete 에 든 낱말로 칸을 알아보고 연락처
                                         아이콘을 띄운다. 앞서 nope-phone·nope-mail 처럼 이름을 지어
                                         오히려 힌트를 주고 있었다. 뜻 없는 값으로 둔다. */}
