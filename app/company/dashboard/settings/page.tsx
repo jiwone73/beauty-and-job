@@ -653,8 +653,11 @@ export default function CompanySettingsPage() {
                           style={{width:168, height:62, borderRadius:8, cursor:"pointer", overflow:"hidden",
                             border: samplePreset === i ? "2px solid #582681" : "1.5px solid #efeff1",
                             backgroundImage:`url(${pr.img})`, backgroundSize:"cover", backgroundPosition:"center",
-                            color: pr.text, fontSize:11, fontWeight:700}}>
-                          {pr.label}
+                            color: pr.text, fontSize:11, fontWeight:700, padding:"0 8px",
+                            textOverflow:"ellipsis", whiteSpace:"nowrap"}}>
+                          {/* 배경 이름 대신 실제로 들어갈 글자를 얹는다 — 고르기 전에 결과가 보인다.
+                              (배경 이름은 마우스를 올리면 title 로 뜬다) */}
+                          {sampleText.trim().split("\n")[0] || form.company_name || pr.label}
                         </button>
                       ))}
                     </div>
