@@ -13013,16 +13013,26 @@ button,
   .resume-sidebar .resume-completion-bar { max-width: none; width: 100%; }
   .resume-sidebar .resume-completion-text { white-space: nowrap; font-size: 12px; }
 
+  /* 격자로 두면 한 행의 두 칸이 서로 키를 맞춘다 — 경력이 길어지면 옆
+     자리가 비어도 그만큼 늘어난다. 여러 단으로 흘리면 아래 칸이 빈자리를
+     채우며 올라온다. */
   .resume-editor {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    align-content: start;
+    columns: 2;
+    column-gap: 12px;
+    display: block;
   }
-  .resume-editor > * { margin-bottom: 0; }
+  .resume-editor > * {
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    margin: 0 0 12px;
+  }
   /* 좌우로 넓어야 하는 것만 두 칸을 다 쓴다. 한줄소개는 입력 한 줄이라
      길어야 하고, 기본 정보는 오른쪽에 사진이 붙으며, 저장은 맨 아래 띠다. */
-  #section-headline, #section-basic, .resume-bottom-save { grid-column: 1 / -1; }
+  /* 좌우로 넓어야 하는 것은 단을 가로지른다. */
+  #section-headline, #section-basic, .resume-bottom-save {
+    column-span: all;
+    -webkit-column-span: all;
+  }
   .resume-mobile-progress { display: none; }
 }
 

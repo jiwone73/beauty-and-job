@@ -378,9 +378,8 @@ function ResumePageContent() {
   const 포트폴리오채움 = portfolioImages.length > 0 || links.length > 0;
   // 모바일 완성도 (사이드바와 동일 기준)
   // 모바일 완성도 — 사이드 목록과 같은 기준. 접어 둔 칸은 값이 있을 때만 센다.
-  const 접힘셈 = resumeType === "office" || educations.length > 0 || experiences.length > 0;
-  const progressItems = [true, careers.length > 0, skills.length > 0, certificates.length > 0, languages.length > 0, 포트폴리오채움,
-    ...(접힘셈 ? [educations.length > 0, experiences.length > 0] : [])];
+  const progressItems = [true, careers.length > 0, educations.length > 0, skills.length > 0,
+    certificates.length > 0, experiences.length > 0, languages.length > 0, 포트폴리오채움];
   const progressRate = Math.round((progressItems.filter(Boolean).length / progressItems.length) * 100);
 
   return (
@@ -422,18 +421,17 @@ function ResumePageContent() {
             // 살롱 채용에서 실제로 보는 순서. 학력·활동수상은 뒤로 접어 두므로
             // 매장 이력서에서는 값이 있을 때만 목록에 세운다 — 안 쓸 칸이
             // 완성도를 깎으면 아무리 채워도 100%가 안 된다.
-            const 접힘보임 = resumeType === "office" || educations.length > 0 || experiences.length > 0;
+            // 매장·본사가 같은 순서를 쓴다. 편집 화면·미리보기·이 목록이
+            // 서로 다른 차례로 서 있으면 같은 이력서를 세 번 새로 읽게 된다.
             const sections = [
               { id: "basic", label: "기본 정보", done: true },
               { id: "career", label: "경력", done: careers.length > 0 },
-              { id: "skill", label: "시술 스킬", done: skills.length > 0 },
+              { id: "education", label: "학력", done: educations.length > 0 },
+              { id: "skill", label: "스킬", done: skills.length > 0 },
               { id: "certificate", label: "자격증", done: certificates.length > 0 },
+              { id: "experience", label: "활동/수상", done: experiences.length > 0 },
               { id: "language", label: "어학", done: languages.length > 0 },
               { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
-              ...(접힘보임 ? [
-                { id: "education", label: "학력", done: educations.length > 0 },
-                { id: "experience", label: "활동/수상", done: experiences.length > 0 },
-              ] : []),
             ];
             const doneCount = sections.filter((s) => s.done).length;
             const rate = Math.round((doneCount / sections.length) * 100);

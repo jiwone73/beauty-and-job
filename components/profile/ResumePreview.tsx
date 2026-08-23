@@ -168,7 +168,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           ))}
         </div>
       )}
-
       {educations.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">학력</h2>
@@ -189,7 +188,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           ))}
         </div>
       )}
-
       {skills.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title">스킬</h2>
@@ -200,26 +198,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               </span>
             ))}
           </div>
-        </div>
-      )}
-      {languages.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">어학</h2>
-          {languages.map((lang) => (
-            <div key={lang.id} className="rp-item">
-              <p className="rp-text" style={{ fontWeight: 400, fontSize: "13px", color: "#666" }}>
-                {lang.language}
-                <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>
-                  {lang.level}
-                </span>
-              </p>
-              {시험한줄(lang.test) && (
-                <p className="rp-text" style={{ color: "#888", fontSize: "13px" }}>
-                  {시험한줄(lang.test)}
-                </p>
-              )}
-            </div>
-          ))}
         </div>
       )}
       {certificates.length > 0 && (
@@ -253,6 +231,26 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               </div>
               {x.description && (
                 <p className="rp-item-sub">{x.description}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      {languages.length > 0 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">어학</h2>
+          {languages.map((lang) => (
+            <div key={lang.id} className="rp-item">
+              <p className="rp-text" style={{ fontWeight: 400, fontSize: "13px", color: "#666" }}>
+                {lang.language}
+                <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>
+                  {lang.level}
+                </span>
+              </p>
+              {시험한줄(lang.test) && (
+                <p className="rp-text" style={{ color: "#888", fontSize: "13px" }}>
+                  {시험한줄(lang.test)}
+                </p>
               )}
             </div>
           ))}

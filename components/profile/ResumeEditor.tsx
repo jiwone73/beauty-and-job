@@ -298,14 +298,60 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 스킬 — 매장도 쓴다. 커트·펌·염색 같은 시술 스킬이 곧 실력이라
-          오히려 매장 쪽이 더 중요하다. SkillModal 이 매장직 시술 사전을
-          이미 갖고 있는데 이 칸만 본사에 잠겨 있었다. */}
+      {/* 학력 */}
+      <section id="section-education" className="resume-section">
+        <div className="resume-section-head">
+          <h2 className="resume-section-title">
+            학력
+            {/* 매장 이력서에서는 학력을 묻지 않는다 — 미용실·네일숍이 보는 것은
+                학교가 아니라 경력과 작업물이고, 별표를 붙여 두면 채우지 못한
+                사람이 이력서를 미완성으로 여기고 만다. */}
+            {resumeType === "office" && (
+              <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
+            )}
+          </h2>
+          <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => addEducation({ id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "" })}>
+            <Plus size={18} />
+          </button>
+        </div>
+        {educations.map((e) => (
+          <div key={e.id} className="if-row">
+            <span className="if-row-icon"><GraduationCap size={17} /></span>
+            <div className="if-row-body">
+              <div className="if-line if-line-head">
+                <InlineText value={e.school} placeholder="학교명" required wide
+                  onSave={(v) => updateEducation(e.id, { ...e, school: v })} />
+              </div>
+              <div className="if-line">
+                <InlineYM value={e.startDate} onSave={(v) => updateEducation(e.id, { ...e, startDate: v })} />
+                <span className="if-sep">–</span>
+                <InlineYM value={e.endDate} onSave={(v) => updateEducation(e.id, { ...e, endDate: v })} />
+                <span className="if-bar">│</span>
+                <InlinePick value={e.status} placeholder="졸업 상태" required options={졸업상태}
+                  onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
+                <span className="if-bar">│</span>
+                <InlineText value={e.major} placeholder="전공"
+                  onSave={(v) => updateEducation(e.id, { ...e, major: v })} />
+              </div>
+            </div>
+            <button className="if-row-del" aria-label="삭제"
+              onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(e.id); }}>
+              <Trash2 size={15} />
+            </button>
+          </div>
+        ))}
+        {educations.length === 0 && (
+          <button type="button" className="if-empty" onClick={() => addEducation({
+            id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "",
+          })}>학교명 · 재학 기간 · 졸업 상태를 적어 주세요</button>
+        )}
+      </section>
+
       {true && (
         <section id="section-skill" className="resume-section">
           <div className="resume-section-head">
-            <h2 className="resume-section-title">시술 스킬</h2>
-            <button className="resume-icon-btn" aria-label="시술 스킬 추가" onClick={() => setSkillModalOpen(true)}>
+            <h2 className="resume-section-title">스킬</h2>
+            <button className="resume-icon-btn" aria-label="스킬 추가" onClick={() => setSkillModalOpen(true)}>
               <Plus size={18} />
             </button>
           </div>
@@ -361,9 +407,43 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 어학 — 살롱에서 실제로 보는 칸이다. 외국인 손님 응대가 되는 사람을
-          찾는 매장이 많다. 대신 시험명·점수는 받지 않는다. 손님 앞에서 말이
-          되느냐가 전부라 상·중·하면 충분하다. */}
+      {/* 활동/수상 */}
+      <section id="section-experience" className="resume-section">
+        <div className="resume-section-head">
+          <h2 className="resume-section-title">활동/수상</h2>
+          <button className="resume-icon-btn" aria-label="활동 추가" onClick={() => addExperience({ id: genId(), category: "", title: "", description: "" })}>
+            <Plus size={18} />
+          </button>
+        </div>
+        {experiences.map((x) => (
+          <div key={x.id} className="if-row">
+            <span className="if-row-icon"><Trophy size={17} /></span>
+            <div className="if-row-body">
+              <div className="if-line if-line-head">
+                <InlineText value={x.title} placeholder="활동·수상명" required wide
+                  onSave={(v) => updateExperience(x.id, { ...x, title: v })} />
+              </div>
+              <div className="if-line">
+                <InlinePick value={x.category} placeholder="종류" options={활동종류}
+                  onSave={(v) => updateExperience(x.id, { ...x, category: v })} />
+                <span className="if-bar">│</span>
+                <InlineText value={x.description} placeholder="어떤 활동이었는지 적어 보세요" wide
+                  onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
+              </div>
+            </div>
+            <button className="if-row-del" aria-label="삭제"
+              onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
+              <Trash2 size={15} />
+            </button>
+          </div>
+        ))}
+        {experiences.length === 0 && (
+          <button type="button" className="if-empty" onClick={() => addExperience({
+            id: genId(), category: "", title: "", description: "",
+          })}>콘테스트 수상이나 교육 이수를 적어 주세요</button>
+        )}
+      </section>
+
       <section id="section-language" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">어학</h2>
@@ -412,8 +492,6 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 포트폴리오 — 사진과 SNS 를 각각 한 줄로 둔다. 다른 항목(경력·학력)과 같은
-          모양이라 손이 같은 자리로 간다. 비어 있으면 ＋, 내용이 있으면 ✎·🗑. */}
       <section id="section-portfolio" className="resume-section">
         <div className="resume-section-head" onClick={() => togglePf()} style={{ cursor: "pointer" }}>
           <h2 className="resume-section-title">포트폴리오</h2>
@@ -497,105 +575,8 @@ export default function ResumeEditor({
         )}
       </section>
 
-      {/* 학력·활동수상은 접어 둔다. 살롱 채용에서 이 둘을 보는 곳은 드문데
-          칸이 늘면 쓰다 마는 사람이 생긴다. 이미 채운 사람과 본사 이력서에는
-          그대로 펼쳐 둔다. 어학은 접지 않는다 — 외국인 손님 응대 때문에
-          실제로 보는 칸이다. */}
-      {!더적기 && resumeType !== "office" && educations.length === 0 && experiences.length === 0 ? (
-        <button type="button" className="resume-more-open" onClick={() => set더적기(true)}>
-          학력 · 활동/수상 더 적기
-        </button>
-      ) : (
-        <>
 
-      {/* 학력 */}
-      <section id="section-education" className="resume-section">
-        <div className="resume-section-head">
-          <h2 className="resume-section-title">
-            학력
-            {/* 매장 이력서에서는 학력을 묻지 않는다 — 미용실·네일숍이 보는 것은
-                학교가 아니라 경력과 작업물이고, 별표를 붙여 두면 채우지 못한
-                사람이 이력서를 미완성으로 여기고 만다. */}
-            {resumeType === "office" && (
-              <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
-            )}
-          </h2>
-          <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => addEducation({ id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "" })}>
-            <Plus size={18} />
-          </button>
-        </div>
-        {educations.map((e) => (
-          <div key={e.id} className="if-row">
-            <span className="if-row-icon"><GraduationCap size={17} /></span>
-            <div className="if-row-body">
-              <div className="if-line if-line-head">
-                <InlineText value={e.school} placeholder="학교명" required wide
-                  onSave={(v) => updateEducation(e.id, { ...e, school: v })} />
-              </div>
-              <div className="if-line">
-                <InlineYM value={e.startDate} onSave={(v) => updateEducation(e.id, { ...e, startDate: v })} />
-                <span className="if-sep">–</span>
-                <InlineYM value={e.endDate} onSave={(v) => updateEducation(e.id, { ...e, endDate: v })} />
-                <span className="if-bar">│</span>
-                <InlinePick value={e.status} placeholder="졸업 상태" required options={졸업상태}
-                  onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
-                <span className="if-bar">│</span>
-                <InlineText value={e.major} placeholder="전공"
-                  onSave={(v) => updateEducation(e.id, { ...e, major: v })} />
-              </div>
-            </div>
-            <button className="if-row-del" aria-label="삭제"
-              onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(e.id); }}>
-              <Trash2 size={15} />
-            </button>
-          </div>
-        ))}
-        {educations.length === 0 && (
-          <button type="button" className="if-empty" onClick={() => addEducation({
-            id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "",
-          })}>학교명 · 재학 기간 · 졸업 상태를 적어 주세요</button>
-        )}
-      </section>
 
-      {/* 활동/수상 */}
-      <section id="section-experience" className="resume-section">
-        <div className="resume-section-head">
-          <h2 className="resume-section-title">활동/수상</h2>
-          <button className="resume-icon-btn" aria-label="활동 추가" onClick={() => addExperience({ id: genId(), category: "", title: "", description: "" })}>
-            <Plus size={18} />
-          </button>
-        </div>
-        {experiences.map((x) => (
-          <div key={x.id} className="if-row">
-            <span className="if-row-icon"><Trophy size={17} /></span>
-            <div className="if-row-body">
-              <div className="if-line if-line-head">
-                <InlineText value={x.title} placeholder="활동·수상명" required wide
-                  onSave={(v) => updateExperience(x.id, { ...x, title: v })} />
-              </div>
-              <div className="if-line">
-                <InlinePick value={x.category} placeholder="종류" options={활동종류}
-                  onSave={(v) => updateExperience(x.id, { ...x, category: v })} />
-                <span className="if-bar">│</span>
-                <InlineText value={x.description} placeholder="어떤 활동이었는지 적어 보세요" wide
-                  onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
-              </div>
-            </div>
-            <button className="if-row-del" aria-label="삭제"
-              onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
-              <Trash2 size={15} />
-            </button>
-          </div>
-        ))}
-        {experiences.length === 0 && (
-          <button type="button" className="if-empty" onClick={() => addExperience({
-            id: genId(), category: "", title: "", description: "",
-          })}>콘테스트 수상이나 교육 이수를 적어 주세요</button>
-        )}
-      </section>
-
-        </>
-      )}
 
 
       {확대 !== null && (
