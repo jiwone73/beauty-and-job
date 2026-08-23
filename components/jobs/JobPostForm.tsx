@@ -2744,7 +2744,7 @@ export default function JobPostForm({
                           <th style={{ ...thc, minWidth: 56 }}>성별우대</th>
                           <th style={{ ...thc, minWidth: 72 }}>경력/직책</th>
                           <th style={{ ...thc, minWidth: 52 }}>학력</th>
-                          {!isOffice && <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>}
+                          <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>
                           <th style={{ ...thc, minWidth: 82 }}>급여</th>
                         </tr>
                       </thead>
@@ -2764,8 +2764,6 @@ export default function JobPostForm({
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "", false)}</td>
-                              {/* 본사는 근무요일·시간을 공고에 적지 않는다 — 매장에서만 세운다. */}
-                              {!isOffice && (
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
                                 <button type="button" onClick={(e) => { if (posShiftOpen === cat) { setPosShiftOpen(null); return; } openPopAt(e.currentTarget, 244, 250); setPosShiftOpen(cat); }}
                                   style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "left", border: "none", borderRadius: 5, padding: "3px 6px", fontSize: 12.5, lineHeight: 1.35, cursor: "pointer", color: "#333", ...cellFill(!!(row.workDays || row.workTime)) }}>
@@ -2845,7 +2843,6 @@ export default function JobPostForm({
                                   );
                                 })()}
                               </td>
-                              )}
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "", true, SALARY_UNITS)}</td>
                             </tr>
                           );
