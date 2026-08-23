@@ -38,6 +38,8 @@ function ResumePageContent() {
   const [sectionsOpen, setSectionsOpen] = useState(true);
   useEffect(() => { setSectionsOpen(window.innerWidth >= 768); }, []);
   const [resumeType, setResumeType] = useState<"office" | "salon">("office");
+  // 프로필에서 아직 안 채운 필수 항목. 하나라도 있으면 이력서를 쓸 수 없다.
+  const [못채운것, set못채운것] = useState<string[]>([]);
   const [introLocal, setIntroLocal] = useState(intro);
   const [coreLocal, setCoreLocal] = useState(coreCompetencies);
   // 서버/스토어에서 한줄소개가 뒤늦게 로드되면 입력값이 비어있을 때만 채움(작성 중이면 덮지 않음)
@@ -105,11 +107,14 @@ function ResumePageContent() {
           if (!d.address_road) missing.push("거주지");
           if (!Array.isArray(d.preferred_regions) || d.preferred_regions.length === 0) missing.push("희망 근무지역");
           if (d.job_type === "OFFICE" && (!Array.isArray(d.office_job_areas) || d.office_job_areas.length === 0)) missing.push("직군 영역");
+          // 예전에는 알림창을 띄우고 곧장 프로필로 튕겨 냈다. 이력서를 쓰러 온
+          // 사람을 밀어내는 셈이라, 무엇이 비었는지 이 자리에서 보여주고
+          // 채우러 갈지는 본인이 고르게 한다.
           if (missing.length > 0) {
-            alert(`이력서를 작성하려면 프로필 필수항목을 먼저 완성해 주세요.\n\n[미입력 항목]\n· ${missing.join("\n· ")}`);
-            router.replace("/profile");
+            set못채운것(missing);
             return;
           }
+          set못채운것([]);
           if (res.data.email) setEmailLocal(res.data.email);
           if (res.data.phone) setPhoneLocal(res.data.phone);
           if (res.data.job_type === "STORE") setResumeType("salon");
@@ -384,17 +389,24 @@ function ResumePageContent() {
           들어온 자리의 머리줄이 그대로 있어야 길을 잃지 않는다.
           여기 있던 미리보기·다운로드는 왼쪽 사이드 아래로 내렸다. */}
       <Header />
-      {/* 메뉴로 바로 들어왔는데 프로필이 비어 있으면 빈 이력서가 열린다.
-          처음 온 사람의 순서(프로필 → 이력서)를 여기서 다시 잡아 준다. */}
-      {!name && (
-        <div className="resume-need-profile">
-          <span>이름·연락처가 아직 없어요. 프로필을 먼저 채우면 이력서에 그대로 들어옵니다.</span>
+      {/* 프로필이 덜 채워졌으면 이력서를 열지 않는다. 이름·연락처·주소가
+          이력서에 그대로 실려 가는데, 비어 있으면 빈 이력서가 완성된 척
+          만들어진다. 무엇이 비었는지 여기서 보여주고 채우러 갈지는 본인이
+          고른다 — 예전에는 알림창을 띄우고 곧장 프로필로 밀어냈다. */}
+      {못채운것.length > 0 ? (
+        <div className="resume-gate">
+          <h2>프로필을 먼저 채워 주세요</h2>
+          <p>이력서의 이름·연락처·희망 근무지역은 프로필에서 그대로 가져옵니다.</p>
+          <ul>
+            {못채운것.map((m) => <li key={m}>{m}</li>)}
+          </ul>
           <button type="button" onClick={() => router.push("/profile")}>
-            프로필 먼저 채우기 <ChevronRight size={15} />
+            프로필 채우러 가기 <ChevronRight size={16} />
           </button>
         </div>
-      )}
+      ) : (
 
+      <>
       <div className="resume-layout">
         <aside className="resume-sidebar">
           <button
@@ -537,6 +549,8 @@ function ResumePageContent() {
           </div>
         </main>
       </div>
+      </>
+      )}
 
       {showPreview && (
         <div className="rp-modal-overlay">

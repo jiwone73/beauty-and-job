@@ -1,13 +1,10 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Building2, Check, ChevronDown, FileText, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
+import { Award, Building2, Check, ChevronDown, FileText, Globe, GraduationCap, Pencil, Plus, Trash2, Trophy, Upload, X } from "lucide-react";
 import { useProfileStore, genId } from "@/lib/store/profileStore";
 import { InlineText, InlinePick, InlineYM } from "@/components/profile/inline/InlineField";
-import EducationModal from "@/components/profile/EducationModal";
-import LanguageModal from "@/components/profile/LanguageModal";
-import ExperienceModal from "@/components/profile/ExperienceModal";
+import { 시험읽기, 시험쓰기 } from "@/lib/languageTest";
 import SkillModal from "@/components/profile/SkillModal";
-import CertificateModal from "@/components/profile/CertificateModal";
 import { MAX_PHOTOS } from "@/lib/compressImage";
 import { linkLabel, normalizeUrl, looksLikeUrl, MAX_LINKS } from "@/lib/linkLabel";
 import PhotoLightbox from "@/components/profile/PhotoLightbox";
@@ -34,8 +31,12 @@ type Props = {
   resumeFileReadOnly?: boolean;
 };
 
-// 살롱 직급은 정해져 있다. 적게 하는 대신 고르게 하면 표기가 통일된다.
+// 고를 것이 정해진 칸들. 적게 하는 대신 고르게 하면 빠르고 표기가 통일된다.
 const 살롱직급 = ["인턴", "스탭", "디자이너", "아티스트", "실장", "원장"];
+const 졸업상태 = ["졸업", "재학", "휴학", "중퇴", "수료"];
+const 언어들 = ["영어", "일본어", "중국어", "베트남어", "러시아어", "태국어", "스페인어", "프랑스어", "기타"];
+const 수준들 = ["능숙하게 소통", "일상 회화 가능", "간단한 표현"];
+const 활동종류 = ["수상", "교육", "봉사", "동아리", "기타"];
 
 export default function ResumeEditor({
   resumeType,
@@ -58,6 +59,10 @@ export default function ResumeEditor({
     setEmail, addLink, removeLink, removeLanguage, removeExperience,
     removeEducation, removeCareer, certificates, removeCertificate,
     addCareer, updateCareer,
+    addEducation, updateEducation,
+    addLanguage, updateLanguage,
+    addExperience, updateExperience,
+    addCertificate, updateCertificate,
     isEntryLevel, setIsEntryLevel,
     entryExperience, setEntryExperience,
   } = useProfileStore();
@@ -326,46 +331,33 @@ export default function ResumeEditor({
       <section id="section-certificate" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">자격증</h2>
-          <button className="resume-icon-btn" aria-label="자격증 추가" onClick={() => { setEditCert(null); setCertModalOpen(true); }}>
+          <button className="resume-icon-btn" aria-label="자격증 추가" onClick={() => addCertificate({ id: genId(), name: "", issuer: "", issued_ym: "" })}>
             <Plus size={18} />
           </button>
         </div>
-        {certificates.length > 0 ? (
-          <div className="resume-list">
-            {certificates.map((cert) => {
-              const key = `cert-${cert.id}`;
-              const open = !collapsed.has(key);
-              return (
-                <div key={cert.id} className="resume-list-item">
-                  <p className="resume-item-text" onClick={() => { setEditCert(cert); setCertModalOpen(true); }} style={{ fontWeight: 400, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
-                    <ChevronDown size={16} onClick={(e) => { e.stopPropagation(); toggleExpand(key); }} style={{ cursor: "pointer", flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
-                    {cert.name}
-                    {cert.issued_ym && (
-                      <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{cert.issued_ym}</span>
-                    )}
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                      <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 자격증을 삭제할까요?")) removeCertificate(cert.id); }}>
-                        <Trash2 size={15} />
-                      </button>
-                    </span>
-                  </p>
-                  {open && cert.issuer && (
-                    <p className="resume-item-text" style={{ color: "#888", paddingLeft: "22px" }}>{cert.issuer}</p>
-                  )}
-                </div>
-              );
-            })}
+        {certificates.map((c) => (
+          <div key={c.id} className="if-row">
+            <span className="if-row-icon"><Award size={17} /></span>
+            <div className="if-row-body">
+              <div className="if-line if-line-head">
+                <InlineText value={c.name} placeholder="자격증명" required wide
+                  onSave={(v) => updateCertificate(c.id, { ...c, name: v })} />
+              </div>
+              <div className="if-line">
+                <InlineYM value={c.issued_ym} placeholder="취득 년월"
+                  onSave={(v) => updateCertificate(c.id, { ...c, issued_ym: v })} />
+              </div>
+            </div>
+            <button className="if-row-del" aria-label="삭제"
+              onClick={() => { if (confirm("이 자격증을 삭제할까요?")) removeCertificate(c.id); }}>
+              <Trash2 size={15} />
+            </button>
           </div>
-        ) : (
-          null
-        )}
-        {certModalOpen && (
-          <CertificateModal inline isOpen={certModalOpen} onClose={() => { setCertModalOpen(false); setEditCert(null); }} editTarget={editCert} />
-        )}
-        {!certModalOpen && certificates.length === 0 && (
-          <button type="button" className="resume-blank" onClick={() => { setEditCert(null); setCertModalOpen(true); }}>
-            <span className="resume-blank-fields">자격증명 <i>*</i> │ 취득 년월</span>
-          </button>
+        ))}
+        {certificates.length === 0 && (
+          <button type="button" className="if-empty" onClick={() => addCertificate({
+            id: genId(), name: "", issuer: "", issued_ym: "",
+          })}>미용사 면허 같은 자격증을 적어 주세요</button>
         )}
       </section>
 
@@ -376,37 +368,47 @@ export default function ResumeEditor({
         <div className="resume-section-head">
           <h2 className="resume-section-title">어학</h2>
           {languages.length > 0 && !langOpen && (
-            <button className="resume-icon-btn" aria-label="어학 추가" onClick={() => { setEditLang(null); setLangOpen(true); }}>
+            <button className="resume-icon-btn" aria-label="어학 추가" onClick={() => addLanguage({ id: genId(), language: "", level: "", test: "" })}>
               <Plus size={18} />
             </button>
           )}
         </div>
-        {languages.length > 0 && (
-          <div className="resume-list">
-            {languages.map((lang) => (
-              <div key={lang.id} className="resume-list-item">
-                <p className="resume-item-text" onClick={() => { setEditLang(lang); setLangOpen(true); }}
-                  style={{ fontWeight: 400, marginBottom: "4px", display: "flex", alignItems: "center", cursor: "pointer" }}>
-                  <span style={{ whiteSpace: "nowrap" }}>{lang.language}</span>
-                  <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>{lang.level}</span>
-                  <span style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
-                    <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 어학을 삭제할까요?")) removeLanguage(lang.id); }}>
-                      <Trash2 size={15} />
-                    </button>
-                  </span>
-                </p>
+        {languages.map((l) => {
+          const t = 시험읽기(l.test);
+          const 담기 = (v: Partial<typeof t>) => updateLanguage(l.id, { ...l, test: 시험쓰기({ ...t, ...v }) });
+          return (
+            <div key={l.id} className="if-row">
+              <span className="if-row-icon"><Globe size={17} /></span>
+              <div className="if-row-body">
+                <div className="if-line">
+                  <InlinePick value={l.language} placeholder="언어" required options={언어들}
+                    onSave={(v) => updateLanguage(l.id, { ...l, language: v })} />
+                  <span className="if-bar">│</span>
+                  <InlinePick value={l.level} placeholder="수준" required options={수준들}
+                    onSave={(v) => updateLanguage(l.id, { ...l, level: v })} />
+                </div>
+                {/* 시험 점수는 본사 지원서에만 쓰인다. 살롱은 상·중·하면 끝난다. */}
+                {resumeType === "office" && (
+                  <div className="if-line">
+                    <InlineText value={t.name} placeholder="시험명" onSave={(v) => 담기({ name: v })} />
+                    <span className="if-bar">│</span>
+                    <InlineText value={t.score} placeholder="점수/등급" onSave={(v) => 담기({ score: v })} />
+                    <span className="if-bar">│</span>
+                    <InlineYM value={t.ym} placeholder="취득 년월" onSave={(v) => 담기({ ym: v })} />
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
-        )}
-        {/* 열지 않아도 무엇을 넣는 칸인지 보이게 빈 자리를 그려 둔다. */}
-        {!langOpen && languages.length === 0 && (
-          <button type="button" className="resume-blank" onClick={() => { setEditLang(null); setLangOpen(true); }}>
-            <span className="resume-blank-fields">언어 <i>*</i> │ 수준 <i>*</i></span>
-          </button>
-        )}
-        {langOpen && (
-          <LanguageModal inline isOpen={langOpen} onClose={() => { setLangOpen(false); setEditLang(null); }} editTarget={editLang} resumeType={resumeType} />
+              <button className="if-row-del" aria-label="삭제"
+                onClick={() => { if (confirm("이 어학을 삭제할까요?")) removeLanguage(l.id); }}>
+                <Trash2 size={15} />
+              </button>
+            </div>
+          );
+        })}
+        {languages.length === 0 && (
+          <button type="button" className="if-empty" onClick={() => addLanguage({
+            id: genId(), language: "", level: "", test: "",
+          })}>손님 응대가 되는 언어를 적어 주세요</button>
         )}
       </section>
 
@@ -518,49 +520,40 @@ export default function ResumeEditor({
               <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
             )}
           </h2>
-          <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
+          <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => addEducation({ id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "" })}>
             <Plus size={18} />
           </button>
         </div>
-        {educations.length === 0 ? (
-          null
-        ) : (
-          educations.map((edu) => {
-            const key = `edu-${edu.id}`;
-            const open = !collapsed.has(key);
-            return (
-              <div key={edu.id} className="resume-edu-item">
-                <div className="resume-career-head" onClick={() => { setEditEdu(edu); setEduModalOpen(true); }} style={{ cursor: "pointer" }}>
-                  <ChevronDown size={16} onClick={(e) => { e.stopPropagation(); toggleExpand(key); }} style={{ cursor: "pointer", flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
-                  <strong>{edu.school}</strong>
-                  {!open && (
-                    <span style={{ marginLeft: "8px", fontSize: "13px", fontWeight: 400, color: "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {edu.startDate} - {edu.endDate}
-                    </span>
-                  )}
-                  <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                    <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(edu.id); }}>
-                      <Trash2 size={15} />
-                    </button>
-                  </span>
-                </div>
-                {open && (
-                  <>
-                    <span className="resume-edu-info">{edu.major} · {edu.status}</span>
-                    <span className="resume-edu-period">{edu.startDate} - {edu.endDate}</span>
-                  </>
-                )}
+        {educations.map((e) => (
+          <div key={e.id} className="if-row">
+            <span className="if-row-icon"><GraduationCap size={17} /></span>
+            <div className="if-row-body">
+              <div className="if-line if-line-head">
+                <InlineText value={e.school} placeholder="학교명" required wide
+                  onSave={(v) => updateEducation(e.id, { ...e, school: v })} />
               </div>
-            );
-          })
-        )}
-        {eduModalOpen && (
-          <EducationModal inline isOpen={eduModalOpen} onClose={() => { setEduModalOpen(false); setEditEdu(null); }} editTarget={editEdu} />
-        )}
-        {!eduModalOpen && educations.length === 0 && (
-          <button type="button" className="resume-blank" onClick={() => { setEditEdu(null); setEduModalOpen(true); }}>
-            <span className="resume-blank-fields">학교명 <i>*</i> │ 전공 │ 졸업 상태 <i>*</i></span>
-          </button>
+              <div className="if-line">
+                <InlineYM value={e.startDate} onSave={(v) => updateEducation(e.id, { ...e, startDate: v })} />
+                <span className="if-sep">–</span>
+                <InlineYM value={e.endDate} onSave={(v) => updateEducation(e.id, { ...e, endDate: v })} />
+                <span className="if-bar">│</span>
+                <InlinePick value={e.status} placeholder="졸업 상태" required options={졸업상태}
+                  onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
+                <span className="if-bar">│</span>
+                <InlineText value={e.major} placeholder="전공"
+                  onSave={(v) => updateEducation(e.id, { ...e, major: v })} />
+              </div>
+            </div>
+            <button className="if-row-del" aria-label="삭제"
+              onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(e.id); }}>
+              <Trash2 size={15} />
+            </button>
+          </div>
+        ))}
+        {educations.length === 0 && (
+          <button type="button" className="if-empty" onClick={() => addEducation({
+            id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "",
+          })}>학교명 · 재학 기간 · 졸업 상태를 적어 주세요</button>
         )}
       </section>
 
@@ -568,44 +561,36 @@ export default function ResumeEditor({
       <section id="section-experience" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">활동/수상</h2>
-          <button className="resume-icon-btn" aria-label="활동 추가" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
+          <button className="resume-icon-btn" aria-label="활동 추가" onClick={() => addExperience({ id: genId(), category: "", title: "", description: "" })}>
             <Plus size={18} />
           </button>
         </div>
-        {experiences.length > 0 ? (
-          <div className="resume-list">
-            {experiences.map((x) => {
-              const key = `exp-${x.id}`;
-              const open = !collapsed.has(key);
-              return (
-                <div key={x.id} className="resume-list-item">
-                  <p className="resume-item-text" onClick={() => { setEditExp(x); setExpModalOpen(true); }} style={{ fontWeight: 400, marginBottom: open ? "4px" : 0, display: "flex", alignItems: "center", cursor: "pointer" }}>
-                    <ChevronDown size={16} onClick={(e) => { e.stopPropagation(); toggleExpand(key); }} style={{ cursor: "pointer", flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
-                    {x.category && <span style={{ color: "#582681", marginRight: "8px" }}>[{x.category}]</span>}
-                    {x.title}
-                    <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                      <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
-                        <Trash2 size={15} />
-                      </button>
-                    </span>
-                  </p>
-                  {open && x.description && (
-                    <p className="resume-item-text" style={{ color: "#666", paddingLeft: "22px" }}>{x.description}</p>
-                  )}
-                </div>
-              );
-            })}
+        {experiences.map((x) => (
+          <div key={x.id} className="if-row">
+            <span className="if-row-icon"><Trophy size={17} /></span>
+            <div className="if-row-body">
+              <div className="if-line if-line-head">
+                <InlineText value={x.title} placeholder="활동·수상명" required wide
+                  onSave={(v) => updateExperience(x.id, { ...x, title: v })} />
+              </div>
+              <div className="if-line">
+                <InlinePick value={x.category} placeholder="종류" options={활동종류}
+                  onSave={(v) => updateExperience(x.id, { ...x, category: v })} />
+                <span className="if-bar">│</span>
+                <InlineText value={x.description} placeholder="어떤 활동이었는지 적어 보세요" wide
+                  onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
+              </div>
+            </div>
+            <button className="if-row-del" aria-label="삭제"
+              onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
+              <Trash2 size={15} />
+            </button>
           </div>
-        ) : (
-          null
-        )}
-        {expModalOpen && (
-          <ExperienceModal inline isOpen={expModalOpen} onClose={() => { setExpModalOpen(false); setEditExp(null); }} editTarget={editExp} />
-        )}
-        {!expModalOpen && experiences.length === 0 && (
-          <button type="button" className="resume-blank" onClick={() => { setEditExp(null); setExpModalOpen(true); }}>
-            <span className="resume-blank-fields">활동·수상명 <i>*</i> │ 시기</span>
-          </button>
+        ))}
+        {experiences.length === 0 && (
+          <button type="button" className="if-empty" onClick={() => addExperience({
+            id: genId(), category: "", title: "", description: "",
+          })}>콘테스트 수상이나 교육 이수를 적어 주세요</button>
         )}
       </section>
 
