@@ -451,37 +451,35 @@ export default function CompanySettingsPage() {
   // SNS·홈페이지 목록 — 매장과 본사가 같은 것을 쓴다(개인회원 프로필과 같은 부품).
   //   라벨 옆에 바로 칸이 붙어 한 줄로 읽힌다. 빈 줄 하나는 늘 세워 둔다 —
   //   "넣어 보세요" 같은 안내 단추 없이도 무엇을 적는 자리인지 자리글이 말해 준다.
+  // SNS·홈페이지 — 개인회원 프로필과 같은 부품. 2열 한 칸에 들어가는 크기다.
+  //   ＋ 는 두지 않는다. 맨 아래에 늘 빈 줄이 하나 서 있어, 채우면 그 아래로
+  //   빈 줄이 또 따라 붙는다(누를 것 없이 계속 넣을 수 있다).
   const 링크목록 = (
-    <div className="admin-form-row" style={{ gridColumn: "1 / -1" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-        {/* .if-row 의 위 여백(12px)에 맞춰 라벨을 내려 첫 줄과 가운데를 맞춘다. */}
-        <label className="admin-form-label" style={{ margin: 0, flexShrink: 0, paddingTop: 21, lineHeight: "24px" }}>{L.site}</label>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {(links.length ? links : [{ id: "__빈", category: "", url: "" }]).map((l) => (
-            <div key={l.id} className="if-row if-row-plain">
-              <div className="if-row-body">
-                <div className="if-line">
-                  <InlineSuggest value={l.category} placeholder="SNS명"
-                    찾기={SNS찾기}
-                    onPick={(k) => 링크고치기(l.id, { category: k.이름, url: l.url || k.앞부분 })}
-                    onSave={(v) => 링크고치기(l.id, { category: v })} />
-                  <span className="if-sep">|</span>
-                  <InlineText value={l.url} placeholder="https://" required
-                    onSave={(v) => 링크고치기(l.id, { url: v })} />
-                </div>
+    <div className="admin-form-row">
+      <label className="admin-form-label">{isStore ? "SNS" : "웹사이트"}</label>
+      <div style={{ minWidth: 0 }}>
+        {[...links, { id: "__빈", category: "", url: "" }].map((l) => (
+          <div key={l.id} className="if-row if-row-plain">
+            <div className="if-row-body">
+              {/* 이 폼은 값을 오른쪽에 붙인다(직원수·업종과 같은 줄에 서므로). */}
+              <div className="if-line" style={{ justifyContent: "flex-end" }}>
+                <InlineSuggest value={l.category} placeholder="SNS명"
+                  찾기={SNS찾기}
+                  onPick={(k) => 링크고치기(l.id, { category: k.이름, url: l.url || k.앞부분 })}
+                  onSave={(v) => 링크고치기(l.id, { category: v })} />
+                <span className="if-sep">|</span>
+                <InlineText value={l.url} placeholder="https://" required
+                  onSave={(v) => 링크고치기(l.id, { url: v })} />
               </div>
+            </div>
+            {l.id !== "__빈" && (
               <button className="if-row-del" aria-label="삭제"
                 onClick={() => setLinks((ls) => ls.filter((x) => x.id !== l.id))}>
                 <Trash2 size={15} />
               </button>
-            </div>
-          ))}
-        </div>
-        <button type="button" aria-label={`${L.site} 추가`} title="하나 더 넣어요"
-          onClick={() => setLinks((ls) => [...(ls.length ? ls : [{ id: 새id(), category: "", url: "" }]), { id: 새id(), category: "", url: "" }])}
-          style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", border: "none", background: "none", color: "#582681", padding: "12px 0 0", cursor: "pointer" }}>
-          <Plus size={18} />
-        </button>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -708,6 +706,7 @@ export default function CompanySettingsPage() {
               {isStore ? (
                 <>
                 <div className="admin-form-row-2col">
+                  {링크목록}
                   <div className="admin-form-row">
                     <label className="admin-form-label">{L.size}</label>
                     <select className="admin-form-select" data-empty={!form.company_size}
@@ -719,7 +718,6 @@ export default function CompanySettingsPage() {
                     </select>
                   </div>
                 </div>
-                {링크목록}
                 </>
               ) : (
                 <>
