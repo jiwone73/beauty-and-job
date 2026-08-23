@@ -461,8 +461,7 @@ export default function CompanySettingsPage() {
         {[...links, { id: "__빈", category: "", url: "" }].map((l) => (
           <div key={l.id} className="if-row if-row-plain">
             <div className="if-row-body">
-              {/* 이 폼은 값을 오른쪽에 붙인다(직원수·업종과 같은 줄에 서므로). */}
-              <div className="if-line" style={{ justifyContent: "flex-end" }}>
+              <div className="if-line">
                 <InlineSuggest value={l.category} placeholder="SNS명"
                   찾기={SNS찾기}
                   onPick={(k) => 링크고치기(l.id, { category: k.이름, url: l.url || k.앞부분 })}

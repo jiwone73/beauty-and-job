@@ -5660,26 +5660,26 @@ div:has(> table.admin-table),
 /* 공고등록의 기업정보 블록과 같은 규칙: 항목명은 연한 회색, 빈 칸만 56px 연보라 블록,
    값이 들어오면 배경 없이 글자만 보인다. */
 .settings-compact .admin-form-label { color: #999; font-weight: 400; }
+/* 빈 칸은 56px 회색 블록으로 덮고 placeholder 를 투명하게 두고 있었다. 무엇을 적는
+   자리인지 알 길이 없어, 공고 등록 폼처럼 자리글을 그대로 보여준다. */
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:placeholder-shown,
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select[data-empty="true"] {
-  background: #f7f7f8 !important;
-  border-radius: 5px;
-  width: 56px;
-  margin-left: auto;
-  color: transparent;            /* 빈 칸엔 placeholder 대신 블록만 */
+  background: transparent !important;
+  width: auto;
+  color: #cfcfcf;
 }
-.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:placeholder-shown::placeholder { color: transparent; }
+.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input::placeholder { color: #cfcfcf; }
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:focus {
   background: transparent !important; width: 100%; color: #333;
 }
-.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:focus::placeholder { color: #ccc; }
 /* 기업 소개(textarea)는 여러 줄이라 블록 대신 옅은 배경만 */
 .settings-compact .admin-form-textarea { background: #f7f7f8; border: none; border-radius: 8px; }
 .settings-compact .admin-form-row:has(> .admin-form-label) > *:not(.admin-form-label) {
   grid-column: 2; min-width: 0;
-  /* 값은 오른쪽에 맞춘다 — 입력칸(text-align:right)과 계정 탭의 글자 값이 같은 선에 선다. */
-  justify-self: end;
-  text-align: right;
+  /* 값은 라벨 바로 옆에 붙인다. 오른쪽 끝으로 밀어 두니 라벨과 값 사이가 비어
+     어느 라벨의 값인지 눈이 한 번 더 건너뛰어야 했다(공고 등록 폼과 같은 규칙). */
+  justify-self: start;
+  text-align: left;
 }
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input,
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select {
@@ -5688,11 +5688,11 @@ div:has(> table.admin-table),
   padding: 0 !important;
   height: 24px !important;
   line-height: 24px !important;
-  text-align: right;
-  text-align-last: right;
+  text-align: left;
+  text-align-last: left;
   font-size: 14px;
 }
-/* select 우측 정렬(네이티브 화살표 제거하고 값만 우측에) */
+/* 네이티브 화살표는 걷고 값만 남긴다 */
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select {
   -webkit-appearance: none;
   -moz-appearance: none;
