@@ -355,12 +355,12 @@ export default function ResumeEditor({
               <Plus size={18} />
             </button>
           </div>
-          {skills.length > 0 ? (
+          {/* 폼을 열면 그 안에도 담은 스킬이 (지우기와 함께) 서 있다. 둘 다
+              두면 같은 것이 한 화면에 두 번 나온다. */}
+          {skills.length > 0 && !skillModalOpen && (
             <div className="resume-skill-chips">
               {skills.map((sk) => <span key={sk} className="resume-skill-chip">{sk}</span>)}
             </div>
-          ) : (
-            null
           )}
           {skillModalOpen && (
             <SkillModal inline isOpen={skillModalOpen} onClose={() => setSkillModalOpen(false)} />

@@ -299,7 +299,7 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
             onChange={(e) => 검색바꾸기(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
           />
-          <button className="cv-skill-add-btn" onClick={() => handleAdd()}>추가하기</button>
+          <button className="cv-skill-add-btn" onClick={() => handleAdd()}>직접입력</button>
         </div>
 
         {query && (
@@ -319,7 +319,7 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
                 )}
               </div>
             ) : (
-              <p className="cv-recommend-desc">일치하는 추천 스킬이 없어요. ‘추가하기’로 직접 등록할 수 있어요.</p>
+              <p className="cv-recommend-desc">일치하는 스킬이 없어요. ‘직접입력’으로 넣을 수 있어요.</p>
             )}
           </div>
         )}
