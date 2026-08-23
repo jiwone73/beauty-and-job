@@ -2138,6 +2138,8 @@ export default function JobPostForm({
   const mx = "0";
   // 기업이 쓰는 화면인지. 관리자 화면은 지금 짜임을 그대로 둔다.
   const 기업폼 = mode !== "admin";
+  // 기업 폼은 사이드 오른쪽 칸을 꽉 채운다. 760 으로 묶어 두면 오른쪽에 빈 띠가 남는다.
+  const 콘텐츠폭: number | "none" = 기업폼 ? "none" : 760;
   // 왼쪽 사이드에 세울 칸 목록. 아래로 내려가지 않아도 무엇이 남았는지 보인다.
   const 할칸 = [
     { id: "banner", label: "배너", done: bannerImages.length > 0 },
@@ -2153,7 +2155,7 @@ export default function JobPostForm({
   return (
     <>
       {/* 헤더 폭·정렬을 본문(760px)과 일치 → 상단 버튼 오른쪽 끝이 본문 오른쪽 끝과 맞음 */}
-      <div className="admin-form-header" style={{ maxWidth: 760, marginLeft: mx, marginRight: mx }}>
+      <div className="admin-form-header" style={{ maxWidth: 콘텐츠폭, marginLeft: mx, marginRight: mx }}>
         {mode !== "admin" && (
           <button className="admin-back-btn" onClick={() => router.push(listHref)}>
             <ChevronLeft size={18} /> 목록으로
@@ -2236,7 +2238,7 @@ export default function JobPostForm({
 
       {/* 페이지 제목 — 아래 콘텐츠(760px, mx 정렬)와 시작점을 맞춘다 */}
       {!isMobile && (
-        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 10px`, boxSizing: "border-box" }}>
+        <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 10px`, boxSizing: "border-box" }}>
           <h2 style={{ fontSize: 18, fontWeight: 400, color: "#1a1a1a", margin: "0 0 0 2px" }}>
             {editId ? "채용공고 수정" : "채용공고 등록"}
           </h2>
@@ -2246,7 +2248,7 @@ export default function JobPostForm({
 
       {/* 채용유형(매장/본사) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
       {showTypeToggle && (
-        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 12px`, boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
+        <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 12px`, boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#582681", fontSize: 16, fontWeight: 400 }}>
             <Settings size={16} /> 채용유형
           </span>
@@ -2270,7 +2272,7 @@ export default function JobPostForm({
 
       {/* 새로고침 뒤 남아 있던 내용을 되살렸다는 표시. 원치 않으면 여기서 비운다. */}
       {restored && (
-        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 12px`, boxSizing: "border-box",
+        <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 12px`, boxSizing: "border-box",
           display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
           padding: "10px 14px", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 10 }}>
           <span style={{ fontSize: 13.5, color: "#4a4453" }}>
@@ -2285,7 +2287,7 @@ export default function JobPostForm({
       )}
 
       {mode === "admin" && (
-        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
+        <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
           <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 16px", marginBottom: 8, marginLeft: 2 }}>
             <span style={{ fontWeight: 400, fontSize: 16, color: "#582681" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</span>
             <div style={{ display: "flex", gap: 20 }}>
@@ -2451,7 +2453,7 @@ export default function JobPostForm({
 
       {/* 이 공고 이슈 메모 — 불러온 원문(picked.url)에 매칭. 필드 선택 + 한 줄 메모, 자동저장 */}
       {mode === "admin" && picked?.url && (
-        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box", border: "1px solid #f0d9d9", background: "#fff8f6", borderRadius: 10, padding: "10px 12px" }}>
+        <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box", border: "1px solid #f0d9d9", background: "#fff8f6", borderRadius: 10, padding: "10px 12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: issueItems.length ? 8 : 0 }}>
             <span style={{ fontSize: 14, fontWeight: 500, color: "#c0392b" }}>🐞 이 공고 이슈</span>
             <span style={{ fontSize: 12, color: "#b08a86" }}>불러온 원문과 다른·잘못된 항목을 적어두면 자동저장돼요</span>
@@ -2500,7 +2502,7 @@ export default function JobPostForm({
         <div className={기업폼 ? "jp-body" : undefined}>
       {/* 공고 상단 이미지 */}
       {mode === "company" && isMobile ? (
-        <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
+        <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
           {/* 제목 옆에 ＋(이미지 추가) — 카드 안 공간을 쓰지 않는다 */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
             <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고 배너 이미지</h2>
@@ -2540,7 +2542,7 @@ export default function JobPostForm({
         </div>
       ) : (() => {
         return (
-          <div style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
+          <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
             {/* 제목 옆에 ＋(이미지 추가)·샘플 배너 — 드래그 박스 안을 버튼으로 채우지 않는다. */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 4px" }}>
               {/* 제목은 왼쪽, 단추는 오른쪽 끝으로 밀어 붙인다. */}
@@ -2623,7 +2625,7 @@ export default function JobPostForm({
         );
       })()}
 
-      <div className="admin-form-grid jobpost-form" style={{ width: "100%", maxWidth: 760, margin: mx, gridTemplateColumns: "1fr", justifyContent: "stretch", justifyItems: "stretch", rowGap: "16px" }}>
+      <div className="admin-form-grid jobpost-form" style={{ width: "100%", maxWidth: 콘텐츠폭, margin: mx, gridTemplateColumns: "1fr", justifyContent: "stretch", justifyItems: "stretch", rowGap: "16px" }}>
         {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "8px" }}>
 
@@ -2908,6 +2910,10 @@ export default function JobPostForm({
               <div style={{ paddingTop: 14, borderTop: "1px solid #f7f7f8", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}>
                   <MapPin size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역 <span style={{ color: "#e74c3c" }}>*</span>
+                  {/* 근무지가 여럿일 때 칸을 더한다. 모집분야와 같은 자리·같은 모양. */}
+                  <button type="button" onClick={() => setExtraLocations((prev) => [...prev, { address: "", detail: "" }])}
+                    className="jp-add-cat" title="근무지역을 하나 더 넣어요"
+                    style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: "#582681", lineHeight: 1, padding: 0, cursor: "pointer" }}>＋</button>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 12 }}>
                   <input readOnly value={nmAddress} onClick={() => openAddressSearch()}
@@ -2961,10 +2967,6 @@ export default function JobPostForm({
                   );
                 })}
 
-                <button type="button" onClick={() => setExtraLocations((prev) => [...prev, { address: "", detail: "" }])}
-                  style={{ marginTop: 10, padding: "7px 12px", borderRadius: 8, border: "1px dashed #e3e3e6", background: "#fff", color: "#582681", fontSize: 13.5, cursor: "pointer" }}>
-                  ＋ 근무지역 추가
-                </button>
               </div>
 
               {/* 지원 안내 (채용 담당자 · 접수방법 · 채용 절차) */}
@@ -3001,13 +3003,14 @@ export default function JobPostForm({
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
                     {/* 지원방법 (좌) — 연보라 블록을 눌러 팝오버에서 복수 선택 */}
                     <div ref={contactMethodsRef} style={{ position: "relative", minWidth: 0 }}>
-                     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0" }}>
-                      <span style={lblS}>지원방법</span>
+                     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0" }}>
+                      <span style={{ ...lblS, paddingTop: 0 }}>지원방법</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <button type="button"
                           onClick={(e) => { if (contactMethodsOpen) { setContactMethodsOpen(false); return; } openPopAt(e.currentTarget, 232, 150); setContactMethodsOpen(true); }}
-                          style={{ ...fld(contactMethods.length > 0), textAlign: "left", cursor: "pointer", lineHeight: 1.5 }}>
-                          {contactMethods.join(", ")}
+                          style={{ ...fld(contactMethods.length > 0), textAlign: "left", cursor: "pointer", lineHeight: 1.5,
+                            ...(contactMethods.length ? null : { width: "auto", height: "auto", minHeight: 24, background: "none", color: "#cfcfcf", padding: "0 2px" }) }}>
+                          {contactMethods.length ? contactMethods.join(", ") : "지원방법 선택하기"}
                         </button>
                         {contactMethodsOpen && popAt && (
                           <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -3195,7 +3198,7 @@ export default function JobPostForm({
 
       {/* ═══ 기업 정보 (맨 하단) · 상세 다른 섹션과 동일한 인라인 스타일 ═══ */}
       {mode === "admin" && nonMember && (
-        <div className="jobpost-form" style={{ width: "100%", maxWidth: 760, margin: `16px ${mx} 0`, boxSizing: "border-box" }}>
+        <div className="jobpost-form" style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `16px ${mx} 0`, boxSizing: "border-box" }}>
           <h2 className="jobpost-section-title">{L.section}</h2>
           <div style={{ fontSize: 12, color: "#999", margin: "8px 0 8px 2px" }}>기업회원 페이지의 “{L.section}”를 불러와 자동 작성돼요 · 공고 상세 맨 아래에 표시됩니다</div>
           <div className="company-card" style={{ overflow: "visible" }}>
@@ -3247,7 +3250,7 @@ export default function JobPostForm({
 
       {isMobile && mode === "admin" && (
         <button type="button" onClick={runCurate} disabled={parsing || curating}
-          style={{ width: "100%", maxWidth: 760, margin: `0 ${mx} 12px`, display: "block", padding: "10px", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 14, fontWeight: 700, boxSizing: "border-box", opacity: curating ? 0.6 : 1 }}>
+          style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 12px`, display: "block", padding: "10px", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 14, fontWeight: 700, boxSizing: "border-box", opacity: curating ? 0.6 : 1 }}>
           {curating ? "다듬는 중..." : "✨ 큐레이션"}
         </button>
       )}

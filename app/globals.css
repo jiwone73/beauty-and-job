@@ -13291,7 +13291,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 @media (min-width: 1180px) {
   .jp-shell {
     display: grid; grid-template-columns: 150px minmax(0, 1fr);
-    gap: 26px; max-width: 940px; margin: 0; align-items: start;   /* 왼쪽 정렬 — 가운데 두면 사이드바 오른쪽에 빈 띠가 넓게 남는다 */
+    gap: 26px; margin: 0; align-items: start;   /* 왼쪽 정렬 · 폭 제한 없음 — 오른쪽에 빈 띠를 남기지 않는다 */
   }
   .jp-side {
     display: flex; flex-direction: column; position: sticky; top: 84px;
