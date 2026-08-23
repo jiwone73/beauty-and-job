@@ -2569,9 +2569,6 @@ export default function JobPostForm({
               <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
                 onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
             </label>
-            <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요" style={bannerBtn(bannerGenOpen)}>
-              {!isMobile && <Wand2 size={15} />}{isMobile ? "샘플" : "샘플 배너"}
-            </button>
           </div>
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
             {/* 썸네일마다 ×로 이 공고에서만 제거 */}
@@ -2610,9 +2607,14 @@ export default function JobPostForm({
                 <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
                   onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
               </label>
+              {/* 샘플 배너는 관리자 대행 등록에만 둔다. 기업회원은 매장/기업정보에서
+                  한 번 만들어 두고 공고에서는 '불러오기'로 가져다 쓴다 — 같은 일을 하는
+                  자리가 둘이면 어디서 만든 것인지 헷갈린다. */}
+              {mode === "admin" && (
               <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요" style={bannerBtn(bannerGenOpen)}>
                 {!isMobile && <Wand2 size={16} />}{isMobile ? "샘플" : "샘플 배너"}
               </button>
+              )}
               {mode === "company" && coverImages.length > 0 && bannerImages.length === 0 && (
                 <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
                   style={{ ...bannerBtn(false), color: "#666" }}>{L.section} 사진 불러오기</button>
@@ -2663,7 +2665,7 @@ export default function JobPostForm({
                 </div>
                 {bannerHint}
                 {/* 샘플 배너 생성 패널 */}
-                {bannerGenOpen && (
+                {bannerGenOpen && mode === "admin" && (
                   <div style={{ marginTop: 10, padding: 12, border: "1px solid #efeff1", borderRadius: 10, background: "#f7f7f8" }}>
                     <div style={{ fontSize: 13, color: "#582681", fontWeight: 600, marginBottom: 8 }}>샘플 배너 만들기 <span style={{ fontWeight: 400, color: "#999" }}>· 가운데 제목만 넣어요(줄바꿈 가능)</span></div>
                     <textarea value={bannerGenTitle} onChange={(e) => setBannerGenTitle(e.target.value)} rows={2}

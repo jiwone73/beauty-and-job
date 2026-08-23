@@ -35,6 +35,7 @@ export default function CompanySettingsPage() {
   const [coverImages, setCoverImages] = useState<{ url: string; name?: string }[]>([]);
   const [coverUploading, setCoverUploading] = useState(false);
   const [coverStart, setCoverStart] = useState(0);
+  const [samplePreset, setSamplePreset] = useState(0);   // 샘플 배너 배경 — 공고 등록 화면과 같은 목록
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -185,7 +186,7 @@ export default function CompanySettingsPage() {
     setSampleBusy(true);
     try {
       const canvas = document.createElement("canvas");
-      await drawSampleBanner(canvas, BANNER_PRESETS[0], text);
+      await drawSampleBanner(canvas, BANNER_PRESETS[samplePreset] || BANNER_PRESETS[0], text);
       const blob: Blob | null = await new Promise((res) => canvas.toBlob((b) => res(b), "image/png", 0.92));
       if (!blob) { alert("배너 생성에 실패했어요."); return; }
       const fd = new FormData();
@@ -581,6 +582,20 @@ export default function CompanySettingsPage() {
                     <textarea value={sampleText} onChange={(e) => setSampleText(e.target.value)} rows={2}
                       placeholder={`${form.company_name || "리안헤어 광명점"}\n함께 일할 디자이너를 찾습니다 (자유 입력)`}
                       style={{width:"100%", boxSizing:"border-box", border:"1px solid #efeff1", borderRadius:8, padding:"8px 10px", fontSize:14, resize:"vertical", outline:"none"}} />
+                    {/* 배경 고르기 — 여태 첫 배경 하나로 고정돼 있어 샘플 배너를 쓴 매장이 다 같아 보였다.
+                        공고 등록 화면과 같은 목록을 여기에도 둔다. */}
+                    <div style={{display:"flex", flexWrap:"wrap", gap:8, margin:"10px 0"}}>
+                      {BANNER_PRESETS.map((pr, i) => (
+                        <button key={pr.key} type="button" onClick={() => setSamplePreset(i)}
+                          title={pr.label}
+                          style={{width:168, height:62, borderRadius:8, cursor:"pointer", overflow:"hidden",
+                            border: samplePreset === i ? "2px solid #582681" : "1.5px solid #efeff1",
+                            backgroundImage:`url(${pr.img})`, backgroundSize:"cover", backgroundPosition:"center",
+                            color: pr.text, fontSize:11, fontWeight:700}}>
+                          {pr.label}
+                        </button>
+                      ))}
+                    </div>
                     <div style={{display:"flex", gap:8, marginTop:10}}>
                       <button type="button" onClick={addSampleBanner} disabled={sampleBusy || !sampleText.trim()}
                         className="company-primary-btn" style={{padding:"8px 16px", fontSize:13, opacity:(sampleBusy || !sampleText.trim()) ? 0.6 : 1}}>
