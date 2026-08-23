@@ -363,9 +363,10 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
           </div>
         )}
 
+        {/* 스킬은 누르는 즉시 담긴다. 담고 나면 남는 일은 닫는 것뿐이라
+            '완료'와 '닫기'를 나란히 두면 같은 일을 하는 단추가 둘이 된다. */}
         <div className={inline ? "cv-actions" : undefined}>
-          {inline && <button type="button" className="cv-inline-cancel" onClick={onClose}>닫기</button>}
-          <button className="cv-btn-primary" onClick={onClose}>완료</button>
+          <button className="cv-btn-primary" onClick={onClose}>닫기</button>
         </div>
       </div>
   );

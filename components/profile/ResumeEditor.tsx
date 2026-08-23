@@ -94,11 +94,12 @@ export default function ResumeEditor({
   };
   // 모달이 문제를 물어보고 화면에 알리게 한다 — 편집기가 오류 문구까지 들고 있으면
   // 두 곳에서 같은 상태를 나눠 갖게 된다.
-  const 링크담기 = (t: string): string | null => {
+  const 링크담기 = (t: string, 이름?: string): string | null => {
     if (!looksLikeUrl(t)) return "주소가 맞는지 확인해 주세요. 예: instagram.com/내아이디";
     const 같은주소 = (u: string) => normalizeUrl(u).replace(/\/+$/, "").toLowerCase();
     if (links.some((l) => 같은주소(l.url) === 같은주소(t))) return "이미 넣은 주소예요.";
-    addLink({ id: genId(), category: linkLabel(t), url: t });
+    // 이름을 안 적으면 주소에서 알아낸 것을 쓴다(instagram.com → 인스타그램).
+    addLink({ id: genId(), category: (이름 || "").trim() || linkLabel(t), url: t });
     return null;
   };
   const 링크지우기 = (id: string) => {
@@ -507,12 +508,12 @@ export default function ResumeEditor({
               )}
               <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
                 {portfolioImages.length === 0 ? (
-                  <button className="resume-icon-btn" aria-label="사진 추가" onClick={() => set모달("photo")}>
+                  <button className="resume-icon-btn" aria-label="사진 추가" onClick={() => set모달((v) => (v === "photo" ? null : "photo"))}>
                     <Plus size={18} />
                   </button>
                 ) : (
                   <>
-                    <button className="resume-icon-btn" aria-label="사진 편집" onClick={() => set모달("photo")}>
+                    <button className="resume-icon-btn" aria-label="사진 편집" onClick={() => set모달((v) => (v === "photo" ? null : "photo"))}>
                       <Pencil size={15} />
                     </button>
                     <button className="resume-icon-btn danger" aria-label="사진 전체 삭제" onClick={사진전부지우기}>
@@ -537,6 +538,13 @@ export default function ResumeEditor({
               </>
             )}
 
+        {/* 폼은 누른 줄 바로 밑에 선다. 아래에 몰아 두면 사진을 눌렀는데
+            SNS 두 줄을 건너뛴 자리에서 열려 무엇이 열렸는지 헷갈린다. */}
+        {모달 === "photo" && (
+          <PortfolioModal inline isOpen mode="photo" resumeType={resumeType}
+            onClose={() => set모달(null)} images={portfolioImages} links={links} isUploading={isUploading}
+            onFiles={onPortfolioFiles} onDeletePhotos={onPortfolioDelete} onAddLink={링크담기} onDeleteLink={링크지우기} />
+        )}
             {/* ── SNS 줄 ── */}
             <div className="resume-career-head" style={{ display: "flex", alignItems: "center", marginTop: 14 }}>
               <strong style={{ fontWeight: 400 }}>SNS</strong>
@@ -545,12 +553,12 @@ export default function ResumeEditor({
               )}
               <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
                 {links.length === 0 ? (
-                  <button className="resume-icon-btn" aria-label="SNS 추가" onClick={() => set모달("sns")}>
+                  <button className="resume-icon-btn" aria-label="SNS 추가" onClick={() => set모달((v) => (v === "sns" ? null : "sns"))}>
                     <Plus size={18} />
                   </button>
                 ) : (
                   <>
-                    <button className="resume-icon-btn" aria-label="SNS 편집" onClick={() => set모달("sns")}>
+                    <button className="resume-icon-btn" aria-label="SNS 편집" onClick={() => set모달((v) => (v === "sns" ? null : "sns"))}>
                       <Pencil size={15} />
                     </button>
                     <button className="resume-icon-btn danger" aria-label="SNS 전체 삭제" onClick={링크전부지우기}>
@@ -568,8 +576,8 @@ export default function ResumeEditor({
             ))}
           </>
         )}
-        {모달 !== null && (
-          <PortfolioModal inline isOpen mode={모달} resumeType={resumeType}
+        {모달 === "sns" && (
+          <PortfolioModal inline isOpen mode="sns" resumeType={resumeType}
             onClose={() => set모달(null)} images={portfolioImages} links={links} isUploading={isUploading}
             onFiles={onPortfolioFiles} onDeletePhotos={onPortfolioDelete} onAddLink={링크담기} onDeleteLink={링크지우기} />
         )}

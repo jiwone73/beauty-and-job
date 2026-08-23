@@ -66,13 +66,15 @@ export default function PortfolioModal({
   isUploading: boolean;
   onFiles: (files: File[]) => void;
   onDeletePhotos: (urls: string[]) => Promise<void>;
-  onAddLink: (url: string) => string | null;   // 문제가 있으면 알릴 말을 돌려준다
+  onAddLink: (url: string, 이름?: string) => string | null;   // 문제가 있으면 알릴 말을 돌려준다
   /** 넣을 수만 있고 뺄 수는 없으면, 주소를 잘못 넣은 사람은 손쓸 방법이 없다. */
   onDeleteLink: (id: string) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const 주소칸 = useRef<HTMLInputElement>(null);
   const [주소, set주소] = useState("");
+  // 이름은 안 적어도 된다 — 비우면 주소에서 알아낸 것을 쓴다.
+  const [링크명, set링크명] = useState("");
   const [오류, set오류] = useState("");
   const [끌림, set끌림] = useState(false);
   // 사진 고르기는 편집 자리(여기)에만 둔다. 이력서 화면에는 결과만 보이고,
@@ -94,9 +96,9 @@ export default function PortfolioModal({
   const 담기 = () => {
     const t = 주소.trim();
     if (!t) return;
-    const 문제 = onAddLink(t);
+    const 문제 = onAddLink(t, 링크명);
     if (문제) { set오류(문제); return; }
-    set주소(""); set오류("");
+    set주소(""); set링크명(""); set오류("");
   };
 
   const 사진남은자리 = MAX_PHOTOS - images.length;
@@ -116,7 +118,6 @@ export default function PortfolioModal({
       <div className={inline ? "cv-body cv-body-inline" : "cv-body"}>
         {/* .cv-desc 의 24px 은 칸이 하나뿐인 모달을 위한 값이다. 여기는 바로
             아래에 같은 성격의 안내가 또 오므로 두 줄을 한 덩어리로 붙인다. */}
-        <p className="cv-desc" style={{ ...흐린글, marginBottom: 10 }}>작업물을 올리면 합격률이 올라갑니다.</p>
 
         {mode !== "sns" && (<>
         {mode === "all" && <label className="cv-field-label">사진</label>}
@@ -151,11 +152,18 @@ export default function PortfolioModal({
                     <img src={img.url} alt="" loading="lazy"
                       onClick={() => 고름 && 고르기(img.url)}
                       style={{ cursor: 고름 ? "pointer" : "default", opacity: 고름 && !골랐나 ? 0.55 : 1 }} />
-                    {고름 && (
+                    {고름 ? (
                       <button type="button" className={`pf-check${골랐나 ? " on" : ""}`}
                         aria-label={골랐나 ? "선택 해제" : "선택"} aria-pressed={골랐나}
                         onClick={(e) => { e.stopPropagation(); 고르기(img.url); }}>
                         {골랐나 && <Check size={14} strokeWidth={3} />}
+                      </button>
+                    ) : (
+                      /* 한 장을 뺄 때 '선택 → 고르기 → 삭제' 세 걸음은 길다.
+                         손을 올리면 그 사진에서 바로 뺀다. 여러 장은 선택으로. */
+                      <button type="button" className="pf-del-one" aria-label="이 사진 삭제"
+                        onClick={(e) => { e.stopPropagation(); onDeletePhotos([img.url]); }}>
+                        <X size={13} strokeWidth={2.6} />
                       </button>
                     )}
                   </div>
@@ -201,9 +209,6 @@ export default function PortfolioModal({
 
         {mode !== "photo" && (<>
         {mode === "all" && <label className="cv-field-label" style={{ marginTop: 22 }}>SNS</label>}
-        <p style={{ ...흐린글, margin: "0 0 10px" }}>
-          인스타그램, 유튜브, 블로그 등 작업물을 올리는 곳을 적어주세요.
-        </p>
         {links.map((l) => (
           <div key={l.id} className="resume-link-item">
             <span className="resume-link-category" style={흐린글}>{linkLabel(l.url)}</span>
@@ -221,18 +226,31 @@ export default function PortfolioModal({
           </div>
         ))}
         {links.length < MAX_LINKS && (<>
-          <div style={{ display: "flex", gap: 6, marginTop: links.length ? 10 : 0 }}>
+          {/* 링크명을 먼저 받는다 — 목록에 뜨는 이름이라 '내 작업 인스타'처럼
+              직접 붙이는 편이 알아보기 쉽다. 비우면 주소에서 알아낸다. */}
+          <div className="pf-link-form" style={{ marginTop: links.length ? 10 : 0 }}>
+            <input
+              className="cv-input"
+              style={{ marginTop: 0, fontSize: 13 }}
+              placeholder="링크명을 입력해 보세요."
+              value={링크명}
+              onChange={(e) => set링크명(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); 주소칸.current?.focus(); } }}
+              maxLength={20}
+            />
+          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
             <input
               ref={주소칸}
               className="cv-input"
               style={{ flex: 1, minWidth: 0, marginTop: 0, fontSize: 13 }}
-              placeholder="주소를 붙여넣거나 아래에서 고르세요"
+              placeholder="https://(필수)"
               value={주소}
               onChange={(e) => { set주소(e.target.value); if (오류) set오류(""); }}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); 담기(); } }}
               inputMode="url"
             />
             <button type="button" className="profile-select-btn accent" style={{ flexShrink: 0 }} onClick={담기}>추가</button>
+          </div>
           </div>
           {/* 아직 주소 꼴이 아닐 때만 낸다 — 다 적고 나면 방해만 된다. */}
           {골라줄것.length > 0 && (
@@ -250,7 +268,11 @@ export default function PortfolioModal({
         {오류 && <p style={{ ...글, color: "#c0392b", margin: "6px 0 0" }}>{오류}</p>}
         </>)}
 
-        <button className="cv-btn-primary" style={{ marginTop: 24 }} onClick={onClose}>완료</button>
+        {/* 칸 안에서 펼칠 때는 바닥 단추를 두지 않는다. 사진과 링크는 담는
+            즉시 반영되고, 닫는 일은 열 때 누른 그 + 가 도로 맡는다. */}
+        {!inline && (
+          <button className="cv-btn-primary" style={{ marginTop: 24 }} onClick={onClose}>완료</button>
+        )}
       </div>
   );
 

@@ -13229,3 +13229,26 @@ button,
   width: 100%; height: 48px; border: none; border-radius: 10px;
   background: var(--color-primary); color: #fff; font-family: inherit; font-size: 15px; cursor: pointer; }
 .resume-gate button:hover { background: var(--color-primary-hover); }
+/* 포트폴리오 사진 한 장 빼기 — 손을 올렸을 때만 나온다 */
+.pf-del-one {
+  position: absolute; top: 5px; right: 5px; width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 50%; cursor: pointer;
+  background: rgba(0,0,0,.55); color: #fff;
+  opacity: 0; transition: opacity .12s, background .12s;
+}
+.portfolio-cell:hover .pf-del-one { opacity: 1; }
+.pf-del-one:hover { background: rgba(0,0,0,.78); }
+
+/* ── 자리글 색 ────────────────────────────────────────────────
+   같은 뜻("아직 안 적었다")을 네 가지 색으로 말하고 있었다 — #555,
+   #9a9a9a, #a8a8ad, gray-400. 한 단계 옅게 하나로 모은다. 적힌 값
+   (#2b2b2b)과 충분히 갈라지면서, 무엇을 적는 칸인지는 읽힌다. */
+input::placeholder,
+textarea::placeholder { color: #b4b4b9; opacity: 1; }
+.if-slot:not(.on),
+.if-empty,
+.resume-blank-fields { color: #b4b4b9; }
+/* 항목의 첫 줄은 그 항목의 이름이다(매장명·학교명·자격증명). 여기까지
+   흐려지면 무엇에 관한 줄인지가 먼저 사라진다. 한 단계 진하게 둔다. */
+.if-line-head .if-slot:not(.on) { color: #96969c; }
