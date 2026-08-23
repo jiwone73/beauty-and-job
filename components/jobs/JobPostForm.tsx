@@ -1814,9 +1814,9 @@ export default function JobPostForm({
       notes: notes.trim() || null,
       apply_method: applyMethod,
       external_apply_url: externalApplyUrl.trim() || null,
-      external_contact_email: nmContactEmail.trim() || null,
-      external_contact_name: nmManagerName.trim() || null,
-      external_contact_phone: nmManagerPhone.replace(/\D/g, "") || null,
+      external_contact_email: 낼담당.메일 || null,
+      external_contact_name: 낼담당.이름 || null,
+      external_contact_phone: 낼담당.전화.replace(/\D/g, "") || null,
       contact_methods: contactMethods,
       // 불러온 원문 URL 저장 → 이후 파서 개선 시 일괄 재파싱·백필 가능(picked.url 우선)
       source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
@@ -2053,6 +2053,13 @@ export default function JobPostForm({
       </span>
     ) : null;
   const isOffice = jobGroupType === "기업";
+  // 고른 지원방법이 부르는 담당자 칸만 내보낸다. 문자·전화 → 전화 / 이메일 → 메일 /
+  //   둘 중 하나라도 → 이름. 미리보기와 저장이 같은 규칙을 써야 보이는 대로 나간다.
+  const 쓸전화 = contactMethods.includes("문자") || contactMethods.includes("전화");
+  const 쓸메일 = contactMethods.includes("이메일");
+  const 낼담당 = { 이름: (쓸전화 || 쓸메일) ? nmManagerName.trim() : "",
+                  전화: 쓸전화 ? nmManagerPhone.trim() : "",
+                  메일: 쓸메일 ? nmContactEmail.trim() : "" };
   // 매장은 '회사'가 아니라 '매장' 기준으로 부른다. 기업회원 설정 화면
   // (company/dashboard/settings)과 같은 말을 쓴다 — 같은 값을 두 화면에서
   // 다르게 부르면 관리자도 매장도 헷갈린다.
@@ -2159,11 +2166,12 @@ export default function JobPostForm({
     workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의")),
     workPeriodText: fiWorkPeriod.trim() || workPeriod || "협의",
     workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의")),
-    // 비회원(관리자) 공고는 담당자 연락처를 구직자에게 노출하지 않음 → 미리보기도 동일하게 숨기고 '뷰티워크 온라인지원'만
+    // 비회원(관리자) 공고는 담당자 연락처를 구직자에게 노출하지 않음 → 미리보기도 동일하게 숨기고 '뷰티워크 온라인지원'만.
+    //   기업회원 공고는 실제 상세화면과 같게, 고른 지원방법이 부르는 칸만 보여준다.
     isExternal: isNm,
-    contactName: "",
-    contactPhone: "",
-    contactEmail: "",
+    contactName: isNm ? "" : 낼담당.이름,
+    contactPhone: isNm ? "" : 낼담당.전화,
+    contactEmail: isNm ? "" : 낼담당.메일,
     contactMethods: isNm ? ["뷰티워크 온라인지원"] : contactMethods,
   };
 
