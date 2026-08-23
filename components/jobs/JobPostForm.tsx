@@ -3019,9 +3019,12 @@ export default function JobPostForm({
               {(() => {
                 // 매장 공고는 자체 채용 홈페이지가 없는 경우가 대부분이라 '회사 홈페이지 지원'을 빼고, 본사에서만 쓴다.
                 // 매장은 '직접방문'(워크인)이 흔하고, 본사는 그런 접수를 받지 않는다.
-                // 홈페이지 접수는 둘 다 쓴다 — 매장도 자체 사이트·예약 링크로 받는 곳이 있다.
+                // '회사 홈페이지 지원'은 그 반대 — 매장은 자체 채용 홈페이지가 없다.
+                // 문자·전화도 매장만 — 본사 채용은 담당자 개인 번호로 받지 않는다.
                 const methodOptions = CONTACT_METHOD_OPTIONS
+                  .filter((m) => m !== "회사 홈페이지 지원" || isOffice)
                   .filter((m) => m !== "직접방문" || !isOffice)
+                  .filter((m) => (m !== "문자" && m !== "전화") || !isOffice)
                   // '상세요강 참조'는 관리자 대행 등록에만 연다. 기업에게 열어 두면 가장 쉬운
                   // 길이라 다들 그걸 고르고 연락처를 안 채운다 — 구직자가 지원할 길이 사라진다.
                   // 관리자는 원문 연락처가 본문에만 있는 외부 공고를 옮길 때 달리 고를 것이 없다.
@@ -3029,7 +3032,7 @@ export default function JobPostForm({
                 const canPhone = contactMethods.includes("문자") || contactMethods.includes("전화");
                 const canEmail = contactMethods.includes("이메일");
                 const canName = canPhone || canEmail;
-                const canUrl = contactMethods.includes("회사 홈페이지 지원");
+                const canUrl = isOffice && contactMethods.includes("회사 홈페이지 지원");
                 // 담당자 칸이 생기면 URL은 지원방법 밑(좌)에, 우측이 비면 URL을 우측에 둔다.
                 const urlOnLeft = canUrl && canName;
                 const isNmAdminJob = mode === "admin" && nonMember;
