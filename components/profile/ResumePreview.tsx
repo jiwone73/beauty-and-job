@@ -1,4 +1,5 @@
 "use client";
+import { 시험한줄 } from "@/lib/languageTest";
 
 import { forwardRef, useState } from "react";
 import PhotoLightbox from "@/components/profile/PhotoLightbox";
@@ -212,9 +213,9 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
                   {lang.level}
                 </span>
               </p>
-              {lang.test && (
+              {시험한줄(lang.test) && (
                 <p className="rp-text" style={{ color: "#888", fontSize: "13px" }}>
-                  {lang.test}
+                  {시험한줄(lang.test)}
                 </p>
               )}
             </div>

@@ -101,15 +101,15 @@ export default function PortfolioModal({
 
   const 사진남은자리 = MAX_PHOTOS - images.length;
 
-  // 점이 찍혔으면 주소를 적고 있는 중이니 비켜 준다. 그전까지는 친 글자에
-  // 걸리는 것만 남긴다 — 아무것도 안 쳤으면 넷까지 보여 준다.
+  // 아무것도 안 쳤을 때는 아무것도 깔지 않는다. 미리 깔아 두면 고르라는
+  // 말처럼 보이는데, 정작 쓰는 곳은 대부분 목록에 없는 자기 계정 주소다.
+  // 점이 찍혔으면 주소를 적고 있는 중이니 그때도 비켜 준다.
   const 친것 = 주소.trim().toLowerCase();
-  const 골라줄것 = 친것.includes(".")
+  const 골라줄것 = (!친것 || 친것.includes("."))
     ? []
-    : (친것
-        ? 모든칩.filter((k) => k.별칭.some((a) => a.startsWith(친것)) || k.이름.startsWith(친것))
-        : (resumeType === "office" ? 본사칩 : 매장칩)
-      ).slice(0, 4);
+    : 모든칩
+        .filter((k) => k.별칭.some((a) => a.startsWith(친것)) || k.이름.startsWith(친것))
+        .slice(0, 4);
 
   // 칸 안에서 그대로 펼칠 때 쓰는 몸통.
   const 몸통 = (

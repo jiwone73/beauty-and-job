@@ -406,7 +406,7 @@ export default function ResumeEditor({
           </button>
         )}
         {langOpen && (
-          <LanguageModal inline isOpen={langOpen} onClose={() => { setLangOpen(false); setEditLang(null); }} editTarget={editLang} />
+          <LanguageModal inline isOpen={langOpen} onClose={() => { setLangOpen(false); setEditLang(null); }} editTarget={editLang} resumeType={resumeType} />
         )}
       </section>
 
