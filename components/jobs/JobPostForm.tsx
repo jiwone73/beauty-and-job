@@ -2183,18 +2183,29 @@ export default function JobPostForm({
   // 기업 폼은 사이드 오른쪽 칸을 꽉 채운다. 760 으로 묶어 두면 오른쪽에 빈 띠가 남는다.
   const 콘텐츠폭: number | "none" = 기업폼 ? "none" : 760;
   // 왼쪽 사이드에 세울 칸 목록. 아래로 내려가지 않아도 무엇이 남았는지 보인다.
+  // 작성 현황은 '지금 발행할 수 있나'를 말해야 쓸모가 있다. 그래서 판정을 발행 검증과
+  // 한 글자씩 맞춘다. 어긋나 있던 것들:
+  //   · 제목이 아예 목록에 없었다(발행을 막는 첫 항목인데).
+  //   · 근무지역을 regionList 로만 봤다. 주소를 붙여넣으면 그 배열이 비어 있어도
+  //     발행은 되는데(주소에서 다시 뽑는다) 현황은 끝까지 미완료로 남았다.
+  //   · 복리후생을 태그로만 봤다. 자유입력으로 적으면 발행은 되는데 미완료였다.
+  //   · 전형절차는 발행을 막지 않는다(필수 아님) — 목록에서 뺀다.
+  // 배너만 예외로 남긴다. 발행은 되지만 비면 공고가 회색 칸으로 나가 얼굴이 없다.
+  const 지역참 = regionList.length > 0
+    || deriveRegion(nmFullAddress).length > 0
+    || extraLocations.some((l) => deriveRegion([l.address, l.detail].filter(Boolean).join(" ")).length > 0);
   const 할칸 = [
     { id: "banner", label: "배너", done: bannerImages.length > 0 },
+    { id: "title", label: "제목", done: !!form.title.trim() },
     { id: "positions", label: "모집분야", done: categories.length > 0 },
     { id: "deadline", label: "마감일", done: !!form.deadline || alwaysOpen },
-    { id: "region", label: "근무지역", done: regionList.length > 0 },
-    { id: "benefit", label: "복리후생", done: benefitTags.length > 0 },
-    // 상세요강: 이미지가 있으면 됐고, 없으면 본사는 담당업무·자격요건, 매장은 상세요강 글.
+    { id: "region", label: "근무지역", done: 지역참 },
+    { id: "benefit", label: "복리후생", done: benefitTags.length > 0 || !!fiBenefits.trim() },
+    // 상세요강: 이미지가 있으면 됐고, 없으면 본문(본사=담당업무 / 매장=상세요강 글)과 자격요건.
     //   전엔 description 만 봐서 본사 공고는 아무리 채워도 안 채운 것으로 셌다.
-    { id: "detail", label: "상세요강", done: detailImages.length > 0 || (isOffice
-        ? (!!String(form.responsibilities || "").trim() && !!String(form.requirements || "").trim())
-        : !!String(form.description || "").trim()) },
-    ...(isOffice ? [{ id: "process", label: "전형절차", done: hiringProcess.length > 0 }] : []),
+    { id: "detail", label: "상세요강", done: detailImages.length > 0
+        || (!!String(isOffice ? form.responsibilities : form.description || "").trim()
+            && !!String(form.requirements || "").trim()) },
   ];
   const 채운칸 = 할칸.filter((c) => c.done).length;
   const 작성률 = Math.round((채운칸 / 할칸.length) * 100);
@@ -2593,7 +2604,7 @@ export default function JobPostForm({
             {/* 제목 옆에 ＋(이미지 추가)·샘플 배너 — 드래그 박스 안을 버튼으로 채우지 않는다. */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 4px" }}>
               {/* 제목은 왼쪽, 단추는 오른쪽 끝으로 밀어 붙인다. */}
-              <h2 className="jobpost-section-title" style={{ margin: 0, marginRight: "auto" }}>공고 배너 이미지</h2>
+              <h2 id="jp-banner" className="jobpost-section-title" style={{ margin: 0, marginRight: "auto" }}>공고 배너 이미지</h2>
               <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
                 {!isMobile && <ImagePlus size={17} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
                 <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
@@ -2707,6 +2718,7 @@ export default function JobPostForm({
                   />
                 </div>
                 <AutoTextarea
+                  id="jp-title"
                   placeholder="공고 제목을 입력하세요 * (예: 리안헤어 광명점 헤어디자이너·인턴 모집)"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
@@ -2718,7 +2730,7 @@ export default function JobPostForm({
 
               {/* ── 모집부문 제목(모집분야 위, '지원 안내'와 동일 스타일) ── */}
               <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", paddingTop: 14, borderTop: "1px solid #f7f7f8", fontWeight: 400, color: "#333" }}>
-                <Briefcase size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문
+                <Briefcase id="jp-positions" size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문
               </div>
               {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "0 0 12px", alignItems: "center" }}>
@@ -2732,7 +2744,7 @@ export default function JobPostForm({
                     <span className="jp-add-note">눌러 모집할 분야를 담아주세요</span>
                   </span>
                 </div>
-                <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
+                <div id="jp-deadline" className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                   <button type="button"
                     onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
@@ -2898,7 +2910,7 @@ export default function JobPostForm({
               <div style={{ marginTop: 4 }}>
                 <div className="job-detail-company-info">
                   {/* 복리후생 — 한 행을 다 쓴다. 태그가 여럿이라 좁으면 읽기 나쁘다. */}
-                  <div className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1" }}>
+                  <div id="jp-benefit" className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 15 }}>복리후생<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                     {/* 글자만 눌린다. flex:1 로 행을 다 차지하면 오른쪽 빈 곳을 눌러도
                         팝오버가 열려, 뭘 눌러서 열렸는지 알 수 없었다. */}
@@ -2972,7 +2984,7 @@ export default function JobPostForm({
               {/* 근무지역: 별도 섹션(제목+아이콘, 지원 안내와 동일 스타일). 전체 주소 → 필터용 시·군·구 자동 추출 + 지도 */}
               <div style={{ paddingTop: 14, borderTop: "1px solid #f7f7f8", marginTop: 6 }}>
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}>
-                  <MapPin size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역 <span style={{ color: "#e74c3c" }}>*</span>
+                  <MapPin id="jp-region" size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역 <span style={{ color: "#e74c3c" }}>*</span>
                   {/* 근무지가 여럿일 때 칸을 더한다. 모집분야와 같은 자리·같은 모양. */}
                   <button type="button" onClick={() => setExtraLocations((prev) => [...prev, { address: "", detail: "" }])}
                     title="근무지역을 하나 더 넣어요"
@@ -3169,7 +3181,7 @@ export default function JobPostForm({
 
               {/* 채용 절차 — 본사(기업) 공고에서만 노출 */}
               {jobGroupType === "기업" && (
-                <div id="jp-process" style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
                   <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차</span>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", flex: 1 }}>
                     {PRESET_PROCESS.기업.map((p) => {
@@ -3198,7 +3210,7 @@ export default function JobPostForm({
           {/* 모바일만 제목 옆 ＋(자리 절약). PC는 아래 드래그 박스에서 첨부한다.
               위 여백은 '기본정보' 제목과 같게(앞 카드 아래 40px) — 컬럼 gap 8 + 카드 marginBottom을 감안해 24 추가. */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4, marginTop: 24 }}>
-            <h2 className="jobpost-section-title" style={{ margin: 0 }}>상세요강</h2>
+            <h2 id="jp-detail" className="jobpost-section-title" style={{ margin: 0 }}>상세요강</h2>
             {isMobile && (
               <label title="상세요강 이미지 추가"
                 style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0, border: "1px solid #efeff1", background: "#fff", color: uploading ? "#bbb" : "#582681", borderRadius: 7, fontSize: 13, lineHeight: 1, cursor: uploading ? "wait" : "pointer" }}>

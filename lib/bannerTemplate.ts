@@ -34,7 +34,9 @@ function wrapLines(ctx: CanvasRenderingContext2D, title: string, maxW: number, m
 //   PC 배너는 칸을 정사각으로 잘라 쓰므로, 글자는 가운데 정사각(=높이) 안에서만 줄바꿈해
 //   어느 쪽에서도 잘리지 않게 한다.
 export async function drawSampleBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRESETS)[number], title: string) {
-  const W = 1200, H = 900;   // 공고 카드 칸과 같은 4:3 — 여기서 3:2로 만들면 카드에서 한 번 더 잘린다.
+  // 공고 배너의 실제 비율은 8:3 이다. 상세 배너는 자르지 않고 그대로 보여주므로(BannerImg contain)
+  // 여기서 만든 모양이 곧 배너 모양이 된다.
+  const W = 1600, H = 600;
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -56,7 +58,9 @@ export async function drawSampleBanner(canvas: HTMLCanvasElement, preset: (typeo
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillStyle = preset.text;
   ctx.font = "700 62px 'Pretendard','Apple SD Gothic Neo',sans-serif";
-  const lines = wrapLines(ctx, title, Math.min(W, H) * 0.82, 4);
+  // 목록 카드는 이 배너를 3:2 로 잘라 쓴다(JobCard, cover). 글자가 거기서 잘리지 않게
+  //   가운데 3:2 영역(폭 = 높이 × 1.5) 안에서만 줄바꿈한다.
+  const lines = wrapLines(ctx, title, H * 1.5 * 0.82, 4);
   const lh = 84;
   const startY = H / 2 - ((lines.length - 1) * lh) / 2;
   lines.forEach((ln, i) => ctx.fillText(ln, W / 2, startY + i * lh));
