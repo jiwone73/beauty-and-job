@@ -2061,10 +2061,12 @@ export default function JobPostForm({
     // 매장은 홈페이지가 거의 없고 인스타가 사실상 포트폴리오다.
     site: isOffice ? "웹사이트" : "매장 SNS",
   };
-  const textFieldMeta: Record<TextKey, { label: string; hint?: string; placeholder: string }> = {
+  // 부제(hint)는 두지 않는다. '필수 (이미지 없을 시)' 같은 말을 라벨 옆에 달면
+  // 칸마다 설명이 붙어 어수선하다. 필수 여부는 빨간 * 하나로 말한다 —
+  // 이미지가 없어 이 글이 곧 상세요강일 때만 별이 뜬다.
+  const textFieldMeta: Record<TextKey, { label: string; placeholder: string }> = {
     benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
     responsibilities: { label: "담당업무",
-      hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
       placeholder: detailImages.length > 0
         ? "이미지에 없는 업무만 더해 주세요"
         : "맡을 일을 적어 주세요 — 예) 신제품 기획 · 협력사 관리 · 매출 분석" },
@@ -2072,22 +2074,19 @@ export default function JobPostForm({
       // 매장 공고에만 선다(textFields 참조 — 본사는 담당업무가 그 자리다).
       // 섹션 제목도 '상세요강'이라 그 안의 글 칸임을 드러낸다(위는 이미지 칸).
       label: "상세요강 글",
-      hint: detailImages.length > 0 ? "선택 · 상세 이미지 아래에 표시" : "필수 (이미지 없을 시)",
       // 이미지가 있으면 보태는 자리, 없으면 이 칸이 상세요강 본문 노릇을 한다.
       placeholder: detailImages.length > 0
         ? "이미지에 없는 이야기만 더해 주세요 — 매장 분위기, 고객층, 성장 지원처럼"
         : "어떤 자리인지 소개해 주세요 — 하는 일, 매장 분위기, 고객층, 성장 지원처럼",
     },
     requirements: { label: "자격요건",
-      // 본사는 이미지가 없으면 이 칸이 필수다(담당업무와 함께 상세요강 노릇을 한다).
-      hint: isOffice ? (detailImages.length > 0 ? "선택" : "필수 (이미지 없을 시)") : undefined,
       placeholder: detailImages.length > 0
         ? "이미지에 없는 조건만 더해 주세요"
         : (isOffice
             ? "갖춰야 할 것을 적어 주세요 — 예) 관련 경력 3년 이상 · 엑셀 능숙"
             : "예) 미용사 면허 소지 · 디자이너 2년 이상"),
     },
-    preferred: { label: "우대사항", hint: "선택",
+    preferred: { label: "우대사항",
       // 이미지가 없으면 여기가 마지막 칸이다. 앞 칸에 안 들어간 것을 여기서 부른다.
       placeholder: detailImages.length > 0
         ? (isOffice ? "예) 뷰티 업계 경험 · 해외 거래처 경험" : "예) 중국어 가능 · 인근 거주 · 장기 근무 가능")
@@ -3251,7 +3250,6 @@ export default function JobPostForm({
                     <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block" }}>
                       {meta.label}
                       {isReq && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}
-                      {meta.hint && <span style={{ fontSize: 11, fontWeight: 400, color: "#bbb", marginLeft: 6 }}>{meta.hint}</span>}
                     </label>
                     <AutoTextarea
                       placeholder={meta.placeholder}
