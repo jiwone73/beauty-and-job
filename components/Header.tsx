@@ -13,6 +13,9 @@ import { useAuthStore } from "@/lib/store/authStore";
 function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const router = useRouter();
   const { isLoggedIn, ownerType, userName, avatarUrl, setAvatar } = useAuthStore();
+  // 로고 주소가 죽어 있으면 브라우저가 깨진 그림(?)을 그린다. 기본 그림으로 물러선다.
+  const [그림깨짐, set그림깨짐] = useState(false);
+  useEffect(() => { set그림깨짐(false); }, [avatarUrl]);
 
   // 헤더에서도 자기 얼굴을 본다. 개인은 프로필 사진, 기업은 대표 사진
   // (매장=공고 배너 첫 장, 본사=로고). 로그인 후 한 번만 읽어 스토어에 담아 둔다.
@@ -41,8 +44,9 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
         <div className="auth-user-wrap">
           <button className="auth-user-btn" aria-label={ownerType === "company" ? "기업 대시보드" : "내 프로필"}
             onClick={() => router.push(ownerType === "company" ? "/company/dashboard" : "/profile")}>
-            {avatarUrl ? (
+            {avatarUrl && !그림깨짐 ? (
               <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
+                onError={() => set그림깨짐(true)}
                 style={{ width: 32, height: 32, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block", background: "#f7f7f8" }} />
             ) : (
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -53,16 +57,11 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
             )}
           </button>
         </div>
-        {/* 이미 로그인한 기업에게 '기업 서비스' 소개 페이지는 의미가 없다. 돌아갈 자리로 바꾼다. */}
-        {ownerType === "company" ? (
-          <Link href="/company/dashboard" className="btn btn-outline-biz gnb-biz-btn">
-            대시보드로 <ChevronDown size={14} style={{ transform: "rotate(-90deg)" }} />
-          </Link>
-        ) : (
-          <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
-            기업 서비스 <ChevronDown size={14} />
-          </Link>
-        )}
+        {/* 대시보드는 왼쪽 로고 단추가 맡는다. 여기까지 '대시보드로'로 두니 두 단추가
+            같은 곳으로 갔다 — 여기는 기업 서비스 소개로 둔다(요금·기능을 다시 볼 일이 있다). */}
+        <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
+          기업 서비스 <ChevronDown size={14} />
+        </Link>
       </>
     );
   }
