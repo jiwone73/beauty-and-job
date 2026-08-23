@@ -189,7 +189,9 @@ export default function PortfolioModal({
               style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: `1px dashed ${끌림 ? "#582681" : "#dcdce0"}`, background: 끌림 ? "#f7f7f8" : "#fff", color: "#582681", fontSize: 13, cursor: isUploading ? "not-allowed" : "pointer", alignItems: "center", justifyContent: "center", gap: 8, textAlign: "center" }}
             >
               <Upload size={17} />
-              <span>{isUploading ? "올리는 중..." : 끌림 ? "여기에 놓으세요" : `최대 ${MAX_PHOTOS}장`}</span>
+              {/* 끌어다 놓아도 되고 눌러도 된다는 것을 한 줄 안에서 말한다.
+                  둘 중 하나만 적으면 나머지 길은 있는 줄도 모른다. */}
+              <span>{isUploading ? "올리는 중..." : 끌림 ? "여기에 놓으세요" : `끌어다 놓거나 눌러서 올리기 · 최대 ${MAX_PHOTOS}장`}</span>
             </div>
             <button
               type="button"
