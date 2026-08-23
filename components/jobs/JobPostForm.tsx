@@ -2663,6 +2663,7 @@ export default function JobPostForm({
                       고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
                   <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
                     className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: "2px 6px", cursor: typeLocked ? "default" : "pointer" }}>＋</button>
+                  <span className="jp-add-note">눌러서 표에 모집분야를 더합니다</span>
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span></span>
@@ -2715,7 +2716,7 @@ export default function JobPostForm({
                                 <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
                                   <span style={{ flex: 1, minWidth: 0 }}>{baseCat(cat)}</span>
                                   <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
-                                    style={{ width: 18, height: 18, flexShrink: 0, borderRadius: 5, border: "1px solid #eee", background: "#fff", color: "#bbb", fontSize: 12, lineHeight: 1, cursor: "pointer", padding: 0 }}>×</button>
+                                    style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0 }}>×</button>
                                 </div>
                               </td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "예: 정규직")}</td>
