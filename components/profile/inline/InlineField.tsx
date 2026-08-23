@@ -15,6 +15,16 @@ function 별표(필수?: boolean) {
   return 필수 ? <i className="if-req">*</i> : null;
 }
 
+/**
+ * 친 글자 길이만큼만 칸을 넓힌다. 고정 폭으로 두면 두 글자 치려고 열었는데
+ * 칸이 줄을 다 차지해 옆 칸이 아래로 밀린다(원티드는 글자만큼만 늘어난다).
+ * 한글은 라틴 글자의 두 배 폭으로 센다.
+ */
+function 칸폭(글: string, 자리글: string) {
+  const 셈 = (t: string) => [...t].reduce((a, c) => a + (/[\u3131-\u318E\uAC00-\uD7A3]/.test(c) ? 2 : 1), 0);
+  return `${Math.max(8, Math.max(셈(글), 셈(자리글)) + 2)}ch`;
+}
+
 /** 눌러서 그 자리에서 치는 칸. */
 export function InlineText({
   value, placeholder, required, onSave, wide,
@@ -37,6 +47,7 @@ export function InlineText({
   if (고치는중) {
     return (
       <input ref={칸} className={`if-input ${wide ? "if-wide" : ""}`} value={초안}
+        style={wide ? undefined : { width: 칸폭(초안, placeholder) }}
         placeholder={placeholder}
         onChange={(e) => set초안(e.target.value)}
         onBlur={마치기}
@@ -98,6 +109,7 @@ export function InlineSuggest<T extends { 이름: string }>({
   return (
     <span className="if-wrap" ref={감싸개} style={wide ? { width: "100%" } : undefined}>
       <input ref={칸} className={`if-input ${wide ? "if-wide" : ""}`} value={초안}
+        style={wide ? undefined : { width: 칸폭(초안, placeholder) }}
         placeholder={placeholder} autoComplete="off"
         onChange={(e) => set초안(e.target.value)}
         onKeyDown={(e) => {

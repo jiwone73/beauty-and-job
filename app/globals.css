@@ -13188,7 +13188,8 @@ button,
    옆 칸이 아래로 떨어졌다. 접지 않고 그 자리에서 커서만 뜨게 한다. */
 .if-row-plain .if-line { flex-wrap: nowrap; }
 .if-row-plain .if-wrap { min-width: 0; flex: 1 1 auto; }
-.if-row-plain .if-input { min-width: 0; width: 100%; }
+/* 테두리 상자 없이 커서만 뜨게 — 폭은 친 글자만큼(InlineField 의 칸폭). */
+.if-row-plain .if-input { min-width: 0; border-color: transparent; padding: 2px 0; background: transparent; }
 .if-row-plain .if-slot { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .if-row-icon { width: 30px; height: 30px; border-radius: 8px; background: #f2f2f4;
   display: flex; align-items: center; justify-content: center; color: #a8a8ad; }
