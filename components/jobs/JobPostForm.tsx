@@ -2839,12 +2839,12 @@ export default function JobPostForm({
                   {/* 복리후생 — 한 행을 다 쓴다. 태그가 여럿이라 좁으면 읽기 나쁘다. */}
                   <div className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1" }}>
                     <span className="job-detail-company-label" style={{ fontSize: 15 }}>복리후생<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
-                    {/* 자리 상자만 눌린다. flex:1 로 행을 다 차지하면 오른쪽 빈 곳을
-                        눌러도 팝오버가 열려, 뭘 눌러서 열렸는지 알 수 없었다. */}
+                    {/* 글자만 눌린다. flex:1 로 행을 다 차지하면 오른쪽 빈 곳을 눌러도
+                        팝오버가 열려, 뭘 눌러서 열렸는지 알 수 없었다. */}
                     {!fiBenefits.trim() && (
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
                       style={{ flex: "0 0 auto", maxWidth: "100%", alignSelf: "flex-start", textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
-                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : pick())}
+                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "검색하기")}
                     </button>
                     )}
                     {freeField("benefits", fiBenefits, setFiBenefits, "예: 4대보험, 인센티브", false, () => setBenefitTags([]))}
