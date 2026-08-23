@@ -106,9 +106,11 @@ export async function GET(
     // 화면에서 가려도 이 JSON 을 그대로 열어 보면 번호가 다 보이기 때문이다.
     // 지원은 뷰티워크를 거쳐야 매장에도 이력이 남고 우리도 성과를 안다.
     // (관리자 화면은 /api/admin/jobs 를 따로 쓰므로 대조에는 지장이 없다.)
-    external_contact_name: isExternalJob ? '' : (job.external_contact_name || ''),
-    external_contact_phone: isExternalJob ? '' : (job.external_contact_phone || ''),
-    external_contact_email: isExternalJob ? '' : (job.external_contact_email || ''),
+    // 기업이 '비공개'로 두면 화면에서 가리는 것으로는 모자라다 — 이 JSON 을 그대로
+    // 열어 보면 다 보인다. 아예 내려보내지 않는다.
+    external_contact_name: (isExternalJob || job.contact_public === false) ? '' : (job.external_contact_name || ''),
+    external_contact_phone: (isExternalJob || job.contact_public === false) ? '' : (job.external_contact_phone || ''),
+    external_contact_email: (isExternalJob || job.contact_public === false) ? '' : (job.external_contact_email || ''),
     contact_methods: job.contact_methods || [],
     notes: hide(job.notes) || '',
     responsibilities: hide(job.responsibilities) || '',
