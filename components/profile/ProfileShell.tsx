@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { Bell, X } from "lucide-react";
+import { Bell, X, Store, Building2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -29,7 +29,7 @@ const 메뉴 = [
 export default function ProfileShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { logout } = useAuthStore();
+  const { logout, userName, userJobType } = useAuthStore();
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unreadNotif, setUnreadNotif] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -113,6 +113,21 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
         {/* PC — 왼쪽 사이드 메뉴. 계정 설정과 로그아웃은 선 아래에 둔다.
             보는 화면을 고르는 일과 계정을 다루는 일은 성격이 다르다. */}
         <nav className="pf-side">
+          {/* 누구의 화면인지 사이드가 먼저 말한다. 기업 사이드도 맨 위에 이름과
+              매장/본사를 세운다 — 두 화면의 짜임을 같게 둔다.
+              구직유형은 가입 때 정하고 여기서 바꾸지 않는다(바꾸면 직군·스킬이
+              통째로 어긋난다). 아래 '직군' 이 무엇을 뜻하는지 이 값이 정한다. */}
+          {userName && (
+            <div className="pf-side-me">
+              <span className="pf-side-me-name">{userName}</span>
+              {userJobType && (
+                <span className="pf-side-me-type">
+                  {userJobType === "STORE" ? <Store size={12} /> : <Building2 size={12} />}
+                  {userJobType === "STORE" ? "매장" : "본사"}
+                </span>
+              )}
+            </div>
+          )}
           {/* 머리줄에서 내려온 알림. */}
           <div className="pf-side-notif">        <div style={{ position: "relative", display: "inline-flex", marginLeft: "auto" }}>
           <button

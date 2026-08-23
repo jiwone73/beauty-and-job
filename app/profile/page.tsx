@@ -555,7 +555,9 @@ export default function ProfilePage() {
       <div className="profile-content">
             <section className="profile-section">
               <div className="profile-info-card pf-grid">
-                <div style={{ padding: "11px 16px", borderBottom: "1px solid #efeff1", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
+                <div className="pf-wide" style={{ padding: "11px 16px", borderBottom: "1px solid #efeff1", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
+                  {/* 구직유형은 사이드 맨 위에 이름과 함께 세운다 — 이 카드 한 칸의 값이
+                      아니라 이력서까지 걸리는 값이라, 화면 머리맡이 제 자리다. */}
                   <span className="profile-info-label">이름/사진<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", position: "relative" }}>
                     <div
