@@ -126,7 +126,12 @@ export default function BannerStrip({
                     if (from !== null && from !== idx) onReorder(from, idx);
                     dragFrom.current = null;
                   } : undefined}
-                  style={{ position: "relative", width: `${100 / PER}%`, aspectRatio: CELL_RATIO, flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
+                  /* 한 장뿐이면 쪽을 통째로 쓴다. 띠 한 쪽은 4:3 칸 둘이라 정확히 8:3 이고,
+                     샘플 배너도 8:3 으로 만든다 — 반쪽 칸에 넣으면 사방에 여백만 남았다. */
+                  style={{ position: "relative",
+                    width: 쪽사진.length < PER ? "100%" : `${100 / PER}%`,
+                    aspectRatio: 쪽사진.length < PER ? "8 / 3" : CELL_RATIO,
+                    flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
                   <BannerImg src={src} alt={alt} />
                   {/* 편집 화면은 순서만 보면 되지만(첫 장이 목록 썸네일이 된다),
                       공개 화면은 "몇 장 중 몇 번째"를 알아야 더 볼 것이 남았는지
