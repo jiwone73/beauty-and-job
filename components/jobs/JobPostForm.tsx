@@ -1961,7 +1961,7 @@ export default function JobPostForm({
       <span className="poscell-pop" style={{ position: "relative", display: "block" }}>
         <button type="button"
           onClick={(e) => { if (open) { setCellOpen(null); return; } setCellFree(false); openPopAt(e.currentTarget, width, height); setCellOpen(key); }}
-          style={{ ...cellSelect, ...cellFill(!!v), textAlign: "left", color: "#333", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || ""}</button>
+          style={{ ...cellSelect, ...cellFill(!!v), textAlign: "left", color: v ? "#333" : "#b4b4b9", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || ph}</button>
         {open && popAt && (
           <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, boxSizing: "border-box",
             // 목록은 항목 길이에 맞춰 좁게(오른쪽 빈 공간 제거), 자유입력·급여는 입력칸이 있어 고정 폭
@@ -2661,9 +2661,11 @@ export default function JobPostForm({
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span></span>
                   {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                       고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
-                  <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
-                    className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: "2px 6px", cursor: typeLocked ? "default" : "pointer" }}>＋</button>
-                  <span className="jp-add-note">눌러서 표에 모집분야를 더합니다</span>
+                  <span className="jp-add-wrap">
+                    <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
+                      className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: 0, cursor: typeLocked ? "default" : "pointer" }}>＋</button>
+                    <span className="jp-add-note">눌러서 표에 모집분야를 더합니다</span>
+                  </span>
                 </div>
                 <div className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "var(--color-primary)", marginLeft: 2 }}>*</span></span>
@@ -2696,17 +2698,8 @@ export default function JobPostForm({
                 ) : (
                   <div style={{ overflowX: "auto" }}>
                     <table style={{ minWidth: 566, borderCollapse: "collapse" }}>
-                      <thead>
-                        <tr>
-                          <th style={{ ...thc, ...firstCol, minWidth: 92 }}>모집분야{reqStar}</th>
-                          <th style={{ ...thc, minWidth: 66 }}>고용형태</th>
-                          <th style={{ ...thc, minWidth: 56 }}>성별우대</th>
-                          <th style={{ ...thc, minWidth: 72 }}>경력/직책</th>
-                          <th style={{ ...thc, minWidth: 52 }}>학력</th>
-                          <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>
-                          <th style={{ ...thc, minWidth: 82 }}>급여</th>
-                        </tr>
-                      </thead>
+                      {/* 표 머리줄은 걷었다. 칸마다 제 이름이 자리글로 들어 있어,
+                          채우기 전에도 무슨 칸인지 보이고 채우면 값으로 바뀐다. */}
                       <tbody>
                         {categories.map((cat) => {
                           const row = posMeta[cat] || emptyPos;
@@ -2719,10 +2712,10 @@ export default function JobPostForm({
                                     style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0 }}>×</button>
                                 </div>
                               </td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "예: 정규직")}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "예: 무관", false)}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "", false)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "고용형태")}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "성별우대", false)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "경력/직책", false)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "학력", false)}</td>
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
                                 <button type="button" onClick={(e) => { if (posShiftOpen === cat) { setPosShiftOpen(null); return; } openPopAt(e.currentTarget, 244, 250); setPosShiftOpen(cat); }}
                                   style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "left", border: "none", borderRadius: 5, padding: "3px 6px", fontSize: 12.5, lineHeight: 1.35, cursor: "pointer", color: "#333", ...cellFill(!!(row.workDays || row.workTime)) }}>
@@ -2735,7 +2728,7 @@ export default function JobPostForm({
                                       {row.workTime && <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workTime}</div>}
                                     </>
                                     )
-                                  ) : ""}
+                                  ) : <span style={{ color: "#b4b4b9" }}>근무요일 / 시간</span>}
                                 </button>
                                 {posShiftOpen === cat && (() => {
                                   const days = (row.workDays && row.workDays !== "협의") ? row.workDays.split(/[·,]/).map((s) => s.trim()).filter((d) => WORK_DAY_OPTIONS.includes(d)) : [];
@@ -2802,7 +2795,7 @@ export default function JobPostForm({
                                   );
                                 })()}
                               </td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "예: 300~350", true, SALARY_UNITS)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "급여", true, SALARY_UNITS)}</td>
                             </tr>
                           );
                         })}
