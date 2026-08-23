@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   if (authErr) return authErr;
   const result = await pool.query(
     `SELECT c.id, c.company_name, c.brand_name, c.industry, c.business_number, c.representative_name, c.manager_name, c.company_type,
-            c.email, c.phone, c.company_phone, c.logo_url, c.cover_images, c.description, c.website_url, c.address, c.address_detail,
+            c.email, c.phone, c.company_phone, c.logo_url, c.cover_images, c.description, c.website_url, c.links, c.address, c.address_detail,
             c.company_size, c.founded_year, c.region_sido, c.region_sigungu,
             c.status, c.business_license_path, c.created_at,
             -- 헤더·사이드바에 쓸 대표 사진. 매장은 로고를 받지 않으므로 배너 첫 장이 얼굴이고,
@@ -45,7 +45,7 @@ export async function PATCH(req: NextRequest) {
   // 수정 가능한 필드 (whitelist - 보안)
   const allowedFields = [
     "company_name", "brand_name", "industry", "representative_name", "manager_name", "phone", "company_phone",
-    "logo_url", "description", "website_url", "address", "address_detail",
+    "logo_url", "description", "website_url", "links", "address", "address_detail",
     "company_size", "founded_year", "region_sido", "region_sigungu",
   ];
 
@@ -55,6 +55,12 @@ export async function PATCH(req: NextRequest) {
 
   for (const field of allowedFields) {
     if (body[field] !== undefined) {
+      // jsonb 칸은 문자열로 넘겨 캐스팅한다(배열을 그대로 넘기면 pg 가 못 다룬다).
+      if (field === "links") {
+        values.push(JSON.stringify(Array.isArray(body.links) ? body.links : []));
+        updates.push(`links = $${idx++}::jsonb`);
+        continue;
+      }
       updates.push(`${field} = $${idx++}`);
       values.push(body[field]);
     }
@@ -72,7 +78,7 @@ export async function PATCH(req: NextRequest) {
     SET ${updates.join(", ")}
     WHERE id = $${idx++}
     RETURNING id, company_name, brand_name, industry, business_number, representative_name, manager_name, company_type,
-              email, phone, company_phone, logo_url, description, website_url, address, address_detail,
+              email, phone, company_phone, logo_url, description, website_url, links, address, address_detail,
               company_size, founded_year, region_sido, region_sigungu,
               status, created_at
   `;

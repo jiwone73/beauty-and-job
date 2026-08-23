@@ -7,6 +7,9 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { downscaleImage } from "@/lib/imageResize";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
+import { SNS찾기 } from "@/lib/snsPresets";
+import { InlineSuggest, InlineText } from "@/components/profile/inline/InlineField";
+import { Link as LinkIcon, Plus, Trash2 } from "lucide-react";
 import type { CompanyInfo } from "@/lib/types/company";
 
 declare global {
@@ -36,6 +39,12 @@ export default function CompanySettingsPage() {
   const [coverUploading, setCoverUploading] = useState(false);
   const [coverStart, setCoverStart] = useState(0);
   const [samplePreset, setSamplePreset] = useState(0);   // 샘플 배너 배경 — 공고 등록 화면과 같은 목록
+  // SNS·홈페이지 — 개인회원 프로필과 같은 방식으로 여러 개를 담는다.
+  //   website_url 은 열다섯 곳에서 읽고 있어 그대로 두고, 첫 링크를 늘 거기에 맞춘다.
+  const [links, setLinks] = useState<{ id: string; category: string; url: string }[]>([]);
+  const 새id = () => `l${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
+  const 링크고치기 = (id: string, patch: Partial<{ category: string; url: string }>) =>
+    setLinks((ls) => ls.map((l) => (l.id === id ? { ...l, ...patch } : l)));
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -93,6 +102,13 @@ export default function CompanySettingsPage() {
         setLogoUrl((res.data as any).logo_url || null);
         const cov = (res.data as any).cover_images;
         setCoverImages(Array.isArray(cov) ? cov.filter((c: any) => c?.url) : []);
+        // 링크 목록. 아직 없으면 여태 쓰던 website_url 한 줄로 시작한다.
+        const raw = (res.data as any).links;
+        const 온것 = Array.isArray(raw) ? raw.filter((l: any) => l?.url) : [];
+        const 첫줄 = res.data.website_url ? [{ category: "", url: res.data.website_url }] : [];
+        setLinks((온것.length ? 온것 : 첫줄).map((l: any) => ({
+          id: `l${Math.random().toString(36).slice(2, 8)}`, category: l.category || "", url: l.url || "",
+        })));
         setForm({
           company_name: res.data.company_name || "",
           brand_name: res.data.brand_name || "",
@@ -428,6 +444,49 @@ export default function CompanySettingsPage() {
     } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); } finally { setPhoneVerifying(false); }
   };
 
+  // SNS·홈페이지 목록 — 매장과 본사가 같은 것을 쓴다(개인회원 프로필과 같은 부품).
+  const 링크목록 = (
+                  <div className="admin-form-row" style={{ gridColumn: "1 / -1" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                        <label className="admin-form-label" style={{ margin: 0 }}>{L.site}</label>
+                        {links.length > 0 && <span style={{ fontSize: 12.5, color: "#999" }}>{links.length}개</span>}
+                        <button type="button" aria-label={`${L.site} 추가`} title="하나 더 넣어요"
+                          onClick={() => setLinks((ls) => [...ls, { id: 새id(), category: "", url: "" }])}
+                          style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", border: "none", background: "none", color: "#582681", padding: 0, cursor: "pointer" }}>
+                          <Plus size={18} />
+                        </button>
+                      </div>
+                      {/* 개인회원 프로필과 같은 방식 — 이름을 고르면 주소 앞부분까지 채워 준다. */}
+                      {links.map((l) => (
+                        <div key={l.id} className="if-row">
+                          <span className="if-row-icon"><LinkIcon size={16} /></span>
+                          <div className="if-row-body">
+                            <div className="if-line">
+                              <InlineSuggest value={l.category} placeholder="어떤 곳인지 (예: 매장 인스타)" wide
+                                찾기={SNS찾기}
+                                onPick={(k) => 링크고치기(l.id, { category: k.이름, url: l.url || k.앞부분 })}
+                                onSave={(v) => 링크고치기(l.id, { category: v })} />
+                            </div>
+                            <div className="if-line">
+                              <InlineText value={l.url} placeholder="https:// 로 시작하는 주소" required wide
+                                onSave={(v) => 링크고치기(l.id, { url: v })} />
+                            </div>
+                          </div>
+                          <button className="if-row-del" aria-label="삭제"
+                            onClick={() => { if (confirm("이 주소를 지울까요?")) setLinks((ls) => ls.filter((x) => x.id !== l.id)); }}>
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      ))}
+                      {links.length === 0 && (
+                        <button type="button" className="if-empty"
+                          onClick={() => setLinks([{ id: 새id(), category: "", url: "" }])}>
+                          {isStore ? "매장 인스타·네이버 예약 주소를 넣어 보세요" : "홈페이지·채용 페이지 주소를 넣어 보세요"}
+                        </button>
+                      )}
+                    </div>
+  );
+
   const handleSave = async () => {
     if (!form.company_name.trim()) {
       alert(`${L.name}은 필수입니다.`);
@@ -455,7 +514,10 @@ export default function CompanySettingsPage() {
     }
     setSaving(true);
     try {
-      const res = await companyMeApi.update(form);
+      // 빈 줄은 버린다. 첫 링크는 website_url 에도 넣어 기존 화면들이 그대로 돌게 한다.
+      const 낼링크 = links.filter((l) => l.url.trim())
+        .map((l) => ({ category: l.category.trim(), url: l.url.trim() }));
+      const res = await companyMeApi.update({ ...form, links: 낼링크, website_url: 낼링크[0]?.url || "" } as any);
       setInfo(res.data);
       setOrigPhone(form.phone);
       setPhoneVerified(false); setPhoneCodeSent(false); setPhoneCode(""); setPhoneMsg("");
@@ -616,7 +678,7 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">{L.name}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <input className="admin-form-input" placeholder={L.name}
+                  <input className="admin-form-input" placeholder={isStore ? "예) 준오헤어 광명점" : "예) (주)뷰티워크"}
                     value={form.company_name}
                     onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
                 </div>
@@ -625,7 +687,7 @@ export default function CompanySettingsPage() {
                   <select className="admin-form-select" data-empty={!form.industry} style={{ height: 42, boxSizing: "border-box" }}
                     value={form.industry}
                     onChange={(e) => setForm({ ...form, industry: e.target.value })}>
-                    <option value="">선택</option>
+                    <option value="">선택하기</option>
                     {industryGroupsFor(info?.company_type as any).map((g, gi) =>
                       g.label ? (
                         <optgroup key={gi} label={g.label}>
@@ -642,24 +704,21 @@ export default function CompanySettingsPage() {
               {/* 매장은 상호가 곧 브랜드라 이름 칸이 하나면 된다(브랜드명·대표자·설립연도·매장 전화번호 없음).
                   본사(매장이 아닌 곳)는 근로계약이 법인 기준이라 기업명과 브랜드명을 따로 받는다. */}
               {isStore ? (
+                <>
                 <div className="admin-form-row-2col">
-                  <div className="admin-form-row">
-                    <label className="admin-form-label">{L.site}</label>
-                    <input className="admin-form-input" placeholder={L.sitePh}
-                      value={form.website_url}
-                      onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
-                  </div>
                   <div className="admin-form-row">
                     <label className="admin-form-label">{L.size}</label>
                     <select className="admin-form-select" data-empty={!form.company_size}
                       style={{ height: 42, boxSizing: "border-box" }}
                       value={form.company_size}
                       onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
-                      <option value="">선택</option>
+                      <option value="">선택하기</option>
                       {sizeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
                     </select>
                   </div>
                 </div>
+                {링크목록}
+                </>
               ) : (
                 <>
                   <div className="admin-form-row-2col">
@@ -669,12 +728,7 @@ export default function CompanySettingsPage() {
                         value={form.brand_name}
                         onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
                     </div>
-                    <div className="admin-form-row">
-                      <label className="admin-form-label">{L.site}</label>
-                      <input className="admin-form-input" placeholder={L.sitePh}
-                        value={form.website_url}
-                        onChange={(e) => setForm({ ...form, website_url: e.target.value })} />
-                    </div>
+                    {링크목록}
                   </div>
                   <div className="admin-form-row-2col">
                     <div className="admin-form-row">
@@ -683,7 +737,7 @@ export default function CompanySettingsPage() {
                         style={{ height: 42, boxSizing: "border-box" }}
                         value={form.company_size}
                         onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
-                        <option value="">선택</option>
+                        <option value="">선택하기</option>
                         {sizeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
                       </select>
                     </div>
@@ -699,13 +753,13 @@ export default function CompanySettingsPage() {
                   <div className="admin-form-row-2col">
                     <div className="admin-form-row">
                       <label className="admin-form-label">대표자</label>
-                      <input className="admin-form-input" placeholder="대표자명"
+                      <input className="admin-form-input" placeholder="예) 홍길동"
                         value={form.representative_name}
                         onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
                     </div>
                     <div className="admin-form-row">
                       <label className="admin-form-label">{L.phone}</label>
-                      <input className="admin-form-input" placeholder="02-000-0000" inputMode="numeric" maxLength={13}
+                      <input className="admin-form-input" placeholder="02-XXX-XXXX" inputMode="numeric" maxLength={13}
                         value={formatPhone(form.company_phone)}
                         onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
                     </div>
@@ -715,15 +769,15 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">담당자<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <input className="admin-form-input" placeholder="담당자명"
+                  <input className="admin-form-input" placeholder="예) 홍길동"
                     value={form.manager_name}
                     onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
                 </div>
                 <div className="admin-form-row">
-                  <label className="admin-form-label">담당자 연락처<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="admin-form-label">담당자 휴대폰<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <button type="button" onClick={openPhoneModal}
                     style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6, width: "100%", background: "none", border: "none", padding: 0, cursor: "pointer", color: form.phone ? "#333" : "#bbb", fontSize: 14, fontFamily: "inherit" }}>
-                    <span>{form.phone ? formatPhone(form.phone) : "번호 등록"}</span>
+                    <span>{form.phone ? formatPhone(form.phone) : "010-XXXX-XXXX"}</span>
                     <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
                   </button>
                 </div>
@@ -755,7 +809,9 @@ export default function CompanySettingsPage() {
                 <div>
                 <label className="admin-form-label">{L.intro}</label>
                 <textarea className="admin-form-textarea" rows={5}
-                  placeholder="회사를 소개하는 글을 입력해주세요. 여기에 작성한 내용은 채용공고 상세 페이지의 '회사 소개' 영역에 표시돼요."
+                  placeholder={isStore
+                    ? "어떤 매장인지 적어 주세요 — 주 고객층, 시술 강점, 분위기, 직원 구성, 교육·성장 지원처럼\n(공고 상세의 '매장 소개'에 그대로 실려요)"
+                    : "어떤 회사인지 적어 주세요 — 무엇을 만드는지, 브랜드, 팀 구성, 일하는 방식, 복지처럼\n(공고 상세의 '기업 소개'에 그대로 실려요)"}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })} />
                 </div>

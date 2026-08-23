@@ -23,13 +23,13 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const {
     company_name, brand_name, business_number, company_type,
-    email, phone: rawPhone, password, address, website_url, description,
+    email, phone: rawPhone, manager_name, password, address, website_url, description,
     business_license_path, agreed_term_ids
   } = body
 
   // 필수값 검증
   const phone = (rawPhone || '').replace(/\D/g, '')
-  if (!company_name || !business_number || !company_type || !email || !phone || !password) {
+  if (!company_name || !business_number || !company_type || !email || !phone || !password || !(manager_name || '').trim()) {
     return err('USER_002', '필수 항목을 모두 입력해주세요.')
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
         `UPDATE companies SET
            company_name = $2, brand_name = $3, business_number = $4, company_type = $5,
            phone = $6, password_hash = $7, address = $8, website_url = $9, description = $10,
-           business_license_path = $11, status = $12::company_status,
+           business_license_path = $11, status = $12::company_status, manager_name = $13,
            is_member = true, onboarding_status = 'LINKED',
            joined_at = COALESCE(joined_at, now()), linked_at = now(), updated_at = now()
          WHERE id = $1
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
         [
           claimId, company_name, brand_name || null, business_number, company_type,
           phone, passwordHash, address || null, website_url || null, description || null,
-          business_license_path || null, companyStatus
+          business_license_path || null, companyStatus, (manager_name || '').trim()
         ]
       )
       company = upd.rows[0]
@@ -140,16 +140,16 @@ export async function POST(req: NextRequest) {
         `INSERT INTO companies (
           company_name, brand_name, business_number, company_type,
           email, phone, password_hash, address, website_url, description,
-          business_license_path, status
+          business_license_path, status, manager_name
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::company_status
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::company_status, $13
         ) RETURNING id, company_name, brand_name, business_number, company_type,
                    email, phone, address, website_url, description, status, created_at`,
         [
           company_name, brand_name || null, business_number, company_type,
           email, phone, passwordHash,
           address || null, website_url || null, description || null,
-          business_license_path || null, companyStatus
+          business_license_path || null, companyStatus, (manager_name || '').trim()
         ]
       )
       company = result.rows[0]

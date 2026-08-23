@@ -31,6 +31,7 @@ export default function CompanySignupPage() {
     company_type: "",
     business_license_path: "",
     email: "",
+    manager_name: "",
     phone: "",
     password: "",
     passwordConfirm: "",
@@ -208,6 +209,7 @@ export default function CompanySignupPage() {
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
     emailStatus !== "taken" &&
     emailVerified &&
+    form.manager_name.trim() &&
     form.phone.replace(/\D/g, "").length >= 10 &&
     phoneVerified &&
     isPasswordValid(form.password) &&
@@ -433,8 +435,20 @@ export default function CompanySignupPage() {
           <div className="mt-6 pt-6 border-t border-[#ececec]">
             <h2 className="text-[16px] md:text-[17px] font-normal mb-3">담당자 정보</h2>
 
+            {/* 담당자 이름을 먼저 받는다. 아래에서 인증하는 번호가 누구 번호인지
+                그 자리에서 분명해지고, 이름과 번호가 한 덩어리로 묶인다.
+                여태 이 칸이 없어 가입 직후 manager_name 이 빈 채로 남았다
+                (매장정보에서는 필수라 저장할 때야 막혔다). */}
             <div className="mb-3">
-              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">휴대폰 <span className="text-[#e74c3c]">*</span></label>
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">담당자 <span className="text-[#e74c3c]">*</span></label>
+              <input type="text" value={form.manager_name}
+                onChange={(e) => update("manager_name", e.target.value)}
+                placeholder="예) 홍길동"
+                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
+            </div>
+
+            <div className="mb-3">
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">담당자 휴대폰 <span className="text-[#e74c3c]">*</span></label>
               <div className="flex gap-2">
                 <input type="tel" value={form.phone}
                   onChange={(e) => { update("phone", formatPhone(e.target.value)); setPhoneVerified(false); setCodeSent(false); }}
