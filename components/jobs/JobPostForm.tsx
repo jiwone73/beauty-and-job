@@ -3096,7 +3096,9 @@ export default function JobPostForm({
                     {/* 담당자 (우) — 고른 방법에 필요한 칸만 생성. 우측이 빌 때는 홈페이지 URL을 여기에 둔다 */}
                     {(canName || canUrl) ? (
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0", minWidth: 0 }}>
-                        <span style={{ ...lblS, ...(canName ? null : { width: 88 }) }}>
+                        {/* '담당자'는 세 글자라 68px 고정이면 오른쪽에 여유가 남는다.
+                            그 여유는 메일 칸이 쓰는 게 낫다(왼쪽 '지원방법'과 폭을 맞출 이유가 없다). */}
+                        <span style={{ ...lblS, ...(canName ? { width: "auto" } : { width: 88 }) }}>
                           {canName ? "담당자" : "홈페이지 URL"}
                           {isNmAdminJob && canName && <><br /><span style={{ fontSize: 10, color: "#e3e3e6" }}>관리자용</span></>}
                         </span>
@@ -3121,14 +3123,20 @@ export default function JobPostForm({
                                 {칸.map((f, i) => (
                                   <span key={f.k} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0,
                                     flex: f.k === "mail" ? `1 1 ${f.폭}px` : `0 1 ${f.폭}px` }}>
-                                    {/* 크롬은 name·autocomplete 에 든 낱말로 칸을 알아보고 연락처
-                                        아이콘을 띄운다. 앞서 nope-phone·nope-mail 처럼 이름을 지어
-                                        오히려 힌트를 주고 있었다. 뜻 없는 값으로 둔다. */}
-                                    <input value={f.v} placeholder={f.ph} inputMode={f.im}
-                                      autoComplete={`bw-${i}`} name={`bw-${i}`} data-lpignore="true" data-1p-ignore
-                                      onChange={(e) => f.set(e.target.value)}
-                                      style={{ flex: 1, minWidth: 0, height: 22, border: "none", borderRadius: 5, fontSize: 14, color: "#333", outline: "none",
-                                        background: f.v ? "transparent" : PH_BG, padding: f.v ? "0 2px" : "0 8px", boxSizing: "border-box" }} />
+                                    {/* 크롬은 placeholder·name 에 든 낱말('전화'·'메일')로 칸을 알아보고
+                                        연락처 아이콘을 띄운다. 그래서 자리글을 속성에서 빼고 우리가 그린다.
+                                        name·autocomplete 도 뜻 없는 값으로 둔다. */}
+                                    <span style={{ position: "relative", display: "flex", flex: 1, minWidth: 0 }}>
+                                      <input value={f.v} inputMode={f.im} aria-label={`담당자 ${f.ph}`}
+                                        autoComplete={`bw-${i}`} name={`bw-${i}`} data-lpignore="true" data-1p-ignore
+                                        onChange={(e) => f.set(e.target.value)}
+                                        style={{ flex: 1, minWidth: 0, height: 22, border: "none", borderRadius: 5, fontSize: 14, color: "#333", outline: "none",
+                                          background: f.v ? "transparent" : PH_BG, padding: f.v ? "0 2px" : "0 8px", boxSizing: "border-box" }} />
+                                      {!f.v && (
+                                        <span aria-hidden style={{ position: "absolute", left: 8, top: 0, bottom: 0, display: "flex", alignItems: "center",
+                                          fontSize: 14, color: "#b4b4b9", pointerEvents: "none" }}>{f.ph}</span>
+                                      )}
+                                    </span>
                                     {i < 칸.length - 1 && <span style={{ color: "#dcdce0", flexShrink: 0 }}>|</span>}
                                   </span>
                                 ))}
