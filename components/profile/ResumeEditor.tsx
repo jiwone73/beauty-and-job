@@ -35,6 +35,8 @@ type Props = {
 // 고를 것이 정해진 칸들. 적게 하는 대신 고르게 하면 빠르고 표기가 통일된다.
 const 살롱직급 = ["인턴", "스탭", "디자이너", "아티스트", "실장", "원장"];
 const 졸업상태 = ["졸업", "재학", "휴학", "중퇴", "수료"];
+// 원티드 본사 경력은 재직 형태를 필수로 묻는다. 살롱은 직급이 그 자리다.
+const 재직형태 = ["정규직", "계약직", "인턴", "프리랜서", "파견직", "아르바이트"];
 const 언어들 = ["영어", "일본어", "중국어", "베트남어", "러시아어", "태국어", "스페인어", "프랑스어", "기타"];
 const 수준들 = ["능숙하게 소통", "일상 회화 가능", "간단한 표현"];
 const 활동종류 = ["수상", "교육", "봉사", "동아리", "기타"];
@@ -115,6 +117,7 @@ export default function ResumeEditor({
   const [eduModalOpen, setEduModalOpen] = useState(false);
   const [editEdu, setEditEdu] = useState<any>(null);
   const [langOpen, setLangOpen] = useState(false);
+  const 본사냐 = resumeType === "office";
   const [더적기, set더적기] = useState(false);
   const [editLang, setEditLang] = useState<any>(null);
   const [expModalOpen, setExpModalOpen] = useState(false);
@@ -266,7 +269,7 @@ export default function ResumeEditor({
             <span className="if-row-icon"><Building2 size={17} /></span>
             <div className="if-row-body">
               <div className="if-line if-line-head">
-                <InlineText value={c.company} placeholder="매장명" required wide
+                <InlineText value={c.company} placeholder={본사냐 ? "회사명" : "매장명"} required wide
                   onSave={(v) => updateCareer(c.id, { ...c, company: v })} />
               </div>
               <div className="if-line">
@@ -276,11 +279,26 @@ export default function ResumeEditor({
                 <InlineYM value={c.endDate} placeholder="재직 중"
                   onSave={(v) => updateCareer(c.id, { ...c, endDate: v })} />
                 <span className="if-bar">│</span>
-                <InlinePick value={c.position} placeholder="직급" options={살롱직급}
-                  onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
+                {/* 살롱 직급은 정해져 있어 고르게 하고, 본사 직책은 회사마다
+                    달라 적게 둔다. */}
+                {본사냐 ? (
+                  <>
+                    <InlinePick value={c.department} placeholder="재직 형태" required options={재직형태}
+                      onSave={(v) => updateCareer(c.id, { ...c, department: v })} />
+                    <span className="if-bar">│</span>
+                    <InlineText value={c.position} placeholder="직무 · 직책"
+                      onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
+                  </>
+                ) : (
+                  <InlinePick value={c.position} placeholder="직급" options={살롱직급}
+                    onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
+                )}
               </div>
               <div className="if-line">
-                <InlineText value={c.description} placeholder="맡았던 시술과 역할을 적어 보세요" wide
+                {/* 본사 지원서는 성과를 적는 자리가 곧 심사 대상이라 필수다.
+                    살롱은 시술 스킬과 사진이 그 몫을 해서 선택으로 둔다. */}
+                <InlineText value={c.description} wide required={본사냐}
+                  placeholder={본사냐 ? "주요 성과" : "맡았던 시술과 역할을 적어 보세요"}
                   onSave={(v) => updateCareer(c.id, { ...c, description: v })} />
               </div>
             </div>
@@ -296,7 +314,7 @@ export default function ResumeEditor({
                   id: genId(), company: "", department: "", position: "",
                   startDate: "", endDate: "", isVerified: false, description: "",
                 })}>
-            매장명 · 근무 기간 · 직급을 적어 주세요
+            {본사냐 ? "회사명 · 재직 기간 · 재직 형태를 적어 주세요" : "매장명 · 근무 기간 · 직급을 적어 주세요"}
           </button>
         )}
       </section>
@@ -333,7 +351,7 @@ export default function ResumeEditor({
                 <InlinePick value={e.status} placeholder="졸업 상태" required options={졸업상태}
                   onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
                 <span className="if-bar">│</span>
-                <InlineText value={e.major} placeholder="전공"
+                <InlineText value={e.major} placeholder={본사냐 ? "전공 및 학위" : "전공"} required={본사냐}
                   onSave={(v) => updateEducation(e.id, { ...e, major: v })} />
               </div>
             </div>
@@ -406,7 +424,7 @@ export default function ResumeEditor({
         {certificates.length === 0 && (
           <button type="button" className="if-empty" onClick={() => addCertificate({
             id: genId(), name: "", issuer: "", issued_ym: "",
-          })}>미용사 면허 같은 자격증을 적어 주세요</button>
+          })}>{본사냐 ? "보유한 자격증을 적어 주세요" : "미용사 면허 같은 자격증을 적어 주세요"}</button>
         )}
       </section>
 
@@ -443,7 +461,7 @@ export default function ResumeEditor({
         {experiences.length === 0 && (
           <button type="button" className="if-empty" onClick={() => addExperience({
             id: genId(), category: "", title: "", description: "",
-          })}>콘테스트 수상이나 교육 이수를 적어 주세요</button>
+          })}>{본사냐 ? "수상 · 교육 · 대외활동을 적어 주세요" : "콘테스트 수상이나 교육 이수를 적어 주세요"}</button>
         )}
       </section>
 
@@ -491,7 +509,7 @@ export default function ResumeEditor({
         {languages.length === 0 && (
           <button type="button" className="if-empty" onClick={() => addLanguage({
             id: genId(), language: "", level: "", test: "",
-          })}>손님 응대가 되는 언어를 적어 주세요</button>
+          })}>{본사냐 ? "업무에 쓰는 언어를 적어 주세요" : "손님 응대가 되는 언어를 적어 주세요"}</button>
         )}
       </section>
 

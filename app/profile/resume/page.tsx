@@ -197,6 +197,16 @@ function ResumePageContent() {
   const handleSave = async () => {
     // 경력/신입은 필수 구분: 경력 1건 이상이거나 '신입' 체크 중 하나는 반드시.
     if (!introLocal.trim()) { alert("한줄소개를 입력해주세요."); return; }
+    // 본사 지원서는 성과를 적는 자리가 곧 심사 대상이다. 별표만 붙여 두면
+    // 비운 채로 넘어가므로 여기서 막는다. 살롱은 시술 스킬과 사진이 그 몫을
+    // 하므로 묻지 않는다.
+    if (resumeType === "office") {
+      const 성과빈것 = careers.filter((c) => c.company.trim() && !c.description.trim());
+      if (성과빈것.length > 0) {
+        alert(`주요 성과를 적어 주세요.\n\n· ${성과빈것.map((c) => c.company).join("\n· ")}`);
+        return;
+      }
+    }
     if (careers.length === 0 && !isEntryLevel) {
       alert("경력자/신입 여부를 선택해주세요.\n경력이 있으면 '경력'을 추가하고, 없으면 '신입'을 체크해 주세요.");
       return;
