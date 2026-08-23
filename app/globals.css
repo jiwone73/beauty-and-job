@@ -11564,7 +11564,10 @@ div:has(> table.admin-table),
 /* 탭-헤더 여백 축소 + 이력서편집 바 제거 + 이메일↔소개 여백 축소 */
 .profile-tabs { margin-top: 10px !important; }
 .resume-subheader { display: none !important; }
-#section-basic { padding-bottom: 14px; margin-bottom: 8px; }
+/* 기본 정보만 아래 여백이 8px 이라 그 아래 칸과의 간격이 다른 곳(12px)과
+   어긋났다. 왼쪽 칸과 오른쪽 칸이 같은 자리에서 시작해도 눈에는 다르게
+   읽힌다. 간격은 .resume-section 이 정한 하나만 쓴다. */
+#section-basic { padding-bottom: 14px; }
 #section-intro { padding-top: 14px; }
 /* 메인 카드 이미지 — 채용공고 페이지와 동일 비율(1:1)로 통일 */
 
