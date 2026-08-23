@@ -4,7 +4,13 @@
 // 배경 프리셋(뷰티 필). bg=그라데이션 2색, text=제목색, wm=배경 'RECRUIT' 워터마크색
 // 사진을 배경으로 깔고 그 위에 제목을 그린다(제목은 별도 입력). bg는 사진 로드 실패 시 폴백 색.
 export const BANNER_PRESETS: { key: string; label: string; bg: string; text: string; img: string }[] = [
-  { key: "aura", label: "화이트 뷰티", bg: "#f7f5f2", text: "#1f1b17", img: "/banner-default.jpg" },
+  { key: "cream", label: "크림 & 브러시", bg: "#efe0d1", text: "#3a2f26", img: "/banner/cream.jpg" },
+  { key: "salon", label: "화이트 살롱", bg: "#e8e0d3", text: "#332c22", img: "/banner/salon.jpg" },
+  { key: "blossom", label: "벚꽃 핑크", bg: "#fadbdb", text: "#4a2b30", img: "/banner/blossom.jpg" },
+  { key: "marble", label: "마블 스파", bg: "#ebe9e7", text: "#2f2d2b", img: "/banner/marble.jpg" },
+  { key: "silk", label: "실크 화이트", bg: "#eee9e1", text: "#3a342a", img: "/banner/silk.jpg" },
+  { key: "lavender", label: "라벤더 헤어", bg: "#cfc1d4", text: "#3b2b45", img: "/banner/lavender.jpg" },
+  { key: "aura", label: "오라 베이지", bg: "#f7f5f2", text: "#1f1b17", img: "/banner-default.jpg" },
 ];
 // 폭 초과 시 자동 줄바꿈(명시적 개행 우선)
 function wrapLines(ctx: CanvasRenderingContext2D, title: string, maxW: number, maxLines = 3): string[] {
@@ -28,13 +34,13 @@ function wrapLines(ctx: CanvasRenderingContext2D, title: string, maxW: number, m
 //   PC 배너는 칸을 정사각으로 잘라 쓰므로, 글자는 가운데 정사각(=높이) 안에서만 줄바꿈해
 //   어느 쪽에서도 잘리지 않게 한다.
 export async function drawSampleBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRESETS)[number], title: string) {
-  const W = 1350, H = 900;
+  const W = 1200, H = 900;   // 공고 카드 칸과 같은 4:3 — 여기서 3:2로 만들면 카드에서 한 번 더 잘린다.
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   ctx.fillStyle = preset.bg; ctx.fillRect(0, 0, W, H);
   // 배경 사진: cover. 세로는 아래쪽에 치우치게 잘라(0.68) 아래에 놓인 제품 연출이 살아남게 한다.
-  //   제목이 묻히지 않게 채도만 낮춘다(형체·선명도는 그대로).
+  //   제목이 묻히지 않게 채도만 살짝 낮춘다(형체·선명도는 그대로).
   const img = new Image();
   img.crossOrigin = "anonymous";
   await new Promise<void>((res) => { img.onload = () => res(); img.onerror = () => res(); img.src = preset.img; });
@@ -42,7 +48,7 @@ export async function drawSampleBanner(canvas: HTMLCanvasElement, preset: (typeo
     const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
     const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
     ctx.save();
-    ctx.filter = "saturate(0.25)";
+    ctx.filter = "saturate(0.72)";
     ctx.drawImage(img, (W - dw) / 2, (H - dh) * 0.68, dw, dh);
     ctx.restore();
   }
