@@ -13141,3 +13141,63 @@ button,
   padding: 7px 13px; font-size: 13px; color: #6f6f75; cursor: pointer; font-family: inherit;
 }
 .cv-skill-more:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+/* ── 칸 하나만 고치는 이력서 줄 ─────────────────────────────────
+   무엇을 적는 칸인지 값이 없어도 보이게 회색으로 적어 두고, 누르면 그
+   칸만 열린다. 폼 전체가 열리면 매장명 하나 고치자고 기간·직급까지
+   다시 마주하게 된다. */
+.if-row { display: grid; grid-template-columns: 30px 1fr 26px; gap: 10px; align-items: start;
+  padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+.if-row:last-of-type { border-bottom: none; }
+.if-row-icon { width: 30px; height: 30px; border-radius: 8px; background: #f2f2f4;
+  display: flex; align-items: center; justify-content: center; color: #a8a8ad; }
+.if-row-body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.if-line { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; min-width: 0; }
+.if-sep, .if-bar { color: #c4c4c9; font-size: 13px; padding: 0 4px; flex-shrink: 0; }
+.if-row-del { background: none; border: none; cursor: pointer; color: #c4c4c9; padding: 4px;
+  border-radius: 6px; opacity: 0; transition: opacity .12s, color .12s; }
+.if-row:hover .if-row-del { opacity: 1; }
+.if-row-del:hover { color: var(--color-error); }
+
+/* 값이 없으면 회색 안내, 있으면 제 색. 누르면 열린다. */
+.if-slot { background: none; border: none; padding: 2px 4px; border-radius: 5px; cursor: pointer;
+  font-family: inherit; font-size: 13.5px; color: #a8a8ad; text-align: left;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  transition: background .12s; }
+.if-slot:hover { background: #f2f2f4; }
+.if-slot.on { color: #2b2b2b; }
+.if-line-head .if-slot { font-size: 15px; }
+.if-line-head .if-slot.on { font-weight: 700; }
+.if-req { font-style: normal; color: #e24b4a; margin-left: 2px; }
+
+.if-input { font-family: inherit; font-size: 13.5px; color: #2b2b2b; padding: 2px 5px;
+  border: 1px solid var(--color-primary); border-radius: 5px; outline: none; min-width: 120px; }
+.if-input.if-wide { width: 100%; }
+.if-line-head .if-input { font-size: 15px; font-weight: 700; }
+
+/* 고르는 칸이 여는 작은 판 */
+.if-wrap { position: relative; display: inline-flex; }
+.if-pop { position: absolute; top: calc(100% + 5px); left: 0; z-index: 60;
+  background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 5px; display: flex; flex-direction: column;
+  min-width: 132px; max-height: 264px; overflow-y: auto; }
+.if-pop-item { background: none; border: none; text-align: left; padding: 8px 11px; border-radius: 6px;
+  font-family: inherit; font-size: 13.5px; color: #3d3d3d; cursor: pointer; white-space: nowrap; }
+.if-pop-item:hover { background: #f2f2f4; }
+.if-pop-item.on { color: var(--color-primary); background: #efeff1; }
+.if-pop-ym { min-width: 216px; }
+.if-ym-head { display: flex; padding: 2px 4px 6px; }
+.if-ym-head button { background: none; border: none; font-family: inherit; font-size: 13.5px;
+  color: var(--color-primary); cursor: pointer; padding: 4px 6px; }
+.if-ym-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+.if-ym-month { grid-template-columns: repeat(4, 1fr); }
+.if-ym-cell { background: none; border: none; padding: 8px 4px; border-radius: 6px;
+  font-family: inherit; font-size: 13px; color: #3d3d3d; cursor: pointer; }
+.if-ym-cell:hover { background: #efeff1; color: var(--color-primary); }
+
+/* 항목 하나 더 붙이기 */
+.if-add { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
+  margin-top: 10px; padding: 11px; background: #fff; border: 1px dashed #dcdce0; border-radius: 10px;
+  font-family: inherit; font-size: 13.5px; color: #6f6f75; cursor: pointer;
+  transition: border-color .12s, color .12s; }
+.if-add:hover { border-color: var(--color-primary); color: var(--color-primary); }

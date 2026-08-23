@@ -1,8 +1,8 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Check, ChevronDown, FileText, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
+import { Building2, Check, ChevronDown, FileText, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
 import { useProfileStore, genId } from "@/lib/store/profileStore";
-import CareerEditModal from "@/components/profile/CareerEditModal";
+import { InlineText, InlinePick, InlineYM } from "@/components/profile/inline/InlineField";
 import EducationModal from "@/components/profile/EducationModal";
 import LanguageModal from "@/components/profile/LanguageModal";
 import ExperienceModal from "@/components/profile/ExperienceModal";
@@ -34,6 +34,9 @@ type Props = {
   resumeFileReadOnly?: boolean;
 };
 
+// 살롱 직급은 정해져 있다. 적게 하는 대신 고르게 하면 표기가 통일된다.
+const 살롱직급 = ["인턴", "스탭", "디자이너", "아티스트", "실장", "원장"];
+
 export default function ResumeEditor({
   resumeType,
   emailLocal,
@@ -54,6 +57,7 @@ export default function ResumeEditor({
     educations, careers, skills, languages, experiences, links,
     setEmail, addLink, removeLink, removeLanguage, removeExperience,
     removeEducation, removeCareer, certificates, removeCertificate,
+    addCareer, updateCareer,
     isEntryLevel, setIsEntryLevel,
     entryExperience, setEntryExperience,
   } = useProfileStore();
@@ -244,43 +248,43 @@ export default function ResumeEditor({
             }}
           />
         )}
-        {isEntryLevel ? null : careers.length === 0 ? null : (
-          careers.map((c) => {
-            const key = `career-${c.id}`;
-            const open = !collapsed.has(key);
-            return (
-              <div key={c.id} className="resume-career-item">
-                <div className="resume-career-head" onClick={() => { setEditCareer(c); setCareerModalOpen(true); }} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-                  <ChevronDown size={16} onClick={(e) => { e.stopPropagation(); toggleExpand(key); }} style={{ cursor: "pointer", flexShrink: 0, marginRight: "6px", color: "#bbb", transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
-                  <strong>{c.company}</strong>
-                  {!open && (
-                    <span style={{ marginLeft: "8px", fontSize: "13px", fontWeight: 400, color: "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {c.startDate} - {c.endDate}
-                    </span>
-                  )}
-                  <span style={{ marginLeft: "auto", display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                    <button className="resume-icon-btn danger" aria-label="삭제" onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}>
-                      <Trash2 size={15} />
-                    </button>
-                  </span>
-                </div>
-                {open && (
-                  <>
-                    <span className="resume-career-period">{c.startDate} - {c.endDate}</span>
-                    {c.department && <p className="resume-career-dept">{c.department} · {c.position}</p>}
-                    {c.description && <p className="resume-career-dept" style={{ whiteSpace: "pre-line", marginTop: "4px", color: "#555" }}>{c.description}</p>}
-                  </>
-                )}
+        {/* 칸마다 무엇을 적는지 회색으로 적어 둔다. 누르면 그 칸 하나만 열린다 —
+            매장명 하나 고치자고 기간·직급까지 다시 마주할 이유가 없다. */}
+        {!isEntryLevel && careers.map((c) => (
+          <div key={c.id} className="if-row">
+            <span className="if-row-icon"><Building2 size={17} /></span>
+            <div className="if-row-body">
+              <div className="if-line if-line-head">
+                <InlineText value={c.company} placeholder="매장명" required wide
+                  onSave={(v) => updateCareer(c.id, { ...c, company: v })} />
               </div>
-            );
-          })
-        )}
-        {careerModalOpen && (
-          <CareerEditModal inline isOpen={careerModalOpen} onClose={() => { setCareerModalOpen(false); setEditCareer(null); }} editTarget={editCareer} resumeType={resumeType} />
-        )}
-        {!careerModalOpen && careers.length === 0 && !isEntryLevel && (
-          <button type="button" className="resume-blank" onClick={() => { setEditCareer(null); setCareerModalOpen(true); }}>
-            <span className="resume-blank-fields">매장명 <i>*</i> │ 근무 기간 <i>*</i> │ 직급</span>
+              <div className="if-line">
+                <InlineYM value={c.startDate} required
+                  onSave={(v) => updateCareer(c.id, { ...c, startDate: v })} />
+                <span className="if-sep">–</span>
+                <InlineYM value={c.endDate} placeholder="재직 중"
+                  onSave={(v) => updateCareer(c.id, { ...c, endDate: v })} />
+                <span className="if-bar">│</span>
+                <InlinePick value={c.position} placeholder="직급" options={살롱직급}
+                  onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
+              </div>
+              <div className="if-line">
+                <InlineText value={c.description} placeholder="맡았던 시술과 역할을 적어 보세요" wide
+                  onSave={(v) => updateCareer(c.id, { ...c, description: v })} />
+              </div>
+            </div>
+            <button className="if-row-del" aria-label="삭제"
+              onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}>
+              <Trash2 size={15} />
+            </button>
+          </div>
+        ))}
+        {!isEntryLevel && (
+          <button type="button" className="if-add" onClick={() => addCareer({
+            id: genId(), company: "", department: "", position: "",
+            startDate: "", endDate: "", isVerified: false, description: "",
+          })}>
+            <Plus size={16} /> 경력 추가
           </button>
         )}
       </section>
