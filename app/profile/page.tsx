@@ -3,10 +3,11 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal } from "lucide-react";
+import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal, Trash2 } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
+import { InlineText } from "@/components/profile/inline/InlineField";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
 import { shortRegion } from "@/lib/regionShort";
@@ -558,7 +559,7 @@ export default function ProfilePage() {
                 <div className="pf-wide" style={{ padding: "11px 16px", borderBottom: "1px solid #efeff1", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px" }}>
                   {/* 구직유형은 사이드 맨 위에 이름과 함께 세운다 — 이 카드 한 칸의 값이
                       아니라 이력서까지 걸리는 값이라, 화면 머리맡이 제 자리다. */}
-                  <span className="profile-info-label">이름/사진<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
+                  <span className="profile-info-label">사진<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", position: "relative" }}>
                     <div
                       onClick={(e) => { e.stopPropagation(); setAvatarMenu((v) => !v); }}
@@ -578,7 +579,6 @@ export default function ProfilePage() {
                         </div>
                       )}
                     </div>
-                    <p style={{ fontSize: "14px", fontWeight: 400, color: "#555", margin: 0 }}>{name || "회원"}</p>
                     {avatarMenu && (
                       <div onClick={(e) => e.stopPropagation()}
                         style={{ position: "absolute", top: "100%", right: 0, marginTop: "6px", zIndex: 30, background: "#fff", border: "1px solid #efeff1", borderRadius: "10px", boxShadow: "0 6px 20px rgba(0,0,0,0.12)", padding: "6px", minWidth: "196px" }}>
@@ -720,7 +720,7 @@ export default function ProfilePage() {
                     )}
                   </div>
                 ) : (
-                  <InfoRow label="휴대전화" value={formatPhone(phoneOverride || userPhone || phone || "") || "정보 없음"} isEmpty={!(phoneOverride || userPhone || phone)} onClick={() => { setPhoneInput((phoneOverride || userPhone || phone || "").replace(/\D/g, "")); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); setEditField("phone"); }} required />
+                  <InfoRow label="휴대전화" value={formatPhone(phoneOverride || userPhone || phone || "") || "010-XXXX-XXXX"} isEmpty={!(phoneOverride || userPhone || phone)} onClick={() => { setPhoneInput((phoneOverride || userPhone || phone || "").replace(/\D/g, "")); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); setEditField("phone"); }} required />
                 )}
 
                 {editField === "birth" ? (
@@ -760,7 +760,7 @@ export default function ProfilePage() {
                     />
                   </div>
                 ) : (
-                  <InfoRow label="생년월일" value={birth ? `${birth.slice(0, 4)}.${birth.slice(4, 6) || "00"}.${birth.slice(6, 8) || "00"}` : "정보 없음"} isEmpty={!birth} onClick={() => { setBirthInput(birth || ""); setEditField("birth"); }} required />
+                  <InfoRow label="생년월일" value={birth ? `${birth.slice(0, 4)}.${birth.slice(4, 6) || "00"}.${birth.slice(6, 8) || "00"}` : "YYYY.MM.DD"} isEmpty={!birth} onClick={() => { setBirthInput(birth || ""); setEditField("birth"); }} required />
                 )}
 
                 {editField === "gender" ? (
@@ -796,7 +796,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 ) : (
-                  <InfoRow label="성별" value={gender || "정보 없음"} isEmpty={!gender} onClick={() => setEditField("gender")} required />
+                  <InfoRow label="성별" value={gender || "선택하기"} isEmpty={!gender} onClick={() => setEditField("gender")} required />
                 )}
 
                 {editField === "email" ? (
@@ -836,7 +836,7 @@ export default function ProfilePage() {
                     />
                   </div>
                 ) : (
-                  <InfoRow label="이메일" value={emailInput || "입력하기"} isEmpty={!emailInput} onClick={() => { setNewEmailInput(""); setEmailPw(""); setEmailMsg(""); setShowEmailModal(true); }} isLast required />
+                  <InfoRow label="이메일" value={emailInput || "name@example.com"} isEmpty={!emailInput} onClick={() => { setNewEmailInput(""); setEmailPw(""); setEmailMsg(""); setShowEmailModal(true); }} isLast required />
                 )}
               </div>
             </section>
@@ -844,20 +844,28 @@ export default function ProfilePage() {
 
             {/* 거주지 (기본정보 하위) */}
             <section className="profile-section" style={{ marginTop: 0 }}>
-              <div className="profile-info-card" style={{ padding: "16px" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                  <label className="profile-info-label">거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  {addressRoad && (
-                    <button type="button" onClick={handleClearAddress}
-                      style={{ fontSize: "12px", color: "#999", background: "none", border: "none", cursor: "pointer", padding: "2px 4px", textDecoration: "underline" }}>
-                      초기화
-                    </button>
-                  )}
-                </div>
-                <div style={{ marginBottom: "8px" }}>
-                  <input readOnly value={addressRoad} placeholder="터치하여 주소를 검색해주세요"
-                    onClick={openPostcode}
-                    style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", border: "1px solid #efeff1", borderRadius: "8px", fontSize: "14px", color: "#555", background: "#fafafa", cursor: "pointer" }} />
+              <div className="profile-info-card" style={{ padding: "13px 16px" }}>
+                {/* 기업정보와 같은 결 — 큰 상자 둘 대신 라벨 옆 한 줄.
+                    주소는 검색으로만 넣으니 눌러서 여는 자리글, 상세주소는 그 자리에서 친다. */}
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <label className="profile-info-label" style={{ flexShrink: 0 }}>거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: 0 }}>
+                    <div className="if-row-body">
+                      <div className="if-line">
+                        <button type="button" className={`if-slot ${addressRoad ? "on" : ""}`} onClick={openPostcode}>
+                          {addressRoad || "주소 검색"}{!addressRoad && <i className="if-req">*</i>}
+                        </button>
+                        <span className="if-sep">|</span>
+                        <InlineText value={addressDetail} placeholder="동·호수"
+                          onSave={(v) => { setAddressDetail(v); patchUser({ address_detail: v }); }} />
+                      </div>
+                    </div>
+                    {addressRoad && (
+                      <button className="if-row-del" aria-label="주소 초기화" title="주소 초기화" onClick={handleClearAddress}>
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {postcodeOpen && (
                   <div className="postcode-modal-overlay">
@@ -872,12 +880,6 @@ export default function ProfilePage() {
                       <div ref={postcodeLayerRef} style={{ flex: 1, overflow: "hidden" }} />
                     </div>
                   </div>
-                )}
-                {addressRoad && (
-                  <input value={addressDetail} placeholder="상세주소 (동·호수 등)"
-                    onChange={(e) => setAddressDetail(e.target.value)}
-                    onBlur={() => patchUser({ address_detail: addressDetail })}
-                    style={{ width: "100%", padding: "12px 14px", border: "1px solid #efeff1", borderRadius: "8px", fontSize: "14px", color: "#555", background: "#fafafa", boxSizing: "border-box" }} />
                 )}
               </div>
             </section>

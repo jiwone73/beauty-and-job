@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { Bell, X, Store, Building2 } from "lucide-react";
+import { Bell, X, Store, Building2, User, Send, Bookmark, Settings, LogOut } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -21,9 +21,9 @@ import { useApplicationStore } from "@/lib/store/applicationStore";
  * 같은 곳으로 가는 길이 둘이 되고 어느 메뉴가 켜져야 할지도 어긋난다.
  */
 const 메뉴 = [
-  { href: "/profile", 글: "프로필" },
-  { href: "/profile/applied", 글: "지원현황" },
-  { href: "/profile/bookmarks", 글: "관심공고" },
+  { href: "/profile", 글: "프로필", 그림: User },
+  { href: "/profile/applied", 글: "지원현황", 그림: Send },
+  { href: "/profile/bookmarks", 글: "관심공고", 그림: Bookmark },
 ];
 
 export default function ProfileShell({ children }: { children: React.ReactNode }) {
@@ -128,6 +128,7 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
               )}
             </div>
           )}
+          {userName && <span className="pf-side-sep" />}
           {/* 머리줄에서 내려온 알림. */}
           <div className="pf-side-notif">        <div style={{ position: "relative", display: "inline-flex", marginLeft: "auto" }}>
           <button
@@ -173,10 +174,14 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
         </div>
           </div>
           {메뉴.map((m) => (
-            <Link key={m.href} href={m.href} className={pathname === m.href ? "on" : undefined}>{m.글}</Link>
+            <Link key={m.href} href={m.href} className={pathname === m.href ? "on" : undefined}>
+              <m.그림 size={17} />{m.글}
+            </Link>
           ))}
           <span className="pf-side-sep" />
-          <Link href="/profile/settings" className={pathname === "/profile/settings" ? "on" : undefined}>설정</Link>
+          <Link href="/profile/settings" className={pathname === "/profile/settings" ? "on" : undefined}>
+            <Settings size={17} />설정
+          </Link>
           <button type="button" className="pf-side-out" onClick={() => {
             useSignupStore.getState().reset();
             useProfileStore.getState().reset();
@@ -184,7 +189,7 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
             useApplicationStore.getState().reset();
             logout();
             router.push("/");
-          }}>로그아웃</button>
+          }}><LogOut size={17} />로그아웃</button>
         </nav>
 
         <div className="pf-main">{children}</div>
