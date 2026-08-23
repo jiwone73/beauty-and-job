@@ -1920,6 +1920,16 @@ export default function JobPostForm({
   const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
   // 근무시간 숫자 입력: 타이핑 중에는 숫자·콜론만 남기고, 칸을 벗어날 때 HH:MM으로 정리한다.
   //   "9"→09:00, "930"→09:30, "0930"→09:30, "2000"→20:00 (24시 넘거나 60분 넘으면 잘라 맞춤)
+  // 전화번호에 하이픈을 넣어 준다. 저장할 때는 숫자만 남기므로 화면 표기만 바뀐다.
+  //   02 는 지역번호가 두 자리, 나머지는 세 자리다.
+  const 전화꼴 = (v: string) => {
+    const d = (v || "").replace(/\D/g, "").slice(0, 11);
+    const 서울 = d.startsWith("02");
+    const 앞 = 서울 ? 2 : 3;
+    if (d.length <= 앞) return d;
+    if (d.length <= 앞 + 4) return `${d.slice(0, 앞)}-${d.slice(앞)}`;
+    return `${d.slice(0, 앞)}-${d.slice(앞, d.length - 4)}-${d.slice(-4)}`;
+  };
   const cleanTime = (v: string) => v.replace(/[^\d:]/g, "").slice(0, 5);
   const fmtTime = (v: string) => {
     const d = v.replace(/\D/g, "").slice(0, 4);
@@ -3091,21 +3101,21 @@ export default function JobPostForm({
                               제목 세 줄이 사라진다. 고른 방법에 따라 나오는 칸만 사이에 바를 넣는다. */}
                           {canName && (() => {
                             const 칸 = [
-                              { k: "name", ph: "이름", v: nmManagerName, set: setNmManagerName, im: undefined as ("numeric" | "email" | undefined), 몫: 1 },
-                              canPhone ? { k: "phone", ph: "전화", v: nmManagerPhone, set: setNmManagerPhone, im: "numeric" as const, 몫: 1.4 } : null,
-                              canEmail ? { k: "mail", ph: "메일", v: nmContactEmail, set: setNmContactEmail, im: "email" as const, 몫: 1.8 } : null,
-                            ].filter(Boolean) as { k: string; ph: string; v: string; set: (v: string) => void; im?: "numeric" | "email"; 몫: number }[];
+                              { k: "name", ph: "이름", v: nmManagerName, set: setNmManagerName, im: undefined as ("numeric" | "email" | undefined), 폭: 66 },
+                              canPhone ? { k: "phone", ph: "전화", v: nmManagerPhone, set: (v: string) => setNmManagerPhone(전화꼴(v)), im: "numeric" as const, 폭: 122 } : null,
+                              canEmail ? { k: "mail", ph: "메일", v: nmContactEmail, set: setNmContactEmail, im: "email" as const, 폭: 168 } : null,
+                            ].filter(Boolean) as { k: string; ph: string; v: string; set: (v: string) => void; im?: "numeric" | "email"; 폭: number }[];
                             return (
-                              // 칸마다 제 몫을 미리 잡아 둔다. 채운 칸만 늘리면 자리가 들썩이고
-                              // 옆에 빈 띠가 남는다. 몫은 들어갈 글자 길이대로 — 이름<전화<메일.
-                              <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "3px 0", minWidth: 0 }}>
+                              // 칸 폭은 들어갈 글자 길이에 맞춘다 — 이름 3자, 전화 010-1234-5678,
+                              // 메일 주소. 좁으면 눌러 담지 말고 다음 줄로 넘긴다(자리는 안 들썩인다).
+                              <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, padding: "3px 0", minWidth: 0 }}>
                                 {칸.map((f, i) => (
-                                  <span key={f.k} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0, flex: `${f.몫} 1 0` }}>
-                                    {/* 크롬은 autoComplete="off" 를 무시하고 이름·전화 칸으로 넘겨짚어
-                                        연락처 아이콘과 저장된 이름 목록을 띄운다. 모르는 토큰을 주면
-                                        그 넘겨짚기가 꺼진다. */}
+                                  <span key={f.k} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0, flex: `1 1 ${f.폭}px` }}>
+                                    {/* 크롬은 name·autocomplete 에 든 낱말로 칸을 알아보고 연락처
+                                        아이콘을 띄운다. 앞서 nope-phone·nope-mail 처럼 이름을 지어
+                                        오히려 힌트를 주고 있었다. 뜻 없는 값으로 둔다. */}
                                     <input value={f.v} placeholder={f.ph} inputMode={f.im}
-                                      autoComplete={`nope-${f.k}`} name={`nope-${f.k}`} data-lpignore="true" data-1p-ignore
+                                      autoComplete={`bw-${i}`} name={`bw-${i}`} data-lpignore="true" data-1p-ignore
                                       onChange={(e) => f.set(e.target.value)}
                                       style={{ flex: 1, minWidth: 0, height: 22, border: "none", borderRadius: 5, fontSize: 14, color: "#333", outline: "none",
                                         background: f.v ? "transparent" : PH_BG, padding: f.v ? "0 2px" : "0 8px", boxSizing: "border-box" }} />
