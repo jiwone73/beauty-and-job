@@ -596,13 +596,13 @@ export default function ResumeEditor({
             {/* 항목이 곧 입력칸이다. 링크명과 주소를 그 자리에서 친다 —
                 주소만 넣으면 이름은 주소에서 알아낸다(instagram.com → 인스타그램). */}
             {links.map((l) => (
-              <div key={l.id} className="if-row">
+              <div key={l.id} className="if-row if-row-plain">
                 <span className="if-row-icon"><LinkIcon size={16} /></span>
                 <div className="if-row-body">
                   <div className="if-line">
                     {/* 이름을 고르면 주소 앞부분까지 채워 준다 — 유튜브를 고르면
                         아래 칸이 https://youtube.com/@ 로 시작한 채 기다린다. */}
-                    <InlineSuggest value={l.category} placeholder="어떤 곳인지 (예: 작업 인스타)" wide
+                    <InlineSuggest value={l.category} placeholder="SNS명 (예: 유튜브)" wide
                       찾기={SNS찾기}
                       onPick={(k) => updateLink(l.id, { ...l, category: k.이름, url: l.url || k.앞부분 })}
                       onSave={(v) => updateLink(l.id, { ...l, category: v })} />
