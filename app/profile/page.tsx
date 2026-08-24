@@ -556,6 +556,14 @@ export default function ProfilePage() {
       <div className="profile-content">
             <section className="profile-section">
               <div className="profile-info-card pf-grid">
+                {/* 구직유형 — 가입 때 정한다. 바꾸면 아래 직군·스킬이 통째로 어긋나므로
+                    보여만 준다. 이 값이 '직군' 의 뜻을 정하니 목록 맨 위가 제 자리다. */}
+                <div className="profile-info-row" style={{ cursor: "default" }}>
+                  <span className="profile-info-label">구직유형</span>
+                  <span className={`profile-info-value ${dbJobType ? "" : "is-empty"}`}>
+                    {dbJobType === "STORE" ? "매장" : dbJobType === "OFFICE" ? "본사" : "선택하기"}
+                  </span>
+                </div>
 
                 {editField === "phone" ? (
                   <div className="profile-info-row" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
@@ -694,7 +702,7 @@ export default function ProfilePage() {
                     />
                   </div>
                 ) : (
-                  <InfoRow label="생년월일" value={birth ? `${birth.slice(0, 4)}.${birth.slice(4, 6) || "00"}.${birth.slice(6, 8) || "00"}` : "YYYY.MM.DD"} isEmpty={!birth} onClick={() => { setBirthInput(birth || ""); setEditField("birth"); }} required />
+                  <InfoRow label="생년월일" value={birth ? `${birth.slice(0, 4)}.${birth.slice(4, 6) || "00"}.${birth.slice(6, 8) || "00"}` : "YYYYMMDD"} isEmpty={!birth} onClick={() => { setBirthInput(birth || ""); setEditField("birth"); }} required />
                 )}
 
                 {editField === "gender" ? (
@@ -730,7 +738,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 ) : (
-                  <InfoRow label="성별" value={gender || "선택하기"} isEmpty={!gender} onClick={() => setEditField("gender")} required />
+                  <InfoRow label="성별" value={/^m/i.test(gender) ? "남성" : /^f/i.test(gender) ? "여성" : (gender || "선택하기")} isEmpty={!gender} onClick={() => setEditField("gender")} required />
                 )}
 
                 {editField === "email" ? (
@@ -770,12 +778,12 @@ export default function ProfilePage() {
                     />
                   </div>
                 ) : (
-                  <InfoRow label="이메일" value={emailInput || "name@example.com"} isEmpty={!emailInput} onClick={() => { setNewEmailInput(""); setEmailPw(""); setEmailMsg(""); setShowEmailModal(true); }} isLast required />
+                  <InfoRow label="이메일" value={emailInput || "예) hong@gmail.com"} isEmpty={!emailInput} onClick={() => { setNewEmailInput(""); setEmailPw(""); setEmailMsg(""); setShowEmailModal(true); }} required />
                 )}
                 {/* 거주지 — 기업정보와 같은 결로 라벨 옆 한 줄. 카드를 따로 두지 않는다:
                     셋으로 갈라 두니 한 페이지가 아니라 세 덩어리로 읽혔다. */}
-                <div className="pf-wide" style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", borderTop: "1px solid #efeff1" }}>
-                  <label className="profile-info-label" style={{ flexShrink: 0 }}>거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                <div className="pf-wide" style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 3, padding: "13px 16px", borderBottom: "1px solid #efeff1" }}>
+                  <label className="profile-info-label">거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: 0 }}>
                     <div className="if-row-body">
                       <div className="if-line">
@@ -923,7 +931,6 @@ function InfoRow({ label, value, isEmpty, isLast, onClick, required }: {
     <button className={`profile-info-row ${isLast ? "is-last" : ""}`} onClick={onClick} disabled={!onClick}>
       <span className="profile-info-label">{label}{required && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</span>
       <span className={`profile-info-value ${isEmpty ? "is-empty" : ""}`}>{value}</span>
-      <ChevronRight size={16} className="profile-info-chevron" />
     </button>
   );
 }
