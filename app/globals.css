@@ -13044,6 +13044,8 @@ button,
    헤더 메뉴로 올라간 별개의 화면이다. */
 .pf-body { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
 .pf-side { display: none; }
+/* 폰은 위 탭 줄이 지금 화면을 이미 말해 준다 — PC 미디어쿼리에서만 되살린다. */
+.pf-main-title { display: none; }
 
 @media (min-width: 900px) {
   /* 채용공고와 같은 흰 판이다. 지금까진 페이지 바탕이 회색(#f7f7f8)이고
@@ -13110,6 +13112,13 @@ button,
   .pf-side-avatar-menu button:hover { background: #f7f7f8; }
   .pf-side-me-name { font-size: 15px; font-weight: 700; color: #2b2b2b; }
   .pf-side-me-type { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px; font-size: 12px; color: #8a8a8f; }
+  /* 본문 왼쪽 위 제목 — 사이드 'HA JIWON' 과 같은 글자(15px/700/#2b2b2b).
+     .pf-main 과 .pf-side 가 같은 22px 위 여백을 쓰므로, .pf-side-me 의
+     2px 안쪽 여백만큼만 더 내리면 두 글자가 같은 높이에서 시작한다.
+     폰은 사이드 대신 위 탭 줄이 지금 화면을 이미 말해 준다 — 여기 또
+     세우면 같은 말이 두 번 된다. .pf-main-title 기본값(아래)에서 감춘 걸
+     PC 에서만 되살린다. */
+  .pf-main-title { display: block; font-size: 15px; font-weight: 700; color: #2b2b2b; margin: 2px 0 20px; }
 
   .pf-side .pf-side-out { color: #a9a2b2; }
   /* 사이드가 생기면서 안쪽 칸이 가운데로 몰릴 이유가 없어졌다. 폰 시절의

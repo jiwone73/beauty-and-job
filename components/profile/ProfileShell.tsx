@@ -26,11 +26,23 @@ const 메뉴 = [
   { href: "/profile/bookmarks", 글: "관심공고", 그림: Bookmark },
 ];
 
+// 사이드에서 고른 메뉴 이름. PC 는 사이드가 늘 옆에 있어 뭘 보고 있는지
+// 안 잊어버리지만, 본문 자체에는 지금 무엇을 보는지 말하는 줄이 없었다.
+const 메뉴제목: Record<string, string> = {
+  "/profile": "프로필",
+  "/profile/applied": "지원현황",
+  "/profile/bookmarks": "관심공고",
+  "/profile/notifications": "알림",
+};
+
 export default function ProfileShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { logout, userName } = useAuthStore();
   const [unreadNotif, setUnreadNotif] = useState(0);
+  const 현재제목 = pathname && 메뉴제목[pathname]
+    ? 메뉴제목[pathname]
+    : pathname?.startsWith("/profile/settings") ? "설정" : "";
 
   const loadNotifs = () => {
     const token = localStorage.getItem("access_token");
@@ -104,7 +116,12 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
           }}><LogOut size={17} />로그아웃</button>
         </nav>
 
-        <div className="pf-main">{children}</div>
+        <div className="pf-main">
+          {/* 사이드의 'HA JIWON' 과 같은 높이에 둔다 — 사이드에서 고른 값이
+              본문 왼쪽 위에도 그대로 보여야 지금 무엇을 보는지 안 놓친다. */}
+          {현재제목 && <h1 className="pf-main-title">{현재제목}</h1>}
+          {children}
+        </div>
       </div>
     </main>
   );
