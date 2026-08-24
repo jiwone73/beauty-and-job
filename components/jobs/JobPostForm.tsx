@@ -2223,12 +2223,19 @@ export default function JobPostForm({
     <>
       {/* 헤더 폭·정렬을 본문(760px)과 일치 → 상단 버튼 오른쪽 끝이 본문 오른쪽 끝과 맞음 */}
       <div className="admin-form-header" style={{ maxWidth: 콘텐츠폭, marginLeft: mx, marginRight: mx }}>
-        {mode !== "admin" && (
+        {/* 모바일은 사이드 메뉴가 없어 되돌아갈 길이 이 버튼뿐이다. 데스크톱은
+            사이드의 '채용공고 관리'가 그 역할을 하니, 같은 자리에 제목을 둔다. */}
+        {기업폼 && isMobile && (
           <button className="admin-back-btn" onClick={() => router.push(listHref)}>
             <ChevronLeft size={18} /> 목록으로
           </button>
         )}
-        {!isMobile && <span style={{ marginRight: "auto" }} />}
+        {기업폼 && !isMobile && (
+          <h2 style={{ fontSize: 18, fontWeight: 400, color: "#1a1a1a", margin: 0 }}>
+            {editId ? "채용공고 수정" : "채용공고 등록"}
+          </h2>
+        )}
+        {mode === "admin" && !isMobile && <span style={{ marginRight: "auto" }} />}
         {!isMobile && (
           <div className="admin-form-actions">
             {/* 임시저장 버튼 + (관리자) 임시저장 목록 드롭다운 — 페이지를 밀지 않도록 버튼에서 팝오버로 노출 */}
@@ -2303,8 +2310,8 @@ export default function JobPostForm({
         headerSlot
       )}
 
-      {/* 페이지 제목 — 아래 콘텐츠(760px, mx 정렬)와 시작점을 맞춘다 */}
-      {!isMobile && (
+      {/* 관리자 화면 제목 — 기업 폼은 위 헤더 줄로 옮겼다(목록으로 링크가 있던 자리). */}
+      {mode === "admin" && !isMobile && (
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 10px`, boxSizing: "border-box" }}>
           <h2 style={{ fontSize: 18, fontWeight: 400, color: "#1a1a1a", margin: "0 0 0 2px" }}>
             {editId ? "채용공고 수정" : "채용공고 등록"}
