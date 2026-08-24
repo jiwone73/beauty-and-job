@@ -15,7 +15,28 @@
       "mcp__Claude_Browser__tabs_create",
       "mcp__Claude_Browser__tabs_select",
       "mcp__Claude_Browser__tabs_close",
-      "mcp__Claude_Browser__preview_logs"
+      "mcp__Claude_Browser__preview_logs",
+
+      "Bash(python3*)",
+      "Bash(node*)",
+      "Bash(npx tsc*)",
+      "Bash(npx next*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(grep*)",
+      "Bash(sed*)",
+      "Bash(curl*)",
+      "Bash(pkill -f \"next dev\"*)",
+      "Bash(lsof -ti:3000*)",
+      "Bash(rm -rf .next*)",
+      "Bash(nohup npx next dev*)",
+      "Bash(mkdir -p*)",
+      "Bash(rm -f*)",
+      "Bash(xargs*)"
     ]
   }
 }

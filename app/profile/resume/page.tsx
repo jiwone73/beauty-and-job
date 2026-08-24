@@ -6,7 +6,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
 import { AlertCircle } from "lucide-react";
-import { ChevronDown, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
+import { Briefcase, ChevronDown, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -543,11 +543,10 @@ function ResumePageContent() {
                 {/* 위쪽 여백을 따로 주지 않는다. 제목 아래 간격은 다른 구역과 같이
                     .resume-section-title 이 맡고, 여기서 또 띄우면 이 칸만 벌어진다. */}
                 <h3 className="resume-name" style={{ fontSize: "15px", fontWeight: 400 }}>{name || "이름"}</h3>
-                {/* 한 줄에 둘씩 붙여 놓으면 넉 줄이라 86px, 옆 사진은 128px 이라
-                    글 아래가 비어 보였다. 직군과 이메일을 각자 줄로 내리면 여섯 줄
-                    23 + 21x5 = 128px 로 사진과 아래끝이 맞는다. */}
+                {/* 직군은 여기 없다 — 아래 '직군 영역' 칸으로 옮겼다. 미리보기는
+                    이미 그렇게 따로 갈라서 보여 주고 있었는데(office_job_areas
+                    전부를 칩으로), 여기는 값 하나만 이 줄에 욱여넣고 있었다. */}
                 <p className="resume-job-line">{birthDisplay}</p>
-                {jobDisplay && <p className="resume-job-line">{jobDisplay}</p>}
                 <p className="resume-contact">{formatPhone(phone || phoneLocal)}</p>
                 {emailLocal && <p className="resume-contact">{emailLocal}</p>}
                 {addressDisplay && <p className="resume-contact">{addressDisplay}</p>}
@@ -562,7 +561,18 @@ function ResumePageContent() {
             </div>
           </section>
 
-          
+          {/* 직군 영역 — 미리보기(ResumePreview)에는 이미 있었는데 폼에는
+              없고, 대신 '기본 정보'에 값 하나만 끼워 넣고 있었다. 본사
+              이력서에서 office_job_areas 전부를 여기로 옮긴다(경력 바로
+              위). 프로필에서 정하는 값이라 여기서는 보여만 준다. */}
+          {resumeType === "office" && effectiveOfficeAreas.length > 0 && (
+            <section id="section-job-area" className="resume-section">
+              <h2 className="resume-section-title"><Briefcase size={16} className="resume-section-icon" />직군 영역</h2>
+              <div className="resume-skill-chips">
+                {effectiveOfficeAreas.map((area) => <span key={area} className="resume-skill-chip">{area}</span>)}
+              </div>
+            </section>
+          )}
 
           <ResumeEditor
             resumeType={resumeType}

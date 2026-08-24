@@ -289,8 +289,7 @@ export default function ResumeEditor({
         {/* 칸마다 무엇을 적는지 회색으로 적어 둔다. 누르면 그 칸 하나만 열린다 —
             매장명 하나 고치자고 기간·직급까지 다시 마주할 이유가 없다. */}
         {!isEntryLevel && careers.map((c) => (
-          <div key={c.id} className="if-row">
-            <span className="if-row-icon"><Building2 size={17} /></span>
+          <div key={c.id} className="if-row if-row-plain">
             <div className="if-row-body">
               <흠줄 말들={항목흠("career", c.id)} />
               <div className="if-line if-line-head">
@@ -354,8 +353,7 @@ export default function ResumeEditor({
         </div>
         <흠줄 말들={칸흠("education")} />
         {educations.map((e) => (
-          <div key={e.id} className="if-row">
-            <span className="if-row-icon"><GraduationCap size={17} /></span>
+          <div key={e.id} className="if-row if-row-plain">
             <div className="if-row-body">
               <흠줄 말들={항목흠("education", e.id)} />
               <div className="if-line if-line-head">
@@ -413,8 +411,7 @@ export default function ResumeEditor({
           </button>
         </div>
         {certificates.map((c) => (
-          <div key={c.id} className="if-row">
-            <span className="if-row-icon"><Award size={17} /></span>
+          <div key={c.id} className="if-row if-row-plain">
             <div className="if-row-body">
               <div className="if-line if-line-head">
                 <InlineText value={c.name} placeholder="자격증명" required wide
@@ -442,8 +439,7 @@ export default function ResumeEditor({
           </button>
         </div>
         {experiences.map((x) => (
-          <div key={x.id} className="if-row">
-            <span className="if-row-icon"><Trophy size={17} /></span>
+          <div key={x.id} className="if-row if-row-plain">
             <div className="if-row-body">
               <div className="if-line if-line-head">
                 <InlineText value={x.title} placeholder="무엇을 했는지" required wide
@@ -479,8 +475,7 @@ export default function ResumeEditor({
           const t = 시험읽기(l.test);
           const 담기 = (v: Partial<typeof t>) => updateLanguage(l.id, { ...l, test: 시험쓰기({ ...t, ...v }) });
           return (
-            <div key={l.id} className="if-row">
-              <span className="if-row-icon"><Globe size={17} /></span>
+            <div key={l.id} className="if-row if-row-plain">
               <div className="if-row-body">
                 <흠줄 말들={항목흠("language", l.id)} />
                 <div className="if-line">
@@ -597,7 +592,6 @@ export default function ResumeEditor({
                 주소만 넣으면 이름은 주소에서 알아낸다(instagram.com → 인스타그램). */}
             {links.map((l) => (
               <div key={l.id} className="if-row if-row-plain">
-                <span className="if-row-icon"><LinkIcon size={16} /></span>
                 <div className="if-row-body">
                   <div className="if-line">
                     {/* 이름을 고르면 주소 앞부분까지 채워 준다 — 유튜브를 고르면
