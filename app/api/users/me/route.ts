@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   const client = await pool.connect();
   try {
     const res = await client.query(
-      `SELECT id, email, name, phone, gender, job_type, office_job_areas, status, created_at, avatar_url, avatar_public,
+      `SELECT id, email, name, phone, gender, nationality, job_type, office_job_areas, status, created_at, avatar_url, avatar_public,
               birth_date, address_road, address_detail, region_sido, region_sigungu, preferred_regions,
               portfolio_images, resume_file_url, resume_file_name, resume_file_size,
               (password_hash IS NOT NULL) AS has_password, (kakao_id IS NOT NULL) AS is_kakao
@@ -59,7 +59,7 @@ export async function PATCH(req: NextRequest) {
   const body = await req.json();
   const {
     job_type, phone,
-    birth, gender, email, office_job_areas,
+    birth, gender, nationality, email, office_job_areas,
     address_road, address_detail, region_sido, region_sigungu, preferred_regions,
   } = body;
   const sets: string[] = [];
@@ -98,6 +98,12 @@ export async function PATCH(req: NextRequest) {
     }
     sets.push("birth_date = TO_DATE($" + idx++ + ", 'YYYYMMDD')");
     params.push(birthDate);
+  }
+  if (nationality !== undefined) {
+    // 목록에 없는 나라도 있을 수 있어 값을 묶지 않는다. 빈 값이면 '안 밝힘'.
+    const n = String(nationality || "").trim().slice(0, 40);
+    sets.push("nationality = $" + idx++);
+    params.push(n || null);
   }
   if (gender !== undefined) {
     const genderVal = gender === "남성" || gender === "여성" ? gender : null;
@@ -152,7 +158,7 @@ export async function PATCH(req: NextRequest) {
   try {
     const res = await client.query(
       "UPDATE users SET " + sets.join(", ") + " WHERE id = $" + idx +
-      " RETURNING id, name, email, birth_date, gender, job_type, address_road, address_detail, region_sido, region_sigungu, preferred_regions",
+      " RETURNING id, name, email, birth_date, gender, nationality, job_type, address_road, address_detail, region_sido, region_sigungu, preferred_regions",
       params
     );
     if (res.rowCount === 0) return err("USER_004", "사용자를 찾을 수 없습니다.", 404);

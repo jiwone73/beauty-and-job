@@ -7,7 +7,7 @@ import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal, Trash2 }
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
-import { InlineText } from "@/components/profile/inline/InlineField";
+import { InlineText, InlinePick } from "@/components/profile/inline/InlineField";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
 import { shortRegion } from "@/lib/regionShort";
@@ -69,6 +69,9 @@ export default function ProfilePage() {
   // 얼굴은 경력보다 민감하다. 사진만 빼고 싶은 사람이 프로필을 통째로 닫지
   // 않도록 따로 끌 수 있게 한다. 기본은 공개.
   const [avatarPublic, setAvatarPublic] = useState(true);
+  // 국적 — 살롱 채용에 외국인 구직자가 적지 않다. 비자·의사소통 때문에 매장이
+  //   지원 전에 알아야 한다. 안 밝혀도 되도록 필수로 두지 않는다.
+  const [nationality, setNationality] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarLoaded, setAvatarLoaded] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -131,6 +134,7 @@ export default function ProfilePage() {
       .then((res) => {
         if (res.success) {
           if (res.data.job_type) setDbJobType(res.data.job_type);
+          if (res.data.nationality) setNationality(res.data.nationality);
           if (res.data.email) setEmailInput(res.data.email);
           setIsKakao(!!res.data.is_kakao);
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
@@ -630,6 +634,29 @@ export default function ProfilePage() {
                   <span className="profile-info-label">구직유형</span>
                   <span className={`profile-info-value ${dbJobType ? "" : "is-empty"}`}>
                     {dbJobType === "STORE" ? "매장" : dbJobType === "OFFICE" ? "본사" : "선택하기"}
+                  </span>
+                </div>
+
+                {/* 국적 — 원티드식으로 그 자리에서 고른다. 펼쳐지는 판·취소 단추를
+                    따로 두지 않는다(칸 하나 고르자고 화면이 들썩일 이유가 없다).
+                    목록에 없는 나라는 '기타'로 두고 자세한 것은 이력서 어학에서 읽는다. */}
+                <div className="profile-info-row" style={{ cursor: "default" }}>
+                  <span className="profile-info-label">국적</span>
+                  <span>
+                    <InlinePick value={nationality} placeholder="선택하기"
+                      options={["대한민국", "중국", "베트남", "일본", "몽골", "우즈베키스탄", "러시아", "태국", "필리핀", "기타"]}
+                      onSave={(v) => {
+                        const 앞 = nationality;
+                        setNationality(v);
+                        const token = localStorage.getItem("access_token");
+                        fetch("/api/users/me", {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                          body: JSON.stringify({ nationality: v }),
+                        }).then((r) => r.json()).then((d) => {
+                          if (!d.success) { setNationality(앞); alert(d.error?.message || "저장에 실패했어요."); }
+                        }).catch(() => { setNationality(앞); alert("네트워크 오류가 났어요."); });
+                      }} />
                   </span>
                 </div>
 
