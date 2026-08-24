@@ -13379,9 +13379,6 @@ button,
   transition: border-color .12s, color .12s; }
 .if-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
 /* 항목이 하나도 없는 칸의 안내 한 줄 */
-/* 눌리는 것이 아니라 무엇을 적는 칸인지 알리는 한 줄이다. 더하기는 머리줄
-   ＋ 가 맡으므로 여기까지 누를 곳으로 만들면 같은 일을 하는 자리가 둘이 된다. */
-.if-empty { margin: 0; padding: 12px 0; text-align: left; font-size: 13.5px; color: #a8a8ad; }
 
 /* 프로필이 덜 채워졌을 때 이력서 대신 서는 안내 판 */
 .resume-gate { max-width: 460px; margin: 60px auto; padding: 32px 28px; text-align: center;
@@ -13414,7 +13411,6 @@ button,
 input::placeholder,
 textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .if-slot:not(.on),
-.if-empty,
 .resume-blank-fields { color: #b4b4b9; }
 /* 항목의 첫 줄은 그 항목의 이름이다(매장명·학교명·자격증명). 여기까지
    흐려지면 무엇에 관한 줄인지가 먼저 사라진다. 한 단계 진하게 둔다. */

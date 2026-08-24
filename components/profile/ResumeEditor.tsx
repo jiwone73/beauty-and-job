@@ -264,8 +264,8 @@ export default function ResumeEditor({
               <Plus size={18} />
             </button>
           </div>
-        <흠줄 말들={칸흠("career")} />
         </div>
+        <흠줄 말들={칸흠("career")} />
         {isEntryLevel && (
           <textarea
             ref={entryRef}
@@ -328,12 +328,6 @@ export default function ResumeEditor({
             </button>
           </div>
         ))}
-        {/* 항목이 하나도 없을 때만 안내 한 줄. 더하기는 머리줄 + 가 맡는다. */}
-        {!isEntryLevel && careers.length === 0 && (
-          <p className="if-empty">
-            {본사냐 ? "회사명 · 재직 기간 · 재직 형태를 적어 주세요" : "매장명 · 근무 기간 · 직급을 적어 주세요"}
-          </p>
-        )}
       </section>
 
       {/* 학력 */}
@@ -380,9 +374,6 @@ export default function ResumeEditor({
             </button>
           </div>
         ))}
-        {educations.length === 0 && (
-          <p className="if-empty">학교명 · 재학 기간 · 졸업 상태를 적어 주세요</p>
-        )}
       </section>
 
       {true && (
@@ -403,11 +394,6 @@ export default function ResumeEditor({
           )}
           {skillModalOpen && (
             <SkillModal inline isOpen={skillModalOpen} onClose={() => setSkillModalOpen(false)} />
-          )}
-          {!skillModalOpen && skills.length === 0 && (
-            <p className="if-empty">
-              내 직무 기반 스킬을 추가해보세요
-            </p>
           )}
         </section>
       )}
@@ -439,9 +425,6 @@ export default function ResumeEditor({
             </button>
           </div>
         ))}
-        {certificates.length === 0 && (
-          <p className="if-empty">{본사냐 ? "보유한 자격증을 적어 주세요" : "미용사 면허 같은 자격증을 적어 주세요"}</p>
-        )}
       </section>
 
       {/* 활동/수상 */}
@@ -474,9 +457,6 @@ export default function ResumeEditor({
             </button>
           </div>
         ))}
-        {experiences.length === 0 && (
-          <p className="if-empty">{본사냐 ? "수상 · 교육 · 대외활동을 적어 주세요" : "콘테스트 수상이나 교육 이수를 적어 주세요"}</p>
-        )}
       </section>
 
       <section id="section-language" className="resume-section">
@@ -522,9 +502,6 @@ export default function ResumeEditor({
             </div>
           );
         })}
-        {languages.length === 0 && (
-          <p className="if-empty">{본사냐 ? "업무에 쓰는 언어를 적어 주세요" : "손님 응대가 되는 언어를 적어 주세요"}</p>
-        )}
       </section>
 
       <section id="section-portfolio" className="resume-section">
