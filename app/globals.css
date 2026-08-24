@@ -1786,6 +1786,9 @@ input[type="range"].career-slider::-moz-range-thumb {
    건드리지 않는다. */
 .resume-section .resume-career-head { padding-left: 22px; }
 #section-portfolio > .portfolio-grid { margin-left: 22px; }
+/* 기본 정보(이름·생년월일·연락처·주소)도 같은 22px 로 맞춘다 — 여기만
+   빠져 있어 제목 아이콘 밑으로 글자가 삐져나와 있었다. */
+#section-basic .resume-basic-info { margin-left: 22px; }
 .resume-career-head strong { font-weight: 400; font-size: 14px; min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 항목 헤더의 수정·삭제 아이콘 묶음은 항상 보이도록 축소 금지 */
 .resume-career-head > span:last-child { flex-shrink: 0; }
