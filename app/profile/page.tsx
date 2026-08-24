@@ -675,6 +675,8 @@ export default function ProfilePage() {
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <span className="profile-info-label">{칸그림("휴대전화")}휴대전화<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                        <button onClick={() => { setEditField(null); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); }}
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                         <button
                           style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: phoneVerified ? "#582681" : "#e0e0e0", color: phoneVerified ? "#fff" : "#9a9a9a", cursor: phoneVerified ? "pointer" : "not-allowed" }}
                           disabled={!phoneVerified}
@@ -697,8 +699,6 @@ export default function ProfilePage() {
                           }}>
                           저장
                         </button>
-                        <button onClick={() => { setEditField(null); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); }}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                       </span>
                     </div>
                     <div style={{ display: "flex", gap: "8px" }}>
@@ -826,6 +826,8 @@ export default function ProfilePage() {
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <span className="profile-info-label">{칸그림("이메일")}이메일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
+                        <button onClick={() => setEditField(null)}
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                         <button
                           style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#582681", color: "#fff", cursor: "pointer" }}
                           onClick={async () => {
@@ -846,8 +848,6 @@ export default function ProfilePage() {
                           }}>
                           저장
                         </button>
-                        <button onClick={() => setEditField(null)}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
                       </span>
                     </div>
                     <input
