@@ -11995,6 +11995,7 @@ div:has(> table.admin-table),
 .profile-select-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid #e0e0e0; background: #fff; color: #666; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: inherit; }
 .profile-select-btn.accent { border-color: #efeff1; color: #582681; }
 .profile-select-btn.danger { border-color: #f0d0d0; color: #c0392b; }
+.profile-select-btn:disabled { color: #c9c9cf; border-color: #f2f2f4; cursor: not-allowed; }
 /* 고르는 중에는 체크박스가 첫 줄(제목)과 눈높이를 맞춰야 한다.
    카드가 가운데 정렬이라 그냥 두면 제목과 매장명 사이에 끼어 보인다. */
 .bookmark-item:has(> .applied-check) { align-items: flex-start; }

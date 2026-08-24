@@ -154,6 +154,23 @@ export default function AppliedList({ userName }: { userName: string }) {
     </div>
   );
 
+  /* 증명서 단추는 고르는 중이든 아니든 막대 오른쪽 끝에 같은 크기로 선다.
+     고르는 중일 때만 통줄 막대로 따로 떠 있으니 누를 곳이 두 군데로 갈렸다.
+     건수는 왼쪽 '전체 (N)' 이 이미 말해 주므로 글도 한 가지로 둔다. */
+  const 증명서단추 = (
+    <button
+      className="profile-select-btn accent"
+      style={selectMode ? undefined : { marginLeft: "auto" }}
+      disabled={selectMode && selectedApps.size === 0}
+      onClick={() => {
+        if (!selectMode) { setSelectMode(true); alert("증명서에 넣을 지원 내역을 골라 주세요."); return; }
+        setShowCert(true);
+      }}
+    >
+      📄 취업활동 증명서
+    </button>
+  );
+
   return (
     <div className="profile-tab-content">
       <div className="profile-select-bar">
@@ -173,29 +190,15 @@ export default function AppliedList({ userName }: { userName: string }) {
                 삭제 {selectedApps.size}
               </button>
             )}
+            {증명서단추}
           </>
         ) : (
           <>
             <button className="profile-select-btn" onClick={() => setSelectMode(true)}>선택</button>
-            <button
-              className="profile-select-btn accent"
-              style={{ marginLeft: "auto" }}
-              onClick={() => { setSelectMode(true); alert("증명서에 넣을 지원 내역을 골라 주세요."); }}
-            >
-              📄 취업활동 증명서
-            </button>
+            {증명서단추}
           </>
         )}
       </div>
-      {selectMode && selectedApps.size > 0 && (
-        <button
-          className="profile-select-btn accent"
-          style={{ width: "100%", marginBottom: 12 }}
-          onClick={() => setShowCert(true)}
-        >
-          📄 고른 {selectedApps.size}건으로 취업활동 증명서
-        </button>
-      )}
       <div className="applied-list">
         {apps.map((app) => {
           const date = new Date(app.applied_at);
