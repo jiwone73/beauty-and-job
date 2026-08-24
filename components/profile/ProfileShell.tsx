@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { Bell, X, Store, Building2, User, Send, Bookmark, Settings, LogOut } from "lucide-react";
+import { Bell, X, User, Send, Bookmark, Settings, LogOut } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -29,7 +29,7 @@ const 메뉴 = [
 export default function ProfileShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { logout, userName, userJobType } = useAuthStore();
+  const { logout, userName } = useAuthStore();
   const [unreadNotif, setUnreadNotif] = useState(0);
 
   const loadNotifs = () => {
@@ -75,12 +75,6 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
           {userName && (
             <div className="pf-side-me">
               <span className="pf-side-me-name">{userName}</span>
-              {userJobType && (
-                <span className="pf-side-me-type">
-                  {userJobType === "STORE" ? <Store size={12} /> : <Building2 size={12} />}
-                  {userJobType === "STORE" ? "매장" : "본사"}
-                </span>
-              )}
             </div>
           )}
           {userName && <span className="pf-side-sep" />}

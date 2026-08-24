@@ -1307,7 +1307,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .profile-info-label { display: inline-flex; align-items: center; gap: 6px; }
 .profile-info-icon { flex-shrink: 0; color: #b7b0c0; }
 /* 값 옆에 붙는 덧말(구직유형이 무엇을 뜻하는지 등). 값보다 흐리게 두어 값이 먼저 읽힌다. */
-.profile-info-note { font-style: normal; font-size: 12.5px; color: #b4b4b9; margin-left: 8px; line-height: 1.5; }
+.profile-info-note { font-style: normal; font-size: 12.5px; color: #d4d4d8; margin-left: 8px; line-height: 1.5; }
 /* 라벨 글자가 시작하는 자리 = 아이콘 폭(16) + 사이(6) = 22px. 값도 그 선에 세운다.
    고르개(.if-slot)는 제 안에 좌우 4px 을 두르고 있어, 22 를 그대로 주면 글자가
    4px 더 오른쪽으로 밀린다. 그만큼 덜어 18px 을 준다. */
