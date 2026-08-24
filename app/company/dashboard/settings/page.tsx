@@ -9,7 +9,8 @@ import BannerStrip from "@/components/jobs/BannerStrip";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { SNS찾기 } from "@/lib/snsPresets";
 import { InlineSuggest, InlineText } from "@/components/profile/inline/InlineField";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Store, Tag, Link as LinkIcon, Globe, Users, Calendar,
+  UserRound, Phone, Smartphone, Home, FileText, Image as ImageIcon, BadgeCheck } from "lucide-react";
 import type { CompanyInfo } from "@/lib/types/company";
 
 declare global {
@@ -38,6 +39,21 @@ export default function CompanySettingsPage() {
   const [coverImages, setCoverImages] = useState<{ url: string; name?: string }[]>([]);
   const [coverUploading, setCoverUploading] = useState(false);
   const [coverStart, setCoverStart] = useState(0);
+  /** 항목마다 왼쪽에 놓는 아이콘. 라벨 이름으로 고른다 — 칸이 늘어도 여기만 손보면 된다. */
+  const 칸그림 = (이름: string) => {
+    const 표: Record<string, any> = {
+      "매장명": Store, "기업명": Store, "회사명": Store, "업종": Tag,
+      "SNS": LinkIcon, "웹사이트": Globe, "브랜드명": BadgeCheck,
+      "직원수": Users, "사원수": Users, "설립연도": Calendar,
+      "대표자": UserRound, "매장 전화번호": Phone, "회사 대표번호": Phone,
+      "담당자": UserRound, "담당자 휴대폰": Smartphone, "주소": Home,
+      "매장 소개": FileText, "기업 소개": FileText,
+      "회사 로고": ImageIcon, "공고 배너 이미지": ImageIcon,
+    };
+    const G = 표[이름];
+    return G ? <G size={15} className="admin-form-icon" /> : null;
+  };
+
   const [samplePreset, setSamplePreset] = useState(0);   // 샘플 배너 배경 — 공고 등록 화면과 같은 목록
   // SNS·홈페이지 — 개인회원 프로필과 같은 방식으로 여러 개를 담는다.
   //   website_url 은 열다섯 곳에서 읽고 있어 그대로 두고, 첫 링크를 늘 거기에 맞춘다.
@@ -459,7 +475,7 @@ export default function CompanySettingsPage() {
   const 링크한줄 = links[0] || { id: "__빈", category: "", url: "" };
   const 링크목록 = (
     <div className="admin-form-row">
-      <label className="admin-form-label">{isStore ? "SNS" : "웹사이트"}</label>
+      <label className="admin-form-label">{칸그림(isStore ? "SNS" : "웹사이트")}{isStore ? "SNS" : "웹사이트"}</label>
       <div className="if-row if-row-plain" style={{ borderBottom: "none", padding: 0, minWidth: 0 }}>
         <div className="if-row-body">
           <div className="if-line">
@@ -554,7 +570,7 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row">
                 <div>
                 <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
-                  <label className="admin-form-label" style={{margin:0}}>회사 로고</label>
+                  <label className="admin-form-label" style={{margin:0}}>{칸그림("회사 로고")}회사 로고</label>
                   <label title={logoUrl ? "로고 변경" : "로고 등록"}
                     style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:38, height:38, flexShrink:0,
                       borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#582681",
@@ -594,7 +610,7 @@ export default function CompanySettingsPage() {
                 {/* 버튼은 제목 바로 옆에 붙인다(공고 등록 화면과 같은 자리).
                     모바일은 테두리·아이콘을 빼고 글자만 남겨 좁은 폭을 제목에 내준다. */}
                 <div style={{display:"flex", alignItems:"center", gap:6, marginBottom:"8px"}}>
-                  <label className="admin-form-label" style={{margin:0}}>공고 배너 이미지</label>
+                  <label className="admin-form-label" style={{margin:0}}>{칸그림("공고 배너 이미지")}공고 배너 이미지</label>
                   <label title="여러 장 추가할 수 있어요" style={{...bannerBtn(false), cursor: coverUploading ? "wait" : "pointer"}}>
                     {!isMobile && <ImagePlus size={17} />}{coverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
                     <input type="file" accept="image/jpeg,image/png,image/webp" multiple
@@ -674,13 +690,13 @@ export default function CompanySettingsPage() {
 
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
-                  <label className="admin-form-label">{L.name}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="admin-form-label">{칸그림(L.name)}{L.name}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <input className="admin-form-input" placeholder={isStore ? "예) 준오헤어 광명점" : "예) (주)뷰티워크"}
                     value={form.company_name}
                     onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
                 </div>
                 <div className="admin-form-row">
-                  <label className="admin-form-label">업종<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="admin-form-label">{칸그림("업종")}업종<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <select className="admin-form-select" data-empty={!form.industry} style={{ height: 42, boxSizing: "border-box" }}
                     value={form.industry}
                     onChange={(e) => setForm({ ...form, industry: e.target.value })}>
@@ -705,7 +721,7 @@ export default function CompanySettingsPage() {
                 <div className="admin-form-row-2col">
                   {링크목록}
                   <div className="admin-form-row">
-                    <label className="admin-form-label">{L.size}</label>
+                    <label className="admin-form-label">{칸그림(L.size)}{L.size}</label>
                     <select className="admin-form-select" data-empty={!form.company_size}
                       style={{ height: 42, boxSizing: "border-box" }}
                       value={form.company_size}
@@ -720,7 +736,7 @@ export default function CompanySettingsPage() {
                 <>
                   <div className="admin-form-row-2col">
                     <div className="admin-form-row">
-                      <label className="admin-form-label">브랜드명</label>
+                      <label className="admin-form-label">{칸그림("브랜드명")}브랜드명</label>
                       <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
                         value={form.brand_name}
                         onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
@@ -729,7 +745,7 @@ export default function CompanySettingsPage() {
                   </div>
                   <div className="admin-form-row-2col">
                     <div className="admin-form-row">
-                      <label className="admin-form-label">{L.size}</label>
+                      <label className="admin-form-label">{칸그림(L.size)}{L.size}</label>
                       <select className="admin-form-select" data-empty={!form.company_size}
                         style={{ height: 42, boxSizing: "border-box" }}
                         value={form.company_size}
@@ -739,7 +755,7 @@ export default function CompanySettingsPage() {
                       </select>
                     </div>
                     <div className="admin-form-row">
-                      <label className="admin-form-label">설립연도</label>
+                      <label className="admin-form-label">{칸그림("설립연도")}설립연도</label>
                       <input type="number" className="admin-form-input" placeholder="예) 2020"
                         style={{ height: 42, boxSizing: "border-box" }}
                         min="1900" max={new Date().getFullYear()}
@@ -749,13 +765,13 @@ export default function CompanySettingsPage() {
                   </div>
                   <div className="admin-form-row-2col">
                     <div className="admin-form-row">
-                      <label className="admin-form-label">대표자</label>
+                      <label className="admin-form-label">{칸그림("대표자")}대표자</label>
                       <input className="admin-form-input" placeholder="예) 홍길동"
                         value={form.representative_name}
                         onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
                     </div>
                     <div className="admin-form-row">
-                      <label className="admin-form-label">{L.phone}</label>
+                      <label className="admin-form-label">{칸그림(L.phone)}{L.phone}</label>
                       <input className="admin-form-input" placeholder="02-XXX-XXXX" inputMode="numeric" maxLength={13}
                         value={formatPhone(form.company_phone)}
                         onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
@@ -765,13 +781,13 @@ export default function CompanySettingsPage() {
               )}
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
-                  <label className="admin-form-label">담당자<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="admin-form-label">{칸그림("담당자")}담당자<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <input className="admin-form-input" placeholder="예) 홍길동"
                     value={form.manager_name}
                     onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
                 </div>
                 <div className="admin-form-row">
-                  <label className="admin-form-label">담당자 휴대폰<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="admin-form-label">{칸그림("담당자 휴대폰")}담당자 휴대폰<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <button type="button" onClick={openPhoneModal}
                     style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 6, width: "100%", background: "none", border: "none", padding: 0, cursor: "pointer", color: form.phone ? "#333" : "#cfcfcf", fontSize: 14, fontFamily: "inherit" }}>
                     <span>{form.phone ? formatPhone(form.phone) : "010-XXXX-XXXX"}</span>
@@ -782,7 +798,7 @@ export default function CompanySettingsPage() {
               {/* 주소도 다른 칸과 같은 결로 — 큰 테두리 상자 둘 대신 라벨 옆 한 줄.
                   주소는 검색으로만 넣으므로 눌러서 여는 자리글, 상세주소는 그 자리에서 친다. */}
               <div className="admin-form-row" style={{ gridColumn: "1 / -1" }}>
-                <label className="admin-form-label">주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                <label className="admin-form-label">{칸그림("주소")}주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 <div className="if-row if-row-plain" style={{ borderBottom: "none", padding: 0 }}>
                   <div className="if-row-body">
                     <div className="if-line">
@@ -805,7 +821,7 @@ export default function CompanySettingsPage() {
 
               <div className="admin-form-row">
                 <div>
-                <label className="admin-form-label">{L.intro}</label>
+                <label className="admin-form-label">{칸그림(L.intro)}{L.intro}</label>
                 <textarea className="admin-form-textarea" rows={5}
                   placeholder={isStore
                     ? "어떤 매장인지 적어 주세요 — 주 고객층, 시술 강점, 분위기, 직원 구성, 교육·성장 지원처럼\n(공고 상세의 '매장 소개'에 그대로 실려요)"
