@@ -13399,12 +13399,12 @@ button,
   .pf-side-notif .company-notif-dropdown { left: 0; right: auto; top: 40px; }
 }
 
-/* 이력서 기본 정보 — 글 여섯 줄과 옆 사진의 아래끝을 맞춘다.
-   줄 자체는 23 + 21x5 = 128px 로 사진과 같은데, 줄 사이 여백 14px 때문에
-   글이 사진보다 그만큼 내려와 있었다. 줄 간격은 line-height 21px 이 이미
-   맡고 있으므로 여백은 뗀다. */
-.resume-name-block .resume-name,
-.resume-name-block .resume-job-line { margin-bottom: 0; }
+/* 이력서 기본 정보 — 글줄과 옆 사진의 아래끝을 맞춘다. 직군을 별도
+   섹션으로 뺀 뒤로 줄이 여섯에서 다섯(이름·생년월일·전화·이메일·주소)
+   으로 줄어, 23 + 21x4 = 107px 로 사진(128px)보다 21px 짧아졌다
+   ("늘려서 주소와 사진하단부 테두리가 수평이되게") — 줄 사이 네 틈에
+   5.25px 씩 나눠 21px 를 되채운다. */
+.resume-name-block > *:not(:last-child) { margin-bottom: 5.25px; }
 /* 칸 안에서 펼친 폼의 저장·취소. 한 줄에 나란히 두되 저장이 넓다. */
 .cv-actions { display: flex; gap: 8px; align-items: stretch; }
 .cv-actions .cv-btn-primary { flex: 1; margin-top: 0 !important; }
