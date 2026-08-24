@@ -7,7 +7,7 @@ import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal, Trash2 }
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
-import { InlineText, InlinePick } from "@/components/profile/inline/InlineField";
+import { InlineText, InlinePick, InlineYMD } from "@/components/profile/inline/InlineField";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
 import { shortRegion } from "@/lib/regionShort";
@@ -760,81 +760,56 @@ export default function ProfilePage() {
                   <InfoRow label="휴대전화" value={formatPhone(phoneOverride || userPhone || phone || "") || "010-XXXX-XXXX"} isEmpty={!(phoneOverride || userPhone || phone)} onClick={() => { setPhoneInput((phoneOverride || userPhone || phone || "").replace(/\D/g, "")); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); setEditField("phone"); }} required />
                 )}
 
-                {editField === "birth" ? (
-                  <div className="profile-info-row" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <span className="profile-info-label">생년월일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
-                      <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-                        <button
-                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#582681", color: "#fff", cursor: "pointer" }}
-                          onClick={async () => {
-                            const birthCheck = validateBirth(birthInput);
-                            if (!birthCheck.ok) { alert(birthCheck.message); return; }
-                            try {
-                              const token = localStorage.getItem("access_token");
-                              const res = await fetch("/api/users/me", {
-                                method: "PATCH",
-                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                                body: JSON.stringify({ birth: birthInput }),
-                              });
-                              const data = await res.json();
-                              if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
-                              useSignupStore.getState().setBasic({ birth: birthInput });
-                              setEditField(null);
-                            } catch { alert("네트워크 오류가 발생했습니다."); }
-                          }}>
-                          저장
-                        </button>
-                        <button onClick={() => setEditField(null)}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
-                      </span>
-                    </div>
-                    <input
-                      type="text" placeholder="YYYYMMDD (예: 19900115)" maxLength={8}
-                      value={birthInput}
-                      onChange={(e) => setBirthInput(e.target.value.replace(/\D/g, ""))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #efeff1", borderRadius: "8px", fontSize: "14px" }}
-                    />
-                  </div>
-                ) : (
-                  <InfoRow label="생년월일" value={birth ? `${birth.slice(0, 4)}.${birth.slice(4, 6) || "00"}.${birth.slice(6, 8) || "00"}` : "YYYYMMDD"} isEmpty={!birth} onClick={() => { setBirthInput(birth || ""); setEditField("birth"); }} required />
-                )}
+                {/* 생년월일 — 큰 입력칸에 여덟 자리를 치게 하고 저장·취소를 붙여 두니
+                    칸 하나 고치자고 화면이 들썩였다. 그 자리에서 연→월→일로 고른다. */}
+                <div className="profile-info-row" style={{ cursor: "default" }}>
+                  <span className="profile-info-label">생년월일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
+                  <span>
+                    <InlineYMD required
+                      value={birth ? `${birth.slice(0, 4)}.${birth.slice(4, 6)}.${birth.slice(6, 8)}` : ""}
+                      placeholder="YYYY.MM.DD"
+                      onSave={async (v) => {
+                        const d = v.replace(/\D/g, "");
+                        if (d.length !== 8) return;
+                        const 검사 = validateBirth(d);
+                        if (!검사.ok) { alert(검사.message); return; }
+                        try {
+                          const token = localStorage.getItem("access_token");
+                          const res = await fetch("/api/users/me", {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                            body: JSON.stringify({ birth: d }),
+                          });
+                          const data = await res.json();
+                          if (!data.success) { alert(data.error?.message || "저장에 실패했어요."); return; }
+                          useSignupStore.getState().setBasic({ birth: d });
+                        } catch { alert("네트워크 오류가 났어요."); }
+                      }} />
+                  </span>
+                </div>
 
-                {editField === "gender" ? (
-                  <div className="profile-info-row is-last" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <span className="profile-info-label">성별<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
-                      <button onClick={() => setEditField(null)}
-                        style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>
-                        취소
-                      </button>
-                    </div>
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      {["남성", "여성"].map((g) => (
-                        <button key={g}
-                          style={{ flex: 1, padding: "10px", borderRadius: "8px", fontSize: "14px", cursor: "pointer", border: gender === g ? "1.5px solid #582681" : "1px solid #efeff1", background: gender === g ? "#582681" : "#fff", color: gender === g ? "#fff" : "#333", fontWeight: gender === g ? 600 : 400 }}
-                          onClick={async () => {
-                            try {
-                              const token = localStorage.getItem("access_token");
-                              const res = await fetch("/api/users/me", {
-                                method: "PATCH",
-                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                                body: JSON.stringify({ gender: g }),
-                              });
-                              const data = await res.json();
-                              if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
-                              useSignupStore.getState().setBasic({ gender: g as "남성" | "여성" });
-                              setEditField(null);
-                            } catch { alert("네트워크 오류가 발생했습니다."); }
-                          }}>
-                          {g}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <InfoRow label="성별" value={/^m/i.test(gender) ? "남성" : /^f/i.test(gender) ? "여성" : (gender || "선택하기")} isEmpty={!gender} onClick={() => setEditField("gender")} required />
-                )}
+                {/* 성별 — 국적·생년월일과 같은 결로 그 자리에서 고른다. */}
+                <div className="profile-info-row" style={{ cursor: "default" }}>
+                  <span className="profile-info-label">성별<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
+                  <span>
+                    <InlinePick required placeholder="선택하기" options={["남성", "여성"]}
+                      value={/^m/i.test(gender) ? "남성" : /^f/i.test(gender) ? "여성" : (gender || "")}
+                      onSave={async (v) => {
+                        if (!v) return;
+                        try {
+                          const token = localStorage.getItem("access_token");
+                          const res = await fetch("/api/users/me", {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                            body: JSON.stringify({ gender: v }),
+                          });
+                          const data = await res.json();
+                          if (!data.success) { alert(data.error?.message || "저장에 실패했어요."); return; }
+                          useSignupStore.getState().setBasic({ gender: v as "남성" | "여성" });
+                        } catch { alert("네트워크 오류가 났어요."); }
+                      }} />
+                  </span>
+                </div>
 
                 {editField === "email" ? (
                   <div className="profile-info-row is-last" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>

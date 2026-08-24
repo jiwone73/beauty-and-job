@@ -179,6 +179,95 @@ export function InlinePick({
 }
 
 /** 연·월을 고르는 칸. 손으로 치게 하면 형식이 제각각이 된다. */
+/**
+ * 연 → 월 → 일 을 그 자리에서 고른다. 생년월일처럼 세 토막이 다 필요한 칸에 쓴다.
+ * 큰 입력칸에 여덟 자리를 치게 하면 오타가 나고, 저장·취소 단추까지 붙어
+ * 칸 하나 고치자고 화면이 들썩인다.
+ */
+export function InlineYMD({
+  value, placeholder = "YYYY.MM.DD", required, onSave, 올해 = new Date().getFullYear(), 몇해 = 90,
+}: {
+  value: string;
+  placeholder?: string;
+  required?: boolean;
+  onSave: (v: string) => void;
+  올해?: number;
+  몇해?: number;
+}) {
+  const [열림, set열림] = useState(false);
+  const [연, set연] = useState<number | null>(null);
+  const [월, set월] = useState<number | null>(null);
+  const 감싸개 = useRef<HTMLSpanElement>(null);
+
+  useLayoutEffect(() => {
+    if (!열림) return;
+    const m = value.match(/(\d{4})/);
+    set연(m ? Number(m[1]) : null);
+    set월(null);
+  }, [열림, value]);
+
+  useEffect(() => {
+    if (!열림) return;
+    const 밖 = (e: MouseEvent) => { if (!감싸개.current?.contains(e.target as Node)) set열림(false); };
+    const 키 = (e: KeyboardEvent) => { if (e.key === "Escape") set열림(false); };
+    document.addEventListener("mousedown", 밖);
+    window.addEventListener("keydown", 키);
+    return () => { document.removeEventListener("mousedown", 밖); window.removeEventListener("keydown", 키); };
+  }, [열림]);
+
+  const 연들 = Array.from({ length: 몇해 }, (_, i) => 올해 - i);
+  const 그달일수 = (y: number, m: number) => new Date(y, m, 0).getDate();
+
+  return (
+    <span className="if-wrap" ref={감싸개}>
+      <button type="button" className={`if-slot ${value ? "on" : ""}`} onClick={() => set열림((v) => !v)}>
+        {value || placeholder}{!value && 별표(required)}
+      </button>
+      {열림 && (
+        <span className="if-pop if-pop-ym">
+          {연 === null ? (
+            <span className="if-ym-grid">
+              {연들.map((y) => (
+                <button key={y} type="button" className="if-ym-cell" onClick={() => set연(y)}>{y}</button>
+              ))}
+            </span>
+          ) : 월 === null ? (
+            <>
+              <span className="if-ym-head">
+                <button type="button" onClick={() => set연(null)}>{연}년</button>
+              </span>
+              <span className="if-ym-grid if-ym-month">
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                  <button key={m} type="button" className="if-ym-cell" onClick={() => set월(m)}>
+                    {String(m).padStart(2, "0")}
+                  </button>
+                ))}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="if-ym-head">
+                <button type="button" onClick={() => set월(null)}>{연}년 {String(월).padStart(2, "0")}월</button>
+              </span>
+              <span className="if-ym-grid if-ym-month">
+                {Array.from({ length: 그달일수(연, 월) }, (_, i) => i + 1).map((d) => (
+                  <button key={d} type="button" className="if-ym-cell"
+                    onClick={() => {
+                      onSave(`${연}.${String(월).padStart(2, "0")}.${String(d).padStart(2, "0")}`);
+                      set열림(false);
+                    }}>
+                    {String(d).padStart(2, "0")}
+                  </button>
+                ))}
+              </span>
+            </>
+          )}
+        </span>
+      )}
+    </span>
+  );
+}
+
 export function InlineYM({
   value, placeholder = "YYYY.MM", required, onSave, 올해 = 2026,
 }: {
