@@ -13614,9 +13614,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   .jp-side-item.on { color: var(--color-primary); }
   .jp-side-item.on span { color: var(--color-primary); }
 
-  /* 본문 안쪽 칸들이 760px 로 묶여 있던 것을 풀어 사이드 옆을 다 쓰게 한다. */
-  .jp-body > div,
-  .jp-body > div > div { max-width: none !important; }
   .jp-body { min-width: 0; }
 }
 /* 모집분야 ＋ — 이 화면에서 가장 먼저 누르는 것이라 제목보다 크게 세운다.
