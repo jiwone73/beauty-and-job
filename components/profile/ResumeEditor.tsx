@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { AlertCircle, Award, Building2, Link as LinkIcon, Check, ChevronDown, FileText, Globe, GraduationCap, Pencil, Plus, Trash2, Trophy, Upload, X } from "lucide-react";
+import { AlertCircle, Award, Building2, Link as LinkIcon, Check, ChevronDown, FileText, Globe, GraduationCap, Image as ImageIcon, Pencil, Plus, Sparkles, Trash2, Trophy, Upload, X } from "lucide-react";
 import { useProfileStore, genId } from "@/lib/store/profileStore";
 import { InlineText, InlinePick, InlineYM, InlineSuggest } from "@/components/profile/inline/InlineField";
 import { SNS찾기 } from "@/lib/snsPresets";
@@ -236,6 +236,7 @@ export default function ResumeEditor({
       <section id="section-career" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">
+            <Building2 size={16} className="resume-section-icon" />
             경력
             <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
             {!isEntryLevel && totalCareer && (
@@ -338,6 +339,7 @@ export default function ResumeEditor({
       <section id="section-education" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title">
+            <GraduationCap size={16} className="resume-section-icon" />
             학력
             {/* 매장 이력서에서는 학력을 묻지 않는다 — 미용실·네일숍이 보는 것은
                 학교가 아니라 경력과 작업물이고, 별표를 붙여 두면 채우지 못한
@@ -383,7 +385,7 @@ export default function ResumeEditor({
       {true && (
         <section id="section-skill" className="resume-section">
           <div className="resume-section-head">
-            <h2 className="resume-section-title">스킬{!본사냐 && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}</h2>
+            <h2 className="resume-section-title"><Sparkles size={16} className="resume-section-icon" />스킬{!본사냐 && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}</h2>
             <button className="resume-icon-btn" aria-label="스킬 추가" onClick={() => setSkillModalOpen(true)}>
               <Plus size={18} />
             </button>
@@ -405,7 +407,7 @@ export default function ResumeEditor({
       {/* 자격증 */}
       <section id="section-certificate" className="resume-section">
         <div className="resume-section-head">
-          <h2 className="resume-section-title">자격증</h2>
+          <h2 className="resume-section-title"><Award size={16} className="resume-section-icon" />자격증</h2>
           <button className="resume-icon-btn" aria-label="자격증 추가" onClick={() => addCertificate({ id: genId(), name: "", issuer: "", issued_ym: "" })}>
             <Plus size={18} />
           </button>
@@ -434,7 +436,7 @@ export default function ResumeEditor({
       {/* 활동/수상 */}
       <section id="section-experience" className="resume-section">
         <div className="resume-section-head">
-          <h2 className="resume-section-title">활동/수상</h2>
+          <h2 className="resume-section-title"><Trophy size={16} className="resume-section-icon" />활동/수상</h2>
           <button className="resume-icon-btn" aria-label="활동 추가" onClick={() => addExperience({ id: genId(), category: "", title: "", description: "" })}>
             <Plus size={18} />
           </button>
@@ -465,7 +467,7 @@ export default function ResumeEditor({
 
       <section id="section-language" className="resume-section">
         <div className="resume-section-head">
-          <h2 className="resume-section-title">어학{!본사냐 && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}</h2>
+          <h2 className="resume-section-title"><Globe size={16} className="resume-section-icon" />어학{!본사냐 && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}</h2>
           {(
             <button className="resume-icon-btn" aria-label="어학 추가" onClick={() => addLanguage({ id: genId(), language: "", level: "", test: "" })}>
               <Plus size={18} />
@@ -511,6 +513,7 @@ export default function ResumeEditor({
       <section id="section-portfolio" className="resume-section">
         <div className="resume-section-head" onClick={() => togglePf()} style={{ cursor: "pointer" }}>
           <h2 className="resume-section-title">
+            <ImageIcon size={16} className="resume-section-icon" />
             포트폴리오
             {/* 살롱은 시술 사진이 곧 실력 증명이라 채운 사람과 안 채운 사람의
                 차이가 크다. 본사 지원에는 그만한 무게가 없어 붙이지 않는다. */}

@@ -1725,7 +1725,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) { .resume-layout { padding: 0; } }
 .resume-section { background: white; border-radius: 12px; padding: 18px; margin-bottom: 12px; }
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.resume-section-title { font-size: 16px; font-weight: 400; color: #582681; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
+.resume-section-title { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 400; color: #582681; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
+/* 프로필 항목 앞 아이콘(.profile-info-icon)과 같은 값 — 옅은 회색, 채우지 않는다. */
+.resume-section-icon { flex-shrink: 0; color: #b7b0c0; }
 .apply-resume-wrap .resume-section { padding: 16px 0; background: transparent; margin-bottom: 0; }
 .apply-cover-block { padding: 20px 0 0; }
 @media (max-width: 640px) { .apply-cover-block { padding: 18px 0 0; } }
@@ -13112,13 +13114,13 @@ button,
   .pf-side-avatar-menu button:hover { background: #f7f7f8; }
   .pf-side-me-name { font-size: 15px; font-weight: 700; color: #2b2b2b; }
   .pf-side-me-type { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px; font-size: 12px; color: #8a8a8f; }
-  /* 본문 왼쪽 위 제목 — 사이드 'HA JIWON' 과 같은 글자(15px/700/#2b2b2b).
-     .pf-main 과 .pf-side 가 같은 22px 위 여백을 쓰므로, .pf-side-me 의
-     2px 안쪽 여백만큼만 더 내리면 두 글자가 같은 높이에서 시작한다.
+  /* 본문 왼쪽 위 제목 — 이력서 페이지의 '기본 이력서' 제목과 같은 글자
+     (.resume-top-title: 19px/700/#1a1a1a). 페이지 제목끼리는 사이트
+     전체에서 같은 무게로 읽혀야 한다.
      폰은 사이드 대신 위 탭 줄이 지금 화면을 이미 말해 준다 — 여기 또
      세우면 같은 말이 두 번 된다. .pf-main-title 기본값(아래)에서 감춘 걸
      PC 에서만 되살린다. */
-  .pf-main-title { display: block; font-size: 15px; font-weight: 700; color: #2b2b2b; margin: 2px 0 20px; }
+  .pf-main-title { display: block; font-size: 19px; font-weight: 700; color: #1a1a1a; margin: 0 0 20px; }
 
   .pf-side .pf-side-out { color: #a9a2b2; }
   /* 사이드가 생기면서 안쪽 칸이 가운데로 몰릴 이유가 없어졌다. 폰 시절의

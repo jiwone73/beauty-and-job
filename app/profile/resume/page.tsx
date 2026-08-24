@@ -6,7 +6,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
 import { AlertCircle } from "lucide-react";
-import { ChevronDown, Download, Eye, FileText, Pencil, Plus, Printer, Trash2, Upload, X, ChevronRight } from "lucide-react";
+import { ChevronDown, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -520,7 +520,7 @@ function ResumePageContent() {
             </button>
           </div>
           <section id="section-headline" className="resume-section">
-            <h2 className="resume-section-title">한줄소개<span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span></h2>
+            <h2 className="resume-section-title"><Quote size={16} className="resume-section-icon" />한줄소개<span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span></h2>
             <흠줄 말들={칸흠("headline")} />
             {/* 안내는 칸 안에 둔다. 밖에 한 줄을 더 세우면 적기도 전에 읽을
                 것이 둘이 되고, 다 적고 나면 그 줄만 남아 자리를 먹는다.
@@ -537,7 +537,7 @@ function ResumePageContent() {
           </section>
 
           <section id="section-basic" className="resume-section">
-            <h2 className="resume-section-title">기본 정보</h2>
+            <h2 className="resume-section-title"><IdCard size={16} className="resume-section-icon" />기본 정보</h2>
             <div className="resume-basic-info" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
               <div className="resume-name-block" style={{ flex: 1, minWidth: 0 }}>
                 {/* 위쪽 여백을 따로 주지 않는다. 제목 아래 간격은 다른 구역과 같이
