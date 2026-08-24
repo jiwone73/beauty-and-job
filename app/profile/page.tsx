@@ -563,7 +563,7 @@ export default function ProfilePage() {
               <div className="profile-info-card pf-grid">
                 {/* 이름 — 목록 맨 위. 사진은 이 줄 오른쪽 끝에 둔다(누르면 바꾸기·지우기). */}
                 <div className="profile-info-row" style={{ cursor: "default", flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 14 }}>
-                  <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+                  <span className="pf-labelwrap" style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
                     <span className="profile-info-label">{칸그림("이름")}이름<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                     <span className={`profile-info-value ${name ? "" : "is-empty"}`}>{name || "이름"}</span>
                   </span>

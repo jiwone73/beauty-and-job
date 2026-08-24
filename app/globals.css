@@ -1312,8 +1312,10 @@ input[type="range"].career-slider::-moz-range-thumb {
    고르개(.if-slot)는 제 안에 좌우 4px 을 두르고 있어, 22 를 그대로 주면 글자가
    4px 더 오른쪽으로 밀린다. 그만큼 덜어 18px 을 준다. */
 .pf-main .pf-grid .profile-info-row > .if-wrap,
-.pf-main .pf-grid .profile-info-row > span:not(.profile-info-label):not(.profile-info-value),
+.pf-main .pf-grid .profile-info-row > span:not(.profile-info-label):not(.profile-info-value):not(.pf-labelwrap),
 .pf-main .pf-grid .profile-info-row > .if-row { padding-left: 18px; }
+/* 라벨까지 품은 래퍼는 들여쓰지 않는다 — 들여쓰면 라벨 아이콘이 다른 줄보다 밀린다. */
+.pf-main .pf-grid .profile-info-row > .pf-labelwrap { padding-left: 0; }
 
 /* 알림 — 본문에 펴는 목록(사이드 판을 걷고 옮겼다). */
 .pf-notif-head { display: flex; align-items: center; gap: 8px; padding: 14px 16px; border-bottom: 1px solid #efeff1; }
