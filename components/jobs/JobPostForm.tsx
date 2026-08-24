@@ -34,7 +34,9 @@ const SALARY_UNITS: { label: string; prefix: string }[] = [
   { label: "월급", prefix: "월" },
   { label: "연봉", prefix: "연" },
 ];
-const POS_EDU = ["무관", "고졸", "초대졸", "대졸", "석사"];
+// "고졸"만 적으면 고졸인 사람만 되는 것처럼 읽힌다("최저학력이라고 해야 하나" 고민도 이 때문).
+// 헤더를 바꾸는 대신 값 자체를 표준 표기로 — EDUCATION_OPTIONS(불러오기 검증용)와 같은 방식이다.
+const POS_EDU = ["무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 // 업로드 전 압축. 서버는 5MB·JPG/PNG/WebP만 받는데, 휴대폰 사진은 그보다 크거나 HEIC라 그냥 올리면 실패한다.
 //   긴 변을 1600px로 줄이고 JPEG 품질을 낮춰가며 목표 용량 아래로 맞춘다.
 //   캔버스를 거치면서 HEIC도 JPEG로 바뀐다(사파리는 HEIC 디코딩 가능). EXIF 회전은 적용해서 그린다.
@@ -425,10 +427,12 @@ export default function JobPostForm({
   const [jobGroupType, setJobGroupType] = useState<"" | "기업" | "매장">("매장"); // 기본값 매장(관리자). 선택 전 직군·급여·복지 잠금 해제용
   const [categories, setCategories] = useState<string[]>([]);
   // 모집부문 표: 모집분야(=categories)별 경력·고용형태·급여·근무요일·근무시간·인원·성별우대.
-  type PosRow = { career: string; education: string; employment: string; salary: string; workDays: string; workTime: string; headcount: string; gender: string };
-  const emptyPos: PosRow = { career: "", education: "", employment: "", salary: "", workDays: "", workTime: "", headcount: "", gender: "" };
+  // shiftNego·salaryNego: 값을 정해 두고도 "협의 가능"을 따로 표시할 때. 기존 '협의'는
+  // 값 자체를 지우고 그 말로 채우는 것이라, 값은 정해졌지만 조율 여지가 있다는 뜻은 못 담았다.
+  type PosRow = { career: string; education: string; employment: string; salary: string; workDays: string; workTime: string; headcount: string; gender: string; shiftNego: boolean; salaryNego: boolean };
+  const emptyPos: PosRow = { career: "", education: "", employment: "", salary: "", workDays: "", workTime: "", headcount: "", gender: "", shiftNego: false, salaryNego: false };
   const [posMeta, setPosMeta] = useState<Record<string, PosRow>>({});
-  const setPos = (cat: string, k: keyof PosRow, v: string) =>
+  const setPos = <K extends keyof PosRow>(cat: string, k: K, v: PosRow[K]) =>
     setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, [k]: v } }; });
   // 같은 모집분야를 여러 행으로 쓸 수 있게(예: 헤어디자이너 신입 1 · 경력 1) 내부 키에만 "#2" 꼬리표를 붙인다.
   //   화면 표시·저장은 항상 꼬리표를 뗀 원래 분야명으로 나간다.
@@ -917,7 +921,7 @@ export default function JobPostForm({
           const base = String(p.category);
           const key = keys.includes(base) ? nextDupKey(base, keys) : base;
           keys.push(key);
-          meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", headcount: p.headcount || "", gender: p.gender || "" };
+          meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", headcount: p.headcount || "", gender: p.gender || "", shiftNego: !!p.shiftNego, salaryNego: !!p.salaryNego };
         }
         setCategories(keys);
         setPosMeta(meta);
@@ -1378,6 +1382,8 @@ export default function JobPostForm({
         workTime: typeof d.work_time === "string" ? d.work_time : "",
         headcount: (d.headcount != null && Number(d.headcount) > 0) ? `${Number(d.headcount)}명` : "",
         gender: "",
+        shiftNego: false,
+        salaryNego: !!d.salary_negotiable,
       });
       // 근무기간 (매장 공고)
       if (typeof d.work_period === "string" && WORK_PERIODS.includes(d.work_period)) setWorkPeriod(d.work_period);
@@ -1737,7 +1743,7 @@ export default function JobPostForm({
     }
 
     // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim() }; });
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego }; });
     // 발행 시 꼭 있어야 하는 것은 모집분야뿐이다.
     //
     // 고용형태는 원문에 아예 언급이 없는 공고가 흔하다. 필수로 두면 관리자가 없는
@@ -1912,7 +1918,10 @@ export default function JobPostForm({
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
   // 모집부문 표 셀 스타일
-  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 12.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap" };
+  // 13.5px — 실제 미리보기(JobDetailView) 표와 같은 크기. 여기서 잘리지 않으면
+  // 거기서도 잘리지 않는다. 글자 크기가 다르면 여기서 안 잘려 보여도 막상
+  // 등록하면 잘릴 수 있어, 폼만 보고는 미리 알 수 없었다.
+  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 13.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap" };
   const reqStar = <span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span>; // 필수 열 표시(모집분야만)
   const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f7f7f8", verticalAlign: "middle" };
   // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
@@ -1951,7 +1960,7 @@ export default function JobPostForm({
     const st = f(a), en = f(b);
     return st || en ? `${st}~${en}` : "";
   };
-  const cellSelect: React.CSSProperties = { width: "100%", minHeight: 24, boxSizing: "border-box", border: "none", borderRadius: 5, padding: "3px 6px", fontSize: 12.5, WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
+  const cellSelect: React.CSSProperties = { width: "100%", minHeight: 24, boxSizing: "border-box", border: "none", borderRadius: 5, padding: "3px 6px", fontSize: 13.5, WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
   // 값이 없으면 연보라 자리표시, 채우면 배경 없이 글자만(테두리는 쓰지 않음)
   const cellFill = (filled: boolean): React.CSSProperties => ({ background: filled ? "transparent" : PH_BG });
   // 클릭-선택 셀: 옵션 있으면 드롭다운(+비회원 '직접입력…'). 값이 목록에 없으면 클릭 텍스트→팝오버. 급여처럼 옵션 없으면 항상 팝오버.
@@ -1962,8 +1971,10 @@ export default function JobPostForm({
   };
   // 표 셀 입력: iOS 네이티브 select 피커가 화면 절반을 덮을 만큼 커서, 목록도 자체 팝오버로 띄운다.
   //   options가 있으면 컴팩트 목록, units(급여)면 지급주기 칩, 그 외에는 자유입력.
-  const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력", allowFi = true, units?: typeof SALARY_UNITS) => {
-    const v = (posMeta[cat] || emptyPos)[field];
+  const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력", allowFi = true, units?: typeof SALARY_UNITS, wrap = false, nego = false) => {
+    const v = (posMeta[cat] || emptyPos)[field] as string;
+    // 값은 그대로 두고 "(협의)" 만 덧붙인다 — 값 자체를 '협의'로 바꾸는 것과는 다르다.
+    const shown = v && nego && v !== "협의" ? `${v} (협의)` : v;
     const key = `${cat}|${field}`;
     const open = cellOpen === key;
     const freeInput = options.length === 0 || cellFree;      // 목록 없는 칸이거나 '직접입력'을 고른 상태
@@ -1977,10 +1988,15 @@ export default function JobPostForm({
         <button type="button"
           onClick={(e) => { if (open) { setCellOpen(null); return; } setCellFree(false); openPopAt(e.currentTarget, width, height); setCellOpen(key); }}
           style={{ ...cellSelect, background: "transparent", textAlign: "left", color: v ? "#333" : "#b4b4b9",
-            display: "flex", alignItems: "center", gap: 4,
+            display: "flex", alignItems: wrap ? "flex-start" : "center", gap: 4,
             borderBottom: v ? "1px solid transparent" : "1px solid #e3e3e6", borderRadius: 0 }}>
-          <span style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v || ph}</span>
-          {!v && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9" }} />}
+          {/* 급여처럼 길어질 수 있는 값은 잘라내지(...) 않고 두 줄까지 접는다.
+              maxWidth 없이 whiteSpace:normal 만 주면 표가 그냥 옆으로 넓어져
+              한 줄에 다 펴져 버린다 — 폭을 못박아야 그 안에서 접힌다. */}
+          <span style={wrap
+            ? { flex: 1, minWidth: 0, maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.3 }
+            : { flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{shown || ph}</span>
+          {!v && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9", marginTop: wrap ? 2 : 0 }} />}
         </button>
         {open && popAt && (
           <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, boxSizing: "border-box",
@@ -2143,7 +2159,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
-    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim() }; }),
+    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego }; }),
     color: "#f7f7f8",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -2617,7 +2633,7 @@ export default function JobPostForm({
             {/* 제목 옆에 ＋(이미지 추가)·샘플 배너 — 드래그 박스 안을 버튼으로 채우지 않는다. */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 4px" }}>
               {/* 제목은 왼쪽, 단추는 오른쪽 끝으로 밀어 붙인다. */}
-              <h2 id="jp-banner" className="jobpost-section-title" style={{ margin: 0, marginRight: "auto" }}>공고 배너 이미지</h2>
+              <h2 id="jp-banner" className="jobpost-section-title" style={{ marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: "auto" }}>공고 배너 이미지</h2>
               <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
                 {!isMobile && <ImagePlus size={17} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
                 <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
@@ -2799,13 +2815,13 @@ export default function JobPostForm({
                           대신 자리글과 같은 흐린 회색·가는 글씨로 눌러 캡션처럼 읽히게 했다. */}
                       <thead>
                         <tr>
-                          <th style={{ ...thc, ...firstCol, minWidth: 92 }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
+                          <th style={{ ...thc, ...firstCol, minWidth: 100, maxWidth: 130 }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
                           <th style={{ ...thc, minWidth: 66 }}>고용형태</th>
-                          <th style={{ ...thc, minWidth: 56 }}>성별우대</th>
+                          <th style={{ ...thc, minWidth: 56 }}>성별</th>
                           <th style={{ ...thc, minWidth: 72 }}>경력/직책</th>
                           <th style={{ ...thc, minWidth: 52 }}>학력</th>
                           <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>
-                          <th style={{ ...thc, minWidth: 82 }}>급여</th>
+                          <th style={{ ...thc, minWidth: 96, maxWidth: 130 }}>급여</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2813,35 +2829,50 @@ export default function JobPostForm({
                           const row = posMeta[cat] || emptyPos;
                           return (
                             <tr key={cat}>
-                              <td style={{ ...tdc, ...firstCol, fontSize: 12.5, color: "#333" }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                  <span style={{ flex: 1, minWidth: 0 }}>{baseCat(cat)}</span>
+                              <td style={{ ...tdc, ...firstCol, fontSize: 13.5, color: "#333" }}>
+                                {/* 긴 분야명이 한 줄로 늘어지며 표를 넓혀 급여·근무요일 칸까지
+                                    가로 스크롤로 밀어냈다. 폭을 묶어 두 줄까지는 그대로 접는다. */}
+                                <div style={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
+                                  <span style={{ flex: 1, minWidth: 0, maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>{baseCat(cat)}</span>
                                   <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
-                                    style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0 }}>×</button>
+                                    style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0, marginTop: 1 }}>×</button>
                                 </div>
                               </td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "")}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성", "남성"], "", false)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성 우대", "남성 우대"], "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", POS_EDU, "", false)}</td>
+                              {/* 매장(헤어·네일·피부 등 현장직)은 석사 학력을 요구할 일이 없다. */}
+                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU, "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
                                 <button type="button" onClick={(e) => { if (posShiftOpen === cat) { setPosShiftOpen(null); return; } openPopAt(e.currentTarget, 244, 250); setPosShiftOpen(cat); }}
-                                  /* 다른 칸과 같은 규칙 — 비면 밑줄과 ▾, 채우면 값만. */
+                                  /* 다른 칸과 같은 규칙 — 비면 밑줄과 ▾, 채우면 값만.
+                                     요일·시간을 한 줄에 나란히 두니 시간이 잘렸다. 세로로 쌓아
+                                     요일 1행·시간 2행으로 — 상세페이지 표와 같은 모양이다. */
                                   style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "left", border: "none",
                                     borderBottom: (row.workDays || row.workTime) ? "1px solid transparent" : "1px solid #e3e3e6",
-                                    borderRadius: 0, padding: "3px 6px", fontSize: 12.5, lineHeight: 1.35, cursor: "pointer", color: "#333",
-                                    background: "transparent", display: "flex", alignItems: "center", gap: 4 }}>
+                                    borderRadius: 0, padding: "3px 6px", fontSize: 13.5, lineHeight: 1.35, cursor: "pointer", color: "#333",
+                                    background: "transparent", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
                                   {(row.workDays || row.workTime) ? (
                                     (row.workDays === "협의" && row.workTime === "협의") ? (
-                                      <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>협의</div>
+                                      <div style={{ whiteSpace: "nowrap" }}>협의</div>
                                     ) : (
                                     <>
-                                      {row.workDays && <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workDays}</div>}
-                                      {row.workTime && <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{row.workTime}</div>}
+                                      {row.workDays && <div style={{ whiteSpace: "nowrap" }}>{row.workDays}</div>}
+                                      {row.workTime && <div style={{ whiteSpace: "nowrap" }}>{row.workTime}{row.shiftNego && row.workTime !== "협의" ? " (협의)" : ""}</div>}
                                     </>
                                     )
                                   ) : <ChevronDown size={12} style={{ marginLeft: "auto", flexShrink: 0, color: "#c4c4c9" }} />}
                                 </button>
+                                {/* 값은 정해 두고 조율 여지만 남길 때. '협의'(값을 비우고 그 말로
+                                    채움)와는 다르다 — 시간은 그대로 보이고 "(협의)" 만 덧붙는다.
+                                    시간 자체가 '협의'면 이미 그 뜻이라 체크박스가 필요 없다. */}
+                                {row.workTime && row.workTime !== "협의" && (
+                                  <label style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 3, fontSize: 10.5, color: "#9a94a4", cursor: "pointer", whiteSpace: "nowrap" }}>
+                                    <input type="checkbox" checked={row.shiftNego} onChange={(e) => setPos(cat, "shiftNego", e.target.checked)}
+                                      style={{ width: 11, height: 11, margin: 0, accentColor: "#582681" }} />
+                                    협의 가능
+                                  </label>
+                                )}
                                 {posShiftOpen === cat && (() => {
                                   const days = (row.workDays && row.workDays !== "협의") ? row.workDays.split(/[·,]/).map((s) => s.trim()).filter((d) => WORK_DAY_OPTIONS.includes(d)) : [];
                                   const daysNego = row.workDays === "협의";
@@ -2907,7 +2938,16 @@ export default function JobPostForm({
                                   );
                                 })()}
                               </td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "salary", [], "", true, SALARY_UNITS)}</td>
+                              <td style={{ ...tdc, position: "relative" }}>
+                                {posCell(cat, "salary", [], "", true, SALARY_UNITS, true, row.salaryNego)}
+                                {row.salary && row.salary !== "협의" && (
+                                  <label style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 3, fontSize: 10.5, color: "#9a94a4", cursor: "pointer", whiteSpace: "nowrap" }}>
+                                    <input type="checkbox" checked={row.salaryNego} onChange={(e) => setPos(cat, "salaryNego", e.target.checked)}
+                                      style={{ width: 11, height: 11, margin: 0, accentColor: "#582681" }} />
+                                    협의 가능
+                                  </label>
+                                )}
+                              </td>
                             </tr>
                           );
                         })}

@@ -92,7 +92,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const posColDefs: { key: string; label: string; get: (p: any) => string }[] = [
     { key: "category", label: "모집분야", get: (p) => p.category },
     { key: "employment", label: "고용형태", get: (p) => p.employment },
-    { key: "gender", label: "성별우대", get: (p) => p.gender },
+    { key: "gender", label: "성별", get: (p) => p.gender },
     { key: "career", label: "경력/직책", get: (p) => p.career },
     { key: "education", label: "학력", get: (p) => p.education },
     { key: "shift", label: "근무요일/시간", get: (p) => (p.workDays || p.workTime || "") },
@@ -104,7 +104,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 협의인지 알 수 없다. 금액이 없으면 무엇에 대한 말인지 붙여 준다.
   const asideSalary = (() => {
     const v = positions.length ? String(positions[0].salary || "").trim() : "";
-    const t = (v ? withNegotiable(v) : String(job.salary || "").trim());
+    // 표에서 회사가 직접 '협의 가능'을 체크한 자리만 (협의)를 붙인다. 정해 둔 값을
+    // 여기서 또 협의처럼 보이게 하면, 표에서는 확정으로 적어 놓고 카드만 다르게 읽힌다.
+    const nego = positions.length ? !!positions[0].salaryNego : false;
+    const t = v ? (nego && v !== "협의" ? `${v} (협의)` : v) : String(job.salary || "").trim();
     if (!t) return "";
     // 금액이 적혀 있으면 그 자체로 읽힌다. 숫자가 없을 때만 무엇에 대한 말인지 붙인다.
     return !/\d/.test(t) && !/^급여/.test(t) ? `급여 ${t}` : t;
@@ -123,28 +126,47 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         <table style={{ minWidth: Math.min(640, posCols.length * 96), borderCollapse: "collapse", fontSize: 13.5 }}>
           <thead>
             <tr style={{ background: "#f7f7f8" }}>
-              {posCols.map((c) => (
-                <th key={c.key} className="jd-pos-th">{c.label}</th>
-              ))}
+              {posCols.map((c) => {
+                // 모집분야·급여는 길어지면 표를 옆으로 밀어내(가로 스크롤) 뒤 칸이
+                // 잘려 보였다. 폭을 묶어 두 줄까지 접는다.
+                const wrapCol = c.key === "category" || c.key === "salary";
+                return (
+                  <th key={c.key} className="jd-pos-th" style={wrapCol ? { whiteSpace: "normal", maxWidth: 130 } : undefined}>{c.label}</th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
             {positions.map((p: any, i: number) => (
               <tr key={i}>
-                {posCols.map((c, j) => (
-                  <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#333" : "#555" }}>
-                    {/* 근무요일/시간 열은 요일 1행·시간 2행으로 */}
-                    {c.key === "shift"
-                      ? ((p.workDays || p.workTime)
-                          ? ((p.workDays === "협의" && p.workTime === "협의")
-                              ? "협의"
-                              : <>{p.workDays && <div>{p.workDays}</div>}{p.workTime && <div>{withNegotiable(p.workTime)}</div>}</>)
-                          : "협의")
-                      : c.key === "salary"
-                        ? withNegotiable(c.get(p))
-                        : (c.get(p) || "-")}
-                  </td>
-                ))}
+                {posCols.map((c, j) => {
+                  const wrapCol = c.key === "category" || c.key === "salary";
+                  // 값은 있는데 회사가 표에서 '협의 가능'을 안 켰으면 그대로 확정값으로 보인다.
+                  const salaryTxt = c.get(p)
+                    ? (p.salaryNego && c.get(p) !== "협의" ? `${c.get(p)} (협의)` : c.get(p))
+                    : "협의";
+                  const timeTxt = p.workTime
+                    ? (p.shiftNego && p.workTime !== "협의" ? `${p.workTime} (협의)` : p.workTime)
+                    : "";
+                  const content = c.key === "shift"
+                    ? ((p.workDays || p.workTime)
+                        ? ((p.workDays === "협의" && p.workTime === "협의")
+                            ? "협의"
+                            : <>{p.workDays && <div>{p.workDays}</div>}{timeTxt && <div>{timeTxt}</div>}</>)
+                        : "협의")
+                    : c.key === "salary"
+                      ? salaryTxt
+                      : (c.get(p) || "-");
+                  return (
+                    <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#333" : "#555" }}>
+                      {/* 근무요일/시간 열은 요일 1행·시간 2행으로. 모집분야·급여는 길어지면
+                          표를 옆으로 밀어내던 것을(가로 스크롤) 폭을 묶어 두 줄까지 접는다. */}
+                      {wrapCol
+                        ? <span style={{ display: "inline-block", maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all" }}>{content}</span>
+                        : content}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
