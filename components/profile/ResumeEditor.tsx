@@ -30,6 +30,9 @@ type Props = {
   onResumeFileDelete: () => void;
   onResumeFileOpen: () => void;
   resumeFileReadOnly?: boolean;
+  /** 사진을 바꿀 수 없는 화면(지원서 사본)에서 켠다. 사진은 바로 서버로
+      올라가 기본 이력서를 바꾸므로, 사본을 고치는 자리에서는 손대지 않는다. */
+  portfolioReadOnly?: boolean;
   /** 작성 완료를 누른 뒤 아직 못 채운 곳. 해당 칸·항목 위에 붙는다. */
   흠?: { 어디: string; 누구?: string; 말: string }[];
 };
@@ -72,6 +75,7 @@ export default function ResumeEditor({
   onResumeFileDelete,
   onResumeFileOpen,
   resumeFileReadOnly = false,
+  portfolioReadOnly = false,
   흠 = [],
 }: Props) {
   const {
@@ -197,7 +201,7 @@ export default function ResumeEditor({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length) onPortfolioFiles(files);
+    if (files.length && !portfolioReadOnly) onPortfolioFiles(files);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragOver(true); };
@@ -205,7 +209,7 @@ export default function ResumeEditor({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault(); setIsDragOver(false);
     const files = Array.from(e.dataTransfer.files || []);
-    if (files.length) onPortfolioFiles(files);
+    if (files.length && !portfolioReadOnly) onPortfolioFiles(files);
   };
 
   const handleResumeFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -525,7 +529,7 @@ export default function ResumeEditor({
                 <span style={{ marginLeft: 8, fontSize: 13, color: "#888" }}>{portfolioImages.length}장</span>
               )}
               <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
-                {portfolioImages.length === 0 ? (
+                {portfolioReadOnly ? null : portfolioImages.length === 0 ? (
                   <button className="resume-icon-btn" aria-label="사진 추가" onClick={() => set모달((v) => (v === "photo" ? null : "photo"))}>
                     <Plus size={18} />
                   </button>
@@ -553,10 +557,12 @@ export default function ResumeEditor({
                           onClick={() => set확대(idx)} style={{ cursor: "zoom-in" }} />
                         {/* 한 장 빼는 일은 사진 위에서 끝난다. 쓰레기통은 전부
                             지우는 것이라 뜻이 다르다. */}
-                        <button type="button" className="pf-del-one" aria-label="이 사진 삭제"
-                          onClick={(e) => { e.stopPropagation(); onPortfolioDelete([img.url]); }}>
-                          <X size={13} strokeWidth={2.6} />
-                        </button>
+                        {!portfolioReadOnly && (
+                          <button type="button" className="pf-del-one" aria-label="이 사진 삭제"
+                            onClick={(e) => { e.stopPropagation(); onPortfolioDelete([img.url]); }}>
+                            <X size={13} strokeWidth={2.6} />
+                          </button>
+                        )}
                       </div>
                     );
                   })}

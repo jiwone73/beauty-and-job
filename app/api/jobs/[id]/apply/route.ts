@@ -4,6 +4,7 @@ import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
 import { sendApplicationCompleteEmail, sendNewApplicantEmail } from '@/lib/email'
 import { buildResumeSnapshot } from '@/lib/resumeSnapshot'
+import { 이력서쓰기 } from '@/lib/resumeWrite'
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -12,7 +13,7 @@ export async function POST(
   if (authErr) return authErr
   const { id: jobPostingId } = params
   const body = await req.json().catch(() => ({}))
-  const { resume_id, cover_letter, third_party_consent } = body
+  const { resume_id, cover_letter, third_party_consent, resume } = body
   const jobRes = await pool.query(
     `SELECT jp.id, jp.status, jp.deadline, jp.company_id, jp.title,
             jp.description, jp.location, jp.address, jp.work_type, jp.experience_level,
@@ -91,12 +92,34 @@ export async function POST(
     )
     if (own.rowCount && own.rowCount > 0) finalResumeId = resume_id
   }
-  // 지원 시점 이력서 박제 (스냅샷)
+  // 지원 시점 이력서 박제 (스냅샷).
+  //
+  // resume 가 함께 오면 그것은 지원자가 이 공고에 맞게 고친 사본이다.
+  // 기본 이력서는 이력서 페이지에서만 바뀐다 — 여기서 저장해 버리면
+  // 이 공고에 맞춘 손질이 다음 지원에도, 인재검색에도 그대로 따라간다.
+  // 그래서 트랜잭션 안에 사본을 잠깐 써 놓고 같은 연결로 읽어 박제한 뒤
+  // 되돌린다. 남는 것은 스냅샷뿐이고 사람의 행은 손대지 않은 채다.
   let snapshot = null
-  try {
-    snapshot = await buildResumeSnapshot(auth!.sub, finalResumeId)
-  } catch (e) {
-    console.error('[apply] 이력서 스냅샷 생성 실패', e)
+  if (resume) {
+    const client = await pool.connect()
+    try {
+      await client.query('BEGIN')
+      await 이력서쓰기(client, auth!.sub, resume)
+      snapshot = await buildResumeSnapshot(auth!.sub, finalResumeId, client)
+      await client.query('ROLLBACK')
+    } catch (e) {
+      try { await client.query('ROLLBACK') } catch {}
+      console.error('[apply] 사본 스냅샷 생성 실패', e)
+    } finally {
+      client.release()
+    }
+  }
+  if (!snapshot) {
+    try {
+      snapshot = await buildResumeSnapshot(auth!.sub, finalResumeId)
+    } catch (e) {
+      console.error('[apply] 이력서 스냅샷 생성 실패', e)
+    }
   }
 
   // 지원 시점 채용공고 박제 (스냅샷) — 이후 공고가 수정·마감·삭제돼도 증빙 가능

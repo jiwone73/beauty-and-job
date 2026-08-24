@@ -97,7 +97,20 @@ export interface ProfileState {
   // 새 액션: DB 동기화
   loadFromServer: () => Promise<void>;
   syncToDb: () => Promise<void>;
+
+  /** 저장을 잠근다. 지원서 사본을 고치는 동안 기본 이력서가 덮이지 않게. */
+  자동저장잠금: (잠글까: boolean) => void;
+  /** 지금 이력서를 한 벌 떠 둔다(깊은 사본). */
+  이력서뽑기: () => 이력서한벌;
+  /** 떠 둔 것으로 되돌린다. 지원서 창을 닫을 때 부른다. */
+  이력서되돌리기: (사본: 이력서한벌) => void;
 }
+
+/** 이력서를 이루는 값들만 모은 것. 액션·loaded 는 뺀다. */
+export type 이력서한벌 = Pick<ProfileState,
+  "isCareerVerified" | "verifiedDate" | "careers" | "educations" | "experiences" |
+  "skills" | "languages" | "links" | "certificates" | "intro" | "coreCompetencies" |
+  "email" | "isEntryLevel" | "entryExperience">;
 
 let counter = 0;
 export function genId(): string {
@@ -116,7 +129,12 @@ export const useProfileStore = create<ProfileState>()(
 
       // 액션 뒤 자동 저장. 타자를 치는 동안에는 미뤘다가 손을 멈추면 한 번에
       // 묶어 보낸다. 칸마다 즉시 보내면 이력서 하나에 마흔 번 넘게 나간다.
+      // 지원서 창이 열려 있는 동안은 잠근다. 그때 고치는 것은 이 공고에
+      // 낼 사본이지 기본 이력서가 아니다 — 타자마다 서버로 나가면 사본이라는
+      // 말이 무색해진다.
+      let 저장잠김 = false;
       const autoSync = () => {
+        if (저장잠김) return;
         if (autoSyncTimer) clearTimeout(autoSyncTimer);
         autoSyncTimer = setTimeout(() => { autoSyncTimer = null; get().syncToDb(); }, 1500);
       };
@@ -124,6 +142,7 @@ export const useProfileStore = create<ProfileState>()(
       // 대기 중인 저장을 지금 흘려보낸다. 화면을 덮거나 떠날 때 부른다 —
       // 1.5초를 기다리다가 그냥 나가면 마지막 손질이 사라진다.
       const 지금보내기 = () => {
+        if (저장잠김) return;
         if (!autoSyncTimer) return;
         clearTimeout(autoSyncTimer); autoSyncTimer = null;
         get().syncToDb();
@@ -149,6 +168,22 @@ export const useProfileStore = create<ProfileState>()(
         isEntryLevel: false,
         entryExperience: "",
         loaded: false,
+
+        자동저장잠금: (잠글까) => {
+          저장잠김 = 잠글까;
+          if (잠글까 && autoSyncTimer) { clearTimeout(autoSyncTimer); autoSyncTimer = null; }
+        },
+        이력서뽑기: () => {
+          const s = get();
+          return JSON.parse(JSON.stringify({
+            isCareerVerified: s.isCareerVerified, verifiedDate: s.verifiedDate,
+            careers: s.careers, educations: s.educations, experiences: s.experiences,
+            skills: s.skills, languages: s.languages, links: s.links, certificates: s.certificates,
+            intro: s.intro, coreCompetencies: s.coreCompetencies, email: s.email,
+            isEntryLevel: s.isEntryLevel, entryExperience: s.entryExperience,
+          }));
+        },
+        이력서되돌리기: (사본) => set(JSON.parse(JSON.stringify(사본))),
 
         reset: () => set({
           isCareerVerified: false,
@@ -351,6 +386,8 @@ export const useProfileStore = create<ProfileState>()(
         },
 
         syncToDb: async () => {
+          // 잠긴 동안에는 어느 길로 불려도 나가지 않는다.
+          if (저장잠김) return;
           const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
           if (!token) return;
           // 이 PUT 은 이력서를 통째로 갈아 끼운다. 서버에서 한 번도 받아오지

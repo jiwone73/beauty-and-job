@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect, Fragment } from "react";
-import { useProfileStore } from "@/lib/store/profileStore";
+import { useState, useEffect, useRef, Fragment } from "react";
+import { useProfileStore, type 이력서한벌 } from "@/lib/store/profileStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeEditor from "@/components/profile/ResumeEditor";
@@ -36,7 +36,6 @@ export default function ApplyModal({
   const [coverLoaded, setCoverLoaded] = useState(false);
   const [applying, setApplying] = useState(false);
   const [consent, setConsent] = useState(false);
-  const [saving, setSaving] = useState(false);
 
   // 기본 정보 (이력서 페이지와 동일하게 /api/users/me 에서)
   const [emailLocal, setEmailLocal] = useState(email);
@@ -59,12 +58,32 @@ export default function ApplyModal({
     return () => { document.body.style.overflow = prev; };
   }, []);
 
+  /* 여기서 고치는 것은 이 공고에 낼 사본이다. 기본 이력서는 이력서 페이지에서만
+     바뀐다. 그런데 수정 화면은 이력서 페이지와 같은 store·같은 편집기를 쓰고,
+     store 는 손을 멈추면 1.5초 뒤 알아서 서버로 보낸다 — 그대로 두면 글자
+     하나만 고쳐도 기본 이력서가 덮인다.
+
+     그래서 창이 열려 있는 동안 저장을 잠그고, 열 때 한 벌 떠 두었다가 닫을 때
+     되돌린다. 회사에 가는 것은 지원할 때 보내는 사본으로 서버가 뜬 스냅샷이다. */
+  const 뜬이력서 = useRef<이력서한벌 | null>(null);
+  useEffect(() => {
+    useProfileStore.getState().자동저장잠금(true);
+    return () => {
+      const 사본 = 뜬이력서.current;
+      if (사본) useProfileStore.getState().이력서되돌리기(사본);
+      useProfileStore.getState().자동저장잠금(false);
+    };
+  }, []);
+
   // 모달 열릴 때: store 로드 + 기본정보 + 최근 자소서
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
 
-    useProfileStore.getState().loadFromServer();
+    // 서버에서 받아온 뒤에 떠야 한다 — 그 전 store 는 다른 화면이 남긴 것일 수 있다.
+    useProfileStore.getState().loadFromServer().then(() => {
+      뜬이력서.current = useProfileStore.getState().이력서뽑기();
+    });
 
     fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
@@ -185,18 +204,35 @@ export default function ApplyModal({
     }
   };
 
-  // 수정 화면 저장
-  const handleSaveResume = async () => {
-    setSaving(true);
-    try {
-      useProfileStore.getState().setEmail(emailLocal);
-      await useProfileStore.getState().syncToDb();
-      alert("이력서가 저장되었습니다.");
-    } catch (e) {
-      alert("저장에 실패했습니다.");
-    } finally {
-      setSaving(false);
-    }
+  /** 지금 화면에 든 이력서를 서버가 알아듣는 꼴로 싼다.
+   *  기본 이력서를 저장할 때(profileStore.syncToDb)와 같은 모양이라야
+   *  서버가 같은 코드로 스냅샷을 뜰 수 있다. 더하기만 누르고 비워 둔 줄은
+   *  빼고 보낸다 — 남의 화면에 빈 줄로 나가면 안 된다. */
+  const 사본싸기 = () => {
+    const s = useProfileStore.getState();
+    const sg = useSignupStore.getState();
+    const 알맹이 = (v: unknown) => String(v ?? "").trim().length > 0;
+    return {
+      profile: {
+        intro: s.intro,
+        core_competencies: s.coreCompetencies,
+        entry_experience: s.entryExperience,
+        is_career_verified: s.isCareerVerified,
+        verified_date: s.verifiedDate,
+        is_entry_level: s.isEntryLevel,
+        skills: s.skills,
+        skill_areas: sg.skillAreas || [],
+        work_type_prefer: sg.workTypePrefer || "",
+        region_prefer: sg.regionPrefer || "",
+        office_job_areas: sg.officeJobAreas || [],
+      },
+      careers: s.careers.filter((c) => 알맹이(c.company)),
+      educations: s.educations.filter((e) => 알맹이(e.school)),
+      experiences: s.experiences.filter((x) => 알맹이(x.title)),
+      languages: s.languages.filter((l) => 알맹이(l.language)),
+      links: s.links.filter((l) => 알맹이(l.url)),
+      certificates: s.certificates.filter((c) => 알맹이(c.name)),
+    };
   };
 
   // 지원하기 = 이력서 저장(syncToDb) → 지원 API(스냅샷 박제)
@@ -205,18 +241,13 @@ export default function ApplyModal({
     if (!token) { alert("로그인이 필요합니다."); return; }
     setApplying(true);
     try {
-      // 최신 이력서를 먼저 DB에 반영 → 스냅샷이 화면과 일치
-      try {
-        useProfileStore.getState().setEmail(emailLocal);
-        await useProfileStore.getState().syncToDb();
-      } catch (e) {
-        console.error("[apply] 이력서 사전 저장 실패", e);
-      }
-
+      // 예전에는 스냅샷을 화면과 맞추려고 먼저 저장했다. 그 한 줄 때문에
+      // 이 공고에 맞춘 손질이 기본 이력서에까지 남았다. 이제는 사본을 그대로
+      // 실어 보내고, 서버가 그것으로 스냅샷을 뜬다.
       const res = await fetch(`/api/jobs/${jobId}/apply`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ cover_letter: coverLetter.trim() || null }),
+        body: JSON.stringify({ cover_letter: coverLetter.trim() || null, resume: 사본싸기() }),
       });
       const data = await res.json();
       if (!data.success) {
@@ -437,17 +468,14 @@ export default function ApplyModal({
                   onResumeFileDelete={handleDeleteResumeFile}
                   onResumeFileOpen={handleOpenResumeFile}
                   resumeFileReadOnly
+                  portfolioReadOnly
                 />
               </div>
 
+              {/* '저장하기' 는 없앴다. 여기 고친 것은 이 공고에 낼 사본이라
+                  따로 저장할 곳이 없다 — 지원할 때 함께 나간다. 단추만 남겨
+                  두면 눌러 놓고 기본 이력서에도 남은 줄 안다. */}
               <div style={{ display: "flex", gap: 8, marginTop: 16, paddingBottom: 16 }}>
-                <button
-                  onClick={handleSaveResume}
-                  disabled={saving}
-                  style={{ flex: 1, padding: "13px 0", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
-                >
-                  {saving ? "저장 중..." : "저장하기"}
-                </button>
                 <button
                   className="cv-btn-primary"
                   style={{ flex: 1, marginTop: 0 }}
