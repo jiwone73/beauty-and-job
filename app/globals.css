@@ -13068,6 +13068,14 @@ button,
      관심공고가 함께 따르게 한다 — 카드에만 걸어 두니 목록 화면은 그대로 늘어졌다.
      640 + 좌우 여백 28. */
   .pf-main { padding: 28px; min-width: 0; max-width: 696px; box-sizing: border-box; }
+  /* 지원현황·관심공고는 카드 하나에 제목·회사·날짜만 든다. 한 줄에 하나씩 쌓으면
+     오른쪽이 넓게 비고 목록이 세로로 길어진다 — 두 칸씩 놓는다. */
+  .pf-main .applied-list,
+  .pf-main .bookmark-list {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+  }
+  .pf-main .applied-item,
+  .pf-main .bookmark-item { min-width: 0; }
   .pf-main .profile-section,
   .pf-main .profile-content { max-width: 640px; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
   .pf-main .profile-info-card { max-width: 640px; }
