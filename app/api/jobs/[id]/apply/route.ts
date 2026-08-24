@@ -181,6 +181,12 @@ export async function POST(
     `UPDATE job_postings SET application_count = application_count + 1 WHERE id = $1`,
     [jobPostingId]
   )
+  // 임시저장해 둔 사본은 여기서 지운다(클라이언트가 따로 안 지워도 되게).
+  // 남겨 두면 다음에 이 공고를 다시 열 때 이미 낸 사본이 초안이라며 되살아난다.
+  pool.query(
+    `DELETE FROM application_drafts WHERE user_id = $1 AND job_posting_id = $2`,
+    [auth!.sub, jobPostingId]
+  ).catch((e) => console.error('[apply] 초안 정리 실패', e))
   if (!isExternal && job.company_id) {
     try {
       await pool.query(

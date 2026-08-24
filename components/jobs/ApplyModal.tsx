@@ -32,9 +32,9 @@ export default function ApplyModal({
   } = useProfileStore();
 
   /* 임시저장. 창을 닫으면 사본은 사라지므로(기본 이력서로 되돌리니까) 고치던
-     것을 어딘가 붙들어 둬야 한다. 공고 등록폼과 같은 방식으로 이 브라우저에
-     둔다 — 아직 내지 않은 지원서라 서버에 둘 자리가 없다. */
-  const 초안열쇠 = `apply:draft:${jobId}`;
+     것을 어딘가 붙들어 둬야 한다. 서버(사람 + 공고 키)에 둔다 — 브라우저에
+     두면 폰에서 쓰다 만 것을 PC에서 이어 쓸 수 없다. 계정은 같은데 그릇이
+     다르면 못 찾는다. */
   const [초안됨, set초안됨] = useState(false);   // 이번에 불러온 초안이 있나
   const [방금저장, set방금저장] = useState(false);
   const 초안준비 = useRef(false);               // 원본을 뜨기 전에는 쓰지 않는다
@@ -90,17 +90,16 @@ export default function ApplyModal({
     if (!token) return;
 
     // 서버에서 받아온 뒤에 떠야 한다 — 그 전 store 는 다른 화면이 남긴 것일 수 있다.
-    useProfileStore.getState().loadFromServer().then(() => {
+    useProfileStore.getState().loadFromServer().then(async () => {
       // 되돌릴 원본은 언제나 방금 받아온 기본 이력서다. 초안을 뜨면
       // 창을 닫을 때 초안이 기본 이력서 자리에 눌러앉는다.
       뜬이력서.current = useProfileStore.getState().이력서뽑기();
       try {
-        const 남은것 = localStorage.getItem(초안열쇠);
-        if (남은것) {
-          const 초안 = JSON.parse(남은것);
-          if (초안?.이력서) { useProfileStore.getState().이력서되돌리기(초안.이력서); set초안됨(true); }
-          if (초안?.자소서) { setCoverLetter(초안.자소서); setCoverLoaded(true); }
-        }
+        const dr = await fetch(`/api/jobs/${jobId}/apply-draft`, { headers: { Authorization: `Bearer ${token}` } });
+        const dd = await dr.json();
+        const 초안 = dd?.data?.draft;
+        if (초안?.resume) { useProfileStore.getState().이력서되돌리기(사본풀기(초안.resume)); set초안됨(true); }
+        if (초안?.cover_letter) { setCoverLetter(초안.cover_letter); setCoverLoaded(true); }
       } catch {}
       초안준비.current = true;
     });
@@ -224,58 +223,11 @@ export default function ApplyModal({
     }
   };
 
-  const 첫자소서 = useRef<string | null>(null);
-  const 초안쓰기 = () => {
-    if (!초안준비.current) return;
-    const 지금 = useProfileStore.getState().이력서뽑기();
-    // 기본 이력서와 한 글자도 다르지 않고 자소서도 그대로면 붙들어 둘 것이
-    // 없다. 남겨 두면 다음에 열 때 '임시저장한 사본' 이라며 기본 이력서와
-    // 똑같은 것을 되살려 놓고, 무엇이 사본인지 알 수 없게 된다.
-    const 같은이력서 = JSON.stringify(지금) === JSON.stringify(뜬이력서.current);
-    const 같은자소서 = 첫자소서.current === null || 첫자소서.current === coverLetter;
-    try {
-      if (같은이력서 && 같은자소서) { localStorage.removeItem(초안열쇠); return; }
-      localStorage.setItem(초안열쇠, JSON.stringify({
-        이력서: 지금,
-        자소서: coverLetter,
-        때: new Date().toISOString(),
-      }));
-    } catch {}
-  };
-  // 손을 멈추면 알아서 붙들어 둔다. 단추를 누르지 않고 창을 닫아도
-  // 고치던 것이 사라지지 않게 — 단추는 그것을 눈으로 확인하는 자리다.
-  useEffect(() => {
-    if (!초안준비.current) return;
-    const t = setTimeout(초안쓰기, 800);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [intro, coreCompetencies, careers, educations, skills, languages, experiences,
-      links, certificates, email, isEntryLevel, entryExperience, coverLetter]);
-
-  // 자소서가 다 차려진 뒤의 값을 처음 값으로 삼는다(템플릿·이전 자소서·초안).
-  useEffect(() => {
-    if (초안준비.current && 첫자소서.current === null) 첫자소서.current = coverLetter;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coverLoaded, 초안됨]);
-
-  const 손으로임시저장 = () => {
-    초안쓰기();
-    set방금저장(true);
-    setTimeout(() => set방금저장(false), 2000);
-  };
-  const 초안버리기 = () => {
-    if (!confirm("임시저장한 내용을 버리고 기본 이력서로 되돌릴까요?")) return;
-    try { localStorage.removeItem(초안열쇠); } catch {}
-    const 원본 = 뜬이력서.current;
-    if (원본) useProfileStore.getState().이력서되돌리기(원본);
-    첫자소서.current = coverLetter;
-    set초안됨(false);
-  };
-
   /** 지금 화면에 든 이력서를 서버가 알아듣는 꼴로 싼다.
    *  기본 이력서를 저장할 때(profileStore.syncToDb)와 같은 모양이라야
    *  서버가 같은 코드로 스냅샷을 뜰 수 있다. 더하기만 누르고 비워 둔 줄은
-   *  빼고 보낸다 — 남의 화면에 빈 줄로 나가면 안 된다. */
+   *  빼고 보낸다 — 남의 화면에 빈 줄로 나가면 안 된다. 임시저장도 같은
+   *  모양을 그대로 쓴다 — 저장 API 를 두 벌 두지 않으려는 것이다. */
   const 사본싸기 = () => {
     const s = useProfileStore.getState();
     const sg = useSignupStore.getState();
@@ -302,6 +254,86 @@ export default function ApplyModal({
       certificates: s.certificates.filter((c) => 알맹이(c.name)),
     };
   };
+  /** 사본싸기() 의 반대 방향. 서버에 둔 초안을 store 가 쓰는 모양으로 되돌린다.
+   *  email 은 이 모양에 없다 — 초안을 되살릴 때는 지금 store 의 email 을 그대로
+   *  둔다(임시저장이 email 을 다루지 않으므로). */
+  const 사본풀기 = (서버꼴: any): 이력서한벌 => {
+    const p = 서버꼴?.profile || {};
+    return {
+      isCareerVerified: !!p.is_career_verified,
+      verifiedDate: p.verified_date || "",
+      careers: 서버꼴?.careers || [],
+      educations: 서버꼴?.educations || [],
+      experiences: 서버꼴?.experiences || [],
+      skills: p.skills || [],
+      languages: 서버꼴?.languages || [],
+      links: 서버꼴?.links || [],
+      certificates: 서버꼴?.certificates || [],
+      intro: p.intro || "",
+      coreCompetencies: p.core_competencies || "",
+      email: useProfileStore.getState().email,
+      isEntryLevel: !!p.is_entry_level,
+      entryExperience: p.entry_experience || "",
+    };
+  };
+
+  const 첫자소서 = useRef<string | null>(null);
+  const 초안쓰기 = async () => {
+    if (!초안준비.current) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    const 지금 = useProfileStore.getState().이력서뽑기();
+    // 기본 이력서와 한 글자도 다르지 않고 자소서도 그대로면 붙들어 둘 것이
+    // 없다. 남겨 두면 다음에 열 때 '임시저장한 사본' 이라며 기본 이력서와
+    // 똑같은 것을 되살려 놓고, 무엇이 사본인지 알 수 없게 된다.
+    const 같은이력서 = JSON.stringify(지금) === JSON.stringify(뜬이력서.current);
+    const 같은자소서 = 첫자소서.current === null || 첫자소서.current === coverLetter;
+    try {
+      if (같은이력서 && 같은자소서) {
+        await fetch(`/api/jobs/${jobId}/apply-draft`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+        return;
+      }
+      await fetch(`/api/jobs/${jobId}/apply-draft`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ resume: 사본싸기(), cover_letter: coverLetter }),
+      });
+    } catch (e) {
+      console.error("[apply-draft]", e);
+    }
+  };
+  // 손을 멈추면 알아서 붙들어 둔다. 단추를 누르지 않고 창을 닫아도
+  // 고치던 것이 사라지지 않게 — 단추는 그것을 눈으로 확인하는 자리다.
+  useEffect(() => {
+    if (!초안준비.current) return;
+    const t = setTimeout(초안쓰기, 800);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [intro, coreCompetencies, careers, educations, skills, languages, experiences,
+      links, certificates, email, isEntryLevel, entryExperience, coverLetter]);
+
+  // 자소서가 다 차려진 뒤의 값을 처음 값으로 삼는다(템플릿·이전 자소서·초안).
+  useEffect(() => {
+    if (초안준비.current && 첫자소서.current === null) 첫자소서.current = coverLetter;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coverLoaded, 초안됨]);
+
+  const 손으로임시저장 = () => {
+    초안쓰기();
+    set방금저장(true);
+    setTimeout(() => set방금저장(false), 2000);
+  };
+  const 초안버리기 = async () => {
+    if (!confirm("임시저장한 내용을 버리고 기본 이력서로 되돌릴까요?")) return;
+    const token = localStorage.getItem("access_token");
+    try {
+      if (token) await fetch(`/api/jobs/${jobId}/apply-draft`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+    } catch {}
+    const 원본 = 뜬이력서.current;
+    if (원본) useProfileStore.getState().이력서되돌리기(원본);
+    첫자소서.current = coverLetter;
+    set초안됨(false);
+  };
 
   // 지원하기 = 이력서 저장(syncToDb) → 지원 API(스냅샷 박제)
   const handleApply = async () => {
@@ -326,9 +358,8 @@ export default function ApplyModal({
         alert(data.error?.message || "지원에 실패했습니다.");
         return;
       }
-      // 낸 뒤에는 붙들어 둘 이유가 없다. 남겨 두면 다음에 이 공고를 열 때
-      // 이미 낸 사본이 초안이라며 되살아난다.
-      try { localStorage.removeItem(초안열쇠); } catch {}
+      // 임시저장 사본은 서버가 지원 API 안에서 지운다(같은 자리, 같은 트랜잭션
+      // 옆에서 — 이 창이 닫히기 전에 실패해도 서버 쪽은 이미 끝나 있다).
       alert("지원이 완료되었습니다!");
       onApplied();
       onClose();
