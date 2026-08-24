@@ -13010,6 +13010,9 @@ button,
   .pf-main .profile-bottom-cta { max-width: 918px; margin-left: 0; margin-right: 0; }
   /* 머리줄도 본문과 같은 폭으로 벌린다 — 로고가 사이드 메뉴 위에 선다. */
   .profile-page .profile-header-inner { max-width: 1000px; padding: 0 16px; }
+  /* 프로필은 사이드가 화면 왼쪽 끝에 붙는다. 머리줄만 40px 안쪽에서 시작하면
+     로고가 사이드보다 오른쪽에 놓여 두 줄의 왼쪽 끝이 어긋난다. */
+  .profile-page .header-inner { max-width: none; margin: 0; padding: 0 16px; }
 }
 /* 계정 설정 — 폰에서만 제목을 세운다. PC 는 사이드 메뉴가 그 몫을 한다. */
 .pf-set-body { max-width: 600px; margin: 0 auto; padding: 0 16px 24px; }
