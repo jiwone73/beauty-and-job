@@ -503,8 +503,14 @@ function ResumePageContent() {
               채웠는지 보는 자리라 성격이 다르다. */}
           <div className="resume-top-actions">
             {/* 채용공고의 '매장 채용공고 95건' 자리다 — 단추만 오른쪽에 떠
-                있으면 그 줄이 무엇에 관한 줄인지 왼쪽이 비어 있다. */}
-            <h1 className="resume-top-title">기본 이력서</h1>
+                있으면 그 줄이 무엇에 관한 줄인지 왼쪽이 비어 있다.
+                '기본' 이 무슨 뜻인지 여기서 한 줄로 밝힌다. 이 화면만 보면
+                이력서가 하나뿐인 줄 알고, 공고마다 고쳐 낼 수 있다는 것을
+                지원하기를 눌러 보기 전에는 모른다. */}
+            <div className="resume-top-head">
+              <h1 className="resume-top-title">기본 이력서</h1>
+              <p className="resume-top-desc">공고에 지원할 때 이 이력서를 불러와, 그 자리에 맞게 고쳐서 냅니다.</p>
+            </div>
             <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
               <Eye size={15} /><span>미리보기</span>
             </button>
