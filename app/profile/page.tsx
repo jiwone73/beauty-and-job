@@ -635,6 +635,15 @@ export default function ProfilePage() {
                   <span className="profile-info-label">{칸그림("구직유형")}구직유형</span>
                   <span className={`profile-info-value ${dbJobType ? "" : "is-empty"}`}>
                     {dbJobType === "STORE" ? "매장" : dbJobType === "OFFICE" ? "본사" : "선택하기"}
+                    {/* 무엇을 뜻하는 유형인지 — 메인 히어로에서 쓰는 말 그대로.
+                        같은 것을 두 화면이 다르게 설명하면 어느 쪽이 맞는지 헷갈린다. */}
+                    {dbJobType && (
+                      <em className="profile-info-note">
+                        {dbJobType === "STORE"
+                          ? "살롱·샵 등 매장에서 근무하는 직군이에요"
+                          : "브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳에서 근무하는 직군이에요"}
+                      </em>
+                    )}
                   </span>
                 </div>
 
