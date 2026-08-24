@@ -104,10 +104,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 협의인지 알 수 없다. 금액이 없으면 무엇에 대한 말인지 붙여 준다.
   const asideSalary = (() => {
     const v = positions.length ? String(positions[0].salary || "").trim() : "";
-    // 표에서 회사가 직접 '협의 가능'을 체크한 자리만 (협의)를 붙인다. 정해 둔 값을
+    // 표에서 회사가 직접 '협의 가능'을 체크한 자리만 (+협의)를 붙인다. 정해 둔 값을
     // 여기서 또 협의처럼 보이게 하면, 표에서는 확정으로 적어 놓고 카드만 다르게 읽힌다.
     const nego = positions.length ? !!positions[0].salaryNego : false;
-    const t = v ? (nego && v !== "협의" ? `${v} (협의)` : v) : String(job.salary || "").trim();
+    const t = v ? (nego && v !== "협의" ? `${v} (+협의)` : v) : String(job.salary || "").trim();
     if (!t) return "";
     // 금액이 적혀 있으면 그 자체로 읽힌다. 숫자가 없을 때만 무엇에 대한 말인지 붙인다.
     return !/\d/.test(t) && !/^급여/.test(t) ? `급여 ${t}` : t;
@@ -145,17 +145,30 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 {posCols.map((c, j) => {
                   const wrapCol = c.key === "category" || c.key === "salary";
                   // 값은 있는데 회사가 표에서 '협의 가능'을 안 켰으면 그대로 확정값으로 보인다.
+                  // '협의'(데이터 없음)와 '+협의'(값은 두고 조율 여지만 추가)를 구분한다.
                   const salaryTxt = c.get(p)
-                    ? (p.salaryNego && c.get(p) !== "협의" ? `${c.get(p)} (협의)` : c.get(p))
+                    ? (p.salaryNego && c.get(p) !== "협의" ? `${c.get(p)} (+협의)` : c.get(p))
                     : "협의";
-                  const timeTxt = p.workTime
-                    ? (p.shiftNego && p.workTime !== "협의" ? `${p.workTime} (협의)` : p.workTime)
+                  const daysTxt = p.workDays
+                    ? (p.shiftNego && p.workDays !== "협의" ? `${p.workDays} (+협의)` : p.workDays)
                     : "";
+                  const timeTxt = p.workTime
+                    ? (p.shiftNego && p.workTime !== "협의" ? `${p.workTime} (+협의)` : p.workTime)
+                    : "";
+                  // 요일마다 시간이 다르면("월·수·금은 이 시간, 화·목은 저 시간") 기본 한 벌
+                  // 뒤로 추가 근무시간을 이어 붙인다.
+                  const extraShifts = Array.isArray(p.extraShifts) ? p.extraShifts : [];
                   const content = c.key === "shift"
                     ? ((p.workDays || p.workTime)
                         ? ((p.workDays === "협의" && p.workTime === "협의")
                             ? "협의"
-                            : <>{p.workDays && <div>{p.workDays}</div>}{timeTxt && <div>{timeTxt}</div>}</>)
+                            : <>
+                                {daysTxt && <div>{daysTxt}</div>}
+                                {timeTxt && <div>{timeTxt}</div>}
+                                {extraShifts.map((s: any, i: number) => (
+                                  <div key={i}>{[s.days, s.time].filter(Boolean).join(" ")}</div>
+                                ))}
+                              </>)
                         : "협의")
                     : c.key === "salary"
                       ? salaryTxt
