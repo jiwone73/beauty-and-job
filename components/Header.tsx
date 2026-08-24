@@ -67,11 +67,21 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
         </div>
         {/* 개인회원으로 이미 로그인했으면 기업 서비스로 건너가는 문은 필요
             없다 — 구직자 계정으로 기업 기능을 쓸 일이 없다. 아직 무엇으로
-            가입할지 안 정한 손님(로그아웃 상태)에게만 이 문을 보여 준다. */}
+            가입할지 안 정한 손님(로그아웃 상태)에게는 이 문을 그대로 보여
+            준다.
+            기업회원은 둘 다 본다 — '기업 서비스'(/company)는 가입 안내로
+            그치지 않고 광고·노출 상품 소개도 겸하고 있어("기업서비스가
+            상품안내 페이지야"), 이미 가입한 회원도 새 상품을 보러 다시
+            들를 수 있다. '대시보드'는 그 옆에 따로 둔다. */}
         {ownerType === "company" && (
-          <Link href="/company/dashboard" className="btn btn-outline-biz gnb-biz-btn">
-            대시보드 <ChevronDown size={14} />
-          </Link>
+          <>
+            <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
+              기업 서비스
+            </Link>
+            <Link href="/company/dashboard" className="btn btn-outline-biz gnb-biz-btn">
+              대시보드 <ChevronDown size={14} />
+            </Link>
+          </>
         )}
       </>
     );
