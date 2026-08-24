@@ -13202,7 +13202,7 @@ button,
     background: #fff; border: none; border-right: 1px solid #f0f0f0; border-radius: 0;
     padding: 22px 14px; margin: 0; gap: 3px;
   }
-  .resume-sidebar-item { justify-content: flex-start; border: none; background: transparent; border-radius: 7px; padding: 7px 9px; }
+  .resume-sidebar-item { justify-content: flex-start; border: none; background: transparent; border-radius: 7px; padding: 7px 9px; font-size: 14px; }
   .resume-sidebar-item:hover { background: #efeff1; }
   .resume-sidebar-item.active { background: #efeff1; color: var(--color-primary); }
   .resume-sidebar-toggle { display: none; }
@@ -13210,8 +13210,10 @@ button,
   /* 가로로 늘어서던 완성도 줄을 세로로 세운다 — 176px 안에 한 줄로는 안 들어간다. */
   .resume-sidebar .resume-completion { flex-direction: column; align-items: stretch; gap: 6px; margin-bottom: 10px; }
   .resume-sidebar .resume-completion-head { justify-content: space-between; }
+  .resume-sidebar .resume-completion-head span { font-size: 14px; }
+  .resume-sidebar .resume-completion-head strong { font-size: 19px; }
   .resume-sidebar .resume-completion-bar { max-width: none; width: 100%; }
-  .resume-sidebar .resume-completion-text { white-space: nowrap; font-size: 12px; }
+  .resume-sidebar .resume-completion-text { white-space: nowrap; font-size: 13px; }
 
   /* 격자로 두면 한 행의 두 칸이 서로 키를 맞춘다 — 경력이 길어지면 옆
      자리가 비어도 그만큼 늘어난다. 여러 단으로 흘리면 아래 칸이 빈자리를
