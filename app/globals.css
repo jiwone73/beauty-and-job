@@ -13188,7 +13188,18 @@ button,
 @media (min-width: 1024px) {
   .resume-top-actions {
     display: flex; justify-content: flex-end; gap: 8px;
-    column-span: all; -webkit-column-span: all; margin: 0 0 12px;
+    column-span: all; -webkit-column-span: all;
+    /* 아래 여백은 첫 카드가 이고 있는 투명 테두리 12px 이 이미 만든다.
+       여기 또 12px 을 두면 단추 줄만 위아래로 넉넉히 떠 보인다. */
+    margin: 0;
+    /* 카드 사이를 띄우는 투명 위 테두리(.resume-editor > *)는 이 줄에는
+       필요 없다. 12px 을 이고 있으면 본문 첫 줄이 사이드 첫 줄보다 그만큼
+       내려앉아, 같은 22px 여백을 주고도 두 기둥의 어깨가 어긋난다. */
+    border-top: 0;
+  }
+  .resume-top-title {
+    margin: 0 auto 0 0; align-self: center;
+    font-size: 19px; font-weight: 700; color: #1a1a1a;
   }
   .resume-top-actions button {
     display: flex; align-items: center; justify-content: center; gap: 6px;

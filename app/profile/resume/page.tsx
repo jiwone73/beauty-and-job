@@ -502,6 +502,9 @@ function ResumePageContent() {
           {/* 다 채운 뒤에 누르는 것이라 본문 오른쪽 위에 둔다. 사이드는 어디까지
               채웠는지 보는 자리라 성격이 다르다. */}
           <div className="resume-top-actions">
+            {/* 채용공고의 '매장 채용공고 95건' 자리다 — 단추만 오른쪽에 떠
+                있으면 그 줄이 무엇에 관한 줄인지 왼쪽이 비어 있다. */}
+            <h1 className="resume-top-title">이력서</h1>
             <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
               <Eye size={15} /><span>미리보기</span>
             </button>
