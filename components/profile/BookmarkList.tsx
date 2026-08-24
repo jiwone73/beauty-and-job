@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { shortRegion } from "@/lib/regionShort";
+import { MapPin } from "lucide-react";
 
 /** 관심공고. 지원현황과 같은 이유로 떼어 냈다. */
 export default 
@@ -96,7 +97,10 @@ function BookmarkList() {
               <div className="bookmark-item-left">
                 <h3 className="bookmark-title">{job.title}</h3>
                 <span className="bookmark-brand">{job.brand_name || job.company_name}</span>
-                <span className="bookmark-location">📍 {job.location ? shortRegion(job.location) : "협의"}</span>
+                <span className="bookmark-location">
+                  <MapPin size={13} strokeWidth={2} />
+                  {job.location ? shortRegion(job.location) : "협의"}
+                </span>
               </div>
               <span className="bookmark-deadline">{formatDeadline(job.deadline)}</span>
             </>
