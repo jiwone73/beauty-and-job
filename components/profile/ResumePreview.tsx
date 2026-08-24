@@ -84,17 +84,16 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       <div className="rp-header" style={{display:"flex", alignItems:"flex-start", gap:"20px"}}>
         <div style={{flex:1, minWidth:0}}>
           <h1 className="rp-name">{name || "이름"}</h1>
+          {/* 폼(app/profile/resume/page.tsx 의 기본 정보 칸)과 줄바꿈을 맞춘다.
+              폼은 생년월일·직군·전화·이메일·주소를 각자 줄로 내린다 — 미리보기
+              에서 " · " 로 묶으면 폼에서 본 것과 다른 모양이 뽑혀 나온다. */}
           <p className="rp-meta">
-            {[birthDisplay, ageDisplay, genderDisplay, jobDisplay].filter(Boolean).join(" · ")}
+            {[birthDisplay, ageDisplay, genderDisplay].filter(Boolean).join(" · ")}
           </p>
-          <p className="rp-contact">
-            {formatPhone(phone)}
-            {phone && email ? " · " : ""}
-            {email || ""}
-          </p>
-          {addressDisplay && (
-            <p className="rp-contact" style={{ marginTop: "2px" }}>{addressDisplay}</p>
-          )}
+          {jobDisplay && <p className="rp-meta">{jobDisplay}</p>}
+          <p className="rp-contact">{formatPhone(phone)}</p>
+          {email && <p className="rp-contact">{email}</p>}
+          {addressDisplay && <p className="rp-contact">{addressDisplay}</p>}
         </div>
         {/* 폼과 같은 자리 — 사진 위 테두리를 이름 첫 줄에 맞춘다. 미리보기가
             폼과 한 픽셀이라도 다르면 그대로 뽑히는 줄 알았다가 놀란다. */}

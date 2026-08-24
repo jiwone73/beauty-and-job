@@ -3385,11 +3385,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   color: #333;
   margin: 0 0 4px;
 }
+/* 폼과 줄을 맞추면서(생년월일·직군·전화·이메일·주소 각자 한 줄) 줄 수가
+   늘었다. 여백이 0 이면 다섯 줄이 그대로 맞붙어 붐빈다 — 살짝만 띄운다. */
 .rp-contact {
   font-size: 14px;
   color: #333;
-  margin: 0;
+  margin: 0 0 3px;
 }
+.rp-contact:last-child { margin-bottom: 0; }
 
 /* 섹션 공통 */
 .rp-section {
@@ -13206,6 +13209,8 @@ button,
     columns: 2;
     column-gap: 12px;
     display: block;
+    /* "이력서 폼 넓이가 많이 큰거 같은데. 15% 만 줄여보자" — 1054px → 896px. */
+    max-width: 896px;
   }
   /* 카드 사이 여백은 margin 으로 두지 않는다. 단이 갈리는 자리에서 margin 은
      브라우저마다 다르게 다뤄진다 — 아래 여백은 다음 단 맨 위로 이월되기도
