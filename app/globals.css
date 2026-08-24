@@ -12449,20 +12449,32 @@ button,
    글자에 그라데이션을 입히려면 색을 비워야 하므로(background-clip: text)
    평소 보라를 그라데이션의 바탕색으로 둔다. */
 .mt-evt-when {
+  display: inline-flex; align-items: center; gap: 4px;
   font-size: 13px; font-weight: 700; white-space: nowrap; padding: 0;
   background-image: linear-gradient(100deg,
-    #582681 0%, #582681 26%,
-    #582681 40%, #9b6fc4 50%, #582681 60%,
-    #582681 74%, #582681 100%);
+    #582681 0%, #582681 22%,
+    #ffb703 42%, #ffe89b 50%, #ffb703 58%,
+    #582681 78%, #582681 100%);
   background-size: 300% 100%;
   background-position: 100% 0;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: gnbShine 1.8s ease-in-out infinite;
+  animation: mtEvtShine 1.6s ease-in-out infinite;
+}
+.mt-evt-when-ic { flex-shrink: 0; color: #ffb703; animation: mtEvtTwinkle 1.6s ease-in-out infinite; }
+@keyframes mtEvtShine {
+  0%   { background-position: 100% 0; }
+  65%  { background-position: 0% 0; }
+  100% { background-position: 0% 0; }
+}
+@keyframes mtEvtTwinkle {
+  0%, 100% { opacity: .5; transform: scale(.8) rotate(0deg); }
+  50%      { opacity: 1; transform: scale(1.15) rotate(12deg); }
 }
 @media (prefers-reduced-motion: reduce) {
   .mt-evt-when { animation: none; background: none; color: var(--color-primary); }
+  .mt-evt-when-ic { animation: none; }
 }
 
 /* 카드 제목 앞 아이콘. 점 하나보다 무엇에 관한 칸인지 먼저 말해 준다. */
@@ -12483,17 +12495,17 @@ button,
    앞선 .mt-jobs/.mt-card override 블록보다 소스상 뒤에 있어야 이긴다
    (선택자 상세도가 같으면 나중 규칙이 이긴다). */
 @media (min-width: 1025px) { .mt-evt-item + .mt-evt-item { border-left-color: var(--color-border); } }
-/* 누가 받는 혜택인지와, 그 혜택을 받으러 가는 문을 한 줄에 둔다. */
-.mt-evt-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
-.mt-evt-who { font-size: 12px; font-weight: 600; color: var(--color-primary);
-  background: #f7f7f8; border-radius: 5px; padding: 3px 8px; }
+/* 누가 받는 혜택인지는 위에 작은 글자로만 — 배경 딱지를 달면 아래 버튼과
+   무게가 겹쳐 뭘 눌러야 할지 헷갈린다("배지·버튼·링크로 액션이 세 군데"). */
+.mt-evt-who { display: block; font-size: 12px; font-weight: 500; color: #9a94a4; margin-bottom: 9px; }
+.mt-evt-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+/* 버튼은 카드 맨 아래, 정보를 다 읽은 다음에 만나는 하나뿐인 행동이다. */
 .mt-evt-btn { font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: -.2px;
-  height: 30px; padding: 0 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;
-  display: inline-flex; align-items: center; text-decoration: none;
+  height: 32px; padding: 0 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;
+  display: flex; align-items: center; justify-content: center; width: 100%; text-decoration: none;
   background: var(--color-primary); color: #fff; border: 1px solid var(--color-primary);
   transition: background .15s, border-color .15s, color .15s; }
 .mt-evt-btn:hover { border-color: var(--color-primary-hover); background: var(--color-primary-hover); }
-.mt-evt-row { display: flex; align-items: center; gap: 12px; }
 .mt-evt-txt { flex: 1; min-width: 0; }
 /* 내용 오른쪽 끝에 원문으로 가는 길. 버튼과 무게가 겹치지 않게 글자만 둔다. */
 .mt-evt-more { flex-shrink: 0; font-size: 12px; color: #9a94a4; text-decoration: none; white-space: nowrap; }
@@ -12525,7 +12537,6 @@ button,
   .mt-evt-list { grid-template-columns: 1fr; gap: 14px; }
   .mt-evt-item + .mt-evt-item { border-left: 0; padding-left: 0;
     border-top: 1px solid #f7f7f8; padding-top: 14px; }
-  .mt-evt-top { flex-wrap: wrap; }
   .mt-evt-more { display: none; }
   .mt-hero-in { padding: 22px 20px; }
   .mt-hero-h { font-size: 24px; }

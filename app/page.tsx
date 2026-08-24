@@ -230,14 +230,11 @@ function Hero() {
                   <Link href="/event" className="t"><Gift size={17} className="mt-ic" />이달의 이벤트</Link>
                   {/* 언제 왜 주는지는 두 혜택에 공통이다. 줄마다 되풀이하지 않고
                       제목 옆에 한 번만 둔다. */}
-                  <span className="mt-evt-when">10월 오픈 기념</span>
+                  <span className="mt-evt-when"><Sparkles size={13} className="mt-evt-when-ic" />10월 오픈 기념</span>
                 </div>
                 <div className="mt-evt-list">
                   <div className="mt-evt-item">
-                    <div className="mt-evt-top">
-                      <span className="mt-evt-who">개인회원</span>
-                      <ResumeCta className="mt-evt-btn">이력서 등록하기</ResumeCta>
-                    </div>
+                    <span className="mt-evt-who">개인회원</span>
                     <div className="mt-evt-row">
                       <span className="mt-evt-ic"><Coffee size={19} /></span>
                       <span className="mt-evt-txt">
@@ -245,22 +242,11 @@ function Hero() {
                         <span className="mt-evt-t">무료 메가MGC 커피</span>
                         <span className="mt-evt-s">2,000원 쿠폰 지급</span>
                       </span>
-                      <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/event"} className="mt-evt-more">자세히 보기 ›</Link>
                     </div>
+                    <ResumeCta className="mt-evt-btn">이력서 등록하기</ResumeCta>
                   </div>
                   <div className="mt-evt-item">
-                    <div className="mt-evt-top">
-                      <span className="mt-evt-who">기업회원</span>
-                      <button
-                        type="button"
-                        className="mt-evt-btn"
-                        onClick={() => router.push(
-                          isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
-                        )}
-                      >
-                        채용공고 등록하기
-                      </button>
-                    </div>
+                    <span className="mt-evt-who">기업회원</span>
                     <div className="mt-evt-row">
                       <span className="mt-evt-ic"><TrendingUp size={19} /></span>
                       <span className="mt-evt-txt">
@@ -268,8 +254,16 @@ function Hero() {
                         <span className="mt-evt-t">무료 상단 노출</span>
                         <span className="mt-evt-s">먼저 올린 순서대로 · 10월 1일부터</span>
                       </span>
-                      <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/event"} className="mt-evt-more">자세히 보기 ›</Link>
                     </div>
+                    <button
+                      type="button"
+                      className="mt-evt-btn"
+                      onClick={() => router.push(
+                        isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
+                      )}
+                    >
+                      채용공고 등록하기
+                    </button>
                   </div>
                 </div>
               </div>
