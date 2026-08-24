@@ -1720,6 +1720,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-sidebar-title { width: 100%; font-size: 12px; font-weight: 700; color: var(--color-text-mute); letter-spacing: 0.5px; margin: 0; padding: 0; }
 .resume-sidebar-item { background: #f7f7f8; border: 1px solid var(--color-border); border-radius: 100px; padding: 6px 14px; font-size: 13px; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .resume-sidebar-item:hover { background: #efeff1; color: var(--color-text); }
+/* "이력서에서 완성된 건 흐린 그레이로 표시해줘" — "내말은 사이드메뉴에
+   완성도" 로 다시 짚었다. 다 채운 칸은 옅게 물러나고, 아직 안 채운
+   칸(○)만 또렷하게 남아야 뭘 더 채워야 하는지 한눈에 보인다. */
+.resume-sidebar-item.done { color: #b4b4b9; }
+.resume-sidebar-item.done .resume-sidebar-check { color: #b4b4b9; }
 .resume-sidebar-item.active { background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600; }
 .resume-nav { padding: 0 24px; }
 @media (max-width: 768px) { .resume-layout { padding: 0; } }
@@ -1812,6 +1817,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-link-url:hover { text-decoration: underline; }
 
 .resume-skill-chips { display: block; }
+/* 스킬·직군 영역 칩 묶음도 항목 내용과 같은 22px 로 제목 글자와 맞춘다
+   ("직군영역 항목 내용은 들여쓰기 안되어있어") — if-row 구조가 아니라
+   .if-row-body 규칙이 안 닿는 자리라 따로 맞춘다. */
+.resume-section .resume-skill-chips { margin-left: 22px; }
 /* 칩(pill) 없이 텍스트만, 가운뎃점 구분 */
 .resume-skill-chip { display: inline; font-size: 14px; line-height: 1.8; color: #333; }
 .resume-skill-chip:not(:last-child)::after { content: " · "; color: #bbb; }
@@ -3394,14 +3403,14 @@ input[type="range"].career-slider::-moz-range-thumb {
 .rp-meta {
   font-size: 14px;
   color: #333;
-  margin: 0 0 4px;
+  margin: 0 0 6px;
 }
 /* 폼과 줄을 맞추면서(생년월일·직군·전화·이메일·주소 각자 한 줄) 줄 수가
-   늘었다. 여백이 0 이면 다섯 줄이 그대로 맞붙어 붐빈다 — 살짝만 띄운다. */
+   늘었다. 처음엔 3px 만 띄웠는데 "행간 여백을 좀더 키워줘" — 6px 로. */
 .rp-contact {
   font-size: 14px;
   color: #333;
-  margin: 0 0 3px;
+  margin: 0 0 6px;
 }
 .rp-contact:last-child { margin-bottom: 0; }
 
@@ -3421,6 +3430,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   letter-spacing: normal;
   margin: 0 0 12px;
 }
+/* 폼(이력서 작성 화면)에서 항목 내용을 제목 글자와 맞추려고 22px 들여썼다
+   ("기본이력서 항목 별 내용 시작점을 제목과 맞춰줘"). 미리보기·다운로드
+   ·인쇄에 쓰는 이 문서에는 그 들여쓰기가 안 옮겨져 있었다("미리보기에는
+   들여쓰기 적용안됬어") — 제목 뒤에 오는 형제만 같은 22px 을 준다.
+   ~ 를 쓴 것은 한줄소개처럼 제목 없이 .rp-section 만 쓰는 자리(가운데
+   정렬)까지 밀리지 않게 하려는 것이다 — 그 자리엔 .rp-section-title 이
+   없어 이 규칙이 아예 안 걸린다. */
+.rp-section-title ~ * { margin-left: 22px; }
 
 /* 텍스트 */
 .rp-text {
@@ -3796,6 +3813,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   transition: background 0.15s;
 }
 .auth-user-btn:hover { background: #ebebeb; }
+/* 개인회원 얼굴 사진 전용. 사진(32x32, border-radius:50%)은 이미 원이었는데,
+   감싸는 단추가 그보다 큰 사각 여백(6px 10px)에 옅은 사각 배경(radius:8px)을
+   두르고 있어 사진 둘레로 네모난 회색 테가 비쳤다("아바타 배경이 4각형").
+   단추 자체를 사진과 같은 32x32 원으로 좁힌다 — 여백·배경을 없애 사진의
+   원 둘레가 곧 단추의 둘레가 되게 한다. 기업 로고(사각 radius:7)는
+   그대로 둔다 — 로고는 사진이 아니라 네모난 여백이 오히려 자연스럽다. */
+.auth-user-btn-round { width: 32px; height: 32px; padding: 0; background: transparent; border-radius: 50%; }
+.auth-user-btn-round:hover { background: #f0f0f0; }
 .auth-avatar {
   width: 26px;
   height: 26px;
@@ -9109,6 +9134,10 @@ div:has(> table.admin-table),
     gap: 0 !important;
     background: none !important;
   }
+  /* 개인 얼굴 사진 단추는 이 4px 패딩도 받으면 안 된다 — 32px 고정 폭 안에서
+     사진(같은 32px)이 flex 로 눌려 타원이 됐다("아바타 배경이 4각형"
+     다음으로 실측에서 드러난 문제). 같은 !important 무게로 되돌린다. */
+  .auth-user-btn-round { padding: 0 !important; }
   /* 드롭다운 오른쪽 정렬 */
   .auth-dropdown-right {
     left: auto !important;
@@ -13411,7 +13440,13 @@ button,
 /* 좁은 칸(2열 한 칸)에 서는 줄. 고칠 때 입력칸이 최소 120px 을 요구해 줄이 접히고
    옆 칸이 아래로 떨어졌다. 접지 않고 그 자리에서 커서만 뜨게 한다. */
 .if-row-plain .if-line { flex-wrap: nowrap; }
-.if-row-plain .if-wrap { min-width: 0; flex: 1 1 auto; }
+/* flex-grow 를 안 준다(0). InlinePick(언어·수준 등)은 닫혀 있을 때도
+   이 감싸개를 늘 두르는데, 예전엔 여기가 늘어나(1 1 auto) '영어' 처럼
+   짧은 값 뒤로 다음 항목까지 큰 공백이 생겼다("영어 옆에 왜이렇게
+   간격이 넓지?"). 넓게 펴야 하는 자리(SNS 주소 등)는 InlineSuggest/
+   InlineText 가 편집 중 인라인 스타일로 width:100% 를 직접 준다 —
+   여기서 또 키울 필요가 없다. */
+.if-row-plain .if-wrap { min-width: 0; flex: 0 1 auto; }
 /* 테두리 상자 없이 커서만 뜨게 — 폭은 친 글자만큼(InlineField 의 칸폭). */
 /* 자리글 버튼(.if-slot)과 여백·크기를 똑같이 둔다. 다르면 눌렀을 때 글자가 옆으로 튄다. */
 .if-row-plain .if-input { min-width: 0; border-color: transparent; background: transparent;

@@ -50,12 +50,12 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
     return (
       <>
         <div className="auth-user-wrap">
-          <button className="auth-user-btn" aria-label={ownerType === "company" ? "기업 대시보드" : "내 프로필"}
+          <button className={`auth-user-btn${ownerType === "company" ? "" : " auth-user-btn-round"}`} aria-label={ownerType === "company" ? "기업 대시보드" : "내 프로필"}
             onClick={() => router.push(ownerType === "company" ? "/company/dashboard" : "/profile")}>
             {avatarUrl && !그림깨짐 ? (
               <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
                 onError={() => set그림깨짐(true)}
-                style={{ width: 32, height: 32, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block", background: "#f7f7f8" }} />
+                style={{ width: 32, height: 32, flexShrink: 0, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block", background: "#f7f7f8" }} />
             ) : (
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <circle cx="16" cy="16" r="16" fill="#f7f7f8"/>

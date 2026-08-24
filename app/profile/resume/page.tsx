@@ -471,7 +471,7 @@ function ResumePageContent() {
                 {sectionsOpen && sections.map((sec) => (
                   <button
                     key={sec.id}
-                    className={`resume-sidebar-item ${activeSection === sec.id ? "active" : ""}`}
+                    className={`resume-sidebar-item ${sec.done ? "done" : ""} ${activeSection === sec.id ? "active" : ""}`}
                     onClick={() => {
                       setActiveSection(sec.id);
                       const el = document.getElementById(`section-${sec.id}`);
