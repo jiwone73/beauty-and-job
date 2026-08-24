@@ -855,7 +855,8 @@ export default function ProfilePage() {
                     셋으로 갈라 두니 한 페이지가 아니라 세 덩어리로 읽혔다. */}
                 <div className="pf-wide" style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 3, padding: "13px 16px", borderBottom: "1px solid #efeff1" }}>
                   <label className="profile-info-label">{칸그림("거주지 주소")}거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: 0 }}>
+                  {/* 왼쪽 18px 은 라벨 글자 선(아이콘 16 + 사이 6 = 22)에서 슬롯 제 여백 4 를 뺀 값. */}
+                  <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: "0 0 0 18px" }}>
                     <div className="if-row-body">
                       <div className="if-line">
                         <button type="button" className={`if-slot ${addressRoad ? "on" : ""}`} onClick={openPostcode}>
