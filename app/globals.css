@@ -1303,6 +1303,10 @@ input[type="range"].career-slider::-moz-range-thumb {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* 항목 아이콘 — 라벨 왼쪽. 값보다 흐리게 두어 글자를 가리지 않는다. */
+.profile-info-label { display: inline-flex; align-items: center; gap: 6px; }
+.profile-info-icon { flex-shrink: 0; color: #b7b0c0; }
+
 .profile-info-value.is-empty {
   /* 아직 안 채운 칸 — 폼의 다른 자리글과 같은 회색으로 둔다(--color-text-mute 는
      '값'에 쓰는 색이라, 자리글까지 그 색이면 채운 것처럼 읽힌다). */

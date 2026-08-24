@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal, Trash2 } from "lucide-react";
+import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal, Trash2,
+  User, Store, Building2, Globe, Phone, Cake, Users as UsersIcon, Mail, Home, Briefcase } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -563,7 +564,7 @@ export default function ProfilePage() {
                 {/* 이름 — 목록 맨 위. 사진은 이 줄 오른쪽 끝에 둔다(누르면 바꾸기·지우기). */}
                 <div className="profile-info-row" style={{ cursor: "default", flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 14 }}>
                   <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
-                    <span className="profile-info-label">이름<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
+                    <span className="profile-info-label">{칸그림("이름")}이름<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                     <span className={`profile-info-value ${name ? "" : "is-empty"}`}>{name || "이름"}</span>
                   </span>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", position: "relative" }}>
@@ -631,7 +632,7 @@ export default function ProfilePage() {
                 {/* 구직유형 — 가입 때 정한다. 바꾸면 아래 직군·스킬이 통째로 어긋나므로
                     보여만 준다. 이 값이 '직군' 의 뜻을 정하니 목록 맨 위가 제 자리다. */}
                 <div className="profile-info-row" style={{ cursor: "default" }}>
-                  <span className="profile-info-label">구직유형</span>
+                  <span className="profile-info-label">{칸그림("구직유형")}구직유형</span>
                   <span className={`profile-info-value ${dbJobType ? "" : "is-empty"}`}>
                     {dbJobType === "STORE" ? "매장" : dbJobType === "OFFICE" ? "본사" : "선택하기"}
                   </span>
@@ -641,7 +642,7 @@ export default function ProfilePage() {
                     따로 두지 않는다(칸 하나 고르자고 화면이 들썩일 이유가 없다).
                     목록에 없는 나라는 '기타'로 두고 자세한 것은 이력서 어학에서 읽는다. */}
                 <div className="profile-info-row" style={{ cursor: "default" }}>
-                  <span className="profile-info-label">국적</span>
+                  <span className="profile-info-label">{칸그림("국적")}국적</span>
                   <span>
                     <InlinePick value={nationality} placeholder="선택하기"
                       options={["대한민국", "중국", "베트남", "일본", "몽골", "우즈베키스탄", "러시아", "태국", "필리핀", "기타"]}
@@ -663,7 +664,7 @@ export default function ProfilePage() {
                 {editField === "phone" ? (
                   <div className="profile-info-row" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <span className="profile-info-label">휴대전화<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
+                      <span className="profile-info-label">{칸그림("휴대전화")}휴대전화<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button
                           style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: phoneVerified ? "#582681" : "#e0e0e0", color: phoneVerified ? "#fff" : "#9a9a9a", cursor: phoneVerified ? "pointer" : "not-allowed" }}
@@ -763,7 +764,7 @@ export default function ProfilePage() {
                 {/* 생년월일 — 큰 입력칸에 여덟 자리를 치게 하고 저장·취소를 붙여 두니
                     칸 하나 고치자고 화면이 들썩였다. 그 자리에서 연→월→일로 고른다. */}
                 <div className="profile-info-row" style={{ cursor: "default" }}>
-                  <span className="profile-info-label">생년월일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
+                  <span className="profile-info-label">{칸그림("생년월일")}생년월일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                   <span>
                     <InlineYMD required
                       value={birth ? `${birth.slice(0, 4)}.${birth.slice(4, 6)}.${birth.slice(6, 8)}` : ""}
@@ -790,7 +791,7 @@ export default function ProfilePage() {
 
                 {/* 성별 — 국적·생년월일과 같은 결로 그 자리에서 고른다. */}
                 <div className="profile-info-row" style={{ cursor: "default" }}>
-                  <span className="profile-info-label">성별<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
+                  <span className="profile-info-label">{칸그림("성별")}성별<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                   <span>
                     <InlinePick required placeholder="선택하기" options={["남성", "여성"]}
                       value={/^m/i.test(gender) ? "남성" : /^f/i.test(gender) ? "여성" : (gender || "")}
@@ -814,7 +815,7 @@ export default function ProfilePage() {
                 {editField === "email" ? (
                   <div className="profile-info-row is-last" style={{ cursor: "default", flexDirection: "column", alignItems: "stretch", gap: "10px" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <span className="profile-info-label">이메일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
+                      <span className="profile-info-label">{칸그림("이메일")}이메일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button
                           style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#582681", color: "#fff", cursor: "pointer" }}
@@ -853,7 +854,7 @@ export default function ProfilePage() {
                 {/* 거주지 — 기업정보와 같은 결로 라벨 옆 한 줄. 카드를 따로 두지 않는다:
                     셋으로 갈라 두니 한 페이지가 아니라 세 덩어리로 읽혔다. */}
                 <div className="pf-wide" style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 3, padding: "13px 16px", borderBottom: "1px solid #efeff1" }}>
-                  <label className="profile-info-label">거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="profile-info-label">{칸그림("거주지 주소")}거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: 0 }}>
                     <div className="if-row-body">
                       <div className="if-line">
@@ -994,12 +995,23 @@ export default function ProfilePage() {
     </ProfileShell>
   );
 }
+/** 항목마다 왼쪽에 놓는 아이콘. 라벨 이름으로 고른다 — 칸이 늘어도 여기만 손보면 된다. */
+function 칸그림(label: string) {
+  const 표: Record<string, any> = {
+    "이름": User, "구직유형": Store, "국적": Globe, "휴대전화": Phone,
+    "생년월일": Cake, "성별": UsersIcon, "이메일": Mail,
+    "거주지 주소": Home, "직군": Briefcase, "희망 근무지역": MapPin,
+  };
+  const G = 표[label];
+  return G ? <G size={16} className="profile-info-icon" /> : null;
+}
+
 function InfoRow({ label, value, isEmpty, isLast, onClick, required }: {
   label: string; value: string; isEmpty?: boolean; isLast?: boolean; onClick?: () => void; required?: boolean;
 }) {
   return (
     <button className={`profile-info-row ${isLast ? "is-last" : ""}`} onClick={onClick} disabled={!onClick}>
-      <span className="profile-info-label">{label}{required && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</span>
+      <span className="profile-info-label">{칸그림(label)}{label}{required && <span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span>}</span>
       <span className={`profile-info-value ${isEmpty ? "is-empty" : ""}`}>{value}</span>
     </button>
   );
