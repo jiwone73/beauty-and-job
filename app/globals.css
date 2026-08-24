@@ -13049,7 +13049,9 @@ button,
   }
   .pf-side-avatar-menu button:hover { background: #f7f7f8; }
   .pf-side-me-name { font-size: 15px; font-weight: 700; color: #2b2b2b; }
-  .pf-side-me-type { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #8a8a8f; }
+  .pf-side-me-type { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px; font-size: 12px; color: #8a8a8f; }
+  /* 유형이 무엇을 뜻하는지 — 유형 글자보다 흐리게 두어 유형이 먼저 읽히게 한다. */
+  .pf-side-me-desc { font-style: normal; font-size: 11.5px; color: #c4c4c9; line-height: 1.5; }
   .pf-side .pf-side-out { color: #a9a2b2; }
   /* 사이드가 생기면서 안쪽 칸이 가운데로 몰릴 이유가 없어졌다. 폰 시절의
      600px 를 그대로 두면 카드만 넓어지고 버튼은 좁아 왼쪽 끝이 어긋난다. */
