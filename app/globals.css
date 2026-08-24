@@ -12475,7 +12475,7 @@ button,
 /* 이달의 이벤트 — 개인회원·기업회원 몫을 나란히 둔다. 누가 받는 혜택인지가
    먼저 보여야 자기 것만 읽고 넘어갈 수 있다. */
 .mt-evt { display: flex; flex-direction: column; }
-.mt-evt-list { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: center; }
+.mt-evt-list { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
 .mt-evt-item + .mt-evt-item { border-left: 1px solid #f7f7f8; padding-left: 18px; }
 /* 회색 구분선이 회색 카드 바탕에 얹혀 묻혀 있었다("개인회원·기업회원
    사이 세로선이 안 보인다"). .mt-card 가 흰 바탕으로 바뀌는 PC 폭에서는
