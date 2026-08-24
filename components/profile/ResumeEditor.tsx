@@ -330,12 +330,9 @@ export default function ResumeEditor({
         ))}
         {/* 항목이 하나도 없을 때만 안내 한 줄. 더하기는 머리줄 + 가 맡는다. */}
         {!isEntryLevel && careers.length === 0 && (
-          <button type="button" className="if-empty" onClick={() => addCareer({
-                  id: genId(), company: "", department: "", position: "",
-                  startDate: "", endDate: "", isVerified: false, description: "",
-                })}>
+          <p className="if-empty">
             {본사냐 ? "회사명 · 재직 기간 · 재직 형태를 적어 주세요" : "매장명 · 근무 기간 · 직급을 적어 주세요"}
-          </button>
+          </p>
         )}
       </section>
 
@@ -384,9 +381,7 @@ export default function ResumeEditor({
           </div>
         ))}
         {educations.length === 0 && (
-          <button type="button" className="if-empty" onClick={() => addEducation({
-            id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "",
-          })}>학교명 · 재학 기간 · 졸업 상태를 적어 주세요</button>
+          <p className="if-empty">학교명 · 재학 기간 · 졸업 상태를 적어 주세요</p>
         )}
       </section>
 
@@ -410,9 +405,9 @@ export default function ResumeEditor({
             <SkillModal inline isOpen={skillModalOpen} onClose={() => setSkillModalOpen(false)} />
           )}
           {!skillModalOpen && skills.length === 0 && (
-            <button type="button" className="if-empty" onClick={() => setSkillModalOpen(true)}>
+            <p className="if-empty">
               내 직무 기반 스킬을 추가해보세요
-            </button>
+            </p>
           )}
         </section>
       )}
@@ -445,9 +440,7 @@ export default function ResumeEditor({
           </div>
         ))}
         {certificates.length === 0 && (
-          <button type="button" className="if-empty" onClick={() => addCertificate({
-            id: genId(), name: "", issuer: "", issued_ym: "",
-          })}>{본사냐 ? "보유한 자격증을 적어 주세요" : "미용사 면허 같은 자격증을 적어 주세요"}</button>
+          <p className="if-empty">{본사냐 ? "보유한 자격증을 적어 주세요" : "미용사 면허 같은 자격증을 적어 주세요"}</p>
         )}
       </section>
 
@@ -482,9 +475,7 @@ export default function ResumeEditor({
           </div>
         ))}
         {experiences.length === 0 && (
-          <button type="button" className="if-empty" onClick={() => addExperience({
-            id: genId(), category: "", title: "", description: "",
-          })}>{본사냐 ? "수상 · 교육 · 대외활동을 적어 주세요" : "콘테스트 수상이나 교육 이수를 적어 주세요"}</button>
+          <p className="if-empty">{본사냐 ? "수상 · 교육 · 대외활동을 적어 주세요" : "콘테스트 수상이나 교육 이수를 적어 주세요"}</p>
         )}
       </section>
 
@@ -532,9 +523,7 @@ export default function ResumeEditor({
           );
         })}
         {languages.length === 0 && (
-          <button type="button" className="if-empty" onClick={() => addLanguage({
-            id: genId(), language: "", level: "", test: "",
-          })}>{본사냐 ? "업무에 쓰는 언어를 적어 주세요" : "손님 응대가 되는 언어를 적어 주세요"}</button>
+          <p className="if-empty">{본사냐 ? "업무에 쓰는 언어를 적어 주세요" : "손님 응대가 되는 언어를 적어 주세요"}</p>
         )}
       </section>
 

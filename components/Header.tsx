@@ -14,8 +14,12 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const router = useRouter();
   const { isLoggedIn, ownerType, userName, avatarUrl, setAvatar } = useAuthStore();
   const pathname = usePathname();
-  // 사이드가 신원을 이미 보여 주는 화면들.
-  const 프로필안 = !!pathname && (pathname.startsWith("/profile") || pathname.startsWith("/company/dashboard"));
+  // 사이드가 신원을 이미 보여 주는 화면들. 이력서는 빼둔다 — 여기 사이드는
+  // 어디까지 채웠는지만 말하고 메뉴가 없어서, 아바타가 없으면 프로필로 돌아갈
+  // 길이 끊긴다. 헤더 '이력서' 로 들어오는 별개의 화면이기도 하다.
+  const 프로필안 = !!pathname
+    && (pathname.startsWith("/profile") || pathname.startsWith("/company/dashboard"))
+    && !pathname.startsWith("/profile/resume");
   // 로고 주소가 죽어 있으면 브라우저가 깨진 그림(?)을 그린다. 기본 그림으로 물러선다.
   const [그림깨짐, set그림깨짐] = useState(false);
   useEffect(() => { set그림깨짐(false); }, [avatarUrl]);

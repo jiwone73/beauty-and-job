@@ -142,6 +142,10 @@ export default function ProfilePage() {
           if (res.data.office_job_areas?.length > 0) {
             setOfficeJobAreas(res.data.office_job_areas);
           }
+          // 전화는 서버가 가진 것이 참이다. 예전에는 로그인 때 스토어에 담긴
+          // 값만 봤는데, 그 값은 새로고침·다른 기기·JWT 재발급에서 비어 있어
+          // 이미 넣어 둔 번호가 화면에서만 사라졌다(프로필이 미완성으로 보였다).
+          if (res.data.phone) setPhoneOverride(res.data.phone);
           if (res.data.address_road) setAddressRoad(res.data.address_road);
           if (res.data.address_detail) setAddressDetail(res.data.address_detail);
           if (res.data.region_sido) setRegionSido(res.data.region_sido);

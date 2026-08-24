@@ -13115,16 +13115,20 @@ button,
    폰은 지금 그대로 1열이다 — 좁은 화면에서 둘로 나누면 둘 다 못 읽는다. */
 @media (min-width: 1024px) {
   .resume-layout {
-    grid-template-columns: 176px minmax(0, 1fr);
-    max-width: 1120px;
-    gap: 26px;
-    padding: 22px 24px 60px;
+    grid-template-columns: 220px minmax(0, 1fr);
+    max-width: none; gap: 0; margin: 0; padding: 0; align-items: stretch;
   }
-  /* 스크롤을 내려도 어디까지 채웠는지 늘 보이게 붙여 둔다. */
+  /* 판을 통짜로 넓혔으니 여백은 본문이 제 것으로 가진다. */
+  .resume-editor { padding: 22px 26px 60px; max-width: 900px; box-sizing: border-box; }
+  /* 프로필과 같은 기둥이다 — 화면 왼쪽 끝에 붙은 흰 기둥, 오른쪽에 선 하나로
+     본문과 가른다. 회색 바탕 위에 그냥 떠 있으면 한 페이지가 아니라 조각으로
+     읽힌다. 메뉴는 넣지 않는다 — 이력서는 헤더로 들어오는 별개의 화면이다.
+     스크롤을 내려도 어디까지 채웠는지 늘 보이게 붙여 둔다. */
   .resume-sidebar {
-    position: sticky; top: 84px;
-    flex-direction: column; align-items: stretch; flex-wrap: nowrap;
-    background: transparent; border-bottom: none; padding: 0; gap: 3px;
+    display: flex; flex-direction: column; align-items: stretch; flex-wrap: nowrap;
+    position: sticky; top: 73px; align-self: start; min-height: calc(100vh - 73px);
+    background: #fff; border-right: 1px solid #f0f0f0; border-bottom: none; border-radius: 0;
+    padding: 22px 14px; gap: 3px;
   }
   .resume-sidebar-item { justify-content: flex-start; border: none; background: transparent; border-radius: 7px; padding: 7px 9px; }
   .resume-sidebar-item:hover { background: #efeff1; }
@@ -13372,9 +13376,9 @@ button,
   transition: border-color .12s, color .12s; }
 .if-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
 /* 항목이 하나도 없는 칸의 안내 한 줄 */
-.if-empty { width: 100%; text-align: left; background: none; border: none; padding: 12px 4px;
-  font-family: inherit; font-size: 13.5px; color: #a8a8ad; cursor: pointer; border-radius: 8px; }
-.if-empty:hover { background: #f7f7f8; color: #6f6f75; }
+/* 눌리는 것이 아니라 무엇을 적는 칸인지 알리는 한 줄이다. 더하기는 머리줄
+   ＋ 가 맡으므로 여기까지 누를 곳으로 만들면 같은 일을 하는 자리가 둘이 된다. */
+.if-empty { margin: 0; padding: 12px 0; text-align: left; font-size: 13.5px; color: #a8a8ad; }
 
 /* 프로필이 덜 채워졌을 때 이력서 대신 서는 안내 판 */
 .resume-gate { max-width: 460px; margin: 60px auto; padding: 32px 28px; text-align: center;
