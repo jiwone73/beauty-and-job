@@ -12359,6 +12359,17 @@ button,
 /* 카드 안쪽은 순백이 아니다 — 바탕의 보라기를 아주 옅게 머금어야 따로 놀지 않는다. */
 .mt-card { background: #f7f7f8; border-radius: 14px; padding: 22px 20px; text-decoration: none; color: inherit; display: block; }
 
+/* 채용공고·프로필·이력서와 같은 흰 판 (PC 전용 — "모바일은 나중에").
+   .mt-jobs 바탕은 원래 순백이었는데(#fff → #fefcfd → … → #fdfcfe →
+   #fbfaff) 여러 손질을 거치며 페이지 바탕색(#f7f7f8)과 같은 값까지
+   내려와, 히어로 아래 검색·공지 판이 페이지에 녹아 경계가 안 보이게
+   됐다. 페이지를 흰색으로 두고 판은 옅은 테두리로 되살린다 — 안쪽
+   .mt-card 는 그대로 회색으로 둬 판 안에서 한 번 더 갈린다. */
+@media (min-width: 1025px) {
+  .main-page { background: #fff; }
+  .mt-jobs { background-color: #fff; border: 1px solid var(--color-border); }
+}
+
 /* 한 줄짜리 카드. 세로 여백을 조여 제 높이만 쓰게 한다. */
 .mt-nc { display: flex; align-items: center; gap: 11px; padding: 13px 20px; }
 /* '이달의 이벤트' 제목과 같은 글자. 두 카드가 위아래로 붙어 있으니 머리글
