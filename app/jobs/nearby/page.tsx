@@ -360,6 +360,10 @@ export default function NearbyJobsPage() {
           없으면 다른 화면으로 갈 길이 뒤로가기뿐이라 갇힌 것처럼 된다. 같은
           이유로 안쪽 뒤로가기 화살표는 뺀다 — 파고든 화면이 아니다. */}
       <Header />
+      {/* .nb-page 는 max-width 로 가운데 둔 안쪽 기둥이라 화면 전체 폭을
+          안 채운다. 바탕은 이 바깥 겹에서 칠한다 — body 는 전역 규칙이
+          !important 로 걸려 있어 여기서 못 이긴다. */}
+      <div className="nb-shell">
       <div className="nb-page">
         <div className="nb-head">
           <h1>내 주변 공고</h1>
@@ -484,6 +488,7 @@ export default function NearbyJobsPage() {
           ))
         )}
         </div>
+      </div>
       </div>
     </>
   );

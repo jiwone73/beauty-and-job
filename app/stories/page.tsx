@@ -43,13 +43,13 @@ export default function StoriesPage() {
   };
 
   return (
-    <main>
+    <main className="stories-page">
       <Header />
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 80px" }}>
 
       {/* 인트로 배너 */}
-      <div style={{
-        background: "#f7f7f8", borderRadius: 16, padding: "22px 24px", marginBottom: 20,
+      <div className="stories-intro" style={{
+        borderRadius: 16, padding: "22px 24px", marginBottom: 20,
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
       }}>
         <div>
@@ -117,6 +117,18 @@ export default function StoriesPage() {
       </div>
 
       <style jsx>{`
+        /* 인트로 배너·글 카드가 body 의 회색(#f7f7f8)과 같은 색이라, 카드는
+           흰 채움 때문에 그나마 드러났지만 배너는 페이지에 완전히 녹아
+           경계가 없었다. 채용공고·메인과 같은 규칙 — 흰 바탕, 구분은
+           테두리로. PC 전용(min-width:768px) — 폰은 지금 그대로 둔다.
+           (페이지 바탕 자체(.stories-page)는 styled-jsx 가 루트 <main> 에
+           스코프 클래스를 안 붙여 이 자리에서 못 건드린다 — globals.css 로 뺐다.) */
+        .stories-intro { background: #f7f7f8; }
+        .story-card { border: 1px solid #f7f7f8; }
+        @media (min-width: 768px) {
+          .stories-intro { background: #fff; border: 1px solid var(--color-border); }
+          .story-card { border-color: var(--color-border); }
+        }
         .stories-filter-bar {
           display: flex;
           flex-direction: column;
@@ -195,8 +207,8 @@ export default function StoriesPage() {
             const cs = CAT_STYLE[p.category] || { bg: "#f0f0f0", color: "#666", emoji: "💬" };
             return (
               <Link key={p.id} href={`/stories/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                <div style={{
-                  background: "#fff", border: "1px solid #f7f7f8", borderRadius: 14,
+                <div className="story-card" style={{
+                  background: "#fff", borderRadius: 14,
                   padding: 18, cursor: "pointer",
                 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>

@@ -11726,6 +11726,13 @@ div:has(> table.admin-table),
   text-overflow: ellipsis; white-space: nowrap; max-width: 45%; }
 .nearby-map-wrap { height: 320px; }
 @media (min-width: 768px) {
+  /* 채용공고·메인과 같은 흰 바탕. 목록은 줄마다 밑선(border-bottom)으로
+     이미 갈리니 카드를 따로 두를 것은 없다 — 페이지 색만 바꾸면 된다.
+     body 에 직접 걸면 안 먹는다 — 전역 html,body 배경이 !important 라
+     레이어(@layer base) 안에 있어도 일반 규칙은 절대 못 이긴다. .nb-page
+     자체는 max-width 로 가운데 둔 기둥이라 화면 폭을 안 채우므로, 감싸는
+     .nb-shell(화면 폭 그대로)에 칠한다. */
+  .nb-shell { background: #fff; }
   .nb-page { max-width: 1080px; }
   .nearby-map-wrap { height: 560px; }
   /* 지도가 넓어지면 목록도 그만큼 넓어져 한 줄이 휑해진다. 두 줄로 나눈다. */
@@ -12823,6 +12830,13 @@ button,
 }
 @media (min-width: 769px) { .story-item-title { font-size: 16px; } }
 @media (max-width: 480px) { .story-item-title { font-size: 14px; } }
+
+/* 페이지 바탕 — 채용공고·메인과 같은 흰색(PC 전용). 인트로 배너·글 카드의
+   테두리는 app/stories/page.tsx 의 지역 <style jsx> 에서 다룬다. 이
+   한 줄만 여기 있는 까닭: styled-jsx 가 그 파일 루트 <main> 에는
+   스코프 클래스를 안 붙여(중첩 요소는 붙는데 루트만 빠진다 — 실측
+   확인), 지역 스타일로는 .stories-page 를 못 건드린다. */
+@media (min-width: 768px) { .stories-page { background: #fff; } }
 
 /* ══ 채용공고 — 왼쪽 사이드바 ══════════════════════════════════════
    드롭다운에 접어 두면 무엇이 있는지 모르는 사람은 못 고른다. 뷰티는 직군
