@@ -12963,15 +12963,23 @@ button,
 .pf-side { display: none; }
 
 @media (min-width: 900px) {
-  .pf-body { display: grid; grid-template-columns: 150px 1fr; gap: 34px; align-items: start; padding-top: 26px; }
+  /* 기업 대시보드와 같은 짜임 — 사이드는 화면 왼쪽 끝에 붙은 흰 기둥,
+     본문은 그 오른쪽 회색 바탕 위. 1000px 로 묶어 가운데 두니 사이드가
+     허공에 떠 한 페이지가 아니라 조각들로 읽혔다. */
+  .pf-body {
+    display: grid; grid-template-columns: 220px minmax(0, 1fr);
+    gap: 0; align-items: stretch;
+    max-width: none; margin: 0; padding: 0;
+  }
   .pf-mob { display: none; }
   /* 사이드는 카드로 두르지 않는다. 카드가 되면 본문 카드와 나란히 놓인 '또 하나의
      상자'로 읽혀 한 페이지가 여러 덩어리로 갈린다. 기업 대시보드 사이드처럼
      바탕만 흰색으로 두고 오른쪽에 선 하나로 본문과 가른다. */
   .pf-side {
-    display: flex; flex-direction: column; position: sticky; top: 112px;
-    padding: 2px 16px 2px 0; border-right: 1px solid #f0f0f0;
-    margin-top: 24px; min-height: 320px;
+    display: flex; flex-direction: column; position: sticky; top: 73px;
+    align-self: start; min-height: calc(100vh - 73px);
+    background: #fff; border-right: 1px solid #f0f0f0; border-radius: 0;
+    padding: 22px 14px; margin: 0;
   }
   .pf-side a, .pf-side .pf-side-out {
     display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
@@ -12992,6 +13000,8 @@ button,
   .pf-side .pf-side-out { color: #a9a2b2; }
   /* 사이드가 생기면서 안쪽 칸이 가운데로 몰릴 이유가 없어졌다. 폰 시절의
      600px 를 그대로 두면 카드만 넓어지고 버튼은 좁아 왼쪽 끝이 어긋난다. */
+  /* 본문은 대시보드 콘텐츠와 같은 여백을 두른다. */
+  .pf-main { padding: 28px; min-width: 0; }
   .pf-main .profile-section,
   .pf-main .profile-content { max-width: none; }
   .pf-main .profile-info-card { max-width: none; }
