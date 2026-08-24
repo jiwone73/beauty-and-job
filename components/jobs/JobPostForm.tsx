@@ -1973,8 +1973,10 @@ export default function JobPostForm({
   //   options가 있으면 컴팩트 목록, units(급여)면 지급주기 칩, 그 외에는 자유입력.
   const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력", allowFi = true, units?: typeof SALARY_UNITS, wrap = false, nego = false) => {
     const v = (posMeta[cat] || emptyPos)[field] as string;
-    // 값은 그대로 두고 "(협의)" 만 덧붙인다 — 값 자체를 '협의'로 바꾸는 것과는 다르다.
-    const shown = v && nego && v !== "협의" ? `${v} (협의)` : v;
+    // '협의'를 고르면: 값이 있으면 그대로 두고 "(협의)"만 덧붙이고, 값이 없으면 '협의'
+    // 그 자체를 보여준다. 값을 지우고 그 자리를 '협의'로 바꿔치기하던 예전 방식은
+    // 이미 적어 둔 급여를 날려 버리는 사고로 이어져 없앴다.
+    const shown = nego ? (v && v !== "협의" ? `${v} (협의)` : "협의") : v;
     const key = `${cat}|${field}`;
     const open = cellOpen === key;
     const freeInput = options.length === 0 || cellFree;      // 목록 없는 칸이거나 '직접입력'을 고른 상태
@@ -1993,8 +1995,11 @@ export default function JobPostForm({
           {/* 급여처럼 길어질 수 있는 값은 잘라내지(...) 않고 두 줄까지 접는다.
               maxWidth 없이 whiteSpace:normal 만 주면 표가 그냥 옆으로 넓어져
               한 줄에 다 펴져 버린다 — 폭을 못박아야 그 안에서 접힌다. */}
+          {/* minWidth:0 이면 다른 칸(고용형태·성별 등)이 제 몫을 채울 때 이 칸부터
+              먼저 짜부라져 3행까지 접혔다 — 바닥(104)을 둬 표가 대신 옆으로 늘거나
+              스크롤되게 한다(감싼 div 가 overflowX:auto). */}
           <span style={wrap
-            ? { flex: 1, minWidth: 0, maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.3 }
+            ? { flex: 1, minWidth: 104, maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.3 }
             : { flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{shown || ph}</span>
           {!v && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9", marginTop: wrap ? 2 : 0 }} />}
         </button>
@@ -2021,7 +2026,10 @@ export default function JobPostForm({
             ) : (
               <>
                 {units && (
-                  /* 지급 주기 선택 → 앞머리(시·주·월·연) 자동 입력. 금액만 이어서 적으면 된다. */
+                  /* 지급 주기 선택 → 앞머리(시·주·월·연) 자동 입력. 금액만 이어서 적으면 된다.
+                     '협의' 버튼은 없앴다 — 값을 지우고 그 자리를 대체하는 방식이라, 이미
+                     적어 둔 급여를 눌러서 날려 버리는 사고로 이어졌다. 값을 두고도, 값
+                     없이도 '협의'를 남기는 건 이제 아래 '협의 가능' 체크 하나로 한다. */
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 6 }}>
                     {units.map((u) => {
                       const on = v.trim().startsWith(u.prefix);
@@ -2031,8 +2039,6 @@ export default function JobPostForm({
                           style={{ border: `1px solid ${on ? "#582681" : "#efeff1"}`, background: on ? "#f7f7f8" : "#fff", color: on ? "#582681" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>{u.label}</button>
                       );
                     })}
-                    <button type="button" onClick={() => { setPos(cat, field, "협의"); setCellOpen(null); }}
-                      style={{ border: `1px solid ${v.trim() === "협의" ? "#582681" : "#efeff1"}`, background: v.trim() === "협의" ? "#f7f7f8" : "#fff", color: v.trim() === "협의" ? "#582681" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>협의</button>
                   </div>
                 )}
                 <input ref={cellInputRef} type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph}
@@ -2833,7 +2839,7 @@ export default function JobPostForm({
                                 {/* 긴 분야명이 한 줄로 늘어지며 표를 넓혀 급여·근무요일 칸까지
                                     가로 스크롤로 밀어냈다. 폭을 묶어 두 줄까지는 그대로 접는다. */}
                                 <div style={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
-                                  <span style={{ flex: 1, minWidth: 0, maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>{baseCat(cat)}</span>
+                                  <span style={{ flex: 1, minWidth: 104, maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>{baseCat(cat)}</span>
                                   <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
                                     style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0, marginTop: 1 }}>×</button>
                                 </div>
@@ -2852,8 +2858,8 @@ export default function JobPostForm({
                                     borderBottom: (row.workDays || row.workTime) ? "1px solid transparent" : "1px solid #e3e3e6",
                                     borderRadius: 0, padding: "3px 6px", fontSize: 13.5, lineHeight: 1.35, cursor: "pointer", color: "#333",
                                     background: "transparent", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
-                                  {(row.workDays || row.workTime) ? (
-                                    (row.workDays === "협의" && row.workTime === "협의") ? (
+                                  {(row.workDays || row.workTime || row.shiftNego) ? (
+                                    (row.workDays === "협의" && row.workTime === "협의") || (!row.workDays && !row.workTime) ? (
                                       <div style={{ whiteSpace: "nowrap" }}>협의</div>
                                     ) : (
                                     <>
@@ -2863,16 +2869,13 @@ export default function JobPostForm({
                                     )
                                   ) : <ChevronDown size={12} style={{ marginLeft: "auto", flexShrink: 0, color: "#c4c4c9" }} />}
                                 </button>
-                                {/* 값은 정해 두고 조율 여지만 남길 때. '협의'(값을 비우고 그 말로
-                                    채움)와는 다르다 — 시간은 그대로 보이고 "(협의)" 만 덧붙는다.
-                                    시간 자체가 '협의'면 이미 그 뜻이라 체크박스가 필요 없다. */}
-                                {row.workTime && row.workTime !== "협의" && (
-                                  <label style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 3, fontSize: 10.5, color: "#9a94a4", cursor: "pointer", whiteSpace: "nowrap" }}>
-                                    <input type="checkbox" checked={row.shiftNego} onChange={(e) => setPos(cat, "shiftNego", e.target.checked)}
-                                      style={{ width: 11, height: 11, margin: 0, accentColor: "#582681" }} />
-                                    협의 가능
-                                  </label>
-                                )}
+                                {/* 값을 적어 두고도, 값 없이도 체크할 수 있다 — 시간이 있으면
+                                    "(협의)"만 덧붙고, 요일·시간이 다 없으면 '협의' 그 자체가 된다. */}
+                                <label style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 3, fontSize: 10.5, color: "#9a94a4", cursor: "pointer", whiteSpace: "nowrap" }}>
+                                  <input type="checkbox" checked={row.shiftNego} onChange={(e) => setPos(cat, "shiftNego", e.target.checked)}
+                                    style={{ width: 11, height: 11, margin: 0, accentColor: "#582681" }} />
+                                  협의 가능
+                                </label>
                                 {posShiftOpen === cat && (() => {
                                   const days = (row.workDays && row.workDays !== "협의") ? row.workDays.split(/[·,]/).map((s) => s.trim()).filter((d) => WORK_DAY_OPTIONS.includes(d)) : [];
                                   const daysNego = row.workDays === "협의";
@@ -2940,13 +2943,13 @@ export default function JobPostForm({
                               </td>
                               <td style={{ ...tdc, position: "relative" }}>
                                 {posCell(cat, "salary", [], "", true, SALARY_UNITS, true, row.salaryNego)}
-                                {row.salary && row.salary !== "협의" && (
-                                  <label style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 3, fontSize: 10.5, color: "#9a94a4", cursor: "pointer", whiteSpace: "nowrap" }}>
-                                    <input type="checkbox" checked={row.salaryNego} onChange={(e) => setPos(cat, "salaryNego", e.target.checked)}
-                                      style={{ width: 11, height: 11, margin: 0, accentColor: "#582681" }} />
-                                    협의 가능
-                                  </label>
-                                )}
+                                {/* 값을 적어 두고도, 값 없이도 체크할 수 있다 — 값이 있으면
+                                    "(협의)"만 덧붙고, 없으면 '협의' 그 자체가 된다. */}
+                                <label style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 3, fontSize: 10.5, color: "#9a94a4", cursor: "pointer", whiteSpace: "nowrap" }}>
+                                  <input type="checkbox" checked={row.salaryNego} onChange={(e) => setPos(cat, "salaryNego", e.target.checked)}
+                                    style={{ width: 11, height: 11, margin: 0, accentColor: "#582681" }} />
+                                  협의 가능
+                                </label>
                               </td>
                             </tr>
                           );

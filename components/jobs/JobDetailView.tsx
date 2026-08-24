@@ -130,8 +130,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 // 모집분야·급여는 길어지면 표를 옆으로 밀어내(가로 스크롤) 뒤 칸이
                 // 잘려 보였다. 폭을 묶어 두 줄까지 접는다.
                 const wrapCol = c.key === "category" || c.key === "salary";
+                // 다른 칸(고용형태·성별·경력·학력·근무요일/시간)은 minWidth 로 자기
+                // 몫을 지키는데, 이 둘은 늘어나는 값을 접으려고 maxWidth 만 뒀었다.
+                // 바닥이 없으니 표가 좁아질 때 이 두 칸만 먼저 짜부라져 3행까지 접혔다.
                 return (
-                  <th key={c.key} className="jd-pos-th" style={wrapCol ? { whiteSpace: "normal", maxWidth: 130 } : undefined}>{c.label}</th>
+                  <th key={c.key} className="jd-pos-th" style={wrapCol ? { whiteSpace: "normal", minWidth: 104, maxWidth: 130 } : undefined}>{c.label}</th>
                 );
               })}
             </tr>
@@ -162,7 +165,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                       {/* 근무요일/시간 열은 요일 1행·시간 2행으로. 모집분야·급여는 길어지면
                           표를 옆으로 밀어내던 것을(가로 스크롤) 폭을 묶어 두 줄까지 접는다. */}
                       {wrapCol
-                        ? <span style={{ display: "inline-block", maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all" }}>{content}</span>
+                        ? <span style={{ display: "inline-block", minWidth: 104, maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all" }}>{content}</span>
                         : content}
                     </td>
                   );
