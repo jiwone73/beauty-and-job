@@ -13007,6 +13007,11 @@ button,
 .pf-side { display: none; }
 
 @media (min-width: 900px) {
+  /* 채용공고와 같은 흰 판이다. 지금까진 페이지 바탕이 회색(#f7f7f8)이고
+     그 위에 흰 카드가 떠 있어, 카드 사이 회색 틈이 '조각조각 붙어 있다'는
+     인상을 줬다. 채용공고는 페이지 자체가 흰색이고 카드는 옅은 테두리
+     하나로만 갈린다 — 그 방식을 그대로 가져온다. */
+  .profile-page { background: #fff; }
   /* 채용공고·이력서와 같은 판이다 — 1360 안쪽에 32px 여백. 머리줄도 같은 판을
      쓰므로 사이드 왼쪽 끝이 로고와 저절로 맞고, 화면을 옮겨도 머리줄이
      제자리에 있다. 예전에는 여기서만 판을 통짜로 벌려, 프로필로 들어올 때
@@ -13099,6 +13104,11 @@ button,
   .pf-main .profile-bottom-cta { max-width: 640px; margin-left: 0; margin-right: 0; }
   /* 머리줄도 본문과 같은 폭으로 벌린다 — 로고가 사이드 메뉴 위에 선다. */
   .profile-page .profile-header-inner { max-width: 1000px; padding: 0 16px; }
+  /* 페이지가 흰색이 됐으니 카드는 색 대비가 아니라 옅은 테두리로 갈린다
+     (채용공고 .job-card 와 같은 값). .profile-info-card 는 프로필·알림이
+     함께 쓴다. .pf-set-card 는 계정 설정의 다섯 블록. */
+  .profile-info-card,
+  .pf-set-card { border: 1px solid var(--color-border); }
 }
 /* 계정 설정 — 폰에서만 제목을 세운다. PC 는 사이드 메뉴가 그 몫을 한다. */
 .pf-set-body { max-width: 600px; margin: 0 auto; padding: 0 16px 24px; }
@@ -13113,6 +13123,14 @@ button,
    길었다. 짧은 칸끼리 짝을 지어 붙이면 한 화면에 훨씬 많이 들어온다.
    폰은 지금 그대로 1열이다 — 좁은 화면에서 둘로 나누면 둘 다 못 읽는다. */
 @media (min-width: 1024px) {
+  /* 채용공고와 같은 흰 판이다. 지금까진 페이지 바탕이 회색이고 그 위에
+     흰 카드가 떠 있어 카드마다 조각조각 떨어져 보였다 — 채용공고처럼
+     페이지 자체를 흰색으로 두고, 칸은 옅은 테두리 하나로만 가른다.
+     border 대신 inset box-shadow 를 쓴다: 이 아래 .resume-editor > *
+     의 border-top(칸 사이 간격을 만드는 장치)과 같은 속성을 다퉈
+     서로 지우는 일이 없게 하려는 것이다. */
+  .resume-page { background: #fff; }
+  .resume-section { box-shadow: inset 0 0 0 1px var(--color-border); }
   /* 채용공고와 같은 판이다 — 1360 안쪽에 32px 여백. 머리줄도 같은 판을 쓰므로
      사이드 왼쪽 끝이 로고와 저절로 맞는다(1800 창에서 둘 다 252). */
   .resume-layout {

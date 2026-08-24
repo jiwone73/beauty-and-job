@@ -107,7 +107,7 @@ export default function AccountSettingsPage() {
       <div className="pf-set-body">
         {/* 프로필 공개 — 원티드처럼 계정 설정에 둔다. 프로필 화면에도 두면
             같은 값을 고치는 곳이 둘이 되어 어느 쪽이 맞는지 헷갈린다. */}
-        <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
+        <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
           <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 4px" }}>프로필 공개</h2>
           <p style={{ fontSize: 13, color: "#999", margin: 0 }}>언제든 바꿀 수 있어요.</p>
           {/* 두 갈래뿐이라 한 행에 나란히 둔다. 카드 두 장으로 세우면 화면
@@ -141,7 +141,7 @@ export default function AccountSettingsPage() {
 
         {/* 차단 매장·기업 — 공개와 얽혀 있지만 고르는 값이 아니라 목록을
             관리하는 일이라, 나란한 선택지로 두지 않고 따로 뺀다. */}
-        <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
+        <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
           <button type="button" onClick={() => setBlockOpen(true)}
             style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}>
             <span style={{ textAlign: "left" }}>
@@ -156,7 +156,7 @@ export default function AccountSettingsPage() {
 
         {/* 비밀번호 변경 — 접어 둔다. 늘 펼쳐 두면 설정 화면의 절반을
             차지하는데, 정작 바꾸는 일은 몇 달에 한 번이다. */}
-        <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
+        <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
           <button type="button" onClick={() => setPwOpen((v) => !v)} aria-expanded={pwOpen}
             style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}>
             <span style={{ fontSize: 15, color: "#1a1a1a" }}>비밀번호 변경</span>
@@ -181,7 +181,7 @@ export default function AccountSettingsPage() {
 
         {/* 알림 설정 — 프로필 톱니가 열던 자리였다. 톱니가 계정 설정으로
             바뀌면서 갈 곳이 없어져 여기로 들인다. 알림도 계정 설정의 하나다. */}
-        <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px" }}>
+        <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px" }}>
           <button type="button" onClick={() => setNotifOpen(true)}
             style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%",
               background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit" }}>
@@ -196,7 +196,7 @@ export default function AccountSettingsPage() {
         </section>
 
         {/* 회원 탈퇴 */}
-        <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px" }}>
+        <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px" }}>
           <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: 0 }}>회원 탈퇴</h2>
           {/* 자세한 주의사항은 모달에서 읽힌다 — 여기서 다 늘어놓으면 정작
               읽어야 할 때는 이미 지나친 글이 된다. */}
