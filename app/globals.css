@@ -12793,6 +12793,13 @@ button,
 .cs-ad span { font-size: 13px; color: #857b83; word-break: keep-all; }
 .cs-ad em { font-style: normal; font-size: 15px; font-weight: 700; color: var(--cs); margin-top: 6px; }
 
+/* 배너 예시 — 가로로 넘겨 보는 띠. 값만 적어 두면 뭘 사는지 안 그려진다. */
+.cs-banner-gallery { margin-top: 28px; }
+.cs-banner-gallery-label { font-size: 13px; font-weight: 600; color: #857b83; margin: 0 0 10px; }
+.cs-banner-gallery-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
+.cs-banner-sample { flex: 0 0 260px; border-radius: 10px; overflow: hidden; border: 1px solid #efeff1; }
+.cs-banner-sample img { width: 100%; height: auto; display: block; }
+
 /* 선택 이유 */
 .cs-why { display: grid; grid-template-columns: 1fr 268px; gap: 16px; margin-top: 34px; align-items: stretch; }
 .cs-why-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }

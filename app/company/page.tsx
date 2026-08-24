@@ -63,6 +63,16 @@ const 광고상품 = [
   { Icon: Gift, name: "추천 뷰티 서비스", sub: "서비스 제휴 및 배너 노출", price: "별도 협의" },
 ];
 
+// 메인 AD 배너 상품이 실제로 어떻게 걸리는지 보여주는 예시 이미지.
+// 말로 "20만원~"만 적어 두면 뭘 사는 건지 그려지지 않는다.
+const 배너샘플 = [
+  "/images/company/ad-banner-sample-1.png",
+  "/images/company/ad-banner-sample-2.png",
+  "/images/company/ad-banner-sample-3.png",
+  "/images/company/ad-banner-sample-4.png",
+  "/images/company/ad-banner-sample-5.png",
+];
+
 const 이유 = [
   { Icon: Sparkles, name: "뷰티 전문 플랫폼", sub: "뷰티 분야에 특화된 인재 풀과 데이터 보유" },
   { Icon: ShieldCheck, name: "검증된 인재 풀", sub: "경력·자격 검토를 통한 검증된 인재 매칭" },
@@ -245,6 +255,18 @@ export default function CompanyServicePage() {
               </div>
             ))}
           </div>
+
+          <div className="cs-banner-gallery">
+            <p className="cs-banner-gallery-label">메인 AD 배너 예시</p>
+            <div className="cs-banner-gallery-row">
+              {배너샘플.map((src, i) => (
+                <div key={src} className="cs-banner-sample">
+                  <Image src={src} alt={`메인 AD 배너 예시 ${i + 1}`} width={1024} height={384} />
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="cs-center">
             <Link href="/support" className="cs-btn-fill lg">
               광고·노출 상품 자세히 보기 <ArrowRight size={16} />
