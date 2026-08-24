@@ -150,7 +150,7 @@ export default function CompanyLayout({ children, activePage }: {
     return (
       <div className="co-m">
         <style>{`
-          .co-m { min-height: 100vh; background: #f7f7f8; padding-bottom: 68px; }
+          .co-m { min-height: 100vh; background: #fff; padding-bottom: 68px; }
           .co-m-header { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 14px; background: #fff; border-bottom: 1px solid #eee; }
           .co-m-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a1a; min-width: 0; }
           .co-m-logo { width: 32px; height: 32px; border-radius: 8px; background: #f2f2f2; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #582681; flex-shrink: 0; }

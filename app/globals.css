@@ -6856,7 +6856,7 @@ div:has(> table.admin-table),
 .company-layout {
   display: flex;
   min-height: 100vh;
-  background: #f5f6fa;
+  background: #fff;
   font-family: var(--font-sans);
 }
 /* 기업 대시보드: 모든 텍스트 평체(굵기 400) */
