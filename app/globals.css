@@ -13007,21 +13007,21 @@ button,
 .pf-side { display: none; }
 
 @media (min-width: 900px) {
-  /* 기업 대시보드와 같은 짜임 — 사이드는 화면 왼쪽 끝에 붙은 흰 기둥,
-     본문은 그 오른쪽 회색 바탕 위. 1000px 로 묶어 가운데 두니 사이드가
-     허공에 떠 한 페이지가 아니라 조각들로 읽혔다. */
+  /* 채용공고·이력서와 같은 판이다 — 1360 안쪽에 32px 여백. 머리줄도 같은 판을
+     쓰므로 사이드 왼쪽 끝이 로고와 저절로 맞고, 화면을 옮겨도 머리줄이
+     제자리에 있다. 예전에는 여기서만 판을 통짜로 벌려, 프로필로 들어올 때
+     로고가 236px 왼쪽으로 튀었다. */
   .pf-body {
     display: grid; grid-template-columns: 220px minmax(0, 1fr);
-    gap: 0; align-items: stretch;
-    max-width: none; margin: 0; padding: 0;
+    gap: 22px; align-items: stretch;
+    max-width: 1360px; margin: 0 auto; padding: 0 32px;
   }
   .pf-mob { display: none; }
   /* 사이드는 카드로 두르지 않는다. 카드가 되면 본문 카드와 나란히 놓인 '또 하나의
      상자'로 읽혀 한 페이지가 여러 덩어리로 갈린다. 기업 대시보드 사이드처럼
      바탕만 흰색으로 두고 오른쪽에 선 하나로 본문과 가른다. */
   .pf-side {
-    display: flex; flex-direction: column; position: sticky; top: 73px;
-    align-self: start; min-height: calc(100vh - 73px);
+    display: flex; flex-direction: column; position: static; align-self: stretch;
     background: #fff; border-right: 1px solid #f0f0f0; border-radius: 0;
     padding: 22px 14px; margin: 0;
   }
@@ -13073,7 +13073,9 @@ button,
   /* 본문은 대시보드 콘텐츠와 같은 여백. 폭은 .pf-main 에 걸어 프로필·지원현황·
      관심공고가 함께 따르게 한다 — 카드에만 걸어 두니 목록 화면은 그대로 늘어졌다.
      640 + 좌우 여백 28. */
-  .pf-main { padding: 28px; min-width: 0; max-width: 696px; box-sizing: border-box; }
+  /* 판이 제 여백(32)을 가지므로 본문은 위아래만 띄운다 — 예전 28px 은 사이드가
+     화면 끝에 붙어 있던 시절 본문을 안으로 들이던 값이다. */
+  .pf-main { padding: 22px 0 40px; min-width: 0; max-width: 696px; box-sizing: border-box; }
   /* 지원현황·관심공고는 카드 하나에 제목·회사·날짜만 든다. 한 줄에 하나씩 쌓으면
      오른쪽이 넓게 비고 목록이 세로로 길어진다 — 두 칸씩 놓는다. */
   .pf-main .applied-list,
@@ -13097,9 +13099,6 @@ button,
   .pf-main .profile-bottom-cta { max-width: 640px; margin-left: 0; margin-right: 0; }
   /* 머리줄도 본문과 같은 폭으로 벌린다 — 로고가 사이드 메뉴 위에 선다. */
   .profile-page .profile-header-inner { max-width: 1000px; padding: 0 16px; }
-  /* 프로필은 사이드가 화면 왼쪽 끝에 붙는다. 머리줄만 40px 안쪽에서 시작하면
-     로고가 사이드보다 오른쪽에 놓여 두 줄의 왼쪽 끝이 어긋난다. */
-  .profile-page .header-inner { max-width: none; margin: 0; padding: 0 16px; }
 }
 /* 계정 설정 — 폰에서만 제목을 세운다. PC 는 사이드 메뉴가 그 몫을 한다. */
 .pf-set-body { max-width: 600px; margin: 0 auto; padding: 0 16px 24px; }
@@ -13114,24 +13113,26 @@ button,
    길었다. 짧은 칸끼리 짝을 지어 붙이면 한 화면에 훨씬 많이 들어온다.
    폰은 지금 그대로 1열이다 — 좁은 화면에서 둘로 나누면 둘 다 못 읽는다. */
 @media (min-width: 1024px) {
+  /* 채용공고와 같은 판이다 — 1360 안쪽에 32px 여백. 머리줄도 같은 판을 쓰므로
+     사이드 왼쪽 끝이 로고와 저절로 맞는다(1800 창에서 둘 다 252). */
   .resume-layout {
     grid-template-columns: 220px minmax(0, 1fr);
-    max-width: none; gap: 0; margin: 0; padding: 0; align-items: stretch;
+    max-width: 1360px; margin: 0 auto; padding: 0 32px 60px;
+    gap: 22px; align-items: stretch;
   }
-  /* 판을 통짜로 넓혔으니 여백은 본문이 제 것으로 가진다. */
-  .resume-editor { padding: 22px 26px 60px; max-width: 900px; box-sizing: border-box; }
-  /* 프로필과 같다 — 사이드가 화면 왼쪽 끝에 붙는데 머리줄만 가운데로 묶이면
-     로고가 사이드보다 한참 오른쪽에 놓여 두 줄의 왼쪽 끝이 어긋난다. */
-  .resume-page .header-inner { max-width: none; margin: 0; padding: 0 16px; }
+  .resume-editor { padding: 22px 0 0; min-width: 0; }
   /* 프로필과 같은 기둥이다 — 화면 왼쪽 끝에 붙은 흰 기둥, 오른쪽에 선 하나로
      본문과 가른다. 회색 바탕 위에 그냥 떠 있으면 한 페이지가 아니라 조각으로
      읽힌다. 메뉴는 넣지 않는다 — 이력서는 헤더로 들어오는 별개의 화면이다.
      스크롤을 내려도 어디까지 채웠는지 늘 보이게 붙여 둔다. */
+  /* 카드가 아니라 기둥이다 — 본문과 위아래 끝을 맞추고 오른쪽 선 하나로
+     가른다. 상자로 두르면 본문 카드들과 나란히 놓인 '또 하나의 카드'로
+     읽혀 한 페이지가 여러 덩어리로 갈린다. */
   .resume-sidebar {
     display: flex; flex-direction: column; align-items: stretch; flex-wrap: nowrap;
-    position: sticky; top: 73px; align-self: start; min-height: calc(100vh - 73px);
-    background: #fff; border-right: 1px solid #f0f0f0; border-bottom: none; border-radius: 0;
-    padding: 22px 14px; gap: 3px;
+    position: static; align-self: stretch;
+    background: #fff; border: none; border-right: 1px solid #f0f0f0; border-radius: 0;
+    padding: 22px 14px; margin: 0; gap: 3px;
   }
   .resume-sidebar-item { justify-content: flex-start; border: none; background: transparent; border-radius: 7px; padding: 7px 9px; }
   .resume-sidebar-item:hover { background: #efeff1; }
