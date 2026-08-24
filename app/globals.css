@@ -1329,10 +1329,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .pf-notif-item:last-child { border-bottom: none; }
 .pf-notif-item:hover { background: #fafafa; }
-.pf-notif-item.unread { background: #fbf9fd; }
 .pf-notif-title { font-size: 14px; font-weight: 600; color: #2b2b2b; }
 .pf-notif-msg { font-size: 13px; color: #6b6570; line-height: 1.5; }
 .pf-notif-time { font-size: 12px; color: #b4b4b9; }
+.pf-notif-item:not(.unread) .pf-notif-title { color: #999; }
+.pf-notif-item:not(.unread) .pf-notif-msg { color: #b4b4b9; }
 .pf-notif-del { position: absolute; top: 12px; right: 12px; border: none; background: none; color: #c4c4c9; cursor: pointer; padding: 2px; line-height: 0; }
 .pf-notif-del:hover { color: var(--color-error, #e74c3c); }
 
