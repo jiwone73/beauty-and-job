@@ -1771,6 +1771,15 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-career-item, .resume-edu-item, .resume-exp-item, .resume-lang-item, .resume-link-item { padding: 12px 0; border-bottom: 1px solid var(--color-border); }
 .resume-career-item:last-child, .resume-edu-item:last-child, .resume-exp-item:last-child, .resume-lang-item:last-child, .resume-link-item:last-child { border-bottom: none; }
 .resume-career-head { display: flex; justify-content: space-between; align-items: center; gap: 4px; min-width: 0; margin-bottom: 4px; font-size: 14px; font-weight: 400; color: #555; }
+/* 포트폴리오의 '사진'·'SNS' 줄머리도 제목 글자와 맞춘다 — 제목의
+   아이콘(16px)+간격(6px)=22px 만큼. .if-row-body 는 18px 로 맞았는데,
+   그 안 버튼(.if-slot)이 제 몫으로 4px 을 더 물고 있어(18+4=22) 그랬다.
+   여기 <strong> 은 그 4px 이 없으니 곧장 22px 을 준다. 이미지 그리드
+   (.portfolio-grid, 이미 올린 사진들)도 '사진' 글자와 왼쪽 끝을 맞춘다.
+   > 로 좁혀 PortfolioModal 안의 고르는 그리드(다른 자리, 다른 뜻)는
+   건드리지 않는다. */
+.resume-section .resume-career-head { padding-left: 22px; }
+#section-portfolio > .portfolio-grid { margin-left: 22px; }
 .resume-career-head strong { font-weight: 400; font-size: 14px; min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 항목 헤더의 수정·삭제 아이콘 묶음은 항상 보이도록 축소 금지 */
 .resume-career-head > span:last-child { flex-shrink: 0; }
@@ -13414,6 +13423,11 @@ button,
 .if-row-icon { width: 30px; height: 30px; border-radius: 8px; background: #f2f2f4;
   display: flex; align-items: center; justify-content: center; color: #a8a8ad; }
 .if-row-body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+/* 이력서 칸(경력·학력·자격증·활동/수상·어학·SNS) 항목의 첫 글자를 제목
+   글자와 맞춘다. 제목은 아이콘(16px) + 간격(6px) 만큼 들여써 있는데,
+   행 아이콘을 걷어낸 뒤로 내용이 제목보다 왼쪽에서 시작했다 — 실측
+   (한국어 336 vs 어학 354)으로 잰 18px 만큼 맞춰 넣는다. */
+.resume-section .if-row-body { padding-left: 18px; }
 .if-line { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; min-width: 0; }
 .if-sep, .if-bar { color: #c4c4c9; font-size: 13px; padding: 0 4px; flex-shrink: 0; }
 .if-row-del { background: none; border: none; cursor: pointer; color: #c4c4c9; padding: 4px;
