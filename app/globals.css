@@ -13000,12 +13000,14 @@ button,
   .pf-side .pf-side-out { color: #a9a2b2; }
   /* 사이드가 생기면서 안쪽 칸이 가운데로 몰릴 이유가 없어졌다. 폰 시절의
      600px 를 그대로 두면 카드만 넓어지고 버튼은 좁아 왼쪽 끝이 어긋난다. */
-  /* 본문은 대시보드 콘텐츠와 같은 여백을 두른다. */
+  /* 본문은 대시보드 콘텐츠와 같은 여백. 다만 폭까지 다 쓰면 한 줄이 1100px 을
+     넘어 눈이 좌우로 크게 움직인다 — 이력서 본문과 같은 폭(1120 - 176 - 26 = 918)
+     으로 묶고 왼쪽에 붙인다. */
   .pf-main { padding: 28px; min-width: 0; }
   .pf-main .profile-section,
-  .pf-main .profile-content { max-width: none; }
-  .pf-main .profile-info-card { max-width: none; }
-  .pf-main .profile-bottom-cta { max-width: none; }
+  .pf-main .profile-content { max-width: 918px; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+  .pf-main .profile-info-card { max-width: 918px; }
+  .pf-main .profile-bottom-cta { max-width: 918px; margin-left: 0; margin-right: 0; }
   /* 머리줄도 본문과 같은 폭으로 벌린다 — 로고가 사이드 메뉴 위에 선다. */
   .profile-page .profile-header-inner { max-width: 1000px; padding: 0 16px; }
 }
