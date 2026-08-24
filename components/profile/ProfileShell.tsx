@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,7 +29,45 @@ const 메뉴 = [
 export default function ProfileShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { logout, userName, userJobType } = useAuthStore();
+  const { logout, userName, userJobType, avatarUrl, setAvatar } = useAuthStore();
+  const [아바타메뉴, set아바타메뉴] = useState(false);
+  const 사진칸 = useRef<HTMLInputElement>(null);
+  const [올리는중, set올리는중] = useState(false);
+
+  // 사진은 사이드 이름 왼쪽에 둔다 — 기업 사이드의 로고 자리와 같다.
+  //   프로필 카드 안에 한 행을 따로 쓰던 것을 여기로 옮겼다.
+  const 사진올리기 = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(f.type)) {
+      alert("JPG, PNG, WebP 이미지만 올릴 수 있어요."); e.target.value = ""; return;
+    }
+    if (f.size > 10 * 1024 * 1024) { alert("이미지가 너무 커요. 10MB 이하로 올려주세요."); e.target.value = ""; return; }
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    set올리는중(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", f);
+      const res = await fetch("/api/users/me/avatar", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const d = await res.json();
+      if (d.success) setAvatar(d.data.avatar_url || "");
+      else alert(d.error?.message || "업로드에 실패했어요.");
+    } catch { alert("네트워크 오류가 났어요."); }
+    finally { set올리는중(false); e.target.value = ""; }
+  };
+  const 사진지우기 = async () => {
+    if (!confirm("프로필 사진을 지울까요?")) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    set올리는중(true);
+    try {
+      const res = await fetch("/api/users/me/avatar", { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      const d = await res.json();
+      if (d.success) setAvatar("");
+    } catch { /* 조용히 */ }
+    finally { set올리는중(false); }
+  };
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unreadNotif, setUnreadNotif] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -119,13 +157,33 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
               통째로 어긋난다). 아래 '직군' 이 무엇을 뜻하는지 이 값이 정한다. */}
           {userName && (
             <div className="pf-side-me">
-              <span className="pf-side-me-name">{userName}</span>
-              {userJobType && (
-                <span className="pf-side-me-type">
-                  {userJobType === "STORE" ? <Store size={12} /> : <Building2 size={12} />}
-                  {userJobType === "STORE" ? "매장" : "본사"}
-                </span>
-              )}
+              <div style={{ position: "relative", flexShrink: 0 }}>
+                <button type="button" className="pf-side-avatar" title="사진 바꾸기"
+                  onClick={() => set아바타메뉴((v) => !v)}>
+                  {avatarUrl ? <img src={avatarUrl} alt="프로필 사진" /> : <span>👤</span>}
+                  {올리는중 && <i className="pf-side-avatar-busy">올리는 중</i>}
+                </button>
+                {아바타메뉴 && (
+                  <>
+                    <div style={{ position: "fixed", inset: 0, zIndex: 90 }} onClick={() => set아바타메뉴(false)} />
+                    <div className="pf-side-avatar-menu">
+                      <button type="button" onClick={() => { 사진칸.current?.click(); set아바타메뉴(false); }}>사진 바꾸기</button>
+                      {avatarUrl && <button type="button" onClick={() => { 사진지우기(); set아바타메뉴(false); }}>사진 지우기</button>}
+                    </div>
+                  </>
+                )}
+                <input ref={사진칸} type="file" accept="image/jpeg,image/jpg,image/png,image/webp"
+                  onChange={사진올리기} style={{ display: "none" }} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+                <span className="pf-side-me-name">{userName}</span>
+                {userJobType && (
+                  <span className="pf-side-me-type">
+                    {userJobType === "STORE" ? <Store size={12} /> : <Building2 size={12} />}
+                    {userJobType === "STORE" ? "매장" : "본사"}
+                  </span>
+                )}
+              </div>
             </div>
           )}
           {userName && <span className="pf-side-sep" />}

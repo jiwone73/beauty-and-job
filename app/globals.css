@@ -12994,7 +12994,27 @@ button,
   /* 보는 화면을 고르는 일과 계정을 다루는 일은 성격이 다르다. 선으로 가른다. */
   .pf-side-sep { display: block; height: 1px; background: #eee; margin: 10px 10px; }
   /* 사이드 맨 위 — 누구의 화면인지, 어떤 구직유형인지. 기업 사이드와 같은 짜임. */
-  .pf-side-me { display: flex; flex-direction: column; gap: 3px; padding: 2px 10px 10px; }
+  .pf-side-me { display: flex; align-items: center; gap: 10px; padding: 2px 10px 12px; }
+  .pf-side-avatar {
+    width: 40px; height: 40px; border-radius: 50%; overflow: hidden; position: relative;
+    border: 1px solid #f2f2f2; background: #f7f7f8; padding: 0; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .pf-side-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pf-side-avatar-busy {
+    position: absolute; inset: 0; background: rgba(255,255,255,.85); color: var(--color-primary);
+    font-size: 9px; font-style: normal; font-weight: 600; display: flex; align-items: center; justify-content: center;
+  }
+  .pf-side-avatar-menu {
+    position: absolute; top: calc(100% + 6px); left: 0; z-index: 95; background: #fff;
+    border: 1px solid #efeff1; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.12);
+    padding: 5px; min-width: 132px;
+  }
+  .pf-side-avatar-menu button {
+    display: block; width: 100%; text-align: left; border: none; background: none;
+    padding: 8px 10px; border-radius: 6px; font: inherit; font-size: 13px; color: #333; cursor: pointer;
+  }
+  .pf-side-avatar-menu button:hover { background: #f7f7f8; }
   .pf-side-me-name { font-size: 15px; font-weight: 700; color: #2b2b2b; }
   .pf-side-me-type { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #8a8a8f; }
   .pf-side .pf-side-out { color: #a9a2b2; }
@@ -13142,7 +13162,8 @@ button,
   /* 격자로 세우는 것은 항목 줄이 든 카드뿐이다. 주소처럼 자체 짜임이 있는
      카드까지 격자로 만들면 안쪽이 좌우로 쪼개진다. */
   .pf-main .profile-info-card.pf-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
+    /* 한 줄에 한 칸. 두 칸씩 붙여 두니 라벨과 값 사이가 멀어지고 눈이 좌우로 오간다. */
+    display: grid; grid-template-columns: minmax(0, 1fr);
     border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden;
   }
   /* 통줄을 쓰는 칸은 .pf-wide 로만 정한다. :first-child 로 잡아 두니 직군이

@@ -36,33 +36,15 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   }, [isLoggedIn, ownerType, setAvatar]);
 
   if (isLoggedIn) {
+    // 헤더 아바타는 걷었다 — 개인은 사이드 맨 위에, 기업은 사이드 로고에 같은
+    //   사진이 이미 서 있어 한 화면에 두 번 나왔다.
+    // 개인 회원에게 '기업 서비스' 소개는 볼 일이 없다. 기업 회원에게만 남긴다
+    //   (대시보드는 사이드 로고가 맡으니 여기는 요금·기능 소개 자리).
+    if (ownerType !== "company") return null;
     return (
-      <>
-        {/* 아바타를 누르면 바로 간다. 메뉴에 담긴 것이 '내 프로필·계정 설정'
-            둘뿐이었는데, 그 둘을 보자고 한 번 더 누르게 하는 것은 낭비다.
-            계정 설정과 로그아웃은 프로필 페이지 안으로 옮겼다. */}
-        <div className="auth-user-wrap">
-          <button className="auth-user-btn" aria-label={ownerType === "company" ? "기업 대시보드" : "내 프로필"}
-            onClick={() => router.push(ownerType === "company" ? "/company/dashboard" : "/profile")}>
-            {avatarUrl && !그림깨짐 ? (
-              <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
-                onError={() => set그림깨짐(true)}
-                style={{ width: 32, height: 32, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block", background: "#f7f7f8" }} />
-            ) : (
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="16" r="16" fill="#f7f7f8"/>
-                <circle cx="16" cy="13" r="5" fill="#582681"/>
-                <path d="M6 28c0-5.5 4.5-9 10-9s10 3.5 10 9" fill="#582681"/>
-              </svg>
-            )}
-          </button>
-        </div>
-        {/* 대시보드는 왼쪽 로고 단추가 맡는다. 여기까지 '대시보드로'로 두니 두 단추가
-            같은 곳으로 갔다 — 여기는 기업 서비스 소개로 둔다(요금·기능을 다시 볼 일이 있다). */}
-        <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
-          기업 서비스 <ChevronDown size={14} />
-        </Link>
-      </>
+      <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
+        기업 서비스 <ChevronDown size={14} />
+      </Link>
     );
   }
 
