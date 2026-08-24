@@ -6940,6 +6940,10 @@ div:has(> table.admin-table),
 }
 .company-nav-item:hover { background: #f7f7f8; color: #582681; }
 .company-nav-item.active { background: #f7f7f8; color: #582681; font-weight: 700; }
+/* 채용공고 등록 — '채용공고 관리' 밑에 하위 메뉴로. 아이콘이 없는 만큼
+   부모 글자(아이콘 20px+간격 10px=30px) 밑으로 들여써 글자 시작점을 맞춘다. */
+.company-nav-subitem { padding: 8px 12px 8px 42px; font-size: 14.5px; color: #888; }
+.company-nav-subitem.active { font-weight: 700; }
 .company-sidebar-bottom { padding: 12px 8px; border-top: 1px solid #f0f0f0; }
 .company-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .company-header {

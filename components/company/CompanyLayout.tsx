@@ -121,12 +121,16 @@ export default function CompanyLayout({ children, activePage }: {
 
   const NAV_ITEMS = [
     { id: "dashboard", label: "대시보드",      icon: Briefcase,    href: base },
-    { id: "jobs",      label: "채용공고 관리", icon: FileText,     href: `${base}/jobs` },
+    { id: "jobs",      label: "채용공고 관리", icon: FileText,     href: `${base}/jobs`,
+      children: [{ id: "jobs-new", label: "채용공고 등록", href: `${base}/jobs/new` }] },
     { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent` },
     { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped` },
     { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants` },
     { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings` },
   ];
+  // '신규 공고' 버튼이 이미 이 주소로 보낸다. 사이드에도 같은 자리를
+  // '채용공고 관리' 밑에 둔다 — 등록 화면이 목록의 하위 동작이라서다.
+  const isJobsNew = pathname === `${base}/jobs/new`;
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -305,11 +309,19 @@ export default function CompanyLayout({ children, activePage }: {
 
         <nav className="company-nav">
           {NAV_ITEMS.map((item) => (
-            <Link key={item.id} href={item.href}
-              className={`company-nav-item ${activePage === item.id ? "active" : ""}`}>
-              <item.icon size={20} />
-              <span>{item.label}</span>
-            </Link>
+            <div key={item.id}>
+              <Link href={item.href}
+                className={`company-nav-item ${activePage === item.id && !(item.id === "jobs" && isJobsNew) ? "active" : ""}`}>
+                <item.icon size={20} />
+                <span>{item.label}</span>
+              </Link>
+              {item.children?.map((child) => (
+                <Link key={child.id} href={child.href}
+                  className={`company-nav-item company-nav-subitem ${child.id === "jobs-new" && isJobsNew ? "active" : ""}`}>
+                  <span>{child.label}</span>
+                </Link>
+              ))}
+            </div>
           ))}
           {/* 사이트로 이동은 메뉴의 연장선이라 맨 아래가 아니라 마지막 메뉴 밑에 둔다. */}
           <div className="company-nav-divider" />
