@@ -12453,7 +12453,7 @@ button,
   font-size: 13px; font-weight: 700; white-space: nowrap; padding: 0;
   background-image: linear-gradient(100deg,
     #582681 0%, #582681 22%,
-    #ffb703 42%, #ffe89b 50%, #ffb703 58%,
+    #ff5c9e 42%, #ffc2dd 50%, #ff5c9e 58%,
     #582681 78%, #582681 100%);
   background-size: 300% 100%;
   background-position: 100% 0;
@@ -12462,7 +12462,7 @@ button,
   color: transparent;
   animation: mtEvtShine 1.6s ease-in-out infinite;
 }
-.mt-evt-when-ic { flex-shrink: 0; color: #ffb703; animation: mtEvtTwinkle 1.6s ease-in-out infinite; }
+.mt-evt-when-ic { flex-shrink: 0; color: #ff5c9e; animation: mtEvtTwinkle 1.6s ease-in-out infinite; }
 @keyframes mtEvtShine {
   0%   { background-position: 100% 0; }
   65%  { background-position: 0% 0; }
