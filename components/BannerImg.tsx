@@ -23,6 +23,21 @@ export function BannerImg({ src, alt, ratio = false, fill = false }: { src: stri
       /* CORS 등으로 픽셀 샘플 실패 → 기본 배경 유지 */
     }
   };
+  // fill 모드는 사진이 칸을 꽉 채워(cover) 배경색이 한 뼘도 비치지 않는다.
+  // 그런데도 배경색을 재려고 crossOrigin="anonymous" 로 걸면, 사진 서버가
+  // CORS 헤더를 안 주는 한(외부 스톡사진 대부분이 그렇다) 첫 요청은
+  // 반드시 실패하고 — onError 로 재시도하며 같은 사진을 처음부터 다시
+  // 받는다. 채용공고 그리드가 이 모드를 쓰는데, 카드가 90장을 넘으면
+  // 사진 하나하나가 두 번씩 내려받혀 탭을 바꿀 때마다 눈에 띄게 느려졌다.
+  // fill 에서는 애초에 안 보일 값이니 재는 일 자체를 건너뛴다.
+  if (fill) {
+    return (
+      <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+        <img src={src} alt={alt} loading="lazy" decoding="async"
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      </div>
+    );
+  }
   return (
     <div style={{ width: "100%", height: ratio ? "auto" : "100%", background: ratio ? "transparent" : bg, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
       <img
@@ -31,9 +46,7 @@ export function BannerImg({ src, alt, ratio = false, fill = false }: { src: stri
         {...(noCors ? {} : { crossOrigin: "anonymous" as const })}
         onLoad={(e) => sample(e.currentTarget)}
         onError={() => setNoCors(true)}
-        style={fill
-          ? { width: "100%", height: "100%", objectFit: "cover", display: "block" }
-          : ratio
+        style={ratio
           ? { width: "100%", height: "auto", display: "block" }
           : { maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
       />
