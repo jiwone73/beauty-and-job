@@ -504,7 +504,7 @@ function ResumePageContent() {
           <div className="resume-top-actions">
             {/* 채용공고의 '매장 채용공고 95건' 자리다 — 단추만 오른쪽에 떠
                 있으면 그 줄이 무엇에 관한 줄인지 왼쪽이 비어 있다. */}
-            <h1 className="resume-top-title">이력서</h1>
+            <h1 className="resume-top-title">기본 이력서</h1>
             <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
               <Eye size={15} /><span>미리보기</span>
             </button>
