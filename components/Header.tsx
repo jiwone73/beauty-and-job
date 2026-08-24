@@ -13,6 +13,9 @@ import { useAuthStore } from "@/lib/store/authStore";
 function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const router = useRouter();
   const { isLoggedIn, ownerType, userName, avatarUrl, setAvatar } = useAuthStore();
+  const pathname = usePathname();
+  // 사이드가 신원을 이미 보여 주는 화면들.
+  const 프로필안 = !!pathname && (pathname.startsWith("/profile") || pathname.startsWith("/company/dashboard"));
   // 로고 주소가 죽어 있으면 브라우저가 깨진 그림(?)을 그린다. 기본 그림으로 물러선다.
   const [그림깨짐, set그림깨짐] = useState(false);
   useEffect(() => { set그림깨짐(false); }, [avatarUrl]);
@@ -36,15 +39,32 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   }, [isLoggedIn, ownerType, setAvatar]);
 
   if (isLoggedIn) {
-    // 헤더 아바타는 걷었다 — 개인은 사이드 맨 위에, 기업은 사이드 로고에 같은
-    //   사진이 이미 서 있어 한 화면에 두 번 나왔다.
-    // 개인 회원에게 '기업 서비스' 소개는 볼 일이 없다. 기업 회원에게만 남긴다
-    //   (대시보드는 사이드 로고가 맡으니 여기는 요금·기능 소개 자리).
-    if (ownerType !== "company") return null;
+    // 프로필·기업 대시보드 안에서는 사이드가 이미 누구인지 말하고 있다.
+    //   같은 사진과 같은 링크를 머리줄에 또 두면 한 화면에 두 번 나온다.
+    //   그 밖의 화면에서는 아바타가 프로필로 들어가는 유일한 길이라 꼭 있어야 한다.
+    if (프로필안) return null;
     return (
-      <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
-        기업 서비스 <ChevronDown size={14} />
-      </Link>
+      <>
+        <div className="auth-user-wrap">
+          <button className="auth-user-btn" aria-label={ownerType === "company" ? "기업 대시보드" : "내 프로필"}
+            onClick={() => router.push(ownerType === "company" ? "/company/dashboard" : "/profile")}>
+            {avatarUrl && !그림깨짐 ? (
+              <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
+                onError={() => set그림깨짐(true)}
+                style={{ width: 32, height: 32, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block", background: "#f7f7f8" }} />
+            ) : (
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="16" fill="#f7f7f8"/>
+                <circle cx="16" cy="13" r="5" fill="#582681"/>
+                <path d="M6 28c0-5.5 4.5-9 10-9s10 3.5 10 9" fill="#582681"/>
+              </svg>
+            )}
+          </button>
+        </div>
+        <Link href={ownerType === "company" ? "/company/dashboard" : "/company"} className="btn btn-outline-biz gnb-biz-btn">
+          {ownerType === "company" ? "대시보드" : "기업 서비스"} <ChevronDown size={14} />
+        </Link>
+      </>
     );
   }
 
