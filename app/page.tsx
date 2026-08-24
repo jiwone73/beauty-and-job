@@ -48,12 +48,15 @@ export default function HomePage() {
   useEffect(() => {
     useBookmarkStore.getState().loadFromServer();
   }, []);
+  // '지금 적극 채용 중'에 뜬 공고 id. null 이면 아직 안 불러온 상태라
+  // 추천 공고 쪽 요청을 잠깐 미룬다 — 겹치는지 알기 전에 먼저 쏘면 걸러줄 게 없다.
+  const [activeHiringIds, setActiveHiringIds] = useState<string[] | null>(null);
   return (
     <main className="main-page">
       <Header />
       <MobileDetector />
-      <SectionActiveHiring />
-      <SectionPick />
+      <SectionActiveHiring onLoaded={setActiveHiringIds} />
+      <SectionPick excludeIds={activeHiringIds} />
       {/* <SectionJobGroups /> 공고 충분히 쌓이면 노출 */}
       <SectionStories />
       {/* <SectionBeautyServices /> 숨김 */}
@@ -297,13 +300,16 @@ function Hero() {
 /* ============================================
    섹션: 지금 적극 채용 중
    ============================================ */
-function SectionActiveHiring() {
+function SectionActiveHiring({ onLoaded }: { onLoaded: (ids: string[]) => void }) {
   const [jobs, setJobs] = useState<any[]>([]);
   useEffect(() => {
     fetch("/api/jobs?active=1&limit=4")
       .then((r) => r.json())
-      .then((res) => { if (res.success && Array.isArray(res.data)) setJobs(res.data); else setJobs([]); })
-      .catch(console.error);
+      .then((res) => {
+        if (res.success && Array.isArray(res.data)) { setJobs(res.data); onLoaded(res.data.map((j: any) => j.id)); }
+        else { setJobs([]); onLoaded([]); }
+      })
+      .catch((e) => { console.error(e); onLoaded([]); });
   }, []);
   const mappedJobs = jobs.map(mapJob);
   if (mappedJobs.length === 0) return null;
@@ -328,7 +334,7 @@ function SectionActiveHiring() {
   );
 }
 
-function SectionPick() {
+function SectionPick({ excludeIds }: { excludeIds: string[] | null }) {
   // 사이트 어디서나 매장/본사 두 갈래만 쓴다. '전체'를 한 곳에만 남기면
   // 같은 토글이 화면마다 다르게 생긴 셈이 된다.
   const [tab, setTab] = useState<"매장" | "본사">("매장");
@@ -337,9 +343,13 @@ function SectionPick() {
   // 최신순을 추천이라 내놓으면 한 번 보고 다시 안 본다.
   const [맞춤, set맞춤] = useState(false);
   useEffect(() => {
+    // 위쪽 '지금 적극 채용 중'과 겹치는 공고를 걸러내려면 그쪽 id 를 먼저
+    // 받아야 한다. 아직이면(null) 잠깐 기다린다.
+    if (excludeIds === null) return;
     const jt = tab === "매장" ? "&job_type=STORE" : tab === "본사" ? "&job_type=OFFICE" : "";
+    const exclude = excludeIds.length ? `&exclude=${excludeIds.join(",")}` : "";
     const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-    fetch(`/api/jobs/recommended?limit=4${jt}`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
+    fetch(`/api/jobs/recommended?limit=4${jt}${exclude}`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
       .then((r) => r.json())
       .then((res) => {
         const d = res?.data;
@@ -347,7 +357,7 @@ function SectionPick() {
         else { setJobs([]); set맞춤(false); }
       })
       .catch(console.error);
-  }, [tab]);
+  }, [tab, excludeIds]);
   const mappedJobs = jobs.map(mapJob);
   const seeAll = tab === "매장" ? "/jobs?type=매장" : tab === "본사" ? "/jobs?type=본사" : "/jobs";
   return (

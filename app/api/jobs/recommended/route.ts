@@ -12,6 +12,10 @@ import type { JobType } from "@/lib/data/jobGroups";
 export async function GET(req: NextRequest) {
   const limit = Math.min(Number(new URL(req.url).searchParams.get("limit")) || 4, 12);
   const jobTypeQ = new URL(req.url).searchParams.get("job_type");
+  // '지금 적극 채용 중'에 이미 뜬 공고를 여기 또 올리지 않는다 — 한 화면에
+  // 같은 카드가 두 번 보이면 훑어보는 사람은 목록이 짧다고 느낀다.
+  const excludeQ = new URL(req.url).searchParams.get("exclude");
+  const excludeIds = excludeQ ? excludeQ.split(",").map((s) => s.trim()).filter(Boolean) : [];
 
   const token = (req.headers.get("authorization") || "").replace("Bearer ", "").trim();
   let userId: string | null = null;
@@ -28,6 +32,7 @@ export async function GET(req: NextRequest) {
     const 조건: string[] = ["TRUE"];
     const params: any[] = [];
     if (jobTypeQ === "STORE" || jobTypeQ === "OFFICE") { 조건.push(`j.job_type = $${params.length + 1}`); params.push(jobTypeQ); }
+    if (excludeIds.length) { 조건.push(`NOT (j.id = ANY($${params.length + 1}::uuid[]))`); params.push(excludeIds); }
     // 카드가 그대로 그릴 수 있게 /api/jobs 와 같은 칸을 돌려준다 — 목록마다 모양이
     // 달라지면 화면에서 또 맞춰야 한다. v_active_jobs 는 마감·상태를 이미 걸러 준다.
     const 후보 = await pool.query(

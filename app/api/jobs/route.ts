@@ -74,15 +74,7 @@ export async function GET(req: NextRequest) {
 
   const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : ''
 
-  const activeOrderBy = `
-    (j.deadline::date - j.created_at::date) ASC,
-    CASE
-      WHEN app_stats.total_apps >= 3
-      THEN COALESCE(app_stats.view_rate, 0.5)
-      ELSE 0.5
-    END DESC,
-    j.created_at DESC
-  `
+  const activeOrderBy = `j.created_at DESC`
   const listQuery = active ? `
     SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url, j.cover_images, j.company_type,
            j.location, j.work_type, j.employment_type, j.salary_min, j.salary_max, j.salary_type,
