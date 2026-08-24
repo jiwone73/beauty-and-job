@@ -556,6 +556,74 @@ export default function ProfilePage() {
       <div className="profile-content">
             <section className="profile-section">
               <div className="profile-info-card pf-grid">
+                {/* 이름 — 목록 맨 위. 사진은 이 줄 오른쪽 끝에 둔다(누르면 바꾸기·지우기). */}
+                <div className="profile-info-row" style={{ cursor: "default", flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 14 }}>
+                  <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+                    <span className="profile-info-label">이름<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
+                    <span className={`profile-info-value ${name ? "" : "is-empty"}`}>{name || "이름"}</span>
+                  </span>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", position: "relative" }}>
+                    <div
+                      onClick={(e) => { e.stopPropagation(); setAvatarMenu((v) => !v); }}
+                      title="사진 변경/삭제"
+                      style={{ width: "80px", height: "80px", borderRadius: "50%", background: avatarLoaded ? "#f7f7f8" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: avatarLoaded ? "1px solid #f2f2f2" : "1px solid transparent", cursor: "pointer" }}>
+                      {/* 사진을 비공개로 두면 이 자리도 기본 아바타로 바꾼다. 남에게
+                          안 보이는데 나에게만 보이면, 껐는지 켰는지 매번 메뉴를 열어
+                          확인해야 한다. 사진 자체는 지워지지 않고 그대로 있다. */}
+                      {avatarUrl && avatarPublic ? (
+                        <img src={avatarUrl} alt="프로필" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : avatarLoaded ? (
+                        <span style={{ fontSize: "30px", color: "#a8a8ad" }}>👤</span>
+                      ) : null}
+                      {avatarUploading && (
+                        <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#582681", fontWeight: 600 }}>
+                          업로드중
+                        </div>
+                      )}
+                    </div>
+                    {avatarMenu && (
+                      <div onClick={(e) => e.stopPropagation()}
+                        style={{ position: "absolute", top: "100%", right: 0, marginTop: "6px", zIndex: 30, background: "#fff", border: "1px solid #efeff1", borderRadius: "10px", boxShadow: "0 6px 20px rgba(0,0,0,0.12)", padding: "6px", minWidth: "196px" }}>
+                        <button
+                          onClick={() => { avatarFileRef.current?.click(); setAvatarMenu(false); }}
+                          style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 10px", border: "none", background: "transparent", fontSize: "13px", color: "#333", cursor: "pointer", borderRadius: "6px" }}>
+                          {avatarUrl ? "사진 변경" : "사진 추가"}
+                        </button>
+                        {avatarUrl && (
+                          <button
+                            onClick={() => { handleAvatarDelete(); setAvatarMenu(false); }}
+                            style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 10px", border: "none", background: "transparent", fontSize: "13px", color: "#e74c3c", cursor: "pointer", borderRadius: "6px" }}>
+                            사진 삭제
+                          </button>
+                        )}
+                        {/* 사진을 감추는 일은 사진을 만지는 자리에서 하는 게 맞다.
+                            예전엔 공개 설정 모달 안에 숨어 있어, 사진을 바꾸러 온
+                            사람은 그런 선택이 있는 줄도 몰랐다. */}
+                        {avatarUrl && (
+                          <>
+                            <div style={{ height: 1, background: "#f7f7f8", margin: "5px 6px" }} />
+                            <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", cursor: "pointer" }}>
+                              <input type="checkbox" className="applied-check"
+                                checked={!avatarPublic}
+                                onChange={(e) => saveAvatarPublic(!e.target.checked)} />
+                              <span style={{ fontSize: "13px", color: "#333" }}>사진 비공개</span>
+                            </label>
+                            {/* avatar_public 은 인재검색 쪽만 막는다. 지원한 곳은 그대로 본다.
+                                사진이 화면에서 사라지므로 지워진 것으로 오해하지 않게 적는다. */}
+                            <div style={{ fontSize: "11px", color: "#aaa", padding: "0 10px 4px", lineHeight: 1.5 }}>
+                              {avatarPublic
+                                ? "내가 지원한 매장에는 그대로 보여요."
+                                : "사진은 지워지지 않아요. 내가 지원한 매장에는 그대로 보여요."}
+                            </div>
+                            <div style={{ height: 1, background: "#f7f7f8", margin: "1px 6px 5px" }} />
+                          </>
+                        )}
+                        <div style={{ fontSize: "11px", color: "#aaa", padding: "4px 10px 2px" }}>JPG/PNG/WebP · 자동 최적화 (최대 3MB)</div>
+                      </div>
+                    )}
+                    <input ref={avatarFileRef} type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleAvatarUpload} style={{ display: "none" }} />
+                  </div>
+                </div>
                 {/* 구직유형 — 가입 때 정한다. 바꾸면 아래 직군·스킬이 통째로 어긋나므로
                     보여만 준다. 이 값이 '직군' 의 뜻을 정하니 목록 맨 위가 제 자리다. */}
                 <div className="profile-info-row" style={{ cursor: "default" }}>
