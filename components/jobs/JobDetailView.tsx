@@ -124,8 +124,14 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 줄바꿈되는 칸은 줄 하나의 길이만 따진다(합이 아니라). 값 하나가 유독 길어도
   // 그 칸이 나머지를 다 밀어내지 않도록 위쪽에 상한을 둔다(모집분야·급여·근무
   // 요일은 줄바꿈으로 받아 주니 좀 더 넉넉히).
-  const posColLenOf = (s: string) => s.replace(/\s/g, "").length;
-  const POS_COL_CAP: Record<string, number> = { category: 22, salary: 14, shift: 15 };
+  // 공백도 실제로는 폭을 차지한다(글자 한 칸의 절반쯤) — 다 지우면 "10시30분 ~ 20시30분"처럼
+  // 공백이 늘어난 값의 폭이 실제보다 좁게 잡힌다.
+  const posColLenOf = (s: string) => {
+    let n = 0;
+    for (const ch of s) n += /\s/.test(ch) ? 0.5 : 1;
+    return n;
+  };
+  const POS_COL_CAP: Record<string, number> = { category: 22, salary: 14, shift: 16 };
   const posColWeights = posCols.map((c) => {
     let w = posColLenOf(c.label);
     positions.forEach((p: any) => {
@@ -139,6 +145,19 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     });
     return Math.min(w, POS_COL_CAP[c.key] || 10);
   });
+  // 모집분야는 다른 칸보다 훨씬 자주 길다 — 다른 칸을 한 글자씩 덜어 그만큼을
+  // 모집분야로 몰아준다(등록폼 표와 같은 규칙 — "미리보기는 아까랑 똑같은데").
+  {
+    let stolen = 0;
+    posCols.forEach((c, i) => {
+      if (c.key === "category") return;
+      const take = Math.min(1, Math.max(0, posColWeights[i] - 2));
+      posColWeights[i] -= take;
+      stolen += take;
+    });
+    const catIdx = posCols.findIndex((c) => c.key === "category");
+    if (catIdx >= 0) posColWeights[catIdx] += stolen;
+  }
   // 글자 수 비율 그대로 100%를 나누면, 화면이 넓을 때 근무요일/시간처럼 원래
   // 긴 칸이 남는 폭을 혼자 다 가져가 그 칸만 헐렁해 보였다("여백이 왜 이렇게
   // 많아 · 이 여백을 나눠쓰면 되잖아"). 평균 쪽으로 절반 당겨써 큰 칸이 가져갈
