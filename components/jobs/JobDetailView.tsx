@@ -20,14 +20,6 @@ const withSeeDetail = (v: string) => {
   const t = String(v || "").trim();
   return /상세요강\s*참조/.test(t) ? t : (t ? `${t} · 상세요강 참조` : "상세요강 참조");
 };
-// 급여·근무요일/시간 값 끝의 "(협의)"/"(+협의)"를 떼어내, 값과 한 줄에 붙여 읽히지
-// 않도록 별도 줄("협의가능")로 내린다. "월, 수 10시-18시 (협의)"처럼 시간이 줄바꿈
-// 안 되고 한 줄에 다 붙어 보이던 것과, "월 240~260 (협의)"처럼 급여가 값과 나란히
-// 붙어 보이던 것을 모두 이걸로 정리한다.
-const splitNegoSuffix = (v: string): [string, boolean] => {
-  const m = String(v || "").match(/^(.*?)\s*\(\+?협의\)$/s);
-  return m ? [m[1], true] : [String(v || ""), false];
-};
 
 // 상세요강 본문에 적힌 매장 연락처는 구직자에게 가린다.
   //
@@ -169,14 +161,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   // shiftText — 원티드식 자유 문장("월, 수 10시-18시 / 금 12시-20시")으로 등록한
                   // 공고는 이 필드가 있다. "/"로 나눠 묶음마다 한 줄로 보여준다. 이 필드가 없는
                   // (그 전에 저장된) 공고만 구조화 필드로 문장을 조립한다.
-                  // 협의 여지("(협의)")는 맨 마지막 줄(시간) 끝에만 붙어 저장돼 있다 — 새 줄로
-                  // 더 내리지 않고, 그 줄 안에서 "(협의)"만 "협의가능"으로 바꿔 단다.
-                  const rawShiftLines = p.shiftText ? String(p.shiftText).split(/\n|\//).map((s: string) => s.trim()).filter(Boolean) : [];
-                  const shiftLines = rawShiftLines.map((l: string, idx: number) => {
-                    if (idx !== rawShiftLines.length - 1) return l;
-                    const [base, nego] = splitNegoSuffix(l);
-                    return nego ? `${base} 협의가능` : l;
-                  });
+                  // 협의 여지는 시간 옆에 "(협의)"로 그대로 둔다(옛 "(+협의)" 표기만 맞춘다).
+                  const shiftLines = p.shiftText ? String(p.shiftText).split(/\n|\//).map((s: string) => s.trim().replace(/\(\+협의\)/, "(협의)")).filter(Boolean) : [];
                   const content = c.key === "shift"
                     ? (shiftLines.length
                         ? (shiftLines.length === 1 && shiftLines[0] === "협의" ? "협의"
@@ -186,8 +172,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                             ? "협의"
                             : <>
                                 {daysTxt && <div>{daysTxt}</div>}
-                                {timeTxt && <div>{timeTxt}{p.shiftNego && " 협의가능"}</div>}
-                                {!timeTxt && p.shiftNego && <div>협의가능</div>}
+                                {timeTxt && <div>{timeTxt}{p.shiftNego && " (협의)"}</div>}
+                                {!timeTxt && p.shiftNego && <div>(협의)</div>}
                                 {extraShifts.map((s: any, i: number) => (
                                   <div key={i}>{[s.days, s.time].filter(Boolean).join(" ")}</div>
                                 ))}

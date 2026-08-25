@@ -54,7 +54,9 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     setQuickType(type);
     if (type === "nego") { setDraft("협의"); return; }
     if (type === "custom" && days.length === 0) { setDraft(""); return; }
-    const label = type === "weekday" ? "평일" : type === "weekend" ? "주말" : days.join(", ");
+    // "평일"만 적으면 구직자가 정확히 어떤 요일인지 다시 물어야 했다. 어느 요일인지
+    // 값 자체에 적어 둔다.
+    const label = type === "weekday" ? "평일(월~금)" : type === "weekend" ? "주말(토~일)" : days.join(", ");
     // 요일과 시간을 한 줄에 붙이면 길어서 표·칸에서 줄바꿈 없이 한 줄로 늘어졌다
     // ("시간 줄바꿈 안되어 있어") — 요일 다음 줄에 시간을 따로 둔다.
     setDraft(`${label}\n${fmtT(startH, startM)}-${fmtT(endH, endM)}`);
