@@ -107,7 +107,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     // 표에서 회사가 고른 것과 카드가 다르게 읽히지 않게 그대로 따른다.
     const negoState = positions.length ? positions[0].salaryNego : "";
     const t = negoState === "hidden" ? "협의"
-      : v ? (negoState === "open" && v !== "협의" ? `${v} (+협의)` : v) : String(job.salary || "").trim();
+      : v ? (negoState === "open" && v !== "협의" ? `${v} (협의)` : v) : String(job.salary || "").trim();
     if (!t) return "";
     // 금액이 적혀 있으면 그 자체로 읽힌다. 숫자가 없을 때만 무엇에 대한 말인지 붙인다.
     return !/\d/.test(t) && !/^급여/.test(t) ? `급여 ${t}` : t;
@@ -146,16 +146,16 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   const wrapCol = c.key === "category" || c.key === "salary";
                   // 값은 있는데 회사가 표에서 '확정'을 골랐으면 그대로 노출한다.
                   // "hidden"(협의·금액 비공개)이면 값을 적어 뒀어도 "협의"만 보이고,
-                  // "open"(협의·금액 제시)이면 값에 "(+협의)"를 덧붙인다.
+                  // "open"(협의·금액 제시)이면 값에 "(협의)"를 덧붙인다.
                   const salaryTxt = p.salaryNego === "hidden" ? "협의"
                     : c.get(p)
-                      ? (p.salaryNego === "open" && c.get(p) !== "협의" ? `${c.get(p)} (+협의)` : c.get(p))
+                      ? (p.salaryNego === "open" && c.get(p) !== "협의" ? `${c.get(p)} (협의)` : c.get(p))
                       : "협의";
                   const daysTxt = p.workDays
-                    ? (p.shiftNego && p.workDays !== "협의" ? `${p.workDays} (+협의)` : p.workDays)
+                    ? (p.shiftNego && p.workDays !== "협의" ? `${p.workDays} (협의)` : p.workDays)
                     : "";
                   const timeTxt = p.workTime
-                    ? (p.shiftNego && p.workTime !== "협의" ? `${p.workTime} (+협의)` : p.workTime)
+                    ? (p.shiftNego && p.workTime !== "협의" ? `${p.workTime} (협의)` : p.workTime)
                     : "";
                   // 요일마다 시간이 다르면("월·수·금은 이 시간, 화·목은 저 시간") 기본 한 벌
                   // 뒤로 추가 근무시간을 이어 붙인다.

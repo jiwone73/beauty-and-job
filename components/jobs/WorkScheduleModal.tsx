@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Clock, Calendar, MessageCircle, ChevronDown, X } from "lucide-react";
 
 const DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
-const HOUR_OPTIONS = Array.from({ length: 19 }, (_, i) => i + 6); // 6시~24시
+const HOUR_OPTIONS = Array.from({ length: 17 }, (_, i) => i + 7); // 7시~23시 — 매장·본사 공통 범위
+const MIN_OPTIONS = [0, 30]; // 30분 단위만 — 매장 근무시간엔 이 이상 잘게 쪼갤 일이 없다
 const FORMAT_EXAMPLES = ["월, 수 10시-18시 / 금 12시-20시", "평일 10시-18시, 토 10시-17시", "협의"];
+const fmtT = (h: number, m: number) => (m ? `${h}시${m}분` : `${h}시`);
 
 interface Props {
   value: string;
@@ -14,6 +16,8 @@ interface Props {
   popRef: React.RefObject<HTMLDivElement>;
   left: number;
   top: number;
+  defaultStart?: number; // 매장 10시 / 본사 7시 — 빠른 선택 시간의 기본값
+  defaultEnd?: number;   // 매장 20시 / 본사 19시
 }
 
 // 근무요일/시간 — 원티드식 자유 문장으로. 요일 원형 버튼+시작·종료 시간을 팝오버
@@ -25,37 +29,39 @@ interface Props {
 // 다른 칸들과 같은 자리에서 뜨는 작은 팝오버로 접었다 — 다양한 입력 예시·안내
 // 문구는 자리를 많이 먹어 한 줄 요약으로 줄였다.
 // 배경은 뷰티워크 보라(#582681) 그대로 — 옅은 연보라 톤은 쓰지 않기로 했다.
-// "(협의)"/"(+협의)" 로 끝나면 시간은 정해 두고 조율 여지만 남긴 값이다.
+// "(협의)" 로 끝나면 시간은 정해 두고 조율 여지만 남긴 값이다.
 // 그 꼬리를 떼어 draft(시간 부분)와 nego(체크 여부)로 나눈다.
 const splitNego = (v: string): [string, boolean] => {
   const m = (v || "").match(/^(.*?)\s*\(\+?협의\)$/s);
   return m ? [m[1], true] : [v || "", false];
 };
 
-export default function WorkScheduleModal({ value, onChange, onClose, popRef, left, top }: Props) {
+export default function WorkScheduleModal({ value, onChange, onClose, popRef, left, top, defaultStart = 10, defaultEnd = 18 }: Props) {
   const [tab, setTab] = useState<"quick" | "free">("quick");
   const [initDraft, initNego] = splitNego(value);
   const [draft, setDraft] = useState(initDraft);
   const [nego, setNego] = useState(initNego);
   const [quickType, setQuickType] = useState<"weekday" | "weekend" | "custom" | "nego" | null>(null);
   const [qDays, setQDays] = useState<string[]>([]);
-  const [qStart, setQStart] = useState(10);
-  const [qEnd, setQEnd] = useState(18);
+  const [qStart, setQStart] = useState(defaultStart);
+  const [qStartMin, setQStartMin] = useState(0);
+  const [qEnd, setQEnd] = useState(defaultEnd);
+  const [qEndMin, setQEndMin] = useState(0);
 
   useEffect(() => { const [d, n] = splitNego(value); setDraft(d); setNego(n); }, [value]);
 
-  const applyQuick = (type: "weekday" | "weekend" | "custom" | "nego", days: string[], start: number, end: number) => {
+  const applyQuick = (type: "weekday" | "weekend" | "custom" | "nego", days: string[], startH: number, startM: number, endH: number, endM: number) => {
     setQuickType(type);
     if (type === "nego") { setDraft("협의"); return; }
     if (type === "custom" && days.length === 0) { setDraft(""); return; }
     const label = type === "weekday" ? "평일" : type === "weekend" ? "주말" : days.join(", ");
-    setDraft(`${label} ${start}시-${end}시`);
+    setDraft(`${label} ${fmtT(startH, startM)}-${fmtT(endH, endM)}`);
   };
 
   const toggleQDay = (d: string) => {
     const next = qDays.includes(d) ? qDays.filter((x) => x !== d) : [...qDays, d].sort((a, b) => DAY_OPTIONS.indexOf(a) - DAY_OPTIONS.indexOf(b));
     setQDays(next);
-    applyQuick("custom", next, qStart, qEnd);
+    applyQuick("custom", next, qStart, qStartMin, qEnd, qEndMin);
   };
 
   const quickRows: { type: "weekday" | "weekend" | "custom" | "nego"; icon: any; label: string }[] = [
@@ -99,7 +105,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                 return (
                   <div key={r.type}>
                     <button type="button" className={`ws-quick-row ${on ? "on" : ""}`}
-                      onClick={() => r.type === "custom" ? applyQuick("custom", qDays, qStart, qEnd) : applyQuick(r.type, [], qStart, qEnd)}>
+                      onClick={() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin)}>
                       <r.icon size={13} style={{ color: on ? "#582681" : "#fff", flexShrink: 0 }} />{r.label}
                     </button>
                     {quickType === r.type && r.type !== "nego" && (
@@ -111,13 +117,19 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             ))}
                           </div>
                         )}
-                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                          <select className="ws-hourSel" value={qStart} onChange={(e) => { const s = Number(e.target.value); setQStart(s); applyQuick(r.type, r.type === "custom" ? qDays : [], s, qEnd); }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                          <select className="ws-hourSel" value={qStart} onChange={(e) => { const s = Number(e.target.value); setQStart(s); applyQuick(r.type, r.type === "custom" ? qDays : [], s, qStartMin, qEnd, qEndMin); }}>
                             {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                           </select>
+                          <select className="ws-hourSel" value={qStartMin} onChange={(e) => { const m = Number(e.target.value); setQStartMin(m); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, m, qEnd, qEndMin); }}>
+                            {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
+                          </select>
                           <span style={{ color: "#fff", fontSize: 12 }}>~</span>
-                          <select className="ws-hourSel" value={qEnd} onChange={(e) => { const en = Number(e.target.value); setQEnd(en); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, en); }}>
+                          <select className="ws-hourSel" value={qEnd} onChange={(e) => { const en = Number(e.target.value); setQEnd(en); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, en, qEndMin); }}>
                             {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
+                          </select>
+                          <select className="ws-hourSel" value={qEndMin} onChange={(e) => { const m = Number(e.target.value); setQEndMin(m); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, m); }}>
+                            {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                           </select>
                         </div>
                       </div>
@@ -142,7 +154,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
             </div>
           )}
           {/* 시간은 정해 두고도 조율 여지를 남기고 싶을 때. 값을 지우고 '협의'로
-              바꿔치기하는 것과 달리, 시간은 그대로 두고 "(+협의)"만 붙는다. */}
+              바꿔치기하는 것과 달리, 시간은 그대로 두고 "(협의)"만 붙는다. */}
           {draft.trim() && draft.trim() !== "협의" && (
             <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12, color: "#fff", cursor: "pointer" }}>
               <input type="checkbox" checked={nego} onChange={(e) => setNego(e.target.checked)}
@@ -154,7 +166,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
 
         <div className="ws-footer">
           <button type="button" onClick={onClose} style={{ border: "1px solid rgba(255,255,255,0.4)", background: "transparent", color: "#fff", borderRadius: 7, padding: "6px 12px", fontSize: 12.5, cursor: "pointer" }}>취소</button>
-          <button type="button" onClick={() => { const t = draft.trim(); onChange(t && nego && t !== "협의" ? `${t} (+협의)` : t); onClose(); }} style={{ border: "none", background: "#fff", color: "#582681", borderRadius: 7, padding: "6px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>적용</button>
+          <button type="button" onClick={() => { const t = draft.trim(); onChange(t && nego && t !== "협의" ? `${t} (협의)` : t); onClose(); }} style={{ border: "none", background: "#fff", color: "#582681", borderRadius: 7, padding: "6px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>적용</button>
         </div>
       </div>
     </>

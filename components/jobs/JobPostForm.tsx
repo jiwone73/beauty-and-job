@@ -1995,13 +1995,15 @@ export default function JobPostForm({
     // '협의'만), "제시 협의"(금액을 보여주고 조율 여지도 표시, 예전의 '협의+').
     // 값을 지우고 그 자리를 '협의'로 바꿔치기하던 예전 방식은 이미 적어 둔
     // 급여를 날려 버리는 사고로 이어져 없앴다 — 값은 그대로 두고 표시만 바뀐다.
-    const shown = nego === "hidden" ? "협의" : nego === "open" ? (v && v !== "협의" ? `${v} (+협의)` : "협의") : v;
+    const shown = nego === "hidden" ? "협의" : nego === "open" ? (v && v !== "협의" ? `${v} (협의)` : "협의") : v;
     const key = `${cat}|${field}`;
     const open = cellOpen === key;
     const freeInput = options.length === 0 || cellFree;      // 목록 없는 칸이거나 '직접입력'을 고른 상태
     // 급여는 "300"(확정) · "300~"(이상) · "300~350"(범위) 세 가지 형태가 섞여 쓰인다.
     // 최소·최대 두 칸으로 나눠 받고, 최대를 비운 채로 "이상" 표시만 고를 수 있게 한다.
-    const salaryPrefix = units ? (v.match(/^\s*([시주월연])\s*/)?.[1] || "") : "";
+    // 급여유형을 아직 안 골랐으면 매장은 월급, 본사는 연봉을 기본으로 삼는다 — 숫자만
+    // 입력해도 그 단위가 자동으로 붙는다.
+    const salaryPrefix = units ? (v.match(/^\s*([시주월연])\s*/)?.[1] || (jobGroupType === "매장" ? "월" : "연")) : "";
     const salaryRest = units ? v.replace(/^\s*[시주월연]\s*/, "") : "";
     const salaryParts = units ? salaryRest.match(/^(\d+)(~)?(\d*)$/) : null;
     const sMin = salaryParts ? salaryParts[1] : "";
@@ -2065,7 +2067,7 @@ export default function JobPostForm({
                      없이도 '협의'를 남기는 건 이제 아래 '협의 가능' 체크 하나로 한다. */
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 6 }}>
                     {units.map((u) => {
-                      const on = v.trim().startsWith(u.prefix);
+                      const on = u.prefix === salaryPrefix;
                       return (
                         <button key={u.label} type="button"
                           onClick={() => { setPos(cat, field, withSalaryUnit(v, u.prefix)); cellInputRef.current?.focus({ preventScroll: true }); }}
@@ -2943,6 +2945,8 @@ export default function JobPostForm({
                                     popRef={popRef}
                                     left={popAt.left}
                                     top={popAt.top}
+                                    defaultStart={jobGroupType === "매장" ? 10 : 7}
+                                    defaultEnd={jobGroupType === "매장" ? 20 : 19}
                                   />
                                 )}
                               </td>
