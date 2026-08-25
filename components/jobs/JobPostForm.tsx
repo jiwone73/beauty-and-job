@@ -2042,8 +2042,8 @@ export default function JobPostForm({
             적으면 머리줄과 같은 말이 위아래로 겹친다. 채우면 둘 다 사라지고 값만 남는다. */}
         <button type="button"
           onClick={(e) => { if (open) { setCellOpen(null); return; } setCellFree(false); openPopAt(e.currentTarget, width, height); setCellOpen(key); }}
-          style={{ ...cellSelect, background: "transparent", textAlign: "left", color: v ? "#333" : "#b4b4b9",
-            display: "flex", alignItems: wrap ? "flex-start" : "center", gap: 4,
+          style={{ ...cellSelect, background: "transparent", textAlign: "center", color: v ? "#333" : "#b4b4b9",
+            display: "flex", alignItems: wrap ? "flex-start" : "center", justifyContent: "center", gap: 4,
             borderBottom: v ? "1px solid transparent" : "1px solid #e3e3e6", borderRadius: 0 }}>
           {/* 급여처럼 길어질 수 있는 값은 잘라내지(...) 않고 두 줄까지 접는다.
               maxWidth 없이 whiteSpace:normal 만 주면 표가 그냥 옆으로 넓어져
@@ -2954,11 +2954,11 @@ export default function JobPostForm({
                                     처음엔 화면 가운데 뜨는 큰 모달이었는데("윈도우창이 너무
                                     크지 않나") 다른 칸과 같은 작은 팝오버로 바꿨다. */}
                                 <button type="button" onClick={(e) => { if (shiftModalCat === cat) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(cat); }}
-                                  style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "left", border: "none",
+                                  style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "center", border: "none",
                                     borderBottom: shiftDisplay(row) ? "1px solid transparent" : "1px solid #e3e3e6",
                                     borderRadius: 0, padding: "3px 6px", fontSize: 13.5, lineHeight: 1.35, cursor: "pointer",
                                     color: shiftDisplay(row) ? "#333" : "#b4b4b9",
-                                    background: "transparent", display: "flex", alignItems: shiftDisplay(row) ? "flex-start" : "center", gap: 4,
+                                    background: "transparent", display: "flex", alignItems: shiftDisplay(row) ? "flex-start" : "center", justifyContent: "center", gap: 4,
                                     whiteSpace: "pre-line", wordBreak: "keep-all" }}>
                                   {/* "/" 도 줄바꿈처럼 각자 한 줄로 — 근무시간 묶음이 여럿이면 표에서도 나뉘어 보인다.
                                       빠른 선택은 요일과 시간을 이미 줄바꿈으로 나눠 저장한다("요일은
