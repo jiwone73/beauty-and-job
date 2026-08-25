@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { UserRound, Smartphone, FileText } from "lucide-react";
+import { UserRound, Smartphone, FileText, Mail, KeyRound, UserX } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { InlineText } from "@/components/profile/inline/InlineField";
 import { passwordError, PASSWORD_HINT } from "@/lib/password";
@@ -177,14 +177,14 @@ export default function CompanyAccountPage() {
               </div>
 
               <div className="admin-form-row" style={row}>
-                <label className="admin-form-label" style={label}>사업자등록번호</label>
+                <label className="admin-form-label" style={label}><FileText size={15} className="admin-form-icon" />사업자등록번호</label>
                 <span style={{ fontSize: 14, color: businessNumber ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{businessNumber || "미등록"}</span>
               </div>
 
               <div className="admin-form-row"
                 onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
                 style={{ ...row, cursor: "pointer" }}>
-                <label className="admin-form-label" style={label}>이메일</label>
+                <label className="admin-form-label" style={label}><Mail size={15} className="admin-form-icon" />이메일</label>
                 <span style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                   <span style={{ fontSize: 14, color: email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
                   <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
@@ -192,7 +192,7 @@ export default function CompanyAccountPage() {
               </div>
 
               <div className="admin-form-row" onClick={() => setShowPwModal(true)} style={{ ...row, cursor: "pointer" }}>
-                <label className="admin-form-label" style={label}>비밀번호</label>
+                <label className="admin-form-label" style={label}><KeyRound size={15} className="admin-form-icon" />비밀번호</label>
                 <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
                   변경하기 <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
                 </span>
@@ -200,7 +200,7 @@ export default function CompanyAccountPage() {
 
               <div className="admin-form-row" onClick={() => router.push("/company/dashboard/account/withdraw")}
                 style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
-                <label className="admin-form-label" style={label}>회원 탈퇴</label>
+                <label className="admin-form-label" style={label}><UserX size={15} className="admin-form-icon" />회원 탈퇴</label>
                 <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
                   탈퇴하기 <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
                 </span>
