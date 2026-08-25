@@ -6,7 +6,6 @@ import {
   Download, Printer, MapPin, ChevronDown, SlidersHorizontal,
 } from "lucide-react";
 import { companyTalentApi, type TalentItem } from "@/lib/api/company";
-import { JS_LABEL, statusAge } from "@/lib/jobSearchStatus";
 import ResumePreview from "@/components/profile/ResumePreview";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
@@ -669,7 +668,6 @@ export default function TalentPage() {
                 <th>구직 직군</th>
                 <th>지역</th>
                 <th>최근경력</th>
-                <th>구직상태</th>
                 <th>연락처</th>
                 <th>이력서</th>
                 <th>포트폴리오</th>
@@ -727,20 +725,6 @@ export default function TalentPage() {
                       ) : (
                         <span style={{ color: "#ccc" }}>—</span>
                       )}
-                    </td>
-                    <td className="company-td-sub">
-                      {(() => {
-                        const js = JS_LABEL[t.jobSearchStatus] || JS_LABEL.SEEKING;
-                        const age = statusAge(t.jobSearchStatusAt);
-                        return (
-                          <>
-                            <div style={{ display: "inline-block", padding: "2px 8px", borderRadius: 11, fontSize: 12.5, fontWeight: 500, color: js.color, background: js.bg }}>
-                              {js.text}
-                            </div>
-                            {age && <div style={{ color: "#aaa", fontSize: 12, marginTop: 3 }}>{age}</div>}
-                          </>
-                        );
-                      })()}
                     </td>
                     <td className="company-td-sub">
                       <div style={{ marginBottom: 2, ...(t.email ? {} : { color: "#ccc" }) }}>{t.email || "이메일 없음"}</div>
