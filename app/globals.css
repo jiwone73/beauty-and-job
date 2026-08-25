@@ -2364,8 +2364,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 모집부문 표. 좁은 화면에서는 칸 사이 여백이 20px 씩 붙어 일곱 열이 화면을 넘어가고,
    가로로 밀어야 급여가 보였다. 여백만 줄여 한눈에 들어오게 한다. */
 /* 표를 테두리로 감싸므로 첫 칸에도 왼쪽 여백을 준다(전엔 0이라 글이 선에 붙었다). */
-.jd-pos-th { text-align: left; padding: 10px 20px 10px 12px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; white-space: nowrap; }
-.jd-pos-td { padding: 12px 20px 12px 12px; border-bottom: none; white-space: nowrap; line-height: 1.6; }
+.jd-pos-th { text-align: left; padding: 10px 20px 7px 12px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; white-space: nowrap; }
+.jd-pos-td { padding: 9px 20px 9px 12px; border-bottom: none; white-space: nowrap; line-height: 1.6; }
 @media (max-width: 640px) {
   .jd-pos-th, .jd-pos-td { padding-right: 10px; padding-left: 10px; }
 }

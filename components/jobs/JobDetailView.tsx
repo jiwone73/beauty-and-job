@@ -20,6 +20,14 @@ const withSeeDetail = (v: string) => {
   const t = String(v || "").trim();
   return /상세요강\s*참조/.test(t) ? t : (t ? `${t} · 상세요강 참조` : "상세요강 참조");
 };
+// 급여·근무요일/시간 값 끝의 "(협의)"/"(+협의)"를 떼어내, 값과 한 줄에 붙여 읽히지
+// 않도록 별도 줄("협의가능")로 내린다. "월, 수 10시-18시 (협의)"처럼 시간이 줄바꿈
+// 안 되고 한 줄에 다 붙어 보이던 것과, "월 240~260 (협의)"처럼 급여가 값과 나란히
+// 붙어 보이던 것을 모두 이걸로 정리한다.
+const splitNegoSuffix = (v: string): [string, boolean] => {
+  const m = String(v || "").match(/^(.*?)\s*\(\+?협의\)$/s);
+  return m ? [m[1], true] : [String(v || ""), false];
+};
 
 // 상세요강 본문에 적힌 매장 연락처는 구직자에게 가린다.
   //
@@ -106,11 +114,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     const v = positions.length ? String(positions[0].salary || "").trim() : "";
     // 표에서 회사가 고른 것과 카드가 다르게 읽히지 않게 그대로 따른다.
     const negoState = positions.length ? positions[0].salaryNego : "";
-    const t = negoState === "hidden" ? "협의"
-      : v ? (negoState === "open" && v !== "협의" ? `${v} (협의)` : v) : String(job.salary || "").trim();
-    if (!t) return "";
+    const nego = negoState === "open" && !!v && v !== "협의";
+    const base = negoState === "hidden" ? "협의" : v ? v : String(job.salary || "").trim();
+    if (!base) return null;
     // 금액이 적혀 있으면 그 자체로 읽힌다. 숫자가 없을 때만 무엇에 대한 말인지 붙인다.
-    return !/\d/.test(t) && !/^급여/.test(t) ? `급여 ${t}` : t;
+    const text = !/\d/.test(base) && !/^급여/.test(base) ? `급여 ${base}` : base;
+    return { text, nego };
   })();
   // 값이 비어도 화면에는 "협의" 로 나가는 열(급여·근무요일/시간)은 숨기지 않는다.
   // 숨기면 등록 폼에는 있는 열이 미리보기에서 사라져, 무엇이 어떻게 보일지 대조할 수
@@ -146,27 +155,33 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   const wrapCol = c.key === "category" || c.key === "salary";
                   // 값은 있는데 회사가 표에서 '확정'을 골랐으면 그대로 노출한다.
                   // "hidden"(협의·금액 비공개)이면 값을 적어 뒀어도 "협의"만 보이고,
-                  // "open"(협의·금액 제시)이면 값에 "(협의)"를 덧붙인다.
-                  const salaryTxt = p.salaryNego === "hidden" ? "협의"
-                    : c.get(p)
-                      ? (p.salaryNego === "open" && c.get(p) !== "협의" ? `${c.get(p)} (협의)` : c.get(p))
-                      : "협의";
-                  const daysTxt = p.workDays
-                    ? (p.shiftNego && p.workDays !== "협의" ? `${p.workDays} (협의)` : p.workDays)
-                    : "";
-                  const timeTxt = p.workTime
-                    ? (p.shiftNego && p.workTime !== "협의" ? `${p.workTime} (협의)` : p.workTime)
-                    : "";
+                  // "open"(협의·금액 제시)이면 금액과 나란히 "(협의)"를 붙이는 대신
+                  // 아래 줄에 "협의가능"으로 따로 뗀다 — 값과 붙어 있으면 협의 여지가
+                  // 금액의 일부처럼 읽혔다.
+                  const salaryNego = p.salaryNego === "open" && !!c.get(p) && c.get(p) !== "협의";
+                  const salaryBase = p.salaryNego === "hidden" ? "협의" : (c.get(p) || "협의");
+                  const salaryTxt = salaryNego ? <>{salaryBase}<div>협의가능</div></> : salaryBase;
+                  const daysTxt = p.workDays || "";
+                  const timeTxt = p.workTime || "";
                   // 요일마다 시간이 다르면("월·수·금은 이 시간, 화·목은 저 시간") 기본 한 벌
                   // 뒤로 추가 근무시간을 이어 붙인다.
                   const extraShifts = Array.isArray(p.extraShifts) ? p.extraShifts : [];
                   // shiftText — 원티드식 자유 문장("월, 수 10시-18시 / 금 12시-20시")으로 등록한
                   // 공고는 이 필드가 있다. "/"로 나눠 묶음마다 한 줄로 보여준다. 이 필드가 없는
                   // (그 전에 저장된) 공고만 구조화 필드로 문장을 조립한다.
-                  const shiftLines = p.shiftText ? String(p.shiftText).split(/\n|\//).map((s: string) => s.trim()).filter(Boolean) : [];
+                  // 협의 여지("(협의)")는 맨 마지막 줄 끝에만 붙어 저장돼 있어 그 줄에서만 뗀다.
+                  const rawShiftLines = p.shiftText ? String(p.shiftText).split(/\n|\//).map((s: string) => s.trim()).filter(Boolean) : [];
+                  let shiftNego = false;
+                  const shiftLines = rawShiftLines.map((l: string, idx: number) => {
+                    if (idx !== rawShiftLines.length - 1) return l;
+                    const [base, nego] = splitNegoSuffix(l);
+                    if (nego) shiftNego = true;
+                    return nego ? base : l;
+                  });
                   const content = c.key === "shift"
                     ? (shiftLines.length
-                        ? (shiftLines.length === 1 && shiftLines[0] === "협의" ? "협의" : shiftLines.map((l: string, i: number) => <div key={i}>{l}</div>))
+                        ? (shiftLines.length === 1 && shiftLines[0] === "협의" ? "협의"
+                            : <>{shiftLines.map((l: string, i: number) => <div key={i}>{l}</div>)}{shiftNego && <div>협의가능</div>}</>)
                         : (p.workDays || p.workTime)
                         ? ((p.workDays === "협의" && p.workTime === "협의")
                             ? "협의"
@@ -176,6 +191,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                                 {extraShifts.map((s: any, i: number) => (
                                   <div key={i}>{[s.days, s.time].filter(Boolean).join(" ")}</div>
                                 ))}
+                                {p.shiftNego && <div>협의가능</div>}
                               </>)
                         : "협의")
                     : c.key === "salary"
@@ -550,7 +566,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               한 화면에서 서로 다른 말을 했다. 두 값이 다르면 구직자는 어느 쪽이
               사실인지 알 수 없다. 모집부문이 뽑는 자리별로 적는 원문에 가깝다. */}
           {asideSalary && (
-            <div className="job-detail-aside-salary">{asideSalary}</div>
+            <div className="job-detail-aside-salary">
+              {asideSalary.text}
+              {asideSalary.nego && <div>협의가능</div>}
+            </div>
           )}
           {job.deadline && (
             <div className="job-detail-aside-deadline">
