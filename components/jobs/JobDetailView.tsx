@@ -158,6 +158,16 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     const catIdx = posCols.findIndex((c) => c.key === "category");
     if (catIdx >= 0) posColWeights[catIdx] += stolen;
   }
+  // "근무요일 시간을 여백을 한글자 더 확보하고 모집분야에 1글자 줄여" — 모집분야에서
+  // 한 글자만큼 도로 덜어 근무요일/시간에 준다.
+  {
+    const catIdx = posCols.findIndex((c) => c.key === "category");
+    const shiftIdx = posCols.findIndex((c) => c.key === "shift");
+    if (catIdx >= 0 && shiftIdx >= 0 && posColWeights[catIdx] > posColWeights[shiftIdx]) {
+      posColWeights[catIdx] -= 1;
+      posColWeights[shiftIdx] += 1;
+    }
+  }
   // 글자 수 비율 그대로 100%를 나누면, 화면이 넓을 때 근무요일/시간처럼 원래
   // 긴 칸이 남는 폭을 혼자 다 가져가 그 칸만 헐렁해 보였다("여백이 왜 이렇게
   // 많아 · 이 여백을 나눠쓰면 되잖아"). 평균 쪽으로 절반 당겨써 큰 칸이 가져갈

@@ -2935,12 +2935,12 @@ export default function JobPostForm({
                               시간 구분자를 "-"에서 " ~ "로 바꾸며 근무요일/시간 칸이 길어진 만큼은
                               도로 모집분야에서 덜어 왔다("증가된 여백은 1열 모집분야 여백을
                               줄여서 확보해"). */}
-                          <th style={{ ...thc, ...firstCol, minWidth: 152, maxWidth: 182 }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
+                          <th style={{ ...thc, ...firstCol, minWidth: 140, maxWidth: 170 }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
                           <th style={{ ...thc, minWidth: 54 }}>고용형태</th>
                           <th style={{ ...thc, minWidth: 44 }}>성별</th>
                           <th style={{ ...thc, minWidth: 60 }}>경력/직책</th>
                           <th style={{ ...thc, minWidth: 40 }}>학력</th>
-                          <th style={{ ...thc, minWidth: 132 }}>근무요일 / 시간</th>
+                          <th style={{ ...thc, minWidth: 144 }}>근무요일 / 시간</th>
                           <th style={{ ...thc, minWidth: 84, maxWidth: 130, borderRight: "none" }}>급여<span style={{ fontSize: "0.8em" }}>(만원)</span></th>
                         </tr>
                       </thead>
@@ -2958,7 +2958,7 @@ export default function JobPostForm({
                                 {/* 긴 분야명이 한 줄로 늘어지며 표를 넓혀 급여·근무요일 칸까지
                                     가로 스크롤로 밀어냈다. 폭을 묶어 두 줄까지는 그대로 접는다. */}
                                 <div style={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
-                                  <span style={{ flex: 1, minWidth: 156, maxWidth: 182, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>{baseCat(cat)}</span>
+                                  <span style={{ flex: 1, minWidth: 144, maxWidth: 170, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>{baseCat(cat)}</span>
                                   <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
                                     style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0, marginTop: 1 }}>×</button>
                                 </div>
