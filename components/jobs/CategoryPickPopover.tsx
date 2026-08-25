@@ -39,7 +39,7 @@ export default function CategoryPickPopover({ jobType, onPick, onClose }: Props)
         .catpick-pop-body { position: absolute; top: calc(100% + 6px); left: 0; z-index: 200; background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 300px; max-width: calc(100vw - 16px); box-sizing: border-box; overflow: hidden; }
         .cp-body { display: flex; }
         .cp-left { width: 104px; flex-shrink: 0; background: #fafafa; border-right: 1px solid #f0f0f0; }
-        .cp-group { display: block; width: 100%; text-align: left; padding: 9px 10px; background: none; border: none; cursor: pointer; font-size: 13px; color: #666; border-left: 2px solid transparent; }
+        .cp-group { display: block; width: 100%; text-align: left; padding: 9px 10px; background: none; border: none; cursor: pointer; font-size: 12px; color: #666; border-left: 2px solid transparent; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-sizing: border-box; }
         .cp-group.on { background: #fff; color: #582681; font-weight: 600; border-left-color: #582681; }
         .cp-right { flex: 1; padding: 6px; }
         .cp-item { display: block; width: 100%; text-align: left; padding: 8px 9px; background: none; border: none; border-radius: 6px; cursor: pointer; font-size: 12.5px; color: #333; }
