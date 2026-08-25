@@ -475,9 +475,13 @@ export default function JobPostForm({
   const placePop = (el: HTMLElement, width: number, height: number) => {
     const r = el.getBoundingClientRect();
     const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
-    // 아래 공간이 모자라면 트리거 위쪽으로 뒤집어 띄운다(모바일 하단에서 잘리지 않게)
+    // 아래 공간이 모자라면 트리거 위쪽으로 뒤집어 띄운다(모바일 하단에서 잘리지 않게).
+    //   위쪽도 모자라면(내용이 큰 팝오버가 화면 중간 트리거에서 열릴 때) 무조건 위로
+    //   뒤집지 않고 공간이 더 넉넉한 쪽을 골라 잘리는 걸 줄인다.
     const below = r.bottom + 4;
-    const raw = below + height > window.innerHeight - 8 ? r.top - height - 4 : below;
+    const spaceBelow = window.innerHeight - 8 - below;
+    const spaceAbove = r.top - 4 - 8;
+    const raw = below + height > window.innerHeight - 8 && spaceAbove > spaceBelow ? r.top - height - 4 : below;
     const top = Math.max(8, Math.min(raw, window.innerHeight - height - 8)); // 항상 화면 안
     setPopAt({ left, top });
   };
@@ -506,7 +510,7 @@ export default function JobPostForm({
       if (!t || !t.el.isConnected) return;
       // 팝오버 안에서 입력 중이면 그대로 둔다(키보드가 뷰포트를 줄이면서 팝오버가 튀는 것 방지)
       const ae = document.activeElement as HTMLElement | null;
-      if (ae?.closest?.(".poscell-pop, .posshift-pop, .catpick-pop")) return;
+      if (ae?.closest?.(".poscell-pop, .posshift-pop")) return;
       placePop(t.el, t.width, t.height);
     };
     window.addEventListener("scroll", onMove, true);
@@ -2859,10 +2863,19 @@ export default function JobPostForm({
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                   {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                       고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
-                  <span className="jp-add-wrap catpick-pop">
-                    <button type="button" disabled={typeLocked} onClick={(e) => { if (addRowOpen) { setAddRowOpen(false); return; } openPopAt(e.currentTarget, 300, 320); setAddRowOpen(true); }} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
+                  <span className="jp-add-wrap catpick-pop" style={{ position: "relative" }}>
+                    <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen((v) => !v)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
                       className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: 0, cursor: typeLocked ? "default" : "pointer" }}>＋</button>
-                    <span className="jp-add-note">눌러 모집할 분야를 담아주세요</span>
+                    {/* 고정좌표(popAt) 팝오버는 화면 기준이라, 콘텐츠가 늦게 도착해 트리거가 밀리면
+                        따라가지 못했다("+ 버튼 바로 밑에서 떠야지"). 여기는 표 밖이라 가로 스크롤에
+                        잘릴 일이 없으니, 트리거에 상대 위치로 붙여 항상 바로 밑에 뜨게 한다. */}
+                    {addRowOpen && (
+                      <CategoryPickPopover
+                        jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
+                        onPick={(item) => { addCatRow(item); setAddRowOpen(false); }}
+                        onClose={() => setAddRowOpen(false)}
+                      />
+                    )}
                   </span>
                 </div>
                 <div id="jp-deadline" className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
@@ -2961,7 +2974,7 @@ export default function JobPostForm({
                                 )}
                               </td>
                               <td style={{ ...tdc, position: "relative" }}>
-                                {posCell(cat, "salary", [], "예) 300~350", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(cat, "salaryNego", v))}
+                                {posCell(cat, "salary", [], "", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(cat, "salaryNego", v))}
                               </td>
                             </tr>
                           );
@@ -2969,17 +2982,6 @@ export default function JobPostForm({
                       </tbody>
                     </table>
                   </div>
-                )}
-                {/* 행 추가용 분야 선택 — 고르는 즉시 행이 붙는다(같은 분야도 다시 고를 수 있음) */}
-                {addRowOpen && popAt && (
-                  <CategoryPickPopover
-                    jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
-                    onPick={(item) => { addCatRow(item); setAddRowOpen(false); }}
-                    onClose={() => setAddRowOpen(false)}
-                    popRef={popRef}
-                    left={popAt.left}
-                    top={popAt.top}
-                  />
                 )}
               </div>
 
