@@ -161,22 +161,30 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   // shiftText — 원티드식 자유 문장("월, 수 10시-18시 / 금 12시-20시")으로 등록한
                   // 공고는 이 필드가 있다. "/"로 나눠 묶음마다 한 줄로 보여준다. 이 필드가 없는
                   // (그 전에 저장된) 공고만 구조화 필드로 문장을 조립한다.
-                  // 협의 여지는 시간 옆에 "(협의)"로 그대로 둔다(옛 "(+협의)" 표기만 맞춘다).
-                  const shiftLines = p.shiftText ? String(p.shiftText).split(/\n|\//).map((s: string) => s.trim().replace(/\(\+협의\)/, "(협의)")).filter(Boolean) : [];
+                  // 협의 여지("(협의)")는 맨 마지막 줄(시간) 끝에 붙어 저장돼 있다 — 한 줄 더
+                  // 내려 "협의가능"으로 바꿔 단다(요일 1행·시간 2행·협의가능 3행).
+                  const rawShiftLines = p.shiftText ? String(p.shiftText).split(/\n|\//).map((s: string) => s.trim()).filter(Boolean) : [];
+                  let shiftNego = false;
+                  const shiftLines = rawShiftLines.map((l: string, idx: number) => {
+                    if (idx !== rawShiftLines.length - 1) return l;
+                    const m = l.match(/^(.*?)\s*\(\+?협의\)$/s);
+                    if (m) { shiftNego = true; return m[1]; }
+                    return l;
+                  });
                   const content = c.key === "shift"
                     ? (shiftLines.length
                         ? (shiftLines.length === 1 && shiftLines[0] === "협의" ? "협의"
-                            : shiftLines.map((l: string, i: number) => <div key={i}>{l}</div>))
+                            : <>{shiftLines.map((l: string, i: number) => <div key={i}>{l}</div>)}{shiftNego && <div>협의가능</div>}</>)
                         : (p.workDays || p.workTime)
                         ? ((p.workDays === "협의" && p.workTime === "협의")
                             ? "협의"
                             : <>
                                 {daysTxt && <div>{daysTxt}</div>}
-                                {timeTxt && <div>{timeTxt}{p.shiftNego && " (협의)"}</div>}
-                                {!timeTxt && p.shiftNego && <div>(협의)</div>}
+                                {timeTxt && <div>{timeTxt}</div>}
                                 {extraShifts.map((s: any, i: number) => (
                                   <div key={i}>{[s.days, s.time].filter(Boolean).join(" ")}</div>
                                 ))}
+                                {p.shiftNego && <div>협의가능</div>}
                               </>)
                         : "협의")
                     : c.key === "salary"

@@ -2962,9 +2962,9 @@ export default function JobPostForm({
                                     whiteSpace: "pre-line", wordBreak: "keep-all" }}>
                                   {/* "/" 도 줄바꿈처럼 각자 한 줄로 — 근무시간 묶음이 여럿이면 표에서도 나뉘어 보인다.
                                       빠른 선택은 요일과 시간을 이미 줄바꿈으로 나눠 저장한다("요일은
-                                      1행, 시간은 2행") — 협의 여지는 시간 옆에 그대로 "(협의)"로 둔다
-                                      (옛 "(+협의)" 표기만 새 형식으로 맞춘다). */}
-                                  <span style={{ flex: 1, minWidth: 0 }}>{shiftDisplay(row).replace(/\s*\/\s*/g, "\n").replace(/\(\+협의\)/, "(협의)")}</span>
+                                      1행, 시간은 2행") — 협의 여지는 시간 줄에 붙어 있던 "(협의)"를
+                                      한 줄 더 내려 "협의가능"으로 바꿔 단다(총 3행). */}
+                                  <span style={{ flex: 1, minWidth: 0 }}>{shiftDisplay(row).replace(/\s*\/\s*/g, "\n").replace(/\s*\(\+?협의\)\s*$/, "\n협의가능")}</span>
                                   {!shiftDisplay(row) && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9", marginTop: 2 }} />}
                                 </button>
                                 {shiftModalCat === cat && popAt && (
