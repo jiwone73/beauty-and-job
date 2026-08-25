@@ -2929,13 +2929,16 @@ export default function JobPostForm({
                           대신 자리글과 같은 흐린 회색·가는 글씨로 눌러 캡션처럼 읽히게 했다. */}
                       <thead>
                         <tr>
-                          <th style={{ ...thc, ...firstCol, minWidth: 100, maxWidth: 130 }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
-                          <th style={{ ...thc, minWidth: 66 }}>고용형태</th>
-                          <th style={{ ...thc, minWidth: 56 }}>성별</th>
-                          <th style={{ ...thc, minWidth: 72 }}>경력/직책</th>
-                          <th style={{ ...thc, minWidth: 52 }}>학력</th>
-                          <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>
-                          <th style={{ ...thc, minWidth: 96, maxWidth: 130, borderRight: "none" }}>급여<span style={{ fontSize: "0.8em" }}>(만원)</span></th>
+                          {/* 다른 칸을 한 글자씩 줄여 그만큼을 모집분야로 몰아준다
+                              ("전체적으로 한글자씩만 더 줄여도 되. 그 여백을 모집분야에
+                              넣어줘") — 분야명이 다른 칸보다 훨씬 자주 길다. */}
+                          <th style={{ ...thc, ...firstCol, minWidth: 172, maxWidth: 202 }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
+                          <th style={{ ...thc, minWidth: 54 }}>고용형태</th>
+                          <th style={{ ...thc, minWidth: 44 }}>성별</th>
+                          <th style={{ ...thc, minWidth: 60 }}>경력/직책</th>
+                          <th style={{ ...thc, minWidth: 40 }}>학력</th>
+                          <th style={{ ...thc, minWidth: 112 }}>근무요일 / 시간</th>
+                          <th style={{ ...thc, minWidth: 84, maxWidth: 130, borderRight: "none" }}>급여<span style={{ fontSize: "0.8em" }}>(만원)</span></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2952,7 +2955,7 @@ export default function JobPostForm({
                                 {/* 긴 분야명이 한 줄로 늘어지며 표를 넓혀 급여·근무요일 칸까지
                                     가로 스크롤로 밀어냈다. 폭을 묶어 두 줄까지는 그대로 접는다. */}
                                 <div style={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
-                                  <span style={{ flex: 1, minWidth: 104, maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>{baseCat(cat)}</span>
+                                  <span style={{ flex: 1, minWidth: 176, maxWidth: 202, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>{baseCat(cat)}</span>
                                   <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
                                     style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0, marginTop: 1 }}>×</button>
                                 </div>
