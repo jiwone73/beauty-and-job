@@ -25,6 +25,10 @@ export default function JobDetailPage() {
   const [job, setJob] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
   const [companyJobsCount, setCompanyJobsCount] = useState(0);
+  // res.success 가 false(예: 미등록·삭제·아직 발행 안 된 임시저장 공고)면 job이 끝까지
+  // null로 남아 "불러오는 중..."이 영원히 떠 있었다("눌러도 불러오는중으로 표시되면서
+  // 안열려") — 실패를 구분해 안내로 갈아 끼운다.
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -155,9 +159,11 @@ export default function JobDetailPage() {
               setLogoHref(pl.owner_type === "company" ? "/company/dashboard" : "/");
             } catch {}
           }
+        } else {
+          setNotFound(true);
         }
       })
-      .catch(e => console.error('[load job]', e));
+      .catch(e => { console.error('[load job]', e); setNotFound(true); });
   }, [id]);
 
   const [isOwnerCompany, setIsOwnerCompany] = useState(false);
@@ -194,6 +200,16 @@ export default function JobDetailPage() {
   }, [showApplyModal, coverLoaded]);
   const { toggle: toggleBookmark, isBookmarked, loadFromServer: loadBookmarks } = useBookmarkStore();
   useEffect(() => { loadBookmarks(); }, [loadBookmarks]);
+  if (notFound) {
+    return (
+      <div className="job-detail-page">
+        <div style={{ padding: "80px 20px", textAlign: "center", color: "#888" }}>
+          <p style={{ marginBottom: 16 }}>공고를 찾을 수 없어요. 마감됐거나 아직 등록 중인 공고예요.</p>
+          <Link href="/jobs" style={{ color: "#582681", fontWeight: 600 }}>채용공고 목록으로</Link>
+        </div>
+      </div>
+    );
+  }
   if (!job) {
     return (
       <div className="job-detail-page">

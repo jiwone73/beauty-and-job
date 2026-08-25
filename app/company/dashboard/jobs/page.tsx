@@ -489,7 +489,11 @@ function CompanyJobsContent() {
                       onChange={() => toggleCheck(job.id)} />
                   </td>
                   <td className="company-td-name">
-                    <span className="tbl-name-btn" title="공고 보기" onClick={() => router.push(`/jobs/${job.id}`)}>
+                    {/* 임시저장(DRAFT)은 발행 전이라 공개 페이지에 없다 — 공고 보기로 보내면
+                        늘 404였다("눌러도 불러오는중으로 표시되면서 안열려"). 이어서 쓰도록
+                        등록 화면으로 보낸다. */}
+                    <span className="tbl-name-btn" title={job.status === "DRAFT" ? "이어서 작성" : "공고 보기"}
+                      onClick={() => router.push(job.status === "DRAFT" ? `/company/dashboard/jobs/new?id=${job.id}` : `/jobs/${job.id}`)}>
                       <span className="tbl-name-txt td-clamp2" style={{color:"#1a1a1a", fontWeight:400}}>{job.title}</span>
                     </span>
                   </td>
