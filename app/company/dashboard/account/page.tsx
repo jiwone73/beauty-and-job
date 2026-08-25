@@ -159,7 +159,7 @@ export default function CompanyAccountPage() {
 
   return (
     <CompanyLayout activePage="account">
-      <div style={{ maxWidth: 460, margin: "0 auto" }}>
+      <div style={{ maxWidth: 460 }}>
         {!loading && (
           <div className="company-card">
             <div className="admin-form-body settings-compact" style={{ gap: 0, paddingTop: 0, paddingBottom: 0 }}>
@@ -198,7 +198,7 @@ export default function CompanyAccountPage() {
                 </span>
               </div>
 
-              <div className="admin-form-row" onClick={() => router.push("/company/dashboard/settings/withdraw")}
+              <div className="admin-form-row" onClick={() => router.push("/company/dashboard/account/withdraw")}
                 style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
                 <label className="admin-form-label" style={label}>회원 탈퇴</label>
                 <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>

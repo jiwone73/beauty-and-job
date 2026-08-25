@@ -53,8 +53,8 @@ export default function CompanyWithdrawPage() {
   const 매장기업 = isOffice ? "기업" : "매장";
 
   return (
-    <CompanyLayout activePage="settings">
-      <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 0 32px" }}>
+    <CompanyLayout activePage="account">
+      <div style={{ maxWidth: 600, padding: "0 0 32px" }}>
         <h1 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 16px" }}>회원 탈퇴</h1>
 
         <section style={{ background: "#fff", border: "1px solid #f0f0f0", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
