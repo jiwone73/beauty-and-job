@@ -2370,26 +2370,23 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 칸마다 세로 구분선을 넣고("항목별 세로 구분선 넣어줘"), 제목·내용 모두
    가운데 정렬한다 — 등록폼 표와 같은 인상. 마지막 칸은 표 바깥 테두리와
    겹치니 세로선을 뺀다. */
-/* 세로 구분선 좌우 여백을 더 확 줄인다("세로 열 구분선 좌우로 여백을 확
-   줄여") — 2px 까지 좁혀 그만큼 표 전체 폭도 줄어든다. */
-.jd-pos-th { text-align: center; padding: 8px 2px 6px 2px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; border-right: 1px solid #f2f2f2; white-space: nowrap; }
-/* 칸 폭은 값 길이만큼 절대 픽셀로 확보돼(JobDetailView의 posColMinWidth)
-   말줄임이 나올 일이 없다("말줄임은 절대 나오면 안됨") — 그래도 예상 못한
-   값이 들어올 극단적인 경우를 대비한 마지막 안전장치로만 남겨 둔다. */
-.jd-pos-td { padding: 7px 2px; border-bottom: 1px solid #f2f2f2; border-right: 1px solid #f2f2f2; white-space: nowrap; line-height: 1.5; text-align: center; overflow: hidden; text-overflow: ellipsis; }
+/* 좌우 여백을 사실상 없앤다("좌우 여백 최대로 줄여") — 가로 스크롤을 아예
+   없애고(다 구겨 넣기) 그 압축 여지를 넓히려면 칸 안 여백부터 최소로
+   줄여야 한다. 세로 구분선과 글자 사이 1px만 남긴다. */
+.jd-pos-th { text-align: center; padding: 8px 1px 6px 1px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; border-right: 1px solid #f2f2f2; white-space: normal; word-break: keep-all; overflow-wrap: break-word; }
+/* 칸 폭을 fixed 로 못박아 두니, 좁아진 칸에서 안 잘리게(줄바꿈 없이 nowrap
+   이면 옆 칸을 침범하거나 말줄임됐다) 모든 칸에 줄바꿈을 연다 — 넘치는
+   대신 아래로 접힌다("다 구겨 넣어야지"). "10시30분-20시30분"처럼 띄어쓰기
+   없는 값은 keep-all 만으로는 끊을 자리가 없어 그대로 넘쳤다 —
+   overflow-wrap:break-word 를 더해 정 안 되면 글자 사이에서라도 끊는다. */
+.jd-pos-td { padding: 7px 1px; border-bottom: 1px solid #f2f2f2; border-right: 1px solid #f2f2f2; white-space: normal; word-break: keep-all; overflow-wrap: break-word; line-height: 1.4; text-align: center; }
 .jd-pos-th:last-child, .jd-pos-td:last-child { border-right: none; }
 tr:last-child > .jd-pos-td { border-bottom: none; }
-.jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 6px; }
+.jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 4px; }
 @media (max-width: 640px) {
-  .jd-pos-th, .jd-pos-td { padding-right: 2px; padding-left: 2px; }
-  .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 6px; }
+  .jd-pos-th, .jd-pos-td { padding-right: 1px; padding-left: 1px; }
+  .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 4px; }
 }
-/* 가는 OS 기본 스크롤바는 화면 캡처·터치 환경에서 거의 안 보여, 표가 카드보다
-   넓어지면(값이 길어 가로 스크롤이 필요할 때) 그냥 잘려 끝난 것처럼 보였다.
-   늘 보이는 굵기의 스크롤바로 "옆으로 더 있다"는 걸 알린다. */
-.jd-pos-scroll { scrollbar-width: thin; scrollbar-color: #c9c0d6 #f2f2f2; }
-.jd-pos-scroll::-webkit-scrollbar { height: 7px; }
-.jd-pos-scroll::-webkit-scrollbar-track { background: #f2f2f2; }
 .jd-pos-scroll::-webkit-scrollbar-thumb { background: #c9c0d6; border-radius: 4px; }
 .jobpost-preview-scope { padding: 0; max-height: 72vh; overflow-y: auto; overflow-x: hidden; background: #f7f7f8; }
 @media (max-width: 640px) {

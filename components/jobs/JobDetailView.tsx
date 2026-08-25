@@ -140,42 +140,34 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     return Math.min(w, POS_COL_CAP[c.key] || 10);
   });
   const posColWeightTotal = posColWeights.reduce((s, w) => s + w, 0) || 1;
-  // 비율(%)만으로 나누면 화면이 좁을 때 그 몫의 절댓값이 모자라 글자가 잘렸다
-  // ("말줄임은 절대 나오면 안됨") — 칸마다 글자 수 기준 절대 픽셀 바닥을 먼저
-  // 잡아 표 자체의 최소 폭(minWidth)으로 쓴다. 화면이 넓으면 표가 100%까지
-  // 늘어나며 같은 비율 그대로 커지고, 좁으면 표가 가로 스크롤될지언정 칸은
-  // 항상 바닥만큼은 확보된다.
-  const posColMinWidth = posColWeights.reduce((sum, w) => sum + w * 13 + 6, 0);
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
       <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문</h2>
       {/* 표를 테두리로 감싼다. 칸 밑줄만 있으면 바로 아래 복리후생 줄까지 표의 한
           부분처럼 읽혀, 어디까지가 자리별 조건인지 알 수 없다. */}
-      {/* 좁은 화면에서 표가 카드 폭보다 넓어지면 가로 스크롤이 되긴 하지만, 스크롤바가
-          가늘어(OS 기본값) 안 보이면 표가 그냥 잘려 끝난 것처럼 보였다 — 스크롤바를
-          늘 보이는 굵기로 그려 "더 있다"는 걸 알린다. */}
-      <div className="jd-pos-scroll" style={{ overflowX: "auto", border: "1px solid #efeff1", borderRadius: 10 }}>
-        <table style={{ width: "100%", minWidth: posColMinWidth, borderCollapse: "collapse", fontSize: 13.5, tableLayout: "fixed" }}>
+      {/* 가로 스크롤 없이 카드 폭에 무조건 맞춘다("좌우 스크롤 되면 안 돼 · 다
+          구겨 넣어야지") — 최소 폭을 두지 않고 100%만 쓴다. fixed 레이아웃 +
+          colgroup 비율이 폭을 칸별로 압축해서라도 맞춰 준다. 여백도 최대로
+          좁혀(.jd-pos-th/.jd-pos-td) 압축 여지를 넓힌다. */}
+      <div style={{ overflowX: "hidden", border: "1px solid #efeff1", borderRadius: 10 }}>
+        <table style={{ width: "100%", tableLayout: "fixed", borderCollapse: "collapse", fontSize: 13.5 }}>
           <colgroup>
             {posCols.map((c, i) => <col key={c.key} style={{ width: `${(posColWeights[i] / posColWeightTotal) * 100}%` }} />)}
           </colgroup>
           <thead>
             <tr style={{ background: "#f7f7f8" }}>
-              {posCols.map((c) => {
-                // 모집분야·급여는 길어지면 여러 줄로 접힐 수 있어, 칸 폭이 정해진
-                // 지금도 줄바꿈은 허용해 둔다(폭은 colgroup 이 이미 못박았다).
-                const wrapCol = c.key === "category" || c.key === "salary";
-                return (
-                  <th key={c.key} className="jd-pos-th" style={wrapCol ? { whiteSpace: "normal" } : undefined}>{c.label}</th>
-                );
-              })}
+              {/* 칸 폭을 fixed 로 못박은 채 nowrap 이면 좁아진 칸에서 글자가 넘치거나
+                  말줄임됐다 — 모든 칸에 줄바꿈을 열어 넘치는 대신 아래로 접히게
+                  한다("좌우 스크롤 되면 안 돼 · 다 구겨 넣어야지"). */}
+              {posCols.map((c) => (
+                <th key={c.key} className="jd-pos-th">{c.label}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {positions.map((p: any, i: number) => (
               <tr key={i}>
                 {posCols.map((c, j) => {
-                  const wrapCol = c.key === "category" || c.key === "salary";
                   // 값은 있는데 회사가 표에서 '확정'을 골랐으면 그대로 노출한다.
                   // "hidden"(협의·금액 비공개)이면 값을 적어 뒀어도 "협의"만 보이고,
                   // "open"(협의·금액 제시)이면 금액과 나란히 "(협의)"를 붙이는 대신
@@ -223,11 +215,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                       : (c.get(p) || "-");
                   return (
                     <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#333" : "#555" }}>
-                      {/* 근무요일/시간 열은 요일 1행·시간 2행으로. 모집분야·급여는 길면
-                          colgroup 이 못박은 칸 폭 안에서 줄바꿈으로 접는다. */}
-                      {wrapCol
-                        ? <span style={{ display: "block", whiteSpace: "normal", wordBreak: "keep-all" }}>{content}</span>
-                        : content}
+                      {content}
                     </td>
                   );
                 })}
