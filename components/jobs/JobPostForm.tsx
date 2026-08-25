@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase,
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
-import JobGroupSelectModal from "@/components/JobGroupSelectModal";
+import CategoryPickPopover from "@/components/jobs/CategoryPickPopover";
 import WorkScheduleModal from "@/components/jobs/WorkScheduleModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
@@ -506,7 +506,7 @@ export default function JobPostForm({
       if (!t || !t.el.isConnected) return;
       // 팝오버 안에서 입력 중이면 그대로 둔다(키보드가 뷰포트를 줄이면서 팝오버가 튀는 것 방지)
       const ae = document.activeElement as HTMLElement | null;
-      if (ae?.closest?.(".poscell-pop, .posshift-pop")) return;
+      if (ae?.closest?.(".poscell-pop, .posshift-pop, .catpick-pop")) return;
       placePop(t.el, t.width, t.height);
     };
     window.addEventListener("scroll", onMove, true);
@@ -716,6 +716,13 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [shiftModalCat]);
+  // 모집분야 추가 팝오버: 바깥 클릭 시 닫기
+  useEffect(() => {
+    if (!addRowOpen) return;
+    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".catpick-pop")) setAddRowOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [addRowOpen]);
   // 근무지역 인라인 자동완성: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!regionOpen) return;
@@ -2037,9 +2044,7 @@ export default function JobPostForm({
           {!v && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9", marginTop: wrap ? 2 : 0 }} />}
         </button>
         {open && popAt && (
-          // 급여 팝오버만 뷰티워크 보라를 배경으로 채운다("연보라 안 하기로 했는데" — 옅은
-          // 톤 말고 브랜드 보라 그대로). 다른 칸(학력·경력 등)은 units 가 없어 그대로 흰 배경.
-          <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: units ? "#582681" : "#fff", border: units ? "none" : "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, boxSizing: "border-box",
+          <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, boxSizing: "border-box",
             // 목록은 항목 길이에 맞춰 좁게(오른쪽 빈 공간 제거), 자유입력·급여는 입력칸이 있어 고정 폭
             ...(freeInput ? { width } : { width: "max-content", minWidth: 84, maxWidth: 220 }) }}>
             {!freeInput ? (
@@ -2071,7 +2076,7 @@ export default function JobPostForm({
                       return (
                         <button key={u.label} type="button"
                           onClick={() => { setPos(cat, field, withSalaryUnit(v, u.prefix)); cellInputRef.current?.focus({ preventScroll: true }); }}
-                          style={{ border: `1px solid ${on ? "#fff" : "rgba(255,255,255,0.5)"}`, background: on ? "#fff" : "transparent", color: on ? "#582681" : "#fff", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>{u.label}</button>
+                          style={{ border: `1px solid ${on ? "#582681" : "#ddd"}`, background: on ? "#582681" : "#fff", color: on ? "#fff" : "#582681", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>{u.label}</button>
                       );
                     })}
                   </div>
@@ -2083,7 +2088,7 @@ export default function JobPostForm({
                         onChange={(e) => setPos(cat, field, buildSalary(e.target.value.replace(/\D/g, ""), sMax, sOpenEnded))}
                         onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
                         style={{ width: 0, flex: 1, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12, textAlign: "center" }} />
-                      <span style={{ color: units ? "#fff" : "#888", fontSize: 12, flexShrink: 0 }}>~</span>
+                      <span style={{ color: "#888", fontSize: 12, flexShrink: 0 }}>~</span>
                       <input type="text" inputMode="numeric" placeholder="최대(선택)" value={sMax}
                         onChange={(e) => setPos(cat, field, buildSalary(sMin, e.target.value.replace(/\D/g, ""), sOpenEnded))}
                         onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
@@ -2106,9 +2111,9 @@ export default function JobPostForm({
                       { v: "hidden" as const, label: "협의 · 금액 비공개" },
                       { v: "open" as const, label: "협의 · 금액 제시" },
                     ]).map((o) => (
-                      <label key={o.v} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: units ? "#fff" : "#555", cursor: "pointer" }}>
+                      <label key={o.v} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#555", cursor: "pointer" }}>
                         <input type="radio" name={`nego-${key}`} checked={nego === o.v} onChange={() => onNegoChange(o.v)}
-                          style={{ width: 13, height: 13, margin: 0, accentColor: units ? "#fff" : "#582681" }} />
+                          style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
                         {o.label}
                       </label>
                     ))}
@@ -2116,8 +2121,8 @@ export default function JobPostForm({
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
                   {options.length > 0 ? <button type="button" onClick={() => setCellFree(false)} style={{ border: "none", background: "none", color: "#888", fontSize: 11.5, cursor: "pointer" }}>목록으로</button> : <span />}
-                  <button type="button" onClick={() => setCellOpen(null)} className={units ? undefined : "company-primary-btn"}
-                    style={units ? { padding: "3px 11px", fontSize: 11.5, background: "#fff", color: "#582681", border: "none", borderRadius: 6, fontWeight: 600, cursor: "pointer" } : { padding: "3px 11px", fontSize: 11.5 }}>확인</button>
+                  <button type="button" onClick={() => setCellOpen(null)} className="company-primary-btn"
+                    style={{ padding: "3px 11px", fontSize: 11.5 }}>확인</button>
                 </div>
               </>
             )}
@@ -2849,8 +2854,8 @@ export default function JobPostForm({
                   <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                   {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                       고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
-                  <span className="jp-add-wrap">
-                    <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen(true)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
+                  <span className="jp-add-wrap catpick-pop">
+                    <button type="button" disabled={typeLocked} onClick={(e) => { if (addRowOpen) { setAddRowOpen(false); return; } openPopAt(e.currentTarget, 300, 300); setAddRowOpen(true); }} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
                       className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: 0, cursor: typeLocked ? "default" : "pointer" }}>＋</button>
                     <span className="jp-add-note">눌러 모집할 분야를 담아주세요</span>
                   </span>
@@ -2960,15 +2965,17 @@ export default function JobPostForm({
                     </table>
                   </div>
                 )}
-                {/* 행 추가용 분야 선택 — 고르는 즉시 행이 붙는다(선택 상태를 비워 둬 같은 분야도 다시 고를 수 있음) */}
-                <JobGroupSelectModal
-                  open={addRowOpen}
-                  jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
-                  selected={[]}
-                  onChange={(next) => { const picked = next[next.length - 1]; if (picked) addCatRow(picked); setAddRowOpen(false); }}
-                  onClose={() => setAddRowOpen(false)}
-                  title="모집분야 추가 (같은 분야도 다시 고를 수 있어요)"
-                />
+                {/* 행 추가용 분야 선택 — 고르는 즉시 행이 붙는다(같은 분야도 다시 고를 수 있음) */}
+                {addRowOpen && popAt && (
+                  <CategoryPickPopover
+                    jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
+                    onPick={(item) => { addCatRow(item); setAddRowOpen(false); }}
+                    onClose={() => setAddRowOpen(false)}
+                    popRef={popRef}
+                    left={popAt.left}
+                    top={popAt.top}
+                  />
+                )}
               </div>
 
               {/* ── 복리후생 (모집부문 안으로 통합, 별도 타이틀·구분선 없음) ──

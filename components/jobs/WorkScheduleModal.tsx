@@ -28,7 +28,7 @@ interface Props {
 // 처음엔 화면 가운데 뜨는 큰 모달로 만들었는데("윈도우창이 너무 크지 않나"),
 // 다른 칸들과 같은 자리에서 뜨는 작은 팝오버로 접었다 — 다양한 입력 예시·안내
 // 문구는 자리를 많이 먹어 한 줄 요약으로 줄였다.
-// 배경은 뷰티워크 보라(#582681) 그대로 — 옅은 연보라 톤은 쓰지 않기로 했다.
+// 배경은 다른 칸과 같은 흰색 — 보라는 "선택된" 빠른선택 항목 버튼에만 쓴다.
 // "(협의)" 로 끝나면 시간은 정해 두고 조율 여지만 남긴 값이다.
 // 그 꼬리를 떼어 draft(시간 부분)와 nego(체크 여부)로 나눈다.
 const splitNego = (v: string): [string, boolean] => {
@@ -74,22 +74,22 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   return (
     <>
       <style>{`
-        .ws-pop { position: fixed; z-index: 200; background: #582681; border: none; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.24); width: 320px; max-width: calc(100vw - 16px); box-sizing: border-box; overflow: hidden; }
-        .ws-tabs { display: flex; gap: 4px; border-bottom: 1px solid rgba(255,255,255,0.18); padding: 8px 10px 0; }
-        .ws-tab { padding: 6px 8px; margin-bottom: -1px; border: none; background: none; font-size: 12.5px; color: rgba(255,255,255,0.6); cursor: pointer; border-bottom: 2px solid transparent; }
-        .ws-tab.on { color: #fff; font-weight: 600; border-bottom-color: #fff; }
+        .ws-pop { position: fixed; z-index: 200; background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 320px; max-width: calc(100vw - 16px); box-sizing: border-box; overflow: hidden; }
+        .ws-tabs { display: flex; gap: 4px; border-bottom: 1px solid #eee; padding: 8px 10px 0; }
+        .ws-tab { padding: 6px 8px; margin-bottom: -1px; border: none; background: none; font-size: 12.5px; color: #999; cursor: pointer; border-bottom: 2px solid transparent; }
+        .ws-tab.on { color: #582681; font-weight: 600; border-bottom-color: #582681; }
         .ws-body { padding: 10px; max-height: 60vh; overflow-y: auto; }
-        .ws-quick-row { display: flex; align-items: center; gap: 6px; width: 100%; padding: 8px 9px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; background: rgba(255,255,255,0.06); cursor: pointer; text-align: left; margin-bottom: 6px; font-size: 12.5px; color: #fff; }
-        .ws-quick-row.on { border-color: #fff; background: #fff; color: #582681; }
+        .ws-quick-row { display: flex; align-items: center; gap: 6px; width: 100%; padding: 8px 9px; border: 1px solid #e3e3e6; border-radius: 8px; background: #fff; cursor: pointer; text-align: left; margin-bottom: 6px; font-size: 12.5px; color: #333; }
+        .ws-quick-row.on { border-color: #582681; background: #582681; color: #fff; }
         .ws-daychip { width: 24px; height: 24px; border-radius: 50%; font-size: 11px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #666; flex-shrink: 0; }
         .ws-daychip.on { border: 1.5px solid #582681; background: #582681; color: #fff; }
         .ws-hourSel { height: 28px; border: 1px solid #ddd; border-radius: 6px; padding: 0 4px; font-size: 12px; color: #333; background: #fff; }
-        .ws-footer { display: flex; justify-content: flex-end; gap: 6px; padding: 8px 10px; border-top: 1px solid rgba(255,255,255,0.18); }
+        .ws-footer { display: flex; justify-content: flex-end; gap: 6px; padding: 8px 10px; border-top: 1px solid #eee; }
       `}</style>
       <div ref={popRef} className="ws-pop posshift-pop" style={{ left, top }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 10px 0" }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#fff" }}><Clock size={14} style={{ color: "#fff" }} />근무요일/시간</span>
-          <button type="button" onClick={onClose} aria-label="닫기" style={{ background: "none", border: "none", color: "rgba(255,255,255,0.7)", cursor: "pointer", padding: 2 }}><X size={15} /></button>
+          <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#333" }}><Clock size={14} style={{ color: "#582681" }} />근무요일/시간</span>
+          <button type="button" onClick={onClose} aria-label="닫기" style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", padding: 2 }}><X size={15} /></button>
         </div>
 
         <div className="ws-tabs">
@@ -106,10 +106,10 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                   <div key={r.type}>
                     <button type="button" className={`ws-quick-row ${on ? "on" : ""}`}
                       onClick={() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin)}>
-                      <r.icon size={13} style={{ color: on ? "#582681" : "#fff", flexShrink: 0 }} />{r.label}
+                      <r.icon size={13} style={{ color: on ? "#fff" : "#582681", flexShrink: 0 }} />{r.label}
                     </button>
                     {quickType === r.type && r.type !== "nego" && (
-                      <div style={{ margin: "-2px 0 8px", padding: 9, background: "rgba(255,255,255,0.1)", borderRadius: 8 }}>
+                      <div style={{ margin: "-2px 0 8px", padding: 9, background: "#f7f7f8", borderRadius: 8 }}>
                         {r.type === "custom" && (
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 8 }}>
                             {DAY_OPTIONS.map((d) => (
@@ -124,7 +124,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                           <select className="ws-hourSel" value={qStartMin} onChange={(e) => { const m = Number(e.target.value); setQStartMin(m); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, m, qEnd, qEndMin); }}>
                             {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                           </select>
-                          <span style={{ color: "#fff", fontSize: 12 }}>~</span>
+                          <span style={{ color: "#888", fontSize: 12 }}>~</span>
                           <select className="ws-hourSel" value={qEnd} onChange={(e) => { const en = Number(e.target.value); setQEnd(en); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, en, qEndMin); }}>
                             {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                           </select>
@@ -147,7 +147,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                 style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 7, padding: "7px 9px", fontSize: 12.5, marginBottom: 8, fontFamily: "inherit", resize: "vertical" }} />
               <ul style={{ margin: 0, paddingLeft: 16 }}>
                 {FORMAT_EXAMPLES.map((ex) => (
-                  <li key={ex} style={{ fontSize: 11.5, color: "rgba(255,255,255,0.75)", lineHeight: 1.8, cursor: "pointer", whiteSpace: "pre-line" }}
+                  <li key={ex} style={{ fontSize: 11.5, color: "#888", lineHeight: 1.8, cursor: "pointer", whiteSpace: "pre-line" }}
                     onClick={() => setDraft(ex.replace(/\s*\/\s*/g, "\n"))}>{ex}</li>
                 ))}
               </ul>
@@ -156,17 +156,17 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
           {/* 시간은 정해 두고도 조율 여지를 남기고 싶을 때. 값을 지우고 '협의'로
               바꿔치기하는 것과 달리, 시간은 그대로 두고 "(협의)"만 붙는다. */}
           {draft.trim() && draft.trim() !== "협의" && (
-            <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12, color: "#fff", cursor: "pointer" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12, color: "#555", cursor: "pointer" }}>
               <input type="checkbox" checked={nego} onChange={(e) => setNego(e.target.checked)}
-                style={{ width: 13, height: 13, margin: 0, accentColor: "#fff" }} />
+                style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
               협의 가능 (시간은 두고 조율 여지만 표시)
             </label>
           )}
         </div>
 
         <div className="ws-footer">
-          <button type="button" onClick={onClose} style={{ border: "1px solid rgba(255,255,255,0.4)", background: "transparent", color: "#fff", borderRadius: 7, padding: "6px 12px", fontSize: 12.5, cursor: "pointer" }}>취소</button>
-          <button type="button" onClick={() => { const t = draft.trim(); onChange(t && nego && t !== "협의" ? `${t} (협의)` : t); onClose(); }} style={{ border: "none", background: "#fff", color: "#582681", borderRadius: 7, padding: "6px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>적용</button>
+          <button type="button" onClick={onClose} style={{ border: "1px solid #ddd", background: "#fff", color: "#666", borderRadius: 7, padding: "6px 12px", fontSize: 12.5, cursor: "pointer" }}>취소</button>
+          <button type="button" onClick={() => { const t = draft.trim(); onChange(t && nego && t !== "협의" ? `${t} (협의)` : t); onClose(); }} className="company-primary-btn" style={{ borderRadius: 7, padding: "6px 12px", fontSize: 12.5 }}>적용</button>
         </div>
       </div>
     </>
