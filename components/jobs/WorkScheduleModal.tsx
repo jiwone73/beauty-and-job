@@ -24,15 +24,24 @@ interface Props {
 // 처음엔 화면 가운데 뜨는 큰 모달로 만들었는데("윈도우창이 너무 크지 않나"),
 // 다른 칸들과 같은 자리에서 뜨는 작은 팝오버로 접었다 — 다양한 입력 예시·안내
 // 문구는 자리를 많이 먹어 한 줄 요약으로 줄였다.
+// "(협의)"/"(+협의)" 로 끝나면 시간은 정해 두고 조율 여지만 남긴 값이다.
+// 그 꼬리를 떼어 draft(시간 부분)와 nego(체크 여부)로 나눈다.
+const splitNego = (v: string): [string, boolean] => {
+  const m = (v || "").match(/^(.*?)\s*\(\+?협의\)$/);
+  return m ? [m[1], true] : [v || "", false];
+};
+
 export default function WorkScheduleModal({ value, onChange, onClose, popRef, left, top }: Props) {
   const [tab, setTab] = useState<"quick" | "free">("quick");
-  const [draft, setDraft] = useState(value || "");
+  const [initDraft, initNego] = splitNego(value);
+  const [draft, setDraft] = useState(initDraft);
+  const [nego, setNego] = useState(initNego);
   const [quickType, setQuickType] = useState<"weekday" | "weekend" | "custom" | "nego" | null>(null);
   const [qDays, setQDays] = useState<string[]>([]);
   const [qStart, setQStart] = useState(10);
   const [qEnd, setQEnd] = useState(18);
 
-  useEffect(() => { setDraft(value || ""); }, [value]);
+  useEffect(() => { const [d, n] = splitNego(value); setDraft(d); setNego(n); }, [value]);
 
   const applyQuick = (type: "weekday" | "weekend" | "custom" | "nego", days: string[], start: number, end: number) => {
     setQuickType(type);
@@ -125,14 +134,20 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
               </ul>
             </div>
           )}
-          <p style={{ fontSize: 11, color: "#b4b4b9", margin: "6px 0 0", lineHeight: 1.6 }}>
-            요일은 쉼표·공백으로, 시간대가 다르면 슬래시(/)로 구분하세요.
-          </p>
+          {/* 시간은 정해 두고도 조율 여지를 남기고 싶을 때. 값을 지우고 '협의'로
+              바꿔치기하는 것과 달리, 시간은 그대로 두고 "(+협의)"만 붙는다. */}
+          {draft.trim() && draft.trim() !== "협의" && (
+            <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12, color: "#555", cursor: "pointer" }}>
+              <input type="checkbox" checked={nego} onChange={(e) => setNego(e.target.checked)}
+                style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
+              협의 가능 (시간은 두고 조율 여지만 표시)
+            </label>
+          )}
         </div>
 
         <div className="ws-footer">
           <button type="button" onClick={onClose} style={{ border: "1px solid #e3e3e6", background: "#fff", color: "#666", borderRadius: 7, padding: "6px 12px", fontSize: 12.5, cursor: "pointer" }}>취소</button>
-          <button type="button" onClick={() => { onChange(draft); onClose(); }} style={{ border: "none", background: "#582681", color: "#fff", borderRadius: 7, padding: "6px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>적용</button>
+          <button type="button" onClick={() => { const t = draft.trim(); onChange(t && nego && t !== "협의" ? `${t} (+협의)` : t); onClose(); }} style={{ border: "none", background: "#582681", color: "#fff", borderRadius: 7, padding: "6px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>적용</button>
         </div>
       </div>
     </>
