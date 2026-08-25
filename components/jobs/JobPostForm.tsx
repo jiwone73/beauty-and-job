@@ -1999,8 +1999,20 @@ export default function JobPostForm({
     const key = `${cat}|${field}`;
     const open = cellOpen === key;
     const freeInput = options.length === 0 || cellFree;      // 목록 없는 칸이거나 '직접입력'을 고른 상태
+    // 급여는 "300"(확정) · "300~"(이상) · "300~350"(범위) 세 가지 형태가 섞여 쓰인다.
+    // 최소·최대 두 칸으로 나눠 받고, 최대를 비운 채로 "이상" 표시만 고를 수 있게 한다.
+    const salaryPrefix = units ? (v.match(/^\s*([시주월연])\s*/)?.[1] || "") : "";
+    const salaryRest = units ? v.replace(/^\s*[시주월연]\s*/, "") : "";
+    const salaryParts = units ? salaryRest.match(/^(\d+)(~)?(\d*)$/) : null;
+    const sMin = salaryParts ? salaryParts[1] : "";
+    const sMax = salaryParts ? salaryParts[3] : "";
+    const sOpenEnded = salaryParts ? !!salaryParts[2] : false;
+    const buildSalary = (min: string, max: string, openEnded: boolean) => {
+      const body = !min ? "" : max ? `${min}~${max}` : (openEnded ? `${min}~` : min);
+      return salaryPrefix ? (body ? `${salaryPrefix} ${body}` : `${salaryPrefix} `) : body;
+    };
     const width = units ? 214 : 168;
-    const height = freeInput ? (units ? (onNegoChange ? 168 : 126) : 88) : Math.min(options.length + (allowFi && nonMember ? 1 : 0), 7) * 30 + 14;
+    const height = freeInput ? (units ? (onNegoChange ? 210 : 168) : 88) : Math.min(options.length + (allowFi && nonMember ? 1 : 0), 7) * 30 + 14;
     return (
       <span className="poscell-pop" style={{ position: "relative", display: "block" }}>
         {/* 빈 칸은 옅은 밑줄과 ▾ 로 "누르면 목록이 뜬다"만 알린다. 회색 덩어리는
@@ -2060,9 +2072,33 @@ export default function JobPostForm({
                     })}
                   </div>
                 )}
-                <input ref={cellInputRef} type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph}
-                  onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
-                  style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12 }} />
+                {units ? (
+                  <div style={{ marginBottom: 6 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <input ref={cellInputRef} type="text" inputMode="numeric" placeholder="최소" value={sMin}
+                        onChange={(e) => setPos(cat, field, buildSalary(e.target.value.replace(/\D/g, ""), sMax, sOpenEnded))}
+                        onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
+                        style={{ width: 0, flex: 1, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12, textAlign: "center" }} />
+                      <span style={{ color: "#888", fontSize: 12, flexShrink: 0 }}>~</span>
+                      <input type="text" inputMode="numeric" placeholder="최대(선택)" value={sMax}
+                        onChange={(e) => setPos(cat, field, buildSalary(sMin, e.target.value.replace(/\D/g, ""), sOpenEnded))}
+                        onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
+                        style={{ width: 0, flex: 1, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12, textAlign: "center" }} />
+                    </div>
+                    {/* 최대를 안 적으면 "300"(확정)인지 "300~"(이상)인지 갈린다 — 체크로 고른다. */}
+                    {!sMax && (
+                      <label style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 5, fontSize: 11.5, color: "#888", cursor: "pointer" }}>
+                        <input type="checkbox" checked={sOpenEnded} onChange={(e) => setPos(cat, field, buildSalary(sMin, "", e.target.checked))}
+                          style={{ width: 12, height: 12, margin: 0, accentColor: "#582681" }} />
+                        최대 없이 "{sMin || "300"}~"(이상)으로 표시
+                      </label>
+                    )}
+                  </div>
+                ) : (
+                  <input ref={cellInputRef} type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph}
+                    onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
+                    style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12 }} />
+                )}
                 {/* 표 칸 밑에 상시 노출하면 값·근무요일/시간 칸이 늘 3행이 되어 표가
                     지저분해 보였다("3행이라 너무 보기 안좋아") — 팝오버 안으로 옮긴다.
                     "협의 가능"을 하나로 뭉치면 금액을 보여줄지 감출지를 못 갈랐다 —
