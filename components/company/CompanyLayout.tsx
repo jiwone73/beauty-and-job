@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
-  Briefcase, Users, FileText, FilePlus2, Settings,
+  Briefcase, Users, FileText, FilePlus2, Settings, UserCog,
   Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink
 } from "lucide-react";
 
@@ -18,6 +18,7 @@ const PAGE_TITLES: Record<string, string> = {
   talent: "인재 검색",
   scrapped: "스크랩 인재",
   settings: "기업 정보",
+  account: "계정 설정",
 };
 
 export default function CompanyLayout({ children, activePage }: {
@@ -132,6 +133,9 @@ export default function CompanyLayout({ children, activePage }: {
     { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped`, group: "talent" },
     { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "talent" },
     { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings`, group: "settings" },
+    // 계정의 책임자는 담당자다 — 담당자 정보를 매장정보(프로필)에서 계정 설정으로 옮긴다
+    // ("이 계정의 책임자는 담당자이지. 담당자 정보를 계정 설정으로 옮기자는거야?").
+    { id: "account",   label: "계정 설정",                 icon: UserCog,      href: `${base}/account`, group: "settings" },
   ];
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);

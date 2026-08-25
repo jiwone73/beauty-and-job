@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Save, Camera, ImagePlus, Wand2, X, ChevronRight } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
@@ -10,16 +11,15 @@ import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { SNS찾기 } from "@/lib/snsPresets";
 import { InlineSuggest, InlineText } from "@/components/profile/inline/InlineField";
 import { Plus, Trash2, Store, Tag, Link as LinkIcon, Globe, Users, Calendar,
-  UserRound, Phone, Smartphone, Home, FileText, Image as ImageIcon, BadgeCheck } from "lucide-react";
+  UserRound, Phone, Home, FileText, Image as ImageIcon, BadgeCheck } from "lucide-react";
 import type { CompanyInfo } from "@/lib/types/company";
-import { passwordError, PASSWORD_HINT } from "@/lib/password";
 
 declare global {
   interface Window { daum?: any; }
 }
 
 export default function CompanySettingsPage() {
-  const [activeTab, setActiveTab] = useState<"brand" | "account">("brand");
+  const router = useRouter();
   const [info, setInfo] = useState<CompanyInfo | null>(null);
   // 매장 회원은 '회사'가 아니라 '매장' 기준 용어를 쓴다.
   const isStore = info?.company_type !== "OFFICE"; // 매장·매장+본사는 매장 기준 용어를 쓴다
@@ -47,7 +47,7 @@ export default function CompanySettingsPage() {
       "SNS": LinkIcon, "웹사이트": Globe, "브랜드명": BadgeCheck,
       "직원수": Users, "사원수": Users, "설립연도": Calendar,
       "대표자": UserRound, "매장 전화번호": Phone, "회사 대표번호": Phone,
-      "담당자": UserRound, "담당자 휴대폰": Smartphone, "주소": Home,
+      "주소": Home,
       "매장 소개": FileText, "기업 소개": FileText,
       "회사 로고": ImageIcon, "공고 배너 이미지": ImageIcon,
     };
@@ -82,37 +82,13 @@ export default function CompanySettingsPage() {
     website_url: "",
     address: "",
     address_detail: "",
-    phone: "",
     company_phone: "",
     representative_name: "",
-    manager_name: "",
     company_size: "",
     founded_year: "",
     region_sido: "",
     region_sigungu: "",
   });
-  const [pwForm, setPwForm] = useState({ current_password: "", new_password: "", confirm_password: "" });
-  const [pwSaving, setPwSaving] = useState(false);
-  const [showPwModal, setShowPwModal] = useState(false);
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const [emailStep, setEmailStep] = useState<1 | 2>(1);
-  const [newEmail, setNewEmail] = useState("");
-  const [emailCode, setEmailCode] = useState("");
-  const [emailBusy, setEmailBusy] = useState(false);
-  const [emailMsg, setEmailMsg] = useState("");
-  const [showWithdraw, setShowWithdraw] = useState(false);
-  const [withdrawing, setWithdrawing] = useState(false);
-  const [withdrawPw, setWithdrawPw] = useState("");
-  const [showPw, setShowPw] = useState(false);
-  const [origPhone, setOrigPhone] = useState("");
-  const [showPhoneModal, setShowPhoneModal] = useState(false);
-  const [newPhone, setNewPhone] = useState("");
-  const [phoneVerified, setPhoneVerified] = useState(false);
-  const [phoneCodeSent, setPhoneCodeSent] = useState(false);
-  const [phoneCode, setPhoneCode] = useState("");
-  const [phoneSending, setPhoneSending] = useState(false);
-  const [phoneVerifying, setPhoneVerifying] = useState(false);
-  const [phoneMsg, setPhoneMsg] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -137,16 +113,13 @@ export default function CompanySettingsPage() {
           website_url: res.data.website_url || "",
           address: (res.data as any).address || "",
           address_detail: (res.data as any).address_detail || "",
-          phone: (res.data as any).phone || "",
           company_phone: (res.data as any).company_phone || "",
           representative_name: (res.data as any).representative_name || "",
-          manager_name: (res.data as any).manager_name || "",
           company_size: (res.data as any).company_size || "",
           founded_year: (res.data as any).founded_year || "",
           region_sido: (res.data as any).region_sido || "",
           region_sigungu: (res.data as any).region_sigungu || "",
         });
-        setOrigPhone((res.data as any).phone || "");
       } catch (e) {
         console.error("[load company]", e);
       } finally {
@@ -331,37 +304,6 @@ export default function CompanySettingsPage() {
       document.body.appendChild(script);
     }, 0);
   };
-  const handleChangePassword = async () => {
-    if (!pwForm.current_password || !pwForm.new_password) {
-      alert("현재 비밀번호와 새 비밀번호를 입력해주세요.");
-      return;
-    }
-    const pwErr = passwordError(pwForm.new_password);
-    if (pwErr) {
-      alert(pwErr);
-      return;
-    }
-    if (pwForm.new_password !== pwForm.confirm_password) {
-      alert("새 비밀번호가 일치하지 않습니다.");
-      return;
-    }
-    setPwSaving(true);
-    try {
-      await companyMeApi.changePassword({
-        current_password: pwForm.current_password,
-        new_password: pwForm.new_password,
-      });
-      alert("비밀번호가 변경되었습니다.");
-      setPwForm({ current_password: "", new_password: "", confirm_password: "" });
-      setShowPwModal(false);
-    } catch (e: any) {
-      alert(e?.message || "비밀번호 변경에 실패했어요. 현재 비밀번호를 확인해주세요.");
-      console.error("[changePassword]", e);
-    } finally {
-      setPwSaving(false);
-    }
-  };
-
   const handleClearAddress = () => {
     if (!confirm("주소를 초기화할까요?")) return;
     setForm((prev) => ({ ...prev, address: "", address_detail: "", region_sido: "", region_sigungu: "" }));
@@ -372,97 +314,6 @@ export default function CompanySettingsPage() {
     if (d.length < 4) return d;
     if (d.length < 8) return d.replace(/(\d{3})(\d+)/, "$1-$2");
     return d.replace(/(\d{3})(\d{4})(\d+)/, "$1-$2-$3");
-  };
-
-  const handleSendEmailCode = async () => {
-    if (!newEmail.trim()) { alert("새 이메일 주소를 입력해주세요."); return; }
-    setEmailBusy(true); setEmailMsg("");
-    try {
-      const res = await companyMeApi.requestEmailChange({ new_email: newEmail.trim() });
-      if (res.success) {
-        setEmailStep(2);
-        if (res.data?.dev_code) {
-          setEmailMsg(`인증코드를 발송했어요. (테스트: ${res.data.dev_code})`);
-        } else if (res.data?.sent) {
-          setEmailMsg("새 이메일로 인증코드를 발송했어요. 메일함(스팸함 포함)을 확인해주세요.");
-        } else {
-          setEmailMsg(`메일 발송 실패: ${(res.data as any)?.error || "Resend 설정(도메인·API 키)을 확인해주세요."}`);
-        }
-      } else {
-        setEmailMsg((res as any).error?.message || "발송에 실패했습니다.");
-      }
-    } catch { setEmailMsg("오류가 발생했습니다."); }
-    finally { setEmailBusy(false); }
-  };
-
-  const handleVerifyEmailCode = async () => {
-    if (!emailCode.trim()) { alert("인증코드를 입력해주세요."); return; }
-    setEmailBusy(true); setEmailMsg("");
-    try {
-      const res = await companyMeApi.verifyEmailChange({ new_email: newEmail.trim(), code: emailCode.trim() });
-      if (res.success) {
-        setInfo((prev) => (prev ? { ...prev, email: (res.data as any).email } : prev));
-        setShowEmailModal(false);
-        alert("이메일이 변경되었습니다.");
-      } else {
-        setEmailMsg((res as any).error?.message || "인증에 실패했습니다.");
-      }
-    } catch { setEmailMsg("오류가 발생했습니다."); }
-    finally { setEmailBusy(false); }
-  };
-
-  const handleWithdraw = async () => {
-    if (!withdrawPw) { alert("비밀번호를 입력해주세요."); return; }
-    setWithdrawing(true);
-    try {
-      const res = await companyMeApi.withdraw(withdrawPw);
-      if (res.success) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("beautynjob-auth");
-        alert("탈퇴가 완료되었습니다. 그동안 이용해 주셔서 감사합니다.");
-        window.location.href = "/";
-      } else {
-        alert((res as any).error?.message || "탈퇴에 실패했습니다.");
-        setWithdrawing(false);
-      }
-    } catch {
-      alert("탈퇴 중 오류가 발생했습니다.");
-      setWithdrawing(false);
-    }
-  };
-
-  const openPhoneModal = () => {
-    setNewPhone(form.phone || "");
-    setPhoneCode(""); setPhoneCodeSent(false); setPhoneMsg("");
-    setShowPhoneModal(true);
-  };
-
-  const handleSendPhoneCode = async () => {
-    const clean = newPhone.replace(/\D/g, "");
-    if (clean.length < 10) { setPhoneMsg("올바른 휴대폰 번호를 입력해주세요."); return; }
-    setPhoneSending(true); setPhoneMsg("");
-    try {
-      const res = await fetch("/api/auth/phone/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: clean, purpose: "signup" }) });
-      const data = await res.json();
-      if (data.success) { setPhoneCodeSent(true); setPhoneMsg(data.data?.dev_code ? `[개발용] 인증번호: ${data.data.dev_code}` : "인증번호를 발송했어요. (3분 이내 입력)"); }
-      else setPhoneMsg(data.error?.message || "발송에 실패했습니다.");
-    } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); } finally { setPhoneSending(false); }
-  };
-
-  const handleVerifyPhoneCode = async () => {
-    const clean = newPhone.replace(/\D/g, "");
-    if (!phoneCode.trim()) { setPhoneMsg("인증번호를 입력해주세요."); return; }
-    setPhoneVerifying(true); setPhoneMsg("");
-    try {
-      const res = await fetch("/api/auth/phone/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: clean, code: phoneCode, purpose: "signup" }) });
-      const data = await res.json();
-      if (data.success) {
-        setPhoneVerified(true);
-        setForm((f) => ({ ...f, phone: clean }));
-        setShowPhoneModal(false);
-      }
-      else setPhoneMsg(data.error?.message || "인증번호가 올바르지 않습니다.");
-    } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); } finally { setPhoneVerifying(false); }
   };
 
   // SNS·홈페이지 목록 — 매장과 본사가 같은 것을 쓴다(개인회원 프로필과 같은 부품).
@@ -512,18 +363,6 @@ export default function CompanySettingsPage() {
       alert("주소는 필수입니다. 주소 검색으로 입력해주세요.");
       return;
     }
-    if (!form.manager_name.trim()) {
-      alert("담당자명은 필수입니다.");
-      return;
-    }
-    if (!form.phone.trim()) {
-      alert("담당자 연락처는 필수입니다.");
-      return;
-    }
-    if (form.phone.replace(/\D/g, "") !== origPhone.replace(/\D/g, "") && !phoneVerified) {
-      alert("담당자 연락처를 변경하려면 휴대폰 인증을 완료해주세요.");
-      return;
-    }
     setSaving(true);
     try {
       // 빈 줄은 버린다. 첫 링크는 website_url 에도 넣어 기존 화면들이 그대로 돌게 한다.
@@ -531,8 +370,6 @@ export default function CompanySettingsPage() {
         .map((l) => ({ category: l.category.trim(), url: l.url.trim() }));
       const res = await companyMeApi.update({ ...form, links: 낼링크, website_url: 낼링크[0]?.url || "" } as any);
       setInfo(res.data);
-      setOrigPhone(form.phone);
-      setPhoneVerified(false); setPhoneCodeSent(false); setPhoneCode(""); setPhoneMsg("");
       setSavedMessage("저장되었습니다 ✓");
       setTimeout(() => setSavedMessage(""), 2500);
     } catch (e: any) {
@@ -555,14 +392,7 @@ export default function CompanySettingsPage() {
 
   return (
     <CompanyLayout activePage="settings">
-      <div className="admin-tab-row1" style={{ marginBottom: "16px" }}>
-        <button className={`admin-tab1 ${activeTab === "brand" ? "active" : ""}`}
-          onClick={() => setActiveTab("brand")}>프로필</button>
-        <button className={`admin-tab1 ${activeTab === "account" ? "active" : ""}`}
-          onClick={() => setActiveTab("account")}>계정</button>
-      </div>
-
-      {activeTab === "brand" && (
+      {(
         <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "800px" }}>
           <div className="company-card">
             <div className="admin-form-body settings-compact">
@@ -781,22 +611,6 @@ export default function CompanySettingsPage() {
                   </div>
                 </>
               )}
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">{칸그림("담당자")}담당자<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <input className="admin-form-input" placeholder="예) 홍길동"
-                    value={form.manager_name}
-                    onChange={(e) => setForm({ ...form, manager_name: e.target.value })} />
-                </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">{칸그림("담당자 휴대폰")}담당자 휴대폰<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <button type="button" onClick={openPhoneModal}
-                    style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 6, width: "100%", background: "none", border: "none", padding: 0, cursor: "pointer", color: form.phone ? "#333" : "#cfcfcf", fontSize: 14, fontFamily: "inherit" }}>
-                    <span>{form.phone ? formatPhone(form.phone) : "010-XXXX-XXXX"}</span>
-                    <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
-                  </button>
-                </div>
-              </div>
               {/* 주소도 다른 칸과 같은 결로 — 큰 테두리 상자 둘 대신 라벨 옆 한 줄.
                   주소는 검색으로만 넣으므로 눌러서 여는 자리글, 상세주소는 그 자리에서 친다. */}
               <div className="admin-form-row" style={{ gridColumn: "1 / -1" }}>
@@ -837,186 +651,7 @@ export default function CompanySettingsPage() {
         </div>
       )}
 
-      {activeTab === "account" && (
-        <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "400px" }}>
-          <div className="company-card">
-            {/* settings-compact를 함께 걸어 항목명 색을 프로필 탭과 통일 */}
-            <div className="admin-form-body settings-compact" style={{ gap: 0, paddingTop: 0, paddingBottom: 0 }}>
-              <div className="admin-form-row" style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", borderBottom: "1px solid #f0f0f0" }}>
-                <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>사업자등록번호</label>
-                <span style={{ fontSize: "14px", color: info?.business_number ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{info?.business_number || "미등록"}</span>
-              </div>
-
-              <div className="admin-form-row"
-                onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
-                style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}>
-                <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>이메일</label>
-                <span style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0 }}>
-                  <span style={{ fontSize: "14px", color: info?.email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{info?.email || "미등록"}</span>
-                  <span style={{ color: "#ccc", fontSize: "16px", flexShrink: 0 }}>›</span>
-                </span>
-              </div>
-
-              <div className="admin-form-row"
-                onClick={() => setShowPwModal(true)}
-                style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", borderBottom: "1px solid #f0f0f0", cursor: "pointer" }}>
-                <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>비밀번호</label>
-                {/* 눌러야 할 것을 말로 적되, 자리글 색으로 둔다 — 채운 값이 아니라 할 일이다. */}
-                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#cfcfcf", fontSize: "14px" }}>
-                  변경하기 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
-                </span>
-              </div>
-
-              <div className="admin-form-row"
-                onClick={() => setShowWithdraw(true)}
-                style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "15px 0", cursor: "pointer" }}>
-                <label className="admin-form-label" style={{ margin: 0, flexShrink: 0 }}>회원 탈퇴</label>
-                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#cfcfcf", fontSize: "14px" }}>
-                  탈퇴하기 <span style={{ color: "#ccc", fontSize: "16px" }}>›</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showEmailModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
-          <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 6px" }}>이메일 변경</h3>
-            <p style={{ fontSize: 13, color: "#888", margin: "0 0 16px", lineHeight: 1.5 }}>
-              {emailStep === 1 ? "① 새 이메일 주소를 입력하고 인증코드를 받으세요." : "② 새 이메일로 받은 인증코드를 입력하세요."}
-            </p>
-            {emailStep === 1 ? (
-              <input type="email" className="admin-form-input" placeholder="새 이메일 주소"
-                value={newEmail} onChange={(e) => setNewEmail(e.target.value)} style={{ marginBottom: 4 }} />
-            ) : (
-              <input className="admin-form-input" placeholder="인증코드 6자리" inputMode="numeric" maxLength={6}
-                value={emailCode} onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))} style={{ marginBottom: 4 }} />
-            )}
-            {emailMsg && <p style={{ fontSize: 13, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
-            <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
-              <button onClick={() => setShowEmailModal(false)} disabled={emailBusy}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
-                취소
-              </button>
-              {emailStep === 1 ? (
-                <button onClick={handleSendEmailCode} disabled={emailBusy}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
-                  {emailBusy ? "발송 중..." : "인증코드 받기"}
-                </button>
-              ) : (
-                <button onClick={handleVerifyEmailCode} disabled={emailBusy}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
-                  {emailBusy ? "확인 중..." : "변경하기"}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showPhoneModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
-          <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 6px" }}>담당자 연락처 변경</h3>
-            <p style={{ fontSize: 13, color: "#888", margin: "0 0 16px", lineHeight: 1.5 }}>
-              {!phoneCodeSent ? "① 새 휴대폰 번호를 입력하고 인증번호를 받으세요." : "② 문자로 받은 인증번호를 입력하세요."}
-            </p>
-            {!phoneCodeSent ? (
-              <input className="admin-form-input" placeholder="010-0000-0000" inputMode="numeric" maxLength={13}
-                value={formatPhone(newPhone)}
-                onChange={(e) => { setNewPhone(e.target.value.replace(/\D/g, "").slice(0, 11)); setPhoneVerified(false); setPhoneMsg(""); }} style={{ marginBottom: 4 }} />
-            ) : (
-              <input className="admin-form-input" placeholder="인증번호 6자리" inputMode="numeric" maxLength={6}
-                value={phoneCode} onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))} style={{ marginBottom: 4 }} />
-            )}
-            {phoneMsg && <p style={{ fontSize: 13, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{phoneMsg}</p>}
-            <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
-              <button onClick={() => setShowPhoneModal(false)} disabled={phoneSending || phoneVerifying}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
-                취소
-              </button>
-              {!phoneCodeSent ? (
-                <button onClick={handleSendPhoneCode} disabled={phoneSending || newPhone.replace(/\D/g, "").length < 10}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: "pointer", opacity: (phoneSending || newPhone.replace(/\D/g, "").length < 10) ? 0.6 : 1 }}>
-                  {phoneSending ? "발송 중..." : "인증번호 받기"}
-                </button>
-              ) : (
-                <button onClick={handleVerifyPhoneCode} disabled={phoneVerifying || phoneCode.length < 6}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: "pointer", opacity: (phoneVerifying || phoneCode.length < 6) ? 0.6 : 1 }}>
-                  {phoneVerifying ? "확인 중..." : "변경하기"}
-                </button>
-              )}
-            </div>
-            {phoneCodeSent && (
-              <button onClick={handleSendPhoneCode} disabled={phoneSending}
-                style={{ marginTop: 10, width: "100%", background: "none", border: "none", color: "#888", fontSize: 13, cursor: "pointer", textDecoration: "underline" }}>
-                인증번호 재전송
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {showPwModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
-          <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 16px" }}>비밀번호 변경</h3>
-            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="현재 비밀번호"
-              value={pwForm.current_password}
-              onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })} />
-            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder={`새 비밀번호 (${PASSWORD_HINT})`}
-              style={{ marginTop: "8px" }}
-              value={pwForm.new_password}
-              onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })} />
-            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 확인"
-              style={{ marginTop: "8px" }}
-              value={pwForm.confirm_password}
-              onChange={(e) => setPwForm({ ...pwForm, confirm_password: e.target.value })} />
-            <label style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "14px", color: "#666", cursor: "pointer" }}>
-              <input type="checkbox" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} />
-              비밀번호 표시
-            </label>
-            <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
-              <button onClick={() => setShowPwModal(false)} disabled={pwSaving}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
-                취소
-              </button>
-              <button onClick={handleChangePassword} disabled={pwSaving}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
-                {pwSaving ? "변경 중..." : "변경하기"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showWithdraw && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
-          <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 400, width: "100%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 10px" }}>정말 탈퇴하시겠어요?</h3>
-            <p style={{ fontSize: 15, color: "#666", lineHeight: 1.6, margin: "0 0 20px" }}>
-              탈퇴하면 계정과 등록한 채용공고가 비활성화되고, 되돌릴 수 없어요.
-            </p>
-            <input type="password" className="admin-form-input" placeholder="현재 비밀번호 입력"
-              value={withdrawPw} onChange={(e) => setWithdrawPw(e.target.value)}
-              style={{ marginBottom: 16 }} />
-            <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => { setShowWithdraw(false); setWithdrawPw(""); }} disabled={withdrawing}
-                style={{ flex: 1, height: 48, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
-                취소
-              </button>
-              <button onClick={handleWithdraw} disabled={withdrawing}
-                style={{ flex: 1, height: 48, borderRadius: 8, border: "none", background: "#e74c3c", color: "#fff", fontSize: 16, fontWeight: 600, cursor: withdrawing ? "not-allowed" : "pointer", opacity: withdrawing ? 0.7 : 1 }}>
-                {withdrawing ? "처리 중..." : "탈퇴하기"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === "brand" && (
+      {(
         <div style={{ margin: "24px 0 40px", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
           {savedMessage && (
             <span style={{ color: "#10b981", fontSize: "15px", fontWeight: 600 }}>
