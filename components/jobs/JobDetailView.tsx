@@ -124,7 +124,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       {/* 표를 테두리로 감싼다. 칸 밑줄만 있으면 바로 아래 복리후생 줄까지 표의 한
           부분처럼 읽혀, 어디까지가 자리별 조건인지 알 수 없다. */}
       <div style={{ overflowX: "auto", border: "1px solid #efeff1", borderRadius: 10 }}>
-        <table style={{ minWidth: Math.min(640, posCols.length * 96), borderCollapse: "collapse", fontSize: 13.5 }}>
+        {/* width 없이 내용 폭만큼만 잡으면 카드가 넓을 때 표 오른쪽에 빈 여백이
+            남았다("넓이를 다 균등하게 쓰자") — 100%로 채우고 auto 레이아웃이
+            남는 폭을 칸별 내용 길이에 비례해 나누게 한다. */}
+        <table style={{ width: "100%", minWidth: Math.min(640, posCols.length * 96), borderCollapse: "collapse", fontSize: 13.5, tableLayout: "auto" }}>
           <thead>
             <tr style={{ background: "#f7f7f8" }}>
               {posCols.map((c) => {

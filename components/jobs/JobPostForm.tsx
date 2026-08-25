@@ -1951,9 +1951,9 @@ export default function JobPostForm({
   // 등록하면 잘릴 수 있어, 폼만 보고는 미리 알 수 없었다.
   // 칸 사이 경계가 없으니 여러 줄로 접힌 값(근무요일/시간·급여)이 어느 줄까지 한 칸인지
   // 구분이 안 됐다("테이블 라인을 만들 수 있나"). 흐린 회색 선으로 칸을 나눈다.
-  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 13.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap", borderBottom: "1px solid #eee", borderRight: "1px solid #eee" };
+  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 13.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap", borderBottom: "1px solid #f2f2f2", borderRight: "1px solid #f2f2f2" };
   const reqStar = <span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span>; // 필수 열 표시(모집분야만)
-  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #eee", borderRight: "1px solid #eee", verticalAlign: "middle" };
+  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f2f2f2", borderRight: "1px solid #f2f2f2", verticalAlign: "middle" };
   // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
   const firstCol: React.CSSProperties = { paddingLeft: 0 };
   const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
@@ -2912,8 +2912,11 @@ export default function JobPostForm({
               {/* ── 모집부문 표: 분야별 고용형태·성별·경력/직책·학력·근무·급여 ── */}
               <div style={{ margin: "10px 0 22px" }}>
                 {categories.length === 0 ? null : (
-                  <div style={{ overflowX: "auto", border: "1px solid #eee", borderRadius: 8 }}>
-                    <table style={{ minWidth: 566, borderCollapse: "collapse" }}>
+                  /* 표 전체 폭은 카드 폭에 고정하고(가로 스크롤은 아주 좁은 화면만 대비),
+                     auto 표 레이아웃이 남는 폭을 칸별 내용 길이에 비례해 나눠 준다 —
+                     칸마다 정해 둔 minWidth 는 그 밑으로는 안 좁아지는 바닥으로만 쓴다. */
+                  <div style={{ overflowX: "auto", border: "1px solid #f2f2f2", borderRadius: 8 }}>
+                    <table style={{ width: "100%", maxWidth: "100%", borderCollapse: "collapse", tableLayout: "auto" }}>
                       {/* 빈 칸의 자리글은 비워 뒀다. 머리줄이 이미 칸 이름을 대고 있어
                           같은 말이 위아래로 두 번 나오기 때문. 빈 칸은 회색 바탕(PH_BG)만으로
                           아직 안 채운 자리임을 알린다.
