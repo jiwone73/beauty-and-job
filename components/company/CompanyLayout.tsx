@@ -119,14 +119,17 @@ export default function CompanyLayout({ children, activePage }: {
   const isLegacy = segments[0] === "company";
   const base = isLegacy ? "/company/dashboard" : `/${segments[0]}`;
 
+  // 대분류로 묶는다 — 예전엔 6개가 한 줄로 쭉 이어져 채용·인재·설정이 한 덩어리로
+  // 읽혔다("왼쪽 전체 사이드메뉴를 대분류로 묶어줘"). 대시보드는 어디에도 안 속하는
+  // 홈이라 소제목 없이 맨 위에 혼자 둔다.
   const NAV_ITEMS = [
     { id: "dashboard", label: "대시보드",      icon: Briefcase,    href: base },
-    { id: "jobs",      label: "채용공고 관리", icon: FileText,     href: `${base}/jobs`,
+    { id: "jobs",      label: "채용공고 관리", icon: FileText,     href: `${base}/jobs`, group: "채용",
       children: [{ id: "jobs-new", label: "채용공고 등록", href: `${base}/jobs/new` }] },
-    { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent` },
-    { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped` },
-    { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants` },
-    { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings` },
+    { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent`, group: "인재" },
+    { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped`, group: "인재" },
+    { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "인재" },
+    { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings`, group: "설정" },
   ];
   // '신규 공고' 버튼이 이미 이 주소로 보낸다. 사이드에도 같은 자리를
   // '채용공고 관리' 밑에 둔다 — 등록 화면이 목록의 하위 동작이라서다.
@@ -308,8 +311,11 @@ export default function CompanyLayout({ children, activePage }: {
         </div>
 
         <nav className="company-nav">
-          {NAV_ITEMS.map((item) => (
+          {NAV_ITEMS.map((item, i) => (
             <div key={item.id}>
+              {item.group && item.group !== NAV_ITEMS[i - 1]?.group && (
+                <p className="company-nav-group-title">{item.group}</p>
+              )}
               <Link href={item.href}
                 className={`company-nav-item ${activePage === item.id && !(item.id === "jobs" && isJobsNew) ? "active" : ""}`}>
                 <item.icon size={20} />

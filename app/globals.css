@@ -6941,6 +6941,10 @@ div:has(> table.admin-table),
 .company-logo-name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
 .company-logo-category { font-size: 13px; color: #888; }
 .company-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; }
+/* 대분류 소제목 — 채용·인재·설정 묶음의 경계를 알린다("왼쪽 전체 사이드메뉴를
+   대분류로 묶어줘"). 대시보드는 어디에도 안 속해 소제목 없이 맨 위에 혼자 둔다. */
+.company-nav-group-title { margin: 14px 12px 4px; font-size: 12px; font-weight: 600; color: #b3adbd; }
+.company-nav > div:first-child .company-nav-group-title { margin-top: 4px; }
 .company-nav-item {
   display: flex;
   align-items: center;

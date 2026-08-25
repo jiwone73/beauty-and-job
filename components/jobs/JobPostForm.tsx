@@ -2773,7 +2773,9 @@ export default function JobPostForm({
         </div>
       ) : (() => {
         return (
-          <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
+          // 위쪽 여백을 0으로 없앴더니 상단 액션줄의 "공고 등록"과 이 줄의 "추가"가
+          // 버튼끼리 거의 맞붙어 보였다("추가버튼하고 공고등록 버튼이 너무 붙었네").
+          <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `${기업폼 ? 16 : 0}px ${mx} 16px`, boxSizing: "border-box" }}>
             {/* 제목 옆에 ＋(이미지 추가)·샘플 배너 — 드래그 박스 안을 버튼으로 채우지 않는다. */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 4px" }}>
               {/* 제목은 왼쪽, 단추는 오른쪽 끝으로 밀어 붙인다. */}
