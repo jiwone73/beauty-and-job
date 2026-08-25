@@ -484,7 +484,7 @@ export default function CompanySettingsPage() {
               onPick={(k) => 링크고치기(링크한줄.id, { category: k.이름, url: 링크한줄.url || k.앞부분 })}
               onSave={(v) => 링크고치기(링크한줄.id, { category: v })} />
             <span className="if-sep">|</span>
-            <InlineText value={링크한줄.url} placeholder="https://" required
+            <InlineText value={링크한줄.url} placeholder="https://"
               onSave={(v) => 링크고치기(링크한줄.id, { url: v })} />
           </div>
         </div>
@@ -824,8 +824,8 @@ export default function CompanySettingsPage() {
                 <label className="admin-form-label">{칸그림(L.intro)}{L.intro}</label>
                 <textarea className="admin-form-textarea" rows={5}
                   placeholder={isStore
-                    ? "어떤 매장인지 적어 주세요 — 주 고객층, 시술 강점, 분위기, 직원 구성, 교육·성장 지원처럼\n(공고 상세의 '매장 소개'에 그대로 실려요)"
-                    : "어떤 회사인지 적어 주세요 — 무엇을 만드는지, 브랜드, 팀 구성, 일하는 방식, 복지처럼\n(공고 상세의 '기업 소개'에 그대로 실려요)"}
+                    ? "어떤 매장인지 적어 주세요 — 주 고객층, 시술 강점, 분위기, 직원 구성, 교육·성장 지원처럼"
+                    : "어떤 회사인지 적어 주세요 — 무엇을 만드는지, 브랜드, 팀 구성, 일하는 방식, 복지처럼"}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })} />
                 </div>

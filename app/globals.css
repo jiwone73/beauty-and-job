@@ -13263,24 +13263,29 @@ button,
   .resume-page { background: #fff; }
   .resume-section { box-shadow: inset 0 0 0 1px var(--color-border); }
   /* 채용공고와 같은 판이다 — 1360 안쪽에 32px 여백. 머리줄도 같은 판을 쓰므로
-     사이드 왼쪽 끝이 로고와 저절로 맞는다(1800 창에서 둘 다 252). */
+     사이드 왼쪽 끝이 로고와 저절로 맞는다(1800 창에서 둘 다 252).
+     사이드를 오른쪽으로 옮긴다("이력서 페이지에 있는 작성현황 카드도 동일하게
+     페이지 오른쪽으로") — 채용공고 등록폼과 같은 방향. */
   .resume-layout {
-    grid-template-columns: 220px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) 220px;
     max-width: 1360px; margin: 0 auto; padding: 0 32px 60px;
     gap: 22px; align-items: stretch;
   }
-  .resume-editor { padding: 22px 0 0; min-width: 0; }
-  /* 프로필과 같은 기둥이다 — 화면 왼쪽 끝에 붙은 흰 기둥, 오른쪽에 선 하나로
+  /* grid-row 를 안 박아 두면 auto-placement가 본문을 다음 줄로 밀어낸다
+     (채용공고 등록폼에서 겪은 것과 같은 함정) — 두 칸 다 1행에 못박는다. */
+  .resume-editor { grid-column: 1; grid-row: 1; padding: 22px 0 0; min-width: 0; }
+  /* 프로필과 같은 기둥이다 — 화면 오른쪽 끝에 붙은 흰 기둥, 왼쪽에 선 하나로
      본문과 가른다. 회색 바탕 위에 그냥 떠 있으면 한 페이지가 아니라 조각으로
      읽힌다. 메뉴는 넣지 않는다 — 이력서는 헤더로 들어오는 별개의 화면이다.
      스크롤을 내려도 어디까지 채웠는지 늘 보이게 붙여 둔다. */
-  /* 카드가 아니라 기둥이다 — 본문과 위아래 끝을 맞추고 오른쪽 선 하나로
+  /* 카드가 아니라 기둥이다 — 본문과 위아래 끝을 맞추고 왼쪽 선 하나로
      가른다. 상자로 두르면 본문 카드들과 나란히 놓인 '또 하나의 카드'로
      읽혀 한 페이지가 여러 덩어리로 갈린다. */
   .resume-sidebar {
+    grid-column: 2; grid-row: 1;
     display: flex; flex-direction: column; align-items: stretch; flex-wrap: nowrap;
     position: static; align-self: stretch;
-    background: #fff; border: none; border-right: 1px solid #f0f0f0; border-radius: 0;
+    background: #fff; border: none; border-left: 1px solid #f0f0f0; border-radius: 0;
     padding: 22px 14px; margin: 0; gap: 3px;
   }
   .resume-sidebar-item { justify-content: flex-start; border: none; background: transparent; border-radius: 7px; padding: 7px 9px; font-size: 14px; }
@@ -13614,21 +13619,28 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .company-content:has(.jp-shell) .admin-form-header { margin-bottom: 0; }
 
 @media (min-width: 1180px) {
+  /* 사이드를 오른쪽으로("작성현황은 오른쪽으로 배치해주고 본문 페이지를
+     왼쪽으로 밀어줘") — DOM 순서(사이드 먼저, 본문 다음)는 그대로 두고
+     grid-column 으로 칸만 맞바꾼다. */
   .jp-shell {
-    display: grid; grid-template-columns: 150px minmax(0, 1fr);
-    gap: 26px; margin: 0; align-items: start;   /* 왼쪽 정렬 · 폭 제한 없음 — 오른쪽에 빈 띠를 남기지 않는다 */
+    display: grid; grid-template-columns: minmax(0, 1fr) 150px;
+    gap: 26px; margin: 0; align-items: start;
   }
-  /* 상단 버튼 줄은 jp-shell 그리드 밖에 있어 사이드(150px)+간격(26px)만큼 본문보다
-     왼쪽에 있었다 — 오른쪽 끝이 본문 오른쪽 끝보다 176px 짧아 보였다
-     ("버튼 3개 오른쪽 끝으로 정렬해줘"). 같은 만큼 밀어 오른쪽 끝을 맞춘다. */
-  .jp-header-offset { margin-left: 176px; }
+  /* 사이드가 왼쪽에 있을 때는 본문이 176px(사이드+간격) 밀려나 상단 버튼 줄과
+     오른쪽 끝이 어긋났다. 사이드가 오른쪽으로 옮겨온 지금은 본문이 그리드
+     맨 왼쪽 칸(헤더와 같은 시작점)이라 더 밀 필요가 없다. */
+  .jp-header-offset { margin-left: 0; }
   .jp-side {
     /* 바탕도 여백도 없이 떠 있어 본문 카드와 따로 놀았다. 이력서 사이드처럼
-       흰 바탕에 여백을 두르고, 본문 첫 카드와 윗변을 맞춘다. */
+       흰 바탕에 여백을 두르고, 본문 첫 카드와 윗변을 맞춘다.
+       grid-row 를 안 박아 두면 auto-placement가 본문을 다음 줄로 밀어
+       사이드 밑에 큰 빈 칸이 생겼다 — 두 칸 다 1행에 못박는다. */
+    grid-column: 2; grid-row: 1;
     display: flex; flex-direction: column; position: sticky; top: 96px;
     background: #fff; border: 1px solid #f0f0f0; border-radius: 12px;
     padding: 16px 14px; margin-top: 5px;   /* '공고 배너 이미지' 글자 윗변과 맞춘다 */
   }
+  .jp-body { grid-column: 1; grid-row: 1; }
   .jp-side-title { font-size: 12px; color: #6f6f75; margin: 0 0 7px; }
   .jp-side-bar { height: 4px; background: #e3e3e6; border-radius: 2px; overflow: hidden; }
   .jp-side-bar span { display: block; height: 4px; background: var(--color-primary); border-radius: 2px; transition: width .2s; }

@@ -64,7 +64,7 @@ function CompanyJobNewForm() {
   };
 
   return (
-    <CompanyLayout activePage="jobs">
+    <CompanyLayout activePage="jobs-new">
         <JobPostForm
           mode="company"
           editId={editId || copyId}

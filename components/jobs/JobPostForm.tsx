@@ -2272,7 +2272,7 @@ export default function JobPostForm({
     companyInfo: {
       name: previewCompanyName,
       brandName: isNm ? newBrandName : (cp?.brand_name || ""),
-      industry: isNm ? (fiIndustry.trim() || nmIndustry) : "",
+      industry: isNm ? (fiIndustry.trim() || nmIndustry) : (cp?.industry || ""),
       representative: isNm ? nmRepresentative : (cp?.representative_name || ""),
       companyType: jobGroupType === "매장" ? "매장" : "본사",
       size: isNm ? nmSize : (cp?.company_size || ""),
@@ -2382,12 +2382,10 @@ export default function JobPostForm({
             <ChevronLeft size={18} /> 목록으로
           </button>
         )}
-        {기업폼 && !isMobile && (
-          <h2 style={{ fontSize: 18, fontWeight: 400, color: "#1a1a1a", margin: 0 }}>
-            {editId ? "채용공고 수정" : "채용공고 등록"}
-          </h2>
-        )}
-        {mode === "admin" && !isMobile && <span style={{ marginRight: "auto" }} />}
+        {/* 제목은 이제 페이지 맨 위 마스트헤드가 대신 보여준다("헤더쪽 채용공고 관리를
+            삭제하고 밑에 있는 채용공고 등록 텍스트를 이동해줘" — CompanyLayout의
+            PAGE_TITLES["jobs-new"]). 여기는 버튼을 오른쪽 끝으로 미는 빈 자리만 남긴다. */}
+        {!isMobile && <span style={{ marginRight: "auto" }} />}
         {!isMobile && (
           <div className="admin-form-actions">
             {/* 임시저장 버튼 + (관리자) 임시저장 목록 드롭다운 — 페이지를 밀지 않도록 버튼에서 팝오버로 노출 */}
@@ -3455,6 +3453,36 @@ export default function JobPostForm({
       </div>
         </div>
       </div>
+
+      {/* ═══ 매장정보/기업정보 (맨 하단, 기업회원 전용) ═══
+          이 폼에서 새로 받지 않는다 — 매장정보 설정 페이지에 이미 저장된 값을
+          그대로 불러와 보여주기만 한다("매장정보로 항목 추가해서 불러와줘").
+          같은 값을 두 군데서 받으면 어긋날 수 있어 여기서는 읽기 전용이다. */}
+      {기업폼 && cp && (
+        <div className="jobpost-form jp-header-offset" style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `16px ${mx} 0`, boxSizing: "border-box" }}>
+          <h2 className="jobpost-section-title">{infoPageLabel}</h2>
+          <div style={{ fontSize: 12, color: "#999", margin: "8px 0 8px 2px" }}>
+            {infoPageLabel} 페이지에 저장된 값이 그대로 나가요 · <a href="/company/dashboard/settings" style={{ color: "#582681" }}>{infoPageLabel} 수정하기</a>
+          </div>
+          <div className="company-card" style={{ overflow: "visible" }}>
+            <div className="admin-form-body">
+              {(() => {
+                const row: CSSProperties = { display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" };
+                const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 1 };
+                const val: CSSProperties = { fontSize: 15, color: "#333", lineHeight: 1.5 };
+                const location = composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address);
+                const rows: [string, string][] = isOffice
+                  ? [["회사명", cp.company_name], ["업종", cp.industry], ["직원수", cp.company_size], ["홈페이지", cp.website_url], ["주소", location]]
+                  : [["매장명", cp.company_name], ["업종", cp.industry], ["주소", location], [infoPageLabel, cp.description]];
+                const filled = rows.filter(([, v]) => (v || "").trim());
+                return filled.length ? filled.map(([k, v]) => (
+                  <div key={k} style={row}><span style={lbl2}>{k}</span><span style={val}>{v}</span></div>
+                )) : <p style={{ fontSize: 13.5, color: "#999", margin: 0 }}>{infoPageLabel}에 값을 채우면 여기 나와요.</p>;
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ═══ 기업 정보 (맨 하단) · 상세 다른 섹션과 동일한 인라인 스타일 ═══ */}
       {mode === "admin" && nonMember && (

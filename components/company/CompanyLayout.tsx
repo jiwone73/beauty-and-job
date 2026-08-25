@@ -13,6 +13,7 @@ import {
 const PAGE_TITLES: Record<string, string> = {
   dashboard: "대시보드",
   jobs: "채용공고 관리",
+  "jobs-new": "채용공고 등록",
   applicants: "지원자 관리",
   talent: "인재 검색",
   scrapped: "스크랩 인재",
@@ -132,9 +133,6 @@ export default function CompanyLayout({ children, activePage }: {
     { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "talent" },
     { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings`, group: "settings" },
   ];
-  // /jobs·/jobs/new 둘 다 activePage="jobs"로 넘어와 이걸로 둘을 가른다.
-  const isJobsNew = pathname === `${base}/jobs/new`;
-
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -311,21 +309,15 @@ export default function CompanyLayout({ children, activePage }: {
         </div>
 
         <nav className="company-nav">
-          {NAV_ITEMS.map((item, i) => {
-            // activePage는 /jobs·/jobs/new 둘 다 "jobs"로 넘어온다 — isJobsNew로 둘을 가른다.
-            const isOn = item.id === "jobs-new" ? isJobsNew
-              : item.id === "jobs" ? (activePage === "jobs" && !isJobsNew)
-              : activePage === item.id;
-            return (
-              <div key={item.id}>
-                {item.group !== NAV_ITEMS[i - 1]?.group && i > 0 && <div className="company-nav-divider" />}
-                <Link href={item.href} className={`company-nav-item ${isOn ? "active" : ""}`}>
-                  <item.icon size={20} />
-                  <span>{item.label}</span>
-                </Link>
-              </div>
-            );
-          })}
+          {NAV_ITEMS.map((item, i) => (
+            <div key={item.id}>
+              {item.group !== NAV_ITEMS[i - 1]?.group && i > 0 && <div className="company-nav-divider" />}
+              <Link href={item.href} className={`company-nav-item ${activePage === item.id ? "active" : ""}`}>
+                <item.icon size={20} />
+                <span>{item.label}</span>
+              </Link>
+            </div>
+          ))}
           {/* 사이트로 이동은 메뉴의 연장선이라 맨 아래가 아니라 마지막 메뉴 밑에 둔다. */}
           <div className="company-nav-divider" />
           <button className="company-nav-item" onClick={() => router.push("/")}>
