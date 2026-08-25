@@ -2935,11 +2935,16 @@ export default function JobPostForm({
                         </tr>
                       </thead>
                       <tbody>
-                        {categories.map((cat) => {
+                        {categories.map((cat, rowIdx) => {
                           const row = posMeta[cat] || emptyPos;
+                          // 마지막 행의 밑줄은 표를 감싼 바깥 테두리 바로 위에 겹쳐 두 줄이
+                          // 겹친 것처럼 두꺼워 보였다("테두리가 두꺼워 보여, 그림자 떄문인거
+                          // 같고") — 마지막 행만 밑줄을 뺀다.
+                          const isLastRow = rowIdx === categories.length - 1;
+                          const rb = isLastRow ? { borderBottom: "none" } : {};
                           return (
                             <tr key={cat}>
-                              <td style={{ ...tdc, ...firstCol, fontSize: 13.5, color: "#333" }}>
+                              <td style={{ ...tdc, ...firstCol, ...rb, fontSize: 13.5, color: "#333" }}>
                                 {/* 긴 분야명이 한 줄로 늘어지며 표를 넓혀 급여·근무요일 칸까지
                                     가로 스크롤로 밀어냈다. 폭을 묶어 두 줄까지는 그대로 접는다. */}
                                 <div style={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
@@ -2948,12 +2953,12 @@ export default function JobPostForm({
                                     style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0, marginTop: 1 }}>×</button>
                                 </div>
                               </td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "")}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성 우대", "남성 우대"], "", false)}</td>
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
+                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "")}</td>
+                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성 우대", "남성 우대"], "", false)}</td>
+                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
                               {/* 매장(헤어·네일·피부 등 현장직)은 석사 학력을 요구할 일이 없다. */}
-                              <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU, "", false)}</td>
-                              <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
+                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "education", jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU, "", false)}</td>
+                              <td style={{ ...tdc, ...rb, position: "relative" }} className="posshift-pop">
                                 {/* 요일 원형 버튼+시간 두 칸을 채우던 구조를 접었다. 요일마다
                                     시간이 다르면 근무시간 묶음을 몇 개나 만들어야 했는데, 원티드
                                     처럼 자유 문장 하나로 받는다("월, 수 10시-18시 / 금 12시-20시").
@@ -2985,7 +2990,7 @@ export default function JobPostForm({
                                   />
                                 )}
                               </td>
-                              <td style={{ ...tdc, position: "relative", borderRight: "none" }}>
+                              <td style={{ ...tdc, ...rb, position: "relative", borderRight: "none" }}>
                                 {posCell(cat, "salary", [], "", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(cat, "salaryNego", v))}
                               </td>
                             </tr>
@@ -3002,10 +3007,10 @@ export default function JobPostForm({
                   라벨이라 모집부문의 하위 항목처럼 읽혔다.
                   근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 139건 중 1건만 채워져
                   있었고, 그 반열이 복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
-              <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", paddingTop: 14, borderTop: "1px solid #f7f7f8", fontWeight: 400, color: "#333" }}>
+              <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 6px", paddingTop: 14, borderTop: "1px solid #f7f7f8", fontWeight: 400, color: "#333" }}>
                 <Tag size={16} style={{ color: "#582681", flexShrink: 0 }} />복리후생{reqStar}
               </div>
-              <div style={{ marginTop: 4 }}>
+              <div>
                 <div className="job-detail-company-info">
                   {/* 복리후생 — 한 행을 다 쓴다. 태그가 여럿이라 좁으면 읽기 나쁘다. */}
                   <div id="jp-benefit" className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1" }}>

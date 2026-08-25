@@ -5,7 +5,7 @@ import { shortRegion } from "@/lib/regionShort";
 import KakaoMap from "@/components/KakaoMap";
 import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
-import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send } from "lucide-react";
+import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag } from "lucide-react";
 import { hideContacts } from "@/lib/hideContacts";
 
   // 매장 공고는 적힌 값이 그대로 지켜지는 일이 드물다. 근무시간·급여는 면접에서
@@ -124,21 +124,28 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       {/* 표를 테두리로 감싼다. 칸 밑줄만 있으면 바로 아래 복리후생 줄까지 표의 한
           부분처럼 읽혀, 어디까지가 자리별 조건인지 알 수 없다. */}
       <div style={{ overflowX: "auto", border: "1px solid #efeff1", borderRadius: 10 }}>
-        {/* width 없이 내용 폭만큼만 잡으면 카드가 넓을 때 표 오른쪽에 빈 여백이
-            남았다("넓이를 다 균등하게 쓰자") — 100%로 채우고 auto 레이아웃이
-            남는 폭을 칸별 내용 길이에 비례해 나누게 한다. */}
-        <table style={{ width: "100%", minWidth: Math.min(640, posCols.length * 96), borderCollapse: "collapse", fontSize: 13.5, tableLayout: "auto" }}>
+        {/* auto 레이아웃은 남는 폭을 칸마다 다르게(때로는 안) 나눠 브라우저마다
+            달랐고, 오른쪽에 빈 여백이 남기도 했다("넓이를 다 균등하게 쓰자 ·
+            내용넓이에 비례하여"). colgroup + fixed 레이아웃으로 칸 폭을 내용
+            길이 비례 비율로 못박아, 언제나 100%를 정확히 나눠 쓰게 한다. */}
+        <table style={{ width: "100%", minWidth: Math.min(640, posCols.length * 96), borderCollapse: "collapse", fontSize: 13.5, tableLayout: "fixed" }}>
+          <colgroup>
+            {(() => {
+              // 등록폼 표의 칸 바닥 폭(모집분야130·고용형태66·성별56·경력72·학력52·
+              // 근무요일124·급여130)과 같은 비율 — 두 표가 같은 인상으로 보인다.
+              const COL_WEIGHT: Record<string, number> = { category: 130, employment: 66, gender: 56, career: 72, education: 52, shift: 124, salary: 130 };
+              const total = posCols.reduce((s, c) => s + (COL_WEIGHT[c.key] || 80), 0);
+              return posCols.map((c) => <col key={c.key} style={{ width: `${((COL_WEIGHT[c.key] || 80) / total) * 100}%` }} />);
+            })()}
+          </colgroup>
           <thead>
             <tr style={{ background: "#f7f7f8" }}>
               {posCols.map((c) => {
-                // 모집분야·급여는 길어지면 표를 옆으로 밀어내(가로 스크롤) 뒤 칸이
-                // 잘려 보였다. 폭을 묶어 두 줄까지 접는다.
+                // 모집분야·급여는 길어지면 여러 줄로 접힐 수 있어, 칸 폭이 정해진
+                // 지금도 줄바꿈은 허용해 둔다(폭은 colgroup 이 이미 못박았다).
                 const wrapCol = c.key === "category" || c.key === "salary";
-                // 다른 칸(고용형태·성별·경력·학력·근무요일/시간)은 minWidth 로 자기
-                // 몫을 지키는데, 이 둘은 늘어나는 값을 접으려고 maxWidth 만 뒀었다.
-                // 바닥이 없으니 표가 좁아질 때 이 두 칸만 먼저 짜부라져 3행까지 접혔다.
                 return (
-                  <th key={c.key} className="jd-pos-th" style={wrapCol ? { whiteSpace: "normal", minWidth: 104, maxWidth: 130 } : undefined}>{c.label}</th>
+                  <th key={c.key} className="jd-pos-th" style={wrapCol ? { whiteSpace: "normal" } : undefined}>{c.label}</th>
                 );
               })}
             </tr>
@@ -195,10 +202,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                       : (c.get(p) || "-");
                   return (
                     <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#333" : "#555" }}>
-                      {/* 근무요일/시간 열은 요일 1행·시간 2행으로. 모집분야·급여는 길어지면
-                          표를 옆으로 밀어내던 것을(가로 스크롤) 폭을 묶어 두 줄까지 접는다. */}
+                      {/* 근무요일/시간 열은 요일 1행·시간 2행으로. 모집분야·급여는 길면
+                          colgroup 이 못박은 칸 폭 안에서 줄바꿈으로 접는다. */}
                       {wrapCol
-                        ? <span style={{ display: "inline-block", minWidth: 104, maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all" }}>{content}</span>
+                        ? <span style={{ display: "block", whiteSpace: "normal", wordBreak: "keep-all" }}>{content}</span>
                         : content}
                     </td>
                   );
@@ -208,14 +215,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </tbody>
         </table>
       </div>
-      {/* 복리후생: 별도 '근무 조건' 제목 없이 모집부문 블록에 이어 붙임(표와 동일한 밀도).
-          값이 없어도 늘 보인다 — 매장마다 달라 표에 다 담기지 않으니 '상세요강 참조'만이라도 걸어 둔다.
+      {/* 복리후생을 모집부문과 같은 레벨(아이콘+제목)로 세운다 — 등록폼과 같은 인상
+          ("복리후생을 모집부문과 동일한 레벨로 표기해줘"). 값이 없어도 늘 보인다 —
+          매장마다 달라 표에 다 담기지 않으니 '상세요강 참조'만이라도 걸어 둔다.
           근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 거의 비어 있었고, 그 반열이
           복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
-      <div style={{ marginTop: 12, display: "flex", gap: 12, padding: "3px 0", alignItems: "flex-start" }}>
-        <span style={{ fontSize: 13.5, color: "#6f6f75", width: 60, flexShrink: 0 }}>복리후생</span>
-        <span style={{ fontSize: 13.5, color: "#555", lineHeight: 1.5 }}>{withSeeDetail((job.benefits || []).join(", "))}</span>
-      </div>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 18 }}><Tag size={16} style={{ color: "#582681", flexShrink: 0 }} />복리후생</h2>
+      <div style={{ fontSize: 13.5, color: "#555", lineHeight: 1.5 }}>{withSeeDetail((job.benefits || []).join(", "))}</div>
     </div>
   ) : null;
   // 모집부문 표가 있으면 근무기간·복리후생은 표 아래로 합쳐 넣으므로, 여기(근무 조건 제목 블록)는 텍스트형 공고에서만 노출.
