@@ -209,9 +209,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           값이 없어도 늘 보인다 — 매장마다 달라 표에 다 담기지 않으니 '상세요강 참조'만이라도 걸어 둔다.
           근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 거의 비어 있었고, 그 반열이
           복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
-      <div style={{ marginTop: 12, display: "flex", gap: 12, fontSize: 13.5, padding: "3px 0", alignItems: "flex-start" }}>
-        <span style={{ color: "#6f6f75", width: 60, flexShrink: 0 }}>복리후생</span>
-        <span style={{ color: "#555", lineHeight: 1.5 }}>{withSeeDetail((job.benefits || []).join(", "))}</span>
+      <div style={{ marginTop: 12, display: "flex", gap: 12, padding: "3px 0", alignItems: "flex-start" }}>
+        <span style={{ fontSize: 13.5, color: "#6f6f75", width: 60, flexShrink: 0 }}>복리후생</span>
+        <span style={{ fontSize: 13.5, color: "#555", lineHeight: 1.5 }}>{withSeeDetail((job.benefits || []).join(", "))}</span>
       </div>
     </div>
   ) : null;

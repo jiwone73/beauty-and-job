@@ -1951,9 +1951,9 @@ export default function JobPostForm({
   // 등록하면 잘릴 수 있어, 폼만 보고는 미리 알 수 없었다.
   // 칸 사이 경계가 없으니 여러 줄로 접힌 값(근무요일/시간·급여)이 어느 줄까지 한 칸인지
   // 구분이 안 됐다("테이블 라인을 만들 수 있나"). 흐린 회색 선으로 칸을 나눈다.
-  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 13.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap", borderBottom: "1px solid #e3e3e6", borderRight: "1px solid #e3e3e6" };
+  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 13.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap", borderBottom: "1px solid #eee", borderRight: "1px solid #eee" };
   const reqStar = <span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span>; // 필수 열 표시(모집분야만)
-  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #e3e3e6", borderRight: "1px solid #e3e3e6", verticalAlign: "middle" };
+  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #eee", borderRight: "1px solid #eee", verticalAlign: "middle" };
   // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
   const firstCol: React.CSSProperties = { paddingLeft: 0 };
   const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
@@ -2046,7 +2046,7 @@ export default function JobPostForm({
           onClick={(e) => { if (open) { setCellOpen(null); return; } setCellFree(false); openPopAt(e.currentTarget, width, height); setCellOpen(key); }}
           style={{ ...cellSelect, background: "transparent", textAlign: "center", color: v ? "#333" : "#b4b4b9",
             display: "flex", alignItems: wrap ? "flex-start" : "center", justifyContent: "center", gap: 4,
-            borderBottom: v ? "1px solid transparent" : "1px solid #e3e3e6", borderRadius: 0 }}>
+            border: "none", borderRadius: 0 }}>
           {/* 급여처럼 길어질 수 있는 값은 잘라내지(...) 않고 두 줄까지 접는다.
               maxWidth 없이 whiteSpace:normal 만 주면 표가 그냥 옆으로 넓어져
               한 줄에 다 펴져 버린다 — 폭을 못박아야 그 안에서 접힌다. */}
@@ -2859,59 +2859,60 @@ export default function JobPostForm({
                 />
               </div>
 
+              {/* ── 마감일. 미리보기(공개 화면)에서 제목 바로 밑에 뜨는 것과 같은 자리로 옮긴다
+                  ("마감일이 공고 밑에 있어") — 전엔 모집분야와 한 행에 있어 모집부문 쪽으로 치우쳐 보였다. */}
+              <div id="jp-deadline" className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative", margin: "0 0 12px" }}>
+                <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
+                <button type="button"
+                  onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
+                  style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                  {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
+                </button>
+                {deadlineModalOpen && popAt && (
+                  /* 절대위치 240px이라 좁은 화면에서 오른쪽으로 넘쳐 잘렸다 → 표 팝오버와 같은 화면 고정 좌표로. */
+                  <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "12px", width: 240, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
+                    <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
+                      style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
+                    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                      <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
+                    </label>
+                    <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
+                      <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
+                      <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* ── 모집부문 제목(모집분야 위, '지원 안내'와 동일 스타일) ── */}
               <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", paddingTop: 14, borderTop: "1px solid #f7f7f8", fontWeight: 400, color: "#333" }}>
                 <Briefcase id="jp-positions" size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문
               </div>
-              {/* ── 모집분야 + 마감일(같은 행). 모집분야는 모집부문 표의 행이 됨 ── */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px 16px", margin: "0 0 12px", alignItems: "center" }}>
-                <div className="job-detail-meta-item">
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
-                  {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
-                      고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
-                  <span className="jp-add-wrap catpick-pop" style={{ position: "relative" }}>
-                    <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen((v) => !v)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
-                      className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: 0, cursor: typeLocked ? "default" : "pointer" }}>＋</button>
-                    {/* 고정좌표(popAt) 팝오버는 화면 기준이라, 콘텐츠가 늦게 도착해 트리거가 밀리면
-                        따라가지 못했다("+ 버튼 바로 밑에서 떠야지"). 여기는 표 밖이라 가로 스크롤에
-                        잘릴 일이 없으니, 트리거에 상대 위치로 붙여 항상 바로 밑에 뜨게 한다. */}
-                    {addRowOpen && (
-                      <CategoryPickPopover
-                        jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
-                        onPick={(item) => { addCatRow(item); setAddRowOpen(false); }}
-                        onClose={() => setAddRowOpen(false)}
-                      />
-                    )}
-                  </span>
-                </div>
-                <div id="jp-deadline" className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative" }}>
-                  <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
-                  <button type="button"
-                    onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
-                    style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
-                    {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
-                  </button>
-                  {deadlineModalOpen && popAt && (
-                    /* 절대위치 240px이라 좁은 화면에서 오른쪽으로 넘쳐 잘렸다 → 표 팝오버와 같은 화면 고정 좌표로. */
-                    <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "12px", width: 240, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
-                      <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
-                        style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
-                      <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                        <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
-                      </label>
-                      <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
-                        <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
-                        <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
-                      </div>
-                    </div>
+              {/* ── 모집분야. 골라 담으면 모집부문 표의 행이 됨 ── */}
+              <div className="job-detail-meta-item" style={{ margin: "0 0 12px" }}>
+                <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
+                {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
+                    고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
+                <span className="jp-add-wrap catpick-pop" style={{ position: "relative" }}>
+                  <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen((v) => !v)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
+                    className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: 0, cursor: typeLocked ? "default" : "pointer" }}>＋</button>
+                  {/* 고정좌표(popAt) 팝오버는 화면 기준이라, 콘텐츠가 늦게 도착해 트리거가 밀리면
+                      따라가지 못했다("+ 버튼 바로 밑에서 떠야지"). 여기는 표 밖이라 가로 스크롤에
+                      잘릴 일이 없으니, 트리거에 상대 위치로 붙여 항상 바로 밑에 뜨게 한다. */}
+                  {addRowOpen && (
+                    <CategoryPickPopover
+                      jobType={jobGroupType === "기업" ? "OFFICE" : "STORE"}
+                      onPick={(item) => { addCatRow(item); setAddRowOpen(false); }}
+                      onClose={() => setAddRowOpen(false)}
+                    />
                   )}
-                </div>
+                </span>
               </div>
 
               {/* ── 모집부문 표: 분야별 고용형태·성별·경력/직책·학력·근무·급여 ── */}
               <div style={{ margin: "10px 0 22px" }}>
                 {categories.length === 0 ? null : (
-                  <div style={{ overflowX: "auto", border: "1px solid #e3e3e6", borderRadius: 8 }}>
+                  <div style={{ overflowX: "auto", border: "1px solid #eee", borderRadius: 8 }}>
                     <table style={{ minWidth: 566, borderCollapse: "collapse" }}>
                       {/* 빈 칸의 자리글은 비워 뒀다. 머리줄이 이미 칸 이름을 대고 있어
                           같은 말이 위아래로 두 번 나오기 때문. 빈 칸은 회색 바탕(PH_BG)만으로
@@ -2957,7 +2958,6 @@ export default function JobPostForm({
                                     크지 않나") 다른 칸과 같은 작은 팝오버로 바꿨다. */}
                                 <button type="button" onClick={(e) => { if (shiftModalCat === cat) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(cat); }}
                                   style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "center", border: "none",
-                                    borderBottom: shiftDisplay(row) ? "1px solid transparent" : "1px solid #e3e3e6",
                                     borderRadius: 0, padding: "3px 6px", fontSize: 13.5, lineHeight: 1.35, cursor: "pointer",
                                     color: shiftDisplay(row) ? "#333" : "#b4b4b9",
                                     background: "transparent", display: "flex", alignItems: shiftDisplay(row) ? "flex-start" : "center", justifyContent: "center", gap: 4,
@@ -2994,20 +2994,24 @@ export default function JobPostForm({
                 )}
               </div>
 
-              {/* ── 복리후생 (모집부문 안으로 통합, 별도 타이틀·구분선 없음) ──
+              {/* ── 복리후생. 모집부문과 같은 레벨(아이콘 + 제목)로 세운다
+                  ("복리후생을 모집부문과 동일한 레벨로 표기해줘") — 전엔 작은 인라인
+                  라벨이라 모집부문의 하위 항목처럼 읽혔다.
                   근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 139건 중 1건만 채워져
                   있었고, 그 반열이 복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
+              <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", paddingTop: 14, borderTop: "1px solid #f7f7f8", fontWeight: 400, color: "#333" }}>
+                <Tag size={16} style={{ color: "#582681", flexShrink: 0 }} />복리후생{reqStar}
+              </div>
               <div style={{ marginTop: 4 }}>
                 <div className="job-detail-company-info">
                   {/* 복리후생 — 한 행을 다 쓴다. 태그가 여럿이라 좁으면 읽기 나쁘다. */}
                   <div id="jp-benefit" className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1" }}>
-                    <span className="job-detail-company-label" style={{ fontSize: 15 }}>복리후생<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                     {/* 글자만 눌린다. flex:1 로 행을 다 차지하면 오른쪽 빈 곳을 눌러도
                         팝오버가 열려, 뭘 눌러서 열렸는지 알 수 없었다. */}
                     {!fiBenefits.trim() && (
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
                       style={{ flex: "0 0 auto", maxWidth: "100%", alignSelf: "flex-start", textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
-                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "검색하기")}
+                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "검색 및 선택하기")}
                     </button>
                     )}
                     {freeField("benefits", fiBenefits, setFiBenefits, "예: 4대보험, 인센티브", false, () => setBenefitTags([]))}
