@@ -158,8 +158,14 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   // 요일마다 시간이 다르면("월·수·금은 이 시간, 화·목은 저 시간") 기본 한 벌
                   // 뒤로 추가 근무시간을 이어 붙인다.
                   const extraShifts = Array.isArray(p.extraShifts) ? p.extraShifts : [];
+                  // shiftText — 원티드식 자유 문장("월, 수 10시-18시 / 금 12시-20시")으로 등록한
+                  // 공고는 이 필드가 있다. "/"로 나눠 묶음마다 한 줄로 보여준다. 이 필드가 없는
+                  // (그 전에 저장된) 공고만 구조화 필드로 문장을 조립한다.
+                  const shiftLines = p.shiftText ? String(p.shiftText).split("/").map((s: string) => s.trim()).filter(Boolean) : [];
                   const content = c.key === "shift"
-                    ? ((p.workDays || p.workTime)
+                    ? (shiftLines.length
+                        ? (shiftLines.length === 1 && shiftLines[0] === "협의" ? "협의" : shiftLines.map((l: string, i: number) => <div key={i}>{l}</div>))
+                        : (p.workDays || p.workTime)
                         ? ((p.workDays === "협의" && p.workTime === "협의")
                             ? "협의"
                             : <>

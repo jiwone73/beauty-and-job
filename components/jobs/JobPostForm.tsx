@@ -8,6 +8,7 @@ import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
+import WorkScheduleModal from "@/components/jobs/WorkScheduleModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
@@ -21,7 +22,6 @@ const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.s
 
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const WEEKDAY_DAYS = ["월", "화", "수", "목", "금"]; // 평일(미입력 시 기본값)
-const WEEKEND_DAYS = ["토", "일"]; // 주말
 // 근무시간 풀다운 옵션: 오전/오후 구분 없이 24시간 표기, 1시간 간격, 오전 9시~밤 11시(자정~오전 8시 제외)
 const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
@@ -431,24 +431,16 @@ export default function JobPostForm({
   // 값 자체를 지우고 그 말로 채우는 것이라, 값은 정해졌지만 조율 여지가 있다는 뜻은 못 담았다.
   // extraShifts: 요일마다 시간이 다를 때("월·수·금은 이 시간, 화·목은 저 시간") 기본
   // 근무요일/시간 한 벌로는 못 담아 추가로 쌓는 근무시간 묶음.
+  // shiftText: 근무요일/시간을 원티드식으로 자유 문장 하나로 받는다("월, 수 10시-18시
+  // / 금 12시-20시"). 요일 원형 버튼+근무시간 묶음 추가로 구조를 다 갖추던 방식은
+  // 이 문장 하나로 대체한다. workDays/workTime/extraShifts/shiftNego 는 이 필드가
+  // 생기기 전에 저장된 공고를 그대로 보여주기 위한 하위호환용으로만 남긴다.
   type ShiftSlot = { days: string; time: string };
-  type PosRow = { career: string; education: string; employment: string; salary: string; workDays: string; workTime: string; headcount: string; gender: string; shiftNego: boolean; salaryNego: boolean; extraShifts: ShiftSlot[] };
-  const emptyPos: PosRow = { career: "", education: "", employment: "", salary: "", workDays: "", workTime: "", headcount: "", gender: "", shiftNego: false, salaryNego: false, extraShifts: [] };
+  type PosRow = { career: string; education: string; employment: string; salary: string; workDays: string; workTime: string; shiftText: string; headcount: string; gender: string; shiftNego: boolean; salaryNego: boolean; extraShifts: ShiftSlot[] };
+  const emptyPos: PosRow = { career: "", education: "", employment: "", salary: "", workDays: "", workTime: "", shiftText: "", headcount: "", gender: "", shiftNego: false, salaryNego: false, extraShifts: [] };
   const [posMeta, setPosMeta] = useState<Record<string, PosRow>>({});
   const setPos = <K extends keyof PosRow>(cat: string, k: K, v: PosRow[K]) =>
     setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, [k]: v } }; });
-  const addExtraShift = (cat: string) =>
-    setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, extraShifts: [...cur.extraShifts, { days: "", time: "" }] } }; });
-  const removeExtraShift = (cat: string, i: number) =>
-    setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, extraShifts: cur.extraShifts.filter((_, idx) => idx !== i) } }; });
-  const setExtraShift = (cat: string, i: number, patch: Partial<ShiftSlot>) =>
-    setPosMeta((m) => { const cur = m[cat] || emptyPos; const next = cur.extraShifts.slice(); next[i] = { ...next[i], ...patch }; return { ...m, [cat]: { ...cur, extraShifts: next } }; });
-  const toggleExtraDay = (cat: string, i: number, d: string) => {
-    const cur = ((posMeta[cat] || emptyPos).extraShifts[i]) || { days: "", time: "" };
-    const days = cur.days ? cur.days.split(/[·,]/).map((s) => s.trim()).filter(Boolean) : [];
-    const nd = days.includes(d) ? days.filter((x) => x !== d) : [...days, d].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b));
-    setExtraShift(cat, i, { days: nd.join("·") });
-  };
   // 같은 모집분야를 여러 행으로 쓸 수 있게(예: 헤어디자이너 신입 1 · 경력 1) 내부 키에만 "#2" 꼬리표를 붙인다.
   //   화면 표시·저장은 항상 꼬리표를 뗀 원래 분야명으로 나간다.
   const baseCat = (c: string) => c.replace(/#\d+$/, "");
@@ -470,7 +462,7 @@ export default function JobPostForm({
   };
   // 불러오기로 파싱된 경력·급여·인원을, 관리자가 모집분야를 고르면 첫 행에 채워줌(수기 재입력 방지).
   const [parsedPrimary, setParsedPrimary] = useState<PosRow | null>(null);
-  const [posShiftOpen, setPosShiftOpen] = useState<string | null>(null); // 근무요일/시간 팝오버가 열린 분야
+  const [shiftModalCat, setShiftModalCat] = useState<string | null>(null); // WorkScheduleModal 이 열린 분야
   const [cellOpen, setCellOpen] = useState<string | null>(null); // 표 셀 직접입력 팝오버 `${cat}|${field}`
   const cellInputRef = useRef<HTMLInputElement>(null); // 표 셀 직접입력 팝오버의 입력칸(주기 클릭 후 바로 타이핑되게)
   const [addRowOpen, setAddRowOpen] = useState(false); // 모집부문 '행 추가' — 분야를 골라 행을 붙임(같은 분야 중복 가능)
@@ -709,13 +701,6 @@ export default function JobPostForm({
     setPosMeta((m) => (m[c0] && (m[c0].career || m[c0].salary || m[c0].headcount || m[c0].employment)) ? m : { ...m, [c0]: { ...emptyPos, ...parsedPrimary } });
     setParsedPrimary(null);
   }, [parsedPrimary, categories]);
-  // 근무요일/시간 팝오버: 바깥 클릭 시 닫기
-  useEffect(() => {
-    if (!posShiftOpen) return;
-    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".posshift-pop")) setPosShiftOpen(null); };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [posShiftOpen]);
   // 표 셀 직접입력 팝오버: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!cellOpen) return;
@@ -723,6 +708,13 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [cellOpen]);
+  // 근무요일/시간 팝오버: 바깥 클릭 시 닫기
+  useEffect(() => {
+    if (!shiftModalCat) return;
+    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".posshift-pop")) setShiftModalCat(null); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [shiftModalCat]);
   // 근무지역 인라인 자동완성: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!regionOpen) return;
@@ -936,7 +928,7 @@ export default function JobPostForm({
           const base = String(p.category);
           const key = keys.includes(base) ? nextDupKey(base, keys) : base;
           keys.push(key);
-          meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", headcount: p.headcount || "", gender: p.gender || "", shiftNego: !!p.shiftNego, salaryNego: !!p.salaryNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
+          meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", headcount: p.headcount || "", gender: p.gender || "", shiftNego: !!p.shiftNego, salaryNego: !!p.salaryNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
         }
         setCategories(keys);
         setPosMeta(meta);
@@ -1399,6 +1391,7 @@ export default function JobPostForm({
         gender: "",
         shiftNego: false,
         salaryNego: !!d.salary_negotiable,
+        shiftText: "",
         extraShifts: [],
       });
       // 근무기간 (매장 공고)
@@ -1759,7 +1752,7 @@ export default function JobPostForm({
     }
 
     // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
     // 발행 시 꼭 있어야 하는 것은 모집분야뿐이다.
     //
     // 고용형태는 원문에 아예 언급이 없는 공고가 흔하다. 필수로 두면 관리자가 없는
@@ -1955,7 +1948,6 @@ export default function JobPostForm({
     if (d.length <= 앞 + 4) return `${d.slice(0, 앞)}-${d.slice(앞)}`;
     return `${d.slice(0, 앞)}-${d.slice(앞, d.length - 4)}-${d.slice(-4)}`;
   };
-  const cleanTime = (v: string) => v.replace(/[^\d:]/g, "").slice(0, 5);
   const fmtTime = (v: string) => {
     const d = v.replace(/\D/g, "").slice(0, 4);
     if (!d) return "";
@@ -1964,9 +1956,6 @@ export default function JobPostForm({
     if (isNaN(h)) return "";
     return `${String(Math.min(23, h)).padStart(2, "0")}:${String(Math.min(59, isNaN(m) ? 0 : m)).padStart(2, "0")}`;
   };
-  // 둘 다 비면 workTime 자체를 비운다("~"만 남지 않게)
-  const setTimeRange = (cat: string, start: string, end: string) =>
-    setPos(cat, "workTime", start || end ? `${start}~${end}` : "");
   // 저장·미리보기 시 한 번 더 정리 — 입력 직후 칸을 벗어나지 않고 바로 등록해도 09:30 형태로 나가게
   const normWorkTime = (v: string) => {
     const t = (v || "").trim();
@@ -1984,6 +1973,16 @@ export default function JobPostForm({
   const withSalaryUnit = (cur: string, prefix: string) => {
     const rest = cur.replace(/^\s*[시주월연]\s*/, "").replace(/^협의\s*$/, "").trim();
     return rest ? `${prefix} ${rest}` : `${prefix} `;
+  };
+  // 근무요일/시간 표시 문구. shiftText(원티드식 자유 문장)가 있으면 그대로 쓰고,
+  // 아직 그 필드가 없던 예전 공고(수정 진입)는 구조화 필드로 최대한 문장을 만들어 보여준다.
+  const shiftDisplay = (row: PosRow): string => {
+    if (row.shiftText) return row.shiftText;
+    if (!row.workDays && !row.workTime) return "";
+    if (row.workDays === "협의" && row.workTime === "협의") return "협의";
+    const parts = [row.workDays, row.workTime].filter(Boolean);
+    const extra = row.extraShifts.map((s) => [s.days, s.time].filter(Boolean).join(" ")).filter(Boolean);
+    return [parts.join(" "), ...extra].filter(Boolean).join(" / ");
   };
   // 표 셀 입력: iOS 네이티브 select 피커가 화면 절반을 덮을 만큼 커서, 목록도 자체 팝오버로 띄운다.
   //   options가 있으면 컴팩트 목록, units(급여)면 지급주기 칩, 그 외에는 자유입력.
@@ -2190,7 +2189,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
-    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; }),
+    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; }),
     color: "#f7f7f8",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -2875,141 +2874,31 @@ export default function JobPostForm({
                               {/* 매장(헤어·네일·피부 등 현장직)은 석사 학력을 요구할 일이 없다. */}
                               <td style={{ ...tdc, position: "relative" }}>{posCell(cat, "education", jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU, "", false)}</td>
                               <td style={{ ...tdc, position: "relative" }} className="posshift-pop">
-                                <button type="button" onClick={(e) => { if (posShiftOpen === cat) { setPosShiftOpen(null); return; } openPopAt(e.currentTarget, 244, 250); setPosShiftOpen(cat); }}
-                                  /* 다른 칸과 같은 규칙 — 비면 밑줄과 ▾, 채우면 값만.
-                                     요일·시간을 한 줄에 나란히 두니 시간이 잘렸다. 세로로 쌓아
-                                     요일 1행·시간 2행으로 — 상세페이지 표와 같은 모양이다. */
+                                {/* 요일 원형 버튼+시간 두 칸을 채우던 구조를 접었다. 요일마다
+                                    시간이 다르면 근무시간 묶음을 몇 개나 만들어야 했는데, 원티드
+                                    처럼 자유 문장 하나로 받는다("월, 수 10시-18시 / 금 12시-20시").
+                                    처음엔 화면 가운데 뜨는 큰 모달이었는데("윈도우창이 너무
+                                    크지 않나") 다른 칸과 같은 작은 팝오버로 바꿨다. */}
+                                <button type="button" onClick={(e) => { if (shiftModalCat === cat) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(cat); }}
                                   style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "left", border: "none",
-                                    borderBottom: (row.workDays || row.workTime) ? "1px solid transparent" : "1px solid #e3e3e6",
-                                    borderRadius: 0, padding: "3px 6px", fontSize: 13.5, lineHeight: 1.35, cursor: "pointer", color: "#333",
-                                    background: "transparent", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
-                                  {(row.workDays || row.workTime || row.shiftNego) ? (
-                                    (row.workDays === "협의" && row.workTime === "협의") || (!row.workDays && !row.workTime) ? (
-                                      <div style={{ whiteSpace: "nowrap" }}>협의</div>
-                                    ) : (
-                                    <>
-                                      {/* 시간에만 "(협의)"를 붙이면 요일은 확정, 시간만 조율 가능한
-                                          것처럼 읽혔다("시간만 협의된다는 느낌") — 요일·시간 둘 다에 붙인다. */}
-                                      {row.workDays && <div style={{ whiteSpace: "nowrap" }}>{row.workDays}{row.shiftNego && row.workDays !== "협의" ? " (+협의)" : ""}</div>}
-                                      {row.workTime && <div style={{ whiteSpace: "nowrap" }}>{row.workTime}{row.shiftNego && row.workTime !== "협의" ? " (+협의)" : ""}</div>}
-                                      {row.extraShifts.map((slot, i) => (
-                                        <div key={i} style={{ whiteSpace: "nowrap" }}>{slot.days}{slot.days && slot.time ? " " : ""}{slot.time}</div>
-                                      ))}
-                                    </>
-                                    )
-                                  ) : <ChevronDown size={12} style={{ marginLeft: "auto", flexShrink: 0, color: "#c4c4c9" }} />}
+                                    borderBottom: shiftDisplay(row) ? "1px solid transparent" : "1px solid #e3e3e6",
+                                    borderRadius: 0, padding: "3px 6px", fontSize: 13.5, lineHeight: 1.35, cursor: "pointer",
+                                    color: shiftDisplay(row) ? "#333" : "#b4b4b9",
+                                    background: "transparent", display: "flex", alignItems: "center", gap: 4,
+                                    whiteSpace: "normal", wordBreak: "keep-all" }}>
+                                  <span style={{ flex: 1, minWidth: 0 }}>{shiftDisplay(row) || "선택 또는 입력"}</span>
+                                  {!shiftDisplay(row) && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9" }} />}
                                 </button>
-                                {posShiftOpen === cat && (() => {
-                                  const days = (row.workDays && row.workDays !== "협의") ? row.workDays.split(/[·,]/).map((s) => s.trim()).filter((d) => WORK_DAY_OPTIONS.includes(d)) : [];
-                                  const daysNego = row.workDays === "협의";
-                                  const timeParts = (row.workTime && row.workTime !== "협의") ? row.workTime.split("~") : [];
-                                  const tStart = (timeParts[0] || "").trim();
-                                  const tEnd = (timeParts[1] || "").trim();
-                                  const tm = /^\d{1,2}:\d{2}~\d{1,2}:\d{2}$/.test((row.workTime || "").replace(/\s/g, "")) ? [row.workTime, tStart, tEnd] as const : null;
-                                  const timeNego = row.workTime === "협의";
-                                  const toggleDay = (d: string) => { const nd = days.includes(d) ? days.filter((x) => x !== d) : [...days, d].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b)); setPos(cat, "workDays", nd.join("·")); };
-                                  const setDays = (arr: string[]) => setPos(cat, "workDays", [...new Set(arr)].sort((a, b) => WORK_DAY_OPTIONS.indexOf(a) - WORK_DAY_OPTIONS.indexOf(b)).join("·"));
-                                  const toggleGroup = (grp: string[], on: boolean) => { const base = days.filter((d) => !grp.includes(d)); setDays(on ? [...base, ...grp] : base); };
-                                  const allWeekday = WEEKDAY_DAYS.every((d) => days.includes(d));
-                                  const allWeekend = WEEKEND_DAYS.every((d) => days.includes(d));
-                                  const timeSel: React.CSSProperties = { flex: 1, minWidth: 0, height: 29, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "0 6px", fontSize: 12, background: timeNego ? "#f5f5f5" : "#fff", color: timeNego ? "#bbb" : "#333", cursor: timeNego ? "default" : "pointer" };
-                                  return (
-                                    <div ref={popRef} style={{ position: "fixed", left: popAt?.left ?? 8, top: popAt?.top ?? 8, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 244 }}>
-                                      <div style={{ fontSize: 11.5, color: "#888", marginBottom: 5 }}>근무요일</div>
-                                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                                        {WORK_DAY_OPTIONS.map((d) => { const on = days.includes(d); return (
-                                          <button key={d} type="button" disabled={daysNego} onClick={() => toggleDay(d)}
-                                            style={{ width: 27, height: 27, borderRadius: "50%", fontSize: 12, cursor: daysNego ? "default" : "pointer", border: on ? "1.5px solid #582681" : "1px solid #ddd", background: on ? "#582681" : "#fff", color: daysNego ? "#ccc" : (on ? "#fff" : "#666") }}>{d}</button>
-                                        ); })}
-                                      </div>
-                                      <div style={{ display: "flex", gap: 14, marginTop: 8 }}>
-                                        <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11.5, color: daysNego ? "#bbb" : "#555", cursor: daysNego ? "default" : "pointer" }}>
-                                          <input type="checkbox" disabled={daysNego} checked={allWeekday} onChange={(e) => toggleGroup(WEEKDAY_DAYS, e.target.checked)} /> 평일
-                                        </label>
-                                        <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11.5, color: daysNego ? "#bbb" : "#555", cursor: daysNego ? "default" : "pointer" }}>
-                                          <input type="checkbox" disabled={daysNego} checked={allWeekend} onChange={(e) => toggleGroup(WEEKEND_DAYS, e.target.checked)} /> 주말
-                                        </label>
-                                        <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11.5, color: "#555", cursor: "pointer" }}>
-                                          <input type="checkbox" checked={daysNego} onChange={(e) => setPos(cat, "workDays", e.target.checked ? "협의" : "")} /> 협의
-                                        </label>
-                                      </div>
-                                      <div style={{ fontSize: 11.5, color: "#888", margin: "10px 0 5px" }}>근무시간</div>
-                                      {/* 30분 단위 등 자유로운 시간을 넣을 수 있게 숫자 입력. 0930 처럼 쳐도 09:30으로 정리된다. */}
-                                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                        <input type="text" inputMode="numeric" disabled={timeNego} placeholder="0930" aria-label="근무 시작 시간"
-                                          value={tStart}
-                                          onChange={(e) => setTimeRange(cat, cleanTime(e.target.value), tEnd)}
-                                          onBlur={(e) => setTimeRange(cat, fmtTime(e.target.value), tEnd)}
-                                          style={{ ...timeSel, textAlign: "center", cursor: timeNego ? "default" : "text" }} />
-                                        <span style={{ color: "#888" }}>~</span>
-                                        <input type="text" inputMode="numeric" disabled={timeNego} placeholder="2000" aria-label="근무 종료 시간"
-                                          value={tEnd}
-                                          onChange={(e) => setTimeRange(cat, tStart, cleanTime(e.target.value))}
-                                          onBlur={(e) => setTimeRange(cat, tStart, fmtTime(e.target.value))}
-                                          style={{ ...timeSel, textAlign: "center", cursor: timeNego ? "default" : "text" }} />
-                                      </div>
-                                      <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 12.5, color: "#555", cursor: "pointer" }}>
-                                        <input type="checkbox" checked={timeNego} onChange={(e) => setPos(cat, "workTime", e.target.checked ? "협의" : "")} /> 시간 협의
-                                      </label>
-                                      {nonMember && (
-                                        <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px solid #eee" }}>
-                                          <input type="text" value={(days.length || daysNego) ? "" : row.workDays} onChange={(e) => setPos(cat, "workDays", e.target.value)} placeholder="요일 직접입력(예: 주말만)" style={{ ...cellInput, marginBottom: 6 }} />
-                                          <input type="text" value={(tm || timeNego || /[\d]|~/.test(row.workTime || "")) ? "" : row.workTime} onChange={(e) => setPos(cat, "workTime", e.target.value)} placeholder="시간 직접입력(예: 평일 저녁)" style={cellInput} />
-                                        </div>
-                                      )}
-                                      {/* 요일마다 시간이 다를 때("월·수·금은 이 시간, 화·목은 저 시간")
-                                          기본 근무요일/시간 한 벌로는 못 담아 여기서 몫을 나눠 추가한다. */}
-                                      {row.extraShifts.map((slot, i) => {
-                                        const slotDays = slot.days ? slot.days.split(/[·,]/).map((s) => s.trim()).filter(Boolean) : [];
-                                        const [sStart = "", sEnd = ""] = slot.time.split("~");
-                                        const setSlotTime = (start: string, end: string) => setExtraShift(cat, i, { time: start || end ? `${start}~${end}` : "" });
-                                        return (
-                                          <div key={i} style={{ marginTop: 10, paddingTop: 10, borderTop: "1px dashed #e5e5e5" }}>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
-                                              <span style={{ fontSize: 11.5, color: "#888" }}>근무시간 {i + 2}</span>
-                                              <button type="button" onClick={() => removeExtraShift(cat, i)} title="이 근무시간 삭제"
-                                                style={{ width: 18, height: 18, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0 }}>×</button>
-                                            </div>
-                                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                                              {WORK_DAY_OPTIONS.map((d) => { const on = slotDays.includes(d); return (
-                                                <button key={d} type="button" onClick={() => toggleExtraDay(cat, i, d)}
-                                                  style={{ width: 27, height: 27, borderRadius: "50%", fontSize: 12, cursor: "pointer", border: on ? "1.5px solid #582681" : "1px solid #ddd", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666" }}>{d}</button>
-                                              ); })}
-                                            </div>
-                                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8 }}>
-                                              <input type="text" inputMode="numeric" placeholder="0930" aria-label={`근무시간 ${i + 2} 시작`}
-                                                value={sStart}
-                                                onChange={(e) => setSlotTime(cleanTime(e.target.value), sEnd)}
-                                                onBlur={(e) => setSlotTime(fmtTime(e.target.value), sEnd)}
-                                                style={{ ...timeSel, textAlign: "center", cursor: "text" }} />
-                                              <span style={{ color: "#888" }}>~</span>
-                                              <input type="text" inputMode="numeric" placeholder="2000" aria-label={`근무시간 ${i + 2} 종료`}
-                                                value={sEnd}
-                                                onChange={(e) => setSlotTime(sStart, cleanTime(e.target.value))}
-                                                onBlur={(e) => setSlotTime(sStart, fmtTime(e.target.value))}
-                                                style={{ ...timeSel, textAlign: "center", cursor: "text" }} />
-                                            </div>
-                                          </div>
-                                        );
-                                      })}
-                                      <button type="button" onClick={() => addExtraShift(cat)}
-                                        style={{ display: "block", width: "100%", marginTop: 10, border: "1px dashed #d8d3e0", background: "#fff", color: "#582681", borderRadius: 6, padding: "6px 8px", fontSize: 12, cursor: "pointer" }}>
-                                        + 근무시간 추가
-                                      </button>
-                                      {/* 표 칸 밑에 상시 노출하면 늘 3행이 되어 지저분해 보였다 —
-                                          팝오버 안으로 옮긴다. 값을 정해 두고도, 값 없이도 체크할 수
-                                          있다: 있으면 "(협의)"만 덧붙고, 없으면 '협의' 그 자체가 된다. */}
-                                      <label style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 10, fontSize: 12.5, color: "#555", cursor: "pointer" }}>
-                                        <input type="checkbox" checked={row.shiftNego} onChange={(e) => setPos(cat, "shiftNego", e.target.checked)}
-                                          style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
-                                        협의 가능
-                                      </label>
-                                      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
-                                        <button type="button" onClick={() => setPosShiftOpen(null)} className="company-primary-btn" style={{ padding: "5px 14px", fontSize: 13 }}>닫기</button>
-                                      </div>
-                                    </div>
-                                  );
-                                })()}
+                                {shiftModalCat === cat && popAt && (
+                                  <WorkScheduleModal
+                                    value={shiftDisplay(row)}
+                                    onChange={(v) => setPos(cat, "shiftText", v)}
+                                    onClose={() => setShiftModalCat(null)}
+                                    popRef={popRef}
+                                    left={popAt.left}
+                                    top={popAt.top}
+                                  />
+                                )}
                               </td>
                               <td style={{ ...tdc, position: "relative" }}>
                                 {posCell(cat, "salary", [], "", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(cat, "salaryNego", v))}
