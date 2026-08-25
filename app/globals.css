@@ -6959,6 +6959,13 @@ div:has(> table.admin-table),
 }
 .company-nav-item:hover { background: #f7f7f8; color: #582681; }
 .company-nav-item.active { background: #f7f7f8; color: #582681; font-weight: 700; }
+/* 새 지원자 건수 — 알림 종의 빨간 배지와 같은 모양, 자리만 메뉴 줄 오른쪽 끝. */
+.company-nav-badge {
+  margin-left: auto; flex-shrink: 0;
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: #e2402d; color: #fff; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
 /* 채용공고 등록 — '채용공고 관리' 밑에 하위 메뉴로. 아이콘이 없는 만큼
    부모 글자(아이콘 20px+간격 10px=30px) 밑으로 들여써 글자 시작점을 맞춘다. */
 .company-nav-subitem { padding: 8px 12px 8px 42px; font-size: 14.5px; color: #888; }

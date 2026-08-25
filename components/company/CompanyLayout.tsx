@@ -315,6 +315,11 @@ export default function CompanyLayout({ children, activePage }: {
               <Link href={item.href} className={`company-nav-item ${activePage === item.id ? "active" : ""}`}>
                 <item.icon size={20} />
                 <span>{item.label}</span>
+                {/* 알림 종은 남기되("일단 종은 유지하자"), 지금 알림이 전부 새 지원자
+                    소식이라 실제로 움직여야 할 곳(지원자 관리)에 건수를 바로 보여준다. */}
+                {item.id === "applicants" && unread > 0 && (
+                  <span className="company-nav-badge">{unread > 99 ? "99+" : unread}</span>
+                )}
               </Link>
             </div>
           ))}
