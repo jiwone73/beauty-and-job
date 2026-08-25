@@ -13618,6 +13618,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
     display: grid; grid-template-columns: 150px minmax(0, 1fr);
     gap: 26px; margin: 0; align-items: start;   /* 왼쪽 정렬 · 폭 제한 없음 — 오른쪽에 빈 띠를 남기지 않는다 */
   }
+  /* 상단 버튼 줄은 jp-shell 그리드 밖에 있어 사이드(150px)+간격(26px)만큼 본문보다
+     왼쪽에 있었다 — 오른쪽 끝이 본문 오른쪽 끝보다 176px 짧아 보였다
+     ("버튼 3개 오른쪽 끝으로 정렬해줘"). 같은 만큼 밀어 오른쪽 끝을 맞춘다. */
+  .jp-header-offset { margin-left: 176px; }
   .jp-side {
     /* 바탕도 여백도 없이 떠 있어 본문 카드와 따로 놀았다. 이력서 사이드처럼
        흰 바탕에 여백을 두르고, 본문 첫 카드와 윗변을 맞춘다. */
@@ -13629,6 +13633,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   .jp-side-bar { height: 4px; background: #e3e3e6; border-radius: 2px; overflow: hidden; }
   .jp-side-bar span { display: block; height: 4px; background: var(--color-primary); border-radius: 2px; transition: width .2s; }
   .jp-side-count { font-size: 12px; color: #8a8a8f; margin: 5px 0 12px; }
+  .jp-side-group-title { font-size: 11px; font-weight: 600; color: #b3adbd; margin: 0 0 2px; padding: 0 8px; }
   .jp-side-item {
     display: flex; align-items: center; gap: 7px; width: 100%; text-align: left;
     background: none; border: none; cursor: pointer; padding: 7px 8px; border-radius: 7px;

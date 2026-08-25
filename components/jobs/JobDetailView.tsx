@@ -46,6 +46,10 @@ interface JobDetailViewProps {
   companyJobsCount?: number;
   onBrandClick?: () => void;
   asideAction?: ReactNode;
+  // 등록폼의 "미리보기" 모달에서만 켠다. 실제 공개 페이지는 그대로 두고,
+  // 미리보기의 기업정보만 폼에 없는 값(대표자·설립연도 등)을 걷어내
+  // "폼에 없는 값이 미리보기엔 있다"는 어긋남을 없앤다.
+  previewMode?: boolean;
 }
 
 /**
@@ -54,7 +58,7 @@ interface JobDetailViewProps {
  * 회사 정보는 공고 내용 아래에 인라인으로 표시(등록 시 입력한 값 그대로).
  */
 const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function JobDetailView(
-  { job, related = [], companyJobsCount = 0, onBrandClick, asideAction },
+  { job, related = [], companyJobsCount = 0, onBrandClick, asideAction, previewMode = false },
   ref
 ) {
   const ci = job.companyInfo || {};
@@ -67,7 +71,22 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       target="_blank" rel="noreferrer" style={{ color: "#582681", wordBreak: "break-all" }}>{url}</a>
   );
   const companyRows: [string, ReactNode][] = [];
-  if (isOfficeJob) {
+  if (previewMode) {
+    // 등록폼에는 대표자·설립연도 같은 입력칸이 없다 — 미리보기에서만, 폼이
+    // 실제로 다루는 값에 가까운 최소 항목으로 좁힌다("매장명·업종·주소·매장소개 /
+    // 본사는 회사명·업종·직원수·홈페이지·주소 정도").
+    if (isOfficeJob) {
+      if (ci.name) companyRows.push(["회사명", ci.name]);
+      if (ci.industry) companyRows.push(["업종", ci.industry]);
+      if (ci.size) companyRows.push(["직원수", ci.size]);
+      if (ci.website) companyRows.push(["홈페이지", linkCell(ci.website)]);
+      if (ci.location) companyRows.push(["주소", ci.location]);
+    } else {
+      if (ci.name) companyRows.push(["매장명", ci.name]);
+      if (ci.industry) companyRows.push(["업종", ci.industry]);
+      if (ci.location) companyRows.push(["주소", ci.location]);
+    }
+  } else if (isOfficeJob) {
     if (ci.name) companyRows.push(["회사명", ci.name]);
     if (ci.brandName) companyRows.push(["브랜드명", ci.brandName]);
     if (ci.industry) companyRows.push(["업종", ci.industry]);
