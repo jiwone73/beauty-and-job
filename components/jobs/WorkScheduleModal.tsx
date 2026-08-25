@@ -55,7 +55,9 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     if (type === "nego") { setDraft("협의"); return; }
     if (type === "custom" && days.length === 0) { setDraft(""); return; }
     const label = type === "weekday" ? "평일" : type === "weekend" ? "주말" : days.join(", ");
-    setDraft(`${label} ${fmtT(startH, startM)}-${fmtT(endH, endM)}`);
+    // 요일과 시간을 한 줄에 붙이면 길어서 표·칸에서 줄바꿈 없이 한 줄로 늘어졌다
+    // ("시간 줄바꿈 안되어 있어") — 요일 다음 줄에 시간을 따로 둔다.
+    setDraft(`${label}\n${fmtT(startH, startM)}-${fmtT(endH, endM)}`);
   };
 
   const toggleQDay = (d: string) => {

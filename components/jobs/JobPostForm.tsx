@@ -2960,11 +2960,11 @@ export default function JobPostForm({
                                     color: shiftDisplay(row) ? "#333" : "#b4b4b9",
                                     background: "transparent", display: "flex", alignItems: shiftDisplay(row) ? "flex-start" : "center", gap: 4,
                                     whiteSpace: "pre-line", wordBreak: "keep-all" }}>
-                                  {/* "/" 도 줄바꿈처럼 각자 한 줄로 — 근무시간 묶음이 여럿이면 표에서도 나뉘어 보인다. */}
-                                  {/* 값과 나란히 붙는 "(협의)"는 줄바꿈 없이 한 줄에 다 붙어 보였다
-                                      ("시간 줄바꿈 안되어 있어") — 마지막 줄 끝에서 떼어 "협의가능"
-                                      한 줄을 새로 붙인다. */}
-                                  <span style={{ flex: 1, minWidth: 0 }}>{shiftDisplay(row).replace(/\s*\/\s*/g, "\n").replace(/\s*\(\+?협의\)\s*$/, "\n협의가능")}</span>
+                                  {/* "/" 도 줄바꿈처럼 각자 한 줄로 — 근무시간 묶음이 여럿이면 표에서도 나뉘어 보인다.
+                                      빠른 선택은 요일과 시간을 이미 줄바꿈으로 나눠 저장한다("요일은
+                                      1행, 시간은 2행") — "(협의)"는 새 줄을 더 내리지 않고 그 줄
+                                      안에서 "협의가능"으로 바꿔 단다. */}
+                                  <span style={{ flex: 1, minWidth: 0 }}>{shiftDisplay(row).replace(/\s*\/\s*/g, "\n").replace(/\s*\(\+?협의\)\s*$/, " 협의가능")}</span>
                                   {!shiftDisplay(row) && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9", marginTop: 2 }} />}
                                 </button>
                                 {shiftModalCat === cat && popAt && (

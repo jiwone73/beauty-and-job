@@ -169,29 +169,28 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   // shiftText — 원티드식 자유 문장("월, 수 10시-18시 / 금 12시-20시")으로 등록한
                   // 공고는 이 필드가 있다. "/"로 나눠 묶음마다 한 줄로 보여준다. 이 필드가 없는
                   // (그 전에 저장된) 공고만 구조화 필드로 문장을 조립한다.
-                  // 협의 여지("(협의)")는 맨 마지막 줄 끝에만 붙어 저장돼 있어 그 줄에서만 뗀다.
+                  // 협의 여지("(협의)")는 맨 마지막 줄(시간) 끝에만 붙어 저장돼 있다 — 새 줄로
+                  // 더 내리지 않고, 그 줄 안에서 "(협의)"만 "협의가능"으로 바꿔 단다.
                   const rawShiftLines = p.shiftText ? String(p.shiftText).split(/\n|\//).map((s: string) => s.trim()).filter(Boolean) : [];
-                  let shiftNego = false;
                   const shiftLines = rawShiftLines.map((l: string, idx: number) => {
                     if (idx !== rawShiftLines.length - 1) return l;
                     const [base, nego] = splitNegoSuffix(l);
-                    if (nego) shiftNego = true;
-                    return nego ? base : l;
+                    return nego ? `${base} 협의가능` : l;
                   });
                   const content = c.key === "shift"
                     ? (shiftLines.length
                         ? (shiftLines.length === 1 && shiftLines[0] === "협의" ? "협의"
-                            : <>{shiftLines.map((l: string, i: number) => <div key={i}>{l}</div>)}{shiftNego && <div>협의가능</div>}</>)
+                            : shiftLines.map((l: string, i: number) => <div key={i}>{l}</div>))
                         : (p.workDays || p.workTime)
                         ? ((p.workDays === "협의" && p.workTime === "협의")
                             ? "협의"
                             : <>
                                 {daysTxt && <div>{daysTxt}</div>}
-                                {timeTxt && <div>{timeTxt}</div>}
+                                {timeTxt && <div>{timeTxt}{p.shiftNego && " 협의가능"}</div>}
+                                {!timeTxt && p.shiftNego && <div>협의가능</div>}
                                 {extraShifts.map((s: any, i: number) => (
                                   <div key={i}>{[s.days, s.time].filter(Boolean).join(" ")}</div>
                                 ))}
-                                {p.shiftNego && <div>협의가능</div>}
                               </>)
                         : "협의")
                     : c.key === "salary"

@@ -36,20 +36,27 @@ export default function CategoryPickPopover({ jobType, onPick, onClose }: Props)
   return (
     <>
       <style>{`
+        /* 트리거가 .job-detail-meta-item 안에 있어, 그 안의 모든 글자를 15px로
+           박아 두는 규칙(.jobpost-form .job-detail-meta-item *)을 그대로 물려받는다.
+           그 규칙도 클래스 두 개 특이도라, !important만으로는 안 지고 특이도까지
+           맞춰야 이긴다 — 그래서 아래 글자 크기 규칙은 전부 .catpick-pop-body를
+           덧붙여 클래스 두 개 이상으로 맞춘다. */
         .catpick-pop-body { position: absolute; top: calc(100% + 6px); left: 0; z-index: 200; background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 328px; max-width: calc(100vw - 16px); box-sizing: border-box; overflow: hidden; }
+        .catpick-pop-body.catpick-pop .cp-title { font-size: 12.5px !important; font-weight: 600; color: #333; }
         .cp-body { display: flex; }
         .cp-left { width: 132px; flex-shrink: 0; background: #fafafa; border-right: 1px solid #f0f0f0; }
-        .cp-group { display: block; width: 100%; text-align: left; padding: 9px 10px; background: none; border: none; cursor: pointer; font-size: 12px; color: #666; border-left: 2px solid transparent; white-space: nowrap; box-sizing: border-box; }
+        .catpick-pop-body.catpick-pop .cp-group { display: block; width: 100%; text-align: left; padding: 9px 10px; background: none; border: none; cursor: pointer; font-size: 10px !important; color: #666; border-left: 2px solid transparent; white-space: nowrap; box-sizing: border-box; }
         .cp-group.on { background: #fff; color: #582681; font-weight: 600; border-left-color: #582681; }
         .cp-right { flex: 1; padding: 6px; }
-        .cp-item { display: block; width: 100%; text-align: left; padding: 8px 9px; background: none; border: none; border-radius: 6px; cursor: pointer; font-size: 12.5px; color: #333; }
+        .catpick-pop-body.catpick-pop .cp-item { display: block; width: 100%; text-align: left; padding: 8px 9px; background: none; border: none; border-radius: 6px; cursor: pointer; font-size: 12.5px !important; color: #333; }
         .cp-item:hover { background: #f7f7f8; color: #582681; }
         .cp-other { padding: 10px; }
-        .cp-other input { width: 100%; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; padding: 6px 8px; font-size: 12.5px; margin-bottom: 6px; }
+        .catpick-pop-body.catpick-pop .cp-other input { width: 100%; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; padding: 6px 8px; font-size: 12.5px !important; margin-bottom: 6px; }
+        .catpick-pop-body.catpick-pop .cp-add-btn { width: 100%; justify-content: center; padding: 6px 0; font-size: 12px !important; }
       `}</style>
       <div className="catpick-pop-body catpick-pop" onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px" }}>
-          <span style={{ fontSize: 12.5, fontWeight: 600, color: "#333" }}>모집분야 추가</span>
+          <span className="cp-title">모집분야 추가</span>
           <button type="button" onClick={onClose} aria-label="닫기" style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", padding: 2 }}><X size={14} /></button>
         </div>
         <div className="cp-body">
@@ -65,7 +72,7 @@ export default function CategoryPickPopover({ jobType, onPick, onClose }: Props)
                 <input autoFocus value={customText} onChange={(e) => setCustomText(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustom(); } }}
                   placeholder="포지션명 입력 (예: 실장, 인턴)" autoComplete="off" />
-                <button type="button" onClick={addCustom} className="company-primary-btn" style={{ width: "100%", justifyContent: "center", padding: "6px 0", fontSize: 12 }}>추가</button>
+                <button type="button" onClick={addCustom} className="company-primary-btn cp-add-btn">추가</button>
               </div>
             ) : (
               items.map((item) => (
