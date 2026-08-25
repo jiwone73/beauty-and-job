@@ -6941,10 +6941,6 @@ div:has(> table.admin-table),
 .company-logo-name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
 .company-logo-category { font-size: 13px; color: #888; }
 .company-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; }
-/* 대분류 소제목 — 채용·인재·설정 묶음의 경계를 알린다("왼쪽 전체 사이드메뉴를
-   대분류로 묶어줘"). 대시보드는 어디에도 안 속해 소제목 없이 맨 위에 혼자 둔다. */
-.company-nav-group-title { margin: 14px 12px 4px; font-size: 12px; font-weight: 600; color: #b3adbd; }
-.company-nav > div:first-child .company-nav-group-title { margin-top: 4px; }
 .company-nav-item {
   display: flex;
   align-items: center;
@@ -13637,7 +13633,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   .jp-side-bar { height: 4px; background: #e3e3e6; border-radius: 2px; overflow: hidden; }
   .jp-side-bar span { display: block; height: 4px; background: var(--color-primary); border-radius: 2px; transition: width .2s; }
   .jp-side-count { font-size: 12px; color: #8a8a8f; margin: 5px 0 12px; }
-  .jp-side-group-title { font-size: 11px; font-weight: 600; color: #b3adbd; margin: 0 0 2px; padding: 0 8px; }
   .jp-side-item {
     display: flex; align-items: center; gap: 7px; width: 100%; text-align: left;
     background: none; border: none; cursor: pointer; padding: 7px 8px; border-radius: 7px;

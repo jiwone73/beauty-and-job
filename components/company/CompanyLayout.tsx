@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
-  Briefcase, Users, FileText, Settings,
+  Briefcase, Users, FileText, FilePlus2, Settings,
   Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink
 } from "lucide-react";
 
@@ -119,20 +119,20 @@ export default function CompanyLayout({ children, activePage }: {
   const isLegacy = segments[0] === "company";
   const base = isLegacy ? "/company/dashboard" : `/${segments[0]}`;
 
-  // 대분류로 묶는다 — 예전엔 6개가 한 줄로 쭉 이어져 채용·인재·설정이 한 덩어리로
-  // 읽혔다("왼쪽 전체 사이드메뉴를 대분류로 묶어줘"). 대시보드는 어디에도 안 속하는
-  // 홈이라 소제목 없이 맨 위에 혼자 둔다.
+  // 채용공고 등록을 '채용공고 관리'의 하위 항목이 아니라 같은 깊이의 독립 메뉴로 뺀다
+  // ("채용공고 관리 안에 넣지 말고 동일한 depth로 별도로 빼줘 아이콘도 넣어주고").
+  // group이 앞 항목과 달라지는 자리에 글씨 없이 구분선만 넣는다
+  // ("글씨 빼는대신에 구분선 넣어서 구분만 해줘").
   const NAV_ITEMS = [
-    { id: "dashboard", label: "대시보드",      icon: Briefcase,    href: base },
-    { id: "jobs",      label: "채용공고 관리", icon: FileText,     href: `${base}/jobs`, group: "채용",
-      children: [{ id: "jobs-new", label: "채용공고 등록", href: `${base}/jobs/new` }] },
-    { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent`, group: "인재" },
-    { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped`, group: "인재" },
-    { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "인재" },
-    { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings`, group: "설정" },
+    { id: "dashboard", label: "대시보드",      icon: Briefcase,    href: base, group: "home" },
+    { id: "jobs",      label: "채용공고 관리", icon: FileText,     href: `${base}/jobs`, group: "jobs" },
+    { id: "jobs-new",  label: "채용공고 등록", icon: FilePlus2,    href: `${base}/jobs/new`, group: "jobs" },
+    { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent`, group: "talent" },
+    { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped`, group: "talent" },
+    { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "talent" },
+    { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings`, group: "settings" },
   ];
-  // '신규 공고' 버튼이 이미 이 주소로 보낸다. 사이드에도 같은 자리를
-  // '채용공고 관리' 밑에 둔다 — 등록 화면이 목록의 하위 동작이라서다.
+  // /jobs·/jobs/new 둘 다 activePage="jobs"로 넘어와 이걸로 둘을 가른다.
   const isJobsNew = pathname === `${base}/jobs/new`;
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -311,24 +311,21 @@ export default function CompanyLayout({ children, activePage }: {
         </div>
 
         <nav className="company-nav">
-          {NAV_ITEMS.map((item, i) => (
-            <div key={item.id}>
-              {item.group && item.group !== NAV_ITEMS[i - 1]?.group && (
-                <p className="company-nav-group-title">{item.group}</p>
-              )}
-              <Link href={item.href}
-                className={`company-nav-item ${activePage === item.id && !(item.id === "jobs" && isJobsNew) ? "active" : ""}`}>
-                <item.icon size={20} />
-                <span>{item.label}</span>
-              </Link>
-              {item.children?.map((child) => (
-                <Link key={child.id} href={child.href}
-                  className={`company-nav-item company-nav-subitem ${child.id === "jobs-new" && isJobsNew ? "active" : ""}`}>
-                  <span>{child.label}</span>
+          {NAV_ITEMS.map((item, i) => {
+            // activePage는 /jobs·/jobs/new 둘 다 "jobs"로 넘어온다 — isJobsNew로 둘을 가른다.
+            const isOn = item.id === "jobs-new" ? isJobsNew
+              : item.id === "jobs" ? (activePage === "jobs" && !isJobsNew)
+              : activePage === item.id;
+            return (
+              <div key={item.id}>
+                {item.group !== NAV_ITEMS[i - 1]?.group && i > 0 && <div className="company-nav-divider" />}
+                <Link href={item.href} className={`company-nav-item ${isOn ? "active" : ""}`}>
+                  <item.icon size={20} />
+                  <span>{item.label}</span>
                 </Link>
-              ))}
-            </div>
-          ))}
+              </div>
+            );
+          })}
           {/* 사이트로 이동은 메뉴의 연장선이라 맨 아래가 아니라 마지막 메뉴 밑에 둔다. */}
           <div className="company-nav-divider" />
           <button className="company-nav-item" onClick={() => router.push("/")}>

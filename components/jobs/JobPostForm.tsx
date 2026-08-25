@@ -2317,24 +2317,21 @@ export default function JobPostForm({
   const 지역참 = regionList.length > 0
     || deriveRegion(nmFullAddress).length > 0
     || extraLocations.some((l) => deriveRegion([l.address, l.detail].filter(Boolean).join(" ")).length > 0);
-  // 대분류로 묶는다 — 실제 본문도 배너 아래 "기본정보"(제목·마감일·모집부문) 한
-  // 카드, 그다음 근무지역·복리후생, 마지막에 상세요강 순서라 그 짜임을 그대로 따른다.
   const 할칸 = [
-    { id: "banner", label: "배너", group: "기본정보", done: bannerImages.length > 0 },
-    { id: "title", label: "제목", group: "기본정보", done: !!form.title.trim() },
-    { id: "positions", label: "모집분야", group: "기본정보", done: categories.length > 0 },
-    { id: "deadline", label: "마감일", group: "기본정보", done: !!form.deadline || alwaysOpen },
-    { id: "region", label: "근무지역", group: "근무조건", done: 지역참 },
-    { id: "benefit", label: "복리후생", group: "근무조건", done: benefitTags.length > 0 || !!fiBenefits.trim() },
+    { id: "banner", label: "배너", done: bannerImages.length > 0 },
+    { id: "title", label: "제목", done: !!form.title.trim() },
+    { id: "positions", label: "모집분야", done: categories.length > 0 },
+    { id: "deadline", label: "마감일", done: !!form.deadline || alwaysOpen },
+    { id: "region", label: "근무지역", done: 지역참 },
+    { id: "benefit", label: "복리후생", done: benefitTags.length > 0 || !!fiBenefits.trim() },
     // 상세요강: 이미지가 있으면 됐고, 없으면 본문(본사=담당업무 / 매장=상세요강 글)과 자격요건.
     //   전엔 description 만 봐서 본사 공고는 아무리 채워도 안 채운 것으로 셌다.
-    { id: "detail", label: "상세요강", group: "상세정보", done: detailImages.length > 0
+    { id: "detail", label: "상세요강", done: detailImages.length > 0
         || (!!String(isOffice ? form.responsibilities : form.description || "").trim()
             && !!String(form.requirements || "").trim()) },
   ];
   const 채운칸 = 할칸.filter((c) => c.done).length;
   const 작성률 = Math.round((채운칸 / 할칸.length) * 100);
-  const 할칸그룹 = Array.from(new Set(할칸.map((c) => c.group))).map((g) => ({ group: g, items: 할칸.filter((c) => c.group === g) }));
 
   // 모집부문 표 칸 너비 — 고정 퍼센트로 두니 "아르바이트"·"여성 우대"·"초대졸 이상"처럼
   // 값이 긴 칸은 말줄임(...)으로 잘리고, 근무요일/시간·급여는 늘 남아돌았다
@@ -2720,16 +2717,11 @@ export default function JobPostForm({
             <p className="jp-side-title">작성 현황</p>
             <div className="jp-side-bar"><span style={{ width: `${작성률}%` }} /></div>
             <p className="jp-side-count">{채운칸}/{할칸.length} 완료</p>
-            {할칸그룹.map((g, gi) => (
-              <div key={g.group} className="jp-side-group" style={gi > 0 ? { marginTop: 10 } : undefined}>
-                <p className="jp-side-group-title">{g.group}</p>
-                {g.items.map((c) => (
-                  <button key={c.id} type="button" className={`jp-side-item ${c.done ? "on" : ""}`}
-                    onClick={() => document.getElementById(`jp-${c.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}>
-                    <span>{c.done ? "✓" : "○"}</span>{c.label}
-                  </button>
-                ))}
-              </div>
+            {할칸.map((c) => (
+              <button key={c.id} type="button" className={`jp-side-item ${c.done ? "on" : ""}`}
+                onClick={() => document.getElementById(`jp-${c.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}>
+                <span>{c.done ? "✓" : "○"}</span>{c.label}
+              </button>
             ))}
           </aside>
         )}
