@@ -1949,9 +1949,11 @@ export default function JobPostForm({
   // 13.5px — 실제 미리보기(JobDetailView) 표와 같은 크기. 여기서 잘리지 않으면
   // 거기서도 잘리지 않는다. 글자 크기가 다르면 여기서 안 잘려 보여도 막상
   // 등록하면 잘릴 수 있어, 폼만 보고는 미리 알 수 없었다.
-  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 13.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap" };
+  // 칸 사이 경계가 없으니 여러 줄로 접힌 값(근무요일/시간·급여)이 어느 줄까지 한 칸인지
+  // 구분이 안 됐다("테이블 라인을 만들 수 있나"). 흐린 회색 선으로 칸을 나눈다.
+  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 13.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap", borderBottom: "1px solid #e3e3e6", borderRight: "1px solid #e3e3e6" };
   const reqStar = <span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span>; // 필수 열 표시(모집분야만)
-  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f7f7f8", verticalAlign: "middle" };
+  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #e3e3e6", borderRight: "1px solid #e3e3e6", verticalAlign: "middle" };
   // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
   const firstCol: React.CSSProperties = { paddingLeft: 0 };
   const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
@@ -2909,7 +2911,7 @@ export default function JobPostForm({
               {/* ── 모집부문 표: 분야별 고용형태·성별·경력/직책·학력·근무·급여 ── */}
               <div style={{ margin: "10px 0 22px" }}>
                 {categories.length === 0 ? null : (
-                  <div style={{ overflowX: "auto" }}>
+                  <div style={{ overflowX: "auto", border: "1px solid #e3e3e6", borderRadius: 8 }}>
                     <table style={{ minWidth: 566, borderCollapse: "collapse" }}>
                       {/* 빈 칸의 자리글은 비워 뒀다. 머리줄이 이미 칸 이름을 대고 있어
                           같은 말이 위아래로 두 번 나오기 때문. 빈 칸은 회색 바탕(PH_BG)만으로
@@ -2925,7 +2927,7 @@ export default function JobPostForm({
                           <th style={{ ...thc, minWidth: 72 }}>경력/직책</th>
                           <th style={{ ...thc, minWidth: 52 }}>학력</th>
                           <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>
-                          <th style={{ ...thc, minWidth: 96, maxWidth: 130 }}>급여</th>
+                          <th style={{ ...thc, minWidth: 96, maxWidth: 130, borderRight: "none" }}>급여</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2980,7 +2982,7 @@ export default function JobPostForm({
                                   />
                                 )}
                               </td>
-                              <td style={{ ...tdc, position: "relative" }}>
+                              <td style={{ ...tdc, position: "relative", borderRight: "none" }}>
                                 {posCell(cat, "salary", [], "", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(cat, "salaryNego", v))}
                               </td>
                             </tr>
