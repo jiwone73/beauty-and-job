@@ -13617,8 +13617,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   }
   .jp-side-item span { width: 13px; flex-shrink: 0; color: #c4c4c9; }
   .jp-side-item:hover { background: #efeff1; color: #2b2b2b; }
-  .jp-side-item.on { color: var(--color-primary); }
-  .jp-side-item.on span { color: var(--color-primary); }
+  .jp-side-item.on { color: #b3b3b8; filter: blur(1px); }
+  .jp-side-item.on span { color: #b3b3b8; }
 
   .jp-body { min-width: 0; }
 }
