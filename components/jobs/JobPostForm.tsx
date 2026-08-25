@@ -2035,7 +2035,9 @@ export default function JobPostForm({
           {!v && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9", marginTop: wrap ? 2 : 0 }} />}
         </button>
         {open && popAt && (
-          <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, boxSizing: "border-box",
+          // 급여 팝오버만 뷰티워크 보라를 배경으로 채운다("연보라 안 하기로 했는데" — 옅은
+          // 톤 말고 브랜드 보라 그대로). 다른 칸(학력·경력 등)은 units 가 없어 그대로 흰 배경.
+          <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: units ? "#582681" : "#fff", border: units ? "none" : "1px solid #e5e5e5", borderRadius: 8, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, boxSizing: "border-box",
             // 목록은 항목 길이에 맞춰 좁게(오른쪽 빈 공간 제거), 자유입력·급여는 입력칸이 있어 고정 폭
             ...(freeInput ? { width } : { width: "max-content", minWidth: 84, maxWidth: 220 }) }}>
             {!freeInput ? (
@@ -2067,7 +2069,7 @@ export default function JobPostForm({
                       return (
                         <button key={u.label} type="button"
                           onClick={() => { setPos(cat, field, withSalaryUnit(v, u.prefix)); cellInputRef.current?.focus({ preventScroll: true }); }}
-                          style={{ border: `1px solid ${on ? "#582681" : "#efeff1"}`, background: on ? "#f7f7f8" : "#fff", color: on ? "#582681" : "#666", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>{u.label}</button>
+                          style={{ border: `1px solid ${on ? "#fff" : "rgba(255,255,255,0.5)"}`, background: on ? "#fff" : "transparent", color: on ? "#582681" : "#fff", borderRadius: 6, padding: "2px 7px", fontSize: 11.5, cursor: "pointer" }}>{u.label}</button>
                       );
                     })}
                   </div>
@@ -2079,20 +2081,12 @@ export default function JobPostForm({
                         onChange={(e) => setPos(cat, field, buildSalary(e.target.value.replace(/\D/g, ""), sMax, sOpenEnded))}
                         onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
                         style={{ width: 0, flex: 1, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12, textAlign: "center" }} />
-                      <span style={{ color: "#888", fontSize: 12, flexShrink: 0 }}>~</span>
+                      <span style={{ color: units ? "#fff" : "#888", fontSize: 12, flexShrink: 0 }}>~</span>
                       <input type="text" inputMode="numeric" placeholder="최대(선택)" value={sMax}
                         onChange={(e) => setPos(cat, field, buildSalary(sMin, e.target.value.replace(/\D/g, ""), sOpenEnded))}
                         onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
                         style={{ width: 0, flex: 1, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12, textAlign: "center" }} />
                     </div>
-                    {/* 최대를 안 적으면 "300"(확정)인지 "300~"(이상)인지 갈린다 — 체크로 고른다. */}
-                    {!sMax && (
-                      <label style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 5, fontSize: 11.5, color: "#888", cursor: "pointer" }}>
-                        <input type="checkbox" checked={sOpenEnded} onChange={(e) => setPos(cat, field, buildSalary(sMin, "", e.target.checked))}
-                          style={{ width: 12, height: 12, margin: 0, accentColor: "#582681" }} />
-                        최대 없이 "{sMin || "300"}~"(이상)으로 표시
-                      </label>
-                    )}
                   </div>
                 ) : (
                   <input ref={cellInputRef} type="text" value={v} onChange={(e) => setPos(cat, field, e.target.value)} placeholder={ph}
@@ -2110,9 +2104,9 @@ export default function JobPostForm({
                       { v: "hidden" as const, label: "협의 · 금액 비공개" },
                       { v: "open" as const, label: "협의 · 금액 제시" },
                     ]).map((o) => (
-                      <label key={o.v} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#555", cursor: "pointer" }}>
+                      <label key={o.v} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: units ? "#fff" : "#555", cursor: "pointer" }}>
                         <input type="radio" name={`nego-${key}`} checked={nego === o.v} onChange={() => onNegoChange(o.v)}
-                          style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
+                          style={{ width: 13, height: 13, margin: 0, accentColor: units ? "#fff" : "#582681" }} />
                         {o.label}
                       </label>
                     ))}
@@ -2120,7 +2114,8 @@ export default function JobPostForm({
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
                   {options.length > 0 ? <button type="button" onClick={() => setCellFree(false)} style={{ border: "none", background: "none", color: "#888", fontSize: 11.5, cursor: "pointer" }}>목록으로</button> : <span />}
-                  <button type="button" onClick={() => setCellOpen(null)} className="company-primary-btn" style={{ padding: "3px 11px", fontSize: 11.5 }}>확인</button>
+                  <button type="button" onClick={() => setCellOpen(null)} className={units ? undefined : "company-primary-btn"}
+                    style={units ? { padding: "3px 11px", fontSize: 11.5, background: "#fff", color: "#582681", border: "none", borderRadius: 6, fontWeight: 600, cursor: "pointer" } : { padding: "3px 11px", fontSize: 11.5 }}>확인</button>
                 </div>
               </>
             )}
