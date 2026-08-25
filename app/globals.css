@@ -13630,7 +13630,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
      왼쪽으로 밀어줘") — DOM 순서(사이드 먼저, 본문 다음)는 그대로 두고
      grid-column 으로 칸만 맞바꾼다. */
   .jp-shell {
+    /* 사이드가 왼쪽일 땐 폭 제한이 없어도 됐다(넘치는 폭이 본문 오른쪽에
+       빈 띠로만 남았다) — 오른쪽으로 옮긴 뒤로는 그 빈 띠가 그대로 사이드를
+       화면 오른쪽 끝까지 떠밀어 본문과 멀어졌다("작성현황이 오른쪽 끝으로
+       밀렸네"). 본문(800) + 간격(26) + 사이드(150) 만큼만 쓴다. */
     display: grid; grid-template-columns: minmax(0, 1fr) 150px;
+    max-width: 976px;
     gap: 26px; margin: 0; align-items: start;
   }
   /* 사이드가 왼쪽에 있을 때는 본문이 176px(사이드+간격) 밀려나 상단 버튼 줄과

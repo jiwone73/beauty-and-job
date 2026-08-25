@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { passwordError, PASSWORD_HINT } from "@/lib/password";
 
 // 계정 설정에서 '차단 기업'과 같은 자리글 방식으로 연다 — 늘 펼쳐 둔
 // 아코디언 대신 판으로. 닫힐 때마다 입력한 것을 지워 다음에 열면 늘 빈
@@ -17,7 +18,8 @@ export default function PasswordChangeModal({ open, onClose }: { open: boolean; 
 
   const handleChangePw = async () => {
     if (!curPw || !newPw) { alert("현재 비밀번호와 새 비밀번호를 입력해주세요."); return; }
-    if (newPw.length < 8) { alert("새 비밀번호는 8자 이상이어야 합니다."); return; }
+    const pwErr = passwordError(newPw);
+    if (pwErr) { alert(pwErr); return; }
     if (newPw !== confirmPw) { alert("새 비밀번호가 일치하지 않습니다."); return; }
     const token = localStorage.getItem("access_token");
     if (!token) { alert("로그인이 필요합니다."); return; }
@@ -54,7 +56,7 @@ export default function PasswordChangeModal({ open, onClose }: { open: boolean; 
         <div className="cv-body">
           <input type="password" placeholder="현재 비밀번호" value={curPw} onChange={(e) => setCurPw(e.target.value)}
             style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
-          <input type="password" placeholder="새 비밀번호 (8자 이상)" value={newPw} onChange={(e) => setNewPw(e.target.value)}
+          <input type="password" placeholder={`새 비밀번호 (${PASSWORD_HINT})`} value={newPw} onChange={(e) => setNewPw(e.target.value)}
             style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 8, boxSizing: "border-box" }} />
           <input type="password" placeholder="새 비밀번호 확인" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)}
             style={{ width: "100%", height: 44, padding: "0 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, marginBottom: 16, boxSizing: "border-box" }} />

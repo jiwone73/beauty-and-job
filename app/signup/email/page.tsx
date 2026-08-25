@@ -7,6 +7,7 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useAuthStore } from "@/lib/store/authStore";
 import { setLoginPersistence } from "@/lib/auth/session";
+import { passwordError, PASSWORD_HINT } from "@/lib/password";
 
 interface Term {
   id: string;
@@ -61,15 +62,7 @@ function SignupEmailContent() {
     return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
   };
 
-  const isPasswordValid = (pw: string) => {
-    if (pw.length < 8 || pw.length > 16) return false;
-    const hasUpper = /[A-Z]/.test(pw);
-    const hasLower = /[a-z]/.test(pw);
-    const hasNumber = /[0-9]/.test(pw);
-    const hasSpecial = /[^A-Za-z0-9]/.test(pw);
-    const count = [hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length;
-    return count >= 3;
-  };
+  const isPasswordValid = (pw: string) => !passwordError(pw);
 
   const requiredTerms = terms.filter((t) => t.is_required);
   const optionalTerms = terms.filter((t) => !t.is_required);
@@ -412,7 +405,7 @@ function SignupEmailContent() {
               className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
             />
             <p className={`text-[12px] md:text-[14px] mt-1.5 leading-relaxed ${password && !isPasswordValid(password) ? "text-[#e74c3c]" : "text-[#9a9a9a]"}`}>
-              영문·숫자·특수문자 중 3가지 이상으로 조합해 8자 이상 16자 이하로 입력해주세요.
+              {PASSWORD_HINT}
             </p>
             {passwordConfirm && password !== passwordConfirm && (
               <p className="text-[12px] md:text-[14px] text-[#e74c3c] mt-1">비밀번호가 일치하지 않습니다.</p>

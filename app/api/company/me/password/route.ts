@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
+import { passwordError } from "@/lib/password";
 
 export async function PATCH(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
@@ -13,8 +14,9 @@ export async function PATCH(req: NextRequest) {
   if (!current_password || !new_password) {
     return err("AUTH_001", "현재 비밀번호와 새 비밀번호를 입력해주세요.", 400);
   }
-  if (new_password.length < 8) {
-    return err("VALIDATION_001", "새 비밀번호는 8자 이상이어야 합니다.", 400);
+  const pwErr = passwordError(new_password);
+  if (pwErr) {
+    return err("VALIDATION_001", pwErr, 400);
   }
 
   try {

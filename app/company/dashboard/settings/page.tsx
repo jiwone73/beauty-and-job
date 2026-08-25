@@ -12,6 +12,7 @@ import { InlineSuggest, InlineText } from "@/components/profile/inline/InlineFie
 import { Plus, Trash2, Store, Tag, Link as LinkIcon, Globe, Users, Calendar,
   UserRound, Phone, Smartphone, Home, FileText, Image as ImageIcon, BadgeCheck } from "lucide-react";
 import type { CompanyInfo } from "@/lib/types/company";
+import { passwordError, PASSWORD_HINT } from "@/lib/password";
 
 declare global {
   interface Window { daum?: any; }
@@ -335,8 +336,9 @@ export default function CompanySettingsPage() {
       alert("현재 비밀번호와 새 비밀번호를 입력해주세요.");
       return;
     }
-    if (pwForm.new_password.length < 8) {
-      alert("새 비밀번호는 8자 이상이어야 합니다.");
+    const pwErr = passwordError(pwForm.new_password);
+    if (pwErr) {
+      alert(pwErr);
       return;
     }
     if (pwForm.new_password !== pwForm.confirm_password) {
@@ -964,7 +966,7 @@ export default function CompanySettingsPage() {
             <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="현재 비밀번호"
               value={pwForm.current_password}
               onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })} />
-            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 (8자 이상)"
+            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder={`새 비밀번호 (${PASSWORD_HINT})`}
               style={{ marginTop: "8px" }}
               value={pwForm.new_password}
               onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })} />

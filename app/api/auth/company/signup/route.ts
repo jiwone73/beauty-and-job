@@ -7,6 +7,7 @@ import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
 import { sendCompanyWelcomeEmail } from '@/lib/email'
 import { verifyBusinessNumber } from '@/lib/business/verify'
+import { passwordError } from '@/lib/password'
 
 // ── 기업 가입 승인 게이트 (드롭인) ───────────────────────────
 // 4단계에서 이 함수 안에 본인인증 + 진위확인을 넣어 통과 시 'ACTIVE' 반환하면 자동승인 전환.
@@ -35,8 +36,9 @@ export async function POST(req: NextRequest) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return err('USER_002', '올바른 이메일 형식이 아닙니다.')
   }
-  if (password.length < 8) {
-    return err('USER_002', '비밀번호는 최소 8자 이상이어야 합니다.')
+  const pwErr = passwordError(password)
+  if (pwErr) {
+    return err('USER_002', pwErr)
   }
   const cleanBizNum = business_number.replace(/\D/g, '')
   if (cleanBizNum.length !== 10) {

@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server'
 import bcrypt from 'bcryptjs'
 import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
+import { passwordError } from '@/lib/password'
 
 export async function POST(req: NextRequest) {
   const { token, password } = await req.json()
@@ -12,8 +13,9 @@ export async function POST(req: NextRequest) {
     return err('USER_002', '토큰과 새 비밀번호를 입력해주세요.')
   }
 
-  if (password.length < 8) {
-    return err('USER_002', '비밀번호는 최소 8자 이상이어야 합니다.')
+  const pwErr = passwordError(password)
+  if (pwErr) {
+    return err('USER_002', pwErr)
   }
 
   const tokenRes = await pool.query(

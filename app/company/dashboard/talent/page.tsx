@@ -680,7 +680,7 @@ export default function TalentPage() {
                   <tr key={t.id}>
                     <td>
                       <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(t)}
-                        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                        style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 10, textAlign: "left" }}>
                         <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           {t.avatarUrl
                             ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />

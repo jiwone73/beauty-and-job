@@ -4,6 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { passwordError, PASSWORD_HINT } from "@/lib/password";
 
 export default function PasswordResetTokenPage() {
   const router = useRouter();
@@ -16,18 +17,10 @@ export default function PasswordResetTokenPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
-  const isPasswordValid = (pw: string) => {
-    if (pw.length < 8 || pw.length > 16) return false;
-    const hasUpper = /[A-Z]/.test(pw);
-    const hasLower = /[a-z]/.test(pw);
-    const hasNumber = /[0-9]/.test(pw);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pw);
-    return [hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length >= 3;
-  };
-
   const handleSubmit = async () => {
-    if (!isPasswordValid(password)) {
-      setError("비밀번호 규칙을 확인해주세요.");
+    const pwErr = passwordError(password);
+    if (pwErr) {
+      setError(pwErr);
       return;
     }
     if (password !== passwordConfirm) {
@@ -133,7 +126,7 @@ export default function PasswordResetTokenPage() {
               className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[15px] focus:outline-none focus:border-[#582681]"
             />
             <p className="text-[12px] md:text-[13px] text-[#9a9a9a] mt-1.5">
-              영문 대소문자, 숫자, 특수문자를 3가지 이상으로 조합해 8~16자
+              {PASSWORD_HINT}
             </p>
           </div>
           {error && <p className="text-[13px] md:text-[14px] text-[#e74c3c] mt-3">{error}</p>}
