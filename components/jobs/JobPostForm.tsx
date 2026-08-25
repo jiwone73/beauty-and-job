@@ -2011,7 +2011,11 @@ export default function JobPostForm({
     // '협의'만), "제시 협의"(금액을 보여주고 조율 여지도 표시, 예전의 '협의+').
     // 값을 지우고 그 자리를 '협의'로 바꿔치기하던 예전 방식은 이미 적어 둔
     // 급여를 날려 버리는 사고로 이어져 없앴다 — 값은 그대로 두고 표시만 바뀐다.
-    const shown = nego === "hidden" ? "협의" : nego === "open" ? (v && v !== "협의" ? `${v} (협의)` : "협의") : v;
+    // 협의 여지를 값과 나란히 "(협의)"로 붙이면 표에서도 금액의 일부처럼 읽힌다
+    // (공개 화면과 같은 이유). 아래 줄에 "협의가능"으로 뗀다.
+    const shown = nego === "hidden" ? "협의"
+      : nego === "open" ? (v && v !== "협의" ? <>{v}<div>협의가능</div></> : "협의")
+      : v;
     const key = `${cat}|${field}`;
     const open = cellOpen === key;
     const freeInput = options.length === 0 || cellFree;      // 목록 없는 칸이거나 '직접입력'을 고른 상태
@@ -2957,7 +2961,10 @@ export default function JobPostForm({
                                     background: "transparent", display: "flex", alignItems: shiftDisplay(row) ? "flex-start" : "center", gap: 4,
                                     whiteSpace: "pre-line", wordBreak: "keep-all" }}>
                                   {/* "/" 도 줄바꿈처럼 각자 한 줄로 — 근무시간 묶음이 여럿이면 표에서도 나뉘어 보인다. */}
-                                  <span style={{ flex: 1, minWidth: 0 }}>{shiftDisplay(row).replace(/\s*\/\s*/g, "\n") || "선택 또는 입력"}</span>
+                                  {/* 값과 나란히 붙는 "(협의)"는 줄바꿈 없이 한 줄에 다 붙어 보였다
+                                      ("시간 줄바꿈 안되어 있어") — 마지막 줄 끝에서 떼어 "협의가능"
+                                      한 줄을 새로 붙인다. */}
+                                  <span style={{ flex: 1, minWidth: 0 }}>{shiftDisplay(row).replace(/\s*\/\s*/g, "\n").replace(/\s*\(\+?협의\)\s*$/, "\n협의가능")}</span>
                                   {!shiftDisplay(row) && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9", marginTop: 2 }} />}
                                 </button>
                                 {shiftModalCat === cat && popAt && (
