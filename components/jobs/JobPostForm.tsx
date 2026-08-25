@@ -2049,14 +2049,11 @@ export default function JobPostForm({
           style={{ ...cellSelect, background: "transparent", textAlign: "center", color: v ? "#333" : "#b4b4b9",
             display: "flex", alignItems: wrap ? "flex-start" : "center", justifyContent: "center", gap: 4,
             border: "none", borderRadius: 0 }}>
-          {/* 급여처럼 길어질 수 있는 값은 잘라내지(...) 않고 두 줄까지 접는다.
-              maxWidth 없이 whiteSpace:normal 만 주면 표가 그냥 옆으로 넓어져
-              한 줄에 다 펴져 버린다 — 폭을 못박아야 그 안에서 접힌다. */}
-          {/* minWidth:0 이면 다른 칸(고용형태·성별 등)이 제 몫을 채울 때 이 칸부터
-              먼저 짜부라져 3행까지 접혔다 — 바닥(104)을 둬 표가 대신 옆으로 늘거나
-              스크롤되게 한다(감싼 div 가 overflowX:auto). */}
+          {/* 값을 잘라내지(...) 않고 접는다("말줄임은 절대 나오면 안됨") — 표가
+              fixed 레이아웃 + 칸 너비 비율(글자 수 기반)로 이미 칸마다 필요한
+              만큼을 배정해 두니, 칸 안에서는 minWidth 없이 그대로 접히면 된다. */}
           <span style={wrap
-            ? { flex: 1, minWidth: 104, maxWidth: 130, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.3 }
+            ? { flex: 1, minWidth: 0, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.3 }
             : { flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{shown || ph}</span>
           {!v && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9", marginTop: wrap ? 2 : 0 }} />}
         </button>
@@ -2335,6 +2332,41 @@ export default function JobPostForm({
   ];
   const 채운칸 = 할칸.filter((c) => c.done).length;
   const 작성률 = Math.round((채운칸 / 할칸.length) * 100);
+
+  // 모집부문 표 칸 너비 — 고정 퍼센트로 두니 "아르바이트"·"여성 우대"·"초대졸 이상"처럼
+  // 값이 긴 칸은 말줄임(...)으로 잘리고, 근무요일/시간·급여는 늘 남아돌았다
+  // ("다른항목이 잘렸어" · "근무요일/시간 여백이 너무 넓어"). 미리보기 표와 같은 방식으로
+  // 실제로 채운 값의 글자 수를 재서 칸마다 비율을 다시 매긴다. table-layout은 fixed로
+  // 두니(font-swap 반응 없음) 칸 너비는 이 비율 그대로 못박힌다.
+  const posColLenOf = (s: string) => { let n = 0; for (const ch of s) n += /\s/.test(ch) ? 0.5 : 1; return n; };
+  const POS_TABLE_COLS: { key: keyof PosRow | "category"; label: string }[] = [
+    { key: "category", label: "모집분야" },
+    { key: "employment", label: "고용형태" },
+    { key: "gender", label: "성별" },
+    { key: "career", label: "경력/직책" },
+    { key: "education", label: "학력" },
+    { key: "shiftText", label: "근무요일/시간" },
+    { key: "salary", label: "급여" },
+  ];
+  const POS_TABLE_CAP: Partial<Record<string, number>> = { category: 22, shiftText: 16, salary: 14 };
+  const posTableWeights = POS_TABLE_COLS.map((c) => {
+    let w = posColLenOf(c.label);
+    categories.forEach((cat) => {
+      const row = posMeta[cat] || emptyPos;
+      if (c.key === "category") { w = Math.max(w, posColLenOf(baseCat(cat))); return; }
+      if (c.key === "shiftText") {
+        const lines = shiftDisplay(row).replace(/\s*\/\s*/g, "\n").replace(/\s*\(\+?협의\)\s*$/, "\n협의가능").split("\n").filter(Boolean);
+        lines.forEach((l) => { w = Math.max(w, posColLenOf(l)); });
+        return;
+      }
+      w = Math.max(w, posColLenOf(String(row[c.key as keyof PosRow] || "")));
+    });
+    return Math.min(w, POS_TABLE_CAP[c.key as string] || 10);
+  });
+  const posTableAvg = posTableWeights.reduce((s, w) => s + w, 0) / posTableWeights.length;
+  const posTableBlended = posTableWeights.map((w) => w * 0.5 + posTableAvg * 0.5);
+  const posTableTotal = posTableBlended.reduce((s, w) => s + w, 0) || 1;
+  const posColPct = posTableBlended.map((w) => (w / posTableTotal) * 100);
 
   return (
     <>
@@ -2925,13 +2957,7 @@ export default function JobPostForm({
                   <div style={{ overflowX: "auto", border: "1px solid #f2f2f2", borderRadius: 8 }}>
                     <table style={{ width: "100%", maxWidth: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
                       <colgroup>
-                        <col style={{ width: "24.7%" }} />
-                        <col style={{ width: "9.5%" }} />
-                        <col style={{ width: "7.8%" }} />
-                        <col style={{ width: "10.6%" }} />
-                        <col style={{ width: "7.1%" }} />
-                        <col style={{ width: "25.4%" }} />
-                        <col style={{ width: "14.9%" }} />
+                        {posColPct.map((pct, i) => <col key={POS_TABLE_COLS[i].key} style={{ width: `${pct}%` }} />)}
                       </colgroup>
                       {/* 빈 칸의 자리글은 비워 뒀다. 머리줄이 이미 칸 이름을 대고 있어
                           같은 말이 위아래로 두 번 나오기 때문. 빈 칸은 회색 바탕(PH_BG)만으로
@@ -2969,11 +2995,11 @@ export default function JobPostForm({
                                     style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0, marginTop: 1 }}>×</button>
                                 </div>
                               </td>
-                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "")}</td>
-                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성 우대", "남성 우대"], "", false)}</td>
-                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false)}</td>
+                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "", true, undefined, true)}</td>
+                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성 우대", "남성 우대"], "", false, undefined, true)}</td>
+                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false, undefined, true)}</td>
                               {/* 매장(헤어·네일·피부 등 현장직)은 석사 학력을 요구할 일이 없다. */}
-                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "education", jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU, "", false)}</td>
+                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "education", jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU, "", false, undefined, true)}</td>
                               <td style={{ ...tdc, ...rb, position: "relative" }} className="posshift-pop">
                                 {/* 요일 원형 버튼+시간 두 칸을 채우던 구조를 접었다. 요일마다
                                     시간이 다르면 근무시간 묶음을 몇 개나 만들어야 했는데, 원티드
