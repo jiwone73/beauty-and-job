@@ -511,7 +511,12 @@ export default function JobPostForm({
     };
     window.addEventListener("scroll", onMove, true);
     window.addEventListener("resize", onMove);
-    return () => { window.removeEventListener("scroll", onMove, true); window.removeEventListener("resize", onMove); };
+    // 회사 프로필(배너·기본정보)이 늦게 도착해 트리거 버튼이 밀리는 경우가 있다
+    //   (스크롤·리사이즈가 아니라 콘텐츠 높이 변화라 위 리스너로는 못 잡는다 —
+    //   "+ 누르면 그자리에서 팝오버여야 하는데 위치 내려갔어"). 본문 높이 변화를 관찰해 같이 재배치한다.
+    const ro = new ResizeObserver(onMove);
+    ro.observe(document.body);
+    return () => { window.removeEventListener("scroll", onMove, true); window.removeEventListener("resize", onMove); ro.disconnect(); };
   }, [popAt !== null]);
   const [coverStart, setCoverStart] = useState(0); // 공고 상단 이미지 썸네일: 두 장을 넘으면 화살표로 넘길 시작 위치
   const [regionList, setRegionList] = useState<string[]>([]);
@@ -2855,7 +2860,7 @@ export default function JobPostForm({
                   {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                       고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
                   <span className="jp-add-wrap catpick-pop">
-                    <button type="button" disabled={typeLocked} onClick={(e) => { if (addRowOpen) { setAddRowOpen(false); return; } openPopAt(e.currentTarget, 300, 300); setAddRowOpen(true); }} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
+                    <button type="button" disabled={typeLocked} onClick={(e) => { if (addRowOpen) { setAddRowOpen(false); return; } openPopAt(e.currentTarget, 300, 320); setAddRowOpen(true); }} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
                       className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: 0, cursor: typeLocked ? "default" : "pointer" }}>＋</button>
                     <span className="jp-add-note">눌러 모집할 분야를 담아주세요</span>
                   </span>

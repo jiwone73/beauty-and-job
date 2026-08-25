@@ -36,11 +36,11 @@ export default function CategoryPickPopover({ jobType, onPick, onClose, popRef, 
     <>
       <style>{`
         .catpick-pop { position: fixed; z-index: 200; background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 300px; max-width: calc(100vw - 16px); box-sizing: border-box; overflow: hidden; }
-        .cp-body { display: flex; height: 260px; }
-        .cp-left { width: 104px; flex-shrink: 0; background: #fafafa; overflow-y: auto; border-right: 1px solid #f0f0f0; }
+        .cp-body { display: flex; max-height: 80vh; }
+        .cp-left { width: 104px; flex-shrink: 0; background: #fafafa; border-right: 1px solid #f0f0f0; }
         .cp-group { display: block; width: 100%; text-align: left; padding: 9px 10px; background: none; border: none; cursor: pointer; font-size: 12px; color: #666; border-left: 2px solid transparent; }
         .cp-group.on { background: #fff; color: #582681; font-weight: 600; border-left-color: #582681; }
-        .cp-right { flex: 1; overflow-y: auto; padding: 6px; }
+        .cp-right { flex: 1; padding: 6px; }
         .cp-item { display: block; width: 100%; text-align: left; padding: 8px 9px; background: none; border: none; border-radius: 6px; cursor: pointer; font-size: 12.5px; color: #333; }
         .cp-item:hover { background: #f7f7f8; color: #582681; }
         .cp-other { padding: 10px; }
@@ -64,7 +64,7 @@ export default function CategoryPickPopover({ jobType, onPick, onClose, popRef, 
                 <input autoFocus value={customText} onChange={(e) => setCustomText(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustom(); } }}
                   placeholder="포지션명 입력 (예: 실장, 인턴)" autoComplete="off" />
-                <button type="button" onClick={addCustom} className="company-primary-btn" style={{ width: "100%", padding: "6px 0", fontSize: 12 }}>추가</button>
+                <button type="button" onClick={addCustom} className="company-primary-btn" style={{ width: "100%", justifyContent: "center", padding: "6px 0", fontSize: 12 }}>추가</button>
               </div>
             ) : (
               items.map((item) => (
