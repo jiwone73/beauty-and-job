@@ -2364,10 +2364,15 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 모집부문 표. 좁은 화면에서는 칸 사이 여백이 20px 씩 붙어 일곱 열이 화면을 넘어가고,
    가로로 밀어야 급여가 보였다. 여백만 줄여 한눈에 들어오게 한다. */
 /* 표를 테두리로 감싸므로 첫 칸에도 왼쪽 여백을 준다(전엔 0이라 글이 선에 붙었다). */
-.jd-pos-th { text-align: left; padding: 10px 20px 7px 12px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; white-space: nowrap; }
-.jd-pos-td { padding: 9px 20px 9px 12px; border-bottom: none; white-space: nowrap; line-height: 1.6; }
+/* 좌우 여백이 20px 씩 넓어 급여·근무요일 같은 칸의 숫자가 좁은 폭 안에 밀려
+   잘려 보였다("미리보기에서 잘리네, 폼에서는 여유가 있는데") — 등록폼(표 안
+   4px 안팎)만큼 바짝 좁힌다. */
+.jd-pos-th { text-align: left; padding: 10px 6px 7px 6px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; white-space: nowrap; }
+.jd-pos-td { padding: 9px 6px; border-bottom: none; white-space: nowrap; line-height: 1.6; }
+.jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 12px; }
 @media (max-width: 640px) {
-  .jd-pos-th, .jd-pos-td { padding-right: 10px; padding-left: 10px; }
+  .jd-pos-th, .jd-pos-td { padding-right: 5px; padding-left: 5px; }
+  .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 10px; }
 }
 .jobpost-preview-scope { padding: 0; max-height: 72vh; overflow-y: auto; overflow-x: hidden; background: #f7f7f8; }
 @media (max-width: 640px) {
