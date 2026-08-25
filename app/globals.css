@@ -2371,7 +2371,10 @@ input[type="range"].career-slider::-moz-range-thumb {
    가운데 정렬한다 — 등록폼 표와 같은 인상. 마지막 칸은 표 바깥 테두리와
    겹치니 세로선을 뺀다. */
 .jd-pos-th { text-align: center; padding: 10px 6px 7px 6px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; border-right: 1px solid #f2f2f2; white-space: nowrap; }
-.jd-pos-td { padding: 9px 6px; border-bottom: 1px solid #f2f2f2; border-right: 1px solid #f2f2f2; white-space: nowrap; line-height: 1.6; text-align: center; }
+/* 칸 폭을 값 길이에 맞춰 좁혀도(내용에 따른 균등분할), 드물게 그보다 긴 값이
+   들어오면 줄바꿈 안 되는 칸은 옆 칸으로 글자가 넘쳤다("초대졸 이상 문구
+   이탈"). 잘라내는 대신 말줄임표로 — 옆 칸을 침범하는 것보다 낫다. */
+.jd-pos-td { padding: 9px 6px; border-bottom: 1px solid #f2f2f2; border-right: 1px solid #f2f2f2; white-space: nowrap; line-height: 1.6; text-align: center; overflow: hidden; text-overflow: ellipsis; }
 .jd-pos-th:last-child, .jd-pos-td:last-child { border-right: none; }
 tr:last-child > .jd-pos-td { border-bottom: none; }
 .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 12px; }

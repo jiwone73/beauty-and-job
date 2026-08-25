@@ -125,17 +125,35 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           부분처럼 읽혀, 어디까지가 자리별 조건인지 알 수 없다. */}
       <div style={{ overflowX: "auto", border: "1px solid #efeff1", borderRadius: 10 }}>
         {/* auto 레이아웃은 남는 폭을 칸마다 다르게(때로는 안) 나눠 브라우저마다
-            달랐고, 오른쪽에 빈 여백이 남기도 했다("넓이를 다 균등하게 쓰자 ·
-            내용넓이에 비례하여"). colgroup + fixed 레이아웃으로 칸 폭을 내용
-            길이 비례 비율로 못박아, 언제나 100%를 정확히 나눠 쓰게 한다. */}
+            달랐고, 오른쪽에 빈 여백이 남기도 했다("넓이를 다 균등하게 쓰자"). 칸
+            굵기를 정해진 비율이 아니라 실제로 그 칸에 들어간 값의 글자 수로
+            직접 재서 나눈다("내용에 따른 균등분할") — 학력이 "초대졸 이상"처럼
+            길면 그만큼 넓어지고, 급여가 "월 200~250"처럼 짧으면 그만큼 좁아진다.
+            근무요일/시간처럼 줄바꿈 되는 칸은 줄 하나의 길이만 따진다(합이 아니라). */}
         <table style={{ width: "100%", minWidth: Math.min(640, posCols.length * 96), borderCollapse: "collapse", fontSize: 13.5, tableLayout: "fixed" }}>
           <colgroup>
             {(() => {
-              // 등록폼 표의 칸 바닥 폭(모집분야130·고용형태66·성별56·경력72·학력52·
-              // 근무요일124·급여130)과 같은 비율 — 두 표가 같은 인상으로 보인다.
-              const COL_WEIGHT: Record<string, number> = { category: 130, employment: 66, gender: 56, career: 72, education: 52, shift: 124, salary: 130 };
-              const total = posCols.reduce((s, c) => s + (COL_WEIGHT[c.key] || 80), 0);
-              return posCols.map((c) => <col key={c.key} style={{ width: `${((COL_WEIGHT[c.key] || 80) / total) * 100}%` }} />);
+              const lenOf = (s: string) => s.replace(/\s/g, "").length;
+              // 한 자리만 유독 긴 값을 적어도(예: 직접입력 경력·직책) 그 칸이 나머지를
+              // 다 밀어내지 않도록 위쪽에 상한을 둔다. 모집분야·급여는 줄바꿈으로
+              // 받아 주니 상한을 넘겨도 그냥 다음 줄로 접힐 뿐이라 더 넉넉히 둔다.
+              const CAP: Record<string, number> = { category: 26, salary: 18, shift: 18 };
+              const weightOf = (c: typeof posCols[number]) => {
+                let w = lenOf(c.label);
+                positions.forEach((p: any) => {
+                  if (c.key === "shift") {
+                    const raw = p.shiftText || [p.workDays, p.workTime].filter(Boolean).join(" ");
+                    String(raw).split(/\n|\//).map((s: string) => s.trim()).filter(Boolean)
+                      .forEach((line: string) => { w = Math.max(w, lenOf(line)); });
+                  } else {
+                    w = Math.max(w, lenOf(String(c.get(p) || "")));
+                  }
+                });
+                return Math.min(w, CAP[c.key] || 14);
+              };
+              const weights = posCols.map((c) => weightOf(c));
+              const total = weights.reduce((s, w) => s + w, 0) || 1;
+              return posCols.map((c, i) => <col key={c.key} style={{ width: `${(weights[i] / total) * 100}%` }} />);
             })()}
           </colgroup>
           <thead>
