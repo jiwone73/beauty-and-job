@@ -2370,17 +2370,19 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 칸마다 세로 구분선을 넣고("항목별 세로 구분선 넣어줘"), 제목·내용 모두
    가운데 정렬한다 — 등록폼 표와 같은 인상. 마지막 칸은 표 바깥 테두리와
    겹치니 세로선을 뺀다. */
-.jd-pos-th { text-align: center; padding: 10px 6px 7px 6px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; border-right: 1px solid #f2f2f2; white-space: nowrap; }
-/* 칸 폭을 값 길이에 맞춰 좁혀도(내용에 따른 균등분할), 드물게 그보다 긴 값이
-   들어오면 줄바꿈 안 되는 칸은 옆 칸으로 글자가 넘쳤다("초대졸 이상 문구
-   이탈"). 잘라내는 대신 말줄임표로 — 옆 칸을 침범하는 것보다 낫다. */
-.jd-pos-td { padding: 9px 6px; border-bottom: 1px solid #f2f2f2; border-right: 1px solid #f2f2f2; white-space: nowrap; line-height: 1.6; text-align: center; overflow: hidden; text-overflow: ellipsis; }
+/* 여백을 전체적으로 최소화한다("여백을 최소화해") — 칸 안 좌우 여백을
+   4px 까지 좁힌다. */
+.jd-pos-th { text-align: center; padding: 8px 4px 6px 4px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; border-right: 1px solid #f2f2f2; white-space: nowrap; }
+/* 칸 폭은 이제 값 길이만큼 절대 픽셀로 확보돼(JobDetailView의 posColMinWidth)
+   말줄임이 나올 일이 없다("말줄임은 절대 나오면 안됨") — 그래도 예상 못한
+   값이 들어올 극단적인 경우를 대비한 마지막 안전장치로만 남겨 둔다. */
+.jd-pos-td { padding: 7px 4px; border-bottom: 1px solid #f2f2f2; border-right: 1px solid #f2f2f2; white-space: nowrap; line-height: 1.5; text-align: center; overflow: hidden; text-overflow: ellipsis; }
 .jd-pos-th:last-child, .jd-pos-td:last-child { border-right: none; }
 tr:last-child > .jd-pos-td { border-bottom: none; }
-.jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 12px; }
+.jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 8px; }
 @media (max-width: 640px) {
-  .jd-pos-th, .jd-pos-td { padding-right: 5px; padding-left: 5px; }
-  .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 10px; }
+  .jd-pos-th, .jd-pos-td { padding-right: 4px; padding-left: 4px; }
+  .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 8px; }
 }
 .jobpost-preview-scope { padding: 0; max-height: 72vh; overflow-y: auto; overflow-x: hidden; background: #f7f7f8; }
 @media (max-width: 640px) {

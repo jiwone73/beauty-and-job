@@ -2064,15 +2064,17 @@ export default function JobPostForm({
             ...(freeInput ? { width } : { width: "max-content", minWidth: 84, maxWidth: 220 }) }}>
             {!freeInput ? (
               <div style={{ maxHeight: 216, overflowY: "auto" }}>
+                {/* 목록 맨 위에 둔다 — 아래로 스크롤해야 나오면 지울 일이 있을 때마다
+                    매번 목록을 다 훑어야 했다. */}
+                {v && (
+                  <button type="button" onClick={() => { setPos(cat, field, ""); setCellOpen(null); }}
+                    style={{ display: "block", width: "100%", textAlign: "left", border: "none", borderBottom: "1px solid #f0f0f0", background: "transparent", borderRadius: 5, padding: "6px 8px", fontSize: 11.5, color: "#aaa", cursor: "pointer" }}>선택 해제</button>
+                )}
                 {options.map((o) => (
                   <button key={o} type="button" onClick={() => { setPos(cat, field, o); setCellOpen(null); }}
                     style={{ display: "block", width: "100%", textAlign: "left", border: "none", borderRadius: 5, padding: "6px 8px", fontSize: 12.5, lineHeight: 1.2, cursor: "pointer",
                       background: o === v ? "#f7f7f8" : "transparent", color: o === v ? "#582681" : "#333" }}>{o}</button>
                 ))}
-                {v && (
-                  <button type="button" onClick={() => { setPos(cat, field, ""); setCellOpen(null); }}
-                    style={{ display: "block", width: "100%", textAlign: "left", border: "none", borderTop: "1px solid #f0f0f0", background: "transparent", borderRadius: 5, padding: "6px 8px", fontSize: 11.5, color: "#aaa", cursor: "pointer" }}>선택 해제</button>
-                )}
                 {allowFi && nonMember && (
                   <button type="button" onClick={() => setCellFree(true)}
                     style={{ display: "block", width: "100%", textAlign: "left", border: "none", borderTop: "1px solid #f0f0f0", background: "transparent", borderRadius: 5, padding: "6px 8px", fontSize: 11.5, color: "#582681", cursor: "pointer" }}>직접입력…</button>
