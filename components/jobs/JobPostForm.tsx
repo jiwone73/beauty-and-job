@@ -1954,8 +1954,10 @@ export default function JobPostForm({
   const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 13.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap", borderBottom: "1px solid #f2f2f2", borderRight: "1px solid #f2f2f2" };
   const reqStar = <span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span>; // 필수 열 표시(모집분야만)
   const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f2f2f2", borderRight: "1px solid #f2f2f2", verticalAlign: "middle" };
-  // 첫 열은 왼쪽 여백을 없애 위 '모집부문'·'모집분야' 라벨과 시작점을 맞춘다.
-  const firstCol: React.CSSProperties = { paddingLeft: 0 };
+  // 첫 열 왼쪽 여백 — 표에 테두리를 두르기 전엔 0으로 비워 위 라벨과 시작점을
+  // 맞췄는데, 테두리가 생긴 뒤로는 글자가 선에 바로 붙어 보였다("문제성이
+  // 왼쪽 테두리하고 딱 붙었어 · 1칸정도 띄어줘").
+  const firstCol: React.CSSProperties = { paddingLeft: 10 };
   const cellInput: React.CSSProperties = { width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 6, padding: "5px 8px", fontSize: 13.5, background: "#fff" };
   // 근무시간 숫자 입력: 타이핑 중에는 숫자·콜론만 남기고, 칸을 벗어날 때 HH:MM으로 정리한다.
   //   "9"→09:00, "930"→09:30, "0930"→09:30, "2000"→20:00 (24시 넘거나 60분 넘으면 잘라 맞춤)
