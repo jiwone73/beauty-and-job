@@ -145,13 +145,16 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 잡아 표 자체의 최소 폭(minWidth)으로 쓴다. 화면이 넓으면 표가 100%까지
   // 늘어나며 같은 비율 그대로 커지고, 좁으면 표가 가로 스크롤될지언정 칸은
   // 항상 바닥만큼은 확보된다.
-  const posColMinWidth = posColWeights.reduce((sum, w) => sum + w * 13.5 + 10, 0);
+  const posColMinWidth = posColWeights.reduce((sum, w) => sum + w * 13 + 6, 0);
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
       <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문</h2>
       {/* 표를 테두리로 감싼다. 칸 밑줄만 있으면 바로 아래 복리후생 줄까지 표의 한
           부분처럼 읽혀, 어디까지가 자리별 조건인지 알 수 없다. */}
-      <div style={{ overflowX: "auto", border: "1px solid #efeff1", borderRadius: 10 }}>
+      {/* 좁은 화면에서 표가 카드 폭보다 넓어지면 가로 스크롤이 되긴 하지만, 스크롤바가
+          가늘어(OS 기본값) 안 보이면 표가 그냥 잘려 끝난 것처럼 보였다 — 스크롤바를
+          늘 보이는 굵기로 그려 "더 있다"는 걸 알린다. */}
+      <div className="jd-pos-scroll" style={{ overflowX: "auto", border: "1px solid #efeff1", borderRadius: 10 }}>
         <table style={{ width: "100%", minWidth: posColMinWidth, borderCollapse: "collapse", fontSize: 13.5, tableLayout: "fixed" }}>
           <colgroup>
             {posCols.map((c, i) => <col key={c.key} style={{ width: `${(posColWeights[i] / posColWeightTotal) * 100}%` }} />)}

@@ -3015,7 +3015,10 @@ export default function JobPostForm({
               <div>
                 <div className="job-detail-company-info">
                   {/* 복리후생 — 한 행을 다 쓴다. 태그가 여럿이라 좁으면 읽기 나쁘다. */}
-                  <div id="jp-benefit" className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1" }}>
+                  {/* 제목 아이콘(16px)+간격(6px)만큼 들여써 "복리후생" 글자 시작 위치에
+                      맞춘다("제목 첫글자 위치에 맞춰서 입력값이 들여쓰기") — 안 그러면
+                      아이콘 밑에서 시작해 제목과 어긋나 보였다. */}
+                  <div id="jp-benefit" className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1", paddingLeft: 22 }}>
                     {/* 글자만 눌린다. flex:1 로 행을 다 차지하면 오른쪽 빈 곳을 눌러도
                         팝오버가 열려, 뭘 눌러서 열렸는지 알 수 없었다. */}
                     {!fiBenefits.trim() && (
@@ -3191,7 +3194,9 @@ export default function JobPostForm({
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
                     {/* 지원방법 (좌) — 연보라 블록을 눌러 팝오버에서 복수 선택 */}
                     <div ref={contactMethodsRef} style={{ position: "relative", minWidth: 0 }}>
-                     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0" }}>
+                     {/* 제목 아이콘(16px)+간격(6px)만큼 들여써 "지원 안내" 글자 시작
+                         위치에 맞춘다(복리후생과 같은 규칙). */}
+                     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0", paddingLeft: 22 }}>
                       <span style={{ ...lblS, paddingTop: 0 }}>지원방법</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <button type="button"
