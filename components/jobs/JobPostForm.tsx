@@ -436,8 +436,9 @@ export default function JobPostForm({
   // 이 문장 하나로 대체한다. workDays/workTime/extraShifts/shiftNego 는 이 필드가
   // 생기기 전에 저장된 공고를 그대로 보여주기 위한 하위호환용으로만 남긴다.
   type ShiftSlot = { days: string; time: string };
-  type PosRow = { career: string; education: string; employment: string; salary: string; workDays: string; workTime: string; shiftText: string; headcount: string; gender: string; shiftNego: boolean; salaryNego: boolean; extraShifts: ShiftSlot[] };
-  const emptyPos: PosRow = { career: "", education: "", employment: "", salary: "", workDays: "", workTime: "", shiftText: "", headcount: "", gender: "", shiftNego: false, salaryNego: false, extraShifts: [] };
+  // salaryNego: "" 확정 / "hidden" 협의(금액 비공개) / "open" 협의(금액 제시).
+  type PosRow = { career: string; education: string; employment: string; salary: string; workDays: string; workTime: string; shiftText: string; headcount: string; gender: string; shiftNego: boolean; salaryNego: "" | "open" | "hidden"; extraShifts: ShiftSlot[] };
+  const emptyPos: PosRow = { career: "", education: "", employment: "", salary: "", workDays: "", workTime: "", shiftText: "", headcount: "", gender: "", shiftNego: false, salaryNego: "", extraShifts: [] };
   const [posMeta, setPosMeta] = useState<Record<string, PosRow>>({});
   const setPos = <K extends keyof PosRow>(cat: string, k: K, v: PosRow[K]) =>
     setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, [k]: v } }; });
@@ -928,7 +929,9 @@ export default function JobPostForm({
           const base = String(p.category);
           const key = keys.includes(base) ? nextDupKey(base, keys) : base;
           keys.push(key);
-          meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", headcount: p.headcount || "", gender: p.gender || "", shiftNego: !!p.shiftNego, salaryNego: !!p.salaryNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
+          // 예전엔 salaryNego 가 boolean(true=협의+금액제시) 이었다 — true 를 "open" 으로 옮긴다.
+          const savedSalaryNego: "" | "open" | "hidden" = p.salaryNego === true ? "open" : (p.salaryNego === "open" || p.salaryNego === "hidden" ? p.salaryNego : "");
+          meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", headcount: p.headcount || "", gender: p.gender || "", shiftNego: !!p.shiftNego, salaryNego: savedSalaryNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
         }
         setCategories(keys);
         setPosMeta(meta);
@@ -1390,7 +1393,7 @@ export default function JobPostForm({
         headcount: (d.headcount != null && Number(d.headcount) > 0) ? `${Number(d.headcount)}명` : "",
         gender: "",
         shiftNego: false,
-        salaryNego: !!d.salary_negotiable,
+        salaryNego: d.salary_negotiable ? "open" : "",
         shiftText: "",
         extraShifts: [],
       });
@@ -1986,17 +1989,18 @@ export default function JobPostForm({
   };
   // 표 셀 입력: iOS 네이티브 select 피커가 화면 절반을 덮을 만큼 커서, 목록도 자체 팝오버로 띄운다.
   //   options가 있으면 컴팩트 목록, units(급여)면 지급주기 칩, 그 외에는 자유입력.
-  const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력", allowFi = true, units?: typeof SALARY_UNITS, wrap = false, nego = false, onNegoChange?: (v: boolean) => void) => {
+  const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력", allowFi = true, units?: typeof SALARY_UNITS, wrap = false, nego: "" | "open" | "hidden" = "", onNegoChange?: (v: "" | "open" | "hidden") => void) => {
     const v = (posMeta[cat] || emptyPos)[field] as string;
-    // '협의'와 '협의+'를 나눈다 — 값 없이 완전 미정이면 '협의', 값을 정해 두고
-    // 조율 여지만 남기면 '협의+'. 값을 지우고 그 자리를 '협의'로 바꿔치기하던 예전
-    // 방식은 이미 적어 둔 급여를 날려 버리는 사고로 이어져 없앴다.
-    const shown = nego ? (v && v !== "협의" ? `${v} (+협의)` : "협의") : v;
+    // 협의를 셋으로 나눈다 — "확정"(그대로 노출), "비공개 협의"(금액은 감추고
+    // '협의'만), "제시 협의"(금액을 보여주고 조율 여지도 표시, 예전의 '협의+').
+    // 값을 지우고 그 자리를 '협의'로 바꿔치기하던 예전 방식은 이미 적어 둔
+    // 급여를 날려 버리는 사고로 이어져 없앴다 — 값은 그대로 두고 표시만 바뀐다.
+    const shown = nego === "hidden" ? "협의" : nego === "open" ? (v && v !== "협의" ? `${v} (+협의)` : "협의") : v;
     const key = `${cat}|${field}`;
     const open = cellOpen === key;
     const freeInput = options.length === 0 || cellFree;      // 목록 없는 칸이거나 '직접입력'을 고른 상태
     const width = units ? 214 : 168;
-    const height = freeInput ? (units ? 126 : 88) : Math.min(options.length + (allowFi && nonMember ? 1 : 0), 7) * 30 + 14;
+    const height = freeInput ? (units ? (onNegoChange ? 168 : 126) : 88) : Math.min(options.length + (allowFi && nonMember ? 1 : 0), 7) * 30 + 14;
     return (
       <span className="poscell-pop" style={{ position: "relative", display: "block" }}>
         {/* 빈 칸은 옅은 밑줄과 ▾ 로 "누르면 목록이 뜬다"만 알린다. 회색 덩어리는
@@ -2060,13 +2064,23 @@ export default function JobPostForm({
                   onKeyDown={(e) => { if (e.key === "Enter") setCellOpen(null); }}
                   style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 6, padding: "5px 7px", fontSize: 12 }} />
                 {/* 표 칸 밑에 상시 노출하면 값·근무요일/시간 칸이 늘 3행이 되어 표가
-                    지저분해 보였다("3행이라 너무 보기 안좋아") — 팝오버 안으로 옮긴다. */}
+                    지저분해 보였다("3행이라 너무 보기 안좋아") — 팝오버 안으로 옮긴다.
+                    "협의 가능"을 하나로 뭉치면 금액을 보여줄지 감출지를 못 갈랐다 —
+                    셋으로 나눈다: 확정 / 협의(금액 비공개) / 협의(금액 제시). */}
                 {onNegoChange && (
-                  <label style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 8, fontSize: 12, color: "#555", cursor: "pointer" }}>
-                    <input type="checkbox" checked={nego} onChange={(e) => onNegoChange(e.target.checked)}
-                      style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
-                    협의 가능
-                  </label>
+                  <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 5 }}>
+                    {([
+                      { v: "" as const, label: "확정 (그대로 노출)" },
+                      { v: "hidden" as const, label: "협의 · 금액 비공개" },
+                      { v: "open" as const, label: "협의 · 금액 제시" },
+                    ]).map((o) => (
+                      <label key={o.v} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#555", cursor: "pointer" }}>
+                        <input type="radio" name={`nego-${key}`} checked={nego === o.v} onChange={() => onNegoChange(o.v)}
+                          style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
+                        {o.label}
+                      </label>
+                    ))}
+                  </div>
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
                   {options.length > 0 ? <button type="button" onClick={() => setCellFree(false)} style={{ border: "none", background: "none", color: "#888", fontSize: 11.5, cursor: "pointer" }}>목록으로</button> : <span />}
@@ -2884,10 +2898,11 @@ export default function JobPostForm({
                                     borderBottom: shiftDisplay(row) ? "1px solid transparent" : "1px solid #e3e3e6",
                                     borderRadius: 0, padding: "3px 6px", fontSize: 13.5, lineHeight: 1.35, cursor: "pointer",
                                     color: shiftDisplay(row) ? "#333" : "#b4b4b9",
-                                    background: "transparent", display: "flex", alignItems: "center", gap: 4,
-                                    whiteSpace: "normal", wordBreak: "keep-all" }}>
-                                  <span style={{ flex: 1, minWidth: 0 }}>{shiftDisplay(row) || "선택 또는 입력"}</span>
-                                  {!shiftDisplay(row) && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9" }} />}
+                                    background: "transparent", display: "flex", alignItems: shiftDisplay(row) ? "flex-start" : "center", gap: 4,
+                                    whiteSpace: "pre-line", wordBreak: "keep-all" }}>
+                                  {/* "/" 도 줄바꿈처럼 각자 한 줄로 — 근무시간 묶음이 여럿이면 표에서도 나뉘어 보인다. */}
+                                  <span style={{ flex: 1, minWidth: 0 }}>{shiftDisplay(row).replace(/\s*\/\s*/g, "\n") || "선택 또는 입력"}</span>
+                                  {!shiftDisplay(row) && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9", marginTop: 2 }} />}
                                 </button>
                                 {shiftModalCat === cat && popAt && (
                                   <WorkScheduleModal
@@ -2901,7 +2916,7 @@ export default function JobPostForm({
                                 )}
                               </td>
                               <td style={{ ...tdc, position: "relative" }}>
-                                {posCell(cat, "salary", [], "", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(cat, "salaryNego", v))}
+                                {posCell(cat, "salary", [], "예) 300~350", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(cat, "salaryNego", v))}
                               </td>
                             </tr>
                           );

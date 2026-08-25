@@ -27,7 +27,7 @@ interface Props {
 // "(협의)"/"(+협의)" 로 끝나면 시간은 정해 두고 조율 여지만 남긴 값이다.
 // 그 꼬리를 떼어 draft(시간 부분)와 nego(체크 여부)로 나눈다.
 const splitNego = (v: string): [string, boolean] => {
-  const m = (v || "").match(/^(.*?)\s*\(\+?협의\)$/);
+  const m = (v || "").match(/^(.*?)\s*\(\+?협의\)$/s);
   return m ? [m[1], true] : [v || "", false];
 };
 
@@ -124,12 +124,15 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
             </div>
           ) : (
             <div>
-              <input value={draft} onChange={(e) => setDraft(e.target.value)}
-                placeholder="예) 월, 수 10시-18시 / 금 12시-20시"
-                style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 7, padding: "7px 9px", fontSize: 12.5, marginBottom: 8 }} />
+              {/* 요일마다 시간이 다르면 줄바꿈으로 나눠 적는다("월, 수 10시-18시"
+                  엔터 "금 12시-20시") — "/"도 예전처럼 계속 인식한다. */}
+              <textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={3}
+                placeholder={"예) 월, 수 10시-18시\n금 12시-20시 (줄바꿈으로 구분)"}
+                style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 7, padding: "7px 9px", fontSize: 12.5, marginBottom: 8, fontFamily: "inherit", resize: "vertical" }} />
               <ul style={{ margin: 0, paddingLeft: 16 }}>
                 {FORMAT_EXAMPLES.map((ex) => (
-                  <li key={ex} style={{ fontSize: 11.5, color: "#9a94a4", lineHeight: 1.8, cursor: "pointer" }} onClick={() => setDraft(ex)}>{ex}</li>
+                  <li key={ex} style={{ fontSize: 11.5, color: "#9a94a4", lineHeight: 1.8, cursor: "pointer", whiteSpace: "pre-line" }}
+                    onClick={() => setDraft(ex.replace(/\s*\/\s*/g, "\n"))}>{ex}</li>
                 ))}
               </ul>
             </div>

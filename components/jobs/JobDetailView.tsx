@@ -104,10 +104,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 협의인지 알 수 없다. 금액이 없으면 무엇에 대한 말인지 붙여 준다.
   const asideSalary = (() => {
     const v = positions.length ? String(positions[0].salary || "").trim() : "";
-    // 표에서 회사가 직접 '협의 가능'을 체크한 자리만 (+협의)를 붙인다. 정해 둔 값을
-    // 여기서 또 협의처럼 보이게 하면, 표에서는 확정으로 적어 놓고 카드만 다르게 읽힌다.
-    const nego = positions.length ? !!positions[0].salaryNego : false;
-    const t = v ? (nego && v !== "협의" ? `${v} (+협의)` : v) : String(job.salary || "").trim();
+    // 표에서 회사가 고른 것과 카드가 다르게 읽히지 않게 그대로 따른다.
+    const negoState = positions.length ? positions[0].salaryNego : "";
+    const t = negoState === "hidden" ? "협의"
+      : v ? (negoState === "open" && v !== "협의" ? `${v} (+협의)` : v) : String(job.salary || "").trim();
     if (!t) return "";
     // 금액이 적혀 있으면 그 자체로 읽힌다. 숫자가 없을 때만 무엇에 대한 말인지 붙인다.
     return !/\d/.test(t) && !/^급여/.test(t) ? `급여 ${t}` : t;
@@ -144,11 +144,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               <tr key={i}>
                 {posCols.map((c, j) => {
                   const wrapCol = c.key === "category" || c.key === "salary";
-                  // 값은 있는데 회사가 표에서 '협의 가능'을 안 켰으면 그대로 확정값으로 보인다.
-                  // '협의'(데이터 없음)와 '+협의'(값은 두고 조율 여지만 추가)를 구분한다.
-                  const salaryTxt = c.get(p)
-                    ? (p.salaryNego && c.get(p) !== "협의" ? `${c.get(p)} (+협의)` : c.get(p))
-                    : "협의";
+                  // 값은 있는데 회사가 표에서 '확정'을 골랐으면 그대로 노출한다.
+                  // "hidden"(협의·금액 비공개)이면 값을 적어 뒀어도 "협의"만 보이고,
+                  // "open"(협의·금액 제시)이면 값에 "(+협의)"를 덧붙인다.
+                  const salaryTxt = p.salaryNego === "hidden" ? "협의"
+                    : c.get(p)
+                      ? (p.salaryNego === "open" && c.get(p) !== "협의" ? `${c.get(p)} (+협의)` : c.get(p))
+                      : "협의";
                   const daysTxt = p.workDays
                     ? (p.shiftNego && p.workDays !== "협의" ? `${p.workDays} (+협의)` : p.workDays)
                     : "";
@@ -161,7 +163,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   // shiftText — 원티드식 자유 문장("월, 수 10시-18시 / 금 12시-20시")으로 등록한
                   // 공고는 이 필드가 있다. "/"로 나눠 묶음마다 한 줄로 보여준다. 이 필드가 없는
                   // (그 전에 저장된) 공고만 구조화 필드로 문장을 조립한다.
-                  const shiftLines = p.shiftText ? String(p.shiftText).split("/").map((s: string) => s.trim()).filter(Boolean) : [];
+                  const shiftLines = p.shiftText ? String(p.shiftText).split(/\n|\//).map((s: string) => s.trim()).filter(Boolean) : [];
                   const content = c.key === "shift"
                     ? (shiftLines.length
                         ? (shiftLines.length === 1 && shiftLines[0] === "협의" ? "협의" : shiftLines.map((l: string, i: number) => <div key={i}>{l}</div>))
