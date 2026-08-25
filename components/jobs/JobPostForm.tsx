@@ -2933,7 +2933,7 @@ export default function JobPostForm({
                           <th style={{ ...thc, minWidth: 72 }}>경력/직책</th>
                           <th style={{ ...thc, minWidth: 52 }}>학력</th>
                           <th style={{ ...thc, minWidth: 124 }}>근무요일 / 시간</th>
-                          <th style={{ ...thc, minWidth: 96, maxWidth: 130, borderRight: "none" }}>급여</th>
+                          <th style={{ ...thc, minWidth: 96, maxWidth: 130, borderRight: "none" }}>급여<span style={{ fontSize: "0.8em" }}>(만원)</span></th>
                         </tr>
                       </thead>
                       <tbody>

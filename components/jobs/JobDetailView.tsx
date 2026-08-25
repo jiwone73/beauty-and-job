@@ -139,7 +139,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     });
     return Math.min(w, POS_COL_CAP[c.key] || 10);
   });
-  const posColWeightTotal = posColWeights.reduce((s, w) => s + w, 0) || 1;
+  // 글자 수 비율 그대로 100%를 나누면, 화면이 넓을 때 근무요일/시간처럼 원래
+  // 긴 칸이 남는 폭을 혼자 다 가져가 그 칸만 헐렁해 보였다("여백이 왜 이렇게
+  // 많아 · 이 여백을 나눠쓰면 되잖아"). 평균 쪽으로 절반 당겨써 큰 칸이 가져갈
+  // 몫 일부를 짧은 칸들에 나눠 준다 — 그래도 긴 값이 짧은 값보다는 더 갖는다.
+  const posColAvgWeight = posColWeights.reduce((s, w) => s + w, 0) / (posColWeights.length || 1);
+  const posColBlended = posColWeights.map((w) => w * 0.5 + posColAvgWeight * 0.5);
+  const posColWeightTotal = posColBlended.reduce((s, w) => s + w, 0) || 1;
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
       <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문</h2>
@@ -152,7 +158,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       <div style={{ overflowX: "hidden", border: "1px solid #efeff1", borderRadius: 10 }}>
         <table style={{ width: "100%", tableLayout: "fixed", borderCollapse: "collapse", fontSize: 13.5 }}>
           <colgroup>
-            {posCols.map((c, i) => <col key={c.key} style={{ width: `${(posColWeights[i] / posColWeightTotal) * 100}%` }} />)}
+            {posCols.map((c, i) => <col key={c.key} style={{ width: `${(posColBlended[i] / posColWeightTotal) * 100}%` }} />)}
           </colgroup>
           <thead>
             <tr style={{ background: "#f7f7f8" }}>
@@ -160,7 +166,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   말줄임됐다 — 모든 칸에 줄바꿈을 열어 넘치는 대신 아래로 접히게
                   한다("좌우 스크롤 되면 안 돼 · 다 구겨 넣어야지"). */}
               {posCols.map((c) => (
-                <th key={c.key} className="jd-pos-th">{c.label}</th>
+                <th key={c.key} className="jd-pos-th">
+                  {c.label}
+                  {c.key === "salary" && <span style={{ fontSize: "0.8em", fontWeight: 400 }}>(만원)</span>}
+                </th>
               ))}
             </tr>
           </thead>
