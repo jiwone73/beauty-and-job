@@ -2916,11 +2916,23 @@ export default function JobPostForm({
               {/* ── 모집부문 표: 분야별 고용형태·성별·경력/직책·학력·근무·급여 ── */}
               <div style={{ margin: "10px 0 22px" }}>
                 {categories.length === 0 ? null : (
-                  /* 표 전체 폭은 카드 폭에 고정하고(가로 스크롤은 아주 좁은 화면만 대비),
-                     auto 표 레이아웃이 남는 폭을 칸별 내용 길이에 비례해 나눠 준다 —
-                     칸마다 정해 둔 minWidth 는 그 밑으로는 안 좁아지는 바닥으로만 쓴다. */
+                  /* auto 표 레이아웃은 내용의 실제 렌더 폭을 재서 칸 너비를 정한다 —
+                     동적 서브셋 웹폰트(Pretendard)가 아직 없는 글자를 처음 쓸 때는
+                     잠깐 대체 글꼴로 그리다 몇 초 뒤 폰트가 도착하면 폭이 바뀌어
+                     칸이 다시 잡혔다("처음 입력할 때 이렇게 보이다가 몇초 지나면
+                     정상으로 줄맞춤되"). fixed 레이아웃 + colgroup 비율로 칸 너비를
+                     아예 못박아 두면 글꼴이 언제 도착하든 칸 폭 자체는 안 흔들린다. */
                   <div style={{ overflowX: "auto", border: "1px solid #f2f2f2", borderRadius: 8 }}>
-                    <table style={{ width: "100%", maxWidth: "100%", borderCollapse: "collapse", tableLayout: "auto" }}>
+                    <table style={{ width: "100%", maxWidth: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                      <colgroup>
+                        <col style={{ width: "24.7%" }} />
+                        <col style={{ width: "9.5%" }} />
+                        <col style={{ width: "7.8%" }} />
+                        <col style={{ width: "10.6%" }} />
+                        <col style={{ width: "7.1%" }} />
+                        <col style={{ width: "25.4%" }} />
+                        <col style={{ width: "14.9%" }} />
+                      </colgroup>
                       {/* 빈 칸의 자리글은 비워 뒀다. 머리줄이 이미 칸 이름을 대고 있어
                           같은 말이 위아래로 두 번 나오기 때문. 빈 칸은 회색 바탕(PH_BG)만으로
                           아직 안 채운 자리임을 알린다.
@@ -2929,19 +2941,13 @@ export default function JobPostForm({
                           대신 자리글과 같은 흐린 회색·가는 글씨로 눌러 캡션처럼 읽히게 했다. */}
                       <thead>
                         <tr>
-                          {/* 다른 칸을 한 글자씩 줄여 그만큼을 모집분야로 몰아준다
-                              ("전체적으로 한글자씩만 더 줄여도 되. 그 여백을 모집분야에
-                              넣어줘") — 분야명이 다른 칸보다 훨씬 자주 길다.
-                              시간 구분자를 "-"에서 " ~ "로 바꾸며 근무요일/시간 칸이 길어진 만큼은
-                              도로 모집분야에서 덜어 왔다("증가된 여백은 1열 모집분야 여백을
-                              줄여서 확보해"). */}
-                          <th style={{ ...thc, ...firstCol, minWidth: 140, maxWidth: 170 }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
-                          <th style={{ ...thc, minWidth: 54 }}>고용형태</th>
-                          <th style={{ ...thc, minWidth: 44 }}>성별</th>
-                          <th style={{ ...thc, minWidth: 60 }}>경력/직책</th>
-                          <th style={{ ...thc, minWidth: 40 }}>학력</th>
-                          <th style={{ ...thc, minWidth: 144 }}>근무요일 / 시간</th>
-                          <th style={{ ...thc, minWidth: 84, maxWidth: 130, borderRight: "none" }}>급여<span style={{ fontSize: "0.8em" }}>(만원)</span></th>
+                          <th style={{ ...thc, ...firstCol }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
+                          <th style={thc}>고용형태</th>
+                          <th style={thc}>성별</th>
+                          <th style={thc}>경력/직책</th>
+                          <th style={thc}>학력</th>
+                          <th style={thc}>근무요일 / 시간</th>
+                          <th style={{ ...thc, borderRight: "none" }}>급여<span style={{ fontSize: "0.8em" }}>(만원)</span></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2958,7 +2964,7 @@ export default function JobPostForm({
                                 {/* 긴 분야명이 한 줄로 늘어지며 표를 넓혀 급여·근무요일 칸까지
                                     가로 스크롤로 밀어냈다. 폭을 묶어 두 줄까지는 그대로 접는다. */}
                                 <div style={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
-                                  <span style={{ flex: 1, minWidth: 144, maxWidth: 170, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>{baseCat(cat)}</span>
+                                  <span style={{ flex: 1, minWidth: 0, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>{baseCat(cat)}</span>
                                   <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
                                     style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0, marginTop: 1 }}>×</button>
                                 </div>
