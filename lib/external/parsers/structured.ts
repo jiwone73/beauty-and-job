@@ -72,9 +72,14 @@ function parseHairinjob(html: string): StructuredResult | null {
   // 이 경우 상세주소로 쓰면 지도가 엉뚱한 곳(본사)을 가리키므로 비운다(잘못된 주소보다 없는 게 낫다).
   let address = liValue("업체주소");
   if (address && region) {
-    const aS = (address.match(/^\s*(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/) || [])[1] || "";
+    const sidoPrefix = /^\s*(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/;
+    const aS = (address.match(sidoPrefix) || [])[1] || "";
     const aFull = SIDO[aS] || aS;
-    const rFull = region.split(" ")[0];
+    // region.split(" ")[0] 은 정규화 전 원문 첫 토큰이라, "전남광주"처럼 헤어인잡이 쓰는
+    // 시·도 아닌 묶음 표기가 그대로 들어오면 같은 지역인데도 문자열이 달라 주소가 지워졌다
+    // ("상세주소 누락"). address 쪽과 같은 방식(접두 시·도만 추출)으로 맞춰 비교한다.
+    const rS = (region.match(sidoPrefix) || [])[1] || "";
+    const rFull = SIDO[rS] || rS || region.split(" ")[0];
     if (aFull && rFull && aFull !== rFull) address = "";
   }
   // 업체주소 li가 없거나(상세주소 마스킹 등) 비면 근무지역(시·군·구)이라도 주소로 사용
@@ -221,7 +226,9 @@ function parseHairinjob(html: string): StructuredResult | null {
       // 잘라낸 자리에 남는 꼬리 정리 — "※ 위" 같은 조각과 '◇ 지원방법' 머리글.
       t = t.replace(/[\s◇◆◈▷▶▪•*·\-]*지원\s*방법\s*$/, "").trimEnd();
       t = t.replace(/[\s]*※\s*위?\s*$/, "").trimEnd();
-      descText = t.trim().slice(0, 2000);
+      // 2000자였던 상한에 걸려 "상세요강에 누락됨" 이슈가 올라왔다(실제 본문이 그보다 긴
+      // 공고가 흔하다) — DB 컬럼은 TEXT라 길이 제한이 없으므로 넉넉히 올린다.
+      descText = t.trim().slice(0, 8000);
       // 로그인 게이트라 실질 내용이 남지 않으면 비운다.
       if (descText.length < 10) descText = "";
     }
@@ -446,7 +453,7 @@ function parseJobkorea(html: string): StructuredResult | null {
     salary_amount,
     salary_amount_max: 0,
     salary_negotiable,
-    description: stripTags(jp.description || "").slice(0, 800),
+    description: stripTags(jp.description || "").slice(0, 8000),
     job_type: sug.job_type || "OFFICE", // 잡코리아는 본사·기업이 많음
     job_categories: sug.job_categories,
     _confident: !!(title && (company || region)),
@@ -544,7 +551,7 @@ function parseAlbamon(html: string): StructuredResult | null {
     const sug = suggestCats(`${jobFieldStr} ${title}`);
     // 경력: JSON-LD 우선, 없으면 초보가능 → 경력 무관
     const career = mapCareer(stripTags(jp?.experienceRequirements || "")) || (vd.beginnerAvailableStatus ? "경력 무관" : "");
-    const description = stripTags(String(vd.simpleRecruitContents || "")).replace(/\s+/g, " ").trim().slice(0, 800);
+    const description = stripTags(String(vd.simpleRecruitContents || "")).replace(/\s+/g, " ").trim().slice(0, 8000);
     // 칩에 안 담기는 근무요일 부가설명·급여옵션은 비고로 보존
     const extra_notes = [
       vd.workWeekEtc ? `근무요일: ${stripTags(String(vd.workWeekEtc))}` : "",
@@ -615,7 +622,7 @@ function parseAlbamon(html: string): StructuredResult | null {
     salary_amount_max: 0,
     salary_negotiable,
     work_time,
-    description: stripTags(jp.description || "").slice(0, 800),
+    description: stripTags(jp.description || "").slice(0, 8000),
     job_type: sug.job_type || "STORE", // 알바몬은 매장·알바가 많음
     job_categories: sug.job_categories,
     _confident: !!(title && (company || region)),
@@ -893,7 +900,7 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
     .replace(/\\+"/g, '"')
     .replace(/\\+/g, "")
     .trim()
-    .slice(0, 2000);
+    .slice(0, 8000);
 
   // 이미지: shopImages(매장 사진) → 배너 / contentsImages(상세요강 포스터) → 상세
   const shopM = chunk.match(/"shopImages":\[([^\]]*)\]/);

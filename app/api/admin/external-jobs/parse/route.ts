@@ -469,7 +469,7 @@ export async function POST(req: NextRequest) {
                   .filter((l) => { const n = compNorm(l); return n && n !== cTitle && n !== cName && l !== out.title; });
                 const compDesc = descLines.join("\n").trim();
                 if (compDesc.length > 10) {
-                  out.company_description = compDesc.slice(0, 800); // 기업 소개
+                  out.company_description = compDesc.slice(0, 3000); // 기업 소개
                   const fy = compDesc.match(/(19|20)\d{2}(?=\s*년\s*에?\s*설립)/);
                   if (fy) out.founded_year = Number(fy[0]);             // 설립연도
                   const emp = Number((compDesc.match(/사원수\s*([\d,]+)\s*명/) || [])[1]?.replace(/,/g, "") || 0);
@@ -493,16 +493,16 @@ export async function POST(req: NextRequest) {
                     const j = stops.map((x) => { const p = s.indexOf(x); return p < 0 ? Infinity : p; }).reduce((m, x) => Math.min(m, x), Infinity);
                     return (j === Infinity ? s : s.slice(0, j)).replace(/^[\s·ㆍ:]+/, "").trim();
                   };
-                  const duty = betw("담당업무", ["스킬", "핵심역량", "자격요건", "우대사항", "전형절차", "근무", "접수"]).slice(0, 1500);
-                  const req = betw("자격요건", ["우대사항", "전형절차", "근무", "접수", "복리후생"]).slice(0, 1500);
-                  const pref = betw("우대사항", ["전형절차", "근무", "접수", "복리후생", "담당자"]).slice(0, 1500);
+                  const duty = betw("담당업무", ["스킬", "핵심역량", "자격요건", "우대사항", "전형절차", "근무", "접수"]).slice(0, 4000);
+                  const req = betw("자격요건", ["우대사항", "전형절차", "근무", "접수", "복리후생"]).slice(0, 4000);
+                  const pref = betw("우대사항", ["전형절차", "근무", "접수", "복리후생", "담당자"]).slice(0, 4000);
                   if (duty && duty.length > 3) { out.main_duties = duty; out.description = duty; }
                   if (req && req.length > 3) out.requirements = req;
                   if (pref && pref.length > 3) out.preferred = pref;
                 }
               } else if (detailText.length > 10) {
                 // og:description은 뷰티잡 공용 사이트 문구라 무의미 → 실제 상세요강 본문으로 덮어쓴다.
-                out.description = detailText.slice(0, 2000);
+                out.description = detailText.slice(0, 8000);
               }
             }
           }
@@ -573,9 +573,9 @@ export async function POST(req: NextRequest) {
               .replace(/^[\]\}\s:·\-–—]+/u, "").replace(/[\[\{\s·\-–—]+$/u, "").trim();
             // 고용24형 공고는 [근무시간]·[급여조건]·[자격면허]·[기타 우대내용]·[접수 방법]·[기업분류] 라벨을 쓰므로 stop 단어에 포함(brackets는 clean 후에도 남음).
             const S = ["자격요건", "자격면허", "우대사항", "기타 우대", "근무조건", "근무시간", "급여조건", "장애인채용", "병역특례", "접수", "기업분류", "복지", "혜택", "고용24"];
-            const duty = tail((between("주요업무", S) || between("담당업무", S)).slice(0, 1500));
-            const req = tail((between("자격요건", S.filter((x) => x !== "자격요건")) || between("자격면허", S.filter((x) => x !== "자격면허"))).slice(0, 1500));
-            const pref = tail((between("우대사항", S.filter((x) => x !== "우대사항")) || between("기타 우대내용", S.filter((x) => !/우대/.test(x))) || between("기타 우대", S.filter((x) => !/우대/.test(x)))).slice(0, 1500));
+            const duty = tail((between("주요업무", S) || between("담당업무", S)).slice(0, 4000));
+            const req = tail((between("자격요건", S.filter((x) => x !== "자격요건")) || between("자격면허", S.filter((x) => x !== "자격면허"))).slice(0, 4000));
+            const pref = tail((between("우대사항", S.filter((x) => x !== "우대사항")) || between("기타 우대내용", S.filter((x) => !/우대/.test(x))) || between("기타 우대", S.filter((x) => !/우대/.test(x)))).slice(0, 4000));
             if (duty && duty.length > 3) { out.description = duty; out.main_duties = duty; } // 매장=포지션소개 / 오피스=담당업무
             if (req && req.length > 3) out.requirements = req;
             if (pref && pref.length > 3) out.preferred = pref;
@@ -593,7 +593,7 @@ export async function POST(req: NextRequest) {
             const addr = (workcond.match(/근무지\s*[:：]?\s*([가-힣][^•·|\n]{4,80})/) || [])[1]?.trim() || "";
             if (addr && !out.region) { out.address = addr; out.region = addr; }
             // 복리후생 / 복지 및 혜택 → 태그 + 비고 보존
-            const welfare = (between("복리후생", ["채용절차", "접수", "지원방법", "담당자", "홈페이지", "전형", "마감"]) || between("복지", ["채용절차", "접수", "지원방법", "담당자", "홈페이지", "전형", "마감"])).slice(0, 500);
+            const welfare = (between("복리후생", ["채용절차", "접수", "지원방법", "담당자", "홈페이지", "전형", "마감"]) || between("복지", ["채용절차", "접수", "지원방법", "담당자", "홈페이지", "전형", "마감"])).slice(0, 1500);
             if (welfare) {
               const tags: string[] = [];
               if (/4대|국민연금|고용보험|산재|건강보험/.test(welfare)) tags.push("4대보험");
@@ -664,8 +664,8 @@ export async function POST(req: NextRequest) {
               const j = stops.map((x) => { const p = s.indexOf(x); return p < 0 ? Infinity : p; }).reduce((m, x) => Math.min(m, x), Infinity);
               return (j === Infinity ? s : s.slice(0, j)).trim();
             };
-            const duty = betw("담당업무", ["자격요건", "우대사항"]).slice(0, 1500);
-            const req = betw("자격요건", ["근무조건", "우대사항", "전형", "접수", "복리후생"]).slice(0, 1500);
+            const duty = betw("담당업무", ["자격요건", "우대사항"]).slice(0, 4000);
+            const req = betw("자격요건", ["근무조건", "우대사항", "전형", "접수", "복리후생"]).slice(0, 4000);
             const workcond = betw("근무조건", ["복리후생", "전형", "접수", "담당자", "마감", "우대", "기타"]);
             if (duty && duty.length > 3) { out.description = duty; out.main_duties = duty; } // 매장=포지션소개 / 오피스=담당업무 양쪽 커버
             if (req && req.length > 3) out.requirements = req;
