@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { BannerImg } from "@/components/BannerImg";
 
@@ -93,12 +93,34 @@ export default function BannerStrip({
     set쪽(갈곳);
   };
 
+  // 마우스로 배너를 누른 채 위아래로 끌면 페이지가 스크롤된다(휠·트랙패드 두 손가락과
+  // 달리 클릭+드래그는 브라우저 기본 동작이 아니라 스크롤이 안 됐다 — "스크롤되야
+  // 하는데 안되"). 끌어서 순서 바꾸기(onReorder)가 있는 등록 폼에서는 같은 손짓이
+  // 순서 바꾸기와 겹치므로, 순서 바꾸기가 없는 읽기 전용 화면에서만 켠다.
+  const drag = useRef<{ startY: number; startScrollY: number } | null>(null);
+  const onBannerMouseDown = onReorder ? undefined : (e: ReactMouseEvent) => {
+    if (e.button !== 0) return;
+    drag.current = { startY: e.clientY, startScrollY: window.scrollY };
+    const onMove = (ev: MouseEvent) => {
+      if (!drag.current) return;
+      window.scrollTo(window.scrollX, drag.current.startScrollY - (ev.clientY - drag.current.startY));
+    };
+    const onUp = () => {
+      drag.current = null;
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  };
+
   return (
     <div className="bstrip">
       <div
         ref={띠}
         className="bstrip-track"
-        style={{ borderRadius: radius }}
+        style={{ borderRadius: radius, cursor: onReorder ? undefined : "grab" }}
+        onMouseDown={onBannerMouseDown}
         onScroll={(e) => {
           const el = e.currentTarget;
           if (!el.clientWidth) return;
