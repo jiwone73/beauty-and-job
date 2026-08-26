@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
-  Briefcase, Users, FileText, FilePlus2, Settings, UserCog,
+  Briefcase, Users, FileText, Settings, UserCog,
   Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink
 } from "lucide-react";
 
@@ -12,7 +12,7 @@ import {
 
 const PAGE_TITLES: Record<string, string> = {
   dashboard: "대시보드",
-  jobs: "채용공고 관리",
+  jobs: "채용공고",
   "jobs-new": "채용공고 등록",
   applicants: "지원자 관리",
   talent: "인재 검색",
@@ -121,14 +121,16 @@ export default function CompanyLayout({ children, activePage }: {
   const isLegacy = segments[0] === "company";
   const base = isLegacy ? "/company/dashboard" : `/${segments[0]}`;
 
-  // 채용공고 등록을 '채용공고 관리'의 하위 항목이 아니라 같은 깊이의 독립 메뉴로 뺀다
-  // ("채용공고 관리 안에 넣지 말고 동일한 depth로 별도로 빼줘 아이콘도 넣어주고").
+  // 채용공고 등록을 독립 메뉴로 뺐었는데, 목록 페이지(신규 공고·복사 등록 버튼)에서
+  // 이미 두 가지 방법으로 다 새 공고를 시작할 수 있게 되면서 같은 곳으로 가는 문이
+  // 하나 더 있는 셈이 됐다("사이드 메뉴로 별도로 빼는게 의미가 없어보이는데") — 다시
+  // 목록 메뉴 하나로 합치고, '관리'만으로는 등록도 여기서 된다는 게 안 드러나
+  // "채용공고"로 이름을 줄였다("이름을 좀더 직관적인 이름으로 바꾸는건 어때").
   // group이 앞 항목과 달라지는 자리에 글씨 없이 구분선만 넣는다
   // ("글씨 빼는대신에 구분선 넣어서 구분만 해줘").
   const NAV_ITEMS = [
     { id: "dashboard", label: "대시보드",      icon: Briefcase,    href: base, group: "home" },
-    { id: "jobs",      label: "채용공고 관리", icon: FileText,     href: `${base}/jobs`, group: "jobs" },
-    { id: "jobs-new",  label: "채용공고 등록", icon: FilePlus2,    href: `${base}/jobs/new`, group: "jobs" },
+    { id: "jobs",      label: "채용공고",       icon: FileText,     href: `${base}/jobs`, group: "jobs" },
     { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent`, group: "talent" },
     { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped`, group: "talent" },
     { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "talent" },
@@ -137,6 +139,9 @@ export default function CompanyLayout({ children, activePage }: {
     // ("이 계정의 책임자는 담당자이지. 담당자 정보를 계정 설정으로 옮기자는거야?").
     { id: "account",   label: "계정 설정",                 icon: UserCog,      href: `${base}/account`, group: "settings" },
   ];
+  // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의
+  // 연장이니 그 메뉴가 계속 켜져 있어야 한다.
+  const navActive = (id: string) => activePage === id || (id === "jobs" && activePage === "jobs-new");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -246,8 +251,8 @@ export default function CompanyLayout({ children, activePage }: {
 
         <nav className="co-m-tabs">
           {MTABS.map((t) => (
-            <Link key={t.id} href={t.href} className={`co-m-tab ${activePage === t.id ? "on" : ""}`}>
-              <t.icon size={21} strokeWidth={activePage === t.id ? 2.4 : 1.8} />
+            <Link key={t.id} href={t.href} className={`co-m-tab ${navActive(t.id) ? "on" : ""}`}>
+              <t.icon size={21} strokeWidth={navActive(t.id) ? 2.4 : 1.8} />
               <span>{t.label}</span>
             </Link>
           ))}
@@ -316,7 +321,7 @@ export default function CompanyLayout({ children, activePage }: {
           {NAV_ITEMS.map((item, i) => (
             <div key={item.id}>
               {item.group !== NAV_ITEMS[i - 1]?.group && i > 0 && <div className="company-nav-divider" />}
-              <Link href={item.href} className={`company-nav-item ${activePage === item.id ? "active" : ""}`}>
+              <Link href={item.href} className={`company-nav-item ${navActive(item.id) ? "active" : ""}`}>
                 <item.icon size={20} />
                 <span>{item.label}</span>
                 {/* 알림 종은 남기되("일단 종은 유지하자"), 지금 알림이 전부 새 지원자
