@@ -5786,8 +5786,9 @@ div:has(> table.admin-table),
   grid-column: 1; grid-row: 2; min-width: 0;
   justify-self: start;
   text-align: left;
-  /* 아이콘(15px) + 라벨과의 간격(6px)만큼 들여써 값의 첫 글자를 라벨 첫 글자에 맞춘다. */
-  padding-left: 21px;
+  /* 아이콘(15px) + 라벨과의 간격(6px)만큼 들여써 값의 첫 글자를 라벨 첫 글자에 맞춘다.
+     SNS·주소 칸은 자기 자리에 인라인 padding:0 을 이미 갖고 있어 !important 없이는 졌다. */
+  padding-left: 21px !important;
   box-sizing: border-box;
   width: 100%;
 }
@@ -5795,7 +5796,9 @@ div:has(> table.admin-table),
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select {
   border: none !important;
   background: transparent !important;
-  padding: 0 !important;
+  /* padding:0 !important 가 앞의 padding-left:21px 를 지워, 값이 아이콘 밑(라벨 첫
+     글자보다 왼쪽)에서 시작했다("내용을 아이콘에 정렬하지 말고 제목에 왼쪽정렬"). */
+  padding: 0 0 0 21px !important;
   height: 24px !important;
   line-height: 24px !important;
   text-align: left;
