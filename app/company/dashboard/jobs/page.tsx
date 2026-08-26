@@ -263,7 +263,7 @@ function CompanyJobsContent() {
               <button
                 style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color:"#555", fontSize:14, fontWeight:500, cursor:"pointer" }}
                 onClick={handleBulkClose}>
-                <Ban size={14} /> 마감
+                <Ban size={14} /> 공고마감
               </button>
               <button
                 style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color: checked.length !== 1 ? "#bbb" : "#555", fontSize:14, fontWeight:500, cursor: checked.length !== 1 ? "not-allowed" : "pointer" }}
@@ -358,7 +358,7 @@ function CompanyJobsContent() {
               {selectMode && (
                 <>
                   <button className="co-mbar-btn" disabled={checked.length === 0} onClick={handleBulkClose}>
-                    <Ban size={14} /> 마감
+                    <Ban size={14} /> 공고마감
                   </button>
                   <button className="co-mbar-btn" disabled={checked.length !== 1} onClick={handleReRegister}>
                     <Copy size={14} /> 재등록
