@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Plus, Search, Edit, X, Trash2, Copy, Ban
+  Users, Search, Edit, X, Trash2, Copy, Ban
 } from "lucide-react";
 import { companyJobsApi } from "@/lib/api/company";
 import type { CompanyJob, JobStatus } from "@/lib/types/company";
@@ -293,7 +293,7 @@ function CompanyJobsContent() {
           {checked.length === 0 && (
             <Link href="/company/dashboard/jobs/new" className="company-primary-btn"
               style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, fontSize:14, fontWeight:500, border:"1px solid transparent" }}>
-              <Plus size={14} /> 신규 공고
+              신규 등록
             </Link>
           )}
         </div>
@@ -347,7 +347,7 @@ function CompanyJobsContent() {
             {/* 모바일도 같은 규칙 — 선택 중에는 아래 선택 바의 액션만 남긴다. */}
             {checked.length === 0 && (
               <Link href="/company/dashboard/jobs/new" className="co-addbtn">
-                <Plus size={16} /> 신규 공고
+                신규 등록
               </Link>
             )}
             <div className="co-statrow">
